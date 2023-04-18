@@ -14,6 +14,7 @@ export default function CustomTokenModal({
 }: ICustomTokenModalProps) {
   return (
     <Modal
+      destroyOnClose
       {...props}
       wrapClassName="custom-token-modal"
       maskClosable={true}

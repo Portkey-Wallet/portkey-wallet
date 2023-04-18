@@ -6178,7 +6178,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-native@^0.69.3", "@types/react-native@^0.69.7":
+"@types/react-native@^0.69.7":
   version "0.69.15"
   resolved "https://registry.npmjs.org/@types/react-native/-/react-native-0.69.15.tgz#67d27777c3e9a117e11cb1a539865d5e0504d950"
   integrity sha512-IYruD0E50stGMy2NtB2c6C/45TPtP+9dz4rJfSLrVEiIl25aN3QLVJMS5UIPaAMNZVwXJlu0LKAirYYX6FNPDQ==
@@ -7231,28 +7231,6 @@ aelf-sdk@^3.2.40:
   version "3.2.40"
   resolved "https://registry.npmmirror.com/aelf-sdk/-/aelf-sdk-3.2.40.tgz#57064ffe31590f8c7d615224eb664b4c723c87bf"
   integrity sha512-VhiwX9am5gS1mMnImdwaPuFo/sdABrX1gL1ojCM3ohKN/L4qE+egxGBYHEcVxHbCFo1t54pUB2/w7pA4QMJY2w==
-  dependencies:
-    "@aelfqueen/protobufjs" "^6.8.9"
-    "@babel/runtime" "^7.4.5"
-    assert "^2.0.0"
-    bignumber.js "^9.0.0"
-    bip39 "^3.0.2"
-    browserify-cipher "^1.0.1"
-    bs58 "^4.0.1"
-    buffer "^5.2.1"
-    crypto-js "^3.1.9-1"
-    elliptic "^6.4.1"
-    hdkey "^1.1.1"
-    js-sha256 "^0.9.0"
-    query-string "5.1.1"
-    randombytes "^2.1.0"
-    scryptsy "^2.1.0"
-    xmlhttprequest "^1.8.0"
-
-aelf-sdk@^3.2.41:
-  version "3.2.41"
-  resolved "https://registry.npmmirror.com/aelf-sdk/-/aelf-sdk-3.2.41.tgz#6e2df4cd57e884a7c06b1cc1fa73634e7306e3cd"
-  integrity sha512-1Iq/wTNRUMYMgptzxNgWVFq9MJAYBkX/Q+XU+emZIpx8gqAE+fN3ph1FnWEMjnzkg47HAKwXmXYYmc95kWMAAw==
   dependencies:
     "@aelfqueen/protobufjs" "^6.8.9"
     "@babel/runtime" "^7.4.5"
@@ -13738,7 +13716,7 @@ expo-image-loader@~3.2.0:
   resolved "https://registry.npmmirror.com/expo-image-loader/-/expo-image-loader-3.2.0.tgz#d98b021660edef7243f7c5ec011b8d0545626d41"
   integrity sha512-LU3Q2prn64/HxdToDmxgMIRXS1ZvD9Q3iCxRVTZn1fPQNNDciIQFE5okaa74Ogx20DFHs90r6WoUd7w9Af1OGQ==
 
-expo-image-picker@^13.2.1, expo-image-picker@~13.3.1:
+expo-image-picker@^13.2.1:
   version "13.3.1"
   resolved "https://registry.npmmirror.com/expo-image-picker/-/expo-image-picker-13.3.1.tgz#7e8fe1dd7a58ab9e0fa17569ab6b64256ece0c98"
   integrity sha512-IY84uDu9uxetAup5yw0CIIujigl/lM3grwyfpeZFMKGmWHzmKamptjd/sG8K65xkb6tF9awmGMW0qglHQ9hakQ==
@@ -21635,11 +21613,6 @@ qrcode-terminal@0.11.0:
   resolved "https://registry.npmmirror.com/qrcode-terminal/-/qrcode-terminal-0.11.0.tgz#ffc6c28a2fc0bfb47052b47e23f4f446a5fbdb9e"
   integrity sha512-Uu7ii+FQy4Qf82G4xu7ShHhjhGahEpCWc3x8UavY3CTcWV+ufmmCtwkr7ZKsX42jdL0kr1B5FKUeqJvAn51jzQ==
 
-qrcode.react@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.npmmirror.com/qrcode.react/-/qrcode.react-3.1.0.tgz#5c91ddc0340f768316fbdb8fff2765134c2aecd8"
-  integrity sha512-oyF+Urr3oAMUG/OiOuONL3HXM+53wvuH3mtIWQrYmsXoAq0DkvZp2RYUWFSMFtbdOpuS++9v+WAkzNVkMlNW6Q==
-
 qrcode@1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/qrcode/-/qrcode-1.4.4.tgz#f0c43568a7e7510a55efc3b88d9602f71963ea83"
@@ -21653,7 +21626,7 @@ qrcode@1.4.4:
     pngjs "^3.3.0"
     yargs "^13.2.4"
 
-qrcode@^1.5.0, qrcode@^1.5.1:
+qrcode@^1.5.1:
   version "1.5.1"
   resolved "https://registry.npmmirror.com/qrcode/-/qrcode-1.5.1.tgz#0103f97317409f7bc91772ef30793a54cd59f0cb"
   integrity sha512-nS8NJ1Z3md8uTjKtP+SGGhfqmTCs5flU/xR623oI0JX+Wepz9R8UrRVCTBTJm3qGw3rH6jJ6MUHjkDx15cxSSg==
@@ -22559,14 +22532,6 @@ react-native-qrcode-styled@^0.2.1:
   integrity sha512-SxjmUzHGCAyrH2/cWTErbzgfDE+aph4kJOb0EtYDmpL1pPDQ/7sjUIYYomsapf7SYqwGq+eYW5dPKPXT6gntgg==
   dependencies:
     qrcode "^1.5.1"
-
-react-native-qrcode-svg@^6.1.2:
-  version "6.1.2"
-  resolved "https://registry.npmmirror.com/react-native-qrcode-svg/-/react-native-qrcode-svg-6.1.2.tgz#a7cb6c10199ab01418a7f7700ce17a6a014f544e"
-  integrity sha512-lMbbxoPVybXCp9SYm73Aj/0iZ9OlSZl2u+zpdbjgC4DYHBm9m9tDQxISNg1OPeR7AAzmyx8IV4JTFmk8G5R22g==
-  dependencies:
-    prop-types "^15.7.2"
-    qrcode "^1.5.0"
 
 react-native-randombytes@^3.6.1:
   version "3.6.1"

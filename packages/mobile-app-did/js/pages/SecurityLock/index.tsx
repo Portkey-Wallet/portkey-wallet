@@ -21,7 +21,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import PinContainer from 'components/PinContainer';
 import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
 import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
-import useDebounceCallback from '@portkey-wallet/hooks/useDebounceCallback';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 let appState: AppStateStatus, verifyTime: number;
 export default function SecurityLock() {
   const { biometrics } = useUser();
@@ -125,7 +125,7 @@ export default function SecurityLock() {
     ],
   );
 
-  const verifyBiometrics = useDebounceCallback(
+  const verifyBiometrics = useThrottleCallback(
     async () => {
       if (!biometrics || (verifyTime && verifyTime + 1000 > Date.now())) return;
       try {

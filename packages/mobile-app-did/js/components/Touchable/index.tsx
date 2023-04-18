@@ -1,4 +1,4 @@
-import useDebounceCallback from '@portkey-wallet/hooks/useDebounceCallback';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 import React, { memo } from 'react';
 import { TouchableOpacity, TouchableHighlight, TouchableOpacityProps } from 'react-native';
 
@@ -10,8 +10,8 @@ type TouchableProps = {
 const Touchable: React.FC<TouchableOpacityProps & TouchableProps> = props => {
   const { onPressIn, onPress, highlight, onPressWithSecond } = props;
 
-  const handleOnPressIn = useDebounceCallback(onPressIn, [onPressIn], onPressWithSecond);
-  const handleOnPress = useDebounceCallback(onPress, [onPress], onPressWithSecond);
+  const handleOnPressIn = useThrottleCallback(onPressIn, [onPressIn], onPressWithSecond);
+  const handleOnPress = useThrottleCallback(onPress, [onPress], onPressWithSecond);
   if (highlight)
     return (
       <TouchableHighlight

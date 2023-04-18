@@ -41,7 +41,7 @@ export default function VerifierPage({ currentGuardian, guardianType, isInitStat
   const { pathname } = useLocation();
   const [isFromLoginOrRegister, setIsFromLoginOrRegister] = useState(true);
   const [pinVal, setPinVal] = useState<string>();
-  const timerRef = useRef<NodeJS.Timer>();
+  const timerRef = useRef<NodeJS.Timer | number>();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
 

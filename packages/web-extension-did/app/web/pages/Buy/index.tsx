@@ -37,7 +37,7 @@ export default function Buy() {
   const { state } = useLocation();
   const { isPrompt } = useCommonState();
   const updateTimeRef = useRef(MAX_UPDATE_TIME);
-  const updateTimerRef = useRef<NodeJS.Timer>();
+  const updateTimerRef = useRef<NodeJS.Timer | number>();
   const valueSaveRef = useRef({ ...initValueSave });
   const [errMsg, setErrMsg] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);

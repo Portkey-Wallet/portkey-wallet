@@ -1,8 +1,8 @@
 import { WORKER_KEEP_ALIVE_MESSAGE, TIME_45_MIN_IN_MS, WORKER_KEEP_ALIVE_INTERVAL } from 'constants/index';
 import { apis } from './BrowserApis';
 
-let keepAliveInterval: NodeJS.Timeout;
-let keepAliveTimer: NodeJS.Timeout;
+let keepAliveInterval: NodeJS.Timeout | number;
+let keepAliveTimer: NodeJS.Timeout | number;
 
 /**
  * SERVICE WORKER LOGIC

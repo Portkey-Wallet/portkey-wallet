@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
 import { setIsPopupInit } from 'store/reducers/common/slice';
 import { setLocalStorage } from 'utils/storage/chromeStorage';
-let timer: NodeJS.Timeout;
+let timer: NodeJS.Timeout | number;
 
 export default function useLocationChange() {
   const location = useLocation();

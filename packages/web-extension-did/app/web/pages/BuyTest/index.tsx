@@ -27,7 +27,7 @@ export default function Buy() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { isPrompt } = useCommonState();
-  const timerRef = useRef<NodeJS.Timer>();
+  const timerRef = useRef<NodeJS.Timer | number>();
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
 
   const handlePageChange = useCallback((e: RadioChangeEvent) => {

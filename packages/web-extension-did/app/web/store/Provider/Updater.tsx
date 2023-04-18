@@ -42,8 +42,6 @@ export default function Updater() {
   useMemo(() => {
     request.set('baseURL', apiUrl);
   }, [apiUrl]);
-  // TODO
-  // Query the caAddress of each chain by Contract
   useCaInfoOnChain();
   useActiveLockStatus();
   useMemo(() => {

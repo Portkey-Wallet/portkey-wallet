@@ -111,12 +111,12 @@ export default function MyBalance() {
     [navTarget, navigate],
   );
 
-  const { isPrompt } = useCommonState();
+  const { isNotLessThan768 } = useCommonState();
   const SelectTokenELe = useMemo(() => {
     const title = navTarget === 'receive' ? 'Select Token' : 'Select Assets';
     const searchPlaceHolder = navTarget === 'receive' ? 'Search Token' : 'Search Assets';
 
-    return isPrompt ? (
+    return isNotLessThan768 ? (
       <CustomTokenModal
         open={tokenOpen}
         drawerType={navTarget}
@@ -142,7 +142,7 @@ export default function MyBalance() {
         }}
       />
     );
-  }, [isPrompt, navTarget, onSelectedToken, tokenOpen]);
+  }, [isNotLessThan768, navTarget, onSelectedToken, tokenOpen]);
 
   const onChange = useCallback(async (key: string) => {
     setActiveKey(key);

@@ -27,24 +27,25 @@ export default function SocialLogin({
 
   const isLogin = useMemo(() => type === 'Login', [type]);
 
-  const renderLoginTitle = useMemo(() => {
+  const renderTitle = useMemo(() => {
+    const title = isLogin ? t('Login') : t('Sign up');
     if (isTestnet) {
       return (
         <div className="flex testnet-flag">
-          {t('Login')}
+          {title}
           <span className="flag-text flex-center">{t('TEST')}</span>
         </div>
       );
     }
-    return t('Login');
-  }, [isTestnet, t]);
+    return title;
+  }, [isLogin, isTestnet, t]);
 
   return (
     <>
       <div className="card-content">
         <h1 className="title">
           {!isLogin && <CustomSvg type="BackLeft" onClick={onBack} />}
-          {isLogin ? renderLoginTitle : t('Sign up')}
+          {renderTitle}
           {isLogin && <CustomSvg type="QRCode" onClick={() => navigate('/register/start/scan')} />}
         </h1>
         <div className="social-login-content">

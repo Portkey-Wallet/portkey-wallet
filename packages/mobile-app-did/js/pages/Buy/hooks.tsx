@@ -9,6 +9,7 @@ import CommonToast from 'components/CommonToast';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
 
 export const useTestAmountPrice = (
   // receiveAmount: number,
@@ -214,14 +215,8 @@ export const useReceive = (
   ]);
   refreshReceiveRef.current = refreshReceive;
 
-  const timer = useRef<NodeJS.Timeout>();
   const debounceRefreshReceiveRef = useRef<() => void>();
-  const debounceRefreshReceive = useCallback(() => {
-    timer.current && clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      refreshReceiveRef.current?.();
-    }, 500);
-  }, []);
+  const debounceRefreshReceive = useDebounceCallback(refreshReceive, []);
   debounceRefreshReceiveRef.current = debounceRefreshReceive;
 
   useEffect(() => {

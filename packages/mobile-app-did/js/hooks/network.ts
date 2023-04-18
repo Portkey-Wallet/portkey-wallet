@@ -5,7 +5,7 @@ import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation';
 import { useAppDispatch } from 'store/hooks';
 import navigationService from 'utils/navigationService';
-import useDebounceCallback from '@portkey-wallet/hooks/useDebounceCallback';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useLanguage } from 'i18n/hooks';
 import ActionSheet from 'components/ActionSheet';
@@ -16,7 +16,7 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const { walletInfo } = useWallet();
   const resetStore = useResetStore();
   const { t } = useLanguage();
-  const onConfirm = useDebounceCallback(
+  const onConfirm = useThrottleCallback(
     async (network: NetworkItem, logged: boolean) => {
       let routeName: keyof RootStackParamList = 'LoginPortkey';
       if (logged) routeName = 'Tab';
@@ -27,7 +27,7 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
     },
     [dispatch, route.name],
   );
-  return useDebounceCallback(
+  return useThrottleCallback(
     (network: NetworkItem) => {
       const { caInfo } = walletInfo || {};
       const tmpCaInfo = caInfo?.[network.networkType];

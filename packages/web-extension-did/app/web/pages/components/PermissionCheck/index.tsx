@@ -100,6 +100,7 @@ export default function PermissionCheck({
     }
     if (noCheckRegister) return;
     if (isRegisterPage) return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
+    await sleep(500);
     if (!walletInfo?.caInfo?.[currentNetwork]) {
       if (pageType === 'Popup') {
         return InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();
@@ -108,7 +109,7 @@ export default function PermissionCheck({
       }
     }
     getPassword();
-  }, [pageType, noCheckRegister, isRegisterPage, walletInfo?.caInfo, currentNetwork, getPassword, navigate]);
+  }, [pageType, noCheckRegister, isRegisterPage, walletInfo, currentNetwork, getPassword, navigate]);
 
   useEffect(() => {
     if (location.pathname.includes('/test')) return;

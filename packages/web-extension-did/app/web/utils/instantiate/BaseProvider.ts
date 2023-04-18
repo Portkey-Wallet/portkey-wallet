@@ -48,7 +48,7 @@ export default class BaseProvider extends PortKeyListener {
   };
 
   constructor({ logger = console, maxEventListeners = 100 }: BaseProviderOptions) {
-    super({ logger, maxEventListeners });
+    super();
     this._state = {
       ...BaseProvider._defaultState,
     };

@@ -1,0 +1,387 @@
+type Query {
+  tokenInfo(dto: GetTokenInfoDto): [TokenInfoDto]
+  caHolderTransaction(
+    dto: GetCAHolderTransactionDto
+  ): CAHolderTransactionPageResultDto
+  caHolderTransactionInfo(
+    dto: GetCAHolderTransactionDto
+  ): CAHolderTransactionPageResultDto
+  caHolderManagerInfo(dto: GetCAHolderManagerInfoDto): [CAHolderManagerDto]
+  caHolderInfo(dto: GetCAHolderInfoDto): [CAHolderInfoDto]
+  loginGuardianInfo(dto: GetLoginGuardianInfoDto): [LoginGuardianDto]
+  caHolderNFTCollectionBalanceInfo(
+    dto: GetCAHolderNFTCollectionInfoDto
+  ): CAHolderNFTCollectionBalancePageResultDto
+  caHolderNFTBalanceInfo(
+    dto: GetCAHolderNFTInfoDto
+  ): CAHolderNFTBalancePageResultDto
+  caHolderTokenBalanceInfo(
+    dto: GetCAHolderTokenBalanceDto
+  ): CAHolderTokenBalancePageResultDto
+  caHolderTransactionAddressInfo(
+    dto: GetCAHolderTransactionAddressDto
+  ): CAHolderTransactionAddressPageResultDto
+  loginGuardianChangeRecordInfo(
+    dto: GetLoginGuardianChangeRecordDto
+  ): [LoginGuardianChangeRecordDto]
+  caHolderManagerChangeRecordInfo(
+    dto: GetCAHolderManagerChangeRecordDto
+  ): [CAHolderManagerChangeRecordDto]
+  caHolderSearchTokenNFT(
+    dto: GetCAHolderSearchTokenNFTDto
+  ): CAHolderSearchTokenNFTPageResultDto
+  syncState(dto: GetSyncStateDto): SyncStateDto
+}
+
+type TokenInfoDto {
+  id: String
+  chainId: String
+  blockHash: String
+  blockHeight: Long!
+  previousBlockHash: String
+  symbol: String
+  type: TokenType!
+  tokenContractAddress: String
+  decimals: Int!
+  totalSupply: Long!
+  tokenName: String
+  issuer: String
+  isBurnable: Boolean!
+  issueChainId: Int!
+}
+
+scalar Long
+
+enum TokenType {
+  TOKEN
+  NFT_COLLECTION
+  NFT_ITEM
+}
+
+input GetTokenInfoDto {
+  symbol: String
+  chainId: String
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type CAHolderTransactionPageResultDto {
+  totalRecordCount: Long!
+  data: [CAHolderTransactionDto]
+}
+
+type CAHolderTransactionDto {
+  id: String
+  chainId: String
+  blockHash: String
+  blockHeight: Long!
+  previousBlockHash: String
+  transactionId: String
+  methodName: String
+  tokenInfo: TokenInfoDto
+  nftInfo: NFTItemInfoDto
+  status: TransactionStatus!
+  timestamp: Long!
+  transferInfo: TransferInfo
+  fromAddress: String
+  transactionFees: [TransactionFee]
+}
+
+type NFTItemInfoDto {
+  symbol: String
+  tokenContractAddress: String
+  decimals: Int!
+  supply: Long!
+  totalSupply: Long!
+  tokenName: String
+  issuer: String
+  isBurnable: Boolean!
+  issueChainId: Int!
+  imageUrl: String
+  collectionSymbol: String
+  collectionName: String
+}
+
+enum TransactionStatus {
+  NOT_EXISTED
+  PENDING
+  FAILED
+  MINED
+  CONFLICT
+  PENDING_VALIDATION
+  NODE_VALIDATION_FAILED
+}
+
+type TransferInfo {
+  fromAddress: String
+  fromCAAddress: String
+  toAddress: String
+  amount: Long!
+  fromChainId: String
+  toChainId: String
+  transferTransactionId: String
+}
+
+type TransactionFee {
+  symbol: String
+  amount: Long!
+}
+
+input GetCAHolderTransactionDto {
+  chainId: String
+  startBlockHeight: Long!
+  endBlockHeight: Long!
+  symbol: String
+  caAddresses: [String]
+  transactionId: String
+  blockHash: String
+  transferTransactionId: String
+  methodNames: [String]
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type CAHolderManagerDto {
+  id: String
+  chainId: String
+  caHash: String
+  caAddress: String
+  managerInfos: [ManagerInfo]
+  originChainId: String
+}
+
+type ManagerInfo {
+  address: String
+  extraData: String
+}
+
+input GetCAHolderManagerInfoDto {
+  chainId: String
+  caHash: String
+  caAddresses: [String]
+  manager: String
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type CAHolderInfoDto {
+  id: String
+  chainId: String
+  caHash: String
+  caAddress: String
+  managerInfos: [ManagerInfo]
+  originChainId: String
+  guardianList: GuardianList
+}
+
+type GuardianList {
+  guardians: [Guardian]
+}
+
+type Guardian {
+  type: Int!
+  verifierId: String
+  identifierHash: String
+  salt: String
+  isLoginGuardian: Boolean!
+}
+
+input GetCAHolderInfoDto {
+  chainId: String
+  caHash: String
+  caAddress: [String]
+  loginGuardianIdentifierHash: String
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type LoginGuardianDto {
+  id: String
+  chainId: String
+  caHash: String
+  caAddress: String
+  manager: String
+  loginGuardian: GuardianDto
+}
+
+type GuardianDto {
+  type: Int!
+  verifierId: String
+  identifierHash: String
+  salt: String
+  isLoginGuardian: Boolean!
+}
+
+input GetLoginGuardianInfoDto {
+  chainId: String
+  caHash: String
+  caAddress: String
+  loginGuardian: String
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type CAHolderNFTCollectionBalancePageResultDto {
+  totalRecordCount: Long!
+  data: [CAHolderNFTCollectionBalanceInfoDto]
+}
+
+type CAHolderNFTCollectionBalanceInfoDto {
+  id: String
+  chainId: String
+  caAddress: String
+  tokenIds: [Long!]
+  nftCollectionInfo: NFTCollectionDto
+}
+
+type NFTCollectionDto {
+  symbol: String
+  tokenContractAddress: String
+  decimals: Int!
+  supply: Long!
+  totalSupply: Long!
+  tokenName: String
+  issuer: String
+  isBurnable: Boolean!
+  issueChainId: Int!
+  imageUrl: String
+}
+
+input GetCAHolderNFTCollectionInfoDto {
+  chainId: String
+  symbol: String
+  caAddresses: [String]
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type CAHolderNFTBalancePageResultDto {
+  totalRecordCount: Long!
+  data: [CAHolderNFTBalanceInfoDto]
+}
+
+type CAHolderNFTBalanceInfoDto {
+  id: String
+  chainId: String
+  caAddress: String
+  balance: Long!
+  nftInfo: NFTItemInfoDto
+}
+
+input GetCAHolderNFTInfoDto {
+  chainId: String
+  symbol: String
+  caAddresses: [String]
+  collectionSymbol: String
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type CAHolderTokenBalancePageResultDto {
+  totalRecordCount: Long!
+  data: [CAHolderTokenBalanceDto]
+}
+
+type CAHolderTokenBalanceDto {
+  chainId: String
+  caAddress: String
+  tokenInfo: TokenInfoDto
+  balance: Long!
+  tokenIds: [Long!]
+}
+
+input GetCAHolderTokenBalanceDto {
+  chainId: String
+  caAddresses: [String]
+  symbol: String
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type CAHolderTransactionAddressPageResultDto {
+  totalRecordCount: Long!
+  data: [CAHolderTransactionAddressDto]
+}
+
+type CAHolderTransactionAddressDto {
+  chainId: String
+  caAddress: String
+  address: String
+  addressChainId: String
+  transactionTime: Long!
+}
+
+input GetCAHolderTransactionAddressDto {
+  chainId: String
+  caAddresses: [String]
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type LoginGuardianChangeRecordDto {
+  changeType: String
+  blockHeight: Long!
+  id: String
+  chainId: String
+  caHash: String
+  caAddress: String
+  manager: String
+  loginGuardian: GuardianDto
+}
+
+input GetLoginGuardianChangeRecordDto {
+  chainId: String
+  startBlockHeight: Long!
+  endBlockHeight: Long!
+}
+
+type CAHolderManagerChangeRecordDto {
+  caAddress: String
+  caHash: String
+  manager: String
+  changeType: String
+  blockHeight: Long!
+}
+
+input GetCAHolderManagerChangeRecordDto {
+  chainId: String
+  startBlockHeight: Long!
+  endBlockHeight: Long!
+}
+
+type CAHolderSearchTokenNFTPageResultDto {
+  totalRecordCount: Long!
+  data: [CAHolderSearchTokenNFTDto]
+}
+
+type CAHolderSearchTokenNFTDto {
+  chainId: String
+  caAddress: String
+  balance: Long!
+  tokenId: Long!
+  tokenInfo: TokenInfoDto
+  nftInfo: NFTItemInfoDto
+}
+
+input GetCAHolderSearchTokenNFTDto {
+  chainId: String
+  caAddresses: [String]
+  searchWord: String
+  skipCount: Int!
+  maxResultCount: Int!
+}
+
+type SyncStateDto {
+  confirmedBlockHeight: Long!
+}
+
+input GetSyncStateDto {
+  chainId: String
+  filterType: BlockFilterType!
+}
+
+enum BlockFilterType {
+  BLOCK
+  TRANSACTION
+  LOG_EVENT
+}

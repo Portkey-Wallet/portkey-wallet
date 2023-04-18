@@ -1,0 +1,57 @@
+@import '../../../../assets/theme/color.less';
+.to-account {
+  position: relative;
+  width: 100%;
+
+  .address-text {
+    min-height: 56px;
+    line-break: anywhere;
+    line-height: 16px;
+    font-size: 12px;
+    padding: 6px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  input,
+  .address-text {
+    text-overflow: ellipsis;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .address-text.with-name {
+    padding: 20px 16px;
+    height: fit-content;
+  }
+  .@{app-prefix}-input.with-name,
+  .address-text.with-name {
+    transform: translateY(13px);
+    font-size: 12px;
+    line-height: 16px;
+    color: @font-13;
+  }
+  .@{app-prefix}-input:focus.with-name {
+    transform: translateY(0);
+    line-height: 22px;
+    font-size: 16px;
+    color: @font-13;
+  }
+  .@{app-prefix}-input:focus + .account-name {
+    display: none;
+  }
+  .account-name {
+    white-space: nowrap;
+    max-width: calc(100% - 52px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    pointer-events: none;
+    color: @font-13;
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    z-index: 10;
+    line-height: 22px;
+    font-size: 16px;
+  }
+}

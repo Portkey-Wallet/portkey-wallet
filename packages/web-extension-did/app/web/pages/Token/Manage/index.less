@@ -1,0 +1,130 @@
+@import '../../../assets/theme/color.less';
+
+.add-token {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .add-token-top {
+    margin-bottom: 1px;
+    flex-shrink: 0;
+
+    .close2-icon {
+      width: 18px;
+      height: 18px;
+    }
+    .setting-header-wrapper {
+      border: none;
+      height: unset;
+      padding-top: 32px;
+      background-color: @bg-13;
+
+      .title-center {
+        text-align: left;
+      }
+
+      .header-title {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+
+        .@{app-prefix}-btn {
+          width: 120px;
+          height: 44px;
+          border-radius: 24px;
+          margin-left: 16px;
+        }
+      }
+    }
+  }
+
+  .add-token-content {
+    flex: 1;
+    background-color: #fff;
+    overflow: auto;
+
+    .token-item {
+      display: flex;
+      border-bottom: 1px solid @border-2;
+      padding: 12px 16px;
+      justify-content: space-between;
+      align-items: center;
+
+      .token-item-content {
+        display: flex;
+        align-items: center;
+        margin-right: 8px;
+
+        .elf-icon-icon {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          svg {
+            width: 28px;
+            height: 28px;
+          }
+        }
+        .token-logo {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          margin-right: 12px;
+        }
+        .custom-word-logo {
+          background-color: @bg-10;
+          border: 1px solid @border-1;
+          text-align: center;
+          line-height: 26px;
+          color: @font-11;
+        }
+
+        .token-info {
+          display: flex;
+          gap: 2px;
+          flex-direction: column;
+          .token-item-symbol {
+            width: 232px;
+            font-size: 16px;
+            color: @font-11;
+            height: 22px;
+            line-height: 22px;
+          }
+          .token-item-net {
+            line-height: 16px;
+            color: @font-13;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+  }
+
+  .add-token-btn {
+    min-width: 48px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border-color: @border-3;
+    color: @font-9;
+    border-radius: 11px;
+
+    & > span {
+      display: block;
+      height: 16px;
+      line-height: 16px;
+    }
+  }
+
+  .add-token-btn-icon {
+    display: flex;
+    width: 48px;
+    justify-content: center;
+    height: 16px;
+  }
+}
+
+.left-icon {
+  display: inline-block;
+  font-size: 15px;
+  margin-right: 10px;
+}

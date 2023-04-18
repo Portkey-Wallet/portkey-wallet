@@ -1,0 +1,69 @@
+@import '../../assets/theme/color.less';
+
+.network-dropdown {
+  width: 312px;
+  border-radius: 6px;
+  background-color: white;
+  box-shadow: 0 3px 10px 0 rgb(77 78 89/ 24%);
+
+  .chain-menu {
+    .title {
+      padding: 12px 0 14px;
+      line-height: 22px;
+      font-size: 18px;
+      text-align: center;
+      width: 100%;
+      color: @font-11;
+      border-bottom: 1px solid @border-2;
+    }
+    .chain-wrap {
+      height: 184px;
+      overflow-y: scroll;
+      padding: 8px 0;
+      .chain-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 16px 20px;
+        font-size: 16px;
+        .select-flag,
+        .empty {
+          width: 16px;
+          height: 16px;
+          margin-right: 12px;
+        }
+        .aelf-icon {
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+        }
+      }
+    }
+    .@{app-prefix}-dropdown-menu {
+      box-shadow: none;
+      padding: 8px 0;
+      height: 184px;
+      overflow: scroll;
+    }
+    .button-wrap {
+      padding: 0 16px 16px;
+      button {
+        height: 48px;
+        border-radius: 24px;
+      }
+    }
+  }
+}
+
+.prompt-body {
+  .network-dropdown {
+    transform: translateX();
+  }
+}
+
+.popup-body {
+  .network-dropdown {
+    left: 48px !important;
+    top: 60px !important;
+  }
+}

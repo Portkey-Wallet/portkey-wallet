@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "name": "Portkey: DID & Crypto & NFT",
+  "version": "1.2.3",
+  "description": "Identity System for Social Recover and Asset Management Tool",
+  "icons": {
+    "16": "assets/images/extension_logo.png",
+    "48": "assets/images/extension_logo.png",
+    "128": "assets/images/extension_logo.png"
+  },
+  "background": {
+    "service_worker": "./js/serviceWorker.js"
+  },
+  "action": {
+    "default_icon": "assets/images/extension_logo.png",
+    "default_title": "Portkey: DID & Crypto & NFT",
+    "default_popup": "popup.html"
+  },
+  "sandbox": {
+    "pages": ["sandbox.html", "sandbox-index.html"]
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+C",
+        "mac": "Command+Shift+C",
+        "chromeos": "Ctrl+Shift+C",
+        "linux": "Ctrl+Shift+C"
+      }
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": ["storage", "unlimitedStorage", "tabs", "alarms"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "web_accessible_resources": [
+    {
+      "resources": ["js/inject.js"],
+      "matches": ["<all_urls>"]
+    },
+    {
+      "resources": ["sandbox.html"],
+      "matches": ["<all_urls>"]
+    },
+    {
+      "resources": ["sandbox-index.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "options_page": "options.html",
+  "options_ui": {
+    "page": "options.html"
+  },
+  "default_locale": "en"
+}

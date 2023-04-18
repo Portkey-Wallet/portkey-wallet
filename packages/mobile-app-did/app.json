@@ -1,0 +1,17 @@
+{
+  "name": "PortkeyApp",
+  "displayName": "PortkeyApp",
+  "expo": {
+    "android": {
+      "googleServicesFile": "./google-services.json"
+    },
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/perf",
+      "@react-native-firebase/crashlytics"
+    ]
+  }
+}

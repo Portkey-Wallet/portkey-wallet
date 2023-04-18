@@ -1,0 +1,38 @@
+@import '../../../../assets/theme/color.less';
+
+.set-wallet-name-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .form-content {
+    padding: 24px;
+
+    .@{app-prefix}-form-item-label,
+    .@{app-prefix}-input {
+      color: @font-11;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .@{app-prefix}-form-item-label {
+      padding-bottom: 8px;
+      label {
+        font-size: 14px;
+      }
+    }
+    .@{app-prefix}-input {
+      padding: 14px 16px;
+    }
+  }
+  .form-btn {
+    width: 100%;
+    padding: 16px;
+
+    .@{app-prefix}-form-item {
+      margin-bottom: 0;
+    }
+    .@{app-prefix}-btn-primary {
+      border-radius: 22px;
+    }
+  }
+}

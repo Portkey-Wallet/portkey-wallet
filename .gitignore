@@ -1,0 +1,19 @@
+
+# OSX
+#
+.DS_Store
+
+.idea
+.eslintcache
+.idea
+
+# node.js
+#
+node_modules/
+npm-debug.log
+yarn-error.log
+
+.vscode
+
+ignore/
+**/*.zip

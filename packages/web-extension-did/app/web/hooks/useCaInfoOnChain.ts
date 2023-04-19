@@ -8,7 +8,7 @@ import { isAddress } from '@portkey-wallet/utils';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
-import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
+import { useAppDispatch } from 'store/Provider/hooks';
 import { getHolderInfoByContract } from 'utils/sandboxUtil/getHolderInfo';
 
 export const useCaInfoOnChain = () => {

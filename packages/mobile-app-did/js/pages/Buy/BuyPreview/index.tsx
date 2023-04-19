@@ -67,9 +67,13 @@ export default function BuyPreview() {
         achUrl += `&type=sell&cryptoAmount=${amount}`;
       }
 
+      let incognito: boolean | undefined = true;
       const achTokenInfo = await getAchTokenInfo();
       if (achTokenInfo !== undefined) {
+        console.log('achTokenInfo', achTokenInfo);
+
         achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
+        incognito = undefined;
       }
 
       const orderNo = await getPaymentOrderNo({
@@ -81,13 +85,14 @@ export default function BuyPreview() {
       // TODO: setCurrent Mainnet Aelf address
       const address = 'Re16JhfpEFxgJebKNW9xDciwRUu8aibwXbTrqt5J1BSwjdSkB';
       const signature = await getAchSignature({ address });
-      achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
 
+      achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
       console.log('achUrl', achUrl);
       navigationService.navigate('ViewOnWebView', {
         title: 'Alchemy Pay Ramp',
         url: achUrl,
         webViewPageType: 'ach',
+        incognito,
       });
     } catch (error) {
       CommonToast.fail(`There is a network error, please try again.`);

@@ -1,0 +1,98 @@
+import { useCurrentWallet } from './wallet';
+import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
+import { useCurrentNetworkInfo, useCurrentApiUrl, useVerifierList, useIsTestnet } from './network';
+import { ChainType, NetworkType } from '@portkey-wallet/types';
+
+import { renderHook } from '@testing-library/react';
+import { renderHookWithProvider } from '../../../test/utils/render';
+import { setupStore } from '../../../test/utils/setup';
+
+jest.mock('./wallet');
+
+/**
+ * useNetworkList method, tested by executing the useCurrentNetworkInfo method
+ */
+
+const chainList: any = undefined;
+const walletInfo: any = { caHash: '0x9876543210abcdef' };
+const currentWallet = (currentNetwork: NetworkType) => {
+  return {
+    walletInfo: walletInfo,
+    chainList: chainList,
+    walletAvatar: '',
+    walletType: 'aelf' as ChainType,
+    walletName: '',
+    currentNetwork: currentNetwork,
+  };
+};
+
+describe('useCurrentNetworkInfo', () => {
+  it('currentNetwork is TESTNET, and return successfully', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
+    const { result } = renderHook(() => useCurrentNetworkInfo());
+    expect(result.current).toEqual(NetworkList[0]);
+  });
+  it('currentNetwork is MAIN, and return successfully', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+    const { result } = renderHook(() => useCurrentNetworkInfo());
+    expect(result.current).toEqual(NetworkList[1]);
+  });
+  it('currentNetwork is not exist in NetworkList, and return default NetworkList item', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('XXX' as any));
+    const { result } = renderHook(() => useCurrentNetworkInfo());
+    expect(result.current).toEqual(NetworkList[0]);
+  });
+});
+
+describe('useCurrentApiUrl', () => {
+  it('currentNetwork is TESTNET, and return NetworkList[0].apiUrl', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
+    const { result } = renderHook(() => useCurrentApiUrl());
+    expect(result.current).toEqual(NetworkList[0].apiUrl);
+  });
+});
+
+describe('useVerifierList', () => {
+  it('verifierMap is undefined, and return []', () => {
+    const state = {
+      guardians: {},
+    };
+
+    const { result } = renderHookWithProvider(useVerifierList, setupStore(state));
+
+    expect(result.current).toEqual([]);
+  });
+  it('verifierMap is , and return ', () => {
+    const verifierMapItem = {
+      '2ded6...68dbda8': {
+        id: '2ded6...68dbda8', //aelf.Hash
+        name: 'CryptoGuardian',
+        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/CryptoGuardian.png',
+        endPoints: ['http://192.168.66.240:16050'],
+        verifierAddresses: ['2bWw...dSb4hJz'],
+      },
+    };
+    const state = {
+      guardians: {
+        verifierMap: [verifierMapItem],
+      },
+    };
+
+    const { result } = renderHookWithProvider(useVerifierList, setupStore(state));
+
+    expect(result.current).toEqual([verifierMapItem]);
+  });
+});
+
+describe('useIsTestnet', () => {
+  it('currentNetwork is TESTNET, and return true', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
+    const { result } = renderHook(() => useIsTestnet());
+    expect(result.current).toEqual(true);
+  });
+  it('currentNetwork is MAIN, and return false', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+    const { result } = renderHook(() => useIsTestnet());
+    expect(result.current).toEqual(false);
+  });
+});

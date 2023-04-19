@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
 import CustomHeader from 'components/CustomHeader';
@@ -12,7 +12,6 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { upDateRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import navigationService from 'utils/navigationService';
 import { ACH_REDIRECT_URL } from 'constants/common';
-import useEffectOnce from 'hooks/useEffectOnce';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -30,12 +29,12 @@ const ViewOnWebView: React.FC = () => {
     title = '',
     url,
     webViewPageType = 'default',
-    incognito,
+    injectedJavaScript,
   } = useRouterParams<{
     url: string;
     title?: string;
     webViewPageType?: WebViewPageType;
-    incognito?: boolean;
+    injectedJavaScript?: string;
   }>();
 
   const [browserInfo, setBrowserInfo] = useState({ url, title });
@@ -66,7 +65,6 @@ const ViewOnWebView: React.FC = () => {
     },
     [dispatch, title, url, webViewPageType],
   );
-
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
       <CustomHeader
@@ -85,7 +83,9 @@ const ViewOnWebView: React.FC = () => {
         style={pageStyles.webView}
         source={{ uri: url ?? '' }}
         onNavigationStateChange={handleNavigationStateChange}
-        incognito={incognito}
+        // cacheEnabled={false}
+        injectedJavaScript={injectedJavaScript}
+        // incognito={incognito}
       />
     </SafeAreaBox>
   );

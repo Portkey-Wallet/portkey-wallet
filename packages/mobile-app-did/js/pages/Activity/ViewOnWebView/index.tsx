@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
 import CustomHeader from 'components/CustomHeader';
@@ -30,13 +30,11 @@ const ViewOnWebView: React.FC = () => {
     url,
     webViewPageType = 'default',
     injectedJavaScript,
-    incognito,
   } = useRouterParams<{
     url: string;
     title?: string;
     webViewPageType?: WebViewPageType;
     injectedJavaScript?: string;
-    incognito: boolean;
   }>();
 
   const [browserInfo, setBrowserInfo] = useState({ url, title });
@@ -67,7 +65,6 @@ const ViewOnWebView: React.FC = () => {
     },
     [dispatch, title, url, webViewPageType],
   );
-
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
       <CustomHeader
@@ -88,7 +85,7 @@ const ViewOnWebView: React.FC = () => {
         onNavigationStateChange={handleNavigationStateChange}
         // cacheEnabled={false}
         injectedJavaScript={injectedJavaScript}
-        incognito={incognito}
+        // incognito={incognito}
       />
     </SafeAreaBox>
   );

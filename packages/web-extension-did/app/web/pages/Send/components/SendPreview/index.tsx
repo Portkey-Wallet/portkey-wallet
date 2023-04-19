@@ -10,7 +10,7 @@ import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ChainId } from '@portkey-wallet/types';
 import { chainShowText } from '@portkey-wallet/utils';
-import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useIsTestnet } from 'hooks/useNetwork';
 
 export default function SendPreview({
@@ -40,6 +40,8 @@ export default function SendPreview({
   const wallet = useCurrentWalletInfo();
   const isTestNet = useIsTestnet();
   const amountInUsdShow = useAmountInUsdShow();
+  useFreshTokenPrice();
+
   const toChain = useMemo(() => {
     const arr = toAccount.address.split('_');
     if (isAelfAddress(arr[arr.length - 1])) {

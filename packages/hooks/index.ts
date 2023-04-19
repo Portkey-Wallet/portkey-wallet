@@ -29,7 +29,7 @@ export function useDebounceCallback<T extends (...args: any[]) => any>(
   deps: DependencyList,
   delay = 500,
 ) {
-  const timer = useRef<NodeJS.Timeout>();
+  const timer = useRef<NodeJS.Timeout | number>();
   const callbackRef = useRef<T>();
 
   useEffect(() => {

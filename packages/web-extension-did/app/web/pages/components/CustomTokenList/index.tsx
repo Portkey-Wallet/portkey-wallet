@@ -11,7 +11,7 @@ import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenMana
 import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
-import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -42,6 +42,7 @@ export default function CustomTokenList({
   const chainIdArray = useChainIdList();
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
+  useFreshTokenPrice();
 
   useEffect(() => {
     if (drawerType === 'send') {

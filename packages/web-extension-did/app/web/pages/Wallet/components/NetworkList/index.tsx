@@ -9,6 +9,7 @@ import { useCallback } from 'react';
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import CustomModal from 'pages/components/CustomModal';
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
+import clsx from 'clsx';
 import './index.less';
 
 const netWorkIcon: Record<NetworkType, IconType> = {
@@ -27,6 +28,7 @@ export default function NetworkList() {
   const handleChangeNetwork = useCallback(
     (network: NetworkItem) => {
       if (network.networkType === currentNetwork) return;
+      if (!network.isActive) return;
       const { title, content } = changeNetworkModalText(network.networkType);
       CustomModal({
         type: 'confirm',
@@ -52,7 +54,10 @@ export default function NetworkList() {
   return (
     <div className="flex-column network-list">
       {NetworkList.map((net) => (
-        <div key={net.networkType} className="network-item" onClick={() => handleChangeNetwork(net)}>
+        <div
+          key={net.networkType}
+          className={clsx('network-item', !net.isActive && 'disabled')}
+          onClick={() => handleChangeNetwork(net)}>
           <div className="network-item-checked">
             {currentNetwork === net.networkType && <CustomSvg type="selected" className="selected-svg" />}
           </div>

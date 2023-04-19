@@ -75,7 +75,11 @@ export default function EditContactForm({
                   <div className="address-item" key={key}>
                     <div className="flex-between address-item-title">
                       <span>{`Address${i + 1}`}</span>
-                      <CustomSvg type="Delete" onClick={() => handleDelete(name, i, remove)} />
+                      <CustomSvg
+                        type="Delete"
+                        className="address-item-delete"
+                        onClick={() => handleDelete(name, i, remove)}
+                      />
                     </div>
                     <Input.Group compact className="flex-column address-item-body">
                       <FormItem {...restField} name={[name, 'networkName']} noStyle>

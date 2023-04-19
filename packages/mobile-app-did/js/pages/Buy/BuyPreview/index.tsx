@@ -85,14 +85,15 @@ export default function BuyPreview() {
 
         achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
         console.log('achUrl', achUrl);
-        const injectedJavaScript: string | undefined =
-          achTokenInfo === undefined || isNoEmail
-            ? `
-            if ( window.location.href.startsWith('${achUrl}') ) { 
-              window.localStorage.removeItem('token');
-              window.localStorage.removeItem('login_email');
-            }`
-            : undefined;
+        // const injectedJavaScript: string | undefined =
+        //   achTokenInfo === undefined || isNoEmail
+        //     ? `
+        //     if ( window.location.href.startsWith('${achUrl}') ) {
+        //       window.localStorage.removeItem('token');
+        //       window.localStorage.removeItem('login_email');
+        //     }`
+        //     : undefined;
+        const injectedJavaScript = undefined;
 
         navigationService.navigate('ViewOnWebView', {
           title: 'Alchemy Pay Ramp',

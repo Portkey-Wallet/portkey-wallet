@@ -35,6 +35,7 @@ export function useChangeNetwork() {
         }
       } else {
         if (!isPrompt) {
+          await sleep(500);
           InternalMessage.payload(PortkeyMessageTypes.REGISTER_START_WALLET).send();
         } else {
           navigate('/register/start');

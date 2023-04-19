@@ -54,6 +54,7 @@ export default function ConfirmPassword({
   return (
     <div className="confirm-password">
       <FormItem
+        key="new-pin-form-item"
         label={
           label?.password ? (
             label?.password
@@ -108,6 +109,7 @@ export default function ConfirmPassword({
         />
       </FormItem>
       <FormItem
+        key="confirm-pin-form-item"
         label={label?.confirmPassword ? label?.confirmPassword : t('Confirm Pin')}
         name="confirmPassword"
         validateTrigger="onBlur"

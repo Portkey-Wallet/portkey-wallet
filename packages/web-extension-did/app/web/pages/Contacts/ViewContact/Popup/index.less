@@ -1,4 +1,5 @@
 @import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .view-contact-popup {
   .view-contact-nav {
@@ -14,6 +15,7 @@
     height: 110px;
     background-color: @bg-13;
     color: @font-11;
+    width: 100%;
 
     .name-index {
       margin-left: 16px;
@@ -25,11 +27,16 @@
       border: 1px solid @border-1;
       font-size: 24px;
       line-height: 28px;
+      flex-shrink: 0;
     }
 
     .name {
       font-size: 20px;
       line-height: 24px;
+      flex: 1;
+      width: 0;
+      word-wrap: break-word;
+      .text-overflow(1)
     }
   }
   .contact-body {

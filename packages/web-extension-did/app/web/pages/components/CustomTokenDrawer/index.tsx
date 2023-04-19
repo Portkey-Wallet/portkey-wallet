@@ -20,7 +20,7 @@ export default function CustomTokenDrawer({
   ...props
 }: CustomSelectProps) {
   return (
-    <BaseDrawer {...props} onClose={onClose} className="custom-token-drawer">
+    <BaseDrawer {...props} destroyOnClose onClose={onClose} className="custom-token-drawer">
       <CustomTokenList
         drawerType={drawerType}
         title={title}

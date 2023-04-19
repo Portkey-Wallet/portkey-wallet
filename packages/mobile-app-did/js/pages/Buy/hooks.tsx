@@ -217,9 +217,10 @@ export const useReceive = (
   const timer = useRef<NodeJS.Timeout>();
   const debounceRefreshReceiveRef = useRef<() => void>();
   const debounceRefreshReceive = useCallback(() => {
-    timer.current && clearTimeout(timer.current);
+    if (timer.current !== undefined) return;
     timer.current = setTimeout(() => {
       refreshReceiveRef.current?.();
+      timer.current = undefined;
     }, 500);
   }, []);
   debounceRefreshReceiveRef.current = debounceRefreshReceive;

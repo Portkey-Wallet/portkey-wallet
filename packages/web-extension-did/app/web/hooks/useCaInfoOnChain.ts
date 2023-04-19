@@ -89,6 +89,6 @@ export const useCaInfoOnChain = () => {
       }
     },
     1000,
-    [],
+    [walletInfo],
   );
 };

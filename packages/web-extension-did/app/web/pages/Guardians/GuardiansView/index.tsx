@@ -6,7 +6,7 @@ import { useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
-import useDebounceCallback from '@portkey-wallet/hooks/useDebounceCallback';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
@@ -251,7 +251,7 @@ export default function GuardiansView() {
     verifyHandler,
   ]);
 
-  const checkSwitch = useDebounceCallback(
+  const checkSwitch = useThrottleCallback(
     async (status: boolean) => {
       if (status) {
         const isLogin = Object.values(userGuardiansList ?? {}).some(

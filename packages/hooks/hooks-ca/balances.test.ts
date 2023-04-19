@@ -1,4 +1,4 @@
-import { useCurrentNetworkBalances, useAccountListNativeBalances } from './balances';
+import { useCurrentNetworkBalances, useAccountBalanceUSD } from './balances';
 import { renderHookWithProvider } from '../../../test/utils/render';
 import { setupStore } from '../../../test/utils/setup';
 
@@ -86,175 +86,36 @@ describe('useCurrentNetworkBalances', () => {
     expect(result.current).toBeUndefined();
   });
 });
-describe('useAccountListNativeBalances', () => {
-  test('all data defined, and return an object', () => {
+
+describe('useAccountBalanceUSD', () => {
+  test('all data defined, and return successfully', () => {
     const state = {
-      tokenBalance: {
-        balances: {
-          rpcUrl1: {
-            address1: {
-              ELF: 'value1',
+      assets: {
+        accountToken: {
+          accountTokenList: [
+            {
+              chainId: 'AELF',
+              symbol: 'ELF',
+              balance: 24858795000,
+              decimals: 8,
             },
-            address2: {
-              ELF: 'value2',
+            {
+              chainId: 'tDVV',
+              symbol: 'ELF',
+              balance: 2895000000,
+              decimals: 8,
             },
-          },
+          ],
         },
-      },
-      wallet: {
-        accountList: [
-          {
-            address: 'address1',
+        tokenPrices: {
+          tokenPriceObject: {
+            ELF: 0.311933,
           },
-          {
-            address: 'address2',
-          },
-        ],
-      },
-      chain: {
-        currentChain: {
-          rpcUrl: 'rpcUrl1',
-          nativeCurrency: { symbol: 'ELF' },
         },
       },
     };
 
-    const { result } = renderHookWithProvider(useAccountListNativeBalances, setupStore(state));
-
-    expect(result.current).toHaveProperty('address1', 'value1');
-    expect(result.current).toHaveProperty('address2', 'value2');
-  });
-
-  test('currentChain and nativeCurrency undefined, return undefined', () => {
-    const state = {
-      tokenBalance: {
-        balances: {
-          rpcUrl1: {
-            address1: {
-              ELF: 'value1',
-            },
-          },
-        },
-      },
-      wallet: {
-        accountList: [
-          {
-            address: 'address1',
-          },
-          {
-            address: 'address2',
-          },
-        ],
-      },
-      chain: {
-        currentChain: undefined,
-      },
-    };
-
-    const { result } = renderHookWithProvider(useAccountListNativeBalances, setupStore(state));
-
-    expect(result.current).toBeUndefined();
-  });
-
-  test('currentNetworkBalances undefined, and return undefined', () => {
-    const state = {
-      tokenBalance: {
-        balances: {
-          rpcUrl1: {
-            address1: {
-              ELF: 'value1',
-            },
-            address2: {
-              ELF: 'value2',
-            },
-          },
-        },
-      },
-      wallet: {
-        accountList: [
-          {
-            address: 'address1',
-          },
-          {
-            address: 'address2',
-          },
-        ],
-      },
-      chain: {
-        currentChain: {
-          rpcUrl: undefined,
-          nativeCurrency: undefined,
-        },
-      },
-    };
-
-    const { result } = renderHookWithProvider(useAccountListNativeBalances, setupStore(state));
-
-    expect(result.current).toBeUndefined();
-  });
-
-  test('accountList undefined, and return empty object', () => {
-    const state = {
-      tokenBalance: {
-        balances: {
-          rpcUrl1: {
-            address1: {
-              ELF: 'value1',
-            },
-            address2: {
-              ELF: 'value2',
-            },
-          },
-        },
-      },
-      wallet: {
-        accountList: undefined,
-      },
-      chain: {
-        currentChain: {
-          rpcUrl: 'rpcUrl1',
-          nativeCurrency: { symbol: 'ELF' },
-        },
-      },
-    };
-
-    const { result } = renderHookWithProvider(useAccountListNativeBalances, setupStore(state));
-
-    expect(result.current).toMatchObject({});
-  });
-
-  test('obj[account.address] undefined, and return an object', () => {
-    const state = {
-      tokenBalance: {
-        balances: {
-          rpcUrl1: {
-            address1: {
-              ELF: 'value1',
-            },
-          },
-        },
-      },
-      wallet: {
-        accountList: [
-          {
-            address: 'address1',
-          },
-          {
-            address: 'address2',
-          },
-        ],
-      },
-      chain: {
-        currentChain: {
-          rpcUrl: 'rpcUrl1',
-          nativeCurrency: { symbol: 'ELF' },
-        },
-      },
-    };
-
-    const { result } = renderHookWithProvider(useAccountListNativeBalances, setupStore(state));
-
-    expect(result.current).toHaveProperty('address1', 'value1');
-    expect(result.current).toHaveProperty('address2', undefined);
+    const { result } = renderHookWithProvider(useAccountBalanceUSD, setupStore(state));
+    expect(result.current).toBe('86.57');
   });
 });

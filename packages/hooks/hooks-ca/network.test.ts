@@ -1,6 +1,6 @@
 import { useCurrentWallet } from './wallet';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
-import { useCurrentNetworkInfo, useCurrentApiUrl, useVerifierList, useIsTestnet } from './network';
+import { useCurrentNetworkInfo, useCurrentApiUrl, useVerifierList, useIsTestnet, useIsMainnet } from './network';
 import { ChainType, NetworkType } from '@portkey-wallet/types';
 
 import { renderHook } from '@testing-library/react';
@@ -30,12 +30,12 @@ describe('useCurrentNetworkInfo', () => {
   it('currentNetwork is TESTNET, and return successfully', () => {
     jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
     const { result } = renderHook(() => useCurrentNetworkInfo());
-    expect(result.current).toEqual(NetworkList[0]);
+    expect(result.current).toEqual(NetworkList[1]);
   });
   it('currentNetwork is MAIN, and return successfully', () => {
     jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
     const { result } = renderHook(() => useCurrentNetworkInfo());
-    expect(result.current).toEqual(NetworkList[1]);
+    expect(result.current).toEqual(NetworkList[0]);
   });
   it('currentNetwork is not exist in NetworkList, and return default NetworkList item', () => {
     jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('XXX' as any));
@@ -48,7 +48,7 @@ describe('useCurrentApiUrl', () => {
   it('currentNetwork is TESTNET, and return NetworkList[0].apiUrl', () => {
     jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
     const { result } = renderHook(() => useCurrentApiUrl());
-    expect(result.current).toEqual(NetworkList[0].apiUrl);
+    expect(result.current).toEqual(NetworkList[1].apiUrl);
   });
 });
 
@@ -94,5 +94,18 @@ describe('useIsTestnet', () => {
     jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
     const { result } = renderHook(() => useIsTestnet());
     expect(result.current).toEqual(false);
+  });
+});
+
+describe('useIsMainnet', () => {
+  it('currentNetwork is TESTNET, and return false', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
+    const { result } = renderHook(() => useIsMainnet());
+    expect(result.current).toEqual(false);
+  });
+  it('currentNetwork is MAIN, and return true', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
+    const { result } = renderHook(() => useIsMainnet());
+    expect(result.current).toEqual(true);
   });
 });

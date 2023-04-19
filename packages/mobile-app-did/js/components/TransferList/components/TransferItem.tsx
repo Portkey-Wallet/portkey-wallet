@@ -144,7 +144,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
             {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : ''}
             {!item?.nftInfo?.nftId ? amountString : ''}
           </Text>
-          {!isTestnet && !item?.nftInfo && (isTokenHasPrice || item.symbol === null) && (
+          {!isTestnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
             <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
               divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(item ? tokenPriceObject[item?.symbol] : 0),
               2,

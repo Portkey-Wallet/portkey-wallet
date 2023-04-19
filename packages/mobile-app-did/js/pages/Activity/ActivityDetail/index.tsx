@@ -27,7 +27,7 @@ import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { HIDDEN_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
 const ActivityDetail = () => {
   const { t } = useLanguage();
@@ -36,6 +36,7 @@ const ActivityDetail = () => {
   const caAddresses = useCaAddresses();
   const isTestnet = useIsTestnet();
   const isTokenHasPrice = useIsTokenHasPrice(activityItemFromRoute?.symbol);
+  const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { currentNetwork } = useCurrentWallet();
 
   const [activityItem, setActivityItem] = useState<ActivityItemType>();
@@ -157,6 +158,10 @@ const ActivityDetail = () => {
     );
   }, [activityItem?.transactionFees, isTestnet, t]);
 
+  useEffectOnce(() => {
+    getTokenPrice(activityItem?.symbol);
+  });
+
   return (
     <PageContainer
       hideHeader
@@ -201,7 +206,9 @@ const ActivityDetail = () => {
             </Text>
             {!isTestnet && isTokenHasPrice && (
               <Text style={styles.usdtCount}>{`$ ${formatAmountShow(
-                divDecimals(activityItem?.amount, activityItem?.decimals).multipliedBy(activityItem?.priceInUsd ?? 0),
+                divDecimals(activityItem?.amount, activityItem?.decimals).multipliedBy(
+                  tokenPriceObject[activityItem.symbol],
+                ),
                 2,
               )}`}</Text>
             )}

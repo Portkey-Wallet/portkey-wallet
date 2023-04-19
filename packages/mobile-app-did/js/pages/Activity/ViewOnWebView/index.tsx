@@ -12,7 +12,6 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { upDateRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import navigationService from 'utils/navigationService';
 import { ACH_REDIRECT_URL } from 'constants/common';
-import useEffectOnce from 'hooks/useEffectOnce';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -30,12 +29,14 @@ const ViewOnWebView: React.FC = () => {
     title = '',
     url,
     webViewPageType = 'default',
+    injectedJavaScript,
     incognito,
   } = useRouterParams<{
     url: string;
     title?: string;
     webViewPageType?: WebViewPageType;
-    incognito?: boolean;
+    injectedJavaScript?: string;
+    incognito: boolean;
   }>();
 
   const [browserInfo, setBrowserInfo] = useState({ url, title });
@@ -85,6 +86,8 @@ const ViewOnWebView: React.FC = () => {
         style={pageStyles.webView}
         source={{ uri: url ?? '' }}
         onNavigationStateChange={handleNavigationStateChange}
+        // cacheEnabled={false}
+        injectedJavaScript={injectedJavaScript}
         incognito={incognito}
       />
     </SafeAreaBox>

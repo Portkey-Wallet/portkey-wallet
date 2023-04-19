@@ -67,13 +67,15 @@ export default function BuyPreview() {
         achUrl += `&type=sell&cryptoAmount=${amount}`;
       }
 
-      let incognito: boolean | undefined = true;
+      let injectedJavaScript: string | undefined = `
+        if (window.location.href.startsWith('${achUrl}')) {
+          window.localStorage.clear()
+        }
+      `;
       const achTokenInfo = await getAchTokenInfo();
       if (achTokenInfo !== undefined) {
-        console.log('achTokenInfo', achTokenInfo);
-
         achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
-        incognito = undefined;
+        injectedJavaScript = undefined;
       }
 
       const orderNo = await getPaymentOrderNo({
@@ -92,7 +94,7 @@ export default function BuyPreview() {
         title: 'Alchemy Pay Ramp',
         url: achUrl,
         webViewPageType: 'ach',
-        incognito,
+        injectedJavaScript,
       });
     } catch (error) {
       CommonToast.fail(`There is a network error, please try again.`);

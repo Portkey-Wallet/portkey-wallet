@@ -76,7 +76,7 @@ export default function AddGuardian() {
         }
         case LoginType.Apple:
         case LoginType.Google: {
-          check = !socialValue?.value;
+          check = !(socialValue?.id || socialValue?.value);
           break;
         }
         default:
@@ -233,7 +233,7 @@ export default function AddGuardian() {
   const renderSocialGuardianAccount = useCallback(
     (v: ISocialLogin) => (
       <div className="social">
-        {socialValue?.value ? (
+        {socialValue?.id ? (
           <div className="flex-column social-input detail">
             <span className="name">{socialValue.name}</span>
             <span className="email">{socialValue.isPrivate ? '******' : socialValue.value}</span>

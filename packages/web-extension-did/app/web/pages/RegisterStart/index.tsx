@@ -56,7 +56,7 @@ export default function RegisterStart() {
         value: item.networkType,
         icon: netWorkIcon[item.networkType],
         label: item.name,
-        // disabled: !item.isActive,
+        disabled: !item.isActive,
       })),
     [netWorkIcon, networkList],
   );

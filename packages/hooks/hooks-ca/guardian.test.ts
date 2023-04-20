@@ -7,7 +7,7 @@ import { setupStore } from '../../../test/utils/setup';
 jest.mock('@portkey-wallet/api/api-did');
 
 describe('useGetRegisterInfo', () => {
-  test('should first', async () => {
+  test('complete data, and return successfully', async () => {
     expect.assertions(1);
 
     jest.mocked(request.wallet.getRegisterInfo).mockResolvedValue([]);
@@ -19,14 +19,14 @@ describe('useGetRegisterInfo', () => {
 
     expect(res).toHaveLength(0);
   });
-  test('should second', async () => {
+  test('mock reject, and catch error', async () => {
     expect.assertions(2);
 
     jest.mocked(request.wallet.getRegisterInfo).mockRejectedValue({ code: 500, message: 'server error' });
     const { result } = renderHook(() => useGetRegisterInfo());
 
     try {
-      await await result.current({
+      await result.current({
         loginGuardianIdentifier: '',
       });
     } catch (e) {

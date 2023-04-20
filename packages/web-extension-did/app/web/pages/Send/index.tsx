@@ -5,13 +5,7 @@ import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/s
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getAddressChainId, isDIDAddress } from '@portkey-wallet/utils';
-import {
-  getAelfAddress,
-  getEntireDIDAelfAddress,
-  getWallet,
-  isCrossChain,
-  isEqAddress,
-} from '@portkey-wallet/utils/aelf';
+import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
 import aes from '@portkey-wallet/utils/aes';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { Button, message, Modal } from 'antd';
@@ -245,7 +239,6 @@ export default function Send() {
     try {
       if (!chainInfo || !passwordSeed) return;
       const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
-      console.log(getWallet(privateKey || ''), 'getWallet-privateKey======sendHandler');
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
       setLoading(true);

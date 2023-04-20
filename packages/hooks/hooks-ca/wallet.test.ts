@@ -112,6 +112,41 @@ const NO_WALLET_INFO_STATE = {
   },
 };
 
+const NETWORK_INFO = {
+  apiUrl: 'https://did-portkey-test.portkey.finance',
+  connectUrl: 'https://auth-portkey-test.portkey.finance',
+  graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
+  isActive: true,
+  name: 'aelf Testnet',
+  networkType: 'TESTNET' as NetworkType,
+  walletType: 'aelf' as ChainType,
+};
+
+const CA_HOLDER_MANAGER_INFO_DATA = {
+  caHolderManagerInfo: [
+    {
+      __typename: 'CAHolderManagerDto',
+      id: 'AELF-e6ausH...5FMEXt',
+      chainId: 'AELF',
+      caHash: 'a0a96f...7b67fa',
+      caAddress: 'e6ausHQXshHhWdkMX3AsQc6zy3W4418k2axY8c9tUY15FMEXt',
+      managerInfos: [
+        {
+          __typename: 'ManagerInfo',
+          address: '2n9fgWhGos3bHFJieuz6HgfmYV7dbF9DEpkRA4EtVghPgSfS2e',
+          extraData:
+            '{"transactionTime":1681891953548,"deviceInfo":"WjWf5TwN4/UhaYpuLGlKfaOCdQB1leN3hWJKxa1gEdN/mP82cPAyPdTLxaYa/zxg","version":"2.0.0"}',
+        },
+      ],
+      originChainId: 'AELF',
+    },
+  ],
+};
+
+const EXTRA_DATA_LIST: ExtraDataDecodeType[] = [
+  { transactionTime: 1681891953548, deviceInfo: { deviceName: 'Other', deviceType: 0 }, version: '2.0.0' },
+];
+
 describe('useCurrentWalletInfo', () => {
   test('complete wallet data, and return successfully', () => {
     const { result } = renderHookWithProvider(useCurrentWalletInfo, setupStore(COMPLETE_WALLET_STATE));
@@ -132,76 +167,83 @@ describe('useCurrentWallet', () => {
 });
 
 describe('useDeviceList', () => {
-  test('complete wallet data, and return successfully', () => {
-    const networkInfo = {
-      apiUrl: 'https://did-portkey-test.portkey.finance',
-      connectUrl: 'https://auth-portkey-test.portkey.finance',
-      graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
-      isActive: true,
-      name: 'aelf Testnet',
-      networkType: 'TESTNET' as NetworkType,
-      walletType: 'aelf' as ChainType,
-    };
-    jest.mocked(useCurrentNetworkInfo).mockReturnValue(networkInfo);
+  test('useCaHolderManagerInfoQuery.data is undefined, and return deviceAmount is 0', () => {
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NETWORK_INFO);
     jest
       .mocked(useCaHolderManagerInfoQuery)
       .mockReturnValue({ data: undefined, error: undefined, refetch: jest.fn(), loading: true } as any);
-    const extraDataList: ExtraDataDecodeType[] = [
-      { transactionTime: 1681891953548, deviceInfo: { deviceName: 'Other', deviceType: 0 }, version: '2.0.0' },
-    ];
-    jest.mocked(extraDataListDecode).mockResolvedValue(extraDataList);
-    jest.mocked(getApolloClient).mockReturnValue({} as ApolloClient<NormalizedCacheObject>);
 
     const { result } = renderHookWithProvider(useDeviceList, setupStore(COMPLETE_WALLET_STATE));
     expect(result.current.deviceList.length).toBe(0);
     expect(result.current.loading).toBe(true);
   });
 
-  test('complete wallet data, and return successfully', async () => {
-    const networkInfo = {
-      apiUrl: 'https://did-portkey-test.portkey.finance',
-      connectUrl: 'https://auth-portkey-test.portkey.finance',
-      graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
-      isActive: true,
-      name: 'aelf Testnet',
-      networkType: 'TESTNET' as NetworkType,
-      walletType: 'aelf' as ChainType,
-    };
-    jest.mocked(useCurrentNetworkInfo).mockReturnValue(networkInfo);
-    const useCaHolderManagerInfoQueryData = {
-      caHolderManagerInfo: [
-        {
-          __typename: 'CAHolderManagerDto',
-          id: 'AELF-e6ausHQXshHhWdkMX3AsQc6zy3W4418k2axY8c9tUY15FMEXt',
-          chainId: 'AELF',
-          caHash: 'a0a96f0c4b45719091ede2634dc05b277df4c68c39e2a3465c0c38f61a7b67fa',
-          caAddress: 'e6ausHQXshHhWdkMX3AsQc6zy3W4418k2axY8c9tUY15FMEXt',
-          managerInfos: [
-            {
-              __typename: 'ManagerInfo',
-              address: '2n9fgWhGos3bHFJieuz6HgfmYV7dbF9DEpkRA4EtVghPgSfS2e',
-              extraData:
-                '{"transactionTime":1681891953548,"deviceInfo":"WjWf5TwN4/UhaYpuLGlKfaOCdQB1leN3hWJKxa1gEdN/mP82cPAyPdTLxaYa/zxg","version":"2.0.0"}',
-            },
-          ],
-          originChainId: 'AELF',
-        },
-      ],
-    };
+  test('complete wallet data, and return deviceAmount is 1', async () => {
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NETWORK_INFO);
     jest.mocked(useCaHolderManagerInfoQuery).mockReturnValue({
-      data: useCaHolderManagerInfoQueryData,
+      data: CA_HOLDER_MANAGER_INFO_DATA,
       error: undefined,
       refetch: jest.fn(),
       loading: false,
     } as any);
-    const extraDataList: ExtraDataDecodeType[] = [
-      { transactionTime: 1681891953548, deviceInfo: { deviceName: 'Other', deviceType: 0 }, version: '2.0.0' },
-    ];
-    jest.mocked(extraDataListDecode).mockResolvedValue(extraDataList);
+    jest.mocked(extraDataListDecode).mockResolvedValue(EXTRA_DATA_LIST);
     jest.mocked(getApolloClient).mockReturnValue({} as ApolloClient<NormalizedCacheObject>);
 
     const res = await act(async () => renderHookWithProvider(useDeviceList, setupStore(COMPLETE_WALLET_STATE)));
+
     expect(res.result.current.deviceList.length).toBeGreaterThan(0);
+    expect(res.result.current.deviceAmount).toBe(1);
+    expect(res.result.current.loading).toBe(false);
+  });
+
+  test('managerInfos is undefined, and return deviceAmount is 0', async () => {
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NETWORK_INFO);
+    const caHolderManagerInfoData = {
+      caHolderManagerInfo: [{ ...CA_HOLDER_MANAGER_INFO_DATA.caHolderManagerInfo[0], managerInfos: undefined }],
+    };
+    jest.mocked(useCaHolderManagerInfoQuery).mockReturnValue({
+      data: caHolderManagerInfoData,
+      error: undefined,
+      refetch: jest.fn(),
+      loading: false,
+    } as any);
+    jest.mocked(extraDataListDecode).mockResolvedValue(EXTRA_DATA_LIST);
+    jest.mocked(getApolloClient).mockReturnValue({} as ApolloClient<NormalizedCacheObject>);
+
+    const res = await act(async () => renderHookWithProvider(useDeviceList, setupStore(COMPLETE_WALLET_STATE)));
+
+    expect(res.result.current.deviceList.length).toBe(0);
+    expect(res.result.current.deviceAmount).toBe(0);
+    expect(res.result.current.loading).toBe(false);
+  });
+
+  test('complete wallet data, and return deviceAmount is 1', async () => {
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NETWORK_INFO);
+    const caHolderManagerInfoData = {
+      caHolderManagerInfo: [
+        {
+          ...CA_HOLDER_MANAGER_INFO_DATA.caHolderManagerInfo[0],
+          managerInfos: [
+            {
+              __typename: 'ManagerInfo',
+              address: '2n9fgWhGos3bHFJieuz6HgfmYV7dbF9DEpkRA4EtVghPgSfS2e',
+            },
+          ],
+        },
+      ],
+    };
+    jest.mocked(useCaHolderManagerInfoQuery).mockReturnValue({
+      data: caHolderManagerInfoData,
+      error: undefined,
+      refetch: jest.fn(),
+      loading: false,
+    } as any);
+    jest.mocked(extraDataListDecode).mockResolvedValue(EXTRA_DATA_LIST);
+    jest.mocked(getApolloClient).mockReturnValue({} as ApolloClient<NormalizedCacheObject>);
+
+    const res = await act(async () => renderHookWithProvider(useDeviceList, setupStore(COMPLETE_WALLET_STATE)));
+
+    expect(res.result.current.deviceList.length).toBe(1);
     expect(res.result.current.deviceAmount).toBe(1);
     expect(res.result.current.loading).toBe(false);
   });

@@ -38,7 +38,6 @@ type NFTCollectionProps = NFTCollectionItemShowType & {
 function areEqual(prevProps: NFTCollectionProps, nextProps: NFTCollectionProps) {
   const prevNftObj = prevProps?.openCollectionObj?.[`${prevProps.symbol}${prevProps?.chainId}`];
   const nextNftObj = nextProps?.openCollectionObj?.[`${nextProps.symbol}${nextProps?.chainId}`];
-
   return nextProps.isCollapsed === prevProps.isCollapsed && prevNftObj?.pageNum === nextNftObj?.pageNum;
 }
 
@@ -161,7 +160,7 @@ export default function NFTSection() {
         )}
         renderItem={({ item }: { item: NFTCollectionItemShowType }) => (
           <NFTCollection
-            key={item.symbol}
+            key={`${item.symbol}${item.chainId}`}
             isCollapsed={!openCollectionObj?.[`${item.symbol}${item.chainId}`]}
             openCollectionObj={openCollectionObj}
             setOpenCollectionObj={setOpenCollectionObj}

@@ -9,7 +9,7 @@ import CommonToast from 'components/CommonToast';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
-import { useDebounceCallback } from '@portkey-wallet/hooks';
+import { useIsFocused } from '@react-navigation/native';
 
 export const useTestAmountPrice = (
   // receiveAmount: number,
@@ -100,6 +100,9 @@ export const useReceive = (
   const [rateRefreshTime, setRateRefreshTime] = useState<number>(MAX_REFRESH_TIME);
   const refreshReceiveRef = useRef<() => void>();
   const refreshReceiveTimerRef = useRef<NodeJS.Timer>();
+  const isFocused = useIsFocused();
+  const isFocusedRef = useRef(isFocused);
+  isFocusedRef.current = isFocused;
 
   const [amountError, setAmountError] = useState<ErrorType>(INIT_NONE_ERROR);
 
@@ -122,6 +125,8 @@ export const useReceive = (
 
   const registerRefreshReceive = useCallback(() => {
     clearRefreshReceive();
+
+    if (!isFocusedRef.current) return;
 
     rateRefreshTimeRef.current = MAX_REFRESH_TIME;
     setRateRefreshTime(MAX_REFRESH_TIME);
@@ -215,8 +220,15 @@ export const useReceive = (
   ]);
   refreshReceiveRef.current = refreshReceive;
 
+  const timer = useRef<NodeJS.Timeout>();
   const debounceRefreshReceiveRef = useRef<() => void>();
-  const debounceRefreshReceive = useDebounceCallback(refreshReceive, []);
+  const debounceRefreshReceive = useCallback(() => {
+    if (timer.current !== undefined) return;
+    timer.current = setTimeout(() => {
+      refreshReceiveRef.current?.();
+      timer.current = undefined;
+    }, 500);
+  }, []);
   debounceRefreshReceiveRef.current = debounceRefreshReceive;
 
   useEffect(() => {

@@ -75,16 +75,15 @@ export default function NFTSection() {
     if (clearType) setOpenCollectionObj({});
   }, [clearType]);
 
-  const closeItem = useCallback(
-    (symbol: string, chainId: string) => {
-      const key = `${symbol}${chainId}`;
-      const newObj = { ...openCollectionObj };
-      delete newObj[key];
+  const closeItem = useCallback((symbol: string, chainId: string) => {
+    const key = `${symbol}${chainId}`;
 
-      setOpenCollectionObj(newObj);
-    },
-    [openCollectionObj],
-  );
+    setOpenCollectionObj(pre => {
+      const newObj = { ...pre };
+      delete newObj[key];
+      return newObj;
+    });
+  }, []);
 
   const openItem = useLockCallback(
     async (symbol: string, chainId: ChainId, itemCount: number) => {

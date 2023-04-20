@@ -18,6 +18,7 @@ import { ManagerInfo } from '@portkey-wallet/graphql/contract/__generated__/type
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
+import { getWalletInfo, isCurrentCaHash } from 'utils/redux';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -77,7 +78,8 @@ export function useCheckManagerOnLogout() {
     if (!caHash) return;
     try {
       const isManager = await checkManager({ caHash, address });
-      if (!isManager) logout();
+      const walletInfo = getWalletInfo();
+      if (!isManager && walletInfo?.address === address && isCurrentCaHash(caHash)) logout();
     } catch (error) {
       console.log(error, '======error');
     }

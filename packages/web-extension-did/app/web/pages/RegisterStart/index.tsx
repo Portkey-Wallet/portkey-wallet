@@ -23,7 +23,7 @@ import { SocialLoginFinishHandler } from 'types/wallet';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-test1';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
 import CustomModal from 'pages/components/CustomModal';
 import { IconType } from 'types/icon';

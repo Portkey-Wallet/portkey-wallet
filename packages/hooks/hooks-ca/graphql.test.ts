@@ -17,10 +17,8 @@ jest.mock('@portkey-wallet/store/store-ca/wallet/actions', () => {
     }),
   };
 });
-jest.mocked(useAppCommonDispatch).mockReturnValue(() => {
-  return (call: () => {}) => {
-    call();
-  };
+jest.mocked(useAppCommonDispatch).mockReturnValue(async (call: () => void) => {
+  return call;
 });
 
 const NETWORK: NetworkType = 'TESTNET';

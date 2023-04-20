@@ -112,37 +112,6 @@ const NO_WALLET_INFO_STATE = {
   },
 };
 
-const NETWORK_INFO = {
-  apiUrl: 'https://did-portkey-test.portkey.finance',
-  connectUrl: 'https://auth-portkey-test.portkey.finance',
-  graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
-  isActive: true,
-  name: 'aelf Testnet',
-  networkType: 'TESTNET' as NetworkType,
-  walletType: 'aelf' as ChainType,
-};
-
-const CA_HOLDER_MANAGER_INFO_DATA = {
-  caHolderManagerInfo: [
-    {
-      __typename: 'CAHolderManagerDto',
-      id: 'AELF-e6ausH...5FMEXt',
-      chainId: 'AELF',
-      caHash: 'a0a96f...7b67fa',
-      caAddress: 'e6ausHQXshHhWdkMX3AsQc6zy3W4418k2axY8c9tUY15FMEXt',
-      managerInfos: [
-        {
-          __typename: 'ManagerInfo',
-          address: '2n9fgWhGos3bHFJieuz6HgfmYV7dbF9DEpkRA4EtVghPgSfS2e',
-          extraData:
-            '{"transactionTime":1681891953548,"deviceInfo":"WjWf5TwN4/UhaYpuLGlKfaOCdQB1leN3hWJKxa1gEdN/mP82cPAyPdTLxaYa/zxg","version":"2.0.0"}',
-        },
-      ],
-      originChainId: 'AELF',
-    },
-  ],
-};
-
 const EXTRA_DATA_LIST: ExtraDataDecodeType[] = [
   { transactionTime: 1681891953548, deviceInfo: { deviceName: 'Other', deviceType: 0 }, version: '2.0.0' },
 ];
@@ -162,11 +131,45 @@ describe('useCurrentWalletInfo', () => {
 describe('useCurrentWallet', () => {
   test('complete wallet data, and return successfully', () => {
     const { result } = renderHookWithProvider(useCurrentWallet, setupStore(COMPLETE_WALLET_STATE));
-    expect(result.current.chainList.length).toBe(2);
+    expect(result.current.chainList).toHaveLength(2);
   });
 });
 
 describe('useDeviceList', () => {
+  let NETWORK_INFO: any;
+  let CA_HOLDER_MANAGER_INFO_DATA: any;
+  beforeEach(() => {
+    NETWORK_INFO = {
+      apiUrl: 'https://did-portkey-test.portkey.finance',
+      connectUrl: 'https://auth-portkey-test.portkey.finance',
+      graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
+      isActive: true,
+      name: 'aelf Testnet',
+      networkType: 'TESTNET' as NetworkType,
+      walletType: 'aelf' as ChainType,
+    };
+
+    CA_HOLDER_MANAGER_INFO_DATA = {
+      caHolderManagerInfo: [
+        {
+          __typename: 'CAHolderManagerDto',
+          id: 'AELF-e6ausH...5FMEXt',
+          chainId: 'AELF',
+          caHash: 'a0a96f...7b67fa',
+          caAddress: 'e6ausHQXshHhWdkMX3AsQc6zy3W4418k2axY8c9tUY15FMEXt',
+          managerInfos: [
+            {
+              __typename: 'ManagerInfo',
+              address: '2n9fgWhGos3bHFJieuz6HgfmYV7dbF9DEpkRA4EtVghPgSfS2e',
+              extraData:
+                '{"transactionTime":1681891953548,"deviceInfo":"WjWf5TwN4/UhaYpuLGlKfaOCdQB1leN3hWJKxa1gEdN/mP82cPAyPdTLxaYa/zxg","version":"2.0.0"}',
+            },
+          ],
+          originChainId: 'AELF',
+        },
+      ],
+    };
+  });
   test('useCaHolderManagerInfoQuery.data is undefined, and return deviceAmount is 0', () => {
     jest.mocked(useCurrentNetworkInfo).mockReturnValue(NETWORK_INFO);
     jest
@@ -174,7 +177,7 @@ describe('useDeviceList', () => {
       .mockReturnValue({ data: undefined, error: undefined, refetch: jest.fn(), loading: true } as any);
 
     const { result } = renderHookWithProvider(useDeviceList, setupStore(COMPLETE_WALLET_STATE));
-    expect(result.current.deviceList.length).toBe(0);
+    expect(result.current.deviceList).toHaveLength(0);
     expect(result.current.loading).toBe(true);
   });
 
@@ -191,7 +194,7 @@ describe('useDeviceList', () => {
 
     const res = await act(async () => renderHookWithProvider(useDeviceList, setupStore(COMPLETE_WALLET_STATE)));
 
-    expect(res.result.current.deviceList.length).toBeGreaterThan(0);
+    expect(res.result.current.deviceList).toHaveLength(1);
     expect(res.result.current.deviceAmount).toBe(1);
     expect(res.result.current.loading).toBe(false);
   });
@@ -212,7 +215,7 @@ describe('useDeviceList', () => {
 
     const res = await act(async () => renderHookWithProvider(useDeviceList, setupStore(COMPLETE_WALLET_STATE)));
 
-    expect(res.result.current.deviceList.length).toBe(0);
+    expect(res.result.current.deviceList).toHaveLength(0);
     expect(res.result.current.deviceAmount).toBe(0);
     expect(res.result.current.loading).toBe(false);
   });
@@ -243,7 +246,7 @@ describe('useDeviceList', () => {
 
     const res = await act(async () => renderHookWithProvider(useDeviceList, setupStore(COMPLETE_WALLET_STATE)));
 
-    expect(res.result.current.deviceList.length).toBe(1);
+    expect(res.result.current.deviceList).toHaveLength(1);
     expect(res.result.current.deviceAmount).toBe(1);
     expect(res.result.current.loading).toBe(false);
   });
@@ -252,12 +255,12 @@ describe('useDeviceList', () => {
 describe('useCaAddressInfoList', () => {
   test('complete wallet data, and return successfully', () => {
     const { result } = renderHookWithProvider(useCaAddressInfoList, setupStore(COMPLETE_WALLET_STATE));
-    expect(result.current.length).toBe(2);
+    expect(result.current).toHaveLength(2);
     expect(result.current[0].caAddress).toBe(COMPLETE_WALLET_STATE.wallet.walletInfo.caInfo.TESTNET.AELF.caAddress);
   });
   test('no caInfo.[currentNetwork] data, and return []', () => {
     const { result } = renderHookWithProvider(useCaAddressInfoList, setupStore(INCOMPLETE_WALLET_STATE));
-    expect(result.current.length).toBe(0);
+    expect(result.current).toHaveLength(0);
   });
 });
 
@@ -286,22 +289,22 @@ describe('useSetWalletName', () => {
 describe('useCaAddresses', () => {
   test('complete wallet data, and return successfully', () => {
     const { result } = renderHookWithProvider(useCaAddresses, setupStore(COMPLETE_WALLET_STATE));
-    expect(result.current.length).toBe(2);
+    expect(result.current).toHaveLength(2);
   });
   test('no caInfo, and return empty array', () => {
     const { result } = renderHookWithProvider(useCaAddresses, setupStore(INCOMPLETE_WALLET_STATE));
-    expect(result.current.length).toBe(0);
+    expect(result.current).toHaveLength(0);
   });
 });
 
 describe('useChainIdList', () => {
   test('complete wallet data, and return successfully', () => {
     const { result } = renderHookWithProvider(useChainIdList, setupStore(COMPLETE_WALLET_STATE));
-    expect(result.current.length).toBe(2);
+    expect(result.current).toHaveLength(2);
   });
   test('no caInfo, and return empty array', () => {
     const { result } = renderHookWithProvider(useChainIdList, setupStore(INCOMPLETE_WALLET_STATE));
-    expect(result.current.length).toBe(0);
+    expect(result.current).toHaveLength(0);
   });
 });
 

@@ -1,6 +1,6 @@
 export default {
   checkButtonBuy: {
-    target: '/api/app/switch/ramp',
+    target: '/api/app/switch',
     config: { method: 'GET' },
   },
 } as const;

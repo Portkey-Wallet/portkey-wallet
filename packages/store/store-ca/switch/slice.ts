@@ -9,9 +9,14 @@ const initialState: SwitchStateTypes = {
   isShowBuyFeature: false,
 };
 
-export const fetchIsShowBuyFeatureAsync = createAsyncThunk('fetchTokenListAsync', async () => {
-  const result = await request.switch.checkButtonBuy({});
-  return result.data;
+export const fetchIsShowBuyFeatureAsync = createAsyncThunk('fetchIsShowBuyFeatureAsync', async () => {
+  const result = await request.switch.checkButtonBuy({
+    params: {
+      switchName: 'ramp',
+    },
+  });
+
+  return result.isOpen;
 });
 
 export const switchSlice = createSlice({
@@ -20,6 +25,9 @@ export const switchSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder.addCase(fetchIsShowBuyFeatureAsync.fulfilled, (state, action) => {
+      console.log('====================================');
+      console.log('action.payload', action.payload);
+      console.log('====================================');
       state.isShowBuyFeature = action.payload;
     });
   },

@@ -32,6 +32,7 @@ import BuyButton from 'components/BuyButton';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useIsShowBuy } from 'hooks/useSwitchBuy';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -49,6 +50,7 @@ const TokenDetail: React.FC = () => {
 
   const isTestnet = useIsTestnet();
   const currentWallet = useCurrentWallet();
+  const isShowBuy = useIsShowBuy();
   const caAddressInfos = useCaAddressInfoList();
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
@@ -126,8 +128,8 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF',
-    [tokenInfo.chainId, tokenInfo.symbol],
+    () => tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
+    [isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   return (

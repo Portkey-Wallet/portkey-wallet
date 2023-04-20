@@ -8,6 +8,7 @@ import tokenApi from './token';
 import paymentApi from './payment';
 import deviceApi from './device';
 import messageApi from './message';
+import switchApi from './switch';
 
 import esApi from './es';
 import myServer, { DidService } from './server';
@@ -46,6 +47,7 @@ export const EXPAND_APIS = {
   payment: paymentApi,
   device: deviceApi,
   message: messageApi,
+  switch: switchApi,
 };
 
 export type BASE_REQ_TYPES = {

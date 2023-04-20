@@ -17,11 +17,13 @@ import { useLanguage } from 'i18n/hooks';
 import BuyButton from 'components/BuyButton';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
+import { useIsShowBuy } from 'hooks/useSwitchBuy';
 
 const Card: React.FC = () => {
   const { t } = useLanguage();
   const isTestnet = useIsTestnet();
   const { walletName } = useWallet();
+  const isShowBuy = useIsShowBuy();
   const accountBalanceUSD = useAccountBalanceUSD();
   const [, requestQrPermission] = useQrScanPermission();
 
@@ -56,7 +58,7 @@ const Card: React.FC = () => {
       <Text style={styles.usdtBalance}>{isTestnet ? 'Dev Mode' : `$${accountBalanceUSD}`}</Text>
       <TextM style={styles.accountName}>{walletName}</TextM>
       <View style={styles.buttonGroupWrap}>
-        <BuyButton themeType="dashBoard" />
+        {isShowBuy && <BuyButton themeType="dashBoard" />}
         <SendButton themeType="dashBoard" />
         <ReceiveButton themeType="dashBoard" />
         <ActivityButton themeType="dashBoard" />

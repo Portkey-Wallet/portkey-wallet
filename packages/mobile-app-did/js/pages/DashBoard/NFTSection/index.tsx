@@ -36,8 +36,11 @@ type NFTCollectionProps = NFTCollectionItemShowType & {
 
 // TODO make the list fluently
 function areEqual(prevProps: NFTCollectionProps, nextProps: NFTCollectionProps) {
+  return false;
+
   const prevNftObj = prevProps?.openCollectionObj?.[`${prevProps.symbol}${prevProps?.chainId}`];
   const nextNftObj = nextProps?.openCollectionObj?.[`${nextProps.symbol}${nextProps?.chainId}`];
+
   return nextProps.isCollapsed === prevProps.isCollapsed && prevNftObj?.pageNum === nextNftObj?.pageNum;
 }
 

@@ -1,10 +1,13 @@
-# React Native Wallet APP 
+<p align="center">
+    <img width="200" src= "../../logo.png"/>
+</p>
 
-[![GitHub Super-Linter](https://github.com/AElfProject/aelf-wallet-rn/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+<h1 align="center">Portkey DID APP</h1>
+
 [![Node Version](https://img.shields.io/badge/node-%3E%3D%2016.11.1-brightgreen)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](#)
-[![React Native](https://img.shields.io/badge/react--native-%3D0.68.2-red)](https://reactnative.dev/)
-[![Expo SDK](https://img.shields.io/badge/Expo%20SDK-%3D45.0.0-green)](https://docs.expo.dev/versions/latest/)
+[![React Native](https://img.shields.io/badge/react--native-%3D0.69.7-red)](https://reactnative.dev/)
+[![Expo SDK](https://img.shields.io/badge/Expo%20SDK-%3D46.0.0-green)](https://docs.expo.dev/versions/latest/)
 
 # Getting Start
 
@@ -20,8 +23,6 @@ If you do not meet these prerequisites, follow the links below:
 
 [Installing Expo modules](https://docs.expo.dev/bare/installing-expo-modules/)
 
-## How dev
-
 ## Code style
 
 pre commit: husky + eslint + commit lint + prettier + Typescript
@@ -30,64 +31,67 @@ after publish: SuperLinter + eslint
 
 Super Linter does not support rn yet. Waiting [PR2918](https://github.com/github/super-linter/pull/2918) to be merged.
 
-## Expo
 
-What can we do with Expo in Bare React Native.
-https://docs.expo.dev/introduction/managed-vs-bare/#workflow-comparison
-
-### Step 1 Install Expo
-Expo [Automatic installation](https://docs.expo.dev/bare/installing-expo-modules/#automatic-installation)
-
-iOS [Todo] `pod install`
-
-```zsh
-› Installing ios pods...
-> pod install
-Couldn't install Pods. Updating the Pods project and trying again...
-> pod install --repo-update
-Couldn't install Pods. Updating the Pods project and trying again...
-Uncaught Error CocoaPodsError: Command `pod install` failed.
-└─ Cause: spawn pod ENOENT
-    at getImprovedPodInstallError (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:908331)
-    at CocoaPodsPackageManager.handleInstallErrorAsync (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:903884)
-    at CocoaPodsPackageManager.runInstallTypeCommandAsync (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:904913)
-    at processTicksAndRejections (node:internal/process/task_queues:96:5)
-    at async CocoaPodsPackageManager._installAsync (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:904482)
-    at async CocoaPodsPackageManager.handleInstallErrorAsync (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:904075)
-    at async CocoaPodsPackageManager.runInstallTypeCommandAsync (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:904902)
-    at async CocoaPodsPackageManager._installAsync (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:904482)
-    at async CocoaPodsPackageManager.installAsync (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:903518)
-    at async installPodsAsync (/Users/huangzongzhe/.npm/_npx/b99c464f4819196b/node_modules/install-expo-modules/build/index.js:33:977028) {
-  code: 'COMMAND_FAILED',
-  cause: Error: spawn pod ENOENT
-      at Process.ChildProcess._handle.onexit (node:internal/child_process:282:19)
-      at onErrorNT (node:internal/child_process:477:16)
-      at processTicksAndRejections (node:internal/process/task_queues:83:21) {
-    errno: -2,
-    code: 'ENOENT',
-    syscall: 'spawn pod',
-    path: 'pod',
-    spawnargs: [ 'install', '--repo-update', '--ansi' ],
-    pid: undefined,
-    output: [ '', '' ],
-    stdout: '',
-    stderr: '',
-    status: null,
-    signal: null
-  },
-  isPackageManagerError: true
-}
+## Installing
+```
+yarn
 ```
 
-### Sept 2 Install modules from Expo SDK & Rebuild APP
-
-For example:
-```zsh
-# add battery module
-expo install expo-battery
-# rebuild your app
-yarn android # yarn ios
-# We can call the API of expo-battery in our APP now.
+## Android 
+```bash
+yarn android
 ```
+
+## iOS
+```bash
+yarn pod-install
+
+yarn ios
+```
+
+## Debugging
+
+First, make sure you have the following running:
+
+-   Your Android emulator or iOS simulator
+-   `yarn android` or `yarn ios`
+
+Next, install the [Flipper](https://fbflipper.com/) desktop app (verified working with v0.127.0)
+
+Finally, check that the debugger is working:
+
+-   Open your emulator or simulator alongside the Flipper app
+-   Flipper should auto-detect the device and the application to debug
+-   You should now be able to access features such as `Logs`
+
+### Debugging Physical iOS devices
+
+-   Debugging physical iOS devices requires `idb` to be installed, which consists of 2 parts
+-   Install the two idb parts:
+    1. `brew tap facebook/fb` & `brew install idb-companion`
+    2. `pip3.9 install fb-idb` (This step may require that you install python3 via `python -m pip3 install --upgrade pip`)
+
+### Debug a website inside the WebView (in-app browser)
+
+Android
+
+-   Run the app in debug mode (for example, in a simulator)
+-   Open Chrome on your desktop
+-   Go to `chrome://inspect/#devices`
+-   Look for the device and click inspect
+
+iOS
+
+-   Run the app in debug mode (for example, in a simulator)
+-   Open Safari on your desktop
+-   Go to the menu Develop -> [Your device] -> [Website]
+
+You should see the console for the website that is running inside the WebView
+
+#### Miscellaneous
+
+-   [Troubleshooting for React Native](https://facebook.github.io/react-native/docs/troubleshooting#content)
+-   [Flipper Documentation](https://fbflipper.com/docs/features/react-native/)
+
 
 ## Notifee

@@ -23,7 +23,6 @@ export const useGetAchTokenInfo = () => {
     if (emailGuardian === undefined) {
       return undefined;
     }
-    console.log('email', emailGuardian.guardianAccount);
 
     if (achTokenInfo === undefined || achTokenInfo.expires < Date.now()) {
       const rst = await getAchToken({ email: emailGuardian.guardianAccount });

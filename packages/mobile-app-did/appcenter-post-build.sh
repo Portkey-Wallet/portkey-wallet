@@ -91,6 +91,49 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
         echo "Current branch is $APPCENTER_BRANCH"
     fi
 
+
+
+    # Example: Upload main branch app binary to HockeyApp using the API
+    if [ "$PLATFORM_TYPE" == "google-play" ];
+     then
+        curl -X POST -H "Content-Type: application/json" \
+        -d '{
+            "msg_type": "post",
+            "content": {
+                "post": {
+                    "zh_cn": {
+                        "title": "Notification about package updating",
+                        "content": [
+                            [
+                                {
+                                    "tag": "text",
+                                    "text": "The latest android alpha package(id:'$APPCENTER_BUILD_ID',environment:'$ENVIRONMENT')has updated at googlePlay: "
+                                },
+                                {
+                                    "tag": "text",
+                                    "text": "you can apply to join the internal testing group and "
+                                },
+                                {
+                                    "tag": "a",
+                                    "text": "click here",
+                                    "href": "https://play.google.com/apps/testing/com.portkey.did"
+                                },
+                                {
+                                    "tag": "text",
+                                    "text": "view/download the latest version of the app on googlePlay."
+                                }
+                            ]
+                        ]
+                    }
+                }
+            }
+        }' \
+        https://open.feishu.cn/open-apis/bot/v2/hook/f2d3fffd-c630-4e59-86e3-e7053a64e4b2
+    else
+        echo "Current branch is $APPCENTER_BRANCH"
+    fi
+
+
 fi
 
 

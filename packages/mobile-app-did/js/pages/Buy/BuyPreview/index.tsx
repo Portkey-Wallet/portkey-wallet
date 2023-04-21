@@ -25,6 +25,7 @@ import paymentApi from '@portkey-wallet/api/api-did/payment';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
 import { ACH_REDIRECT_URL } from 'constants/common';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface RouterParams {
   type?: TypeEnum;
@@ -49,6 +50,7 @@ export default function BuyPreview() {
   const { rate, receiveAmount } = useReceive(type, amount || '', fiat, token, receiveAmountProps, rateProps);
   const isBuy = useMemo(() => type === TypeEnum.BUY, [type]);
   const apiUrl = useCurrentApiUrl();
+  const wallet = useCurrentWalletInfo();
 
   const getAchTokenInfo = useGetAchTokenInfo();
   const goPayPage = useCallback(
@@ -79,8 +81,10 @@ export default function BuyPreview() {
         });
         achUrl += `&merchantOrderNo=${orderNo}`;
 
-        // TODO: setCurrent Mainnet Aelf address
-        const address = 'Re16JhfpEFxgJebKNW9xDciwRUu8aibwXbTrqt5J1BSwjdSkB';
+        const address = wallet.AELF?.caAddress;
+        if (!address) {
+          throw new Error('address is undefined');
+        }
         const signature = await getAchSignature({ address });
 
         achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
@@ -107,7 +111,7 @@ export default function BuyPreview() {
       }
       Loading.hide();
     },
-    [amount, apiUrl, fiat, getAchTokenInfo, receiveAmount, token, type],
+    [amount, apiUrl, fiat, getAchTokenInfo, receiveAmount, token, type, wallet.AELF?.caAddress],
   );
 
   return (

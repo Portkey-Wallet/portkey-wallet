@@ -107,11 +107,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                             [
                                 {
                                     "tag": "text",
-                                    "text": "The latest android alpha package(id:'$APPCENTER_BUILD_ID',environment:'$ENVIRONMENT')has updated at googlePlay: "
-                                },
-                                {
-                                    "tag": "text",
-                                    "text": "you can apply to join the internal testing group and "
+                                    "text": "The latest android alpha package(id:'$APPCENTER_BUILD_ID',environment:'$ENVIRONMENT')has updated at googlePlay, "
                                 },
                                 {
                                     "tag": "a",

@@ -24,6 +24,7 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useNavigate } from 'react-router';
 import { clearLocalStorage } from 'utils/storage/chromeStorage';
+import { getWalletInfo, isCurrentCaHash } from 'store/utils/getStore';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -96,7 +97,8 @@ export function useCheckManagerOnLogout() {
     if (!caHash) return;
     try {
       const isManager = await checkManager({ caHash, address });
-      if (!isManager) logout();
+      const walletInfo = getWalletInfo();
+      if (!isManager && walletInfo?.address === address && isCurrentCaHash(caHash)) logout();
     } catch (error) {
       console.log(error, '======error');
       const msg = handleErrorMessage(error);

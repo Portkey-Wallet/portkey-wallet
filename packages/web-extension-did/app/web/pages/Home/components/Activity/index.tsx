@@ -63,7 +63,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       const params: IActivitiesApiParams = {
         maxResultCount: AMX_RESULT_COUNT,
         skipCount: SKIP_COUNT,
-        caAddresses: chainId ? [walletInfo?.[chainId]?.caAddress] : caAddressList,
+        caAddresses: chainId ? [walletInfo?.[chainId]?.caAddress || ''] : caAddressList,
         caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,
@@ -79,7 +79,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       const params = {
         maxResultCount: AMX_RESULT_COUNT,
         skipCount: skipCount + maxResultCount,
-        caAddresses: chainId ? [walletInfo?.[chainId]?.caAddress] : caAddressList,
+        caAddresses: chainId ? [walletInfo?.[chainId]?.caAddress || ''] : caAddressList,
         caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,

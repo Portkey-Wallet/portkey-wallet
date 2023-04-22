@@ -25,7 +25,7 @@ import { LoginGuardianTypeIcon } from 'constants/misc';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
-import useDebounceCallback from '@portkey-wallet/hooks/useDebounceCallback';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { verification } from 'utils/api';
 import { useLanguage } from 'i18n/hooks';
 import { useVerifyToken } from 'hooks/authentication';
@@ -87,7 +87,7 @@ function GuardianItemButton({
   );
   const originChainId = useOriginChainId();
 
-  const onSendCode = useDebounceCallback(async () => {
+  const onSendCode = useThrottleCallback(async () => {
     Loading.show();
     try {
       const req = await verification.sendVerificationCode({
@@ -155,7 +155,7 @@ function GuardianItemButton({
     originChainId,
     verifyToken,
   ]);
-  const onVerifier = useDebounceCallback(async () => {
+  const onVerifier = useThrottleCallback(async () => {
     switch (guardianItem.guardianType) {
       case LoginType.Apple:
       case LoginType.Google:

@@ -22,7 +22,7 @@ export interface CloseParams extends SendResponseParams {
  */
 export default class NotificationService {
   protected openWindow: null | chrome.windows.Window;
-  protected getPopupTimeout: NodeJS.Timeout | null;
+  protected getPopupTimeout: NodeJS.Timeout | number | null;
   protected openTag: null | chrome.tabs.Tab;
   protected closeSender: Record<string, NotificationType | null> | null;
   protected platform: ExtensionPlatform;

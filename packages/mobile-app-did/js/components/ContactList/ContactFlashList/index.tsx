@@ -1,9 +1,10 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { styles as contactListStyles } from './style';
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { FlashList } from '@shopify/flash-list';
 import IndexBar from 'components/IndexBar';
+import { TextM } from 'components/CommonText';
 
 type contactFlatItemType = ContactIndexType | ContactItemType;
 interface ContactsListProps {
@@ -41,12 +42,6 @@ const ContactsList: React.FC<ContactsListProps> = ({
     [contactIndexList],
   );
 
-  const headerIndex = useMemo(
-    () =>
-      dataArray.map((item, idx) => ((item as ContactItemType).id === undefined ? idx : -1)).filter(idx => idx !== -1),
-    [dataArray],
-  );
-
   return (
     <View style={[contactListStyles.sectionListWrap, !isIndexBarShow && contactListStyles.sectionListWrapFull]}>
       <FlashList
@@ -57,12 +52,14 @@ const ContactsList: React.FC<ContactsListProps> = ({
         overrideItemLayout={(layout, item) => {
           layout.size = (item as ContactItemType).id === undefined ? sectionHeight : itemHeight;
         }}
-        stickyHeaderIndices={headerIndex}
         renderItem={({ item }) => {
           if ((item as ContactItemType).id === undefined) {
             return renderContactIndex(item as ContactIndexType);
           }
           return renderContactItem(item as ContactItemType);
+        }}
+        getItemType={item => {
+          return (item as ContactItemType).id === undefined ? 'sectionHeader' : 'row';
         }}
         keyExtractor={item => ((item as ContactItemType).id === undefined ? item.index : (item as ContactItemType).id)}
         ListFooterComponent={ListFooterComponent}

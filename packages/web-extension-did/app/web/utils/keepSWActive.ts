@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import { ENVIRONMENT_TYPE_POPUP } from 'constants/envType';
 import {
   ACK_KEEP_ALIVE_MESSAGE,
@@ -8,7 +7,6 @@ import {
 } from 'constants/index';
 import { checkForError } from 'utils';
 import { apis } from './BrowserApis';
-import { errorToReload } from './errorHtml';
 
 export function keepSWActive({
   port,
@@ -47,7 +45,7 @@ export function keepSWActive({
  */
 let extensionPort: chrome.runtime.Port;
 let lastMessageReceivedTimestamp = Date.now();
-let ackTimeoutToDisplayError: NodeJS.Timeout;
+let ackTimeoutToDisplayError: NodeJS.Timeout | number;
 let isHasMessage: boolean;
 export const keepAliveOnPages = ({ onError }: { onError?: () => void }) => {
   const windowType = ENVIRONMENT_TYPE_POPUP;

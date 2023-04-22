@@ -1,0 +1,36 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { request } from '@portkey-wallet/api/api-did';
+
+export type SwitchStateTypes = {
+  isShowBuyFeature: boolean;
+};
+
+const initialState: SwitchStateTypes = {
+  isShowBuyFeature: false,
+};
+
+export const fetchIsShowBuyFeatureAsync = createAsyncThunk('fetchIsShowBuyFeatureAsync', async () => {
+  const result = await request.switch.checkButtonBuy({
+    params: {
+      switchName: 'ramp',
+    },
+  });
+
+  return result.isOpen;
+});
+
+export const switchSlice = createSlice({
+  name: 'switch',
+  initialState,
+  reducers: {},
+  extraReducers: builder => {
+    builder.addCase(fetchIsShowBuyFeatureAsync.fulfilled, (state, action) => {
+      console.log('====================================');
+      console.log('action.payload', action.payload);
+      console.log('====================================');
+      state.isShowBuyFeature = action.payload;
+    });
+  },
+});
+
+export default switchSlice;

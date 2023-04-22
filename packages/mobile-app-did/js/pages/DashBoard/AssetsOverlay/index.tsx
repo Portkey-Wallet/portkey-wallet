@@ -49,7 +49,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
 
   if (item.nftInfo) {
     const {
-      nftInfo: { tokenId, chainId },
+      nftInfo: { tokenId },
     } = item;
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
@@ -66,7 +66,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
 
             {isTestnet ? (
               <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
-                {formatChainInfoToShow(chainId as ChainId, currentNetwork)}
+                {formatChainInfoToShow(item.chainId as ChainId, currentNetwork)}
               </TextS>
             ) : (
               // TODO: price use

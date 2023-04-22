@@ -5,9 +5,10 @@ export const NetworkList: NetworkItem[] = [
     name: 'aelf Mainnet',
     walletType: 'aelf',
     networkType: 'MAIN',
-    apiUrl: '',
-    graphqlUrl: '',
-    connectUrl: '',
+    isActive: true,
+    apiUrl: 'https://did-portkey.portkey.finance',
+    graphqlUrl: 'https://dapp-portkey.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
+    connectUrl: 'https://auth-portkey.portkey.finance',
   },
   {
     name: 'aelf Testnet',

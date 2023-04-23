@@ -7,6 +7,7 @@ import { InterfaceActions, setCurrentInterface } from './actions';
 import { State } from './types';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
+import useScheme from 'hooks/useScheme';
 
 const INITIAL_STATE = {};
 const InterfaceContext = createContext<any>(INITIAL_STATE);
@@ -48,6 +49,7 @@ export default function Provider({ children }: { children: React.ReactNode }) {
     androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
     shouldAutoExchangeCode: false,
   });
+  useScheme();
   useEffect(() => {
     if (currentNetwork.chainType === 'aelf') {
       if (prevRpcUrl !== currentNetwork.rpcUrl) dispatch(setCurrentInterface(getAelfInstance(currentNetwork.rpcUrl)));

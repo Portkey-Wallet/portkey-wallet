@@ -1,14 +1,15 @@
-import React, { useCallback, useState } from 'react';
-import PageContainer from 'components/PageContainer';
+import { StyleSheet, View, Image, Keyboard, Linking } from 'react-native';
+import OverlayModal from 'components/OverlayModal';
+import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { ModalBody } from 'components/ModalBody';
+import React, { useCallback, useEffect, useState } from 'react';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
 import { TextM, TextXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from 'components/CommonToast';
@@ -30,8 +31,7 @@ const mockData = {
   extraData: { deviceInfo: { deviceType: 2, deviceName: 'iPhone' }, version: '2.0.0' },
 } as LoginQRData;
 
-const ScrollViewProps = { disabled: true };
-export default function ScanLogin() {
+function AuthLoginH5() {
   const { t } = useLanguage();
 
   const { address: managerAddress, extraData: qrExtraData, deviceType } = mockData || {};
@@ -58,7 +58,7 @@ export default function ScanLogin() {
   );
 
   const onLogin = useCallback(async () => {
-    if (currentNetwork !== mockData.netWorkType) return showDialog('networkError');
+    if (currentNetwork === mockData.netWorkType) return showDialog('networkError');
     if (!caHash || loading || !managerAddress) return showDialog();
 
     try {
@@ -94,23 +94,14 @@ export default function ScanLogin() {
   ]);
 
   return (
-    <PageContainer
-      safeAreaColor={['white', 'white']}
-      scrollViewProps={ScrollViewProps}
-      titleDom
-      leftDom={
-        <TouchableOpacity onPress={() => navigationService.navigate('Tab')} style={styles.iconWrap}>
-          <Svg color={defaultColors.icon1} icon={'left-arrow'} size={pTd(20)} iconStyle={GStyles.marginRight(4)} />
-        </TouchableOpacity>
-      }
-      containerStyles={styles.containerStyles}>
-      <View style={GStyles.itemCenter}>
+    <ModalBody modalBodyType="bottom" title="">
+      <View style={[styles.topSection, GStyles.itemCenter]}>
         <View style={GStyles.flexRow}>
           <Image
-            source={require('../../../assets/image/pngs/portkeyBlueBackground.png')}
+            source={require('../../assets/image/pngs/portkeyBlueBackground.png')}
             style={[styles.baseImage, styles.portkeyImg]}
           />
-          <Image source={require('../../../assets/image/pngs/bingoGame.png')} style={[styles.baseImage]} />
+          <Image source={require('../../assets/image/pngs/bingoGame.png')} style={[styles.baseImage]} />
         </View>
         <TextXXL style={[styles.title, GStyles.textAlignCenter, fonts.mediumFont]}>
           {t('Authorized login to Bingogame')}
@@ -122,16 +113,57 @@ export default function ScanLogin() {
       <View style={styles.bottomBox}>
         <CommonButton type="primary" title="Confirm" onPress={onLogin} loading={loading} />
       </View>
-    </PageContainer>
+    </ModalBody>
   );
 }
 
+export const showAuthLoginH5 = () => {
+  Keyboard.dismiss();
+  OverlayModal.show(<AuthLoginH5 />, {
+    position: 'bottom',
+  });
+};
+
+export default {
+  showAuthLoginH5,
+};
+
 const styles = StyleSheet.create({
+  itemRow: {
+    height: 72,
+    paddingLeft: pTd(20),
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  disableItem: {
+    opacity: 0.3,
+  },
+  nameRow: {
+    flex: 1,
+    marginLeft: pTd(12),
+    flexDirection: 'row',
+    height: '100%',
+    alignItems: 'center',
+  },
+  borderBottom1: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  nameText: {
+    flex: 1,
+    marginRight: 50,
+  },
+  selectIconStyle: {
+    position: 'absolute',
+    right: pTd(22),
+  },
   containerStyles: {
     justifyContent: 'space-between',
     paddingBottom: 32,
     paddingTop: 100,
     alignItems: 'center',
+  },
+  topSection: {
+    marginTop: pTd(40),
   },
   title: {
     marginTop: 41,
@@ -143,11 +175,11 @@ const styles = StyleSheet.create({
     width: pTd(64),
   },
   bottomBox: {
-    width: '100%',
-    marginHorizontal: 16,
+    marginTop: pTd(80),
+    marginHorizontal: pTd(16),
   },
   cancelButtonStyle: {
-    marginTop: 8,
+    marginTop: pTd(8),
     backgroundColor: 'transparent',
   },
   baseImage: {

@@ -9,23 +9,104 @@ import {
   useSymbolImages,
 } from './useToken';
 import { TokenManagementState } from '../../../test/data/tokenManagementState';
+import * as baseHooks from '../index';
+import * as networkHooks from './network';
+import { ChainType, NetworkType } from '@portkey-wallet/types';
+import { request } from '@portkey-wallet/api/api-did';
 
 jest.mock('@portkey-wallet/store/store-ca/tokenManagement/action');
-jest.mock('../index', () => {
-  return {
-    ...jest.requireActual('../index'),
-    useAppCommonDispatch: jest.fn(() => async (call: () => void) => {
-      return call;
-    }),
-  };
+jest.mock('@portkey-wallet/api/api-did');
+
+beforeEach(() => {
+  jest.restoreAllMocks();
 });
 
-afterEach(() => {
-  jest.clearAllMocks();
+describe('useToken', () => {
+  let NETWORK_INFO: any;
+  beforeEach(() => {
+    NETWORK_INFO = {
+      apiUrl: 'https://did-portkey-test.portkey.finance',
+      connectUrl: 'https://auth-portkey-test.portkey.finance',
+      graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
+      isActive: true,
+      name: 'aelf Testnet',
+      networkType: 'TESTNET' as NetworkType,
+      walletType: 'aelf' as ChainType,
+    };
+  });
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  test('complete data, and return successfully', async () => {
+    // mock
+    jest.spyOn(baseHooks, 'useAppCommonDispatch').mockReturnValue(() => async (call: () => void) => {
+      return call;
+    });
+    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(NETWORK_INFO);
+
+    jest.mocked(fetchAllTokenListAsync).mockReturnValue({ list: [{}, {}], totalRecordCount: 2 } as any);
+    jest.mocked(request.token.displayUserToken).mockResolvedValue({});
+    jest.spyOn(global, 'setTimeout');
+
+    // dispatch hook
+    const { result } = renderHookWithProvider(useToken, setupStore(TokenManagementState));
+    // expect hook
+    expect(result.current[0]).toEqual(TokenManagementState.tokenManagement);
+    expect(result.current[1]).toHaveProperty('fetchTokenList');
+    expect(result.current[1]).toHaveProperty('displayUserToken');
+
+    // dispatch hook result - fetchTokenList
+    await result.current[1].fetchTokenList();
+    // expect hook result - fetchTokenList
+    expect(fetchAllTokenListAsync).toHaveBeenCalled();
+
+    // dispatch hook result - displayUserToken
+    const params = {
+      tokenItem: {
+        address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+        chainId: 'AELF',
+        decimals: 8,
+        id: '217258ef-a5af-44aa-89cf-ed4134882bad',
+        isAdded: true,
+        isDefault: false,
+        name: 'CPU',
+        symbol: 'CPU',
+        tokenName: 'CPU',
+        userTokenId: 'a0a3e672-afff-3b98-21ca-3a0a1f90a6d4',
+      },
+      keyword: '',
+      chainIdArray: ['AELF', 'tDVV'],
+    };
+    await result.current[1].displayUserToken(params);
+    jest.runAllTimers();
+
+    // expect hook result - displayUserToken
+    expect(request.token.displayUserToken).toHaveBeenCalled();
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(fetchAllTokenListAsync).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('useMarketTokenListInCurrentChain', () => {
+  test('get tokenManagement.tokenDataShowInMarket', () => {
+    const { result } = renderHookWithProvider(useMarketTokenListInCurrentChain, setupStore(TokenManagementState));
+    expect(result.current).toBe(TokenManagementState.tokenManagement.tokenDataShowInMarket);
+  });
+});
+
+describe('useIsFetchingTokenList', () => {
+  test('get tokenManagement.isFetching', () => {
+    const { result } = renderHookWithProvider(useIsFetchingTokenList, setupStore(TokenManagementState));
+    expect(result.current).toBe(TokenManagementState.tokenManagement.isFetching);
+  });
 });
 
 describe('useFetchSymbolImages', () => {
   test('The getSymbolImagesAsync method is triggered successfully', () => {
+    jest.spyOn(baseHooks, 'useAppCommonDispatch').mockReturnValue(() => async (call: () => void) => {
+      return call;
+    });
     jest.mocked(getSymbolImagesAsync).mockReturnValue('' as any);
     renderHookWithProvider(useFetchSymbolImages, setupStore({}));
     expect(getSymbolImagesAsync).toBeCalled();

@@ -11,8 +11,8 @@ import {
 import { TokenManagementState } from '../../../test/data/tokenManagementState';
 import * as baseHooks from '../index';
 import * as networkHooks from './network';
-import { ChainType, NetworkType } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
+import { NetworkInfo } from '../../../test/data/networkState';
 
 jest.mock('@portkey-wallet/store/store-ca/tokenManagement/action');
 jest.mock('@portkey-wallet/api/api-did');
@@ -22,18 +22,6 @@ beforeEach(() => {
 });
 
 describe('useToken', () => {
-  let NETWORK_INFO: any;
-  beforeEach(() => {
-    NETWORK_INFO = {
-      apiUrl: 'https://did-portkey-test.portkey.finance',
-      connectUrl: 'https://auth-portkey-test.portkey.finance',
-      graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
-      isActive: true,
-      name: 'aelf Testnet',
-      networkType: 'TESTNET' as NetworkType,
-      walletType: 'aelf' as ChainType,
-    };
-  });
   beforeAll(() => {
     jest.useFakeTimers();
   });
@@ -43,7 +31,7 @@ describe('useToken', () => {
     jest.spyOn(baseHooks, 'useAppCommonDispatch').mockReturnValue(() => async (call: () => void) => {
       return call;
     });
-    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(NETWORK_INFO);
+    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(NetworkInfo);
 
     jest.mocked(fetchAllTokenListAsync).mockReturnValue({ list: [{}, {}], totalRecordCount: 2 } as any);
     jest.mocked(request.token.displayUserToken).mockResolvedValue({});

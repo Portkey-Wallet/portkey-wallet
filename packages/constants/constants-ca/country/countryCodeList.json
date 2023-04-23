@@ -1,18 +1,11 @@
 {
   "countryCode": [
-    { "country": "Australia", "code": "61", "iso": "AU" },
     { "country": "China", "code": "86", "iso": "CN" },
     { "country": "Denmark", "code": "45", "iso": "DK" },
     { "country": "France", "code": "33", "iso": "FR" },
-    { "country": "Germany", "code": "49", "iso": "DE" },
     { "country": "Hong Kong", "code": "852", "iso": "HK" },
-    { "country": "Indonesia", "code": "62", "iso": "ID" },
-    { "country": "Malaysia", "code": "60", "iso": "MY" },
     { "country": "Mexico", "code": "52", "iso": "MX" },
     { "country": "Singapore", "code": "65", "iso": "SG" },
-    { "country": "South Korea", "code": "82", "iso": "KR" },
-    { "country": "Sri Lanka", "code": "94", "iso": "LK" },
-    { "country": "Thailand", "code": "66", "iso": "TH" },
     { "country": "United Kingdom", "code": "44", "iso": "GB" },
     { "country": "United States", "code": "1", "iso": "US" }
   ]

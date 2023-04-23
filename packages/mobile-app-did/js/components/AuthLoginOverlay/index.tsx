@@ -2,10 +2,8 @@ import { StyleSheet, View, Image, Keyboard } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
 import { ModalBody } from 'components/ModalBody';
 import React, { useCallback, useState } from 'react';
-
 import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
-import navigationService from 'utils/navigationService';
 import { TextM, TextXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
@@ -15,8 +13,6 @@ import CommonToast from 'components/CommonToast';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { addManager } from 'utils/wallet';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
-import socket from '@portkey-wallet/socket/socket-did';
-import { request } from '@portkey-wallet/api/api-did';
 import fonts from 'assets/theme/fonts';
 import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
@@ -56,8 +52,6 @@ function AuthLogin({ loginData, extraData: websiteInfo }: AuthLoginOverlayPropsT
   );
 
   const onLogin = useCallback(async () => {
-    console.log('!!!', loginData, currentNetwork, loginData.netWorkType);
-
     if (currentNetwork !== loginData.netWorkType) return showDialog();
     if (!caHash || loading || !managerAddress) return showDialog();
 
@@ -69,11 +63,6 @@ function AuthLogin({ loginData, extraData: websiteInfo }: AuthLoginOverlayPropsT
 
       const req = await addManager({ contract, caHash, address, managerAddress, extraData });
       if (req?.error) throw req?.error;
-      socket.doOpen({
-        url: `${request.defaultConfig.baseURL}/ca`,
-        clientId: managerAddress,
-      });
-      navigationService.navigate('Tab');
 
       OverlayModal.hide();
       minimizer.goBack();

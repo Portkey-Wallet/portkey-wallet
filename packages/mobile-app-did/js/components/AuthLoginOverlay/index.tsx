@@ -1,9 +1,8 @@
-import { StyleSheet, View, Image, Keyboard, Linking } from 'react-native';
+import { StyleSheet, View, Image, Keyboard } from 'react-native';
 import OverlayModal from 'components/OverlayModal';
-import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { ModalBody } from 'components/ModalBody';
-import React, { useCallback, useEffect, useState } from 'react';
-import Svg from 'components/Svg';
+import React, { useCallback, useState } from 'react';
+
 import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
@@ -22,19 +21,19 @@ import fonts from 'assets/theme/fonts';
 import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
 import ActionSheet from 'components/ActionSheet';
+import minimizer from 'react-native-minimizer';
+import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 
-const mockData = {
-  chainType: 'aelf',
-  type: 'login',
-  address: 'Qx7j9zpxvp14Hz7UQMv7a28c7ftVgSTVnpQxDs2XhafrWQQ1R',
-  netWorkType: 'TESTNET',
-  extraData: { deviceInfo: { deviceType: 2, deviceName: 'iPhone' }, version: '2.0.0' },
-} as LoginQRData;
+export interface AuthLoginOverlayPropsTypes {
+  domain: string;
+  loginData: LoginQRData;
+  extraData: { websiteName: string; websiteIcon?: string };
+}
 
-function AuthLogin() {
+function AuthLogin({ loginData, extraData: websiteInfo }: AuthLoginOverlayPropsTypes) {
   const { t } = useLanguage();
 
-  const { address: managerAddress, extraData: qrExtraData, deviceType } = mockData || {};
+  const { address: managerAddress, extraData: qrExtraData, deviceType } = loginData || {};
 
   const { caHash, address } = useCurrentWalletInfo();
   const { currentNetwork } = useWallet();
@@ -42,16 +41,13 @@ function AuthLogin() {
   const getCurrentCAContract = useGetCurrentCAContract();
 
   const showDialog = useCallback(
-    (type?: 'networkError' | 'other') =>
+    () =>
       ActionSheet.alert({
         title: t('Authorization failed'),
-        message:
-          type === 'networkError'
-            ? t('Network error, please switch Portkey app to the matching network.')
-            : t("You weren't able to give access to the App. Go back and try logging in again."),
+        message: t('Network error, please switch Portkey app to the matching network.'),
         buttons: [
           {
-            title: t(type === 'networkError' ? 'OK' : 'Back'),
+            title: t('OK'),
             type: 'solid',
           },
         ],
@@ -60,7 +56,9 @@ function AuthLogin() {
   );
 
   const onLogin = useCallback(async () => {
-    if (currentNetwork === mockData.netWorkType) return showDialog('networkError');
+    console.log('!!!', loginData, currentNetwork, loginData.netWorkType);
+
+    if (currentNetwork !== loginData.netWorkType) return showDialog();
     if (!caHash || loading || !managerAddress) return showDialog();
 
     try {
@@ -79,11 +77,15 @@ function AuthLogin() {
         clientId: managerAddress,
       });
       navigationService.navigate('Tab');
+
+      OverlayModal.hide();
+      minimizer.goBack();
     } catch (error) {
       CommonToast.failError(error);
     }
     setLoading(false);
   }, [
+    loginData,
     currentNetwork,
     showDialog,
     caHash,
@@ -96,7 +98,7 @@ function AuthLogin() {
   ]);
 
   return (
-    <ModalBody modalBodyType="bottom" title="">
+    <ModalBody modalBodyType="bottom" title="" style={styles.modal} onClose={minimizer.goBack}>
       <View style={[styles.topSection, GStyles.itemCenter]}>
         <View style={GStyles.flexRow}>
           <Image
@@ -106,13 +108,14 @@ function AuthLogin() {
           <Image source={require('../../assets/image/pngs/bingoGame.png')} style={[styles.baseImage]} />
         </View>
         <TextXXL style={[styles.title1, GStyles.textAlignCenter, fonts.mediumFont]}>
-          {t('Authorize Bingogame to login ')}
+          {t(`Authorize ${websiteInfo?.websiteName} to login`)}
         </TextXXL>
         <TextXXL style={[styles.title2, GStyles.textAlignCenter, fonts.mediumFont]}>{t('with your account')}</TextXXL>
         <TextM style={[styles.tips, FontStyles.font3, GStyles.textAlignCenter]}>
           {t('This application will be able to use your wallet account.')}
         </TextM>
       </View>
+      <View style={GStyles.flex1} />
       <View style={styles.bottomBox}>
         <CommonButton type="primary" title={t('Allow')} onPress={onLogin} loading={loading} />
       </View>
@@ -120,9 +123,9 @@ function AuthLogin() {
   );
 }
 
-export const showAuthLogin = () => {
+export const showAuthLogin = (props: AuthLoginOverlayPropsTypes) => {
   Keyboard.dismiss();
-  OverlayModal.show(<AuthLogin />, {
+  OverlayModal.show(<AuthLogin {...props} />, {
     position: 'bottom',
   });
 };
@@ -132,6 +135,9 @@ export default {
 };
 
 const styles = StyleSheet.create({
+  modal: {
+    height: windowHeight * 0.6,
+  },
   itemRow: {
     height: 72,
     paddingLeft: pTd(20),

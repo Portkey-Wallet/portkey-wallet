@@ -127,7 +127,7 @@ export default function SendPreview({
         <span className="label">Transaction fee</span>
         <p className="value">
           <span className="symbol">
-            <span className="usd">{!isTestNet && amountInUsdShow(transactionFee, 0, symbol)}</span>
+            <span className="usd">{!isTestNet && amountInUsdShow(transactionFee, 0, 'ELF')}</span>
             {` ${formatAmountShow(transactionFee)} ELF`}
           </span>
         </p>

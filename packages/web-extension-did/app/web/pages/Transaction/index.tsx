@@ -202,7 +202,11 @@ export default function Transaction() {
       <p className="value">
         <span className="left">{t('Transaction Fee')}</span>
         <span className="right">
-          {(!feeInfo || feeInfo?.length === 0) && <div className="right-item">0 ELF</div>}
+          {(!feeInfo || feeInfo?.length === 0) && (
+            <div className="right-item">
+              <span>{`0 ELF`}</span> {!isTestNet && <span className="right-usd">{`$ 0`}</span>}
+            </div>
+          )}
           {feeInfo?.length > 0 &&
             feeInfo.map((item, idx) => {
               return (
@@ -212,7 +216,7 @@ export default function Transaction() {
                     decimals: item?.decimals || 8,
                   })} ${item.symbol ?? ''}`}</span>
                   {!isTestNet && (
-                    <span className="right-usd">{amountInUsdShow(item.fee, item?.decimals || 8, item.symbol)}</span>
+                    <span className="right-usd">{amountInUsdShow(item.fee, item?.decimals || 8, 'ELF')}</span>
                   )}
                 </div>
               );

@@ -28,6 +28,7 @@ let config = {
     prompt: './app/web/Prompt/Prompt.tsx',
     serviceWorker: './app/web/serviceWorker/index.ts',
     sandboxUtil: './app/web/sandboxUtil.ts',
+    sandboxSDK: './app/web/sandbox/sandbox-sdk.js',
     content: './app/web/content.ts',
     inject: './app/web/inject.ts',
   },
@@ -155,7 +156,7 @@ let config = {
     new HtmlWebpackPlugin({
       chunks: [''],
       template: './app/web/sandbox/index.html',
-      filename: `./${outputDir}/sandbox-index.html`,
+      filename: `./${outputDir}/sandbox-sdk.html`,
     }),
     new CopyWebpackPlugin({
       patterns: [

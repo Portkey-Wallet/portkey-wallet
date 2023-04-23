@@ -4764,6 +4764,103 @@
   resolved "https://registry.npmmirror.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
+"@portkey/accounts@^0.0.1-alpha.1.4":
+  version "0.0.1-alpha.1.4"
+  resolved "https://registry.npmjs.org/@portkey/accounts/-/accounts-0.0.1-alpha.1.4.tgz#f6892789014e4c2b0d6db3597b07cb3e5a761e1f"
+  integrity sha512-V3o9C4M9vv1ia/MmNfdc4cOq+qUG4Iygyzd7lHTldxp0W4nHh0PVAykiHyycPwexLFLOkJPjO5m53ZaguRismQ==
+  dependencies:
+    "@portkey/types" "^0.0.1-alpha.1.4"
+    "@portkey/utils" "^0.0.1-alpha.1.4"
+    "@portkey/validator" "^0.0.1-alpha.1.4"
+    aelf-sdk "^3.2.44"
+
+"@portkey/contracts@^0.0.1-alpha.1.6":
+  version "0.0.1-alpha.1.6"
+  resolved "https://registry.npmjs.org/@portkey/contracts/-/contracts-0.0.1-alpha.1.6.tgz#7f536d66b1a209e4113f1fb78bc50060a9c5c5f5"
+  integrity sha512-xceKqdpkEzuZ2srC4UuSOM+mezkhQsLJL3jD/0zBHpILvo6EwR8qFLYfJoaZE4aaaERdjNWuO+bRKgqP0XqmkQ==
+  dependencies:
+    "@portkey/utils" "^0.0.1-alpha.1.4"
+    aelf-sdk "^3.2.44"
+
+"@portkey/did-ui-react@^0.0.1-alpha.4.9":
+  version "0.0.1-alpha.4.9"
+  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-0.0.1-alpha.4.9.tgz#e44489b3a485936803780c054a83c267d6d68a89"
+  integrity sha512-Qw4aQS/do9gcaVuQoqnIBDGZdqQFEPmL39y8Q0pRdC7Wu+mVNtqXPrwUmeUHLwQorYFp6w9oLwcA/5vXG7zoxA==
+  dependencies:
+    "@portkey/did" "^0.0.1-alpha.2.8"
+    aelf-sdk "^3.2.40"
+    antd "4.24.4"
+    antd-mobile "5.26.0"
+    bignumber.js "^9.1.0"
+    clsx "^1.2.1"
+    react-i18next "^11.18.6"
+    react-qrcode-logo "2.9.0"
+    react-use "^17.4.0"
+    reactjs-social-login "^2.6.2"
+    uuid "^8.3.2"
+
+"@portkey/did@^0.0.1-alpha.2.8":
+  version "0.0.1-alpha.2.8"
+  resolved "https://registry.npmjs.org/@portkey/did/-/did-0.0.1-alpha.2.8.tgz#e8f73e77a46ffb14344572916ad5dc3d676988ab"
+  integrity sha512-MoXVNS89jw6fJXnZy7PNubAMsePIdMXM1nMKrjpsVF2iFnyYVsNxzOjOl432TKb5jaNspYSbEUYeEJbcbqhkpg==
+  dependencies:
+    "@portkey/accounts" "^0.0.1-alpha.1.4"
+    "@portkey/contracts" "^0.0.1-alpha.1.6"
+    "@portkey/graphql" "^0.0.1-alpha.1.6"
+    "@portkey/request" "^0.0.1-alpha.1.5"
+    "@portkey/services" "^0.0.1-alpha.1.9"
+    "@portkey/types" "^0.0.1-alpha.1.5"
+    "@portkey/utils" "^0.0.1-alpha.1.7"
+    aelf-sdk "^3.2.44"
+    react "^18.2.0"
+
+"@portkey/graphql@^0.0.1-alpha.1.6":
+  version "0.0.1-alpha.1.6"
+  resolved "https://registry.npmjs.org/@portkey/graphql/-/graphql-0.0.1-alpha.1.6.tgz#b434170610687bb0fc82b5210ba042236ebf2c3f"
+  integrity sha512-SeggBzjDb6g60HWfhiEwJqydlTu23e7aT5fTR0JD9OLFNoebdtfo26oM842DPRL0si0NZzP2xrbhmrCbs2xt8g==
+  dependencies:
+    "@apollo/client" "^3.7.3"
+    "@portkey/types" "^0.0.1-alpha.1.4"
+    graphql "^16.6.0"
+    subscriptions-transport-ws "^0.11.0"
+
+"@portkey/request@^0.0.1-alpha.1.4", "@portkey/request@^0.0.1-alpha.1.5":
+  version "0.0.1-alpha.1.5"
+  resolved "https://registry.npmjs.org/@portkey/request/-/request-0.0.1-alpha.1.5.tgz#18fc82ee2917621316694469a46023cbe522f2a9"
+  integrity sha512-t/1fitglOgo0sHhjrVfScgjUSpnJFAB6w0dedUmb1Gxfuva9rKn4a1k3kDRa1PdMy2c+/Ne/rt7AtMFemAtZPw==
+  dependencies:
+    "@portkey/types" "^0.0.1-alpha.1.4"
+    query-string "^6.14.1"
+
+"@portkey/services@^0.0.1-alpha.1.9":
+  version "0.0.1-alpha.1.9"
+  resolved "https://registry.npmjs.org/@portkey/services/-/services-0.0.1-alpha.1.9.tgz#ed358aecf19c3727ccbb06d4012d4926ad9c3196"
+  integrity sha512-oNB6wAXy2vJjOZ5j7M3y472KXE5LJthDO/jpTCDJTHrDEoSCUKeBmEeOVLAKW1a6zAaLb7g0sR1Aa6+rVZbboA==
+  dependencies:
+    "@portkey/graphql" "^0.0.1-alpha.1.6"
+    "@portkey/request" "^0.0.1-alpha.1.4"
+    "@portkey/types" "^0.0.1-alpha.1.4"
+    aelf-sdk "^3.2.44"
+
+"@portkey/types@^0.0.1-alpha.1.4", "@portkey/types@^0.0.1-alpha.1.5":
+  version "0.0.1-alpha.1.5"
+  resolved "https://registry.npmjs.org/@portkey/types/-/types-0.0.1-alpha.1.5.tgz#24657a63686d6408c0d83446220433eecb73d61e"
+  integrity sha512-nRPU1Z7uJr9IQhJ7Xq1ceTBUjGiICXfMUM+b9bKm/cJ30EbqlJ3DZHHZfvWcRNnXBHcK2BRgy+x6SMovavL8CQ==
+  dependencies:
+    "@types/elliptic" "^6.4.14"
+
+"@portkey/utils@^0.0.1-alpha.1.4", "@portkey/utils@^0.0.1-alpha.1.7":
+  version "0.0.1-alpha.1.7"
+  resolved "https://registry.npmjs.org/@portkey/utils/-/utils-0.0.1-alpha.1.7.tgz#9a178b1b16ff0d69184d73bc9db7a55d939a915b"
+  integrity sha512-NJpFD+Vp8otsh1pX1QCsSDZgToCKgJbrYds8Nw9iZozH9dD4T4FtRd5GUlo6ctOJ07MJ3wJrhS8+QxLcFTVxVg==
+  dependencies:
+    aelf-sdk "^3.2.44"
+
+"@portkey/validator@^0.0.1-alpha.1.4":
+  version "0.0.1-alpha.1.4"
+  resolved "https://registry.npmjs.org/@portkey/validator/-/validator-0.0.1-alpha.1.4.tgz#64093bd30d0a96d3a57d7c98a9c671f4ddeebba3"
+  integrity sha512-/QCQ1bQ+Lk46YYmGJAMnIX0AHC24fOOTlBgKi+vIofcaDz3u2mu41tNMQ5zC1BZ/yXy9vMMleKxkaEkLGuEs+Q==
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.npmmirror.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -7510,7 +7607,7 @@ antd-mobile-v5-count@^1.0.1:
   resolved "https://registry.yarnpkg.com/antd-mobile-v5-count/-/antd-mobile-v5-count-1.0.1.tgz#85f20c46d1635c24e856bcf5ad55e8c98e44a523"
   integrity sha512-YGsiEDCPUDz3SzfXi6gLZn/HpeSMW+jgPc4qiYUr1fSopg3hkUie2TnooJdExgfiETHefH3Ggs58He0OVfegLA==
 
-antd-mobile@^5.26.0:
+antd-mobile@5.26.0, antd-mobile@^5.26.0:
   version "5.26.0"
   resolved "https://registry.yarnpkg.com/antd-mobile/-/antd-mobile-5.26.0.tgz#338282126c2054fa8b84777f81db112238939261"
   integrity sha512-syhaSpgiR+SG+s868R0nS+vj3pORVrM2fp9ZPLQD5yHlpxdXZ9/OY82+ttNtuazz2r37PxOOQ/0ggQds5t9LrA==
@@ -7532,7 +7629,7 @@ antd-mobile@^5.26.0:
     tslib "^2.4.1"
     use-sync-external-store "^1.2.0"
 
-antd@^4.21.7:
+antd@4.24.4, antd@^4.21.7:
   version "4.24.4"
   resolved "https://registry.yarnpkg.com/antd/-/antd-4.24.4.tgz#33df11a101ecfe62ed4bc8a492e7f83e9b83e5e0"
   integrity sha512-XKZYMCKTQV+z0kZkAodvWMph9EhnNLon4JrWOoi2rjBzsYKKOVNEceXi3TZy/wdF6GcawjBduL3gd6NtWcTe4A==
@@ -21685,6 +21782,16 @@ query-string@6.13.5:
   integrity sha512-svk3xg9qHR39P3JlHuD7g3nRnyay5mHbrPctEBDUxUkHRifPHXJDhBUycdCC0NBjXoDf44Gb+IsOZL1Uwn8M/Q==
   dependencies:
     decode-uri-component "^0.2.0"
+    split-on-first "^1.0.0"
+    strict-uri-encode "^2.0.0"
+
+query-string@^6.14.1:
+  version "6.14.1"
+  resolved "https://registry.npmjs.org/query-string/-/query-string-6.14.1.tgz#7ac2dca46da7f309449ba0f86b1fd28255b0c86a"
+  integrity sha512-XDxAeVmpfu1/6IjyT/gXHOl+S0vQ9owggJ30hhWKdHAsNPOcasn5o9BW0eejZqL2e4vMjhAxoW3jVHcD6mbcYw==
+  dependencies:
+    decode-uri-component "^0.2.0"
+    filter-obj "^1.1.0"
     split-on-first "^1.0.0"
     strict-uri-encode "^2.0.0"
 

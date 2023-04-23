@@ -64,11 +64,8 @@ function AuthLogin({ loginData, extraData: websiteInfo }: AuthLoginOverlayPropsT
     try {
       setLoading(true);
       const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
-      console.log('qrExtraData', qrExtraData, deviceType);
-      console.log('deviceInfo', deviceInfo);
       const contract = await getCurrentCAContract();
       const extraData = await extraDataEncode(deviceInfo || {}, true);
-      console.log('extraData===', extraData);
 
       const req = await addManager({ contract, caHash, address, managerAddress, extraData });
       if (req?.error) throw req?.error;

@@ -31,7 +31,7 @@ const mockData = {
   extraData: { deviceInfo: { deviceType: 2, deviceName: 'iPhone' }, version: '2.0.0' },
 } as LoginQRData;
 
-function AuthLoginH5() {
+function AuthLogin() {
   const { t } = useLanguage();
 
   const { address: managerAddress, extraData: qrExtraData, deviceType } = mockData || {};
@@ -120,15 +120,15 @@ function AuthLoginH5() {
   );
 }
 
-export const showAuthLoginH5 = () => {
+export const showAuthLogin = () => {
   Keyboard.dismiss();
-  OverlayModal.show(<AuthLoginH5 />, {
+  OverlayModal.show(<AuthLogin />, {
     position: 'bottom',
   });
 };
 
 export default {
-  showAuthLoginH5,
+  showAuthLogin,
 };
 
 const styles = StyleSheet.create({

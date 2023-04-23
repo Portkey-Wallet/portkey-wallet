@@ -1,3 +1,4 @@
+#import <React/RCTLinkingManager.h>
 #import "AppDelegate.h"
 
 #import <React/RCTBridge.h>
@@ -6,6 +7,7 @@
 
 #import <React/RCTAppSetupUtils.h>
 #import <Firebase.h>
+
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -64,6 +66,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
+
+
 
 /// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
 ///
@@ -134,5 +138,13 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 }
 
 #endif
+
+- (BOOL)application:(UIApplication *)application
+   openURL:(NSURL *)url
+   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  return [RCTLinkingManager application:application openURL:url options:options];
+}
+
 
 @end

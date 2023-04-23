@@ -569,7 +569,7 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.8.0):
     - React-Core
-  - react-native-minimizer (1.3.1):
+  - react-native-minimizer (1.3.3):
     - AFNetworking (~> 3.0)
     - React
   - react-native-pager-view (6.0.2):
@@ -1152,7 +1152,7 @@ SPEC CHECKSUMS:
   react-native-config: 7cd105e71d903104e8919261480858940a6b9c0e
   react-native-flipper: ea555c5b21d9d15814999327aecf31b98ac87079
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
-  react-native-minimizer: 803eb3e0babff2b8edb3b3473b6423894c4363b7
+  react-native-minimizer: b33b62100148ac712cd6b314fcfd9c9a98a8d1a3
   react-native-pager-view: 592421df0259bf7a7a4fe85b74c24f3f39905605
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a

@@ -46,10 +46,12 @@ function AuthLoginH5() {
       ActionSheet.alert({
         title: t('Authorization failed'),
         message:
-          type === 'networkError' ? t('Network error, please switch Portkey app to the matching network.') : undefined,
+          type === 'networkError'
+            ? t('Network error, please switch Portkey app to the matching network.')
+            : t("You weren't able to give access to the App. Go back and try logging in again."),
         buttons: [
           {
-            title: t('OK'),
+            title: t(type === 'networkError' ? 'OK' : 'Back'),
             type: 'solid',
           },
         ],
@@ -103,15 +105,16 @@ function AuthLoginH5() {
           />
           <Image source={require('../../assets/image/pngs/bingoGame.png')} style={[styles.baseImage]} />
         </View>
-        <TextXXL style={[styles.title, GStyles.textAlignCenter, fonts.mediumFont]}>
-          {t('Authorized login to Bingogame')}
+        <TextXXL style={[styles.title1, GStyles.textAlignCenter, fonts.mediumFont]}>
+          {t('Authorize Bingogame to login ')}
         </TextXXL>
+        <TextXXL style={[styles.title2, GStyles.textAlignCenter, fonts.mediumFont]}>{t('with your account')}</TextXXL>
         <TextM style={[styles.tips, FontStyles.font3, GStyles.textAlignCenter]}>
-          {t('Once authorized, your wallet information will be synchronized with bingogame.')}
+          {t('This application will be able to use your wallet account.')}
         </TextM>
       </View>
       <View style={styles.bottomBox}>
-        <CommonButton type="primary" title="Confirm" onPress={onLogin} loading={loading} />
+        <CommonButton type="primary" title={t('Allow')} onPress={onLogin} loading={loading} />
       </View>
     </ModalBody>
   );
@@ -165,8 +168,11 @@ const styles = StyleSheet.create({
   topSection: {
     marginTop: pTd(40),
   },
-  title: {
+  title1: {
     marginTop: 41,
+  },
+  title2: {
+    marginTop: 0,
   },
   tips: {
     marginTop: pTd(16),

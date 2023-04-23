@@ -27,18 +27,19 @@ import Loading from 'components/Loading';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import { NetworkType } from '@portkey-wallet/types';
 
 interface ManageTokenListProps {
   route?: any;
 }
 
 type ItemProps = {
-  isTestnet: boolean;
+  networkType: NetworkType;
   item: TokenItemShowType;
   onHandleToken: (item: TokenItemShowType, type: 'add' | 'delete') => void;
 };
 
-const Item = ({ isTestnet, item, onHandleToken }: ItemProps) => {
+const Item = ({ networkType, item, onHandleToken }: ItemProps) => {
   const symbolImages = useSymbolImages();
   return (
     <TouchableOpacity style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
@@ -58,7 +59,7 @@ const Item = ({ isTestnet, item, onHandleToken }: ItemProps) => {
             {item.symbol}
           </TextL>
           <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3]}>
-            {`${formatChainInfoToShow(item.chainId)} ${isTestnet && 'Testnet'}`}
+            {`${formatChainInfoToShow(item.chainId, networkType)}`}
           </TextS>
         </View>
 
@@ -158,7 +159,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         data={tokenDataShowInMarket || []}
         renderItem={({ item }: { item: TokenItemShowType }) => (
           <Item
-            isTestnet={currentNetwork === 'TESTNET'}
+            networkType={currentNetwork}
             item={item}
             onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)}
           />

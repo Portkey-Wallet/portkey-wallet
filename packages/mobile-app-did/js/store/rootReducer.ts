@@ -19,6 +19,7 @@ import { activitySlice } from '@portkey-wallet/store/store-ca/activity/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
+import { switchSlice } from '@portkey-wallet/store/store-ca/switch/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -97,6 +98,7 @@ const rootReducer = combineReducers({
   [tokenManagementSlice.name]: tokenManagementSlice.reducer,
   [paymentSlice.name]: paymentReducer,
   [discoverSlice.name]: discoverReducer,
+  [switchSlice.name]: switchSlice.reducer,
 });
 
 export default rootReducer;

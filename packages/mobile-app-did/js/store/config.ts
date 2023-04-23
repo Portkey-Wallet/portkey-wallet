@@ -12,6 +12,7 @@ import settingsSlice from '@portkey-wallet/store/settings/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import discoverSlice from '@portkey-wallet/store/store-ca/discover/slice';
+import switchSlice from '@portkey-wallet/store/store-ca/switch/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -40,6 +41,7 @@ const reduxPersistConfig = {
     recentSlice.name,
     activitySlice.name,
     discoverSlice.name,
+    switchSlice.name,
   ],
 
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

@@ -5,8 +5,8 @@ import React, { memo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { IGameListItemType } from '@portkey-wallet/types/types-ca/discover';
-import GameImage from '../GameImage';
-import { GameImgMapKeyType } from '../GameImage/index';
+import GameImage from '../../../../components/GameImage';
+import { GameImgMapKeyType } from '../../../../components/GameImage/index';
 interface TokenListItemType {
   item: IGameListItemType;
   onPress?: () => void;

@@ -1,5 +1,5 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
-import { useOriginChainId, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { changeNetworkType } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ParamListBase, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation';
@@ -9,11 +9,12 @@ import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useLanguage } from 'i18n/hooks';
 import ActionSheet from 'components/ActionSheet';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-testnet';
 
 export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const dispatch = useAppDispatch();
-  const originChainId = useOriginChainId();
-  const { walletInfo } = useWallet();
+  const wallet = useWallet();
+
   const resetStore = useResetStore();
   const { t } = useLanguage();
   const onConfirm = useThrottleCallback(
@@ -29,9 +30,11 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   );
   return useThrottleCallback(
     (network: NetworkItem) => {
+      const { walletInfo, originChainId } = wallet;
       const { caInfo } = walletInfo || {};
       const tmpCaInfo = caInfo?.[network.networkType];
-      const logged = tmpCaInfo?.managerInfo && tmpCaInfo[originChainId]?.caAddress;
+      const tmpChainId = tmpCaInfo?.originChainId || originChainId || DefaultChainId;
+      const logged = tmpCaInfo?.managerInfo && tmpCaInfo[tmpChainId]?.caAddress;
       const networkName = network.networkType === 'MAIN' ? 'Mainnet' : 'Testnet';
       ActionSheet.alert({
         title: t('You are about to switch to', {
@@ -49,6 +52,6 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
         ],
       });
     },
-    [originChainId, walletInfo, onConfirm],
+    [wallet, onConfirm],
   );
 }

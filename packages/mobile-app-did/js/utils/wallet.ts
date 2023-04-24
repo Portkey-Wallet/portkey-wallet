@@ -34,9 +34,11 @@ export function intervalGetResult({ managerInfo, onPass, onFail }: IntervalGetRe
     if (mark) return;
     switch (result.recoveryStatus || result.registerStatus) {
       case 'pass': {
-        onPass?.(result);
-        remove();
-        mark = true;
+        if (result.caAddress && result.caHash) {
+          onPass?.(result);
+          remove();
+          mark = true;
+        }
         break;
       }
       case 'fail': {

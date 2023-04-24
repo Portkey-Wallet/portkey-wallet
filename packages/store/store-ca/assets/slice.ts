@@ -26,7 +26,7 @@ export type AssetsStateType = {
   tokenPrices: {
     isFetching: boolean;
     tokenPriceObject: {
-      [symbol: string]: number;
+      [symbol: string]: number | string;
     };
   };
   accountAssets: {
@@ -257,6 +257,7 @@ export const assetsSlice = createSlice({
         }, ZERO);
 
         state.accountBalance = formatAmountShow(totalBalanceInUsd, 2);
+        state.tokenPrices.tokenPriceObject = { ...state.tokenPrices.tokenPriceObject, ...priceObj };
 
         state.accountToken.accountTokenList = list as [];
         state.accountToken.skipCount = state.accountToken.accountTokenList.length;

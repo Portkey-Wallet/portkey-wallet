@@ -19,6 +19,7 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import './index.less';
+import { reCAPTCHAAction } from 'utils/lib/serviceWorkerAction';
 
 export default function SelectVerifier() {
   const { verifierMap } = useGuardiansInfo();
@@ -59,7 +60,15 @@ export default function SelectVerifier() {
       if (!selectItem) return message.error('Can not get verification');
 
       setLoading(true);
+
+      // Google reCAPTCHA
+      const reCaptcha: any = await reCAPTCHAAction();
+      if (reCaptcha?.error) throw reCaptcha;
+
       const result = await verification.sendVerificationCode({
+        headers: {
+          reCaptchaToken: reCaptcha?.response || '',
+        },
         params: {
           guardianIdentifier: loginAccount.guardianAccount.replaceAll(' ', ''),
           type: LoginType[loginAccount.loginType],

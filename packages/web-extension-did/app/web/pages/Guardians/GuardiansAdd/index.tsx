@@ -12,7 +12,6 @@ import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'sto
 import { EmailReg } from '@portkey-wallet/utils/reg';
 import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import CustomSelect from 'pages/components/CustomSelect';
-import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -24,7 +23,7 @@ import PhoneInput from '../components/PhoneInput';
 import { EmailError } from '@portkey-wallet/utils/check';
 import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
 import { IPhoneInput, ISocialInput } from 'types/guardians';
-import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
+import { reCAPTCHAAction, socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
@@ -291,7 +290,15 @@ export default function AddGuardian() {
         setLoading(true);
         dispatch(resetUserGuardianStatus());
         await userGuardianList({ caHash: walletInfo.caHash });
+
+        // Google reCAPTCHA
+        const reCaptcha: any = await reCAPTCHAAction();
+        if (reCaptcha?.error) throw reCaptcha;
+
         const result = await verification.sendVerificationCode({
+          headers: {
+            reCaptchaToken: reCaptcha?.response || '',
+          },
           params: {
             guardianIdentifier: guardianAccount,
             type: LoginType[guardianType as LoginType],
@@ -322,7 +329,7 @@ export default function AddGuardian() {
       } catch (error) {
         setLoading(false);
         console.log('---add-guardian-send-code', error);
-        const _error = verifyErrorHandler(error);
+        const _error = handleErrorMessage(error);
         message.error(_error);
       }
     },

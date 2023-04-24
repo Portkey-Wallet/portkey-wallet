@@ -4,7 +4,7 @@ import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
@@ -19,6 +19,7 @@ import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import qs from 'query-string';
 import './index.less';
+import { reCAPTCHAAction } from 'utils/lib/serviceWorkerAction';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -48,6 +49,8 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
     [item.guardianType],
   );
 
+  const reCaptchaRes = useRef<string>('');
+
   const guardianSendCode = useCallback(
     async (item: UserGuardianItem) => {
       try {
@@ -59,6 +62,9 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
           }),
         );
         const result = await verification.sendVerificationCode({
+          headers: {
+            reCaptchaToken: reCaptchaRes.current,
+          },
           params: {
             guardianIdentifier: item?.guardianAccount,
             type: LoginType[item.guardianType],
@@ -97,9 +103,12 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
 
   const SendCode = useCallback(
     async (item: UserGuardianItem) => {
-      console.log(item, 'guardianSendCode===');
-
       try {
+        // Google reCAPTCHA
+        const reCaptcha: any = await reCAPTCHAAction();
+        if (reCaptcha?.error) throw reCaptcha;
+        reCaptchaRes.current = reCaptcha?.response || '';
+
         if (query && query.indexOf('guardians') !== -1) {
           guardianSendCode(item);
           return;
@@ -109,7 +118,11 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
             'User registration information is invalid, please fill in the registration method again',
           );
         setLoading(true);
+
         const result = await verification.sendVerificationCode({
+          headers: {
+            reCaptchaToken: reCaptchaRes.current,
+          },
           params: {
             guardianIdentifier: item?.guardianAccount,
             type: LoginType[item.guardianType],

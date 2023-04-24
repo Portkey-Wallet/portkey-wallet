@@ -24,7 +24,7 @@ import { contractErrorHandler } from 'utils/tryErrorHandler';
 import useGuardianList from 'hooks/useGuardianList';
 import { verification } from 'utils/api';
 import aes from '@portkey-wallet/utils/aes';
-import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
+import { reCAPTCHAAction, socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
 import GuardianViewPrompt from './Prompt';
@@ -179,7 +179,14 @@ export default function GuardiansView() {
         }
         setLoading(true);
 
+        // Google reCAPTCHA
+        const reCaptcha: any = await reCAPTCHAAction();
+        if (reCaptcha?.error) throw reCaptcha;
+
         const result = await verification.sendVerificationCode({
+          headers: {
+            reCaptchaToken: reCaptcha?.response || '',
+          },
           params: {
             guardianIdentifier: opGuardian?.guardianAccount as string,
             type: LoginType[opGuardian?.guardianType as LoginType],

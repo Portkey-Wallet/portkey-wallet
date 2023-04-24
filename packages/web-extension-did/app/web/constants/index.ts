@@ -40,3 +40,4 @@ export const AUTH_HOST = 'https://test.portkey.finance';
 // export const AUTH_HOST = 'https://portkey.finance';
 export const JOIN_AUTH_URL = `${AUTH_HOST}/join`;
 export const AUTH_APPLE_URL = `${AUTH_HOST}/apple-auth`;
+export const RECAPTCHA_URL = `https://portkey-website-dev.vercel.app/recaptcha-check`;

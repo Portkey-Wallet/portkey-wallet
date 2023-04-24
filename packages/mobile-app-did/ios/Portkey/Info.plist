@@ -51,7 +51,7 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow $(PRODUCT_NAME) to use the camera</string>
+	<string>$(PRODUCT_NAME) needs camera access to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you quick and secure access to your account.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -9,7 +9,7 @@ import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
 import { recoveryDIDWallet, registerDIDWallet } from '@portkey-wallet/api/api-did/utils/wallet';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
-import { VerificationType, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { VerificationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useFetchDidWallet from './useFetchDidWallet';
@@ -40,12 +40,19 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   }, [userGuardianStatus]);
 
   const requestRegisterDIDWallet = useCallback(
-    async ({ managerAddress }: { managerAddress: string }) => {
+    async ({ managerAddress, verifierParams }: { managerAddress: string; verifierParams?: VerifierInfo }) => {
       // console.log(loginAccount, registerVerifier, 'requestRegisterDIDWallet==');
       if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
         throw 'Missing account!!! Please login/register again';
       const requestId = randomId();
-      if (!registerVerifier) throw 'Missing Verifier Server';
+      let verifier: VerifierInfo;
+      if (registerVerifier) {
+        verifier = registerVerifier;
+      } else if (verifierParams) {
+        verifier = verifierParams;
+      } else {
+        throw 'Missing Verifier Server';
+      }
       const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
       const result = await registerDIDWallet({
         type: LoginType[loginAccount.loginType],
@@ -53,9 +60,9 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         manager: managerAddress,
         extraData, //navigator.userAgent,
         chainId: originChainId,
-        verifierId: registerVerifier.verifierId,
-        verificationDoc: registerVerifier.verificationDoc,
-        signature: registerVerifier.signature,
+        verifierId: verifier.verifierId,
+        verificationDoc: verifier.verificationDoc,
+        signature: verifier.signature,
         context: {
           clientId: managerAddress,
           requestId,
@@ -97,7 +104,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   );
 
   return useCallback(
-    async (pin: string) => {
+    async (pin: string, verifierParams?: VerifierInfo) => {
       try {
         if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
           return message.error('Missing account!!! Please login/register again');
@@ -112,7 +119,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         };
 
         if (state === 'register') {
-          sessionInfo = await requestRegisterDIDWallet({ managerAddress: _walletInfo.address });
+          sessionInfo = await requestRegisterDIDWallet({ managerAddress: _walletInfo.address, verifierParams });
         } else {
           sessionInfo = await requestRecoveryDIDWallet({ managerAddress: _walletInfo.address });
         }

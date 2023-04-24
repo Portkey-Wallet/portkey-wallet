@@ -1,5 +1,5 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
-import { useOriginChainId, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { changeNetworkType, setWalletNameAction } from '@portkey-wallet/store/store-ca/wallet/actions';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
@@ -9,23 +9,26 @@ import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import closeOpenTabs from 'utils/clearOpenTabs';
 import { sleep } from '@portkey-wallet/utils';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 
 export function useChangeNetwork() {
   const dispatch = useAppDispatch();
-  const { walletInfo } = useWallet();
+  const wallet = useWallet();
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
-  const originChainId = useOriginChainId();
   const resetStore = useResetStore();
 
   return useCallback(
     async (network: NetworkItem) => {
+      const { walletInfo, originChainId } = wallet || {};
       const { caInfo } = walletInfo || {};
       const tmpCaInfo = caInfo?.[network.networkType];
+      const tmpChainId = tmpCaInfo?.originChainId || originChainId || DefaultChainId;
+
       resetStore();
       dispatch(setWalletNameAction('Wallet 01'));
       dispatch(changeNetworkType(network.networkType));
-      if (tmpCaInfo?.managerInfo && tmpCaInfo?.[originChainId]?.caAddress) {
+      if (tmpCaInfo?.managerInfo && tmpCaInfo?.[tmpChainId]?.caAddress) {
         await closeOpenTabs(true);
         if (!isPrompt) {
           await sleep(500);
@@ -42,6 +45,6 @@ export function useChangeNetwork() {
         }
       }
     },
-    [walletInfo, originChainId, resetStore, dispatch, isPrompt, navigate],
+    [wallet, resetStore, dispatch, isPrompt, navigate],
   );
 }

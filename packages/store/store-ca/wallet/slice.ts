@@ -66,7 +66,7 @@ export const walletSlice = createSlice({
         checkPassword(state.walletInfo?.AESEncryptMnemonic, pin);
         const currentNetwork = action.payload.networkType || state.currentNetwork || initialState.currentNetwork;
         if (!state.walletInfo?.AESEncryptMnemonic) throw new Error(WalletError.noCreateWallet);
-        if (state.walletInfo.caInfo[currentNetwork]) throw new Error(WalletError.caAccountExists);
+        if (state.walletInfo.caInfo[currentNetwork]?.managerInfo) throw new Error(WalletError.caAccountExists);
         state.walletInfo.caInfo[currentNetwork] = { originChainId: state.originChainId, managerInfo };
       })
       .addCase(changePin, (state, action) => {

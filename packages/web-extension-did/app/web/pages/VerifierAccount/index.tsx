@@ -132,7 +132,7 @@ export default function VerifierAccount() {
         dispatch(setRegisterVerifierAction(res));
         const result = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
         if (walletInfo.address && result.data.privateKey) {
-          onManagerAddressAndQueryResult(result.data.privateKey);
+          onManagerAddressAndQueryResult(result.data.privateKey, res);
         } else {
           navigate('/login/set-pin/register');
         }

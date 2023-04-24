@@ -19,7 +19,8 @@ import { defaultColors } from 'assets/theme';
 import ActionSheet from 'components/ActionSheet';
 import minimizer from 'react-native-minimizer';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
-import { AUTH_LOGIN_TYPE, AUTH_LOGIN_MAP, AUTH_LOGIN_TYPE_LIST } from 'constants/scheme';
+import { AUTH_LOGIN_MAP } from 'constants/scheme';
+import { getFaviconUrlFromDomain } from 'utils';
 
 export interface AuthLoginOverlayPropsTypes {
   domain: string;
@@ -27,32 +28,21 @@ export interface AuthLoginOverlayPropsTypes {
   extraData: { websiteName: string; websiteIcon?: string };
 }
 
-function ThirdAuthImage({
-  websiteName,
-  websiteIcon,
-  style,
-}: {
-  websiteName: AUTH_LOGIN_TYPE;
-  websiteIcon?: string;
-  style?: any;
-}) {
-  if (websiteIcon) return <Image source={{ uri: websiteIcon }} style={style} />;
+function ThirdAuthImage({ websiteIcon, domain, style }: { websiteIcon?: string; domain: string; style?: any }) {
+  const [isLoadError, setIsLoadError] = useState<boolean>(false);
 
-  console.log(
-    'websiteName',
-    websiteName,
-    AUTH_LOGIN_TYPE_LIST,
-    AUTH_LOGIN_TYPE_LIST.find(item => item === websiteName),
+  if (isLoadError) return <Image source={AUTH_LOGIN_MAP.Other?.imgUrl} style={style} />;
+
+  return (
+    <Image
+      source={{ uri: websiteIcon ? websiteIcon : getFaviconUrlFromDomain(domain || '') }}
+      style={style}
+      onError={() => setIsLoadError(true)}
+    />
   );
-
-  const img = AUTH_LOGIN_TYPE_LIST.find(item => item === websiteName)
-    ? AUTH_LOGIN_MAP[websiteName]?.imgUrl
-    : AUTH_LOGIN_MAP.Other?.imgUrl;
-
-  return <Image source={img} style={style} />;
 }
 
-function AuthLogin({ loginData, extraData: websiteInfo }: AuthLoginOverlayPropsTypes) {
+function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverlayPropsTypes) {
   const { t } = useLanguage();
 
   const { address: managerAddress, extraData: qrExtraData, deviceType } = loginData || {};
@@ -117,7 +107,7 @@ function AuthLogin({ loginData, extraData: websiteInfo }: AuthLoginOverlayPropsT
             source={require('../../assets/image/pngs/portkeyBlueBackground.png')}
             style={[styles.baseImage, styles.portkeyImg]}
           />
-          <ThirdAuthImage websiteName={websiteInfo?.websiteName as AUTH_LOGIN_TYPE} style={styles.baseImage} />
+          <ThirdAuthImage domain={domain} websiteIcon={websiteInfo.websiteIcon} style={styles.baseImage} />
         </View>
         <TextXXL style={[styles.title1, GStyles.textAlignCenter, fonts.mediumFont]}>
           {t(`Authorize ${websiteInfo?.websiteName} to login`)}

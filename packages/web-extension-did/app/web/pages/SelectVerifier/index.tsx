@@ -6,9 +6,12 @@ import { useAppDispatch, useGuardiansInfo, useLoginInfo } from 'store/Provider/h
 import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { VerifierSelect } from '@portkey/did-ui-react';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import './index.less';
 
 interface ConfirmResultInfo {
@@ -24,12 +27,16 @@ export default function SelectVerifier() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult('register');
+  const { address: managerAddress } = useCurrentWalletInfo();
 
   const onConfirm = useCallback(
     async (result: ConfirmResultInfo) => {
       console.log(result, 'result==onConfirm');
       if (!loginAccount)
         return message.error('User registration information is invalid, please fill in the registration method again');
+      const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
+
       if (result.verifierSessionId) {
         const _key = `${loginAccount.guardianAccount}&${result.verifier.name}`;
         dispatch(
@@ -47,7 +54,11 @@ export default function SelectVerifier() {
             salt: '',
           }),
         );
-        navigate('/register/verifier-account', { state: 'register' });
+        if (managerAddress && res.data.privateKey) {
+          onManagerAddressAndQueryResult(res.data.privateKey);
+        } else {
+          navigate('/login/set-pin/register');
+        }
       } else if (result.verificationDoc && result.signature) {
         dispatch(
           setRegisterVerifierAction({
@@ -56,12 +67,16 @@ export default function SelectVerifier() {
             signature: result.signature,
           }),
         );
-        navigate('/login/set-pin/register');
+        if (managerAddress && res.data.privateKey) {
+          onManagerAddressAndQueryResult(res.data.privateKey);
+        } else {
+          navigate('/login/set-pin/register');
+        }
       } else {
         message.error('Verification failed, please try again later');
       }
     },
-    [dispatch, loginAccount, navigate],
+    [dispatch, loginAccount, managerAddress, navigate, onManagerAddressAndQueryResult],
   );
 
   const authorized = useMemo(

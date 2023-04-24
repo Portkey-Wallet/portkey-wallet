@@ -389,7 +389,7 @@ const GuardianEdit: React.FC = () => {
       if (appleUserExtraInfo.isPrivate) {
         setAccount(PRIVATE_GUARDIAN_ACCOUNT);
       } else {
-        setAccount(appleUserExtraInfo.email);
+        setAccount(appleUserExtraInfo.email || PRIVATE_GUARDIAN_ACCOUNT);
       }
     } catch (error) {
       if (!userInfo) return;

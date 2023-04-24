@@ -34,7 +34,6 @@ type NFTCollectionProps = NFTCollectionItemShowType & {
   loadMoreItem: (symbol: string, chainId: ChainId, pageNum: number) => void;
 };
 
-// TODO make the list fluently
 function areEqual(prevProps: NFTCollectionProps, nextProps: NFTCollectionProps) {
   const prevNftObj = prevProps?.openCollectionObj?.[`${prevProps.symbol}${prevProps?.chainId}`];
   const nextNftObj = nextProps?.openCollectionObj?.[`${nextProps.symbol}${nextProps?.chainId}`];
@@ -76,30 +75,21 @@ export default function NFTSection() {
     if (clearType) setOpenCollectionObj({});
   }, [clearType]);
 
-  const closeItem = useCallback(
-    (symbol: string, chainId: string) => {
-      const key = `${symbol}${chainId}`;
-      const newObj = { ...openCollectionObj };
-      delete newObj[key];
+  const closeItem = useCallback((symbol: string, chainId: string) => {
+    const key = `${symbol}${chainId}`;
 
-      setOpenCollectionObj(newObj);
-    },
-    [openCollectionObj],
-  );
+    setOpenCollectionObj(pre => {
+      const newObj = { ...pre };
+      delete newObj[key];
+      return newObj;
+    });
+  }, []);
 
   const openItem = useLockCallback(
     async (symbol: string, chainId: ChainId, itemCount: number) => {
       const currentCaAddress = walletInfo?.caInfo?.[currentNetwork]?.[chainId]?.caAddress;
 
       const key = `${symbol}${chainId}`;
-      const newObj = {
-        ...openCollectionObj,
-        [key]: {
-          pageNum: 0,
-          pageSize: 9,
-          itemCount,
-        },
-      };
 
       await dispatch(
         fetchNFTAsync({
@@ -111,7 +101,14 @@ export default function NFTSection() {
         }),
       );
 
-      setOpenCollectionObj(newObj);
+      setOpenCollectionObj(pre => ({
+        ...pre,
+        [key]: {
+          pageNum: 0,
+          pageSize: 9,
+          itemCount,
+        },
+      }));
     },
     [currentNetwork, dispatch, openCollectionObj, walletInfo?.caInfo],
   );
@@ -134,17 +131,14 @@ export default function NFTSection() {
           pageNum: pageNum,
         }),
       );
-      // }
 
-      const newObj = {
-        ...openCollectionObj,
+      setOpenCollectionObj(prev => ({
+        ...prev,
         [key]: {
           ...currentOpenObj,
           pageNum,
         },
-      };
-
-      setOpenCollectionObj(newObj);
+      }));
     },
     [accountNFTList, caAddressInfos, currentNetwork, dispatch, openCollectionObj, walletInfo?.caInfo],
   );
@@ -161,7 +155,7 @@ export default function NFTSection() {
         )}
         renderItem={({ item }: { item: NFTCollectionItemShowType }) => (
           <NFTCollection
-            key={item.symbol}
+            key={`${item.symbol}${item.chainId}`}
             isCollapsed={!openCollectionObj?.[`${item.symbol}${item.chainId}`]}
             openCollectionObj={openCollectionObj}
             setOpenCollectionObj={setOpenCollectionObj}

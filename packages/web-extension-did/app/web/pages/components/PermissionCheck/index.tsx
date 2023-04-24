@@ -100,9 +100,9 @@ export default function PermissionCheck({
     }
     if (noCheckRegister) return;
     if (isRegisterPage) return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
-    await sleep(500);
     if (!walletInfo?.caInfo?.[currentNetwork]) {
       if (pageType === 'Popup') {
+        await sleep(500);
         return InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();
       } else {
         return navigate('/register');

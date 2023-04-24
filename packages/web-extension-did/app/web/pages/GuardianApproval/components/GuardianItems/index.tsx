@@ -54,7 +54,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
   const guardianSendCode = useCallback(
     async (item: UserGuardianItem) => {
       try {
-        setLoading(true);
         dispatch(
           setLoginAccountAction({
             guardianAccount: item.guardianAccount,
@@ -104,6 +103,8 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
   const SendCode = useCallback(
     async (item: UserGuardianItem) => {
       try {
+        setLoading(true);
+
         // Google reCAPTCHA
         const reCaptcha: any = await reCAPTCHAAction();
         if (reCaptcha?.error) throw reCaptcha;
@@ -113,11 +114,9 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
           guardianSendCode(item);
           return;
         }
-        if (!loginAccount || !LoginType[loginAccount.loginType] || !loginAccount.guardianAccount)
-          return message.error(
-            'User registration information is invalid, please fill in the registration method again',
-          );
-        setLoading(true);
+        if (!loginAccount || !LoginType[loginAccount.loginType] || !loginAccount.guardianAccount) {
+          throw 'User registration information is invalid, please fill in the registration method again';
+        }
 
         const result = await verification.sendVerificationCode({
           headers: {
@@ -157,7 +156,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
       } catch (error: any) {
         console.log(error, 'error===');
         setLoading(false);
-        const _error = verifyErrorHandler(error);
+        const _error = handleErrorMessage(error);
         message.error(_error);
       }
     },

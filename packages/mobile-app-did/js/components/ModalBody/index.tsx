@@ -15,10 +15,11 @@ export interface ModalBodyProps extends ViewProps {
   title?: string;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyle;
+  onClose?: () => void;
 }
 
 export const ModalBody: React.FC<ModalBodyProps> = props => {
-  const { modalBodyType, title, children, style = {} } = props;
+  const { modalBodyType, title, children, style = {}, onClose } = props;
 
   if (modalBodyType === 'bottom') {
     return (
@@ -28,6 +29,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
           <Touchable
             style={styles.closeIcon}
             onPress={() => {
+              onClose?.();
               Keyboard.dismiss();
               OverlayModal.hide();
             }}>

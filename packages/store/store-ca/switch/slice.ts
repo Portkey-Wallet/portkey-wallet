@@ -25,9 +25,6 @@ export const switchSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder.addCase(fetchIsShowBuyFeatureAsync.fulfilled, (state, action) => {
-      console.log('====================================');
-      console.log('action.payload', action.payload);
-      console.log('====================================');
       state.isShowBuyFeature = action.payload;
     });
   },

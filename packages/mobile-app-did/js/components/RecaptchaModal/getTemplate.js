@@ -32,14 +32,21 @@ export default function getTemplate(params, enterprise, recaptchaDomain, gstatic
             let onCloseInterval;
             let widget;
             let onCloseObserver;
+            
+            let isOnCloseTriggeredInSeconds = false;
     
             const onClose = () => {
+                isOnCloseTriggeredInSeconds = true;
+                setTimeout(() => {
+                  isOnCloseTriggeredInSeconds = false;
+                }, 50);
                 window.ReactNativeWebView.postMessage(JSON.stringify({
                     close: [],
                 }));
             }
             
             const onClickOutSide = () => {
+                if(isOnCloseTriggeredInSeconds) return;
                 window.ReactNativeWebView.postMessage(JSON.stringify({
                     closeWebView: [],
                 }));

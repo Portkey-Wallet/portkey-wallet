@@ -26,3 +26,7 @@ export const getFaviconUrl = (url: string) => {
   const newDomain = domain ? domain[1] : '';
   return `http://${newDomain}/favicon.ico`;
 };
+
+export const getFaviconUrlFromDomain = (domain = '') => {
+  return `https://${domain}/favicon.ico`;
+};

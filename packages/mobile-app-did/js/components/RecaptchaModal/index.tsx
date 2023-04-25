@@ -128,6 +128,7 @@ const Recaptcha = forwardRef(function Recaptcha(
 
   const handleMessage = useCallback(
     (content: WebViewMessageEvent) => {
+      console.log('handler msg', content.nativeEvent.data);
       try {
         const payload = JSON.parse(content.nativeEvent.data);
         if (payload.close && isInvisibleSize) {
@@ -183,7 +184,7 @@ const Recaptcha = forwardRef(function Recaptcha(
   };
 
   return (
-    <Modal transparent {...modalProps} visible={visible} onRequestClose={handleClose}>
+    <>
       {headerComponent}
       <WebView
         ref={webViewRef}
@@ -205,7 +206,7 @@ const Recaptcha = forwardRef(function Recaptcha(
       />
       {footerComponent}
       {renderLoading()}
-    </Modal>
+    </>
   );
 });
 

@@ -9,7 +9,7 @@ jest.mock('store/Provider/hooks');
 describe('useActiveLockStatus', () => {
   test('isPrompt is true, clear timer, and return successfully', () => {
     jest.mocked(useActiveLockStatusAction).mockReturnValue(() => Promise.resolve());
-    jest.mocked(useCommonState).mockReturnValue({ isPrompt: true, isPopupInit: true });
+    jest.mocked(useCommonState).mockReturnValue({ isPrompt: true, isPopupInit: true, isNotLessThan768: false });
 
     const { result } = renderHook(() => useActiveLockStatus());
     result.current();
@@ -18,7 +18,7 @@ describe('useActiveLockStatus', () => {
   });
   test('isPrompt is false, execute the activeLockStatus method, and return successfully', () => {
     jest.mocked(useActiveLockStatusAction).mockReturnValue(() => Promise.resolve());
-    jest.mocked(useCommonState).mockReturnValue({ isPrompt: false, isPopupInit: true });
+    jest.mocked(useCommonState).mockReturnValue({ isPrompt: false, isPopupInit: true, isNotLessThan768: false });
 
     const { result } = renderHook(() => useActiveLockStatus());
     result.current();
@@ -28,7 +28,7 @@ describe('useActiveLockStatus', () => {
 
   test('isPrompt is false, catch activeLockStatus error, and return successfully', () => {
     jest.mocked(useActiveLockStatusAction).mockReturnValue(() => Promise.reject('error'));
-    jest.mocked(useCommonState).mockReturnValue({ isPrompt: false, isPopupInit: true });
+    jest.mocked(useCommonState).mockReturnValue({ isPrompt: false, isPopupInit: true, isNotLessThan768: false });
 
     const { result } = renderHook(() => useActiveLockStatus());
     result.current();

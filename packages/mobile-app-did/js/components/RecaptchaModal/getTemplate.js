@@ -38,6 +38,12 @@ export default function getTemplate(params, enterprise, recaptchaDomain, gstatic
                     close: [],
                 }));
             }
+            
+            const onClickOutSide = () => {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                    closeWebView: [],
+                }));
+            }
     
             const onLoad = () => {
                 window.ReactNativeWebView.postMessage(JSON.stringify({
@@ -159,7 +165,7 @@ export default function getTemplate(params, enterprise, recaptchaDomain, gstatic
         </style>
     </head>
     
-    <body>
+    <body onClick="onClickOutSide()">
         <div class="container">
             <span id="recaptcha-container"></span>
         </div>

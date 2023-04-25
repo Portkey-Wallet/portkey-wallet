@@ -2,11 +2,7 @@ import React from 'react';
 import RecaptchaModal from 'components/RecaptchaModal';
 import OverlayModal from '../OverlayModal';
 import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
-import { View } from 'react-native';
 
-const HeaderComp = () => {
-  return <View />;
-};
 function verifyHumanMachine(language: any) {
   return new Promise((resolve, reject) => {
     OverlayModal.show(
@@ -23,6 +19,10 @@ function verifyHumanMachine(language: any) {
         onExpire={() => {
           console.log('expire');
           reject('expire');
+        }}
+        onClose={() => {
+          OverlayModal.hide();
+          console.log('klq onclose');
         }}
         onError={error => {
           console.log(error, '=====error');

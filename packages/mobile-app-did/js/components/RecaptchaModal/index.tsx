@@ -1,6 +1,6 @@
 import React from 'react';
 import { forwardRef, useMemo, useState, useCallback, useRef, useImperativeHandle, ReactNode } from 'react';
-import { StyleSheet, ActivityIndicator, View, ModalProps, ViewStyle, StyleProp, Modal } from 'react-native';
+import { StyleSheet, ActivityIndicator, View, ModalProps, ViewStyle, StyleProp } from 'react-native';
 
 import WebView, { WebViewMessageEvent, WebViewProps } from 'react-native-webview';
 import getTemplate from './getTemplate';
@@ -78,9 +78,9 @@ const Recaptcha = forwardRef(function Recaptcha(
   }: RecaptchaProps,
   ref,
 ) {
-  const isClosed = useRef(true);
+  const isClosed = useRef(false);
   const webViewRef = useRef<any>();
-  const [visible, setVisible] = useState(false);
+  const [, setVisible] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const isInvisibleSize = size === 'invisible';
@@ -128,10 +128,13 @@ const Recaptcha = forwardRef(function Recaptcha(
 
   const handleMessage = useCallback(
     (content: WebViewMessageEvent) => {
-      console.log('handler msg', content.nativeEvent.data);
+      console.log('handler msg', content.nativeEvent.data, isInvisibleSize);
       try {
         const payload = JSON.parse(content.nativeEvent.data);
         if (payload.close && isInvisibleSize) {
+          handleClose();
+        }
+        if (payload.closeWebView) {
           handleClose();
         }
         if (payload.load) {

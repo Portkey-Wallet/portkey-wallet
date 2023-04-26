@@ -6,6 +6,7 @@ import { getHolderInfoByContract } from 'utils/sandboxUtil/getHolderInfo';
 import { setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { isAddress } from '@portkey-wallet/utils';
 import InternalMessage from 'messages/InternalMessage';
+import { currentWallet } from '../../../../../test/data/chainInfo';
 
 jest.mock('@portkey-wallet/hooks/hooks-ca/network');
 jest.mock('@portkey-wallet/hooks/hooks-ca/wallet');
@@ -19,19 +20,10 @@ jest.mock('store/Provider/hooks', () => ({
 
 describe('useCaInfoOnChain', () => {
   test('no chainList, cannot fetch data', async () => {
-    const chainList: any = undefined;
-    const walletInfo: any = { caHash: '0x9876543210abcdef' };
     const currentNetwork: any = {
       walletType: 'aelf',
     };
-    jest.mocked(useCurrentWallet).mockReturnValue({
-      walletInfo: walletInfo,
-      chainList: chainList,
-      walletAvatar: '',
-      walletType: 'aelf',
-      walletName: '',
-      currentNetwork: 'TESTNET',
-    });
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
     jest.mocked(useCurrentNetworkInfo).mockReturnValue(currentNetwork);
 
     renderHook(() => useCaInfoOnChain());

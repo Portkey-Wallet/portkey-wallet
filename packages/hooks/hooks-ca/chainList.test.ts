@@ -9,21 +9,7 @@ import { renderHook } from '@testing-library/react';
 import { useAppCommonDispatch } from '../index';
 import { getChainListAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentWallet, useOriginChainId, useWallet } from './wallet';
-import { ChainType, NetworkType } from '@portkey-wallet/types';
-
-const chainList: any = undefined;
-const walletInfo: any = { caHash: '0x9876543210abcdef' };
-const currentWallet = (currentNetwork: NetworkType) => {
-  return {
-    walletInfo: walletInfo,
-    chainList: chainList,
-    chainInfo: { MAIN: [{ chainId: 'AELF' } as any] },
-    walletAvatar: '',
-    walletType: 'aelf' as ChainType,
-    walletName: '',
-    currentNetwork: currentNetwork,
-  };
-};
+import { currentWallet } from '../../../test/data/chainInfo';
 
 jest.mock('@portkey-wallet/store/store-ca/wallet/actions', () => {
   return {

@@ -35,8 +35,10 @@ describe('useGetAchTokenInfo', () => {
   test('complete data, and return successfully', async () => {
     expect.assertions(2);
 
-    const state = { ...PaymentState, ...GuardianState };
+    const achToken = { id: 'achTokenId', email: 'aurora@porykey.finance', accessToken: 'ACH043...QpgA==' };
+    jest.mocked(getAchToken).mockResolvedValue(achToken);
 
+    const state = { ...PaymentState, ...GuardianState };
     const { result } = renderHookWithProvider(useGetAchTokenInfo, setupStore(state));
     expect(result.current).toBeInstanceOf(Function);
 

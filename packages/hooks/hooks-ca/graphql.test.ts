@@ -1,17 +1,17 @@
-jest.mock('./chainList');
-jest.mock('@portkey-wallet/graphql/index');
-jest.mock('../index');
-
 import { renderHook, act } from '@testing-library/react';
-import { useIntervalQueryCAInfoByAddress } from './graphql';
+import { useIntervalQueryCAInfoByAddress, useCheckManager } from './graphql';
 import { useCurrentChain } from './chainList';
 import { useAppCommonDispatch } from '../index';
-import { contractQueries } from '@portkey-wallet/graphql/index';
+import * as graphqlQuery from '@portkey-wallet/graphql/index';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { CaHolderWithGuardian } from '@portkey-wallet/graphql/contract/types';
 import * as chainListHooks from './chainList';
-import { AELFChainInfo } from '../../../test/data/chainInfo';
+import { AELFChainInfo, currentWallet } from '../../../test/data/chainInfo';
+import { useCurrentWallet, useOriginChainId } from './wallet';
 
+jest.mock('./chainList');
+jest.mock('../index');
+jest.mock('./wallet');
 jest.mock('@portkey-wallet/store/store-ca/wallet/actions', () => {
   return {
     getChainListAsync: jest.fn(() => {
@@ -63,6 +63,10 @@ const CA_HOLDER_MANAGER_INFO: CaHolderWithGuardian[] = [
 ];
 
 describe('useIntervalQueryCAInfoByAddress', () => {
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
   test('no address, and return undefined', () => {
     jest.mocked(useCurrentChain).mockReturnValue(CHAIN_INFO);
     const { result } = renderHook(() => useIntervalQueryCAInfoByAddress(NETWORK, ''));
@@ -70,7 +74,9 @@ describe('useIntervalQueryCAInfoByAddress', () => {
   });
   test('no chainInfo, and return undefined', () => {
     jest.mocked(useCurrentChain).mockReturnValue(undefined);
-    jest.mocked(contractQueries.getCAHolderByManager).mockReturnValue(Promise.resolve({ caHolderManagerInfo: [] }));
+    jest
+      .spyOn(graphqlQuery.contractQueries, 'getCAHolderByManager')
+      .mockReturnValue(Promise.resolve({ caHolderManagerInfo: [] }));
     const { result } = renderHook(() => useIntervalQueryCAInfoByAddress(NETWORK, ADDRESS));
     expect(result.current).toBeUndefined();
   });
@@ -78,7 +84,7 @@ describe('useIntervalQueryCAInfoByAddress', () => {
     const caHolderManagerInfo: CaHolderWithGuardian[] = [];
     jest.mocked(useCurrentChain).mockReturnValue(CHAIN_INFO);
     jest
-      .mocked(contractQueries.getCAHolderByManager)
+      .spyOn(graphqlQuery.contractQueries, 'getCAHolderByManager')
       .mockReturnValue(Promise.resolve({ caHolderManagerInfo: caHolderManagerInfo }));
     const { result } = renderHook(() => useIntervalQueryCAInfoByAddress(NETWORK, ADDRESS));
     expect(result.current).toBeUndefined();
@@ -92,7 +98,7 @@ describe('useIntervalQueryCAInfoByAddress', () => {
     ];
     jest.mocked(useCurrentChain).mockReturnValue(CHAIN_INFO);
     jest
-      .mocked(contractQueries.getCAHolderByManager)
+      .spyOn(graphqlQuery.contractQueries, 'getCAHolderByManager')
       .mockReturnValue(Promise.resolve({ caHolderManagerInfo: caHolderManagerInfo }));
     const { result } = renderHook(() => useIntervalQueryCAInfoByAddress(NETWORK, ADDRESS));
     expect(result.current).toBeUndefined();
@@ -106,7 +112,7 @@ describe('useIntervalQueryCAInfoByAddress', () => {
     ];
     jest.mocked(useCurrentChain).mockReturnValue(CHAIN_INFO);
     jest
-      .mocked(contractQueries.getCAHolderByManager)
+      .spyOn(graphqlQuery.contractQueries, 'getCAHolderByManager')
       .mockReturnValue(Promise.resolve({ caHolderManagerInfo: caHolderManagerInfo }));
     const { result } = renderHook(() => useIntervalQueryCAInfoByAddress(NETWORK, ADDRESS));
     expect(result.current).toBeUndefined();
@@ -114,7 +120,7 @@ describe('useIntervalQueryCAInfoByAddress', () => {
   test('have total data, and return successfully', async () => {
     jest.mocked(useCurrentChain).mockReturnValue(CHAIN_INFO);
     jest
-      .mocked(contractQueries.getCAHolderByManager)
+      .spyOn(graphqlQuery.contractQueries, 'getCAHolderByManager')
       .mockReturnValue(Promise.resolve({ caHolderManagerInfo: CA_HOLDER_MANAGER_INFO }));
     jest.spyOn(chainListHooks, 'useGetChainInfo').mockReturnValue(() => {
       return Promise.resolve(AELFChainInfo);
@@ -127,7 +133,7 @@ describe('useIntervalQueryCAInfoByAddress', () => {
   test('have no return validateManager, and return undefined', async () => {
     jest.mocked(useCurrentChain).mockReturnValue(CHAIN_INFO);
     jest
-      .mocked(contractQueries.getCAHolderByManager)
+      .spyOn(graphqlQuery.contractQueries, 'getCAHolderByManager')
       .mockReturnValue(Promise.resolve({ caHolderManagerInfo: CA_HOLDER_MANAGER_INFO }));
     jest.spyOn(chainListHooks, 'useGetChainInfo').mockReturnValue(() => {
       return Promise.reject({ code: 500 });
@@ -139,7 +145,7 @@ describe('useIntervalQueryCAInfoByAddress', () => {
   test('no originChainId, and originChainId = DefaultChainId', async () => {
     jest.mocked(useCurrentChain).mockReturnValue(CHAIN_INFO);
     jest
-      .mocked(contractQueries.getCAHolderByManager)
+      .spyOn(graphqlQuery.contractQueries, 'getCAHolderByManager')
       .mockReturnValue(Promise.resolve({ caHolderManagerInfo: CA_HOLDER_MANAGER_INFO }));
     jest.spyOn(chainListHooks, 'useGetChainInfo').mockReturnValue(() => {
       return Promise.resolve(AELFChainInfo);
@@ -151,8 +157,127 @@ describe('useIntervalQueryCAInfoByAddress', () => {
   });
   test('getCAHolderByManager reject, and throw error', () => {
     jest.mocked(useCurrentChain).mockReturnValue(CHAIN_INFO);
-    jest.mocked(contractQueries.getCAHolderByManager).mockReturnValue(Promise.reject('error'));
+    jest.spyOn(graphqlQuery.contractQueries, 'getCAHolderByManager').mockReturnValue(Promise.reject('error'));
     const { result } = renderHook(() => useIntervalQueryCAInfoByAddress(NETWORK, ADDRESS));
     expect(result.current).toBeUndefined();
+  });
+});
+
+describe('useCheckManager', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+  test('complete data, and return successfully', () => {
+    const CAHolderManagerInfoRes = {
+      data: {
+        caHolderManagerInfo: [
+          {
+            __typename: 'CAHolderManagerDto' as any,
+            id: 'AELF-A4pVWW2tC4jinQ8MduBvQxYvDnKM7t8YFqbSc5YLtdiDerETp',
+            chainId: 'AELF',
+            caHash: '2ed9e4c3587f7d7d69ed1254d3f44b99b069cc05b257ef25f9ab0d8bd3024a71',
+            caAddress: 'A4pVWW2tC4jinQ8MduBvQxYvDnKM7t8YFqbSc5YLtdiDerETp',
+            managerInfos: [
+              {
+                __typename: 'ManagerInfo' as any,
+                address: 's3m5dXHw3JS2GxnV6bdgLu4BRQX9H5nRr4TBfytngR5HXBojY',
+                extraData: '1,1679043726757',
+              },
+              {
+                __typename: 'ManagerInfo' as any,
+                address: '2VvKrhyu9DbXTmfQLrx2dqdwrF4V13T2Bbyhunan9KdGUFe2sR',
+                extraData: '1,1679380781160',
+              },
+            ],
+            originChainId: 'AELF',
+          },
+        ],
+      },
+      loading: false,
+      networkStatus: 7,
+    };
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
+    jest.mocked(useOriginChainId).mockReturnValue('AELF');
+    jest.spyOn(graphqlQuery.contractQueries, 'getCAHolderManagerInfo').mockResolvedValue(CAHolderManagerInfoRes);
+
+    const mockFun = jest.fn();
+    renderHook(() => useCheckManager(mockFun));
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(graphqlQuery.contractQueries.getCAHolderManagerInfo).toHaveBeenCalledTimes(1);
+  });
+  test('caHolderManagerInfo.length is 0, and return successfully', () => {
+    const CAHolderManagerInfoRes = {
+      data: {
+        caHolderManagerInfo: [],
+      },
+      loading: false,
+      networkStatus: 7,
+    };
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
+    jest.mocked(useOriginChainId).mockReturnValue('AELF');
+    jest.spyOn(graphqlQuery.contractQueries, 'getCAHolderManagerInfo').mockResolvedValue(CAHolderManagerInfoRes);
+
+    const mockFun = jest.fn();
+    renderHook(() => useCheckManager(mockFun));
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(graphqlQuery.contractQueries.getCAHolderManagerInfo).toHaveBeenCalledTimes(1);
+  });
+  test('getCAHolderManagerInfo.data is undefined, and return successfully', () => {
+    const CAHolderManagerInfoRes: any = {
+      data: undefined,
+      loading: false,
+      networkStatus: 7,
+    };
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
+    jest.mocked(useOriginChainId).mockReturnValue('AELF');
+    jest.spyOn(graphqlQuery.contractQueries, 'getCAHolderManagerInfo').mockResolvedValue(CAHolderManagerInfoRes);
+
+    const mockFun = jest.fn();
+    renderHook(() => useCheckManager(mockFun));
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(graphqlQuery.contractQueries.getCAHolderManagerInfo).toHaveBeenCalledTimes(1);
+    expect(mockFun).toHaveBeenCalledTimes(0);
+  });
+  test('getCAHolderManagerInfo reject, and catch error', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('TESTNET'));
+    jest.mocked(useOriginChainId).mockReturnValue('AELF');
+    jest.spyOn(graphqlQuery.contractQueries, 'getCAHolderManagerInfo').mockRejectedValue({ error: {} });
+
+    const mockFun = jest.fn();
+    renderHook(() => useCheckManager(mockFun));
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(graphqlQuery.contractQueries.getCAHolderManagerInfo).toHaveBeenCalledTimes(1);
+  });
+  test('no caHash, and do not call getCAHolderManagerInfo', () => {
+    jest.mocked(useCurrentWallet).mockReturnValue({
+      ...currentWallet('TESTNET'),
+      walletInfo: undefined,
+    } as any);
+    jest.mocked(useOriginChainId).mockReturnValue('AELF');
+    jest.spyOn(graphqlQuery.contractQueries, 'getCAHolderManagerInfo').mockRejectedValue({ error: {} });
+
+    const mockFun = jest.fn();
+    renderHook(() => useCheckManager(mockFun));
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(graphqlQuery.contractQueries.getCAHolderManagerInfo).toHaveBeenCalledTimes(0);
   });
 });

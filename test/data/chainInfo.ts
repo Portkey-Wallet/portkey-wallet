@@ -1,3 +1,5 @@
+import { ChainType, NetworkType } from '@portkey-wallet/types';
+
 /**
  * @for useGetChainInfo
  */
@@ -16,4 +18,27 @@ export const AELFChainInfo = {
   },
   lastModifyTime: '2023-03-29T08:58:25.5132315Z',
   id: 'AELF',
+};
+
+/**
+ * @for useCurrentWallet
+ * @param currentNetwork
+ * @returns
+ */
+export const currentWallet = (currentNetwork: NetworkType) => {
+  return {
+    walletInfo: {
+      caHash: '0x9876543210abcdef',
+      address: '2ZpT...3Udb',
+      BIP44Path: "m/44'/1616'/0'/0/0",
+      AESEncryptPrivateKey: 'U6Fs...OxA',
+      AESEncryptMnemonic: 'U6Fs...zHss',
+    },
+    chainList: undefined,
+    chainInfo: { MAIN: [{ chainId: 'AELF' } as any] },
+    walletAvatar: 'master6',
+    walletType: 'aelf' as ChainType,
+    walletName: 'Wallet k',
+    currentNetwork: currentNetwork,
+  };
 };

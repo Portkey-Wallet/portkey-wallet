@@ -1,30 +1,16 @@
 import { useCurrentWallet } from './wallet';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
 import { useCurrentNetworkInfo, useCurrentApiUrl, useVerifierList, useIsTestnet, useIsMainnet } from './network';
-import { ChainType, NetworkType } from '@portkey-wallet/types';
-
 import { renderHook } from '@testing-library/react';
 import { renderHookWithProvider } from '../../../test/utils/render';
 import { setupStore } from '../../../test/utils/setup';
+import { currentWallet } from '../../../test/data/chainInfo';
 
 jest.mock('./wallet');
 
 /**
  * useNetworkList method, tested by executing the useCurrentNetworkInfo method
  */
-
-const chainList: any = undefined;
-const walletInfo: any = { caHash: '0x9876543210abcdef' };
-const currentWallet = (currentNetwork: NetworkType) => {
-  return {
-    walletInfo: walletInfo,
-    chainList: chainList,
-    walletAvatar: '',
-    walletType: 'aelf' as ChainType,
-    walletName: '',
-    currentNetwork: currentNetwork,
-  };
-};
 
 describe('useCurrentNetworkInfo', () => {
   it('currentNetwork is TESTNET, and return successfully', () => {

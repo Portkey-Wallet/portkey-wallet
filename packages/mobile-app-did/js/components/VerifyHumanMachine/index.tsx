@@ -3,7 +3,14 @@ import RecaptchaModal from 'components/RecaptchaModal';
 import OverlayModal from '../OverlayModal';
 import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
 
-function verifyHumanMachine(language: any) {
+async function verifyHumanMachine(language: any, needVerifyFunc?: () => Promise<boolean>) {
+  let needVerify = false;
+  if (needVerifyFunc) {
+    needVerify = await needVerifyFunc();
+  }
+  if (!needVerify) {
+    return Promise.resolve('');
+  }
   return new Promise((resolve, reject) => {
     OverlayModal.show(
       <RecaptchaModal

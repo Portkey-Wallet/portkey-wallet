@@ -2,8 +2,20 @@ import React from 'react';
 import RecaptchaModal from 'components/RecaptchaModal';
 import OverlayModal from '../OverlayModal';
 import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { request } from '@portkey-wallet/api/api-did';
 
-function verifyHumanMachine(language: any) {
+async function checkNeedVerify() {
+  const req = await request.verify.checkGoogleRecaptcha({});
+  return req as boolean;
+}
+async function verifyHumanMachine(language: any, needVerifyFunc: () => Promise<boolean> = checkNeedVerify) {
+  let needVerify = false;
+  if (needVerifyFunc) {
+    needVerify = await needVerifyFunc();
+  }
+  if (!needVerify) {
+    return Promise.resolve('');
+  }
   return new Promise((resolve, reject) => {
     OverlayModal.show(
       <RecaptchaModal

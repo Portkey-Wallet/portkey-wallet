@@ -19,7 +19,7 @@ import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import qs from 'query-string';
 import './index.less';
-import { reCAPTCHAAction } from 'utils/lib/serviceWorkerAction';
+import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -105,10 +105,9 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
       try {
         setLoading(true);
 
-        // Google reCAPTCHA
-        const reCaptcha: any = await reCAPTCHAAction();
-        if (reCaptcha?.error) throw reCaptcha;
-        reCaptchaRes.current = reCaptcha?.response || '';
+        // check is need to call Google reCAPTCHA
+        const reCaptcha = await checkReCaptcha();
+        reCaptchaRes.current = reCaptcha || '';
 
         if (query && query.indexOf('guardians') !== -1) {
           guardianSendCode(item);

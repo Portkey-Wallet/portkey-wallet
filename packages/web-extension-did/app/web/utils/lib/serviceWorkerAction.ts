@@ -5,7 +5,7 @@ import { JOIN_AUTH_URL, RECAPTCHA_URL } from 'constants/index';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
-import { SendResponseParams } from 'types';
+import { ReCaptchaResponseParams, SendResponseParams } from 'types';
 import { setLocalStorage } from 'utils/storage/chromeStorage';
 
 export const completeRegistration = async () => {
@@ -42,7 +42,7 @@ export const socialLoginAction = async (type: ISocialLogin, network: NetworkType
     externalLink: `${JOIN_AUTH_URL}/${network}/${type}`,
   }).send();
 
-export const reCAPTCHAAction = async (): Promise<SendResponseParams> =>
+export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> =>
   await InternalMessage.payload(PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE, {
     externalLink: `${RECAPTCHA_URL}`,
   }).send();

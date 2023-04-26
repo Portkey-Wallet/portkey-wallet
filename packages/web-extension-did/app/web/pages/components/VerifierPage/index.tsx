@@ -18,7 +18,7 @@ import { verification } from 'utils/api';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCommonState } from 'store/Provider/hooks';
 import { useLocation } from 'react-router';
-import { reCAPTCHAAction } from 'utils/lib/serviceWorkerAction';
+import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 const MAX_TIMER = 60;
 
@@ -101,13 +101,12 @@ export default function VerifierPage({ currentGuardian, guardianType, isInitStat
       if (!guardianType && guardianType !== 0) throw 'Missing guardiansType';
       setLoading(true);
 
-      // Google reCAPTCHA
-      const reCaptcha: any = await reCAPTCHAAction();
-      if (reCaptcha?.error) throw reCaptcha;
+      // check is need to call Google reCAPTCHA
+      const reCaptcha = await checkReCaptcha();
 
       const res = await verification.sendVerificationCode({
         headers: {
-          reCaptchaToken: reCaptcha?.response || '',
+          reCaptchaToken: reCaptcha || '',
         },
         params: {
           guardianIdentifier: currentGuardian.guardianAccount.replaceAll(' ', ''),

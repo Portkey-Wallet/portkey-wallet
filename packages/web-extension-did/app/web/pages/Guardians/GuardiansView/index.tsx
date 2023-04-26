@@ -24,7 +24,7 @@ import { contractErrorHandler } from 'utils/tryErrorHandler';
 import useGuardianList from 'hooks/useGuardianList';
 import { verification } from 'utils/api';
 import aes from '@portkey-wallet/utils/aes';
-import { reCAPTCHAAction, socialLoginAction } from 'utils/lib/serviceWorkerAction';
+import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { request } from '@portkey-wallet/api/api-did';
 import GuardianViewPrompt from './Prompt';
@@ -34,6 +34,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
 import './index.less';
+import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -179,13 +180,12 @@ export default function GuardiansView() {
         }
         setLoading(true);
 
-        // Google reCAPTCHA
-        const reCaptcha: any = await reCAPTCHAAction();
-        if (reCaptcha?.error) throw reCaptcha;
+        // check is need to call Google reCAPTCHA
+        const reCaptcha = await checkReCaptcha();
 
         const result = await verification.sendVerificationCode({
           headers: {
-            reCaptchaToken: reCaptcha?.response || '',
+            reCaptchaToken: reCaptcha || '',
           },
           params: {
             guardianIdentifier: opGuardian?.guardianAccount as string,

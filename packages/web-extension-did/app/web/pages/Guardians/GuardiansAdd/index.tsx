@@ -23,7 +23,7 @@ import PhoneInput from '../components/PhoneInput';
 import { EmailError } from '@portkey-wallet/utils/check';
 import { guardianTypeList, phoneInit, socialInit } from 'constants/guardians';
 import { IPhoneInput, ISocialInput } from 'types/guardians';
-import { reCAPTCHAAction, socialLoginAction } from 'utils/lib/serviceWorkerAction';
+import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
@@ -36,6 +36,7 @@ import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
+import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
@@ -291,13 +292,12 @@ export default function AddGuardian() {
         dispatch(resetUserGuardianStatus());
         await userGuardianList({ caHash: walletInfo.caHash });
 
-        // Google reCAPTCHA
-        const reCaptcha: any = await reCAPTCHAAction();
-        if (reCaptcha?.error) throw reCaptcha;
+        // check is need to call Google reCAPTCHA
+        const reCaptcha = await checkReCaptcha();
 
         const result = await verification.sendVerificationCode({
           headers: {
-            reCaptchaToken: reCaptcha?.response || '',
+            reCaptchaToken: reCaptcha || '',
           },
           params: {
             guardianIdentifier: guardianAccount,

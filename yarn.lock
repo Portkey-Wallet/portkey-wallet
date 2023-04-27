@@ -22353,7 +22353,7 @@ react-devtools-core@4.24.0:
     shell-quote "^1.6.1"
     ws "^7"
 
-react-dom@18.2.0, react-dom@^18.2.0:
+react-dom@^18.2.0:
   version "18.2.0"
   resolved "https://registry.npmmirror.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
   integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
@@ -22521,10 +22521,10 @@ react-native-localize@^2.2.1:
   resolved "https://registry.npmmirror.com/react-native-localize/-/react-native-localize-2.2.4.tgz#3bc46ade48499ab9df61bf17a9b66633a5ba9bb9"
   integrity sha512-gVmbyAEQQnBQ8vKlAQchFfIISeId3qT6Lc7LHmKF39nsYWX9KN4PHuG6Hk+7gduMI6IHKeZGKcLsOdh6wvN6cg==
 
-react-native-minimizer@1.3.3:
-  version "1.3.3"
-  resolved "https://registry.npmmirror.com/react-native-minimizer/-/react-native-minimizer-1.3.3.tgz#4e6a253cb9b39ea2c7eeb93052c00836b6725c28"
-  integrity sha512-M0Jpyyy21lAVOkmH4kl0PKViPS81eEPMjdwAEcoHHe6XLcU/J/Ra5xuSPQdPL3zmsYoQxIh/ooe9chsa9DBDXA==
+react-native-minimizer@1.3.4:
+  version "1.3.4"
+  resolved "https://registry.yarnpkg.com/react-native-minimizer/-/react-native-minimizer-1.3.4.tgz#2c27c7519eb836e324c853b22bb6be75aa7f1b00"
+  integrity sha512-LghG60ueGSTYtrqm8C27e4vk7fC5h6DqEmvdlIT16zXvWJk/yTRBjOn5nTw9AofQN/Jj/cRqQ3VG54Hc1JG4MQ==
 
 react-native-pager-view@^6.0.2:
   version "6.0.2"

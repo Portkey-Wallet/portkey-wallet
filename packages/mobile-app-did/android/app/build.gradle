@@ -167,8 +167,8 @@ android {
         applicationId "com.portkey.did"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 162
-        versionName "1.2.3"
+        versionCode 230
+        versionName "1.2.5"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -326,7 +326,6 @@ dependencies {
 
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-	implementation 'androidx.appcompat:appcompat:1.2.0'
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 

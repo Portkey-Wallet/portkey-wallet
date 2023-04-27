@@ -4,7 +4,7 @@ import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
@@ -19,6 +19,7 @@ import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import qs from 'query-string';
 import './index.less';
+import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -48,10 +49,11 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
     [item.guardianType],
   );
 
+  const reCaptchaRes = useRef<string>('');
+
   const guardianSendCode = useCallback(
     async (item: UserGuardianItem) => {
       try {
-        setLoading(true);
         dispatch(
           setLoginAccountAction({
             guardianAccount: item.guardianAccount,
@@ -59,6 +61,9 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
           }),
         );
         const result = await verification.sendVerificationCode({
+          headers: {
+            reCaptchaToken: reCaptchaRes.current,
+          },
           params: {
             guardianIdentifier: item?.guardianAccount,
             type: LoginType[item.guardianType],
@@ -97,19 +102,25 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
 
   const SendCode = useCallback(
     async (item: UserGuardianItem) => {
-      console.log(item, 'guardianSendCode===');
-
       try {
+        setLoading(true);
+
+        // check is need to call Google reCAPTCHA
+        const reCaptcha = await checkReCaptcha();
+        reCaptchaRes.current = reCaptcha || '';
+
         if (query && query.indexOf('guardians') !== -1) {
           guardianSendCode(item);
           return;
         }
-        if (!loginAccount || !LoginType[loginAccount.loginType] || !loginAccount.guardianAccount)
-          return message.error(
-            'User registration information is invalid, please fill in the registration method again',
-          );
-        setLoading(true);
+        if (!loginAccount || !LoginType[loginAccount.loginType] || !loginAccount.guardianAccount) {
+          throw 'User registration information is invalid, please fill in the registration method again';
+        }
+
         const result = await verification.sendVerificationCode({
+          headers: {
+            reCaptchaToken: reCaptchaRes.current,
+          },
           params: {
             guardianIdentifier: item?.guardianAccount,
             type: LoginType[item.guardianType],
@@ -144,7 +155,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
       } catch (error: any) {
         console.log(error, 'error===');
         setLoading(false);
-        const _error = verifyErrorHandler(error);
+        const _error = handleErrorMessage(error);
         message.error(_error);
       }
     },

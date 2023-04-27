@@ -12,7 +12,6 @@ import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'sto
 import { EmailReg } from '@portkey-wallet/utils/reg';
 import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import CustomSelect from 'pages/components/CustomSelect';
-import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -37,6 +36,7 @@ import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
+import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ export default function AddGuardian() {
         }
         case LoginType.Apple:
         case LoginType.Google: {
-          check = !socialValue?.value;
+          check = !(socialValue?.id || socialValue?.value);
           break;
         }
         default:
@@ -233,7 +233,7 @@ export default function AddGuardian() {
   const renderSocialGuardianAccount = useCallback(
     (v: ISocialLogin) => (
       <div className="social">
-        {socialValue?.value ? (
+        {socialValue?.id ? (
           <div className="flex-column social-input detail">
             <span className="name">{socialValue.name}</span>
             <span className="email">{socialValue.isPrivate ? '******' : socialValue.value}</span>
@@ -291,7 +291,14 @@ export default function AddGuardian() {
         setLoading(true);
         dispatch(resetUserGuardianStatus());
         await userGuardianList({ caHash: walletInfo.caHash });
+
+        // check is need to call Google reCAPTCHA
+        const reCaptcha = await checkReCaptcha();
+
         const result = await verification.sendVerificationCode({
+          headers: {
+            reCaptchaToken: reCaptcha || '',
+          },
           params: {
             guardianIdentifier: guardianAccount,
             type: LoginType[guardianType as LoginType],
@@ -322,7 +329,7 @@ export default function AddGuardian() {
       } catch (error) {
         setLoading(false);
         console.log('---add-guardian-send-code', error);
-        const _error = verifyErrorHandler(error);
+        const _error = handleErrorMessage(error);
         message.error(_error);
       }
     },

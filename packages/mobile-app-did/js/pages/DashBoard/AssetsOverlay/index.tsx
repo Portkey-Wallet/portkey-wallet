@@ -22,7 +22,6 @@ import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParam
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useGStyles } from 'assets/theme/useGStyles';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -36,7 +35,6 @@ type TokenListProps = {
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
   const { symbol, onPress, item } = props;
 
-  const isTestnet = useIsTestnet();
   const { currentNetwork } = useWallet();
 
   if (item.tokenInfo)
@@ -49,7 +47,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
 
   if (item.nftInfo) {
     const {
-      nftInfo: { tokenId, chainId },
+      nftInfo: { tokenId },
     } = item;
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
@@ -64,14 +62,9 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
               {`${symbol || 'Name'} #${tokenId}`}
             </TextL>
 
-            {isTestnet ? (
-              <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
-                {formatChainInfoToShow(chainId as ChainId, currentNetwork)}
-              </TextS>
-            ) : (
-              // TODO: price use
-              <TextL style={[FontStyles.font7]} />
-            )}
+            <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
+              {formatChainInfoToShow(item.chainId as ChainId, currentNetwork)}
+            </TextS>
           </View>
 
           <View style={itemStyle.balanceWrap}>

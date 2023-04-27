@@ -27,6 +27,7 @@ import fonts from 'assets/theme/fonts';
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import Divider from 'components/Divider';
 import { useAppleAuthentication, useGoogleAuthentication } from 'hooks/authentication';
+import { verifyHumanMachine } from '../../../../components/VerifyHumanMachine';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -36,7 +37,7 @@ export default function GuardianDetail() {
   const {
     params: { guardian },
   } = useRoute<RouteProp<{ params: RouterParams }>>();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const getGuardiansInfo = useGetGuardiansInfo();
   const { userGuardiansList } = useGuardiansInfo();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
@@ -87,8 +88,12 @@ export default function GuardianDetail() {
   const sendLoginAccountVerify = useCallback(async () => {
     if (!guardian) return;
     try {
+      const reCaptchaToken = await verifyHumanMachine(language);
       Loading.show();
       const req = await verification.sendVerificationCode({
+        headers: {
+          reCaptchaToken: reCaptchaToken as string,
+        },
         params: {
           type: LoginType[guardian.guardianType],
           guardianIdentifier: guardian.guardianAccount,

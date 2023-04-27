@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
 import CustomHeader from 'components/CustomHeader';
@@ -29,10 +29,12 @@ const ViewOnWebView: React.FC = () => {
     title = '',
     url,
     webViewPageType = 'default',
+    injectedJavaScript,
   } = useRouterParams<{
     url: string;
     title?: string;
     webViewPageType?: WebViewPageType;
+    injectedJavaScript?: string;
   }>();
 
   const [browserInfo, setBrowserInfo] = useState({ url, title });
@@ -54,7 +56,6 @@ const ViewOnWebView: React.FC = () => {
     (navState: any) => {
       if (webViewPageType === 'default') return;
       if (webViewPageType === 'ach') {
-        console.log('ach', navState.url);
         if (navState.url.startsWith(ACH_REDIRECT_URL)) {
           navigationService.navigate('Tab');
         }
@@ -64,7 +65,6 @@ const ViewOnWebView: React.FC = () => {
     },
     [dispatch, title, url, webViewPageType],
   );
-
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
       <CustomHeader
@@ -83,6 +83,9 @@ const ViewOnWebView: React.FC = () => {
         style={pageStyles.webView}
         source={{ uri: url ?? '' }}
         onNavigationStateChange={handleNavigationStateChange}
+        // cacheEnabled={false}
+        injectedJavaScript={injectedJavaScript}
+        // incognito={incognito}
       />
     </SafeAreaBox>
   );

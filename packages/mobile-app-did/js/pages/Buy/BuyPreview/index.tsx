@@ -25,6 +25,7 @@ import paymentApi from '@portkey-wallet/api/api-did/payment';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
 import { ACH_REDIRECT_URL } from 'constants/common';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface RouterParams {
   type?: TypeEnum;
@@ -49,52 +50,69 @@ export default function BuyPreview() {
   const { rate, receiveAmount } = useReceive(type, amount || '', fiat, token, receiveAmountProps, rateProps);
   const isBuy = useMemo(() => type === TypeEnum.BUY, [type]);
   const apiUrl = useCurrentApiUrl();
+  const wallet = useCurrentWalletInfo();
 
   const getAchTokenInfo = useGetAchTokenInfo();
-  const goPayPage = useCallback(async () => {
-    if (!amount || !receiveAmount || !fiat || !token) return;
-    Loading.show();
-    try {
-      let achUrl = `https://ramp.alchemypay.org/?crypto=${token.crypto}&network=${token.network}&country=${
-        fiat.country
-      }&fiat=${fiat.currency}&appId=${ACH_APP_ID}&redirectUrl=${encodeURIComponent(
-        ACH_REDIRECT_URL,
-      )}&callbackUrl=${encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`)}`;
+  const goPayPage = useCallback(
+    async (isNoEmail = false) => {
+      if (!amount || !receiveAmount || !fiat || !token) return;
+      Loading.show();
+      try {
+        let achUrl = `https://ramp.alchemypay.org/?crypto=${token.crypto}&network=${token.network}&country=${
+          fiat.country
+        }&fiat=${fiat.currency}&appId=${ACH_APP_ID}&redirectUrl=${encodeURIComponent(
+          ACH_REDIRECT_URL,
+        )}&callbackUrl=${encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`)}`;
 
-      if (type === TypeEnum.BUY) {
-        achUrl += `&type=buy&fiatAmount=${amount}`;
-      } else {
-        achUrl += `&type=sell&cryptoAmount=${amount}`;
+        if (type === TypeEnum.BUY) {
+          achUrl += `&type=buy&fiatAmount=${amount}`;
+        } else {
+          achUrl += `&type=sell&cryptoAmount=${amount}`;
+        }
+
+        const achTokenInfo = await getAchTokenInfo();
+        if (achTokenInfo !== undefined && isNoEmail === false) {
+          achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
+        }
+
+        const orderNo = await getPaymentOrderNo({
+          transDirect: type === TypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
+          merchantName: ACH_MERCHANT_NAME,
+        });
+        achUrl += `&merchantOrderNo=${orderNo}`;
+
+        const address = wallet.AELF?.caAddress;
+        if (!address) {
+          throw new Error('address is undefined');
+        }
+        const signature = await getAchSignature({ address });
+
+        achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
+        console.log('achUrl', achUrl);
+        // const injectedJavaScript: string | undefined =
+        //   achTokenInfo === undefined || isNoEmail
+        //     ? `
+        //     if ( window.location.href.startsWith('${achUrl}') ) {
+        //       window.localStorage.removeItem('token');
+        //       window.localStorage.removeItem('login_email');
+        //     }`
+        //     : undefined;
+        const injectedJavaScript = undefined;
+
+        navigationService.navigate('ViewOnWebView', {
+          title: 'Alchemy Pay Ramp',
+          url: achUrl,
+          webViewPageType: 'ach',
+          injectedJavaScript,
+        });
+      } catch (error) {
+        CommonToast.fail(`There is a network error, please try again.`);
+        console.log(error);
       }
-
-      const achTokenInfo = await getAchTokenInfo();
-      if (achTokenInfo !== undefined) {
-        achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
-      }
-
-      const orderNo = await getPaymentOrderNo({
-        transDirect: type === TypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
-        merchantName: ACH_MERCHANT_NAME,
-      });
-      achUrl += `&merchantOrderNo=${orderNo}`;
-
-      // TODO: setCurrent Mainnet Aelf address
-      const address = 'Re16JhfpEFxgJebKNW9xDciwRUu8aibwXbTrqt5J1BSwjdSkB';
-      const signature = await getAchSignature({ address });
-      achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
-
-      console.log('achUrl', achUrl);
-      navigationService.navigate('ViewOnWebView', {
-        title: 'Alchemy Pay Ramp',
-        url: achUrl,
-        webViewPageType: 'ach',
-      });
-    } catch (error) {
-      CommonToast.fail(`There is a network error, please try again.`);
-      console.log(error);
-    }
-    Loading.hide();
-  }, [amount, apiUrl, fiat, getAchTokenInfo, receiveAmount, token, type]);
+      Loading.hide();
+    },
+    [amount, apiUrl, fiat, getAchTokenInfo, receiveAmount, token, type, wallet.AELF?.caAddress],
+  );
 
   return (
     <PageContainer
@@ -144,7 +162,11 @@ export default function BuyPreview() {
           </TextM>
           .
         </TextM>
-        <CommonButton type="primary" onPress={goPayPage}>
+        <CommonButton
+          type="primary"
+          onPress={() => {
+            goPayPage();
+          }}>
           Go to AlchemyPay
         </CommonButton>
       </View>

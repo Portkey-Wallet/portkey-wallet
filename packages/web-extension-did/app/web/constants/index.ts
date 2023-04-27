@@ -35,7 +35,9 @@ export const DEVICE_TYPE = (() => {
 export const PAGE_SIZE_IN_NFT_ITEM_PROMPT = 6;
 
 // JOIN AUTH URL
-export const AUTH_HOST = 'https://portkey-website-dev.vercel.app/';
+// export const AUTH_HOST = 'https://portkey-website-dev.vercel.app/';
+export const AUTH_HOST = 'https://portkey.finance';
 // export const AUTH_HOST = 'https://portkey.finance';
 export const JOIN_AUTH_URL = `${AUTH_HOST}/join`;
 export const AUTH_APPLE_URL = `${AUTH_HOST}/apple-auth`;
+export const RECAPTCHA_URL = `https://portkey-website-dev.vercel.app/recaptcha-check`;

@@ -34,8 +34,8 @@ export default function CustomList({ onChange, onClose, title, searchPlaceHolder
       ? buyFiatList
       : buyFiatList.filter(
           (item) =>
-            item.currency.toLocaleLowerCase().includes(filterWord) ||
-            item.countryName?.toLocaleLowerCase().includes(filterWord),
+            item.currency.toLowerCase().includes(filterWord.toLowerCase()) ||
+            item.countryName?.toLowerCase().includes(filterWord.toLowerCase()),
         );
   }, [buyFiatList, filterWord]);
   const showTokenList = useMemo(() => {

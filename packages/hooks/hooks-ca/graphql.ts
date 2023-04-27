@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import useInterval from '../useInterval';
 import { contractQueries } from '@portkey-wallet/graphql/index';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
@@ -77,11 +78,14 @@ export function useIntervalQueryCAInfoByAddress(
   return caInfo;
 }
 
-export function useCheckManager(callBack: () => void) {
+export function useCheckManager(callback: () => void) {
   const { walletInfo, currentNetwork } = useCurrentWallet();
   const { caHash, address } = walletInfo || {};
   const originChainId = useOriginChainId();
-
+  const savedCallback = useRef<() => void>();
+  useEffect(() => {
+    savedCallback.current = callback;
+  });
   const checkManager = useLockCallback(async () => {
     try {
       if (!caHash) return;
@@ -97,7 +101,7 @@ export function useCheckManager(callBack: () => void) {
       if (caHolderManagerInfo) {
         const { managerInfos } = caHolderManagerInfo[0] || {};
         const isManager = managerInfos?.some(manager => manager?.address === address);
-        if (!isManager) callBack();
+        if (!isManager) savedCallback.current?.();
       }
     } catch (error) {
       console.log(error, '=====error');

@@ -26,7 +26,7 @@ export type AssetsStateType = {
   tokenPrices: {
     isFetching: boolean;
     tokenPriceObject: {
-      [symbol: string]: number;
+      [symbol: string]: number | string;
     };
   };
   accountAssets: {
@@ -156,9 +156,9 @@ export const fetchNFTAsync = createAsyncThunk(
 
     if (totalRecordCount === 0 || totalRecordCount > children.length) {
       const response = await fetchNFTList({ symbol, caAddresses, caAddressInfos, skipCount, maxResultCount });
-      return { symbol, chainId, list: response.data, totalRecordCount: response.totalRecordCount };
+      return { symbol, chainId, list: response.data, totalRecordCount: response.totalRecordCount, skipCount };
     }
-    return { symbol, chainId, list: [], totalRecordCount };
+    return { symbol, chainId, list: [], totalRecordCount, skipCount };
   },
 );
 
@@ -257,6 +257,7 @@ export const assetsSlice = createSlice({
         }, ZERO);
 
         state.accountBalance = formatAmountShow(totalBalanceInUsd, 2);
+        state.tokenPrices.tokenPriceObject = { ...state.tokenPrices.tokenPriceObject, ...priceObj };
 
         state.accountToken.accountTokenList = list as [];
         state.accountToken.skipCount = state.accountToken.accountTokenList.length;
@@ -292,13 +293,13 @@ export const assetsSlice = createSlice({
       })
       .addCase(fetchNFTAsync.fulfilled, (state, action) => {
         if (!action.payload) return;
-        const { list, totalRecordCount, symbol, chainId } = action.payload;
+        const { list, totalRecordCount, symbol, chainId, skipCount } = action.payload;
         const currentNFTSeriesItem = state.accountNFT.accountNFTList.find(
           ele => ele.symbol === symbol && ele.chainId === chainId,
         );
         if (!currentNFTSeriesItem) return;
         // if (!currentNFTSeriesItem?.children) currentNFTSeriesItem.children = [];
-
+        if (currentNFTSeriesItem?.children?.length > skipCount) return;
         currentNFTSeriesItem.children = [...(currentNFTSeriesItem?.children ?? []), ...list];
         currentNFTSeriesItem.skipCount = currentNFTSeriesItem.children.length;
         currentNFTSeriesItem.totalRecordCount = totalRecordCount;

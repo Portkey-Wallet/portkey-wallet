@@ -15,6 +15,7 @@ import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
 import paymentApi from '@portkey-wallet/api/api-did/payment';
 import { useCurrentApiUrl } from '@portkey-wallet/hooks/hooks-ca/network';
 import CustomModal from 'pages/components/CustomModal';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
 
 export default function Preview() {
@@ -26,6 +27,7 @@ export default function Preview() {
   const [receive, setReceive] = useState('');
   const [rate, setRate] = useState('');
   const { setLoading } = useLoading();
+  const wallet = useCurrentWalletInfo();
 
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
   const showRateText = useMemo(() => `1 ${data.crypto} ≈ ${formatAmountShow(rate, 2)} ${data.fiat}`, [data, rate]);
@@ -90,8 +92,7 @@ export default function Preview() {
       });
       achUrl += `&merchantOrderNo=${orderNo}`;
 
-      // TODO: setCurrent Mainnet Aelf address
-      const address = 'Re16JhfpEFxgJebKNW9xDciwRUu8aibwXbTrqt5J1BSwjdSkB';
+      const address = wallet?.AELF?.caAddress || '';
       const signature = await getAchSignature({ address });
       achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
 
@@ -108,7 +109,7 @@ export default function Preview() {
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, data, getAchTokenInfo, navigate, setLoading]);
+  }, [apiUrl, data, getAchTokenInfo, navigate, setLoading, wallet]);
 
   const showDisclaimerTipModal = useCallback(() => {
     CustomModal({

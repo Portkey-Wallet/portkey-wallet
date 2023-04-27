@@ -6,7 +6,7 @@ import { defaultColors } from 'assets/theme';
 import { Image } from 'react-native';
 
 const GameImgMap = {
-  bingoGame: require('../../../../assets/image/pngs/bingoGame.png'),
+  bingoGame: require('../../assets/image/pngs/bingoGame.png'),
 } as const;
 
 export type GameImgMapKeyType = keyof typeof GameImgMap;

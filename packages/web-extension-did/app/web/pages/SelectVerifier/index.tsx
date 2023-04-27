@@ -14,8 +14,12 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { handleError } from '@portkey-wallet/utils';
 import { useVerifyToken } from 'hooks/authentication';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import './index.less';
+import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 export default function SelectVerifier() {
   const { verifierMap } = useGuardiansInfo();
@@ -26,6 +30,8 @@ export default function SelectVerifier() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const originChainId = useOriginChainId();
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult('register');
+  const { address: managerAddress } = useCurrentWalletInfo();
 
   const handleChange = useCallback((value: string) => {
     setSelectVal(value);
@@ -54,7 +60,13 @@ export default function SelectVerifier() {
       if (!selectItem) return message.error('Can not get verification');
 
       setLoading(true);
+
+      const reCaptchaRes = await checkReCaptcha();
+
       const result = await verification.sendVerificationCode({
+        headers: {
+          reCaptchaToken: reCaptchaRes || '',
+        },
         params: {
           guardianIdentifier: loginAccount.guardianAccount.replaceAll(' ', ''),
           type: LoginType[loginAccount.loginType],
@@ -109,14 +121,33 @@ export default function SelectVerifier() {
           signature: rst.signature,
         }),
       );
-      navigate('/login/set-pin/register');
+      const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
+      if (managerAddress && res.data.privateKey) {
+        onManagerAddressAndQueryResult(res.data.privateKey, {
+          verifierId: selectItem?.id as string,
+          verificationDoc: rst.verificationDoc,
+          signature: rst.signature,
+        });
+      } else {
+        navigate('/login/set-pin/register');
+      }
     } catch (error) {
       const msg = handleError(error);
       message.error(msg);
     } finally {
       setLoading(false);
     }
-  }, [dispatch, loginAccount, navigate, originChainId, selectItem?.id, setLoading, verifyToken]);
+  }, [
+    dispatch,
+    loginAccount,
+    managerAddress,
+    navigate,
+    onManagerAddressAndQueryResult,
+    originChainId,
+    selectItem?.id,
+    setLoading,
+    verifyToken,
+  ]);
 
   const onConfirm = useCallback(async () => {
     switch (loginAccount?.loginType) {

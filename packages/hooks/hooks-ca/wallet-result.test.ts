@@ -11,7 +11,7 @@ import { VerificationType } from '@portkey-wallet/types/verifier';
 
 describe('useFetchWalletCAAddress', () => {
   test('recovery success', async () => {
-    jest.mocked(useCurrentApiUrl).mockReturnValue('https://explorer.aelf.io/chain');
+    jest.mocked(useCurrentApiUrl).mockReturnValue('https://localhost/chain');
     const remove = () => jest.fn();
     jest.spyOn(Socket, 'onCaAccountRegister').mockReturnValue({ remove });
     jest.spyOn(Socket, 'onCaAccountRecover').mockReturnValue({ remove });
@@ -33,7 +33,7 @@ describe('useFetchWalletCAAddress', () => {
   });
 
   test('recovery success', async () => {
-    jest.mocked(useCurrentApiUrl).mockReturnValue('https://explorer.aelf.io/chain');
+    jest.mocked(useCurrentApiUrl).mockReturnValue('https://localhost/chain');
     const remove = () => jest.fn();
     jest.spyOn(Socket, 'onCaAccountRegister').mockReturnValue({ remove });
     jest.spyOn(Socket, 'onCaAccountRecover').mockReturnValue({ remove });

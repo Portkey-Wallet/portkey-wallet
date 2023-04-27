@@ -53,8 +53,8 @@ describe('useVerifierList', () => {
       '2ded6...68dbda8': {
         id: '2ded6...68dbda8', //aelf.Hash
         name: 'CryptoGuardian',
-        imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/CryptoGuardian.png',
-        endPoints: ['http://192.168.66.240:16050'],
+        imageUrl: 'https://localhost/CryptoGuardian.png',
+        endPoints: ['http://localhost'],
         verifierAddresses: ['2bWw...dSb4hJz'],
       },
     };

@@ -1,6 +1,6 @@
 import { act } from '@testing-library/react';
 import { WalletType } from '@portkey-wallet/store/store-ca/wallet/type';
-import { ChainId, ChainType, NetworkType } from '@portkey-wallet/types';
+import { ChainId, NetworkType } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
 import { useCurrentNetworkInfo } from './network';
 import {
@@ -38,8 +38,8 @@ const COMPLETE_WALLET_STATE = {
           caContractAddress: '2w13D...iw4ZF',
           chainId: 'AELF' as ChainId,
           chainName: 'AELF',
-          endPoint: 'https://aelf-test-node.aelf.io',
-          explorerUrl: 'https://explorer-test.aelf.io',
+          endPoint: 'https://localhost',
+          explorerUrl: 'https://localhost',
           id: 'AELF',
           lastModifyTime: '2023-02-25T07:15:23.6079047Z',
         },
@@ -47,8 +47,8 @@ const COMPLETE_WALLET_STATE = {
           caContractAddress: '2TtDQ...WppP',
           chainId: 'tDVW' as ChainId,
           chainName: 'tDVW',
-          endPoint: 'https://tdvw-test-node.aelf.io',
-          explorerUrl: 'https://explorer-test-side02.aelf.io',
+          endPoint: 'https://localhost',
+          explorerUrl: 'https://localhost',
           id: 'tDVW',
           lastModifyTime: '2023-02-25T07:18:48.0341696Z',
         },
@@ -65,18 +65,18 @@ const COMPLETE_WALLET_STATE = {
       caInfo: {
         TESTNET: {
           AELF: {
-            caAddress: 'hpBcYBkhACfrPV3LjK8ePV6CzaMsNopsNungea6w3PFJuNoVE',
+            caAddress: 'hpB...NoVE',
             caHash: '2cd...ec7',
           },
           managerInfo: {
-            loginAccount: 'yangkexin@portkey.finance',
-            managerUniqueId: 'f606b4c8-038d-a830-c470-3a09b34d66b5',
-            requestId: '965580154d7943b18813bfc031cfc0be',
+            loginAccount: 'aurora@portkey.finance',
+            managerUniqueId: 'f60...66b5',
+            requestId: '965...c0be',
             type: 0,
             verificationType: 1,
           },
           tDVW: {
-            caAddress: 'c8WTWYtpLAsiVT32CtpQeqXgbv3GDYpzQa8zEWECSHq3ZNkg6',
+            caAddress: 'c8W...Nkg6',
             caHash: '2cd...ec7',
           },
         },
@@ -146,13 +146,12 @@ describe('useDeviceList', () => {
           id: 'AELF-e6ausH...5FMEXt',
           chainId: 'AELF',
           caHash: 'a0a96f...7b67fa',
-          caAddress: 'e6ausHQXshHhWdkMX3AsQc6zy3W4418k2axY8c9tUY15FMEXt',
+          caAddress: 'e6a...MEXt',
           managerInfos: [
             {
               __typename: 'ManagerInfo',
-              address: '2n9fgWhGos3bHFJieuz6HgfmYV7dbF9DEpkRA4EtVghPgSfS2e',
-              extraData:
-                '{"transactionTime":1681891953548,"deviceInfo":"WjWf5TwN4/UhaYpuLGlKfaOCdQB1leN3hWJKxa1gEdN/mP82cPAyPdTLxaYa/zxg","version":"2.0.0"}',
+              address: '2n9...fS2e',
+              extraData: '{"transactionTime":1681891953548,"deviceInfo":"WjW...zxg","version":"2.0.0"}',
             },
           ],
           originChainId: 'AELF',
@@ -219,7 +218,7 @@ describe('useDeviceList', () => {
           managerInfos: [
             {
               __typename: 'ManagerInfo',
-              address: '2n9fgWhGos3bHFJieuz6HgfmYV7dbF9DEpkRA4EtVghPgSfS2e',
+              address: '2n9...fS2e',
             },
           ],
         },

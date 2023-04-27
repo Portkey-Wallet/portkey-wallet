@@ -52,16 +52,16 @@ describe('useToken', () => {
     // dispatch hook result - displayUserToken
     const params = {
       tokenItem: {
-        address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+        address: 'JRm...oAaE',
         chainId: 'AELF',
         decimals: 8,
-        id: '217258ef-a5af-44aa-89cf-ed4134882bad',
+        id: '217...2bad',
         isAdded: true,
         isDefault: false,
         name: 'CPU',
         symbol: 'CPU',
         tokenName: 'CPU',
-        userTokenId: 'a0a3e672-afff-3b98-21ca-3a0a1f90a6d4',
+        userTokenId: 'a0a...a6d4',
       },
       keyword: '',
       chainIdArray: ['AELF', 'tDVV'],

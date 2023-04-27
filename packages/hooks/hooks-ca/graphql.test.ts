@@ -29,8 +29,8 @@ const CHAIN_INFO = {
   caContractAddress: '2w13...w4ZF',
   chainId: 'AELF' as ChainId,
   chainName: 'AELF',
-  endPoint: 'https://aelf-test-node.aelf.io',
-  explorerUrl: 'https://explorer-test.aelf.io',
+  endPoint: 'https://localhost',
+  explorerUrl: 'https://localhost',
   id: 'AELF',
   lastModifyTime: '2023-02-25T07:15:23.6079047Z',
 };
@@ -177,19 +177,19 @@ describe('useCheckManager', () => {
         caHolderManagerInfo: [
           {
             __typename: 'CAHolderManagerDto' as any,
-            id: 'AELF-A4pVWW2tC4jinQ8MduBvQxYvDnKM7t8YFqbSc5YLtdiDerETp',
+            id: 'AEL...rETp',
             chainId: 'AELF',
-            caHash: '2ed9e4c3587f7d7d69ed1254d3f44b99b069cc05b257ef25f9ab0d8bd3024a71',
-            caAddress: 'A4pVWW2tC4jinQ8MduBvQxYvDnKM7t8YFqbSc5YLtdiDerETp',
+            caHash: '2ed...4a71',
+            caAddress: 'A4p...rETp',
             managerInfos: [
               {
                 __typename: 'ManagerInfo' as any,
-                address: 's3m5dXHw3JS2GxnV6bdgLu4BRQX9H5nRr4TBfytngR5HXBojY',
+                address: 's3m...BojY',
                 extraData: '1,1679043726757',
               },
               {
                 __typename: 'ManagerInfo' as any,
-                address: '2VvKrhyu9DbXTmfQLrx2dqdwrF4V13T2Bbyhunan9KdGUFe2sR',
+                address: '2Vv...e2sR',
                 extraData: '1,1679380781160',
               },
             ],

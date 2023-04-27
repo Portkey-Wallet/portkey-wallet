@@ -4,7 +4,7 @@ export const PaymentState: { payment: PaymentStateType } = {
   payment: {
     achTokenInfo: {
       expires: 1682146455494,
-      token: 'ACH043...QpgA==',
+      token: 'ACH...gA==',
     },
     buyFiatList: [
       {
@@ -12,7 +12,7 @@ export const PaymentState: { payment: PaymentStateType } = {
         countryName: 'Andorra',
         currency: 'EUR',
         fixedFee: '0.410000',
-        icon: 'https://static.alchemypay.org/alchemypay/flag/AD.png',
+        icon: 'https://localhost/alchemypay/flag/AD.png',
         payMax: '5153.000000',
         payMin: '15.000000',
         payWayCode: '10001',
@@ -24,7 +24,7 @@ export const PaymentState: { payment: PaymentStateType } = {
         countryName: 'Andorra',
         currency: 'USD',
         fixedFee: '0.400000',
-        icon: 'https://static.alchemypay.org/alchemypay/flag/AD.png',
+        icon: 'https://localhost/alchemypay/flag/AD.png',
         payMax: '5000.000000',
         payMin: '15.000000',
         payWayCode: '701',
@@ -36,7 +36,7 @@ export const PaymentState: { payment: PaymentStateType } = {
         countryName: 'United Arab Emirates',
         currency: 'USD',
         fixedFee: '0.400000',
-        icon: 'https://static.alchemypay.org/alchemypay/flag/AE.png',
+        icon: 'https://localhost/alchemypay/flag/AE.png',
         payMax: '5000.000000',
         payMin: '15.000000',
         payWayCode: '10001',

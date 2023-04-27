@@ -6,13 +6,13 @@ import { ChainType, NetworkType } from '@portkey-wallet/types';
 export const AELFChainInfo = {
   chainId: 'AELF',
   chainName: 'AELF',
-  endPoint: 'http://192.168.66.61:8000',
-  explorerUrl: 'http://192.168.66.61:8000',
-  caContractAddress: '2nyC8hqq3pGnRu8gJzCsTaxXB6snfGxmL2viimKXgEfYWGtjEh',
+  endPoint: 'http://...:8000',
+  explorerUrl: 'http://...:8000',
+  caContractAddress: '2nyC...tjEh',
   defaultToken: {
     name: 'AELF',
-    address: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
-    imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf_token_logo.png',
+    address: 'JRmB...oAaE',
+    imageUrl: 'https://.../img/aelf_token_logo.png',
     symbol: 'ELF',
     decimals: '8',
   },
@@ -28,11 +28,11 @@ export const AELFChainInfo = {
 export const currentWallet = (currentNetwork: NetworkType) => {
   return {
     walletInfo: {
-      caHash: '0x9876543210abcdef',
-      address: '2ZpT...3Udb',
-      BIP44Path: "m/44'/1616'/0'/0/0",
-      AESEncryptPrivateKey: 'U6Fs...OxA',
-      AESEncryptMnemonic: 'U6Fs...zHss',
+      caHash: '0x9...def',
+      address: '2Zp...3Udb',
+      BIP44Path: "m/44'/0/0",
+      AESEncryptPrivateKey: 'U6F...OxA',
+      AESEncryptMnemonic: 'U6F...zHss',
     },
     chainList: undefined,
     chainInfo: { MAIN: [{ chainId: 'AELF' } as any] },

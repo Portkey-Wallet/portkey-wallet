@@ -1,0 +1,96 @@
+import { AssetsStateType } from '@portkey-wallet/store/store-ca/assets/slice';
+
+export const AssetsState: { assets: AssetsStateType } = {
+  assets: {
+    accountToken: {
+      isFetching: true,
+      skipCount: 8,
+      maxResultCount: 10,
+      accountTokenList: [
+        {
+          address: '',
+          name: '',
+          chainId: 'AELF',
+          symbol: 'ELF',
+          price: 0.29558,
+          balance: '34858795000',
+          decimals: 8,
+          balanceInUsd: '103.035626261',
+          tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+          imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Mainchain_aelf.png',
+        },
+        {
+          address: '',
+          name: '',
+          chainId: 'tDVV',
+          symbol: 'ELF',
+          price: 0.29558,
+          balance: '2895000000',
+          decimals: 8,
+          balanceInUsd: '8.557041',
+          tokenContractAddress: '7RzVGiuVWkvL4VfVHdZfQF2Tri3sgLe9U991bohHFfSRZXuGX',
+          imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/aelf/Mainchain_aelf.png',
+        },
+        {
+          address: '',
+          name: '',
+          chainId: 'tDVV',
+          symbol: 'CPU',
+          price: 0,
+          balance: '0',
+          decimals: 8,
+          balanceInUsd: '0',
+          tokenContractAddress: '7RzVGiuVWkvL4VfVHdZfQF2Tri3sgLe9U991bohHFfSRZXuGX',
+        },
+      ],
+      totalRecordCount: 3,
+    },
+    accountNFT: { isFetching: false, skipCount: 0, maxResultCount: 10, accountNFTList: [], totalRecordCount: 0 },
+    accountAssets: {
+      isFetching: false,
+      skipCount: 31,
+      maxResultCount: 1000,
+      accountAssetsList: [
+        {
+          chainId: 'AELF',
+          symbol: 'ELF',
+          address: '2A6v7PZoZ96VGus4hhsooGREtiNQXkBHKhY7xQqxdhgdBJxHzh',
+          tokenInfo: {
+            id: '01',
+            balance: '34858795000',
+            decimals: '8',
+            balanceInUsd: '103.1757586169',
+            tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+          },
+        },
+        {
+          chainId: 'tDVV',
+          symbol: 'ELF',
+          address: '27gw9bKbnq7NRirbyrkCb5nJrvs14MrQU88ceHPmBvBM8uUfVX',
+          tokenInfo: {
+            id: '02',
+            balance: '2895000000',
+            decimals: '8',
+            balanceInUsd: '8.5686789',
+            tokenContractAddress: '7RzVGiuVWkvL4VfVHdZfQF2Tri3sgLe9U991bohHFfSRZXuGX',
+          },
+        },
+        {
+          chainId: 'AELF',
+          symbol: 'NIUNIU-01',
+          address: '2A6v7PZoZ96VGus4hhsooGREtiNQXkBHKhY7xQqxdhgdBJxHzh',
+          // nftInfo: {
+          //   imageUrl: 'https://portkey-did.s3.ap-northeast-1.amazonaws.com/img/Untitled/144xAUTO/3.jpg',
+          //   alias: 'NIUNIU-01',
+          //   tokenId: '01',
+          //   balance: '10',
+          //   tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+          // },
+        },
+      ],
+      totalRecordCount: 3,
+    },
+    tokenPrices: { isFetching: false, tokenPriceObject: { ELF: 0.294964 } },
+    accountBalance: '111.59',
+  },
+};

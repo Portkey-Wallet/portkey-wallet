@@ -4,25 +4,37 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   coverageDirectory: 'coverage',
-  testMatch: [
-    '<rootDir>/packages/hooks/**/*.test.{ts,tsx}',
-    '<rootDir>/packages/utils/**/*.test.{ts,tsx}',
-    '<rootDir>/packages/store/**/*.test.{ts,tsx}',
-    '<rootDir>/packages/web-extension-did/**/*.test.tsx',
-  ],
   collectCoverageFrom: [
     '**/packages/hooks/hooks-ca/*.{ts,tsx}',
     '**/packages/store/store-ca/*.{ts,tsx}',
     '**/packages/utils/**/*.ts',
-    '**/packages/web-extension-did/app/web/**/*.{ts,tsx}',
     '!**/node_modules/**',
   ],
+  coverageReporters: ['json-summary'],
   moduleNameMapper: {
     '\\.(css|less)$': 'identity-obj-proxy',
   },
   projects: [
     {
       displayName: 'hooks',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/packages/hooks/hooks-ca/*.test.{ts,tsx}'],
+      testEnvironment: 'jsdom',
+    },
+    {
+      displayName: 'store',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/packages/store/store-ca/*.test.{ts,tsx}'],
+      testEnvironment: 'jsdom',
+    },
+    {
+      displayName: 'utils',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/packages/utils/**/*.test.{ts,tsx}'],
+      testEnvironment: 'jsdom',
+    },
+    {
+      displayName: 'web-extension-did-hooks',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/web-extension-did/app/web/hooks/*.test.{ts,tsx}'],
       testEnvironment: 'jsdom',

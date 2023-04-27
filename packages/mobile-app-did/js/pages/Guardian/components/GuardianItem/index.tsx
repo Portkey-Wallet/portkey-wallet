@@ -32,6 +32,7 @@ import { useVerifyToken } from 'hooks/authentication';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import myEvents from 'utils/deviceEvent';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
 
@@ -59,7 +60,7 @@ function GuardianItemButton({
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
 
@@ -88,9 +89,13 @@ function GuardianItemButton({
   const originChainId = useOriginChainId();
 
   const onSendCode = useThrottleCallback(async () => {
-    Loading.show();
     try {
+      const reCaptchaToken = await verifyHumanMachine(language);
+      Loading.show();
       const req = await verification.sendVerificationCode({
+        headers: {
+          reCaptchaToken: reCaptchaToken as string,
+        },
         params: {
           type: LoginType[guardianInfo.guardianItem.guardianType],
           guardianIdentifier: guardianInfo.guardianItem.guardianAccount,

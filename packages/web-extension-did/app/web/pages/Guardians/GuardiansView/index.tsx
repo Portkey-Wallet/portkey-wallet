@@ -34,6 +34,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
 import './index.less';
+import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -179,7 +180,13 @@ export default function GuardiansView() {
         }
         setLoading(true);
 
+        // check is need to call Google reCAPTCHA
+        const reCaptcha = await checkReCaptcha();
+
         const result = await verification.sendVerificationCode({
+          headers: {
+            reCaptchaToken: reCaptcha || '',
+          },
           params: {
             guardianIdentifier: opGuardian?.guardianAccount as string,
             type: LoginType[opGuardian?.guardianType as LoginType],

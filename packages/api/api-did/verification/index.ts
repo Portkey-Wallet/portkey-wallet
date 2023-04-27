@@ -9,5 +9,5 @@ export default {
     target: `/api/app/userExtraInfo`,
     config: { method: 'GET' },
   },
-  checkGoogleRecaptcha: 'api/app/account/isGoogleRecaptchaOpen',
+  checkGoogleRecaptcha: '/api/app/account/isGoogleRecaptchaOpen',
 } as const;

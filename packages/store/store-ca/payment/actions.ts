@@ -19,11 +19,6 @@ export const fetchBuyFiatListAsync = createAsyncThunk<FiatType[]>('payment/fetch
     }
   });
 
-  await new Promise(resolve => {
-    setTimeout(resolve, 10000);
-  });
-  console.log('fetchBuyFiatListAsync');
-
   return Object.values(fiatMap).map(item => ({
     ...item,
     countryName: countryCodeMap[item.country]?.country,

@@ -6,7 +6,7 @@ import Config from 'react-native-config';
 import { request } from '@portkey-wallet/api/api-did';
 
 async function checkNeedVerify() {
-  const req = await request.verify.checkGoogleRecaptcha({});
+  const req = await request.verify.checkGoogleRecaptcha();
   return req as boolean;
 }
 async function verifyHumanMachine(language: any, needVerifyFunc: () => Promise<boolean> = checkNeedVerify) {

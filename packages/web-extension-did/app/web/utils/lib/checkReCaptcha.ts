@@ -9,7 +9,7 @@ import { message } from 'antd';
  */
 export const checkReCaptcha = async () => {
   try {
-    const req = await request.verify.checkGoogleRecaptcha({});
+    const req = await request.verify.checkGoogleRecaptcha();
     if (req) {
       // Google reCAPTCHA
       const reCaptcha = await reCAPTCHAAction();

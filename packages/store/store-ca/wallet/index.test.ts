@@ -11,6 +11,8 @@ import {
   setOriginChainId,
   resetCaInfo,
   getWalletNameAsync,
+  setChainListAction,
+  createWalletAction,
 } from './actions';
 import { changeEncryptStr } from '../../wallet/utils';
 import { walletSlice } from './slice';
@@ -167,7 +169,14 @@ describe('setManageInfo', () => {
         AESEncryptPrivateKey: 'AESEncryptPrivateKey',
         AESEncryptMnemonic: 'AESEncryptMnemonic',
         caInfo: {
-          TESTNET: {},
+          TESTNET: {
+            managerInfo: {
+              managerUniqueId: 'managerUniqueId',
+              loginAccount: '1@q.com',
+              type: 0,
+              verificationType: 0,
+            },
+          },
           MAIN: {},
         },
       },
@@ -500,5 +509,140 @@ describe('resetCaInfo', () => {
     };
     const payload = 'TESTNET';
     expect(reducer(mockState, resetCaInfo(payload)).walletInfo?.caInfo).not.toHaveProperty('TESTNET');
+  });
+});
+
+// un-used
+describe('setChainListAction', () => {
+  test('chainInfo does not exist, state will add a chainInfo property', () => {
+    const chainList = [
+      {
+        chainId: 'AELF' as ChainId,
+        chainName: 'AELF',
+        endPoint: 'http://localhost:1235',
+        explorerUrl: 'http://localhost:1235',
+        caContractAddress: 'caContractAddress',
+      },
+    ];
+    const mockState = {
+      walletAvatar: 'master1',
+      walletType: 'aelf' as WalletType,
+      walletName: 'Wallet 02',
+      currentNetwork: 'TESTNET' as NetworkType,
+      chainList: [],
+    };
+    const networkType = 'TESTNET';
+    const newState = reducer(mockState, setChainListAction({ chainList, networkType }));
+    expect(newState).toHaveProperty('chainInfo');
+    expect(newState.chainInfo).toHaveProperty('TESTNET');
+  });
+  test('chainInfo exist, chainInfo will be update', () => {
+    const chainList = [
+      {
+        chainId: 'tDVV' as ChainId,
+        chainName: 'tDVV',
+        endPoint: 'http://localhost:1235',
+        explorerUrl: 'http://localhost:1235',
+        caContractAddress: 'caContractAddress',
+      },
+    ];
+    const mockState = {
+      walletAvatar: 'master1',
+      walletType: 'aelf' as WalletType,
+      walletName: 'Wallet 02',
+      currentNetwork: 'TESTNET' as NetworkType,
+      chainList: [],
+      chainInfo: {
+        TESTNET: [
+          {
+            chainId: 'AELF' as ChainId,
+            chainName: 'AELF',
+            endPoint: 'http://localhost:1235',
+            explorerUrl: 'http://localhost:1235',
+            caContractAddress: 'caContractAddress',
+          },
+        ],
+      },
+    };
+    const networkType = 'TESTNET';
+    const newState = reducer(mockState, setChainListAction({ chainList, networkType }));
+    expect(newState.chainInfo?.TESTNET).toHaveLength(1);
+    expect(newState.chainInfo?.TESTNET).toEqual(chainList);
+  });
+});
+
+// un-used
+describe('createWalletAsync', () => {
+  const mockState = {
+    walletAvatar: 'master1',
+    walletType: 'aelf' as WalletType,
+    walletName: 'Wallet 02',
+    currentNetwork: 'TESTNET' as NetworkType,
+    chainList: [],
+    walletInfo: {
+      BIP44Path: 'BIP44Path',
+      address: 'address',
+    },
+  };
+  const payload = {
+    networkType: 'TESTNET' as NetworkType,
+    walletInfo: {
+      BIP44Path: 'string',
+      address: 'address',
+      AESEncryptPrivateKey: 'AESEncryptPrivateKey',
+      AESEncryptMnemonic: 'AESEncryptMnemonic',
+    },
+    caInfo: {
+      originChainId: 'AELF' as ChainId,
+      managerInfo: {
+        managerUniqueId: 'managerUniqueId',
+        loginAccount: '1@q.com',
+        type: 0,
+        verificationType: VerificationType.addGuardian,
+      },
+      AELF: {
+        caAddress: 'caAddress',
+        caHash: 'caHash',
+      },
+    },
+  };
+  test('AESEncryptMnemonic does not exist, throw error', async () => {
+    const state = {
+      ...mockState,
+      walletInfo: {
+        ...mockState.walletInfo,
+        AESEncryptPrivateKey: 'AESEncryptPrivateKey',
+        AESEncryptMnemonic: 'AESEncryptMnemonic',
+      },
+    };
+    expect(() => reducer(state as any, createWalletAction(payload))).toThrow(WalletError.walletExists);
+  });
+  test('caInfo is empty, will be update', async () => {
+    const payload = {
+      walletInfo: {
+        BIP44Path: 'string',
+        address: 'address',
+        AESEncryptPrivateKey: 'AESEncryptPrivateKey',
+        AESEncryptMnemonic: 'AESEncryptMnemonic',
+      },
+      caInfo: {
+        managerInfo: {
+          managerUniqueId: 'managerUniqueId',
+          loginAccount: '1@q.com',
+          type: 0,
+          verificationType: VerificationType.addGuardian,
+        },
+        AELF: {
+          caAddress: 'caAddress',
+          caHash: 'caHash',
+        },
+      },
+    };
+    const res = reducer(mockState as any, createWalletAction(payload));
+    expect(res.walletInfo?.caInfo.TESTNET).toEqual(payload.caInfo);
+  });
+  test('caInfo is not empty, will be update', async () => {
+    const res = reducer(mockState as any, createWalletAction(payload));
+    expect(res.walletInfo?.caInfo.TESTNET).toEqual(payload.caInfo);
   });
 });

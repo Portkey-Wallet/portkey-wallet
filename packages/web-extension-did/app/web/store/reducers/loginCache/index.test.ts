@@ -9,12 +9,13 @@ import {
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
+import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 
 const reducer = loginSlice.reducer;
 const mockState = {
   countryCode: {
-    index: 'H',
-    country: { country: 'Hong Kong', code: '852', iso: 'HK' },
+    index: DefaultCountry.country[0],
+    country: DefaultCountry,
   },
 };
 
@@ -105,8 +106,8 @@ describe('resetLoginInfoAction', () => {
     const res = reducer(mockState, resetLoginInfoAction());
     expect(res).toEqual({
       countryCode: {
-        index: 'H',
-        country: { country: 'Hong Kong', code: '852', iso: 'HK' },
+        index: DefaultCountry.country[0],
+        country: DefaultCountry,
       },
     });
   });

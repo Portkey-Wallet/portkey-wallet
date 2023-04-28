@@ -26,8 +26,6 @@ import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { useLanguage } from 'i18n/hooks';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -61,7 +59,6 @@ export default function VerifierDetails() {
     verificationType,
   } = useRouterParams<RouterParams>();
   const originChainId = useOriginChainId();
-  const { language } = useLanguage();
 
   const countdown = useRef<VerifierCountdownInterface>();
   useEffectOnce(() => {
@@ -171,12 +168,8 @@ export default function VerifierDetails() {
   );
   const resendCode = useCallback(async () => {
     try {
-      const reCaptchaToken = await verifyHumanMachine(language);
       Loading.show();
       const req = await verification.sendVerificationCode({
-        headers: {
-          reCaptchaToken: reCaptchaToken as string,
-        },
         params: {
           type: LoginType[guardianItem?.guardianType as LoginType],
           guardianIdentifier: guardianItem?.guardianAccount,

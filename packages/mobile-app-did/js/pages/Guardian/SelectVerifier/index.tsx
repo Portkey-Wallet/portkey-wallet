@@ -28,7 +28,6 @@ import { useVerifyToken } from 'hooks/authentication';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 export type RouterParams = {
   loginAccount: string;
@@ -39,7 +38,7 @@ export type RouterParams = {
 
 const ScrollViewProps = { disabled: true };
 export default function SelectVerifier() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const verifierList = useVerifierList();
 
   const [selectedVerifier, setSelectedVerifier] = useState<VerifierItem | undefined>(verifierList[0]);
@@ -88,12 +87,8 @@ export default function SelectVerifier() {
   const onDefaultConfirm = useCallback(() => {
     const confirm = async () => {
       try {
-        const reCaptchaToken = await verifyHumanMachine(language);
         Loading.show();
         const requestCodeResult = await verification.sendVerificationCode({
-          headers: {
-            reCaptchaToken: reCaptchaToken as string,
-          },
           params: {
             type: LoginType[loginType],
             guardianIdentifier: loginAccount,

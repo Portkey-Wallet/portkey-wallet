@@ -2,13 +2,14 @@ import { IStorage, StorageBaseLoader } from '@portkey-wallet/types/storage';
 import { request } from '@portkey-wallet/api/api-did';
 import { RequestConfig } from '../../types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
+import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 type VerifierInfo = {
   verifierSessionId: string;
   time: number;
 };
 
-interface SendVerificationConfig extends RequestConfig {
+export interface SendVerificationConfig extends RequestConfig {
   params: {
     type: LoginKeyType;
     guardianIdentifier?: string;
@@ -17,10 +18,10 @@ interface SendVerificationConfig extends RequestConfig {
   };
 }
 
-const IntervalErrorMessage = 'The interval between sending two verification codes is less than 60s';
+export const IntervalErrorMessage = 'The interval between sending two verification codes is less than 60s';
 export class Verification extends StorageBaseLoader {
   private readonly _defaultKeyName = 'portkey_did_wallet';
-  private readonly _expirationTime = 60 * 1000;
+  private readonly _expirationTime = 58 * 1000;
   public verifierMap: {
     [key: string]: VerifierInfo;
   };

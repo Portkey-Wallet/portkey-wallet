@@ -30,7 +30,7 @@
     "page": "yarn workspace web-page run",
     "test": "jest",
     "test-cov": "jest --coverage",
-    "test-badges": "istanbul-badges-readme"
+    "test-badges": "jest --coverage && istanbul-badges-readme"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",

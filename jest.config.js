@@ -6,9 +6,11 @@ module.exports = {
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     '**/packages/hooks/hooks-ca/*.{ts,tsx}',
-    '**/packages/store/store-ca/**/*.{ts,tsx}',
-    '**/packages/utils/**/*.ts',
+    '**/packages/store/store-ca/**/slice.{ts,tsx}',
+    '**/packages/utils/wallet/index.ts',
+    '**/packages/web-extension-did/app/web/store/reducers/**/*.{ts,tsx}',
     '!**/node_modules/**',
+    '!**/*.test.{ts,tsx}',
   ],
   coverageReporters: ['json-summary'],
   moduleNameMapper: {
@@ -31,6 +33,12 @@ module.exports = {
       displayName: 'utils',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/utils/**/*.test.{ts,tsx}'],
+      testEnvironment: 'jsdom',
+    },
+    {
+      displayName: 'web-extension-did-store',
+      preset: 'ts-jest',
+      testMatch: ['<rootDir>/packages/web-extension-did/app/web/store/**/*.test.{ts,tsx}'],
       testEnvironment: 'jsdom',
     },
     {

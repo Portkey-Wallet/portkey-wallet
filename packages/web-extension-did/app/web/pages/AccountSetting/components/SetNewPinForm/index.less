@@ -1,0 +1,54 @@
+@import '../../../../assets/theme/color.less';
+
+.set-pin-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .form-content {
+    padding: 14px 24px 24px;
+    .new-pin-label {
+      margin-top: 16px;
+    }
+    .@{app-prefix}-form-item-label > label,
+    .@{app-prefix}-input-password {
+      color: @font-11;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .@{app-prefix}-form-item-label {
+      padding-bottom: 8px;
+    }
+    .@{app-prefix}-input-password {
+      padding: 0;
+      padding: 14px 16px;
+    }
+    .@{app-prefix}-input-affix-wrapper {
+      padding-right: 16px;
+    }
+    .confirm-password .@{app-prefix}-form-item {
+      flex-direction: column;
+    }
+  }
+  .form-footer {
+    padding: 16px;
+    width: 100%;
+    border-top: 1px solid @border-2;
+
+    .@{app-prefix}-form-item {
+      margin-bottom: 0;
+    }
+    .@{app-prefix}-btn-primary {
+      height: 48px;
+      border-radius: 22px;
+      font-size: 16px;
+    }
+  }
+}
+
+.set-pin-form-prompt {
+  .form-footer {
+    position: absolute;
+    bottom: 0;
+  }
+}

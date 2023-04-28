@@ -1,0 +1,94 @@
+@import '../../../assets/theme/color.less';
+
+.custom-select {
+  width: 100%;
+  &.@{app-prefix}-select-focused:not(.@{app-prefix}-select-disabled).@{app-prefix}-select:not(.@{app-prefix}-select-customize-input)
+    .@{app-prefix}-select-selector {
+    border-color: @border-3 !important;
+  }
+
+  .@{app-prefix}-select-selector {
+    border-color: @border-1!important;
+    border-radius: 6px !important;
+    height: 48px;
+    padding: 0 16px;
+    box-shadow: none !important;
+  }
+  .@{app-prefix}-select-arrow {
+    color: @font-13;
+    width: 16px;
+    height: 16px;
+    right: 16px;
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  &.@{app-prefix}-select-single.@{app-prefix}-select-lg:not(.@{app-prefix}-select-customize-input)
+    .@{app-prefix}-select-selector {
+    padding: 0 16px;
+    height: 48px;
+  }
+}
+
+.custom-select-option {
+  font-size: 14px;
+  line-height: 20px;
+  color: @font-11;
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  .option-selected-icon-area {
+    display: none;
+    .correct-icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  .option-label {
+    flex: 1;
+  }
+}
+
+.custom-select-popup {
+  border-radius: 6px;
+  .@{app-prefix}-select-item-option {
+    background: transparent !important;
+    padding: 0 12px;
+    border-bottom: 1px solid @border-2;
+
+    &:last-child {
+      border: none;
+    }
+  }
+
+  .@{app-prefix}-select-item-option-selected {
+    background: transparent !important;
+    font-weight: 400;
+
+    .option-selected-icon-area {
+      opacity: 1 !important;
+    }
+    .option-label {
+      color: @font-9;
+    }
+  }
+
+  .custom-select-option {
+    padding: 0 4px;
+    height: 48px;
+
+    .option-selected-icon-area {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      opacity: 0;
+    }
+    .option-label {
+      flex: 1;
+    }
+  }
+}

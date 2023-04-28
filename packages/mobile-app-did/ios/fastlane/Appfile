@@ -1,0 +1,9 @@
+app_identifier("com.aelf.portkeyapp") # The bundle identifier of your app
+apple_id("david.wei@aelf.io") # Your Apple Developer Portal username
+
+itc_team_id("118351925") # App Store Connect Team ID
+team_id("LR77E76VJ6") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
+

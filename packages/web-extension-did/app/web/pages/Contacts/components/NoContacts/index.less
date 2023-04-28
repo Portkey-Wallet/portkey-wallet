@@ -1,0 +1,43 @@
+@import '../../../../assets/theme/color.less';
+
+.no-contacts {
+  align-items: center;
+
+  .no-contact-svg {
+    width: 56px;
+    height: 64px;
+    margin-top: 56px;
+  }
+
+  .title {
+    margin: 24px 0 8px;
+    color: @font-13;
+    font-size: 16px;
+  }
+  .desc {
+    color: @font-13;
+    font-size: 14px;
+    margin-bottom: 40px;
+  }
+  .add-button {
+    width: fit-content;
+    background-color: transparent;
+    color: @font-9;
+    border: none;
+    box-shadow: none;
+    text-shadow: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    line-height: 20px;
+    .plus-icon {
+      width: 12px;
+      height: 12px;
+      margin-right: 8px;
+      & > svg {
+        display: block;
+      }
+    }
+  }
+}

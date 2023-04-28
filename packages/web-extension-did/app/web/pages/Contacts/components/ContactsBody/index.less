@@ -1,0 +1,21 @@
+@import '../../../../assets/theme/color.less';
+
+.contacts-body {
+  flex: 1;
+  color: @font-11;
+  border-top: 1px solid @border-2;
+  overflow-y: auto;
+
+  .no-search-result {
+    margin-top: 32px;
+    line-height: 20px;
+    color: @font-12;
+    font-size: 14px;
+  }
+
+  &.index-bar-hidden {
+    .adm-index-bar-sidebar {
+      display: none;
+    }
+  }
+}

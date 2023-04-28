@@ -1,0 +1,62 @@
+@import '../../../../assets/theme/color.less';
+
+.device-detail-common {
+  height: calc(100% - 96px);
+  .content-item {
+    height: 96px;
+    border-bottom: 1px solid @bg-15;
+    .item-desc {
+      width: 100%;
+      display: flex;
+      justify-content: left;
+      margin-bottom: 4px;
+      .icon {
+        height: 22px;
+        margin: 0 16px;
+        .custom-svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+      .name {
+        line-height: 22px;
+        color: @font-11;
+        font-size: 16px;
+      }
+      .tag {
+        margin-left: 10px;
+        padding: 0 12px;
+        height: 22px;
+        line-height: 16px;
+        color: @font-13;
+        font-size: 12px;
+        border: 1px solid @border-1;
+        border-radius: 12px;
+      }
+    }
+    .item-time {
+      padding-left: 48px;
+      line-height: 20px;
+      color: @font-12;
+      font-size: 14px;
+    }
+  }
+  .content-desc {
+    padding: 24px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @font-13;
+  }
+  .content-btn {
+    width: 100%;
+    background-color: @bg-11;
+    .@{app-prefix}-btn-primary {
+      color: @font-14;
+      height: 48px;
+      background-color: @bg-11;
+      border-radius: 24px;
+      border: 1px solid @border-7;
+      text-shadow: none;
+    }
+  }
+}

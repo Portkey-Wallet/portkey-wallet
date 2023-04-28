@@ -1,0 +1,119 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router';
+import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
+import svgsList from 'assets/svgs';
+import WalletPopup from './Popup';
+import { MenuItemInfo } from 'pages/components/MenuList';
+import WalletPrompt from './Prompt';
+import { IExitWalletProps } from './components/ExitWallet';
+import { BaseHeaderProps } from 'types/UI';
+
+export type WalletAvatar = keyof typeof svgsList;
+
+export interface IWalletProps extends IExitWalletProps, BaseHeaderProps {
+  walletAvatar: WalletAvatar;
+  menuList: MenuItemInfo[];
+  select?: string;
+  onClose?: () => void;
+}
+
+export default function Wallet() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { walletName, walletAvatar } = useWalletInfo();
+  const [exitVisible, setExitVisible] = useState<boolean>(false);
+  const [selectedItem, setSelectedItem] = useState<string>('');
+
+  const WalletNameLabel = 'wallet-name';
+  const AutoLockLabel = 'auto-lock';
+  const SwitchNetworksLabel = 'switch-networks';
+  const AboutUsLabel = 'about-us';
+
+  const MenuList: MenuItemInfo[] = useMemo(
+    () => [
+      {
+        element: 'Wallet Name',
+        key: WalletNameLabel,
+        click: () => {
+          setSelectedItem(WalletNameLabel);
+          navigate('/setting/wallet/wallet-name');
+        },
+      },
+      {
+        element: 'Auto-lock',
+        key: AutoLockLabel,
+        click: () => {
+          setSelectedItem(AutoLockLabel);
+          navigate('/setting/wallet/auto-lock');
+        },
+      },
+      {
+        element: 'Switch Networks',
+        key: SwitchNetworksLabel,
+        click: () => {
+          setSelectedItem(SwitchNetworksLabel);
+          navigate('/setting/wallet/switch-networks');
+        },
+      },
+      {
+        element: 'About Us',
+        key: AboutUsLabel,
+        click: () => {
+          setSelectedItem(AboutUsLabel);
+          navigate('/setting/wallet/about-us');
+        },
+      },
+    ],
+
+    [navigate],
+  );
+
+  useEffect(() => {
+    if (isPrompt && pathname === '/setting/wallet') {
+      setSelectedItem('');
+    } else if (isPrompt && MenuList) {
+      MenuList.forEach((item) => {
+        if (pathname.includes(String(item.key))) {
+          setSelectedItem(String(item.key));
+        }
+      });
+    }
+  }, [MenuList, isPrompt, pathname, walletName]);
+
+  const title = t('Wallet');
+  const exitText = t('Exit Wallet');
+  const goBack = useCallback(() => navigate('/setting'), [navigate]);
+  const onExit = () => {
+    setExitVisible(true);
+  };
+  const onCancelExit = () => {
+    setExitVisible(false);
+  };
+
+  return isNotLessThan768 ? (
+    <WalletPrompt
+      headerTitle={title}
+      exitText={exitText}
+      exitVisible={exitVisible}
+      select={selectedItem}
+      walletAvatar={walletAvatar as WalletAvatar}
+      menuList={MenuList}
+      onExit={onExit}
+      onCancelExit={onCancelExit}
+    />
+  ) : (
+    <WalletPopup
+      headerTitle={title}
+      exitText={exitText}
+      exitVisible={exitVisible}
+      walletAvatar={walletAvatar as WalletAvatar}
+      menuList={MenuList}
+      goBack={goBack}
+      onExit={onExit}
+      onCancelExit={onCancelExit}
+    />
+  );
+}

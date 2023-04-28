@@ -1,0 +1,17 @@
+{
+  "name": "@portkey-wallet/constants",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.1",
+  "type": "commonjs",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "start": "tsc --watch",
+    "handle-network": "cd ./scripts && node handleNetwork.js"
+  },
+  "dependencies": {
+    "@portkey-wallet/types": "^0.0.1"
+  }
+}

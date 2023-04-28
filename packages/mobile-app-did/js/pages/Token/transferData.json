@@ -1,0 +1,200 @@
+[ {
+"id": 206381,
+"txId": "7b2fb47709dec122ec2c2e36a8032f6a2999919af6c1660f97ea0b6e97b18439",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "FXM24cEKUDqHoXFnAo9H1oza2wkELVFh7oH2eGCFoSbykAgwy",
+"amount": "4600000.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": null,
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-09-09T06:57:08.1718905Z",
+"method": "Release",
+"blockHeight": 108110910,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 202813,
+"txId": "8505bd29cdb86f85bb820fe2706194f65b95b85c9c7d299af7d4cb6f7624d6c1",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "pHra7X9jLj5NAnccFSJQWqeVhJyTKenTf9ivK421TgGPpHv9U",
+"amount": "1200000.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": null,
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-09-01T11:13:24.141468Z",
+"method": "Release",
+"blockHeight": 106773204,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 200578,
+"txId": "8d3e233a1963eab7a60c1b76e12109b8d76f57b7731a1b27149eac9636271705",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "vDFbsr1r8xsC3gEgcKLKJqhvuN2ZwXo97vMNYwy1qjWYD4tLa",
+"amount": "3600000.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": null,
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-08-26T06:34:36.175202Z",
+"method": "Release",
+"blockHeight": 105713445,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 194793,
+"txId": "ffdcfdecab57ef5a336dca99ff25d7bb904670e8213b9d39714176a69ac07a20",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "2mkuq8zdiWa6tSZm8Mw26idnUaQMarPiBgAb18Q7YLqwsXMZMY",
+"amount": "4000000.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": null,
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-08-11T06:02:20.1855375Z",
+"method": "Release",
+"blockHeight": 103152308,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 191683,
+"txId": "5e526ba00b4b77b3522a4f89679f5f1d8c43ec0a3dafb12f231e4ca7111b2890",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "cVVn1XKgjbm13KDb2ySXte83SWNRcsqSHDpL2Zc85JLiQyW3h",
+"amount": "5000000.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": null,
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-08-03T08:58:44Z",
+"method": "Release",
+"blockHeight": 101826640,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 175648,
+"txId": "734353787e97e0780294a830e92fccc63a2ad335ba2cdb98dccb969deb01aaa1",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "2FaKMniuPNwzNNFKDD2s8ERkQukeQoPy1uPvn1oyiq6Jq77q6H",
+"amount": "2000000.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": "Test",
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-07-08T12:53:28Z",
+"method": "Release",
+"blockHeight": 97442853,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 175627,
+"txId": "c00317c45083aead98bf7be9d07eb9026c391795fa66a749dca13c9dae01ddf5",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "2FaKMniuPNwzNNFKDD2s8ERkQukeQoPy1uPvn1oyiq6Jq77q6H",
+"amount": "10.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": "Test",
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-07-08T12:33:28.2520247Z",
+"method": "Release",
+"blockHeight": 97440471,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 123672,
+"txId": "eb206e04f9fe278114c5b60107a832ddc17362f2c6a06fd434f6dd9da6e5ef77",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "2ExtaRkjDiFhkGH8hwLZYVpRAnXe7awa25C61KVWy47uwnRw4s",
+"amount": "500000.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": "Transfer for swap",
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-05-05T13:15:28Z",
+"method": "Release",
+"blockHeight": 86556949,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 84071,
+"txId": "23397524494e9843cda4ef60b788c63c2c1c0896e9db4f151cb44e7f177afcd8",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "UVVvmaXbWtM44nTviqiz7cKNS2tcizdrauKTciovQ7ujK9gtS",
+"amount": "153257.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": null,
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-02-07T11:15:00.1988963Z",
+"method": "Release",
+"blockHeight": 71653382,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+},
+{
+"id": 83941,
+"txId": "ed921b52e9bbee58b0f34bd7e9c97d7fbb0b912e0057438be6b1490f18859306",
+"from": "25CuX2FXDvhaj7etTpezDQDunk5xGhytxE68yTYJJfMkQwvj5p",
+"to": "21dtMzbgXEiPs3XWWCQorgodAUdAHYM4RLiFBaBREyk6p45eCW",
+"amount": "100.00000000",
+"symbol": "ELF",
+"action": "Transferred",
+"isCrossChain": "no",
+"relatedChainId": "AELF",
+"memo": null,
+"txFee": {
+    "ELF": 0.24635
+},
+"time": "2022-02-07T08:53:52.1769321Z",
+"method": "Release",
+"blockHeight": 71636567,
+"addressFrom": "2R1rgEKkG84XGtbx6fvxExzChaXEyJrfSnvMpuKCGrUFoR5SKz",
+"addressTo": "XyRN9VNabpBiVUFeX2t7ZUR2b3tWV7U31exufJ2AUepVb5t56"
+}]

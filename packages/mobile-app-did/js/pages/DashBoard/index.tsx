@@ -13,6 +13,7 @@ import { fetchBuyFiatListAsync } from '@portkey-wallet/store/store-ca/payment/ac
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { getPhoneCountryCode } from '@portkey-wallet/store/store-ca/misc/actions';
 
 const DashBoard: React.FC = () => {
   useGetCurrentAccountTokenPrice();
@@ -25,17 +26,15 @@ const DashBoard: React.FC = () => {
 
   useEffectOnce(() => {
     getCurrentCAViewContract();
-  });
-
-  useEffectOnce(() => {
-    if (isMainNetwork) {
-      dispatch(fetchBuyFiatListAsync());
-    }
     dispatch(getWalletNameAsync());
     dispatch(getSymbolImagesAsync());
+    dispatch(getPhoneCountryCode());
     getGuardiansInfoWriteStore({
       caHash,
     });
+    if (isMainNetwork) {
+      dispatch(fetchBuyFiatListAsync());
+    }
   });
 
   return (

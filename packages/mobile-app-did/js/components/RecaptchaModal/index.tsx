@@ -130,6 +130,7 @@ const Recaptcha = forwardRef(function Recaptcha(
     (content: WebViewMessageEvent) => {
       try {
         const payload = JSON.parse(content.nativeEvent.data);
+
         if (payload.close && isInvisibleSize) {
           handleClose();
         }
@@ -147,7 +148,7 @@ const Recaptcha = forwardRef(function Recaptcha(
           onError?.(payload.error[0]);
         }
         if (payload.verify) {
-          handleClose();
+          handleClose('verified');
           onVerify?.(payload.verify[0]);
         }
       } catch (err) {

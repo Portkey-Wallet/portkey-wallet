@@ -19,9 +19,9 @@ async function verifyHumanMachine(language: any) {
         onExpire={() => {
           reject('expire');
         }}
-        onClose={() => {
+        onClose={type => {
           OverlayModal.hide();
-          reject();
+          if (type !== 'verified') reject();
         }}
         onError={error => {
           reject(error);

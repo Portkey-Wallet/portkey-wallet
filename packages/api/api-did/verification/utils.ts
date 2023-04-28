@@ -59,7 +59,7 @@ export class Verification extends StorageBaseLoader {
   }
   public async sendVerificationCode(config: SendVerificationConfig) {
     const { guardianIdentifier, verifierId } = config.params;
-    const key = guardianIdentifier || '' + verifierId || '';
+    const key = (guardianIdentifier || '') + (verifierId || '');
     try {
       const req = await request.verify.sendVerificationRequest(config);
       await this.set(key, { ...req, time: Date.now() });

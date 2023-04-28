@@ -14,7 +14,8 @@ class MobileVerification extends Verification {
   }
   public async sendVerificationCode(config: SendVerificationConfig) {
     const { guardianIdentifier, verifierId } = config.params;
-    const key = guardianIdentifier || '' + verifierId || '';
+    const key = (guardianIdentifier || '') + (verifierId || '');
+
     try {
       const item = this.get(key);
       if (item) {

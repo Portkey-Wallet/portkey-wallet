@@ -48,7 +48,6 @@ import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import { DEVICE_TYPE } from 'constants/common';
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -63,7 +62,7 @@ type thirdPartyInfoType = {
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
 
 const GuardianEdit: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
 
@@ -244,12 +243,8 @@ const GuardianEdit: React.FC = () => {
           onPress: async () => {
             try {
               if ([LoginType.Email, LoginType.Phone].includes(guardianType)) {
-                const reCaptchaToken = await verifyHumanMachine(language);
                 Loading.show();
                 const req = await verification.sendVerificationCode({
-                  headers: {
-                    reCaptchaToken: reCaptchaToken as string,
-                  },
                   params: {
                     type: LoginType[guardianType],
                     guardianIdentifier: guardianAccount,

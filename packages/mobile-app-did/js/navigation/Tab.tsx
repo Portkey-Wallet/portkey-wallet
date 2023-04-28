@@ -7,7 +7,7 @@ import { useLanguage } from 'i18n/hooks';
 import MyMenu from 'pages/My';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLogOut from 'hooks/useLogOut';
-// import DiscoverHome from 'pages/Discover/DiscoverHome';
+import useInitData from 'hooks/useInitData';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,6 +22,10 @@ export const tabMenuList = [
 export default function TabRoot() {
   const { t } = useLanguage();
   const { address } = useCurrentWalletInfo();
+
+  // init data
+  useInitData();
+
   const logOut = useLogOut();
   useEffect(() => {
     if (!address) logOut();

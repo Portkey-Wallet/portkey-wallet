@@ -295,6 +295,175 @@ describe('fetchNFTAsync', () => {
     await mockStore.dispatch(fetchNFTAsync({ ...mockPayload, symbol: 'CARD-1', chainId: 'tDVV' }));
     expect(mockStore.getState().assets.accountNFT.accountNFTList[0].children).toHaveLength(0);
   });
+  test('repeated fetch multiple times will update once', async () => {
+    const state = {
+      ...mockInitState,
+      accountNFT: {
+        ...mockInitState.accountNFT,
+        accountNFTList: [
+          {
+            isFetching: false,
+            skipCount: 0,
+            maxResultCount: 2,
+            totalRecordCount: 1,
+            chainId: 'AELF' as ChainId,
+            collectionName: 'Nature Elves',
+            imageUrl: 'https:/294xAUTO/1.jpg',
+            itemCount: 1,
+            symbol: 'CARD-0',
+            decimals: 0,
+            children: [
+              {
+                alias: 'Forest Warrior',
+                quantity: '1',
+                chainId: 'AELF' as ChainId,
+                imageLargeUrl: 'https://1008xAUTO/1.jpg',
+                imageUrl: 'https://294xAUTO/1.jpg',
+                symbol: 'CARD-001',
+                tokenContractAddress: '7W99faZSvoAaE',
+                tokenId: '001',
+              },
+              {
+                alias: 'Forest',
+                quantity: '1',
+                chainId: 'AELF' as ChainId,
+                imageLargeUrl: 'https://1008xAUTO/1.jpg',
+                imageUrl: 'https://294xAUTO/1.jpg',
+                symbol: 'CARD-002',
+                tokenContractAddress: '7W99faZSvoAaE',
+                tokenId: '002',
+              },
+            ],
+          },
+        ],
+      },
+    };
+    jest.mocked(fetchNFTList).mockResolvedValue({
+      data: [mockReturnNftItem],
+      totalRecordCount: 1,
+    });
+    const mockStore = configureStore({
+      reducer: {
+        assets: assetsSlice.reducer,
+      },
+      preloadedState: {
+        assets: state,
+      },
+    });
+    await mockStore.dispatch(fetchNFTAsync({ ...mockPayload, pageNum: 2 }));
+    expect(mockStore.getState().assets.accountNFT.accountNFTList[0].children).toHaveLength(2);
+  });
+  test('enough nft items so will not to fetch new nft items', async () => {
+    const state = {
+      ...mockInitState,
+      accountNFT: {
+        ...mockInitState.accountNFT,
+        accountNFTList: [
+          {
+            isFetching: false,
+            skipCount: 1,
+            maxResultCount: 1,
+            totalRecordCount: 10,
+            chainId: 'AELF' as ChainId,
+            collectionName: 'Nature Elves',
+            imageUrl: 'https:/294xAUTO/1.jpg',
+            itemCount: 1,
+            symbol: 'CARD-0',
+            decimals: 0,
+            children: [
+              {
+                alias: 'Forest Warrior',
+                quantity: '1',
+                chainId: 'AELF' as ChainId,
+                imageLargeUrl: 'https://1008xAUTO/1.jpg',
+                imageUrl: 'https://294xAUTO/1.jpg',
+                symbol: 'CARD-001',
+                tokenContractAddress: '7W99faZSvoAaE',
+                tokenId: '001',
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const mockStore = configureStore({
+      reducer: {
+        assets: assetsSlice.reducer,
+      },
+      preloadedState: {
+        assets: state,
+      },
+    });
+    const mockPayload = {
+      caAddresses: ['7W99faZSvoAaE'],
+      caAddressInfos: [
+        {
+          caAddress: '7W99faZSvoAaE',
+          chainId: 'AELF' as ChainId,
+        },
+      ],
+      symbol: 'CARD-0',
+      chainId: 'AELF' as ChainId,
+      pageNum: 0,
+    };
+    await mockStore.dispatch(fetchNFTAsync(mockPayload));
+    expect(mockStore.getState().assets.accountNFT.accountNFTList[0].children).toHaveLength(1);
+  });
+  test('have got it all, does not need to get it again', async () => {
+    const state = {
+      ...mockInitState,
+      accountNFT: {
+        ...mockInitState.accountNFT,
+        accountNFTList: [
+          {
+            isFetching: false,
+            skipCount: 1,
+            maxResultCount: 2,
+            totalRecordCount: 1,
+            chainId: 'AELF' as ChainId,
+            collectionName: 'Nature Elves',
+            imageUrl: 'https:/294xAUTO/1.jpg',
+            itemCount: 1,
+            symbol: 'CARD-0',
+            decimals: 0,
+            children: [
+              {
+                alias: 'Forest Warrior',
+                quantity: '1',
+                chainId: 'AELF' as ChainId,
+                imageLargeUrl: 'https://1008xAUTO/1.jpg',
+                imageUrl: 'https://294xAUTO/1.jpg',
+                symbol: 'CARD-001',
+                tokenContractAddress: '7W99faZSvoAaE',
+                tokenId: '001',
+              },
+            ],
+          },
+        ],
+      },
+    };
+    const mockStore = configureStore({
+      reducer: {
+        assets: assetsSlice.reducer,
+      },
+      preloadedState: {
+        assets: state,
+      },
+    });
+    const mockPayload = {
+      caAddresses: ['7W99faZSvoAaE'],
+      caAddressInfos: [
+        {
+          caAddress: '7W99faZSvoAaE',
+          chainId: 'AELF' as ChainId,
+        },
+      ],
+      symbol: 'CARD-0',
+      chainId: 'AELF' as ChainId,
+    };
+    await mockStore.dispatch(fetchNFTAsync(mockPayload as any));
+    expect(mockStore.getState().assets.accountNFT.accountNFTList[0].children).toHaveLength(1);
+  });
   test('fetchNFTAsync failed', async () => {
     jest.mocked(fetchNFTList).mockRejectedValue({
       error: 'error',

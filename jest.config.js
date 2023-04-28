@@ -60,6 +60,7 @@ module.exports = {
         '^constants/(.*)$': '<rootDir>/packages/web-extension-did/app/web/constants/$1',
         '^messages/(.*)$': '<rootDir>/packages/web-extension-did/app/web/messages/$1',
       },
+      coveragePathIgnorePatterns: ['/node_modules/', '/store/'],
     },
   ],
 };

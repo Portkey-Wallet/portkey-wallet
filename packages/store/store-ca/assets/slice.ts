@@ -119,7 +119,7 @@ export const fetchNFTCollectionsAsync = createAsyncThunk(
     return { list: response.data, totalRecordCount: response.totalRecordCount, maxNFTCount };
     // }
 
-    return { list: [], totalRecordCount };
+    // return { list: [], totalRecordCount };
   },
 );
 

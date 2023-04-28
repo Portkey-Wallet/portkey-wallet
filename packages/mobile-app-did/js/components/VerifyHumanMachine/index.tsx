@@ -21,6 +21,7 @@ async function verifyHumanMachine(language: any) {
         }}
         onClose={() => {
           OverlayModal.hide();
+          reject();
         }}
         onError={error => {
           reject(error);

@@ -20,7 +20,8 @@ class MobileVerification extends Verification {
       if (item) {
         return item;
       } else {
-        const needRecaptcha = await request.verify.checkGoogleRecaptcha({});
+        const needRecaptcha = await request.verify.checkGoogleRecaptcha();
+
         if (needRecaptcha) {
           // TODO: add language
           const reCaptchaToken = await verifyHumanMachine('en');

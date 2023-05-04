@@ -5,7 +5,7 @@ import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
 import Config from 'react-native-config';
 import { clearBackgroundTimeout, setBackgroundTimeout } from 'utils/backgroundTimer';
 
-const TIME_OUT = 30000; // recaptcha timeout 30 seconds
+const TIME_OUT = 20000; // recaptcha timeout 20 seconds
 
 async function verifyHumanMachine(language: any) {
   let timer: undefined | NodeJS.Timer;
@@ -25,7 +25,7 @@ async function verifyHumanMachine(language: any) {
         }}
         onClose={type => {
           OverlayModal.hideKey(key);
-          if (type !== 'verified') reject();
+          if (type !== 'verified') reject('You closed the prompt without any action.');
         }}
         webViewProps={{
           onLoadEnd: () => {
@@ -34,7 +34,7 @@ async function verifyHumanMachine(language: any) {
           onLoadStart: () => {
             timer = setBackgroundTimeout(() => {
               OverlayModal.hideKey(key);
-              reject('time out');
+              reject('Request timed out');
             }, TIME_OUT);
           },
         }}

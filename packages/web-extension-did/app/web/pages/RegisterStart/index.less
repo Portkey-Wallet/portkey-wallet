@@ -23,6 +23,19 @@
     line-height: 48px;
     font-size: 16px;
   }
+  .register-start-inner {
+    width: 406px;
+    height: 474px;
+    border-radius: 6px;
+    background-color: @bg-11;
+    box-shadow: @box-shadow5;
+  }
+  .portkey-ui-wrapper {
+    height: 100%;
+  }
+  .area-code-wrapper {
+    height: 260px;
+  }
 }
 
 .network-list-wrapper {
@@ -79,69 +92,5 @@
     &.@{app-prefix}-select-single .@{app-prefix}-select-selector .@{app-prefix}-select-selection-item {
       line-height: 22px;
     }
-  }
-}
-
-.register-start-card {
-  width: 406px;
-  height: 474px;
-  padding: 0 20px 24px;
-  border-radius: 6px;
-  background-color: @bg-11;
-  box-shadow: @box-shadow5;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  .card-content {
-    flex: 1;
-  }
-  .title {
-    text-align: center;
-    padding: 24px 0;
-    line-height: 32px;
-    color: @font-11;
-    font-size: 24px;
-    font-weight: 500;
-    position: relative;
-    .backleft-icon {
-      cursor: pointer;
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      left: 0;
-      top: 50%;
-      margin-top: -20px;
-    }
-    .testnet-flag {
-      justify-content: center;
-      .flag-text {
-        width: 41px;
-        height: 18px;
-        font-size: 12px;
-        line-height: 16px;
-        color: @font-9;
-        background-color: @bg-9;
-        border-radius: 10px;
-      }
-    }
-  }
-  .qrcode-icon,
-  .pc-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    top: 4px;
-    right: -16px;
-    cursor: pointer;
-    position: absolute;
-  }
-
-  .sign-btn {
-    border-radius: 24px;
-    line-height: 48px;
-    font-size: 16px;
-    color: @font-9;
-    background-color: @bg-9;
-    border: none;
   }
 }

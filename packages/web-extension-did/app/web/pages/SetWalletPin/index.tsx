@@ -1,8 +1,6 @@
-import { Button, Form, message } from 'antd';
-import { FormItem } from 'components/BaseAntd';
-import ConfirmPassword from 'components/ConfirmPassword';
+import { Button, message } from 'antd';
 import PortKeyTitle from 'pages/components/PortKeyTitle';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
@@ -22,14 +20,15 @@ import { setPasswordSeed } from 'store/reducers/user/slice';
 import { DEVICE_TYPE } from 'constants/index';
 import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { getDeviceInfo } from 'utils/device';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
+import { SetPinAndAddManager, CreatePendingInfo } from '@portkey/did-ui-react';
+import { AccountType, GuardiansApproved } from '@portkey/services';
 import './index.less';
 
 export default function SetWalletPin() {
-  const [form] = Form.useForm();
   const { t } = useTranslation();
 
   const { type: state } = useParams<{ type: 'login' | 'scan' | 'register' }>();
@@ -81,6 +80,18 @@ export default function SetWalletPin() {
       .filter((guardian) => guardian.status === VerifyStatus.Verified)
       .map((guardian) => ({
         type: LoginType[guardian.guardianType],
+        identifier: guardian.guardianAccount,
+        verifierId: guardian.verifier?.id || '',
+        verificationDoc: guardian.verificationDoc || '',
+        signature: guardian.signature || '',
+      }));
+  }, [userGuardianStatus]);
+
+  const approvedList: GuardiansApproved[] = useMemo(() => {
+    return Object.values(userGuardianStatus ?? {})
+      .filter((guardian) => guardian.status === VerifyStatus.Verified)
+      .map((guardian) => ({
+        type: LoginType[guardian.guardianType] as AccountType,
         identifier: guardian.guardianAccount,
         verifierId: guardian.verifier?.id || '',
         verificationDoc: guardian.verificationDoc || '',
@@ -232,11 +243,6 @@ export default function SetWalletPin() {
     ],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.error(errorInfo, 'onFinishFailed==');
-    message.error('Something error');
-  }, []);
-
   const backHandler = useCallback(async () => {
     switch (state) {
       case 'register':
@@ -266,39 +272,58 @@ export default function SetWalletPin() {
     backHandler();
   });
 
+  const onCreatePending = useCallback(
+    async (info: CreatePendingInfo) => {
+      const managerInfo: ManagerInfo = {
+        managerUniqueId: info.sessionId,
+        requestId: info.requestId,
+        loginAccount: loginAccount?.guardianAccount as string,
+        type: loginAccount?.loginType as LoginType,
+        verificationType: state === 'login' ? VerificationType.communityRecovery : VerificationType.register,
+      };
+      const pin = info.pin;
+      dispatch(setPasswordSeed(pin));
+      !walletInfo.address
+        ? dispatch(
+            createWallet({
+              walletInfo: info.walletInfo,
+              pin,
+              caInfo: { managerInfo },
+            }),
+          )
+        : dispatch(
+            setManagerInfo({
+              networkType: network.networkType,
+              pin,
+              managerInfo,
+            }),
+          );
+      await setLocalStorage({
+        registerStatus: 'registeredNotGetCaAddress',
+      });
+      await setPinAction(pin);
+    },
+    [dispatch, loginAccount, network, state, walletInfo],
+  );
+
   return (
     <div className="common-page set-pin-wrapper" id="set-pin-wrapper">
       <PortKeyTitle leftElement leftCallBack={leftCallBack} />
       <div className="common-content1 set-pin-content">
-        <div className="title">{t('Enter Pin to Protect Your Wallet')}</div>
-        <Form
-          className="create-wallet-form"
-          name="CreateWalletForm"
-          form={form}
-          requiredMark={false}
-          onFinish={onCreate}
-          layout="vertical"
-          onFinishFailed={onFinishFailed}
-          autoComplete="off">
-          {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
-          <FormItem name="pin" style={{ marginBottom: 16 }}>
-            <ConfirmPassword validateFields={form.validateFields} isPasswordLengthTipShow={false} />
-          </FormItem>
-
-          <FormItem shouldUpdate>
-            {() => (
-              <Button
-                className="submit-btn"
-                type="primary"
-                htmlType="submit"
-                disabled={
-                  !form.isFieldsTouched(true) || !!form.getFieldsError().filter(({ errors }) => errors.length).length
-                }>
-                {t('Confirm')}
-              </Button>
-            )}
-          </FormItem>
-        </Form>
+        <SetPinAndAddManager
+          chainId={originChainId}
+          // className,
+          isErrorTip
+          accountType={LoginType[loginAccount?.loginType as any] as AccountType}
+          guardianIdentifier={loginAccount?.guardianAccount as string}
+          type={state === 'login' ? 'recovery' : 'register'}
+          guardianApprovedList={approvedList}
+          onError={(e) => {
+            console.log(e, 'setWalletPin');
+          }}
+          // onFinish,
+          onCreatePending={onCreatePending}
+        />
       </div>
 
       <CommonModal

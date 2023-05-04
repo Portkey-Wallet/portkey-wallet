@@ -13,11 +13,12 @@ import { useRecovery } from './hooks/useRecovery';
 import { useRemoveOtherManage } from './hooks/useRemoveOtherManage';
 import GuardianApprovalPrompt from './Prompt';
 import GuardianApprovalPopup from './Popup';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import qs from 'query-string';
+import { GuardianList } from '@portkey/did-ui-react';
 import './index.less';
 
 export default function GuardianApproval() {
@@ -27,6 +28,7 @@ export default function GuardianApproval() {
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const navigate = useNavigate();
   const { state, search } = useLocation();
+  const originChainId = useOriginChainId();
   const [query, setQuery] = useState('');
   useEffect(() => {
     if (search) {
@@ -122,6 +124,16 @@ export default function GuardianApproval() {
 
   const renderContent = useMemo(
     () => (
+      // <GuardianList
+      //   chainId={originChainId}
+      //   expiredTime={expiredTime}
+      //   guardianList={_guardianList}
+      //   isErrorTip={isErrorTip}
+      //   onSend={onSendCodeHandler}
+      //   onVerifying={onVerifyingHandler}
+      //   onConfirm={onConfirmHandler}
+      //   onError={onError}
+      // />
       <div className="common-content1 guardian-approval-content flex-1 flex-column-between">
         <div>
           <div className="title">{t('Guardian Approval')}</div>

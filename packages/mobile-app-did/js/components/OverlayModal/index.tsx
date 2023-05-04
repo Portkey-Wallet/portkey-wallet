@@ -61,7 +61,7 @@ export function OverlayTransformView({
 }
 
 export default class OverlayModal extends React.Component {
-  static show(component: ReactNode, overlayProps: OverlayModalProps = {}) {
+  static show(component: ReactNode, overlayProps: OverlayModalProps = {}): number {
     const {
       position,
       style: propsStyle,
@@ -80,8 +80,9 @@ export default class OverlayModal extends React.Component {
     }
     propsStyle && style.push(propsStyle);
     propsContainerStyle && containerStyle.push(propsContainerStyle);
+    let overlayView;
     if (position === 'bottom') {
-      const overlayView = (
+      overlayView = (
         <Overlay.PopView
           {...DefaultOverlayProps}
           containerStyle={[GStyles.flex1, style]}
@@ -92,9 +93,8 @@ export default class OverlayModal extends React.Component {
           </OverlayTransformView>
         </Overlay.PopView>
       );
-      Overlay.show(overlayView);
     } else {
-      const overlayView = (
+      overlayView = (
         <Overlay.PopView
           {...DefaultOverlayProps}
           style={style}
@@ -104,14 +104,18 @@ export default class OverlayModal extends React.Component {
           {component}
         </Overlay.PopView>
       );
-      Overlay.show(overlayView);
     }
+    return Overlay.show(overlayView);
   }
 
   static hide() {
     elements = elements.filter(item => item); // Discard invalid data
     const topItem = elements.pop();
     topItem?.close?.();
+  }
+
+  static hideKey(key: number) {
+    Overlay.hide(key);
   }
 
   static destroy() {

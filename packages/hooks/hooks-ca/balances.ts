@@ -24,40 +24,40 @@ export function useCurrentNetworkBalances() {
 }
 
 // FIXME: test balance hook
-export function useCurrentELFBalances(dev?: boolean) {
-  const chainInfo = useCurrentChain('AELF');
-  const { AELF } = useCurrentWalletInfo();
-  const [balance, setBalance] = useState<string>();
-  const getBalances = useCallback(async () => {
-    if (!chainInfo?.endPoint || !dev) return;
-    try {
-      const chainStatus = await getElfChainStatus(chainInfo.endPoint);
-      const contractAddress = await getELFTokenAddress(chainInfo.endPoint, chainStatus.GenesisContractAddress);
-      const contract = await getELFContract(chainInfo.endPoint, contractAddress);
-      const balance = await contract.GetBalance.call({
-        symbol: 'ELF',
-        owner: AELF?.caAddress,
-      });
-      setBalance(
-        `caHash: ${AELF?.caHash}\n\n caAddress: ${AELF?.caAddress}\n\nbalance: ${unitConverter(
-          divDecimals(balance.balance, 8),
-        )}`,
-      );
-    } catch (error) {
-      console.debug(error, '====useCurrentELFBalances');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainInfo]);
-  const interval = useInterval(
-    () => {
-      if (!dev) interval.remove();
-      getBalances();
-    },
-    60000,
-    [getBalances],
-  );
-  return balance;
-}
+// export function useCurrentELFBalances(dev?: boolean) {
+//   const chainInfo = useCurrentChain('AELF');
+//   const { AELF } = useCurrentWalletInfo();
+//   const [balance, setBalance] = useState<string>();
+//   const getBalances = useCallback(async () => {
+//     if (!chainInfo?.endPoint || !dev) return;
+//     try {
+//       const chainStatus = await getElfChainStatus(chainInfo.endPoint);
+//       const contractAddress = await getELFTokenAddress(chainInfo.endPoint, chainStatus.GenesisContractAddress);
+//       const contract = await getELFContract(chainInfo.endPoint, contractAddress);
+//       const balance = await contract.GetBalance.call({
+//         symbol: 'ELF',
+//         owner: AELF?.caAddress,
+//       });
+//       setBalance(
+//         `caHash: ${AELF?.caHash}\n\n caAddress: ${AELF?.caAddress}\n\nbalance: ${unitConverter(
+//           divDecimals(balance.balance, 8),
+//         )}`,
+//       );
+//     } catch (error) {
+//       console.debug(error, '====useCurrentELFBalances');
+//     }
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, [chainInfo]);
+//   const interval = useInterval(
+//     () => {
+//       if (!dev) interval.remove();
+//       getBalances();
+//     },
+//     60000,
+//     [getBalances],
+//   );
+//   return balance;
+// }
 
 export const useAccountBalanceUSD = () => {
   const {

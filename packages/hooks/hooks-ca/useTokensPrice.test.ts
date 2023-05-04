@@ -27,6 +27,18 @@ describe('useGetCurrentAccountTokenPrice', () => {
     expect(assetSlice.fetchTokensPriceAsync).toHaveBeenCalledTimes(1);
   });
 
+  test('set ELF params, and return successfully', () => {
+    jest.spyOn(baseHooks, 'useAppCommonDispatch').mockReturnValue(() => async (call: () => void) => {
+      return call;
+    });
+    jest.spyOn(assetSlice, 'fetchTokensPriceAsync').mockReturnValue({} as any);
+    const { result } = renderHookWithProvider(useGetCurrentAccountTokenPrice, setupStore(AssetsState));
+    expect(result.current[1]).toBeInstanceOf(Function);
+
+    result.current[1]('ELF');
+    expect(assetSlice.fetchTokensPriceAsync).toHaveBeenCalledTimes(1);
+  });
+
   test('no accountToken data, and do not call fetchTokensPriceAsync method', () => {
     jest.spyOn(baseHooks, 'useAppCommonDispatch').mockReturnValue(() => async (call: () => void) => {
       return call;

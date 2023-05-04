@@ -638,8 +638,18 @@ describe('createWalletAsync', () => {
         },
       },
     };
-    const res = reducer(mockState as any, createWalletAction(payload));
-    expect(res.walletInfo?.caInfo.TESTNET).toEqual(payload.caInfo);
+    const state = {
+      walletAvatar: 'master1',
+      walletType: 'aelf' as WalletType,
+      walletName: 'Wallet 02',
+      chainList: [],
+      walletInfo: {
+        BIP44Path: 'BIP44Path',
+        address: 'address',
+      },
+    };
+    const res = reducer(state as any, createWalletAction(payload));
+    expect(res.walletInfo?.caInfo.MAIN).toEqual(payload.caInfo);
   });
   test('caInfo is not empty, will be update', async () => {
     const res = reducer(mockState as any, createWalletAction(payload));

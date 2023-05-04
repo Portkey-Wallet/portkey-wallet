@@ -297,13 +297,15 @@ export const assetsSlice = createSlice({
         const currentNFTSeriesItem = state.accountNFT.accountNFTList.find(
           ele => ele.symbol === symbol && ele.chainId === chainId,
         );
-        if (!currentNFTSeriesItem) return;
-        // if (!currentNFTSeriesItem?.children) currentNFTSeriesItem.children = [];
-        if (currentNFTSeriesItem?.children?.length > skipCount) return;
-        currentNFTSeriesItem.children = [...(currentNFTSeriesItem?.children ?? []), ...list];
-        currentNFTSeriesItem.skipCount = currentNFTSeriesItem.children.length;
-        currentNFTSeriesItem.totalRecordCount = totalRecordCount;
-        currentNFTSeriesItem.isFetching = false;
+        // if (!currentNFTSeriesItem) return;
+        if (currentNFTSeriesItem) {
+          // if (!currentNFTSeriesItem?.children) currentNFTSeriesItem.children = [];
+          if (currentNFTSeriesItem?.children?.length > skipCount) return;
+          currentNFTSeriesItem.children = [...currentNFTSeriesItem.children, ...list];
+          currentNFTSeriesItem.skipCount = currentNFTSeriesItem.children.length;
+          currentNFTSeriesItem.totalRecordCount = totalRecordCount;
+          currentNFTSeriesItem.isFetching = false;
+        }
       })
       .addCase(fetchNFTAsync.rejected, state => {
         state.accountToken.isFetching = false;

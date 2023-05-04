@@ -93,9 +93,9 @@ export const walletSlice = createSlice({
       .addCase(getWalletNameAsync.fulfilled, (state, action) => {
         if (action.payload) state.walletName = action.payload;
       })
-      .addCase(getWalletNameAsync.rejected, (_, action) => {
-        console.log(action.error);
-      })
+      // .addCase(getWalletNameAsync.rejected, (_, action) => {
+      //   // console.log(action.error);
+      // })
       .addCase(setWalletNameAction, (state, action) => {
         state.walletName = action.payload;
       })

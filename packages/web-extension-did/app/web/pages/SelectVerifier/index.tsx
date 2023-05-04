@@ -19,7 +19,6 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import './index.less';
-import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 export default function SelectVerifier() {
   const { verifierMap } = useGuardiansInfo();
@@ -61,12 +60,7 @@ export default function SelectVerifier() {
 
       setLoading(true);
 
-      const reCaptchaRes = await checkReCaptcha();
-
       const result = await verification.sendVerificationCode({
-        headers: {
-          reCaptchaToken: reCaptchaRes || '',
-        },
         params: {
           guardianIdentifier: loginAccount.guardianAccount.replaceAll(' ', ''),
           type: LoginType[loginAccount.loginType],

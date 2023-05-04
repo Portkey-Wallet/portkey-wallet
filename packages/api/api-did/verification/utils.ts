@@ -2,7 +2,6 @@ import { IStorage, StorageBaseLoader } from '@portkey-wallet/types/storage';
 import { request } from '@portkey-wallet/api/api-did';
 import { RequestConfig } from '../../types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 type VerifierInfo = {
   verifierSessionId: string;

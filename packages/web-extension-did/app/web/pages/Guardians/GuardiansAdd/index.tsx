@@ -36,7 +36,6 @@ import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
-import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
@@ -292,13 +291,7 @@ export default function AddGuardian() {
         dispatch(resetUserGuardianStatus());
         await userGuardianList({ caHash: walletInfo.caHash });
 
-        // check is need to call Google reCAPTCHA
-        const reCaptcha = await checkReCaptcha();
-
         const result = await verification.sendVerificationCode({
-          headers: {
-            reCaptchaToken: reCaptcha || '',
-          },
           params: {
             guardianIdentifier: guardianAccount,
             type: LoginType[guardianType as LoginType],

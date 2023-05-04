@@ -19,7 +19,6 @@ import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import qs from 'query-string';
 import './index.less';
-import { checkReCaptcha } from 'utils/lib/checkReCaptcha';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -49,8 +48,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
     [item.guardianType],
   );
 
-  const reCaptchaRes = useRef<string>('');
-
   const guardianSendCode = useCallback(
     async (item: UserGuardianItem) => {
       try {
@@ -61,9 +58,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
           }),
         );
         const result = await verification.sendVerificationCode({
-          headers: {
-            reCaptchaToken: reCaptchaRes.current,
-          },
           params: {
             guardianIdentifier: item?.guardianAccount,
             type: LoginType[item.guardianType],
@@ -105,10 +99,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
       try {
         setLoading(true);
 
-        // check is need to call Google reCAPTCHA
-        const reCaptcha = await checkReCaptcha();
-        reCaptchaRes.current = reCaptcha || '';
-
         if (query && query.indexOf('guardians') !== -1) {
           guardianSendCode(item);
           return;
@@ -118,9 +108,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
         }
 
         const result = await verification.sendVerificationCode({
-          headers: {
-            reCaptchaToken: reCaptchaRes.current,
-          },
           params: {
             guardianIdentifier: item?.guardianAccount,
             type: LoginType[item.guardianType],

@@ -1,6 +1,6 @@
 import CommonButton from 'components/CommonButton';
 import PageContainer from 'components/PageContainer';
-import RecaptchaModal, { RecaptchaInterface } from 'components/RecaptchaModal';
+import Recaptcha, { RecaptchaInterface } from 'components/Recaptcha';
 import { useLanguage } from 'i18n/hooks';
 import React, { useRef } from 'react';
 
@@ -10,7 +10,7 @@ const TestRecaptcha: React.FC = () => {
 
   return (
     <PageContainer>
-      <RecaptchaModal
+      <Recaptcha
         lang={language}
         ref={recaptcha}
         // test siteKey

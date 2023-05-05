@@ -99,6 +99,7 @@ export default function VerifierPage({ currentGuardian, guardianType, isInitStat
       if (!currentGuardian?.guardianAccount) throw 'Missing loginGuardianType';
       if (!guardianType && guardianType !== 0) throw 'Missing guardiansType';
       setLoading(true);
+
       const res = await verification.sendVerificationCode({
         params: {
           guardianIdentifier: currentGuardian.guardianAccount.replaceAll(' ', ''),

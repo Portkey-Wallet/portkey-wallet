@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { TextL, TextM, TextS, TextXXXL } from 'components/CommonText';
@@ -115,6 +115,7 @@ export default function SelectVerifier() {
       }
       Loading.hide();
     };
+
     ActionSheet.alert({
       title2: (
         <Text>

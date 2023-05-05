@@ -9,3 +9,10 @@ export interface CustomEventType extends Event {
 }
 
 export type RegisterStatus = undefined | null | 'notRegistered' | 'registeredNotGetCaAddress' | 'Registered';
+
+export type ReCaptchaResponseParams = {
+  response?: string;
+  error?: number;
+  message?: string;
+  name?: string;
+};

@@ -5,7 +5,7 @@ import LoginCard from './components/LoginCard';
 import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
 import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { NetworkType } from '@portkey-wallet/types';
@@ -27,6 +27,7 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
 import CustomModal from 'pages/components/CustomModal';
 import { IconType } from 'types/icon';
+import LoginModal from './components/LoginModal';
 import './index.less';
 
 export default function RegisterStart() {
@@ -39,6 +40,7 @@ export default function RegisterStart() {
   const fetchUserVerifier = useGuardianList();
   const changeNetworkModalText = useChangeNetworkText();
   const isMainnet = useIsMainnet();
+  const [open, setOpen] = useState<boolean>();
 
   const networkList = useNetworkList();
 
@@ -128,6 +130,7 @@ export default function RegisterStart() {
 
   const onSignFinish = useCallback(
     (data: LoginInfo) => {
+      dispatch(setOriginChainId(DefaultChainId));
       saveState(data);
       dispatch(resetGuardians());
       navigate('/register/select-verifier');
@@ -139,6 +142,10 @@ export default function RegisterStart() {
     async (loginInfo: LoginInfo) => {
       try {
         setLoading(true);
+        const { originChainId } = await getRegisterInfo({
+          loginGuardianIdentifier: loginInfo.guardianAccount,
+        });
+        dispatch(setOriginChainId(originChainId));
         saveState({ ...loginInfo, createType: 'login' });
         dispatch(resetGuardians());
         await fetchUserVerifier({ guardianIdentifier: loginInfo.guardianAccount });
@@ -152,22 +159,20 @@ export default function RegisterStart() {
         setLoading(false);
       }
     },
-    [dispatch, fetchUserVerifier, navigate, saveState, setLoading],
+    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading],
   );
-
+  const loginInfoRef = useRef<LoginInfo>();
   const onInputFinish = useCallback(
     async (loginInfo: LoginInfo) => {
+      loginInfoRef.current = loginInfo;
       if (isHasAccount?.current) {
-        const { originChainId } = await getRegisterInfo({
-          loginGuardianIdentifier: loginInfo.guardianAccount,
-        });
-        dispatch(setOriginChainId(originChainId));
-        return onLoginFinish(loginInfo);
+        if (type === 'create') return setOpen(true);
+        else return onLoginFinish(loginInfo);
       }
-      dispatch(setOriginChainId(DefaultChainId));
-      return onSignFinish(loginInfo);
+      if (type === 'create') return onSignFinish(loginInfo);
+      else return setOpen(true);
     },
-    [dispatch, getRegisterInfo, onLoginFinish, onSignFinish],
+    [onLoginFinish, onSignFinish, type],
   );
 
   const onSocialFinish: SocialLoginFinishHandler = useCallback(
@@ -211,7 +216,7 @@ export default function RegisterStart() {
   );
 
   return (
-    <div>
+    <div id="register-start-wrapper">
       <RegisterHeader />
       <div className="flex-between register-start-content">
         <div className="text-content">
@@ -248,6 +253,16 @@ export default function RegisterStart() {
           </div>
         </div>
       </div>
+      <LoginModal
+        open={open}
+        type={type}
+        onCancel={() => setOpen(false)}
+        onConfirm={() => {
+          if (!loginInfoRef.current) return setOpen(false);
+          if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
+          onSignFinish(loginInfoRef.current);
+        }}
+      />
     </div>
   );
 }

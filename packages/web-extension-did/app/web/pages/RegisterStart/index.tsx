@@ -162,17 +162,32 @@ export default function RegisterStart() {
     [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading],
   );
   const loginInfoRef = useRef<LoginInfo>();
+  // const onInputFinish = useCallback(
+  //   async (loginInfo: LoginInfo) => {
+  //     loginInfoRef.current = loginInfo;
+  //     if (isHasAccount?.current) {
+  //       if (type === 'create') return setOpen(true);
+  //       else return onLoginFinish(loginInfo);
+  //     }
+  //     if (type === 'create') return onSignFinish(loginInfo);
+  //     else return setOpen(true);
+  //   },
+  //   [onLoginFinish, onSignFinish, type],
+  // );
+
   const onInputFinish = useCallback(
     async (loginInfo: LoginInfo) => {
-      loginInfoRef.current = loginInfo;
       if (isHasAccount?.current) {
-        if (type === 'create') return setOpen(true);
-        else return onLoginFinish(loginInfo);
+        const { originChainId } = await getRegisterInfo({
+          loginGuardianIdentifier: loginInfo.guardianAccount,
+        });
+        dispatch(setOriginChainId(originChainId));
+        return onLoginFinish(loginInfo);
       }
-      if (type === 'create') return onSignFinish(loginInfo);
-      else return setOpen(true);
+      dispatch(setOriginChainId(DefaultChainId));
+      return onSignFinish(loginInfo);
     },
-    [onLoginFinish, onSignFinish, type],
+    [dispatch, getRegisterInfo, onLoginFinish, onSignFinish],
   );
 
   const onSocialFinish: SocialLoginFinishHandler = useCallback(

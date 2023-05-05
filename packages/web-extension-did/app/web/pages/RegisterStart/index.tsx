@@ -101,7 +101,6 @@ export default function RegisterStart() {
 
   const validateIdentifier = useCallback(
     async (identifier?: string) => {
-      setLoading(true);
       let isLoginAccount = false;
       try {
         const { originChainId } = await getRegisterInfo({
@@ -124,7 +123,7 @@ export default function RegisterStart() {
       }
       isHasAccount.current = isLoginAccount;
     },
-    [getRegisterInfo, setLoading],
+    [getRegisterInfo],
   );
 
   const saveState = useCallback(

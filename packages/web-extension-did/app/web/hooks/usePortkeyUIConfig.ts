@@ -1,19 +1,28 @@
 import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
-import { ConfigProvider, setLoading } from '@portkey/did-ui-react';
+import { ConfigProvider, ReCaptchaType, setLoading } from '@portkey/did-ui-react';
 import { localStorage } from 'redux-persist-webextension-storage';
 import { useMemo, useCallback } from 'react';
-import { socialLoginAction } from 'utils/lib/serviceWorkerAction';
+import { reCAPTCHAAction, socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 
 const usePortkeyUIConfig = () => {
   const currentNetwork = useCurrentNetworkInfo();
   const networkList = useNetworkList();
 
+  const customReCaptchaHandler: () => Promise<{
+    type: ReCaptchaType;
+    message?: any;
+  }> = useCallback(async () => {
+    const reCaptcha = await reCAPTCHAAction();
+    if (reCaptcha.error) return { type: 'error', message: reCaptcha.message };
+    return { type: 'success', message: reCaptcha.response };
+  }, []);
+
   const socialLoginHandler = useCallback(
     async (v: ISocialLogin) => {
       setLoading(true);
       const result: any = await socialLoginAction(v, currentNetwork.networkType);
-      console.log(result, 'result===socialLoginHandler');
+
       if (result.error) {
         setLoading(false);
         return { error: Error(result.message) };
@@ -48,8 +57,11 @@ const usePortkeyUIConfig = () => {
         defaultNetwork: currentNetwork.networkType,
         networkList: networkList,
       },
+      reCaptchaConfig: {
+        customReCaptchaHandler,
+      },
     });
-  }, [currentNetwork, networkList, socialLoginHandler]);
+  }, [currentNetwork, customReCaptchaHandler, networkList, socialLoginHandler]);
 };
 
 export default usePortkeyUIConfig;

@@ -4281,6 +4281,13 @@
   dependencies:
     nanoid "^3.3.3"
 
+"@matt-block/react-recaptcha-v2@^2.0.0":
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/@matt-block/react-recaptcha-v2/-/react-recaptcha-v2-2.0.1.tgz#4f3c6b540a5216e6154ca08d2243314a07ffc197"
+  integrity sha512-nQ1DjdjmfeG5dcKwqprfgBMdBO1MYlFcB4LtfMDsw8kmuxVuRsiVlAHsmARirmGutJ9zKQpvcYZqy2HbIoAH5w==
+  dependencies:
+    nanoid "^3.3.4"
+
 "@metamask/detect-provider@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@metamask/detect-provider/-/detect-provider-1.2.0.tgz#3667a7531f2a682e3c3a43eaf3a1958bdb42a696"
@@ -4782,33 +4789,35 @@
     "@portkey/utils" "^0.0.1-alpha.1.4"
     aelf-sdk "^3.2.44"
 
-"@portkey/did-ui-react@^0.0.1-alpha.4.9":
-  version "0.0.1-alpha.4.9"
-  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-0.0.1-alpha.4.9.tgz#e44489b3a485936803780c054a83c267d6d68a89"
-  integrity sha512-Qw4aQS/do9gcaVuQoqnIBDGZdqQFEPmL39y8Q0pRdC7Wu+mVNtqXPrwUmeUHLwQorYFp6w9oLwcA/5vXG7zoxA==
+"@portkey/did-ui-react@^0.0.1-alpha.7.1":
+  version "0.0.1-alpha.7.1"
+  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-0.0.1-alpha.7.1.tgz#d2faaac656416117e828cb847afebfade3f9382f"
+  integrity sha512-Lf3jaPe/1+sLmbWZTaBf9eRbAObKYw7U5+FZbG9w1tlhcjJlyzHxQaTYdI6nhVr+cI1poJBowY1IEE3C52iOFA==
   dependencies:
-    "@portkey/did" "^0.0.1-alpha.2.8"
+    "@matt-block/react-recaptcha-v2" "^2.0.0"
+    "@portkey/did" "^0.0.1-alpha.3.2"
     aelf-sdk "^3.2.40"
     antd "4.24.4"
     antd-mobile "5.26.0"
     bignumber.js "^9.1.0"
     clsx "^1.2.1"
+    query-string "^6.14.1"
     react-i18next "^11.18.6"
     react-qrcode-logo "2.9.0"
     react-use "^17.4.0"
     reactjs-social-login "^2.6.2"
     uuid "^8.3.2"
 
-"@portkey/did@^0.0.1-alpha.2.8":
-  version "0.0.1-alpha.2.8"
-  resolved "https://registry.npmjs.org/@portkey/did/-/did-0.0.1-alpha.2.8.tgz#e8f73e77a46ffb14344572916ad5dc3d676988ab"
-  integrity sha512-MoXVNS89jw6fJXnZy7PNubAMsePIdMXM1nMKrjpsVF2iFnyYVsNxzOjOl432TKb5jaNspYSbEUYeEJbcbqhkpg==
+"@portkey/did@^0.0.1-alpha.3.2":
+  version "0.0.1-alpha.3.2"
+  resolved "https://registry.npmjs.org/@portkey/did/-/did-0.0.1-alpha.3.2.tgz#3dd171cd7ad7696f98838e21a135abde4ec1b62f"
+  integrity sha512-aTrYjKyC9IST1mAd2xAUGEtRbheEaqmZVllPNVFYpjqTUOj+WwDRteYDCze4+e/6+8mC4ggonGbXo4MqoEmQZg==
   dependencies:
     "@portkey/accounts" "^0.0.1-alpha.1.4"
     "@portkey/contracts" "^0.0.1-alpha.1.6"
     "@portkey/graphql" "^0.0.1-alpha.1.6"
-    "@portkey/request" "^0.0.1-alpha.1.5"
-    "@portkey/services" "^0.0.1-alpha.1.9"
+    "@portkey/request" "^0.0.1-alpha.1.6"
+    "@portkey/services" "^0.0.1-alpha.2.2"
     "@portkey/types" "^0.0.1-alpha.1.5"
     "@portkey/utils" "^0.0.1-alpha.1.7"
     aelf-sdk "^3.2.44"
@@ -4824,21 +4833,21 @@
     graphql "^16.6.0"
     subscriptions-transport-ws "^0.11.0"
 
-"@portkey/request@^0.0.1-alpha.1.4", "@portkey/request@^0.0.1-alpha.1.5":
-  version "0.0.1-alpha.1.5"
-  resolved "https://registry.npmjs.org/@portkey/request/-/request-0.0.1-alpha.1.5.tgz#18fc82ee2917621316694469a46023cbe522f2a9"
-  integrity sha512-t/1fitglOgo0sHhjrVfScgjUSpnJFAB6w0dedUmb1Gxfuva9rKn4a1k3kDRa1PdMy2c+/Ne/rt7AtMFemAtZPw==
+"@portkey/request@^0.0.1-alpha.1.6":
+  version "0.0.1-alpha.1.6"
+  resolved "https://registry.npmjs.org/@portkey/request/-/request-0.0.1-alpha.1.6.tgz#11faa9490c0a3abebfbb3b47c12d38d8f031c4f2"
+  integrity sha512-PIw8TZrUXeAyLHj5vLk6n+fy6usT/h14/UOukv1whfjPA80o9XJ+s57vp+6qAqmSPj5VZzWCIpg/fCddjm2JyA==
   dependencies:
     "@portkey/types" "^0.0.1-alpha.1.4"
     query-string "^6.14.1"
 
-"@portkey/services@^0.0.1-alpha.1.9":
-  version "0.0.1-alpha.1.9"
-  resolved "https://registry.npmjs.org/@portkey/services/-/services-0.0.1-alpha.1.9.tgz#ed358aecf19c3727ccbb06d4012d4926ad9c3196"
-  integrity sha512-oNB6wAXy2vJjOZ5j7M3y472KXE5LJthDO/jpTCDJTHrDEoSCUKeBmEeOVLAKW1a6zAaLb7g0sR1Aa6+rVZbboA==
+"@portkey/services@^0.0.1-alpha.2.2":
+  version "0.0.1-alpha.2.2"
+  resolved "https://registry.npmjs.org/@portkey/services/-/services-0.0.1-alpha.2.2.tgz#a8863a3471925c192631feb1fff56371a5928276"
+  integrity sha512-Nk5cbblAMmgUnl+pDzPJV01ps6AKuiSS8Xqze1IHD/FnAVmZ8Yc4Qouvc0ZNdVWFYz13j9BBel/7UbWcJgOtdA==
   dependencies:
     "@portkey/graphql" "^0.0.1-alpha.1.6"
-    "@portkey/request" "^0.0.1-alpha.1.4"
+    "@portkey/request" "^0.0.1-alpha.1.6"
     "@portkey/types" "^0.0.1-alpha.1.4"
     aelf-sdk "^3.2.44"
 

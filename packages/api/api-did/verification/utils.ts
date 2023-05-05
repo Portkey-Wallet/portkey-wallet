@@ -76,12 +76,8 @@ export class Verification extends StorageBaseLoader {
   public async checkVerificationCode(config: RequestConfig) {
     const { guardianIdentifier, verifierId } = config.params || {};
     const key = (guardianIdentifier || '') + (verifierId || '');
-    try {
-      const req = await request.verify.checkVerificationCode(config);
-      this.delete(key);
-      return req;
-    } catch (error) {
-      throw error;
-    }
+    const req = await request.verify.checkVerificationCode(config);
+    this.delete(key);
+    return req;
   }
 }

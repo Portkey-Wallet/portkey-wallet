@@ -48,9 +48,12 @@ export class Verification extends StorageBaseLoader {
     if (endTime > Date.now()) {
       return info;
     } else {
-      delete this.verifierMap[key];
-      this.save();
+      this.delete(key);
     }
+  }
+  public delete(key: string) {
+    delete this.verifierMap[key];
+    this.save();
   }
   public async set(key: string, value: VerifierInfo) {
     this.verifierMap[key] = value;
@@ -67,6 +70,17 @@ export class Verification extends StorageBaseLoader {
       const { message } = error?.error || error || {};
       const item = this.get(key);
       if (message === IntervalErrorMessage && item) return item;
+      throw error;
+    }
+  }
+  public async checkVerificationCode(config: RequestConfig) {
+    const { guardianIdentifier, verifierId } = config.params || {};
+    const key = (guardianIdentifier || '') + (verifierId || '');
+    try {
+      const req = await request.verify.checkVerificationCode(config);
+      this.delete(key);
+      return req;
+    } catch (error) {
       throw error;
     }
   }

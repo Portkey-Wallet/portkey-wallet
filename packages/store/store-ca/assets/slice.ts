@@ -118,8 +118,6 @@ export const fetchNFTCollectionsAsync = createAsyncThunk(
     const response = await fetchNFTSeriesList({ caAddresses, caAddressInfos, skipCount: 0 });
     return { list: response.data, totalRecordCount: response.totalRecordCount, maxNFTCount };
     // }
-
-    // return { list: [], totalRecordCount };
   },
 );
 
@@ -297,9 +295,7 @@ export const assetsSlice = createSlice({
         const currentNFTSeriesItem = state.accountNFT.accountNFTList.find(
           ele => ele.symbol === symbol && ele.chainId === chainId,
         );
-        // if (!currentNFTSeriesItem) return;
         if (currentNFTSeriesItem) {
-          // if (!currentNFTSeriesItem?.children) currentNFTSeriesItem.children = [];
           if (currentNFTSeriesItem?.children?.length > skipCount) return;
           currentNFTSeriesItem.children = [...currentNFTSeriesItem.children, ...list];
           currentNFTSeriesItem.skipCount = currentNFTSeriesItem.children.length;

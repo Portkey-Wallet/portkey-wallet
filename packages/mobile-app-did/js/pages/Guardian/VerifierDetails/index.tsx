@@ -21,7 +21,6 @@ import { useGetCurrentCAContract } from 'hooks/contract';
 import { setLoginAccount } from 'utils/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansStatusItem } from '../types';
-import { request } from '@portkey-wallet/api/api-did';
 import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
@@ -105,7 +104,7 @@ export default function VerifierDetails() {
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
       Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
       try {
-        const rst = await request.verify.checkVerificationCode({
+        const rst = await verification.checkVerificationCode({
           params: {
             type: LoginType[guardianItem?.guardianType as LoginType],
             verificationCode: code,

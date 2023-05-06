@@ -54,7 +54,6 @@ const allowedMethod = [
   PortkeyMessageTypes.SOCIAL_LOGIN,
   WalletMessageTypes.REQUEST_ACCOUNTS,
   MethodMessageTypes.GET_WALLET_STATE,
-  // TODO SET_RECAPTCHA_CODE
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
   PortkeyMessageTypes.ACTIVE_LOCK_STATUS,
@@ -196,6 +195,9 @@ export default class ServiceWorkerInstantiate {
         case MethodMessageTypes.GET_WALLET_STATE:
           ServiceWorkerInstantiate.getWalletState(sendResponse);
           break;
+        case WalletMessageTypes.SET_RECAPTCHA_CODE_V2:
+          this.getRecaptcha(sendResponse, message.payload);
+          break;
         case WalletMessageTypes.SOCIAL_LOGIN:
           this.getSocialLogin(sendResponse, message.payload);
           break;
@@ -242,6 +244,10 @@ export default class ServiceWorkerInstantiate {
     } catch (error) {
       sendResponse(errorHandler(100001, error));
     }
+  }
+
+  async getRecaptcha(sendResponse: SendResponseFun, message: any) {
+    this.notificationServiceClose(sendResponse, { closeParams: message.params, promptType: 'windows' });
   }
 
   async getSocialLogin(sendResponse: SendResponseFun, message: any) {

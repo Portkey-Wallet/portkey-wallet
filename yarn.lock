@@ -18342,6 +18342,14 @@ lottie-react-native@^4.0.2:
     prop-types "^15.5.10"
     react-native-safe-modules "^1.0.3"
 
+lottie-react-native@^5.1.5:
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-5.1.5.tgz#6696fb95773639d04bbba332d753ab69669bccd0"
+  integrity sha512-xl6uEo50joQeIqso5SvPKt1uGBqMhgNgs+36S4725Nfigf4zAY23/I9QEEkJF+1BHq7wKCeYha2KafLTm20gqA==
+  dependencies:
+    invariant "^2.2.2"
+    react-native-safe-modules "^1.0.3"
+
 lottie-web@^5.9.6:
   version "5.9.6"
   resolved "https://registry.npmmirror.com/lottie-web/-/lottie-web-5.9.6.tgz#62ae68563355d3e04aa75d53dec3dd4bea0e57c9"
@@ -22521,11 +22529,6 @@ react-native-localize@^2.2.1:
   resolved "https://registry.npmmirror.com/react-native-localize/-/react-native-localize-2.2.4.tgz#3bc46ade48499ab9df61bf17a9b66633a5ba9bb9"
   integrity sha512-gVmbyAEQQnBQ8vKlAQchFfIISeId3qT6Lc7LHmKF39nsYWX9KN4PHuG6Hk+7gduMI6IHKeZGKcLsOdh6wvN6cg==
 
-react-native-minimizer@1.3.3:
-  version "1.3.3"
-  resolved "https://registry.npmmirror.com/react-native-minimizer/-/react-native-minimizer-1.3.3.tgz#4e6a253cb9b39ea2c7eeb93052c00836b6725c28"
-  integrity sha512-M0Jpyyy21lAVOkmH4kl0PKViPS81eEPMjdwAEcoHHe6XLcU/J/Ra5xuSPQdPL3zmsYoQxIh/ooe9chsa9DBDXA==
-
 react-native-pager-view@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.0.2.tgz#447b85fcb9f35225c4d6885c18689a7d30c181d9"
@@ -23541,6 +23544,11 @@ rlp@^2.0.0, rlp@^2.2.3, rlp@^2.2.4:
   integrity sha512-d5gdPmgQ0Z+AklL2NVXr/IoSjNZFfTVvQWzL/AM2AOcSzYP2xjlb0AC8YyCLc41MSNf6P6QVtjgPdmVtzb+4lQ==
   dependencies:
     bn.js "^5.2.0"
+
+rn-minimizer@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/rn-minimizer/-/rn-minimizer-1.0.0.tgz#1216e0a81f293ba77c98fb99547ee91722708b3d"
+  integrity sha512-ZaHw/8A0oKEpYntVCm5nzqcnHC0oTlpE+IoDglpE1ohD/weC0lqWVKgdILzL2dBWQAXDXSKpYOS/NLcq6IC2yA==
 
 rn-nodeify@^10.3.0:
   version "10.3.0"

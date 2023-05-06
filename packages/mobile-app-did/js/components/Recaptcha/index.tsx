@@ -1,6 +1,6 @@
 import React from 'react';
 import { forwardRef, useMemo, useState, useCallback, useRef, useImperativeHandle, ReactNode } from 'react';
-import { StyleSheet, ActivityIndicator, View, ModalProps, ViewStyle, StyleProp, Modal } from 'react-native';
+import { StyleSheet, View, ViewStyle, StyleProp } from 'react-native';
 
 import WebView, { WebViewMessageEvent, WebViewProps } from 'react-native-webview';
 import getTemplate from './getTemplate';
@@ -33,7 +33,6 @@ export type RecaptchaProps = {
   footerComponent?: ReactNode;
   loadingComponent?: ReactNode;
   webViewProps?: Omit<WebViewProps, 'source' | 'style' | 'onMessage' | 'ref'>;
-  modalProps?: Omit<ModalProps, 'visible' | 'onRequestClose'>;
   onVerify: (token: string) => void;
   onExpire?: (...args: any[]) => void;
   onError?: (error: string) => void;
@@ -58,7 +57,6 @@ const Recaptcha = forwardRef(function Recaptcha(
     footerComponent,
     loadingComponent,
     webViewProps,
-    modalProps,
     onVerify,
     onExpire,
     onError,
@@ -78,9 +76,9 @@ const Recaptcha = forwardRef(function Recaptcha(
   }: RecaptchaProps,
   ref,
 ) {
-  const isClosed = useRef(true);
+  const isClosed = useRef(false);
   const webViewRef = useRef<any>();
-  const [visible, setVisible] = useState(false);
+  const [, setVisible] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const isInvisibleSize = size === 'invisible';
@@ -130,7 +128,11 @@ const Recaptcha = forwardRef(function Recaptcha(
     (content: WebViewMessageEvent) => {
       try {
         const payload = JSON.parse(content.nativeEvent.data);
+
         if (payload.close && isInvisibleSize) {
+          handleClose();
+        }
+        if (payload.closeWebView) {
           handleClose();
         }
         if (payload.load) {
@@ -144,7 +146,7 @@ const Recaptcha = forwardRef(function Recaptcha(
           onError?.(payload.error[0]);
         }
         if (payload.verify) {
-          handleClose();
+          handleClose('verified');
           onVerify?.(payload.verify[0]);
         }
       } catch (err) {
@@ -178,16 +180,17 @@ const Recaptcha = forwardRef(function Recaptcha(
   const webViewStyles = useMemo(() => [styles.webView, style], [style]);
 
   const renderLoading = () => {
-    if (!loading && source) return null;
-    return <View style={styles.loadingContainer}>{loadingComponent || <ActivityIndicator size="large" />}</View>;
+    if ((!loading && source) || !loadingComponent) return null;
+    return <View style={styles.loadingContainer}>{loadingComponent}</View>;
   };
 
   return (
-    <Modal transparent {...modalProps} visible={visible} onRequestClose={handleClose}>
+    <>
       {headerComponent}
       <WebView
         ref={webViewRef}
         bounces={false}
+        incognito
         // allowsBackForwardNavigationGestures={false}
         originWhitelist={originWhitelist}
         onShouldStartLoadWithRequest={event => {
@@ -205,7 +208,7 @@ const Recaptcha = forwardRef(function Recaptcha(
       />
       {footerComponent}
       {renderLoading()}
-    </Modal>
+    </>
   );
 });
 

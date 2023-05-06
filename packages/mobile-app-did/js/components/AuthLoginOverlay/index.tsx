@@ -17,7 +17,7 @@ import fonts from 'assets/theme/fonts';
 import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
 import ActionSheet from 'components/ActionSheet';
-import minimizer from 'react-native-minimizer';
+import minimizer from 'rn-minimizer';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { AUTH_LOGIN_MAP } from 'constants/scheme';
 import { getFaviconUrlFromDomain } from 'utils';

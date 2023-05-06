@@ -26,7 +26,14 @@ export default async function closeOpenTabs(keepCurTabAlive = false) {
 export async function saveOpenTabs(tabId: string | number) {
   if (!tabId) return;
   const openedTabsId = await getLocalStorage('openTabsId');
-  const newTabsId = [...openedTabsId, tabId];
+
+  let newTabsId = [];
+  if (openedTabsId) {
+    newTabsId = [...openedTabsId, tabId];
+  } else {
+    newTabsId = [tabId];
+  }
+
   setLocalStorage({ openTabsId: newTabsId });
 }
 

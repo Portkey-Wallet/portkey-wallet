@@ -30,3 +30,9 @@ export const ELF_SYMBOL = 'ELF';
 export const NFT_SMALL_SIZE = 144;
 export const NFT_MIDDLE_SIZE = 294;
 export const NFT_LARGE_SIZE = 1008;
+
+export enum BalanceTab {
+  TOKEN = 'token',
+  NFT = 'nft',
+  ACTIVITY = 'activity',
+}

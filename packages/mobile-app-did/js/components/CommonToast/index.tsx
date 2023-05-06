@@ -38,15 +38,14 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   toastRow: {
-    maxWidth: '70%',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    maxWidth: '85%',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
     borderRadius: 6,
     shadowColor: defaultColors.shadow1,
     backgroundColor: defaultColors.bg1,
+    overflow: 'hidden',
     // shadow
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
@@ -56,13 +55,14 @@ const styles = StyleSheet.create({
   textStyle: {
     color: defaultColors.font3,
     marginLeft: pTd(10),
-    textAlign: 'center',
+    flexShrink: 1,
   },
 });
 
 const icons: any = {
   success: <Svg icon="success" size={pTd(22)} />,
   fail: <Svg icon="fail" size={pTd(22)} />,
+  warning: <Svg icon="warning" size={pTd(22)} />,
 } as const;
 
 const show = (...args: TostProps) => {
@@ -92,6 +92,11 @@ export default {
   },
   success(...args: TostProps) {
     if (!args[3]) args[3] = 'success';
+    Overlay.hide(element);
+    element = show(...args);
+  },
+  warn(...args: TostProps) {
+    if (!args[3]) args[3] = 'warning';
     Overlay.hide(element);
     element = show(...args);
   },

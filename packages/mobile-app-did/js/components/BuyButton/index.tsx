@@ -32,8 +32,11 @@ const BuyButton = (props: SendButtonType) => {
   const getCurrentCAContract = useGetCurrentCAContract(TOKEN_CLAIM_CONTRACT_CHAIN_ID);
   const claimToken = useCallback(async () => {
     if (!currentWallet.address || !currentWallet.caHash || !currentNetworkInfo.tokenClaimContractAddress) return;
-    Loading.show();
+    Loading.show({
+      text: 'Your ELF is on its way',
+    });
     try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
       const caContract = await getCurrentCAContract();
       const rst = await caContract.callSendMethod('ManagerForwardCall', currentWallet.address, {
         caHash: currentWallet.caHash,
@@ -47,7 +50,8 @@ const BuyButton = (props: SendButtonType) => {
       if (rst.error) {
         throw rst.error;
       }
-      // navigationService.navigate('Tab');
+      navigationService.navigate('Tab');
+      CommonToast.success(`Token successfully requested`);
     } catch (error) {
       console.log(error);
       CommonToast.fail(`Today's limit has been reached.`);

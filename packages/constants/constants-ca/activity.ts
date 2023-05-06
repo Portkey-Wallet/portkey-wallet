@@ -11,6 +11,7 @@ export enum TransactionTypes {
   UPDATE_GUARDIAN = 'UpdateGuardian',
   SET_GUARDIAN_FOR_LOGIN = 'SetGuardianForLogin',
   UNSET_GUARDIAN_FOR_LOGIN = 'UnsetGuardianForLogin',
+  REMOVE_OTHER_MANAGER_INFO = 'RemoveOtherManagerInfo',
 }
 
 export const transactionTypes = [

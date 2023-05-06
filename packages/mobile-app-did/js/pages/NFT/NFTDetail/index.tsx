@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, StatusBar, View, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, StatusBar, View, Image, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
@@ -18,6 +18,8 @@ import * as Clipboard from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
 import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
+import { ScreenWidth } from '@rneui/base';
+import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 
 export interface TokenDetailProps {
   route?: any;
@@ -73,47 +75,50 @@ const NFTDetail: React.FC<TokenDetailProps> = props => {
         <Svg icon="left-arrow" size={20} />
       </TouchableOpacity>
 
-      <View style={[styles.collection, GStyles.flexRow, GStyles.itemCenter]}>
-        <CommonAvatar imageUrl={imageUrl} title={collectionName} shapeType={'circular'} avatarSize={pTd(24)} />
-        <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>{collectionName}</TextM>
-      </View>
-      <TextXXL style={styles.tokenId}>{`#${tokenId}`}</TextXXL>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={[styles.collection, GStyles.flexRow, GStyles.itemCenter]}>
+          <CommonAvatar imageUrl={imageUrl} title={collectionName} shapeType={'circular'} avatarSize={pTd(24)} />
+          <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>{collectionName}</TextM>
+        </View>
+        <TextXXL style={styles.tokenId}>{`#${tokenId}`}</TextXXL>
 
-      <CommonAvatar title={alias} style={[imageLargeUrl ? styles.image1 : styles.image]} imageUrl={imageLargeUrl} />
+        <CommonAvatar title={alias} style={[imageLargeUrl ? styles.image1 : styles.image]} imageUrl={imageLargeUrl} />
 
-      <View>
-        <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>
-        <View style={[GStyles.flexRow, styles.rowWrap]}>
-          <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Contract address')}</TextM>
-          <View style={GStyles.flex1} />
-          <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatStr2EllipsisStr(tokenContractAddress)}</TextM>
-          <TouchableOpacity
-            style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]}
-            onPress={() => copyStr(tokenContractAddress)}>
-            <Svg icon="copy" size={pTd(13)} />
-          </TouchableOpacity>
+        <View style={styles.infoWrap}>
+          <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>
+          <View style={[GStyles.flexRow, styles.rowWrap]}>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Contract address')}</TextM>
+            <View style={GStyles.flex1} />
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatStr2EllipsisStr(tokenContractAddress)}</TextM>
+            <TouchableOpacity
+              style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]}
+              onPress={() => copyStr(tokenContractAddress)}>
+              <Svg icon="copy" size={pTd(13)} />
+            </TouchableOpacity>
+          </View>
+          <View style={[GStyles.flexRow, styles.rowWrap]}>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>
+            <View style={GStyles.flex1} />
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
+          </View>
+          <View style={[GStyles.flexRow, styles.rowWrap]}>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>
+            <View style={GStyles.flex1} />
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{symbol}</TextM>
+          </View>
+          <View style={[GStyles.flexRow, styles.rowWrap]}>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Total Supply')}</TextM>
+            <View style={GStyles.flex1} />
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{totalSupply ?? ''}</TextM>
+          </View>
         </View>
-        <View style={[GStyles.flexRow, styles.rowWrap]}>
-          <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>
-          <View style={GStyles.flex1} />
-          <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
-        </View>
-        <View style={[GStyles.flexRow, styles.rowWrap]}>
-          <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>
-          <View style={GStyles.flex1} />
-          <TextM style={[styles.leftTitle, FontStyles.font5]}>{symbol}</TextM>
-        </View>
-        <View style={[GStyles.flexRow, styles.rowWrap]}>
-          <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Total Supply')}</TextM>
-          <View style={GStyles.flex1} />
-          <TextM style={[styles.leftTitle, FontStyles.font5]}>{totalSupply ?? ''}</TextM>
-        </View>
-      </View>
+      </ScrollView>
 
-      <View style={styles.bottomSection}>
-        <TextXL style={[styles.symbolContent, FontStyles.font3]}>{`You have: ${balance}`}</TextXL>
+      <View style={[GStyles.flexCol, styles.bottomSection]}>
+        <TextM style={[styles.balance, FontStyles.font5, fonts.mediumFont]}>{`You have: ${balance}`}</TextM>
         <CommonButton
           title={t('Send')}
+          style={styles.sendBtn}
           type="primary"
           onPress={() => {
             navigationService.navigate('SendHome', {
@@ -147,10 +152,6 @@ export const styles = StyleSheet.create({
   tokenId: {
     ...fonts.mediumFont,
     lineHeight: pTd(24),
-    marginTop: pTd(8),
-  },
-  balance: {
-    lineHeight: pTd(20),
     marginTop: pTd(8),
   },
   amount: {
@@ -202,7 +203,26 @@ export const styles = StyleSheet.create({
     marginLeft: pTd(8),
   },
   bottomSection: {
+    backgroundColor: defaultColors.bg1,
+    position: 'absolute',
+    bottom: bottomBarHeight,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: defaultColors.border6,
+    width: ScreenWidth,
+    height: pTd(110),
+    paddingLeft: pTd(20),
+    paddingRight: pTd(20),
+  },
+  balance: {
+    width: '100%',
+    textAlign: 'center',
+    marginTop: pTd(10),
+  },
+  sendBtn: {
+    marginTop: pTd(16),
+    marginBottom: pTd(16),
+  },
+  infoWrap: {
+    marginBottom: pTd(150),
   },
 });

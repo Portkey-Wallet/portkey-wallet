@@ -4,8 +4,8 @@ import { View, StyleSheet, Keyboard } from 'react-native';
 import { TextL } from '../CommonText';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import Spinner from 'react-native-spinkit';
-import { FontStyles } from 'assets/theme/styles';
+import Lottie from 'lottie-react-native';
+import { pTd } from 'utils/unit';
 
 let elements: number[] = [];
 let timer: NodeJS.Timeout | null = null;
@@ -22,7 +22,7 @@ type ShowOptionsType = {
 function LoadingBody({ text }: { text?: string; iconType: IconType }) {
   return (
     <View style={GStyles.center}>
-      <Spinner type="Circle" color={FontStyles.font11.color} size={40} />
+      <Lottie source={require('./data.json')} style={{ width: pTd(100), height: pTd(100) }} autoPlay loop />
       <TextL style={styles.textStyles}>{text}</TextL>
     </View>
   );

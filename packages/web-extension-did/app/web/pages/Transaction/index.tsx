@@ -21,6 +21,7 @@ import { addressFormat } from '@portkey-wallet/utils';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 
 export interface ITransactionQuery {
   item: ActivityItemType;
@@ -80,7 +81,7 @@ export default function Transaction() {
 
   const nav = useNavigate();
   const onClose = useCallback(() => {
-    nav(-1);
+    nav('/', { state: { key: BalanceTab.ACTIVITY } });
   }, [nav]);
 
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);

@@ -18,12 +18,11 @@ export default function LoginModal({
       closable={false}
       open={open}
       width={320}
-      title={'Continue using this account?'}
+      title={'Continue with this account?'}
       onCancel={onCancel}>
       <p className="modal-content">
-        {type === 'login' &&
-          'This account has not been registered yet. Click confirm to help you complete the registration process'}
-        {type === 'create' && 'This account has already been registered. Click confirm to continue logging in.'}
+        {type === 'login' && 'This account has not been registered yet. Click "Confirm" to complete the registration.'}
+        {type === 'create' && 'This account already exists. Click "Confirm" to log in.'}
       </p>
       <div className="btn-wrapper">
         <Button onClick={onCancel}>Cancel</Button>

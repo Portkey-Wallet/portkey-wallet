@@ -1,11 +1,11 @@
 import { NetworkType } from '@portkey-wallet/types';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { message } from 'antd';
-import { JOIN_AUTH_URL } from 'constants/index';
+import { JOIN_AUTH_URL, RECAPTCHA_URL } from 'constants/index';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
-import { SendResponseParams } from 'types';
+import { ReCaptchaResponseParams, SendResponseParams } from 'types';
 import { setLocalStorage } from 'utils/storage/chromeStorage';
 
 export const completeRegistration = async () => {
@@ -40,4 +40,9 @@ export const setPinAction = async (pin: string) => {
 export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> =>
   await InternalMessage.payload(PortkeyMessageTypes.SOCIAL_LOGIN, {
     externalLink: `${JOIN_AUTH_URL}/${network}/${type}`,
+  }).send();
+
+export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> =>
+  await InternalMessage.payload(PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE, {
+    externalLink: `${RECAPTCHA_URL}`,
   }).send();

@@ -52,7 +52,7 @@ export function useCheckUpdate() {
 
   return useLockCallback(async () => {
     if (!currentVersion) return;
-    if (versionInfo && compareVersions(currentVersion, versionInfo.targetVersion) === -1) return;
+    if (versionInfo?.targetVersion && compareVersions(currentVersion, versionInfo.targetVersion) === -1) return;
     try {
       dispatch(
         setUpdateVersionInfo({

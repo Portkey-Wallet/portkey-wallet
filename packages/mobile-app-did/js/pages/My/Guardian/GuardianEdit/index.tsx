@@ -242,8 +242,8 @@ const GuardianEdit: React.FC = () => {
           title: t('Confirm'),
           onPress: async () => {
             try {
-              Loading.show();
               if ([LoginType.Email, LoginType.Phone].includes(guardianType)) {
+                Loading.show();
                 const req = await verification.sendVerificationCode({
                   params: {
                     type: LoginType[guardianType],

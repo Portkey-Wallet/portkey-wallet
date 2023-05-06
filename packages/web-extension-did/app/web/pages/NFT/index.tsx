@@ -6,6 +6,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import clsx from 'clsx';
 import './index.less';
 import { useCallback } from 'react';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 
 export default function NFT() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function NFT() {
     return (
       <div className={clsx(['nft-detail', isPrompt ? 'detail-page-prompt' : null])}>
         <div className="nft-detail-body">
-          <SettingHeader leftCallBack={() => navigate(-1)} />
+          <SettingHeader leftCallBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
           <div className="picture picture-common flex-center">
             {state.imageUrl ? (
               <img className="picture-common" src={state.imageUrl} />

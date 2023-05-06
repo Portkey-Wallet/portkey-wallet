@@ -93,7 +93,7 @@ export const customFetch: CustomFetchFun = (url, _config) => {
               _result
                 .text()
                 .then((text: string) => {
-                  const res = formatResponse(text);
+                  const res = formatResponse(text || `${result.url} ${result.status}`);
                   if ((result.status as number).toString()[0] !== '2' || !result.ok) {
                     reject(res ? res : _result.statusText);
                     return;

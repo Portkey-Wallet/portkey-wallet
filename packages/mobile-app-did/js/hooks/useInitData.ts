@@ -8,6 +8,7 @@ import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from './guardian';
 import useEffectOnce from './useEffectOnce';
+import { getPhoneCountryCode } from '@portkey-wallet/store/store-ca/misc/actions';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -27,6 +28,7 @@ export default function useInitData() {
       getCurrentCAViewContract();
       dispatch(getWalletNameAsync());
       dispatch(getSymbolImagesAsync());
+      dispatch(getPhoneCountryCode());
       // getGuardiansInfoWriteStore after getVerifierServers
       await getVerifierServers();
       getGuardiansInfoWriteStore({

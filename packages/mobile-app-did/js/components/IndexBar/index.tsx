@@ -9,7 +9,6 @@ import {
   Animated,
 } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
-import usePrevious from 'hooks/usePrevious';
 import { TextStyleType, ViewStyleType } from 'types/styles';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';

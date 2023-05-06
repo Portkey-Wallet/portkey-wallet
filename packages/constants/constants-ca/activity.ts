@@ -5,6 +5,12 @@ export enum TransactionTypes {
   SOCIAL_RECOVERY = 'SocialRecovery',
   REMOVE_MANAGER = 'RemoveManagerInfo',
   ADD_MANAGER = 'AddManagerInfo',
+  CREATE_CA_HOLDER = 'CreateCAHolder',
+  ADD_GUARDIAN = 'AddGuardian',
+  REMOVE_GUARDIAN = 'RemoveGuardian',
+  UPDATE_GUARDIAN = 'UpdateGuardian',
+  SET_GUARDIAN_FOR_LOGIN = 'SetGuardianForLogin',
+  UNSET_GUARDIAN_FOR_LOGIN = 'UnsetGuardianForLogin',
 }
 
 export const transactionTypes = [

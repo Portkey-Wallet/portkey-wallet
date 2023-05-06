@@ -134,5 +134,5 @@ export function formatWithCommas({
 export const formatAmountShow = (count: number | BigNumber | string, decimal = 4) => {
   const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
   if (bigCount.isNaN()) return '0';
-  return bigCount.decimalPlaces(decimal).toFormat();
+  return bigCount.decimalPlaces(decimal, BigNumber.ROUND_DOWN).toFormat();
 };

@@ -1,20 +1,19 @@
 import { Button, message } from 'antd';
 import PortKeyTitle from 'pages/components/PortKeyTitle';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
-import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setLocalStorage } from 'utils/storage/chromeStorage';
-import { createWallet, resetWallet, setCAInfo, setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { createWallet, resetWallet, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useTranslation } from 'react-i18next';
-import { VerificationType, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { VerificationType } from '@portkey-wallet/types/verifier';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
 import { useHardwareBack } from 'hooks/useHardwareBack';
 import CommonModal from 'components/CommonModal';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { setPasswordSeed } from 'store/reducers/user/slice';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import { SetPinAndAddManager, CreatePendingInfo, DIDWalletInfo } from '@portkey/did-ui-react';
@@ -29,24 +28,38 @@ export default function SetWalletPin() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { setLoading } = useLoading();
-  const { walletInfo } = useCurrentWallet();
   const [returnOpen, setReturnOpen] = useState<boolean>();
-  const { scanWalletInfo, scanCaWalletInfo, loginAccount } = useLoginInfo();
-  const network = useCurrentNetworkInfo();
+  const { scanWalletInfo, scanCaWalletInfo, loginAccount, registerVerifier } = useLoginInfo();
   const { userGuardianStatus } = useGuardiansInfo();
   const originChainId = useOriginChainId();
 
+  useEffect(() => {
+    if (state === 'scan' && (!scanWalletInfo || !scanCaWalletInfo)) {
+      message.error('Wallet information is wrong, please go back to scan the code and try again');
+      navigate('/register/start/scan');
+    }
+  }, [navigate, scanCaWalletInfo, scanWalletInfo, state]);
+
   const approvedList: GuardiansApproved[] = useMemo(() => {
-    return Object.values(userGuardianStatus ?? {})
-      .filter((guardian) => guardian.status === VerifyStatus.Verified)
-      .map((guardian) => ({
-        type: LoginType[guardian.guardianType] as AccountType,
-        identifier: guardian.guardianAccount,
-        verifierId: guardian.verifier?.id || '',
-        verificationDoc: guardian.verificationDoc || '',
-        signature: guardian.signature || '',
-      }));
-  }, [userGuardianStatus]);
+    if (state === 'register') {
+      return [
+        {
+          type: LoginType[loginAccount?.loginType as any] as AccountType,
+          identifier: loginAccount?.guardianAccount || '',
+          verifierId: registerVerifier?.verifierId || '',
+          verificationDoc: registerVerifier?.verificationDoc || '',
+          signature: registerVerifier?.signature || '',
+        },
+      ];
+    }
+    return Object.values(userGuardianStatus ?? {}).map((guardian) => ({
+      type: LoginType[guardian.guardianType] as AccountType,
+      identifier: guardian.guardianAccount,
+      verifierId: guardian.verifier?.id || '',
+      verificationDoc: guardian.verificationDoc || '',
+      signature: guardian.signature || '',
+    }));
+  }, [loginAccount, registerVerifier, state, userGuardianStatus]);
 
   const createByScan = useCallback(
     async (pin: string) => {
@@ -68,7 +81,7 @@ export default function SetWalletPin() {
       });
       dispatch(setPasswordSeed(pin));
       scanWallet?.address && sendScanLoginSuccess({ targetClientId: scanWallet.address });
-      await setPinAction(pin);
+      setPinAction(pin);
       navigate(`/success-page/${state}`);
     },
     [dispatch, navigate, scanCaWalletInfo, scanWalletInfo, state],
@@ -79,35 +92,30 @@ export default function SetWalletPin() {
       try {
         if (state === 'scan' && typeof values === 'string') return createByScan(values);
         if (typeof values !== 'object') throw values;
+        setLoading(true);
+        const result = await getHolderInfo({
+          chainId: originChainId,
+          caHash: values.caInfo.caHash,
+        });
+        setLoading(false);
 
-        if ((values as any).status !== 'pass') {
-          throw values;
-        } else {
-          const result = await getHolderInfo({
-            chainId: originChainId,
-            caHash: values.caInfo.caHash,
-          });
+        const managerList: any[] = result.managerInfos;
 
-          console.log(result, 'result===');
+        if (!managerList.find((info) => info?.address === values.walletInfo.address))
+          throw `${values.walletInfo.address} is not a manager`;
 
-          const managerList: any[] = result.managerInfos;
-
-          if (!managerList.find((info) => info?.address === values.walletInfo.address))
-            throw `${values.walletInfo.address} is not a manager`;
-
-          dispatch(
-            setCAInfo({
-              caInfo: values.caInfo,
-              pin: values.pin,
-              chainId: values.chainId,
-            }),
-          );
-          await setLocalStorage({
-            registerStatus: 'Registered',
-          });
-          const path = state ? 'register' : 'login';
-          navigate(`/success-page/${path}`);
-        }
+        dispatch(
+          setCAInfo({
+            caInfo: values.caInfo,
+            pin: values.pin,
+            chainId: values.chainId,
+          }),
+        );
+        await setLocalStorage({
+          registerStatus: 'Registered',
+        });
+        const path = state ? 'register' : 'login';
+        navigate(`/success-page/${path}`);
       } catch (error: any) {
         await setLocalStorage({
           registerStatus: null,
@@ -155,36 +163,35 @@ export default function SetWalletPin() {
 
   const onCreatePending = useCallback(
     async (info: CreatePendingInfo) => {
-      const managerInfo: ManagerInfo = {
-        managerUniqueId: info.sessionId,
-        requestId: info.requestId,
-        loginAccount: loginAccount?.guardianAccount as string,
-        type: loginAccount?.loginType as LoginType,
-        verificationType: state === 'login' ? VerificationType.communityRecovery : VerificationType.register,
-      };
-      const pin = info.pin;
-      dispatch(setPasswordSeed(pin));
-      !walletInfo.address
-        ? dispatch(
-            createWallet({
-              walletInfo: info.walletInfo,
-              pin,
-              caInfo: { managerInfo },
-            }),
-          )
-        : dispatch(
-            setManagerInfo({
-              networkType: network.networkType,
-              pin,
-              managerInfo,
-            }),
-          );
-      await setLocalStorage({
-        registerStatus: 'registeredNotGetCaAddress',
-      });
-      await setPinAction(pin);
+      try {
+        console.log('onCreatePending:', info);
+        const managerInfo: ManagerInfo = {
+          managerUniqueId: info.sessionId,
+          requestId: info.requestId,
+          loginAccount: loginAccount?.guardianAccount as string,
+          type: loginAccount?.loginType as LoginType,
+          verificationType: state === 'login' ? VerificationType.communityRecovery : VerificationType.register,
+        };
+        const pin = info.pin;
+        dispatch(setPasswordSeed(pin));
+        dispatch(
+          createWallet({
+            walletInfo: info.walletInfo,
+            pin,
+            caInfo: { managerInfo },
+          }),
+        );
+
+        await setLocalStorage({
+          registerStatus: 'registeredNotGetCaAddress',
+        });
+
+        await setPinAction(pin);
+      } catch (error) {
+        console.log('onCreatePending error:', error);
+      }
     },
-    [dispatch, loginAccount, network, state, walletInfo],
+    [dispatch, loginAccount, state],
   );
 
   return (

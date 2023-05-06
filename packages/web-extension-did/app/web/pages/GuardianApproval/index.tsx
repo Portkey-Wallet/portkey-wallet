@@ -1,9 +1,8 @@
 import { Button } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLoginInfo, useGuardiansInfo, useCommonState } from 'store/Provider/hooks';
+import { useLoginInfo, useGuardiansInfo, useCommonState, useAppDispatch } from 'store/Provider/hooks';
 import { VerifyStatus } from '@portkey-wallet/types/verifier';
 import { useNavigate, useLocation } from 'react-router';
-import { UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
 import { getApprovalCount } from '@portkey-wallet/utils/guardian';
 import clsx from 'clsx';
 import CommonTooltip from 'components/CommonTooltip';
@@ -18,8 +17,11 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import qs from 'query-string';
-import { GuardianList } from '@portkey/did-ui-react';
+import { GuardianList, UserGuardianStatus } from '@portkey/did-ui-react';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import type { AccountType } from '@portkey/services';
 import './index.less';
+import { setCurrentGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
@@ -47,8 +49,11 @@ export default function GuardianApproval() {
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(query);
 
   const userVerifiedList = useMemo(() => {
-    const tempVerifiedList = Object.values(userGuardianStatus ?? {});
-    let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
+    const tempVerifiedList: UserGuardianStatus[] = Object.values(userGuardianStatus ?? {}).map((guardian) => ({
+      ...guardian,
+      guardianType: LoginType[guardian.guardianType] as AccountType,
+    }));
+    let filterVerifiedList = tempVerifiedList;
     if (query === 'guardians/edit') {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);
     } else if (['guardians/del', 'guardians/add'].includes(query)) {
@@ -122,56 +127,79 @@ export default function GuardianApproval() {
     }
   }, [navigate, query]);
 
+  const dispatch = useAppDispatch();
+
+  const onSendCodeHandler = useCallback((result: UserGuardianStatus, index: number) => {
+    // const currentGuardian: UserGuardianItem = {
+    //   ...result,
+    //   guardianAccount: result.identifier,
+    //   isInitStatus: true,
+    // };
+    // currentGuardian.verifierInfo;
+    // dispatch(setCurrentGuardianAction(currentGuardian));
+    // dispatch(
+    //   setUserGuardianItemStatus({
+    //     key: item.key,
+    //     status: VerifyStatus.Verifying,
+    //   }),
+    // );
+    if (query && query.indexOf('removeManage') !== -1) {
+      navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
+    } else {
+      navigate('/login/verifier-account', { state: 'login' });
+    }
+  }, []);
+
   const renderContent = useMemo(
     () => (
-      // <GuardianList
-      //   chainId={originChainId}
-      //   expiredTime={expiredTime}
-      //   guardianList={_guardianList}
-      //   isErrorTip={isErrorTip}
-      //   onSend={onSendCodeHandler}
-      //   onVerifying={onVerifyingHandler}
-      //   onConfirm={onConfirmHandler}
-      //   onError={onError}
-      // />
-      <div className="common-content1 guardian-approval-content flex-1 flex-column-between">
-        <div>
-          <div className="title">{t('Guardian Approval')}</div>
-          <p className="description">{isExpired ? t('Expired') : t('Expire after 1 hour')}</p>
-          <div className="flex-between-center approve-count">
-            <span className="flex-row-center">
-              {t("Guardians' approval")}
-              <CommonTooltip placement="top" title={t('guardianApprovalTip')} />
-            </span>
-            <div>
-              <span className="already-approval">{alreadyApprovalLength}</span>
-              <span className="all-approval">{`/${approvalLength}`}</span>
-            </div>
-          </div>
-          <ul className={clsx('verifier-content', !isNotLessThan768 && 'popup-verifier-content')}>
-            {userVerifiedList?.map((item) => (
-              <GuardianItems
-                key={item.key}
-                disabled={alreadyApprovalLength >= approvalLength && item.status !== VerifyStatus.Verified}
-                isExpired={isExpired}
-                item={item}
-                loginAccount={loginAccount}
-              />
-            ))}
-          </ul>
-        </div>
-        {!isExpired && (
-          <div className={clsx(isPrompt ? 'recovery-wallet-btn-wrap' : 'btn-wrap')}>
-            <Button
-              type="primary"
-              className="recovery-wallet-btn"
-              disabled={alreadyApprovalLength <= 0 || alreadyApprovalLength !== approvalLength}
-              onClick={recoveryWallet}>
-              {t('Confirm')}
-            </Button>
-          </div>
-        )}
-      </div>
+      <GuardianList
+        chainId={originChainId}
+        expiredTime={guardianExpiredTime}
+        guardianList={userVerifiedList}
+        isErrorTip
+        onSend={onSendCodeHandler}
+        // onVerifying={onVerifyingHandler}
+        // onConfirm={onConfirmHandler}
+        // onError={onError}
+      />
+      // <div className="common-content1 guardian-approval-content flex-1 flex-column-between">
+      //   <div>
+      //     <div className="title">{t('Guardian Approval')}</div>
+      //     <p className="description">{isExpired ? t('Expired') : t('Expire after 1 hour')}</p>
+      //     <div className="flex-between-center approve-count">
+      //       <span className="flex-row-center">
+      //         {t("Guardians' approval")}
+      //         <CommonTooltip placement="top" title={t('guardianApprovalTip')} />
+      //       </span>
+      //       <div>
+      //         <span className="already-approval">{alreadyApprovalLength}</span>
+      //         <span className="all-approval">{`/${approvalLength}`}</span>
+      //       </div>
+      //     </div>
+      //     <ul className={clsx('verifier-content', !isNotLessThan768 && 'popup-verifier-content')}>
+      //       {userVerifiedList?.map((item) => (
+      //         <GuardianItems
+      //           key={item.key}
+      //           disabled={alreadyApprovalLength >= approvalLength && item.status !== VerifyStatus.Verified}
+      //           isExpired={isExpired}
+      //           item={item}
+      //           loginAccount={loginAccount}
+      //         />
+      //       ))}
+      //     </ul>
+      //   </div>
+      //   {!isExpired && (
+      //     <div className={clsx(isPrompt ? 'recovery-wallet-btn-wrap' : 'btn-wrap')}>
+      //       <Button
+      //         type="primary"
+      //         className="recovery-wallet-btn"
+      //         disabled={alreadyApprovalLength <= 0 || alreadyApprovalLength !== approvalLength}
+      //         onClick={recoveryWallet}>
+      //         {t('Confirm')}
+      //       </Button>
+      //     </div>
+      //   )}
+      // </div>
     ),
     [
       alreadyApprovalLength,

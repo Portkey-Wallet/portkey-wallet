@@ -197,7 +197,6 @@ export default function VerifierAccount() {
 
   const onReSend = useCallback(
     (res: { verifier: VerifierItem; verifierSessionId: string }) => {
-      //
       dispatch(
         setUserGuardianSessionIdAction({
           key: currentGuardian?.key ?? `${currentGuardian?.guardianAccount}&${currentGuardian?.verifier?.name}`,

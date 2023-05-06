@@ -67,6 +67,7 @@ export default function GuardiansView() {
 
   const handleSocialVerify = useCallback(
     async (v: ISocialLogin) => {
+      setLoading(true);
       const result = await socialLoginAction(v, curNet);
       const data = result.data;
       if (!data) throw 'Action error';

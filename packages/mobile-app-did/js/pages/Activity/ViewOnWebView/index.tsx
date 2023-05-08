@@ -12,7 +12,7 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { upDateRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import navigationService from 'utils/navigationService';
 import { ACH_REDIRECT_URL } from 'constants/common';
-import DappOperator from 'utils/dapp';
+import DappOperator from 'utils/dapp/operator';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,

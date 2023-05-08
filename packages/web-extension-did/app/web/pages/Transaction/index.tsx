@@ -22,6 +22,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 
 export interface ITransactionQuery {
   item: ActivityItemType;
@@ -264,21 +265,26 @@ export default function Transaction() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['transaction-detail-modal', isPrompt ? 'detail-page-prompt' : null])}>
-        <div className="header">
-          <CustomSvg type="Close2" onClick={onClose} />
-        </div>
-        <div className="transaction-info">
-          <div className="method-wrap">
-            <p className="method-name">
-              {transactionTypesMap(activityItem.transactionType, activityItem.nftInfo?.nftId)}
-            </p>
-            {isNft ? nftHeaderUI() : tokenHeaderUI()}
+        <div className="transaction-detail-body">
+          <div className="header">
+            <CustomSvg type="Close2" onClick={onClose} />
           </div>
-          {statusAndDateUI()}
-          {fromToUI()}
-          {networkUI()}
-          {transactionUI()}
-          {viewOnExplorerUI()}
+          <div className="transaction-info">
+            <div className="method-wrap">
+              <p className="method-name">
+                {transactionTypesMap(activityItem.transactionType, activityItem.nftInfo?.nftId)}
+              </p>
+              {isNft ? nftHeaderUI() : tokenHeaderUI()}
+            </div>
+            {statusAndDateUI()}
+            {fromToUI()}
+            {networkUI()}
+            {transactionUI()}
+          </div>
+        </div>
+        <div className="transaction-footer">
+          <div>{viewOnExplorerUI()}</div>
+          {isPrompt ? <PromptEmptyElement /> : null}
         </div>
       </div>
     );

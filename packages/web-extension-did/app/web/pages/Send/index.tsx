@@ -32,6 +32,7 @@ import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { AddressCheckError } from '@portkey-wallet/store/store-ca/assets/type';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 
 export type Account = { address: string; name?: string };
 
@@ -487,6 +488,7 @@ export default function Send() {
             </Button>
           </p>
         )}
+        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );
   }, [StageObj, btnDisabled, errorMsg, isPrompt, navigate, stage, symbol, t, toAccount, type, walletName]);

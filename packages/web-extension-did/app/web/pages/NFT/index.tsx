@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import './index.less';
 import { useCallback } from 'react';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 
 export default function NFT() {
   const navigate = useNavigate();
@@ -36,10 +37,13 @@ export default function NFT() {
             {/* <p className="information">Symbol information Symbol information Symbol information</p> */}
           </div>
         </div>
-        <div className="btn-wrap">
-          <Button type="primary" onClick={() => navigate(`/send/nft/${state.symbol}`, { state })}>
-            Send
-          </Button>
+        <div>
+          <div className="btn-wrap">
+            <Button type="primary" onClick={() => navigate(`/send/nft/${state.symbol}`, { state })}>
+              Send
+            </Button>
+          </div>
+          {isPrompt ? <PromptEmptyElement /> : null}
         </div>
       </div>
     );

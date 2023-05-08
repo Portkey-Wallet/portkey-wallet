@@ -1,6 +1,6 @@
 export enum TransactionTypes {
   TRANSFER = 'Transfer',
-  CROSS_CHAIN_TRANSFER = 'CrossChainTransfer', //
+  CROSS_CHAIN_TRANSFER = 'CrossChainTransfer', // CrossChain Transfer
   CROSS_CHAIN_RECEIVE_TOKEN = 'CrossChainReceiveToken',
   SOCIAL_RECOVERY = 'SocialRecovery', // Social Recovery
   ADD_MANAGER = 'AddManagerInfo', // Scan code login

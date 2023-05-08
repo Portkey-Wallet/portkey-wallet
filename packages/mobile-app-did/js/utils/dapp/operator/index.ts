@@ -6,6 +6,7 @@ import {
   RequestMessage,
   RequestResponse,
   RPCMethods,
+  RPCMethodsBase,
   RPCMethodsDemo,
   RPCMethodsUnimplemented,
 } from '../behaviour';
@@ -13,6 +14,7 @@ import handlerJS from '../webpageHandler';
 import DappOperationManager from '../manager';
 
 export default class DappOperator {
+  public url?: string;
   private static ins: DappOperator = new DappOperator();
   private webviewRef?: WebView | null;
 
@@ -89,26 +91,67 @@ export default class DappOperator {
           this.publishEventCallback(eventId, await DappOperationManager.handleGreetings());
           break;
         }
+        case RPCMethodsBase.CHAIN_ID: {
+          const { chainId } = await DappOperationManager.getIns().getChainId();
+          this.publishEventCallback(
+            eventId,
+            !(chainId.length > 0)
+              ? {
+                  code: RequestCode.INTERNAL_ERROR,
+                  msg: 'operation failed',
+                }
+              : {
+                  code: RequestCode.SUCCESS,
+                  data: chainId,
+                },
+          );
+          break;
+        }
+
+        case RPCMethodsBase.ACCOUNTS:
+        case RPCMethodsBase.REQUEST_ACCOUNTS:
+        case RPCMethodsBase.GET_PUBLIC_KEY:
+        case RPCMethodsBase.DECRYPT: {
+          DappOperationManager.getIns().authenticationCall(
+            eventId,
+            { hostName: getHostName(this.url ?? '') },
+            async () => this.handleAuthRequest(eventId, method),
+          );
+          break;
+        }
         case RPCMethodsUnimplemented.ADD_CHAIN:
         case RPCMethodsUnimplemented.SWITCH_CHAIN:
         case RPCMethodsUnimplemented.REQUEST_PERMISSIONS:
         case RPCMethodsUnimplemented.GET_PERMISSIONS:
         case RPCMethodsUnimplemented.NET_VERSION: {
-          await this.publishEventCallback(eventId, {
+          this.publishEventCallback(eventId, {
             code: RequestCode.UNIMPLEMENTED,
             msg: 'this method is not implemented',
           });
           break;
         }
-        default:
+        default: {
+          this.publishEventCallback(eventId, {
+            code: RequestCode.UNKNOWN_METHOD,
+            msg: 'unknown method',
+          });
+        }
       }
     } catch (e) {
       console.error(`error when handleRequest: ${method}, ${data}, ${eventId}`);
-      await this.publishEventCallback(eventId, {
+      this.publishEventCallback(eventId, {
         code: RequestCode.INTERNAL_ERROR,
         msg: 'internal error',
       });
     }
+  };
+
+  // not fully implemented
+  private handleAuthRequest = async (eventId: string, method: RPCMethodsBase) => {
+    this.publishEventCallback(eventId, {
+      code: RequestCode.UNIMPLEMENTED,
+      msg: 'this method is not implemented',
+    });
   };
 
   private executeJS = (js: string): void => {
@@ -119,3 +162,9 @@ export default class DappOperator {
     this.webviewRef.injectJavaScript(js);
   };
 }
+
+const getHostName = (url: string) => {
+  if (!url) return '';
+  const reg = /^http(s)?:\/\/(.*?)\//;
+  return reg.exec(url)?.[2] ?? '';
+};

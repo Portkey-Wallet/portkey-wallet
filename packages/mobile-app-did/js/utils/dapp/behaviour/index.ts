@@ -36,6 +36,7 @@ export enum RequestCode {
   ERROR_IN_PARAMS = -1,
   UNKNOWN_METHOD = -2,
   UNIMPLEMENTED = -3,
+  UNAUTHENTICATED = -4,
   SUCCESS = 0,
   INTERNAL_ERROR = 1,
   TIMEOUT = 2,
@@ -71,12 +72,6 @@ export default interface DappOperationHandler
   isPortkey: boolean;
 }
 
-export interface Auth {
-  name: string;
-  avatar?: string;
-  website?: string;
-}
-
 export enum WalletPermissions {
   ACCOUNTS = 'eth_accounts',
 }
@@ -85,6 +80,7 @@ export enum RPCMethodsBase {
   ACCOUNTS = 'eth_accounts',
   REQUEST_ACCOUNTS = 'eth_requestAccounts',
   DECRYPT = 'eth_decrypt',
+  CHAIN_ID = 'eth_chainId',
   GET_PUBLIC_KEY = 'eth_getEncryptionPublicKey',
 }
 
@@ -112,17 +108,9 @@ interface Web3OperationAdapterBase {
   /**
    * get current account address
    * remember that if a dapp doesn't have the permission to get the account address, it will return nothing or meaningless value
-   * @returns accountChainId
+   * @returns address
    */
-  getAccountAddress: () => Promise<{ accountChainId?: string }>;
-
-  /**
-   * use this API to connect to the current wallet provider
-   * @returns isSuccess marks whether the connection is success or not
-   * @returns accountChainId provides wallet chainId, if the connection is not working, it will be empty
-   * @info accountChainId is an array, because some wallet providers support multiple chainId
-   */
-  connectWallet: () => Promise<{ isSuccess: boolean; accountChainId: Array<string> }>;
+  getAccountAddress: () => Promise<{ address?: string }>;
 
   /**
    * decrypt message that encrypted by the account public key
@@ -165,6 +153,6 @@ interface Web3OperationAdapterExperimental {
   getPermissions: () => Promise<{ grantedPermissions: Array<WalletPermissions> }>;
 }
 
-export type Web3OperationAdapter = Web3OperationAdapterBase &
+export type Web3OperationAdapter = Partial<Web3OperationAdapterBase> &
   Partial<Web3OperationAdapterExperimental> &
   Partial<EthereumBehaviourAlias>;

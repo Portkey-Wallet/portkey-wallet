@@ -56,6 +56,7 @@ const ViewOnWebView: React.FC = () => {
 
   const handleNavigationStateChange = useCallback(
     (navState: any) => {
+      DappOperator.getIns().url = navState.url;
       if (webViewPageType === 'default') return;
       if (webViewPageType === 'ach') {
         if (navState.url.startsWith(ACH_REDIRECT_URL)) {
@@ -81,7 +82,10 @@ const ViewOnWebView: React.FC = () => {
         }
       />
       <WebView
-        ref={webViewRef}
+        ref={ref => {
+          webViewRef.current = ref;
+          webViewRef.current && opreator.current.init(webViewRef.current);
+        }}
         style={pageStyles.webView}
         source={{ uri: url ?? '' }}
         onLoadEnd={() => webViewRef.current && opreator.current.init(webViewRef.current)}

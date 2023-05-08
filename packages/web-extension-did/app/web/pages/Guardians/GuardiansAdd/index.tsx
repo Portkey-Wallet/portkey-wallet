@@ -194,6 +194,7 @@ export default function AddGuardian() {
   const handleSocialAuth = useCallback(
     async (v: ISocialLogin) => {
       try {
+        setLoading(true);
         const result = await socialLoginAction(v, currentNetwork);
         const data = result.data;
         if (!data) throw 'auth error';
@@ -222,11 +223,13 @@ export default function AddGuardian() {
         }
         if (result.error) throw result.message ?? result.Error;
       } catch (error) {
+        setLoading(false);
         const msg = handleErrorMessage(error);
         message.error(msg);
       }
+      setLoading(false);
     },
-    [currentNetwork],
+    [currentNetwork, setLoading],
   );
 
   const renderSocialGuardianAccount = useCallback(

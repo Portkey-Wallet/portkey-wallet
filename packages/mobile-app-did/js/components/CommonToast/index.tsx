@@ -8,6 +8,7 @@ import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { statusBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import Lottie from 'lottie-react-native';
 
 type TostProps = [
   text: string,
@@ -63,6 +64,7 @@ const icons: any = {
   success: <Svg icon="success" size={pTd(22)} />,
   fail: <Svg icon="fail" size={pTd(22)} />,
   warning: <Svg icon="warning" size={pTd(22)} />,
+  loading: <Lottie source={require('./loading.json')} style={{ height: pTd(22) }} autoPlay loop />,
 } as const;
 
 const show = (...args: TostProps) => {
@@ -92,6 +94,11 @@ export default {
   },
   success(...args: TostProps) {
     if (!args[3]) args[3] = 'success';
+    Overlay.hide(element);
+    element = show(...args);
+  },
+  loading(...args: TostProps) {
+    if (!args[3]) args[3] = 'loading';
     Overlay.hide(element);
     element = show(...args);
   },

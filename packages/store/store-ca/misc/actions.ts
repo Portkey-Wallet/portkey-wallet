@@ -2,8 +2,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { UpdateNotify } from '@portkey-wallet/types/types-ca/device';
 import { UpdateVersionParams } from './types';
 import { request } from '@portkey-wallet/api/api-did';
-import { CountryItem } from '@portkey-wallet/types/types-ca/country';
-import { countryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
+import { getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
+import { NetworkType } from '@portkey-wallet/types';
+import { MiscState } from './types';
+import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
 
 export const setUpdateVersionInfo = createAsyncThunk<UpdateNotify, UpdateVersionParams>(
   'wallet/setUpdateVersionInfo',
@@ -21,11 +23,23 @@ export const setUpdateVersionInfo = createAsyncThunk<UpdateNotify, UpdateVersion
   },
 );
 
-export const getPhoneCountryCode = createAsyncThunk<[string, CountryItem[]][], void>(
+export const getPhoneCountryCode = createAsyncThunk<MiscState['phoneCountryCodeIndexChainMap'], NetworkType>(
   'misc/getPhoneCountryCode',
-  async () => {
-    await new Promise(resolve => setTimeout(resolve, 3000));
+  async (network: NetworkType) => {
+    const networkInfo = NetworkList.find(item => item.networkType === network);
+    if (!networkInfo) {
+      throw new Error('networkInfo not found');
+    }
+    const result = await request.wallet.getPhoneCountryCode({
+      baseURL: networkInfo.apiUrl,
+    });
 
-    return countryCodeIndex;
+    if (result.data && Array.isArray(result.data)) {
+      return {
+        [network]: getCountryCodeIndex(result.data),
+      };
+    } else {
+      throw new Error('getPhoneCountryCode error');
+    }
   },
 );

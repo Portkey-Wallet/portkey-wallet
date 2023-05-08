@@ -17,7 +17,7 @@ import { FontStyles } from 'assets/theme/styles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import NoData from 'components/NoData';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
-import { useMisc } from 'hooks/store';
+import { usePhoneCountryCode } from 'hooks/usePhoneCountryCode';
 
 const IndexHeight = 56,
   SectionHeight = 20;
@@ -25,7 +25,7 @@ const IndexHeight = 56,
 export default function SelectCountry() {
   const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
 
-  const { phoneCountryCodeIndex: countryCodeIndex } = useMisc();
+  const countryCodeIndex = usePhoneCountryCode();
   const List = useMemo(() => countryCodeIndex.map(i => ({ index: i[0], items: i[1] })), [countryCodeIndex]);
 
   const [searchList, setSearchList] = useState<CountryItem[]>();

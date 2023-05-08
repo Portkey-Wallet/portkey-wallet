@@ -1,3 +1,4 @@
+import { NetworkType } from '@portkey-wallet/types';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import { UpdateNotify, VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
@@ -10,5 +11,7 @@ export interface UpdateVersionParams {
 
 export interface MiscState {
   versionInfo?: UpdateNotify;
-  phoneCountryCodeIndex: [string, CountryItem[]][];
+  phoneCountryCodeIndexChainMap: {
+    [T in NetworkType]?: [string, CountryItem[]][];
+  };
 }

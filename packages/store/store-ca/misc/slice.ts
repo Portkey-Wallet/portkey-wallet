@@ -1,10 +1,9 @@
-import { NetworkType } from '@portkey-wallet/types';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { getPhoneCountryCode, setUpdateVersionInfo } from './actions';
 import { MiscState } from './types';
 
 const initialState: MiscState = {
-  phoneCountryCodeIndex: [],
+  phoneCountryCodeIndexChainMap: {},
 };
 export const miscSlice = createSlice({
   name: 'misc',
@@ -16,7 +15,13 @@ export const miscSlice = createSlice({
         state.versionInfo = action.payload;
       })
       .addCase(getPhoneCountryCode.fulfilled, (state, action) => {
-        state.phoneCountryCodeIndex = action.payload;
+        state.phoneCountryCodeIndexChainMap = {
+          ...state.phoneCountryCodeIndexChainMap,
+          ...action.payload,
+        };
+      })
+      .addCase(getPhoneCountryCode.rejected, (_state, action) => {
+        console.log('getPhoneCountryCode error', action);
       });
   },
 });

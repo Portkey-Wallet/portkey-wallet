@@ -58,6 +58,7 @@ export const useCaInfoOnChain = () => {
   const fetch = useCallback(async () => {
     if (!chainList) return;
     if (!walletInfo.caHash) return;
+    const caHash = walletInfo.caHash;
     const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
     const pin = getSeedResult.data.privateKey;
     if (!pin) return;
@@ -68,7 +69,7 @@ export const useCaInfoOnChain = () => {
           getHolderInfoByChainId({
             chain,
             walletType: currentNetwork.walletType,
-            caHash: walletInfo.caHash ?? '',
+            caHash,
             pin,
           });
         }

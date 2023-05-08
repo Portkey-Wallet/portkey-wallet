@@ -101,7 +101,7 @@ export default function SelectVerifier() {
   const onConfirmAuth = useCallback(async () => {
     try {
       setLoading(true);
-      if (!loginAccount?.loginType) return;
+      if (!loginAccount?.loginType) throw 'loginType is invalid';
       const rst = await verifyToken(loginAccount.loginType, {
         accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''],
         id: loginAccount.guardianAccount,

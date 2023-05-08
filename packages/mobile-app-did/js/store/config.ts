@@ -6,6 +6,7 @@ import {
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import { walletSlice } from '@portkey-wallet/store/wallet/slice';
 import { contactSlice } from '@portkey-wallet/store/store-ca/contact/slice';
+import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import chainSlice from '@portkey-wallet/store/network/slice';
 import { tokenBalanceSlice } from '@portkey-wallet/store/tokenBalance/slice';
 import settingsSlice from '@portkey-wallet/store/settings/slice';
@@ -35,6 +36,7 @@ const reduxPersistConfig = {
   whitelist: [
     walletSlice.name,
     contactSlice.name,
+    miscSlice.name,
     tokenBalanceSlice.name,
     settingsSlice.name,
     chainSlice.name,

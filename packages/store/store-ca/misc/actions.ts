@@ -2,7 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { UpdateNotify } from '@portkey-wallet/types/types-ca/device';
 import { UpdateVersionParams } from './types';
 import { request } from '@portkey-wallet/api/api-did';
-import { getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
 import { NetworkType } from '@portkey-wallet/types';
 import { MiscState } from './types';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
@@ -23,7 +22,7 @@ export const setUpdateVersionInfo = createAsyncThunk<UpdateNotify, UpdateVersion
   },
 );
 
-export const getPhoneCountryCode = createAsyncThunk<MiscState['phoneCountryCodeIndexChainMap'], NetworkType>(
+export const getPhoneCountryCode = createAsyncThunk<MiscState['phoneCountryCodeListChainMap'], NetworkType>(
   'misc/getPhoneCountryCode',
   async (network: NetworkType) => {
     const networkInfo = NetworkList.find(item => item.networkType === network);
@@ -36,7 +35,7 @@ export const getPhoneCountryCode = createAsyncThunk<MiscState['phoneCountryCodeI
 
     if (result.data && Array.isArray(result.data)) {
       return {
-        [network]: getCountryCodeIndex(result.data),
+        [network]: result.data,
       };
     } else {
       throw new Error('getPhoneCountryCode error');

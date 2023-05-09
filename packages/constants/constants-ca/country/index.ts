@@ -21,7 +21,7 @@ export const countryCode = getCountryCodeJSON(countryCodeList);
 
 export const countryCodeIndex = getCountryCodeIndex(countryCodeList);
 
-export const countryCodeFilter = (filterFelid: string) => {
+export const countryCodeFilter = (filterFelid: string, countryCodeList: CountryItem[]) => {
   if (!filterFelid) return countryCodeList;
   filterFelid = filterFelid.toLocaleLowerCase();
   if (/\d/.test(filterFelid)) {
@@ -43,6 +43,10 @@ export const countryCodeFilter = (filterFelid: string) => {
   } else {
     return countryCodeList.filter(country => country.country.toLocaleLowerCase().includes(filterFelid));
   }
+};
+
+export const countryCodeFilterStatic = (filterFelid: string) => {
+  return countryCodeFilter(filterFelid, countryCodeList);
 };
 
 export const DefaultCountry = { country: 'Singapore', code: '65', iso: 'SG' };

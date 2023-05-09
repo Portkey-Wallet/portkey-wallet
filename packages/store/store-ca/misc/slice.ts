@@ -3,7 +3,7 @@ import { getPhoneCountryCode, setUpdateVersionInfo } from './actions';
 import { MiscState } from './types';
 
 const initialState: MiscState = {
-  phoneCountryCodeIndexChainMap: {},
+  phoneCountryCodeListChainMap: {},
 };
 export const miscSlice = createSlice({
   name: 'misc',
@@ -15,8 +15,8 @@ export const miscSlice = createSlice({
         state.versionInfo = action.payload;
       })
       .addCase(getPhoneCountryCode.fulfilled, (state, action) => {
-        state.phoneCountryCodeIndexChainMap = {
-          ...state.phoneCountryCodeIndexChainMap,
+        state.phoneCountryCodeListChainMap = {
+          ...state.phoneCountryCodeListChainMap,
           ...action.payload,
         };
       })

@@ -1,7 +1,7 @@
 import CommonModal from 'components/CommonModal';
 import { useAppDispatch, useCustomModal } from 'store/Provider/hooks';
 import { setCountryModal } from 'store/reducers/modal/slice';
-import { countryCodeFilter } from '@portkey-wallet/constants/constants-ca/country';
+import { countryCodeFilterStatic } from '@portkey-wallet/constants/constants-ca/country';
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import BackHeader from 'components/BackHeader';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +19,7 @@ export default function CountryCode() {
   const { t } = useTranslation();
   const timer = useRef<any>(null);
 
-  const filterList = useMemo(() => countryCodeFilter(searchVal), [searchVal]);
+  const filterList = useMemo(() => countryCodeFilterStatic(searchVal), [searchVal]);
 
   const debounce = useCallback((fn: () => void, delay = 500) => {
     clearTimeout(timer.current);

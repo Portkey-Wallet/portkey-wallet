@@ -1,4 +1,4 @@
-import { getLocalStorage, removeLocalStorage } from 'utils/storage/chromeStorage';
+import { removeLocalStorage } from 'utils/storage/chromeStorage';
 
 export default class WalletUtil {
   // static async getWalletInfo() {

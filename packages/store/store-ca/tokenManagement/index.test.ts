@@ -49,7 +49,7 @@ describe('clearMarketToken', () => {
         },
       ],
     };
-    const newState = reducer(mockPrevState, clearMarketToken({}));
+    const newState = reducer(mockPrevState, clearMarketToken());
     expect(newState.tokenDataShowInMarket).toEqual([]);
   });
 });

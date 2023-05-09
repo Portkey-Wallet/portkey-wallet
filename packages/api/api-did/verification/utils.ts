@@ -41,7 +41,7 @@ export class Verification extends StorageBaseLoader {
   public async save() {
     this._store.setItem(this._defaultKeyName, JSON.stringify(this.verifierMap));
   }
-  public get(key: string) {
+  public get(key: string): void | VerifierInfo {
     const info = this.verifierMap[key];
     if (!info) return;
     const endTime = info.time + this._expirationTime;

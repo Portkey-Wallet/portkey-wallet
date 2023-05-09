@@ -123,24 +123,24 @@ export const getNextBIP44Path: GetNextBIP44Path = BIP44Path => {
   return BIPArr.join('/');
 };
 
-export function checkPasswordInput(password?: string) {
+export function checkPasswordInput(password?: string): void | string {
   if (!password || password.length < 8) return PasswordErrorMessage.passwordNotLong;
   if (!isValidPassword(password)) return PasswordErrorMessage.invalidPassword;
 }
 
-export function checkWalletNameInput(walletName?: string) {
+export function checkWalletNameInput(walletName?: string): void | string {
   if (!walletName) return WalletNameErrorMessage.enterWalletName;
   if (walletName.length > 30) return WalletNameErrorMessage.walletNameToLong;
   if (!isValidWalletName(walletName)) return WalletNameErrorMessage.invalidWalletName;
 }
 
-export function checkAccountNameInput(accountName?: string) {
+export function checkAccountNameInput(accountName?: string): void | string {
   if (!accountName) return;
   if (accountName.length > 30) return AccountNameErrorMessage.walletNameToLong;
   if (!isValidWalletName(accountName)) return AccountNameErrorMessage.invalidWalletName;
 }
 
-export function checkPinInput(pin?: string) {
+export function checkPinInput(pin?: string): void | string {
   if (isExtension()) {
     if (!pin || pin.length < 6) return PinErrorMessage.PinNotLong;
     if (!isValidPin(pin)) return PinErrorMessage.invalidPin;

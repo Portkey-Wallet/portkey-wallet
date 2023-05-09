@@ -11,7 +11,7 @@ export interface UpdateVersionParams {
 
 export interface MiscState {
   versionInfo?: UpdateNotify;
-  phoneCountryCodeIndexChainMap: {
-    [T in NetworkType]?: [string, CountryItem[]][];
+  phoneCountryCodeListChainMap: {
+    [T in NetworkType]?: CountryItem[];
   };
 }

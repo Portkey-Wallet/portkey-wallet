@@ -1,5 +1,5 @@
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
-import { countryCodeFilter, countryCodeList } from '@portkey-wallet/constants/constants-ca/country';
+import { countryCodeFilterStatic, countryCodeList } from '@portkey-wallet/constants/constants-ca/country';
 import { Input } from 'antd';
 import clsx from 'clsx';
 import CustomSvg from 'components/CustomSvg';
@@ -64,7 +64,7 @@ export default function AreaCode({ open, value, onChange, onCancel }: AreaCodePr
   const noDate = useMemo(() => <div className="flex-center no-search-result">There is no search result.</div>, []);
 
   const filterList = useMemo(() => {
-    const list = countryCodeFilter(searchVal);
+    const list = countryCodeFilterStatic(searchVal);
     if (!list.length) return noDate;
     return list.map((country) => item(country));
   }, [item, noDate, searchVal]);

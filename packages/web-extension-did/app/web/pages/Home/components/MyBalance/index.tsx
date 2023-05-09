@@ -27,7 +27,7 @@ import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
 import { FaucetUrl } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
-import EmptyElement from 'pages/components/EmptyElement';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
@@ -117,7 +117,7 @@ export default function MyBalance() {
     [navTarget, navigate],
   );
 
-  const { isNotLessThan768 } = useCommonState();
+  const { isNotLessThan768, isPrompt } = useCommonState();
   const SelectTokenELe = useMemo(() => {
     const title = navTarget === 'receive' ? 'Select Token' : 'Select Assets';
     const searchPlaceHolder = navTarget === 'receive' ? 'Search Token' : 'Search Assets';
@@ -190,7 +190,7 @@ export default function MyBalance() {
       />
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
-      <EmptyElement />
+      {isPrompt ? <PromptEmptyElement className="empty-element" /> : null}
     </div>
   );
 }

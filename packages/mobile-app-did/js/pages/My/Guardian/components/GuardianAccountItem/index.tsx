@@ -29,14 +29,18 @@ const GuardianAccountItem = ({ guardian }: GuardianAccountItemProps) => {
     if (!guardian) return <></>;
     if (!guardian.firstName) {
       return (
-        <TextM numberOfLines={1} style={GStyles.flex1}>
+        <TextM
+          numberOfLines={[LoginType.Apple, LoginType.Google].includes(guardian.guardianType) ? 1 : 2}
+          style={GStyles.flex1}>
           {guardianAccount}
         </TextM>
       );
     }
     return (
       <View style={GStyles.flex1}>
-        <TextM style={styles.firstNameStyle}>{guardian.firstName}</TextM>
+        <TextM style={styles.firstNameStyle} numberOfLines={1}>
+          {guardian.firstName}
+        </TextM>
         <TextS style={FontStyles.font3} numberOfLines={1}>
           {guardianAccount}
         </TextS>

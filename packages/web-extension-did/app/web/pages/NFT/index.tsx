@@ -9,7 +9,8 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
-import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';       
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
@@ -80,6 +81,7 @@ export default function NFT() {
             Send
           </Button>
         </div>
+        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );
   }, [isPrompt, navigate, renderDetail, state]);

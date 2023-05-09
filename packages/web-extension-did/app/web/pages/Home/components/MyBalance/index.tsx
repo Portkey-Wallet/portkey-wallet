@@ -18,7 +18,6 @@ import {
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { useIsTestnet } from 'hooks/useNetwork';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
 import { fetchBuyFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
@@ -26,9 +25,11 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
-import './index.less';
+import { FaucetUrl } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import './index.less';
 
 export interface TransactionResult {
   total: number;
@@ -51,7 +52,7 @@ export default function MyBalance() {
   const appDispatch = useAppDispatch();
   const caAddresses = useCaAddresses();
   const chainIdArray = useChainIdList();
-  const isTestNet = useIsTestnet();
+  const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
   const renderTabsData = useMemo(
@@ -89,13 +90,13 @@ export default function MyBalance() {
     appDispatch(getWalletNameAsync());
     appDispatch(getSymbolImagesAsync());
     // appDispatch(fetchSellFiatListAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isTestNet, state?.key]);
+  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
-    !isTestNet && appDispatch(fetchBuyFiatListAsync());
+    isMainNet && appDispatch(fetchBuyFiatListAsync());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTestNet]);
+  }, [isMainNet]);
 
   const onSelectedToken = useCallback(
     (v: AccountAssetItem, type: 'token' | 'nft') => {
@@ -154,18 +155,24 @@ export default function MyBalance() {
   }, []);
 
   const handleBuy = useCallback(() => {
-    const path = isTestNet ? '/buy-test' : '/buy';
-    navigate(path);
-  }, [isTestNet, navigate]);
+    if (isMainNet) {
+      navigate('/buy');
+    } else {
+      const openWinder = window.open(FaucetUrl, '_blank');
+      if (openWinder) {
+        openWinder.opener = null;
+      }
+    }
+  }, [isMainNet, navigate]);
 
   return (
     <div className="balance">
       <div className="wallet-name">{walletName}</div>
       <div className="balance-amount">
-        {isTestNet ? (
-          <span className="dev-mode amount">Dev Mode</span>
-        ) : (
+        {isMainNet ? (
           <span className="amount">{`$ ${accountBalanceUSD}`}</span>
+        ) : (
+          <span className="dev-mode amount">Dev Mode</span>
         )}
       </div>
       <BalanceCard

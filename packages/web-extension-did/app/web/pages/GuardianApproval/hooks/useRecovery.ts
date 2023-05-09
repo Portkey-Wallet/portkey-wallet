@@ -9,6 +9,7 @@ import {
 import aes from '@portkey-wallet/utils/aes';
 import { message } from 'antd';
 import useGuardianList from 'hooks/useGuardianList';
+import ModalTip from 'pages/components/ModalTip';
 import { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
@@ -78,7 +79,12 @@ export const useRecovery = () => {
       getGuardianList({ caHash: walletInfo.caHash });
       setLoading(false);
       state === 'guardians/add' && message.success('Guardians Added');
-      navigate('/setting/guardians');
+      ModalTip({
+        content: 'Requested successfully',
+        onClose: () => {
+          navigate('/setting/guardians');
+        },
+      });
     } catch (error: any) {
       setLoading(false);
       console.log('---op-guardian-error', error);

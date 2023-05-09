@@ -29,6 +29,7 @@ export default function SetNewPinForm({
       form={form}
       requiredMark={false}
       layout="vertical"
+      onFinish={onSave}
       onFinishFailed={onFinishFailed}
       autoComplete="off">
       <div className="form-content">
@@ -47,10 +48,10 @@ export default function SetNewPinForm({
             <Button
               className="submit-btn"
               type="primary"
+              htmlType="submit"
               disabled={
                 !form?.isFieldsTouched(true) || !!form?.getFieldsError().filter(({ errors }) => errors.length).length
-              }
-              onClick={onSave}>
+              }>
               {btnText}
             </Button>
           )}

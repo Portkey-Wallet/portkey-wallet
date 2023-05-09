@@ -43,7 +43,7 @@ export default function Referral({
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
 
-  const onLogin = useOnLogin();
+  const onLogin = useOnLogin(type === PageType.login);
   const onAppleSign = useCallback(async () => {
     try {
       Loading.show();

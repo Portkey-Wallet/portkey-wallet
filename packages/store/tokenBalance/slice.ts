@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { tokenBalanceState, Symbol, Account } from '@portkey-wallet/types/types-eoa/tokenBalance';
+import { tokenBalanceState, Symbol } from '@portkey-wallet/types/types-eoa/tokenBalance';
 
 export const initialState: tokenBalanceState = {
   balances: {},

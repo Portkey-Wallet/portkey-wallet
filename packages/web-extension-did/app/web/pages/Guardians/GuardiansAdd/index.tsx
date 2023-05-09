@@ -36,6 +36,7 @@ import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
+import { MessageType } from 'antd/lib/message';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
@@ -433,7 +434,7 @@ export default function AddGuardian() {
     navigate('/setting/guardians');
   }, [dispatch, navigate]);
 
-  const handleCheck = useCallback(() => {
+  const handleCheck = useCallback((): void | MessageType => {
     if (guardianType === LoginType.Email) {
       if (!EmailReg.test(emailVal as string)) {
         setEmailErr(EmailError.invalidEmail);

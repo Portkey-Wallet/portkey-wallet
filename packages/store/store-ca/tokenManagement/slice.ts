@@ -1,8 +1,5 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { ChainItemType } from '@portkey-wallet/types/chain';
-import { AccountAssets, TokenItemType, TokenState } from '@portkey-wallet/types/types-ca/token';
-import { AccountType } from '@portkey-wallet/types/wallet';
-// import { isSameTypeToken } from '@portkey-wallet/utils/token';
+import { createSlice } from '@reduxjs/toolkit';
+import { TokenState } from '@portkey-wallet/types/types-ca/token';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from './action';
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 
@@ -21,7 +18,7 @@ export const tokenManagementSlice = createSlice({
   name: 'tokenManagement',
   initialState,
   reducers: {
-    clearMarketToken: (state, action: PayloadAction<any>) => {
+    clearMarketToken: state => {
       console.log('initCurrentAccountToken');
       state.tokenDataShowInMarket = [];
     },
@@ -37,7 +34,7 @@ export const tokenManagementSlice = createSlice({
         // state.status = 'loading';
       })
       .addCase(fetchAllTokenListAsync.fulfilled, (state, action) => {
-        const { list, totalRecordCount } = action.payload;
+        const { list } = action.payload;
         const tmpToken: TokenItemShowType[] = list.map(item => ({
           isAdded: item.isDisplay,
           isDefault: item.isDefault,

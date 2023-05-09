@@ -44,7 +44,7 @@ export default function QueryPage() {
     setLoading(0.5);
     InternalMessage.payload(InternalMessageTypes.GET_SEED)
       .send()
-      .then((res) => {
+      .then((res): any => {
         if (!res?.data?.privateKey) return setLoading(false);
         fetchCreateWalletResult(res.data.privateKey);
       });

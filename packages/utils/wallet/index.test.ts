@@ -81,7 +81,7 @@ describe('formatWalletInfo', () => {
   });
   test('Valid input, check generate AESEncryptPrivateKey and AESEncryptMnemonic', () => {
     aes.encrypt = jest.fn();
-    const res = formatWalletInfo(walletInfoInput, password);
+    formatWalletInfo(walletInfoInput, password);
     expect(aes.encrypt).toHaveBeenCalledTimes(2);
   });
   test('Valid input, check returnValue', () => {

@@ -53,7 +53,7 @@ const FaucetButton = (props: SendButtonType) => {
       CommonToast.success(`Token successfully requested`);
     } catch (error) {
       console.log(error);
-      CommonToast.fail(`Today's limit has been reached`);
+      CommonToast.warn(`Today's limit has been reached`);
     }
     isLoading.current = false;
   }, [currentNetworkInfo.tokenClaimContractAddress, currentWallet.address, currentWallet.caHash, getCurrentCAContract]);

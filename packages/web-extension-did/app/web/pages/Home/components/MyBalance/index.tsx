@@ -28,6 +28,7 @@ import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
 import './index.less';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import EmptyElement from 'pages/components/EmptyElement';
 
 export interface TransactionResult {
   total: number;
@@ -181,7 +182,8 @@ export default function MyBalance() {
         }}
       />
       {SelectTokenELe}
-      <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} />
+      <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
+      <EmptyElement />
     </div>
   );
 }

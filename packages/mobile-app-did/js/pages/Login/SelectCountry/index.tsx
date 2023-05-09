@@ -1,4 +1,4 @@
-import { bottomBarHeight, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Touchable from 'components/Touchable';
@@ -17,7 +17,7 @@ import { FontStyles } from 'assets/theme/styles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import NoData from 'components/NoData';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
-import { usePhoneCountryCode } from 'hooks/usePhoneCountryCode';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 const IndexHeight = 56,
   SectionHeight = 20;
@@ -25,7 +25,7 @@ const IndexHeight = 56,
 export default function SelectCountry() {
   const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
 
-  const countryCodeIndex = usePhoneCountryCode();
+  const { phoneCountryCodeIndex: countryCodeIndex, phoneCountryCodeList } = usePhoneCountryCode();
   const List = useMemo(() => countryCodeIndex.map(i => ({ index: i[0], items: i[1] })), [countryCodeIndex]);
 
   const [searchList, setSearchList] = useState<CountryItem[]>();
@@ -69,7 +69,7 @@ export default function SelectCountry() {
         <CommonInput
           placeholder="Search countries and regions"
           type="search"
-          onChangeText={s => setSearchList(!s ? undefined : countryCodeFilter(s))}
+          onChangeText={s => setSearchList(!s ? undefined : countryCodeFilter(s, phoneCountryCodeList))}
         />
       </View>
       <View style={styles.indexBarRow}>

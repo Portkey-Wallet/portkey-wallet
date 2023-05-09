@@ -1,7 +1,7 @@
 import PhoneNumberInput from 'components/PhoneNumberInput';
 import { useMemo, useState } from 'react';
 import { useLoginInfo } from 'store/Provider/hooks';
-import { countryCodeFilter } from '@portkey-wallet/constants/constants-ca/country';
+import { countryCodeFilterStatic } from '@portkey-wallet/constants/constants-ca/country';
 import { ISelectCountryCode } from 'store/reducers/loginCache/type';
 
 interface PhoneProps {
@@ -13,7 +13,7 @@ export default function PhoneInput({ code, onChange }: PhoneProps) {
   const { countryCode } = useLoginInfo();
   const defaultCountryCode = useMemo(() => {
     if (code) {
-      const defaultCountryCode = countryCodeFilter(code);
+      const defaultCountryCode = countryCodeFilterStatic(code);
       if (defaultCountryCode.length) {
         return {
           index: defaultCountryCode[0].country[0],

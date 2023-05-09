@@ -1,7 +1,6 @@
-import { fetchChainListAsync } from '@portkey-wallet/store/network/actions';
 import { getChainListAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { ChainItemType } from '@portkey-wallet/types/chain';
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAppCommonSelector, useAppCommonDispatch } from '.';
 
 export function useNetwork() {

@@ -154,7 +154,7 @@ export default function Send() {
   );
 
   const getTranslationInfo = useCallback(
-    async (num = '') => {
+    async (num = ''): Promise<string | void> => {
       try {
         if (!toAccount?.address) throw 'No toAccount';
         const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
@@ -306,7 +306,7 @@ export default function Send() {
     () => ({
       0: {
         btnText: 'Next',
-        handler: () => {
+        handler: (): any => {
           const res = validateToAddress(toAccount);
 
           if (!res) return;

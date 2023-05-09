@@ -32,13 +32,6 @@ export default function AmountInput({
       getTranslationInfo={getTranslationInfo}
     />
   ) : (
-    <NftInput
-      fromAccount={fromAccount}
-      toAccount={toAccount}
-      value={value}
-      token={token}
-      errorMsg={errorMsg}
-      onChange={onChange}
-    />
+    <NftInput fromAccount={fromAccount} value={value} token={token} errorMsg={errorMsg} onChange={onChange} />
   );
 }

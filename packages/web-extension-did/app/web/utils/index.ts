@@ -33,7 +33,7 @@ export const dateFormatTransTo13 = (ipt?: moment.MomentInput) => {
  * Returns an Error if extension.runtime.lastError is present
  * this is a workaround for the non-standard error object that's used
  */
-export const checkForError = () => {
+export const checkForError = (): void | Error => {
   const { lastError } = apis.runtime;
   if (!lastError) return undefined;
   if (lastError.message) return new Error(lastError.message);

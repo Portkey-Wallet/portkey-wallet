@@ -56,7 +56,7 @@ export default class NotificationService {
     });
   }
 
-  showWindow = async (notification: Omit<NotificationType, 'promptType'>) => {
+  showWindow = async (notification: Omit<NotificationType, 'promptType'>): Promise<void | chrome.windows.Window> => {
     try {
       const { height, width, top, left, isFullscreen } = await getPromptConfig({
         message: notification.message,

@@ -12,7 +12,7 @@ interface PortKeyHeaderProps {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true }: PortKeyHeaderProps, ref) => {
+const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true }: PortKeyHeaderProps) => {
   const { isPrompt } = useCommonState();
   const { walletAvatar } = useWalletInfo();
 

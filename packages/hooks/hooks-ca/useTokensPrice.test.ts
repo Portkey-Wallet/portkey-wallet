@@ -91,7 +91,7 @@ describe('useAmountInUsdShow', () => {
     jest.spyOn(assetSlice, 'fetchTokensPriceAsync').mockReturnValue({} as any);
     const { result } = renderHookWithProvider(useAmountInUsdShow, setupStore(AssetsState));
     const res = result.current(100, 0, 'ELF');
-    expect(res).toEqual('$ 29.5');
+    expect(res).toEqual('$ 29.49');
   });
   test('ELF price is 0, and return empty string', () => {
     jest.spyOn(baseHooks, 'useAppCommonDispatch').mockReturnValue(() => async (call: () => void) => {

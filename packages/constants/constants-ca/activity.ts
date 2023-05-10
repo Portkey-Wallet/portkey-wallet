@@ -126,3 +126,9 @@ export const HIDDEN_TRANSACTION_TYPES = [
   TransactionTypes.ADD_MANAGER,
   TransactionTypes.REMOVE_MANAGER,
 ];
+
+export const SHOW_FROM_TRANSACTION_TYPES = [
+  TransactionTypes.TRANSFER,
+  TransactionTypes.CROSS_CHAIN_TRANSFER,
+  TransactionTypes.CLAIM_TOKEN,
+];

@@ -10,10 +10,14 @@ import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { TOKEN_CLAIM_CONTRACT_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/payment';
-import { useGetCurrentCAContract } from 'hooks/contract';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import CommonToast from 'components/CommonToast';
+import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { request } from '@portkey-wallet/api/api-did';
+import { getTxResult } from '@portkey-wallet/contracts/utils';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { getAelfInstance } from '@portkey-wallet/utils/aelf';
+
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
   sentToken?: TokenItemShowType;
@@ -27,36 +31,63 @@ const FaucetButton = (props: SendButtonType) => {
 
   const currentWallet = useCurrentWalletInfo();
   const currentNetworkInfo = useCurrentNetworkInfo();
-  const getCurrentCAContract = useGetCurrentCAContract(TOKEN_CLAIM_CONTRACT_CHAIN_ID);
+  const chainInfo = useCurrentChain('AELF');
   const isLoading = useRef<boolean>(false);
 
   const claimToken = useCallback(async () => {
     if (!currentWallet.address || !currentWallet.caHash || !currentNetworkInfo.tokenClaimContractAddress) return;
-    CommonToast.loading('Your ELF is on its way');
 
+    let reCaptchaToken: string;
+    try {
+      reCaptchaToken = (await verifyHumanMachine('en')) as string;
+      if (!reCaptchaToken) {
+        throw new Error('reCaptchaToken is empty');
+      }
+    } catch (error) {
+      CommonToast.warn(error as string);
+      return;
+    }
+
+    CommonToast.loading('Your ELF is on its way');
     if (isLoading.current) return;
     isLoading.current = true;
     try {
-      const caContract = await getCurrentCAContract();
-      const rst = await caContract.callSendMethod('ManagerForwardCall', currentWallet.address, {
-        caHash: currentWallet.caHash,
-        contractAddress: currentNetworkInfo.tokenClaimContractAddress,
-        methodName: 'ClaimToken',
-        args: {
+      const { transactionId } = await request.token.getClaimToken({
+        params: {
           symbol: 'ELF',
           amount: timesDecimals(100, 8).toString(),
+          address: currentWallet.AELF?.caAddress,
+        },
+        headers: {
+          reCaptchaToken: reCaptchaToken,
         },
       });
-      if (rst.error) {
-        throw rst.error;
+      if (!transactionId) {
+        throw new Error('transactionId is empty');
       }
+
+      if (!chainInfo?.endPoint) {
+        throw new Error('chainInfo.endPoint is empty');
+      }
+      const aelfInstance = getAelfInstance(chainInfo.endPoint);
+      const txResult = await getTxResult(aelfInstance, transactionId);
+      if (!txResult || txResult.Status !== 'MINED') {
+        throw new Error('txResult is error');
+      }
+
       CommonToast.success(`Token successfully requested`);
     } catch (error) {
       console.log(error);
       CommonToast.warn(`Today's limit has been reached`);
     }
     isLoading.current = false;
-  }, [currentNetworkInfo.tokenClaimContractAddress, currentWallet.address, currentWallet.caHash, getCurrentCAContract]);
+  }, [
+    chainInfo,
+    currentNetworkInfo.tokenClaimContractAddress,
+    currentWallet.AELF?.caAddress,
+    currentWallet.address,
+    currentWallet.caHash,
+  ]);
 
   return (
     <View style={styles.buttonWrap}>

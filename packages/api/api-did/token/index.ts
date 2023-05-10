@@ -7,4 +7,5 @@ export default {
     target: '/api/app/userTokens',
     config: { method: 'PUT' },
   },
+  getClaimToken: '/api/app/claim_token/getClaimToken',
 } as const;

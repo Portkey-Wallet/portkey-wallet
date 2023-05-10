@@ -138,25 +138,34 @@ const ActivityDetail = () => {
       <View style={styles.section}>
         <View style={[styles.flexSpaceBetween]}>
           <TextM style={[styles.blackFontColor, styles.fontBold]}>{t('Transaction Fee')}</TextM>
-          <View>
-            {transactionFees.map((item, index) => (
-              <View key={index} style={[styles.transactionFeeItemWrap, index > 0 && styles.marginTop8]}>
-                <TextM style={[styles.blackFontColor, styles.fontBold]}>{`${formatAmountShow(
-                  divDecimals(item?.fee ?? 0, ELF_DECIMAL),
-                )} ${item.symbol}`}</TextM>
-                {!isTestnet && (
-                  <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(
-                    item?.feeInUsd ?? 0,
-                    2,
-                  )}`}</TextS>
-                )}
-              </View>
-            ))}
-          </View>
+          {activityItem?.isDelegated ? (
+            <View style={[styles.transactionFeeItemWrap]}>
+              <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ELF`}</TextM>
+              {!isTestnet && (
+                <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(0, 2)}`}</TextS>
+              )}
+            </View>
+          ) : (
+            <View>
+              {transactionFees.map((item, index) => (
+                <View key={index} style={[styles.transactionFeeItemWrap, index > 0 && styles.marginTop8]}>
+                  <TextM style={[styles.blackFontColor, styles.fontBold]}>{`${formatAmountShow(
+                    divDecimals(item?.fee ?? 0, ELF_DECIMAL),
+                  )} ${item.symbol}`}</TextM>
+                  {!isTestnet && (
+                    <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(
+                      item?.feeInUsd ?? 0,
+                      2,
+                    )}`}</TextS>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       </View>
     );
-  }, [activityItem?.transactionFees, isTestnet, t]);
+  }, [activityItem?.isDelegated, activityItem?.transactionFees, isTestnet, t]);
 
   useEffectOnce(() => {
     getTokenPrice(activityItem?.symbol);

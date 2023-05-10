@@ -26,7 +26,7 @@ import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
 import { addressFormat } from '@portkey-wallet/utils';
 import CommonAvatar from 'components/CommonAvatar';
-import { HIDDEN_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
@@ -116,7 +116,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         <CommonAvatar
           style={itemStyle.left}
           svgName={
-            HIDDEN_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'Contract' : 'transfer'
+            SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'transfer' : 'Contract'
           }
           avatarSize={pTd(32)}
         />
@@ -126,18 +126,15 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
             {item?.transactionType ? transactionTypesMap(item.transactionType, item.nftInfo?.nftId) : ''}
           </Text>
           <Text style={[itemStyle.centerStatus, FontStyles.font3]}>
-            {t('From')}
-            {':  '}
-            {formatStr2EllipsisStr(addressFormat(item?.fromAddress, item?.fromChainId), 10)}
+            {item?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType)
+              ? `${t('From')}: ${formatStr2EllipsisStr(addressFormat(item?.fromAddress, item?.fromChainId), 10)}`
+              : ''}
           </Text>
-
-          {item?.transactionType && !HIDDEN_TRANSACTION_TYPES.includes(item?.transactionType) && (
-            <Text style={[itemStyle.centerStatus, FontStyles.font3]}>
-              {formatChainInfoToShow(item?.fromChainId)}
-              {'-->'}
-              {formatChainInfoToShow(item?.toChainId)}
-            </Text>
-          )}
+          <Text style={[itemStyle.centerStatus, FontStyles.font3]}>
+            {item?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType)
+              ? `${formatChainInfoToShow(item?.fromChainId)}-->${formatChainInfoToShow(item?.toChainId)}`
+              : ''}
+          </Text>
         </View>
         <View style={itemStyle.right}>
           <Text style={[itemStyle.tokenBalance]}>

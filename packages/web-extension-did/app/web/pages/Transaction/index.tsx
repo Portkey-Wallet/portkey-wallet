@@ -1,4 +1,4 @@
-import { TransactionTypes, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -45,11 +45,6 @@ export default function Transaction() {
   const [activityItem, setActivityItem] = useState<ActivityItemType>(state.item);
   const feeInfo = useMemo(() => activityItem.transactionFees, [activityItem.transactionFees]);
   const chainInfo = useCurrentChain(activityItem.fromChainId);
-
-  const hiddenTransactionTypeArr = useMemo(
-    () => [TransactionTypes.SOCIAL_RECOVERY, TransactionTypes.ADD_MANAGER, TransactionTypes.REMOVE_MANAGER],
-    [],
-  );
 
   // Obtain data through api to ensure data integrity.
   // Because some data is not returned in the Activities API. Such as from, to.
@@ -113,7 +108,7 @@ export default function Transaction() {
     const { amount, isReceived, decimals, symbol, transactionType } = activityItem;
     const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
-    if (transactionType && !hiddenTransactionTypeArr.includes(transactionType)) {
+    if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
       return (
         <p className="amount">
           {`${formatWithCommas({ amount, decimals, sign })} ${symbol ?? ''}`}
@@ -123,7 +118,7 @@ export default function Transaction() {
     } else {
       return <p className="no-amount"></p>;
     }
-  }, [activityItem, amountInUsdShow, hiddenTransactionTypeArr, isTestNet]);
+  }, [activityItem, amountInUsdShow, isTestNet]);
 
   const statusAndDateUI = useCallback(() => {
     return (
@@ -148,7 +143,7 @@ export default function Transaction() {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     return (
       transactionType &&
-      !hiddenTransactionTypeArr.includes(transactionType) && (
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
         <div className="account-wrap">
           <p className="label">
             <span className="left">{t('From')}</span>
@@ -178,7 +173,7 @@ export default function Transaction() {
         </div>
       )
     );
-  }, [activityItem, hiddenTransactionTypeArr, t]);
+  }, [activityItem, t]);
 
   const networkUI = useCallback(() => {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
@@ -188,7 +183,7 @@ export default function Transaction() {
 
     return (
       transactionType &&
-      !hiddenTransactionTypeArr.includes(transactionType) && (
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
         <div className="network-wrap">
           <p className="label">
             <span className="left">{t('Network')}</span>
@@ -197,7 +192,7 @@ export default function Transaction() {
         </div>
       )
     );
-  }, [activityItem, hiddenTransactionTypeArr, isTestNet, t]);
+  }, [activityItem, isTestNet, t]);
 
   const noFeeUI = useCallback(() => {
     return (

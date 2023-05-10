@@ -1,4 +1,8 @@
-import { TransactionTypes, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import {
+  SHOW_FROM_TRANSACTION_TYPES,
+  TransactionTypes,
+  transactionTypesMap,
+} from '@portkey-wallet/constants/constants-ca/activity';
 import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { AmountSign, formatWithCommas, formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { List } from 'antd-mobile';
@@ -99,13 +103,8 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       const { transactionType, fromChainId, toChainId } = item;
       const from = transNetworkText(fromChainId, isTestNet);
       const to = transNetworkText(toChainId, isTestNet);
-      const hiddenArr = [
-        TransactionTypes.SOCIAL_RECOVERY,
-        TransactionTypes.ADD_MANAGER,
-        TransactionTypes.REMOVE_MANAGER,
-      ];
 
-      return !hiddenArr.includes(transactionType) && <p className="row-3">{`${from}->${to}`}</p>;
+      return SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && <p className="row-3">{`${from}->${to}`}</p>;
     },
     [isTestNet],
   );

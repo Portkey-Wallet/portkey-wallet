@@ -15,7 +15,7 @@ const defaultHeaders = {
   Accept: 'text/plain;v=1.0',
   'Content-Type': 'application/json',
   // FIXME: delete
-  version: 'v1.2.5',
+  version: 'v1.2.6',
 };
 
 function formatResponse(response: string) {

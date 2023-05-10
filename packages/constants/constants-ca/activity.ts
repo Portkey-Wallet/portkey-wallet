@@ -13,6 +13,9 @@ export enum TransactionTypes {
   UNSET_GUARDIAN_FOR_LOGIN = 'UnsetGuardianForLogin', // Unset login account
   REMOVE_OTHER_MANAGER_INFO = 'RemoveOtherManagerInfo', // Remove device
   CLAIM_TOKEN = 'ClaimToken', // faucet receive transfer
+  APPROVE = 'Approve', // BingoGame Approve
+  BINGO = 'Bingo', // BingoGame Bingo
+  PLAY = 'Play', // BingoGame Play
 }
 
 export const transactionTypes = [
@@ -39,6 +42,9 @@ export const transactionTypesForActivityList = [
   TransactionTypes.UNSET_GUARDIAN_FOR_LOGIN,
   TransactionTypes.REMOVE_OTHER_MANAGER_INFO,
   TransactionTypes.CLAIM_TOKEN,
+  TransactionTypes.APPROVE,
+  TransactionTypes.BINGO,
+  TransactionTypes.PLAY,
 ];
 
 /**
@@ -89,6 +95,15 @@ export const transactionTypesMap = (type?: TransactionTypes, nftId?: string): st
       break;
     case TransactionTypes.REMOVE_OTHER_MANAGER_INFO:
       newType = 'Remove device';
+      break;
+    case TransactionTypes.APPROVE:
+      newType = 'Approve';
+      break;
+    case TransactionTypes.BINGO:
+      newType = 'Bingo';
+      break;
+    case TransactionTypes.PLAY:
+      newType = 'Play';
       break;
   }
   return newType;

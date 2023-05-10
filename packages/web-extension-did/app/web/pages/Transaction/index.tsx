@@ -199,16 +199,22 @@ export default function Transaction() {
     );
   }, [activityItem, hiddenTransactionTypeArr, isTestNet, t]);
 
-  const feeUI = useCallback(() => {
+  const noFeeUI = useCallback(() => {
     return (
+      <div className="right-item">
+        <span>{`0 ELF`}</span> {!isTestNet && <span className="right-usd">{`$ 0`}</span>}
+      </div>
+    );
+  }, [isTestNet]);
+
+  const feeUI = useCallback(() => {
+    return activityItem.isDelegated ? (
+      noFeeUI()
+    ) : (
       <p className="value">
         <span className="left">{t('Transaction Fee')}</span>
         <span className="right">
-          {(!feeInfo || feeInfo?.length === 0) && (
-            <div className="right-item">
-              <span>{`0 ELF`}</span> {!isTestNet && <span className="right-usd">{`$ 0`}</span>}
-            </div>
-          )}
+          {(!feeInfo || feeInfo?.length === 0) && noFeeUI()}
           {feeInfo?.length > 0 &&
             feeInfo.map((item, idx) => {
               return (
@@ -226,7 +232,7 @@ export default function Transaction() {
         </span>
       </p>
     );
-  }, [amountInUsdShow, feeInfo, isTestNet, t]);
+  }, [activityItem.isDelegated, amountInUsdShow, feeInfo, isTestNet, noFeeUI, t]);
 
   const transactionUI = useCallback(() => {
     return (

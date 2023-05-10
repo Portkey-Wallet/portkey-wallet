@@ -45,8 +45,4 @@ export const countryCodeFilter = (filterFelid: string, countryCodeList: CountryI
   }
 };
 
-export const countryCodeFilterStatic = (filterFelid: string) => {
-  return countryCodeFilter(filterFelid, countryCodeList);
-};
-
 export const DefaultCountry = { country: 'Singapore', code: '65', iso: 'SG' };

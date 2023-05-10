@@ -27,7 +27,7 @@ import CommonToast from 'components/CommonToast';
 import { addressFormat } from '@portkey-wallet/utils';
 import CommonAvatar from 'components/CommonAvatar';
 import { HIDDEN_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
 interface ActivityItemPropsType {
@@ -41,7 +41,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   const tokenContractRef = useRef<ContractBasic>();
   const currentChainList = useCurrentChainList();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const isTokenHasPrice = useIsTokenHasPrice(item?.symbol);
 
   const pin = usePin();
@@ -144,7 +144,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
             {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : ''}
             {!item?.nftInfo?.nftId ? amountString : ''}
           </Text>
-          {!isTestnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
+          {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
             <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
               divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(item ? tokenPriceObject[item?.symbol] : 0),
               2,

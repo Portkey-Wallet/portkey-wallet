@@ -116,6 +116,7 @@ export default function SelectVerifier() {
         }),
       );
       const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
+      setLoading(false);
       if (managerAddress && res.data.privateKey) {
         onManagerAddressAndQueryResult(res.data.privateKey, {
           verifierId: selectItem?.id as string,
@@ -128,7 +129,6 @@ export default function SelectVerifier() {
     } catch (error) {
       const msg = handleError(error);
       message.error(msg);
-    } finally {
       setLoading(false);
     }
   }, [

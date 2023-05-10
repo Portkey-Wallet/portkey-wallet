@@ -29,10 +29,15 @@ export function usePhoneCountryCode(isInit = false) {
           dispatch(getPhoneCountryCode(item.networkType));
         }
       });
-    } else {
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
       dispatch(getPhoneCountryCode(networkType));
     }
-  }, []);
+  }, [dispatch, isInit, networkType]);
 
   return { phoneCountryCodeList, phoneCountryCodeIndex };
 }

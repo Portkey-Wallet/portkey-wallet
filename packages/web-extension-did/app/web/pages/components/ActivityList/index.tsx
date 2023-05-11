@@ -84,12 +84,15 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const fromAndUsdUI = useCallback(
     (item: ActivityItemType) => {
-      const { fromAddress, fromChainId, decimals, amount, symbol, nftInfo } = item;
+      const { fromAddress, fromChainId, decimals, amount, symbol, nftInfo, transactionType } = item;
       const transFromAddress = addressFormat(fromAddress, fromChainId, 'aelf');
 
       return (
         <p className="row-2">
-          <span>From: {formatStr2EllipsisStr(transFromAddress, [7, 4])}</span>
+          <span>
+            {SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) &&
+              `From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}
+          </span>
           {nftInfo?.nftId && <span className="nft-name">{formatStr2EllipsisStr(nftInfo.alias)}</span>}
           {!isTestNet && !nftInfo?.nftId && <span>{amountInUsdShow(amount, decimals || 8, symbol)}</span>}
         </p>

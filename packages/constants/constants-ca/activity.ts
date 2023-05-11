@@ -18,15 +18,6 @@ export enum TransactionTypes {
   PLAY = 'Play', // BingoGame Play
 }
 
-export const transactionTypes = [
-  TransactionTypes.TRANSFER,
-  TransactionTypes.CROSS_CHAIN_TRANSFER,
-  TransactionTypes.CROSS_CHAIN_RECEIVE_TOKEN,
-  TransactionTypes.SOCIAL_RECOVERY,
-  TransactionTypes.ADD_MANAGER,
-  TransactionTypes.REMOVE_MANAGER,
-];
-
 export const transactionTypesForActivityList = [
   TransactionTypes.TRANSFER,
   TransactionTypes.CROSS_CHAIN_TRANSFER,

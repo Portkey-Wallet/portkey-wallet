@@ -1,0 +1,45 @@
+@import '../../assets/theme/color.less';
+
+.phone-number-input-wrapper {
+  position: relative;
+  .phone-number-input {
+    border: 1px solid @border-1;
+    border-radius: 6px;
+
+    .@{app-prefix}-input {
+      border: none;
+      flex: 1;
+      font-size: 14px;
+      color: @font-1;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    .addon-content {
+      padding: 8px 0 8px 16px;
+      min-width: 90px;
+      display: flex;
+      &::after {
+        content: '';
+        border-right: 0.5px solid @border-1;
+      }
+    }
+    .input-addon {
+      font-size: 14px;
+      line-height: 20px;
+      height: 100%;
+      flex: 1;
+      padding-right: 10px;
+      color: @font-11;
+      cursor: pointer;
+    }
+
+    .input-arrow {
+      display: inline-block;
+      transform: rotate(-90deg);
+    }
+    .open-input-arrow {
+      transform: rotate(-270deg);
+    }
+  }
+}

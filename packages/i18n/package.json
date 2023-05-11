@@ -1,0 +1,13 @@
+{
+  "name": "@portkey-wallet/i18n",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.0.1",
+  "type": "commonjs",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "tsc",
+    "start": "tsc --watch"
+  }
+}

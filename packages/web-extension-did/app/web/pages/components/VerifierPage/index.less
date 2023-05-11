@@ -1,0 +1,110 @@
+@import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
+
+.verifier-page-wrapper {
+  .login-icon {
+    display: inline-block;
+    border-bottom-right-radius: 9px;
+    border-top-left-radius: 9px;
+    line-height: 18px;
+    background-color: @bg-4;
+    padding: 0 8px;
+    text-align: center;
+    color: @font-8;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+  .icon-pair {
+    margin-right: 12px;
+    .email-icon {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  .login-account {
+    flex: 1;
+    width: 0; // responsive text, to fix overflow
+    line-height: 20px;
+    color: @font-11;
+    font-size: 14px;
+    word-wrap: break-word;
+    .text-overflow(2);
+  }
+  .login-account-wrapper {
+    padding-bottom: 25px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid @border-2;
+  }
+  .send-tip {
+    line-height: 22px;
+    color: @font-11;
+    font-size: 16px;
+    .account {
+      color: @font-9;
+      white-space: nowrap;
+    }
+  }
+  .password-wrapper {
+    padding-top: 26px;
+
+    .adm-passcode-input-cell-container {
+      max-width: 352px;
+      width: 100%;
+    }
+
+    /** pin */
+    .adm-passcode-input-cell {
+      font-size: 36px;
+      line-height: 52px;
+      height: 52px;
+      color: @font-11;
+      font-weight: 500;
+      flex: 1;
+      width: 0; // responsive input-cell
+      max-width: 42px;
+      flex-shrink: 1;
+    }
+    .adm-passcode-input.adm-passcode-input-seperated {
+      display: flex;
+      justify-content: center;
+    }
+    .adm-passcode-input.adm-passcode-input-seperated .adm-passcode-input-cell {
+      border: 0;
+      border-bottom: 1px solid @border-2;
+      border-radius: 0;
+    }
+    .adm-passcode-input-cell-focused {
+      border: 0;
+      box-shadow: none;
+    }
+
+    .adm-passcode-input.adm-passcode-input-seperated .adm-passcode-input-cell:not(:last-child) {
+      margin-right: 20px;
+    }
+
+    /** btn */
+    .resend-btn {
+      width: auto;
+      margin: auto;
+      display: block;
+      margin-top: 24px;
+      color: @font-9;
+      &:hover {
+        background-color: transparent;
+      }
+      span {
+        line-height: 20px;
+        font-size: 14px;
+      }
+      &.resend-after-btn {
+        color: @font-12;
+      }
+    }
+  }
+}
+.popup-page.verifier-page-wrapper {
+  width: 100%;
+  .adm-passcode-input.adm-passcode-input-seperated .adm-passcode-input-cell:not(:last-child) {
+    margin-right: 12px;
+  }
+}

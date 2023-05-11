@@ -1,0 +1,38 @@
+@import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
+.@{app-prefix}-btn.guardian-add-btn {
+  width: 120px;
+  height: 44px;
+  border-radius: 24px;
+}
+
+.guardian {
+  display: flex;
+  position: relative;
+  height: 84px;
+  padding: 0 16px;
+  align-items: center;
+  border-bottom: 1px solid @border-2;
+  font-size: 14px;
+  line-height: 20px;
+  color: @font-11;
+  .guardian-item-wrap {
+    width: 100%;
+  }
+  .login-icon {
+    position: absolute;
+    top: 4px;
+    left: 16px;
+    padding: 2px 8px;
+    border-top-left-radius: 9px;
+    border-bottom-right-radius: 9px;
+    font-size: 12px;
+    line-height: 14px;
+    color: @font-8;
+    background-color: @bg-4;
+  }
+  .icon-pair {
+    margin-right: 12px;
+  }
+}

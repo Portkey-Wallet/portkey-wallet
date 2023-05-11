@@ -1,0 +1,43 @@
+{
+  "name": "root",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/react-native",
+      "**/react-native/**",
+      "**/react-native-**",
+      "**/@react-native-**",
+      "**/@react-native-**/**",
+      "**/expo-**",
+      "**/@sentry/**"
+    ]
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build",
+    "clean": "lerna clean --yes",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "prepare": "husky install",
+    "reset-modules": "rm -rf node_modules/ yarn.lock packages/*/node_modules",
+    "common-package:extension": "npx lerna add @portkey-wallet/utils --scope=web-extension && npx lerna add @portkey-wallet/hooks --scope=web-extension  && npx lerna add @portkey-wallet/store --scope=web-extension && npx lerna add @portkey-wallet/constants --scope=web-extension",
+    "app:did": "yarn workspace mobile-did run",
+    "extension:did": "yarn workspace web-extension-did run",
+    "extension-did:dev": "yarn extension:did dev:watch",
+    "graphql": "yarn workspace @portkey-wallet/graphql run",
+    "page": "yarn workspace web-page run"
+  },
+  "devDependencies": {
+    "eslint": "^8.23.1",
+    "eslint-plugin-react": "^7.31.8",
+    "husky": "^8.0.1",
+    "lerna": "^5.5.2",
+    "lint-staged": ">=13"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --cache --fix"
+  },
+  "version": "1.0.0"
+}

@@ -1,0 +1,39 @@
+@import '../../../assets/theme/color.less';
+
+.contacts-prompt {
+  height: 100%;
+
+  .contacts-frame {
+    width: 100%;
+    flex: 1;
+    overflow-y: auto;
+
+    .contacts-header {
+      border-bottom: 1px solid @border-2;
+      position: relative;
+      .title-right-col {
+        position: absolute;
+        right: 0;
+      }
+    }
+    .search-input-prompt {
+      width: auto;
+      margin-top: 16px;
+      margin-bottom: 16px;
+      margin-left: 12px;
+    }
+    .contacts-body{
+      padding-bottom: 24px;
+      .adm-index-bar-anchor{
+        .adm-index-bar-anchor-title{
+          padding-left: 24px;
+        }
+        .adm-list{
+          .adm-list-item{
+            padding-left: 24px;
+          }
+        }
+      }
+    }
+  }
+}

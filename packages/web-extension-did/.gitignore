@@ -1,0 +1,15 @@
+node_modules
+package-lock.json
+yarn-error.log
+.idea
+.DS_Store
+.vscode
+.eslintcache
+.env
+
+app/public
+app/public.pem
+app/public.crx
+app/public.zip
+
+*.zip

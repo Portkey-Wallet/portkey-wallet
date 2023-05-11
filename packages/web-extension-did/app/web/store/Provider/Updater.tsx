@@ -16,6 +16,7 @@ import { useCheckManagerOnLogout } from 'hooks/useLogout';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckUpdate, useCheckUpdateModal } from 'hooks/useCheckUpdate';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 keepAliveOnPages({});
 
@@ -51,5 +52,6 @@ export default function Updater() {
   useMemo(() => {
     request.setLockCallBack(onLocking);
   }, [onLocking]);
+  usePhoneCountryCode(true);
   return null;
 }

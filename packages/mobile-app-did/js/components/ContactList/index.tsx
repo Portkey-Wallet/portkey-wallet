@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { Text, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';

@@ -6,7 +6,7 @@ export enum EmailError {
   noAccount = 'Failed to log in with this email. Please use your login account.',
 }
 
-export function checkEmail(email?: string) {
+export function checkEmail(email?: string): void | string {
   if (!email) return EmailError.noEmail;
   if (!isValidEmail(email)) return EmailError.invalidEmail;
 }

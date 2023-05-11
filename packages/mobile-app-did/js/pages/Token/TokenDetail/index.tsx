@@ -30,9 +30,10 @@ import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useIsShowBuy } from 'hooks/useSwitchBuy';
+import FaucetButton from 'components/FaucetButton';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -48,7 +49,7 @@ const TokenDetail: React.FC = () => {
   const { t } = useLanguage();
   const { tokenInfo } = useRouterParams<RouterParams>();
 
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const currentWallet = useCurrentWallet();
   const isShowBuy = useIsShowBuy();
   const caAddressInfos = useCaAddressInfoList();
@@ -150,7 +151,7 @@ const TokenDetail: React.FC = () => {
       scrollViewProps={{ disabled: true }}>
       <View style={styles.card}>
         <Text style={styles.tokenBalance}>{`${balanceShow} ${currentToken?.symbol}`}</Text>
-        {!isTestnet && isTokenHasPrice && (
+        {isMainnet && isTokenHasPrice && (
           <Text style={styles.dollarBalance}>{`$ ${formatAmountShow(
             divDecimals(currentToken?.balance, currentToken?.decimals).multipliedBy(
               currentToken ? tokenPriceObject?.[currentToken?.symbol] : 0,
@@ -158,10 +159,18 @@ const TokenDetail: React.FC = () => {
             2,
           )}`}</Text>
         )}
-        <View style={[styles.buttonGroupWrap, !isBuyButtonShow && styles.buttonShortGroupWrap]}>
-          {isBuyButtonShow && <BuyButton themeType="innerPage" />}
+        <View style={styles.buttonGroupWrap}>
+          {isMainnet && isBuyButtonShow && (
+            <>
+              <BuyButton themeType="innerPage" />
+              <View style={styles.spacerStyle} />
+            </>
+          )}
           <SendButton themeType="innerPage" sentToken={currentToken} />
+          <View style={styles.spacerStyle} />
           <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" receiveButton={currentToken} />
+          <View style={styles.spacerStyle} />
+          {!isMainnet && <FaucetButton themeType="innerPage" />}
         </View>
       </View>
 

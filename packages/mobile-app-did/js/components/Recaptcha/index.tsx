@@ -190,6 +190,7 @@ const Recaptcha = forwardRef(function Recaptcha(
       <WebView
         ref={webViewRef}
         bounces={false}
+        incognito
         // allowsBackForwardNavigationGestures={false}
         originWhitelist={originWhitelist}
         onShouldStartLoadWithRequest={event => {

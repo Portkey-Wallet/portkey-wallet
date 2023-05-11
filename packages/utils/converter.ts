@@ -2,17 +2,17 @@ import { isEffectiveNumber, ZERO } from '@portkey-wallet/constants/misc';
 import { DEFAULT_AMOUNT, DEFAULT_DECIMAL, DEFAULT_DIGITS } from '@portkey-wallet/constants/constants-ca/activity';
 import BigNumber from 'bignumber.js';
 
-const zhList = [
-    { value: 1e12, symbol: '萬億' },
-    { value: 1e8, symbol: '億' },
-    { value: 1e4, symbol: '萬' },
-  ],
-  enList = [
-    { value: 1e12, symbol: 'T' },
-    { value: 1e9, symbol: 'B' },
-    { value: 1e6, symbol: 'M' },
-    { value: 1e3, symbol: 'K' },
-  ];
+// const zhList = [
+//   { value: 1e12, symbol: '萬億' },
+//   { value: 1e8, symbol: '億' },
+//   { value: 1e4, symbol: '萬' },
+// ];
+const enList = [
+  { value: 1e12, symbol: 'T' },
+  { value: 1e9, symbol: 'B' },
+  { value: 1e6, symbol: 'M' },
+  { value: 1e3, symbol: 'K' },
+];
 
 export const fixedDecimal = (count?: number | BigNumber | string, num = 4) => {
   const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
@@ -134,5 +134,5 @@ export function formatWithCommas({
 export const formatAmountShow = (count: number | BigNumber | string, decimal = 4) => {
   const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
   if (bigCount.isNaN()) return '0';
-  return bigCount.decimalPlaces(decimal).toFormat();
+  return bigCount.decimalPlaces(decimal, BigNumber.ROUND_DOWN).toFormat();
 };

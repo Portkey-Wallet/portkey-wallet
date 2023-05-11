@@ -1,8 +1,9 @@
 /* eslint-disable no-inline-styles/no-inline-styles */
 import { useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
-import './index.less';
 import { useTranslation } from 'react-i18next';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import './index.less';
 
 export interface BalanceCardProps {
   accountInfo?: any;
@@ -15,16 +16,30 @@ export interface BalanceCardProps {
 
 export default function BalanceCard({ onSend, onReceive, onBuy, isShowBuy }: BalanceCardProps) {
   const { t } = useTranslation();
+  const isMainNet = useIsMainnet();
 
   const renderBuy = useMemo(
     () =>
-      !!isShowBuy && (
+      !!isShowBuy &&
+      isMainNet && (
         <span className="send btn" onClick={onBuy}>
           <CustomSvg type="Buy" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Buy')}</span>
         </span>
       ),
-    [isShowBuy, onBuy, t],
+    [isShowBuy, isMainNet, onBuy, t],
+  );
+
+  const renderFaucet = useMemo(
+    () =>
+      !!isShowBuy &&
+      !isMainNet && (
+        <span className="send btn" onClick={onBuy}>
+          <CustomSvg type="Faucet" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Faucet')}</span>
+        </span>
+      ),
+    [isShowBuy, isMainNet, onBuy, t],
   );
 
   return (
@@ -39,6 +54,7 @@ export default function BalanceCard({ onSend, onReceive, onBuy, isShowBuy }: Bal
           <CustomSvg type="RightDown" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Receive')}</span>
         </span>
+        {renderFaucet}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { TransactionTypes, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -21,6 +21,8 @@ import { addressFormat } from '@portkey-wallet/utils';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 
 export interface ITransactionQuery {
   item: ActivityItemType;
@@ -43,11 +45,6 @@ export default function Transaction() {
   const [activityItem, setActivityItem] = useState<ActivityItemType>(state.item);
   const feeInfo = useMemo(() => activityItem.transactionFees, [activityItem.transactionFees]);
   const chainInfo = useCurrentChain(activityItem.fromChainId);
-
-  const hiddenTransactionTypeArr = useMemo(
-    () => [TransactionTypes.SOCIAL_RECOVERY, TransactionTypes.ADD_MANAGER, TransactionTypes.REMOVE_MANAGER],
-    [],
-  );
 
   // Obtain data through api to ensure data integrity.
   // Because some data is not returned in the Activities API. Such as from, to.
@@ -80,7 +77,7 @@ export default function Transaction() {
 
   const nav = useNavigate();
   const onClose = useCallback(() => {
-    nav(-1);
+    nav('/', { state: { key: BalanceTab.ACTIVITY } });
   }, [nav]);
 
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);
@@ -111,7 +108,7 @@ export default function Transaction() {
     const { amount, isReceived, decimals, symbol, transactionType } = activityItem;
     const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
-    if (transactionType && !hiddenTransactionTypeArr.includes(transactionType)) {
+    if (transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType)) {
       return (
         <p className="amount">
           {`${formatWithCommas({ amount, decimals, sign })} ${symbol ?? ''}`}
@@ -121,7 +118,7 @@ export default function Transaction() {
     } else {
       return <p className="no-amount"></p>;
     }
-  }, [activityItem, amountInUsdShow, hiddenTransactionTypeArr, isTestNet]);
+  }, [activityItem, amountInUsdShow, isTestNet]);
 
   const statusAndDateUI = useCallback(() => {
     return (
@@ -146,7 +143,7 @@ export default function Transaction() {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     return (
       transactionType &&
-      !hiddenTransactionTypeArr.includes(transactionType) && (
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
         <div className="account-wrap">
           <p className="label">
             <span className="left">{t('From')}</span>
@@ -176,7 +173,7 @@ export default function Transaction() {
         </div>
       )
     );
-  }, [activityItem, hiddenTransactionTypeArr, t]);
+  }, [activityItem, t]);
 
   const networkUI = useCallback(() => {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
@@ -186,7 +183,7 @@ export default function Transaction() {
 
     return (
       transactionType &&
-      !hiddenTransactionTypeArr.includes(transactionType) && (
+      SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && (
         <div className="network-wrap">
           <p className="label">
             <span className="left">{t('Network')}</span>
@@ -195,18 +192,24 @@ export default function Transaction() {
         </div>
       )
     );
-  }, [activityItem, hiddenTransactionTypeArr, isTestNet, t]);
+  }, [activityItem, isTestNet, t]);
+
+  const noFeeUI = useCallback(() => {
+    return (
+      <div className="right-item">
+        <span>{`0 ELF`}</span> {!isTestNet && <span className="right-usd">{`$ 0`}</span>}
+      </div>
+    );
+  }, [isTestNet]);
 
   const feeUI = useCallback(() => {
-    return (
+    return activityItem.isDelegated ? (
+      noFeeUI()
+    ) : (
       <p className="value">
         <span className="left">{t('Transaction Fee')}</span>
         <span className="right">
-          {(!feeInfo || feeInfo?.length === 0) && (
-            <div className="right-item">
-              <span>{`0 ELF`}</span> {!isTestNet && <span className="right-usd">{`$ 0`}</span>}
-            </div>
-          )}
+          {(!feeInfo || feeInfo?.length === 0) && noFeeUI()}
           {feeInfo?.length > 0 &&
             feeInfo.map((item, idx) => {
               return (
@@ -224,7 +227,7 @@ export default function Transaction() {
         </span>
       </p>
     );
-  }, [amountInUsdShow, feeInfo, isTestNet, t]);
+  }, [activityItem.isDelegated, amountInUsdShow, feeInfo, isTestNet, noFeeUI, t]);
 
   const transactionUI = useCallback(() => {
     return (
@@ -263,21 +266,26 @@ export default function Transaction() {
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['transaction-detail-modal', isPrompt ? 'detail-page-prompt' : null])}>
-        <div className="header">
-          <CustomSvg type="Close2" onClick={onClose} />
-        </div>
-        <div className="transaction-info">
-          <div className="method-wrap">
-            <p className="method-name">
-              {transactionTypesMap(activityItem.transactionType, activityItem.nftInfo?.nftId)}
-            </p>
-            {isNft ? nftHeaderUI() : tokenHeaderUI()}
+        <div className="transaction-detail-body">
+          <div className="header">
+            <CustomSvg type="Close2" onClick={onClose} />
           </div>
-          {statusAndDateUI()}
-          {fromToUI()}
-          {networkUI()}
-          {transactionUI()}
-          {viewOnExplorerUI()}
+          <div className="transaction-info">
+            <div className="method-wrap">
+              <p className="method-name">
+                {transactionTypesMap(activityItem.transactionType, activityItem.nftInfo?.nftId)}
+              </p>
+              {isNft ? nftHeaderUI() : tokenHeaderUI()}
+            </div>
+            {statusAndDateUI()}
+            {fromToUI()}
+            {networkUI()}
+            {transactionUI()}
+          </div>
+        </div>
+        <div className="transaction-footer">
+          <div>{viewOnExplorerUI()}</div>
+          {isPrompt ? <PromptEmptyElement /> : null}
         </div>
       </div>
     );

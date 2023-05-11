@@ -24,7 +24,6 @@
 //     </div>
 //   );
 // }
-import React from 'react';
 
 export default function SignUpUI() {
   return <div>SignUpUI</div>;

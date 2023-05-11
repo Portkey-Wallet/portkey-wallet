@@ -19,6 +19,7 @@ import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils'
 import { SetPinAndAddManager, CreatePendingInfo, DIDWalletInfo } from '@portkey/did-ui-react';
 import { AccountType, GuardiansApproved } from '@portkey/services';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
+import ModalTip from 'pages/components/ModalTip';
 import './index.less';
 
 export default function SetWalletPin() {
@@ -116,6 +117,10 @@ export default function SetWalletPin() {
         });
         const path = state ? 'register' : 'login';
         navigate(`/success-page/${path}`);
+        setLoading(false);
+        ModalTip({
+          content: 'Requested successfully',
+        });
       } catch (error: any) {
         await setLocalStorage({
           registerStatus: null,

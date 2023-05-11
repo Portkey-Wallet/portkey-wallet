@@ -26,7 +26,7 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { HIDDEN_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
 const ActivityDetail = () => {
@@ -98,7 +98,7 @@ const ActivityDetail = () => {
   const networkUI = useMemo(() => {
     const { transactionType, fromChainId, toChainId, transactionId: _transactionId = '' } = activityItem || {};
 
-    const isNetworkShow = transactionType && !HIDDEN_TRANSACTION_TYPES.includes(transactionType);
+    const isNetworkShow = transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType);
     return (
       <>
         <View style={styles.section}>
@@ -186,7 +186,7 @@ const ActivityDetail = () => {
       </Text>
 
       {activityItem?.transactionType &&
-        !HIDDEN_TRANSACTION_TYPES.includes(activityItem?.transactionType) &&
+        SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) &&
         (isNft ? (
           <>
             <View style={styles.topWrap}>
@@ -207,7 +207,7 @@ const ActivityDetail = () => {
         ) : (
           <>
             <Text style={[styles.tokenCount, styles.fontBold]}>
-              {!HIDDEN_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) &&
+              {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) &&
                 (activityItem?.isReceived ? '+' : '-')}
               {`${formatAmountShow(divDecimals(activityItem?.amount, activityItem?.decimals))} ${
                 activityItem?.symbol || ''
@@ -235,7 +235,7 @@ const ActivityDetail = () => {
       </View>
       <View style={styles.card}>
         {/* From */}
-        {activityItem?.transactionType && !HIDDEN_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
+        {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
           <>
             <View style={styles.section}>
               <View style={[GStyles.flexRowWrap]}>
@@ -254,7 +254,7 @@ const ActivityDetail = () => {
           </>
         )}
         {/* To */}
-        {activityItem?.transactionType && !HIDDEN_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
+        {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
           <>
             <View style={styles.section}>
               <View style={[GStyles.flexRowWrap]}>

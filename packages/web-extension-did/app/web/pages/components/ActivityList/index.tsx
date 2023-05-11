@@ -25,6 +25,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -58,7 +59,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const navToDetail = useCallback(
     (item: ActivityItemType) => {
-      nav('/transaction', { state: { item, chainId } });
+      nav('/transaction', { state: { item, chainId, from: chainId ? '' : BalanceTab.ACTIVITY } });
     },
     [chainId, nav],
   );

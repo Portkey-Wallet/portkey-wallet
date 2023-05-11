@@ -27,12 +27,14 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 export interface ITransactionQuery {
   item: ActivityItemType;
   chainId?: string;
+  from?: string;
 }
 
 export default function Transaction() {
   const { t } = useTranslation();
   const { state }: { state: ITransactionQuery } = useLocation();
   const chainId = state.chainId;
+  const from = state?.from;
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
   const caAddresses = useCaAddresses();
@@ -77,8 +79,14 @@ export default function Transaction() {
 
   const nav = useNavigate();
   const onClose = useCallback(() => {
-    nav('/', { state: { key: BalanceTab.ACTIVITY } });
-  }, [nav]);
+    if (from && from === BalanceTab.ACTIVITY) {
+      // come in from the activityTab, go to the homepage activityTab
+      nav('/', { state: { key: BalanceTab.ACTIVITY } });
+    } else {
+      // come in from the token activity list, go back
+      nav(-1);
+    }
+  }, [from, nav]);
 
   const isNft = useMemo(() => !!activityItem?.nftInfo?.nftId, [activityItem?.nftInfo?.nftId]);
 
@@ -204,7 +212,10 @@ export default function Transaction() {
 
   const feeUI = useCallback(() => {
     return activityItem.isDelegated ? (
-      noFeeUI()
+      <p className="value">
+        <span className="left">{t('Transaction Fee')}</span>
+        {noFeeUI()}
+      </p>
     ) : (
       <p className="value">
         <span className="left">{t('Transaction Fee')}</span>

@@ -5,7 +5,7 @@ import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
-import { TextL, TextM, TextXL, TextXXL } from 'components/CommonText';
+import { TextL, TextM, TextXXL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
 import navigationService from 'utils/navigationService';
@@ -102,12 +102,12 @@ const NFTDetail: React.FC<TokenDetailProps> = props => {
             <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
           </View>
           <View style={[GStyles.flexRow, styles.rowWrap]}>
-            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token')}</TextM>
             <View style={GStyles.flex1} />
             <TextM style={[styles.leftTitle, FontStyles.font5]}>{symbol}</TextM>
           </View>
           <View style={[GStyles.flexRow, styles.rowWrap]}>
-            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Total Supply')}</TextM>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Total supply')}</TextM>
             <View style={GStyles.flex1} />
             <TextM style={[styles.leftTitle, FontStyles.font5]}>{totalSupply ?? ''}</TextM>
           </View>

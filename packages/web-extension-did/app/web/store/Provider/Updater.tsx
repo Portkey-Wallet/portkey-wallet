@@ -16,11 +16,13 @@ import { useCheckManagerOnLogout } from 'hooks/useLogout';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckUpdate, useCheckUpdateModal } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useLocation } from 'react-router';
 
 keepAliveOnPages({});
 
 export default function Updater() {
   const onLocking = useLocking();
+  const { pathname } = useLocation();
   const { passwordSeed } = useUserInfo();
   const checkManagerOnLogout = useCheckManagerOnLogout();
 
@@ -45,6 +47,11 @@ export default function Updater() {
   }, [apiUrl]);
   useCaInfoOnChain();
   useActiveLockStatus();
+  useEffect(() => {
+    const app = document.getElementById('root');
+    if (!app) return;
+    app.scrollTop = 0;
+  }, [pathname]);
   useMemo(() => {
     request.setLockCallBack(onLocking);
   }, [onLocking]);

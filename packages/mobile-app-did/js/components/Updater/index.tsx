@@ -15,6 +15,7 @@ import { useCheckManagerOnLogout } from 'hooks/useLogOut';
 import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
 import { useFetchIsShowBuyButton } from 'hooks/useSwitchBuy';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function Updater() {
   // FIXME: delete language
@@ -50,5 +51,7 @@ export default function Updater() {
       CommonToast.success(data.body);
     });
   });
+
+  usePhoneCountryCode(true);
   return null;
 }

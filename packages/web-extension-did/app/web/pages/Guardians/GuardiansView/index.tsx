@@ -67,6 +67,7 @@ export default function GuardiansView() {
 
   const handleSocialVerify = useCallback(
     async (v: ISocialLogin) => {
+      setLoading(true);
       const result = await socialLoginAction(v, curNet);
       const data = result.data;
       if (!data) throw 'Action error';
@@ -76,21 +77,19 @@ export default function GuardiansView() {
         accessToken: data?.access_token,
       };
       if (v === 'Google') {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const userInfo = await getGoogleUserInfo(data?.access_token);
-        setLoading(true);
+        await getGoogleUserInfo(data?.access_token);
+        // const userInfo = await getGoogleUserInfo(data?.access_token);
         // const { firstName, email, id } = userInfo;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const res = await request.verify.verifyGoogleToken({
+        setLoading(true);
+        await request.verify.verifyGoogleToken({
           params: verifySocialParams,
         });
       } else if (v === 'Apple') {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const userInfo = parseAppleIdentityToken(data?.access_token);
+        parseAppleIdentityToken(data?.access_token);
+        // const userInfo = parseAppleIdentityToken(data?.access_token);
         // const { email, userId } = userInfo;
         setLoading(true);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const res = await request.verify.verifyAppleToken({
+        await request.verify.verifyAppleToken({
           params: verifySocialParams,
         });
       }

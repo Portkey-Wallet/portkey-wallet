@@ -38,15 +38,11 @@ export const styles = StyleSheet.create({
     marginBottom: pTd(40),
     display: 'flex',
     flexDirection: 'row',
-    width: pTd(238),
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonShortGroupWrap: {
-    width: pTd(140),
-  },
-  space: {
-    width: pTd(50),
+  spacerStyle: {
+    width: pTd(36),
   },
   transferWrap: {
     flex: 1,

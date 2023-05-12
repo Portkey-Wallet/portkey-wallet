@@ -1,4 +1,8 @@
-import { TransactionTypes, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import {
+  SHOW_FROM_TRANSACTION_TYPES,
+  TransactionTypes,
+  transactionTypesMap,
+} from '@portkey-wallet/constants/constants-ca/activity';
 import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { AmountSign, formatWithCommas, formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { List } from 'antd-mobile';
@@ -21,6 +25,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -54,7 +59,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const navToDetail = useCallback(
     (item: ActivityItemType) => {
-      nav('/transaction', { state: { item, chainId } });
+      nav('/transaction', { state: { item, chainId, from: chainId ? '' : BalanceTab.ACTIVITY } });
     },
     [chainId, nav],
   );
@@ -79,12 +84,15 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const fromAndUsdUI = useCallback(
     (item: ActivityItemType) => {
-      const { fromAddress, fromChainId, decimals, amount, symbol, nftInfo } = item;
+      const { fromAddress, fromChainId, decimals, amount, symbol, nftInfo, transactionType } = item;
       const transFromAddress = addressFormat(fromAddress, fromChainId, 'aelf');
 
       return (
         <p className="row-2">
-          <span>From: {formatStr2EllipsisStr(transFromAddress, [7, 4])}</span>
+          <span>
+            {SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) &&
+              `From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}
+          </span>
           {nftInfo?.nftId && <span className="nft-name">{formatStr2EllipsisStr(nftInfo.alias)}</span>}
           {!isTestNet && !nftInfo?.nftId && <span>{amountInUsdShow(amount, decimals || 8, symbol)}</span>}
         </p>
@@ -99,13 +107,8 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       const { transactionType, fromChainId, toChainId } = item;
       const from = transNetworkText(fromChainId, isTestNet);
       const to = transNetworkText(toChainId, isTestNet);
-      const hiddenArr = [
-        TransactionTypes.SOCIAL_RECOVERY,
-        TransactionTypes.ADD_MANAGER,
-        TransactionTypes.REMOVE_MANAGER,
-      ];
 
-      return !hiddenArr.includes(transactionType) && <p className="row-3">{`${from}->${to}`}</p>;
+      return SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && <p className="row-3">{`${from}->${to}`}</p>;
     },
     [isTestNet],
   );

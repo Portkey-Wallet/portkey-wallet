@@ -4,7 +4,7 @@ import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';

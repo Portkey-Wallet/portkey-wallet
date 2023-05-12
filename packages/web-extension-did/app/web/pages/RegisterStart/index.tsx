@@ -134,8 +134,9 @@ export default function RegisterStart() {
       saveState(data);
       dispatch(resetGuardians());
       navigate('/register/select-verifier');
+      setLoading(false);
     },
-    [dispatch, navigate, saveState],
+    [dispatch, navigate, saveState, setLoading],
   );
 
   const onLoginFinish = useCallback(
@@ -166,19 +167,25 @@ export default function RegisterStart() {
     async (loginInfo: LoginInfo) => {
       loginInfoRef.current = loginInfo;
       if (isHasAccount?.current) {
-        if (type === 'create') return setOpen(true);
-        else return onLoginFinish(loginInfo);
+        if (type === 'create') {
+          setLoading(false);
+          return setOpen(true);
+        } else return onLoginFinish(loginInfo);
       }
       if (type === 'create') return onSignFinish(loginInfo);
-      else return setOpen(true);
+      else {
+        setLoading(false);
+        return setOpen(true);
+      }
     },
-    [onLoginFinish, onSignFinish, type],
+    [onLoginFinish, onSignFinish, setLoading, type],
   );
 
   const onSocialFinish: SocialLoginFinishHandler = useCallback(
     async ({ type, data }) => {
       try {
         if (!data) throw 'Action error';
+        setLoading(true);
         if (type === 'Google') {
           const userInfo = await getGoogleUserInfo(data?.access_token);
           if (!userInfo?.id) throw userInfo;
@@ -212,7 +219,7 @@ export default function RegisterStart() {
         message.error(msg);
       }
     },
-    [onInputFinish, validateIdentifier],
+    [onInputFinish, setLoading, validateIdentifier],
   );
 
   return (

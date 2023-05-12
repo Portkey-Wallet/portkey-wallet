@@ -48,7 +48,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       activity.isLoading &&
       (!currentActivity?.data?.length || currentActivity?.data?.length === 0)
     ) {
-      setLoading(true, ' ');
+      setLoading(true);
     } else {
       setLoading(false);
     }

@@ -24,7 +24,7 @@ const serviceWorkerListener = ({ pageStateChange, checkRegisterStatus, checkTimi
     // }
   });
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  apis.storage.onChanged.addListener((changes, areaName) => {
+  apis.storage.onChanged.addListener((changes) => {
     console.log('storage.onChanged', changes);
     if (storage.registerStatus in changes) {
       pageStateChange({

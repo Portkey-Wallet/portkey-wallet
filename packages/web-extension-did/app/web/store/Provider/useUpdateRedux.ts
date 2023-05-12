@@ -13,7 +13,7 @@ export default function useUpdateRedux() {
     const addListenerCallback = async (changes: any) => {
       if (storage.reduxStorageName in changes) {
         const { newValue, oldValue } = changes[storage.reduxStorageName];
-        const newValueParse = JSON.parse(newValue);
+        const newValueParse = JSON.parse(newValue ?? '{}');
         const oldValueParse = JSON.parse(oldValue ?? '{}');
         const payloadKeys: string[] = [];
         Object.entries(newValueParse).forEach(([key]) => {

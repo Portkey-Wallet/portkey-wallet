@@ -16,13 +16,13 @@ export const paymentSlice = createSlice({
       .addCase(fetchBuyFiatListAsync.fulfilled, (state, action) => {
         state.buyFiatList = action.payload;
       })
-      .addCase(fetchBuyFiatListAsync.rejected, (state, action) => {
+      .addCase(fetchBuyFiatListAsync.rejected, (_state, action) => {
         console.log('fetchBuyFiatListAsync.rejected: error', action.error.message);
       })
       .addCase(fetchSellFiatListAsync.fulfilled, (state, action) => {
         state.sellFiatList = action.payload;
       })
-      .addCase(fetchSellFiatListAsync.rejected, (state, action) => {
+      .addCase(fetchSellFiatListAsync.rejected, (_state, action) => {
         console.log('fetchSellFiatListAsync.rejected: error', action.error.message);
       })
       .addCase(setAchTokenInfo, (state, action) => {

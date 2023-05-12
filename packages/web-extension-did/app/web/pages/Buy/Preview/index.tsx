@@ -17,6 +17,7 @@ import { useCurrentApiUrl } from '@portkey-wallet/hooks/hooks-ca/network';
 import CustomModal from 'pages/components/CustomModal';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -173,6 +174,7 @@ export default function Preview() {
             {t('Go to AlchemyPay')}
           </Button>
         </div>
+        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     ),
     [

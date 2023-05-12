@@ -1,15 +1,15 @@
-import React from 'react';
+// import React from 'react';
 
 import Socket from '@portkey-wallet/socket/socket-did';
 import { SocketUrl } from '@portkey-wallet/constants/constants-ca/socket';
-import { randomId } from '@portkey-wallet/utils';
-import AElf from 'aelf-sdk';
+// import { randomId } from '@portkey-wallet/utils';
+// import AElf from 'aelf-sdk';
 import { Button, Divider } from 'antd';
 import { request } from '@portkey-wallet/api/api-did';
 
 // const wallet = AElf.wallet.createNewWallet();
 const clientId = 'aelf1';
-const requestId = 'aelf2';
+// const requestId = 'aelf2';
 
 // Socket.doOpen({
 //   url: SocketUrl,

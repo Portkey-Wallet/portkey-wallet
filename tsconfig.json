@@ -14,14 +14,14 @@
     "isolatedModules": true,
     "noEmit": true,
     "outDir": "./dist",
-
     "target": "ES2020",
     "lib": ["DOM", "DOM.Iterable", "ES2021"],
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "allowUnreachableCode": false,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "jsx": "react-jsx"
   },
   "exclude": ["node_modules", "dist"]
 }

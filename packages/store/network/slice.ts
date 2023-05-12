@@ -91,7 +91,7 @@ const chainSlice = createSlice({
         state.currentChain = _chainList.find(item => item.rpcUrl === state.currentChain.rpcUrl) ?? DefaultChain;
         state.chainList = _chainList;
       })
-      .addCase(fetchChainListAsync.rejected, (state, action) => {
+      .addCase(fetchChainListAsync.rejected, (_state, action) => {
         throw Error(action.error.message);
       })
       .addCase(addCustomChainItem.fulfilled, (state, action: PayloadAction<ChainItemType>) => {
@@ -126,7 +126,7 @@ const chainSlice = createSlice({
           item.key === chain.key ? { ...chain, key: `${chain.rpcUrl}&${chain.networkName}` } : item,
         );
       })
-      .addCase(updateCustomChainItem.rejected, (state, action) => {
+      .addCase(updateCustomChainItem.rejected, (_state, action) => {
         throw action.error;
       });
   },

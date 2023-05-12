@@ -11,6 +11,7 @@ import { removeOtherManager } from 'utils/sandboxUtil/removeOtherManager';
 import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import qs from 'query-string';
+import ModalTip from 'pages/components/ModalTip';
 
 export const useRemoveOtherManage = () => {
   const { setLoading } = useLoading();
@@ -56,7 +57,12 @@ export const useRemoveOtherManage = () => {
         },
       });
       setLoading(false);
-      navigate('/setting/wallet-security/manage-devices', { state: 'update' });
+      ModalTip({
+        content: 'Requested successfully',
+        onClose: () => {
+          navigate('/setting/wallet-security/manage-devices', { state: 'update' });
+        },
+      });
     } catch (error: any) {
       setLoading(false);
       console.log('---remove-other-manage-error', error);

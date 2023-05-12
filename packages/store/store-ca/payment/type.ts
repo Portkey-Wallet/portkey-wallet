@@ -3,10 +3,10 @@ export interface GetFiatType {
   country: string; // 2 letters region code
   payWayCode: string; // code of payment
   payWayName: string; // name of payment
-  fixedFee: number; // ramp flat rate
-  rateFee: number; // ramp percentage rate
-  payMin: number;
-  payMax: number;
+  fixedFee: number | string; // ramp flat rate
+  rateFee?: number | string; // ramp percentage rate
+  payMin: number | string;
+  payMax: number | string;
 }
 
 export interface FiatType extends GetFiatType {

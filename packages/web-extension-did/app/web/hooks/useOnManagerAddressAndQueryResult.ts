@@ -15,6 +15,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useFetchDidWallet from './useFetchDidWallet';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
 import { message } from 'antd';
+import ModalTip from 'pages/components/ModalTip';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -150,6 +151,10 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           managerUniqueId: sessionInfo.sessionId,
           pwd: pin,
           managerAddress: _walletInfo.address,
+        });
+        setLoading(false);
+        ModalTip({
+          content: 'Requested successfully',
         });
       } catch (error: any) {
         console.log(error, 'onCreate==error');

@@ -115,7 +115,15 @@ export default function NFT() {
                       }}
                       className={clsx(['item', nftItem.imageUrl ? 'item-img' : ''])}
                       onClick={() => {
-                        nav('/nft', { state: { ...nftItem, address: nftItem.tokenContractAddress, decimals: 0 } });
+                        nav('/nft', {
+                          state: {
+                            ...nftItem,
+                            address: nftItem.tokenContractAddress,
+                            decimals: 0,
+                            collectionName: nft.collectionName,
+                            collectionImageUrl: nft.imageUrl,
+                          },
+                        });
                       }}>
                       <div className="mask">
                         <p className="alias">{nftItem.alias}</p>

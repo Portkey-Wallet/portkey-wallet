@@ -1,3 +1,4 @@
+import { Form } from 'antd';
 import InputPin from 'pages/AccountSetting/components/InputPin';
 import SubmitPinButton from 'pages/AccountSetting/components/SubmitPinButton';
 import SecondPageHeader from 'pages/components/SecondPageHeader';
@@ -16,11 +17,15 @@ export default function ConfirmPinPrompt({
   handleNext,
   goBack,
 }: IConfirmPinProps) {
+  const [form] = Form.useForm();
+
   return (
     <div className="confirm-pin-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
-      <InputPin label={pinLabel} value={pin} placeholder={placeholder} errMsg={errMsg} onChange={onChangePin} />
-      <SubmitPinButton text={btnText} disable={submitDisable} onClick={handleNext} className="confirm-pin-btn" />
+      <Form form={form} colon={false} layout="vertical" onFinish={handleNext}>
+        <InputPin label={pinLabel} value={pin} placeholder={placeholder} errMsg={errMsg} onChange={onChangePin} />
+        <SubmitPinButton text={btnText} disable={submitDisable} className="confirm-pin-btn" />
+      </Form>
     </div>
   );
 }

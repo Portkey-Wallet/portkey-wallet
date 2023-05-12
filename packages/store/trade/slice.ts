@@ -47,7 +47,6 @@ export const tradeSlice = createSlice({
     clearRecentContract: state => {
       state.recentContact = {};
     },
-    updateTransactionRecord: (state, action: PayloadAction<any>) => {},
   },
 });
 

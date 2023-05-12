@@ -16,6 +16,7 @@ import { useIsTestnet } from 'hooks/useNetwork';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 
 export default function AddToken() {
   const { t } = useTranslation();
@@ -127,6 +128,7 @@ export default function AddToken() {
         {!!tokenDataShowInMarket.length && (
           <div className="add-token-content">{tokenDataShowInMarket.map((item) => renderList(item))}</div>
         )}
+        {isPrompt ? <PromptEmptyElement /> : null}
         {/* {filterWord && !tokenDataShowInMarket.length && (
       <div className="flex-center fix-max-content add-token-content-empty">{t('There is no search result.')}</div>
     )} */}

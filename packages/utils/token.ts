@@ -1,7 +1,7 @@
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 
 export const filterTokenList = (tokenList: TokenItemShowType[], keyword: string): TokenItemShowType[] => {
-  return tokenList.filter(ele => {
+  return tokenList.filter((ele): void | boolean => {
     if (ele.chainId === 'AELF') {
       return ele.symbol.toLowerCase().includes(keyword.trim().toLowerCase());
     } else {

@@ -27,6 +27,7 @@ export type NFTItemBaseType = {
   quantity: string;
   imageUrl: string;
   tokenContractAddress: string;
+  totalSupply: string | number;
 };
 
 // assets types

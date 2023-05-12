@@ -39,7 +39,7 @@ export default function Phone({
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [country, setCountry] = useState<CountryItem>(DefaultCountry);
-  const onLogin = useOnLogin();
+  const onLogin = useOnLogin(type === PageType.login);
   const onPageLogin = useCallback(async () => {
     Loading.show();
     try {

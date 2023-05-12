@@ -41,7 +41,7 @@ export default function Email({
   const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
-  const onLogin = useOnLogin();
+  const onLogin = useOnLogin(type === PageType.login);
   const onPageLogin = useCallback(async () => {
     const message = checkEmail(loginAccount);
     setErrorMessage(message);
@@ -87,7 +87,6 @@ export default function Email({
           ref={iptRef}
           value={loginAccount}
           type="general"
-          maxLength={30}
           autoCorrect={false}
           onChangeText={setLoginAccount}
           errorMessage={errorMessage}

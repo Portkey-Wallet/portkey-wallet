@@ -20,8 +20,10 @@ export default function ScreenLoading() {
                   backgroundColor: `rgb(00 00 00 / ${isLoading * 100}%)`,
                 }
           }>
-          <Loading />
-          <div className="loading-text">{loadingText ? loadingText : 'Loading...'}</div>
+          <div className="loading-indicator flex-column-center">
+            <Loading />
+            <div className="loading-text">{loadingText ? loadingText : 'Loading...'}</div>
+          </div>
         </div>
       )}
     </>

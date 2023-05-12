@@ -103,7 +103,7 @@ class Content {
   }
 
   extensionWatch() {
-    apis.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    apis.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       this.respond(message);
       sendResponse(true);
     });

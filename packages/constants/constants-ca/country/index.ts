@@ -21,7 +21,7 @@ export const countryCode = getCountryCodeJSON(countryCodeList);
 
 export const countryCodeIndex = getCountryCodeIndex(countryCodeList);
 
-export const countryCodeFilter = (filterFelid: string) => {
+export const countryCodeFilter = (filterFelid: string, countryCodeList: CountryItem[]) => {
   if (!filterFelid) return countryCodeList;
   filterFelid = filterFelid.toLocaleLowerCase();
   if (/\d/.test(filterFelid)) {

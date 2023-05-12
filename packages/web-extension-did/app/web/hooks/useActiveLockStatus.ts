@@ -10,11 +10,9 @@ export const useActiveLockStatus = () => {
       if (isPrompt) {
         timer.remove();
       } else {
-        try {
-          activeLockStatus();
-        } catch (err: any) {
+        activeLockStatus().catch((err) => {
           console.log('useActiveLockStatus error', err);
-        }
+        });
       }
     },
     1000 * 60,

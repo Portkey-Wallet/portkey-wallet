@@ -19,6 +19,8 @@ import { DiscoverStateType } from '@portkey-wallet/store/store-ca/discover/type'
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import { PaymentStateType } from '@portkey-wallet/store/store-ca/payment/type';
 import { switchSlice, SwitchStateTypes } from '@portkey-wallet/store/store-ca/switch/slice';
+import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
+import { MiscState } from '@portkey-wallet/store/store-ca/misc/types';
 
 export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;
@@ -32,4 +34,5 @@ export type CACommonState = RootCommonState & {
   [discoverSlice.name]: DiscoverStateType;
   [paymentSlice.name]: PaymentStateType;
   [switchSlice.name]: SwitchStateTypes;
+  [miscSlice.name]: MiscState;
 };

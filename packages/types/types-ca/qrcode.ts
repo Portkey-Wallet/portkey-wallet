@@ -1,7 +1,6 @@
 import { ChainId, ChainType, NetworkType } from '..';
 import { DeviceType, QRExtraDataType } from './device';
 import { IToSendAssetParamsType } from './routeParams';
-import { TokenItemShowType } from './token';
 
 export interface QRData {
   type: 'login' | 'send';

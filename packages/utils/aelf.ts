@@ -3,7 +3,6 @@ import { COMMON_PRIVATE } from '@portkey-wallet/constants';
 import { AElfInterface } from '@portkey-wallet/types/aelf';
 import { ChainId } from '@portkey-wallet/types';
 const Wallet = AElf.wallet;
-let wallet: any = null;
 
 export function isEqAddress(a1?: string, a2?: string) {
   return a1?.toLocaleLowerCase() === a2?.toLocaleLowerCase();

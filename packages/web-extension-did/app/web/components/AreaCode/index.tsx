@@ -1,9 +1,10 @@
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
-import { countryCodeFilter, countryCodeList } from '@portkey-wallet/constants/constants-ca/country';
+import { countryCodeFilter } from '@portkey-wallet/constants/constants-ca/country';
 import { Input } from 'antd';
 import clsx from 'clsx';
 import CustomSvg from 'components/CustomSvg';
 import { ChangeEvent, MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import './index.less';
 
 interface AreaCodeProps {
@@ -15,6 +16,7 @@ interface AreaCodeProps {
 
 export default function AreaCode({ open, value, onChange, onCancel }: AreaCodeProps) {
   const [searchVal, setSearchVal] = useState<string>('');
+  const { phoneCountryCodeList } = usePhoneCountryCode();
 
   const timer = useRef<any>(null);
 
@@ -58,16 +60,15 @@ export default function AreaCode({ open, value, onChange, onCancel }: AreaCodePr
     ),
     [onChange, value],
   );
-
-  const allList = useMemo(() => countryCodeList.map((country) => item(country)), [item]);
+  const allList = useMemo(() => phoneCountryCodeList.map((country) => item(country)), [item, phoneCountryCodeList]);
 
   const noDate = useMemo(() => <div className="flex-center no-search-result">There is no search result.</div>, []);
 
   const filterList = useMemo(() => {
-    const list = countryCodeFilter(searchVal);
+    const list = countryCodeFilter(searchVal, phoneCountryCodeList);
     if (!list.length) return noDate;
     return list.map((country) => item(country));
-  }, [item, noDate, searchVal]);
+  }, [item, noDate, phoneCountryCodeList, searchVal]);
 
   return (
     <div className="area-code-wrapper" id="area-code" style={{ display: open ? 'flex' : 'none' }} onClick={onClick}>

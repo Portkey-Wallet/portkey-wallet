@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { useLoginInfo } from 'store/Provider/hooks';
 import { countryCodeFilter } from '@portkey-wallet/constants/constants-ca/country';
 import { ISelectCountryCode } from 'store/reducers/loginCache/type';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 interface PhoneProps {
   code?: string;
@@ -11,9 +12,10 @@ interface PhoneProps {
 
 export default function PhoneInput({ code, onChange }: PhoneProps) {
   const { countryCode } = useLoginInfo();
+  const { phoneCountryCodeList } = usePhoneCountryCode();
   const defaultCountryCode = useMemo(() => {
     if (code) {
-      const defaultCountryCode = countryCodeFilter(code);
+      const defaultCountryCode = countryCodeFilter(code, phoneCountryCodeList);
       if (defaultCountryCode.length) {
         return {
           index: defaultCountryCode[0].country[0],
@@ -25,7 +27,7 @@ export default function PhoneInput({ code, onChange }: PhoneProps) {
       return countryCode;
     }
     return countryCode;
-  }, [code, countryCode]);
+  }, [code, countryCode, phoneCountryCodeList]);
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [areaValue, setAreaValue] = useState<ISelectCountryCode>(defaultCountryCode);
 

@@ -19,7 +19,6 @@ export const useGetAchTokenInfo = () => {
     if (emailGuardian === undefined) {
       return undefined;
     }
-    console.log('email', emailGuardian.guardianAccount);
 
     const rst = await getAchToken({ email: emailGuardian.guardianAccount });
     const achTokenInfo = {

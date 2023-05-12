@@ -26,6 +26,7 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { getDeviceInfo } from 'utils/device';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
+import ModalTip from 'pages/components/ModalTip';
 import './index.less';
 
 export default function SetWalletPin() {
@@ -206,6 +207,10 @@ export default function SetWalletPin() {
           managerUniqueId: sessionInfo.sessionId,
           pwd: pin,
           managerAddress: _walletInfo.address,
+        });
+        setLoading(false);
+        ModalTip({
+          content: 'Requested successfully',
         });
       } catch (error: any) {
         console.log(error, 'onCreate==error');

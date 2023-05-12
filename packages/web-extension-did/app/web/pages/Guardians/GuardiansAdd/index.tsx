@@ -36,6 +36,7 @@ import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
+import { MessageType } from 'antd/lib/message';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
@@ -194,6 +195,7 @@ export default function AddGuardian() {
   const handleSocialAuth = useCallback(
     async (v: ISocialLogin) => {
       try {
+        setLoading(true);
         const result = await socialLoginAction(v, currentNetwork);
         const data = result.data;
         if (!data) throw 'auth error';
@@ -222,11 +224,13 @@ export default function AddGuardian() {
         }
         if (result.error) throw result.message ?? result.Error;
       } catch (error) {
+        setLoading(false);
         const msg = handleErrorMessage(error);
         message.error(msg);
       }
+      setLoading(false);
     },
-    [currentNetwork],
+    [currentNetwork, setLoading],
   );
 
   const renderSocialGuardianAccount = useCallback(
@@ -430,7 +434,7 @@ export default function AddGuardian() {
     navigate('/setting/guardians');
   }, [dispatch, navigate]);
 
-  const handleCheck = useCallback(() => {
+  const handleCheck = useCallback((): void | MessageType => {
     if (guardianType === LoginType.Email) {
       if (!EmailReg.test(emailVal as string)) {
         setEmailErr(EmailError.invalidEmail);

@@ -21,4 +21,8 @@ export default {
     config: { method: 'PUT' },
   },
   pullNotify: 'api/app/notify/pullNotify',
+  getPhoneCountryCode: {
+    target: '/api/app/phone/info',
+    config: { method: 'GET' },
+  },
 } as const;

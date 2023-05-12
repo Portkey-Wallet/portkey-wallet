@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { LockingTimeType, SettingsState } from './types';
 
 const initialState: SettingsState = {
@@ -30,7 +30,7 @@ export const settingsSlice = createSlice({
       console.log('leaver', Date.now());
       state.leaveTime = Date.now();
     },
-    resetSettings: state => initialState,
+    resetSettings: () => initialState,
   },
 });
 

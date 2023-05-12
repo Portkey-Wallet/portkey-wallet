@@ -20,11 +20,14 @@ export default function EmailTab({ confirmText, validateEmail, onFinish }: Email
     try {
       setLoading(true, 'Checking account on the chain...');
       await emailInputInstance?.current?.validateEmail(val);
-      val && onFinish?.(val);
+      if (val && onFinish) {
+        val && onFinish(val);
+      } else {
+        setLoading(false);
+      }
     } catch (error: any) {
       const msg = handleErrorMessage(error);
       setError(msg);
-    } finally {
       setLoading(false);
     }
   }, [onFinish, setLoading, val]);

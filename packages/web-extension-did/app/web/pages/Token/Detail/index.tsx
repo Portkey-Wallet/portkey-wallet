@@ -4,12 +4,13 @@ import BalanceCard from 'pages/components/BalanceCard';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import Activity from 'pages/Home/components/Activity';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { FaucetUrl } from '@portkey-wallet/constants/constants-ca/payment';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
 export enum TokenTransferStatus {
@@ -20,16 +21,22 @@ export enum TokenTransferStatus {
 function TokenDetail() {
   const navigate = useNavigate();
   const { state: currentToken } = useLocation();
-  const isTestNet = useIsTestnet();
+  const isMainNet = useIsMainnet();
   const { isPrompt } = useCommonState();
   const isShowBuy = useMemo(() => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF', [currentToken]);
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
 
   const handleBuy = useCallback(() => {
-    const path = isTestNet ? '/buy-test' : '/buy';
-    navigate(path, { state: { tokenInfo: currentToken } });
-  }, [currentToken, isTestNet, navigate]);
+    if (isMainNet) {
+      navigate('/buy', { state: { tokenInfo: currentToken } });
+    } else {
+      const openWinder = window.open(FaucetUrl, '_blank');
+      if (openWinder) {
+        openWinder.opener = null;
+      }
+    }
+  }, [currentToken, isMainNet, navigate]);
 
   const mainContent = useCallback(() => {
     return (
@@ -39,7 +46,7 @@ function TokenDetail() {
             title={
               <div className="title">
                 <p className="symbol">{currentToken?.symbol}</p>
-                <p className="network">{transNetworkText(currentToken.chainId, isTestNet)}</p>
+                <p className="network">{transNetworkText(currentToken.chainId, !isMainNet)}</p>
               </div>
             }
             leftCallBack={() => navigate('/')}
@@ -51,7 +58,7 @@ function TokenDetail() {
               <span className="amount">
                 {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals || 8))} {currentToken.symbol}
               </span>
-              {!isTestNet && (
+              {isMainNet && (
                 <span className="convert">
                   {amountInUsdShow(currentToken.balance, currentToken.decimals, currentToken.symbol)}
                 </span>
@@ -79,7 +86,7 @@ function TokenDetail() {
         </div>
       </div>
     );
-  }, [amountInUsdShow, currentToken, handleBuy, isPrompt, isShowBuy, isTestNet, navigate]);
+  }, [isPrompt, currentToken, isMainNet, amountInUsdShow, isShowBuy, handleBuy, navigate]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

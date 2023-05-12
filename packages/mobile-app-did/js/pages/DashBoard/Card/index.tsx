@@ -15,13 +15,14 @@ import useQrScanPermission from 'hooks/useQrScanPermission';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import BuyButton from 'components/BuyButton';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { useIsShowBuy } from 'hooks/useSwitchBuy';
+import FaucetButton from 'components/FaucetButton';
 
 const Card: React.FC = () => {
   const { t } = useLanguage();
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const { walletName } = useWallet();
   const isShowBuy = useIsShowBuy();
   const accountBalanceUSD = useAccountBalanceUSD();
@@ -55,12 +56,25 @@ const Card: React.FC = () => {
           <Svg icon="scan" size={22} color={defaultColors.font2} />
         </TouchableOpacity>
       </View>
-      <Text style={styles.usdtBalance}>{isTestnet ? 'Dev Mode' : `$${accountBalanceUSD}`}</Text>
+      <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
       <TextM style={styles.accountName}>{walletName}</TextM>
       <View style={styles.buttonGroupWrap}>
-        {isShowBuy && <BuyButton themeType="dashBoard" />}
+        {isMainnet && isShowBuy && (
+          <>
+            <BuyButton themeType="dashBoard" />
+            <View style={styles.spacerStyle} />
+          </>
+        )}
         <SendButton themeType="dashBoard" />
+        <View style={styles.spacerStyle} />
         <ReceiveButton themeType="dashBoard" />
+        <View style={styles.spacerStyle} />
+        {!isMainnet && (
+          <>
+            <FaucetButton themeType="dashBoard" />
+            <View style={styles.spacerStyle} />
+          </>
+        )}
         <ActivityButton themeType="dashBoard" />
       </View>
     </View>

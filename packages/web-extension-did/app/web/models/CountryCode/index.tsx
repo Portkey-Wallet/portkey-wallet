@@ -10,6 +10,7 @@ import { Input } from 'antd';
 import { setCountryCodeAction } from 'store/reducers/loginCache/actions';
 import { ISelectCountryCode } from 'store/reducers/loginCache/type';
 import AllCountry from './components/AllCountry';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import './index.less';
 
 export default function CountryCode() {
@@ -18,8 +19,12 @@ export default function CountryCode() {
   const [searchVal, setSearchVal] = useState<string>('');
   const { t } = useTranslation();
   const timer = useRef<any>(null);
+  const { phoneCountryCodeList } = usePhoneCountryCode();
 
-  const filterList = useMemo(() => countryCodeFilter(searchVal), [searchVal]);
+  const filterList = useMemo(
+    () => countryCodeFilter(searchVal, phoneCountryCodeList),
+    [phoneCountryCodeList, searchVal],
+  );
 
   const debounce = useCallback((fn: () => void, delay = 500) => {
     clearTimeout(timer.current);

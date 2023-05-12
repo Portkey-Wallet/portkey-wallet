@@ -2,7 +2,7 @@ import response from './data.json';
 
 console.log(response);
 
-const data = [0, 1, 2, 3, 4, 5, 6, 7].map((ele, index) => {
+const data = [0, 1, 2, 3, 4, 5, 6, 7].map((_ele, index) => {
   return {
     isDefault: false, // boolean,
     symbol: `${index}ELF`, // "ELF"   the name showed

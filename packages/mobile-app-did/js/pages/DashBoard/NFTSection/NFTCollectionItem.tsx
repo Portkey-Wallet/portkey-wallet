@@ -110,7 +110,7 @@ export default function NFTItem(props: NFTItemPropsType) {
               key={ele.symbol}
               data={ele}
               onPress={() => {
-                navigationService.navigate('NFTDetail', ele);
+                navigationService.navigate('NFTDetail', { ...ele, collectionInfo: { imageUrl, collectionName } });
               }}
             />
           ))}

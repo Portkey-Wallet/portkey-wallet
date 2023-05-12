@@ -7,6 +7,7 @@ import Copy from 'components/Copy';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { useIsTestnet } from 'hooks/useNetwork';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import PromptFrame from 'pages/components/PromptFrame';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
 import { useCallback, useMemo } from 'react';
@@ -78,6 +79,7 @@ export default function Receive() {
             <Copy className="copy-icon" toCopy={caAddress}></Copy>
           </div>
         </div>
+        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );
   }, [caAddress, isPrompt, isTestNet, rightElement, state.chainId, symbol, value]);

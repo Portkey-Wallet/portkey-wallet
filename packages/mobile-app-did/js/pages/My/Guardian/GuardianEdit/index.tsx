@@ -485,7 +485,6 @@ const GuardianEdit: React.FC = () => {
             label={t('Guardian email')}
             value={account}
             placeholder={t('Enter email')}
-            maxLength={30}
             onChangeText={onAccountChange}
             errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
             keyboardType="email-address"

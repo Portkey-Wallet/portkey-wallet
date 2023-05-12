@@ -30,6 +30,7 @@ import clsx from 'clsx';
 import CustomModal from './components/CustomModal';
 import CustomTipModal from 'pages/components/CustomModal';
 import './index.less';
+import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -476,6 +477,7 @@ export default function Buy() {
           </Button>
         </div>
         {renderSelectELe}
+        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     ),
     [

@@ -1,11 +1,11 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useCallback } from 'react';
+import { StyleSheet, TouchableOpacity, StatusBar, View, Image, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
-import { TextL, TextM, TextXL, TextXXL } from 'components/CommonText';
+import { TextL, TextM, TextXXL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
 import navigationService from 'utils/navigationService';
@@ -14,6 +14,12 @@ import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParam
 import SafeAreaBox from 'components/SafeAreaBox';
 import Svg from 'components/Svg';
 import CommonAvatar from 'components/CommonAvatar';
+import * as Clipboard from 'expo-clipboard';
+import CommonToast from 'components/CommonToast';
+import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { ChainId } from '@portkey-wallet/types';
+import { ScreenWidth } from '@rneui/base';
+import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 
 export interface TokenDetailProps {
   route?: any;
@@ -22,12 +28,17 @@ export interface TokenDetailProps {
 interface NftItemType {
   alias: string;
   balance: string;
-  chainId: string;
+  chainId: ChainId;
   imageUrl: string;
   imageLargeUrl: string;
   symbol: string;
   tokenContractAddress: string;
   tokenId: string;
+  totalSupply: string;
+  collectionInfo: {
+    imageUrl: string;
+    collectionName: string;
+  };
 }
 
 const NFTDetail: React.FC<TokenDetailProps> = props => {
@@ -35,9 +46,27 @@ const NFTDetail: React.FC<TokenDetailProps> = props => {
 
   const nftItem = useRouterParams<NftItemType>();
 
-  const { alias, balance, imageLargeUrl, symbol, tokenId } = nftItem;
+  const {
+    alias,
+    balance,
+    tokenContractAddress,
+    imageLargeUrl,
+    symbol,
+    totalSupply,
+    chainId,
+    tokenId,
+    collectionInfo: { imageUrl, collectionName },
+  } = nftItem;
 
   console.log('nftItem', nftItem);
+
+  const copyStr = useCallback(
+    async (str: string) => {
+      const isCopy = await Clipboard.setStringAsync(str);
+      isCopy && CommonToast.success(t('Copy Success'));
+    },
+    [t],
+  );
 
   return (
     <SafeAreaBox style={styles.pageWrap}>
@@ -45,24 +74,61 @@ const NFTDetail: React.FC<TokenDetailProps> = props => {
       <TouchableOpacity style={styles.iconWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="left-arrow" size={20} />
       </TouchableOpacity>
-      <TextXXL style={styles.title}>{`${alias} #${tokenId}`}</TextXXL>
-      <TextM style={[FontStyles.font3, styles.balance]}>{`Balance ${balance}`}</TextM>
 
-      <CommonAvatar title={alias} style={[imageLargeUrl ? styles.image1 : styles.image]} imageUrl={imageLargeUrl} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={[styles.collection, GStyles.flexRow, GStyles.itemCenter]}>
+          <CommonAvatar imageUrl={imageUrl} title={collectionName} shapeType={'circular'} avatarSize={pTd(24)} />
+          <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>{collectionName}</TextM>
+        </View>
+        <TextXXL style={styles.tokenId}>{`#${tokenId}`}</TextXXL>
 
-      <CommonButton
-        type="primary"
-        onPress={() => {
-          navigationService.navigate('SendHome', {
-            sendType: 'nft',
-            assetInfo: nftItem,
-            toInfo: { name: '', address: '' },
-          } as unknown as IToSendHomeParamsType);
-        }}>
-        {t('Send')}
-      </CommonButton>
-      <TextL style={styles.symbolDescribeTitle}>{symbol}</TextL>
-      <TextXL style={[styles.symbolContent, FontStyles.font3]} />
+        <CommonAvatar title={alias} style={[imageLargeUrl ? styles.image1 : styles.image]} imageUrl={imageLargeUrl} />
+
+        <View style={styles.infoWrap}>
+          <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>
+          <View style={[GStyles.flexRow, styles.rowWrap]}>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Contract address')}</TextM>
+            <View style={GStyles.flex1} />
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatStr2EllipsisStr(tokenContractAddress)}</TextM>
+            <TouchableOpacity
+              style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]}
+              onPress={() => copyStr(tokenContractAddress)}>
+              <Svg icon="copy" size={pTd(13)} />
+            </TouchableOpacity>
+          </View>
+          <View style={[GStyles.flexRow, styles.rowWrap]}>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('BlockChain')}</TextM>
+            <View style={GStyles.flex1} />
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
+          </View>
+          <View style={[GStyles.flexRow, styles.rowWrap]}>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token')}</TextM>
+            <View style={GStyles.flex1} />
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{symbol}</TextM>
+          </View>
+          <View style={[GStyles.flexRow, styles.rowWrap]}>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Total supply')}</TextM>
+            <View style={GStyles.flex1} />
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>{totalSupply ?? ''}</TextM>
+          </View>
+        </View>
+      </ScrollView>
+
+      <View style={[GStyles.flexCol, styles.bottomSection]}>
+        <TextM style={[styles.balance, FontStyles.font5, fonts.mediumFont]}>{`You have: ${balance}`}</TextM>
+        <CommonButton
+          title={t('Send')}
+          style={styles.sendBtn}
+          type="primary"
+          onPress={() => {
+            navigationService.navigate('SendHome', {
+              sendType: 'nft',
+              assetInfo: nftItem,
+              toInfo: { name: '', address: '' },
+            } as unknown as IToSendHomeParamsType);
+          }}
+        />
+      </View>
     </SafeAreaBox>
   );
 };
@@ -79,21 +145,21 @@ export const styles = StyleSheet.create({
     marginBottom: pTd(16),
     marginTop: pTd(16),
   },
-  title: {
-    ...fonts.mediumFont,
-    lineHeight: pTd(24),
+  collection: {
     marginTop: pTd(8),
   },
-  balance: {
-    lineHeight: pTd(20),
+  collectionAvatar: {},
+  tokenId: {
+    ...fonts.mediumFont,
+    lineHeight: pTd(24),
     marginTop: pTd(8),
   },
   amount: {
     marginTop: pTd(8),
   },
   image: {
-    marginTop: pTd(16),
-    marginBottom: pTd(16),
+    marginTop: pTd(24),
+    marginBottom: pTd(24),
     width: pTd(335),
     height: pTd(335),
     borderRadius: pTd(8),
@@ -104,8 +170,8 @@ export const styles = StyleSheet.create({
     color: defaultColors.font7,
   },
   image1: {
-    marginTop: pTd(16),
-    marginBottom: pTd(16),
+    marginTop: pTd(24),
+    marginBottom: pTd(24),
     width: pTd(335),
     height: pTd(335),
     borderRadius: pTd(8),
@@ -113,11 +179,50 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: pTd(100),
   },
+  basicInfoTitle: {
+    marginBottom: pTd(8),
+  },
+  rowWrap: {
+    height: pTd(34),
+    alignItems: 'center',
+  },
+  leftTitle: {},
+  copyIconWrap: {},
   symbolDescribeTitle: {
     marginTop: pTd(32),
     ...fonts.mediumFont,
   },
   symbolContent: {
     marginTop: pTd(4),
+  },
+  divider: {
+    width: '100%',
+    height: StyleSheet.hairlineWidth,
+  },
+  marginLeft8: {
+    marginLeft: pTd(8),
+  },
+  bottomSection: {
+    backgroundColor: defaultColors.bg1,
+    position: 'absolute',
+    bottom: bottomBarHeight,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: defaultColors.border6,
+    width: ScreenWidth,
+    height: pTd(110),
+    paddingLeft: pTd(20),
+    paddingRight: pTd(20),
+  },
+  balance: {
+    width: '100%',
+    textAlign: 'center',
+    marginTop: pTd(10),
+  },
+  sendBtn: {
+    marginTop: pTd(16),
+    marginBottom: pTd(16),
+  },
+  infoWrap: {
+    marginBottom: pTd(150),
   },
 });

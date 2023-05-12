@@ -22,7 +22,7 @@ export class ContractBasic {
   public callViewMethod: CallViewMethod = async (
     functionName,
     paramsOption,
-    callOptions = { defaultBlock: 'latest' },
+    _callOptions = { defaultBlock: 'latest' },
   ) => {
     if (this.callContract instanceof AElfContractBasic)
       return this.callContract.callViewMethod(functionName, paramsOption);
@@ -31,7 +31,7 @@ export class ContractBasic {
     return { data: '' };
   };
 
-  public callSendMethod: CallSendMethod = async (functionName, account, paramsOption, sendOptions) => {
+  public callSendMethod: CallSendMethod = async (functionName, _account, paramsOption, sendOptions) => {
     if (this.callContract instanceof AElfContractBasic)
       return this.callContract.callSendMethod(functionName, paramsOption, sendOptions);
 

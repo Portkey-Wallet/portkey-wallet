@@ -44,11 +44,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 14,
     borderRadius: 6,
-    shadowColor: defaultColors.shadow1,
     backgroundColor: defaultColors.bg1,
-    overflow: 'hidden',
+
     // shadow
     shadowOffset: { width: 0, height: 0 },
+    shadowColor: defaultColors.shadow1,
     shadowOpacity: 0.2,
     shadowRadius: 10,
     elevation: 2,

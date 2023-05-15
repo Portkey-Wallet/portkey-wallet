@@ -75,13 +75,15 @@ export default function NFT() {
           </div>
           {renderDetail}
         </div>
-        <div className="btn-wrap flex-column-center">
-          <div className="balance">{`You have: ${formatAmountShow(balance, 0)}`}</div>
-          <Button type="primary" onClick={() => navigate(`/send/nft/${symbol}`, { state })}>
-            Send
-          </Button>
+        <div>
+          <div className="btn-wrap flex-column-center">
+            <div className="balance">{`You have: ${formatAmountShow(balance, 0)}`}</div>
+            <Button type="primary" onClick={() => navigate(`/send/nft/${symbol}`, { state })}>
+              Send
+            </Button>
+          </div>
+          {isPrompt ? <PromptEmptyElement /> : null}
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );
   }, [isPrompt, navigate, renderDetail, state]);

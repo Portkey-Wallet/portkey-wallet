@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     lineHeight: pTd(16),
   },
   itemAvatarStyle: {
-    marginRight: pTd(8),
+    marginRight: pTd(8) - StyleSheet.hairlineWidth,
     marginTop: pTd(8),
   },
   noMarginRight: {

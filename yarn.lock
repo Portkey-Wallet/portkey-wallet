@@ -5166,10 +5166,10 @@
     "@portkey/utils" "^0.0.1-alpha.1.8"
     aelf-sdk "^3.2.44"
 
-"@portkey/did-ui-react@^0.0.1-alpha.7.4":
-  version "0.0.1-alpha.7.4"
-  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-0.0.1-alpha.7.4.tgz#81edd7dca51852d36ea2794d9d4a2e1b130cad07"
-  integrity sha512-J8HPbLiGG96BXQBAJfkgyeCj0DWBWa4dCXOnRJZHvtYcVXBEkIXxgcr1FwTFxFflSJ5MONthQenms6fvYs5pAw==
+"@portkey/did-ui-react@0.0.1-alpha.7.5":
+  version "0.0.1-alpha.7.5"
+  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-0.0.1-alpha.7.5.tgz#50fefdaba986da5fc157720c89e3decd94e9737b"
+  integrity sha512-7ILhbcbzbrmw6Hkp1aSVQKA3XxPb5P8NcF+J1c6gSm5YVLBzAc/MpU+cotrRjCGBkiEJlMVQ5Z9L+n8HI5bp0Q==
   dependencies:
     "@matt-block/react-recaptcha-v2" "^2.0.0"
     "@portkey/did" "^0.0.1-alpha.3.3"
@@ -5178,6 +5178,7 @@
     antd-mobile "5.26.0"
     bignumber.js "^9.1.0"
     clsx "^1.2.1"
+    lottie-web "5.9.6"
     query-string "^6.14.1"
     react-i18next "^11.18.6"
     react-qrcode-logo "2.9.0"
@@ -5219,23 +5220,16 @@
     query-string "^6.14.1"
 
 "@portkey/services@^0.0.1-alpha.2.3":
-  version "0.0.1-alpha.2.3"
-  resolved "https://registry.npmjs.org/@portkey/services/-/services-0.0.1-alpha.2.3.tgz#8b2e7c25c586059e5c3936d17eff37cd75684ae5"
-  integrity sha512-y1WNgk9kA5KbSENdFE+TY19runGlL17NLx3QoU9TWpIxHIxzIFudlk3jPd4aZfxOtha5xYNzNmMgz+p/WpSoVg==
+  version "0.0.1-alpha.2.4"
+  resolved "https://registry.npmjs.org/@portkey/services/-/services-0.0.1-alpha.2.4.tgz#8c3bf719069962b0357926092c73d73eaced7403"
+  integrity sha512-hdZsl3lmR1r0t7aEKUEZvjGlU/HvaQiTIb0geTuOcy3kv0nUqIGkB2dyZHhXmP6+LN52n4fVCrS55uM5beFJVQ==
   dependencies:
     "@portkey/graphql" "^0.0.1-alpha.1.8"
     "@portkey/request" "^0.0.1-alpha.1.7"
     "@portkey/types" "^0.0.1-alpha.1.6"
     aelf-sdk "^3.2.44"
 
-"@portkey/types@^0.0.1-alpha.1.4":
-  version "0.0.1-alpha.1.5"
-  resolved "https://registry.npmjs.org/@portkey/types/-/types-0.0.1-alpha.1.5.tgz#24657a63686d6408c0d83446220433eecb73d61e"
-  integrity sha512-nRPU1Z7uJr9IQhJ7Xq1ceTBUjGiICXfMUM+b9bKm/cJ30EbqlJ3DZHHZfvWcRNnXBHcK2BRgy+x6SMovavL8CQ==
-  dependencies:
-    "@types/elliptic" "^6.4.14"
-
-"@portkey/types@^0.0.1-alpha.1.6":
+"@portkey/types@^0.0.1-alpha.1.4", "@portkey/types@^0.0.1-alpha.1.6":
   version "0.0.1-alpha.1.6"
   resolved "https://registry.npmjs.org/@portkey/types/-/types-0.0.1-alpha.1.6.tgz#042fb2a0e440fe9a4feffeaced9042389071f2ff"
   integrity sha512-O74byz+d377IR90YOh+e1f6lgL7FB/FmbQefg8fM+vvsLopdvc0e7+MyOZp/L9K5EetgSp3XbgMu+xssI0wknQ==
@@ -19653,7 +19647,7 @@ lottie-react-native@^5.1.5:
     invariant "^2.2.2"
     react-native-safe-modules "^1.0.3"
 
-lottie-web@^5.9.6:
+lottie-web@5.9.6, lottie-web@^5.9.6:
   version "5.9.6"
   resolved "https://registry.npmmirror.com/lottie-web/-/lottie-web-5.9.6.tgz#62ae68563355d3e04aa75d53dec3dd4bea0e57c9"
   integrity sha512-JFs7KsHwflugH5qIXBpB4905yC1Sub2MZWtl/elvO/QC6qj1ApqbUZJyjzJseJUtVpgiDaXQLjBlIJGS7UUUXA==

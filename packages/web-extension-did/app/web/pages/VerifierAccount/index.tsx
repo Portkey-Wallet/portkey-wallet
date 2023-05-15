@@ -38,6 +38,8 @@ export default function VerifierAccount() {
   const { state } = useLocationState<
     'register' | 'login' | 'guardians/add' | 'guardians/edit' | 'guardians/del' | 'guardians/setLoginAccount'
   >();
+
+  console.log(state, 'state====');
   const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
   const currentNetwork = useCurrentNetworkInfo();

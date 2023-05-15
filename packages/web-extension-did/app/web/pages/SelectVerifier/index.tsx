@@ -73,7 +73,7 @@ export default function SelectVerifier() {
 
   return (
     <div className="common-page ">
-      <PortKeyTitle leftElement leftCallBack={() => navigate('/register/start/create')} />
+      <PortKeyTitle leftElement leftCallBack={() => navigate('/register/start')} />
 
       <VerifierSelect
         className="select-verifier-wrapper"

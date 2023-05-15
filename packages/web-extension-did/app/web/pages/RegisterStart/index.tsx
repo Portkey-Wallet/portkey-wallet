@@ -126,16 +126,14 @@ export default function RegisterStart() {
         data.authenticationInfo = {
           [info.identifier]: token,
         };
+      saveState(data);
+      dispatch(resetGuardians());
       if (info.isLoginIdentifier) {
         dispatch(setOriginChainId(info.chainId));
-        saveState(data);
-        dispatch(resetGuardians());
         await fetchUserVerifier({ guardianIdentifier: info.identifier });
         navigate('/login/guardian-approval');
       } else {
         dispatch(setOriginChainId(DefaultChainId));
-        saveState(data);
-        dispatch(resetGuardians());
         navigate('/register/select-verifier');
       }
       setLoading(false);

@@ -5166,10 +5166,10 @@
     "@portkey/utils" "^0.0.1-alpha.1.8"
     aelf-sdk "^3.2.44"
 
-"@portkey/did-ui-react@0.0.1-alpha.7.5":
-  version "0.0.1-alpha.7.5"
-  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-0.0.1-alpha.7.5.tgz#50fefdaba986da5fc157720c89e3decd94e9737b"
-  integrity sha512-7ILhbcbzbrmw6Hkp1aSVQKA3XxPb5P8NcF+J1c6gSm5YVLBzAc/MpU+cotrRjCGBkiEJlMVQ5Z9L+n8HI5bp0Q==
+"@portkey/did-ui-react@0.0.1-alpha.7.6":
+  version "0.0.1-alpha.7.6"
+  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-0.0.1-alpha.7.6.tgz#5c5545277158d06376853ea5652bec8470c2b43c"
+  integrity sha512-tD8J9FETpfNxTKDmCf3+9Ro2A36S89aHD+Non6EMt+sjoIDAEyyoeukyZelKe+tA3pz+Btp7IE/Bw1AljEW/tQ==
   dependencies:
     "@matt-block/react-recaptcha-v2" "^2.0.0"
     "@portkey/did" "^0.0.1-alpha.3.3"

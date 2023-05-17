@@ -11,6 +11,7 @@ import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ChainId } from '@portkey-wallet/types';
+import navigationService from 'utils/navigationService';
 
 export interface ItemType {
   contact: RecentContactItemType;
@@ -48,7 +49,6 @@ const RecentContactItem: React.FC<ItemType> = props => {
                 <Text style={[styles.address, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
                   {formatStr2EllipsisStr(`ELF_${ele?.address}_${ele.chainId}`, 10)}
                 </Text>
-                {/* TODO */}
                 <Text style={[styles.address, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
                   {formatChainInfoToShow(ele?.chainId as ChainId, currentNetwork)}
                 </Text>
@@ -58,10 +58,19 @@ const RecentContactItem: React.FC<ItemType> = props => {
                 <Text style={[styles.address, !ele?.transactionTime && FontStyles.font7]}>
                   {formatStr2EllipsisStr(`ELF_${ele?.address}_${ele.chainId}`, 10)}
                 </Text>
-                {/* TODO */}
                 <Text style={[styles.address, !ele?.transactionTime && FontStyles.font7]}>
                   {formatChainInfoToShow(ele?.chainId as ChainId, currentNetwork)}
                 </Text>
+                <TouchableOpacity
+                  style={styles.contactActivity}
+                  onPress={() =>
+                    navigationService.navigate('ContactActivity', {
+                      address: contact.address,
+                      chainId: contact.addressChainId,
+                    })
+                  }>
+                  <Svg icon={'up-arrow'} size={pTd(20)} />
+                </TouchableOpacity>
               </View>
             ),
           )}
@@ -79,6 +88,16 @@ const RecentContactItem: React.FC<ItemType> = props => {
         {formatStr2EllipsisStr(`ELF_${contact.address}_${contact?.addressChainId}`, 10)}
       </TextS>
       <Text style={styles.chainInfo1}>{formatChainInfoToShow(contact?.addressChainId as ChainId, currentNetwork)}</Text>
+      <TouchableOpacity
+        style={styles.contactActivity}
+        onPress={() =>
+          navigationService.navigate('ContactActivity', {
+            address: contact.address,
+            chainId: contact.addressChainId,
+          })
+        }>
+        <Svg icon={'up-arrow'} size={pTd(20)} />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 };
@@ -137,5 +156,10 @@ export const styles = StyleSheet.create({
     marginTop: pTd(4),
     fontSize: pTd(10),
     color: defaultColors.font3,
+  },
+  contactActivity: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
   },
 });

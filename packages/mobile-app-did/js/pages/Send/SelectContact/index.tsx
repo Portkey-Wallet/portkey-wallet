@@ -21,6 +21,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/useRecent';
 import { fetchRecentListAsync } from '@portkey-wallet/store/store-ca/recent/slice';
+import MyAddressItem from '../components/MyAddressItem';
 
 interface SelectContactProps {
   chainId: ChainId;
@@ -51,6 +52,10 @@ export default function SelectContact(props: SelectContactProps) {
     () => contactIndexList.reduce((pv, cv) => pv + cv.contacts.length, 0) > 0,
     [contactIndexList],
   );
+
+  const myOtherAddressList = useMemo(() => {
+    return caAddressInfos.filter(item => item.chainId !== chainId);
+  }, [caAddressInfos, chainId]);
 
   const loadMore = useCallback(() => {
     dispatch(
@@ -86,7 +91,9 @@ export default function SelectContact(props: SelectContactProps) {
             <FlashList
               data={recentContactList || []}
               renderItem={renderItem}
-              ListFooterComponent={<TextS style={styles.footer}>{t('No More Data')}</TextS>}
+              ListFooterComponent={
+                <TextS style={styles.footer}>{recentContactList?.length === 0 ? '' : t('No More Data')}</TextS>
+              }
               ListEmptyComponent={<NoData noPic message={t('There is no recents.')} />}
               onEndReached={() => {
                 if (recentContactList.length >= totalRecordCount) return;
@@ -113,8 +120,22 @@ export default function SelectContact(props: SelectContactProps) {
           />
         ),
       },
+      {
+        name: t('My address'),
+        tabItemDom: (
+          <View style={styles.recentListWrap}>
+            <FlashList
+              data={myOtherAddressList || []}
+              renderItem={({ item }) => (
+                <MyAddressItem chainId={item.chainId} address={item.caAddress} onPress={onPress} />
+              )}
+              ListEmptyComponent={<NoData noPic message={t('There is no other chain addresses.')} />}
+            />
+          </View>
+        ),
+      },
     ];
-  }, [isExistContact, loadMore, onPress, recentContactList, renderItem, t, totalRecordCount]);
+  }, [isExistContact, loadMore, myOtherAddressList, onPress, recentContactList, renderItem, t, totalRecordCount]);
 
   return <CommonTopTab tabList={tabList} />;
 }

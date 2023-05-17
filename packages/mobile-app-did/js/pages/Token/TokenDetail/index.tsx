@@ -169,8 +169,12 @@ const TokenDetail: React.FC = () => {
           <SendButton themeType="innerPage" sentToken={currentToken} />
           <View style={styles.spacerStyle} />
           <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" receiveButton={currentToken} />
-          <View style={styles.spacerStyle} />
-          {!isMainnet && <FaucetButton themeType="innerPage" />}
+          {!isMainnet && (
+            <>
+              <View style={styles.spacerStyle} />
+              <FaucetButton themeType="innerPage" />
+            </>
+          )}
         </View>
       </View>
 

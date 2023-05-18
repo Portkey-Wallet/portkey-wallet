@@ -15,7 +15,7 @@ export function usePhoneCountryCode(isInit = false) {
   const networkList = useNetworkList();
 
   const phoneCountryCodeList = useMemo(
-    () => phoneCountryCodeListChainMap[networkType] || [],
+    () => phoneCountryCodeListChainMap?.[networkType] || [],
     [networkType, phoneCountryCodeListChainMap],
   );
 
@@ -24,7 +24,7 @@ export function usePhoneCountryCode(isInit = false) {
   useEffect(() => {
     if (isInit) {
       networkList.forEach(item => {
-        const phoneCountryCodeIndexChainMapItem = phoneCountryCodeListChainMap[item.networkType] || [];
+        const phoneCountryCodeIndexChainMapItem = phoneCountryCodeListChainMap?.[item.networkType] || [];
         if (phoneCountryCodeIndexChainMapItem.length === 0) {
           dispatch(getPhoneCountryCode(item.networkType));
         }

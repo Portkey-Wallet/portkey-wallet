@@ -194,7 +194,6 @@ export default function GuardiansView() {
               ...opGuardian!,
               verifierInfo: {
                 sessionId: result.verifierSessionId,
-                endPoint: result.endPoint,
               },
               isInitStatus: true,
             }),

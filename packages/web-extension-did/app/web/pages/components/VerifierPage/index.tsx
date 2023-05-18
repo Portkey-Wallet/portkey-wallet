@@ -117,7 +117,6 @@ export default function VerifierPage({ currentGuardian, guardianType, isInitStat
             key: currentGuardian?.key ?? `${currentGuardian?.guardianAccount}&${currentGuardian?.verifier?.name}`,
             verifierInfo: {
               sessionId: res.verifierSessionId,
-              endPoint: res.endPoint,
             },
           }),
         );

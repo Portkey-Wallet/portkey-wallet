@@ -12,13 +12,13 @@ import { setWalletInfoAction } from 'store/reducers/loginCache/actions';
 import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
-import QRCodeCommon from 'pages/components/QRCodeCommon';
 import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCheckManager } from 'hooks/useLogout';
 import { message } from 'antd';
+import { ScanBase } from '@portkey/did-ui-react';
 import './index.less';
 
-export default function ScanCard() {
+export default function ScanCardPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [newWallet, setNewWallet] = useState<WalletInfoType>();
@@ -84,13 +84,11 @@ export default function ScanCard() {
   }, [caWallet, dispatch, navigate, newWallet, pin]);
 
   return (
-    <div className="register-start-card scan-card-wrapper">
-      <h2 className="title">
-        Scan code to log in
-        <CustomSvg type="PC" onClick={() => navigate('/register/start')} />
-      </h2>
-      <p>Please use the portkey Dapp to scan the QR code</p>
-      <div className="login-content">{qrData && <QRCodeCommon value={qrData} />}</div>
-    </div>
+    <ScanBase
+      wrapperClassName="register-scan"
+      qrData={qrData}
+      backIcon={<CustomSvg type="PC" />}
+      onBack={() => navigate('/register/start')}
+    />
   );
 }

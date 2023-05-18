@@ -1,37 +1,33 @@
 import CustomSvg from 'components/CustomSvg';
 import RegisterHeader from 'pages/components/RegisterHeader';
-import { useNavigate, useParams } from 'react-router';
-import LoginCard from './components/LoginCard';
-import ScanCard from './components/ScanCard';
-import SignCard from './components/SignCard';
+import { useNavigate } from 'react-router';
 import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
-import { setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { useAppDispatch, useLoading, useLoginInfo, useUserInfo } from 'store/Provider/hooks';
+import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { NetworkType } from '@portkey-wallet/types';
 import CommonSelect from 'components/CommonSelect1';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
 import i18n from 'i18n';
 import { LoginInfo } from 'store/reducers/loginCache/type';
-import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
+import { setLoginAccountAction, setWalletInfoAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
-import { handleErrorCode, handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import { message } from 'antd';
-import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
-import { SocialLoginFinishHandler } from 'types/wallet';
-import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { DefaultChainId, OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
 import CustomModal from 'pages/components/CustomModal';
 import { IconType } from 'types/icon';
+import { CreateWalletType, DIDWalletInfo, SignInSuccess, SignUpAndLogin } from '@portkey/did-ui-react';
+import { countryCodeList } from '@portkey-wallet/constants/constants-ca/country';
+import { ChainId } from '@portkey/types';
+import { VerificationType } from '@portkey-wallet/types/verifier';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import LoginModal from './components/LoginModal';
 import './index.less';
 
 export default function RegisterStart() {
-  const { type } = useParams();
   const currentNetwork = useCurrentNetworkInfo();
   const dispatch = useAppDispatch();
   const changeNetwork = useChangeNetwork();
@@ -41,6 +37,7 @@ export default function RegisterStart() {
   const changeNetworkModalText = useChangeNetworkText();
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
+  const createType = useRef<CreateWalletType>('Login');
 
   const networkList = useNetworkList();
 
@@ -90,37 +87,6 @@ export default function RegisterStart() {
     [changeNetwork, changeNetworkModalText, networkList, isMainnet],
   );
 
-  const isHasAccount = useRef<boolean>();
-
-  const getRegisterInfo = useGetRegisterInfo();
-
-  const validateIdentifier = useCallback(
-    async (identifier?: string) => {
-      let isLoginAccount = false;
-      try {
-        const { originChainId } = await getRegisterInfo({
-          loginGuardianIdentifier: identifier,
-        });
-        const checkResult = await getHolderInfo({
-          chainId: originChainId,
-          guardianIdentifier: (identifier as string).replaceAll(' ', ''),
-        });
-        if (checkResult.guardianList?.guardians?.length > 0) {
-          isLoginAccount = true;
-        }
-      } catch (error: any) {
-        const code = handleErrorCode(error);
-        if (code?.toString() === '3002') {
-          isLoginAccount = false;
-        } else {
-          throw handleErrorMessage(error || 'GetHolderInfo error');
-        }
-      }
-      isHasAccount.current = isLoginAccount;
-    },
-    [getRegisterInfo],
-  );
-
   const saveState = useCallback(
     (data: LoginInfo) => {
       dispatch(setLoginAccountAction(data));
@@ -128,98 +94,124 @@ export default function RegisterStart() {
     [dispatch],
   );
 
-  const onSignFinish = useCallback(
-    (data: LoginInfo) => {
-      dispatch(setOriginChainId(DefaultChainId));
+  // phone country code
+  const { countryCode } = useLoginInfo();
+
+  const phoneCountry = useMemo(
+    () => ({
+      countryList: countryCodeList,
+      country: countryCode.country.country,
+    }),
+    [countryCode.country.country],
+  );
+
+  const onSDKError = useCallback((error: any) => {
+    console.log(error, 'error===onSDKError');
+  }, []);
+
+  const signInSuccessRef = useRef<SignInSuccess>();
+
+  const finished = useCallback(async () => {
+    try {
+      setLoading(true);
+      if (!signInSuccessRef.current) throw 'Missing info when finshed';
+      const info = signInSuccessRef.current;
+      const token = info.authenticationInfo?.googleAccessToken || info.authenticationInfo?.appleIdToken;
+      const data: LoginInfo = {
+        guardianAccount: info.identifier,
+        loginType: LoginType[info.accountType],
+        createType: 'login',
+      };
+      if (token)
+        data.authenticationInfo = {
+          [info.identifier]: token,
+        };
       saveState(data);
       dispatch(resetGuardians());
-      navigate('/register/select-verifier');
-      setLoading(false);
-    },
-    [dispatch, navigate, saveState, setLoading],
-  );
-
-  const onLoginFinish = useCallback(
-    async (loginInfo: LoginInfo) => {
-      try {
-        setLoading(true);
-        const { originChainId } = await getRegisterInfo({
-          loginGuardianIdentifier: loginInfo.guardianAccount,
-        });
-        dispatch(setOriginChainId(originChainId));
-        saveState({ ...loginInfo, createType: 'login' });
-        dispatch(resetGuardians());
-        await fetchUserVerifier({ guardianIdentifier: loginInfo.guardianAccount });
-        setLoading(false);
+      if (info.isLoginIdentifier) {
+        dispatch(setOriginChainId(info.chainId));
+        await fetchUserVerifier({ guardianIdentifier: info.identifier });
         navigate('/login/guardian-approval');
-      } catch (error) {
-        console.log(error, 'onLoginFinish====error');
-        const errMsg = handleErrorMessage(error, 'login error');
-        message.error(errMsg);
-      } finally {
+      } else {
+        dispatch(setOriginChainId(DefaultChainId));
+        navigate('/register/select-verifier');
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      message.error(handleErrorMessage(error));
+    }
+  }, [dispatch, fetchUserVerifier, navigate, saveState, setLoading]);
+
+  const onSuccess = useCallback(
+    async (info: SignInSuccess) => {
+      signInSuccessRef.current = info;
+      if (info.isLoginIdentifier && createType.current !== 'Login') {
+        setOpen(true);
         setLoading(false);
+        return;
       }
-    },
-    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading],
-  );
-  const loginInfoRef = useRef<LoginInfo>();
-  const onInputFinish = useCallback(
-    async (loginInfo: LoginInfo) => {
-      loginInfoRef.current = loginInfo;
-      if (isHasAccount?.current) {
-        if (type === 'create') {
-          setLoading(false);
-          return setOpen(true);
-        } else return onLoginFinish(loginInfo);
-      }
-      if (type === 'create') return onSignFinish(loginInfo);
-      else {
+      if (!info.isLoginIdentifier && createType.current !== 'SignUp') {
+        setOpen(true);
         setLoading(false);
-        return setOpen(true);
+        return;
       }
+      finished();
     },
-    [onLoginFinish, onSignFinish, setLoading, type],
+    [createType, finished, setLoading],
   );
 
-  const onSocialFinish: SocialLoginFinishHandler = useCallback(
-    async ({ type, data }) => {
-      try {
-        if (!data) throw 'Action error';
-        setLoading(true);
-        if (type === 'Google') {
-          const userInfo = await getGoogleUserInfo(data?.access_token);
-          if (!userInfo?.id) throw userInfo;
-          await validateIdentifier(userInfo.id);
-          onInputFinish?.({
-            guardianAccount: userInfo.id, // account
-            loginType: LoginType[type],
-            authenticationInfo: { [userInfo.id]: data?.access_token },
-            createType: isHasAccount.current ? 'login' : 'register',
-          });
-        } else if (type === 'Apple') {
-          const userInfo = parseAppleIdentityToken(data?.access_token);
-          console.log(userInfo, data, 'onSocialSignFinish');
-          if (userInfo) {
-            await validateIdentifier(userInfo.userId);
-            onInputFinish({
-              guardianAccount: userInfo.userId, // account
-              loginType: LoginType.Apple,
-              authenticationInfo: { [userInfo.userId]: data?.access_token },
-              createType: isHasAccount.current ? 'login' : 'register',
-            });
-          } else {
-            throw 'Authorization failed';
+  const onOriginChainIdChange = useCallback(
+    (chainId?: ChainId | undefined) => {
+      chainId && dispatch(setOriginChainId(chainId));
+    },
+    [dispatch],
+  );
+
+  const { passwordSeed: pin } = useUserInfo();
+
+  const onLoginFinishWithoutPin = useCallback(
+    (info: Omit<DIDWalletInfo, 'pin'>) => {
+      const { caInfo, chainId, walletInfo, accountInfo } = info || {};
+      if (caInfo && walletInfo && chainId) {
+        const managerInfo = {
+          managerUniqueId: accountInfo.managerUniqueId,
+          loginAccount: accountInfo.guardianIdentifier,
+          type: LoginType[accountInfo.accountType],
+          verificationType: VerificationType.addManager,
+        };
+        if (pin) {
+          try {
+            dispatch(
+              setCAInfoType({
+                caInfo: {
+                  originChainId: chainId,
+                  managerInfo,
+                },
+                pin,
+              }),
+            );
+            navigate('/success-page/login');
+          } catch (error: any) {
+            message.error(error);
           }
         } else {
-          message.error(`LoginType:${type} is not support`);
+          dispatch(setOriginChainId(chainId));
+          dispatch(
+            setWalletInfoAction({
+              walletInfo: walletInfo,
+              caWalletInfo: {
+                originChainId: chainId,
+                managerInfo,
+                [chainId]: caInfo,
+              },
+            }),
+          );
+          navigate('/login/set-pin/scan');
         }
-      } catch (error) {
-        console.log(error, 'error===onSocialSignFinish');
-        const msg = handleErrorMessage(error);
-        message.error(msg);
       }
     },
-    [onInputFinish, setLoading, validateIdentifier],
+    [dispatch, navigate, pin],
   );
 
   return (
@@ -231,23 +223,21 @@ export default function RegisterStart() {
           <h1>{i18n.t('Welcome to Portkey') as string}</h1>
         </div>
         <div>
-          {type === 'create' && (
-            <SignCard
-              validatePhone={validateIdentifier}
-              validateEmail={validateIdentifier}
-              onFinish={onInputFinish}
-              onSocialSignFinish={onSocialFinish}
+          <div className="register-start-inner">
+            <SignUpAndLogin
+              phoneCountry={phoneCountry}
+              onError={onSDKError}
+              isShowScan
+              defaultChainId={DefaultChainId}
+              isErrorTip
+              onSuccess={onSuccess}
+              onSignTypeChange={(type) => (createType.current = type)}
+              onChainIdChange={onOriginChainIdChange}
+              onLoginFinishWithoutPin={onLoginFinishWithoutPin}
+              termsOfService={`${OfficialWebsite}/terms-of-service`}
             />
-          )}
-          {type === 'scan' && <ScanCard />}
-          {(!type || type === 'login') && (
-            <LoginCard
-              validatePhone={validateIdentifier}
-              validateEmail={validateIdentifier}
-              onFinish={onInputFinish}
-              onSocialLoginFinish={onSocialFinish}
-            />
-          )}
+          </div>
+
           <div className="network-list-wrapper">
             <CommonSelect
               className="network-list-select"
@@ -262,12 +252,12 @@ export default function RegisterStart() {
       </div>
       <LoginModal
         open={open}
-        type={type}
+        type={createType.current}
         onCancel={() => setOpen(false)}
         onConfirm={() => {
-          if (!loginInfoRef.current) return setOpen(false);
-          if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
-          onSignFinish(loginInfoRef.current);
+          if (!signInSuccessRef.current) return setOpen(false);
+          createType.current = signInSuccessRef.current.isLoginIdentifier ? 'Login' : 'SignUp';
+          finished();
         }}
       />
     </div>

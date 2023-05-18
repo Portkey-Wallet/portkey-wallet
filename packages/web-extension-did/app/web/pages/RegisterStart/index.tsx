@@ -37,7 +37,7 @@ export default function RegisterStart() {
   const changeNetworkModalText = useChangeNetworkText();
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
-  const [createType, setCreateType] = useState<CreateWalletType>('Login');
+  const createType = useRef<CreateWalletType>('Login');
 
   const networkList = useNetworkList();
 
@@ -146,13 +146,15 @@ export default function RegisterStart() {
   const onSuccess = useCallback(
     async (info: SignInSuccess) => {
       signInSuccessRef.current = info;
-      if (info.isLoginIdentifier && createType !== 'Login') {
+      if (info.isLoginIdentifier && createType.current !== 'Login') {
+        setOpen(true);
         setLoading(false);
-        return setOpen(true);
+        return;
       }
-      if (!info.isLoginIdentifier && createType !== 'SignUp') {
+      if (!info.isLoginIdentifier && createType.current !== 'SignUp') {
+        setOpen(true);
         setLoading(false);
-        return setOpen(true);
+        return;
       }
       finished();
     },
@@ -229,7 +231,7 @@ export default function RegisterStart() {
               defaultChainId={DefaultChainId}
               isErrorTip
               onSuccess={onSuccess}
-              onSignTypeChange={setCreateType}
+              onSignTypeChange={(type) => (createType.current = type)}
               onChainIdChange={onOriginChainIdChange}
               onLoginFinishWithoutPin={onLoginFinishWithoutPin}
               termsOfService={`${OfficialWebsite}/terms-of-service`}
@@ -250,12 +252,11 @@ export default function RegisterStart() {
       </div>
       <LoginModal
         open={open}
-        type={createType}
+        type={createType.current}
         onCancel={() => setOpen(false)}
         onConfirm={() => {
           if (!signInSuccessRef.current) return setOpen(false);
-          const createType = signInSuccessRef.current.isLoginIdentifier ? 'Login' : 'SignUp';
-          setCreateType(createType);
+          createType.current = signInSuccessRef.current.isLoginIdentifier ? 'Login' : 'SignUp';
           finished();
         }}
       />

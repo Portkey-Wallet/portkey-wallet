@@ -93,12 +93,11 @@ export default function SetWalletPin() {
       try {
         if (state === 'scan' && typeof values === 'string') return createByScan(values);
         if (typeof values !== 'object') throw values;
-        setLoading(true);
+        setLoading(true, 'Creating address on the chain...');
         const result = await getHolderInfo({
           chainId: originChainId,
           caHash: values.caInfo.caHash,
         });
-        setLoading(false);
 
         const managerList: any[] = result.managerInfos;
 
@@ -126,12 +125,11 @@ export default function SetWalletPin() {
           registerStatus: null,
         });
         dispatch(resetWallet());
+        setLoading(false);
 
         const walletError = isWalletError(error);
         if (walletError) return message.error(walletError);
         message.error(handleErrorMessage(error, 'Create wallet failed'));
-      } finally {
-        setLoading(false);
       }
     },
     [state, createByScan, originChainId, dispatch, navigate, setLoading],

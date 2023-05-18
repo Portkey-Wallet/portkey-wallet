@@ -4,6 +4,7 @@ import { localStorage } from 'redux-persist-webextension-storage';
 import { useMemo, useCallback } from 'react';
 import { reCAPTCHAAction, socialLoginAction } from 'utils/lib/serviceWorkerAction';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
+import { sleep } from '@portkey-wallet/utils';
 import { useLoading } from 'store/Provider/hooks';
 
 const usePortkeyUIConfig = () => {
@@ -21,6 +22,7 @@ const usePortkeyUIConfig = () => {
 
   const socialLoginHandler = useCallback(
     async (v: ISocialLogin) => {
+      await sleep(10);
       setLoading(true);
       const result: any = await socialLoginAction(v, currentNetwork.networkType);
 

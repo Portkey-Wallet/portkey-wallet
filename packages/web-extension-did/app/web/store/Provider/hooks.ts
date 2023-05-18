@@ -1,8 +1,8 @@
 import { OpacityType } from '@portkey-wallet/types';
 import { useCallback, useMemo } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { setGlobalLoading } from 'store/reducers/user/slice';
 import type { RootState, AppDispatch } from './store';
+import { LoadingInfoType, setLoading } from '@portkey/did-ui-react';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 export const useAppDispatch: () => AppDispatch = useDispatch;
@@ -22,11 +22,9 @@ export const useMiscState = () => useAppSelector((state) => state.misc);
 export const useCommonState = () => useAppSelector((state) => state.common);
 export const usePayment = () => useAppSelector((state) => state.payment);
 export const useLoading = () => {
-  const { loadingInfo } = useAppSelector((state) => state.userInfo);
-  const dispatch = useAppDispatch();
-  const setLoading = useCallback(
-    (isLoading: boolean | OpacityType, loadingText?: string) => dispatch(setGlobalLoading({ isLoading, loadingText })),
-    [dispatch],
+  const _setLoading = useCallback(
+    (isLoading: boolean | OpacityType, loadingInfo?: LoadingInfoType) => setLoading(isLoading, loadingInfo),
+    [],
   );
-  return useMemo(() => ({ isLoading: !!loadingInfo.isLoading, setLoading }), [loadingInfo.isLoading, setLoading]);
+  return useMemo(() => ({ isLoading: false, setLoading: _setLoading }), [_setLoading]);
 };

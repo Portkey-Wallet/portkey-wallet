@@ -127,7 +127,9 @@ export default function GuardianApproval() {
           status: VerifyStatus.Verifying,
         }),
       );
-      if (query && query.indexOf('removeManage') !== -1) {
+      if (query?.includes('guardians')) {
+        navigate('/setting/guardians/verifier-account', { state: query });
+      } else if (query && query.indexOf('removeManage') !== -1) {
         navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
       } else {
         navigate('/login/verifier-account', { state: 'login' });

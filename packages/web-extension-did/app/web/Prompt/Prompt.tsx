@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import { PageRouter } from './routes';
 import CustomProvider from 'store/Provider';
-import '@portkey/did-ui-react/dist/assets/index.css';
 
 const RootWrapper = document.getElementById('root') as Element;
 

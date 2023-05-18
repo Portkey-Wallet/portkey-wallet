@@ -1,6 +1,5 @@
 import { ConfigProvider } from 'antd';
 import ErrorBoundary from 'components/ErrorBoundary';
-import ScreenLoading from 'components/ScreenLoading';
 import { useLanguage } from 'i18n';
 import { ANTD_LOCAL } from 'i18n/config';
 import Modals from 'models';
@@ -12,6 +11,8 @@ import ReduxProvider from './ReduxProvider';
 import Updater from './Updater';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
+import { PortkeyConfigProvider } from '@portkey/did-ui-react';
+import '@portkey/did-ui-react/dist/assets/index.css';
 
 const bodyRootWrapper = document.body;
 Sentry.init({
@@ -51,12 +52,13 @@ export default function ContextProviders({
     <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
       <ErrorBoundary>
         <ReduxProvider>
-          <ScreenLoading />
-          <HashRouter>
-            <Modals />
-            <Updater />
-            <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
-          </HashRouter>
+          <PortkeyConfigProvider>
+            <HashRouter>
+              <Modals />
+              <Updater />
+              <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
+            </HashRouter>
+          </PortkeyConfigProvider>
         </ReduxProvider>
       </ErrorBoundary>
     </ConfigProvider>

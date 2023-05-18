@@ -26,5 +26,5 @@ export const useLoading = () => {
     (isLoading: boolean | OpacityType, loadingInfo?: LoadingInfoType) => setLoading(isLoading, loadingInfo),
     [],
   );
-  return useMemo(() => ({ isLoading: false, setLoading: _setLoading }), [_setLoading]);
+  return useMemo(() => ({ setLoading: _setLoading }), [_setLoading]);
 };

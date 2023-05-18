@@ -78,7 +78,6 @@ export default function ScanCardPage() {
             caWalletInfo: caInfo,
           }),
         );
-        console.log(newWallet, caInfo, 'scanCaWalletInfo===1');
         navigate('/login/set-pin/scan');
       }
     }

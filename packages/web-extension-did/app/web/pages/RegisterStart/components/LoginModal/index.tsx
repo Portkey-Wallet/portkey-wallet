@@ -1,4 +1,4 @@
-import { CommonModal } from '@portkey/did-ui-react';
+import { CommonModal, CreateWalletType } from '@portkey/did-ui-react';
 import { Button } from 'antd';
 
 export default function LoginModal({
@@ -8,7 +8,7 @@ export default function LoginModal({
   onConfirm,
 }: {
   open?: boolean;
-  type?: string;
+  type?: CreateWalletType;
   onCancel?: () => void;
   onConfirm?: () => void;
 }) {

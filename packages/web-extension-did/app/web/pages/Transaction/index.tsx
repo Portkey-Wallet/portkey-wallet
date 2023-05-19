@@ -23,6 +23,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export interface ITransactionQuery {
   item: ActivityItemType;
@@ -143,10 +144,11 @@ export default function Transaction() {
     );
   }, [activityItem.timestamp, status.style, status.text, t]);
 
+  const currentNetwork = useCurrentNetworkInfo();
   const fromToUI = useCallback(() => {
     const { from, fromAddress, fromChainId, to, toAddress, toChainId, transactionType } = activityItem;
-    const transFromAddress = addressFormat(fromAddress, fromChainId, 'aelf');
-    const transToAddress = addressFormat(toAddress, toChainId, 'aelf');
+    const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
+    const transToAddress = addressFormat(toAddress, toChainId, currentNetwork.walletType);
 
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     return (

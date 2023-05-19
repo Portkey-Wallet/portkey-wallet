@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 import PromptFrame from 'pages/components/PromptFrame';
 import Copy from 'components/Copy';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat, getExploreLink } from '@portkey-wallet/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -22,7 +22,8 @@ export default function RecentDetail() {
     nav(-1);
   }, [nav]);
   const chainInfo = useCurrentChain(state?.chainId);
-  const transAddress = addressFormat(state?.address, state.chainId, 'aelf');
+  const currentNetwork = useCurrentNetworkInfo();
+  const transAddress = addressFormat(state?.address, state.chainId, currentNetwork.walletType);
 
   const goAddContact = useCallback(() => {
     const initContactItem: Partial<ContactItemType> = {

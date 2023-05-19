@@ -1,16 +1,22 @@
 import { ChainId } from '@portkey-wallet/types';
-import { addressFormat, formatChainInfoToShow } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { defaultColors } from 'assets/theme';
-import { TextL, TextM, TextXXL } from 'components/CommonText';
+import GStyles from 'assets/theme/GStyles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { TextL, TextM, TextS, TextXXL } from 'components/CommonText';
 import CommonToast from 'components/CommonToast';
 import PageContainer from 'components/PageContainer';
+import Svg from 'components/Svg';
 import { setStringAsync } from 'expo-clipboard';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback } from 'react';
-import { FlatList, View, StyleSheet } from 'react-native';
+import { FlatList, View, StyleSheet, TouchableOpacity } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
+import TransferItem from 'components/TransferList/components/TransferItem';
+import NoData from 'components/NoData';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 interface ParamsType {
   address: string;
@@ -24,6 +30,7 @@ const ContactActivity: React.FC = () => {
   } = useRoute<RouteProp<{ params: ParamsType }>>();
 
   const { t } = useLanguage();
+  const { explorerUrl } = useCurrentChain(chainId) ?? {};
 
   const copyAddress = useCallback(
     async (str: string) => {
@@ -33,33 +40,71 @@ const ContactActivity: React.FC = () => {
     [t],
   );
 
-  const navToExplore = useCallback((navAddress: string, navChainId: ChainId) => {
-    navigationService.navigate('ViewOnWebView', {});
-  }, []);
+  const navToAddContact = useCallback(() => {
+    navigationService.navigate('ContactEdit', {
+      addressList: [addressFormat(address, chainId)],
+    });
+  }, [address, chainId]);
+
+  const navToExplore = useCallback(
+    (navAddress: string, navChainId: ChainId) => {
+      if (!address) return;
+
+      navigationService.navigate('ViewOnWebView', {
+        title: t('View on Explorer'),
+        url: getExploreLink(explorerUrl || '', addressFormat(navAddress, navChainId), 'address'),
+      });
+    },
+    [address, explorerUrl, t],
+  );
 
   return (
-    <PageContainer>
-      {contactName && (
+    <PageContainer
+      titleDom={t('Details')}
+      safeAreaColor={['blue', 'white']}
+      scrollViewProps={{ disabled: true }}
+      containerStyles={[styles.container, BGStyles.bg4]}>
+      <View style={styles.topSection}>
+        {contactName && (
+          <>
+            <TextM style={FontStyles.font3}>{t('Name')}</TextM>
+            <View style={[GStyles.flexRow, BGStyles.bg1, styles.nameSection]}>
+              <View style={styles.itemAvatar}>
+                <TextXXL>{contactName.slice(0, 1)}</TextXXL>
+              </View>
+              <TextL>{contactName}</TextL>
+            </View>
+          </>
+        )}
         <>
-          <View style={styles.itemAvatar}>
-            <TextXXL>{contactName.slice(0, 1)}</TextXXL>
+          <TextM style={FontStyles.font3}>{t('address')}</TextM>
+          <View style={[styles.addressSection, BGStyles.bg1]}>
+            <TextM style={styles.addressStr}>{addressFormat(address, chainId, 'aelf')}</TextM>
+            <TextS style={styles.chainInfo}>{formatChainInfoToShow(chainId)}</TextS>
+            <View style={styles.handleWrap}>
+              {!contactName && (
+                <TouchableOpacity style={styles.handleIconItem} onPress={navToAddContact}>
+                  <Svg icon="add-contact" size={pTd(20)} />
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity
+                style={styles.handleIconItem}
+                onPress={() => copyAddress(addressFormat(address, chainId, 'aelf'))}>
+                <Svg icon="copy3" size={pTd(20)} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.handleIconItem} onPress={() => navToExplore(address, chainId)}>
+                <Svg icon="share2" size={pTd(20)} />
+              </TouchableOpacity>
+            </View>
           </View>
-          <TextL>{contactName}</TextL>
         </>
-      )}
-
-      <TextM>{addressFormat(address, chainId, 'aelf')}</TextM>
-      <TextM>{formatChainInfoToShow(chainId)}</TextM>
-
-      <View>
-        <TextM>add</TextM>
-        <TextM onPress={() => copyAddress(addressFormat(address, chainId, 'aelf'))}>copy</TextM>
-        <TextM onPress={() => navToExplore(address, chainId)}>share</TextM>
       </View>
 
       <FlatList
+        style={styles.flatListWrap}
         data={[1, 2, 3]}
-        renderItem={() => <View style={{ backgroundColor: 'red', width: 500, height: 100 }} />}
+        renderItem={({ item }) => <TransferItem item={item} />}
+        ListEmptyComponent={<NoData message={t('no transactions.')} topDistance={pTd(160)} />}
       />
     </PageContainer>
   );
@@ -68,16 +113,54 @@ const ContactActivity: React.FC = () => {
 export default ContactActivity;
 
 const styles = StyleSheet.create({
+  container: {
+    ...GStyles.paddingArg(0, 0),
+  },
   itemAvatar: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.border1,
-    width: pTd(40),
-    height: pTd(40),
+    width: pTd(36),
+    height: pTd(36),
     borderRadius: pTd(23),
     backgroundColor: defaultColors.bg4,
     marginRight: pTd(10),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  topSection: {
+    ...GStyles.paddingArg(24, 20),
+  },
+  nameSection: {
+    marginTop: pTd(8),
+    marginBottom: pTd(16),
+    ...GStyles.paddingArg(10, 16),
+    alignItems: 'center',
+    borderRadius: pTd(6),
+  },
+  addressSection: {
+    marginTop: pTd(8),
+    ...GStyles.paddingArg(16),
+    borderRadius: pTd(6),
+  },
+  addressStr: {
+    lineHeight: pTd(20),
+  },
+  chainInfo: {
+    marginTop: pTd(8),
+    color: defaultColors.font3,
+  },
+  handleWrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  handleIconItem: {
+    marginLeft: pTd(40),
+  },
+  flatListWrap: {
+    flex: 1,
+    backgroundColor: defaultColors.bg1,
   },
 });

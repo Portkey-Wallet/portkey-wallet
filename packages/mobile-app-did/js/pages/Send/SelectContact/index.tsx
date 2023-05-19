@@ -95,6 +95,7 @@ export default function SelectContact(props: SelectContactProps) {
                 <TextS style={styles.footer}>{recentContactList?.length === 0 ? '' : t('No More Data')}</TextS>
               }
               ListEmptyComponent={<NoData noPic message={t('There is no recents.')} />}
+              onRefresh={init}
               onEndReached={() => {
                 if (recentContactList.length >= totalRecordCount) return;
                 loadMore();
@@ -129,13 +130,13 @@ export default function SelectContact(props: SelectContactProps) {
               renderItem={({ item }) => (
                 <MyAddressItem chainId={item.chainId} address={item.caAddress} onPress={onPress} />
               )}
-              ListEmptyComponent={<NoData noPic message={t('There is no other chain addresses.')} />}
+              ListEmptyComponent={<NoData noPic message={t('There is no address.')} />}
             />
           </View>
         ),
       },
     ];
-  }, [isExistContact, loadMore, myOtherAddressList, onPress, recentContactList, renderItem, t, totalRecordCount]);
+  }, [init, isExistContact, loadMore, myOtherAddressList, onPress, recentContactList, renderItem, t, totalRecordCount]);
 
   return <CommonTopTab tabList={tabList} />;
 }

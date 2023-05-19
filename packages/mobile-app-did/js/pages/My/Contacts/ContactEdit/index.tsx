@@ -245,12 +245,16 @@ const ContactEdit: React.FC = () => {
         await addContactApi(editContact);
         CommonToast.success(t('Contact Added'), undefined, 'bottom');
       }
-      navigationService.navigate('ContactsHome');
+
+      navigationService.navigate(
+        addressList?.length === 0 ? 'ContactsHome' : 'ContactActivity',
+        addressList?.length === 0 ? {} : { address: addressList?.[0], contactName: editContact.name },
+      );
     } catch (err: any) {
       CommonToast.failError(err);
     }
     Loading.hide();
-  }, [addContactApi, checkError, editContact, editContactApi, isEdit, t]);
+  }, [addContactApi, addressList, checkError, editContact, editContactApi, isEdit, t]);
 
   const onDelete = useCallback(() => {
     ActionSheet.alert({

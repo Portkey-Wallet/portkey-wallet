@@ -4,11 +4,11 @@ import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Collapsible from 'components/Collapsible';
-import { TextM, TextS, TextXXL } from 'components/CommonText';
+import { TextL, TextM, TextS, TextXXL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useState } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
-import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { ChainId } from '@portkey-wallet/types';
 import navigationService from 'utils/navigationService';
@@ -32,7 +32,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
           <View style={styles.itemAvatar}>
             <TextXXL>{contact.name.slice(0, 1)}</TextXXL>
           </View>
-          <TextM style={styles.contactName}>{contact.name}</TextM>
+          <TextL style={styles.contactName}>{contact.name}</TextL>
           <Svg icon={collapsed ? 'down-arrow' : 'up-arrow'} size={pTd(20)} />
         </TouchableOpacity>
 
@@ -46,30 +46,43 @@ const RecentContactItem: React.FC<ItemType> = props => {
                   const { address, chainId } = ele;
                   onPress?.({ address: `ELF_${address}_${chainId}`, name: contact.name });
                 }}>
-                <Text style={[styles.address, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
+                <TextM style={[styles.address, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
                   {formatStr2EllipsisStr(`ELF_${ele?.address}_${ele.chainId}`, 10)}
-                </Text>
-                <Text style={[styles.address, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
+                </TextM>
+                <TextS
+                  style={[styles.address, styles.chainInfo, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
                   {formatChainInfoToShow(ele?.chainId as ChainId, currentNetwork)}
-                </Text>
+                </TextS>
+                <TouchableOpacity
+                  style={[styles.contactActivity, styles.moreIconWrapStyle]}
+                  onPress={() =>
+                    navigationService.navigate('ContactActivity', {
+                      address: ele.address,
+                      chainId: ele.chainId,
+                      contactName: contact.name,
+                    })
+                  }>
+                  <Svg icon="more-info" size={pTd(20)} />
+                </TouchableOpacity>
               </TouchableOpacity>
             ) : (
               <View style={[index !== 0 && styles.addressItemWrap]} key={`${ele?.address}${ele?.chainId}`}>
-                <Text style={[styles.address, !ele?.transactionTime && FontStyles.font7]}>
-                  {formatStr2EllipsisStr(`ELF_${ele?.address}_${ele.chainId}`, 10)}
-                </Text>
-                <Text style={[styles.address, !ele?.transactionTime && FontStyles.font7]}>
+                <TextM style={[styles.address, !ele?.transactionTime && FontStyles.font7]}>
+                  {formatStr2EllipsisStr(addressFormat(ele.address, ele.chainId), 10)}
+                </TextM>
+                <TextS style={[styles.address, styles.chainInfo, !ele?.transactionTime && FontStyles.font7]}>
                   {formatChainInfoToShow(ele?.chainId as ChainId, currentNetwork)}
-                </Text>
+                </TextS>
                 <TouchableOpacity
-                  style={styles.contactActivity}
+                  style={[styles.contactActivity, styles.moreIconWrapStyle]}
                   onPress={() =>
                     navigationService.navigate('ContactActivity', {
-                      address: contact.address,
-                      chainId: contact.addressChainId,
+                      address: ele.address,
+                      chainId: ele.chainId,
+                      contactName: contact.name,
                     })
                   }>
-                  <Svg icon={'up-arrow'} size={pTd(20)} />
+                  <Svg icon="more-info" size={pTd(20)} />
                 </TouchableOpacity>
               </View>
             ),
@@ -84,19 +97,21 @@ const RecentContactItem: React.FC<ItemType> = props => {
       onPress={() => {
         onPress?.({ address: `ELF_${contact.address}_${contact.addressChainId}`, name: '' });
       }}>
-      <TextS style={styles.address1}>
-        {formatStr2EllipsisStr(`ELF_${contact.address}_${contact?.addressChainId}`, 10)}
+      <TextM style={styles.address1}>
+        {formatStr2EllipsisStr(addressFormat(contact.address, contact?.addressChainId as ChainId), 10)}
+      </TextM>
+      <TextS style={styles.chainInfo1}>
+        {formatChainInfoToShow(contact?.addressChainId as ChainId, currentNetwork)}
       </TextS>
-      <Text style={styles.chainInfo1}>{formatChainInfoToShow(contact?.addressChainId as ChainId, currentNetwork)}</Text>
       <TouchableOpacity
-        style={styles.contactActivity}
+        style={[styles.contactActivity]}
         onPress={() =>
           navigationService.navigate('ContactActivity', {
             address: contact.address,
             chainId: contact.addressChainId,
           })
         }>
-        <Svg icon={'up-arrow'} size={pTd(20)} />
+        <Svg icon="more-info" size={pTd(20)} />
       </TouchableOpacity>
     </TouchableOpacity>
   );
@@ -107,7 +122,8 @@ export default memo(RecentContactItem);
 export const styles = StyleSheet.create({
   itemWrap: {
     width: '100%',
-    ...GStyles.paddingArg(20, 20),
+    ...GStyles.paddingArg(16, 20),
+    position: 'relative',
     borderBottomColor: defaultColors.bg7,
     borderBottomWidth: StyleSheet.hairlineWidth,
     backgroundColor: defaultColors.bg1,
@@ -115,8 +131,8 @@ export const styles = StyleSheet.create({
   itemAvatar: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.border1,
-    width: pTd(40),
-    height: pTd(40),
+    width: pTd(36),
+    height: pTd(36),
     borderRadius: pTd(23),
     backgroundColor: defaultColors.bg4,
     marginRight: pTd(10),
@@ -138,28 +154,32 @@ export const styles = StyleSheet.create({
   },
   addressItemWrap: {
     marginTop: pTd(16),
+    position: 'relative',
   },
   address: {
     color: defaultColors.font3,
     width: '100%',
-    fontSize: pTd(10),
+  },
+  chainInfo: {
+    marginTop: pTd(4),
   },
   itemNameWrap: {
     flex: 1,
   },
   itemName: {
     color: defaultColors.font3,
-    fontSize: pTd(14),
   },
   address1: {},
   chainInfo1: {
     marginTop: pTd(4),
-    fontSize: pTd(10),
     color: defaultColors.font3,
   },
   contactActivity: {
     position: 'absolute',
-    right: 0,
-    bottom: 0,
+    right: pTd(21),
+    top: pTd(27),
+  },
+  moreIconWrapStyle: {
+    top: pTd(11),
   },
 });

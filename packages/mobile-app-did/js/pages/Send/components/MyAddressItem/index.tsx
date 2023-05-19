@@ -3,8 +3,10 @@ import GStyles from 'assets/theme/GStyles';
 import { TextS } from 'components/CommonText';
 import React, { memo } from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
-import { addressFormat } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { pTd } from 'utils/unit';
 
 export interface ItemType {
   chainId: ChainId;
@@ -14,6 +16,7 @@ export interface ItemType {
 
 const RecentContactItem: React.FC<ItemType> = props => {
   const { chainId, address, onPress } = props;
+  const { currentNetwork } = useWallet();
 
   return (
     <TouchableOpacity
@@ -21,7 +24,8 @@ const RecentContactItem: React.FC<ItemType> = props => {
       onPress={() => {
         onPress?.({ address: addressFormat(address, chainId), name: '' });
       }}>
-      <TextS style={styles.address}>{addressFormat(address, chainId)}</TextS>
+      <TextS>{formatStr2EllipsisStr(addressFormat(address, chainId), 10)}</TextS>
+      <TextS style={styles.chainInfo1}>{formatChainInfoToShow(chainId, currentNetwork)}</TextS>
     </TouchableOpacity>
   );
 };
@@ -37,4 +41,14 @@ export const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
   },
   address: {},
+  chainInfo1: {
+    marginTop: pTd(4),
+    fontSize: pTd(10),
+    color: defaultColors.font3,
+  },
+  contactActivity: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+  },
 });

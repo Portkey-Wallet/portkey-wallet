@@ -37,7 +37,7 @@ export default function ContactCard({ user, className, fromRecents = true, onCha
 
   const navigate = useNavigate();
   const goRecentDetail = (address: string, chainId: string) => {
-    navigate('/recent-detail', { state: { address, chainId } });
+    navigate('/recent-detail', { state: { address, chainId, name: user.name } });
   };
 
   return (

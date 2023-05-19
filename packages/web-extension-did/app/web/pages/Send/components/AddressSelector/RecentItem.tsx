@@ -17,8 +17,8 @@ export default function RecentItem({
   const isTestNet = useIsTestnet();
   const navigate = useNavigate();
 
-  const goRecentDetail = (address: string, chainId: string) => {
-    navigate('/recent-detail', { state: { address, chainId } });
+  const goRecentDetail = (address: string, chainId: string, name: string) => {
+    navigate('/recent-detail', { state: { address, chainId, name } });
   };
 
   return item.name ? (
@@ -38,7 +38,7 @@ export default function RecentItem({
       <CustomSvg
         className="go-detail-icon"
         type={'Info'}
-        onClick={() => goRecentDetail(item.address, item.addressChainId)}
+        onClick={() => goRecentDetail(item.address, item.addressChainId, item.name)}
       />
     </div>
   );

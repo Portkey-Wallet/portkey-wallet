@@ -129,8 +129,13 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
-    [isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
+    () => isMainnet && tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
+    [isMainnet, isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
+  );
+
+  const isFaucetButtonShow = useMemo(
+    () => !isMainnet && tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
+    [isMainnet, isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   return (
@@ -160,7 +165,7 @@ const TokenDetail: React.FC = () => {
           )}`}</Text>
         )}
         <View style={styles.buttonGroupWrap}>
-          {isMainnet && isBuyButtonShow && (
+          {isBuyButtonShow && (
             <>
               <BuyButton themeType="innerPage" />
               <View style={styles.spacerStyle} />
@@ -169,7 +174,7 @@ const TokenDetail: React.FC = () => {
           <SendButton themeType="innerPage" sentToken={currentToken} />
           <View style={styles.spacerStyle} />
           <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" receiveButton={currentToken} />
-          {!isMainnet && (
+          {isFaucetButtonShow && (
             <>
               <View style={styles.spacerStyle} />
               <FaucetButton themeType="innerPage" />

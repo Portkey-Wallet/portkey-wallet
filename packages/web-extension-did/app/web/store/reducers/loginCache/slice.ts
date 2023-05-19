@@ -1,20 +1,8 @@
-import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 import { createSlice } from '@reduxjs/toolkit';
-import {
-  setLoginAccountAction,
-  resetLoginInfoAction,
-  setWalletInfoAction,
-  setRegisterVerifierAction,
-  setCountryCodeAction,
-} from './actions';
+import { setLoginAccountAction, resetLoginInfoAction, setWalletInfoAction, setRegisterVerifierAction } from './actions';
 import { LoginState } from './type';
 
-const initialState: LoginState = {
-  countryCode: {
-    index: DefaultCountry.country[0],
-    country: DefaultCountry,
-  },
-};
+const initialState: LoginState = {};
 
 export const loginSlice = createSlice({
   name: 'loginCache',
@@ -32,9 +20,6 @@ export const loginSlice = createSlice({
       })
       .addCase(setRegisterVerifierAction, (state, action) => {
         state.registerVerifier = action.payload;
-      })
-      .addCase(setCountryCodeAction, (state, action) => {
-        state.countryCode = action.payload;
       })
       .addCase(resetLoginInfoAction, () => ({ ...initialState }));
   },

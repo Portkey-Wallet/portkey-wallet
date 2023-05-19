@@ -45,8 +45,12 @@ import { request } from '@portkey-wallet/api/api-did';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import { DEVICE_TYPE } from 'constants/common';
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
+import { cancelLoginAccount } from 'utils/guardian';
+import { useGetCurrentCAContract } from 'hooks/contract';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -64,6 +68,8 @@ const GuardianEdit: React.FC = () => {
   const { t } = useLanguage();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
+  const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const getCurrentCAContract = useGetCurrentCAContract();
 
   const { guardian: editGuardian, isEdit = false } = useRouterParams<RouterParams>();
 
@@ -302,40 +308,71 @@ const GuardianEdit: React.FC = () => {
     });
   }, [checkCurGuardianRepeat, dispatch, editGuardian, selectedVerifier]);
 
-  const onRemove = useCallback(() => {
-    if (!editGuardian) return;
-    if (editGuardian.isLoginAccount) {
+  const onRemove = useCallback(async () => {
+    if (!editGuardian || !userGuardiansList) return;
+
+    const isLastLoginAccount = checkIsLastLoginAccount(userGuardiansList, editGuardian);
+
+    if (isLastLoginAccount) {
       ActionSheet.alert({
-        title2: t(`This guardian is login account and cannot be remove`),
+        title2: t('This guardian is the only login account and cannot be remove'),
         buttons: [
           {
-            title: t('OK'),
+            title: t('Close'),
           },
         ],
       });
       return;
     }
 
-    ActionSheet.alert({
-      title: t('Are you sure you want to remove this guardian?'),
-      message: t(`Removing a guardian requires guardians' approval`),
-      buttons: [
-        {
-          title: t('Close'),
-          type: 'outline',
-        },
-        {
-          title: t('Send Request'),
-          onPress: () => {
-            navigationService.navigate('GuardianApproval', {
-              approvalType: ApprovalType.deleteGuardian,
-              guardianItem: editGuardian,
-            });
+    const result = await new Promise(resolve => {
+      ActionSheet.alert({
+        title: t('Are you sure you want to remove this guardian?'),
+        message: t(`Removing a guardian requires guardians' approval`),
+        buttons: [
+          {
+            title: t('Close'),
+            type: 'outline',
+            onPress: () => {
+              resolve(false);
+            },
           },
-        },
-      ],
+          {
+            title: t('Send Request'),
+            onPress: () => {
+              resolve(true);
+            },
+          },
+        ],
+      });
     });
-  }, [editGuardian, t]);
+    if (!result) return;
+
+    if (editGuardian.isLoginAccount) {
+      if (!managerAddress || !caHash) return;
+      Loading.show();
+      try {
+        const caContract = await getCurrentCAContract();
+        const req = await cancelLoginAccount(caContract, managerAddress, caHash, editGuardian);
+        if (req && !req.error) {
+          myEvents.refreshGuardiansList.emit();
+        } else {
+          CommonToast.fail(req?.error?.message || '');
+          return;
+        }
+      } catch (error) {
+        CommonToast.failError(error);
+        return;
+      } finally {
+        Loading.hide();
+      }
+    }
+
+    navigationService.navigate('GuardianApproval', {
+      approvalType: ApprovalType.deleteGuardian,
+      guardianItem: editGuardian,
+    });
+  }, [caHash, editGuardian, getCurrentCAContract, managerAddress, t, userGuardiansList]);
 
   const isConfirmDisable = useMemo(
     () => !selectedVerifier || !selectedType || !account,

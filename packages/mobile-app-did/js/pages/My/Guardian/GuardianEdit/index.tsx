@@ -45,8 +45,6 @@ import {
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import { request } from '@portkey-wallet/api/api-did';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
-import { DEVICE_TYPE } from 'constants/common';
-import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 type RouterParams = {
@@ -60,6 +58,7 @@ type thirdPartyInfoType = {
 };
 
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
+const loginTypeList = LOGIN_TYPE_LIST;
 
 const GuardianEdit: React.FC = () => {
   const { t } = useLanguage();
@@ -70,11 +69,6 @@ const GuardianEdit: React.FC = () => {
 
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierList = useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
-
-  const loginTypeList = useMemo(() => {
-    if (DEVICE_TYPE !== DeviceType.ANDROID) return LOGIN_TYPE_LIST;
-    return LOGIN_TYPE_LIST.filter(item => item.value !== LoginType.Apple);
-  }, []);
 
   const [selectedType, setSelectedType] = useState<TypeItemType>();
   const [selectedVerifier, setSelectedVerifier] = useState<VerifierItem>();

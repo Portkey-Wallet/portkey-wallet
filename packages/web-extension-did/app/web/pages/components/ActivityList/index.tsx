@@ -26,6 +26,7 @@ import aes from '@portkey-wallet/utils/aes';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -82,10 +83,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     );
   };
 
+  const currentNetwork = useCurrentNetworkInfo();
   const fromAndUsdUI = useCallback(
     (item: ActivityItemType) => {
       const { fromAddress, fromChainId, decimals, amount, symbol, nftInfo, transactionType } = item;
-      const transFromAddress = addressFormat(fromAddress, fromChainId, 'aelf');
+      const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
 
       return (
         <p className="row-2">

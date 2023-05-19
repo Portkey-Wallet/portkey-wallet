@@ -1,9 +1,8 @@
 import PhoneNumberInput from 'components/PhoneNumberInput';
 import { useMemo, useState } from 'react';
-import { useLoginInfo } from 'store/Provider/hooks';
 import { countryCodeFilter } from '@portkey-wallet/constants/constants-ca/country';
-import { ISelectCountryCode } from 'store/reducers/loginCache/type';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 
 interface PhoneProps {
   code?: string;
@@ -11,17 +10,13 @@ interface PhoneProps {
 }
 
 export default function PhoneInput({ code, onChange }: PhoneProps) {
-  const { countryCode } = useLoginInfo();
-  const { phoneCountryCodeList } = usePhoneCountryCode();
+  const { localPhoneCountryCode: countryCode, phoneCountryCodeList, setLocalPhoneCountryCode } = usePhoneCountryCode();
   const defaultCountryCode = useMemo(() => {
     if (code) {
       const defaultCountryCode = countryCodeFilter(code, phoneCountryCodeList);
       if (defaultCountryCode.length) {
         return {
-          index: defaultCountryCode[0].country[0],
-          country: {
-            ...defaultCountryCode[0],
-          },
+          ...defaultCountryCode[0],
         };
       }
       return countryCode;
@@ -29,7 +24,7 @@ export default function PhoneInput({ code, onChange }: PhoneProps) {
     return countryCode;
   }, [code, countryCode, phoneCountryCodeList]);
   const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [areaValue, setAreaValue] = useState<ISelectCountryCode>(defaultCountryCode);
+  const [areaValue, setAreaValue] = useState<CountryItem>(defaultCountryCode);
 
   return (
     <div className="phone-tab-wrapper">
@@ -38,11 +33,12 @@ export default function PhoneInput({ code, onChange }: PhoneProps) {
         phoneNumber={phoneNumber}
         onAreaChange={(v) => {
           setAreaValue(v);
-          onChange({ code: v.country.code, phoneNumber });
+          onChange({ code: v.code, phoneNumber });
+          setLocalPhoneCountryCode(v);
         }}
         onPhoneNumberChange={(v) => {
           setPhoneNumber(v);
-          onChange({ code: areaValue?.country.code || '', phoneNumber: v });
+          onChange({ code: areaValue?.code || '', phoneNumber: v });
         }}
       />
     </div>

@@ -1,11 +1,12 @@
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { Button, Input } from 'antd';
 import { useState } from 'react';
-import { useAppDispatch, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch } from 'store/Provider/hooks';
 import { setCountryModal } from 'store/reducers/modal/slice';
 
 export default function Example() {
   const dispatch = useAppDispatch();
-  const { countryCode } = useLoginInfo();
+  const { localPhoneCountryCode: countryCode } = usePhoneCountryCode();
   const [phoneNum, setPhoneNum] = useState<string>();
 
   return (
@@ -20,7 +21,7 @@ export default function Example() {
             onClick={() => {
               dispatch(setCountryModal(true));
             }}>
-            {countryCode ? `+${countryCode.country.code}` : ''}
+            {countryCode ? `+${countryCode.code}` : ''}
           </div>
         }
       />

@@ -14,7 +14,6 @@ import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckManagerOnLogout } from 'hooks/useLogOut';
 import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
-import { useFetchIsShowBuyButton } from 'hooks/useSwitchBuy';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function Updater() {
@@ -33,7 +32,6 @@ export default function Updater() {
   useCaInfoOnChain();
   useCheckManager(checkManagerOnLogout);
 
-  useFetchIsShowBuyButton();
   useFetchSymbolImages();
   useMemo(() => {
     request.set('baseURL', apiUrl);

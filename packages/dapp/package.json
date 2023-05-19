@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "yarn run jest",
-    "build-app": "tsc && node ./build/mobile.js"
+    "build": "webpack && rm ./build/inpage-app.js.LICENSE.txt",
+    "build-app": "tsc -p ./tsconfig.app.json && yarn run build && node ./build/script/mobile.js",
+    "build-extension": "tsc -p ./tsconfig.extension.json && node ./build/script/mobile.js"
   },
   "author": "carbon-portkey",
   "license": "ISC",
@@ -13,5 +15,13 @@
     "node.js": "^0.0.1-security",
     "pump": "^3.0.0",
     "typescript": "^5.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.21.8",
+    "@babel/preset-env": "^7.21.5",
+    "babel-loader": "^9.1.2",
+    "webpack": "^5.83.1",
+    "webpack-cli": "^5.1.1",
+    "webpack-dev-server": "^4.15.0"
   }
 }

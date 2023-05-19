@@ -5,7 +5,7 @@ import Contract from './Contract';
  * Factory for Contracts
  */
 export default abstract class IChain {
-  protected mProvider: BaseProvider = null;
+  protected mProvider: BaseProvider;
   constructor(props: IChainInitialProps) {
     const { provider } = props;
     this.mProvider = provider;

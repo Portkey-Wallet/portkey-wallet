@@ -9,6 +9,7 @@ import { useEffectOnce } from 'react-use';
 import Contacts from './Contacts';
 import './index.less';
 import Recents from './Recents';
+import MyAddress from './MyAddress';
 
 export default function AddressSelector({
   onClick,
@@ -38,6 +39,11 @@ export default function AddressSelector({
           label: t('Contacts'),
           key: 'contracts',
           children: <Contacts onChange={onClick} />,
+        },
+        {
+          label: t('My Address'),
+          key: 'myAddress',
+          children: <MyAddress onClick={onClick} chainId={chainId} />,
         },
       ]}
     />

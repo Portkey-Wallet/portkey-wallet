@@ -32,6 +32,7 @@ import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
+import RecentDetail from 'pages/Send/components/RecentDetail';
 
 export const PageRouter = () =>
   useRoutes([
@@ -102,6 +103,10 @@ export const PageRouter = () =>
     {
       path: '/send/:type/:symbol',
       element: <Send />,
+    },
+    {
+      path: '/recent-detail',
+      element: <RecentDetail />,
     },
     {
       path: '/receive/:type/:symbol',

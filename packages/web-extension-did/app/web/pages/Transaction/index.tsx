@@ -23,6 +23,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export interface ITransactionQuery {
   item: ActivityItemType;
@@ -143,10 +144,11 @@ export default function Transaction() {
     );
   }, [activityItem.timestamp, status.style, status.text, t]);
 
+  const currentNetwork = useCurrentNetworkInfo();
   const fromToUI = useCallback(() => {
     const { from, fromAddress, fromChainId, to, toAddress, toChainId, transactionType } = activityItem;
-    const transFromAddress = addressFormat(fromAddress, fromChainId, 'aelf');
-    const transToAddress = addressFormat(toAddress, toChainId, 'aelf');
+    const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
+    const transToAddress = addressFormat(toAddress, toChainId, currentNetwork.walletType);
 
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     return (
@@ -212,12 +214,12 @@ export default function Transaction() {
 
   const feeUI = useCallback(() => {
     return activityItem.isDelegated ? (
-      <p className="value">
+      <div className="value">
         <span className="left">{t('Transaction Fee')}</span>
         {noFeeUI()}
-      </p>
+      </div>
     ) : (
-      <p className="value">
+      <div className="value">
         <span className="left">{t('Transaction Fee')}</span>
         <span className="right">
           {(!feeInfo || feeInfo?.length === 0) && noFeeUI()}
@@ -236,7 +238,7 @@ export default function Transaction() {
               );
             })}
         </span>
-      </p>
+      </div>
     );
   }, [activityItem.isDelegated, amountInUsdShow, feeInfo, isTestNet, noFeeUI, t]);
 
@@ -247,13 +249,13 @@ export default function Transaction() {
           <span className="left">{t('Transaction')}</span>
         </p>
         <div>
-          <p className="value">
+          <div className="value">
             <span className="left">{t('Transaction ID')}</span>
             <span className="right tx-id">
               {`${formatStr2EllipsisStr(activityItem.transactionId, [7, 4])} `}
               <Copy toCopy={activityItem.transactionId} />
             </span>
-          </p>
+          </div>
           {feeUI()}
         </div>
       </div>

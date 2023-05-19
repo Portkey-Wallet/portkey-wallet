@@ -21,7 +21,7 @@ export default function RecentDetail() {
   const onClose = useCallback(() => {
     nav(-1);
   }, [nav]);
-  const chainInfo = useCurrentChain(state?.chainId || '');
+  const chainInfo = useCurrentChain(state?.chainId);
   const transAddress = addressFormat(state?.address, state.chainId, 'aelf');
 
   const goAddContact = useCallback(() => {

@@ -42,7 +42,6 @@
             margin: 0;
 
             .@{app-prefix}-tabs-tab-btn {
-              width: 156px;
               font-weight: 400;
               font-size: 16px;
               height: 22px;
@@ -71,107 +70,37 @@
     }
   }
 
-  // ================ ContactCard component style ================
-  .contact-card {
-    border-top: 0;
-    border-left: 0;
-    border-right: 0;
-    background: white;
-    .@{app-prefix}-collapse-item {
-      border-bottom: none;
-    }
-    .@{app-prefix}-collapse-item-active {
-      .@{app-prefix}-collapse-arrow {
-        margin-right: 8px !important;
-        svg {
-          transform: rotate(-90deg) !important;
-        }
-      }
-    }
-    .@{app-prefix}-collapse-header {
-      flex-direction: row-reverse;
-      align-items: center !important;
-      padding: 16px 18px !important;
-      .@{app-prefix}-collapse-arrow {
-        margin-right: 8px !important;
-        svg {
-          transform: rotate(90deg);
-        }
-      }
-    }
-    .@{app-prefix}-collapse-content {
-      border-top: 0;
-    }
-    .@{app-prefix}-collapse-content-box {
-      padding: 0 58px 20px;
-    }
-    .header {
+  // common address-item style, for Recents and My Address
+  .address-item {
+    display: flex;
+    flex-direction: column;
+    padding: 13px 24px 11px;
+    font-size: 12px;
+    gap: 4px;
+    line-height: 16px;
+    .address {
       display: flex;
-      gap: 12px;
-      align-items: center;
-      line-height: 20px;
-      font-size: 14px;
       color: @font-11;
-      .icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        border: 1px solid @border-1;
-        background: @bg-13;
-      }
     }
-    .content {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      overflow: hidden;
-      p {
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        left: 58px;
-        line-height: 16px;
-        font-size: 12px;
-        color: @font-11;
-        &.disabled {
-          cursor: not-allowed;
-          color: @font-12;
-        }
-      }
-      .network {
-        color: @font-13;
-        &.disabled {
-          cursor: not-allowed;
-          color: @font-12;
-        }
-      }
-      .not-recent-address {
-        color: @font-12;
-      }
+    .network {
+      color: @font-13;
     }
   }
 
   // ================ Recent component style ================
   .recents {
     .recent-item {
-      display: flex;
-      flex-direction: column;
-      padding: 13px 24px 11px;
-      font-size: 12px;
-      gap: 4px;
-      line-height: 16px;
       border-top: none !important;
       border-bottom: 1px solid @border-2;
-      .address {
-        display: flex;
-        color: @font-11;
+      .main-info {
+        cursor: pointer;
+        .address-item();
       }
-      .network {
-        color: @font-13;
+      .go-detail-icon {
+        cursor: pointer;
+        width: 14px;
+        height: 14px;
+        margin-right: 24px;
       }
     }
     .contact-card-in-recent {
@@ -212,8 +141,12 @@
     }
     .adm-list-item {
       padding: 0;
-      .adm-list-item-content-main {
-        width: 100%;
+      .adm-list-item-content {
+        padding: 0;
+        .adm-list-item-content-main {
+          padding: 0;
+          width: 100%;
+        }
       }
     }
     .user {
@@ -223,6 +156,108 @@
       .@{app-prefix}-collapse-item {
         border: none;
       }
+    }
+  }
+
+  // ================ ContactCard component style ================
+  .contact-card {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    background: white;
+    .@{app-prefix}-collapse-item {
+      border-bottom: none;
+    }
+    .@{app-prefix}-collapse-item-active {
+      .@{app-prefix}-collapse-arrow {
+        margin-right: 8px !important;
+        svg {
+          transform: rotate(-90deg) !important;
+        }
+      }
+    }
+    .@{app-prefix}-collapse-header {
+      flex-direction: row-reverse;
+      align-items: center !important;
+      padding: 16px 18px !important;
+      .@{app-prefix}-collapse-arrow {
+        margin-right: 8px !important;
+        svg {
+          transform: rotate(90deg);
+        }
+      }
+    }
+    .@{app-prefix}-collapse-content {
+      border-top: 0;
+    }
+    .@{app-prefix}-collapse-content-box {
+      padding: 0 25px 20px 58px;
+    }
+    .header {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      line-height: 20px;
+      font-size: 14px;
+      color: @font-11;
+      .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid @border-1;
+        background: @bg-13;
+      }
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow: hidden;
+      .content-item {
+        .main-info {
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+          line-height: 16px;
+          font-size: 12px;
+          color: @font-11;
+          &.disabled {
+            cursor: not-allowed;
+            color: @font-12;
+          }
+        }
+        .network {
+          color: @font-13;
+          &.disabled {
+            cursor: not-allowed;
+            color: @font-12;
+          }
+        }
+        .go-detail-icon {
+          width: 14px;
+          height: 14px;
+          cursor: pointer;
+        }
+      }
+      .not-recent-address {
+        color: @font-12;
+      }
+    }
+  }
+
+  // ================ My Address component style ================
+  .my-address {
+    .my-address-item {
+      border-top: none !important;
+      border-bottom: 1px solid @border-2;
+      .address-item();
+    }
+    .loading {
+      margin-top: 14px;
     }
   }
 }

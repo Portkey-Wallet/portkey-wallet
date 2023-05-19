@@ -212,12 +212,12 @@ export default function Transaction() {
 
   const feeUI = useCallback(() => {
     return activityItem.isDelegated ? (
-      <p className="value">
+      <div className="value">
         <span className="left">{t('Transaction Fee')}</span>
         {noFeeUI()}
-      </p>
+      </div>
     ) : (
-      <p className="value">
+      <div className="value">
         <span className="left">{t('Transaction Fee')}</span>
         <span className="right">
           {(!feeInfo || feeInfo?.length === 0) && noFeeUI()}
@@ -236,7 +236,7 @@ export default function Transaction() {
               );
             })}
         </span>
-      </p>
+      </div>
     );
   }, [activityItem.isDelegated, amountInUsdShow, feeInfo, isTestNet, noFeeUI, t]);
 
@@ -247,13 +247,13 @@ export default function Transaction() {
           <span className="left">{t('Transaction')}</span>
         </p>
         <div>
-          <p className="value">
+          <div className="value">
             <span className="left">{t('Transaction ID')}</span>
             <span className="right tx-id">
               {`${formatStr2EllipsisStr(activityItem.transactionId, [7, 4])} `}
               <Copy toCopy={activityItem.transactionId} />
             </span>
-          </p>
+          </div>
           {feeUI()}
         </div>
       </div>

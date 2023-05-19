@@ -33,8 +33,6 @@ import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { verification } from 'utils/api';
 import fonts from 'assets/theme/fonts';
 import PhoneInput from 'components/PhoneInput';
-import { CountryItem } from '@portkey-wallet/types/types-ca/country';
-import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 import Touchable from 'components/Touchable';
 import {
   AppleAuthentication,
@@ -48,6 +46,7 @@ import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import { DEVICE_TYPE } from 'constants/common';
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -81,7 +80,7 @@ const GuardianEdit: React.FC = () => {
   const [account, setAccount] = useState<string>();
   const [guardianTypeError, setGuardianTypeError] = useState<ErrorType>({ ...INIT_HAS_ERROR });
   const [guardianError, setGuardianError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
-  const [country, setCountry] = useState<CountryItem>(DefaultCountry);
+  const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
   const verifyToken = useVerifyToken();
@@ -499,7 +498,6 @@ const GuardianEdit: React.FC = () => {
             errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
             onChangeText={onAccountChange}
             selectCountry={country}
-            onCountryChange={setCountry}
           />
         );
       case LoginType.Google:

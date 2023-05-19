@@ -14,4 +14,6 @@ export interface MiscState {
   phoneCountryCodeListChainMap?: {
     [T in NetworkType]?: CountryItem[];
   };
+  defaultPhoneCountryCode?: CountryItem;
+  localPhoneCountryCode?: CountryItem;
 }

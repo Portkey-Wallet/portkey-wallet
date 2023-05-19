@@ -17,6 +17,7 @@ import { pTd } from 'utils/unit';
 import TransferItem from 'components/TransferList/components/TransferItem';
 import NoData from 'components/NoData';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 
 interface ParamsType {
   address: string;
@@ -39,6 +40,10 @@ const ContactActivity: React.FC = () => {
     },
     [t],
   );
+
+  const renderItem = useCallback(({ item }: { item: ActivityItemType }) => {
+    return <TransferItem item={item} onPress={() => navigationService.navigate('ActivityDetail', item)} />;
+  }, []);
 
   const navToAddContact = useCallback(() => {
     navigationService.navigate('ContactEdit', {
@@ -102,9 +107,9 @@ const ContactActivity: React.FC = () => {
 
       <FlatList
         style={styles.flatListWrap}
-        data={[1, 2, 3]}
-        renderItem={({ item }) => <TransferItem item={item} />}
-        ListEmptyComponent={<NoData message={t('no transactions.')} topDistance={pTd(160)} />}
+        data={[]}
+        renderItem={renderItem}
+        ListEmptyComponent={<NoData message={t('no transactions')} topDistance={pTd(160)} />}
       />
     </PageContainer>
   );

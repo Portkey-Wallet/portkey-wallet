@@ -95,7 +95,8 @@ export default function SelectContact(props: SelectContactProps) {
                 <TextS style={styles.footer}>{recentContactList?.length === 0 ? '' : t('No More Data')}</TextS>
               }
               ListEmptyComponent={<NoData noPic message={t('There is no recents.')} />}
-              onRefresh={init}
+              refreshing={false}
+              onRefresh={() => init()}
               onEndReached={() => {
                 if (recentContactList.length >= totalRecordCount) return;
                 loadMore();

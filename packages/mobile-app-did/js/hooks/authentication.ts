@@ -23,8 +23,8 @@ if (!isIos) {
   });
 
   appleAuthAndroid.configure({
-    clientId: 'did.portkey',
-    redirectUri: 'https://localtest-applesign.portkey.finance/api/app/AppleAuth/receive',
+    clientId: Config.APPLE_CLIENT_ID,
+    redirectUri: Config.APPLE_REDIRECT_URI,
     scope: appleAuthAndroid.Scope.ALL,
     responseType: appleAuthAndroid.ResponseType.ALL,
   });

@@ -94,7 +94,7 @@ export default function SelectContact(props: SelectContactProps) {
               ListFooterComponent={
                 <TextS style={styles.footer}>{recentContactList?.length === 0 ? '' : t('No More Data')}</TextS>
               }
-              ListEmptyComponent={<NoData noPic message={t('There is no recents.')} />}
+              ListEmptyComponent={<NoData noPic message={t('There is no recents')} />}
               refreshing={false}
               onRefresh={() => init()}
               onEndReached={() => {
@@ -108,7 +108,7 @@ export default function SelectContact(props: SelectContactProps) {
       {
         name: t('Contacts'),
         tabItemDom: !isExistContact ? (
-          <NoData noPic message={t('There is no contacts.')} />
+          <NoData noPic message={t('There is no contacts')} />
         ) : (
           <ContactsList
             isReadOnly
@@ -131,7 +131,7 @@ export default function SelectContact(props: SelectContactProps) {
               renderItem={({ item }) => (
                 <MyAddressItem chainId={item.chainId} address={item.caAddress} onPress={onPress} />
               )}
-              ListEmptyComponent={<NoData noPic message={t('There is no address.')} />}
+              ListEmptyComponent={<NoData noPic message={t('There is no address')} />}
             />
           </View>
         ),

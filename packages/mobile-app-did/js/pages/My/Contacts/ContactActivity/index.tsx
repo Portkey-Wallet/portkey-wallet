@@ -109,7 +109,7 @@ const ContactActivity: React.FC = () => {
         style={styles.flatListWrap}
         data={[]}
         renderItem={renderItem}
-        ListEmptyComponent={<NoData message={t('no transactions')} topDistance={pTd(160)} />}
+        ListEmptyComponent={<NoData message={t('')} topDistance={pTd(160)} />}
       />
     </PageContainer>
   );

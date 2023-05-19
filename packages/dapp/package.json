@@ -1,0 +1,17 @@
+{
+  "name": "dapp",
+  "version": "1.0.0",
+  "description": "code dependency for dapp functions",
+  "main": "index.js",
+  "scripts": {
+    "test": "yarn run jest",
+    "build-app": "tsc && node ./build/mobile.js"
+  },
+  "author": "carbon-portkey",
+  "license": "ISC",
+  "dependencies": {
+    "node.js": "^0.0.1-security",
+    "pump": "^3.0.0",
+    "typescript": "^5.0.4"
+  }
+}

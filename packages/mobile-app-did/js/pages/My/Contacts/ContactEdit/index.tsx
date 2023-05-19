@@ -33,6 +33,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 
 type RouterParams = {
   contact?: ContactItemType;
+  addressList?: Array<AddressItem['address']>;
 };
 
 export type EditAddressType = AddressItem & { error: ErrorType };
@@ -54,7 +55,7 @@ const initEditContact: EditContactType = {
 };
 
 const ContactEdit: React.FC = () => {
-  const { contact } = useRouterParams<RouterParams>();
+  const { contact, addressList } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
   const addContactApi = useAddContact();
   const editContactApi = useEditContact();
@@ -99,16 +100,29 @@ const ContactEdit: React.FC = () => {
     if (isEdit || chainList.length === 0) return;
     setEditContact(preEditContact => {
       const _editContact = { ...preEditContact };
-      _editContact.addresses = [
-        {
-          chainId: chainList[0].chainId,
-          address: '',
-          error: { ...INIT_HAS_ERROR },
-        },
-      ];
+      if (!addressList) {
+        _editContact.addresses = [
+          {
+            chainId: chainList[0].chainId,
+            address: '',
+            error: { ...INIT_HAS_ERROR },
+          },
+        ];
+      } else {
+        _editContact.addresses = [];
+        addressList.forEach(item => {
+          if (!isAelfAddress(item)) return;
+          const arr = item.split('_');
+          _editContact.addresses.push({
+            chainId: chainMap[arr[2]]?.chainId || chainList[0].chainId,
+            address: arr[1],
+            error: { ...INIT_HAS_ERROR },
+          });
+        });
+      }
       return _editContact;
     });
-  }, [chainList, currentNetwork, isEdit]);
+  }, [addressList, chainList, chainMap, currentNetwork, isEdit]);
 
   const onNameChange = useCallback((value: string) => {
     setEditContact(preEditContact => ({

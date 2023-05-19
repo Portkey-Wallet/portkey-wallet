@@ -1,9 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getPhoneCountryCode, setUpdateVersionInfo } from './actions';
+import { getPhoneCountryCode, setUpdateVersionInfo, setLocalPhoneCountryCodeAction } from './actions';
 import { MiscState } from './types';
+import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 
 const initialState: MiscState = {
   phoneCountryCodeListChainMap: {},
+  defaultPhoneCountryCode: DefaultCountry,
 };
 export const miscSlice = createSlice({
   name: 'misc',
@@ -17,11 +19,15 @@ export const miscSlice = createSlice({
       .addCase(getPhoneCountryCode.fulfilled, (state, action) => {
         state.phoneCountryCodeListChainMap = {
           ...state.phoneCountryCodeListChainMap,
-          ...action.payload,
+          ...action.payload.phoneCountryCodeListChainMap,
         };
+        state.defaultPhoneCountryCode = action.payload.defaultPhoneCountryCode;
       })
       .addCase(getPhoneCountryCode.rejected, (_state, action) => {
         console.log('getPhoneCountryCode error', action);
+      })
+      .addCase(setLocalPhoneCountryCodeAction, (state, action) => {
+        state.localPhoneCountryCode = action.payload;
       });
   },
 });

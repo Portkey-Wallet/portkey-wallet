@@ -27,6 +27,7 @@ import fonts from 'assets/theme/fonts';
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import Divider from 'components/Divider';
 import { useAppleAuthentication, useGoogleAuthentication } from 'hooks/authentication';
+import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -118,16 +119,8 @@ export default function GuardianDetail() {
       if (guardian === undefined || userGuardiansList === undefined) return;
 
       if (!value) {
-        const loginIndex = userGuardiansList.findIndex(
-          item =>
-            item.isLoginAccount &&
-            !(
-              item.guardianType === guardian.guardianType &&
-              item.guardianAccount === guardian.guardianAccount &&
-              item.verifier?.id === guardian.verifier?.id
-            ),
-        );
-        if (loginIndex === -1) {
+        const isLastLoginAccount = checkIsLastLoginAccount(userGuardiansList, guardian);
+        if (isLastLoginAccount) {
           ActionSheet.alert({
             title2: t('This guardian is the only login account and cannot be turned off'),
             buttons: [

@@ -43,8 +43,6 @@ import {
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import { request } from '@portkey-wallet/api/api-did';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
-import { DEVICE_TYPE } from 'constants/common';
-import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
@@ -63,6 +61,7 @@ type thirdPartyInfoType = {
 };
 
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
+const loginTypeList = LOGIN_TYPE_LIST;
 
 const GuardianEdit: React.FC = () => {
   const { t } = useLanguage();
@@ -75,11 +74,6 @@ const GuardianEdit: React.FC = () => {
 
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierList = useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
-
-  const loginTypeList = useMemo(() => {
-    if (DEVICE_TYPE !== DeviceType.ANDROID) return LOGIN_TYPE_LIST;
-    return LOGIN_TYPE_LIST.filter(item => item.value !== LoginType.Apple);
-  }, []);
 
   const [selectedType, setSelectedType] = useState<TypeItemType>();
   const [selectedVerifier, setSelectedVerifier] = useState<VerifierItem>();
@@ -318,7 +312,7 @@ const GuardianEdit: React.FC = () => {
         title2: t('This guardian is the only login account and cannot be remove'),
         buttons: [
           {
-            title: t('Close'),
+            title: t('OK'),
           },
         ],
       });

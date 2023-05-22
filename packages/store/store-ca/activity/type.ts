@@ -1,5 +1,6 @@
 import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
+import { ICaAddressInfoListItemType } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export type ActivityStateType = {
   activityMap: ActivityStateMap;
@@ -43,4 +44,11 @@ export interface IActivityApiParams {
   transactionId: string;
   blockHash: string;
   caAddresses?: string[];
+}
+
+export interface IActivityListWithAddressApiParams {
+  maxResultCount: number;
+  skipCount: number;
+  caAddressInfos: ICaAddressInfoListItemType[];
+  targetAddressInfos: ICaAddressInfoListItemType[];
 }

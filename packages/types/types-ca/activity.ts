@@ -5,6 +5,7 @@ import { BaseToken } from './token';
 export type ActivityItemType = {
   chainId: string;
   transactionType: TransactionTypes;
+  transactionName: string; // item title
   from: string; // wallet name
   to: string; // to user nick name
   fromAddress: string;

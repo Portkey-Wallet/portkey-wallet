@@ -30,6 +30,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import Loading from 'components/Loading';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -244,10 +245,12 @@ const ContactEdit: React.FC = () => {
         CommonToast.success(t('Contact Added'), undefined, 'bottom');
       }
 
-      navigationService.navigate(
-        addressList?.length === 0 ? 'ContactsHome' : 'ContactActivity',
-        addressList?.length === 0 ? {} : { address: addressList?.[0], contactName: editContact.name },
-      );
+      if (addressList?.length === 0) {
+        navigationService.navigate('ContactsHome');
+      } else {
+        myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+        navigationService.goBack();
+      }
     } catch (err: any) {
       CommonToast.failError(err);
     }

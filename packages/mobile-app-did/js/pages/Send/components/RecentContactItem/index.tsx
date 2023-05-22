@@ -14,13 +14,14 @@ import { ChainId } from '@portkey-wallet/types';
 import navigationService from 'utils/navigationService';
 
 export interface ItemType {
+  fromChainId?: ChainId;
   contact: RecentContactItemType;
   isContacts?: boolean;
   onPress?: (item: any) => void;
 }
 
 const RecentContactItem: React.FC<ItemType> = props => {
-  const { isContacts, contact, onPress } = props;
+  const { isContacts, contact, fromChainId, onPress } = props;
 
   const { currentNetwork } = useWallet();
   const [collapsed, setCollapsed] = useState(true);
@@ -60,6 +61,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
                       address: ele.address,
                       chainId: ele.chainId,
                       contactName: contact.name,
+                      fromChainId,
                     })
                   }>
                   <Svg icon="more-info" size={pTd(20)} />
@@ -80,6 +82,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
                       address: ele.address,
                       chainId: ele.chainId,
                       contactName: contact.name,
+                      fromChainId,
                     })
                   }>
                   <Svg icon="more-info" size={pTd(20)} />
@@ -109,6 +112,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
           navigationService.navigate('ContactActivity', {
             address: contact.address,
             chainId: contact.addressChainId,
+            fromChainId,
           })
         }>
         <Svg icon="more-info" size={pTd(20)} />

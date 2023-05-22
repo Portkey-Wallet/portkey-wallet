@@ -23,6 +23,7 @@ import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import { request } from '@portkey-wallet/api/api-did';
 import useEffectOnce from 'hooks/useEffectOnce';
 import myEvents from 'utils/deviceEvent';
+import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 
 interface ParamsType {
   fromChainId: ChainId;
@@ -49,7 +50,7 @@ const ContactActivity: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
 
-  const params = useMemo(
+  const params: IActivityListWithAddressApiParams = useMemo(
     () => ({
       maxResultCount: MAX_RESULT_COUNT,
       skipCount: skipCount,
@@ -76,7 +77,7 @@ const ContactActivity: React.FC = () => {
 
       setIsFetching(true);
 
-      const result = await request.activity.activityListWithCAAddress({ params: newParams });
+      const result = await request.activity.activityListWithAddress({ params: newParams });
 
       if (isInit) {
         setActivityList(result.data);

@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
-import { transactionTypesForActivityList } from '@portkey-wallet/constants/constants-ca/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 
@@ -67,7 +66,6 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
         caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,
-        transactionTypes: transactionTypesForActivityList,
       };
       dispatch(getActivityListAsync(params));
     }
@@ -83,7 +81,6 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
         caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,
-        transactionTypes: transactionTypesForActivityList,
       };
       return dispatch(getActivityListAsync(params));
     }

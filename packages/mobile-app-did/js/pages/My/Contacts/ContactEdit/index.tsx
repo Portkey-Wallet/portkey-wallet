@@ -34,7 +34,7 @@ import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   contact?: ContactItemType;
-  addressList?: Array<AddressItem['address']>;
+  addressList?: Array<AddressItem>;
 };
 
 export type EditAddressType = AddressItem & { error: ErrorType };
@@ -112,11 +112,9 @@ const ContactEdit: React.FC = () => {
       } else {
         _editContact.addresses = [];
         addressList.forEach(item => {
-          if (!isAelfAddress(item)) return;
-          const arr = item.split('_');
           _editContact.addresses.push({
-            chainId: chainMap[arr[2]]?.chainId || chainList[0].chainId,
-            address: arr[1],
+            chainId: chainMap[item.chainId]?.chainId || chainList[0].chainId,
+            address: item.address,
             error: { ...INIT_HAS_ERROR },
           });
         });

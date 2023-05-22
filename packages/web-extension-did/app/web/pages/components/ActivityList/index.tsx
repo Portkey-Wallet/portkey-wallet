@@ -1,8 +1,4 @@
-import {
-  SHOW_FROM_TRANSACTION_TYPES,
-  TransactionTypes,
-  transactionTypesMap,
-} from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { AmountSign, formatWithCommas, formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { List } from 'antd-mobile';
@@ -66,11 +62,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   );
 
   const amountOrIdUI = (item: ActivityItemType) => {
-    const { transactionType, isReceived, amount, symbol, nftInfo, decimals } = item;
+    const { transactionName, isReceived, amount, symbol, nftInfo, decimals } = item;
     const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     return (
       <p className="row-1">
-        <span>{transactionTypesMap(transactionType, nftInfo?.nftId)}</span>
+        <span>{transactionName}</span>
         <span>
           <span>
             {nftInfo?.nftId && <span>#{nftInfo.nftId}</span>}

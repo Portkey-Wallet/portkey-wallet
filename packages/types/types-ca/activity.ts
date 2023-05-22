@@ -24,6 +24,7 @@ export type ActivityItemType = {
   transactionFees: TransactionFees[];
   listIcon?: string;
   isDelegated?: boolean;
+  transactionName?: string;
 };
 
 export type NftInfo = {

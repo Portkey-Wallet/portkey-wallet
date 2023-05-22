@@ -43,9 +43,9 @@ export default function SelectContact(props: SelectContactProps) {
 
   const renderItem = useCallback(
     ({ item }: { item: RecentContactItemType }) => {
-      return <RecentContactItem contact={item} onPress={onPress} />;
+      return <RecentContactItem fromChainId={chainId} contact={item} onPress={onPress} />;
     },
-    [onPress],
+    [chainId, onPress],
   );
 
   const isExistContact = useMemo<boolean>(
@@ -116,7 +116,12 @@ export default function SelectContact(props: SelectContactProps) {
             isIndexBarShow={false}
             isSearchShow={false}
             renderContactItem={(item: ContactItemType) => (
-              <RecentContactItem isContacts={true} contact={item as RecentContactItemType} onPress={onPress} />
+              <RecentContactItem
+                fromChainId={chainId}
+                isContacts={true}
+                contact={item as RecentContactItemType}
+                onPress={onPress}
+              />
             )}
             ListFooterComponent={<View style={styles.footer} />}
           />

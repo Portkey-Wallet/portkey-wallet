@@ -10,7 +10,7 @@ import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { setStringAsync } from 'expo-clipboard';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
@@ -18,20 +18,79 @@ import TransferItem from 'components/TransferList/components/TransferItem';
 import NoData from 'components/NoData';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
+import { request } from '@portkey-wallet/api/api-did';
+import useEffectOnce from 'hooks/useEffectOnce';
+import myEvents from 'utils/deviceEvent';
 
 interface ParamsType {
+  fromChainId: ChainId;
   address: string;
   chainId: ChainId;
   contactName?: string;
 }
 
+const MAX_RESULT_COUNT = 10;
+
 const ContactActivity: React.FC = () => {
   const {
-    params: { address, chainId, contactName },
+    params: { fromChainId, address, chainId, contactName },
   } = useRoute<RouteProp<{ params: ParamsType }>>();
 
   const { t } = useLanguage();
   const { explorerUrl } = useCurrentChain(chainId) ?? {};
+  const caAddressInfos = useCaAddressInfoList();
+
+  const [addressName, setAddressName] = useState<string | undefined>(contactName);
+
+  const [isFetching, setIsFetching] = useState(false);
+  const [skipCount, setSkipCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
+
+  const params = useMemo(
+    () => ({
+      maxResultCount: MAX_RESULT_COUNT,
+      skipCount: skipCount,
+      caAddressInfos: caAddressInfos.filter(ele => ele.chainId === fromChainId),
+      targetAddressInfos: [
+        {
+          caAddress: address,
+          chainId: chainId,
+        },
+      ],
+      width: NFT_MIDDLE_SIZE,
+      height: -1,
+    }),
+    [address, caAddressInfos, chainId, fromChainId, skipCount],
+  );
+
+  const fetchActivityList = useCallback(
+    async (isInit?: boolean) => {
+      if (isFetching) return;
+      const newParams = {
+        ...params,
+        skipCount: isInit ? 0 : skipCount + params.maxResultCount,
+      };
+
+      setIsFetching(true);
+
+      const result = await request.activity.activityListWithCAAddress({ params: newParams });
+
+      if (isInit) {
+        setActivityList(result.data);
+        setSkipCount(MAX_RESULT_COUNT);
+      } else {
+        setActivityList([...activityList, ...result.data]);
+        setSkipCount(skipCount + MAX_RESULT_COUNT);
+      }
+
+      setTotalCount(result.totalRecordCount);
+      setIsFetching(false);
+    },
+    [activityList, isFetching, params, skipCount],
+  );
 
   const copyAddress = useCallback(
     async (str: string) => {
@@ -47,7 +106,7 @@ const ContactActivity: React.FC = () => {
 
   const navToAddContact = useCallback(() => {
     navigationService.navigate('ContactEdit', {
-      addressList: [addressFormat(address, chainId)],
+      addressList: [{ address, chainId }],
     });
   }, [address, chainId]);
 
@@ -63,6 +122,19 @@ const ContactActivity: React.FC = () => {
     [address, explorerUrl, t],
   );
 
+  useEffect(() => {
+    const listener = myEvents.refreshMyContactDetailInfo.addListener(({ contactName: name }) => {
+      setAddressName(name);
+    });
+    return () => {
+      listener.remove();
+    };
+  }, []);
+
+  useEffectOnce(() => {
+    fetchActivityList(true);
+  });
+
   return (
     <PageContainer
       titleDom={t('Details')}
@@ -70,14 +142,14 @@ const ContactActivity: React.FC = () => {
       scrollViewProps={{ disabled: true }}
       containerStyles={[styles.container, BGStyles.bg4]}>
       <View style={styles.topSection}>
-        {contactName && (
+        {!!addressName && (
           <>
             <TextM style={FontStyles.font3}>{t('Name')}</TextM>
             <View style={[GStyles.flexRow, BGStyles.bg1, styles.nameSection]}>
               <View style={styles.itemAvatar}>
-                <TextXXL>{contactName.slice(0, 1)}</TextXXL>
+                <TextXXL>{addressName.slice(0, 1)}</TextXXL>
               </View>
-              <TextL>{contactName}</TextL>
+              <TextL>{addressName}</TextL>
             </View>
           </>
         )}
@@ -87,7 +159,7 @@ const ContactActivity: React.FC = () => {
             <TextM style={styles.addressStr}>{addressFormat(address, chainId, 'aelf')}</TextM>
             <TextS style={styles.chainInfo}>{formatChainInfoToShow(chainId)}</TextS>
             <View style={styles.handleWrap}>
-              {!contactName && (
+              {!addressName && (
                 <TouchableOpacity style={styles.handleIconItem} onPress={navToAddContact}>
                   <Svg icon="add-contact" size={pTd(20)} />
                 </TouchableOpacity>
@@ -107,8 +179,15 @@ const ContactActivity: React.FC = () => {
 
       <FlatList
         style={styles.flatListWrap}
-        data={[]}
+        refreshing={false}
+        onRefresh={() => fetchActivityList(true)}
+        data={activityList ?? []}
         renderItem={renderItem}
+        onEndReached={() => {
+          if (isFetching) return;
+          if (skipCount >= totalCount) return;
+          fetchActivityList();
+        }}
         ListEmptyComponent={<NoData message={t('')} topDistance={pTd(160)} />}
       />
     </PageContainer>

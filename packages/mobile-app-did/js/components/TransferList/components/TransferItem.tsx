@@ -123,9 +123,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
         />
 
         <View style={itemStyle.center}>
-          <Text style={itemStyle.centerType}>
-            {item?.transactionType ? transactionTypesMap(item.transactionType, item.nftInfo?.nftId) : ''}
-          </Text>
+          <Text style={itemStyle.centerType}>{item?.transactionName}</Text>
           <Text style={[itemStyle.centerStatus, FontStyles.font3]}>
             {item?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType)
               ? `${t('From')}: ${formatStr2EllipsisStr(addressFormat(item?.fromAddress, item?.fromChainId), 10)}`

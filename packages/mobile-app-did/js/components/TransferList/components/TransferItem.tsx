@@ -110,10 +110,6 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
     retryCrossChain(item?.transactionId || '', params);
   }, [activity.failedActivityMap, item?.transactionId, retryCrossChain]);
 
-  const showRightCenterStyle = useMemo(() => {
-    return SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes);
-  }, [item?.transactionType]);
-
   const RightDom = useMemo(() => {
     return SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? (
       <View style={[itemStyle.right]}>

@@ -100,7 +100,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         </p>
       );
     },
-    [amountInUsdShow, isTestNet],
+    [amountInUsdShow, currentNetwork.walletType, isTestNet],
   );
 
   const networkUI = useCallback(
@@ -143,7 +143,6 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const retryCrossChain = useCallback(
     async ({ transactionId, params }: the2ThFailedActivityItemType) => {
       try {
-        //
         const chainId = params.tokenInfo.chainId;
         const chainInfo = chainList?.filter((chain) => chain.chainId === chainId)?.[0];
         if (!chainInfo) return;

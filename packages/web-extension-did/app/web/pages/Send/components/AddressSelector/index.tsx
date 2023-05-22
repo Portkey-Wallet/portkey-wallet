@@ -38,7 +38,7 @@ export default function AddressSelector({
         {
           label: t('Contacts'),
           key: 'contracts',
-          children: <Contacts onChange={onClick} />,
+          children: <Contacts onChange={onClick} chainId={chainId} />,
         },
         {
           label: t('My Address'),

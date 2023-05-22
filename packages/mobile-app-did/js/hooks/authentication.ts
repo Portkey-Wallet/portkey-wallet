@@ -134,6 +134,7 @@ export function useAppleAuthentication() {
   const isMainnet = useIsMainnet();
 
   useEffect(() => {
+    if (isIos) return;
     appleAuthAndroid.configure({
       clientId: Config.APPLE_CLIENT_ID,
       redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,

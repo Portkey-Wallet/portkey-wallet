@@ -285,7 +285,7 @@ export default function Transaction() {
           </div>
           <div className="transaction-info">
             <div className="method-wrap">
-              <p className="method-name">{activityItem.transactionName}</p>
+              <p className="method-name">{activityItem?.transactionName}</p>
               {isNft ? nftHeaderUI() : tokenHeaderUI()}
             </div>
             {statusAndDateUI()}
@@ -301,7 +301,7 @@ export default function Transaction() {
       </div>
     );
   }, [
-    activityItem.transactionName,
+    activityItem?.transactionName,
     fromToUI,
     isNft,
     isPrompt,

@@ -44,12 +44,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const amountInUsdShow = useAmountInUsdShow();
 
   const activityListLeftIcon = (type: TransactionTypes) => {
-    const loginRelatedTypeArr = [
-      TransactionTypes.ADD_MANAGER,
-      TransactionTypes.REMOVE_MANAGER,
-      TransactionTypes.SOCIAL_RECOVERY,
-    ];
-    return loginRelatedTypeArr.includes(type) ? 'socialRecovery' : 'Transfer';
+    return SHOW_FROM_TRANSACTION_TYPES.includes(type) ? 'Transfer' : 'socialRecovery';
   };
 
   const nav = useNavigate();
@@ -82,15 +77,12 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const currentNetwork = useCurrentNetworkInfo();
   const fromAndUsdUI = useCallback(
     (item: ActivityItemType) => {
-      const { fromAddress, fromChainId, decimals, amount, symbol, nftInfo, transactionType } = item;
+      const { fromAddress, fromChainId, decimals, amount, symbol, nftInfo } = item;
       const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
 
       return (
         <p className="row-2">
-          <span>
-            {SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) &&
-              `From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}
-          </span>
+          <span>{`From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}</span>
           {nftInfo?.nftId && <span className="nft-name">{formatStr2EllipsisStr(nftInfo.alias)}</span>}
           {!isTestNet && !nftInfo?.nftId && <span>{amountInUsdShow(amount, decimals || 8, symbol)}</span>}
         </p>
@@ -101,12 +93,11 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
 
   const networkUI = useCallback(
     (item: ActivityItemType) => {
-      /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
-      const { transactionType, fromChainId, toChainId } = item;
+      const { fromChainId, toChainId } = item;
       const from = transNetworkText(fromChainId, isTestNet);
       const to = transNetworkText(toChainId, isTestNet);
 
-      return SHOW_FROM_TRANSACTION_TYPES.includes(transactionType) && <p className="row-3">{`${from}->${to}`}</p>;
+      return <p className="row-3">{`${from}->${to}`}</p>;
     },
     [isTestNet],
   );
@@ -181,6 +172,23 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [activity.failedActivityMap, handleResend],
   );
 
+  const notShowFromAndNetworkUI = useCallback(
+    (item: ActivityItemType) => {
+      const { isReceived, amount, symbol, decimals } = item;
+      const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+      return (
+        <div className="right right-not-from">
+          <span>{item?.transactionName}</span>
+          <div className="right-not-from-amount">
+            <div>{`${formatWithCommas({ sign, amount, decimals, digits: 4 })} ${symbol ?? ''}`}</div>
+            {!isTestNet && <div className="usd">{amountInUsdShow(amount, decimals || 8, symbol)}</div>}
+          </div>
+        </div>
+      );
+    },
+    [amountInUsdShow, isTestNet],
+  );
+
   return (
     <div className="activity-list">
       <List>
@@ -199,12 +207,17 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
                 )}
                 {!item.listIcon && <CustomSvg type={activityListLeftIcon(item.transactionType)} />}
 
-                <div className="right">
-                  {amountOrIdUI(item)}
-                  {fromAndUsdUI(item)}
-                  {networkUI(item)}
-                  {resendUI(item)}
-                </div>
+                {/* [Transfer, CrossChainTransfer, ClaimToken] display the network and from UI */}
+                {!SHOW_FROM_TRANSACTION_TYPES.includes(item.transactionType) ? (
+                  notShowFromAndNetworkUI(item)
+                ) : (
+                  <div className="right">
+                    {amountOrIdUI(item)}
+                    {fromAndUsdUI(item)}
+                    {networkUI(item)}
+                    {resendUI(item)}
+                  </div>
+                )}
               </div>
             </div>
           </List.Item>

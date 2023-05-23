@@ -2,17 +2,6 @@ export enum TransactionTypes {
   TRANSFER = 'Transfer',
   CROSS_CHAIN_TRANSFER = 'CrossChainTransfer', // CrossChain Transfer
   CLAIM_TOKEN = 'ClaimToken', // faucet receive transfer
-  CROSS_CHAIN_RECEIVE_TOKEN = 'CrossChainReceiveToken',
-  SOCIAL_RECOVERY = 'SocialRecovery', // Social Recovery
-  ADD_MANAGER = 'AddManagerInfo', // Scan code login
-  REMOVE_MANAGER = 'RemoveManagerInfo', // Exist wallet
-  CREATE_CA_HOLDER = 'CreateCAHolder', // Create CA address
-  ADD_GUARDIAN = 'AddGuardian', // Add guardian
-  REMOVE_GUARDIAN = 'RemoveGuardian', // Remove guardian
-  UPDATE_GUARDIAN = 'UpdateGuardian', // Edit guardian
-  SET_GUARDIAN_FOR_LOGIN = 'SetGuardianForLogin', // Set login account
-  UNSET_GUARDIAN_FOR_LOGIN = 'UnsetGuardianForLogin', // Unset login account
-  REMOVE_OTHER_MANAGER_INFO = 'RemoveOtherManagerInfo', // Remove device
 }
 
 export const DEFAULT_AMOUNT = 0;

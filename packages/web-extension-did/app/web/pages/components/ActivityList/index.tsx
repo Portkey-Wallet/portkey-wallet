@@ -44,12 +44,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const amountInUsdShow = useAmountInUsdShow();
 
   const activityListLeftIcon = (type: TransactionTypes) => {
-    const loginRelatedTypeArr = [
-      TransactionTypes.ADD_MANAGER,
-      TransactionTypes.REMOVE_MANAGER,
-      TransactionTypes.SOCIAL_RECOVERY,
-    ];
-    return loginRelatedTypeArr.includes(type) ? 'socialRecovery' : 'Transfer';
+    return SHOW_FROM_TRANSACTION_TYPES.includes(type) ? 'Transfer' : 'socialRecovery';
   };
 
   const nav = useNavigate();

@@ -248,7 +248,12 @@ const ContactEdit: React.FC = () => {
       if (addressList?.length === 0) {
         navigationService.navigate('ContactsHome');
       } else {
-        myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+        if (
+          editContact.addresses[0].address === addressList?.[0]?.address &&
+          editContact.addresses[0].chainId === addressList?.[0]?.chainId
+        ) {
+          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+        }
         navigationService.goBack();
       }
     } catch (err: any) {

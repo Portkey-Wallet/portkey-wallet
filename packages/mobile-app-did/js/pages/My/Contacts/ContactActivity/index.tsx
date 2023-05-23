@@ -46,14 +46,13 @@ const ContactActivity: React.FC = () => {
   const [addressName, setAddressName] = useState<string | undefined>(contactName);
 
   const [isFetching, setIsFetching] = useState(false);
-  const [skipCount, setSkipCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
 
   const params: IActivityListWithAddressApiParams = useMemo(
     () => ({
       maxResultCount: MAX_RESULT_COUNT,
-      skipCount: skipCount,
+      skipCount: activityList.length,
       caAddressInfos: caAddressInfos.filter(ele => ele.chainId === fromChainId),
       targetAddressInfos: [
         {
@@ -64,33 +63,32 @@ const ContactActivity: React.FC = () => {
       width: NFT_MIDDLE_SIZE,
       height: -1,
     }),
-    [address, caAddressInfos, chainId, fromChainId, skipCount],
+    [activityList.length, address, caAddressInfos, chainId, fromChainId],
   );
 
   const fetchActivityList = useCallback(
-    async (isInit?: boolean) => {
+    async (skipActivityNumber = 0) => {
       if (isFetching) return;
       const newParams = {
         ...params,
-        skipCount: isInit ? 0 : skipCount + params.maxResultCount,
+        skipCount: skipActivityNumber,
       };
 
       setIsFetching(true);
 
       const result = await request.activity.activityListWithAddress({ params: newParams });
 
-      if (isInit) {
+      if (skipActivityNumber === 0) {
+        // init
         setActivityList(result.data);
-        setSkipCount(MAX_RESULT_COUNT);
       } else {
         setActivityList([...activityList, ...result.data]);
-        setSkipCount(skipCount + MAX_RESULT_COUNT);
       }
 
       setTotalCount(result.totalRecordCount);
       setIsFetching(false);
     },
-    [activityList, isFetching, params, skipCount],
+    [activityList, isFetching, params],
   );
 
   const copyAddress = useCallback(
@@ -132,8 +130,12 @@ const ContactActivity: React.FC = () => {
     };
   }, []);
 
+  const init = useCallback(() => {
+    fetchActivityList(0);
+  }, [fetchActivityList]);
+
   useEffectOnce(() => {
-    fetchActivityList(true);
+    init();
   });
 
   return (
@@ -148,7 +150,7 @@ const ContactActivity: React.FC = () => {
             <TextM style={FontStyles.font3}>{t('Name')}</TextM>
             <View style={[GStyles.flexRow, BGStyles.bg1, styles.nameSection]}>
               <View style={styles.itemAvatar}>
-                <TextXXL>{addressName.slice(0, 1)}</TextXXL>
+                <TextXXL>{addressName.match(/^[a-zA-Z]/) ? addressName.slice(0, 1) : '#'}</TextXXL>
               </View>
               <TextL>{addressName}</TextL>
             </View>
@@ -181,15 +183,15 @@ const ContactActivity: React.FC = () => {
       <FlatList
         style={styles.flatListWrap}
         refreshing={false}
-        onRefresh={() => fetchActivityList(true)}
+        onRefresh={() => init()}
         data={activityList ?? []}
         renderItem={renderItem}
         onEndReached={() => {
           if (isFetching) return;
-          if (skipCount >= totalCount) return;
-          fetchActivityList();
+          if (activityList?.length >= totalCount) return;
+          fetchActivityList(activityList?.length);
         }}
-        ListEmptyComponent={<NoData message={t('')} topDistance={pTd(160)} />}
+        ListEmptyComponent={<NoData message={t('')} />}
       />
     </PageContainer>
   );

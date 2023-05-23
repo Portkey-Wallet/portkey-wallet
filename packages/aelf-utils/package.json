@@ -1,0 +1,21 @@
+{
+    "name": "aelf-utils",
+    "publishConfig": {
+      "access": "public"
+    },
+    "version": "0.0.7",
+    "type": "commonjs",
+    "files": ["lib/**/*"],
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "scripts": {
+      "prebuild": "rm -rf dist",
+      "build": "tsc",
+      "start": "tsc --watch",
+      "handle-network": "cd ./scripts && node handleNetwork.js"
+    },
+    "devDependencies": {
+      "typescript": "^4.4.4"
+    }
+}
+  

@@ -1,10 +1,4 @@
-# `@portkey/utils`
-
-![ES Version](https://img.shields.io/badge/ES-2020-yellow)
-![Node Version](https://img.shields.io/badge/node-14.x-green)
-[![NPM Package][npm-image]][npm-url]
-[![Dependency Status][deps-image]][deps-url]
-[![Dev Dependency Status][deps-dev-image]][deps-dev-url]
+# `aelf-utils`
 
 ## Installation
 

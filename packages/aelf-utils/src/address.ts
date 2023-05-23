@@ -1,4 +1,6 @@
-import { ChainId, ChainType } from '@portkey/types';
+export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
+export type ChainType = 'ethereum' | 'aelf';
+
 /**
  * format address like "aaa...bbb" to "ELF_aaa...bbb_AELF"
  * @param address

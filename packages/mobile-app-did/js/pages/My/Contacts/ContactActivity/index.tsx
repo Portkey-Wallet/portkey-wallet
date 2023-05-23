@@ -68,18 +68,19 @@ const ContactActivity: React.FC = () => {
   );
 
   const fetchActivityList = useCallback(
-    async (isInit?: boolean) => {
+    async (skipActivityNumber: number) => {
       if (isFetching) return;
       const newParams = {
         ...params,
-        skipCount: isInit ? 0 : skipCount + params.maxResultCount,
+        skipCount: skipActivityNumber,
       };
 
       setIsFetching(true);
 
       const result = await request.activity.activityListWithAddress({ params: newParams });
 
-      if (isInit) {
+      if (skipActivityNumber === 0) {
+        // init
         setActivityList(result.data);
         setSkipCount(MAX_RESULT_COUNT);
       } else {
@@ -132,8 +133,13 @@ const ContactActivity: React.FC = () => {
     };
   }, []);
 
+  const init = useCallback(() => {
+    setSkipCount(0);
+    fetchActivityList(0);
+  }, [fetchActivityList]);
+
   useEffectOnce(() => {
-    fetchActivityList(true);
+    init();
   });
 
   return (
@@ -181,15 +187,15 @@ const ContactActivity: React.FC = () => {
       <FlatList
         style={styles.flatListWrap}
         refreshing={false}
-        onRefresh={() => fetchActivityList(true)}
+        onRefresh={() => init()}
         data={activityList ?? []}
         renderItem={renderItem}
         onEndReached={() => {
           if (isFetching) return;
           if (skipCount >= totalCount) return;
-          fetchActivityList();
+          fetchActivityList(skipCount);
         }}
-        ListEmptyComponent={<NoData message={t('')} topDistance={pTd(160)} />}
+        ListEmptyComponent={<NoData message={t('')} noPic />}
       />
     </PageContainer>
   );

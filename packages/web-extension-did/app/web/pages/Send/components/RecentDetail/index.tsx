@@ -13,7 +13,7 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import TitleWrapper from 'components/TitleWrapper';
 import './index.less';
 import ActivityList from 'pages/components/ActivityList';
-import { ActivityStateMapAttributes } from '@portkey-wallet/store/store-ca/activity/type';
+import { IActivitiesApiResponse } from '@portkey-wallet/store/store-ca/activity/type';
 import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/activity/api';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
@@ -33,10 +33,8 @@ export default function RecentDetail() {
   const chainInfo = useCurrentChain(myChainId);
   const currentNetwork = useCurrentNetworkInfo();
   const transTargetAddress = addressFormat(targetAddress, targetChainId, currentNetwork.walletType);
-  const [activityInfo, setActivityList] = useState<ActivityStateMapAttributes>({
+  const [activityInfo, setActivityList] = useState<IActivitiesApiResponse>({
     data: [],
-    maxResultCount: MAX_RESULT_COUNT,
-    skipCount: SKIP_COUNT,
     totalRecordCount: 0,
   });
   const [lastPageSize, setLastPageSize] = useState<number>(0);

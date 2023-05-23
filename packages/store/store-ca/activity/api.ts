@@ -6,7 +6,6 @@ import {
   IActivitiesApiParams,
   IActivitiesApiResponse,
   IActivityListWithAddressApiParams,
-  ActivityStateMapAttributes,
 } from './type';
 
 export function fetchActivities(params: IActivitiesApiParams): Promise<IActivitiesApiResponse> {
@@ -31,7 +30,7 @@ export function fetchActivity(params: IActivityApiParams): Promise<ActivityItemT
 
 export function fetchRecentContactActivities(
   params: IActivityListWithAddressApiParams,
-): Promise<ActivityStateMapAttributes> {
+): Promise<IActivitiesApiResponse> {
   return request.activity.activityListWithAddress({
     params: {
       ...params,

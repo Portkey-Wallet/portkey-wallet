@@ -140,7 +140,7 @@ export default function RecentDetail() {
           <div className="recent-detail-address-wrap">
             {state?.name && (
               <div className="recent-detail-contact flex-row-center">
-                <div className="flex-center avatar">{state?.name?.slice(0, 1)}</div>
+                <div className="flex-center avatar">{state?.index}</div>
                 <div className="name">{state?.name}</div>
               </div>
             )}

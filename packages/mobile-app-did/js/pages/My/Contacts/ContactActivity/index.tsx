@@ -46,14 +46,13 @@ const ContactActivity: React.FC = () => {
   const [addressName, setAddressName] = useState<string | undefined>(contactName);
 
   const [isFetching, setIsFetching] = useState(false);
-  const [skipCount, setSkipCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [activityList, setActivityList] = useState<ActivityItemType[]>([]);
 
   const params: IActivityListWithAddressApiParams = useMemo(
     () => ({
       maxResultCount: MAX_RESULT_COUNT,
-      skipCount: skipCount,
+      skipCount: activityList.length,
       caAddressInfos: caAddressInfos.filter(ele => ele.chainId === fromChainId),
       targetAddressInfos: [
         {
@@ -64,11 +63,11 @@ const ContactActivity: React.FC = () => {
       width: NFT_MIDDLE_SIZE,
       height: -1,
     }),
-    [address, caAddressInfos, chainId, fromChainId, skipCount],
+    [activityList.length, address, caAddressInfos, chainId, fromChainId],
   );
 
   const fetchActivityList = useCallback(
-    async (skipActivityNumber: number) => {
+    async (skipActivityNumber = 0) => {
       if (isFetching) return;
       const newParams = {
         ...params,
@@ -82,16 +81,14 @@ const ContactActivity: React.FC = () => {
       if (skipActivityNumber === 0) {
         // init
         setActivityList(result.data);
-        setSkipCount(MAX_RESULT_COUNT);
       } else {
         setActivityList([...activityList, ...result.data]);
-        setSkipCount(skipCount + MAX_RESULT_COUNT);
       }
 
       setTotalCount(result.totalRecordCount);
       setIsFetching(false);
     },
-    [activityList, isFetching, params, skipCount],
+    [activityList, isFetching, params],
   );
 
   const copyAddress = useCallback(
@@ -134,7 +131,6 @@ const ContactActivity: React.FC = () => {
   }, []);
 
   const init = useCallback(() => {
-    setSkipCount(0);
     fetchActivityList(0);
   }, [fetchActivityList]);
 
@@ -192,10 +188,10 @@ const ContactActivity: React.FC = () => {
         renderItem={renderItem}
         onEndReached={() => {
           if (isFetching) return;
-          if (skipCount >= totalCount) return;
-          fetchActivityList(skipCount);
+          if (activityList?.length >= totalCount) return;
+          fetchActivityList(activityList?.length);
         }}
-        ListEmptyComponent={<NoData message={t('')} noPic />}
+        ListEmptyComponent={<NoData message={t('')} />}
       />
     </PageContainer>
   );

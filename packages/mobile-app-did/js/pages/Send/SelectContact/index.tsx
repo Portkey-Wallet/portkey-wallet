@@ -148,7 +148,18 @@ export default function SelectContact(props: SelectContactProps) {
         ),
       },
     ];
-  }, [init, isExistContact, loadMore, myOtherAddressList, onPress, recentContactList, renderItem, t, totalRecordCount]);
+  }, [
+    chainId,
+    init,
+    isExistContact,
+    loadMore,
+    myOtherAddressList,
+    onPress,
+    recentContactList,
+    renderItem,
+    t,
+    totalRecordCount,
+  ]);
 
   return <CommonTopTab tabList={tabList} />;
 }

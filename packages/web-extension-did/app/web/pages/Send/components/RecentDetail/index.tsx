@@ -105,12 +105,12 @@ export default function RecentDetail() {
 
     setLoading(true);
 
-    const { data, maxResultCount, skipCount, totalRecordCount } = activityInfo;
+    const { data, totalRecordCount } = activityInfo;
 
     if (data.length < totalRecordCount) {
       const params = {
         ...fetchParams,
-        skipCount: skipCount + maxResultCount,
+        skipCount: data.length,
       };
       return fetchRecentContactActivities(params)
         .then((res) => {

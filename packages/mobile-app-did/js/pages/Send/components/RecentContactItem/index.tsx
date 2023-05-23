@@ -31,7 +31,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
       <TouchableOpacity style={styles.itemWrap}>
         <TouchableOpacity style={styles.topWrap} onPress={() => setCollapsed(!collapsed)}>
           <View style={styles.itemAvatar}>
-            <TextXXL>{contact.name.match(/^[a-zA-Z]/) ? contact.name.slice(0, 1) : '#'}</TextXXL>
+            <TextXXL>{contact?.index}</TextXXL>
           </View>
           <TextL style={styles.contactName}>{contact.name}</TextL>
           <Svg icon={collapsed ? 'down-arrow' : 'up-arrow'} size={pTd(20)} />

@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import CommonTopTab from 'components/CommonTopTab';
 import GStyles from 'assets/theme/GStyles';
@@ -22,6 +22,7 @@ import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/ho
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/useRecent';
 import { fetchRecentListAsync } from '@portkey-wallet/store/store-ca/recent/slice';
 import MyAddressItem from '../components/MyAddressItem';
+import myEvents from 'utils/deviceEvent';
 
 interface SelectContactProps {
   chainId: ChainId;
@@ -81,6 +82,11 @@ export default function SelectContact(props: SelectContactProps) {
   useEffectOnce(() => {
     init();
   });
+
+  useEffect(() => {
+    const listener = myEvents.refreshMyContactDetailInfo.addListener(() => init());
+    return () => listener.remove();
+  }, [init]);
 
   const tabList = useMemo(() => {
     return [

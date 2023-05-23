@@ -309,7 +309,7 @@ const GuardianEdit: React.FC = () => {
 
     if (isLastLoginAccount) {
       ActionSheet.alert({
-        title2: t('This guardian is the only login account and cannot be removed.'),
+        title2: t('This guardian is the only login account and cannot be removed'),
         buttons: [
           {
             title: t('OK'),
@@ -324,7 +324,7 @@ const GuardianEdit: React.FC = () => {
       ActionSheet.alert({
         title: isLoginAccount ? undefined : 'Are you sure you want to remove this guardian?',
         title2: isLoginAccount
-          ? `This guardian is set as a login account. Click "Confirm" to unset and remove this guardian.`
+          ? `This guardian is set as a login account. Click "Confirm" to unset and remove this guardian`
           : undefined,
         message: isLoginAccount ? undefined : `Removing a guardian requires guardians' approval`,
         buttons: [

@@ -154,7 +154,7 @@ const ContactActivity: React.FC = () => {
             <TextM style={FontStyles.font3}>{t('Name')}</TextM>
             <View style={[GStyles.flexRow, BGStyles.bg1, styles.nameSection]}>
               <View style={styles.itemAvatar}>
-                <TextXXL>{addressName.slice(0, 1)}</TextXXL>
+                <TextXXL>{addressName.match(/^[a-zA-Z]/) ? addressName.slice(0, 1) : '#'}</TextXXL>
               </View>
               <TextL>{addressName}</TextL>
             </View>

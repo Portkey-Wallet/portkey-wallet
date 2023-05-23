@@ -44,12 +44,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const amountInUsdShow = useAmountInUsdShow();
 
   const activityListLeftIcon = (type: TransactionTypes) => {
-    const loginRelatedTypeArr = [
-      TransactionTypes.ADD_MANAGER,
-      TransactionTypes.REMOVE_MANAGER,
-      TransactionTypes.SOCIAL_RECOVERY,
-    ];
-    return loginRelatedTypeArr.includes(type) ? 'socialRecovery' : 'Transfer';
+    return SHOW_FROM_TRANSACTION_TYPES.includes(type) ? 'Transfer' : 'socialRecovery';
   };
 
   const nav = useNavigate();
@@ -183,7 +178,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
       const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
       return (
         <div className="right right-not-from">
-          <span>{item.transactionName}</span>
+          <span>{item?.transactionName}</span>
           <div className="right-not-from-amount">
             <div>{`${formatWithCommas({ sign, amount, decimals, digits: 4 })} ${symbol ?? ''}`}</div>
             {!isTestNet && <div className="usd">{amountInUsdShow(amount, decimals || 8, symbol)}</div>}

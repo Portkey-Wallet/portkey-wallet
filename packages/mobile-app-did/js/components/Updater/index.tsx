@@ -17,7 +17,9 @@ import CommonToast from 'components/CommonToast';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useTabMenuList } from 'hooks/cms';
+import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 
+request.setExceptionManager(exceptionManager);
 export default function Updater() {
   // FIXME: delete language
   const { changeLanguage } = useLanguage();

@@ -35,7 +35,7 @@ const AboutUs = () => {
         {socialMediaList.map((item, index) => (
           <>
             <MenuItem
-              svgUrl={s3Url && item.svgUrl ? `${s3Url}/${item.svgUrl}.svg` : ''}
+              svgUrl={s3Url && item.svgUrl?.filename_disk ? `${s3Url}/${item.svgUrl.filename_disk}` : ''}
               title={item.title}
               onPress={() => {
                 Linking.openURL(item.link);

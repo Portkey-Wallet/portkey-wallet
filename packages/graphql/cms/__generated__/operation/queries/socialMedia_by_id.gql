@@ -1,0 +1,35 @@
+query socialMedia_by_id($id: ID!){
+    socialMedia_by_id(id: $id){
+        date_created
+        date_created_func{
+            year
+            month
+            week
+            day
+            weekday
+            hour
+            minute
+            second
+        }
+        date_updated
+        date_updated_func{
+            year
+            month
+            week
+            day
+            weekday
+            hour
+            minute
+            second
+        }
+        id
+        index
+        link
+        sort
+        status
+        svgUrl
+        title
+        user_created
+        user_updated
+    }
+}

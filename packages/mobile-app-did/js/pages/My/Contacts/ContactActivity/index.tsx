@@ -157,7 +157,7 @@ const ContactActivity: React.FC = () => {
           </>
         )}
         <>
-          <TextM style={FontStyles.font3}>{t('address')}</TextM>
+          <TextM style={FontStyles.font3}>{t('Address')}</TextM>
           <View style={[styles.addressSection, BGStyles.bg1]}>
             <TextM style={styles.addressStr}>{addressFormat(address, chainId, 'aelf')}</TextM>
             <TextS style={styles.chainInfo}>{formatChainInfoToShow(chainId)}</TextS>
@@ -191,7 +191,7 @@ const ContactActivity: React.FC = () => {
           if (activityList?.length >= totalCount) return;
           fetchActivityList(activityList?.length);
         }}
-        ListEmptyComponent={<NoData message={t('')} />}
+        ListEmptyComponent={<NoData noPic message="" />}
       />
     </PageContainer>
   );
@@ -238,6 +238,7 @@ const styles = StyleSheet.create({
     color: defaultColors.font3,
   },
   handleWrap: {
+    marginTop: pTd(16),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',

@@ -15,6 +15,8 @@ import { useCheckManagerOnLogout } from 'hooks/useLogOut';
 import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useTabMenuList } from 'hooks/cms';
 
 export default function Updater() {
   // FIXME: delete language
@@ -51,5 +53,7 @@ export default function Updater() {
   });
 
   usePhoneCountryCode(true);
+  useSocialMediaList(true);
+  useTabMenuList(true);
   return null;
 }

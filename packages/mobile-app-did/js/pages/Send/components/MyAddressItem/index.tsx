@@ -43,7 +43,6 @@ export const styles = StyleSheet.create({
   address: {},
   chainInfo1: {
     marginTop: pTd(4),
-    fontSize: pTd(10),
     color: defaultColors.font3,
   },
   contactActivity: {

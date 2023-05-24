@@ -1,4 +1,4 @@
-import { ELF_DECIMAL, TransactionTypes, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_DECIMAL, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -320,12 +320,12 @@ export const styles = StyleSheet.create({
   },
   typeTitle: {
     marginTop: pTd(5),
+    marginBottom: pTd(40),
     color: defaultColors.font5,
     fontSize: pTd(20),
     lineHeight: pTd(24),
   },
   tokenCount: {
-    marginTop: pTd(40),
     fontSize: pTd(28),
     ...fonts.mediumFont,
     color: defaultColors.font5,

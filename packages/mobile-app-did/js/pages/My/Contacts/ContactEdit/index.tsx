@@ -245,9 +245,7 @@ const ContactEdit: React.FC = () => {
         CommonToast.success(t('Contact Added'), undefined, 'bottom');
       }
 
-      if (addressList?.length === 0) {
-        navigationService.navigate('ContactsHome');
-      } else {
+      if (addressList && addressList?.length > 0) {
         if (
           editContact.addresses[0].address === addressList?.[0]?.address &&
           editContact.addresses[0].chainId === addressList?.[0]?.chainId
@@ -255,6 +253,8 @@ const ContactEdit: React.FC = () => {
           myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
         }
         navigationService.goBack();
+      } else {
+        navigationService.navigate('ContactsHome');
       }
     } catch (err: any) {
       CommonToast.failError(err);

@@ -49,30 +49,23 @@ export default function ContactCard({ user, className, fromRecents = true, chain
       <Collapse.Panel header={header} key={user.id}>
         <div className="content">
           {user?.addresses?.map((address: RecentAddressItem) => (
-            <div
-              key={address.address}
-              className={clsx([
-                'flex-between-center',
-                'content-item',
-                isDisabled(address?.transactionTime) ? 'disabled' : null,
-              ])}
-              onClick={() =>
-                onChange({ ...address, name: user.name, isDisable: isDisabled(address?.transactionTime) })
-              }>
-              <p className="main-info">
+            <div key={address.address} className={clsx(['flex-between-center', 'content-item'])}>
+              <div
+                className={clsx(['main-info', isDisabled(address?.transactionTime) ? 'disabled' : null])}
+                onClick={() =>
+                  onChange({ ...address, name: user.name, isDisable: isDisabled(address?.transactionTime) })
+                }>
                 <span className={'address'}>
                   {`ELF_${formatStr2EllipsisStr(address.address, [6, 6])}_${address.chainId}`}
                 </span>
                 <span className={clsx(['network', isDisabled(address?.transactionTime) ? 'disabled' : ''])}>
                   {transNetworkText(address.chainId, isTestnet)}
                 </span>
-              </p>
+              </div>
 
-              <CustomSvg
-                className="go-detail-icon"
-                type={'Info'}
-                onClick={() => goRecentDetail(address.address, address.chainId)}
-              />
+              <div className="go-detail" onClick={() => goRecentDetail(address.address, address.chainId)}>
+                <CustomSvg className="go-detail-icon" type={'Info'} />
+              </div>
             </div>
           ))}
         </div>

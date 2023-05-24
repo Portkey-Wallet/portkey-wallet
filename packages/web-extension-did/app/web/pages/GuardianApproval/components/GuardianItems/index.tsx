@@ -72,7 +72,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
               ...item,
               verifierInfo: {
                 sessionId: result.verifierSessionId,
-                endPoint: result.endPoint,
               },
               isInitStatus: true,
             }),
@@ -122,7 +121,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
               ...item,
               verifierInfo: {
                 sessionId: result.verifierSessionId,
-                endPoint: result.endPoint,
               },
               isInitStatus: true,
             }),

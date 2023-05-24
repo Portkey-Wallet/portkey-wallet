@@ -312,7 +312,6 @@ export default function AddGuardian() {
             guardianType: guardianType as LoginType,
             verifierInfo: {
               sessionId: result.verifierSessionId,
-              endPoint: result.endPoint,
             },
             key: curKey,
             isInitStatus: true,

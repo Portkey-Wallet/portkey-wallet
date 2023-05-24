@@ -2,109 +2,14 @@
 @import '../../assets/theme/constants.less';
 
 .guardian-approval-wrapper {
-  .guardian-approval-content {
+  .guardian-list-wrapper {
     margin-bottom: 40px;
-    .title {
-      margin-bottom: 16px;
-      font-size: 40px;
+    .guardian-list-title {
       line-height: 47px;
-      text-align: center;
-    }
-    .description {
-      margin-bottom: 42px;
-    }
-  }
-  .approve-count {
-    line-height: 20px;
-    font-size: 14px;
-    margin-bottom: 8px;
-    padding-bottom: 12px;
-    color: @font-13;
-    border-bottom: 1px solid @border-2;
-    .tooltip-icon {
-      margin-left: 8px;
-      width: 14px;
-      height: 14px;
-    }
-    .already-approval {
-      color: @font-9;
-    }
-    .common-tooltip {
-      max-width: 272px;
     }
   }
   .verifier-content {
     padding-bottom: 24px;
-    .verifier-item {
-      position: relative;
-      padding: 24px 0;
-      border-bottom: 1px solid @border-2;
-      &.verifier-item-disabled {
-        &::after {
-          content: '';
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          background-color: @bg-11;
-          opacity: 0.3;
-          cursor: not-allowed;
-        }
-      }
-      .account-text {
-        margin-left: 12px;
-        line-height: 20px;
-        color: @font-11;
-        font-size: 14px;
-        width: 0; // responsive text, to fix overflow
-        flex: 1;
-        .detail {
-          font-size: 12px;
-          line-height: 16px;
-          color: @font-13;
-        }
-      }
-      .account-text-one-row {
-        word-wrap: break-word;
-        .text-overflow(2);
-      }
-      .account-text-two-row {
-        .name,
-        .detail {
-          word-wrap: break-word;
-          .text-overflow(1);
-        }
-      }
-      .not-verified,
-      .verifying,
-      .@{app-prefix}-btn-text {
-        width: auto;
-        display: block;
-      }
-      .not-verified,
-      .verifying {
-        border-radius: 6px;
-        line-height: 24px;
-        font-size: 12px;
-        padding: 0 12px;
-      }
-      .@{app-prefix}-btn-text {
-        color: @font-9;
-        padding: 0;
-        &.verified {
-          color: @font-15;
-        }
-        &.expired {
-          color: @font-12;
-        }
-        &:hover {
-          background-color: transparent;
-        }
-        span {
-          line-height: 20px;
-          font-size: 14px;
-        }
-      }
-    }
   }
   .popup-verifier-content {
     max-height: 320px;
@@ -145,12 +50,12 @@
       height: 16px !important;
     }
   }
-  .guardian-approval-content {
+  .guardian-wrapper-content {
     padding-top: 0;
     margin: 0 24px;
     width: auto;
     height: calc(100% - 64px);
-    .title {
+    .guardian-list-title {
       height: 28px;
       line-height: 28px;
       color: @font-11;
@@ -158,7 +63,7 @@
       margin-bottom: 4px;
       text-align: center;
     }
-    .description {
+    .guardian-list-description {
       line-height: 20px;
       color: @font-13;
       font-size: 14px;

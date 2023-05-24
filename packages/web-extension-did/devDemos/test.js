@@ -164,7 +164,7 @@ document.addEventListener('Portkey_did#initialized', (result) => {
   setPermission.onclick = function () {
     aelf.setContractPermission(
       {
-        hainId: 'AELF',
+        chainId: 'AELF',
         payload: {
           address: '2JqnxvDiMNzbSgme2oxpqUFpUYfMjTpNBGCLP2CsWjpbHdu',
           contracts: [

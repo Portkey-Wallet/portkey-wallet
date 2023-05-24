@@ -15,6 +15,7 @@ import useLocalInfo from 'hooks/useLocalInfo';
 import { useCheckManagerOnLogout } from 'hooks/useLogout';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckUpdate, useCheckUpdateModal } from 'hooks/useCheckUpdate';
+import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useLocation } from 'react-router';
 
@@ -45,6 +46,9 @@ export default function Updater() {
   useMemo(() => {
     request.set('baseURL', apiUrl);
   }, [apiUrl]);
+
+  usePortkeyUIConfig();
+
   useCaInfoOnChain();
   useActiveLockStatus();
   useEffect(() => {

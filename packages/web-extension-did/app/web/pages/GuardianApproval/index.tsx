@@ -1,32 +1,39 @@
-import { Button } from 'antd';
+import { message } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLoginInfo, useGuardiansInfo, useCommonState } from 'store/Provider/hooks';
-import { VerifyStatus } from '@portkey-wallet/types/verifier';
+import { useLoginInfo, useGuardiansInfo, useCommonState, useAppDispatch, useLoading } from 'store/Provider/hooks';
+import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { useNavigate, useLocation } from 'react-router';
-import { UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
-import { getApprovalCount } from '@portkey-wallet/utils/guardian';
-import clsx from 'clsx';
-import CommonTooltip from 'components/CommonTooltip';
-import { useTranslation } from 'react-i18next';
-import GuardianItems from './components/GuardianItems';
 import { useRecovery } from './hooks/useRecovery';
 import { useRemoveOtherManage } from './hooks/useRemoveOtherManage';
 import GuardianApprovalPrompt from './Prompt';
 import GuardianApprovalPopup from './Popup';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import qs from 'query-string';
+import {
+  GuardianList,
+  OnErrorFunc,
+  UserGuardianStatus,
+  handleErrorMessage,
+  handleVerificationDoc,
+} from '@portkey/did-ui-react';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import type { AccountType } from '@portkey/services';
 import './index.less';
+import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { useVerifyToken } from 'hooks/authentication';
+import clsx from 'clsx';
 
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
   const { address: managerAddress } = useCurrentWalletInfo();
   const { loginAccount } = useLoginInfo();
-  const [isExpired, setIsExpired] = useState<boolean>(false);
   const navigate = useNavigate();
   const { state, search } = useLocation();
+  const originChainId = useOriginChainId();
   const [query, setQuery] = useState('');
   useEffect(() => {
     if (search) {
@@ -37,7 +44,6 @@ export default function GuardianApproval() {
     }
   }, [query, search, state]);
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const { t } = useTranslation();
   const isBigScreenPrompt: boolean = useMemo(() => {
     const isNotFromLoginAndRegister = !!(query && (query.includes('guardian') || query.includes('removeManage')));
     return isNotLessThan768 ? isNotFromLoginAndRegister : false;
@@ -45,8 +51,12 @@ export default function GuardianApproval() {
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(query);
 
   const userVerifiedList = useMemo(() => {
-    const tempVerifiedList = Object.values(userGuardianStatus ?? {});
-    let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
+    const tempVerifiedList: UserGuardianStatus[] = Object.values(userGuardianStatus ?? {}).map((guardian) => ({
+      ...guardian,
+      identifier: guardian.guardianAccount ?? '',
+      guardianType: LoginType[guardian.guardianType] as AccountType,
+    }));
+    let filterVerifiedList = tempVerifiedList;
     if (query === 'guardians/edit') {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);
     } else if (['guardians/del', 'guardians/add'].includes(query)) {
@@ -55,14 +65,7 @@ export default function GuardianApproval() {
     return filterVerifiedList;
   }, [opGuardian?.key, preGuardian?.key, query, userGuardianStatus]);
 
-  const approvalLength = useMemo(() => {
-    return getApprovalCount(userVerifiedList.length);
-  }, [userVerifiedList.length]);
-
-  const alreadyApprovalLength = useMemo(
-    () => userVerifiedList.filter((item) => item?.status === VerifyStatus.Verified).length,
-    [userVerifiedList],
-  );
+  const { setLoading } = useLoading();
 
   const handleGuardianRecovery = useRecovery();
 
@@ -90,21 +93,6 @@ export default function GuardianApproval() {
     query,
   ]);
 
-  useEffect(() => {
-    if (!guardianExpiredTime) return setIsExpired(false);
-    const timeGap = (guardianExpiredTime ?? 0) - Date.now();
-    if (timeGap <= 0) return setIsExpired(true);
-
-    const timer = setInterval(() => {
-      const timeGap = (guardianExpiredTime ?? 0) - Date.now();
-      if (timeGap <= 0) return setIsExpired(true);
-      setIsExpired(false);
-    }, 1000);
-    return () => {
-      clearInterval(timer);
-    };
-  }, [guardianExpiredTime]);
-
   const handleBack = useCallback(() => {
     if (query && query.indexOf('guardians') !== -1) {
       if (['guardians/del', 'guardians/edit'].includes(query)) {
@@ -120,56 +108,121 @@ export default function GuardianApproval() {
     }
   }, [navigate, query]);
 
+  const dispatch = useAppDispatch();
+
+  const onSendCodeHandler = useCallback(
+    (result: UserGuardianStatus) => {
+      const currentGuardian: UserGuardianItem = {
+        ...result,
+        guardianAccount: result.identifier as string,
+        isInitStatus: true,
+        guardianType: LoginType[result.guardianType],
+        identifierHash: result.identifierHash ?? '',
+        salt: result.salt ?? '',
+      };
+      dispatch(setCurrentGuardianAction(currentGuardian));
+      dispatch(
+        setUserGuardianItemStatus({
+          key: result.key,
+          status: VerifyStatus.Verifying,
+        }),
+      );
+      if (query?.includes('guardians')) {
+        navigate('/setting/guardians/verifier-account', { state: query });
+      } else if (query && query.indexOf('removeManage') !== -1) {
+        navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
+      } else {
+        navigate('/login/verifier-account', { state: 'login' });
+      }
+    },
+    [dispatch, navigate, query],
+  );
+
+  const verifyToken = useVerifyToken();
+
+  const socialVerifyHandler = useCallback(
+    async (item: UserGuardianStatus) => {
+      try {
+        setLoading(true);
+        const result = await verifyToken(LoginType[item.guardianType], {
+          accessToken: loginAccount?.authenticationInfo?.[item.identifier as string],
+          id: item.identifier || '',
+          verifierId: item.verifier?.id,
+          chainId: originChainId,
+        });
+        const verifierInfo: VerifierInfo = { ...result, verifierId: item?.verifier?.id };
+        const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+        dispatch(
+          setUserGuardianItemStatus({
+            key: item.key,
+            signature: verifierInfo.signature,
+            verificationDoc: verifierInfo.verificationDoc,
+            status: VerifyStatus.Verified,
+            identifierHash: guardianIdentifier,
+          }),
+        );
+      } catch (error) {
+        const msg = handleErrorMessage(error);
+        message.error(msg);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, loginAccount, originChainId, setLoading, verifyToken],
+  );
+
+  const onVerifyingHandler = useCallback(
+    async (item: UserGuardianStatus) => {
+      const isSocialLogin = item.guardianType === 'Google' || item.guardianType === 'Apple';
+
+      if (isSocialLogin) return socialVerifyHandler(item);
+      dispatch(
+        setCurrentGuardianAction({
+          ...item,
+          guardianAccount: item.identifier || '',
+          guardianType: LoginType[item.guardianType],
+          isInitStatus: false,
+          identifierHash: item.identifierHash || '',
+          salt: item.salt || '',
+        }),
+      );
+      if (query?.includes('guardians')) {
+        navigate('/setting/guardians/verifier-account', { state: query });
+      } else if (query?.includes('removeManage')) {
+        navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
+      } else {
+        navigate('/login/verifier-account', { state: 'login' });
+      }
+    },
+    [dispatch, navigate, query, socialVerifyHandler],
+  );
+
+  const onGuardianListError: OnErrorFunc = useCallback((error) => {
+    console.log('onGuardianListError:', error);
+  }, []);
+
   const renderContent = useMemo(
     () => (
-      <div className="common-content1 guardian-approval-content flex-1 flex-column-between">
-        <div>
-          <div className="title">{t('Guardian Approval')}</div>
-          <p className="description">{isExpired ? t('Expired') : t('Expire after 1 hour')}</p>
-          <div className="flex-between-center approve-count">
-            <span className="flex-row-center">
-              {t("Guardians' approval")}
-              <CommonTooltip placement="top" title={t('guardianApprovalTip')} />
-            </span>
-            <div>
-              <span className="already-approval">{alreadyApprovalLength}</span>
-              <span className="all-approval">{`/${approvalLength}`}</span>
-            </div>
-          </div>
-          <ul className={clsx('verifier-content', !isNotLessThan768 && 'popup-verifier-content')}>
-            {userVerifiedList?.map((item) => (
-              <GuardianItems
-                key={item.key}
-                disabled={alreadyApprovalLength >= approvalLength && item.status !== VerifyStatus.Verified}
-                isExpired={isExpired}
-                item={item}
-                loginAccount={loginAccount}
-              />
-            ))}
-          </ul>
-        </div>
-        {!isExpired && (
-          <div className={clsx(isPrompt ? 'recovery-wallet-btn-wrap' : 'btn-wrap')}>
-            <Button
-              type="primary"
-              className="recovery-wallet-btn"
-              disabled={alreadyApprovalLength <= 0 || alreadyApprovalLength !== approvalLength}
-              onClick={recoveryWallet}>
-              {t('Confirm')}
-            </Button>
-          </div>
-        )}
-      </div>
+      <GuardianList
+        chainId={originChainId}
+        expiredTime={guardianExpiredTime}
+        guardianList={userVerifiedList}
+        isErrorTip
+        className={clsx(isPrompt && 'guardian-list-prompt')}
+        onSend={onSendCodeHandler}
+        onVerifying={onVerifyingHandler}
+        onConfirm={recoveryWallet}
+        onError={onGuardianListError}
+      />
     ),
     [
-      alreadyApprovalLength,
-      approvalLength,
-      isExpired,
-      isNotLessThan768,
+      guardianExpiredTime,
       isPrompt,
-      loginAccount,
+      onGuardianListError,
+      onSendCodeHandler,
+      onVerifyingHandler,
+      originChainId,
       recoveryWallet,
-      t,
       userVerifiedList,
     ],
   );

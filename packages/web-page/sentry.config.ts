@@ -2,6 +2,8 @@ import * as Sentry from '@sentry/nextjs';
 
 export const init = () =>
   Sentry.init({
+    // TODO
+    // environment: process.env.NODE_ENV,
     // Should add your own dsn
     dsn: '',
     // We recommend adjusting this value in production, or using tracesSampler

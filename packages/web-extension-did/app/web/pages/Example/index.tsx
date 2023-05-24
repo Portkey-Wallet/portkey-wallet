@@ -1,3 +1,4 @@
+import { setLoading } from '@portkey/did-ui-react';
 import { Button, Input } from 'antd';
 import { useState } from 'react';
 import { useAppDispatch, useLoginInfo } from 'store/Provider/hooks';
@@ -29,6 +30,12 @@ export default function Example() {
           dispatch(setCountryModal(true));
         }}>
         CountryCode
+      </Button>
+      <Button
+        onClick={() => {
+          setLoading(true);
+        }}>
+        setLoading
       </Button>
     </div>
   );

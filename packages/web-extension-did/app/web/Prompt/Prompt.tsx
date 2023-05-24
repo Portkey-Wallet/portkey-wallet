@@ -6,7 +6,6 @@ const RootWrapper = document.getElementById('root') as Element;
 
 const root = ReactDOM.createRoot(RootWrapper);
 document.body.classList.add('prompt-body');
-// document.body.classList.add('popup-body');
 
 root.render(
   <>

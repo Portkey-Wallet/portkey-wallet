@@ -14,6 +14,8 @@ export const BackEndNetWorkMap: {
     graphqlUrl: 'http://192.168.67.172:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
     connectUrl: 'http://192.168.66.240:8080',
     tokenClaimContractAddress: '2UM9eusxdRyCztbmMZadGXzwgwKfFdk8pF4ckw58D769ehaPSR',
+    cmsUrl: 'http://192.168.66.62:8055/graphql',
+    s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
   },
   'back-end-test2': {
     name: 'aelf Mainnet',

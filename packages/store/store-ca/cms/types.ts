@@ -4,7 +4,9 @@ export interface SocialMediaItem {
   index: number;
   title: string;
   link: string;
-  svgUrl?: string;
+  svgUrl?: {
+    filename_disk?: string;
+  };
 }
 
 export interface tabMenuItem {

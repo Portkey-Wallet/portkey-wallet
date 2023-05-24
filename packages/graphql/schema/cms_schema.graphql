@@ -27,6 +27,9 @@ The `Float` scalar type represents signed double-precision fractional values as 
 """
 scalar Float
 
+"""BigInt value"""
+scalar GraphQLBigInt
+
 """A Float or a String"""
 scalar GraphQLStringOrFloat
 
@@ -63,6 +66,34 @@ type datetime_functions {
   hour: Int
   minute: Int
   second: Int
+}
+
+type directus_files {
+  charset: String
+  description: String
+  duration: Int
+  embed: String
+  filename_disk: String
+  filename_download: String!
+  filesize: GraphQLBigInt
+  folder: String
+  height: Int
+  id: ID!
+  location: String
+  metadata: JSON
+  metadata_func: count_functions
+  modified_by: String
+  modified_on: Date
+  modified_on_func: datetime_functions
+  storage: String!
+  tags: JSON
+  tags_func: count_functions
+  title: String
+  type: String
+  uploaded_by: String
+  uploaded_on: Date
+  uploaded_on_func: datetime_functions
+  width: Int
 }
 
 type discoverGroup {
@@ -121,9 +152,7 @@ type discoverItem {
   description: String
   group(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverGroup
   id: ID!
-
-  """Not support svg"""
-  imgUrl: String
+  imgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   index: Int
   sort: Int
   status: String
@@ -179,9 +208,7 @@ type socialMedia {
   link: String
   sort: Int
   status: String
-
-  """Only support svg"""
-  svgUrl: String
+  svgUrl(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   title: String
   user_created: String
   user_updated: String
@@ -344,6 +371,36 @@ input datetime_function_filter_operators {
   second: number_filter_operators
 }
 
+input directus_files_filter {
+  charset: string_filter_operators
+  description: string_filter_operators
+  duration: number_filter_operators
+  embed: string_filter_operators
+  filename_disk: string_filter_operators
+  filename_download: string_filter_operators
+  filesize: number_filter_operators
+  folder: string_filter_operators
+  height: number_filter_operators
+  id: string_filter_operators
+  location: string_filter_operators
+  metadata: string_filter_operators
+  metadata_func: count_function_filter_operators
+  modified_by: string_filter_operators
+  modified_on: date_filter_operators
+  modified_on_func: datetime_function_filter_operators
+  storage: string_filter_operators
+  tags: string_filter_operators
+  tags_func: count_function_filter_operators
+  title: string_filter_operators
+  type: string_filter_operators
+  uploaded_by: string_filter_operators
+  uploaded_on: date_filter_operators
+  uploaded_on_func: datetime_function_filter_operators
+  width: number_filter_operators
+  _and: [directus_files_filter]
+  _or: [directus_files_filter]
+}
+
 input discoverGroup_filter {
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
@@ -370,7 +427,7 @@ input discoverItem_filter {
   description: string_filter_operators
   group: discoverGroup_filter
   id: number_filter_operators
-  imgUrl: string_filter_operators
+  imgUrl: directus_files_filter
   index: number_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
@@ -406,7 +463,7 @@ input socialMedia_filter {
   link: string_filter_operators
   sort: number_filter_operators
   status: string_filter_operators
-  svgUrl: string_filter_operators
+  svgUrl: directus_files_filter
   title: string_filter_operators
   user_created: string_filter_operators
   user_updated: string_filter_operators

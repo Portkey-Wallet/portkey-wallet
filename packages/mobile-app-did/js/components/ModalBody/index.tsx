@@ -1,6 +1,6 @@
 import React from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { Keyboard, TouchableOpacity, View, ViewProps } from 'react-native';
+import { Keyboard, View, ViewProps } from 'react-native';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
@@ -23,18 +23,19 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     return (
       <View style={[styles.commonBox, styles.bottomBox, style]}>
         <View style={[styles.topWrap]}>
-          <TextXL style={[styles.titleStyle]} onPress={() => Keyboard.dismiss()}>
+          <TextXL suppressHighlighting={true} style={[styles.titleStyle]} onPress={Keyboard.dismiss}>
             {title}
           </TextXL>
-          <TouchableOpacity
+          <View
             style={styles.closeIcon}
-            onPress={() => {
+            pointerEvents="box-only"
+            onTouchStart={() => {
               onClose?.();
               Keyboard.dismiss();
               OverlayModal.hide();
             }}>
             <Svg icon="close" size={pTd(12)} />
-          </TouchableOpacity>
+          </View>
         </View>
         {children}
       </View>

@@ -183,17 +183,13 @@ export default function GuardiansEdit() {
       if (isLoginAccountList.length === 1) {
         CustomModal({
           type: 'info',
-          content: <>{t('This guardian is the only login account and cannot be remove')}</>,
+          content: <>{t('This guardian is the only login account and cannot be removed')}</>,
         });
       } else {
         CustomModal({
           type: 'confirm',
           content: (
-            <>
-              {t(
-                'This guardian has already been set as a login account, clicking confirm will unset the login account and remove the guardian.',
-              )}
-            </>
+            <>{t('This guardian is set as a login account. Click "Confirm" to unset and remove this guardian')}</>
           ),
           okText: t('Confirm'),
           onOk: removeLoginGuardians,

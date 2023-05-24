@@ -6,6 +6,7 @@ import ContactCard from './ContactCard';
 import CustomSvg from 'components/CustomSvg';
 import { useNavigate } from 'react-router';
 import clsx from 'clsx';
+import { ChainId } from '@portkey-wallet/types';
 
 export default function RecentItem({
   item,
@@ -17,12 +18,18 @@ export default function RecentItem({
   const isTestNet = useIsTestnet();
   const navigate = useNavigate();
 
-  const goRecentDetail = (address: string, chainId: string, name: string) => {
-    navigate('/recent-detail', { state: { address, chainId, name } });
+  const goRecentDetail = (
+    chainId: ChainId,
+    targetAddress: string,
+    targetChainId: ChainId,
+    name: string,
+    index: string,
+  ) => {
+    navigate('/recent-detail', { state: { chainId, targetAddress, targetChainId, name, index } });
   };
 
   return item.name ? (
-    <ContactCard user={item} onChange={onClick} className="contact-card-in-recent" />
+    <ContactCard user={item} onChange={onClick} className="contact-card-in-recent" chainId={item.chainId} />
   ) : (
     // In order to keep the format of Recents and Contacts consistent, this can use like {item.addresses[0]}
     <div
@@ -38,7 +45,7 @@ export default function RecentItem({
       <CustomSvg
         className="go-detail-icon"
         type={'Info'}
-        onClick={() => goRecentDetail(item.address, item.addressChainId, item.name)}
+        onClick={() => goRecentDetail(item.chainId, item.address, item.addressChainId, item.name, item?.index)}
       />
     </div>
   );

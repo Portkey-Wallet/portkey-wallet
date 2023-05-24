@@ -416,6 +416,6 @@
   "verificationCodeTip1": "{{verifier}} will send a verification code to",
   "verificationCodeTip2": "to verify your {{type}} address.",
   "returnTip": "Are you sure you want to leave this page? All changes will not be saved.",
-  "This guardian is the only login account and cannot be remove": "This guardian is the only login account and cannot be remove",
-  "This guardian has already been set as a login account, clicking confirm will unset the login account and remove the guardian.": "This guardian has already been set as a login account, clicking confirm will unset the login account and remove the guardian."
+  "This guardian is the only login account and cannot be removed": "This guardian is the only login account and cannot be removed",
+  "This guardian is set as a login account. Click \"Confirm\" to unset and remove this guardian": "This guardian is set as a login account. Click \"Confirm\" to unset and remove this guardian"
 }

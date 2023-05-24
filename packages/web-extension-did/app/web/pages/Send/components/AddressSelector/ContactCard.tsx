@@ -1,3 +1,4 @@
+import { ChainId } from '@portkey-wallet/types';
 import {
   ContactItemType,
   IClickAddressProps,
@@ -14,12 +15,13 @@ import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 
 export interface IContactCardProps {
+  chainId: ChainId;
   user: RecentContactItemType | ContactItemType;
   onChange: (account: IClickAddressProps) => void;
   fromRecents?: boolean;
   className?: string;
 }
-export default function ContactCard({ user, className, fromRecents = true, onChange }: IContactCardProps) {
+export default function ContactCard({ user, className, fromRecents = true, chainId, onChange }: IContactCardProps) {
   const isTestnet = useIsTestnet();
   const isDisabled = useCallback(
     (transactionTime: string | undefined): boolean => fromRecents && !transactionTime,
@@ -36,8 +38,10 @@ export default function ContactCard({ user, className, fromRecents = true, onCha
   );
 
   const navigate = useNavigate();
-  const goRecentDetail = (address: string, chainId: string) => {
-    navigate('/recent-detail', { state: { address, chainId, name: user.name } });
+  const goRecentDetail = (targetAddress: string, targetChainId: ChainId) => {
+    navigate('/recent-detail', {
+      state: { chainId: chainId, targetAddress, targetChainId, name: user.name, index: user.index },
+    });
   };
 
   return (

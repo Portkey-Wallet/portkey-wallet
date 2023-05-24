@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import CommonTopTab from 'components/CommonTopTab';
 import GStyles from 'assets/theme/GStyles';
@@ -22,6 +22,7 @@ import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/ho
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/useRecent';
 import { fetchRecentListAsync } from '@portkey-wallet/store/store-ca/recent/slice';
 import MyAddressItem from '../components/MyAddressItem';
+import myEvents from 'utils/deviceEvent';
 
 interface SelectContactProps {
   chainId: ChainId;
@@ -43,9 +44,9 @@ export default function SelectContact(props: SelectContactProps) {
 
   const renderItem = useCallback(
     ({ item }: { item: RecentContactItemType }) => {
-      return <RecentContactItem contact={item} onPress={onPress} />;
+      return <RecentContactItem fromChainId={chainId} contact={item} onPress={onPress} />;
     },
-    [onPress],
+    [chainId, onPress],
   );
 
   const isExistContact = useMemo<boolean>(
@@ -82,6 +83,11 @@ export default function SelectContact(props: SelectContactProps) {
     init();
   });
 
+  useEffect(() => {
+    const listener = myEvents.refreshMyContactDetailInfo.addListener(() => init());
+    return () => listener.remove();
+  }, [init]);
+
   const tabList = useMemo(() => {
     return [
       {
@@ -116,7 +122,12 @@ export default function SelectContact(props: SelectContactProps) {
             isIndexBarShow={false}
             isSearchShow={false}
             renderContactItem={(item: ContactItemType) => (
-              <RecentContactItem isContacts={true} contact={item as RecentContactItemType} onPress={onPress} />
+              <RecentContactItem
+                fromChainId={chainId}
+                isContacts={true}
+                contact={item as RecentContactItemType}
+                onPress={onPress}
+              />
             )}
             ListFooterComponent={<View style={styles.footer} />}
           />
@@ -137,7 +148,18 @@ export default function SelectContact(props: SelectContactProps) {
         ),
       },
     ];
-  }, [init, isExistContact, loadMore, myOtherAddressList, onPress, recentContactList, renderItem, t, totalRecordCount]);
+  }, [
+    chainId,
+    init,
+    isExistContact,
+    loadMore,
+    myOtherAddressList,
+    onPress,
+    recentContactList,
+    renderItem,
+    t,
+    totalRecordCount,
+  ]);
 
   return <CommonTopTab tabList={tabList} />;
 }

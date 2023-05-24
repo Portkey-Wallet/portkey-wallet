@@ -1,4 +1,4 @@
-import { SHOW_FROM_TRANSACTION_TYPES, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -183,7 +183,7 @@ export default function Transaction() {
         </div>
       )
     );
-  }, [activityItem, t]);
+  }, [activityItem, currentNetwork.walletType, t]);
 
   const networkUI = useCallback(() => {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
@@ -285,9 +285,7 @@ export default function Transaction() {
           </div>
           <div className="transaction-info">
             <div className="method-wrap">
-              <p className="method-name">
-                {transactionTypesMap(activityItem.transactionType, activityItem.nftInfo?.nftId)}
-              </p>
+              <p className="method-name">{activityItem?.transactionName}</p>
               {isNft ? nftHeaderUI() : tokenHeaderUI()}
             </div>
             {statusAndDateUI()}
@@ -303,8 +301,7 @@ export default function Transaction() {
       </div>
     );
   }, [
-    activityItem.nftInfo?.nftId,
-    activityItem.transactionType,
+    activityItem?.transactionName,
     fromToUI,
     isNft,
     isPrompt,

@@ -30,10 +30,11 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import Loading from 'components/Loading';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   contact?: ContactItemType;
-  addressList?: Array<AddressItem['address']>;
+  addressList?: Array<AddressItem>;
 };
 
 export type EditAddressType = AddressItem & { error: ErrorType };
@@ -111,11 +112,9 @@ const ContactEdit: React.FC = () => {
       } else {
         _editContact.addresses = [];
         addressList.forEach(item => {
-          if (!isAelfAddress(item)) return;
-          const arr = item.split('_');
           _editContact.addresses.push({
-            chainId: chainMap[arr[2]]?.chainId || chainList[0].chainId,
-            address: arr[1],
+            chainId: chainMap[item.chainId]?.chainId || chainList[0].chainId,
+            address: item.address,
             error: { ...INIT_HAS_ERROR },
           });
         });
@@ -246,10 +245,17 @@ const ContactEdit: React.FC = () => {
         CommonToast.success(t('Contact Added'), undefined, 'bottom');
       }
 
-      navigationService.navigate(
-        addressList?.length === 0 ? 'ContactsHome' : 'ContactActivity',
-        addressList?.length === 0 ? {} : { address: addressList?.[0], contactName: editContact.name },
-      );
+      if (addressList?.length === 0) {
+        navigationService.navigate('ContactsHome');
+      } else {
+        if (
+          editContact.addresses[0].address === addressList?.[0]?.address &&
+          editContact.addresses[0].chainId === addressList?.[0]?.chainId
+        ) {
+          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+        }
+        navigationService.goBack();
+      }
     } catch (err: any) {
       CommonToast.failError(err);
     }

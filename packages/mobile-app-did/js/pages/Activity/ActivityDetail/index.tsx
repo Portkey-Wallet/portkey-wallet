@@ -181,9 +181,7 @@ const ActivityDetail = () => {
       <TouchableOpacity style={styles.closeWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="close" size={pTd(16)} />
       </TouchableOpacity>
-      <Text style={[styles.typeTitle]}>
-        {transactionTypesMap(activityItem?.transactionType, activityItem?.nftInfo?.nftId)}
-      </Text>
+      <Text style={[styles.typeTitle]}>{activityItem?.transactionName}</Text>
 
       {activityItem?.transactionType &&
         SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) &&

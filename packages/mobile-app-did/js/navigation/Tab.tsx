@@ -1,19 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import DashBoard from 'pages/DashBoard';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import MyMenu from 'pages/My';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
+import { useTabMenuList } from 'hooks/cms';
 
 const Tab = createBottomTabNavigator();
 
-type tabMenuIcon = typeof tabMenuList[number]['icon'];
+export const tabMenuTypeMap: Record<string, { icon: IconName; component: React.FC }> = {
+  Wallet: {
+    icon: 'logo-icon',
+    component: DashBoard,
+  },
+  Settings: {
+    icon: 'my',
+    component: MyMenu,
+  },
+};
 
-export const tabMenuList = [
+export const defaultTabMenuList = [
   { name: 'Wallet', label: 'Wallet', index: 0, icon: 'logo-icon', component: DashBoard },
   // { name: 'Discover', label: 'Discover', index: 1, icon: 'discover', component: DiscoverHome },
   { name: 'Settings', label: 'My', index: 2, icon: 'my', component: MyMenu },
@@ -22,6 +32,17 @@ export const tabMenuList = [
 export default function TabRoot() {
   const { t } = useLanguage();
   const { address } = useCurrentWalletInfo();
+  const tabMenuListStore = useTabMenuList();
+
+  const tabMenuList = useMemo(() => {
+    if (!tabMenuListStore.length) return defaultTabMenuList;
+    return tabMenuListStore.map(item => ({
+      name: item.type.value,
+      label: item.title,
+      index: item.index,
+      ...tabMenuTypeMap[item.type.value],
+    }));
+  }, [tabMenuListStore]);
 
   // init data
   useInitData();
@@ -38,7 +59,7 @@ export default function TabRoot() {
         tabBarAllowFontScaling: false,
         header: () => null,
         tabBarIcon: ({ focused }) => {
-          const iconName: tabMenuIcon = tabMenuList.find(tab => tab.name === route.name)?.icon ?? 'logo-icon';
+          const iconName: IconName = tabMenuList.find(tab => tab.name === route.name)?.icon ?? 'logo-icon';
           return <Svg icon={iconName} size={20} color={focused ? defaultColors.font4 : defaultColors.font7} />;
         },
       })}>

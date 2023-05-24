@@ -1,0 +1,466 @@
+type Query {
+  discoverGroup(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverGroup!]!
+  discoverGroup_by_id(id: ID!): discoverGroup
+  discoverGroup_aggregated(groupBy: [String], filter: discoverGroup_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverGroup_aggregated!]!
+  discoverItem(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem!]!
+  discoverItem_by_id(id: ID!): discoverItem
+  discoverItem_aggregated(groupBy: [String], filter: discoverItem_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverItem_aggregated!]!
+  socialMedia(filter: socialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [socialMedia!]!
+  socialMedia_by_id(id: ID!): socialMedia
+  socialMedia_aggregated(groupBy: [String], filter: socialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [socialMedia_aggregated!]!
+  tabMenu(filter: tabMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tabMenu!]!
+  tabMenu_by_id(id: ID!): tabMenu
+  tabMenu_aggregated(groupBy: [String], filter: tabMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tabMenu_aggregated!]!
+  tabType(filter: tabType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [tabType!]!
+  tabType_by_id(id: ID!): tabType
+  tabType_aggregated(groupBy: [String], filter: tabType_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [tabType_aggregated!]!
+}
+
+"""The `Boolean` scalar type represents `true` or `false`."""
+scalar Boolean
+
+"""ISO8601 Date values"""
+scalar Date
+
+"""
+The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+"""
+scalar Float
+
+"""A Float or a String"""
+scalar GraphQLStringOrFloat
+
+"""
+The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
+"""
+scalar ID
+
+"""
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
+"""
+scalar Int
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+"""
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+"""
+scalar String
+
+type count_functions {
+  count: Int
+}
+
+type datetime_functions {
+  year: Int
+  month: Int
+  week: Int
+  day: Int
+  weekday: Int
+  hour: Int
+  minute: Int
+  second: Int
+}
+
+type discoverGroup {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  user_created: String
+  user_updated: String
+  items(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem]
+  items_func: count_functions
+}
+
+type discoverGroup_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverGroup_aggregated_count
+  countDistinct: discoverGroup_aggregated_count
+  avg: discoverGroup_aggregated_fields
+  sum: discoverGroup_aggregated_fields
+  avgDistinct: discoverGroup_aggregated_fields
+  sumDistinct: discoverGroup_aggregated_fields
+  min: discoverGroup_aggregated_fields
+  max: discoverGroup_aggregated_fields
+}
+
+type discoverGroup_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+  items: Int
+}
+
+type discoverGroup_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type discoverItem {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  group(filter: discoverGroup_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): discoverGroup
+  id: ID!
+
+  """Not support svg"""
+  imgUrl: String
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  user_created: String
+  user_updated: String
+}
+
+type discoverItem_aggregated {
+  group: JSON
+  countAll: Int
+  count: discoverItem_aggregated_count
+  countDistinct: discoverItem_aggregated_count
+  avg: discoverItem_aggregated_fields
+  sum: discoverItem_aggregated_fields
+  avgDistinct: discoverItem_aggregated_fields
+  sumDistinct: discoverItem_aggregated_fields
+  min: discoverItem_aggregated_fields
+  max: discoverItem_aggregated_fields
+}
+
+type discoverItem_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  group: Int
+  id: Int
+
+  """Not support svg"""
+  imgUrl: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type discoverItem_aggregated_fields {
+  group: Float
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type socialMedia {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  link: String
+  sort: Int
+  status: String
+
+  """Only support svg"""
+  svgUrl: String
+  title: String
+  user_created: String
+  user_updated: String
+}
+
+type socialMedia_aggregated {
+  group: JSON
+  countAll: Int
+  count: socialMedia_aggregated_count
+  countDistinct: socialMedia_aggregated_count
+  avg: socialMedia_aggregated_fields
+  sum: socialMedia_aggregated_fields
+  avgDistinct: socialMedia_aggregated_fields
+  sumDistinct: socialMedia_aggregated_fields
+  min: socialMedia_aggregated_fields
+  max: socialMedia_aggregated_fields
+}
+
+type socialMedia_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  link: Int
+  sort: Int
+  status: Int
+
+  """Only support svg"""
+  svgUrl: Int
+  title: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type socialMedia_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+}
+
+type tabMenu {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  index: Int
+  sort: Int
+  status: String
+  title: String
+  type(filter: tabType_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): tabType
+  user_created: String
+  user_updated: String
+}
+
+type tabMenu_aggregated {
+  group: JSON
+  countAll: Int
+  count: tabMenu_aggregated_count
+  countDistinct: tabMenu_aggregated_count
+  avg: tabMenu_aggregated_fields
+  sum: tabMenu_aggregated_fields
+  avgDistinct: tabMenu_aggregated_fields
+  sumDistinct: tabMenu_aggregated_fields
+  min: tabMenu_aggregated_fields
+  max: tabMenu_aggregated_fields
+}
+
+type tabMenu_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  index: Int
+  sort: Int
+  status: Int
+  title: Int
+  type: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type tabMenu_aggregated_fields {
+  id: Float
+  index: Float
+  sort: Float
+  type: Float
+}
+
+type tabType {
+  attribute: String
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  sort: Int
+  status: String
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type tabType_aggregated {
+  group: JSON
+  countAll: Int
+  count: tabType_aggregated_count
+  countDistinct: tabType_aggregated_count
+  avg: tabType_aggregated_fields
+  sum: tabType_aggregated_fields
+  avgDistinct: tabType_aggregated_fields
+  sumDistinct: tabType_aggregated_fields
+  min: tabType_aggregated_fields
+  max: tabType_aggregated_fields
+}
+
+type tabType_aggregated_count {
+  attribute: Int
+  date_created: Int
+  date_updated: Int
+  id: Int
+  sort: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type tabType_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
+input count_function_filter_operators {
+  count: number_filter_operators
+}
+
+input date_filter_operators {
+  _eq: String
+  _neq: String
+  _gt: String
+  _gte: String
+  _lt: String
+  _lte: String
+  _null: Boolean
+  _nnull: Boolean
+  _in: [String]
+  _nin: [String]
+  _between: [GraphQLStringOrFloat]
+  _nbetween: [GraphQLStringOrFloat]
+}
+
+input datetime_function_filter_operators {
+  year: number_filter_operators
+  month: number_filter_operators
+  week: number_filter_operators
+  day: number_filter_operators
+  weekday: number_filter_operators
+  hour: number_filter_operators
+  minute: number_filter_operators
+  second: number_filter_operators
+}
+
+input discoverGroup_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  items: discoverItem_filter
+  items_func: count_function_filter_operators
+  _and: [discoverGroup_filter]
+  _or: [discoverGroup_filter]
+}
+
+input discoverItem_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  group: discoverGroup_filter
+  id: number_filter_operators
+  imgUrl: string_filter_operators
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [discoverItem_filter]
+  _or: [discoverItem_filter]
+}
+
+input number_filter_operators {
+  _eq: GraphQLStringOrFloat
+  _neq: GraphQLStringOrFloat
+  _in: [GraphQLStringOrFloat]
+  _nin: [GraphQLStringOrFloat]
+  _gt: GraphQLStringOrFloat
+  _gte: GraphQLStringOrFloat
+  _lt: GraphQLStringOrFloat
+  _lte: GraphQLStringOrFloat
+  _null: Boolean
+  _nnull: Boolean
+  _between: [GraphQLStringOrFloat]
+  _nbetween: [GraphQLStringOrFloat]
+}
+
+input socialMedia_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  link: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  svgUrl: string_filter_operators
+  title: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [socialMedia_filter]
+  _or: [socialMedia_filter]
+}
+
+input string_filter_operators {
+  _eq: String
+  _neq: String
+  _contains: String
+  _icontains: String
+  _ncontains: String
+  _starts_with: String
+  _nstarts_with: String
+  _ends_with: String
+  _nends_with: String
+  _in: [String]
+  _nin: [String]
+  _null: Boolean
+  _nnull: Boolean
+  _empty: Boolean
+  _nempty: Boolean
+}
+
+input tabMenu_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  index: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  title: string_filter_operators
+  type: tabType_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [tabMenu_filter]
+  _or: [tabMenu_filter]
+}
+
+input tabType_filter {
+  attribute: string_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [tabType_filter]
+  _or: [tabType_filter]
+}

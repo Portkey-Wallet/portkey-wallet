@@ -4,8 +4,6 @@ import { Keyboard, View, ViewProps } from 'react-native';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
-
-import Touchable from 'components/Touchable';
 import { defaultColors } from 'assets/theme';
 import { TextXL } from 'components/CommonText';
 import Svg from 'components/Svg';
@@ -24,18 +22,21 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   if (modalBodyType === 'bottom') {
     return (
       <View style={[styles.commonBox, styles.bottomBox, style]}>
-        <Touchable style={[styles.topWrap]} onPress={Keyboard.dismiss}>
-          <TextXL style={[styles.titleStyle]}>{title}</TextXL>
-          <Touchable
+        <View style={[styles.topWrap]}>
+          <TextXL suppressHighlighting={true} style={[styles.titleStyle]} onPress={Keyboard.dismiss}>
+            {title}
+          </TextXL>
+          <View
             style={styles.closeIcon}
-            onPress={() => {
+            pointerEvents="box-only"
+            onTouchStart={() => {
               onClose?.();
               Keyboard.dismiss();
               OverlayModal.hide();
             }}>
             <Svg icon="close" size={pTd(12)} />
-          </Touchable>
-        </Touchable>
+          </View>
+        </View>
         {children}
       </View>
     );

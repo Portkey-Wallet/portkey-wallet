@@ -22,6 +22,7 @@ import GlobalStyleHandler from 'components/GlobalStyleHandler';
 import { lockScreenOrientation } from 'utils/screenOrientation';
 import Updater from 'components/Updater';
 import CodePush from 'react-native-code-push';
+import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 
 const codePushOptions = {
   updateDialog: false,
@@ -41,6 +42,7 @@ if (!__DEV__) {
     // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
     // We recommend adjusting this value in production.
     tracesSampleRate: 1.0,
+    environment: Config.SENTRY_ENVIRONMENT,
 
     integrations: [
       new Sentry.ReactNativeTracing({
@@ -51,6 +53,7 @@ if (!__DEV__) {
       }),
     ],
   });
+  exceptionManager.setSentryInstance(Sentry);
 }
 
 initLanguage();

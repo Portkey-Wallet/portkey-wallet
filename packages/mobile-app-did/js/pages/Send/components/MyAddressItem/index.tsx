@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextS } from 'components/CommonText';
+import { TextS, TextM } from 'components/CommonText';
 import React, { memo } from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
@@ -24,7 +24,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
       onPress={() => {
         onPress?.({ address: addressFormat(address, chainId), name: '' });
       }}>
-      <TextS>{formatStr2EllipsisStr(addressFormat(address, chainId), 10)}</TextS>
+      <TextM>{formatStr2EllipsisStr(addressFormat(address, chainId), 10)}</TextM>
       <TextS style={styles.chainInfo1}>{formatChainInfoToShow(chainId, currentNetwork)}</TextS>
     </TouchableOpacity>
   );

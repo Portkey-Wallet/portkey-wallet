@@ -14,6 +14,7 @@ import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import discoverSlice from '@portkey-wallet/store/store-ca/discover/slice';
 import switchSlice from '@portkey-wallet/store/store-ca/switch/slice';
+import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -44,6 +45,7 @@ const reduxPersistConfig = {
     activitySlice.name,
     discoverSlice.name,
     switchSlice.name,
+    cmsSlice.name,
   ],
 
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

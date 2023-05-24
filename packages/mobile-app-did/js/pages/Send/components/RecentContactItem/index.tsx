@@ -31,7 +31,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
       <TouchableOpacity style={styles.itemWrap}>
         <TouchableOpacity style={styles.topWrap} onPress={() => setCollapsed(!collapsed)}>
           <View style={styles.itemAvatar}>
-            <TextXXL>{contact.name.slice(0, 1)}</TextXXL>
+            <TextXXL>{contact?.index}</TextXXL>
           </View>
           <TextL style={styles.contactName}>{contact.name}</TextL>
           <Svg icon={collapsed ? 'down-arrow' : 'up-arrow'} size={pTd(20)} />
@@ -45,10 +45,10 @@ const RecentContactItem: React.FC<ItemType> = props => {
                 key={`${ele?.address}${ele?.chainId}`}
                 onPress={() => {
                   const { address, chainId } = ele;
-                  onPress?.({ address: `ELF_${address}_${chainId}`, name: contact.name });
+                  onPress?.({ address: addressFormat(address, chainId), name: contact.name });
                 }}>
                 <TextM style={[styles.address, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
-                  {formatStr2EllipsisStr(`ELF_${ele?.address}_${ele.chainId}`, 10)}
+                  {formatStr2EllipsisStr(addressFormat(ele?.address, ele.chainId), 10)}
                 </TextM>
                 <TextS
                   style={[styles.address, styles.chainInfo, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
@@ -76,6 +76,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
                   {formatChainInfoToShow(ele?.chainId as ChainId, currentNetwork)}
                 </TextS>
                 <TouchableOpacity
+                  hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                   style={[styles.contactActivity, styles.moreIconWrapStyle]}
                   onPress={() =>
                     navigationService.navigate('ContactActivity', {
@@ -154,7 +155,7 @@ export const styles = StyleSheet.create({
   addressListWrap: {
     paddingTop: pTd(10),
     paddingBottom: pTd(10),
-    marginLeft: pTd(54),
+    marginLeft: pTd(48),
   },
   addressItemWrap: {
     marginTop: pTd(16),
@@ -180,10 +181,12 @@ export const styles = StyleSheet.create({
   },
   contactActivity: {
     position: 'absolute',
-    right: pTd(21),
-    top: pTd(27),
+    right: pTd(11),
+    top: pTd(17),
+    padding: pTd(10),
   },
   moreIconWrapStyle: {
-    top: pTd(11),
+    top: pTd(1),
+    right: -pTd(10),
   },
 });

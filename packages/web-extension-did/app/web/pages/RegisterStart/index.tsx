@@ -19,12 +19,11 @@ import { DefaultChainId, OfficialWebsite } from '@portkey-wallet/constants/const
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
 import CustomModal from 'pages/components/CustomModal';
 import { IconType } from 'types/icon';
-import { CreateWalletType, DIDWalletInfo, SignInSuccess, SignUpAndLogin } from '@portkey/did-ui-react';
+import { CreateWalletType, DIDWalletInfo, SignInSuccess, SignUpAndLogin, LoginModal } from '@portkey/did-ui-react';
 import { countryCodeList } from '@portkey-wallet/constants/constants-ca/country';
 import { ChainId } from '@portkey/types';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import LoginModal from './components/LoginModal';
 import './index.less';
 
 export default function RegisterStart() {

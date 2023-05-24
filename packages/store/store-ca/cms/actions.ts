@@ -28,7 +28,7 @@ export const getTabMenuAsync = createAsyncThunk<Required<Pick<CMSState, 'tabMenu
   async (network: NetworkType) => {
     const result = await getTabMenu(network, {
       limit: -1,
-      sort1: 'index',
+      sort: 'index',
     });
 
     if (result.data.tabMenu && Array.isArray(result.data.tabMenu)) {

@@ -1,25 +1,33 @@
 import { NetworkType } from '@portkey-wallet/types';
 import { getApolloClient } from './apollo';
 
-import { SocialMediaDocument, SocialMediaQuery, SocialMediaQueryVariables } from './__generated__/hooks/socialMedia';
+import {
+  SocialMediaCustomDocument,
+  SocialMediaCustomQuery,
+  SocialMediaCustomQueryVariables,
+} from './__generated__/hooks/socialMediaCustom';
 
-import { TabMenuDocument, TabMenuQuery, TabMenuQueryVariables } from './__generated__/hooks/tabMenu';
+import {
+  TabMenuCustomDocument,
+  TabMenuCustomQuery,
+  TabMenuCustomQueryVariables,
+} from './__generated__/hooks/tabMenuCustom';
 
 // SocialMedia
-const getSocialMedia = async (network: NetworkType, params: SocialMediaQueryVariables) => {
+const getSocialMedia = async (network: NetworkType, params: SocialMediaCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
-  const result = await apolloClient.query<SocialMediaQuery>({
-    query: SocialMediaDocument,
+  const result = await apolloClient.query<SocialMediaCustomQuery>({
+    query: SocialMediaCustomDocument,
     variables: params,
   });
   return result;
 };
 
 // TabMenu
-const getTabMenu = async (network: NetworkType, params: TabMenuQueryVariables) => {
+const getTabMenu = async (network: NetworkType, params: TabMenuCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
-  const result = await apolloClient.query<TabMenuQuery>({
-    query: TabMenuDocument,
+  const result = await apolloClient.query<TabMenuCustomQuery>({
+    query: TabMenuCustomDocument,
     variables: params,
   });
   return result;

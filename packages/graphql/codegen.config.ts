@@ -10,7 +10,7 @@ const config: CodegenConfig = {
   },
 };
 
-schemaPath.forEach(({ name, path }) => {
+schemaPath.forEach(({ name, path, isCustomExist }) => {
   config.generates[`./${name}/__generated__/types.ts`] = {
     schema: path,
     plugins: ['typescript'],
@@ -29,6 +29,23 @@ schemaPath.forEach(({ name, path }) => {
       // defaultBaseOptions: {}
     },
   };
+
+  if (isCustomExist) {
+    config.generates[`${name}/custom`] = {
+      documents: [`./${name}/custom/**/*`],
+      schema: path,
+      preset: 'near-operation-file',
+      presetConfig: {
+        baseTypesPath: `../__generated__/types.ts`,
+        extension: '.ts',
+        folder: `../__generated__/hooks`,
+      },
+      plugins: ['typescript-operations', 'typescript-react-apollo'],
+      config: {
+        // defaultBaseOptions: {}
+      },
+    };
+  }
 });
 
 export default config;

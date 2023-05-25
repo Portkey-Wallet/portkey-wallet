@@ -1,13 +1,15 @@
 import RNFS from 'react-native-fs';
 import { isIos } from '@portkey-wallet/utils/mobile/device';
 
+const fileName = 'InpageBridgeWeb3';
+
 const EntryScriptWeb3 = {
   entryScriptWeb3: '',
   // Cache InpageBridgeWeb3 so that it is immediately available
   async init() {
     this.entryScriptWeb3 = isIos
-      ? await RNFS.readFile(`${RNFS.MainBundlePath}/InpageBridgeWeb3.js`, 'utf8')
-      : await RNFS.readFileAssets(`InpageBridgeWeb3.js`);
+      ? await RNFS.readFile(`${RNFS.MainBundlePath}/${fileName}.js`, 'utf8')
+      : await RNFS.readFileAssets(`${fileName}.js`);
 
     return this.entryScriptWeb3;
   },

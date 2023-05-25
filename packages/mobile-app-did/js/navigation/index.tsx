@@ -21,6 +21,7 @@ import MyNav from 'pages/My/router';
 import BuyNav from 'pages/Buy';
 import DiscoverNav from 'pages/Discover/index';
 import { isIos } from '@portkey-wallet/utils/mobile/device';
+import Discover from 'Test/Discover';
 
 const Stack = createStackNavigator();
 export const stackNav = [
@@ -33,6 +34,7 @@ export const stackNav = [
 
   // FIXME: test page
   { name: 'Home', component: Home },
+  { name: 'Discover', component: Discover },
 
   ...GuardianNav,
   ...ActivityNav,

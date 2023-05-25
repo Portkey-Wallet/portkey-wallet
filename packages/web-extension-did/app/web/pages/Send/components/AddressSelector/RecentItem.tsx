@@ -32,21 +32,21 @@ export default function RecentItem({
     <ContactCard user={item} onChange={onClick} className="contact-card-in-recent" chainId={item.chainId} />
   ) : (
     // In order to keep the format of Recents and Contacts consistent, this can use like {item.addresses[0]}
-    <div
-      className={clsx(['flex-between-center', 'recent-item'])}
-      onClick={() => {
-        onClick({ ...item });
-      }}>
-      <div className="main-info">
+    <div className={clsx(['flex-between-center', 'recent-item'])}>
+      <div
+        className="main-info"
+        onClick={() => {
+          onClick({ ...item });
+        }}>
         <p className="address">{`ELF_${formatStr2EllipsisStr(item.address, [6, 6])}_${item.addressChainId}`}</p>
         <p className="network">{transNetworkText(item.addressChainId, isTestNet)}</p>
       </div>
 
-      <CustomSvg
-        className="go-detail-icon"
-        type={'Info'}
-        onClick={() => goRecentDetail(item.chainId, item.address, item.addressChainId, item.name, item?.index)}
-      />
+      <div
+        className="go-detail"
+        onClick={() => goRecentDetail(item.chainId, item.address, item.addressChainId, item.name, item?.index)}>
+        <CustomSvg className="go-detail-icon" type={'Info'} />
+      </div>
     </div>
   );
 }

@@ -48,11 +48,11 @@ export function useCheckUpdateModal() {
 
 export function useCheckUpdate() {
   const dispatch = useAppDispatch();
-  const { versionInfo } = useMiscState();
 
   return useLockCallback(async () => {
     if (!currentVersion) return;
-    if (versionInfo?.targetVersion && compareVersions(currentVersion, versionInfo.targetVersion) === -1) return;
+
+    //Request the latest data every time the page is refreshed
     try {
       dispatch(
         setUpdateVersionInfo({

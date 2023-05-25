@@ -1,4 +1,4 @@
-query discoverGroup(
+query discoverGroupCustom(
   $filter: discoverGroup_filter
   $sort: [String]
   $limit: Int
@@ -22,6 +22,7 @@ query discoverGroup(
       index
       status
       title
+      description
       imgUrl {
         filename_disk
       }

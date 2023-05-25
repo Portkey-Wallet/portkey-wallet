@@ -12,9 +12,9 @@ import {
   TabMenuCustomQueryVariables,
 } from './__generated__/hooks/tabMenuCustom';
 import {
-  DiscoverGroupDocument,
-  DiscoverGroupQuery,
-  DiscoverGroupQueryVariables,
+  DiscoverGroupCustomDocument,
+  DiscoverGroupCustomQuery,
+  DiscoverGroupCustomQueryVariables,
 } from './__generated__/hooks/discoverGroupCustom';
 
 // SocialMedia
@@ -37,10 +37,10 @@ const getTabMenu = async (network: NetworkType, params: TabMenuCustomQueryVariab
   return result;
 };
 
-const getDiscoverGroup = async (network: NetworkType, params: DiscoverGroupQueryVariables) => {
+const getDiscoverGroup = async (network: NetworkType, params: DiscoverGroupCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
-  const result = await apolloClient.query<DiscoverGroupQuery>({
-    query: DiscoverGroupDocument,
+  const result = await apolloClient.query<DiscoverGroupCustomQuery>({
+    query: DiscoverGroupCustomDocument,
     variables: params,
   });
   return result;

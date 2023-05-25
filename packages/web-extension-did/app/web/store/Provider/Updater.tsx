@@ -13,7 +13,7 @@ import { useActiveLockStatus } from 'hooks/useActiveLockStatus';
 import useLocationChange from 'hooks/useLocationChange';
 import { useCheckManagerOnLogout } from 'hooks/useLogout';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
-import { useCheckUpdate, useCheckUpdateModal } from 'hooks/useCheckUpdate';
+import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useLocation } from 'react-router';
 import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -32,7 +32,7 @@ export default function Updater() {
   useChainListFetch();
   useRefreshTokenConfig(passwordSeed);
   const checkUpdate = useCheckUpdate();
-  useCheckUpdateModal();
+
   const apiUrl = useCurrentApiUrl();
 
   useCheckManager(checkManagerOnLogout);

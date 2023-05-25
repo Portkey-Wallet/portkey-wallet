@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getPhoneCountryCode, setUpdateVersionInfo, setLocalPhoneCountryCodeAction } from './actions';
+import { getPhoneCountryCode, setLocalPhoneCountryCodeAction } from './actions';
 import { MiscState } from './types';
 import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 
@@ -13,9 +13,6 @@ export const miscSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
-      .addCase(setUpdateVersionInfo.fulfilled, (state, action) => {
-        state.versionInfo = action.payload;
-      })
       .addCase(getPhoneCountryCode.fulfilled, (state, action) => {
         state.phoneCountryCodeListChainMap = {
           ...state.phoneCountryCodeListChainMap,

@@ -9,6 +9,11 @@ export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'soc
     const result = await getSocialMedia(network, {
       sort: 'index',
       limit: -1,
+      filter: {
+        status: {
+          _eq: 'published',
+        },
+      },
     });
 
     if (result.data.socialMedia && Array.isArray(result.data.socialMedia)) {
@@ -29,6 +34,11 @@ export const getTabMenuAsync = createAsyncThunk<Required<Pick<CMSState, 'tabMenu
     const result = await getTabMenu(network, {
       limit: -1,
       sort: 'index',
+      filter: {
+        status: {
+          _eq: 'published',
+        },
+      },
     });
 
     if (result.data.tabMenu && Array.isArray(result.data.tabMenu)) {

@@ -3,7 +3,7 @@ import * as Types from '../types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type DiscoverGroupQueryVariables = Types.Exact<{
+export type DiscoverGroupCustomQueryVariables = Types.Exact<{
   filter?: Types.InputMaybe<Types.DiscoverGroup_Filter>;
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
@@ -20,7 +20,7 @@ export type DiscoverGroupQueryVariables = Types.Exact<{
   search1?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
-export type DiscoverGroupQuery = {
+export type DiscoverGroupCustomQuery = {
   __typename?: 'Query';
   discoverGroup: Array<{
     __typename?: 'discoverGroup';
@@ -34,13 +34,14 @@ export type DiscoverGroupQuery = {
       index?: number | null;
       status?: string | null;
       title?: string | null;
+      description?: string | null;
       imgUrl?: { __typename?: 'directus_files'; filename_disk?: string | null } | null;
     } | null> | null;
   }>;
 };
 
-export const DiscoverGroupDocument = gql`
-  query discoverGroup(
+export const DiscoverGroupCustomDocument = gql`
+  query discoverGroupCustom(
     $filter: discoverGroup_filter
     $sort: [String]
     $limit: Int
@@ -64,6 +65,7 @@ export const DiscoverGroupDocument = gql`
         index
         status
         title
+        description
         imgUrl {
           filename_disk
         }
@@ -73,16 +75,16 @@ export const DiscoverGroupDocument = gql`
 `;
 
 /**
- * __useDiscoverGroupQuery__
+ * __useDiscoverGroupCustomQuery__
  *
- * To run a query within a React component, call `useDiscoverGroupQuery` and pass it any options that fit your needs.
- * When your component renders, `useDiscoverGroupQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useDiscoverGroupCustomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDiscoverGroupCustomQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useDiscoverGroupQuery({
+ * const { data, loading, error } = useDiscoverGroupCustomQuery({
  *   variables: {
  *      filter: // value for 'filter'
  *      sort: // value for 'sort'
@@ -99,18 +101,27 @@ export const DiscoverGroupDocument = gql`
  *   },
  * });
  */
-export function useDiscoverGroupQuery(
-  baseOptions?: Apollo.QueryHookOptions<DiscoverGroupQuery, DiscoverGroupQueryVariables>,
+export function useDiscoverGroupCustomQuery(
+  baseOptions?: Apollo.QueryHookOptions<DiscoverGroupCustomQuery, DiscoverGroupCustomQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<DiscoverGroupQuery, DiscoverGroupQueryVariables>(DiscoverGroupDocument, options);
+  return Apollo.useQuery<DiscoverGroupCustomQuery, DiscoverGroupCustomQueryVariables>(
+    DiscoverGroupCustomDocument,
+    options,
+  );
 }
-export function useDiscoverGroupLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<DiscoverGroupQuery, DiscoverGroupQueryVariables>,
+export function useDiscoverGroupCustomLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<DiscoverGroupCustomQuery, DiscoverGroupCustomQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<DiscoverGroupQuery, DiscoverGroupQueryVariables>(DiscoverGroupDocument, options);
+  return Apollo.useLazyQuery<DiscoverGroupCustomQuery, DiscoverGroupCustomQueryVariables>(
+    DiscoverGroupCustomDocument,
+    options,
+  );
 }
-export type DiscoverGroupQueryHookResult = ReturnType<typeof useDiscoverGroupQuery>;
-export type DiscoverGroupLazyQueryHookResult = ReturnType<typeof useDiscoverGroupLazyQuery>;
-export type DiscoverGroupQueryResult = Apollo.QueryResult<DiscoverGroupQuery, DiscoverGroupQueryVariables>;
+export type DiscoverGroupCustomQueryHookResult = ReturnType<typeof useDiscoverGroupCustomQuery>;
+export type DiscoverGroupCustomLazyQueryHookResult = ReturnType<typeof useDiscoverGroupCustomLazyQuery>;
+export type DiscoverGroupCustomQueryResult = Apollo.QueryResult<
+  DiscoverGroupCustomQuery,
+  DiscoverGroupCustomQueryVariables
+>;

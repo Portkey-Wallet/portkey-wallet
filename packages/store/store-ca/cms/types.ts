@@ -9,7 +9,7 @@ export interface SocialMediaItem {
   };
 }
 
-export interface tabMenuItem {
+export interface TabMenuItem {
   index: number;
   title: string;
   type: {
@@ -22,6 +22,6 @@ export interface CMSState {
     [T in NetworkType]?: SocialMediaItem[];
   };
   tabMenuListNetMap: {
-    [T in NetworkType]?: tabMenuItem[];
+    [T in NetworkType]?: TabMenuItem[];
   };
 }

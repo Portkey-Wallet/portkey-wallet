@@ -1,10 +1,10 @@
 import { defaultColors } from 'assets/theme';
 import { TextL, TextM } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
+import SvgUri from 'components/Svg/SvgUri';
 
 import React, { memo } from 'react';
 import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
-import { SvgUri } from 'react-native-svg';
 import { pTd } from 'utils/unit';
 
 interface MenuItemProps {
@@ -35,7 +35,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
     <TouchableOpacity style={[styles.itemWrap, style]} onPress={() => onPress?.()}>
       {svgUrl !== undefined &&
         (svgUrl !== '' ? (
-          <SvgUri uri={svgUrl} width={size} height={size} style={[styles.menuIcon, iconStyle]} />
+          <SvgUri source={{ uri: svgUrl }} width={size} height={size} style={[styles.menuIcon, iconStyle]} />
         ) : (
           <View style={[{ width: size, height: size }, styles.menuIcon, iconStyle]} />
         ))}

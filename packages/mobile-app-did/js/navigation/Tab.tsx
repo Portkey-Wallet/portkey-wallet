@@ -9,10 +9,17 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
 import { useTabMenuList } from 'hooks/cms';
+import DiscoverHome from 'pages/Discover/DiscoverHome';
 
 const Tab = createBottomTabNavigator();
+type TabMenuTypeType = { icon: IconName; component: React.FC };
+export interface TabMenuItem extends TabMenuTypeType {
+  name: string;
+  label: string;
+  index: number;
+}
 
-export const tabMenuTypeMap: Record<string, { icon: IconName; component: React.FC }> = {
+export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
   Wallet: {
     icon: 'logo-icon',
     component: DashBoard,
@@ -21,13 +28,16 @@ export const tabMenuTypeMap: Record<string, { icon: IconName; component: React.F
     icon: 'my',
     component: MyMenu,
   },
+  Discover: {
+    icon: 'discover',
+    component: DiscoverHome,
+  },
 };
 
-export const defaultTabMenuList = [
+export const defaultTabMenuList: TabMenuItem[] = [
   { name: 'Wallet', label: 'Wallet', index: 0, icon: 'logo-icon', component: DashBoard },
-  // { name: 'Discover', label: 'Discover', index: 1, icon: 'discover', component: DiscoverHome },
   { name: 'Settings', label: 'My', index: 2, icon: 'my', component: MyMenu },
-] as const;
+];
 
 export default function TabRoot() {
   const { t } = useLanguage();
@@ -35,13 +45,23 @@ export default function TabRoot() {
   const tabMenuListStore = useTabMenuList();
 
   const tabMenuList = useMemo(() => {
-    if (!tabMenuListStore.length) return defaultTabMenuList;
-    return tabMenuListStore.map(item => ({
-      name: item.type.value,
-      label: item.title,
-      index: item.index,
-      ...tabMenuTypeMap[item.type.value],
-    }));
+    const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
+      if (!acc.find(item => item.type.value === cur.type.value)) {
+        acc.push(cur);
+      }
+      return acc;
+    }, []);
+
+    if (!_tabMenuListStore.length) return defaultTabMenuList;
+
+    return _tabMenuListStore
+      .map(item => ({
+        name: item.type.value,
+        label: item.title,
+        index: item.index,
+        ...tabMenuTypeMap[item.type.value],
+      }))
+      .filter(item => item.component !== undefined);
   }, [tabMenuListStore]);
 
   // init data

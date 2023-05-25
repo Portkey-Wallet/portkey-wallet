@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getSocialMediaAsync, getTabMenuAsync } from './actions';
+import { getDiscoverGroupAsync, getSocialMediaAsync, getTabMenuAsync } from './actions';
 import { CMSState } from './types';
 
 const initialState: CMSState = {
   socialMediaListNetMap: {},
   tabMenuListNetMap: {},
+  discoverGroupListNetMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -29,6 +30,15 @@ export const cmsSlice = createSlice({
       })
       .addCase(getTabMenuAsync.rejected, (_state, action) => {
         console.log('getTabMenuAsync error', action);
+      })
+      .addCase(getDiscoverGroupAsync.fulfilled, (state, action) => {
+        state.discoverGroupListNetMap = {
+          ...state.discoverGroupListNetMap,
+          ...action.payload.discoverGroupListNetMap,
+        };
+      })
+      .addCase(getDiscoverGroupAsync.rejected, (_state, action) => {
+        console.log('getDiscoverGroupAsync error', action);
       });
   },
 });

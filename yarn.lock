@@ -5141,10 +5141,10 @@
   resolved "https://registry.npmmirror.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@portkey/provider-types@^0.0.1-alpha.1":
-  version "0.0.1-alpha.1"
-  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.1.tgz#d14fda040e46edc24ee2b5d327904985c96f6ea2"
-  integrity sha512-I5eyfk/peq7AHjNu5Lk1P93sT2K/7/VX4VUFnLwSd+9hAS/nIkivOucpkF6DPmteZ4Iroh34SBX7kCeAYYSn3g==
+"@portkey/provider-types@^0.0.1-alpha.2":
+  version "0.0.1-alpha.2"
+  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.2.tgz#40f2859b676230ccf0e4470ba397de280e0949a4"
+  integrity sha512-6Y63cY9bJsfOAsFbEz5P+t+6zjk6Njt4rJ0siiFr1C9PlYWojNMPJ7SX+hJtdTBUCHxkYwHVBhUjZRGKMg+v6Q==
   dependencies:
     "@types/readable-stream" "^2.3.15"
 

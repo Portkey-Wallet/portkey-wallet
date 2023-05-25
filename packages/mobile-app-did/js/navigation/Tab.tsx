@@ -9,6 +9,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
 import { useTabMenuList } from 'hooks/cms';
+import DiscoverHome from 'pages/Discover/DiscoverHome';
 
 const Tab = createBottomTabNavigator();
 type TabMenuTypeType = { icon: IconName; component: React.FC };
@@ -26,6 +27,10 @@ export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
   Settings: {
     icon: 'my',
     component: MyMenu,
+  },
+  Discover: {
+    icon: 'discover',
+    component: DiscoverHome,
   },
 };
 

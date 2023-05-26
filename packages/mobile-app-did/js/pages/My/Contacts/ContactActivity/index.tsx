@@ -122,21 +122,15 @@ const ContactActivity: React.FC = () => {
   );
 
   useEffect(() => {
-    const listener = myEvents.refreshMyContactDetailInfo.addListener(({ contactName: name }) => {
-      setAddressName(name);
-    });
-    return () => {
-      listener.remove();
-    };
+    init();
+    const listener = myEvents.refreshMyContactDetailInfo.addListener(({ contactName: name }) => setAddressName(name));
+    return () => listener.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const init = useCallback(() => {
     fetchActivityList(0);
   }, [fetchActivityList]);
-
-  useEffectOnce(() => {
-    init();
-  });
 
   return (
     <PageContainer

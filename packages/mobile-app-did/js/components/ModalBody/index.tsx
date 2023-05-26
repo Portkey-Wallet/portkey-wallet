@@ -22,7 +22,7 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
   if (modalBodyType === 'bottom') {
     return (
       <View style={[styles.commonBox, styles.bottomBox, style]}>
-        <View style={[styles.topWrap]}>
+        <View style={styles.topWrap}>
           <TextXL suppressHighlighting={true} style={styles.titleStyle} onPress={Keyboard.dismiss}>
             {title}
           </TextXL>

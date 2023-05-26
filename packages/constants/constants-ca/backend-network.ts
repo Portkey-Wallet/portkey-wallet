@@ -35,7 +35,7 @@ export const BackEndNetWorkMap: {
     graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
     connectUrl: 'https://auth-portkey-test.portkey.finance',
     tokenClaimContractAddress: '233wFn5JbyD4i8R5Me4cW4z6edfFGRn5bpWnGuY8fjR7b2kRsD',
-    cmsUrl: 'cms-test.portkey.finance/graphql',
+    cmsUrl: 'https://cms-test.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
   },
   'back-end-mainnet': {
@@ -46,7 +46,7 @@ export const BackEndNetWorkMap: {
     apiUrl: 'https://did-portkey.portkey.finance',
     graphqlUrl: 'https://dapp-portkey.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
     connectUrl: 'https://auth-portkey.portkey.finance',
-    cmsUrl: 'cms.portkey.finance/graphql',
+    cmsUrl: 'https://cms.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
   },
 };

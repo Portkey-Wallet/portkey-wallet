@@ -101,7 +101,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
       onPress={() => {
         onPress?.({ address: `ELF_${contact.address}_${contact.addressChainId}`, name: '' });
       }}>
-      <TextM style={styles.address1}>
+      <TextM style={FontStyles.font5}>
         {formatStr2EllipsisStr(addressFormat(contact.address, contact?.addressChainId as ChainId), 10)}
       </TextM>
       <TextS style={styles.chainInfo1}>
@@ -174,7 +174,6 @@ export const styles = StyleSheet.create({
   itemName: {
     color: defaultColors.font3,
   },
-  address1: {},
   chainInfo1: {
     marginTop: pTd(4),
     color: defaultColors.font3,

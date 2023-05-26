@@ -28,10 +28,10 @@ export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
     icon: 'my',
     component: MyMenu,
   },
-  Discover: {
-    icon: 'discover',
-    component: DiscoverHome,
-  },
+  // Discover: {
+  //   icon: 'discover',
+  //   component: DiscoverHome,
+  // },
 };
 
 export const defaultTabMenuList: TabMenuItem[] = [

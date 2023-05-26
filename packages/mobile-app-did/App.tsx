@@ -22,7 +22,7 @@ import GlobalStyleHandler from 'components/GlobalStyleHandler';
 import { lockScreenOrientation } from 'utils/screenOrientation';
 import Updater from 'components/Updater';
 import CodePush from 'react-native-code-push';
-import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
+import 'utils/sentryInit';
 
 const codePushOptions = {
   updateDialog: false,
@@ -32,29 +32,6 @@ const codePushOptions = {
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
-
-// Sentry init
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
-
-if (!__DEV__) {
-  Sentry.init({
-    dsn: Config.SENTRY_DSN,
-    // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-    // We recommend adjusting this value in production.
-    tracesSampleRate: 1.0,
-    environment: Config.SENTRY_ENVIRONMENT,
-
-    integrations: [
-      new Sentry.ReactNativeTracing({
-        // Pass instrumentation to be used as `routingInstrumentation`
-        routingInstrumentation,
-        tracingOrigins: ['localhost', 'my-site-url.com', /^\//],
-        // ...
-      }),
-    ],
-  });
-  exceptionManager.setSentryInstance(Sentry);
-}
 
 initLanguage();
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');

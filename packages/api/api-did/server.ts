@@ -55,7 +55,7 @@ export class DidService extends ServiceInit {
       return await this.sendOrigin(base, config, reCount);
     } catch (errResult: any) {
       const { URL, fetchConfig } = this.getConfig(base, config);
-      this.errorHandler(URL, fetchConfig, errResult);
+      this.errorReport(URL, fetchConfig, errResult);
       throw errResult;
     }
   };
@@ -99,7 +99,7 @@ export class DidService extends ServiceInit {
   setExceptionManager = (exceptionManager: IExceptionManager) => {
     this.exceptionManager = exceptionManager;
   };
-  errorHandler = (url: string, fetchConfig: any, fetchResult: any) => {
+  errorReport = (url: string, fetchConfig: any, fetchResult: any) => {
     this.exceptionManager?.reportErrorMessage?.(`${URL} request error`, Severity.Fatal, {
       req: {
         url,

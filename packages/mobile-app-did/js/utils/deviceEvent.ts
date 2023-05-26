@@ -13,6 +13,7 @@ const EventList = [
   'nestScrollViewScrolledTop',
   'nestScrollViewLayout',
   'setAuthenticationInfo',
+  'refreshMyContactDetailInfo',
 ] as const;
 
 // eslint-disable-next-line no-new-func

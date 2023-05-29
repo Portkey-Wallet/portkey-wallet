@@ -6,6 +6,7 @@ import { isIOS } from '@rneui/base';
 
 export const useIsShowBuy = (): boolean => {
   const { isShowBuyFeature } = useAppCASelector(state => state.switch);
+  return true;
   return isIOS ? isShowBuyFeature : true;
 };
 

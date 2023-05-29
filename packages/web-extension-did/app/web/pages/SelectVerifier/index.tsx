@@ -59,6 +59,7 @@ export default function SelectVerifier() {
       if (!selectItem) return message.error('Can not get verification');
 
       setLoading(true);
+
       const result = await verification.sendVerificationCode({
         params: {
           guardianIdentifier: loginAccount.guardianAccount.replaceAll(' ', ''),

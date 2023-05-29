@@ -12,7 +12,6 @@ import { useAppDispatch, useGuardiansInfo, useLoading, useWalletInfo } from 'sto
 import { EmailReg } from '@portkey-wallet/utils/reg';
 import { ISocialLogin, LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import CustomSelect from 'pages/components/CustomSelect';
-import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -291,6 +290,7 @@ export default function AddGuardian() {
         setLoading(true);
         dispatch(resetUserGuardianStatus());
         await userGuardianList({ caHash: walletInfo.caHash });
+
         const result = await verification.sendVerificationCode({
           params: {
             guardianIdentifier: guardianAccount,
@@ -322,7 +322,7 @@ export default function AddGuardian() {
       } catch (error) {
         setLoading(false);
         console.log('---add-guardian-send-code', error);
-        const _error = verifyErrorHandler(error);
+        const _error = handleErrorMessage(error);
         message.error(_error);
       }
     },

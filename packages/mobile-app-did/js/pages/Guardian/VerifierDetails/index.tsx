@@ -167,8 +167,8 @@ export default function VerifierDetails() {
     [requestCodeResult, guardianItem, originChainId, verificationType, setGuardianStatus, onSetLoginAccount],
   );
   const resendCode = useCallback(async () => {
-    Loading.show();
     try {
+      Loading.show();
       const req = await verification.sendVerificationCode({
         params: {
           type: LoginType[guardianItem?.guardianType as LoginType],

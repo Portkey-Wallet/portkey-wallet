@@ -27,7 +27,6 @@ import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { verification } from 'utils/api';
-import { useLanguage } from 'i18n/hooks';
 import { useVerifyToken } from 'hooks/authentication';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import myEvents from 'utils/deviceEvent';
@@ -59,8 +58,6 @@ function GuardianItemButton({
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
-  const { t } = useLanguage();
-
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
 
   const { status, requestCodeResult } = itemStatus || {};
@@ -88,8 +85,8 @@ function GuardianItemButton({
   const originChainId = useOriginChainId();
 
   const onSendCode = useThrottleCallback(async () => {
-    Loading.show();
     try {
+      Loading.show();
       const req = await verification.sendVerificationCode({
         params: {
           type: LoginType[guardianInfo.guardianItem.guardianType],

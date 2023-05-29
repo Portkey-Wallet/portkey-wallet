@@ -3,13 +3,13 @@ import clsx from 'clsx';
 import AreaCode from 'components/AreaCode';
 import CustomSvg from 'components/CustomSvg';
 import { useState } from 'react';
-import { ISelectCountryCode } from 'store/reducers/loginCache/type';
+import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import './index.less';
 
 interface PhoneNumberInputProps {
-  area?: ISelectCountryCode;
+  area?: CountryItem;
   phoneNumber?: string;
-  onAreaChange?: (v: ISelectCountryCode) => void;
+  onAreaChange?: (v: CountryItem) => void;
   onPhoneNumberChange?: (v: string) => void;
   onCancel?: () => void;
 }
@@ -33,7 +33,7 @@ export default function PhoneNumberInput({
               e.stopPropagation();
               setOpen((v) => !v);
             }}>
-            <div>{area?.country.code ? `+ ${area.country.code}` : '--'}</div>
+            <div>{area?.code ? `+ ${area.code}` : '--'}</div>
             <CustomSvg className={clsx('input-arrow', open && 'open-input-arrow')} type="BackLeft" />
           </div>
         </div>
@@ -46,16 +46,13 @@ export default function PhoneNumberInput({
       </div>
       <AreaCode
         open={open}
-        value={area?.country.country}
+        value={area?.country}
         onCancel={() => {
           onCancel?.();
           setOpen(false);
         }}
         onChange={(CountryItem) => {
-          onAreaChange?.({
-            index: CountryItem.country[0],
-            country: CountryItem,
-          });
+          onAreaChange?.(CountryItem);
           setOpen(false);
         }}
       />

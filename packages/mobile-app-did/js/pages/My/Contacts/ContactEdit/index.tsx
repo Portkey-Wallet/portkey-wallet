@@ -30,9 +30,11 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import Loading from 'components/Loading';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   contact?: ContactItemType;
+  addressList?: Array<AddressItem>;
 };
 
 export type EditAddressType = AddressItem & { error: ErrorType };
@@ -54,7 +56,7 @@ const initEditContact: EditContactType = {
 };
 
 const ContactEdit: React.FC = () => {
-  const { contact } = useRouterParams<RouterParams>();
+  const { contact, addressList } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
   const addContactApi = useAddContact();
   const editContactApi = useEditContact();
@@ -99,16 +101,27 @@ const ContactEdit: React.FC = () => {
     if (isEdit || chainList.length === 0) return;
     setEditContact(preEditContact => {
       const _editContact = { ...preEditContact };
-      _editContact.addresses = [
-        {
-          chainId: chainList[0].chainId,
-          address: '',
-          error: { ...INIT_HAS_ERROR },
-        },
-      ];
+      if (!addressList) {
+        _editContact.addresses = [
+          {
+            chainId: chainList[0].chainId,
+            address: '',
+            error: { ...INIT_HAS_ERROR },
+          },
+        ];
+      } else {
+        _editContact.addresses = [];
+        addressList.forEach(item => {
+          _editContact.addresses.push({
+            chainId: chainMap[item.chainId]?.chainId || chainList[0].chainId,
+            address: item.address,
+            error: { ...INIT_HAS_ERROR },
+          });
+        });
+      }
       return _editContact;
     });
-  }, [chainList, currentNetwork, isEdit]);
+  }, [addressList, chainList, chainMap, currentNetwork, isEdit]);
 
   const onNameChange = useCallback((value: string) => {
     setEditContact(preEditContact => ({
@@ -231,12 +244,23 @@ const ContactEdit: React.FC = () => {
         await addContactApi(editContact);
         CommonToast.success(t('Contact Added'), undefined, 'bottom');
       }
-      navigationService.navigate('ContactsHome');
+
+      if (addressList && addressList?.length > 0) {
+        if (
+          editContact.addresses[0].address === addressList?.[0]?.address &&
+          editContact.addresses[0].chainId === addressList?.[0]?.chainId
+        ) {
+          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+        }
+        navigationService.goBack();
+      } else {
+        navigationService.navigate('ContactsHome');
+      }
     } catch (err: any) {
       CommonToast.failError(err);
     }
     Loading.hide();
-  }, [addContactApi, checkError, editContact, editContactApi, isEdit, t]);
+  }, [addContactApi, addressList, checkError, editContact, editContactApi, isEdit, t]);
 
   const onDelete = useCallback(() => {
     ActionSheet.alert({

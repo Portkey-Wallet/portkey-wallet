@@ -45,6 +45,7 @@ import BuyTestPreview from 'pages/BuyTest/Preview';
 import BuyTestConfirm from 'pages/BuyTest/Confirm';
 import { useCommonState } from 'store/Provider/hooks';
 import My from 'pages/My';
+import RecentDetail from 'pages/Send/components/RecentDetail';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -105,6 +106,10 @@ export const PageRouter = () => {
     {
       path: '/send/:type/:symbol',
       element: <Send />,
+    },
+    {
+      path: '/recent-detail',
+      element: <RecentDetail />,
     },
     {
       path: '/receive/:type/:symbol',

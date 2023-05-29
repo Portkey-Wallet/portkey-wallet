@@ -18,6 +18,7 @@ import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
+import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -83,6 +84,11 @@ export const guardiansPersistConfig = {
 
 export const paymentPersistConfig = {
   key: paymentSlice.name,
+  storage: localStorage,
+};
+
+export const cmsPersistConfig = {
+  key: cmsSlice.name,
   storage: localStorage,
 };
 

@@ -9,8 +9,6 @@ import {
   Animated,
 } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
-import usePrevious from 'hooks/usePrevious';
-import isEqual from 'lodash/isEqual';
 import { TextStyleType, ViewStyleType } from 'types/styles';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
@@ -113,7 +111,7 @@ const IndexBar = forwardRef(function IndexBar(
   const indexInfoRef = useRef<IndexInfoType>();
   const indexRef = useRef<View>(null);
   const popoverRef = useRef<PopoverInterface>();
-  const prevData = usePrevious(data);
+  const dataLength = useRef<number>(0);
 
   const [outsideSelectIndex, setOutsideSelectIndex] = useState(0);
   const [scrollSelectIndex, setScrollSelectIndex] = useState(-1);
@@ -156,7 +154,7 @@ const IndexBar = forwardRef(function IndexBar(
   const onPanResponderStart: PanResponderCallbacks['onPanResponderStart'] = useCallback(
     async (evt: { nativeEvent: { pageY: any } }) => {
       const eventPageY = evt.nativeEvent.pageY;
-      if (indexInfoRef.current && (isEqual(data, prevData) || !prevData)) {
+      if (indexInfoRef.current && dataLength.current === data.length) {
         indexInfoRef.current.currentIndex = -1;
       } else {
         const { height, pageX, pageY, indexHeight } = await new Promise<PageLocationType>((resolve, reject) => {
@@ -178,12 +176,13 @@ const IndexBar = forwardRef(function IndexBar(
           pageX,
           pageY,
           indexHeight,
-          currentIndex: 0,
+          currentIndex: -1,
         };
+        dataLength.current = data.length;
       }
       setCurrentIndex(eventPageY);
     },
-    [data, prevData, setCurrentIndex],
+    [data, setCurrentIndex],
   );
   const panResponder = useMemo(
     () =>

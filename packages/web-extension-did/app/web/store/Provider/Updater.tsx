@@ -11,15 +11,18 @@ import { request } from '@portkey-wallet/api/api-did';
 import useLocking from 'hooks/useLocking';
 import { useActiveLockStatus } from 'hooks/useActiveLockStatus';
 import useLocationChange from 'hooks/useLocationChange';
-import useLocalInfo from 'hooks/useLocalInfo';
 import { useCheckManagerOnLogout } from 'hooks/useLogout';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
-import { useCheckUpdate, useCheckUpdateModal } from 'hooks/useCheckUpdate';
+import { useCheckUpdate } from 'hooks/useCheckUpdate';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useLocation } from 'react-router';
+import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 keepAliveOnPages({});
 
 export default function Updater() {
   const onLocking = useLocking();
+  const { pathname } = useLocation();
   const { passwordSeed } = useUserInfo();
   const checkManagerOnLogout = useCheckManagerOnLogout();
 
@@ -28,9 +31,8 @@ export default function Updater() {
   useLocationChange();
   useChainListFetch();
   useRefreshTokenConfig(passwordSeed);
-  useLocalInfo();
   const checkUpdate = useCheckUpdate();
-  useCheckUpdateModal();
+
   const apiUrl = useCurrentApiUrl();
 
   useCheckManager(checkManagerOnLogout);
@@ -44,8 +46,15 @@ export default function Updater() {
   }, [apiUrl]);
   useCaInfoOnChain();
   useActiveLockStatus();
+  useEffect(() => {
+    const app = document.getElementById('root');
+    if (!app) return;
+    app.scrollTop = 0;
+  }, [pathname]);
   useMemo(() => {
     request.setLockCallBack(onLocking);
   }, [onLocking]);
+  usePhoneCountryCode(true);
+  useSocialMediaList(true);
   return null;
 }

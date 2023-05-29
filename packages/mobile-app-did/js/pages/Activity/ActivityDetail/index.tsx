@@ -1,4 +1,4 @@
-import { ELF_DECIMAL, TransactionTypes, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_DECIMAL, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -26,7 +26,7 @@ import { formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { HIDDEN_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
 const ActivityDetail = () => {
@@ -98,7 +98,7 @@ const ActivityDetail = () => {
   const networkUI = useMemo(() => {
     const { transactionType, fromChainId, toChainId, transactionId: _transactionId = '' } = activityItem || {};
 
-    const isNetworkShow = transactionType && !HIDDEN_TRANSACTION_TYPES.includes(transactionType);
+    const isNetworkShow = transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(transactionType);
     return (
       <>
         <View style={styles.section}>
@@ -138,25 +138,34 @@ const ActivityDetail = () => {
       <View style={styles.section}>
         <View style={[styles.flexSpaceBetween]}>
           <TextM style={[styles.blackFontColor, styles.fontBold]}>{t('Transaction Fee')}</TextM>
-          <View>
-            {transactionFees.map((item, index) => (
-              <View key={index} style={[styles.transactionFeeItemWrap, index > 0 && styles.marginTop8]}>
-                <TextM style={[styles.blackFontColor, styles.fontBold]}>{`${formatAmountShow(
-                  divDecimals(item?.fee ?? 0, ELF_DECIMAL),
-                )} ${item.symbol}`}</TextM>
-                {!isTestnet && (
-                  <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(
-                    item?.feeInUsd ?? 0,
-                    2,
-                  )}`}</TextS>
-                )}
-              </View>
-            ))}
-          </View>
+          {activityItem?.isDelegated ? (
+            <View style={[styles.transactionFeeItemWrap]}>
+              <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ELF`}</TextM>
+              {!isTestnet && (
+                <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(0, 2)}`}</TextS>
+              )}
+            </View>
+          ) : (
+            <View>
+              {transactionFees.map((item, index) => (
+                <View key={index} style={[styles.transactionFeeItemWrap, index > 0 && styles.marginTop8]}>
+                  <TextM style={[styles.blackFontColor, styles.fontBold]}>{`${formatAmountShow(
+                    divDecimals(item?.fee ?? 0, ELF_DECIMAL),
+                  )} ${item.symbol}`}</TextM>
+                  {!isTestnet && (
+                    <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(
+                      item?.feeInUsd ?? 0,
+                      2,
+                    )}`}</TextS>
+                  )}
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       </View>
     );
-  }, [activityItem?.transactionFees, isTestnet, t]);
+  }, [activityItem?.isDelegated, activityItem?.transactionFees, isTestnet, t]);
 
   useEffectOnce(() => {
     getTokenPrice(activityItem?.symbol);
@@ -172,12 +181,10 @@ const ActivityDetail = () => {
       <TouchableOpacity style={styles.closeWrap} onPress={() => navigationService.goBack()}>
         <Svg icon="close" size={pTd(16)} />
       </TouchableOpacity>
-      <Text style={[styles.typeTitle]}>
-        {transactionTypesMap(activityItem?.transactionType, activityItem?.nftInfo?.nftId)}
-      </Text>
+      <Text style={[styles.typeTitle]}>{activityItem?.transactionName}</Text>
 
       {activityItem?.transactionType &&
-        !HIDDEN_TRANSACTION_TYPES.includes(activityItem?.transactionType) &&
+        SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) &&
         (isNft ? (
           <>
             <View style={styles.topWrap}>
@@ -198,7 +205,7 @@ const ActivityDetail = () => {
         ) : (
           <>
             <Text style={[styles.tokenCount, styles.fontBold]}>
-              {!HIDDEN_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) &&
+              {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) &&
                 (activityItem?.isReceived ? '+' : '-')}
               {`${formatAmountShow(divDecimals(activityItem?.amount, activityItem?.decimals))} ${
                 activityItem?.symbol || ''
@@ -226,7 +233,7 @@ const ActivityDetail = () => {
       </View>
       <View style={styles.card}>
         {/* From */}
-        {activityItem?.transactionType && !HIDDEN_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
+        {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
           <>
             <View style={styles.section}>
               <View style={[GStyles.flexRowWrap]}>
@@ -245,7 +252,7 @@ const ActivityDetail = () => {
           </>
         )}
         {/* To */}
-        {activityItem?.transactionType && !HIDDEN_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
+        {activityItem?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType) && (
           <>
             <View style={styles.section}>
               <View style={[GStyles.flexRowWrap]}>
@@ -313,12 +320,12 @@ export const styles = StyleSheet.create({
   },
   typeTitle: {
     marginTop: pTd(5),
+    marginBottom: pTd(40),
     color: defaultColors.font5,
     fontSize: pTd(20),
     lineHeight: pTd(24),
   },
   tokenCount: {
-    marginTop: pTd(40),
     fontSize: pTd(28),
     ...fonts.mediumFont,
     color: defaultColors.font5,

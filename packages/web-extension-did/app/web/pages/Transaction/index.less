@@ -1,274 +1,274 @@
 @import '../../assets/theme/color.less';
 .transaction-detail-modal {
-  background: white;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
+  background-color: @bg-11;
   height: 100%;
-  z-index: 100;
   display: flex;
   flex-direction: column;
-  padding: 24px;
-  overflow-y: overlay;
-  .header {
-    display: flex;
-    justify-content: flex-end;
-    margin: 0 0 7px;
-    .custom-svg {
-      width: 18px;
-      height: 18px;
-    }
-  }
-  .transaction-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    .left,
-    .right {
-      line-height: 20px;
-    }
-    .label {
+  justify-content: space-between;
+
+  .transaction-detail-body {
+    background: #fff;
+    padding: 24px;
+
+    .header {
       display: flex;
-      justify-content: space-between;
-      color: @font-11;
-      font-weight: 500;
+      justify-content: flex-end;
+      margin: 0 0 7px;
+      .custom-svg {
+        width: 18px;
+        height: 18px;
+      }
     }
-    .value {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-    }
-    .method-wrap {
-      width: 100%;
+    .transaction-info {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 0;
-      .custom-svg {
-        width: 56px;
-        height: 56px;
-        svg {
-          width: 56px;
-          height: 56px;
-        }
+      flex: 1;
+      .left,
+      .right {
+        line-height: 20px;
       }
-      .method-name {
-        font-size: 20px;
+      .label {
+        display: flex;
+        justify-content: space-between;
         color: @font-11;
         font-weight: 500;
-        line-height: 24px;
       }
-      .amount {
+      .value {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+      }
+      .method-wrap {
+        width: 100%;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        color: @font-11;
-        line-height: 22px;
-        font-size: 18px;
-        margin-bottom: 15px;
-        .usd {
-          line-height: 16px;
-          font-size: 12px;
-          color: @font-13;
-        }
-      }
-      .no-amount {
-        height: 8px;
-      }
-      .nft-amount {
-        padding: 0 24px;
-        width: 100vw;
-        display: flex;
         align-items: center;
         gap: 16px;
-        margin-left: -24px;
-        margin-right: -24px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid @border-2;
-        margin-bottom: 15px;
-        .assets {
+        margin-bottom: 0;
+        .custom-svg {
+          width: 56px;
+          height: 56px;
+          svg {
+            width: 56px;
+            height: 56px;
+          }
+        }
+        .method-name {
+          font-size: 20px;
+          color: @font-11;
+          font-weight: 500;
+          line-height: 24px;
+        }
+        .amount {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          color: @font-11;
+          line-height: 22px;
+          font-size: 18px;
+          margin-bottom: 15px;
+          .usd {
+            line-height: 16px;
+            font-size: 12px;
+            color: @font-13;
+          }
+        }
+        .no-amount {
+          height: 8px;
+        }
+        .nft-amount {
+          padding: 0 24px;
+          width: 100vw;
           display: flex;
           align-items: center;
-          justify-content: center;
-          width: 64px;
-          height: 64px;
-          border-radius: 6px;
-          background: @bg-15;
-          left: 48px;
-          font-size: 24px;
-          color: @font-12;
-          overflow: hidden;
-          .assets-img {
+          gap: 16px;
+          margin-left: -24px;
+          margin-right: -24px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid @border-2;
+          margin-bottom: 15px;
+          .assets {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            border-radius: 6px;
+            background: @bg-15;
+            left: 48px;
+            font-size: 24px;
+            color: @font-12;
+            overflow: hidden;
+            .assets-img {
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+            }
+          }
+          .info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 5px 0;
             width: 100%;
-            height: 100%;
-            object-fit: contain;
-          }
-        }
-        .info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          gap: 12px;
-          padding: 5px 0;
-          width: 100%;
-          .index {
-            display: flex;
-            gap: 4px;
-            line-height: 22px;
-            font-size: 16px;
-            font-weight: 500;
-            color: @font-11;
-            word-wrap: break-word;
-            word-break: break-all;
-            .token-id {
-              font-weight: 400;
+            .index {
+              display: flex;
+              gap: 4px;
+              line-height: 22px;
+              font-size: 16px;
+              font-weight: 500;
+              color: @font-11;
+              word-wrap: break-word;
+              word-break: break-all;
+              .token-id {
+                font-weight: 400;
+              }
             }
-          }
-          .quantity {
-            color: @font-13;
-            line-height: 20px;
-            font-size: 14px;
-          }
-        }
-      }
-    }
-    .status-wrap,
-    .account-wrap,
-    .network-wrap,
-    .money-wrap {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .status-wrap {
-      margin-bottom: 24px;
-      .value {
-        .left {
-          font-weight: 500;
-        }
-        .confirmed {
-          color: @font-15;
-        }
-        .failed {
-          color: @font-14;
-        }
-        .right {
-          color: @font-11;
-        }
-      }
-    }
-    .account-wrap {
-      margin-bottom: 34px;
-      gap: 8px;
-      position: relative;
-      .value {
-        position: initial;
-        .content {
-          display: flex;
-          flex-direction: column;
-          color: @font-13;
-          gap: 2px;
-          .left,
-          .right {
-            font-size: 12px;
-            line-height: 16px;
-          }
-          .right {
-            text-align: right;
-          }
-          .name {
-            line-height: 20px;
-            font-size: 14px;
-            color: @font-11;
-          }
-          .address-wrap {
-            display: flex;
-            gap: 4px;
-            .copy-address {
-              width: 12px;
-              height: 12px;
+            .quantity {
+              color: @font-13;
+              line-height: 20px;
+              font-size: 14px;
             }
           }
         }
-        .right-arrow {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translateX(-16px) translateY(-16px);
-          width: 32px;
-          height: 32px;
-          svg {
-            width: 32px;
-            height: 32px;
-          }
-        }
       }
-    }
-    .network-wrap {
-      margin-bottom: 24px;
-      .value {
-        line-height: 16px;
-        font-size: 12px;
-        color: @font-13;
-      }
-    }
-    .money-wrap {
-      flex: 1;
-      gap: 16px;
-
-      > div {
+      .status-wrap,
+      .account-wrap,
+      .network-wrap,
+      .money-wrap {
+        width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 2px;
+      }
+      .status-wrap {
+        margin-bottom: 24px;
         .value {
-          /* stylelint-disable-next-line no-descending-specificity */
           .left {
-            color: @font-13;
+            font-weight: 500;
           }
-          /* stylelint-disable-next-line no-descending-specificity */
+          .confirmed {
+            color: @font-15;
+          }
+          .failed {
+            color: @font-14;
+          }
           .right {
             color: @font-11;
-            font-weight: 500;
-            .right-item {
-              margin-bottom: 8px;
-            }
-            .right-usd {
-              display: block;
-              text-align: right;
-              color: @font-13;
-              font-size: 12px;
-              font-weight: 400;
-            }
           }
-          .tx-id {
+        }
+      }
+      .account-wrap {
+        margin-bottom: 34px;
+        gap: 8px;
+        position: relative;
+        .value {
+          position: initial;
+          .content {
             display: flex;
-            font-weight: 400;
-            gap: 4px;
-            .copy-wrapper {
-              align-items: flex-start;
-              .custom-svg {
+            flex-direction: column;
+            color: @font-13;
+            gap: 2px;
+            .left,
+            .right {
+              font-size: 12px;
+              line-height: 16px;
+            }
+            .right {
+              text-align: right;
+            }
+            .name {
+              line-height: 20px;
+              font-size: 14px;
+              color: @font-11;
+            }
+            .address-wrap {
+              display: flex;
+              gap: 4px;
+              .copy-address {
                 width: 12px;
                 height: 12px;
               }
             }
           }
-          &.total-amount {
+          .right-arrow {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translateX(-16px) translateY(-16px);
+            width: 32px;
+            height: 32px;
+            svg {
+              width: 32px;
+              height: 32px;
+            }
+          }
+        }
+      }
+      .network-wrap {
+        margin-bottom: 24px;
+        .value {
+          line-height: 16px;
+          font-size: 12px;
+          color: @font-13;
+        }
+      }
+      .money-wrap {
+        flex: 1;
+        gap: 16px;
+
+        > div {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          .value {
+            /* stylelint-disable-next-line no-descending-specificity */
+            .left {
+              color: @font-13;
+            }
+            /* stylelint-disable-next-line no-descending-specificity */
             .right {
-              display: flex;
-              flex-direction: column;
-              span {
+              color: @font-11;
+              font-weight: 500;
+              .right-item {
+                margin-bottom: 8px;
+              }
+              .right-usd {
+                display: block;
                 text-align: right;
-                &.convert {
-                  color: @font-13;
-                  font-weight: 400;
-                  font-size: 12px;
-                  line-height: 16px;
+                color: @font-13;
+                font-size: 12px;
+                font-weight: 400;
+              }
+            }
+            .tx-id {
+              display: flex;
+              font-weight: 400;
+              gap: 4px;
+              .copy-wrapper {
+                align-items: flex-start;
+                .custom-svg {
+                  width: 12px;
+                  height: 12px;
+                }
+              }
+            }
+            &.total-amount {
+              .right {
+                display: flex;
+                flex-direction: column;
+                span {
+                  text-align: right;
+                  &.convert {
+                    color: @font-13;
+                    font-weight: 400;
+                    font-size: 12px;
+                    line-height: 16px;
+                  }
                 }
               }
             }
@@ -276,19 +276,23 @@
         }
       }
     }
+  }
+  .transaction-footer {
     .link {
+      display: block;
+      width: 100%;
+      background: #fff;
+      text-align: center;
       line-height: 20px;
+      padding-bottom: 40px;
     }
   }
 }
-.prompt-body {
-  position: relative;
-}
 
 .transaction-detail {
-  height: 100vh;
   .transaction-detail-modal {
     position: relative;
+    background: #fff;
 
     .transaction-info {
       .method-wrap {
@@ -298,9 +302,6 @@
           width: 100%;
           padding: 0 0 20px;
         }
-      }
-      .link {
-        margin-bottom: 16px;
       }
     }
   }

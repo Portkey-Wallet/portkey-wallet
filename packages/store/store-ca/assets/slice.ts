@@ -97,29 +97,17 @@ export const fetchTokenListAsync = createAsyncThunk(
 // fetch nftSeriesList on Dashboard
 export const fetchNFTCollectionsAsync = createAsyncThunk(
   'fetchNFTCollectionsAsync',
-  async (
-    {
-      caAddresses,
-      caAddressInfos,
-      maxNFTCount = PAGE_SIZE_IN_NFT_ITEM,
-    }: {
-      caAddresses: string[];
-      caAddressInfos: { chainId: ChainId; caAddress: string }[];
-      maxNFTCount?: number;
-    },
-    { getState },
-  ) => {
-    const { assets } = getState() as { assets: AssetsStateType };
-    const {
-      accountNFT: { totalRecordCount },
-    } = assets;
-
-    // if (totalRecordCount === 0 || totalRecordCount > accountNFTList.length) {
+  async ({
+    caAddresses,
+    caAddressInfos,
+    maxNFTCount = PAGE_SIZE_IN_NFT_ITEM,
+  }: {
+    caAddresses: string[];
+    caAddressInfos: { chainId: ChainId; caAddress: string }[];
+    maxNFTCount?: number;
+  }) => {
     const response = await fetchNFTSeriesList({ caAddresses, caAddressInfos, skipCount: 0 });
     return { list: response.data, totalRecordCount: response.totalRecordCount, maxNFTCount };
-    // }
-
-    return { list: [], totalRecordCount };
   },
 );
 
@@ -154,7 +142,7 @@ export const fetchNFTAsync = createAsyncThunk(
     // has cache data
     if ((pageNum + 1) * maxResultCount <= children.length) return;
 
-    if (totalRecordCount === 0 || totalRecordCount > children.length) {
+    if (totalRecordCount === 0 || Number(totalRecordCount) > children.length) {
       const response = await fetchNFTList({ symbol, caAddresses, caAddressInfos, skipCount, maxResultCount });
       return { symbol, chainId, list: response.data, totalRecordCount: response.totalRecordCount, skipCount };
     }
@@ -297,13 +285,13 @@ export const assetsSlice = createSlice({
         const currentNFTSeriesItem = state.accountNFT.accountNFTList.find(
           ele => ele.symbol === symbol && ele.chainId === chainId,
         );
-        if (!currentNFTSeriesItem) return;
-        // if (!currentNFTSeriesItem?.children) currentNFTSeriesItem.children = [];
-        if (currentNFTSeriesItem?.children?.length > skipCount) return;
-        currentNFTSeriesItem.children = [...(currentNFTSeriesItem?.children ?? []), ...list];
-        currentNFTSeriesItem.skipCount = currentNFTSeriesItem.children.length;
-        currentNFTSeriesItem.totalRecordCount = totalRecordCount;
-        currentNFTSeriesItem.isFetching = false;
+        if (currentNFTSeriesItem) {
+          if (currentNFTSeriesItem?.children?.length > skipCount) return;
+          currentNFTSeriesItem.children = [...currentNFTSeriesItem.children, ...list];
+          currentNFTSeriesItem.skipCount = currentNFTSeriesItem.children.length;
+          currentNFTSeriesItem.totalRecordCount = totalRecordCount;
+          currentNFTSeriesItem.isFetching = false;
+        }
       })
       .addCase(fetchNFTAsync.rejected, state => {
         state.accountToken.isFetching = false;

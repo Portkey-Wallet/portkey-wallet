@@ -39,6 +39,8 @@ import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { usePin, useUser } from './store';
 import { queryFailAlert } from 'utils/login';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
+import { ChainId } from '@portkey-wallet/types';
+import ActionSheet from 'components/ActionSheet';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -193,12 +195,99 @@ type LoginParams = {
   showLoginAccount?: string;
 };
 
-export function useOnLogin() {
+export function useGoGuardianApproval(isLogin?: boolean) {
   const dispatch = useAppDispatch();
+  return useCallback(
+    ({
+      originChainId,
+      loginAccount,
+      userGuardiansList,
+      authenticationInfo,
+    }: {
+      originChainId: ChainId;
+      loginAccount: string;
+      userGuardiansList?: any;
+      authenticationInfo?: AuthenticationInfo;
+    }) => {
+      const onConfirm = () => {
+        dispatch(setOriginChainId(originChainId));
+        navigationService.navigate('GuardianApproval', {
+          loginAccount,
+          userGuardiansList,
+          authenticationInfo,
+        });
+      };
+      if (!isLogin) {
+        ActionSheet.alert({
+          title: 'Continue with this account?',
+          message: `This account already exists. Click "Confirm" to log in.`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Confirm',
+              onPress: () => onConfirm(),
+            },
+          ],
+        });
+      } else {
+        onConfirm();
+      }
+    },
+    [dispatch, isLogin],
+  );
+}
+
+export function useGoSelectVerifier(isLogin?: boolean) {
+  const dispatch = useAppDispatch();
+  return useCallback(
+    ({
+      showLoginAccount,
+      loginAccount,
+      loginType,
+      authenticationInfo,
+    }: {
+      showLoginAccount: string;
+      loginAccount: string;
+      loginType: LoginType;
+      authenticationInfo?: AuthenticationInfo;
+    }) => {
+      const onConfirm = () => {
+        dispatch(setOriginChainId(DefaultChainId));
+        navigationService.navigate('SelectVerifier', {
+          showLoginAccount,
+          loginAccount,
+          loginType,
+          authenticationInfo,
+        });
+      };
+      if (isLogin) {
+        ActionSheet.alert({
+          title: 'Continue with this account?',
+          message: `This account has not been registered yet. Click "Confirm" to complete the registration.`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Confirm',
+              onPress: () => onConfirm(),
+            },
+          ],
+        });
+      } else {
+        onConfirm();
+      }
+    },
+    [dispatch, isLogin],
+  );
+}
+
+export function useOnLogin(isLogin?: boolean) {
   const getVerifierServers = useGetVerifierServers();
   const getGuardiansInfo = useGetGuardiansInfo();
   const getRegisterInfo = useGetRegisterInfo();
   const getChainInfo = useGetChainInfo();
+  const goGuardianApproval = useGoGuardianApproval(isLogin);
+  const goSelectVerifier = useGoSelectVerifier(isLogin);
+
   return useCallback(
     async (params: LoginParams) => {
       const { loginAccount, loginType = LoginType.Email, authenticationInfo, showLoginAccount } = params;
@@ -215,16 +304,14 @@ export function useOnLogin() {
 
         const holderInfo = await getGuardiansInfo({ guardianIdentifier: loginAccount }, chainInfo);
         if (holderInfo?.guardianAccounts || holderInfo?.guardianList) {
-          // login
-          dispatch(setOriginChainId(originChainId));
-          navigationService.navigate('GuardianApproval', {
+          goGuardianApproval({
+            originChainId,
             loginAccount,
             userGuardiansList: handleUserGuardiansList(holderInfo, verifierServers),
             authenticationInfo,
           });
         } else {
-          dispatch(setOriginChainId(DefaultChainId));
-          navigationService.navigate('SelectVerifier', {
+          goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
             loginAccount,
             loginType,
@@ -233,8 +320,7 @@ export function useOnLogin() {
         }
       } catch (error) {
         if (handleErrorCode(error) === '3002') {
-          dispatch(setOriginChainId(DefaultChainId));
-          navigationService.navigate('SelectVerifier', {
+          goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
             loginAccount,
             loginType,
@@ -245,7 +331,7 @@ export function useOnLogin() {
         }
       }
     },
-    [dispatch, getChainInfo, getGuardiansInfo, getRegisterInfo, getVerifierServers],
+    [getChainInfo, getGuardiansInfo, getRegisterInfo, getVerifierServers, goGuardianApproval, goSelectVerifier],
   );
 }
 

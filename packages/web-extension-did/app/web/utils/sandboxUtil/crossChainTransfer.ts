@@ -5,8 +5,6 @@ import { getChainIdByAddress } from '@portkey-wallet/utils';
 import { crossChainTransferToCa } from './crossChainTransferToCa';
 import { managerTransfer } from './managerTransfer';
 import { getChainNumber } from '@portkey-wallet/utils/aelf';
-import { getBalance } from './getBalance';
-import token from '@portkey-wallet/api/api-did/token';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
@@ -70,7 +68,6 @@ const crossChainTransfer = async ({
   tokenInfo,
   memo = '',
   toAddress,
-  fee,
 }: CrossChainTransferParams) => {
   let managerTransferResult;
   try {
@@ -134,7 +131,7 @@ const crossChainTransfer = async ({
     toAddress,
   };
   try {
-    const crossResult = await intervalCrossChainTransfer(crossChainTransferParams);
+    await intervalCrossChainTransfer(crossChainTransferParams);
   } catch (error) {
     const returnData: the2ThFailedActivityItemType = {
       transactionId: managerTransferResult.result.message.TransactionId,

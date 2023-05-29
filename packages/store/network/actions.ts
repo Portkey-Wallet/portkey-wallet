@@ -4,7 +4,6 @@ import { fetchChainList } from './api';
 import { checkRpcUrlFormat } from './utils';
 import { getELFTokenAddress } from '@portkey-wallet/contracts/index';
 import type { BaseToken } from '@portkey-wallet/types/types-eoa/token';
-import { PlatformType } from '@portkey-wallet/types';
 import { ChainActionError } from './types';
 
 export const setCurrentChain = createAction<{ rpcUrl: string }>('chain/setCurrentChain');
@@ -17,10 +16,6 @@ export const fetchChainListAsync = createAsyncThunk('chain/fetchDefaultChainList
   const response: any = await fetchChainList();
   return response;
 });
-
-interface CustomChainProps extends ChainItemType {
-  platform?: PlatformType;
-}
 
 export const addCustomChainItem = createAsyncThunk('chain/addCustomChainItem', async (chain: ChainItemType) => {
   if (!chain.networkName) throw new Error(ChainActionError.noName);

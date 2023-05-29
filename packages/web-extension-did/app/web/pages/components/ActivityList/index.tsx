@@ -1,4 +1,4 @@
-import { TransactionTypes, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { AmountSign, formatWithCommas, formatStr2EllipsisStr } from '@portkey-wallet/utils/converter';
 import { List } from 'antd-mobile';
@@ -21,6 +21,8 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -42,29 +44,24 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const amountInUsdShow = useAmountInUsdShow();
 
   const activityListLeftIcon = (type: TransactionTypes) => {
-    const loginRelatedTypeArr = [
-      TransactionTypes.ADD_MANAGER,
-      TransactionTypes.REMOVE_MANAGER,
-      TransactionTypes.SOCIAL_RECOVERY,
-    ];
-    return loginRelatedTypeArr.includes(type) ? 'socialRecovery' : 'Transfer';
+    return SHOW_FROM_TRANSACTION_TYPES.includes(type) ? 'Transfer' : 'socialRecovery';
   };
 
   const nav = useNavigate();
 
   const navToDetail = useCallback(
     (item: ActivityItemType) => {
-      nav('/transaction', { state: { item, chainId } });
+      nav('/transaction', { state: { item, chainId, from: chainId ? '' : BalanceTab.ACTIVITY } });
     },
     [chainId, nav],
   );
 
   const amountOrIdUI = (item: ActivityItemType) => {
-    const { transactionType, isReceived, amount, symbol, nftInfo, decimals } = item;
+    const { transactionName, isReceived, amount, symbol, nftInfo, decimals } = item;
     const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
     return (
       <p className="row-1">
-        <span>{transactionTypesMap(transactionType, nftInfo?.nftId)}</span>
+        <span>{transactionName}</span>
         <span>
           <span>
             {nftInfo?.nftId && <span>#{nftInfo.nftId}</span>}
@@ -77,35 +74,30 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     );
   };
 
+  const currentNetwork = useCurrentNetworkInfo();
   const fromAndUsdUI = useCallback(
     (item: ActivityItemType) => {
       const { fromAddress, fromChainId, decimals, amount, symbol, nftInfo } = item;
-      const transFromAddress = addressFormat(fromAddress, fromChainId, 'aelf');
+      const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
 
       return (
         <p className="row-2">
-          <span>From: {formatStr2EllipsisStr(transFromAddress, [7, 4])}</span>
+          <span>{`From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}</span>
           {nftInfo?.nftId && <span className="nft-name">{formatStr2EllipsisStr(nftInfo.alias)}</span>}
           {!isTestNet && !nftInfo?.nftId && <span>{amountInUsdShow(amount, decimals || 8, symbol)}</span>}
         </p>
       );
     },
-    [amountInUsdShow, isTestNet],
+    [amountInUsdShow, currentNetwork.walletType, isTestNet],
   );
 
   const networkUI = useCallback(
     (item: ActivityItemType) => {
-      /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
-      const { transactionType, fromChainId, toChainId } = item;
+      const { fromChainId, toChainId } = item;
       const from = transNetworkText(fromChainId, isTestNet);
       const to = transNetworkText(toChainId, isTestNet);
-      const hiddenArr = [
-        TransactionTypes.SOCIAL_RECOVERY,
-        TransactionTypes.ADD_MANAGER,
-        TransactionTypes.REMOVE_MANAGER,
-      ];
 
-      return !hiddenArr.includes(transactionType) && <p className="row-3">{`${from}->${to}`}</p>;
+      return <p className="row-3">{`${from}->${to}`}</p>;
     },
     [isTestNet],
   );
@@ -138,7 +130,6 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const retryCrossChain = useCallback(
     async ({ transactionId, params }: the2ThFailedActivityItemType) => {
       try {
-        //
         const chainId = params.tokenInfo.chainId;
         const chainInfo = chainList?.filter((chain) => chain.chainId === chainId)?.[0];
         if (!chainInfo) return;
@@ -181,6 +172,23 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
     [activity.failedActivityMap, handleResend],
   );
 
+  const notShowFromAndNetworkUI = useCallback(
+    (item: ActivityItemType) => {
+      const { isReceived, amount, symbol, decimals } = item;
+      const sign = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+      return (
+        <div className="right right-not-from">
+          <span>{item?.transactionName}</span>
+          <div className="right-not-from-amount">
+            <div>{`${formatWithCommas({ sign, amount, decimals, digits: 4 })} ${symbol ?? ''}`}</div>
+            {!isTestNet && <div className="usd">{amountInUsdShow(amount, decimals || 8, symbol)}</div>}
+          </div>
+        </div>
+      );
+    },
+    [amountInUsdShow, isTestNet],
+  );
+
   return (
     <div className="activity-list">
       <List>
@@ -199,12 +207,17 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
                 )}
                 {!item.listIcon && <CustomSvg type={activityListLeftIcon(item.transactionType)} />}
 
-                <div className="right">
-                  {amountOrIdUI(item)}
-                  {fromAndUsdUI(item)}
-                  {networkUI(item)}
-                  {resendUI(item)}
-                </div>
+                {/* [Transfer, CrossChainTransfer, ClaimToken] display the network and from UI */}
+                {!SHOW_FROM_TRANSACTION_TYPES.includes(item.transactionType) ? (
+                  notShowFromAndNetworkUI(item)
+                ) : (
+                  <div className="right">
+                    {amountOrIdUI(item)}
+                    {fromAndUsdUI(item)}
+                    {networkUI(item)}
+                    {resendUI(item)}
+                  </div>
+                )}
               </div>
             </div>
           </List.Item>

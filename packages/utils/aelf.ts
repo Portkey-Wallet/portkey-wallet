@@ -3,7 +3,6 @@ import { COMMON_PRIVATE } from '@portkey-wallet/constants';
 import { AElfInterface } from '@portkey-wallet/types/aelf';
 import { ChainId } from '@portkey-wallet/types';
 const Wallet = AElf.wallet;
-let wallet: any = null;
 
 export function isEqAddress(a1?: string, a2?: string) {
   return a1?.toLocaleLowerCase() === a2?.toLocaleLowerCase();
@@ -103,13 +102,13 @@ export const getELFContract = async (rpcUrl: string, tokenAddress: string, priva
 };
 
 const isWrappedBytes = (resolvedType: any, name: string) => {
-  if (!resolvedType.name || resolvedType.name !== name) {
+  if (!resolvedType?.name || resolvedType?.name !== name) {
     return false;
   }
-  if (!resolvedType.fieldsArray || resolvedType.fieldsArray.length !== 1) {
+  if (!resolvedType?.fieldsArray || resolvedType?.fieldsArray.length !== 1) {
     return false;
   }
-  return resolvedType.fieldsArray[0].type === 'bytes';
+  return resolvedType?.fieldsArray[0].type === 'bytes';
 };
 
 const isAddress = (resolvedType: any) => isWrappedBytes(resolvedType, 'Address');
@@ -122,7 +121,7 @@ export function transformArrayToMap(inputType: any, origin: any[]) {
   if (origin.length === 0) return '';
   if (isAddress(inputType) || isHash(inputType)) return origin[0];
 
-  const { fieldsArray } = inputType || {};
+  const { fieldsArray } = inputType;
   const fieldsLength = (fieldsArray || []).length;
 
   if (fieldsLength === 0) return origin;

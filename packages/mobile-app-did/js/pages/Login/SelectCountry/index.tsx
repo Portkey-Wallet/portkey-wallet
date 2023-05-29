@@ -1,9 +1,9 @@
-import { bottomBarHeight, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Touchable from 'components/Touchable';
 import PageContainer from 'components/PageContainer';
-import { countryCodeIndex, countryCodeFilter } from '@portkey-wallet/constants/constants-ca/country';
+import { countryCodeFilter } from '@portkey-wallet/constants/constants-ca/country';
 import GStyles from 'assets/theme/GStyles';
 import IndexBarLargeList from 'components/CommonLargeList/IndexBarLargeList';
 import CommonInput from 'components/CommonInput';
@@ -17,16 +17,24 @@ import { FontStyles } from 'assets/theme/styles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import NoData from 'components/NoData';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 const IndexHeight = 56,
   SectionHeight = 20;
-const List = countryCodeIndex.map(i => ({ index: i[0], items: i[1] }));
 
 export default function SelectCountry() {
   const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
 
+  const {
+    phoneCountryCodeIndex: countryCodeIndex,
+    phoneCountryCodeList,
+    setLocalPhoneCountryCode,
+  } = usePhoneCountryCode();
+  const List = useMemo(() => countryCodeIndex.map(i => ({ index: i[0], items: i[1] })), [countryCodeIndex]);
+
   const [searchList, setSearchList] = useState<CountryItem[]>();
-  const data = useMemo(() => searchList || List, [searchList]);
+
+  const data = useMemo(() => searchList || List, [List, searchList]);
   const _renderItem = ({ section, row }: { section: number; row: number }) => {
     let item: CountryItem;
     if ('items' in data[section]) {
@@ -39,6 +47,7 @@ export default function SelectCountry() {
       <Touchable
         style={[styles.itemRow, GStyles.itemCenter, GStyles.spaceBetween]}
         onPress={() => {
+          setLocalPhoneCountryCode(item);
           myEvents.setCountry.emit(item);
           navigationService.goBack();
         }}>
@@ -65,7 +74,7 @@ export default function SelectCountry() {
         <CommonInput
           placeholder="Search countries and regions"
           type="search"
-          onChangeText={s => setSearchList(!s ? undefined : countryCodeFilter(s))}
+          onChangeText={s => setSearchList(!s ? undefined : countryCodeFilter(s, phoneCountryCodeList))}
         />
       </View>
       <View style={styles.indexBarRow}>

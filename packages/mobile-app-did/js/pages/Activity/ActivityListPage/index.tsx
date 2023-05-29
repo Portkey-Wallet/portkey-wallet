@@ -13,7 +13,6 @@ import NoData from 'components/NoData';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { transactionTypesForActivityList } from '@portkey-wallet/constants/constants-ca/activity';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
@@ -48,7 +47,6 @@ const ActivityListPage = () => {
       // managerAddresses: address,
       chainId: chainId,
       symbol: symbol,
-      transactionTypes: transactionTypesForActivityList,
     };
     await dispatch(getActivityListAsync(params));
     setRefreshing(false);

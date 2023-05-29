@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View } from 'react-native';
 import { styles as contactListStyles } from './style';
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { FlashList } from '@shopify/flash-list';
 import IndexBar from 'components/IndexBar';
-import { TextM } from 'components/CommonText';
 
 type contactFlatItemType = ContactIndexType | ContactItemType;
 interface ContactsListProps {

@@ -38,7 +38,7 @@ export interface GuardiansState {
   userGuardianStatus?: { [x: string]: UserGuardianStatus };
   currentGuardian?: UserGuardianItem;
   preGuardian?: StoreUserGuardianItem;
-  opGuardian?: StoreUserGuardianItem;
+  opGuardian?: StoreUserGuardianItem; // operating guardians
   guardianExpiredTime?: number; // timestamp
 }
 

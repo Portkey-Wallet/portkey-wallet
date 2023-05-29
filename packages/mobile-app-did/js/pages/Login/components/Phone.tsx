@@ -10,13 +10,12 @@ import styles from '../styles';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
-import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
 import { useOnLogin } from 'hooks/login';
 import PhoneInput from 'components/PhoneInput';
-import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 const TitleMap = {
   [PageType.login]: {
@@ -38,8 +37,8 @@ export default function Phone({
   const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
-  const [country, setCountry] = useState<CountryItem>(DefaultCountry);
-  const onLogin = useOnLogin();
+  const { localPhoneCountryCode: country } = usePhoneCountryCode();
+  const onLogin = useOnLogin(type === PageType.login);
   const onPageLogin = useCallback(async () => {
     Loading.show();
     try {
@@ -82,7 +81,6 @@ export default function Phone({
           containerStyle={styles.inputContainerStyle}
           onChangeText={setLoginAccount}
           selectCountry={country}
-          onCountryChange={setCountry}
         />
 
         <CommonButton

@@ -1,4 +1,3 @@
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';

@@ -6,6 +6,7 @@ import {
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import { walletSlice } from '@portkey-wallet/store/wallet/slice';
 import { contactSlice } from '@portkey-wallet/store/store-ca/contact/slice';
+import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import chainSlice from '@portkey-wallet/store/network/slice';
 import { tokenBalanceSlice } from '@portkey-wallet/store/tokenBalance/slice';
 import settingsSlice from '@portkey-wallet/store/settings/slice';
@@ -13,6 +14,7 @@ import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import discoverSlice from '@portkey-wallet/store/store-ca/discover/slice';
 import switchSlice from '@portkey-wallet/store/store-ca/switch/slice';
+import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -35,6 +37,7 @@ const reduxPersistConfig = {
   whitelist: [
     walletSlice.name,
     contactSlice.name,
+    miscSlice.name,
     tokenBalanceSlice.name,
     settingsSlice.name,
     chainSlice.name,
@@ -42,6 +45,7 @@ const reduxPersistConfig = {
     activitySlice.name,
     discoverSlice.name,
     switchSlice.name,
+    cmsSlice.name,
   ],
 
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

@@ -241,20 +241,24 @@ export default function GuardianItem({
   const renderGuardianAccount = useCallback(() => {
     if (!guardianItem.firstName) {
       return (
-        <TextM numberOfLines={1} style={[styles.nameStyle, GStyles.flex1]}>
+        <TextM
+          numberOfLines={[LoginType.Apple, LoginType.Google].includes(guardianItem.guardianType) ? 1 : 2}
+          style={[styles.nameStyle, GStyles.flex1]}>
           {guardianAccount}
         </TextM>
       );
     }
     return (
       <View style={[styles.nameStyle, GStyles.flex1]}>
-        <TextM style={styles.firstNameStyle}>{guardianItem.firstName}</TextM>
+        <TextM style={styles.firstNameStyle} numberOfLines={1}>
+          {guardianItem.firstName}
+        </TextM>
         <TextS style={FontStyles.font3} numberOfLines={1}>
           {guardianAccount}
         </TextS>
       </View>
     );
-  }, [guardianAccount, guardianItem.firstName]);
+  }, [guardianAccount, guardianItem.firstName, guardianItem.guardianType]);
 
   return (
     <View style={[styles.itemRow, isBorderHide && styles.itemWithoutBorder, disabled && styles.disabledStyle]}>

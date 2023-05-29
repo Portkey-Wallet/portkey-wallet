@@ -1,7 +1,7 @@
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { Input } from 'antd';
 import { handleKeyDownInt } from 'pages/Send/utils/util.keyDown';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
@@ -10,7 +10,6 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 
 export default function NftInput({
-  toAccount,
   fromAccount,
   token,
   value,
@@ -18,7 +17,6 @@ export default function NftInput({
   onChange,
 }: {
   fromAccount: { address: string; AESEncryptPrivateKey: string };
-  toAccount: { address: string };
   token: BaseToken;
   value: string;
   errorMsg: string;

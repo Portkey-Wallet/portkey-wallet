@@ -9,7 +9,7 @@ import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/ut
 
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { TransactionTypes, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { AmountSign, divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import CommonButton from 'components/CommonButton';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
@@ -26,9 +26,10 @@ import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
 import { addressFormat } from '@portkey-wallet/utils';
 import CommonAvatar from 'components/CommonAvatar';
-import { HIDDEN_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
-import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import fonts from 'assets/theme/fonts';
 
 interface ActivityItemPropsType {
   item?: ActivityItemType;
@@ -41,7 +42,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   const tokenContractRef = useRef<ContractBasic>();
   const currentChainList = useCurrentChainList();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
-  const isTestnet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const isTokenHasPrice = useIsTokenHasPrice(item?.symbol);
 
   const pin = usePin();
@@ -109,48 +110,68 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
     retryCrossChain(item?.transactionId || '', params);
   }, [activity.failedActivityMap, item?.transactionId, retryCrossChain]);
 
+  const RightDom = useMemo(() => {
+    return SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? (
+      <View style={[itemStyle.right]}>
+        <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
+          {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : ''}
+          {!item?.nftInfo?.nftId ? amountString : ''}
+        </Text>
+        <Text style={itemStyle.usdtBalance}>
+          {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null)
+            ? `$ ${formatAmountShow(
+                divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(
+                  item ? tokenPriceObject[item?.symbol] : 0,
+                ),
+                2,
+              )}`
+            : ''}
+        </Text>
+        <Text style={itemStyle.usdtBalance} />
+      </View>
+    ) : (
+      <View style={[itemStyle.right]}>
+        <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
+          {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : ''}
+          {!item?.nftInfo?.nftId ? amountString : ''}
+        </Text>
+        {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
+          <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
+            divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(item ? tokenPriceObject[item?.symbol] : 0),
+            2,
+          )}`}</Text>
+        )}
+      </View>
+    );
+  }, [amountString, isMainnet, isTokenHasPrice, item, tokenPriceObject]);
+
   return (
     <TouchableOpacity style={itemStyle.itemWrap} onPress={() => onPress?.(item)}>
       <Text style={itemStyle.time}>{formatTransferTime(Number(item?.timestamp) * 1000)}</Text>
-      <View style={itemStyle.contentWrap}>
+      <View style={[itemStyle.contentWrap]}>
         <CommonAvatar
           style={itemStyle.left}
           svgName={
-            HIDDEN_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'Contract' : 'transfer'
+            SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'transfer' : 'Contract'
           }
           avatarSize={pTd(32)}
         />
 
         <View style={itemStyle.center}>
-          <Text style={itemStyle.centerType}>
-            {item?.transactionType ? transactionTypesMap(item.transactionType, item.nftInfo?.nftId) : ''}
-          </Text>
-          <Text style={[itemStyle.centerStatus, FontStyles.font3]}>
-            {t('From')}
-            {':  '}
-            {formatStr2EllipsisStr(addressFormat(item?.fromAddress, item?.fromChainId), 10)}
-          </Text>
-
-          {item?.transactionType && !HIDDEN_TRANSACTION_TYPES.includes(item?.transactionType) && (
+          <Text style={itemStyle.centerType}>{item?.transactionName}</Text>
+          {item?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType) && (
             <Text style={[itemStyle.centerStatus, FontStyles.font3]}>
-              {formatChainInfoToShow(item?.fromChainId)}
-              {'-->'}
-              {formatChainInfoToShow(item?.toChainId)}
+              {`${t('From')}: ${formatStr2EllipsisStr(addressFormat(item?.fromAddress, item?.fromChainId), 10)}`}
+            </Text>
+          )}
+          {item?.transactionType && SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType) && (
+            <Text style={[itemStyle.centerStatus, FontStyles.font3]}>
+              {`${formatChainInfoToShow(item?.fromChainId)}-->${formatChainInfoToShow(item?.toChainId)}`}
             </Text>
           )}
         </View>
-        <View style={itemStyle.right}>
-          <Text style={[itemStyle.tokenBalance]}>
-            {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : ''}
-            {!item?.nftInfo?.nftId ? amountString : ''}
-          </Text>
-          {!isTestnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
-            <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
-              divDecimals(item?.amount, Number(item?.decimals)).multipliedBy(item ? tokenPriceObject[item?.symbol] : 0),
-              2,
-            )}`}</Text>
-          )}
-        </View>
+
+        {RightDom}
       </View>
       {activity.failedActivityMap[item?.transactionId || ''] && (
         <View style={itemStyle.btnWrap}>
@@ -212,18 +233,16 @@ const itemStyle = StyleSheet.create({
     textAlign: 'right',
     color: defaultColors.font5,
     fontSize: pTd(16),
-    lineHeight: pTd(22),
   },
   usdtBalance: {
     textAlign: 'right',
     lineHeight: pTd(16),
     fontSize: pTd(10),
     color: defaultColors.font5,
+    height: pTd(16),
   },
   right: {
     display: 'flex',
-    height: '100%',
-    marginTop: pTd(12),
   },
   tokenName: {
     flex: 1,

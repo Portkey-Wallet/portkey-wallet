@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { createAction } from '@reduxjs/toolkit';
-import { HandleTokenArgTypes, TokenState } from '@portkey-wallet/types/types-ca/token';
+import { HandleTokenArgTypes } from '@portkey-wallet/types/types-ca/token';
 import { fetchAllTokenList } from './api';
 import { request } from '@portkey-wallet/api/api-did';
 
@@ -10,11 +10,9 @@ export const deleteTokenInCurrentAccount = createAction<HandleTokenArgTypes>('to
 
 export const fetchAllTokenListAsync = createAsyncThunk(
   'tokenManagement/fetchAllTokenListAsync',
-  async ({ keyword = '', chainIdArray }: { keyword?: string; chainIdArray?: string[] }, { getState, dispatch }) => {
-    const { totalRecordCount, skipCount, maxResultCount } = getState() as TokenState;
-
+  async ({ keyword = '', chainIdArray }: { keyword?: string; chainIdArray?: string[] }) => {
     // if (totalRecordCount === 0 || totalRecordCount > accountTokenList.length) {
-    const response = await fetchAllTokenList({ skipCount, maxResultCount, keyword, chainIdArray: chainIdArray || [] });
+    const response = await fetchAllTokenList({ keyword, chainIdArray: chainIdArray || [] });
     return { list: response.items, totalRecordCount: response.totalRecordCount };
   },
 

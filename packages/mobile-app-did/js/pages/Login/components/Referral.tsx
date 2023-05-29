@@ -43,7 +43,7 @@ export default function Referral({
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
 
-  const onLogin = useOnLogin();
+  const onLogin = useOnLogin(type === PageType.login);
   const onAppleSign = useCallback(async () => {
     try {
       Loading.show();
@@ -88,16 +88,15 @@ export default function Referral({
           containerStyle={pageStyles.outlineContainerStyle}
           titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
         />
-        {isIos && (
-          <CommonButton
-            type="outline"
-            onPress={onAppleSign}
-            title={TitleMap[type].apple}
-            icon={<Svg icon="apple" size={24} />}
-            containerStyle={pageStyles.outlineContainerStyle}
-            titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
-          />
-        )}
+
+        <CommonButton
+          type="outline"
+          onPress={onAppleSign}
+          title={TitleMap[type].apple}
+          icon={<Svg icon="apple" size={24} />}
+          containerStyle={pageStyles.outlineContainerStyle}
+          titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
+        />
 
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <CommonButton type="primary" onPress={() => setLoginType(PageLoginType.phone)} title={TitleMap[type].button} />

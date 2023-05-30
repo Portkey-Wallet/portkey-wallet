@@ -30,7 +30,7 @@ export default function RecentDetail() {
   const { walletInfo } = currentWallet;
   const myAddress = walletInfo?.[myChainId]?.caAddress || ''; // get my address from url state
 
-  const chainInfo = useCurrentChain(myChainId);
+  const chainInfo = useCurrentChain(targetChainId);
   const currentNetwork = useCurrentNetworkInfo();
   const transTargetAddress = addressFormat(targetAddress, targetChainId, currentNetwork.walletType);
   const [activityInfo, setActivityList] = useState<IActivitiesApiResponse>({

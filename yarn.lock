@@ -5146,12 +5146,38 @@
   resolved "https://registry.npmmirror.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@portkey/provider-types@^0.0.1-alpha.2":
-  version "0.0.1-alpha.2"
-  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.2.tgz#40f2859b676230ccf0e4470ba397de280e0949a4"
-  integrity sha512-6Y63cY9bJsfOAsFbEz5P+t+6zjk6Njt4rJ0siiFr1C9PlYWojNMPJ7SX+hJtdTBUCHxkYwHVBhUjZRGKMg+v6Q==
+"@portkey/chain@^0.0.1-alpha.5":
+  version "0.0.1-alpha.5"
+  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-0.0.1-alpha.5.tgz#586356dd0e584feecc0b06862bd2699d3847fc4c"
+  integrity sha512-086n9WxK4bEz7toEilo6zFEHZ1eIPfxAMZLqvgbM2yCq0BZ7xYOVeT97RHz666I5QV1lKK8++FyHMY9jKNbj/g==
+  dependencies:
+    "@portkey/provider-types" "^0.0.1-alpha.5"
+    aelf-sdk "^3.2.44"
+
+"@portkey/provider-types@^0.0.1-alpha.5":
+  version "0.0.1-alpha.5"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-0.0.1-alpha.5.tgz#97d51624a9e0104775f30db9614853a4e7a9d8b1"
+  integrity sha512-wN2acs8dLXizUEWAxyhMn+PJWkRJ3iR+qx/MGyGRo6nAh3MUmi6oqN8yUBVnV/LSYsZUJtF20dgwTp+Py45R+w==
   dependencies:
     "@types/readable-stream" "^2.3.15"
+
+"@portkey/provider-utils@^0.0.1-alpha.5":
+  version "0.0.1-alpha.5"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.5.tgz#6b2f7d7c0b37c98fcdc7c5091ba725b86c0b79e2"
+  integrity sha512-JVgiy9qxUXrps/cM7d9waX63nz7AUPxUpHX3MS1IEbXPZhN80JbbK/naiTlNxef+ZH6mHBuwR6jsM7rboiVcVw==
+  dependencies:
+    "@portkey/provider-types" "^0.0.1-alpha.5"
+
+"@portkey/providers@^0.0.1-alpha.5":
+  version "0.0.1-alpha.5"
+  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-0.0.1-alpha.5.tgz#b3dca1e7cd351e684e663bef1fb13ad4a9dc6663"
+  integrity sha512-TI7caN1zLORYOt/3Pd6GeCGLWwX47DG4fEsFa4DLsLwbtrFOyXVxOvhqXwYEb+TXXlnMcX0BC6GjAgJ2LBld1w==
+  dependencies:
+    "@portkey/chain" "^0.0.1-alpha.5"
+    "@portkey/provider-types" "^0.0.1-alpha.5"
+    "@portkey/provider-utils" "^0.0.1-alpha.5"
+    "@types/readable-stream" "^2.3.15"
+    readable-stream "^4.4.0"
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
@@ -24173,6 +24199,16 @@ readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.5, readable
     safe-buffer "~5.1.1"
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
+
+readable-stream@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-4.4.0.tgz#55ce132d60a988c460d75c631e9ccf6a7229b468"
+  integrity sha512-kDMOq0qLtxV9f/SQv522h8cxZBqNZXuXNyjyezmfAAuribMyVXziljpQ/uQhfE1XLg2/TLTW2DsnoE4VAi/krg==
+  dependencies:
+    abort-controller "^3.0.0"
+    buffer "^6.0.3"
+    events "^3.3.0"
+    process "^0.11.10"
 
 readdir-scoped-modules@^1.1.0:
   version "1.1.0"

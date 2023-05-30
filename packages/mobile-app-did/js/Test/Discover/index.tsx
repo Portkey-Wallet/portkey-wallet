@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
@@ -12,6 +12,9 @@ import navigationService from 'utils/navigationService';
 import { ACH_REDIRECT_URL } from 'constants/common';
 import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
+import { MobileStream } from 'dapp/MobileStream';
+import DappMobileOperator from 'dapp/dappMobileOperator';
+import useHooksWillUnmount from 'hooks/useHooksWillUnmount';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -29,7 +32,6 @@ const Discover: React.FC = () => {
     title = '',
     url,
     webViewPageType = 'default',
-    injectedJavaScript,
   } = useRouterParams<{
     url: string;
     title?: string;
@@ -38,8 +40,11 @@ const Discover: React.FC = () => {
   }>();
 
   const dispatch = useAppCommonDispatch();
-  const webViewRef = React.useRef<WebView>(null);
+  const [webViewRef, setWebViewRef] = useState<WebView | null>(null);
+  const stream: MobileStream | null = useMemo(() => (webViewRef ? new MobileStream(webViewRef) : null), [webViewRef]);
+  const operator: DappMobileOperator | null = useMemo(() => (stream ? new DappMobileOperator(stream) : null), [stream]);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
+  useHooksWillUnmount(() => operator?.onDestroy());
 
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
@@ -66,7 +71,7 @@ const Discover: React.FC = () => {
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
       <CustomHeader titleDom="Discover" leftCallback={navigationService.goBack} />
       <WebView
-        ref={webViewRef}
+        ref={ref => ref && setWebViewRef(ref)}
         style={pageStyles.webView}
         source={{ uri: 'http://localhost:3000/' }}
         onNavigationStateChange={handleNavigationStateChange}
@@ -74,20 +79,7 @@ const Discover: React.FC = () => {
         onMessage={({ nativeEvent }) => {
           const data = JSON.parse(nativeEvent.data) as any;
           console.log(data, '=====data');
-
-          const { eventName } = data || {};
-          webViewRef.current?.postMessage(
-            JSON.stringify({
-              eventName,
-              info: {
-                code: 0,
-                data: {
-                  balance: 100,
-                },
-                msg: 'balance',
-              },
-            }),
-          );
+          operator && operator.handleRequestMessage(data);
         }}
       />
     </SafeAreaBox>

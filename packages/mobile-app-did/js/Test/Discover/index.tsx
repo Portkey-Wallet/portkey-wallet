@@ -1,20 +1,20 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
 import CustomHeader from 'components/CustomHeader';
 import SafeAreaBox from 'components/SafeAreaBox';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { pTd } from 'utils/unit';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { upDateRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import navigationService from 'utils/navigationService';
-import { ACH_REDIRECT_URL } from 'constants/common';
 import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
-import { MobileStream } from 'dapp/MobileStream';
+import { MobileStream } from 'dapp/mobileStream';
 import DappMobileOperator from 'dapp/dappMobileOperator';
-import useHooksWillUnmount from 'hooks/useHooksWillUnmount';
+import { DappManager } from '@portkey-wallet/utils/dapp/dappManager';
+import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import URL from 'url-parse';
+import { store } from 'store';
+import { DappOverlay } from 'dapp/dappOverlay';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -25,27 +25,11 @@ const safeAreaColorMap = {
 
 export type SafeAreaColorMapKeyUnit = keyof typeof safeAreaColorMap;
 
-type WebViewPageType = 'default' | 'discover' | 'ach';
 EntryScriptWeb3.init();
 const Discover: React.FC = () => {
-  const {
-    title = '',
-    url,
-    webViewPageType = 'default',
-  } = useRouterParams<{
-    url: string;
-    title?: string;
-    webViewPageType?: WebViewPageType;
-    injectedJavaScript?: string;
-  }>();
-
-  const dispatch = useAppCommonDispatch();
-  const [webViewRef, setWebViewRef] = useState<WebView | null>(null);
-  const stream: MobileStream | null = useMemo(() => (webViewRef ? new MobileStream(webViewRef) : null), [webViewRef]);
-  const operator: DappMobileOperator | null = useMemo(() => (stream ? new DappMobileOperator(stream) : null), [stream]);
+  const webViewRef = useRef<WebView | null>(null);
+  const operatorRef = useRef<DappMobileOperator | null>(null);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
-  useHooksWillUnmount(() => operator?.onDestroy());
-
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
@@ -53,34 +37,45 @@ const Discover: React.FC = () => {
     };
 
     getEntryScriptWeb3();
+    return () => {
+      operatorRef?.current?.onDestroy();
+    };
   });
-  const handleNavigationStateChange = useCallback(
-    (navState: any) => {
-      if (webViewPageType === 'default') return;
-      if (webViewPageType === 'ach') {
-        if (navState.url.startsWith(ACH_REDIRECT_URL)) {
-          navigationService.navigate('Tab');
-        }
-        return;
-      }
-      dispatch(upDateRecordsItem({ url, title: title ? title : navState.title }));
+
+  const initOperator = useCallback((origin: string) => {
+    operatorRef.current = new DappMobileOperator({
+      origin,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      stream: new MobileStream(webViewRef.current!),
+      dappManager: new DappManager({ store: store as any }),
+      dappOverlay: new DappOverlay(),
+    });
+  }, []);
+
+  const onLoadStart = useCallback(
+    ({ nativeEvent }: WebViewNavigationEvent) => {
+      const { origin } = new URL(nativeEvent.url);
+      initOperator(origin);
     },
-    [dispatch, title, url, webViewPageType],
+    [initOperator],
   );
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
       <CustomHeader titleDom="Discover" leftCallback={navigationService.goBack} />
       <WebView
-        ref={ref => ref && setWebViewRef(ref)}
+        ref={webViewRef}
         style={pageStyles.webView}
         source={{ uri: 'http://localhost:3000/' }}
-        onNavigationStateChange={handleNavigationStateChange}
         injectedJavaScriptBeforeContentLoaded={entryScriptWeb3}
         onMessage={({ nativeEvent }) => {
-          const data = JSON.parse(nativeEvent.data) as any;
-          console.log(data, '=====data');
-          operator && operator.handleRequestMessage(data);
+          console.log(JSON.parse(nativeEvent.data));
+          operatorRef.current?.handleRequestMessage(nativeEvent.data);
         }}
+        onLoadEnd={({ nativeEvent }) => {
+          console.log(nativeEvent, '===nativeEvent');
+        }}
+        onLoadStart={onLoadStart}
       />
     </SafeAreaBox>
   );

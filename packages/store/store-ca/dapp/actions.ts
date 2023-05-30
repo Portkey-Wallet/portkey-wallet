@@ -5,7 +5,7 @@ import { DappStoreItem } from './type';
 export const addDapp = createAction<{
   networkType: NetworkType;
   dapp: DappStoreItem;
-}>('dapp/WalletInfoType');
+}>('dapp/addDapp');
 
 export const removeDapp = createAction<{
   networkType: NetworkType;
@@ -18,4 +18,4 @@ export const updateDapp = createAction<{
   dapp: DappStoreItem;
 }>('dapp/updateDapp');
 
-export const resetDappList = createAction('dapp/resetDapp');
+export const resetDappList = createAction('dapp/resetDappList');

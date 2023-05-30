@@ -5146,36 +5146,36 @@
   resolved "https://registry.npmmirror.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@portkey/chain@^0.0.1-alpha.5":
-  version "0.0.1-alpha.5"
-  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-0.0.1-alpha.5.tgz#586356dd0e584feecc0b06862bd2699d3847fc4c"
-  integrity sha512-086n9WxK4bEz7toEilo6zFEHZ1eIPfxAMZLqvgbM2yCq0BZ7xYOVeT97RHz666I5QV1lKK8++FyHMY9jKNbj/g==
+"@portkey/chain@^0.0.1-alpha.6":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-0.0.1-alpha.6.tgz#765a5a02e2dfe44a74397ac183f7b25fe577f155"
+  integrity sha512-cfIkVD5UHJro883eOUVCRy4uLd889dq9Cj1hw2/3L/NZ2d8GXvOtT6Sf40N59ld/x4gBD5vxcfyWwQV/XtTefw==
   dependencies:
-    "@portkey/provider-types" "^0.0.1-alpha.5"
+    "@portkey/provider-types" "^0.0.1-alpha.6"
     aelf-sdk "^3.2.44"
 
-"@portkey/provider-types@^0.0.1-alpha.5":
-  version "0.0.1-alpha.5"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-0.0.1-alpha.5.tgz#97d51624a9e0104775f30db9614853a4e7a9d8b1"
-  integrity sha512-wN2acs8dLXizUEWAxyhMn+PJWkRJ3iR+qx/MGyGRo6nAh3MUmi6oqN8yUBVnV/LSYsZUJtF20dgwTp+Py45R+w==
+"@portkey/provider-types@^0.0.1-alpha.6":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.6.tgz#046a960fc750c7c442d34c5daef0f64be227b535"
+  integrity sha512-SAnuwMCRquCFqEUhlgOljIPKl2fVinsiIWUMFLagVB0s0nEeZZfWV6l0p5AOGVCO7WSE4deMQZbp0RMMA/UXsw==
   dependencies:
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-utils@^0.0.1-alpha.5":
-  version "0.0.1-alpha.5"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.5.tgz#6b2f7d7c0b37c98fcdc7c5091ba725b86c0b79e2"
-  integrity sha512-JVgiy9qxUXrps/cM7d9waX63nz7AUPxUpHX3MS1IEbXPZhN80JbbK/naiTlNxef+ZH6mHBuwR6jsM7rboiVcVw==
+"@portkey/provider-utils@^0.0.1-alpha.6":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.6.tgz#bd42d0a91657ed5c1eee2f6eb765aa1bbcb197e1"
+  integrity sha512-f2ftySSTNNMlkQ9UiCo02HvVcCgq/RvzYlnBtGLPpHbTm4NHqZVGpvtYMYgDu365Tw16qKv8xM7H+RsLv16T2w==
   dependencies:
-    "@portkey/provider-types" "^0.0.1-alpha.5"
+    "@portkey/provider-types" "^0.0.1-alpha.6"
 
-"@portkey/providers@^0.0.1-alpha.5":
-  version "0.0.1-alpha.5"
-  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-0.0.1-alpha.5.tgz#b3dca1e7cd351e684e663bef1fb13ad4a9dc6663"
-  integrity sha512-TI7caN1zLORYOt/3Pd6GeCGLWwX47DG4fEsFa4DLsLwbtrFOyXVxOvhqXwYEb+TXXlnMcX0BC6GjAgJ2LBld1w==
+"@portkey/providers@^0.0.1-alpha.6":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-0.0.1-alpha.6.tgz#eb3bc05df1c714a28eb778e07919fee4384ffe7c"
+  integrity sha512-uOlMzERnnABnLxKsqO1g1s7nDkdu12DkJRDKIB5mXlElc4jWdkoNTMn3sKAc4k70Y5SOW6SMX0TyWT7lW6JY5g==
   dependencies:
-    "@portkey/chain" "^0.0.1-alpha.5"
-    "@portkey/provider-types" "^0.0.1-alpha.5"
-    "@portkey/provider-utils" "^0.0.1-alpha.5"
+    "@portkey/chain" "^0.0.1-alpha.6"
+    "@portkey/provider-types" "^0.0.1-alpha.6"
+    "@portkey/provider-utils" "^0.0.1-alpha.6"
     "@types/readable-stream" "^2.3.15"
     readable-stream "^4.4.0"
 
@@ -6836,6 +6836,11 @@
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-4.0.2.tgz#6286b4c7228d58ab7866d19716f3696e03a09397"
   integrity sha512-Q5vtl1W5ue16D+nIaW8JWebSSraJVlK+EthKn7e7UcD4KWsaSJ8BqGPXNaPghgtcn/fhvrN17Tv8ksUsQpiplw==
+
+"@types/url-parse@^1.4.8":
+  version "1.4.8"
+  resolved "https://registry.npmjs.org/@types/url-parse/-/url-parse-1.4.8.tgz#c3825047efbca1295b7f1646f38203d9145130d6"
+  integrity sha512-zqqcGKyNWgTLFBxmaexGUKQyWqeG7HjXj20EuQJSJWwXe54BjX0ihIo5cJB9yAQzH8dNugJ9GvkBYMjPXs/PJw==
 
 "@types/use-sync-external-store@^0.0.3":
   version "0.0.3"
@@ -27673,7 +27678,7 @@ url-join@4.0.0:
   resolved "https://registry.npmmirror.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
   integrity sha512-EGXjXJZhIHiQMK2pQukuFcL303nskqIRzWvPvV5O8miOfwoUb9G+a/Cld60kUyeaybEI94wvVClT10DtfeAExA==
 
-url-parse@^1.4.7, url-parse@^1.5.3, url-parse@^1.5.9:
+url-parse@^1.4.7, url-parse@^1.5.10, url-parse@^1.5.3, url-parse@^1.5.9:
   version "1.5.10"
   resolved "https://registry.npmmirror.com/url-parse/-/url-parse-1.5.10.tgz#9d3c2f736c1d75dd3bd2be507dcc111f1e2ea9c1"
   integrity sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==

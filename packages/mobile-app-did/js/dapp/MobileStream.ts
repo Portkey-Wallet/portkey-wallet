@@ -7,15 +7,12 @@ export class MobileStream extends DappInteractionStream {
     this._webViewRef = webViewRef;
   }
 
-  public _write(
-    chunk: ArrayBuffer,
-    _encoding: BufferEncoding,
-    _callback: (error?: Error | null | undefined) => void,
-  ): void {
-    const text = new TextDecoder().decode(chunk);
+  public _write(chunk: any, _encoding: BufferEncoding, callback: (error?: Error | null | undefined) => void): void {
+    const text = chunk.toString();
     if (__DEV__) {
       console.log('MobileStream _write', text);
     }
     this._webViewRef.postMessage(text);
+    callback();
   }
 }

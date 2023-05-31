@@ -1,4 +1,3 @@
-import aelfMessage from './aelfMessage';
 import ethMessage from './ethMessage';
 import walletMessage from './walletMessage';
 
@@ -32,13 +31,12 @@ export const PromptRouteTypes = {
   GUARDIANS_APPROVAL: 'GUARDIANS_APPROVAL',
 } as const;
 
-export const AelfMessageTypes = aelfMessage;
 export const WalletMessageTypes = walletMessage;
 export const MethodMessageTypes = {
   GET_WALLET_STATE: 'wallet_getState',
 };
 
-export const messageType = Object.assign(ethMessage, AelfMessageTypes, MethodMessageTypes);
+export const messageType = Object.assign(ethMessage, MethodMessageTypes);
 
 export const PortkeyMessageTypes = {
   // SEED
@@ -51,10 +49,11 @@ export const PortkeyMessageTypes = {
   LOGIN_WALLET: 'LOGIN_WALLET',
   ACTIVE_LOCK_STATUS: 'ACTIVE_LOCK_STATUS',
 
+  PERMISSION_FINISH: 'PERMISSION_FINISH',
+
   OPEN_PROMPT: 'OPEN_PROMPT',
   CLOSE_PROMPT: 'CLOSE_PROMPT',
 
-  CHECK_CONTENT: 'CHECK_CONTENT',
   CHECK_WALLET_STATUS: 'CHECK_WALLET_STATUS',
   EXPAND_FULL_SCREEN: 'EXPAND_FULL_SCREEN',
 

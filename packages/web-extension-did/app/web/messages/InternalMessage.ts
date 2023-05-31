@@ -1,8 +1,4 @@
-/**
- * @file InternalMessage.js
- * @author Scatter:Shai James.
- */
-import { LocalStream } from 'extension-streams';
+import { LocalStream } from 'utils/extensionStreams';
 import type { SendResponseParams } from 'types';
 import { InternalMessageData } from 'types/SW';
 import errorHandler from 'utils/errorHandler';
@@ -45,10 +41,6 @@ export default class InternalMessage {
   }
 
   async send() {
-    // timeoutPromise(5000).then((res) => {
-    //   console.log('InternalMessage.send', res);
-    // });
-    // return await Promise.race([LocalStream.send(this) as Promise<SendResponseParams>, timeoutPromise(5000)]);
     return LocalStream.send(this) as Promise<SendResponseParams>;
   }
 }

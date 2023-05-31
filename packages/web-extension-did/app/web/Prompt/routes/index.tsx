@@ -46,6 +46,7 @@ import BuyTestConfirm from 'pages/BuyTest/Confirm';
 import { useCommonState } from 'store/Provider/hooks';
 import My from 'pages/My';
 import RecentDetail from 'pages/Send/components/RecentDetail';
+import Permission from 'pages/Permission';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -146,6 +147,10 @@ export const PageRouter = () => {
     {
       path: 'query-page',
       element: <QueryPage />,
+    },
+    {
+      path: '/permission',
+      element: <Permission />,
     },
     {
       path: '/test',

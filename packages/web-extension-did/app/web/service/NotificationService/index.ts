@@ -166,6 +166,7 @@ export default class NotificationService {
     promptType: CreatePromptType = 'windows',
   ): Promise<SendResponseParams> => {
     return new Promise((resolve) => {
+      console.log(message, 'openPrompt==message');
       const promptParam = {
         sendResponse: async (response?: SendResponseParams) => {
           await sleep(500);

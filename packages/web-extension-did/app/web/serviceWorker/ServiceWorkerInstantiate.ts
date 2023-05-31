@@ -1,4 +1,3 @@
-import { LocalStream } from 'extension-streams';
 import { getAllStorageLocalData, getLocalStorage } from 'utils/storage/chromeStorage';
 import storage from 'utils/storage/storage';
 import { AutoLockDataKey, AutoLockDataType, DefaultLock } from 'constants/lock';
@@ -10,8 +9,6 @@ import { getStoreState } from 'store/utils/getStore';
 import { InternalMessageData, IPageState } from 'types/SW';
 import AELFMethodController from 'controllers/methodController/AELFMethodController';
 import InternalMessageTypes, {
-  AelfMessageTypes,
-  MethodMessageTypes,
   PortkeyMessageTypes,
   PromptRouteTypes,
   WalletMessageTypes,
@@ -22,9 +19,13 @@ import errorHandler from 'utils/errorHandler';
 import { apis } from 'utils/BrowserApis';
 import SocialLoginController from 'controllers/socialLoginController';
 import OpenNewTabController from 'controllers/openNewTabController';
+import { LocalStream } from 'utils/extensionStreams';
+import { RPCMethodsUnimplemented, RPCMethodsBase } from '@portkey/provider-types';
+import { getWalletState } from 'utils/lib/SWGetReduxStore';
 
 const notificationService = new NotificationService();
 const socialLoginService = new SocialLoginController();
+
 new OpenNewTabController();
 
 // Get default data in redux
@@ -38,9 +39,8 @@ let pageState: IPageState = {
   wallet: store.wallet,
 };
 
-const aelfValidMethodList: string[] = Object.values(AelfMessageTypes);
-
-const allowedMethod = [
+const permissionWhitelist = [
+  // portkey method
   PortkeyMessageTypes.GET_SEED,
   PortkeyMessageTypes.SET_SEED,
   PortkeyMessageTypes.LOCK_WALLET,
@@ -50,28 +50,22 @@ const allowedMethod = [
   PortkeyMessageTypes.LOGIN_WALLET,
   PortkeyMessageTypes.CHECK_WALLET_STATUS,
   PortkeyMessageTypes.EXPAND_FULL_SCREEN,
-  PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE,
-  PortkeyMessageTypes.SOCIAL_LOGIN,
-  WalletMessageTypes.REQUEST_ACCOUNTS,
-  MethodMessageTypes.GET_WALLET_STATE,
-  WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
-  WalletMessageTypes.SOCIAL_LOGIN,
   PortkeyMessageTypes.ACTIVE_LOCK_STATUS,
-  PortkeyMessageTypes.SETTING,
-  PortkeyMessageTypes.ADD_GUARDIANS,
-  PortkeyMessageTypes.GUARDIANS_VIEW,
-  PortkeyMessageTypes.GUARDIANS_APPROVAL,
+  PortkeyMessageTypes.PERMISSION_FINISH,
+  RPCMethodsUnimplemented.GET_WALLET_STATE,
+  // The method that requires the dapp not to trigger the lock call
+  RPCMethodsBase.ACCOUNTS,
+  RPCMethodsBase.CHAIN_ID,
+  RPCMethodsBase.CHAIN_IDS,
 ];
-
-const PortkeyMethod = [...allowedMethod, WalletMessageTypes.CONNECT, WalletMessageTypes.SWITCH_CHAIN];
 
 const initPageState = async () => {
   const allStorage = await getAllStorageLocalData();
-  const reduxStore = JSON.parse(allStorage[storage.reduxStorageName] ?? null);
+  const wallet = await getWalletState();
   pageState = {
     registerStatus: allStorage[storage.registerStatus],
     lockTime: AutoLockDataType[allStorage[storage.lockTime] as AutoLockDataKey] ?? AutoLockDataType[DefaultLock],
-    wallet: JSON.parse(reduxStore?.['wallet'] ?? null),
+    wallet: wallet as IPageState['wallet'],
   };
   console.log(pageState, 'pageState===');
 };
@@ -82,11 +76,10 @@ export default class ServiceWorkerInstantiate {
   protected approvalController: ApprovalController;
   protected aelfMethodController: AELFMethodController;
   constructor() {
-    this.setupInternalMessaging();
     // Controller that handles portkey checks
     this.permissionController = new PermissionController({
       notificationService,
-      allowedMethod,
+      whitelist: permissionWhitelist,
       getPassword: () => seed,
     });
     // Controller that handles user authorization
@@ -97,10 +90,10 @@ export default class ServiceWorkerInstantiate {
     // Controller that handles aelf transactions
     this.aelfMethodController = new AELFMethodController({
       notificationService,
-      methodList: aelfValidMethodList,
       getPageState: this.getPageState,
       getPassword: () => seed,
     });
+    this.setupInternalMessaging();
   }
 
   // Watches the internal messaging system ( LocalStream )
@@ -112,13 +105,15 @@ export default class ServiceWorkerInstantiate {
         // May not communicate via LocalStream.send
         if (!message.type) return;
         // reset lockout timer
+        console.log(message, 'LocalStream.watch message');
+
         const registerRes = await this.permissionController.checkIsRegisterOtherwiseRegister(message.type);
         if (registerRes.error !== 0) return sendResponse(registerRes);
         await ServiceWorkerInstantiate.checkTimingLock();
         if (message.type === InternalMessageTypes.ACTIVE_LOCK_STATUS) return sendResponse(errorHandler(0));
         const isLocked = await this.permissionController.checkIsLockOtherwiseUnlock(message.type);
         if (isLocked.error !== 0) return sendResponse(isLocked);
-        await this.dispenseMessage(sendResponse, message);
+        this.dispenseMessage(sendResponse, message);
       });
     } catch (error) {
       console.log(error);
@@ -133,90 +128,78 @@ export default class ServiceWorkerInstantiate {
    */
   dispenseMessage(sendResponse: SendResponseFun, message: InternalMessageData) {
     console.log('dispenseMessage: ', message);
-    // // When message.type is aelf transaction type
-    // if (aelfValidMethodList.includes(message.type)) {
-    //   this.aelfMethodController.dispenseMessage(message, sendResponse);
-    //   return;
-    // }
-    if (PortkeyMethod.includes(message.type)) {
-      // When message.type is portkey internal type
-      switch (message.type) {
-        case PortkeyMessageTypes.GET_SEED:
-          ServiceWorkerInstantiate.getSeed(sendResponse);
-          break;
-        case PortkeyMessageTypes.SET_SEED:
-          ServiceWorkerInstantiate.setSeed(sendResponse, message.payload);
-          break;
-        case PortkeyMessageTypes.LOCK_WALLET:
-          ServiceWorkerInstantiate.lockWallet(sendResponse);
-          break;
-        case PortkeyMessageTypes.CHECK_WALLET_STATUS:
-          this.checkWalletStatus(sendResponse);
-          break;
-        case PortkeyMessageTypes.CLOSE_PROMPT:
-          this.notificationServiceClose(sendResponse, message.payload);
-          break;
-        case PortkeyMessageTypes.REGISTER_WALLET:
-          ServiceWorkerInstantiate.checkRegisterStatus();
-          break;
-        case PortkeyMessageTypes.REGISTER_START_WALLET:
-          ServiceWorkerInstantiate.registerStartWallet();
-          break;
-        case PortkeyMessageTypes.LOGIN_WALLET:
-          ServiceWorkerInstantiate.loginWallet();
-          break;
-        case PortkeyMessageTypes.EXPAND_FULL_SCREEN:
-          ServiceWorkerInstantiate.expandFullScreen();
-          break;
-        case PortkeyMessageTypes.SETTING:
-          ServiceWorkerInstantiate.expandSetting();
-          break;
-        case PortkeyMessageTypes.ADD_GUARDIANS:
-          ServiceWorkerInstantiate.expandAddGuardians();
-          break;
-        case PortkeyMessageTypes.GUARDIANS_VIEW:
-          ServiceWorkerInstantiate.expandGuardiansView();
-          break;
-        case PortkeyMessageTypes.GUARDIANS_APPROVAL:
-          ServiceWorkerInstantiate.expandGuardiansApproval(message.payload);
-          break;
-        case PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE:
-          this.openRecaptchaPage(sendResponse, message.payload);
-          break;
-        case PortkeyMessageTypes.SOCIAL_LOGIN:
-          this.socialLogin(sendResponse, message.payload);
-          break;
-        case WalletMessageTypes.CONNECT:
-          this.connectWallet(sendResponse, message.payload);
-          break;
-        case WalletMessageTypes.REQUEST_ACCOUNTS:
-          this.getAddress(sendResponse, message.payload);
-          break;
-        case MethodMessageTypes.GET_WALLET_STATE:
-          ServiceWorkerInstantiate.getWalletState(sendResponse);
-          break;
-        case WalletMessageTypes.SET_RECAPTCHA_CODE_V2:
-          this.getRecaptcha(sendResponse, message.payload);
-          break;
-        case WalletMessageTypes.SOCIAL_LOGIN:
-          this.getSocialLogin(sendResponse, message.payload);
-          break;
 
-        default:
-          sendResponse(errorHandler(700001, `Portkey does not contain this method (${message.type})`));
+    switch (message.type) {
+      case PortkeyMessageTypes.GET_SEED:
+        ServiceWorkerInstantiate.getSeed(sendResponse);
+        break;
+      case PortkeyMessageTypes.SET_SEED:
+        ServiceWorkerInstantiate.setSeed(sendResponse, message.payload);
+        break;
+      case PortkeyMessageTypes.LOCK_WALLET:
+        ServiceWorkerInstantiate.lockWallet(sendResponse);
+        break;
+      case PortkeyMessageTypes.CHECK_WALLET_STATUS:
+        this.checkWalletStatus(sendResponse);
+        break;
+      case PortkeyMessageTypes.CLOSE_PROMPT:
+        this.notificationServiceClose(sendResponse, message.payload);
+        break;
+      case PortkeyMessageTypes.REGISTER_WALLET:
+        ServiceWorkerInstantiate.checkRegisterStatus();
+        break;
+      case PortkeyMessageTypes.REGISTER_START_WALLET:
+        ServiceWorkerInstantiate.registerStartWallet();
+        break;
+      case PortkeyMessageTypes.LOGIN_WALLET:
+        ServiceWorkerInstantiate.loginWallet();
+        break;
+      case PortkeyMessageTypes.EXPAND_FULL_SCREEN:
+        ServiceWorkerInstantiate.expandFullScreen();
+        break;
+      case PortkeyMessageTypes.SETTING:
+        ServiceWorkerInstantiate.expandSetting();
+        break;
+      case PortkeyMessageTypes.ADD_GUARDIANS:
+        ServiceWorkerInstantiate.expandAddGuardians();
+        break;
+      case PortkeyMessageTypes.GUARDIANS_VIEW:
+        ServiceWorkerInstantiate.expandGuardiansView();
+        break;
+      case PortkeyMessageTypes.GUARDIANS_APPROVAL:
+        ServiceWorkerInstantiate.expandGuardiansApproval(message.payload);
+        break;
+      case PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE:
+        this.openRecaptchaPage(sendResponse, message.payload);
+        break;
+      case PortkeyMessageTypes.SOCIAL_LOGIN:
+        this.socialLogin(sendResponse, message.payload);
+        break;
+      case WalletMessageTypes.CONNECT:
+        this.connectWallet(sendResponse, message.payload);
+        break;
+      case WalletMessageTypes.REQUEST_ACCOUNTS:
+        this.getAddress(sendResponse, message.payload);
+        break;
+      case WalletMessageTypes.GET_WALLET_STATE:
+        ServiceWorkerInstantiate.getWalletState(sendResponse);
+        break;
+      case WalletMessageTypes.SET_RECAPTCHA_CODE_V2:
+        this.getRecaptcha(sendResponse, message.payload);
+        break;
+      case WalletMessageTypes.SOCIAL_LOGIN:
+        this.getSocialLogin(sendResponse, message.payload);
+        break;
+      // case PortkeyMessageTypes.FINISH_ASYNC_TASK:
+      //   this.dealNextTask(sendResponse, message.payload);
+      //   break;
+      default:
+        if (this.aelfMethodController.aelfMethodList.includes(message.type)) {
+          this.aelfMethodController.dispenseMessage(message, sendResponse);
           break;
-      }
-      // } else if (pageState.chain.currentChain.chainType === 'aelf') {
-      //   this.aelfMethodController.dispenseMessage(message, sendResponse);
-      //   return;
-    } else {
-      sendResponse(
-        errorHandler(
-          700001,
-          'Not Support',
-          // `The current network is ${pageState.chain.currentChain.chainType}, which cannot match this method (${message.type})`,
-        ),
-      );
+        }
+        sendResponse(errorHandler(700001, `Portkey does not contain this method (${message.type})`));
+        break;
     }
   }
 
@@ -254,6 +237,11 @@ export default class ServiceWorkerInstantiate {
     socialLoginService.finishSocialLogin();
     this.notificationServiceClose(sendResponse, { closeParams: message.params, promptType: 'windows' });
   }
+
+  // async dealNextTask(sendResponse: SendResponseFun, message: any) {
+  //   //
+  //   // const { taskEvent } = message;
+  // }
 
   async openRecaptchaPage(sendResponse: SendResponseFun, message: any) {
     if (!message.externalLink) return sendResponse(errorHandler(400001, 'Missing param externalLink'));
@@ -396,7 +384,7 @@ export default class ServiceWorkerInstantiate {
   }
 
   async checkWalletStatus(sendResponse: SendResponseFun) {
-    const registerStatus = await this.permissionController.checkRegisterStatus();
+    const registerStatus = await this.permissionController.getRegisterStatus();
     console.log(registerStatus, 'registerStatus===');
     return sendResponse({
       ...errorHandler(0),
@@ -436,7 +424,7 @@ export default class ServiceWorkerInstantiate {
     apis.alarms.clear('timingLock');
 
     if (pageState.lockTime === AutoLockDataType.Immediately) {
-      pageState.lockTime = 5;
+      pageState.lockTime = 5 as any;
       return;
     }
     if (seed && pageState.lockTime === AutoLockDataType.Never) {
@@ -489,7 +477,6 @@ export default class ServiceWorkerInstantiate {
 
   static async checkRegisterStatus() {
     const registerStatus = await getLocalStorage('registerStatus');
-    console.log('checkRegisterStatus==');
     if (registerStatus !== 'Registered') {
       return await notificationService.open({
         sendResponse: (response) => {

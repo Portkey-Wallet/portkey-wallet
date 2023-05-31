@@ -57,7 +57,6 @@ export default function connectListener() {
     if (!isContentConnect)
       port.onMessage.addListener((message: chrome.runtime.Port) => {
         // If we get a WORKER_KEEP_ALIVE message, we respond with an ACK
-        console.log('runWorkerKeepAliveInterval', message.name);
         if (message.name === WORKER_KEEP_ALIVE_MESSAGE) {
           // To test un-comment this line and wait for 1 minute. An error should be shown on MetaMask UI.
           port.postMessage({ name: ACK_KEEP_ALIVE_MESSAGE });
@@ -67,7 +66,6 @@ export default function connectListener() {
 
   apis.runtime.onMessage.addListener((message: any, _sender: any, sendResponse: (response?: any) => void) => {
     if (message.name === WORKER_KEEP_ALIVE_MESSAGE) {
-      // console.log('runWorkerKeepAliveInterval==onMessage');
       sendResponse(errorHandler(0));
     }
   });

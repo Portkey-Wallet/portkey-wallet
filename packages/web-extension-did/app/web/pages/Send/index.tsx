@@ -25,7 +25,6 @@ import { WalletError } from '@portkey-wallet/store/wallet/type';
 import getTransferFee from './utils/getTransferFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';
-import './index.less';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
@@ -33,6 +32,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { AddressCheckError } from '@portkey-wallet/store/store-ca/assets/type';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import './index.less';
 
 export type Account = { address: string; name?: string };
 

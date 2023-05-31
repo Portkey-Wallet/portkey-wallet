@@ -29,6 +29,7 @@ import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
+import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 
 export const tokenReducer = persistReducer(tokenPersistConfig, tokenSlice.reducer);
 export const assetReducer = persistReducer(assetPersistConfig, assetsSlice.reducer);
@@ -59,6 +60,7 @@ const rootReducer = customCombineReducers({
   [miscSlice.name]: miscReducer,
   [paymentSlice.name]: paymentReducer,
   [cmsSlice.name]: cmsReducer,
+  [dappSlice.name]: dappSlice.reducer,
 });
 
 export default rootReducer;

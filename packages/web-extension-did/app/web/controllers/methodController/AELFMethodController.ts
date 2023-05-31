@@ -2,46 +2,56 @@
  * @file
  * The controller that handles the aelf method
  */
-import { AelfMessageTypes, PromptRouteTypes } from 'messages/InternalMessageTypes';
+import { PromptRouteTypes } from 'messages/InternalMessageTypes';
 import NotificationService from 'service/NotificationService';
 import { SendResponseFun } from 'types';
-import { ConnectionsType, ContractsItem } from 'types/storage';
-import { BaseInternalMessagePayload, InternalMessageData, InternalMessagePayload, IPageState } from 'types/SW';
+import { ConnectionsType } from 'types/storage';
+import { InternalMessagePayload, IPageState, RequestCommonHandler, RequestMessageData } from 'types/SW';
 import errorHandler, { PortKeyResultType } from 'utils/errorHandler';
-import { getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
+import { getLocalStorage } from 'utils/storage/chromeStorage';
+import { RPCMethodsBase } from '@portkey/provider-types';
+import { ExtensionDappManager } from './ExtensionDappManager';
 
+const dappManager = new ExtensionDappManager();
+
+const aelfMethodList = [RPCMethodsBase.ACCOUNTS, RPCMethodsBase.CHAIN_ID, RPCMethodsBase.CHAIN_IDS];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
-  methodList: string[];
   getPageState: () => IPageState;
   getPassword: () => string | null;
 }
 export default class AELFMethodController {
-  protected methodList: string[];
-  protected _getPageState: () => IPageState;
+  protected getPageState: () => IPageState;
   protected notificationService: NotificationService;
-  protected _getPassword: () => string | null;
-  constructor({ methodList, getPassword, notificationService, getPageState }: AELFMethodControllerProps) {
-    this.methodList = methodList;
-    this._getPageState = getPageState;
+  protected getPassword: () => string | null;
+  public aelfMethodList: string[];
+  constructor({ getPassword, notificationService, getPageState }: AELFMethodControllerProps) {
+    this.getPageState = getPageState;
     this.notificationService = notificationService;
-    this._getPassword = getPassword;
+    this.getPassword = getPassword;
+    this.aelfMethodList = aelfMethodList;
   }
-  dispenseMessage = (message: InternalMessageData, sendResponse: SendResponseFun) => {
-    // const pageState = this._getPageState();
+  dispenseMessage = (message: RequestMessageData, sendResponse: SendResponseFun) => {
     switch (message.type) {
-      case AelfMessageTypes.INIT_AELF_CONTRACT:
-        this.initAelfContractCallOnly(sendResponse, message.payload);
+      case RPCMethodsBase.CHAIN_ID:
+        this.getChainId(sendResponse, message.payload);
         break;
-      case AelfMessageTypes.CALL_SEND_CONTRACT:
-        this.callSendContract(sendResponse, message.payload);
+      case RPCMethodsBase.CHAIN_IDS:
+        this.getChainIds(sendResponse, message.payload);
         break;
-      case AelfMessageTypes.GET_SEND_CONTRACT_SIGN_TX:
-        this.callSendContract(sendResponse, message.payload, 1);
+
+      case RPCMethodsBase.ACCOUNTS:
+        this.getAccounts(sendResponse, message.payload);
         break;
-      case AelfMessageTypes.GET_SIGNATURE:
-        this.getSignature(sendResponse, message.payload);
-        break;
+      // case RPCMethodsBase.CHAINS_INFO:
+      //   this.callSendContract(sendResponse, message.payload);
+      //   break;
+      // case RPCMethodsBase.SEND_TRANSACTION:
+      //   this.callSendContract(sendResponse, message.payload);
+      //   break;
+      // case RPCMethodsBase.REQUEST_ACCOUNTS:
+      //   this.getSignature(sendResponse, message.payload);
+      //   break;
       default:
         sendResponse(
           errorHandler(
@@ -54,62 +64,29 @@ export default class AELFMethodController {
     }
   };
 
-  /**
-   * initAelfContract
-   *
-   * @param {Function} sendResponse sendResponse
-   * @param {Object} callInfo callInfo
-   *
-   */
-  initAelfContractCallOnly = async (sendResponse: SendResponseFun, callInfo: InternalMessagePayload) => {
-    try {
-      const params: {
-        appName?: string;
-        chainId: string;
-        account: string;
-        method: string;
-        contractName: string;
-        contractAddress: string;
-        rpcUrl: string;
-      } = callInfo.params;
-      const { account, contractName = '', contractAddress } = params;
-      const { origin: _origin } = callInfo;
-      console.log('>>>>>>>>>>>>>>>>>initAelfContract', params);
-      const checkResult = await this._checkParamsAndReturnPermission(params, _origin);
-      const connections = checkResult.data;
-      if (checkResult.error !== 0 || !connections) return sendResponse(checkResult);
-      let contracts: ContractsItem;
-      const contractNew = {
-        account,
-        contractName,
-        contractAddress,
-      };
-      const { permission } = connections[_origin] ?? {};
-      if (!permission || !permission?.contracts) {
-        const contract = {
-          [account]: contractNew,
-        };
-        contracts = {
-          [contractAddress]: contract,
-        };
-      } else {
-        contracts = permission.contracts;
-        if (!contracts[contractAddress]) contracts[contractAddress] = {};
-        contracts[contractAddress][account] = contractNew;
-      }
-      const newConnections = connections;
-      newConnections[_origin].permission.contracts = contracts;
-      setLocalStorage({
-        connections: newConnections,
-      });
-      sendResponse({ ...errorHandler(0), data: contractNew });
-    } catch (error) {
-      sendResponse({
-        ...errorHandler(100001),
-        data: error,
-      });
-    }
+  isLocked = () => {
+    return !this.getPassword();
   };
+
+  getAccounts: RequestCommonHandler = async (sendResponse, message) => {
+    const { origin } = message;
+    let accounts = {};
+    const locked = this.isLocked();
+    if (!locked) accounts = await dappManager.accounts(origin);
+    console.log(accounts, 'accounts===');
+    sendResponse({ ...errorHandler(0), data: accounts });
+  };
+
+  getChainId: RequestCommonHandler = async (sendResponse) => {
+    const chainId = await dappManager.chainId();
+    sendResponse({ ...errorHandler(0), data: chainId });
+  };
+
+  getChainIds: RequestCommonHandler = async (sendResponse) => {
+    const chainIds = await dappManager.chainIds();
+    sendResponse({ ...errorHandler(0), data: chainIds });
+  };
+
   /**
    *
    * @param {Function} sendResponse sendResponse sendResponse
@@ -164,19 +141,6 @@ export default class AELFMethodController {
       }),
     });
     sendResponse(signResult);
-  };
-
-  getSignature = async (
-    sendResponse: SendResponseFun,
-    signatureInfo: BaseInternalMessagePayload & {
-      hexToBeSign: string;
-      account: string;
-      appLogo?: string;
-      appName: string;
-    },
-  ) => {
-    console.log(signatureInfo);
-    sendResponse(errorHandler(700001));
   };
 
   _checkParamsAndReturnPermission = async (

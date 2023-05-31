@@ -9,6 +9,8 @@ export const getState = () => store.getState();
 export const getDispatch = () => store.dispatch;
 
 export const getWallet = () => getState().wallet;
+export const getUser = () => getState().user;
+export const getPin = () => getUser().credentials?.pin;
 
 export const getWalletInfo = () => getWallet()?.walletInfo;
 

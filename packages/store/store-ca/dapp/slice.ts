@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { addDapp, removeDapp, updateDapp } from './actions';
 
 const initialState: IDappStoreState = {
-  dappList: {},
+  dappMap: {},
 };
 export const dappSlice = createSlice({
   name: 'dapp',
@@ -14,23 +14,23 @@ export const dappSlice = createSlice({
     builder
       .addCase(addDapp, (state, action) => {
         const { networkType, dapp } = action.payload;
-        let dappList = state.dappList[networkType];
+        let dappList = state.dappMap[networkType];
         if (!dappList) dappList = [];
         if (dappList.some(item => item.origin === dapp.origin)) throw Error('dapp already exists');
         dappList.push(dapp);
-        state.dappList[networkType] = dappList;
+        state.dappMap[networkType] = dappList;
       })
       .addCase(removeDapp, (state, action) => {
         const { networkType, origin } = action.payload;
-        const dappList = state.dappList[networkType];
+        const dappList = state.dappMap[networkType];
         if (!dappList || !dappList.some(item => item.origin === origin)) throw Error('origin does not exist');
-        state.dappList[networkType] = dappList.filter(item => item.origin !== origin);
+        state.dappMap[networkType] = dappList.filter(item => item.origin !== origin);
       })
       .addCase(updateDapp, (state, action) => {
         const { networkType, dapp, origin } = action.payload;
-        const dappList = state.dappList[networkType];
+        const dappList = state.dappMap[networkType];
         if (!dappList || !dappList.some(item => item.origin === origin)) throw Error('origin does not exist');
-        state.dappList[networkType] = dappList.map(item => {
+        state.dappMap[networkType] = dappList.map(item => {
           if (item.origin === origin) return dapp;
           return item;
         });

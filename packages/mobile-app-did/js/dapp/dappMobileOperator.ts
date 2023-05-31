@@ -13,6 +13,17 @@ import { IDappManager } from '@portkey-wallet/types/types-ca/dapp';
 import { IDappOverlay } from './dappOverlay';
 import Operator from '@portkey/providers/dist/Operator';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
+import { getManagerAccount, getPin } from 'utils/redux';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+
+function getContract({ rpcUrl, contractAddress }: { rpcUrl: string; contractAddress: string }) {
+  const pin = getPin();
+  if (!pin) return;
+  const manager = getManagerAccount(pin);
+  if (!manager) return;
+  return getContractBasic({ rpcUrl, contractAddress, account: manager });
+}
 
 export type DappMobileOperatorOptions = {
   origin: string;
@@ -40,27 +51,26 @@ export default class DappMobileOperator extends Operator {
     DappEventBus.unregisterOperator(this);
   };
 
-  handleViewRequest = async (request: IRequestParams<any>): Promise<IResponseType<any>> => {
+  handleViewRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { eventName, method } = request;
-    console.log(method, eventName);
     switch (method) {
       case RPCMethodsBase.ACCOUNTS: {
         return generateNormalResponse({
           eventName,
-          data: this.dappManager.accounts(this.origin),
+          data: await this.dappManager.accounts(this.origin),
         });
       }
       case RPCMethodsBase.CHAIN_ID:
       case RPCMethodsBase.CHAIN_IDS: {
         return generateNormalResponse({
           eventName,
-          data: this.dappManager.chainId(),
+          data: await this.dappManager.chainId(),
         });
       }
       case RPCMethodsBase.CHAINS_INFO: {
         return generateNormalResponse({
           eventName,
-          data: this.dappManager.chainsInfo(),
+          data: await this.dappManager.chainsInfo(),
         });
       }
     }
@@ -69,33 +79,93 @@ export default class DappMobileOperator extends Operator {
       code: ResponseCode.UNIMPLEMENTED,
     });
   };
-  handleRequestAccounts = async (eventName: string, dapp: DappStoreItem) => {
-    const isActive = dapp.origin && this.dappManager.isActive(dapp.origin);
+
+  userConfirmation = async ({
+    eventName,
+    params,
+    method,
+  }: {
+    eventName: string;
+    params: any;
+    method: keyof IDappOverlay;
+  }): Promise<IResponseType | undefined> => {
+    const authorized = await this.dappOverlay[method](params);
+    if (!authorized) return this.userDenied(eventName);
+  };
+
+  handleRequestAccounts = async (method: keyof IDappOverlay, eventName: string, params: DappStoreItem) => {
+    const isActive = params.origin && (await this.dappManager.isActive(params.origin));
     if (isActive)
       return generateNormalResponse({
         eventName,
-        data: this.dappManager.accounts(dapp.origin!),
+        data: await this.dappManager.accounts(params.origin!),
       });
-    const authorized = await this.dappOverlay.requestAccounts(dapp);
-    if (!authorized) return this.userDenied(eventName);
-    this.dappManager.addDapp(dapp);
+
+    // user confirm
+    const response = await this.userConfirmation({ eventName, method, params });
+    if (response) return response;
+
+    await this.dappManager.addDapp(params);
     return generateNormalResponse({
       eventName,
-      data: this.dappManager.accounts(dapp.origin!),
+      data: await this.dappManager.accounts(params.origin!),
     });
   };
-  handleSendTransaction = async (eventName: string, params: SendTransactionParams) => {
-    const authorized = await this.dappOverlay.sendTransaction(params);
-    if (!authorized) return this.userDenied(eventName);
-    return generateNormalResponse({
-      eventName,
-      // TODO: send contract
-      // mock id
-      data: { transactionId: 'transactionId' },
-    });
+  handleSendTransaction = async (method: keyof IDappOverlay, eventName: string, params: SendTransactionParams) => {
+    // user confirm
+    try {
+      const response = await this.userConfirmation({ eventName, method, params });
+      if (response) return response;
+
+      const chainInfo = await this.dappManager.getChainInfo(params.chainId);
+      const caInfo = await this.dappManager.getCaInfo(params.chainId);
+
+      if (!chainInfo || !chainInfo.endPoint || !params.params || !caInfo)
+        return generateErrorResponse({ eventName, code: 40001, msg: 'invalid chain id' });
+
+      const contract = await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.caContractAddress });
+
+      if (chainInfo.caContractAddress !== params.contractAddress) {
+        const data = await contract?.callSendMethod(
+          'ManagerForwardCall',
+          '',
+          {
+            caHash: caInfo.caHash,
+            methodName: params.method,
+            contractAddress: params.contractAddress,
+            args: (params.params as any).paramsOption,
+          },
+          {
+            onMethod: 'transactionHash',
+          },
+        );
+        if (!data?.error) {
+          return generateNormalResponse({
+            eventName,
+            data,
+          });
+        } else {
+          return generateErrorResponse({
+            eventName,
+            code: 40001,
+            msg: handleErrorMessage(data.error),
+          });
+        }
+      } else {
+        return this.userDenied(eventName);
+      }
+    } catch (error) {
+      return generateErrorResponse({
+        eventName,
+        code: 40001,
+        msg: handleErrorMessage(error),
+      });
+    }
   };
 
-  handleSendRequest = async (request: IRequestParams<any>): Promise<IResponseType<any>> => {
+  handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
+    console.log(request, '======request');
+
     const { method, eventName, origin } = request;
     if (this.origin !== origin)
       return generateErrorResponse({
@@ -104,12 +174,12 @@ export default class DappMobileOperator extends Operator {
       });
 
     switch (method) {
-      case RPCMethodsBase.SEND_TRANSACTION: {
-        if (!this.dappManager.isActive(this.origin)) return this.unauthenticated(eventName);
-        return this.handleSendTransaction(eventName, request.payload);
-      }
       case RPCMethodsBase.REQUEST_ACCOUNTS: {
-        return this.handleRequestAccounts(eventName, { origin: this.origin, icon: '', name: '' });
+        return this.handleRequestAccounts(method, eventName, { origin: this.origin, icon: '', name: '' });
+      }
+      case RPCMethodsBase.SEND_TRANSACTION: {
+        if (await !this.dappManager.isActive(this.origin)) return this.unauthenticated(eventName);
+        return this.handleSendTransaction(method, eventName, request.payload);
       }
     }
     return generateErrorResponse({
@@ -118,7 +188,7 @@ export default class DappMobileOperator extends Operator {
     });
   };
 
-  handleRequest = async (request: IRequestParams<any>): Promise<IResponseType<any>> => {
+  handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
     if (request.method === RPCMethodsBase.SEND_TRANSACTION || request.method === RPCMethodsBase.REQUEST_ACCOUNTS)
       return this.handleSendRequest(request);
     return this.handleViewRequest(request);

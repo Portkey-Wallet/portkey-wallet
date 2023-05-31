@@ -7,5 +7,5 @@ export type DappStoreItem = {
 };
 
 export interface IDappStoreState {
-  dappList: { [key in NetworkType]?: DappStoreItem[] };
+  dappMap: { [key in NetworkType]?: DappStoreItem[] };
 }

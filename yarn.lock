@@ -5146,6 +5146,39 @@
   resolved "https://registry.npmmirror.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
+"@portkey/chain@^0.0.1-alpha.6":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-0.0.1-alpha.6.tgz#765a5a02e2dfe44a74397ac183f7b25fe577f155"
+  integrity sha512-cfIkVD5UHJro883eOUVCRy4uLd889dq9Cj1hw2/3L/NZ2d8GXvOtT6Sf40N59ld/x4gBD5vxcfyWwQV/XtTefw==
+  dependencies:
+    "@portkey/provider-types" "^0.0.1-alpha.6"
+    aelf-sdk "^3.2.44"
+
+"@portkey/provider-types@^0.0.1-alpha.6":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.6.tgz#046a960fc750c7c442d34c5daef0f64be227b535"
+  integrity sha512-SAnuwMCRquCFqEUhlgOljIPKl2fVinsiIWUMFLagVB0s0nEeZZfWV6l0p5AOGVCO7WSE4deMQZbp0RMMA/UXsw==
+  dependencies:
+    "@types/readable-stream" "^2.3.15"
+
+"@portkey/provider-utils@^0.0.1-alpha.6":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.6.tgz#bd42d0a91657ed5c1eee2f6eb765aa1bbcb197e1"
+  integrity sha512-f2ftySSTNNMlkQ9UiCo02HvVcCgq/RvzYlnBtGLPpHbTm4NHqZVGpvtYMYgDu365Tw16qKv8xM7H+RsLv16T2w==
+  dependencies:
+    "@portkey/provider-types" "^0.0.1-alpha.6"
+
+"@portkey/providers@^0.0.1-alpha.6":
+  version "0.0.1-alpha.6"
+  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-0.0.1-alpha.6.tgz#eb3bc05df1c714a28eb778e07919fee4384ffe7c"
+  integrity sha512-uOlMzERnnABnLxKsqO1g1s7nDkdu12DkJRDKIB5mXlElc4jWdkoNTMn3sKAc4k70Y5SOW6SMX0TyWT7lW6JY5g==
+  dependencies:
+    "@portkey/chain" "^0.0.1-alpha.6"
+    "@portkey/provider-types" "^0.0.1-alpha.6"
+    "@portkey/provider-utils" "^0.0.1-alpha.6"
+    "@types/readable-stream" "^2.3.15"
+    readable-stream "^4.4.0"
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.npmmirror.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -6713,6 +6746,14 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
+"@types/readable-stream@^2.3.15":
+  version "2.3.15"
+  resolved "https://registry.npmjs.org/@types/readable-stream/-/readable-stream-2.3.15.tgz#3d79c9ceb1b6a57d5f6e6976f489b9b5384321ae"
+  integrity sha512-oM5JSKQCcICF1wvGgmecmHldZ48OZamtMxcGGVICOJA8o8cahXC1zEVAif8iwoc5j8etxFaRFnf095+CDsuoFQ==
+  dependencies:
+    "@types/node" "*"
+    safe-buffer "~5.1.1"
+
 "@types/redux-persist-webextension-storage@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmmirror.com/@types/redux-persist-webextension-storage/-/redux-persist-webextension-storage-1.0.0.tgz#f7e0e504f17a3afd01f005755e6be8884d05b896"
@@ -6795,6 +6836,11 @@
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/tough-cookie/-/tough-cookie-4.0.2.tgz#6286b4c7228d58ab7866d19716f3696e03a09397"
   integrity sha512-Q5vtl1W5ue16D+nIaW8JWebSSraJVlK+EthKn7e7UcD4KWsaSJ8BqGPXNaPghgtcn/fhvrN17Tv8ksUsQpiplw==
+
+"@types/url-parse@^1.4.8":
+  version "1.4.8"
+  resolved "https://registry.npmjs.org/@types/url-parse/-/url-parse-1.4.8.tgz#c3825047efbca1295b7f1646f38203d9145130d6"
+  integrity sha512-zqqcGKyNWgTLFBxmaexGUKQyWqeG7HjXj20EuQJSJWwXe54BjX0ihIo5cJB9yAQzH8dNugJ9GvkBYMjPXs/PJw==
 
 "@types/use-sync-external-store@^0.0.3":
   version "0.0.3"
@@ -9751,6 +9797,11 @@ balanced-match@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmmirror.com/balanced-match/-/balanced-match-2.0.0.tgz#dc70f920d78db8b858535795867bf48f820633d9"
   integrity sha512-1ugUSr8BHXRnK23KfuYS+gVMC3LB8QGH9W1iGtDPsNWoQbgtXSExkBu2aDR4epiGWZOjZsj6lDl/N/AqqTC3UA==
+
+base-64@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
+  integrity sha512-Y5gU45svrR5tI2Vt/X9GPd3L0HNIKzGu202EjxrXMpuc2V2CiKgemAbUUsqYmZJvPtCXoUKjNZwBJzsNScUbXA==
 
 base-64@^1.0.0:
   version "1.0.0"
@@ -23706,6 +23757,14 @@ react-native-flipper@^0.161.0:
   resolved "https://registry.npmmirror.com/react-native-flipper/-/react-native-flipper-0.161.0.tgz#816dd567883a30b894c5f8bc4b92f86303a550ce"
   integrity sha512-AouPbb40n0HODRbOokcZOJPsx42gLXZvQo7xX8RuO0zvVJGCgalgAUcdWeQgjalDIcOdjd4FWUeUvC++6cqYKA==
 
+react-native-fs@^2.20.0:
+  version "2.20.0"
+  resolved "https://registry.npmjs.org/react-native-fs/-/react-native-fs-2.20.0.tgz#05a9362b473bfc0910772c0acbb73a78dbc810f6"
+  integrity sha512-VkTBzs7fIDUiy/XajOSNk0XazFE9l+QlMAce7lGuebZcag5CnjszB+u4BdqzwaQOdcYb5wsJIsqq4kxInIRpJQ==
+  dependencies:
+    base-64 "^0.1.0"
+    utf8 "^3.0.0"
+
 react-native-gesture-handler@^2.5.0:
   version "2.7.0"
   resolved "https://registry.npmmirror.com/react-native-gesture-handler/-/react-native-gesture-handler-2.7.0.tgz#53ad828add926c8e025f68ea581758c0f8893054"
@@ -24145,6 +24204,16 @@ readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.5, readable
     safe-buffer "~5.1.1"
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
+
+readable-stream@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-4.4.0.tgz#55ce132d60a988c460d75c631e9ccf6a7229b468"
+  integrity sha512-kDMOq0qLtxV9f/SQv522h8cxZBqNZXuXNyjyezmfAAuribMyVXziljpQ/uQhfE1XLg2/TLTW2DsnoE4VAi/krg==
+  dependencies:
+    abort-controller "^3.0.0"
+    buffer "^6.0.3"
+    events "^3.3.0"
+    process "^0.11.10"
 
 readdir-scoped-modules@^1.1.0:
   version "1.1.0"
@@ -27609,7 +27678,7 @@ url-join@4.0.0:
   resolved "https://registry.npmmirror.com/url-join/-/url-join-4.0.0.tgz#4d3340e807d3773bda9991f8305acdcc2a665d2a"
   integrity sha512-EGXjXJZhIHiQMK2pQukuFcL303nskqIRzWvPvV5O8miOfwoUb9G+a/Cld60kUyeaybEI94wvVClT10DtfeAExA==
 
-url-parse@^1.4.7, url-parse@^1.5.3, url-parse@^1.5.9:
+url-parse@^1.4.7, url-parse@^1.5.10, url-parse@^1.5.3, url-parse@^1.5.9:
   version "1.5.10"
   resolved "https://registry.npmmirror.com/url-parse/-/url-parse-1.5.10.tgz#9d3c2f736c1d75dd3bd2be507dcc111f1e2ea9c1"
   integrity sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==
@@ -27677,7 +27746,7 @@ utf-8-validate@^5.0.2:
   dependencies:
     node-gyp-build "^4.3.0"
 
-utf8@3.0.0:
+utf8@3.0.0, utf8@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmmirror.com/utf8/-/utf8-3.0.0.tgz#f052eed1364d696e769ef058b183df88c87f69d1"
   integrity sha512-E8VjFIQ/TyQgp+TZfS6l8yp/xWppSAHzidGiRrqe4bK4XP9pTRyKFgGJpO3SN7zdX4DeomTrwaseCHovfpFcqQ==

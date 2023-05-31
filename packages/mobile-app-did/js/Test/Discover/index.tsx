@@ -10,11 +10,12 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import { MobileStream } from 'dapp/mobileStream';
 import DappMobileOperator from 'dapp/dappMobileOperator';
-import { DappManager } from '@portkey-wallet/utils/dapp/dappManager';
 import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import URL from 'url-parse';
 import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
+import { DappMobileManager } from 'dapp/dappManager';
+import { useDapp } from '../../../../hooks/hooks-ca/dapp';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -30,6 +31,9 @@ const Discover: React.FC = () => {
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
+  const dapp = useDapp();
+  console.log(dapp, '=====dapp');
+
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
@@ -47,7 +51,7 @@ const Discover: React.FC = () => {
       origin,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       stream: new MobileStream(webViewRef.current!),
-      dappManager: new DappManager({ store: store as any }),
+      dappManager: new DappMobileManager({ store: store as any }),
       dappOverlay: new DappOverlay(),
     });
   }, []);

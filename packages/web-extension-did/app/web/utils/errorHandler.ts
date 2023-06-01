@@ -60,6 +60,8 @@ const errorMap = {
   // 7xxxxx transaction failed
   700001: '',
   700002: 'The contract call failed, please check the contract address and contract name',
+  // 8xxxxx is the error code of the event
+  800001: '',
 };
 
 export interface PortKeyResultType {

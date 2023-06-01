@@ -4,7 +4,7 @@ import storeConfig from './config';
 import rootReducer from './rootReducer';
 import { rateApi } from '@portkey-wallet/store/rate/api';
 
-const persistedReducer = persistReducer(storeConfig.reduxPersistConfig as any, rootReducer);
+export const persistedReducer = persistReducer(storeConfig.reduxPersistConfig as any, rootReducer);
 
 const middlewareList: any[] = [];
 

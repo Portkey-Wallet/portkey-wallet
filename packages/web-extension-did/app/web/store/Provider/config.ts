@@ -19,6 +19,7 @@ import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
+import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -57,6 +58,11 @@ export const walletPersistConfig = {
   key: walletSlice.name,
   storage: localStorage,
   blacklist: [''],
+};
+
+export const dappPersistConfig = {
+  key: dappSlice.name,
+  storage: localStorage,
 };
 
 export const loginPersistConfig = {

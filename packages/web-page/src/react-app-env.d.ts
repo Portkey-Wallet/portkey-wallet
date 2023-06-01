@@ -1,7 +1,7 @@
 /// <reference types="react-scripts" />
 interface Window {
   NightElf?: any;
-  portkey_did?: {
+  portkey?: {
     on: (eventName: string, listener: (...args: any[]) => void) => any;
     // emit: (type: string, ...args: any[]) => boolean;
     removeListener: (eventName: string | symbol, listener: (...args: any[]) => void) => any;

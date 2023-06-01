@@ -10,12 +10,16 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import { MobileStream } from 'dapp/mobileStream';
 import DappMobileOperator from 'dapp/dappMobileOperator';
-import { WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 import URL from 'url-parse';
 import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { useDapp } from '../../../../hooks/hooks-ca/dapp';
+import CommonButton from 'components/CommonButton';
+import DappEventBus from 'dapp/dappEventBus';
+import { useAppDispatch } from 'store/hooks';
+import { getHost } from '@portkey-wallet/utils/dapp/browser';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -32,8 +36,8 @@ const Discover: React.FC = () => {
   const operatorRef = useRef<DappMobileOperator | null>(null);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
   const dapp = useDapp();
+  const dispatch = useAppDispatch();
   console.log(dapp, '=====dapp');
-
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
@@ -63,23 +67,56 @@ const Discover: React.FC = () => {
     },
     [initOperator],
   );
-
+  const handleUpdate = useCallback(({ nativeEvent }: WebViewNavigationEvent | WebViewErrorEvent) => {
+    const { origin, pathname = '', query = '' } = new URL(nativeEvent.url);
+    const realUrl = `${origin}${pathname}${query}`;
+    const icon = `https://api.faviconkit.com/${getHost(realUrl)}/50`;
+    operatorRef.current?.updateDappInfo({
+      origin,
+      name: nativeEvent.title,
+      icon,
+    });
+  }, []);
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
       <CustomHeader titleDom="Discover" leftCallback={navigationService.goBack} />
       <WebView
         ref={webViewRef}
-        style={pageStyles.webView}
+        style={styles.webView}
+        decelerationRate="normal"
         source={{ uri: 'http://localhost:3000/' }}
         injectedJavaScriptBeforeContentLoaded={entryScriptWeb3}
         onMessage={({ nativeEvent }) => {
-          console.log(JSON.parse(nativeEvent.data));
           operatorRef.current?.handleRequestMessage(nativeEvent.data);
         }}
-        onLoadEnd={({ nativeEvent }) => {
-          console.log(nativeEvent, '===nativeEvent');
-        }}
         onLoadStart={onLoadStart}
+        onLoad={handleUpdate}
+        onLoadProgress={({ nativeEvent }) => {
+          console.log(nativeEvent.progress, '=onLoadProgress');
+        }}
+        onLoadEnd={handleUpdate}
+        applicationNameForUserAgent={'WebView Portkey did Mobile'}
+      />
+      <CommonButton
+        onPress={() => {
+          DappEventBus.dispatchEvent({
+            eventName: 'accountsChanged',
+            data: {
+              AELF: ['iC1BZJsrn9jEYJ4ABgDnpqaYYbu7JB3fZuBJS5xAoZJB3yBVU'],
+              tDVW: ['2BhwLPoSj2z3GSTrBphmqJJ9yq3hdxtLaDQgyoJnJBHvB9cpw1'],
+            },
+          });
+        }}
+        title="accountsChanged"
+      />
+      <CommonButton
+        onPress={() => {
+          DappEventBus.dispatchEvent({
+            eventName: 'chainChanged',
+            data: ['AELF', 'tDVV'],
+          });
+        }}
+        title="accountsChanged2"
       />
     </SafeAreaBox>
   );
@@ -87,7 +124,7 @@ const Discover: React.FC = () => {
 
 export default Discover;
 
-export const pageStyles = StyleSheet.create({
+export const styles = StyleSheet.create({
   pageWrap: {
     paddingLeft: 0,
     paddingRight: 0,

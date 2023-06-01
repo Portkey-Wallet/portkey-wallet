@@ -40,7 +40,7 @@ export default class NotificationService {
         this.openWindow = null;
       }
       if (this.closeSender?.[number]) {
-        this.closeSender?.[number]?.sendResponse?.(errorHandler(200010));
+        this.closeSender?.[number]?.sendResponse?.(errorHandler(200003));
         delete this.closeSender?.[number];
       }
     });
@@ -50,7 +50,7 @@ export default class NotificationService {
         this.openTag = null;
       }
       if (this.closeSender?.[number]) {
-        this.closeSender?.[number]?.sendResponse?.(errorHandler(200010));
+        this.closeSender?.[number]?.sendResponse?.(errorHandler(200003));
         delete this.closeSender?.[number];
       }
     });

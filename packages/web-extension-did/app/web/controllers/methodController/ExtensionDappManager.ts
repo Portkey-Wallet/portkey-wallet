@@ -2,18 +2,18 @@ import { DappManager } from '@portkey-wallet/utils/dapp/dappManager';
 import { DappManagerOptions } from '@portkey-wallet/types/types-ca/dapp';
 
 export class ExtensionDappManager<T = any> extends DappManager {
-  protected getPin: () => boolean;
+  protected locked: () => boolean;
   constructor(
     options: DappManagerOptions<T> & {
-      getPin: () => boolean;
+      locked: () => boolean;
     },
   ) {
     super(options as any);
-    this.getPin = options.getPin;
+    this.locked = options.locked;
   }
 
   isLocked = async (): Promise<boolean> => {
-    return this.getPin();
+    return this.locked();
   };
 
   async isActive(origin: string): Promise<boolean> {

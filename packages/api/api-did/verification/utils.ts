@@ -2,6 +2,7 @@ import { IStorage, StorageBaseLoader } from '@portkey-wallet/types/storage';
 import { request } from '@portkey-wallet/api/api-did';
 import { RequestConfig } from '../../types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
+import { RecaptchaType } from '@portkey-wallet/types/verifier';
 
 type VerifierInfo = {
   verifierSessionId: string;
@@ -14,6 +15,7 @@ export interface SendVerificationConfig extends RequestConfig {
     guardianIdentifier?: string;
     verifierId?: string;
     chainId: string | number;
+    operationType: RecaptchaType;
   };
 }
 
@@ -59,6 +61,7 @@ export class Verification extends StorageBaseLoader {
     this.verifierMap[key] = value;
     await this.save();
   }
+
   public async sendVerificationCode(config: SendVerificationConfig) {
     const { guardianIdentifier, verifierId } = config.params;
     const key = (guardianIdentifier || '') + (verifierId || '');

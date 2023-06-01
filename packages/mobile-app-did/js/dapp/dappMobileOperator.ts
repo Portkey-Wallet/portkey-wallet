@@ -12,7 +12,7 @@ import DappEventBus from './dappEventBus';
 import { generateNormalResponse, generateErrorResponse } from '@portkey/provider-utils';
 import { IDappManager } from '@portkey-wallet/types/types-ca/dapp';
 import { IDappOverlay } from './dappOverlay';
-import Operator from '@portkey/providers/dist/Operator';
+import { Operator } from '@portkey/providers';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount, getPin } from 'utils/redux';

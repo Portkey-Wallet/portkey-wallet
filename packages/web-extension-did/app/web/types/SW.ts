@@ -1,11 +1,11 @@
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 import { AutoLockDataType } from 'constants/lock';
-import { RegisterStatus } from 'types';
+import { RegisterStatus, SendResponseFun } from 'types';
 
 export interface IPageState {
   lockTime: AutoLockDataType;
   registerStatus: RegisterStatus;
-  wallet: WalletState;
+  wallet?: WalletState;
 }
 
 export interface BaseInternalMessagePayload {
@@ -24,3 +24,25 @@ export interface InternalMessageData {
   type: string;
   payload: any;
 }
+
+export interface BaseRequestMessagePayload {
+  eventName: string;
+  hostname: string;
+  href: string;
+  method: string;
+  origin: string;
+}
+
+export interface RequestMessagePayload<T = any> extends BaseRequestMessagePayload {
+  payload: T;
+}
+
+export interface RequestMessageData<T = any> {
+  type: string;
+  payload: RequestMessagePayload<T>;
+}
+
+export type RequestCommonHandler<T = any> = (
+  sendResponse: SendResponseFun,
+  message: RequestMessagePayload<T>,
+) => Promise<void>;

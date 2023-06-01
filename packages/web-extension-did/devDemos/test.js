@@ -1,4 +1,4 @@
-/* global portkey_did */
+/* global portkey */
 
 // century renew blade meadow faith evil uniform work discover poet ripple drill
 
@@ -9,27 +9,27 @@ const tokenContractAddress = 'ELF_JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvo
 let testAddress = 'YUW9zH5GhRboT5JK4vXp5BLAfCDv28rRmTQwo418FuaJmkSg8';
 
 // events
-document.addEventListener('Portkey_did#initialized', (result) => {
-  console.log('portkey_did#initialized', Date.now());
-  console.log('portkey_did test.html: ', result);
+document.addEventListener('portkey#initialized', (result) => {
+  console.log('portkey#initialized', Date.now());
+  console.log('portkey test.html: ', result);
 
-  window.portkey_did.on('connect', (...args) => {
+  window.portkey.on('connect', (...args) => {
     console.log(args, 'connect== on');
   });
 
-  window.portkey_did.on('chainChanged', (...args) => {
+  window.portkey.on('chainChanged', (...args) => {
     console.log(args, '_handleChainChanged== on');
     const loginInfo = document.getElementById('chain-info');
     loginInfo.innerHTML = JSON.stringify(args[0]);
     testAddress = args[0].address;
   });
 
-  window.portkey_did.on('accountsChanged', (...args) => {
+  window.portkey.on('accountsChanged', (...args) => {
     const loginInfo = document.getElementById('login-info');
     console.log(args, 'accountsChanged== on');
     loginInfo.innerHTML = JSON.stringify(args[0]);
   });
-  window.portkey_did.on('onDisconnect', (...args) => {
+  window.portkey.on('onDisconnect', (...args) => {
     console.log(args, 'onDisconnect== on');
   });
 
@@ -62,7 +62,7 @@ document.addEventListener('Portkey_did#initialized', (result) => {
   const removeContractPermission = document.getElementById('remove-contract-permission');
   const removeWhitelist = document.getElementById('remove-whitelist');
   // Login at first
-  const aelf = new window.portkey_did.AElf({
+  const aelf = new window.portkey.AElf({
     // httpProvider: 'http://192.168.199.210:5000/chain',
     // httpProvider: ['http://192.168.66.237:8000'],
     httpProvider: ['https://explorer.aelf.io/chain'],
@@ -82,7 +82,7 @@ document.addEventListener('Portkey_did#initialized', (result) => {
   // console.log('aelf>>>>>>>>>>>', aelf, aelfNight);
 
   switchNetwork.onclick = async function () {
-    const switchNetworkRes = await window.portkey_did.request({
+    const switchNetworkRes = await window.portkey.request({
       method: 'portkey_switchChain',
       params: {
         rpcUrl: 'https://explorer-test.aelf.io/chain',
@@ -366,7 +366,7 @@ document.addEventListener('Portkey_did#initialized', (result) => {
   };
 
   // checkPermissionDefault.onclick = function () {
-  //     portkey_did.api({
+  //     portkey.api({
   //         appName: 'hzzTest',
   //         method: 'CHECK_PERMISSION',
   //         address: 'ELF_6WZNJgU5MHWsvzZmPpC7cW6g3qciniQhDKRLCvbQcTCcVFH'
@@ -416,7 +416,7 @@ document.addEventListener('Portkey_did#initialized', (result) => {
 
   const illegalMethod = document.getElementById('error-illegal-method');
   illegalMethod.onclick = function () {
-    window.portkey_did
+    window.portkey
       .request({
         appName: 'hzzTest',
         method: 'GET_ADDRESS233',
@@ -455,7 +455,7 @@ document.addEventListener('Portkey_did#initialized', (result) => {
 
   const setRecaptchaCode = document.getElementById('set-recaptcha-code');
   setRecaptchaCode.onclick = async () => {
-    const list = await window.Portkey_did.request({
+    const list = await window.portkey.request({
       method: 'portkey_setReCaptchaCodeV2',
       params: {
         a: 1,
@@ -498,7 +498,7 @@ document.addEventListener('Portkey_did#initialized', (result) => {
   // }];
 
   // CALL_AELF_CONTRACT_WITHOUT_CHECK
-  // portkey_did.api({
+  // portkey.api({
   //     appName: 'hzzTest',
   //     // method: 'CALL_AELF_CONTRACT',
   //     method: 'CALL_AELF_CONTRACT_WITHOUT_CHECK',

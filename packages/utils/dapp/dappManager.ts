@@ -66,7 +66,7 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   }
   async accounts(origin: string) {
     const { walletInfo, currentNetwork } = await this.getWallet();
-    if (!this.isActive(origin) || !walletInfo?.caInfo) return {};
+    if (!(await this.isActive(origin)) || !walletInfo?.caInfo) return {};
     const accounts: Accounts = {};
     Object.entries(walletInfo.caInfo[currentNetwork] || {}).forEach(([key, value]) => {
       if ((value as CAInfo)?.caAddress) accounts[key as ChainId] = [(value as CAInfo).caAddress];

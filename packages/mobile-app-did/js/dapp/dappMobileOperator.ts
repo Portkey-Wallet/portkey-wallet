@@ -121,51 +121,50 @@ export default class DappMobileOperator extends Operator {
       const caInfo = await this.dappManager.getCaInfo(params.chainId);
 
       if (!chainInfo || !chainInfo.endPoint || !params.params || !caInfo)
-        return generateErrorResponse({ eventName, code: 40001, msg: 'invalid chain id' });
+        return generateErrorResponse({ eventName, code: 4002, msg: 'invalid chain id' });
 
       const contract = await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.caContractAddress });
 
-      if (chainInfo.caContractAddress !== params.contractAddress) {
-        const data = await contract?.callSendMethod(
-          'ManagerForwardCall',
-          '',
-          {
+      const isCAAddress = chainInfo.caContractAddress !== params.contractAddress;
+
+      let paramsOption = (params.params as { paramsOption: object }).paramsOption;
+
+      const functionName = isCAAddress ? 'ManagerForwardCall' : params.method;
+
+      paramsOption = isCAAddress
+        ? {
             caHash: caInfo.caHash,
             methodName: params.method,
             contractAddress: params.contractAddress,
-            args: (params.params as any).paramsOption,
-          },
-          {
-            onMethod: 'transactionHash',
-          },
-        );
-        if (!data?.error) {
-          return generateNormalResponse({
-            eventName,
-            data,
-          });
-        } else {
-          return generateErrorResponse({
-            eventName,
-            code: 40001,
-            msg: handleErrorMessage(data.error),
-          });
-        }
+            args: paramsOption,
+          }
+        : paramsOption;
+
+      const data = await contract!.callSendMethod(functionName, '', paramsOption, {
+        onMethod: 'transactionHash',
+      });
+      if (!data?.error) {
+        return generateNormalResponse({
+          eventName,
+          data,
+        });
       } else {
-        return this.userDenied(eventName);
+        return generateErrorResponse({
+          eventName,
+          code: 4007,
+          msg: handleErrorMessage(data.error),
+        });
       }
     } catch (error) {
       return generateErrorResponse({
         eventName,
-        code: 40001,
+        code: 4007,
         msg: handleErrorMessage(error),
       });
     }
   };
 
   handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
-    console.log(request, '======request');
-
     const { method, eventName, origin } = request;
     if (this.origin !== origin)
       return generateErrorResponse({

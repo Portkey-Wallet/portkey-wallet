@@ -57,6 +57,7 @@ const permissionWhitelist = [
   RPCMethodsBase.ACCOUNTS,
   RPCMethodsBase.CHAIN_ID,
   RPCMethodsBase.CHAIN_IDS,
+  RPCMethodsBase.CHAINS_INFO,
 ];
 
 const initPageState = async () => {
@@ -90,6 +91,7 @@ export default class ServiceWorkerInstantiate {
     // Controller that handles aelf transactions
     this.aelfMethodController = new AELFMethodController({
       notificationService,
+      approvalController: this.approvalController,
       getPageState: this.getPageState,
       getPassword: () => seed,
     });
@@ -175,12 +177,7 @@ export default class ServiceWorkerInstantiate {
       case PortkeyMessageTypes.SOCIAL_LOGIN:
         this.socialLogin(sendResponse, message.payload);
         break;
-      case WalletMessageTypes.CONNECT:
-        this.connectWallet(sendResponse, message.payload);
-        break;
-      case WalletMessageTypes.REQUEST_ACCOUNTS:
-        this.getAddress(sendResponse, message.payload);
-        break;
+
       case WalletMessageTypes.GET_WALLET_STATE:
         ServiceWorkerInstantiate.getWalletState(sendResponse);
         break;
@@ -331,30 +328,6 @@ export default class ServiceWorkerInstantiate {
       },
       'tabs',
     );
-  }
-
-  /**
-   * Determine whether the portkey is locked, and if not, get the list of authorized users
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAddress(sendResponse: SendResponseFun, _message: any) {
-    try {
-      sendResponse(errorHandler(700001));
-    } catch (error) {
-      sendResponse(errorHandler(500001, error));
-    }
-  }
-
-  /**
-   * Dapp connection portkey
-   */
-  async connectWallet(sendResponse: SendResponseFun, message: any) {
-    try {
-      sendResponse(errorHandler(700001, message));
-    } catch (error) {
-      console.log(error, 'connectWallet==');
-      return sendResponse(errorHandler(500001, error));
-    }
   }
 
   async notificationServiceClose(

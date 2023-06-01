@@ -4,7 +4,7 @@ import { getStoreState as getDefaultState } from 'store/utils/getStore';
 import { getStoredState } from 'redux-persist';
 import { walletPersistConfig, dappPersistConfig } from 'store/Provider/config';
 
-export async function getState() {
+export async function getSWReduxState() {
   return {
     wallet: await getWalletState(),
     dapp: await getWalletState(),

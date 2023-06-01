@@ -1,4 +1,3 @@
-import ethMessage from './ethMessage';
 import walletMessage from './walletMessage';
 
 export const NOTIFICATION_NAMES = {
@@ -36,7 +35,7 @@ export const MethodMessageTypes = {
   GET_WALLET_STATE: 'wallet_getState',
 };
 
-export const messageType = Object.assign(ethMessage, MethodMessageTypes);
+export const messageType = Object.assign({}, MethodMessageTypes);
 
 export const PortkeyMessageTypes = {
   // SEED

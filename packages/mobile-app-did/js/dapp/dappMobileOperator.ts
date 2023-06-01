@@ -178,7 +178,7 @@ export default class DappMobileOperator extends Operator {
         return this.handleRequestAccounts(method, eventName, { origin: this.origin, icon: '', name: '' });
       }
       case RPCMethodsBase.SEND_TRANSACTION: {
-        if (await !this.dappManager.isActive(this.origin)) return this.unauthenticated(eventName);
+        if (!(await this.dappManager.isActive(this.origin))) return this.unauthenticated(eventName);
         return this.handleSendTransaction(method, eventName, request.payload);
       }
     }

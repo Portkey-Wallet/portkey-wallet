@@ -47,6 +47,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import My from 'pages/My';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import Permission from 'pages/Permission';
+import ConnectWallet from 'pages/ConnectWallet';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -169,6 +170,10 @@ export const PageRouter = () => {
     {
       path: '/test/socket',
       element: <TestSocket />,
+    },
+    {
+      path: '/connect-wallet',
+      element: <ConnectWallet />,
     },
     {
       path: '*',

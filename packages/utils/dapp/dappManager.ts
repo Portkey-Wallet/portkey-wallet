@@ -72,6 +72,7 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
     const list = Object.entries(currentCAInfo || {})
       .map(([key, value]) => {
         if ((value as CAInfo)?.caAddress) return key;
+        return undefined;
       })
       .filter(i => !!i);
     return list as ChainIds;

@@ -2,45 +2,73 @@
  * @file
  * The controller that handles the aelf method
  */
-import { AelfMessageTypes, PromptRouteTypes } from 'messages/InternalMessageTypes';
 import NotificationService from 'service/NotificationService';
 import { SendResponseFun } from 'types';
-import { ConnectionsType, ContractsItem } from 'types/storage';
-import { BaseInternalMessagePayload, InternalMessageData, InternalMessagePayload, IPageState } from 'types/SW';
-import errorHandler, { PortKeyResultType } from 'utils/errorHandler';
-import { getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
+import { IPageState, RequestCommonHandler, RequestMessageData } from 'types/SW';
+import errorHandler from 'utils/errorHandler';
+import { RPCMethodsBase, ResponseCode } from '@portkey/provider-types';
+import { ExtensionDappManager } from './ExtensionDappManager';
+import { getSWReduxState } from 'utils/lib/SWGetReduxStore';
+import ApprovalController from 'controllers/approval/ApprovalController';
 
+const storeInSW = {
+  getState: getSWReduxState,
+  dispatch: () => {
+    throw Error('Unable to use dispatch in service worker');
+  },
+};
+
+const aelfMethodList = [
+  RPCMethodsBase.ACCOUNTS,
+  RPCMethodsBase.CHAIN_ID,
+  RPCMethodsBase.CHAIN_IDS,
+  RPCMethodsBase.CHAINS_INFO,
+  RPCMethodsBase.REQUEST_ACCOUNTS,
+  RPCMethodsBase.SEND_TRANSACTION,
+];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
-  methodList: string[];
+  approvalController: ApprovalController;
   getPageState: () => IPageState;
   getPassword: () => string | null;
 }
 export default class AELFMethodController {
-  protected methodList: string[];
-  protected _getPageState: () => IPageState;
+  protected getPageState: () => IPageState;
   protected notificationService: NotificationService;
-  protected _getPassword: () => string | null;
-  constructor({ methodList, getPassword, notificationService, getPageState }: AELFMethodControllerProps) {
-    this.methodList = methodList;
-    this._getPageState = getPageState;
+  protected getPassword: () => string | null;
+  protected dappManager: ExtensionDappManager;
+  protected approvalController: ApprovalController;
+  public aelfMethodList: string[];
+  constructor({ notificationService, approvalController, getPassword, getPageState }: AELFMethodControllerProps) {
+    this.getPageState = getPageState;
+    this.approvalController = approvalController;
     this.notificationService = notificationService;
-    this._getPassword = getPassword;
+    this.getPassword = getPassword;
+    this.aelfMethodList = aelfMethodList;
+    this.dappManager = new ExtensionDappManager({
+      getPin: () => !getPassword(),
+      store: storeInSW,
+    });
   }
-  dispenseMessage = (message: InternalMessageData, sendResponse: SendResponseFun) => {
-    // const pageState = this._getPageState();
+  dispenseMessage = (message: RequestMessageData, sendResponse: SendResponseFun) => {
     switch (message.type) {
-      case AelfMessageTypes.INIT_AELF_CONTRACT:
-        this.initAelfContractCallOnly(sendResponse, message.payload);
+      case RPCMethodsBase.CHAIN_ID:
+        this.getChainId(sendResponse, message.payload);
         break;
-      case AelfMessageTypes.CALL_SEND_CONTRACT:
+      case RPCMethodsBase.CHAIN_IDS:
+        this.getChainIds(sendResponse, message.payload);
+        break;
+      case RPCMethodsBase.ACCOUNTS:
+        this.getAccounts(sendResponse, message.payload);
+        break;
+      case RPCMethodsBase.CHAINS_INFO:
+        this.getChainsInfo(sendResponse, message.payload);
+        break;
+      case RPCMethodsBase.SEND_TRANSACTION:
         this.callSendContract(sendResponse, message.payload);
         break;
-      case AelfMessageTypes.GET_SEND_CONTRACT_SIGN_TX:
-        this.callSendContract(sendResponse, message.payload, 1);
-        break;
-      case AelfMessageTypes.GET_SIGNATURE:
-        this.getSignature(sendResponse, message.payload);
+      case RPCMethodsBase.REQUEST_ACCOUNTS:
+        this.requestAccounts(sendResponse, message.payload);
         break;
       default:
         sendResponse(
@@ -54,152 +82,147 @@ export default class AELFMethodController {
     }
   };
 
-  /**
-   * initAelfContract
-   *
-   * @param {Function} sendResponse sendResponse
-   * @param {Object} callInfo callInfo
-   *
-   */
-  initAelfContractCallOnly = async (sendResponse: SendResponseFun, callInfo: InternalMessagePayload) => {
-    try {
-      const params: {
-        appName?: string;
-        chainId: string;
-        account: string;
-        method: string;
-        contractName: string;
-        contractAddress: string;
-        rpcUrl: string;
-      } = callInfo.params;
-      const { account, contractName = '', contractAddress } = params;
-      const { origin: _origin } = callInfo;
-      console.log('>>>>>>>>>>>>>>>>>initAelfContract', params);
-      const checkResult = await this._checkParamsAndReturnPermission(params, _origin);
-      const connections = checkResult.data;
-      if (checkResult.error !== 0 || !connections) return sendResponse(checkResult);
-      let contracts: ContractsItem;
-      const contractNew = {
-        account,
-        contractName,
-        contractAddress,
-      };
-      const { permission } = connections[_origin] ?? {};
-      if (!permission || !permission?.contracts) {
-        const contract = {
-          [account]: contractNew,
-        };
-        contracts = {
-          [contractAddress]: contract,
-        };
-      } else {
-        contracts = permission.contracts;
-        if (!contracts[contractAddress]) contracts[contractAddress] = {};
-        contracts[contractAddress][account] = contractNew;
-      }
-      const newConnections = connections;
-      newConnections[_origin].permission.contracts = contracts;
-      setLocalStorage({
-        connections: newConnections,
-      });
-      sendResponse({ ...errorHandler(0), data: contractNew });
-    } catch (error) {
-      sendResponse({
-        ...errorHandler(100001),
-        data: error,
-      });
-    }
+  isLocked = () => {
+    return !this.getPassword();
   };
-  /**
-   *
-   * @param {Function} sendResponse sendResponse sendResponse
-   * @param callInfo
-   */
-  callSendContract = async (
-    sendResponse: SendResponseFun,
-    callInfo: InternalMessagePayload,
-    isGetSignTx: 0 | 1 = 0,
-  ) => {
-    console.log(callInfo, 'callSendContract');
-    const params = callInfo.params as {
-      account: string;
-      appName?: string;
-      chainId: string;
-      appLogo?: string;
-      contractAddress: string;
-      contractName: string;
-      method: string;
-      rpcUrl: string;
-      params: any[];
-    };
-    const { account, appName, contractAddress, method: methodName, rpcUrl, appLogo, params: paramsOption } = params;
-    const { origin: _origin } = callInfo;
-    const checkResult = await this._checkParamsAndReturnPermission(params, _origin);
-    const connections = checkResult.data;
-    if (checkResult.error !== 0 || !connections) return sendResponse(checkResult);
-    const permission = connections[_origin].permission ?? {};
-    console.log(permission, 'permission===');
-    const { contracts = {} } = permission;
-    if (!contracts[contractAddress]?.[account])
-      return sendResponse(errorHandler(700001, 'Please initialize the contract first'));
-    // When methodName is Transfer, parameters need to be verified
-    if (methodName === 'Transfer') {
-      const transferInfo = paramsOption[0];
-      if (transferInfo && transferInfo.amount && transferInfo.to && transferInfo.symbol) {
-        // isVerified = true;
-      } else {
-        return sendResponse(errorHandler(400001, 'Missing params'));
-      }
-    }
-    const signResult = await this.notificationService.openPrompt({
-      method: PromptRouteTypes.SIGN_MESSAGE,
-      search: JSON.stringify({
-        appName: appName ?? _origin,
-        rpcUrl,
-        methodName,
-        appLogo,
-        isGetSignTx,
-        ...contracts[contractAddress][account],
-        paramsOption,
-      }),
+
+  getChainsInfo: RequestCommonHandler = async (sendResponse) => {
+    const data = await this.dappManager.chainsInfo();
+    sendResponse({ ...errorHandler(0), data });
+  };
+
+  getAccounts: RequestCommonHandler = async (sendResponse, message) => {
+    const { origin } = message;
+    let accounts = {};
+    const locked = this.isLocked();
+    if (!locked) accounts = await this.dappManager.accounts(origin);
+    console.log(accounts, 'accounts===');
+    sendResponse({ ...errorHandler(0), data: accounts });
+  };
+
+  getChainId: RequestCommonHandler = async (sendResponse) => {
+    const chainId = await this.dappManager.chainId();
+    sendResponse({ ...errorHandler(0), data: chainId });
+  };
+
+  getChainIds: RequestCommonHandler = async (sendResponse) => {
+    const chainIds = await this.dappManager.chainIds();
+    sendResponse({ ...errorHandler(0), data: chainIds });
+  };
+
+  requestAccounts: RequestCommonHandler = async (sendResponse, message) => {
+    const isActive = await this.dappManager.isActive(message.origin);
+    if (isActive) return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
+    const permissionAccount = await this.approvalController.authorizedToConnect({
+      appName: 'appName',
+      appLogo: 'appName',
+      origin,
     });
-    sendResponse(signResult);
+    console.log(permissionAccount, 'permissionAccount===');
+
+    if (permissionAccount.error !== 0) return sendResponse(permissionAccount);
+    // const connectAccount: string[] = permissionAccount.data;
+    // const account = pageState.wallet.accountList?.filter((item) => item.address === connectAccount[0]);
+    // SWEventController.accountsChanged(account?.[0], (res) => {
+    //   console.log(res, 'onDisconnect==accountsChanged');
+    // });
+    // console.log(connectAccount, 'connectWallet==');
+    // sendResponse({
+    //   ...errorHandler(0),
+    //   data: {
+    //     accountName: account?.[0].accountName,
+    //     accountType: account?.[0].accountType,
+    //     address: account?.[0].address,
+    //     publicKey: account?.[0].publicKey,
+    //   },
+    // });
   };
 
-  getSignature = async (
-    sendResponse: SendResponseFun,
-    signatureInfo: BaseInternalMessagePayload & {
-      hexToBeSign: string;
-      account: string;
-      appLogo?: string;
-      appName: string;
-    },
-  ) => {
-    console.log(signatureInfo);
-    sendResponse(errorHandler(700001));
+  callSendContract: RequestCommonHandler = async (sendResponse, message) => {
+    if (!(await this.dappManager.isActive(message.origin)))
+      return sendResponse({
+        ...errorHandler(200016),
+        data: {
+          code: ResponseCode.UNAUTHENTICATED,
+        },
+      });
+    // const { payload } = message;
+    // const chainInfo = await this.dappManager.getChainInfo(payload.chainId);
+    // const caInfo = await this.dappManager.getCaInfo(payload.chainId);
+    // // When methodName is Transfer, parameters need to be verified
+    // if (methodName === 'Transfer') {
+    //   const transferInfo = paramsOption[0];
+    //   if (transferInfo && transferInfo.amount && transferInfo.to && transferInfo.symbol) {
+    //     // isVerified = true;
+    //   } else {
+    //     return sendResponse(errorHandler(400001, 'Missing params'));
+    //   }
+    // }
+    // const signResult = await this.notificationService.openPrompt({
+    //   method: PromptRouteTypes.SIGN_MESSAGE,
+    //   search: JSON.stringify({
+    //     appName: appName ?? _origin,
+    //     rpcUrl,
+    //     methodName,
+    //     appLogo,
+    //     isGetSignTx,
+    //     ...contracts[contractAddress][account],
+    //     paramsOption,
+    //   }),
+    // });
+    // sendResponse(signResult);
+    // return this.handleSendTransaction(method, eventName, request.payload);
   };
 
-  _checkParamsAndReturnPermission = async (
-    params: any,
-    origin: string,
-  ): Promise<PortKeyResultType & { data?: ConnectionsType }> => {
-    // const pageState = this._getPageState();
-    if (!params.contractAddress) return errorHandler(410003);
-    if (!params.account) return errorHandler(410002);
-    // if (params.rpcUrl !== pageState.chain.currentChain.rpcUrl)
-    //   return {
-    //     ...errorHandler(200017),
-    //   };
-    const connections: ConnectionsType = (await getLocalStorage('connections')) ?? {};
-    const { permission } = connections[origin] ?? {};
-    const accountList = permission?.accountList ?? [];
-    console.log(accountList, connections, '_checkParamsAndReturnPermission');
-    if (!accountList?.some((address) => params.account === address)) {
-      return errorHandler(200016, `${params.account} is not connected to Portkey, please connect the user first`);
-    }
-    return {
-      ...errorHandler(0),
-      data: connections,
-    };
-  };
+  // handleSendTransaction = async (method: keyof IDappOverlay, eventName: string, params: SendTransactionParams) => {
+  //   // user confirm
+  //   try {
+  //     const response = await this.userConfirmation({ eventName, method, params });
+  //     if (response) return response;
+
+  //     const chainInfo = await this.dappManager.getChainInfo(params.chainId);
+  //     const caInfo = await this.dappManager.getCaInfo(params.chainId);
+
+  //     if (!chainInfo || !chainInfo.endPoint || !params.params || !caInfo)
+  //       return generateErrorResponse({ eventName, code: 40001, msg: 'invalid chain id' });
+
+  //     const contract = await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.caContractAddress });
+
+  //     if (chainInfo.caContractAddress !== params.contractAddress) {
+  //       const data = await contract?.callSendMethod(
+  //         'ManagerForwardCall',
+  //         '',
+  //         {
+  //           caHash: caInfo.caHash,
+  //           methodName: params.method,
+  //           contractAddress: params.contractAddress,
+  //           args: (params.params as any).paramsOption,
+  //         },
+  //         {
+  //           onMethod: 'transactionHash',
+  //         },
+  //       );
+  //       if (!data?.error) {
+  //         return generateNormalResponse({
+  //           eventName,
+  //           data,
+  //         });
+  //       } else {
+  //         return generateErrorResponse({
+  //           eventName,
+  //           code: 40001,
+  //           msg: handleErrorMessage(data.error),
+  //         });
+  //       }
+  //     } else {
+  //       return this.userDenied(eventName);
+  //     }
+  //   } catch (error) {
+  //     return generateErrorResponse({
+  //       eventName,
+  //       code: 40001,
+  //       msg: handleErrorMessage(error),
+  //     });
+  //   }
+  // };
 }

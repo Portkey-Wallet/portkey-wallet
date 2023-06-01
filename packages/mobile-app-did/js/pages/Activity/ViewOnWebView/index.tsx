@@ -11,7 +11,8 @@ import { pTd } from 'utils/unit';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { upDateRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import navigationService from 'utils/navigationService';
-import { ACH_REDIRECT_URL } from 'constants/common';
+import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
+import { useHandleAchSell } from './hooks/useHandleAchSell';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -22,7 +23,11 @@ const safeAreaColorMap = {
 
 export type SafeAreaColorMapKeyUnit = keyof typeof safeAreaColorMap;
 
-type WebViewPageType = 'default' | 'discover' | 'ach';
+type WebViewPageType = 'default' | 'discover' | 'ach' | 'achSell';
+
+export interface AchSellParams {
+  orderNo?: string;
+}
 
 const ViewOnWebView: React.FC = () => {
   const {
@@ -30,11 +35,13 @@ const ViewOnWebView: React.FC = () => {
     url,
     webViewPageType = 'default',
     injectedJavaScript,
+    params,
   } = useRouterParams<{
     url: string;
     title?: string;
     webViewPageType?: WebViewPageType;
     injectedJavaScript?: string;
+    params?: any;
   }>();
 
   const [browserInfo, setBrowserInfo] = useState({ url, title });
@@ -52,6 +59,7 @@ const ViewOnWebView: React.FC = () => {
     BrowserOverlay.showBrowserModal({ browserInfo, setBrowserInfo, handleReload });
   }, [browserInfo, handleReload]);
 
+  const handleAchSell = useHandleAchSell();
   const handleNavigationStateChange = useCallback(
     (navState: any) => {
       if (webViewPageType === 'default') return;
@@ -61,9 +69,21 @@ const ViewOnWebView: React.FC = () => {
         }
         return;
       }
+      if (webViewPageType === 'achSell') {
+        if (navState.url.startsWith(ACH_WITHDRAW_URL)) {
+          navigationService.navigate('Tab');
+          const { orderNo } = (params as AchSellParams) || {};
+          if (!orderNo) {
+            // TODO:
+            return;
+          }
+
+          handleAchSell(orderNo);
+        }
+      }
       dispatch(upDateRecordsItem({ url, title: title ? title : navState.title }));
     },
-    [dispatch, title, url, webViewPageType],
+    [dispatch, handleAchSell, params, title, url, webViewPageType],
   );
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>

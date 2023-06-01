@@ -10,9 +10,7 @@ export default {
   getOrderQuote: '/api/app/thirdPart/alchemy/order/quote',
   getAchToken: '/api/app/thirdPart/alchemy/token',
   getOrderNo: '/api/app/thirdPart/order',
-  getAchSignature: {
-    target: '/api/app/thirdPart/alchemy/signature',
-    config: { method: 'GET' },
-  },
+  getAchSignature: '/api/app/thirdPart/alchemy/signature',
   updateAchOrder: '/api/app/thirdPart/order/alchemy',
+  setOrderTxHash: 'api/app/thirdPart/txHash',
 } as const;

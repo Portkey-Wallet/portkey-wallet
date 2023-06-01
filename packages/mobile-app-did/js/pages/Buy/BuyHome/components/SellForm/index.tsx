@@ -2,7 +2,6 @@ import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
 
@@ -11,7 +10,7 @@ import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import SelectToken from '../SelectToken';
-import { usePayment } from 'hooks/store';
+import { usePayment, usePin } from 'hooks/store';
 import SelectCurrency from '../SelectCurrency';
 import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 
@@ -25,11 +24,19 @@ import { CryptoInfoType } from '@portkey-wallet/api/api-did/payment/type';
 import { CryptoItemType, LimitType, TypeEnum } from 'pages/Buy/types';
 import { INIT_BUY_AMOUNT, tokenList } from 'pages/Buy/constants';
 import Loading from 'components/Loading';
-import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import { useReceive } from 'pages/Buy/hooks';
+import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { getManagerAccount } from 'utils/redux';
+import { getELFChainBalance } from '@portkey-wallet/utils/balance';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { customFetch } from '@portkey-wallet/utils/fetch';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export default function SellForm() {
-  const { t } = useLanguage();
   const { buyFiatList: fiatList } = usePayment();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
@@ -38,6 +45,14 @@ export default function SellForm() {
   const [token, setToken] = useState<CryptoItemType>(tokenList[0]);
   const [amount, setAmount] = useState<string>(INIT_BUY_AMOUNT);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
+  const { accountToken } = useAssets();
+  const aelfToken = useMemo(
+    () => accountToken.accountTokenList.find(item => item.symbol === 'ELF' && item.chainId === 'AELF'),
+    [accountToken],
+  );
+  const chainInfo = useCurrentChain('AELF');
+  const pin = usePin();
+  const wallet = useCurrentWalletInfo();
 
   const limitAmountRef = useRef<LimitType>();
   const refreshReceiveRef = useRef<() => void>();
@@ -138,6 +153,58 @@ export default function SellForm() {
     let _rate = rate,
       _receiveAmount = receiveAmount;
 
+    const { tokenContractAddress, decimals, symbol, chainId } = aelfToken || {};
+    const { caContractAddress, endPoint } = chainInfo || {};
+    if (!tokenContractAddress || decimals === undefined || !symbol || !chainId) return;
+    if (!pin || !caContractAddress || !endPoint) return;
+    if (ZERO.plus(amount).isLessThanOrEqualTo(DEFAULT_FEE)) return;
+
+    try {
+      Loading.show();
+      const account = getManagerAccount(pin);
+      if (!account) return;
+      const caContract = await getContractBasic({
+        contractAddress: caContractAddress,
+        rpcUrl: endPoint,
+        account: account,
+      });
+      const tokenContract = await getContractBasic({
+        contractAddress: tokenContractAddress,
+        rpcUrl: endPoint,
+        account: account,
+      });
+
+      const balance = await getELFChainBalance(tokenContract, symbol, wallet?.[chainId]?.caAddress || '');
+
+      if (divDecimals(balance, decimals).isLessThan(amount)) {
+        return;
+      }
+
+      const raw = await caContract.encodedTx('ManagerForwardCall', {
+        caHash: wallet.caHash,
+        contractAddress: tokenContractAddress,
+        methodName: 'Transfer',
+        args: {
+          symbol: symbol,
+          to: `ELF_2KQWh5v6Y24VcGgsx2KHpQvRyyU5DnCZ4eAUPqGQbnuZgExKaV_AELF`,
+          amount: timesDecimals(amount, decimals || '0').toNumber(),
+        },
+      });
+
+      await customFetch(`${endPoint}/api/blockChain/calculateTransactionFee`, {
+        method: 'POST',
+        params: {
+          RawTransaction: raw,
+        },
+      });
+    } catch (error) {
+      // TODO: add Toast
+      console.log('error', error);
+      return;
+    } finally {
+      Loading.hide();
+    }
+
     if (isRefreshReceiveValid.current === false) {
       Loading.show();
       const rst = await refreshReceive();
@@ -146,6 +213,7 @@ export default function SellForm() {
       _rate = rst.rate;
       _receiveAmount = rst.receiveAmount;
     }
+
     navigationService.navigate('BuyPreview', {
       amount,
       fiat,
@@ -154,7 +222,7 @@ export default function SellForm() {
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, fiat, rate, receiveAmount, refreshReceive, token]);
+  }, [amount, rate, receiveAmount, aelfToken, chainInfo, pin, fiat, token, wallet, refreshReceive]);
 
   return (
     <View style={styles.formContainer}>

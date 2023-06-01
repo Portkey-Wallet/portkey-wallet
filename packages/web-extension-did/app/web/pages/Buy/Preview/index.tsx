@@ -9,11 +9,11 @@ import { getAchSignature, getOrderQuote, getPaymentOrderNo } from '@portkey-wall
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import { ACH_APP_ID, ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import { ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
 import clsx from 'clsx';
 import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
 import paymentApi from '@portkey-wallet/api/api-did/payment';
-import { useCurrentApiUrl } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentApiUrl, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import CustomModal from 'pages/components/CustomModal';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
@@ -29,6 +29,7 @@ export default function Preview() {
   const [rate, setRate] = useState('');
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
+  const { buyConfig } = useCurrentNetworkInfo();
 
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
   const showRateText = useMemo(() => `1 ${data.crypto} ≈ ${formatAmountShow(rate, 2)} ${data.fiat}`, [data, rate]);
@@ -69,10 +70,13 @@ export default function Preview() {
   }, []);
 
   const goPayPage = useCallback(async () => {
+    const appId = buyConfig?.ach?.appId;
+    const baseUrl = buyConfig?.ach?.baseUrl;
+    if (!appId || !baseUrl) return;
     try {
       setLoading(true);
       const { network, country, fiat, side, amount, crypto } = data;
-      let achUrl = `https://ramp.alchemypay.org/?crypto=${crypto}&network=${network}&country=${country}&fiat=${fiat}&appId=${ACH_APP_ID}&callbackUrl=${encodeURIComponent(
+      let achUrl = `${baseUrl}/?crypto=${crypto}&network=${network}&country=${country}&fiat=${fiat}&appId=${appId}&callbackUrl=${encodeURIComponent(
         `${apiUrl}${paymentApi.updateAchOrder}`,
       )}`;
 
@@ -110,7 +114,7 @@ export default function Preview() {
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, data, getAchTokenInfo, navigate, setLoading, wallet]);
+  }, [apiUrl, buyConfig, data, getAchTokenInfo, navigate, setLoading, wallet?.AELF?.caAddress]);
 
   const showDisclaimerTipModal = useCallback(() => {
     CustomModal({

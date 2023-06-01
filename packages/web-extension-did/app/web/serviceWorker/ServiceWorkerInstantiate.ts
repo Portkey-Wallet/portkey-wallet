@@ -20,7 +20,7 @@ import { apis } from 'utils/BrowserApis';
 import SocialLoginController from 'controllers/socialLoginController';
 import OpenNewTabController from 'controllers/openNewTabController';
 import { LocalStream } from 'utils/extensionStreams';
-import { RPCMethodsUnimplemented, RPCMethodsBase } from '@portkey/provider-types';
+import { MethodsUnimplemented, MethodsBase } from '@portkey/provider-types';
 import { getWalletState } from 'utils/lib/SWGetReduxStore';
 
 const notificationService = new NotificationService();
@@ -52,12 +52,12 @@ const permissionWhitelist = [
   PortkeyMessageTypes.EXPAND_FULL_SCREEN,
   PortkeyMessageTypes.ACTIVE_LOCK_STATUS,
   PortkeyMessageTypes.PERMISSION_FINISH,
-  RPCMethodsUnimplemented.GET_WALLET_STATE,
+  MethodsUnimplemented.GET_WALLET_STATE,
   // The method that requires the dapp not to trigger the lock call
-  RPCMethodsBase.ACCOUNTS,
-  RPCMethodsBase.CHAIN_ID,
-  RPCMethodsBase.CHAIN_IDS,
-  RPCMethodsBase.CHAINS_INFO,
+  MethodsBase.ACCOUNTS,
+  MethodsBase.CHAIN_ID,
+  MethodsBase.CHAIN_IDS,
+  MethodsBase.CHAINS_INFO,
 ];
 
 const initPageState = async () => {
@@ -177,10 +177,6 @@ export default class ServiceWorkerInstantiate {
       case PortkeyMessageTypes.SOCIAL_LOGIN:
         this.socialLogin(sendResponse, message.payload);
         break;
-
-      case WalletMessageTypes.GET_WALLET_STATE:
-        ServiceWorkerInstantiate.getWalletState(sendResponse);
-        break;
       case WalletMessageTypes.SET_RECAPTCHA_CODE_V2:
         this.getRecaptcha(sendResponse, message.payload);
         break;
@@ -190,6 +186,7 @@ export default class ServiceWorkerInstantiate {
       // case PortkeyMessageTypes.FINISH_ASYNC_TASK:
       //   this.dealNextTask(sendResponse, message.payload);
       //   break;
+
       default:
         if (this.aelfMethodController.aelfMethodList.includes(message.type)) {
           this.aelfMethodController.dispenseMessage(message, sendResponse);
@@ -368,14 +365,6 @@ export default class ServiceWorkerInstantiate {
     });
   }
 
-  static async getWalletState(sendResponse: SendResponseFun) {
-    try {
-      sendResponse(errorHandler(0));
-    } catch (error) {
-      sendResponse(errorHandler(200004, error));
-    }
-  }
-
   /***
    * Sets the seed on scope to use from decryption
    * @param sendResponse - Delegating response handler
@@ -435,9 +424,11 @@ export default class ServiceWorkerInstantiate {
 
   static lockWallet(sendResponse?: SendResponseFun, message?: any) {
     try {
-      console.log('lockWallet', message);
-      seed = null;
-      SWEventController.lockStateChanged(true, sendResponse);
+      if (seed) {
+        console.log('lockWallet', message);
+        seed = null;
+        SWEventController.lockStateChanged(true, sendResponse);
+      }
     } catch (e) {
       sendResponse?.(errorHandler(500001, e));
     }

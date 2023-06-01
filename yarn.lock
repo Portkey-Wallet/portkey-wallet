@@ -5018,7 +5018,7 @@
 
 "@portkey/chain@^0.0.1-alpha.11":
   version "0.0.1-alpha.11"
-  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-0.0.1-alpha.11.tgz#047c4ea665d6aea61e5ba53714f2e7b002086a09"
+  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-0.0.1-alpha.11.tgz#047c4ea665d6aea61e5ba53714f2e7b002086a09"
   integrity sha512-Gp/1AngQxA1pwGCOV5f6irUC7b70M3douAlFs/0r6A6VMUj545YXVazQTRZ0Dcp4sO4GBaZebbSdIyLhWUGYMw==
   dependencies:
     "@portkey/provider-types" "^0.0.1-alpha.11"
@@ -5042,9 +5042,9 @@
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
-"@portkey/provider-types@0.0.1-alpha.11", "@portkey/provider-types@^0.0.1-alpha.11":
+"@portkey/provider-types@^0.0.1-alpha.11":
   version "0.0.1-alpha.11"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-0.0.1-alpha.11.tgz#c9a8a4ed006385eb1527d23ec1aab0d11695d1ff"
+  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.11.tgz#c9a8a4ed006385eb1527d23ec1aab0d11695d1ff"
   integrity sha512-EhgThMje7hn7v5tj3koxW37/qKOyF8Z9pozXe3uKE+Iy37J6VvveSbKxtda/j2TEh/XU71bGCCeNKbgx/uOdPw==
   dependencies:
     "@types/readable-stream" "^2.3.15"
@@ -5056,13 +5056,6 @@
   dependencies:
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-utils@0.0.1-alpha.11", "@portkey/provider-utils@^0.0.1-alpha.11":
-  version "0.0.1-alpha.11"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.11.tgz#d14563aaaa5cdd88cf647eab903942396d6a9457"
-  integrity sha512-Cb2sohKPISKp2racIIlpK1NPTC75t5lbIq9K+xt4KhCcETU64zBHE9ASuI2PRMlko8ksNxS+19ZUuy9OLSWNrg==
-  dependencies:
-    "@portkey/provider-types" "^0.0.1-alpha.11"
-
 "@portkey/provider-utils@0.0.1-alpha.8", "@portkey/provider-utils@^0.0.1-alpha.8":
   version "0.0.1-alpha.8"
   resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.8.tgz#f380927c43f4c718e6d7ede438cf6ad48ecaa5f8"
@@ -5070,9 +5063,16 @@
   dependencies:
     "@portkey/provider-types" "^0.0.1-alpha.8"
 
-"@portkey/providers@0.0.1-alpha.11":
+"@portkey/provider-utils@^0.0.1-alpha.11":
   version "0.0.1-alpha.11"
-  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-0.0.1-alpha.11.tgz#2deaf83e9aeed9dfed36209103ad22be0e325f8c"
+  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.11.tgz#d14563aaaa5cdd88cf647eab903942396d6a9457"
+  integrity sha512-Cb2sohKPISKp2racIIlpK1NPTC75t5lbIq9K+xt4KhCcETU64zBHE9ASuI2PRMlko8ksNxS+19ZUuy9OLSWNrg==
+  dependencies:
+    "@portkey/provider-types" "^0.0.1-alpha.11"
+
+"@portkey/providers@^0.0.1-alpha.11":
+  version "0.0.1-alpha.11"
+  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-0.0.1-alpha.11.tgz#2deaf83e9aeed9dfed36209103ad22be0e325f8c"
   integrity sha512-t54NiSBoYJW2YPhBXSaJN8Yn9eVbS8AkSPih2/M+2ejlZTCT8FzyAwIKjAyV1CTjK2k6mw53BLni9/xROSaWWA==
   dependencies:
     "@metamask/object-multiplex" "^1.1.0"

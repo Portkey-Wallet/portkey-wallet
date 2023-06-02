@@ -23,7 +23,7 @@ export class ExtensionVerification extends Verification {
         return item;
       } else {
         const isNeedRecaptcha = operationType === RecaptchaType.register;
-        const reCaptcha = await checkReCaptcha(isNeedRecaptcha);
+        const reCaptcha = await checkReCaptcha(operationType, isNeedRecaptcha);
         if (reCaptcha) {
           config.headers = {
             reCaptchaToken: reCaptcha,

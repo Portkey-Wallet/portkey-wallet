@@ -5,7 +5,6 @@ import { DappMobileManager } from 'dapp/dappManager';
 import DappMobileOperator from 'dapp/dappMobileOperator';
 import { DappOverlay } from 'dapp/dappOverlay';
 import { store } from 'store';
-
 class TestOperatorStream extends DappInteractionStream {
   private messageCallback;
   constructor(callback: (message: IResponseType) => void) {

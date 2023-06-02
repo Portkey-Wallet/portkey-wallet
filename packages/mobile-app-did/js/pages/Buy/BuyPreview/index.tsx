@@ -59,7 +59,6 @@ export default function BuyPreview() {
     async (isNoEmail = false) => {
       const appId = buyConfig?.ach?.appId;
       const baseUrl = buyConfig?.ach?.baseUrl;
-
       if (!amount || !receiveAmount || !fiat || !token || !appId || !baseUrl) return;
       Loading.show();
       try {
@@ -121,10 +120,10 @@ export default function BuyPreview() {
           injectedJavaScript,
           params:
             type === TypeEnum.BUY
-              ? {
+              ? undefined
+              : {
                   orderNo,
-                }
-              : undefined,
+                },
         });
       } catch (error) {
         CommonToast.fail(`There is a network error, please try again.`);

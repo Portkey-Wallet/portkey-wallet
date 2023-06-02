@@ -177,6 +177,7 @@ export default function SellForm() {
       const balance = await getELFChainBalance(tokenContract, symbol, wallet?.[chainId]?.caAddress || '');
 
       if (divDecimals(balance, decimals).isLessThan(amount)) {
+        // TODO: add Toast
         return;
       }
 

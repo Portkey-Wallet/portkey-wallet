@@ -10,6 +10,7 @@ import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
 import { useIsFocused } from '@react-navigation/native';
+import { ZERO } from '@portkey-wallet/constants/misc';
 
 export const useReceive = (
   type: TypeEnum,
@@ -82,7 +83,9 @@ export const useReceive = (
       if (amountNum < min || amountNum > max) {
         setAmountError({
           ...INIT_HAS_ERROR,
-          errorMsg: `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${fiat?.currency}`,
+          errorMsg: `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${
+            type === TypeEnum.BUY ? fiat?.currency : token.crypto
+          }`,
         });
         setRate('');
         setReceiveAmount('');
@@ -123,7 +126,14 @@ export const useReceive = (
       if (isRefreshReceiveValid) isRefreshReceiveValid.current = true;
 
       const _rate = Number(rst.cryptoPrice).toFixed(2) + '';
-      const _receiveAmount = formatAmountShow((type === TypeEnum.BUY ? rst.cryptoQuantity : rst.fiatQuantity) || '', 4);
+      let _receiveAmount = '';
+      if (type === TypeEnum.BUY) {
+        _receiveAmount = formatAmountShow(rst.cryptoQuantity || '', 4);
+      } else {
+        const fiatQuantity = ZERO.plus(rst.fiatQuantity || 0).minus(rst.rampFee || 0);
+        _receiveAmount = formatAmountShow(fiatQuantity.valueOf(), 4);
+      }
+
       setRate(_rate);
       setReceiveAmount(_receiveAmount);
       return {

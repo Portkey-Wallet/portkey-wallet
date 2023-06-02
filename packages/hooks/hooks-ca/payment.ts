@@ -44,16 +44,17 @@ export const useSellTransfer = () => {
       if (!isMainnet || merchantName !== ACH_MERCHANT_NAME) return;
 
       const clientId = randomId();
-      signalrSell.doOpen({
+      await signalrSell.doOpen({
         url: `${request.defaultConfig.baseURL}/ca`,
         clientId,
       });
-      await signalrSell.requestAchTxAddress(clientId, orderId);
-      const achTxAddressReceived = await new Promise<AchTxAddressReceivedType>(resolve => () => {
+
+      const achTxAddressReceived = await new Promise<AchTxAddressReceivedType>(resolve => {
         const { remove } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, data => {
           resolve(data);
           remove();
         });
+        signalrSell.requestAchTxAddress(clientId, orderId);
       });
       const result = await paymentSellTransfer(achTxAddressReceived);
       if (result.error) {

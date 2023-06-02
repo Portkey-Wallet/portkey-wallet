@@ -4,7 +4,11 @@ import { AchTxAddressReceivedType } from '@portkey-wallet/types/types-ca/payment
 
 export class SignalrSell extends Signalr {
   public requestAchTxAddress(clientId: string, orderId: string) {
-    this.invoke('RequestAchTxAddress', clientId, orderId);
+    console.log('invoke RequestAchTxAddress');
+    this.invoke('RequestAchTxAddress', {
+      TargetClientId: clientId,
+      OrderId: orderId,
+    });
   }
 
   public onAchTxAddressReceived(
@@ -12,8 +16,11 @@ export class SignalrSell extends Signalr {
     callback: (data: AchTxAddressReceivedType) => void,
   ) {
     return this.listen('onAchTxAddressReceived', (data: { body: AchTxAddressReceivedType }) => {
+      console.log('onAchTxAddressReceived: data', data);
       if (data?.body?.orderId === orderId) {
         callback(data.body);
+      } else {
+        throw new Error('onAchTxAddressReceived error');
       }
     });
   }

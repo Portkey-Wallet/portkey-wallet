@@ -55,10 +55,10 @@ export const useHandleAchSell = () => {
       const amount = timesDecimals(params.cryptoAmount, decimals).toNumber();
       return await sameChainTransfer({
         contract,
-        tokenInfo: aelfToken,
+        tokenInfo: { ...aelfToken, address: aelfToken.tokenContractAddress || '' },
         caHash: caHash,
         amount,
-        toAddress: params.address,
+        toAddress: `ELF_${params.address}_AELF`,
       });
     },
     [aelfToken, chainInfo, pin, wallet],
@@ -74,6 +74,7 @@ export const useHandleAchSell = () => {
           paymentSellTransfer,
         });
       } catch (error) {
+        console.log('error', error);
         CommonToast.fail('Transfer Error');
       } finally {
         Loading.hide();

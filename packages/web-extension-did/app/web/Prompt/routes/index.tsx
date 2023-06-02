@@ -49,6 +49,7 @@ import RecentDetail from 'pages/Send/components/RecentDetail';
 import Permission from 'pages/Permission';
 import ConnectWallet from 'pages/ConnectWallet';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
+import SendTransactions from 'pages/SendTransactions';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -176,6 +177,11 @@ export const PageRouter = () => {
       path: '/connect-wallet',
       element: <ConnectWallet />,
     },
+    {
+      path: '/send-transactions',
+      element: <SendTransactions />,
+    },
+
     {
       path: '*',
       element: <NotFound />,

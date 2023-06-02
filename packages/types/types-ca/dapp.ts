@@ -15,6 +15,7 @@ export interface IDappManager<T = CACommonState> {
   chainsInfo(): Promise<ChainsInfo>;
   getChainInfo(chainId: ChainId): Promise<ChainItemType | undefined>;
   addDapp(dapp: DappStoreItem): Promise<void>;
+  updateDapp(dapp: DappStoreItem): Promise<void>;
   isLocked(): Promise<boolean>;
   getRpcUrl(chainId: ChainId): Promise<string | undefined>;
   getCaInfo(chainId: ChainId): Promise<CAInfo | undefined>;

@@ -4,10 +4,10 @@ import { InternalMessageData } from 'types/SW';
 import errorHandler from 'utils/errorHandler';
 
 export const timeoutPromise = (delay?: number): Promise<SendResponseParams> => {
-  return new Promise((_resolve) => {
+  return new Promise((resolve) => {
     const ids = setTimeout(() => {
       clearTimeout(ids);
-      _resolve({ ...errorHandler(200018), data: 'timeout' });
+      resolve({ ...errorHandler(200006), data: 'timeout' });
     }, delay);
   });
 };

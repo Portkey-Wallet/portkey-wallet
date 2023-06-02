@@ -6,7 +6,7 @@ import NotificationService from 'service/NotificationService';
 import { SendResponseFun } from 'types';
 import { IPageState, RequestCommonHandler, RequestMessageData } from 'types/SW';
 import errorHandler from 'utils/errorHandler';
-import { RPCMethodsBase, ResponseCode } from '@portkey/provider-types';
+import { MethodsBase, ResponseCode, MethodsUnimplemented } from '@portkey/provider-types';
 import { ExtensionDappManager } from './ExtensionDappManager';
 import { getSWReduxState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
@@ -19,12 +19,13 @@ const storeInSW = {
 };
 
 const aelfMethodList = [
-  RPCMethodsBase.ACCOUNTS,
-  RPCMethodsBase.CHAIN_ID,
-  RPCMethodsBase.CHAIN_IDS,
-  RPCMethodsBase.CHAINS_INFO,
-  RPCMethodsBase.REQUEST_ACCOUNTS,
-  RPCMethodsBase.SEND_TRANSACTION,
+  MethodsBase.ACCOUNTS,
+  MethodsBase.CHAIN_ID,
+  MethodsBase.CHAIN_IDS,
+  MethodsBase.CHAINS_INFO,
+  MethodsBase.REQUEST_ACCOUNTS,
+  MethodsBase.SEND_TRANSACTION,
+  MethodsUnimplemented.GET_WALLET_STATE,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
@@ -46,29 +47,32 @@ export default class AELFMethodController {
     this.getPassword = getPassword;
     this.aelfMethodList = aelfMethodList;
     this.dappManager = new ExtensionDappManager({
-      getPin: () => !getPassword(),
+      locked: () => Boolean(getPassword()),
       store: storeInSW,
     });
   }
   dispenseMessage = (message: RequestMessageData, sendResponse: SendResponseFun) => {
     switch (message.type) {
-      case RPCMethodsBase.CHAIN_ID:
+      case MethodsBase.CHAIN_ID:
         this.getChainId(sendResponse, message.payload);
         break;
-      case RPCMethodsBase.CHAIN_IDS:
+      case MethodsBase.CHAIN_IDS:
         this.getChainIds(sendResponse, message.payload);
         break;
-      case RPCMethodsBase.ACCOUNTS:
+      case MethodsBase.ACCOUNTS:
         this.getAccounts(sendResponse, message.payload);
         break;
-      case RPCMethodsBase.CHAINS_INFO:
+      case MethodsBase.CHAINS_INFO:
         this.getChainsInfo(sendResponse, message.payload);
         break;
-      case RPCMethodsBase.SEND_TRANSACTION:
-        this.callSendContract(sendResponse, message.payload);
+      case MethodsBase.SEND_TRANSACTION:
+        this.sendTransaction(sendResponse, message.payload);
         break;
-      case RPCMethodsBase.REQUEST_ACCOUNTS:
+      case MethodsBase.REQUEST_ACCOUNTS:
         this.requestAccounts(sendResponse, message.payload);
+        break;
+      case MethodsUnimplemented.GET_WALLET_STATE:
+        this.getWalletState(sendResponse, message.payload);
         break;
       default:
         sendResponse(
@@ -82,8 +86,22 @@ export default class AELFMethodController {
     }
   };
 
-  isLocked = () => {
-    return !this.getPassword();
+  isUnlocked = () => {
+    return Boolean(this.getPassword());
+  };
+
+  getWalletState: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
+    try {
+      const origin = message.origin;
+      const data = {
+        isUnlocked: this.isUnlocked(),
+        accounts: await this.dappManager.accounts(origin),
+        isConnected: await this.dappManager.isActive(origin),
+      };
+      sendResponse({ ...errorHandler(0), data });
+    } catch (error) {
+      sendResponse(errorHandler(200002, error));
+    }
   };
 
   getChainsInfo: RequestCommonHandler = async (sendResponse) => {
@@ -94,8 +112,8 @@ export default class AELFMethodController {
   getAccounts: RequestCommonHandler = async (sendResponse, message) => {
     const { origin } = message;
     let accounts = {};
-    const locked = this.isLocked();
-    if (!locked) accounts = await this.dappManager.accounts(origin);
+    const unlocked = this.isUnlocked();
+    if (unlocked) accounts = await this.dappManager.accounts(origin);
     console.log(accounts, 'accounts===');
     sendResponse({ ...errorHandler(0), data: accounts });
   };
@@ -113,116 +131,70 @@ export default class AELFMethodController {
   requestAccounts: RequestCommonHandler = async (sendResponse, message) => {
     const isActive = await this.dappManager.isActive(message.origin);
     if (isActive) return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
-    const permissionAccount = await this.approvalController.authorizedToConnect({
+    const result = await this.approvalController.authorizedToConnect({
       appName: 'appName',
       appLogo: 'appName',
       origin,
     });
-    console.log(permissionAccount, 'permissionAccount===');
-
-    if (permissionAccount.error !== 0) return sendResponse(permissionAccount);
-    // const connectAccount: string[] = permissionAccount.data;
-    // const account = pageState.wallet.accountList?.filter((item) => item.address === connectAccount[0]);
-    // SWEventController.accountsChanged(account?.[0], (res) => {
-    //   console.log(res, 'onDisconnect==accountsChanged');
-    // });
-    // console.log(connectAccount, 'connectWallet==');
-    // sendResponse({
-    //   ...errorHandler(0),
-    //   data: {
-    //     accountName: account?.[0].accountName,
-    //     accountType: account?.[0].accountType,
-    //     address: account?.[0].address,
-    //     publicKey: account?.[0].publicKey,
-    //   },
-    // });
+    if (result.error === 200003)
+      return sendResponse({
+        ...errorHandler(200003),
+        data: {
+          code: ResponseCode.USER_DENIED,
+        },
+      });
+    if (result.error !== 0)
+      return sendResponse({
+        ...errorHandler(700002),
+        data: {
+          code: ResponseCode.CONTRACT_ERROR,
+        },
+      });
+    // TODO
+    sendResponse(errorHandler(0));
   };
 
-  callSendContract: RequestCommonHandler = async (sendResponse, message) => {
+  sendTransaction: RequestCommonHandler = async (sendResponse, message) => {
+    if (!message?.payload?.params)
+      return sendResponse({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
+
     if (!(await this.dappManager.isActive(message.origin)))
       return sendResponse({
-        ...errorHandler(200016),
+        ...errorHandler(200004),
         data: {
           code: ResponseCode.UNAUTHENTICATED,
         },
       });
-    // const { payload } = message;
-    // const chainInfo = await this.dappManager.getChainInfo(payload.chainId);
-    // const caInfo = await this.dappManager.getCaInfo(payload.chainId);
-    // // When methodName is Transfer, parameters need to be verified
-    // if (methodName === 'Transfer') {
-    //   const transferInfo = paramsOption[0];
-    //   if (transferInfo && transferInfo.amount && transferInfo.to && transferInfo.symbol) {
-    //     // isVerified = true;
-    //   } else {
-    //     return sendResponse(errorHandler(400001, 'Missing params'));
-    //   }
-    // }
-    // const signResult = await this.notificationService.openPrompt({
-    //   method: PromptRouteTypes.SIGN_MESSAGE,
-    //   search: JSON.stringify({
-    //     appName: appName ?? _origin,
-    //     rpcUrl,
-    //     methodName,
-    //     appLogo,
-    //     isGetSignTx,
-    //     ...contracts[contractAddress][account],
-    //     paramsOption,
-    //   }),
-    // });
-    // sendResponse(signResult);
-    // return this.handleSendTransaction(method, eventName, request.payload);
+    const { payload, origin } = message;
+    const chainInfo = await this.dappManager.getChainInfo(payload.chainId);
+    const caInfo = await this.dappManager.getCaInfo(payload.chainId);
+    if (!chainInfo || !chainInfo.endPoint || !payload.params || !caInfo)
+      return sendResponse({
+        ...errorHandler(200005),
+        data: {
+          code: 40001,
+          msg: 'invalid chain id',
+        },
+      });
+
+    const result = await this.approvalController.authorizedToSendTransactions({
+      origin,
+      payload: message.payload,
+    });
+    if (result.error === 200003)
+      return sendResponse({
+        ...errorHandler(200003),
+        data: {
+          code: ResponseCode.USER_DENIED,
+        },
+      });
+    if (result.error)
+      return sendResponse({
+        ...errorHandler(700002),
+        data: {
+          code: ResponseCode.CONTRACT_ERROR,
+        },
+      });
+    sendResponse(result);
   };
-
-  // handleSendTransaction = async (method: keyof IDappOverlay, eventName: string, params: SendTransactionParams) => {
-  //   // user confirm
-  //   try {
-  //     const response = await this.userConfirmation({ eventName, method, params });
-  //     if (response) return response;
-
-  //     const chainInfo = await this.dappManager.getChainInfo(params.chainId);
-  //     const caInfo = await this.dappManager.getCaInfo(params.chainId);
-
-  //     if (!chainInfo || !chainInfo.endPoint || !params.params || !caInfo)
-  //       return generateErrorResponse({ eventName, code: 40001, msg: 'invalid chain id' });
-
-  //     const contract = await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.caContractAddress });
-
-  //     if (chainInfo.caContractAddress !== params.contractAddress) {
-  //       const data = await contract?.callSendMethod(
-  //         'ManagerForwardCall',
-  //         '',
-  //         {
-  //           caHash: caInfo.caHash,
-  //           methodName: params.method,
-  //           contractAddress: params.contractAddress,
-  //           args: (params.params as any).paramsOption,
-  //         },
-  //         {
-  //           onMethod: 'transactionHash',
-  //         },
-  //       );
-  //       if (!data?.error) {
-  //         return generateNormalResponse({
-  //           eventName,
-  //           data,
-  //         });
-  //       } else {
-  //         return generateErrorResponse({
-  //           eventName,
-  //           code: 40001,
-  //           msg: handleErrorMessage(data.error),
-  //         });
-  //       }
-  //     } else {
-  //       return this.userDenied(eventName);
-  //     }
-  //   } catch (error) {
-  //     return generateErrorResponse({
-  //       eventName,
-  //       code: 40001,
-  //       msg: handleErrorMessage(error),
-  //     });
-  //   }
-  // };
 }

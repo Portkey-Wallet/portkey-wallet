@@ -177,7 +177,7 @@ export default function VerifierDetails() {
 
       let recaptchaType = RecaptchaType.optGuardian;
       if (verificationType === VerificationType.register) {
-        recaptchaType = RecaptchaType.communityRecovery;
+        recaptchaType = RecaptchaType.register;
       } else if (verificationType === VerificationType.communityRecovery) {
         recaptchaType = RecaptchaType.communityRecovery;
       }

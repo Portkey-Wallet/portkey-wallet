@@ -54,7 +54,7 @@ export default class DappMobileOperator extends Operator {
     DappEventBus.unregisterOperator(this);
   };
 
-  userConfirmation = async ({
+  protected userConfirmation = async ({
     eventName,
     params,
     method,
@@ -67,7 +67,7 @@ export default class DappMobileOperator extends Operator {
     if (!authorized) return this.userDenied(eventName);
   };
 
-  handleViewRequest = async (request: IRequestParams): Promise<IResponseType> => {
+  protected handleViewRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { eventName, method } = request;
     switch (method) {
       case MethodsBase.ACCOUNTS: {
@@ -106,14 +106,14 @@ export default class DappMobileOperator extends Operator {
     });
   };
 
-  handleRequestAccounts: SendRequest<DappStoreItem> = async (eventName, params) => {
+  protected handleRequestAccounts: SendRequest<DappStoreItem> = async (eventName, params) => {
     await this.dappManager.addDapp(params);
     return generateNormalResponse({
       eventName,
       data: await this.dappManager.accounts(params.origin!),
     });
   };
-  handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
+  protected handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
     try {
       if (!params.params) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
 
@@ -127,18 +127,18 @@ export default class DappMobileOperator extends Operator {
 
       const isForward = chainInfo.caContractAddress !== params.contractAddress;
 
-      let paramsOption = (params.params as { paramsOption: object }).paramsOption;
+      let paramsOption = (params.params as { paramsOption: object }).paramsOption,
+        functionName = params.method;
 
-      const functionName = isForward ? 'ManagerForwardCall' : params.method;
-
-      paramsOption = isForward
-        ? {
-            caHash: caInfo.caHash,
-            methodName: params.method,
-            contractAddress: params.contractAddress,
-            args: paramsOption,
-          }
-        : paramsOption;
+      if (isForward) {
+        paramsOption = {
+          caHash: caInfo.caHash,
+          methodName: params.method,
+          contractAddress: params.contractAddress,
+          args: paramsOption,
+        };
+        functionName = 'ManagerForwardCall';
+      }
 
       const data = await contract!.callSendMethod(functionName, '', paramsOption, {
         onMethod: 'transactionHash',
@@ -151,20 +151,20 @@ export default class DappMobileOperator extends Operator {
       } else {
         return generateErrorResponse({
           eventName,
-          code: 4007,
+          code: ResponseCode.CONTRACT_ERROR,
           msg: handleErrorMessage(data.error),
         });
       }
     } catch (error) {
       return generateErrorResponse({
         eventName,
-        code: 4007,
+        code: ResponseCode.CONTRACT_ERROR,
         msg: handleErrorMessage(error),
       });
     }
   };
 
-  async sendRequest({
+  protected async sendRequest({
     eventName,
     params,
     method,
@@ -181,7 +181,7 @@ export default class DappMobileOperator extends Operator {
     return callBack(eventName, params);
   }
 
-  handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
+  protected handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { method, eventName, origin } = request;
     if (this.dapp.origin !== origin)
       return generateErrorResponse({
@@ -226,13 +226,13 @@ export default class DappMobileOperator extends Operator {
     return this.handleViewRequest(request);
   };
 
-  userDenied(eventName: string) {
+  protected userDenied(eventName: string) {
     return generateErrorResponse({
       eventName,
       code: ResponseCode.USER_DENIED,
     });
   }
-  unauthenticated(eventName: string) {
+  protected unauthenticated(eventName: string) {
     return generateErrorResponse({
       eventName,
       code: ResponseCode.UNAUTHENTICATED,

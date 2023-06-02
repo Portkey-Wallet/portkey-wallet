@@ -7,10 +7,8 @@ import { BaseChainType } from '@portkey-wallet/types/chain';
 import { AccountType } from '@portkey-wallet/types/wallet';
 import { NOTIFICATION_NAMES } from 'messages/InternalMessageTypes';
 import { SendResponseFun } from 'types';
-import { ConnectionsType } from 'types/storage';
-import { apis } from 'utils/BrowserApis';
 import errorHandler from 'utils/errorHandler';
-import { getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
+import { setLocalStorage } from 'utils/storage/chromeStorage';
 
 let _isLocked: boolean;
 
@@ -73,27 +71,29 @@ export default class SWEventController {
     data: any,
     responseCallback?: (response: any) => void,
   ) {
+    // TODO
     console.log('_sendMessage', method, data);
-    const connections: ConnectionsType = (await getLocalStorage('connections')) ?? {};
-    Object.values(connections).forEach((connection) => {
-      // const tabId = sender?.tab?.id;
-      const tabs = connection.tabs;
-      tabs?.forEach((tabId) => {
-        if (!tabId) return;
-        apis.tabs.sendMessage(
-          tabId,
-          {
-            method: NOTIFICATION_NAMES[method],
-            data,
-            tabId,
-          },
-          (res) => {
-            const { lastError } = apis.runtime;
-            responseCallback?.(lastError ? lastError : res);
-            // lastError && console.log(lastError, tabId, '_sendMessage==');
-          },
-        );
-      });
-    });
+    responseCallback;
+    // const connections: ConnectionsType = (await getLocalStorage('connections')) ?? {};
+    // Object.values(connections).forEach((connection) => {
+    //   // const tabId = sender?.tab?.id;
+    //   const tabs = connection.tabs;
+    //   tabs?.forEach((tabId) => {
+    //     if (!tabId) return;
+    //     apis.tabs.sendMessage(
+    //       tabId,
+    //       {
+    //         method: NOTIFICATION_NAMES[method],
+    //         data,
+    //         tabId,
+    //       },
+    //       (res) => {
+    //         const { lastError } = apis.runtime;
+    //         responseCallback?.(lastError ? lastError : res);
+    //         // lastError && console.log(lastError, tabId, '_sendMessage==');
+    //       },
+    //     );
+    //   });
+    // });
   }
 }

@@ -99,4 +99,16 @@ export default class ApprovalController {
     });
     return permissionData;
   }
+
+  /**
+   * Obtain authorization to send transactions
+   *
+   */
+  // TODO format params
+  async authorizedToSendTransactions(params: any): Promise<SendResponseParams> {
+    return this.notificationService.openPrompt({
+      method: PromptRouteTypes.SEND_TRANSACTION,
+      search: JSON.stringify(params),
+    });
+  }
 }

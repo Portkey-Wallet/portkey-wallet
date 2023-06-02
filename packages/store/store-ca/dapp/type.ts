@@ -1,9 +1,9 @@
 import { NetworkType } from '@portkey-wallet/types';
 
 export type DappStoreItem = {
+  origin: string;
   name?: string;
   icon?: string;
-  origin?: string;
 };
 
 export interface IDappStoreState {

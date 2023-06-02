@@ -19,7 +19,7 @@ export default async function getPromptConfig({ message }: PromptConfigParam) {
     case PromptRouteTypes.REGISTER_START_WALLET:
     case PromptRouteTypes.SWITCH_CHAIN:
     case PromptRouteTypes.CONNECT_WALLET:
-    case PromptRouteTypes.SIGN_MESSAGE:
+    case PromptRouteTypes.SEND_TRANSACTION:
     case PromptRouteTypes.EXPAND_FULL_SCREEN:
     case PromptRouteTypes.SETTING:
     case PromptRouteTypes.ADD_GUARDIANS:

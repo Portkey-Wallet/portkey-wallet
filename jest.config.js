@@ -20,6 +20,7 @@ module.exports = {
   moduleNameMapper: {
     '\\.(css|less)$': 'identity-obj-proxy',
   },
+  setupFilesAfterEnv: ['./packages/mobile-app-did/__tests__/setup/setupTests.js'],
   projects: [
     {
       displayName: 'hooks',
@@ -65,6 +66,16 @@ module.exports = {
         '^messages/(.*)$': '<rootDir>/packages/web-extension-did/app/web/messages/$1',
       },
       coveragePathIgnorePatterns: ['/node_modules/', '/store/', '/hooks-ca/', '/utils/'],
+    },
+    {
+      displayName: 'mobile-app-did',
+      rootDir: './packages/mobile-app-did',
+      preset: 'ts-jest',
+      moduleNameMapper: {
+        '^react$': '<rootDir>/node_modules/react',
+        '^@portkey/providers$': '<rootDir>/node_modules/@portkey/providers',
+      },
+      coveragePathIgnorePatterns: ['/node_modules/', '/store/', '/Test/', '/utils/'],
     },
   ],
 };

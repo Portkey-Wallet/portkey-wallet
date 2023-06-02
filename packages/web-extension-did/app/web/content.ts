@@ -4,7 +4,7 @@ import { getUrl } from './utils/getHostname';
 import { runWorkerKeepAliveInterval } from 'utils/keepAlive';
 import { checkForError } from 'utils';
 import { ContentPostStream } from '@portkey/extension-provider';
-import { RPCMethodsUnimplemented, IRequestParams } from '@portkey/provider-types';
+import { MethodsUnimplemented, IRequestParams } from '@portkey/provider-types';
 import { generateErrorResponse, generateNormalResponse } from '@portkey/provider-utils';
 /**
  * Don't run the keep-worker-alive logic for JSON-RPC methods called on initial load.
@@ -12,7 +12,7 @@ import { generateErrorResponse, generateNormalResponse } from '@portkey/provider
  * connected to the dapp or when the user is not interacting with the extension.
  * The keep-alive logic should not work for non-dapp pages.
  */
-const IGNORE_INIT_METHODS_FOR_KEEP_ALIVE: string[] = [RPCMethodsUnimplemented.GET_WALLET_STATE];
+const IGNORE_INIT_METHODS_FOR_KEEP_ALIVE: string[] = [MethodsUnimplemented.GET_WALLET_STATE];
 
 // The stream that connects between the content script and the website
 let pageStream: ContentPostStream;
@@ -170,7 +170,7 @@ class Content {
           });
           // send response to the page
         } else {
-          response = generateErrorResponse({ ...message, ...result.data, target: INPAGE_TARGET });
+          response = generateErrorResponse({ ...message, ...result.data, msg: result.message, target: INPAGE_TARGET });
         }
         console.log(result, response, 'result===internalCommunicate');
 

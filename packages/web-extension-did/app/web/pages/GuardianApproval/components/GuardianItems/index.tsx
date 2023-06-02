@@ -110,7 +110,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
 
         let approvalType = ApprovalType.communityRecovery;
         if (query && query.indexOf('removeManage') !== -1) {
-          approvalType = ApprovalType.deleteGuardian;
+          approvalType = ApprovalType.removeOtherManager;
         }
 
         const result = await verification.sendVerificationCode({
@@ -143,7 +143,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
               status: VerifyStatus.Verifying,
             }),
           );
-          if (approvalType === ApprovalType.deleteGuardian) {
+          if (approvalType === ApprovalType.removeOtherManager) {
             navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
           } else {
             navigate('/login/verifier-account', { state: 'login' });

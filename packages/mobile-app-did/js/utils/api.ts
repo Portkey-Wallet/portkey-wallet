@@ -24,7 +24,11 @@ class MobileVerification extends Verification {
       } else {
         let isNeedRecaptcha = operationType === RecaptchaType.register;
         if (!isNeedRecaptcha) {
-          const result = await request.verify.checkGoogleRecaptcha();
+          const result = await request.verify.checkGoogleRecaptcha({
+            params: {
+              operationType,
+            },
+          });
           isNeedRecaptcha = !!result;
         }
 

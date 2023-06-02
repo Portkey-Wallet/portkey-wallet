@@ -17,6 +17,7 @@ import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount, getPin } from 'utils/redux';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
 
 function getContract({ rpcUrl, contractAddress }: { rpcUrl: string; contractAddress: string }) {
   const pin = getPin();
@@ -34,14 +35,13 @@ export type DappMobileOperatorOptions = {
   dappManager: IDappManager;
   dappOverlay: IDappOverlay;
 };
-
 export default class DappMobileOperator extends Operator {
-  public origin: string;
+  public dapp: DappStoreItem;
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
   constructor({ stream, origin, dappManager, dappOverlay }: DappMobileOperatorOptions) {
     super(stream);
-    this.origin = origin;
+    this.dapp = { origin };
     this.onCreate();
     this.dappManager = dappManager;
     this.dappOverlay = dappOverlay;
@@ -73,7 +73,7 @@ export default class DappMobileOperator extends Operator {
       case MethodsBase.ACCOUNTS: {
         return generateNormalResponse({
           eventName,
-          data: await this.dappManager.accounts(this.origin),
+          data: await this.dappManager.accounts(this.dapp.origin),
         });
       }
       case MethodsBase.CHAIN_ID:
@@ -93,8 +93,8 @@ export default class DappMobileOperator extends Operator {
         return generateNormalResponse({
           eventName,
           data: {
-            accounts: await this.dappManager.accounts(this.origin),
-            isConnected: await this.dappManager.isActive(this.origin),
+            accounts: await this.dappManager.accounts(this.dapp.origin),
+            isConnected: await this.dappManager.isActive(this.dapp.origin),
             isUnlocked: !(await this.dappManager.isLocked()),
           },
         });
@@ -125,13 +125,13 @@ export default class DappMobileOperator extends Operator {
 
       const contract = await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.caContractAddress });
 
-      const isCAAddress = chainInfo.caContractAddress !== params.contractAddress;
+      const isForward = chainInfo.caContractAddress !== params.contractAddress;
 
       let paramsOption = (params.params as { paramsOption: object }).paramsOption;
 
-      const functionName = isCAAddress ? 'ManagerForwardCall' : params.method;
+      const functionName = isForward ? 'ManagerForwardCall' : params.method;
 
-      paramsOption = isCAAddress
+      paramsOption = isForward
         ? {
             caHash: caInfo.caHash,
             methodName: params.method,
@@ -183,13 +183,13 @@ export default class DappMobileOperator extends Operator {
 
   handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { method, eventName, origin } = request;
-    if (this.origin !== origin)
+    if (this.dapp.origin !== origin)
       return generateErrorResponse({
         eventName,
         code: ResponseCode.ERROR_IN_PARAMS,
       });
 
-    const isActive = await this.dappManager.isActive(this.origin);
+    const isActive = await this.dappManager.isActive(this.dapp.origin);
 
     let callBack: SendRequest, params: any;
     switch (method) {
@@ -197,10 +197,10 @@ export default class DappMobileOperator extends Operator {
         if (isActive)
           return generateNormalResponse({
             eventName,
-            data: await this.dappManager.accounts(this.origin!),
+            data: await this.dappManager.accounts(this.dapp.origin),
           });
         callBack = this.handleRequestAccounts;
-        params = { origin: this.origin, icon: '', name: '' };
+        params = this.dapp;
         break;
       }
       case MethodsBase.SEND_TRANSACTION: {
@@ -238,4 +238,10 @@ export default class DappMobileOperator extends Operator {
       code: ResponseCode.UNAUTHENTICATED,
     });
   }
+  public updateDappInfo = async (dapp: DappStoreItem) => {
+    if (isEqDapp(this.dapp, dapp)) return;
+    this.dapp = dapp;
+    const isActive = await this.dappManager.isActive(this.dapp.origin);
+    if (isActive) this.dappManager.updateDapp(dapp);
+  };
 }

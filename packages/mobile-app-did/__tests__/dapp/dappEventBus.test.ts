@@ -33,7 +33,7 @@ describe('DappEventBus', () => {
       dappOverlay: new DappOverlay(),
       dappManager: new DappMobileManager({ store: store as any }),
     });
-    console.log(`operator.origin: ${operator.origin}`);
+    console.log(`operator.origin: ${operator.dapp.origin}`);
     DappEventBus.dispatchEvent({ eventName: NotificationEvents.CONNECTED });
   });
   test('unregister successfully', done => {
@@ -46,7 +46,7 @@ describe('DappEventBus', () => {
       dappOverlay: new DappOverlay(),
       dappManager: new DappMobileManager({ store: store as any }),
     });
-    console.log(`operator.origin: ${operator.origin}`);
+    console.log(`operator.origin: ${operator.dapp.origin}`);
     operator.onDestroy();
     DappEventBus.dispatchEvent({ eventName: NotificationEvents.CONNECTED });
   });

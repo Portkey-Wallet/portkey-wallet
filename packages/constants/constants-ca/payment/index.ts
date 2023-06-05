@@ -33,4 +33,4 @@ export const ACH_APP_ID = 'P0e0l39jipsNYT46';
 
 export const FaucetUrl = 'https://testnet-faucet.aelf.io/';
 
-export const FaucetAmount = 100;
+export const FAUCET_AMOUNT = 100;

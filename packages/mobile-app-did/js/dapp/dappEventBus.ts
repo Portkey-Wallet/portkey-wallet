@@ -7,6 +7,7 @@ import {
   ChainIds,
   ConnectInfo,
   ProviderErrorType,
+  NotificationEvents,
 } from '@portkey/provider-types';
 import DappMobileOperator from './dappMobileOperator';
 
@@ -27,12 +28,11 @@ export default class DappEventBus {
   public static unregisterOperator(operator: DappMobileOperator) {
     this.operators = this.operators.filter(item => item !== operator);
   }
-  public static dispatchEvent(params: DappEventPack): void;
-  public static dispatchEvent(params: DappEventPack<'chainChanged', ChainIds>): void;
-  public static dispatchEvent(params: DappEventPack<'accountsChanged', Accounts>): void;
-  public static dispatchEvent(params: DappEventPack<'networkChanged', NetworkType>): void;
-  public static dispatchEvent(params: DappEventPack<'connected', ConnectInfo>): void;
-  public static dispatchEvent(params: DappEventPack<'disconnected', ProviderErrorType>): void;
+  public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.CHAIN_CHANGED, ChainIds>): void;
+  public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.ACCOUNTS_CHANGED, Accounts>): void;
+  public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.NETWORK_CHANGED, NetworkType>): void;
+  public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.CONNECTED, ConnectInfo>): void;
+  public static dispatchEvent(params: DappEventPack<typeof NotificationEvents.DISCONNECTED, ProviderErrorType>): void;
   public static dispatchEvent({ eventName, data, callback, origin, msg }: DappEventPack) {
     const event: IResponseType = {
       eventName,

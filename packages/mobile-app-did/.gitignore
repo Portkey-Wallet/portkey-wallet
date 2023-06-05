@@ -70,4 +70,4 @@ handleSvg.js
 .env
 
 # InpageBridgeWeb3
-/js/utils/InpageBridgeWeb3.js
+**/InpageBridgeWeb3.js

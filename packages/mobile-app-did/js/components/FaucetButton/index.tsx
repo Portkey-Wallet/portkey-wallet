@@ -17,6 +17,9 @@ import { request } from '@portkey-wallet/api/api-did';
 import { getTxResult } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getAelfInstance } from '@portkey-wallet/utils/aelf';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import { TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
@@ -31,7 +34,7 @@ const FaucetButton = (props: SendButtonType) => {
 
   const currentWallet = useCurrentWalletInfo();
   const currentNetworkInfo = useCurrentNetworkInfo();
-  const chainInfo = useCurrentChain('AELF');
+  const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
   const isLoading = useRef<boolean>(false);
 
   const claimToken = useCallback(async () => {
@@ -54,7 +57,7 @@ const FaucetButton = (props: SendButtonType) => {
     try {
       const { transactionId } = await request.token.getClaimToken({
         params: {
-          symbol: 'ELF',
+          symbol: ELF_SYMBOL,
           amount: timesDecimals(100, 8).toString(),
           address: currentWallet.AELF?.caAddress,
         },
@@ -71,7 +74,7 @@ const FaucetButton = (props: SendButtonType) => {
       }
       const aelfInstance = getAelfInstance(chainInfo.endPoint);
       const txResult = await getTxResult(aelfInstance, transactionId);
-      if (!txResult || txResult.Status !== 'MINED') {
+      if (!txResult || txResult.Status !== TransactionStatus.Mined) {
         throw new Error('txResult is error');
       }
 

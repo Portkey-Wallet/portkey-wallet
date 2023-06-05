@@ -13,7 +13,7 @@ import DappEventBus from './dappEventBus';
 import { generateNormalResponse, generateErrorResponse } from '@portkey/provider-utils';
 import { IDappManager } from '@portkey-wallet/types/types-ca/dapp';
 import { IDappOverlay } from './dappOverlay';
-import { Operator } from '@portkey/providers/dist/Operator';
+import { Operator } from '@portkey/providers/dist/operator';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount, getPin } from 'utils/redux';
@@ -109,7 +109,7 @@ export default class DappMobileOperator extends Operator {
 
   protected handleRequestAccounts: SendRequest<DappStoreItem> = async (eventName, params) => {
     await this.dappManager.addDapp(params);
-    // connected
+    // Notification connected
     DappEventBus.dispatchEvent({
       eventName: NotificationEvents.CONNECTED,
       data: {
@@ -123,7 +123,8 @@ export default class DappMobileOperator extends Operator {
   };
   protected handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
     try {
-      if (!params.params) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      if (!params || !params.params || !params.method || !params.contractAddress || !params.chainId)
+        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
 
       const chainInfo = await this.dappManager.getChainInfo(params.chainId);
       const caInfo = await this.dappManager.getCaInfo(params.chainId);
@@ -148,9 +149,7 @@ export default class DappMobileOperator extends Operator {
         functionName = 'ManagerForwardCall';
       }
 
-      const data = await contract!.callSendMethod(functionName, '', paramsOption, {
-        onMethod: 'transactionHash',
-      });
+      const data = await contract!.callSendMethod(functionName, '', paramsOption, { onMethod: 'transactionHash' });
       if (!data?.error) {
         return generateNormalResponse({
           eventName,

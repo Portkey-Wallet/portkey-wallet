@@ -12,6 +12,7 @@ import ReduxProvider from './ReduxProvider';
 import Updater from './Updater';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
+import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 
 const bodyRootWrapper = document.body;
 Sentry.init({
@@ -22,8 +23,10 @@ Sentry.init({
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
   // release: 'v1.0.0',
-  // environment: process.env.NODE_ENV,
+  environment: process.env.NODE_ENV,
 });
+exceptionManager.setSentryInstance(Sentry);
+
 ConfigProvider.config({
   prefixCls,
 });

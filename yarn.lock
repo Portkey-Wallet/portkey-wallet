@@ -5034,6 +5034,11 @@
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
+"@portkey/mobile-provider@^0.0.1-alpha.13":
+  version "0.0.1-alpha.13"
+  resolved "https://registry.npmjs.org/@portkey/mobile-provider/-/mobile-provider-0.0.1-alpha.13.tgz#93feae05af7fff42c30ce5e63902b12e4b8c2236"
+  integrity sha512-Lbra5xle1pP8ktCjwE7p/OwdlJjMeAgNe5BL9ze/uzNF/CdgReVbukO+YCmAfbbm6dQtz8Adl4f4eAM0wZvEuw==
+
 "@portkey/provider-types@^0.0.1-alpha.10", "@portkey/provider-types@^0.0.1-alpha.13":
   version "0.0.1-alpha.13"
   resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.13.tgz#70d831d0917ac902e72de5f85c5b304b0fe3b147"

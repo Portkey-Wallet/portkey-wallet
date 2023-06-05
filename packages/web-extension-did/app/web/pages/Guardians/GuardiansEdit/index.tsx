@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { useCallback, useMemo, useState } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
 import CustomSelect from 'pages/components/CustomSelect';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import {
   resetUserGuardianStatus,
   setCurrentGuardianAction,
@@ -24,6 +24,11 @@ import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
 import './index.less';
+import aes from '@portkey-wallet/utils/aes';
+import { GuardianMth } from 'types/guardians';
+import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function GuardiansEdit() {
   const { t } = useTranslation();
@@ -127,12 +132,69 @@ export default function GuardiansEdit() {
     navigate('/setting/guardians/guardian-approval', { state: 'guardians/del' }); // status
   }, [opGuardian, dispatch, navigate, userGuardianList, walletInfo.caHash]);
 
+  const { passwordSeed } = useUserInfo();
+  const originChainId = useOriginChainId();
+  const currentChain = useCurrentChain(originChainId);
+  const currentNetwork = useCurrentNetworkInfo();
+
+  // unset guardians, then remove
+  const removeLoginGuardians = useCallback(async () => {
+    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+    if (!currentChain?.endPoint || !privateKey) return message.error('unset login account error');
+    setLoading(true);
+    await handleGuardian({
+      rpcUrl: currentChain.endPoint,
+      chainType: currentNetwork.walletType,
+      address: currentChain.caContractAddress,
+      privateKey: privateKey,
+      paramsOption: {
+        method: GuardianMth.UnsetGuardianTypeForLogin,
+        params: {
+          caHash: walletInfo?.caHash,
+          guardian: {
+            type: currentGuardian?.guardianType,
+            verifierId: currentGuardian?.verifier?.id,
+            identifierHash: currentGuardian?.identifierHash,
+          },
+        },
+      },
+    });
+    await userGuardianList({ caHash: walletInfo.caHash });
+    await removeHandler();
+    setLoading(false);
+  }, [
+    currentChain?.caContractAddress,
+    currentChain?.endPoint,
+    currentGuardian?.guardianType,
+    currentGuardian?.identifierHash,
+    currentGuardian?.verifier?.id,
+    currentNetwork.walletType,
+    passwordSeed,
+    removeHandler,
+    setLoading,
+    userGuardianList,
+    walletInfo.AESEncryptPrivateKey,
+    walletInfo.caHash,
+  ]);
+
   const checkRemove = useCallback(() => {
+    const isLoginAccountList = userGuardiansList?.filter((item) => item.isLoginAccount) || [];
     if (opGuardian?.isLoginAccount) {
-      CustomModal({
-        type: 'info',
-        content: <>{t('This guardian is login account and cannot be remove')}</>,
-      });
+      if (isLoginAccountList.length === 1) {
+        CustomModal({
+          type: 'info',
+          content: <>{t('This guardian is the only login account and cannot be removed')}</>,
+        });
+      } else {
+        CustomModal({
+          type: 'confirm',
+          content: (
+            <>{t('This guardian is set as a login account. Click "Confirm" to unset and remove this guardian')}</>
+          ),
+          okText: t('Confirm'),
+          onOk: removeLoginGuardians,
+        });
+      }
     } else {
       CustomModal({
         type: 'confirm',
@@ -146,7 +208,7 @@ export default function GuardiansEdit() {
         onOk: removeHandler,
       });
     }
-  }, [opGuardian, removeHandler, t]);
+  }, [opGuardian?.isLoginAccount, removeHandler, removeLoginGuardians, t, userGuardiansList]);
 
   const renderContent = useMemo(
     () => (

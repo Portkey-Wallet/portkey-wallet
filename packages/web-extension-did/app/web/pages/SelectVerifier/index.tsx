@@ -19,6 +19,7 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import './index.less';
+import { RecaptchaType } from '@portkey-wallet/types/verifier';
 
 export default function SelectVerifier() {
   const { verifierMap } = useGuardiansInfo();
@@ -66,6 +67,7 @@ export default function SelectVerifier() {
           type: LoginType[loginAccount.loginType],
           verifierId: selectItem.id,
           chainId: originChainId,
+          operationType: RecaptchaType.register,
         },
       });
       setLoading(false);
@@ -116,6 +118,7 @@ export default function SelectVerifier() {
         }),
       );
       const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
+      setLoading(false);
       if (managerAddress && res.data.privateKey) {
         onManagerAddressAndQueryResult(res.data.privateKey, {
           verifierId: selectItem?.id as string,
@@ -128,7 +131,6 @@ export default function SelectVerifier() {
     } catch (error) {
       const msg = handleError(error);
       message.error(msg);
-    } finally {
       setLoading(false);
     }
   }, [

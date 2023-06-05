@@ -9,9 +9,9 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import Copy from 'components/Copy';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
-import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';       
+import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
 export default function NFT() {
@@ -19,10 +19,11 @@ export default function NFT() {
   const { state } = useLocation();
   const { isPrompt } = useCommonState();
   const isMainNet = useIsMainnet();
+  const currentNetwork = useCurrentNetworkInfo();
 
   const renderDetail = useMemo(() => {
     const { address, chainId } = state;
-    const formatTokenContractAds = addressFormat(address, chainId, 'aelf');
+    const formatTokenContractAds = addressFormat(address, chainId, currentNetwork.walletType);
     return (
       <div className="info">
         <div className="title">Basic info</div>
@@ -75,13 +76,15 @@ export default function NFT() {
           </div>
           {renderDetail}
         </div>
-        <div className="btn-wrap flex-column-center">
-          <div className="balance">{`You have: ${formatAmountShow(balance, 0)}`}</div>
-          <Button type="primary" onClick={() => navigate(`/send/nft/${symbol}`, { state })}>
-            Send
-          </Button>
+        <div>
+          <div className="btn-wrap flex-column-center">
+            <div className="balance">{`You have: ${formatAmountShow(balance, 0)}`}</div>
+            <Button type="primary" onClick={() => navigate(`/send/nft/${symbol}`, { state })}>
+              Send
+            </Button>
+          </div>
+          {isPrompt ? <PromptEmptyElement /> : null}
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );
   }, [isPrompt, navigate, renderDetail, state]);

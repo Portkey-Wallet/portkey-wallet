@@ -7,13 +7,14 @@ import { localStorage } from 'redux-persist-webextension-storage';
 import { IStorage } from '@portkey-wallet/types/storage';
 import { request } from '@portkey-wallet/api/api-did';
 import { checkReCaptcha } from './lib/checkReCaptcha';
+import { RecaptchaType } from '@portkey-wallet/types/verifier';
 
 export class ExtensionVerification extends Verification {
   constructor(store: IStorage) {
     super(store);
   }
   public async sendVerificationCode(config: SendVerificationConfig) {
-    const { guardianIdentifier, verifierId } = config.params;
+    const { guardianIdentifier, verifierId, operationType } = config.params;
     const key = (guardianIdentifier || '') + (verifierId || '');
 
     try {
@@ -21,7 +22,8 @@ export class ExtensionVerification extends Verification {
       if (item) {
         return item;
       } else {
-        const reCaptcha = await checkReCaptcha();
+        const isNeedRecaptcha = operationType === RecaptchaType.register;
+        const reCaptcha = await checkReCaptcha(operationType, isNeedRecaptcha);
         if (reCaptcha) {
           config.headers = {
             reCaptchaToken: reCaptcha,

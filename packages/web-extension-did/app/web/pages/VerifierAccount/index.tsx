@@ -4,7 +4,7 @@ import { useAppDispatch, useLoginInfo, useGuardiansInfo, useUserInfo, useLoading
 import { useCallback, useMemo } from 'react';
 import { message } from 'antd';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { RecaptchaType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import useLocationState from 'hooks/useLocationState';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -189,6 +189,15 @@ export default function VerifierAccount() {
     return !!currentGuardian?.isInitStatus;
   }, [currentGuardian, state]);
 
+  const recaptchaType = useMemo(() => {
+    if (state === 'register') {
+      return RecaptchaType.register;
+    } else if (state === 'login') {
+      return RecaptchaType.communityRecovery;
+    }
+    return RecaptchaType.optGuardian;
+  }, [state]);
+
   const renderContent = useMemo(
     () => (
       <div className="common-content1 verifier-account-content">
@@ -198,10 +207,11 @@ export default function VerifierAccount() {
           currentGuardian={currentGuardian}
           guardianType={loginAccount?.loginType}
           onSuccess={onSuccess}
+          recaptchaType={recaptchaType}
         />
       </div>
     ),
-    [currentGuardian, isInitStatus, loginAccount, onSuccess],
+    [currentGuardian, isInitStatus, loginAccount, onSuccess, recaptchaType],
   );
 
   const props = useMemo(

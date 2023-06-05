@@ -22,7 +22,7 @@ export default {
   },
   pullNotify: 'api/app/notify/pullNotify',
   getPhoneCountryCode: {
-    target: '/api/app/phone/phone_info',
+    target: '/api/app/phone/info',
     config: { method: 'GET' },
   },
 } as const;

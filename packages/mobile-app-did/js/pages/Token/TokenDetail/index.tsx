@@ -24,7 +24,6 @@ import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/ac
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { transactionTypesForActivityList as transactionList } from '@portkey-wallet/constants/constants-ca/activity';
 import fonts from 'assets/theme/fonts';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
@@ -77,7 +76,6 @@ const TokenDetail: React.FC = () => {
     () => ({
       caAddressInfos: caAddressInfos.filter(ele => ele.chainId === tokenInfo.chainId),
       caAddresses: [currentWallet.walletInfo[tokenInfo.chainId]?.caAddress || ''],
-      transactionTypes: transactionList,
       symbol: tokenInfo.symbol,
       chainId: tokenInfo.chainId,
     }),
@@ -129,8 +127,13 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
-    [isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
+    () => isMainnet && tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
+    [isMainnet, isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
+  );
+
+  const isFaucetButtonShow = useMemo(
+    () => !isMainnet && tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
+    [isMainnet, isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   return (
@@ -160,7 +163,7 @@ const TokenDetail: React.FC = () => {
           )}`}</Text>
         )}
         <View style={styles.buttonGroupWrap}>
-          {isMainnet && isBuyButtonShow && (
+          {isBuyButtonShow && (
             <>
               <BuyButton themeType="innerPage" />
               <View style={styles.spacerStyle} />
@@ -169,8 +172,12 @@ const TokenDetail: React.FC = () => {
           <SendButton themeType="innerPage" sentToken={currentToken} />
           <View style={styles.spacerStyle} />
           <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" receiveButton={currentToken} />
-          <View style={styles.spacerStyle} />
-          {!isMainnet && <FaucetButton themeType="innerPage" />}
+          {isFaucetButtonShow && (
+            <>
+              <View style={styles.spacerStyle} />
+              <FaucetButton themeType="innerPage" />
+            </>
+          )}
         </View>
       </View>
 

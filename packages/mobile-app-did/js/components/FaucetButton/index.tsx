@@ -17,9 +17,10 @@ import { request } from '@portkey-wallet/api/api-did';
 import { getTxResult } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getAelfInstance } from '@portkey-wallet/utils/aelf';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { ELF_DECIMAL, MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
+import { FAUCET_AMOUNT } from '@portkey-wallet/constants/constants-ca/payment';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
@@ -58,7 +59,7 @@ const FaucetButton = (props: SendButtonType) => {
       const { transactionId } = await request.token.getClaimToken({
         params: {
           symbol: ELF_SYMBOL,
-          amount: timesDecimals(100, 8).toString(),
+          amount: timesDecimals(FAUCET_AMOUNT, ELF_DECIMAL).toString(),
           address: currentWallet.AELF?.caAddress,
         },
         headers: {

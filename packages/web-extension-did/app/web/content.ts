@@ -4,8 +4,18 @@ import { getUrl } from './utils/getHostname';
 import { runWorkerKeepAliveInterval } from 'utils/keepAlive';
 import { checkForError } from 'utils';
 import { ContentPostStream } from '@portkey/extension-provider';
-import { MethodsUnimplemented, IRequestParams } from '@portkey/provider-types';
+import {
+  MethodsUnimplemented,
+  IRequestParams,
+  MethodsType,
+  ProviderError,
+  ResponseMessagePreset,
+  ResponseCode,
+} from '@portkey/provider-types';
 import { generateErrorResponse, generateNormalResponse } from '@portkey/provider-utils';
+import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { isMethodsBase, isMethodsUnimplemented } from '@portkey/providers';
+import { isMethodsWalletMessage } from 'messages/utils';
 /**
  * Don't run the keep-worker-alive logic for JSON-RPC methods called on initial load.
  * This is to prevent the service worker from being kept alive when accounts are not
@@ -139,11 +149,19 @@ class Content {
     };
   }
 
+  methodCheck = (method: string): method is MethodsType => {
+    return isMethodsBase(method) || isMethodsUnimplemented(method) || isMethodsWalletMessage(method);
+  };
+
   contentListener(input: IRequestParams) {
+    const URL = getUrl();
+    const icon = `https://api.faviconkit.com/${getHost(URL.href)}/50`;
+
     const message = Object.assign({}, input, {
-      hostname: getUrl().hostname,
-      origin: getUrl().origin,
-      href: getUrl().href,
+      hostname: URL.hostname,
+      origin: URL.origin,
+      href: URL.href,
+      icon,
     });
 
     const method = message.method;
@@ -152,7 +170,9 @@ class Content {
     if (!IGNORE_INIT_METHODS_FOR_KEEP_ALIVE.includes(method)) {
       runWorkerKeepAliveInterval();
     }
-
+    if (!this.methodCheck(method)) {
+      return this.respond(new ProviderError(ResponseMessagePreset['UNKNOWN_METHOD'], ResponseCode.UNKNOWN_METHOD));
+    }
     this.internalCommunicate(method, message);
   }
 

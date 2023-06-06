@@ -4,7 +4,7 @@
  */
 import { ENVIRONMENT_TYPE_SERVICE_WORKER } from 'constants/envType';
 import { ACK_KEEP_ALIVE_MESSAGE, WORKER_KEEP_ALIVE_MESSAGE } from 'constants/index';
-import SWController from 'controllers/SWController';
+import SWEventController from 'controllers/SWEventController';
 import { getEnvironmentType } from 'utils';
 import { apis } from 'utils/BrowserApis';
 import errorHandler from 'utils/errorHandler';
@@ -43,7 +43,7 @@ export default function connectListener() {
     }
     const isContentConnect = portType === ENVIRONMENT_TYPE_SERVICE_WORKER;
     if (isContentConnect) {
-      SWController.connectWebAppByTab(port.sender);
+      SWEventController.registerOperator(port.sender);
       // console.log(port, 'connectListener===port');
       // if (port.name !== WORKER_KEEP_ALIVE_MESSAGE) return;
 

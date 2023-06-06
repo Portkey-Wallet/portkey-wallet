@@ -11,7 +11,6 @@ import { getLocalStorage } from 'utils/storage/chromeStorage';
 import { useEffectOnce } from 'react-use';
 import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
-// import useCheckRegisterOnNetwork from 'hooks/useCheckRegisterOnNetwork';
 
 export default function PermissionCheck({
   children,

@@ -46,6 +46,9 @@ import BuyTestConfirm from 'pages/BuyTest/Confirm';
 import { useCommonState } from 'store/Provider/hooks';
 import My from 'pages/My';
 import RecentDetail from 'pages/Send/components/RecentDetail';
+import Permission from 'pages/Permission';
+import ConnectWallet from 'pages/ConnectWallet';
+import SendTransactions from 'pages/SendTransactions';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -148,6 +151,10 @@ export const PageRouter = () => {
       element: <QueryPage />,
     },
     {
+      path: '/permission',
+      element: <Permission />,
+    },
+    {
       path: '/test',
       element: <Example />,
     },
@@ -165,6 +172,15 @@ export const PageRouter = () => {
       path: '/test/socket',
       element: <TestSocket />,
     },
+    {
+      path: '/connect-wallet',
+      element: <ConnectWallet />,
+    },
+    {
+      path: '/send-transactions',
+      element: <SendTransactions />,
+    },
+
     {
       path: '*',
       element: <NotFound />,

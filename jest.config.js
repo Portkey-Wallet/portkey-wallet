@@ -20,6 +20,7 @@ module.exports = {
   moduleNameMapper: {
     '\\.(css|less)$': 'identity-obj-proxy',
   },
+  setupFilesAfterEnv: ['./packages/mobile-app-did/__tests__/setup/mockAsyncStorage.js'],
   projects: [
     {
       displayName: 'hooks',
@@ -65,6 +66,22 @@ module.exports = {
         '^messages/(.*)$': '<rootDir>/packages/web-extension-did/app/web/messages/$1',
       },
       coveragePathIgnorePatterns: ['/node_modules/', '/store/', '/hooks-ca/', '/utils/'],
+    },
+    {
+      displayName: 'mobile-app-did',
+      preset: 'ts-jest',
+      roots: ['<rootDir>/packages/mobile-app-did'],
+      transform: {
+        '^.+\\.(ts|tsx)$': [`ts-jest`, { isolatedModules: true, tsconfig: './packages/mobile-app-did/tsconfig.json' }],
+      },
+      moduleNameMapper: {
+        '^react$': '<rootDir>/node_modules/react',
+        '^utils/(.*)$': '<rootDir>/packages/mobile-app-did/js/utils/$1',
+        '^store/(.*)$': '<rootDir>/packages/mobile-app-did/js/store/$1',
+        store: '<rootDir>/packages/mobile-app-did/js/store/index.ts',
+        '^dapp/(.*)$': '<rootDir>/packages/mobile-app-did/js/dapp/$1',
+      },
+      coveragePathIgnorePatterns: ['/node_modules/', '/store/', '/Test/', '/utils/'],
     },
   ],
 };

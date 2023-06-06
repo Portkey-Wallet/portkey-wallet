@@ -18,7 +18,7 @@ const EntryScriptWeb3 = {
     if (this.entryScriptWeb3) return this.entryScriptWeb3;
 
     // If for some reason it is not available, get it again
-    return await this.init();
+    return this.init();
   },
 };
 

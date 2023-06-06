@@ -10,18 +10,10 @@ import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { TOKEN_CLAIM_CONTRACT_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/payment';
+import { useGetCurrentCAContract } from 'hooks/contract';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import CommonToast from 'components/CommonToast';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { request } from '@portkey-wallet/api/api-did';
-import { getTxResult } from '@portkey-wallet/contracts/utils';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { getAelfInstance } from '@portkey-wallet/utils/aelf';
-import { ELF_DECIMAL, MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
-import { TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
-import { FAUCET_AMOUNT } from '@portkey-wallet/constants/constants-ca/payment';
-
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
   sentToken?: TokenItemShowType;
@@ -35,63 +27,36 @@ const FaucetButton = (props: SendButtonType) => {
 
   const currentWallet = useCurrentWalletInfo();
   const currentNetworkInfo = useCurrentNetworkInfo();
-  const chainInfo = useCurrentChain(MAIN_CHAIN_ID);
+  const getCurrentCAContract = useGetCurrentCAContract(TOKEN_CLAIM_CONTRACT_CHAIN_ID);
   const isLoading = useRef<boolean>(false);
 
   const claimToken = useCallback(async () => {
     if (!currentWallet.address || !currentWallet.caHash || !currentNetworkInfo.tokenClaimContractAddress) return;
-
-    let reCaptchaToken: string;
-    try {
-      reCaptchaToken = (await verifyHumanMachine('en')) as string;
-      if (!reCaptchaToken) {
-        throw new Error('reCaptchaToken is empty');
-      }
-    } catch (error) {
-      CommonToast.warn(error as string);
-      return;
-    }
-
     CommonToast.loading('Your ELF is on its way');
+
     if (isLoading.current) return;
     isLoading.current = true;
     try {
-      const { transactionId } = await request.token.getClaimToken({
-        params: {
-          symbol: ELF_SYMBOL,
-          amount: timesDecimals(FAUCET_AMOUNT, ELF_DECIMAL).toString(),
-          address: currentWallet.AELF?.caAddress,
-        },
-        headers: {
-          reCaptchaToken: reCaptchaToken,
+      const caContract = await getCurrentCAContract();
+      const rst = await caContract.callSendMethod('ManagerForwardCall', currentWallet.address, {
+        caHash: currentWallet.caHash,
+        contractAddress: currentNetworkInfo.tokenClaimContractAddress,
+        methodName: 'ClaimToken',
+        args: {
+          symbol: 'ELF',
+          amount: timesDecimals(100, 8).toString(),
         },
       });
-      if (!transactionId) {
-        throw new Error('transactionId is empty');
+      if (rst.error) {
+        throw rst.error;
       }
-
-      if (!chainInfo?.endPoint) {
-        throw new Error('chainInfo.endPoint is empty');
-      }
-      const aelfInstance = getAelfInstance(chainInfo.endPoint);
-      const txResult = await getTxResult(aelfInstance, transactionId);
-      if (!txResult || txResult.Status !== TransactionStatus.Mined) {
-        throw new Error('txResult is error');
-      }
-
       CommonToast.success(`Token successfully requested`);
     } catch (error) {
       console.log(error);
       CommonToast.warn(`Today's limit has been reached`);
     }
     isLoading.current = false;
-  }, [
-    chainInfo,
-    currentNetworkInfo.tokenClaimContractAddress,
-    currentWallet.AELF?.caAddress,
-    currentWallet.address,
-    currentWallet.caHash,
-  ]);
+  }, [currentNetworkInfo.tokenClaimContractAddress, currentWallet.address, currentWallet.caHash, getCurrentCAContract]);
 
   return (
     <View style={styles.buttonWrap}>

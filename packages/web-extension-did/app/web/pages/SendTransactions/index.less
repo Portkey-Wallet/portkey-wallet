@@ -1,0 +1,148 @@
+@import '../../assets/theme/color.less';
+
+.send-transaction {
+  width: 328px;
+  margin: 40px auto;
+  flex-direction: column;
+  font-size: 12px;
+  line-height: 16px;
+  color: @font-11;
+  .title {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    color: @font-11;
+  }
+  .chain {
+    align-self: center;
+    margin-bottom: 24px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: 1px solid @border-2;
+    .aelf-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+    }
+  }
+  .account {
+    position: relative;
+    margin: 0 auto 16px;
+    padding: 17px 15px;
+    width: 328px;
+    border: 1px solid @border-2;
+    border-radius: 6px;
+    align-items: center;
+    gap: 44px;
+    .address,
+    .name {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .oval-icon {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-10px) translateY(-10px);
+      z-index: 10;
+    }
+    .line {
+      position: absolute;
+      left: 50%;
+      height: 100%;
+      border-left: 1px solid @border-2;
+    }
+  }
+  .method {
+    margin-bottom: 16px;
+    color: @font-13;
+    .title {
+      margin-bottom: 4px;
+    }
+  }
+  .detail {
+    color: @font-13;
+    .title {
+      margin-bottom: 4px;
+    }
+    .amount {
+      padding: 16px;
+      margin-bottom: 18px;
+      border: 1px solid @border-2;
+      border-radius: 6px;
+    }
+    .fee, .total {
+      margin-bottom: 12px;
+      .elf {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: @font-11;
+      }
+      .dollar {
+        margin-left: 4px;
+      }
+    }
+  }
+  .message-wrapper {
+    color: @font-13;
+    margin-bottom: 42px;
+    .title {
+      margin-bottom: 4px;
+    }
+    .message {
+      width: 328px;
+      padding: 16px;
+      margin-bottom: 18px;
+      border: 1px solid @border-2;
+      border-radius: 6px;
+      .title {
+        margin-bottom: 4px;
+      }
+      .content {
+        margin-bottom: 16px;
+        width: 100%;
+        line-break: anywhere;
+        white-space: pre-wrap;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+    .fee {
+      .elf {
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: @font-11;
+      }
+      .dollar {
+        margin-left: 4px;
+      }
+    }
+  }
+  .btn {
+    width: 100%;
+    .@{app-prefix}-btn {
+      width: 156px;
+      height: 48px;
+      font-size: 14px;
+      line-height: 22px;
+      text-align: center;
+      border-radius: 24px;
+    }
+    .@{app-prefix}-btn-text {
+      border: 1px solid @border-3;
+      color: @font-9;
+      background-color: @bg-11;
+    }
+    .@{app-prefix}-btn-primary {
+      color: @font-5;
+      background-color: @bg-7;
+    }
+  }
+}

@@ -131,11 +131,7 @@ export default class AELFMethodController {
   requestAccounts: RequestCommonHandler = async (sendResponse, message) => {
     const isActive = await this.dappManager.isActive(message.origin);
     if (isActive) return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
-    const result = await this.approvalController.authorizedToConnect({
-      appName: 'appName',
-      appLogo: 'appName',
-      origin,
-    });
+    const result = await this.approvalController.authorizedToConnect(message);
     if (result.error === 200003)
       return sendResponse({
         ...errorHandler(200003),

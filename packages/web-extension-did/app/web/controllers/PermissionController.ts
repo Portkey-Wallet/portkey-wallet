@@ -1,3 +1,4 @@
+import { isNotificationEvents } from '@portkey/providers';
 import { PromptRouteTypes } from 'messages/InternalMessageTypes';
 import NotificationService from 'service/NotificationService';
 import { CreatePromptType } from 'types';
@@ -77,18 +78,13 @@ export default class PermissionController {
   }
 
   async checkIsRegisterOtherwiseRegister(method: string, search?: object): Promise<PortKeyResultType> {
-    if (this.whitelist?.includes(method))
+    if (this.whitelist?.includes(method) || isNotificationEvents(method))
       return {
         error: 0,
         message: 'no check',
       };
     const registerStatus = await this.getRegisterStatus();
     if (registerStatus !== 'Registered') {
-      // pendingTaskService.addTask({
-      //   eventName: 'eventName1',
-      //   method,
-      //   payload: { a: 2 },
-      // });
       if (!search) search = { from: 'sw' };
       return await this.notificationService.openPrompt(
         {

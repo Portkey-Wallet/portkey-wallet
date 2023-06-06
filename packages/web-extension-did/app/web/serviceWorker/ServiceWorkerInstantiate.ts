@@ -52,6 +52,8 @@ const permissionWhitelist = [
   PortkeyMessageTypes.EXPAND_FULL_SCREEN,
   PortkeyMessageTypes.ACTIVE_LOCK_STATUS,
   PortkeyMessageTypes.PERMISSION_FINISH,
+  PortkeyMessageTypes.SOCIAL_LOGIN,
+  WalletMessageTypes.SOCIAL_LOGIN,
   MethodsUnimplemented.GET_WALLET_STATE,
   // The method that requires the dapp not to trigger the lock call
   MethodsBase.ACCOUNTS,
@@ -111,6 +113,14 @@ export default class ServiceWorkerInstantiate {
 
         const registerRes = await this.permissionController.checkIsRegisterOtherwiseRegister(message.type);
         if (registerRes.error !== 0) return sendResponse(registerRes);
+        // process events
+        if (SWEventController.check(message.type, message.payload?.data)) {
+          const payload = message.payload;
+          const data: DappEventPack['data'] = payload.data;
+          const origin = payload.origin;
+          SWEventController.dispatchEvent({ eventName: message.type as any, data, origin, callback: sendResponse });
+          return;
+        }
         await ServiceWorkerInstantiate.checkTimingLock();
         if (message.type === InternalMessageTypes.ACTIVE_LOCK_STATUS) return sendResponse(errorHandler(0));
         const isLocked = await this.permissionController.checkIsLockOtherwiseUnlock(message.type);
@@ -130,14 +140,6 @@ export default class ServiceWorkerInstantiate {
    */
   dispenseMessage(sendResponse: SendResponseFun, message: InternalMessageData) {
     console.log('dispenseMessage: ', message);
-    // process events
-    if (SWEventController.check(message.type, message.payload?.data)) {
-      const payload = message.payload;
-      const data: Omit<DappEventPack, 'callback'> = payload.data;
-      const origin = payload.origin;
-      SWEventController.dispatchEvent({ ...data, origin, callback: sendResponse });
-      return;
-    }
     switch (message.type) {
       case PortkeyMessageTypes.GET_SEED:
         ServiceWorkerInstantiate.getSeed(sendResponse);
@@ -419,7 +421,6 @@ export default class ServiceWorkerInstantiate {
     try {
       if (seed) {
         console.log('lockWallet', message);
-        seed = null;
         SWEventController.dispatchEvent({
           eventName: 'disconnected',
           data: {
@@ -428,10 +429,11 @@ export default class ServiceWorkerInstantiate {
           },
           callback: sendResponse,
         });
-        setLocalStorage({
-          locked: true,
-        });
       }
+      seed = null;
+      setLocalStorage({
+        locked: true,
+      });
     } catch (e) {
       sendResponse?.(errorHandler(500001, e));
     }

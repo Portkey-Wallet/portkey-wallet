@@ -4,6 +4,7 @@ import storeConfig from './config';
 import rootReducer from './rootReducer';
 import { rateApi } from '@portkey-wallet/store/rate/api';
 import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
+import SWEventController from 'controllers/SWEventController';
 
 export const persistedReducer = persistReducer(storeConfig.reduxPersistConfig as any, rootReducer);
 
@@ -13,6 +14,7 @@ middlewareList.push(rateApi.middleware);
 
 // dapp middle
 middlewareList.push(DappMiddle.middle);
+DappMiddle.registerEvent(SWEventController);
 
 export const store = configureStore({
   reducer: persistedReducer,

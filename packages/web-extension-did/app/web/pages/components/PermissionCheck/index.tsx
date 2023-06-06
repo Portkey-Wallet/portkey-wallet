@@ -114,7 +114,7 @@ export default function PermissionCheck({
     if (location.pathname.includes('/test')) return;
     if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
     checkRegisterHandler();
-  }, [isRegisterPage, locked, noCheckRegister, navigate, getPassword, checkRegisterHandler, location.pathname]);
+  }, [checkRegisterHandler, isRegisterPage, location.pathname, locked, navigate, noCheckRegister]);
 
   return <>{children}</>;
 }

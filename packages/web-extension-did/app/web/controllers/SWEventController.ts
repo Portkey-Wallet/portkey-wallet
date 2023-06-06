@@ -135,6 +135,7 @@ export default class SWEventController {
     switch (action) {
       case changeNetworkType.toString(): {
         const { currentNetwork } = await getWalletState();
+
         InternalMessage.payload(NotificationEvents.NETWORK_CHANGED, { data: currentNetwork }).send();
         break;
       }

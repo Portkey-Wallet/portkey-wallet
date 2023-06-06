@@ -5052,7 +5052,7 @@
   resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.13.tgz#70d831d0917ac902e72de5f85c5b304b0fe3b147"
   integrity sha512-p6vJqsAVaCzz1pGLlzr6NH+5o1GTKxQH3vfG/m7hLuNxTFo6gVp3fklBfgs6F6A7ePYBTtOgcZO4QFiSfPO2tg==
   dependencies:
-    "@types/readable-stream" "^2.3.15"
+    "@portkey/provider-types" "^0.0.1-alpha.10"
 
 "@portkey/provider-types@^0.0.1-alpha.14":
   version "0.0.1-alpha.14"

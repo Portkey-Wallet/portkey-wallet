@@ -24,7 +24,6 @@ export default function SendTransactions() {
       chainId: ChainId;
       contractAddress: string;
       method: string;
-      isGetSignTx?: 0 | 1; // 0 message 1 detail
       params: any;
     };
   }>();
@@ -157,7 +156,7 @@ export default function SendTransactions() {
         <div className="title">Method</div>
         <div className="method-name">{detail.payload.method}</div>
       </div>
-      {detail.payload.isGetSignTx ? renderMessage : renderDetail}
+      {detail.payload.method.toLowerCase() === 'transfer' ? renderDetail : renderMessage}
       <div className="btn flex-between">
         <Button
           type="text"

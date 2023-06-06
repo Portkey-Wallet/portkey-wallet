@@ -3,6 +3,7 @@
   "version": "1.1.5",
   "private": true,
   "scripts": {
+    "postinstall": "bash scripts/postinstall.sh",
     "handle-network": "yarn workspace @portkey-wallet/constants run handle-network",
     "android": "react-native run-android",
     "ios": "react-native run-ios --simulator='iPhone 13 Pro'",
@@ -37,7 +38,8 @@
       "base-64",
       "buffer",
       "rn-teaset",
-      "@shopify/flash-list"
+      "@shopify/flash-list",
+      "@portkey/mobile-provider"
     ]
   },
   "dependencies": {
@@ -49,9 +51,10 @@
     "@portkey-wallet/i18n": "^0.0.1",
     "@portkey-wallet/store": "^0.0.1",
     "@portkey-wallet/utils": "^0.0.1",
-    "@portkey/provider-types": "^0.0.1-alpha.11",
-    "@portkey/provider-utils": "^0.0.1-alpha.11",
-    "@portkey/providers": "^0.0.1-alpha.11",
+    "@portkey/mobile-provider": "^0.0.1-alpha.13",
+    "@portkey/provider-types": "^0.0.1-alpha.13",
+    "@portkey/provider-utils": "^0.0.1-alpha.13",
+    "@portkey/providers": "^0.0.1-alpha.13",
     "@react-native-async-storage/async-storage": "^1.17.6",
     "@react-native-firebase/analytics": "^15.3.0",
     "@react-native-firebase/app": "^15.3.0",

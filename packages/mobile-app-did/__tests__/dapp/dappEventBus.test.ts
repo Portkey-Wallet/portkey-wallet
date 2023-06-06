@@ -5,7 +5,6 @@ import { DappMobileManager } from 'dapp/dappManager';
 import DappMobileOperator from 'dapp/dappMobileOperator';
 import { DappOverlay } from 'dapp/dappOverlay';
 import { store } from 'store';
-
 class TestOperatorStream extends DappInteractionStream {
   private messageCallback;
   constructor(callback: (message: IResponseType) => void) {
@@ -34,7 +33,7 @@ describe('DappEventBus', () => {
       dappOverlay: new DappOverlay(),
       dappManager: new DappMobileManager({ store: store as any }),
     });
-    console.log(`operator.origin: ${operator.origin}`);
+    console.log(`operator.origin: ${operator.dapp.origin}`);
     DappEventBus.dispatchEvent({ eventName: NotificationEvents.CONNECTED });
   });
   test('unregister successfully', done => {
@@ -47,7 +46,7 @@ describe('DappEventBus', () => {
       dappOverlay: new DappOverlay(),
       dappManager: new DappMobileManager({ store: store as any }),
     });
-    console.log(`operator.origin: ${operator.origin}`);
+    console.log(`operator.origin: ${operator.dapp.origin}`);
     operator.onDestroy();
     DappEventBus.dispatchEvent({ eventName: NotificationEvents.CONNECTED });
   });

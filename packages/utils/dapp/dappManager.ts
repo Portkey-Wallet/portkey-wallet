@@ -4,7 +4,8 @@ import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { DappManagerOptions, IDappManager, IDappManagerStore } from '@portkey-wallet/types/types-ca/dapp';
 import { CACommonState } from '@portkey-wallet/types/types-ca/store';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { Accounts, ChainId, ChainIds, ChainsInfo } from '@portkey/provider-types';
+import { ChainId, ChainsInfo } from '@portkey/provider-types';
+import { handleAccounts, handleChainIds, handleCurrentCAInfo } from './index';
 import { isEqDapp } from './browser';
 
 export abstract class BaseDappManager<T extends IDappManagerStore> {
@@ -34,8 +35,8 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
     return !!(await this.getOriginInfo(origin));
   }
   async getCurrentCAInfo() {
-    const { walletInfo, currentNetwork } = await this.getWallet();
-    return walletInfo?.caInfo[currentNetwork];
+    const wallet = await this.getWallet();
+    return handleCurrentCAInfo(wallet);
   }
   async getCaInfo(chainId: ChainId): Promise<CAInfo | undefined> {
     return (await this.getCurrentCAInfo())?.[chainId];
@@ -65,27 +66,17 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
     return (await this.originIsAuthorized(origin)) && (await this.isLogged());
   }
   async accounts(origin: string) {
-    const { walletInfo, currentNetwork } = await this.getWallet();
-    if (!(await this.isActive(origin)) || !walletInfo?.caInfo) return {};
-    const accounts: Accounts = {};
-    Object.entries(walletInfo.caInfo[currentNetwork] || {}).forEach(([key, value]) => {
-      if ((value as CAInfo)?.caAddress) accounts[key as ChainId] = [(value as CAInfo).caAddress];
-    });
-    return accounts;
+    const wallet = await this.getWallet();
+    if (!(await this.isActive(origin)) || !wallet.walletInfo?.caInfo) return {};
+    return handleAccounts(wallet);
   }
   async chainId() {
     return this.chainIds();
   }
   async chainIds() {
     if (!this.isLogged()) return [];
-    const currentCAInfo = await this.getCurrentCAInfo();
-    const list = Object.entries(currentCAInfo || {})
-      .map(([key, value]) => {
-        if ((value as CAInfo)?.caAddress) return key;
-        return undefined;
-      })
-      .filter(i => !!i);
-    return list as ChainIds;
+    const wallet = await this.getWallet();
+    return handleChainIds(wallet);
   }
   async chainsInfo() {
     const chainsInfo: ChainsInfo = {};

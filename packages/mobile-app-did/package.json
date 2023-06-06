@@ -193,6 +193,13 @@
       "json",
       "node"
     ],
+    "moduleNameMapper": {
+      "^react$": "<rootDir>/../../node_modules/react",
+      "^utils/(.*)$": "<rootDir>/js/utils/$1",
+      "^store/(.*)$": "<rootDir>/js/store/$1",
+      "store": "<rootDir>/js/store/index.ts",
+      "^dapp/(.*)$": "<rootDir>/js/dapp/$1"
+    },
     "setupFilesAfterEnv": [
       "./__tests__/setup/mockAsyncStorage.js"
     ]

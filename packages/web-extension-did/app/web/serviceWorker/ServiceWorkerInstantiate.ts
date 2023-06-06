@@ -131,9 +131,11 @@ export default class ServiceWorkerInstantiate {
   dispenseMessage(sendResponse: SendResponseFun, message: InternalMessageData) {
     console.log('dispenseMessage: ', message);
     // process events
-    if (SWEventController.checkEventMethod(message.type)) {
-      const data: InternalMessageData<Omit<DappEventPack, 'callback'>> = message;
-      SWEventController.dispatchEvent({ ...data.payload, callback: sendResponse });
+    if (SWEventController.check(message.type, message.payload?.data)) {
+      const payload = message.payload;
+      const data: Omit<DappEventPack, 'callback'> = payload.data;
+      const origin = payload.origin;
+      SWEventController.dispatchEvent({ ...data, origin, callback: sendResponse });
       return;
     }
     switch (message.type) {

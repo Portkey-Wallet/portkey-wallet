@@ -11,22 +11,6 @@ import errorHandler from 'utils/errorHandler';
 import popupHandler from 'utils/popupHandler';
 import { getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 
-// function onMessage(msg: any, port: any) {
-//   console.log('received', msg, 'from', port.sender);
-// }
-
-// function deleteTimer(port: any) {
-//   if (port._timer) {
-//     clearTimeout(port._timer);
-//     delete port._timer;
-//   }
-// }
-// function forceReconnect(port: any) {
-//   deleteTimer(port);
-//   console.log('keepSWActive=forceReconnect===');
-//   port.disconnect();
-// }
-
 export default function connectListener() {
   apis.runtime.onConnect.addListener(async (port: any) => {
     const portType = getEnvironmentType(port.sender.url);
@@ -44,21 +28,14 @@ export default function connectListener() {
     const isContentConnect = portType === ENVIRONMENT_TYPE_SERVICE_WORKER;
     if (isContentConnect) {
       SWEventController.registerOperator(port.sender);
-      // console.log(port, 'connectListener===port');
-      // if (port.name !== WORKER_KEEP_ALIVE_MESSAGE) return;
-
-      // port.onMessage.addListener(onMessage);
-      // port.onDisconnect.addListener(deleteTimer);
-      // port._timer = setTimeout(forceReconnect, TIME_45_MIN_IN_MS, port);
     }
-    // sendReadyMessageToTabs();
 
     // use setInterval
     if (!isContentConnect)
       port.onMessage.addListener((message: chrome.runtime.Port) => {
         // If we get a WORKER_KEEP_ALIVE message, we respond with an ACK
         if (message.name === WORKER_KEEP_ALIVE_MESSAGE) {
-          // To test un-comment this line and wait for 1 minute. An error should be shown on MetaMask UI.
+          // To test un-comment this line and wait for 1 minute. An error should be reload extension
           port.postMessage({ name: ACK_KEEP_ALIVE_MESSAGE });
         }
       });

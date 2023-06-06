@@ -27,7 +27,7 @@ export default class InternalMessage {
     return Object.assign(this.placeholder(), json);
   }
 
-  static payload(type: string | number, payload?: any) {
+  static payload<T = any>(type: string | number, payload?: T) {
     const p = this.placeholder();
     p.type = type;
     p.payload = payload;

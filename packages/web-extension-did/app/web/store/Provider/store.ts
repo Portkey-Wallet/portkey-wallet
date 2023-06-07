@@ -11,10 +11,9 @@ export const persistedReducer = persistReducer(storeConfig.reduxPersistConfig as
 const middlewareList: any[] = [];
 
 middlewareList.push(rateApi.middleware);
-
 // dapp middle
-middlewareList.push(DappMiddle.middle);
 DappMiddle.registerEvent(SWEventController);
+middlewareList.push(DappMiddle.middle);
 
 export const store = configureStore({
   reducer: persistedReducer,

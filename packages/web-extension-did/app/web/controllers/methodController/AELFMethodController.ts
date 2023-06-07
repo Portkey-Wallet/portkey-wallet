@@ -97,6 +97,8 @@ export default class AELFMethodController {
         isUnlocked: this.isUnlocked(),
         accounts: await this.dappManager.accounts(origin),
         isConnected: await this.dappManager.isActive(origin),
+        chainIds: await this.dappManager.chainId(),
+        networkType: (await this.dappManager.getWallet()).currentNetwork,
       };
       sendResponse({ ...errorHandler(0), data });
     } catch (error) {

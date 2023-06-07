@@ -1,7 +1,7 @@
 // Middleware<{}, RootState<Definitions, string, ReducerPath>, ThunkDispatch<any, any, AnyAction>>
 import { CACommonState } from '@portkey-wallet/types/types-ca/store';
 import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { addDapp, removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 
 export interface IMiddlewareAPI<T = CACommonState> {
   getState(): Promise<T>;
@@ -12,7 +12,7 @@ export interface IEvent {
   emit: (action: string, payload: any) => void;
 }
 
-const ActionList = [setCAInfo.toString(), changeNetworkType.toString(), removeDapp.toString()];
+const ActionList = [setCAInfo.toString(), changeNetworkType.toString(), removeDapp.toString(), addDapp.toString()];
 
 export class DappMiddle {
   public static event?: IEvent;

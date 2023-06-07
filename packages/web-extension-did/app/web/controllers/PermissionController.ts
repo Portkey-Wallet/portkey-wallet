@@ -77,7 +77,7 @@ export default class PermissionController {
     }
   }
 
-  async checkIsRegisterOtherwiseRegister(method: string, search?: object): Promise<PortKeyResultType> {
+  async checkIsRegisterOtherwiseRegister(method: string): Promise<PortKeyResultType> {
     if (this.whitelist?.includes(method) || isNotificationEvents(method))
       return {
         error: 0,
@@ -85,11 +85,11 @@ export default class PermissionController {
       };
     const registerStatus = await this.getRegisterStatus();
     if (registerStatus !== 'Registered') {
-      if (!search) search = { from: 'sw' };
+      // if (!search) search = { from: 'sw' };
       return await this.notificationService.openPrompt(
         {
           method: PromptRouteTypes[registerStatus === 'registeredNotGetCaAddress' ? 'BLANK_PAGE' : 'REGISTER_WALLET'],
-          search: JSON.stringify(search),
+          // search: JSON.stringify(search),
         },
         'tabs',
       );

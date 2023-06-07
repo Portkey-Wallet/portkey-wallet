@@ -76,7 +76,7 @@ export default class DappEventBus {
       },
       origin,
     };
-    this.operators.forEach(operator => {
+    DappEventBus.operators.forEach(operator => {
       if (origin && origin !== operator.dapp.origin) return;
       operator?.publishEvent?.(event as any);
     });

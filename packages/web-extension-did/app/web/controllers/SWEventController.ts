@@ -25,7 +25,7 @@ import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wal
 import { getDappState, getWalletState } from 'utils/lib/SWGetReduxStore';
 import InternalMessage from 'messages/InternalMessage';
 import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
-import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { addDapp, removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 
 export interface DappEventPack<T = DappEvents, D = any> {
   eventName: T;
@@ -132,9 +132,11 @@ export default class SWEventController {
   }
   // Trigger events based on user operations to notify service workers
   public static async emit(action: string, payload: any) {
+    console.log(action, payload, 'action==action');
     switch (action) {
       case changeNetworkType.toString(): {
         const { currentNetwork } = await getWalletState();
+
         InternalMessage.payload(NotificationEvents.NETWORK_CHANGED, { data: currentNetwork }).send();
         break;
       }
@@ -152,6 +154,17 @@ export default class SWEventController {
           }).send();
         }
         break;
+      }
+      case addDapp.toString(): {
+        if (payload.dapp.origin) {
+          const wallet = await getWalletState();
+          await InternalMessage.payload(NotificationEvents.CONNECTED, {
+            data: {
+              chainIds: handleChainIds(wallet),
+            },
+            origin: payload.dapp.origin,
+          }).send();
+        }
       }
     }
   }

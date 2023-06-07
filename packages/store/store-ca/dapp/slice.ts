@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { IDappStoreState } from './type';
 import { createSlice } from '@reduxjs/toolkit';
-import { addDapp, removeDapp, updateDapp } from './actions';
+import { addDapp, removeDapp, resetDapp, resetDappList, updateDapp } from './actions';
 
 const initialState: IDappStoreState = {
   dappMap: {},
@@ -34,6 +34,12 @@ export const dappSlice = createSlice({
           if (item.origin === origin) return dapp;
           return item;
         });
+      })
+      .addCase(resetDappList, (state, action) => {
+        state.dappMap[action.payload] = [];
+      })
+      .addCase(resetDapp, state => {
+        state.dappMap = {};
       });
   },
 });

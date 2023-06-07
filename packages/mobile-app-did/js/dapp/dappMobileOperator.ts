@@ -123,13 +123,6 @@ export default class DappMobileOperator extends Operator {
 
   protected handleRequestAccounts: SendRequest<DappStoreItem> = async (eventName, params) => {
     await this.dappManager.addDapp(params);
-    // Notification connected
-    DappEventBus.dispatchEvent({
-      eventName: NotificationEvents.CONNECTED,
-      data: {
-        chainIds: await this.dappManager.chainIds(),
-      },
-    });
     return generateNormalResponse({
       eventName,
       data: await this.dappManager.accounts(params.origin!),

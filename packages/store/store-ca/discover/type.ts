@@ -1,6 +1,15 @@
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
 
-export interface DiscoverStateType {
+export interface ITabItem {
+  id: string | number;
+  name: string;
+  url: string;
+  screenShotUrl: string;
+}
+export interface IDiscoverStateType {
+  isDrawerOpen: boolean;
   recordsList: IRecordsItemType[];
-  tabs: any[];
+  whiteList: any[];
+  activeTabId: number;
+  tabs: ITabItem[];
 }

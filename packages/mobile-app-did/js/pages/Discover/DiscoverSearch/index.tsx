@@ -17,8 +17,14 @@ import { GamesList } from '../DiscoverHome/GameData';
 import { IGameListItemType } from '@portkey-wallet/types/types-ca/discover';
 import { isValidUrl } from '@portkey-wallet/utils/reg';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { addRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice';
+import {
+  addRecordsItem,
+  changeDrawerOpenStatus,
+  createNewTab,
+  setActiveTab,
+} from '@portkey-wallet/store/store-ca/discover/slice';
 import { isIOS } from '@rneui/base';
+import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 
 let timer: any = null;
 
@@ -30,7 +36,7 @@ export default function DiscoverSearch() {
   const iptRef = useRef<any>();
   const [value, setValue] = useState<string>('');
   const [showRecord, setShowRecord] = useState<boolean>(true);
-  const [filterGameList, setFilterGameList] = useState<IGameListItemType[]>(GamesList);
+  const [filterGameList] = useState<IGameListItemType[]>(GamesList);
 
   const navBack = useCallback(() => {
     navigationService.goBack();
@@ -44,18 +50,26 @@ export default function DiscoverSearch() {
 
   const onSearch = useCallback(() => {
     const newValue = value.trim().replace(' ', '');
-    // if URL is valid, navigate to webview
+    const id = Date.now();
 
-    if (isValidUrl(newValue)) {
-      dispatch(addRecordsItem({ title: newValue, url: newValue }));
-      navigationService.navigate('ViewOnWebView', { url: newValue, webViewPageType: 'discover' });
-      setShowRecord(true);
-    } else {
-      // else search in game list
-      const filterList = GamesList.filter(item => item.name.replace(' ', '').includes(newValue));
-      setFilterGameList(filterList);
-      setShowRecord(false);
-    }
+    dispatch(addRecordsItem({ title: newValue, url: prefixUrlWithProtocol(newValue) }));
+    dispatch(createNewTab({ id, url: newValue }));
+    dispatch(changeDrawerOpenStatus(true));
+
+    return;
+    // if (checkIsUrl(newValue)) {
+    //   dispatch(addRecordsItem({ title: newValue, url: prefixUrlWithProtocol(newValue) }));
+    //   navigationService.navigate('ViewOnWebView', {
+    //     url: prefixUrlWithProtocol(newValue),
+    //     webViewPageType: 'discover',
+    //   });
+    //   setShowRecord(true);
+    // } else {
+    //   // else search in game list
+    //   const filterList = GamesList.filter(item => item.name.replace(' ', '').includes(newValue));
+    //   setFilterGameList(filterList);
+    //   setShowRecord(false);
+    // }
   }, [dispatch, value]);
 
   useFocusEffect(

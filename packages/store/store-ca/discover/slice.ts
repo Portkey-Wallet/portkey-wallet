@@ -1,9 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
-import { DiscoverStateType } from './type';
+import { IDiscoverStateType } from './type';
 
-const initialState: DiscoverStateType = {
+const initialState: IDiscoverStateType = {
+  isDrawerOpen: false,
   recordsList: [],
+  whiteList: [],
+  activeTabId: -1,
   tabs: [],
 };
 
@@ -37,10 +40,44 @@ export const discoverSlice = createSlice({
     clearRecordsList: state => {
       state.recordsList = [];
     },
+    closeAllTabs: (state, { payload }) => {
+      state.tabs = [];
+      state.activeTabId = -1;
+      console.log('closeAllTabs', payload);
+    },
+    createNewTab: (state, { payload }) => {
+      state.activeTabId = payload.id;
+      state.tabs.push(payload);
+      console.log('createNewTab', payload);
+    },
+    closeExistingTab: (state, { payload }) => {
+      state.tabs = state.tabs.filter(item => item.id !== payload);
+    },
+    setActiveTab: (state, { payload }) => {
+      state.activeTabId = payload;
+    },
+    updateTab: (state, { payload }) => {
+      state.tabs = state.tabs.map(item => (item.id === payload.id ? { ...item, ...payload } : item));
+    },
+    changeDrawerOpenStatus: (state, { payload }) => {
+      console.log('payload', payload);
+      state.isDrawerOpen = payload;
+    },
     resetDiscover: () => initialState,
   },
 });
 
-export const { addRecordsItem, upDateRecordsItem, clearRecordsList, resetDiscover } = discoverSlice.actions;
+export const {
+  addRecordsItem,
+  upDateRecordsItem,
+  clearRecordsList,
+  resetDiscover,
+  closeAllTabs,
+  createNewTab,
+  closeExistingTab,
+  setActiveTab,
+  updateTab,
+  changeDrawerOpenStatus,
+} = discoverSlice.actions;
 
 export default discoverSlice;

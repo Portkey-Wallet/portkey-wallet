@@ -67,6 +67,7 @@ const guardiansPersistConfig = {
 const discoverPersistConfig = {
   key: discoverSlice.name,
   storage: AsyncStorage,
+  blacklist: ['isDrawerOpen'],
 };
 
 const paymentPersistConfig = {

@@ -5,8 +5,9 @@ import { DappManagerOptions, IDappManager, IDappManagerStore } from '@portkey-wa
 import { CACommonState } from '@portkey-wallet/types/types-ca/store';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { ChainId, ChainsInfo } from '@portkey/provider-types';
-import { handleAccounts, handleChainIds, handleCurrentCAInfo } from './index';
+import { handleAccounts, handleChainIds, handleCurrentCAInfo, handleOriginInfo } from './index';
 import { isEqDapp } from './browser';
+import { NetworkType } from '@portkey-wallet/types';
 
 export abstract class BaseDappManager<T extends IDappManagerStore> {
   protected store: T;
@@ -27,9 +28,12 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   async getWallet() {
     return (await this.getState()).wallet;
   }
+  async networkType(): Promise<NetworkType> {
+    return (await this.getWallet()).currentNetwork;
+  }
   async getOriginInfo(origin: string): Promise<DappStoreItem | undefined> {
     const { wallet, dapp } = await this.getState();
-    return dapp.dappMap?.[wallet.currentNetwork]?.find(item => item.origin === origin);
+    return handleOriginInfo({ wallet, dapp, origin });
   }
   async originIsAuthorized(origin: string): Promise<boolean> {
     return !!(await this.getOriginInfo(origin));

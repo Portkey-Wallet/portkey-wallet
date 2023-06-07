@@ -69,10 +69,13 @@ module.exports = {
     },
     {
       displayName: 'mobile-app-did',
-      preset: 'ts-jest',
+      preset: 'react-native',
       roots: ['<rootDir>/packages/mobile-app-did'],
       transform: {
-        '^.+\\.(ts|tsx)$': [`ts-jest`, { isolatedModules: true, tsconfig: './packages/mobile-app-did/tsconfig.json' }],
+        '^.+\\.(ts|tsx)$': [
+          `react-native`,
+          { isolatedModules: true, tsconfig: './packages/mobile-app-did/tsconfig.json' },
+        ],
       },
       moduleNameMapper: {
         '^react$': '<rootDir>/node_modules/react',

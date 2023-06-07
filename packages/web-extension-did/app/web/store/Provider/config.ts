@@ -118,6 +118,7 @@ const reduxPersistConfig = {
     recentSlice.name,
     contactSlice.name,
     guardiansSlice.name,
+    dappSlice.name,
   ],
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1
   // transforms: [SetTokenTransform],

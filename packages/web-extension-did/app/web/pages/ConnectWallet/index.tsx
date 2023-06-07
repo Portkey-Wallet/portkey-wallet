@@ -21,12 +21,18 @@ export default function ConnectWallet() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWalletInfo();
+  const disabled = useMemo(() => !detail.origin, [detail]);
 
   const renderSite = useMemo(
     () =>
       detail && (
         <div className="site flex-center">
-          <ImgLoading className="icon" src={detail.appLogo} loadEle={detail.appName[0]} errorEle={detail.appName[0]} />
+          <ImgLoading
+            className="icon"
+            src={detail.appLogo}
+            loadEle={detail.appName?.[0]}
+            errorEle={detail.appName?.[0]}
+          />
           <span>{detail.appHref}</span>
         </div>
       ),
@@ -76,7 +82,7 @@ export default function ConnectWallet() {
           }}>
           {t('Reject')}
         </Button>
-        <Button type="primary" onClick={handleSign}>
+        <Button disabled={disabled} type="primary" onClick={handleSign}>
           {t('Sign')}
         </Button>
       </div>

@@ -14,7 +14,7 @@ import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
 import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { getWallet } from 'utils/redux';
 import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
-import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { addDapp, removeDapp, resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 
 export interface DappEventPack<T = DappEvents, D = any> {
   eventName: T;
@@ -58,6 +58,29 @@ export default class DappEventBus {
           });
         break;
       }
+      case addDapp.toString(): {
+        if (payload.dapp) {
+          const wallet = getWallet();
+          DappEventBus.dispatchEvent({
+            origin: payload.dapp.origin,
+            eventName: NotificationEvents.CONNECTED,
+            data: {
+              chainIds: handleChainIds(wallet),
+            },
+          });
+        }
+        break;
+      }
+      case resetDappList.toString(): {
+        DappEventBus.dispatchEvent({
+          eventName: NotificationEvents.DISCONNECTED,
+          data: {
+            message: 'user logout',
+            code: ResponseCode.USER_DENIED,
+          },
+        });
+        break;
+      }
     }
   }
 
@@ -76,7 +99,7 @@ export default class DappEventBus {
       },
       origin,
     };
-    this.operators.forEach(operator => {
+    DappEventBus.operators.forEach(operator => {
       if (origin && origin !== operator.dapp.origin) return;
       operator?.publishEvent?.(event as any);
     });

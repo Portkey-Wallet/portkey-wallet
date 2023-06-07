@@ -1,3 +1,4 @@
+import { IDappStoreState } from '@portkey-wallet/store/store-ca/dapp/type';
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { Accounts, ChainId, ChainIds } from '@portkey/provider-types';
@@ -24,4 +25,16 @@ export function handleAccounts(wallet: WalletState) {
     if ((value as CAInfo)?.caAddress) accounts[key as ChainId] = [(value as CAInfo).caAddress];
   });
   return accounts;
+}
+
+export function handleOriginInfo({
+  wallet,
+  dapp,
+  origin,
+}: {
+  wallet: WalletState;
+  dapp: IDappStoreState;
+  origin: string;
+}) {
+  return dapp.dappMap?.[wallet.currentNetwork]?.find(item => item.origin === origin);
 }

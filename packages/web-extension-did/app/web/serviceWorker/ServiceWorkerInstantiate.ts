@@ -1,7 +1,7 @@
-import { getAllStorageLocalData, getLocalStorage } from 'utils/storage/chromeStorage';
+import { getAllStorageLocalData, getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 import storage from 'utils/storage/storage';
 import { AutoLockDataKey, AutoLockDataType, DefaultLock } from 'constants/lock';
-import SWEventController from 'controllers/SWEventController';
+import SWEventController, { DappEventPack } from 'controllers/SWEventController';
 import PermissionController from 'controllers/PermissionController';
 import NotificationService, { CloseParams } from 'service/NotificationService';
 import ApprovalController from 'controllers/approval/ApprovalController';
@@ -52,6 +52,10 @@ const permissionWhitelist = [
   PortkeyMessageTypes.EXPAND_FULL_SCREEN,
   PortkeyMessageTypes.ACTIVE_LOCK_STATUS,
   PortkeyMessageTypes.PERMISSION_FINISH,
+  PortkeyMessageTypes.SOCIAL_LOGIN,
+  PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE,
+  WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
+  WalletMessageTypes.SOCIAL_LOGIN,
   MethodsUnimplemented.GET_WALLET_STATE,
   // The method that requires the dapp not to trigger the lock call
   MethodsBase.ACCOUNTS,
@@ -111,6 +115,14 @@ export default class ServiceWorkerInstantiate {
 
         const registerRes = await this.permissionController.checkIsRegisterOtherwiseRegister(message.type);
         if (registerRes.error !== 0) return sendResponse(registerRes);
+        // process events
+        if (SWEventController.check(message.type, message.payload?.data)) {
+          const payload = message.payload;
+          const data: DappEventPack['data'] = payload.data;
+          const origin = payload.origin;
+          SWEventController.dispatchEvent({ eventName: message.type as any, data, origin, callback: sendResponse });
+          return;
+        }
         await ServiceWorkerInstantiate.checkTimingLock();
         if (message.type === InternalMessageTypes.ACTIVE_LOCK_STATUS) return sendResponse(errorHandler(0));
         const isLocked = await this.permissionController.checkIsLockOtherwiseUnlock(message.type);
@@ -130,7 +142,6 @@ export default class ServiceWorkerInstantiate {
    */
   dispenseMessage(sendResponse: SendResponseFun, message: InternalMessageData) {
     console.log('dispenseMessage: ', message);
-
     switch (message.type) {
       case PortkeyMessageTypes.GET_SEED:
         ServiceWorkerInstantiate.getSeed(sendResponse);
@@ -393,20 +404,6 @@ export default class ServiceWorkerInstantiate {
       return;
     }
     if (seed) {
-      // const lastTime = await getLocalStorage('lastMessageTime');
-      // const timeLock = moment().isSameOrAfter(lastTime);
-      // setLocalStorage({
-      //   [storage.lastMessageTime]: moment().add(pageState.lockTime, 'm').format(),
-      // });
-      // console.log(
-      //   timeLock,
-      //   lastTime,
-      //   pageState.lockTime,
-      //   moment().format(),
-      //   moment().add(pageState.lockTime, 'm').format(),
-      //   'timeLock==',
-      // );
-      // lastTime && timeLock && ServiceWorkerInstantiate.lockWallet(sendResponse, 'timingLock');
       // MV2 -> MV3 setTimeout -> alarms.create
       apis.alarms.create('timingLock', {
         delayInMinutes: pageState.lockTime ?? AutoLockDataType.OneHour,
@@ -426,9 +423,19 @@ export default class ServiceWorkerInstantiate {
     try {
       if (seed) {
         console.log('lockWallet', message);
-        seed = null;
-        SWEventController.lockStateChanged(true, sendResponse);
+        SWEventController.dispatchEvent({
+          eventName: 'disconnected',
+          data: {
+            code: 1000,
+            message: 'locked',
+          },
+          callback: sendResponse,
+        });
       }
+      seed = null;
+      setLocalStorage({
+        locked: true,
+      });
     } catch (e) {
       sendResponse?.(errorHandler(500001, e));
     }
@@ -436,7 +443,9 @@ export default class ServiceWorkerInstantiate {
 
   static unlockWallet(sendResponse: SendResponseFun, _seed: string | null) {
     if (!_seed) return sendResponse(errorHandler(500001, 'unlockWallet error'));
-    SWEventController.lockStateChanged(false, sendResponse);
+    setLocalStorage({
+      locked: false,
+    });
   }
 
   static async checkRegisterStatus() {

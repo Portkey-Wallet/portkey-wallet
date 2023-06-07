@@ -29,6 +29,7 @@ import { FaucetUrl } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import AccountConnect from 'pages/components/AccountConnect';
 import './index.less';
 
 export interface TransactionResult {
@@ -167,7 +168,10 @@ export default function MyBalance() {
 
   return (
     <div className="balance">
-      <div className="wallet-name">{walletName}</div>
+      <div className="wallet-name">
+        {!isPrompt && <AccountConnect />}
+        {walletName}
+      </div>
       <div className="balance-amount">
         {isMainNet ? (
           <span className="amount">{`$ ${accountBalanceUSD}`}</span>

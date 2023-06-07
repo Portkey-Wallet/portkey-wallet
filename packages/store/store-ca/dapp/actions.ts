@@ -18,4 +18,6 @@ export const updateDapp = createAction<{
   dapp: DappStoreItem;
 }>('dapp/updateDapp');
 
-export const resetDappList = createAction('dapp/resetDappList');
+export const resetDappList = createAction<NetworkType>('dapp/resetDappList');
+
+export const resetDapp = createAction('dapp/resetDapp');

@@ -48,6 +48,7 @@ import My from 'pages/My';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import Permission from 'pages/Permission';
 import ConnectWallet from 'pages/ConnectWallet';
+import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SendTransactions from 'pages/SendTransactions';
 
 export const PageRouter = () => {
@@ -283,6 +284,10 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/manage-devices/guardian-approval',
               element: <GuardianApproval />,
             },
+            {
+              path: '/setting/wallet-security/connected-sites',
+              element: <ConnectedSites />,
+            },
           ],
         },
       ],
@@ -376,6 +381,10 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/manage-devices/guardian-approval',
       element: <GuardianApproval />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites',
+      element: <ConnectedSites />,
     },
   ];
 

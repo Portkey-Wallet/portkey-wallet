@@ -235,12 +235,12 @@ export default class ServiceWorkerInstantiate {
   }
 
   async getRecaptcha(sendResponse: SendResponseFun, message: any) {
-    this.notificationServiceClose(sendResponse, { closeParams: message.params, promptType: 'windows' });
+    this.notificationServiceClose(sendResponse, { closeParams: message.payload, promptType: 'windows' });
   }
 
   async getSocialLogin(sendResponse: SendResponseFun, message: any) {
     socialLoginService.finishSocialLogin();
-    this.notificationServiceClose(sendResponse, { closeParams: message.params, promptType: 'windows' });
+    this.notificationServiceClose(sendResponse, { closeParams: message.payload, promptType: 'windows' });
   }
 
   // async dealNextTask(sendResponse: SendResponseFun, message: any) {

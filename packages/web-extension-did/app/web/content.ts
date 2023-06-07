@@ -105,7 +105,8 @@ class Content {
 
   extensionWatch() {
     apis.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      this.respond(message);
+      console.log(message, 'message=content==extensionWatch');
+      this.respond({ ...message, target: INPAGE_TARGET });
       sendResponse(true);
     });
   }

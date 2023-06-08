@@ -21,6 +21,11 @@ import { getManagerAccount, getPin } from 'utils/redux';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
 
+const SEND_METHOD: { [key: string]: true } = {
+  [MethodsBase.SEND_TRANSACTION]: true,
+  [MethodsBase.REQUEST_ACCOUNTS]: true,
+};
+
 function getContract({ rpcUrl, contractAddress }: { rpcUrl: string; contractAddress: string }) {
   const pin = getPin();
   if (!pin) return;
@@ -96,6 +101,14 @@ export default class DappMobileOperator extends Operator {
           data: await this.dappManager.chainsInfo(),
         });
       }
+      case MethodsUnimplemented.GET_WALLET_NAME: {
+        const isActive = await this.isActive();
+        if (!isActive) return this.unauthenticated(eventName);
+        return generateNormalResponse({
+          eventName,
+          data: await this.dappManager.walletName(),
+        });
+      }
       case MethodsUnimplemented.GET_WALLET_STATE: {
         const [isActive, isLocked] = await Promise.all([this.isActive(), this.dappManager.isLocked()]);
         const data: WalletState = { isConnected: isActive, isUnlocked: !isLocked };
@@ -138,7 +151,10 @@ export default class DappMobileOperator extends Operator {
       const caInfo = await this.dappManager.getCaInfo(params.chainId);
 
       if (!chainInfo?.endPoint || !caInfo?.caHash)
-        return generateErrorResponse({ eventName, code: 4002, msg: 'invalid chain id' });
+        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' });
+
+      if (chainInfo?.endPoint !== params.rpcUrl)
+        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' });
 
       const contract = await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.caContractAddress });
 
@@ -234,10 +250,7 @@ export default class DappMobileOperator extends Operator {
   };
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
-    console.log(request, '======request');
-
-    if (request.method === MethodsBase.SEND_TRANSACTION || request.method === MethodsBase.REQUEST_ACCOUNTS)
-      return this.handleSendRequest(request);
+    if (SEND_METHOD[request.method]) return this.handleSendRequest(request);
     return this.handleViewRequest(request);
   };
 

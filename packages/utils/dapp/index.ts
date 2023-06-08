@@ -2,6 +2,7 @@ import { IDappStoreState } from '@portkey-wallet/store/store-ca/dapp/type';
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { Accounts, ChainId, ChainIds } from '@portkey/provider-types';
+import { addressFormat } from '../index';
 export function handleCurrentCAInfo(wallet: WalletState) {
   const { walletInfo, currentNetwork } = wallet;
   return walletInfo?.caInfo[currentNetwork];
@@ -22,7 +23,9 @@ export function handleAccounts(wallet: WalletState) {
   const currentCAInfo = handleCurrentCAInfo(wallet);
   const accounts: Accounts = {};
   Object.entries(currentCAInfo || {}).forEach(([key, value]) => {
-    if ((value as CAInfo)?.caAddress) accounts[key as ChainId] = [(value as CAInfo).caAddress];
+    const chainId = key as ChainId;
+    const caInfo = value as CAInfo;
+    if (caInfo?.caAddress) accounts[chainId] = [addressFormat(caInfo.caAddress, chainId)];
   });
   return accounts;
 }

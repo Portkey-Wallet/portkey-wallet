@@ -24,6 +24,7 @@ import { isMethodsWalletMessage } from 'messages/utils';
  */
 const IGNORE_INIT_METHODS_FOR_KEEP_ALIVE: string[] = [MethodsUnimplemented.GET_WALLET_STATE];
 
+const EXTENSION_CONTEXT_INVALIDATED_CHROMIUM_ERROR = 'Extension context invalidated.';
 // The stream that connects between the content script and the website
 let pageStream: ContentPostStream;
 const CONTENT_TARGET = 'portkey-content';
@@ -132,6 +133,13 @@ class Content {
     });
 
     Content.keepConnect();
+
+    const err = checkForError();
+    if (err) {
+      err.message === EXTENSION_CONTEXT_INVALIDATED_CHROMIUM_ERROR
+        ? console.error(`Please refresh the page. Portkey: ${err}`)
+        : console.error(`Portkey: ${err}`);
+    }
   }
 
   /***
@@ -167,7 +175,7 @@ class Content {
 
     const method = message.method;
     console.log('contentListener=message: ', message);
-
+    console.log(this.methodCheck(method), 'methodCheck');
     if (!IGNORE_INIT_METHODS_FOR_KEEP_ALIVE.includes(method)) {
       runWorkerKeepAliveInterval();
     }
@@ -178,6 +186,7 @@ class Content {
   }
 
   internalCommunicate(method: string, message: any) {
+    console.log('internalCommunicate', 'method');
     InternalMessage.payload(method, message)
       .send()
       .then((result) => {
@@ -196,6 +205,9 @@ class Content {
         console.log(result, response, 'result===internalCommunicate');
 
         this.respond(response);
+      })
+      .catch((error) => {
+        console.error('internalCommunicate', error);
       });
   }
 }

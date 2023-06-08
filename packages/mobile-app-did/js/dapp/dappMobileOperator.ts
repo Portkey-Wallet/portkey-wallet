@@ -8,6 +8,7 @@ import {
   MethodsUnimplemented,
   SendTransactionParams,
   NotificationEvents,
+  WalletState,
 } from '@portkey/provider-types';
 import DappEventBus from './dappEventBus';
 import { generateNormalResponse, generateErrorResponse } from '@portkey/provider-utils';
@@ -38,12 +39,14 @@ export type DappMobileOperatorOptions = {
 };
 export default class DappMobileOperator extends Operator {
   public dapp: DappStoreItem;
+  protected stream: IDappInteractionStream;
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
   constructor({ stream, origin, dappManager, dappOverlay }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
     this.onCreate();
+    this.stream = stream;
     this.dappManager = dappManager;
     this.dappOverlay = dappOverlay;
   }
@@ -66,6 +69,9 @@ export default class DappMobileOperator extends Operator {
   }): Promise<IResponseType | undefined> => {
     const authorized = await this.dappOverlay[method](params);
     if (!authorized) return this.userDenied(eventName);
+  };
+  protected isActive = async () => {
+    return this.dappManager.isActive(this.dapp.origin);
   };
 
   protected handleViewRequest = async (request: IRequestParams): Promise<IResponseType> => {
@@ -91,13 +97,21 @@ export default class DappMobileOperator extends Operator {
         });
       }
       case MethodsUnimplemented.GET_WALLET_STATE: {
+        const [isActive, isLocked] = await Promise.all([this.isActive(), this.dappManager.isLocked()]);
+        const data: WalletState = { isConnected: isActive, isUnlocked: !isLocked };
+        if (isActive) {
+          const [accounts, chainIds, networkType] = await Promise.all([
+            this.dappManager.accounts(this.dapp.origin),
+            this.dappManager.chainIds(),
+            this.dappManager.networkType(),
+          ]);
+          data.accounts = accounts;
+          data.chainIds = chainIds;
+          data.networkType = networkType;
+        }
         return generateNormalResponse({
           eventName,
-          data: {
-            accounts: await this.dappManager.accounts(this.dapp.origin),
-            isConnected: await this.dappManager.isActive(this.dapp.origin),
-            isUnlocked: !(await this.dappManager.isLocked()),
-          },
+          data,
         });
       }
     }
@@ -109,21 +123,16 @@ export default class DappMobileOperator extends Operator {
 
   protected handleRequestAccounts: SendRequest<DappStoreItem> = async (eventName, params) => {
     await this.dappManager.addDapp(params);
-    // connected
-    DappEventBus.dispatchEvent({
-      eventName: NotificationEvents.CONNECTED,
-      data: {
-        chainIds: await this.dappManager.chainIds(),
-      },
-    });
     return generateNormalResponse({
       eventName,
       data: await this.dappManager.accounts(params.origin!),
     });
   };
+
   protected handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
     try {
-      if (!params.params) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      if (!params || !params.params || !params.method || !params.contractAddress || !params.chainId)
+        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
 
       const chainInfo = await this.dappManager.getChainInfo(params.chainId);
       const caInfo = await this.dappManager.getCaInfo(params.chainId);
@@ -148,9 +157,7 @@ export default class DappMobileOperator extends Operator {
         functionName = 'ManagerForwardCall';
       }
 
-      const data = await contract!.callSendMethod(functionName, '', paramsOption, {
-        onMethod: 'transactionHash',
-      });
+      const data = await contract!.callSendMethod(functionName, '', paramsOption, { onMethod: 'transactionHash' });
       if (!data?.error) {
         return generateNormalResponse({
           eventName,
@@ -197,7 +204,7 @@ export default class DappMobileOperator extends Operator {
         code: ResponseCode.ERROR_IN_PARAMS,
       });
 
-    const isActive = await this.dappManager.isActive(this.dapp.origin);
+    const isActive = await this.isActive();
 
     let callBack: SendRequest, params: any;
     switch (method) {
@@ -246,10 +253,19 @@ export default class DappMobileOperator extends Operator {
       code: ResponseCode.UNAUTHENTICATED,
     });
   }
+
+  public publishEvent = async (event: IResponseType): Promise<void> => {
+    if (event.eventName === NotificationEvents.ACCOUNTS_CHANGED) {
+      const isActive = await this.isActive();
+      if (!isActive) return;
+    }
+    this.stream.write(JSON.stringify(event));
+  };
+
   public updateDappInfo = async (dapp: DappStoreItem) => {
     if (isEqDapp(this.dapp, dapp)) return;
     this.dapp = dapp;
-    const isActive = await this.dappManager.isActive(this.dapp.origin);
+    const isActive = await this.isActive();
     if (isActive) this.dappManager.updateDapp(dapp);
   };
 }

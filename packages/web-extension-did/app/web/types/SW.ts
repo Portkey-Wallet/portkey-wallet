@@ -20,9 +20,9 @@ export interface InternalMessagePayload extends BaseInternalMessagePayload {
   params: any;
 }
 
-export interface InternalMessageData {
+export interface InternalMessageData<T = any> {
   type: string;
-  payload: any;
+  payload: T;
 }
 
 export interface BaseRequestMessagePayload {

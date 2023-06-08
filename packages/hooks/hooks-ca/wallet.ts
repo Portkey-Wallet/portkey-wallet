@@ -18,7 +18,6 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
   caAddressList?: string[];
-  [key: string]: any;
 }
 
 export interface IDeviceList {

@@ -1,14 +1,5 @@
 import walletMessage from './walletMessage';
 
-export const NOTIFICATION_NAMES = {
-  ACCOUNTS_CHANGED: 'portkey_accountsChanged',
-  UNLOCK_STATE_CHANGED: 'portkey_unlockStateChanged',
-  CHAIN_CHANGED: 'portkey_chainChanged',
-  DISCONNECT: 'portkey_disconnect',
-  // TODO
-  MESSAGE: 'portkey_message',
-};
-
 export const PromptRouteTypes = {
   UNLOCK_WALLET: 'UNLOCK_WALLET',
   BLANK_PAGE: 'BLANK_PAGE',
@@ -31,6 +22,8 @@ export const PromptRouteTypes = {
 } as const;
 
 export const WalletMessageTypes = walletMessage;
+export type WalletMessageType = typeof walletMessage[keyof typeof walletMessage];
+
 export const MethodMessageTypes = {
   GET_WALLET_STATE: 'wallet_getState',
 };

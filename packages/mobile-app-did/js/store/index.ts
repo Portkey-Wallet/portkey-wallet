@@ -3,7 +3,7 @@ import { persistReducer } from 'redux-persist';
 import storeConfig from './config';
 import rootReducer from './rootReducer';
 import { rateApi } from '@portkey-wallet/store/rate/api';
-
+import { DappMiddle } from '@portkey-wallet/utils/dapp/middle';
 const persistedReducer = persistReducer(storeConfig.reduxPersistConfig, rootReducer);
 
 const middlewareList: any[] = [];
@@ -13,6 +13,9 @@ if (__DEV__) {
   middlewareList.push(createDebugger());
 }
 middlewareList.push(rateApi.middleware);
+
+// dapp middle
+middlewareList.push(DappMiddle.middle);
 
 export const store = configureStore({
   reducer: persistedReducer,

@@ -4,7 +4,7 @@ import { AchTxAddressReceivedType } from '@portkey-wallet/types/types-ca/payment
 
 export class SignalrSell extends Signalr {
   public requestAchTxAddress(clientId: string, orderId: string) {
-    console.log('invoke RequestAchTxAddress');
+    console.log('invoke RequestAchTxAddress', clientId, orderId);
     this.invoke('RequestAchTxAddress', {
       TargetClientId: clientId,
       OrderId: orderId,

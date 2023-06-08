@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
@@ -60,6 +60,8 @@ const ViewOnWebView: React.FC = () => {
   }, [browserInfo, handleReload]);
 
   const handleAchSell = useHandleAchSell();
+  const isAchSellHandled = useRef(false);
+
   const handleNavigationStateChange = useCallback(
     (navState: any) => {
       if (webViewPageType === 'default') return;
@@ -70,7 +72,8 @@ const ViewOnWebView: React.FC = () => {
         return;
       }
       if (webViewPageType === 'achSell') {
-        if (navState.url.startsWith(ACH_WITHDRAW_URL)) {
+        if (navState.url.startsWith(ACH_WITHDRAW_URL) && !isAchSellHandled.current) {
+          isAchSellHandled.current = true;
           navigationService.navigate('Tab');
           const { orderNo } = (params as AchSellParams) || {};
           if (!orderNo) {

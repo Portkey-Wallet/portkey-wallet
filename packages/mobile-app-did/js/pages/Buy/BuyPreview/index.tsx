@@ -65,41 +65,38 @@ export default function BuyPreview() {
         const callbackUrl = encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`);
         let achUrl = `${baseUrl}/?crypto=${token.crypto}&network=${token.network}&country=${fiat.country}&fiat=${fiat.currency}&appId=${appId}&callbackUrl=${callbackUrl}`;
 
-        const achTokenInfo = await getAchTokenInfo();
-        if (achTokenInfo !== undefined && isNoEmail === false) {
-          achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
-        }
-
         const orderNo = await getPaymentOrderNo({
           transDirect: type === TypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
           merchantName: ACH_MERCHANT_NAME,
         });
         achUrl += `&merchantOrderNo=${orderNo}`;
 
-        const address = wallet.AELF?.caAddress;
-        if (!address) {
-          throw new Error('address is undefined');
-        }
-        achUrl += `&address=${address}`;
-
         if (type === TypeEnum.BUY) {
+          const achTokenInfo = await getAchTokenInfo();
+          if (achTokenInfo !== undefined && isNoEmail === false) {
+            achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
+          }
+
+          const address = wallet.AELF?.caAddress;
+          if (!address) {
+            throw new Error('address is undefined');
+          }
+          achUrl += `&address=${address}`;
+
           const signature = await getAchSignature({ address });
           achUrl += `&type=buy&fiatAmount=${amount}&redirectUrl=${encodeURIComponent(
             ACH_REDIRECT_URL,
           )}&sign=${encodeURIComponent(signature)}`;
         } else {
           const withdrawUrl = encodeURIComponent(ACH_WITHDRAW_URL);
-          const signature = await getAchSignature({
-            address,
-            withdrawUrl,
-            callbackUrl,
-            appId,
-            fiat: fiat.currency,
-            cryptoAmount: amount,
-          });
-          achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&sign=${encodeURIComponent(
-            signature,
-          )}`;
+          // const signature = await getAchSignature({
+          //   withdrawUrl,
+          //   callbackUrl,
+          //   appId,
+          //   fiat: fiat.currency,
+          //   cryptoAmount: amount,
+          // });
+          achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
         }
 
         console.log('achUrl', achUrl);

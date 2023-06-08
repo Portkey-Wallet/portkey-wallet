@@ -10,7 +10,11 @@ export default class Inject {
 
   initPortKey() {
     if (shouldInjectProvider()) {
-      const portkeyStream = new PortkeyPostStream({ name: INPAGE_TARGET, postWindow: window });
+      const portkeyStream = new PortkeyPostStream({
+        name: INPAGE_TARGET,
+        postWindow: window,
+        originWindow: window,
+      });
       new InitializeProvider({
         connectionStream: portkeyStream,
       });

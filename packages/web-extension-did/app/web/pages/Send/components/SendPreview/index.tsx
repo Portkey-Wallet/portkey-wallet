@@ -32,7 +32,7 @@ export default function SendPreview({
   toAccount: { name?: string; address: string };
   transactionFee: string | number;
   type: 'nft' | 'token';
-  chainId: string;
+  chainId: ChainId;
   isCross: boolean;
   tokenId: string;
 }) {
@@ -50,7 +50,7 @@ export default function SendPreview({
     return arr[arr.length - 1];
   }, [toAccount.address]);
   const entireFromAddressShow = useMemo(
-    () => getEntireDIDAelfAddress(wallet[chainId].caAddress, undefined, chainId),
+    () => getEntireDIDAelfAddress(wallet?.[chainId]?.caAddress || '', undefined, chainId),
     [chainId, wallet],
   );
   const renderEstimateAmount = useMemo(() => {

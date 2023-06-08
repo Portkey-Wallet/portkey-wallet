@@ -7,7 +7,7 @@ import { walletPersistConfig, dappPersistConfig } from 'store/Provider/config';
 export async function getSWReduxState() {
   return {
     wallet: await getWalletState(),
-    dapp: await getWalletState(),
+    dapp: await getDappState(),
   };
 }
 

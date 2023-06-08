@@ -26,6 +26,7 @@ const aelfMethodList = [
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
   MethodsUnimplemented.GET_WALLET_STATE,
+  MethodsUnimplemented.GET_WALLET_NAME,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
@@ -74,6 +75,9 @@ export default class AELFMethodController {
       case MethodsUnimplemented.GET_WALLET_STATE:
         this.getWalletState(sendResponse, message.payload);
         break;
+      case MethodsUnimplemented.GET_WALLET_NAME:
+        this.getWalletName(sendResponse, message.payload);
+        break;
       default:
         sendResponse(
           errorHandler(
@@ -88,6 +92,28 @@ export default class AELFMethodController {
 
   isUnlocked = () => {
     return Boolean(this.getPassword());
+  };
+
+  getWalletName: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
+    try {
+      const isActive = await this.dappManager.isActive(message.origin);
+      if (!isActive)
+        return sendResponse({
+          ...errorHandler(400001),
+          data: {
+            code: ResponseCode.UNAUTHENTICATED,
+          },
+        });
+
+      sendResponse({ ...errorHandler(0), data: await this.dappManager.walletName() });
+    } catch (error) {
+      sendResponse({
+        ...errorHandler(500001),
+        data: {
+          code: ResponseCode.INTERNAL_ERROR,
+        },
+      });
+    }
   };
 
   getWalletState: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {

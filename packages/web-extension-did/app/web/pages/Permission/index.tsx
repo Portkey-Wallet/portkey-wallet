@@ -13,9 +13,5 @@ export default function Permission() {
       closeParams: { ...errorHandler(0), data: detail },
     }).send();
   }, [detail]);
-  return (
-    <div>
-      <LockPage header={<RegisterHeader />} onUnLockHandler={onUnLockHandler} />
-    </div>
-  );
+  return <LockPage header={<RegisterHeader />} onUnLockHandler={onUnLockHandler} />;
 }

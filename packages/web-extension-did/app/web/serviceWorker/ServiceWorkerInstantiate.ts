@@ -443,6 +443,7 @@ export default class ServiceWorkerInstantiate {
 
   static unlockWallet(sendResponse: SendResponseFun, _seed: string | null) {
     if (!_seed) return sendResponse(errorHandler(500001, 'unlockWallet error'));
+    sendResponse(errorHandler(0));
     setLocalStorage({
       locked: false,
     });

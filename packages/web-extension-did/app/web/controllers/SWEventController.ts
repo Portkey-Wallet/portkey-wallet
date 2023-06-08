@@ -1,7 +1,7 @@
 /**
  * @remarks
  * The controller that handles the event
- * chainChanged, accountsChanged, networkChanged, disconnected
+ * chainChanged, accountsChanged, networkChanged, disconnected, connected
  */
 import { SendResponseFun } from 'types';
 import { apis } from 'utils/BrowserApis';
@@ -25,7 +25,7 @@ import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wal
 import { getDappState, getWalletState } from 'utils/lib/SWGetReduxStore';
 import InternalMessage from 'messages/InternalMessage';
 import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
-import { addDapp, removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { addDapp, removeDapp, resetDapp, resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 
 export interface DappEventPack<T = DappEvents, D = any> {
   eventName: T;
@@ -165,6 +165,14 @@ export default class SWEventController {
             origin: payload.dapp.origin,
           }).send();
         }
+        break;
+      }
+      case resetDapp.toString():
+      case resetDappList.toString(): {
+        await InternalMessage.payload(NotificationEvents.DISCONNECTED, {
+          data: { message: 'user logout', code: ResponseCode.USER_DENIED },
+        }).send();
+        break;
       }
     }
   }

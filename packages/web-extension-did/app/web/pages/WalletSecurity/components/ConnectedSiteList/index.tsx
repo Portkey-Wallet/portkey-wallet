@@ -20,6 +20,7 @@ export default function ConnectedSiteList({ list, onDisconnect }: IConnectedSite
           <div className="connected-site-item flex-between-center" key={item.origin}>
             <div className="content flex">
               <ImgLoading
+                defaultHeight={32}
                 className="icon"
                 src={item.icon}
                 loadEle={item?.name?.[0] || ''}

@@ -8,6 +8,7 @@ import { ChainId, ChainsInfo } from '@portkey/provider-types';
 import { handleAccounts, handleChainIds, handleCurrentCAInfo, handleOriginInfo } from './index';
 import { isEqDapp } from './browser';
 import { NetworkType } from '@portkey-wallet/types';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 
 export abstract class BaseDappManager<T extends IDappManagerStore> {
   protected store: T;
@@ -66,7 +67,8 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
     this.store.dispatch(updateDapp({ origin: dapp.origin, networkType: currentNetwork, dapp: dapp }));
   }
   async isLogged(): Promise<boolean> {
-    const { walletInfo, currentNetwork, originChainId } = await this.getWallet();
+    const { walletInfo, currentNetwork, originChainId: walletOriginChainId } = await this.getWallet();
+    const originChainId = (await this.getCurrentCAInfo())?.originChainId || walletOriginChainId || DefaultChainId;
     return !!(originChainId && walletInfo?.caInfo[currentNetwork]?.managerInfo);
   }
   async isActive(origin: string) {

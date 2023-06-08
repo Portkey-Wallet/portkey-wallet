@@ -154,7 +154,7 @@ export default class AELFMethodController {
         },
       });
     // TODO
-    sendResponse(errorHandler(0));
+    sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
   };
 
   sendTransaction: RequestCommonHandler = async (sendResponse, message) => {

@@ -32,6 +32,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { AddressCheckError } from '@portkey-wallet/store/store-ca/assets/type';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 
 export type Account = { address: string; name?: string };
@@ -93,7 +94,7 @@ export default function Send() {
         setErrorMsg(AddressCheckError.recipientAddressIsInvalid);
         return false;
       }
-      const selfAddress = wallet[state.chainId].caAddress;
+      const selfAddress = wallet?.[state.chainId as ChainId]?.caAddress || '';
       if (isEqAddress(selfAddress, getAelfAddress(toAccount.address)) && suffix === state.chainId) {
         setErrorMsg(AddressCheckError.equalIsValid);
         return false;
@@ -368,7 +369,7 @@ export default function Send() {
           <AmountInput
             type={type as any}
             fromAccount={{
-              address: wallet[state.chainId].caAddress,
+              address: wallet?.[state.chainId as ChainId]?.caAddress || '',
               AESEncryptPrivateKey: wallet.AESEncryptPrivateKey,
             }}
             toAccount={{

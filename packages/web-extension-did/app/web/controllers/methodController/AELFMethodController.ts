@@ -47,7 +47,7 @@ export default class AELFMethodController {
     this.getPassword = getPassword;
     this.aelfMethodList = aelfMethodList;
     this.dappManager = new ExtensionDappManager({
-      locked: () => Boolean(getPassword()),
+      locked: () => !getPassword(),
       store: storeInSW,
     });
   }
@@ -93,13 +93,18 @@ export default class AELFMethodController {
   getWalletState: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
     try {
       const origin = message.origin;
-      const data = {
+      let data: any = {
         isUnlocked: this.isUnlocked(),
-        accounts: await this.dappManager.accounts(origin),
         isConnected: await this.dappManager.isActive(origin),
-        chainIds: await this.dappManager.chainId(),
-        networkType: (await this.dappManager.getWallet()).currentNetwork,
       };
+      if (data.isConnected) {
+        data = {
+          ...data,
+          accounts: await this.dappManager.accounts(origin),
+          chainIds: await this.dappManager.chainId(),
+          networkType: (await this.dappManager.getWallet()).currentNetwork,
+        };
+      }
       sendResponse({ ...errorHandler(0), data });
     } catch (error) {
       sendResponse(errorHandler(200002, error));
@@ -136,7 +141,7 @@ export default class AELFMethodController {
     const result = await this.approvalController.authorizedToConnect(message);
     if (result.error === 200003)
       return sendResponse({
-        ...errorHandler(200003),
+        ...errorHandler(200003, 'User denied'),
         data: {
           code: ResponseCode.USER_DENIED,
         },

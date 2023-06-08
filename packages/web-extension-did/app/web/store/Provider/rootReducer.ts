@@ -24,6 +24,7 @@ import {
   miscPersistConfig,
   paymentPersistConfig,
   cmsPersistConfig,
+  dappPersistConfig,
 } from './config';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
@@ -42,6 +43,7 @@ export const contactReducer = persistReducer(contactPersistConfig, contactSlice.
 export const miscReducer = persistReducer(miscPersistConfig, miscSlice.reducer);
 export const paymentReducer = persistReducer(paymentPersistConfig, paymentSlice.reducer);
 export const cmsReducer = persistReducer(cmsPersistConfig, cmsSlice.reducer);
+export const dappReducer = persistReducer(dappPersistConfig, dappSlice.reducer);
 
 const rootReducer = customCombineReducers({
   [walletSlice.name]: walletReducer,
@@ -60,7 +62,7 @@ const rootReducer = customCombineReducers({
   [miscSlice.name]: miscReducer,
   [paymentSlice.name]: paymentReducer,
   [cmsSlice.name]: cmsReducer,
-  [dappSlice.name]: dappSlice.reducer,
+  [dappSlice.name]: dappReducer,
 });
 
 export default rootReducer;

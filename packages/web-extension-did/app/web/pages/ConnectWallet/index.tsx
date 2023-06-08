@@ -21,7 +21,7 @@ export default function ConnectWallet() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWalletInfo();
-  const disabled = useMemo(() => !detail.origin, [detail]);
+  const disabled = useMemo(() => !detail.appHref, [detail]);
 
   const renderSite = useMemo(
     () =>
@@ -57,16 +57,24 @@ export default function ConnectWallet() {
   );
 
   const handleSign = useCallback(() => {
-    dispatch(
-      addDapp({
-        networkType: currentNetwork,
-        dapp: detail,
-      }),
-    );
-    closePrompt({
-      ...errorHandler(0),
-      data: {},
-    });
+    try {
+      dispatch(
+        addDapp({
+          networkType: currentNetwork,
+          dapp: {
+            name: detail.appName,
+            icon: detail.appLogo,
+            origin: detail.appHref,
+          },
+        }),
+      );
+      closePrompt({
+        ...errorHandler(0),
+        data: { origin: detail.appHref },
+      });
+    } catch (error) {
+      console.log('add dapp error', error);
+    }
   }, [currentNetwork, detail, dispatch]);
 
   return (

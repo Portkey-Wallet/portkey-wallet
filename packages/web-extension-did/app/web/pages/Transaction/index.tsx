@@ -24,6 +24,7 @@ import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/ho
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { ChainId } from '@portkey-wallet/types';
 
 export interface ITransactionQuery {
   item: ActivityItemType;
@@ -39,7 +40,7 @@ export default function Transaction() {
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
   const caAddresses = useCaAddresses();
-  const caAddress = chainId ? [walletInfo[chainId]?.caAddress] : '';
+  const caAddress = chainId ? [walletInfo?.[chainId as ChainId]?.caAddress] : '';
   const isTestNet = useIsTestnet();
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();

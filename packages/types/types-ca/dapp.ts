@@ -1,5 +1,5 @@
 import { CACommonState } from './store';
-import { Accounts, ChainIds, ChainsInfo } from '@portkey/provider-types';
+import { Accounts, ChainIds, ChainsInfo, WalletName } from '@portkey/provider-types';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { ChainId, NetworkType } from '../index';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
@@ -20,6 +20,7 @@ export interface IDappManager<T = CACommonState> {
   getRpcUrl(chainId: ChainId): Promise<string | undefined>;
   getCaInfo(chainId: ChainId): Promise<CAInfo | undefined>;
   networkType(): Promise<NetworkType>;
+  walletName(): Promise<WalletName>;
 }
 export interface IDappManagerStore<T = CACommonState> {
   getState(): Promise<T>;

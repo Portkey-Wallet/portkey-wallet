@@ -28,6 +28,9 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   async getWallet() {
     return (await this.getState()).wallet;
   }
+  async walletName(): Promise<string> {
+    return (await this.getWallet()).walletName;
+  }
   async networkType(): Promise<NetworkType> {
     return (await this.getWallet()).currentNetwork;
   }

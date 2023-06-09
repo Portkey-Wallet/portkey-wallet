@@ -10,6 +10,6 @@ export interface IDiscoverStateType {
   isDrawerOpen: boolean;
   recordsList: IRecordsItemType[];
   whiteList: any[];
-  activeTabId: number;
+  activeTabId?: number;
   tabs: ITabItem[];
 }

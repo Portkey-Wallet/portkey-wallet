@@ -52,8 +52,8 @@ export default function DiscoverSearch() {
     const newValue = value.trim().replace(' ', '');
     const id = Date.now();
 
-    dispatch(addRecordsItem({ title: newValue, url: prefixUrlWithProtocol(newValue) }));
-    dispatch(createNewTab({ id, url: newValue }));
+    dispatch(addRecordsItem({ id, title: newValue, url: prefixUrlWithProtocol(newValue) }));
+    dispatch(createNewTab({ id, url: prefixUrlWithProtocol(newValue) }));
     dispatch(changeDrawerOpenStatus(true));
 
     return;

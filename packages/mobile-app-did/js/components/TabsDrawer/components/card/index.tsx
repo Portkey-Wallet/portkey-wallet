@@ -22,8 +22,6 @@ const Card: React.FC<ICardsProps> = (props: ICardsProps) => {
   const { t } = useLanguage();
   const dispatch = useAppCommonDispatch();
 
-  console.log('item', item);
-
   return (
     <View style={tabShowItemStyle.cardWrap}>
       <View style={tabShowItemStyle.header}>
@@ -37,9 +35,10 @@ const Card: React.FC<ICardsProps> = (props: ICardsProps) => {
       </View>
       <TouchableOpacity onPress={() => dispatch(setActiveTab(item.id))}>
         <Image
+          resizeMode="cover"
           style={tabShowItemStyle.screenshot}
           source={{
-            uri: getFaviconUrl(item?.screenShotUrl || ''),
+            uri: item?.screenShotUrl,
           }}
         />
       </TouchableOpacity>

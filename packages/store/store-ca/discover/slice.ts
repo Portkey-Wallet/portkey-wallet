@@ -6,7 +6,7 @@ const initialState: IDiscoverStateType = {
   isDrawerOpen: false,
   recordsList: [],
   whiteList: [],
-  activeTabId: -1,
+  activeTabId: undefined,
   tabs: [],
 };
 
@@ -40,10 +40,9 @@ export const discoverSlice = createSlice({
     clearRecordsList: state => {
       state.recordsList = [];
     },
-    closeAllTabs: (state, { payload }) => {
+    closeAllTabs: state => {
       state.tabs = [];
-      state.activeTabId = -1;
-      console.log('closeAllTabs', payload);
+      state.activeTabId = undefined;
     },
     createNewTab: (state, { payload }) => {
       state.activeTabId = payload.id;

@@ -18,6 +18,7 @@ export default function TabsDrawer(props: TabsDrawerPropsType) {
   return (
     <Drawer
       open={isDrawerOpen}
+      swipeEnabled={false}
       onOpen={() => console.log('open')}
       onClose={() => console.log('close')}
       drawerPosition="right"

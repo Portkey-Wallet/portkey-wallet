@@ -9,8 +9,12 @@ import fonts from 'assets/theme/fonts';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import RecordItem from '../RecordItem';
-import { addRecordsItem, clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice';
-import navigationService from 'utils/navigationService';
+import {
+  addRecordsItem,
+  changeDrawerOpenStatus,
+  clearRecordsList,
+  createNewTab,
+} from '@portkey-wallet/store/store-ca/discover/slice';
 
 export default function RecordSection() {
   const { t } = useLanguage();
@@ -43,12 +47,10 @@ export default function RecordSection() {
           key={index}
           item={item}
           onPress={() => {
-            navigationService.navigate('ViewOnWebView', {
-              url: item?.url,
-              title: item?.title ?? '',
-              webViewPageType: 'discover',
-            });
-            dispatch(addRecordsItem({ ...item }));
+            const id = Date.now();
+            dispatch(addRecordsItem(item));
+            dispatch(createNewTab({ id, url: item.url }));
+            dispatch(changeDrawerOpenStatus(true));
           }}
         />
       ))}

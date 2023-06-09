@@ -23367,7 +23367,7 @@ react-native-crypto@^2.2.0:
     public-encrypt "^4.0.0"
     randomfill "^1.0.3"
 
-react-native-drawer-layout@^2.17.0:
+react-native-drawer-layout@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/react-native-drawer-layout/-/react-native-drawer-layout-3.2.0.tgz#1ab05d0bed6bb684353c17c96e1d3e6c1a4e225d"
   integrity sha512-d/kvzeBhXjqcRGlfkTSB96ZRKH6g6YxJK+gPtUOCOCH5piHpsupgX+tLAHdM8r8NUzN6Tl9656xfJTuVb8Zrgw==
@@ -23392,7 +23392,7 @@ react-native-fs@^2.20.0:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
 
-react-native-gesture-handler@^3.2.0:
+react-native-gesture-handler@2.10.2:
   version "2.10.2"
   resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.10.2.tgz#0d7d82de767a551157eaedc5f74e389c5fc357b9"
   integrity sha512-yUwTrgLinaGRdJN3igL5/QP+09B294EKgoCH7QJ4ABKb4W2mUvSDbbuGMaYBNnwMKAD87Ns2q/qibLWy3E3LTw==
@@ -23477,7 +23477,7 @@ react-native-ratings@^8.1.0:
   dependencies:
     lodash "^4.17.15"
 
-react-native-reanimated@^2.17.0:
+react-native-reanimated@2.17.0:
   version "2.17.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.17.0.tgz#eae2308235961cdd79810e01dfdd7e88b1ae5b5c"
   integrity sha512-bVy+FUEaHXq4i+aPPqzGeor1rG4scgVNBbBz21ohvC7iMpB9IIgvGsmy1FAoodZhZ5sa3EPF67Rcec76F1PXlQ==

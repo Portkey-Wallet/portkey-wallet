@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
@@ -14,15 +14,23 @@ import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
+import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+
 type BrowserTabProps = {
-  uri: string;
   isHidden: boolean;
+  item: ITabItem;
+  setActiveTabRef: (ref: any) => void;
+  setActiveWebViewRef: (ref: any) => void;
 };
 
-const BrowserTab: React.FC<BrowserTabProps> = ({ uri, isHidden }) => {
+const BrowserTab: React.FC<BrowserTabProps> = ({ isHidden, item, setActiveTabRef, setActiveWebViewRef }) => {
+  const viewRef = useRef<any>(null);
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
+  const { activeTabId } = useAppCASelector(state => state.discover);
+
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
@@ -63,13 +71,25 @@ const BrowserTab: React.FC<BrowserTabProps> = ({ uri, isHidden }) => {
     });
   }, []);
 
+  useEffect(() => {
+    if (viewRef && viewRef.current && activeTabId === item.id) {
+      setActiveTabRef(viewRef);
+    }
+  }, [activeTabId, item.id, setActiveTabRef, viewRef]);
+
+  useEffect(() => {
+    if (webViewRef && webViewRef.current) {
+      setActiveWebViewRef(webViewRef);
+    }
+  }, [webViewRef, setActiveWebViewRef]);
+
   return (
-    <View style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
+    <View ref={viewRef} style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
       <WebView
         ref={webViewRef}
         style={styles.webView}
         decelerationRate="normal"
-        source={{ uri }}
+        source={{ uri: item.url }}
         injectedJavaScriptBeforeContentLoaded={entryScriptWeb3}
         onMessage={({ nativeEvent }) => {
           operatorRef.current?.handleRequestMessage(nativeEvent.data);

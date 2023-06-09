@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Dispatch, SetStateAction, useCallback } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { StyleSheet, TouchableOpacity, View, Share } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
@@ -14,11 +14,11 @@ import { FontStyles } from 'assets/theme/styles';
 import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
 import { getFaviconUrl } from 'utils';
-import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
 
 import { isIOS } from '@rneui/base';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
+import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -38,11 +38,14 @@ const handleArray = [
 
 const BrowserEditModal = ({
   browserInfo,
-  handleReload,
+  activeWebViewRef,
+  activeWebviewScreenShot,
+  setPreActiveTabId,
 }: {
-  browserInfo: IRecordsItemType;
-  setBrowserInfo: any;
-  handleReload: any;
+  browserInfo: ITabItem;
+  activeWebViewRef: any;
+  activeWebviewScreenShot: () => void;
+  setPreActiveTabId: Dispatch<SetStateAction<number | undefined>>;
 }) => {
   const { t } = useLanguage();
   const dispatch = useAppCommonDispatch();
@@ -53,7 +56,7 @@ const BrowserEditModal = ({
 
       switch (type) {
         case HANDLE_TYPE.REFRESH:
-          handleReload?.();
+          activeWebViewRef?.current?.reload?.();
           OverlayModal.hide();
           break;
 
@@ -64,9 +67,9 @@ const BrowserEditModal = ({
 
         case HANDLE_TYPE.SHARE:
           await Share.share({
-            message: isIOS ? browserInfo?.title ?? browserInfo.url : browserInfo?.url,
-            url: browserInfo?.url ?? browserInfo?.title ?? '',
-            title: browserInfo?.title ?? browserInfo.url,
+            message: isIOS ? browserInfo?.name ?? browserInfo.url : browserInfo?.url,
+            url: browserInfo?.url ?? browserInfo?.name ?? '',
+            title: browserInfo?.name ?? browserInfo.url,
           }).catch(shareError => {
             console.log(shareError);
           });
@@ -82,22 +85,34 @@ const BrowserEditModal = ({
 
         case HANDLE_TYPE.SWITCH:
           OverlayModal.hide();
+          activeWebviewScreenShot();
           dispatch(setActiveTab(undefined));
+          setPreActiveTabId(Number(browserInfo?.id));
+
           break;
 
         default:
           break;
       }
     },
-    [handleReload, browserInfo.url, browserInfo?.title, t, dispatch],
+    [
+      activeWebViewRef,
+      browserInfo.url,
+      browserInfo?.name,
+      browserInfo?.id,
+      t,
+      activeWebviewScreenShot,
+      dispatch,
+      setPreActiveTabId,
+    ],
   );
 
   return (
     <View style={styles.modalStyle}>
-      <View style={[GStyles.flexRow, GStyles.center, styles.headerWrap]}>
+      <View style={[GStyles.flexRow, GStyles.center]}>
         <CommonAvatar avatarSize={pTd(32)} imageUrl={getFaviconUrl(browserInfo?.url || '')} />
         <TextL ellipsizeMode="tail" style={[GStyles.flex1, styles.title]}>
-          {browserInfo?.title}
+          {browserInfo?.name}
         </TextL>
 
         <TouchableOpacity onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
@@ -127,7 +142,12 @@ const BrowserEditModal = ({
   );
 };
 
-export const showBrowserModal = (props: { browserInfo: IRecordsItemType; setBrowserInfo: any; handleReload: any }) => {
+export const showBrowserModal = (props: {
+  browserInfo: ITabItem;
+  activeWebViewRef: any;
+  activeWebviewScreenShot: () => void;
+  setPreActiveTabId: Dispatch<SetStateAction<number | undefined>>;
+}) => {
   OverlayModal.show(<BrowserEditModal {...props} />, {
     position: 'bottom',
     containerStyle: { backgroundColor: defaultColors.bg6 },
@@ -144,7 +164,6 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg6,
     width: screenWidth,
   },
-  headerWrap: {},
   title: {
     textAlign: 'left',
     height: pTd(22),

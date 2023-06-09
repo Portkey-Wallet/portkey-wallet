@@ -9,7 +9,6 @@ import CommonToast from 'components/CommonToast';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
-import { useIsFocused } from '@react-navigation/native';
 import { ZERO } from '@portkey-wallet/constants/misc';
 
 export const useReceive = (
@@ -28,9 +27,7 @@ export const useReceive = (
   const [rateRefreshTime, setRateRefreshTime] = useState<number>(MAX_REFRESH_TIME);
   const refreshReceiveRef = useRef<() => void>();
   const refreshReceiveTimerRef = useRef<NodeJS.Timer>();
-  const isFocused = useIsFocused();
-  const isFocusedRef = useRef(isFocused);
-  isFocusedRef.current = isFocused;
+  const isFocusedRef = useRef(false);
 
   const [amountError, setAmountError] = useState<ErrorType>(INIT_NONE_ERROR);
 
@@ -46,14 +43,15 @@ export const useReceive = (
   }, []);
 
   useEffectOnce(() => {
+    isFocusedRef.current = true;
     return () => {
+      isFocusedRef.current = false;
       clearRefreshReceive();
     };
   });
 
   const registerRefreshReceive = useCallback(() => {
     clearRefreshReceive();
-
     if (!isFocusedRef.current) return;
 
     rateRefreshTimeRef.current = MAX_REFRESH_TIME;
@@ -142,7 +140,9 @@ export const useReceive = (
       };
     } catch (error) {
       console.log('error', error);
-      CommonToast.failError(error);
+      // CommonToast.failError(error);
+      // TODO: add error
+      // CommonToast.failError('get order error');
     }
   }, [
     amount,

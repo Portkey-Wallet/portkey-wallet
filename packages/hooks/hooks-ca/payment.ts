@@ -5,7 +5,7 @@ import { useCallback } from 'react';
 import { useGuardiansInfo } from './guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useIsMainnet } from './network';
-import { ACH_MERCHANT_NAME } from '@portkey-wallet/constants/constants-ca/payment';
+import { ACH_MERCHANT_NAME, SELL_SOCKET_TIMEOUT } from '@portkey-wallet/constants/constants-ca/payment';
 import { AchTxAddressReceivedType, SellTransferParams } from '@portkey-wallet/types/types-ca/payment';
 import signalrSell from '@portkey-wallet/socket/socket-sell';
 import { request } from '@portkey-wallet/api/api-did';
@@ -49,13 +49,25 @@ export const useSellTransfer = () => {
         clientId,
       });
 
-      const achTxAddressReceived = await new Promise<AchTxAddressReceivedType>(resolve => {
+      const timerPromise = new Promise<null>(resolve =>
+        setTimeout(() => {
+          resolve(null);
+        }, SELL_SOCKET_TIMEOUT),
+      );
+      const signalrSellPromise = new Promise<AchTxAddressReceivedType>(resolve => {
         const { remove } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, data => {
           resolve(data);
           remove();
         });
         signalrSell.requestAchTxAddress(clientId, orderId);
       });
+
+      const achTxAddressReceived = await Promise.race([timerPromise, signalrSellPromise]);
+      signalrSell.stop();
+      if (achTxAddressReceived === null) {
+        throw new Error('requestAchTxAddress timeout');
+      }
+
       const result = await paymentSellTransfer(achTxAddressReceived);
       if (result.error) {
         throw result.error;

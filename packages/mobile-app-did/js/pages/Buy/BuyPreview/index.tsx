@@ -89,13 +89,6 @@ export default function BuyPreview() {
           )}&sign=${encodeURIComponent(signature)}`;
         } else {
           const withdrawUrl = encodeURIComponent(ACH_WITHDRAW_URL);
-          // const signature = await getAchSignature({
-          //   withdrawUrl,
-          //   callbackUrl,
-          //   appId,
-          //   fiat: fiat.currency,
-          //   cryptoAmount: amount,
-          // });
           achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
         }
 

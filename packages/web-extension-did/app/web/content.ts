@@ -124,7 +124,7 @@ class Content {
   setupPageStream() {
     // Setting up a new encrypted stream for
     // interaction between the extension and the application
-    pageStream = new ContentPostStream({ name: CONTENT_TARGET, postWindow: window });
+    pageStream = new ContentPostStream({ name: CONTENT_TARGET });
 
     pageStream.on('data', (data: Buffer) => {
       const params = JSON.parse(data.toString());

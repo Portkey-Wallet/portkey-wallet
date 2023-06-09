@@ -26,14 +26,16 @@ export default function ConnectedSiteList({ list, onDisconnect }: IConnectedSite
                 loadEle={item?.name?.[0] || ''}
                 errorEle={item?.name?.[0] || ''}
               />
-              <div className="desc">
+              <div className="desc flex-column">
                 <div className="text name">{item.name}</div>
                 <div className="text origin">{item.origin}</div>
               </div>
             </div>
-            <Button type="text" onClick={() => onDisconnect(item)}>
-              {t('Disconnect')}
-            </Button>
+            <div className="btn">
+              <Button type="text" onClick={() => onDisconnect(item)}>
+                {t('Disconnect')}
+              </Button>
+            </div>
           </div>
         ))}
       </div>

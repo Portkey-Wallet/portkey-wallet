@@ -19,6 +19,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { ACH_WITHDRAW_URL } from 'constants/index';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -103,6 +104,12 @@ export default function Preview() {
         `${apiUrl}${paymentApi.updateAchOrder}`,
       )}`;
 
+      const orderNo = await getPaymentOrderNo({
+        transDirect: side === 'BUY' ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
+        merchantName: ACH_MERCHANT_NAME,
+      });
+      achUrl += `&merchantOrderNo=${orderNo}`;
+
       if (side === PaymentTypeEnum.BUY) {
         achUrl += `&type=buy&fiatAmount=${amount}`;
 
@@ -115,25 +122,10 @@ export default function Preview() {
         const signature = await getAchSignature({ address });
         achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
       } else {
-        // achUrl += `&type=sell&cryptoAmount=${amount}`;
+        const withdrawUrl = encodeURIComponent(ACH_WITHDRAW_URL + `&payload=${orderNo}`);
 
-        const ACH_WITHDRAW_URL = 'http://portkey_sell'; // TODO SELL position
-        const withdrawUrl = encodeURIComponent(ACH_WITHDRAW_URL);
-        // const signature = await getAchSignature({
-        //   withdrawUrl,
-        //   callbackUrl,
-        //   appId,
-        //   fiat: fiat.currency,
-        //   cryptoAmount: amount,
-        // });
         achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
       }
-
-      const orderNo = await getPaymentOrderNo({
-        transDirect: side === 'BUY' ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
-        merchantName: ACH_MERCHANT_NAME,
-      });
-      achUrl += `&merchantOrderNo=${orderNo}`;
 
       console.log('achUrl', achUrl);
       const openWinder = window.open(achUrl, '_blank');

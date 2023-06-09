@@ -1,30 +1,17 @@
 import clsx from 'clsx';
 import PortKeyHeader from 'pages/components/PortKeyHeader';
-import { useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useCallback, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import popupHandler from 'utils/popupHandler';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
 import MyBalance from './components/MyBalance';
 import './index.less';
-// import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
-// import { getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
-// import { ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import qs from 'query-string';
+import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
+import { useStorage } from 'hooks/useStorage';
 
 export default function Home() {
-  // TODO SELL
-  // const handleAchSell = useHandleAchSell();
-
-  // useEffect(() => {
-  //   getPaymentOrderNo({
-  //     transDirect: TransDirectEnum.TOKEN_SELL,
-  //     merchantName: ACH_MERCHANT_NAME,
-  //   }).then((orderNo) => {
-  //     // const orderNo = 'f5298810-35f2-d210-2eba-3a0b8ce563cb'; // mock orderNo;
-  //     handleAchSell(orderNo);
-  //   });
-  // }, [handleAchSell]);
-
   const navigate = useNavigate();
   const { isPopupInit, isPrompt, isNotLessThan768 } = useCommonState();
 
@@ -34,6 +21,25 @@ export default function Home() {
   }, [isNotLessThan768, navigate]);
 
   const { setLoading } = useLoading();
+  const { search } = useLocation();
+  const isSell = useRef(0); // guaranteed to make only one transfer
+  const handleAchSell = useHandleAchSell();
+  const locked = useStorage('locked');
+
+  useEffect(() => {
+    if (search) {
+      const { detail } = qs.parse(search);
+      // if (detail) {
+      // // TODO SELL LOCKED
+      // }
+      if (detail && !locked && isSell.current === 0) {
+        console.log('🌹 🌹 🌹', '');
+        isSell.current = 1;
+        handleAchSell(detail);
+      }
+    }
+  }, [handleAchSell, locked, search]);
+
   const getLocationState = useCallback(async () => {
     try {
       if (!isPopupInit) return;

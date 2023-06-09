@@ -41,3 +41,6 @@ export const AUTH_HOST = 'https://portkey.finance';
 export const JOIN_AUTH_URL = `${AUTH_HOST}/join`;
 export const AUTH_APPLE_URL = `${AUTH_HOST}/apple-auth`;
 export const RECAPTCHA_URL = `${AUTH_HOST}/recaptcha-check`;
+
+// after ach-sell, redirect url, then wake up extension.
+export const ACH_WITHDRAW_URL = 'https://openlogin-test.portkey.finance/extension-rouse?method=portkey_achSellRedirect'; // TODO: change url

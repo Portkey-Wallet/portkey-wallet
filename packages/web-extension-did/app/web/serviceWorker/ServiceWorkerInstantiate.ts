@@ -56,6 +56,7 @@ const allowedMethod = [
   MethodMessageTypes.GET_WALLET_STATE,
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
+  WalletMessageTypes.ACH_SELL_REDIRECT,
   PortkeyMessageTypes.ACTIVE_LOCK_STATUS,
   PortkeyMessageTypes.SETTING,
   PortkeyMessageTypes.ADD_GUARDIANS,
@@ -201,6 +202,9 @@ export default class ServiceWorkerInstantiate {
         case WalletMessageTypes.SOCIAL_LOGIN:
           this.getSocialLogin(sendResponse, message.payload);
           break;
+        case WalletMessageTypes.ACH_SELL_REDIRECT:
+          ServiceWorkerInstantiate.expandHome(message.payload);
+          break;
 
         default:
           sendResponse(errorHandler(700001, `Portkey does not contain this method (${message.type})`));
@@ -340,6 +344,16 @@ export default class ServiceWorkerInstantiate {
       {
         method: PromptRouteTypes.GUARDIANS_APPROVAL,
         search: payload,
+      },
+      'tabs',
+    );
+  }
+
+  static async expandHome(payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.EXPAND_FULL_SCREEN,
+        search: payload.payload,
       },
       'tabs',
     );

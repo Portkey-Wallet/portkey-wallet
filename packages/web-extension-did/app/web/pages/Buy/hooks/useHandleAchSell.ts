@@ -7,10 +7,12 @@ import { AchTxAddressReceivedType } from '@portkey-wallet/types/types-ca/payment
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { message } from 'antd';
 import { useCallback, useMemo } from 'react';
-import { useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useLoading } from 'store/Provider/hooks';
 import sameChainTransfer from 'utils/sandboxUtil/sameChainTransfer';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import aes from '@portkey-wallet/utils/aes';
+import InternalMessage from 'messages/InternalMessage';
+import InternalMessageTypes from 'messages/InternalMessageTypes';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
@@ -24,17 +26,19 @@ export const useHandleAchSell = () => {
   const chainInfo = useCurrentChain('AELF');
   const wallet = useCurrentWalletInfo();
   const currentNetwork = useCurrentNetworkInfo();
-  const { passwordSeed } = useUserInfo();
 
   const paymentSellTransfer = useCallback(
     async (params: AchTxAddressReceivedType) => {
       if (!chainInfo) throw new Error('');
-      const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
+
+      const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
+      const pin = getSeedResult.data.privateKey;
+      const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, pin);
       if (!privateKey) throw new Error('');
 
       if (!aelfToken) throw new Error('');
 
-      const res = await sameChainTransfer({
+      const transferParams = {
         chainInfo,
         chainType: currentNetwork.walletType,
         privateKey,
@@ -51,15 +55,15 @@ export const useHandleAchSell = () => {
         },
         caHash: wallet?.caHash || '',
         amount: timesDecimals(params.cryptoAmount, aelfToken.decimals).toNumber(),
-        toAddress: `ELF_${params.address}_AELF`, // 'ELF_2KQWh5v6Y24VcGgsx2KHpQvRyyU5DnCZ4eAUPqGQbnuZgExKaV_AELF', // TODO SELL
-      });
-
+        toAddress: `ELF_${params.address}_AELF`,
+      };
+      const res = await sameChainTransfer(transferParams);
       return {
         error: res?.result?.Error,
         transactionId: res?.result.TransactionId || '',
       };
     },
-    [aelfToken, chainInfo, currentNetwork.walletType, passwordSeed, wallet.AESEncryptPrivateKey, wallet?.caHash],
+    [aelfToken, chainInfo, currentNetwork.walletType, wallet.AESEncryptPrivateKey, wallet?.caHash],
   );
 
   return useCallback(

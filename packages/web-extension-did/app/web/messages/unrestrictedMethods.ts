@@ -78,6 +78,7 @@ export const unrestrictedMethods = Object.freeze([
   WalletMessageTypes.DISCONNECT,
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
+  WalletMessageTypes.ACH_SELL_REDIRECT,
 ]);
 
 export const authorizationList = [WalletMessageTypes.SWITCH_CHAIN];

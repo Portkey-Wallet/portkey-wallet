@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Radio, RadioChangeEvent } from 'antd';
+import { Button, Radio, RadioChangeEvent, message } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
-import CustomDrawer from './components/CustomDrawer';
 import { handleKeyDown } from 'utils/keyDown';
 import { getOrderQuote, getCryptoInfo } from '@portkey-wallet/api/api-did/payment/util';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { countryCodeMap } from '@portkey-wallet/constants/constants-ca/payment';
 import {
   DrawerType,
   initCrypto,
@@ -19,18 +17,24 @@ import {
   initValueSave,
   Limit,
   MAX_UPDATE_TIME,
-  PageType,
   PartialFiatType,
-  sellSoonText,
 } from './const';
-import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-import CustomModal from './components/CustomModal';
-import CustomTipModal from 'pages/components/CustomModal';
 import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { getBalance } from 'utils/sandboxUtil/getBalance';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import BuyFrom from './components/BuyFrom';
+import SellFrom from './components/SellFrom';
+import { useEffectOnce } from 'react-use';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -41,8 +45,7 @@ export default function Buy() {
   const updateTimerRef = useRef<NodeJS.Timer | number>();
   const valueSaveRef = useRef({ ...initValueSave });
   const [errMsg, setErrMsg] = useState<string>('');
-  const [open, setOpen] = useState<boolean>(false);
-  const [page, setPage] = useState<PageType>(PageType.buy);
+  const [page, setPage] = useState<PaymentTypeEnum>(PaymentTypeEnum.BUY);
   const [rate, setRate] = useState('');
   const [amount, setAmount] = useState(initCurrency);
   const [receive, setReceive] = useState('');
@@ -50,7 +53,6 @@ export default function Buy() {
   const [limit, setLimit] = useState<Limit>(initLimit);
   const { setLoading } = useLoading();
   const [curFiat, setCurFiat] = useState<PartialFiatType>(initFiat);
-  const [drawerType, setDrawerType] = useState<DrawerType>(DrawerType.currency);
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
@@ -59,12 +61,13 @@ export default function Buy() {
     [curFiat, curToken, rate],
   );
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (state && state.amount !== undefined) {
       const { amount, country, fiat, crypto, network, side } = state;
       setAmount(amount);
       setCurFiat({ country, currency: fiat });
       setCurToken({ crypto, network });
+      setPage(side);
       valueSaveRef.current = {
         amount,
         currency: fiat,
@@ -91,8 +94,7 @@ export default function Buy() {
     return () => {
       clearInterval(updateTimerRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const showLimitText = useCallback(
     (min: string | number, max: string | number, fiat = 'USD') =>
@@ -110,6 +112,39 @@ export default function Buy() {
     [],
   );
 
+  const setReceiveCase = useCallback(
+    ({
+      fiatQuantity,
+      rampFee,
+      cryptoQuantity,
+    }: {
+      fiatQuantity?: string;
+      rampFee: string;
+      cryptoQuantity?: string;
+    }) => {
+      if (valueSaveRef.current.side === PaymentTypeEnum.SELL && fiatQuantity && rampFee) {
+        const receive = Number(fiatQuantity) - Number(rampFee);
+        setReceive(formatAmountShow(receive, 4));
+      }
+      if (valueSaveRef.current.side === PaymentTypeEnum.BUY) {
+        setReceive(formatAmountShow(cryptoQuantity || '', 4));
+      }
+    },
+    [],
+  );
+
+  const setErrMsgCase = useCallback(() => {
+    const { min, max, currency, crypto, side } = valueSaveRef.current;
+    if (min !== null && max !== null) {
+      if (side === PaymentTypeEnum.SELL) {
+        setErrMsg(showLimitText(min, max, crypto));
+      }
+      if (side === PaymentTypeEnum.BUY) {
+        setErrMsg(showLimitText(min, max, currency));
+      }
+    }
+  }, [showLimitText]);
+
   const { updateReceive, handleSetTimer } = useMemo(() => {
     const updateReceive = async (
       params = {
@@ -125,18 +160,16 @@ export default function Buy() {
       try {
         const rst = await getOrderQuote(params);
         if (params.amount !== valueSaveRef.current.amount) return;
-        const { cryptoPrice, cryptoQuantity } = rst;
-        setReceive(formatAmountShow(cryptoQuantity || '', 4));
+
+        const { cryptoPrice, cryptoQuantity, fiatQuantity, rampFee } = rst;
+        setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
         setRate(cryptoPrice);
         setErrMsg('');
         handleSetTimer();
       } catch (error) {
         setReceive('');
         setRate('');
-        const { min, max, currency } = valueSaveRef.current;
-        if (min !== null && max !== null) {
-          setErrMsg(showLimitText(min, max, currency));
-        }
+        setErrMsgCase();
         setRateUpdateTime(MAX_UPDATE_TIME);
         updateTimeRef.current = MAX_UPDATE_TIME;
         console.log('error', error);
@@ -155,13 +188,13 @@ export default function Buy() {
       }, 1000);
     };
     return { updateReceive, handleSetTimer };
-  }, [showLimitText]);
+  }, [setErrMsgCase]);
 
   const updateCrypto = useCallback(
     async (fiat = curFiat.currency || 'USD') => {
-      const { crypto, network } = valueSaveRef.current;
+      const { crypto, network, side } = valueSaveRef.current;
       const data = await getCryptoInfo({ fiat }, crypto, network);
-      if (page === PageType.buy) {
+      if (side === PaymentTypeEnum.BUY) {
         if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
           setLimit({ max: data.maxPurchaseAmount, min: data.minPurchaseAmount });
           valueSaveRef.current.max = data.maxPurchaseAmount;
@@ -175,7 +208,7 @@ export default function Buy() {
         }
       }
     },
-    [curFiat.currency, page],
+    [curFiat.currency],
   );
 
   const handleInputChange = useCallback(
@@ -185,7 +218,7 @@ export default function Buy() {
       const { min, max } = limit;
       if (max !== null && min !== null) {
         if (!isValidValue({ amount: v, min, max })) {
-          setErrMsg(showLimitText(min, max, curFiat.currency));
+          setErrMsgCase();
           clearInterval(updateTimerRef.current);
           setRateUpdateTime(MAX_UPDATE_TIME);
           updateTimeRef.current = MAX_UPDATE_TIME;
@@ -204,46 +237,48 @@ export default function Buy() {
         side,
       });
     },
-    [curFiat, isValidValue, limit, showLimitText, updateReceive],
+    [isValidValue, limit, setErrMsgCase, updateReceive],
   );
+
+  const getQuoteAndSetData = useCallback(async () => {
+    const { crypto, currency, country, network, amount, side } = valueSaveRef.current;
+    const rst = await getOrderQuote({
+      crypto,
+      network,
+      fiat: currency,
+      country,
+      amount,
+      side,
+    });
+    const { cryptoPrice, cryptoQuantity, fiatQuantity, rampFee } = rst;
+    setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
+    setRate(cryptoPrice);
+    setRateUpdateTime(MAX_UPDATE_TIME);
+    updateTimeRef.current = MAX_UPDATE_TIME;
+    handleSetTimer();
+  }, [handleSetTimer]);
 
   const handlePageChange = useCallback(
     async (e: RadioChangeEvent) => {
-      if (e.target.value === PageType.sell) {
-        CustomTipModal({
-          content: sellSoonText,
-        });
-        return;
-      }
       clearInterval(updateTimerRef.current);
-      valueSaveRef.current = initValueSave;
       setPage(e.target.value);
-      setCurFiat(initFiat);
+      // BUY
+      valueSaveRef.current = initValueSave;
+      valueSaveRef.current.side = e.target.value;
       setAmount(initCurrency);
-      setErrMsg('');
-      if (e.target.value === PageType.sell) {
+      // SELL
+      if (e.target.value === PaymentTypeEnum.SELL) {
         setAmount(initCrypto);
         valueSaveRef.current.amount = initCrypto;
-        valueSaveRef.current.side = 'SELL';
       }
+
+      setCurFiat(initFiat);
+      setErrMsg('');
+      setReceive('');
+      setRate('');
       try {
         setLoading(true);
-        console.log('valueSaveRef', valueSaveRef.current);
-        const { country, crypto, currency, network, amount, side } = valueSaveRef.current;
-        const rst = await getOrderQuote({
-          crypto,
-          network,
-          fiat: currency,
-          country,
-          amount,
-          side,
-        });
-        const { cryptoPrice, cryptoQuantity } = rst;
-        setReceive(formatAmountShow(cryptoQuantity || '', 4));
-        setRate(cryptoPrice);
-        setRateUpdateTime(MAX_UPDATE_TIME);
-        updateTimeRef.current = MAX_UPDATE_TIME;
-        handleSetTimer();
+        await getQuoteAndSetData();
         await updateCrypto();
       } catch (error) {
         console.log('error', error);
@@ -251,11 +286,11 @@ export default function Buy() {
         setLoading(false);
       }
     },
-    [handleSetTimer, setLoading, updateCrypto],
+    [getQuoteAndSetData, setLoading, updateCrypto],
   );
 
   const handleSelect = useCallback(
-    async (v: PartialFiatType) => {
+    async (v: PartialFiatType, drawerType: DrawerType) => {
       if (drawerType === DrawerType.token) {
         // setCurToken(v);
       } else {
@@ -270,28 +305,45 @@ export default function Buy() {
         try {
           clearInterval(updateTimerRef.current);
           setLoading(true);
-          const { crypto, currency, country, network, amount, side } = valueSaveRef.current;
+          const { crypto, network, amount, side } = valueSaveRef.current;
           const data = await getCryptoInfo({ fiat: v.currency }, crypto, network);
-          if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
-            setLimit({ max: data.maxPurchaseAmount, min: data.minPurchaseAmount });
-            if (isValidValue({ amount, min: data.minPurchaseAmount, max: data.maxPurchaseAmount })) {
-              const rst = await getOrderQuote({
-                crypto,
-                network,
-                fiat: currency,
-                country,
-                amount,
-                side,
-              });
-              const { cryptoPrice, cryptoQuantity } = rst;
-              setReceive(formatAmountShow(cryptoQuantity || '', 4));
-              setRate(cryptoPrice);
-              setRateUpdateTime(MAX_UPDATE_TIME);
-              updateTimeRef.current = MAX_UPDATE_TIME;
-              handleSetTimer();
-              setErrMsg('');
+          if (side === PaymentTypeEnum.BUY) {
+            if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
+              setLimit({ max: data.maxPurchaseAmount, min: data.minPurchaseAmount });
+              valueSaveRef.current.max = data.maxPurchaseAmount;
+              valueSaveRef.current.min = data.minPurchaseAmount;
+
+              if (isValidValue({ amount, min: data.minPurchaseAmount, max: data.maxPurchaseAmount })) {
+                await getQuoteAndSetData();
+                setErrMsg('');
+              } else {
+                setErrMsg(showLimitText(data.minPurchaseAmount, data.maxPurchaseAmount, v.currency));
+                setReceive('');
+                setRate('');
+              }
             } else {
-              setErrMsg(showLimitText(data.minPurchaseAmount, data.maxPurchaseAmount, v.currency));
+              // not maxPurchaseAmount and minPurchaseAmount
+              setErrMsg('');
+              setReceive('');
+              setRate('');
+            }
+          } else {
+            if (data && data.maxSellAmount !== null && data.minSellAmount !== null) {
+              setLimit({ max: data.maxSellAmount, min: data.minSellAmount });
+              valueSaveRef.current.max = data.maxSellAmount;
+              valueSaveRef.current.min = data.minSellAmount;
+
+              if (isValidValue({ amount, min: data.maxSellAmount, max: data.minSellAmount })) {
+                await getQuoteAndSetData();
+                setErrMsg('');
+              } else {
+                setErrMsg(showLimitText(data.minSellAmount, data.maxSellAmount, v.currency));
+                setReceive('');
+                setRate('');
+              }
+            } else {
+              // not maxSellAmount and minSellAmount
+              setErrMsg('');
               setReceive('');
               setRate('');
             }
@@ -303,84 +355,38 @@ export default function Buy() {
         }
       }
     },
-    [curFiat, drawerType, handleSetTimer, isValidValue, setLoading, showLimitText],
+    [curFiat.currency, getQuoteAndSetData, isValidValue, setLoading, showLimitText],
   );
 
-  const renderSelectELe = useMemo(() => {
-    const title = drawerType === DrawerType.token ? 'Select Crypto' : 'Select Currency';
-    const searchPlaceHolder = drawerType === DrawerType.token ? 'Search crypto' : 'Search currency';
-    return isPrompt ? (
-      <CustomModal
-        open={open}
-        drawerType={drawerType}
-        title={title}
-        searchPlaceHolder={searchPlaceHolder}
-        onClose={() => setOpen(false)}
-        onChange={handleSelect}
-      />
-    ) : (
-      <CustomDrawer
-        open={open}
-        drawerType={drawerType}
-        title={title}
-        searchPlaceHolder={searchPlaceHolder}
-        height="528"
-        maskClosable={true}
-        placement="bottom"
-        onClose={() => setOpen(false)}
-        onChange={handleSelect}
-      />
-    );
-  }, [drawerType, handleSelect, isPrompt, open]);
+  const {
+    accountToken: { accountTokenList },
+  } = useAssets();
+  const currentChain = useCurrentChain('AELF');
+  const currentNetwork = useCurrentNetworkInfo();
+  const wallet = useCurrentWalletInfo();
 
-  const renderTokenInput = useMemo(() => {
-    return (
-      <Input
-        value={page === PageType.buy ? receive : amount}
-        readOnly
-        suffix={
-          <div
-            className="flex-center"
-            onClick={() => {
-              setDrawerType(DrawerType.token);
-              setOpen(true);
-            }}>
-            <CustomSvg type="elf-icon" />
-            <div className="currency">{curToken.crypto}</div>
-            <CustomSvg type="Down" />
-          </div>
-        }
-      />
-    );
-  }, [amount, curToken.crypto, page, receive]);
+  const handleNext = useCallback(async () => {
+    if (valueSaveRef.current.side === PaymentTypeEnum.SELL) {
+      if (!currentChain) return;
+      // search balance from contract
+      const result = await getBalance({
+        rpcUrl: currentChain.endPoint,
+        address: accountTokenList[0].tokenContractAddress || '',
+        chainType: currentNetwork.walletType,
+        paramsOption: {
+          owner: wallet['AELF']?.caAddress || '',
+          symbol: 'ELF',
+        },
+      });
+      const balance = result.result.balance;
 
-  const renderCurrencyInput = useMemo(() => {
-    return (
-      <Input
-        value={page === PageType.buy ? amount : receive}
-        autoComplete="off"
-        onChange={(e) => handleInputChange(e.target.value)}
-        readOnly={page === PageType.sell}
-        onKeyDown={handleKeyDown}
-        suffix={
-          <div
-            className="flex-center"
-            onClick={() => {
-              setDrawerType(DrawerType.currency);
-              setOpen(true);
-            }}>
-            <div className="img">
-              <img src={countryCodeMap[curFiat.country || '']?.icon} alt="" />
-            </div>
-            <div className="currency">{curFiat.currency}</div>
-            <CustomSvg type="Down" />
-          </div>
-        }
-      />
-    );
-  }, [page, amount, receive, curFiat.country, curFiat.currency, handleInputChange]);
+      if (
+        ZERO.plus(divDecimals(balance, 8)).isLessThanOrEqualTo(ZERO.plus(DEFAULT_FEE).plus(valueSaveRef.current.amount))
+      ) {
+        return message.error('balance is not enough'); // TODO SELL
+      }
+    }
 
-  const handleNext = useCallback(() => {
     const { amount, currency, country, crypto, network, side } = valueSaveRef.current;
     navigate('/buy/preview', {
       state: {
@@ -393,7 +399,7 @@ export default function Buy() {
         tokenInfo: state ? state.tokenInfo : null,
       },
     });
-  }, [navigate, state]);
+  }, [accountTokenList, currentChain, currentNetwork.walletType, navigate, state, wallet]);
 
   const handleBack = useCallback(() => {
     if (state && state.tokenInfo) {
@@ -404,38 +410,6 @@ export default function Buy() {
       navigate('/');
     }
   }, [navigate, state]);
-
-  const renderBuyForm = useMemo(() => {
-    return (
-      <>
-        <div className="buy-input">
-          <div className="label">I want to pay</div>
-          {renderCurrencyInput}
-          {!!errMsg && <div className="error-text">{errMsg}</div>}
-        </div>
-        <div className="buy-input">
-          <div className="label">I will receive≈</div>
-          {renderTokenInput}
-        </div>
-      </>
-    );
-  }, [errMsg, renderCurrencyInput, renderTokenInput]);
-
-  const renderSellForm = useMemo(() => {
-    return (
-      <>
-        <div className="buy-input">
-          <div className="label">I want to sell</div>
-          {renderTokenInput}
-          {!!errMsg && <div className="error-text">{errMsg}</div>}
-        </div>
-        <div className="buy-input">
-          <div className="label">I will receive≈</div>
-          {renderCurrencyInput}
-        </div>
-      </>
-    );
-  }, [errMsg, renderCurrencyInput, renderTokenInput]);
 
   const renderRate = useMemo(
     () => (
@@ -462,13 +436,45 @@ export default function Buy() {
         </div>
         <div className="buy-content flex-column-center">
           <div className="buy-radio">
-            <Radio.Group defaultValue={PageType.buy} buttonStyle="solid" value={page} onChange={handlePageChange}>
-              <Radio.Button value={PageType.buy}>{t('Buy')}</Radio.Button>
-              <Radio.Button value={PageType.sell}>{t('Sell')}</Radio.Button>
+            <Radio.Group
+              defaultValue={PaymentTypeEnum.BUY}
+              buttonStyle="solid"
+              value={page}
+              onChange={handlePageChange}>
+              <Radio.Button value={PaymentTypeEnum.BUY}>{t('Buy')}</Radio.Button>
+              <Radio.Button value={PaymentTypeEnum.SELL}>{t('Sell')}</Radio.Button>
             </Radio.Group>
           </div>
-          {page === PageType.buy && renderBuyForm}
-          {page === PageType.sell && renderSellForm}
+          {page === PaymentTypeEnum.BUY && (
+            <BuyFrom
+              currencyVal={amount}
+              handleCurrencyChange={(val) => handleInputChange(val)}
+              handleCurrencyKeyDown={handleKeyDown}
+              handleCurrencySelect={(v) => handleSelect(v, DrawerType.currency)}
+              curFiat={curFiat}
+              tokenVal={receive}
+              handleTokenChange={(val) => handleInputChange(val)}
+              handleTokenKeyDown={handleKeyDown}
+              handleTokenSelect={(v) => handleSelect(v, DrawerType.token)}
+              curToken={curToken}
+              errMsg={errMsg}
+            />
+          )}
+          {page === PaymentTypeEnum.SELL && (
+            <SellFrom
+              tokenVal={amount}
+              handleTokenChange={(val) => handleInputChange(val)}
+              handleTokenKeyDown={handleKeyDown}
+              handleTokenSelect={(v) => handleSelect(v, DrawerType.token)}
+              curToken={curToken}
+              currencyVal={receive}
+              handleCurrencyChange={(val) => handleInputChange(val)}
+              handleCurrencyKeyDown={handleKeyDown}
+              handleCurrencySelect={(v) => handleSelect(v, DrawerType.currency)}
+              curFiat={curFiat}
+              errMsg={errMsg}
+            />
+          )}
           {rate !== '' && renderRate}
         </div>
         <div className="buy-footer">
@@ -476,22 +482,25 @@ export default function Buy() {
             {t('Next')}
           </Button>
         </div>
-        {renderSelectELe}
         {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     ),
     [
+      amount,
+      curFiat,
+      curToken,
       disabled,
+      errMsg,
       handleBack,
+      handleInputChange,
       handleNext,
       handlePageChange,
+      handleSelect,
       isPrompt,
       page,
       rate,
-      renderBuyForm,
+      receive,
       renderRate,
-      renderSelectELe,
-      renderSellForm,
       t,
     ],
   );

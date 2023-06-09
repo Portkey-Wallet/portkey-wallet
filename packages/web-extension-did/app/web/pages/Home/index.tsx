@@ -7,8 +7,24 @@ import popupHandler from 'utils/popupHandler';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
 import MyBalance from './components/MyBalance';
 import './index.less';
+// import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
+// import { getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
+// import { ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
 
 export default function Home() {
+  // TODO SELL
+  // const handleAchSell = useHandleAchSell();
+
+  // useEffect(() => {
+  //   getPaymentOrderNo({
+  //     transDirect: TransDirectEnum.TOKEN_SELL,
+  //     merchantName: ACH_MERCHANT_NAME,
+  //   }).then((orderNo) => {
+  //     // const orderNo = 'f5298810-35f2-d210-2eba-3a0b8ce563cb'; // mock orderNo;
+  //     handleAchSell(orderNo);
+  //   });
+  // }, [handleAchSell]);
+
   const navigate = useNavigate();
   const { isPopupInit, isPrompt, isNotLessThan768 } = useCommonState();
 

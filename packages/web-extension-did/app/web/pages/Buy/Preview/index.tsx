@@ -18,6 +18,7 @@ import CustomModal from 'pages/components/CustomModal';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -34,22 +35,44 @@ export default function Preview() {
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
   const showRateText = useMemo(() => `1 ${data.crypto} ≈ ${formatAmountShow(rate, 2)} ${data.fiat}`, [data, rate]);
   const receiveText = useMemo(
-    () => `I will receive ≈ ${formatAmountShow(receive)} ${data.side === 'BUY' ? data.crypto : data.fiat}`,
+    () =>
+      `I will receive ≈ ${formatAmountShow(receive)} ${data.side === PaymentTypeEnum.BUY ? data.crypto : data.fiat}`,
     [data, receive],
   );
   const apiUrl = useCurrentApiUrl();
   const getAchTokenInfo = useGetAchTokenInfo();
 
+  const setReceiveCase = useCallback(
+    ({
+      fiatQuantity,
+      rampFee,
+      cryptoQuantity,
+    }: {
+      fiatQuantity?: string;
+      rampFee: string;
+      cryptoQuantity?: string;
+    }) => {
+      if (data.side === PaymentTypeEnum.SELL && fiatQuantity && rampFee) {
+        const receive = Number(fiatQuantity) - Number(rampFee);
+        setReceive(formatAmountShow(receive, 4));
+      }
+      if (data.side === PaymentTypeEnum.BUY) {
+        setReceive(formatAmountShow(cryptoQuantity || '', 4));
+      }
+    },
+    [data.side],
+  );
+
   const updateReceive = useCallback(async () => {
     try {
       const rst = await getOrderQuote(data);
-      const { cryptoPrice, cryptoQuantity } = rst;
-      setReceive(cryptoQuantity || '');
+      const { cryptoPrice, fiatQuantity, rampFee, cryptoQuantity } = rst;
+      setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
       setRate(cryptoPrice);
     } catch (error) {
       console.log('error', error);
     }
-  }, [data]);
+  }, [data, setReceiveCase]);
 
   useEffect(() => {
     updateReceive();
@@ -80,15 +103,30 @@ export default function Preview() {
         `${apiUrl}${paymentApi.updateAchOrder}`,
       )}`;
 
-      if (side === 'BUY') {
+      if (side === PaymentTypeEnum.BUY) {
         achUrl += `&type=buy&fiatAmount=${amount}`;
-      } else {
-        achUrl += `&type=sell&cryptoAmount=${amount}`;
-      }
 
-      const achTokenInfo = await getAchTokenInfo();
-      if (achTokenInfo !== undefined) {
-        achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
+        const achTokenInfo = await getAchTokenInfo();
+        if (achTokenInfo !== undefined) {
+          achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
+        }
+
+        const address = wallet?.AELF?.caAddress || '';
+        const signature = await getAchSignature({ address });
+        achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
+      } else {
+        // achUrl += `&type=sell&cryptoAmount=${amount}`;
+
+        const ACH_WITHDRAW_URL = 'http://portkey_sell'; // TODO SELL position
+        const withdrawUrl = encodeURIComponent(ACH_WITHDRAW_URL);
+        // const signature = await getAchSignature({
+        //   withdrawUrl,
+        //   callbackUrl,
+        //   appId,
+        //   fiat: fiat.currency,
+        //   cryptoAmount: amount,
+        // });
+        achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
       }
 
       const orderNo = await getPaymentOrderNo({
@@ -96,10 +134,6 @@ export default function Preview() {
         merchantName: ACH_MERCHANT_NAME,
       });
       achUrl += `&merchantOrderNo=${orderNo}`;
-
-      const address = wallet?.AELF?.caAddress || '';
-      const signature = await getAchSignature({ address });
-      achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
 
       console.log('achUrl', achUrl);
       const openWinder = window.open(achUrl, '_blank');
@@ -145,7 +179,7 @@ export default function Preview() {
           <div className="transaction flex-column-center">
             <div className="send">
               <span className="amount">{formatAmountShow(data.amount)}</span>
-              <span className="currency">{data.side === 'BUY' ? data.fiat : data.crypto}</span>
+              <span className="currency">{data.side === PaymentTypeEnum.BUY ? data.fiat : data.crypto}</span>
             </div>
             <div className="receive">{receiveText}</div>
           </div>

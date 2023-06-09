@@ -69,11 +69,9 @@ export const getPaymentOrderNo = async (params: { transDirect: TransDirectEnum; 
   return rst.id as string;
 };
 
-export const getAchSignature = async (signParams: Record<string, string>) => {
+export const getAchSignature = async (params: { address: string }) => {
   const rst = await request.payment.getAchSignature({
-    params: {
-      signParams,
-    },
+    params,
   });
   console.log('getAchSignature', rst);
   if (rst.returnCode !== '0000' || !rst?.signature) {

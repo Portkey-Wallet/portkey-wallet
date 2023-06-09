@@ -77,7 +77,7 @@ export const useSellTransfer = () => {
         throw new Error('transaction is error');
       }
 
-      await request.payment.setOrderTxHash({
+      await request.payment.updateAlchemyOrderTxHash({
         params: {
           merchantName: ACH_MERCHANT_NAME,
           orderId,

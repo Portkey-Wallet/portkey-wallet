@@ -135,6 +135,9 @@ export default function SellForm() {
       return;
     }
     if (!reg.test(text)) return;
+    const arr = text.split('.');
+    if (arr[1]?.length > 8) return;
+    if (arr.join('').length > 13) return;
     setAmount(text);
   }, []);
 
@@ -175,21 +178,19 @@ export default function SellForm() {
         // TODO: add Toast
         return;
       }
+
+      if (isRefreshReceiveValid.current === false) {
+        const rst = await refreshReceive();
+        if (rst === undefined) return;
+        _rate = rst.rate;
+        _receiveAmount = rst.receiveAmount;
+      }
     } catch (error) {
       // TODO: add Toast
       console.log('error', error);
       return;
     } finally {
       Loading.hide();
-    }
-
-    if (isRefreshReceiveValid.current === false) {
-      Loading.show();
-      const rst = await refreshReceive();
-      Loading.hide();
-      if (rst === undefined) return;
-      _rate = rst.rate;
-      _receiveAmount = rst.receiveAmount;
     }
 
     navigationService.navigate('BuyPreview', {
@@ -226,7 +227,7 @@ export default function SellForm() {
             </Touchable>
           }
           type="general"
-          maxLength={30}
+          maxLength={14}
           autoCorrect={false}
           keyboardType="decimal-pad"
           onChangeText={onAmountInput}

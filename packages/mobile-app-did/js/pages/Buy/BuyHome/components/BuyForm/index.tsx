@@ -67,7 +67,7 @@ export default function BuyForm() {
     }
     if (token === undefined || cryptoListRef.current === undefined) return;
     const cryptoInfo = cryptoListRef.current.find(
-      item => item.crypto === token.crypto && item.network === token.network,
+      item => item.crypto === token.crypto && item.network === token.network && Number(item.buyEnable) === 1,
     );
 
     if (cryptoInfo === undefined || cryptoInfo.minPurchaseAmount === null || cryptoInfo.maxPurchaseAmount === null) {

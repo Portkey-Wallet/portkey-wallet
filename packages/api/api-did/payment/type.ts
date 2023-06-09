@@ -11,8 +11,8 @@ export interface OrderQuoteType {
 export interface CryptoInfoType {
   crypto: string;
   network: string;
-  buyEnable: number;
-  sellEnable: number;
+  buyEnable: string;
+  sellEnable: string;
   minPurchaseAmount: number | null;
   maxPurchaseAmount: number | null;
   address: null;

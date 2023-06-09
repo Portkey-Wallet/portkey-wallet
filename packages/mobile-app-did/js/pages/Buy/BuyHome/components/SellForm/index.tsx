@@ -22,7 +22,7 @@ import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import { CryptoInfoType } from '@portkey-wallet/api/api-did/payment/type';
 import { CryptoItemType, LimitType, TypeEnum } from 'pages/Buy/types';
-import { INIT_BUY_AMOUNT, tokenList } from 'pages/Buy/constants';
+import { INIT_SELL_AMOUNT, tokenList } from 'pages/Buy/constants';
 import Loading from 'components/Loading';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from 'pages/Buy/hooks';
@@ -36,13 +36,13 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export default function SellForm() {
-  const { buyFiatList: fiatList } = usePayment();
+  const { sellFiatList: fiatList } = usePayment();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
   );
   const [token, setToken] = useState<CryptoItemType>(tokenList[0]);
-  const [amount, setAmount] = useState<string>(INIT_BUY_AMOUNT);
+  const [amount, setAmount] = useState<string>(INIT_SELL_AMOUNT);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
   const { accountToken } = useAssets();
   const aelfToken = useMemo(
@@ -82,7 +82,7 @@ export default function SellForm() {
     }
     if (token === undefined || cryptoListRef.current === undefined) return;
     const cryptoInfo = cryptoListRef.current.find(
-      item => item.crypto === token.crypto && item.network === token.network,
+      item => item.crypto === token.crypto && item.network === token.network && Number(item.sellEnable) === 1,
     );
 
     console.log('cryptoInfo', cryptoInfo);

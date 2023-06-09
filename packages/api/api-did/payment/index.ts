@@ -12,5 +12,5 @@ export default {
   getOrderNo: '/api/app/thirdPart/order',
   getAchSignature: '/api/app/thirdPart/alchemy/signature',
   updateAchOrder: '/api/app/thirdPart/order/alchemy',
-  setOrderTxHash: 'api/app/thirdPart/txHash',
+  updateAlchemyOrderTxHash: 'api/app/thirdPart/alchemy/txHash',
 } as const;

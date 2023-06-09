@@ -30,3 +30,5 @@ export enum TransDirectEnum {
 export const ACH_MERCHANT_NAME = 'Alchemy';
 
 export const FaucetUrl = 'https://testnet-faucet.aelf.io/';
+
+export const SELL_SOCKET_TIMEOUT = 20 * 1000;

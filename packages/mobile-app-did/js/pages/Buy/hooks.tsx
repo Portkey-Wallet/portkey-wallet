@@ -31,7 +31,8 @@ export const useReceive = (
 
   const [amountError, setAmountError] = useState<ErrorType>(INIT_NONE_ERROR);
 
-  const isAllowAmount = useMemo(() => {
+  const isAllowAmountRef = useRef(false);
+  isAllowAmountRef.current = useMemo(() => {
     const reg = /^\d+(\.\d+)?$/;
     if (amount === '' || !reg.test(amount)) return false;
     return true;
@@ -71,7 +72,14 @@ export const useReceive = (
 
   const lastParams = useRef<GetOrderQuoteParamsType>();
   const refreshReceive = useCallback(async () => {
-    if (fiat === undefined || token === undefined || !isAllowAmount) return;
+    if (amount === '') {
+      setRate('');
+      setReceiveAmount('');
+      clearRefreshReceive();
+      return;
+    }
+
+    if (fiat === undefined || token === undefined || !isAllowAmountRef.current) return;
 
     if (limitAmountRef) {
       if (limitAmountRef.current === undefined) return;
@@ -144,17 +152,7 @@ export const useReceive = (
       // TODO: add error
       // CommonToast.failError('get order error');
     }
-  }, [
-    amount,
-    clearRefreshReceive,
-    fiat,
-    isAllowAmount,
-    isRefreshReceiveValid,
-    limitAmountRef,
-    registerRefreshReceive,
-    token,
-    type,
-  ]);
+  }, [amount, clearRefreshReceive, fiat, isRefreshReceiveValid, limitAmountRef, registerRefreshReceive, token, type]);
   refreshReceiveRef.current = refreshReceive;
 
   const timer = useRef<NodeJS.Timeout>();
@@ -173,5 +171,11 @@ export const useReceive = (
     debounceRefreshReceiveRef.current?.();
   }, [amount]);
 
-  return { receiveAmount, rate, rateRefreshTime, refreshReceive, amountError, isAllowAmount };
+  useEffect(() => {
+    if (!isAllowAmountRef.current) {
+      setReceiveAmount('');
+    }
+  }, [fiat, token]);
+
+  return { receiveAmount, rate, rateRefreshTime, refreshReceive, amountError, isAllowAmount: isAllowAmountRef.current };
 };

@@ -5,7 +5,11 @@ import { useMemo, useCallback, useEffect } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { useIsMainnet } from './network';
 
-export function useGetCurrentAccountTokenPrice(): [Record<string, number | string>, (symbol?: string) => void] {
+export function useGetCurrentAccountTokenPrice(): [
+  Record<string, number | string>,
+  (symbol?: string) => void,
+  (symbols: string[]) => void,
+] {
   const {
     tokenPrices: { tokenPriceObject },
     accountToken,
@@ -24,7 +28,14 @@ export function useGetCurrentAccountTokenPrice(): [Record<string, number | strin
     [dispatch, symbols],
   );
 
-  return [tokenPriceObject, getTokenPrice];
+  const getTokensPrice = useCallback(
+    (symbols: string[]) => {
+      dispatch(fetchTokensPriceAsync({ symbols }));
+    },
+    [dispatch],
+  );
+
+  return [tokenPriceObject, getTokenPrice, getTokensPrice];
 }
 
 export function useFreshTokenPrice() {

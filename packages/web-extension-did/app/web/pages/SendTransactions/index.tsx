@@ -1,6 +1,6 @@
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { ChainId, ChainType } from '@portkey-wallet/types';
+import { ChainId } from '@portkey-wallet/types';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
@@ -15,9 +15,8 @@ import { useUserInfo, useWalletInfo } from 'store/Provider/hooks';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
-import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import getTransferFee from './utils/getTransferFee';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import './index.less';
 
 export default function SendTransactions() {
@@ -37,50 +36,55 @@ export default function SendTransactions() {
   const { t } = useTranslation();
   const { passwordSeed } = useUserInfo();
   const amountInUsdShow = useAmountInUsdShow();
+  const [_tokenPriceObject, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
   const [fee, setFee] = useState('');
-  const isCAManagerForwardCall = useMemo(
-    () => chainInfo?.caContractAddress !== payload?.contractAddress,
-    [chainInfo, payload],
-  );
+  const isCAContract = useMemo(() => chainInfo?.caContractAddress === payload?.contractAddress, [chainInfo, payload]);
   const privateKey = useMemo(
     () => aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed),
     [passwordSeed, wallet.AESEncryptPrivateKey],
   );
 
   const getFee = useCallback(async () => {
-    let paramsOption = {};
-    if (isCAManagerForwardCall) {
-      paramsOption = {
-        caHash: wallet.caHash,
-        contractAddress: payload?.contractAddress,
-        methodName: payload?.method,
-        args: payload?.params?.paramsOption,
-      };
-    } else {
-      paramsOption = {
-        caHash: wallet.caHash,
-        ...payload?.params?.paramsOption,
-      };
-    }
+    if (!chainInfo?.endPoint || !wallet?.caHash || !chainInfo.caContractAddress) return;
+    const mth = isCAContract ? payload?.method : 'ManagerForwardCall';
+    const paramsOption = isCAContract
+      ? payload?.params?.paramsOption
+      : {
+          caHash: wallet.caHash,
+          methodName: payload?.method,
+          contractAddress: payload?.contractAddress,
+          args: payload?.params?.paramsOption,
+        };
     try {
-      const params = {
-        isCAManagerForwardCall,
-        contractAddress: payload?.contractAddress,
-        privateKey: privateKey as string,
-        chainInfo: chainInfo as ChainItemType,
-        chainType: 'aelf' as ChainType,
+      if (!privateKey) throw 'Invalid user information, please check';
+      const fee = await getTransferFee({
+        rpcUrl: chainInfo.endPoint,
+        chainType: 'aelf',
+        methodName: mth,
         paramsOption,
-      };
-      const fee = await getTransferFee(params);
+        privateKey,
+        contractAddress: chainInfo.caContractAddress,
+      });
       setFee(fee);
     } catch (error) {
+      setFee('0');
       console.log('get fee error', error);
     }
-  }, [chainInfo, isCAManagerForwardCall, payload, privateKey, wallet]);
+  }, [chainInfo, isCAContract, payload, privateKey, wallet]);
 
   useEffect(() => {
     getFee();
   }, [getFee]);
+
+  useEffect(() => {
+    const symbol = payload?.params?.paramsOption?.symbol;
+    if (!symbol) return;
+    if (symbol === 'ELF') {
+      getTokenPrice(symbol);
+    } else {
+      getTokensPrice([symbol, 'ELF']);
+    }
+  }, [getTokenPrice, getTokensPrice, payload?.params?.paramsOption?.symbol]);
 
   const renderAccountInfo = useMemo(
     () =>
@@ -101,29 +105,40 @@ export default function SendTransactions() {
 
   // Transfer
   const renderDetail = useMemo(() => {
-    const { symbol, amount, decimals } = payload?.params?.paramsOption || {};
+    const { symbol, amount } = payload?.params?.paramsOption || {};
     return (
       <div className="detail">
         <div className="title">Details</div>
         <div className="amount">
           <div className="title">Amount</div>
           <div className="amount-number flex-between">
-            <div>{`${formatAmountShow(amount)} ELF`}</div>
-            {isMainnet && <div>{amountInUsdShow(amount, decimals, symbol)}</div>}
+            <div>{`${formatAmountShow(amount)} ${symbol}`}</div>
+            {isMainnet && <div>{amountInUsdShow(amount, 0, symbol)}</div>}
           </div>
         </div>
         <div className="fee flex-between">
           <div>Transaction Fee</div>
           <div className="fee-amount">
-            <div className="elf">{`${formatAmountShow(amount)} ELF`}</div>
-            {isMainnet && <div>{amountInUsdShow(amount, decimals, symbol)}</div>}
+            <div className="elf">{`${formatAmountShow(fee)} ELF`}</div>
+            {isMainnet && <div>{amountInUsdShow(fee, 0, 'ELF')}</div>}
           </div>
         </div>
         <div className="total flex-between">
           <div>Total (Amount + Transaction Fee)</div>
           <div className="total-amount">
-            <div className="elf">{`${formatAmountShow(ZERO.plus(amount).plus(fee))} ELF`}</div>
-            {isMainnet && <div>{amountInUsdShow(amount, decimals, symbol)}</div>}
+            {symbol === 'ELF' ? (
+              <>
+                <div className="elf">{`${formatAmountShow(ZERO.plus(amount).plus(fee))} ${symbol}`}</div>
+                {isMainnet && <div>{amountInUsdShow(ZERO.plus(amount).plus(fee).toNumber(), 0, symbol)}</div>}
+              </>
+            ) : (
+              <>
+                <div className="elf">{`${formatAmountShow(fee)} ELF`}</div>
+                {isMainnet && <div>{amountInUsdShow(fee, 0, 'ELF')}</div>}
+                <div className="elf">{`${formatAmountShow(amount)} ${symbol}`}</div>
+                {isMainnet && <div>{amountInUsdShow(amount, 0, symbol)}</div>}
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -162,16 +177,16 @@ export default function SendTransactions() {
       }
       let paramsOption = payload?.params?.paramsOption;
 
-      const functionName = isCAManagerForwardCall ? 'ManagerForwardCall' : payload?.method;
+      const functionName = isCAContract ? payload?.method : 'ManagerForwardCall';
 
-      paramsOption = isCAManagerForwardCall
-        ? {
+      paramsOption = isCAContract
+        ? paramsOption
+        : {
             caHash: wallet.caHash,
             methodName: payload?.method,
             contractAddress: payload?.contractAddress,
             args: paramsOption,
-          }
-        : paramsOption;
+          };
       if (!privateKey) throw 'Invalid user information, please check';
       const result = await callSendMethod({
         rpcUrl: chainInfo.endPoint,
@@ -190,7 +205,7 @@ export default function SendTransactions() {
       console.error(error, 'error===detail');
       message.error(handleErrorMessage(error));
     }
-  }, [chainInfo, wallet, payload, isCAManagerForwardCall, privateKey]);
+  }, [chainInfo, wallet, payload, isCAContract, privateKey]);
 
   return (
     <div className="send-transaction flex">

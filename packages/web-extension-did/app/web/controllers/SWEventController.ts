@@ -3,7 +3,6 @@
  * The controller that handles the event
  * chainChanged, accountsChanged, networkChanged, disconnected, connected
  */
-import { SendResponseFun } from 'types';
 import { apis } from 'utils/BrowserApis';
 import { getConnections } from 'utils/storage/storage.utils';
 import {
@@ -30,7 +29,6 @@ import { addDapp, removeDapp, resetDapp, resetDappList } from '@portkey-wallet/s
 export interface DappEventPack<T = DappEvents, D = any> {
   eventName: T;
   data?: D;
-  callback?: SendResponseFun;
   origin?: string;
 }
 
@@ -92,7 +90,7 @@ export default class SWEventController {
   public static dispatchEvent(params: DappEventPack<'networkChanged', NetworkType>): void;
   public static dispatchEvent(params: DappEventPack<'connected', ConnectInfo>): void;
   public static dispatchEvent(params: DappEventPack<'disconnected', ProviderErrorType>): void;
-  static async dispatchEvent({ eventName, data, callback, origin }: DappEventPack) {
+  static async dispatchEvent({ eventName, data, origin }: DappEventPack) {
     const connections = await getConnections();
     let connectionList: ConnectionsItem[] = [];
     if (origin && origin !== '*' && connections[origin]) {
@@ -125,7 +123,7 @@ export default class SWEventController {
         apis.tabs.sendMessage(tabId, event, (res) => {
           const { lastError } = apis.runtime;
           if (lastError) SWEventController.unregisterOperator(tabId);
-          callback?.(lastError ? lastError : res);
+          console.error('dispatchEvent:tabs.sendMessage', res);
         });
       });
     });

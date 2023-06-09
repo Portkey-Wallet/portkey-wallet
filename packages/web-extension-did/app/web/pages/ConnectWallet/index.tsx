@@ -28,6 +28,7 @@ export default function ConnectWallet() {
       detail && (
         <div className="site flex-center">
           <ImgLoading
+            defaultHeight={24}
             className="icon"
             src={detail.appLogo}
             loadEle={detail.appName?.[0]}

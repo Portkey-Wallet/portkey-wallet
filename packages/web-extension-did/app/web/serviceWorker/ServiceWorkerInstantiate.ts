@@ -120,7 +120,8 @@ export default class ServiceWorkerInstantiate {
           const payload = message.payload;
           const data: DappEventPack['data'] = payload.data;
           const origin = payload.origin;
-          SWEventController.dispatchEvent({ eventName: message.type as any, data, origin, callback: sendResponse });
+          SWEventController.dispatchEvent({ eventName: message.type as any, data, origin });
+          sendResponse(errorHandler(0));
           return;
         }
         await ServiceWorkerInstantiate.checkTimingLock();
@@ -429,13 +430,13 @@ export default class ServiceWorkerInstantiate {
             code: 1000,
             message: 'locked',
           },
-          callback: sendResponse,
         });
       }
       seed = null;
       setLocalStorage({
         locked: true,
       });
+      sendResponse?.(errorHandler(0));
     } catch (e) {
       sendResponse?.(errorHandler(500001, e));
     }
@@ -443,6 +444,7 @@ export default class ServiceWorkerInstantiate {
 
   static unlockWallet(sendResponse: SendResponseFun, _seed: string | null) {
     if (!_seed) return sendResponse(errorHandler(500001, 'unlockWallet error'));
+    sendResponse(errorHandler(0));
     setLocalStorage({
       locked: false,
     });

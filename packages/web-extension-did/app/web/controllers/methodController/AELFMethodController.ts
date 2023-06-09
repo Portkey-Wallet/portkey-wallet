@@ -26,6 +26,7 @@ const aelfMethodList = [
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
   MethodsUnimplemented.GET_WALLET_STATE,
+  MethodsUnimplemented.GET_WALLET_NAME,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
@@ -47,7 +48,7 @@ export default class AELFMethodController {
     this.getPassword = getPassword;
     this.aelfMethodList = aelfMethodList;
     this.dappManager = new ExtensionDappManager({
-      locked: () => Boolean(getPassword()),
+      locked: () => !getPassword(),
       store: storeInSW,
     });
   }
@@ -74,6 +75,9 @@ export default class AELFMethodController {
       case MethodsUnimplemented.GET_WALLET_STATE:
         this.getWalletState(sendResponse, message.payload);
         break;
+      case MethodsUnimplemented.GET_WALLET_NAME:
+        this.getWalletName(sendResponse, message.payload);
+        break;
       default:
         sendResponse(
           errorHandler(
@@ -90,16 +94,43 @@ export default class AELFMethodController {
     return Boolean(this.getPassword());
   };
 
+  getWalletName: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
+    try {
+      const isActive = await this.dappManager.isActive(message.origin);
+      if (!isActive)
+        return sendResponse({
+          ...errorHandler(400001),
+          data: {
+            code: ResponseCode.UNAUTHENTICATED,
+          },
+        });
+
+      sendResponse({ ...errorHandler(0), data: await this.dappManager.walletName() });
+    } catch (error) {
+      sendResponse({
+        ...errorHandler(500001),
+        data: {
+          code: ResponseCode.INTERNAL_ERROR,
+        },
+      });
+    }
+  };
+
   getWalletState: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
     try {
       const origin = message.origin;
-      const data = {
+      let data: any = {
         isUnlocked: this.isUnlocked(),
-        accounts: await this.dappManager.accounts(origin),
         isConnected: await this.dappManager.isActive(origin),
-        chainIds: await this.dappManager.chainId(),
-        networkType: (await this.dappManager.getWallet()).currentNetwork,
       };
+      if (data.isConnected) {
+        data = {
+          ...data,
+          accounts: await this.dappManager.accounts(origin),
+          chainIds: await this.dappManager.chainId(),
+          networkType: (await this.dappManager.getWallet()).currentNetwork,
+        };
+      }
       sendResponse({ ...errorHandler(0), data });
     } catch (error) {
       sendResponse(errorHandler(200002, error));
@@ -136,7 +167,7 @@ export default class AELFMethodController {
     const result = await this.approvalController.authorizedToConnect(message);
     if (result.error === 200003)
       return sendResponse({
-        ...errorHandler(200003),
+        ...errorHandler(200003, 'User denied'),
         data: {
           code: ResponseCode.USER_DENIED,
         },
@@ -149,7 +180,7 @@ export default class AELFMethodController {
         },
       });
     // TODO
-    sendResponse(errorHandler(0));
+    sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
   };
 
   sendTransaction: RequestCommonHandler = async (sendResponse, message) => {

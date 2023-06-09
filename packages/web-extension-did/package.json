@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "1.2.8",
+  "version": "1.3.0",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -16,10 +16,10 @@
     "@portkey-wallet/store": "^0.0.1",
     "@portkey-wallet/types": "^0.0.1",
     "@portkey-wallet/utils": "^0.0.1",
-    "@portkey/extension-provider": "0.0.1-alpha.18",
-    "@portkey/provider-utils": "0.0.1-alpha.18",
-    "@portkey/provider-types": "0.0.1-alpha.18",
-    "@portkey/providers": "0.0.1-alpha.18",
+    "@portkey/extension-provider": "0.0.1-alpha.20",
+    "@portkey/provider-utils": "0.0.1-alpha.20",
+    "@portkey/provider-types": "0.0.1-alpha.20",
+    "@portkey/providers": "0.0.1-alpha.20",
     "readable-stream": "4.4.0",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/browser": "^7.37.1",

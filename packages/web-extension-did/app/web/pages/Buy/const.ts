@@ -44,7 +44,7 @@ export const initLimit = {
 
 export const MAX_UPDATE_TIME = 15;
 export const initCurrency = '200';
-export const initCrypto = '100';
+export const initCrypto = '300';
 export const initValueSave: {
   amount: string;
   currency: string;
@@ -53,7 +53,7 @@ export const initValueSave: {
   network: string;
   min: number | null;
   max: number | null;
-  side: string;
+  side: PaymentTypeEnum;
 } = {
   amount: initCurrency,
   currency: 'USD',

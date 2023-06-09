@@ -188,12 +188,12 @@ export default function Buy() {
       }, 1000);
     };
     return { updateReceive, handleSetTimer };
-  }, [setErrMsgCase]);
+  }, [setErrMsgCase, setReceiveCase]);
 
   const updateCrypto = useCallback(
     async (fiat = curFiat.currency || 'USD') => {
       const { crypto, network, side } = valueSaveRef.current;
-      const data = await getCryptoInfo({ fiat }, crypto, network);
+      const data = await getCryptoInfo({ fiat }, crypto, network, side);
       if (side === PaymentTypeEnum.BUY) {
         if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
           setLimit({ max: data.maxPurchaseAmount, min: data.minPurchaseAmount });
@@ -256,7 +256,7 @@ export default function Buy() {
     setRateUpdateTime(MAX_UPDATE_TIME);
     updateTimeRef.current = MAX_UPDATE_TIME;
     handleSetTimer();
-  }, [handleSetTimer]);
+  }, [handleSetTimer, setReceiveCase]);
 
   const handlePageChange = useCallback(
     async (e: RadioChangeEvent) => {
@@ -304,9 +304,12 @@ export default function Buy() {
         if (v.currency === curFiat.currency) return;
         try {
           clearInterval(updateTimerRef.current);
+          setErrMsg('');
+          setReceive('');
+          setRate('');
           setLoading(true);
           const { crypto, network, amount, side } = valueSaveRef.current;
-          const data = await getCryptoInfo({ fiat: v.currency }, crypto, network);
+          const data = await getCryptoInfo({ fiat: v.currency }, crypto, network, side);
           if (side === PaymentTypeEnum.BUY) {
             if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
               setLimit({ max: data.maxPurchaseAmount, min: data.minPurchaseAmount });
@@ -317,7 +320,7 @@ export default function Buy() {
                 await getQuoteAndSetData();
                 setErrMsg('');
               } else {
-                setErrMsg(showLimitText(data.minPurchaseAmount, data.maxPurchaseAmount, v.currency));
+                setErrMsgCase();
                 setReceive('');
                 setRate('');
               }
@@ -332,12 +335,13 @@ export default function Buy() {
               setLimit({ max: data.maxSellAmount, min: data.minSellAmount });
               valueSaveRef.current.max = data.maxSellAmount;
               valueSaveRef.current.min = data.minSellAmount;
+              setErrMsgCase();
 
-              if (isValidValue({ amount, min: data.maxSellAmount, max: data.minSellAmount })) {
+              if (isValidValue({ amount, max: data.maxSellAmount, min: data.minSellAmount })) {
                 await getQuoteAndSetData();
                 setErrMsg('');
               } else {
-                setErrMsg(showLimitText(data.minSellAmount, data.maxSellAmount, v.currency));
+                setErrMsgCase();
                 setReceive('');
                 setRate('');
               }
@@ -355,7 +359,7 @@ export default function Buy() {
         }
       }
     },
-    [curFiat.currency, getQuoteAndSetData, isValidValue, setLoading, showLimitText],
+    [curFiat.currency, getQuoteAndSetData, isValidValue, setErrMsgCase, setLoading],
   );
 
   const {

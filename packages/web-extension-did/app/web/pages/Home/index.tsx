@@ -10,6 +10,7 @@ import './index.less';
 import qs from 'query-string';
 import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
 import { useStorage } from 'hooks/useStorage';
+import walletMessage from 'messages/walletMessage';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -28,11 +29,11 @@ export default function Home() {
 
   useEffect(() => {
     if (search) {
-      const { detail } = qs.parse(search);
+      const { detail, method } = qs.parse(search);
       // if (detail) {
       // // TODO SELL LOCKED
       // }
-      if (detail && !locked && isSell.current === 0) {
+      if (detail && method === walletMessage.ACH_SELL_REDIRECT && !locked && isSell.current === 0) {
         console.log('🌹 🌹 🌹', '');
         isSell.current = 1;
         handleAchSell(detail);

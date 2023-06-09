@@ -353,7 +353,7 @@ export default class ServiceWorkerInstantiate {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.EXPAND_FULL_SCREEN,
-        search: payload.payload,
+        search: `${payload.payload}&method=${payload.method}`,
       },
       'tabs',
     );

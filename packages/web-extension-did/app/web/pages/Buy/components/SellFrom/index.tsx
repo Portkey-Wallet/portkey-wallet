@@ -17,13 +17,23 @@ export default function SellFrom({
 
   errMsg,
 }: IBuyOrSellFromProps) {
+  const tokenChange = (val: string) => {
+    const arr = val.split('.');
+    // No more than eight digits after the decimal point
+    if (arr[1]?.length > 8) return;
+    // The total number does not exceed 13 digits, not include decimal point
+    if (arr.join('').length > 13) return;
+
+    handleTokenChange(val);
+  };
+
   return (
     <>
       <div className="buy-input">
         <div className="label">{`I want to sell`}</div>
         <TokenInput
           value={tokenVal}
-          onChange={(val) => handleTokenChange(val)}
+          onChange={(val) => tokenChange(val)}
           readOnly={false}
           onKeyDown={handleTokenKeyDown}
           curToken={curToken}

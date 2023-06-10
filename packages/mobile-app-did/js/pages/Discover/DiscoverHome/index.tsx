@@ -8,25 +8,21 @@ import navigationService from 'utils/navigationService';
 import { useLanguage } from 'i18n/hooks';
 import GameSection from '../components/GameSection';
 import { GamesList } from './GameData';
+import SimulatedInputBox from '../components/SimulatedInputBox';
 
 export default function DiscoverHome() {
   const { t } = useLanguage();
 
-  const navigateToSearch = useCallback(() => {
-    console.log('aaa');
-
-    return navigationService.navigate('DiscoverSearch');
-  }, []);
+  const navigateToSearch = useCallback(() => navigationService.navigate('DiscoverSearch'), []);
 
   return (
     <PageContainer
-      hideHeader
+      titleDom={'Discover'}
+      noLeftDom
       safeAreaColor={['blue', 'white']}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
-      <View style={[BGStyles.bg5, styles.inputContainer]}>
-        <CommonInput placeholder={t('Enter URL to explore')} onFocus={() => navigateToSearch()} />
-      </View>
+      <SimulatedInputBox onClickInput={navigateToSearch} />
       <GameSection data={GamesList} />
     </PageContainer>
   );

@@ -1,11 +1,11 @@
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { SendTransactionParams } from '@portkey/provider-types';
+import { GetSignatureParams, SendTransactionParams } from '@portkey/provider-types';
 import ActionSheet from 'components/ActionSheet';
 
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
   sendTransaction(params: SendTransactionParams): Promise<boolean>;
-  wallet_getSignature(params: any): Promise<boolean>;
+  wallet_getSignature(params: GetSignatureParams): Promise<boolean>;
 }
 
 export class DappOverlay implements IDappOverlay {
@@ -49,7 +49,7 @@ export class DappOverlay implements IDappOverlay {
       });
     });
   }
-  async wallet_getSignature(params: SendTransactionParams): Promise<boolean> {
+  async wallet_getSignature(params: GetSignatureParams): Promise<boolean> {
     return new Promise(resolve => {
       // mock approve
       ActionSheet.alert({

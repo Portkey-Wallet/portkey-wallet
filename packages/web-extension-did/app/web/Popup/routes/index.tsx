@@ -33,6 +33,7 @@ import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
 import RecentDetail from 'pages/Send/components/RecentDetail';
+import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 
 export const PageRouter = () =>
   useRoutes([
@@ -175,6 +176,10 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/manage-devices/guardian-approval',
       element: <GuardianApproval />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites',
+      element: <ConnectedSites />,
     },
     {
       path: '/unlock',

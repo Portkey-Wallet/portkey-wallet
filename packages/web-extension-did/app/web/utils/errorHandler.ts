@@ -1,3 +1,5 @@
+import { ResponseMessagePreset } from '@portkey/provider-types';
+
 /**
  * 1xxxxx try catch
  * 2xxxxx handle
@@ -15,51 +17,36 @@
 // B xxxx1x, encryption and decryption related errors; xxxx0x parameter problem.
 // C 0, no Error
 const errorMap = {
-  0: 'success',
+  0: ResponseMessagePreset.SUCCESS,
   // 1xxxx The error code is the error received by the catch
   100001: '',
   200001: 'Payload is false.',
-  200002: 'Please set permission at first.',
-  200003: 'Please set permission at first.',
-  200004: 'No Wallet Info.',
-  200005: 'Portkey is locked!',
-  200006: 'Decrypt Failed. Please unlock your wallet.',
-  200007: 'No Portkey in storage.',
-  200008: 'Please connect first.',
-  200009: 'No permission, can not set whitelist.',
-  200010: 'You closed the prompt without any action.',
-  200011: 'Decrypt failed, get Portkey failed!',
-  200012: 'Wallet error or damaged',
-  200013: 'Decrypt keystore failed',
-  200014: 'Can not find this wallet.',
-  200015: 'PortKet connection failed, please check if your network is secure',
-  200016: 'The user is not connected to Portkey, please connect the user first',
-  200017: "Please make sure your network is consistent with Portkey's current network",
-  200018: 'Chrome extension serviceWorker is invalid',
+  200002: 'No Wallet Info.',
+  200003: 'You closed the prompt without any action.',
+  200004: 'The user is not connected to Portkey, please connect the user first',
+  200005: 'Please check your chain connection is correct',
+  200006: 'Chrome extension serviceWorker is invalid',
   // 3xxxxx Temporarily only used for internal redirects
-  300000: 'Unlocked your wallet, recall your function please.',
+  300000: '',
   // [40000, 41000) is a dynamic error
   // 400001 are dynamic errors
   // [41001, 42000) is fixed bug
   400001: '',
   410001: 'Forbidden',
-  410002: 'Missing param account.',
-  410003: 'Missing param contractAddress.',
-  410004: 'Missing param sendResponse(function).',
-  410005: 'Expected a single, non-array, object argument.',
-  410006: `'args.method' must be a non-empty string.`,
-  410007: `'args.params' must be an object or array if provided.`,
+  410002: ResponseMessagePreset.ERROR_IN_PARAMS,
   // 5xxxxxx is generally related to the interface request, and the plug-in actively throws it out
   // Currently only 500001, serviceWorker.ts reports an error
   // 500002 NotificationService.js failed
   500001: '',
-  500002: '',
+  500002: 'NotificationService error',
   // 6xxxxx is Failed to establish connection registration
   600001: 'Invalid connection',
   600002: 'Chrome Extension update, please refresh the page',
   // 7xxxxx transaction failed
-  700001: '',
+  700001: ResponseMessagePreset.UNIMPLEMENTED,
   700002: 'The contract call failed, please check the contract address and contract name',
+  // 8xxxxx is the error code of the event
+  800001: '',
 };
 
 export interface PortKeyResultType {

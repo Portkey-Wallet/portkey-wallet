@@ -15,7 +15,12 @@ export type ButtonRowProps = {
   }[];
   style?: StyleProp<ViewStyle>;
 } & CommonButtonProps;
-export default function ButtonRow({ buttonStyle: propsButtonStyle, buttons, style }: ButtonRowProps) {
+export default function ButtonRow({
+  buttonStyle: propsButtonStyle,
+  titleStyle: propsTitleStyle,
+  buttons,
+  style,
+}: ButtonRowProps) {
   return (
     <View style={[styles.buttonsBox, style]}>
       {Array.isArray(buttons) &&
@@ -37,7 +42,7 @@ export default function ButtonRow({ buttonStyle: propsButtonStyle, buttons, styl
               loading={item.loading}
               containerStyle={containerStyle}
               buttonStyle={[buttonStyle, propsButtonStyle]}
-              titleStyle={titleStyle}
+              titleStyle={[titleStyle, propsTitleStyle]}
               onPress={item.onPress}
               type={item.type || 'primary'}
               key={index}

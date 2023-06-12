@@ -201,6 +201,12 @@ export default function HomeScreen() {
             console.log(ipAddress, ipAddress2, '======ipAddress');
           }}
         />
+        <Button
+          title="Discover"
+          onPress={async () => {
+            navigationService.navigate('Discover');
+          }}
+        />
 
         <CrashTest />
       </ScrollView>

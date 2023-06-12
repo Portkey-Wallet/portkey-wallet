@@ -13,6 +13,8 @@ import Updater from './Updater';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 
+let childrenNode: any = undefined;
+
 const bodyRootWrapper = document.body;
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -36,6 +38,9 @@ export default function ContextProviders({
   pageType?: 'Popup' | 'Prompt';
 }) {
   const { language } = useLanguage();
+
+  console.log(children === childrenNode, pageType, 'PermissionCheck=ContextProviders');
+  if (childrenNode === undefined) childrenNode = children;
   useEffect(() => {
     let preLanguageWrapper: string | null = null;
     bodyRootWrapper.classList.forEach((item) => {

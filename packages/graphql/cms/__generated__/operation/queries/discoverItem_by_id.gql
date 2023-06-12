@@ -145,6 +145,7 @@ query discoverItem_by_id($filter: discoverGroup_filter, $sort: [String], $limit:
                 sort
                 status
                 title
+                url
                 user_created
                 user_updated
             }
@@ -177,6 +178,7 @@ query discoverItem_by_id($filter: discoverGroup_filter, $sort: [String], $limit:
         sort
         status
         title
+        url
         user_created
         user_updated
     }

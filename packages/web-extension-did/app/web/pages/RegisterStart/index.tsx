@@ -214,6 +214,7 @@ export default function RegisterStart() {
           message.error(`LoginType:${type} is not support`);
         }
       } catch (error) {
+        setLoading(false);
         console.log(error, 'error===onSocialSignFinish');
         const msg = handleErrorMessage(error);
         message.error(msg);

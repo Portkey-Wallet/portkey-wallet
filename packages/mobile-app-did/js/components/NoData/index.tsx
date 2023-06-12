@@ -10,10 +10,17 @@ export type NoDataPropsType = {
   message?: string;
   type?: 'center' | 'top';
   topDistance?: number | string;
+  style?: ViewStyle;
 };
 
 const NoData: React.FC<NoDataPropsType> = props => {
-  const { message = 'You have no transactions!', type = 'top', topDistance = pTd(89), noPic = false } = props;
+  const {
+    message = 'You have no transactions!',
+    type = 'top',
+    topDistance = pTd(89),
+    noPic = false,
+    style = {},
+  } = props;
 
   let topStyle: ViewStyle = {};
 
@@ -25,7 +32,7 @@ const NoData: React.FC<NoDataPropsType> = props => {
   }
 
   return (
-    <View style={[styles.wrap, topStyle]}>
+    <View style={[styles.wrap, topStyle, style]}>
       {!noPic && <Svg icon="noData" oblongSize={[pTd(160), pTd(140)]} iconStyle={styles.img} />}
       <TextL style={styles.message}>{message}</TextL>
     </View>

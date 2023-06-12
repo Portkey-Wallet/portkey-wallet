@@ -21,6 +21,8 @@ export interface DiscoverItem {
   id: string;
   index: number;
   title: string;
+  description: string;
+  url: string;
   imgUrl?: {
     filename_disk?: string;
   };

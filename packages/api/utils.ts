@@ -12,6 +12,10 @@ export function spliceUrl(baseUrl: string, extendArg: string = '') {
 }
 
 export function getRequestConfig(base: BaseConfig, config?: RequestConfig, defaultConfig?: RequestConfig) {
+  const headers = {
+    ...defaultConfig?.headers,
+    ...config?.headers,
+  };
   if (typeof base === 'string') {
     if (defaultConfig) {
       return {
@@ -19,6 +23,7 @@ export function getRequestConfig(base: BaseConfig, config?: RequestConfig, defau
         ...config,
         baseURL: config?.baseURL === undefined ? defaultConfig.baseURL : config?.baseURL,
         params: { ...defaultConfig.params, ...config?.params },
+        headers,
       };
     }
     return config;
@@ -26,11 +31,15 @@ export function getRequestConfig(base: BaseConfig, config?: RequestConfig, defau
     const { config: baseConfig } = base || {};
     const { params } = config || {};
     return {
-      ...defaultConfig,
       ...baseConfig,
+      ...defaultConfig,
       ...config,
       baseURL: config?.baseURL === undefined ? defaultConfig?.baseURL : config?.baseURL,
       params: { ...defaultConfig?.params, ...baseConfig.params, ...params },
+      headers: {
+        ...baseConfig?.headers,
+        ...headers,
+      },
     };
   }
 }

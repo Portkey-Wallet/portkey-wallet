@@ -14,6 +14,7 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 
 export type CustomHeaderProps = {
   themeType?: SafeAreaColorMapKeyUnit;
+  noLeftDom?: boolean;
   leftDom?: ReactNode;
   titleDom?: ReactNode | string;
   rightDom?: ReactNode;
@@ -29,6 +30,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   const { t } = useLanguage();
 
   const {
+    noLeftDom = false,
     leftDom = null,
     titleDom = 'title',
     rightDom = null,
@@ -77,6 +79,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   }, [navigation, onGestureStartCallback]);
 
   const letElement = useMemo(() => {
+    if (noLeftDom) return null;
     if (leftDom) return leftDom;
     if (!isCanGoBack && !leftCallback) return null;
     const onPress = leftCallback ? leftCallback : () => navigationService.goBack();
@@ -93,7 +96,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
         {leftIcon}
       </TouchableOpacity>
     );
-  }, [backTitle, isCanGoBack, leftCallback, leftDom, leftIcon, styles.leftBackTitle, t, type]);
+  }, [backTitle, isCanGoBack, leftCallback, leftDom, leftIcon, noLeftDom, styles.leftBackTitle, t, type]);
 
   const centerElement = useMemo(() => {
     if (typeof titleDom === 'string')

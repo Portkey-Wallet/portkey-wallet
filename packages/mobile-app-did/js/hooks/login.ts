@@ -41,6 +41,7 @@ import { queryFailAlert } from 'utils/login';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { ChainId } from '@portkey-wallet/types';
 import ActionSheet from 'components/ActionSheet';
+import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -55,6 +56,7 @@ export function useOnResultFail() {
       queryFailAlert(
         () => {
           resetStore();
+          dispatch(resetDappList(currentNetwork));
           if (otherNetworkLogged) {
             dispatch(resetCaInfo(currentNetwork));
           } else {

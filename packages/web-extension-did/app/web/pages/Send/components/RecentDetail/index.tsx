@@ -17,6 +17,7 @@ import { IActivitiesApiResponse } from '@portkey-wallet/store/store-ca/activity/
 import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/activity/api';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
+import { ChainId } from '@portkey-wallet/types';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -28,7 +29,7 @@ export default function RecentDetail() {
   const myChainId = state?.chainId; // get my chainId from url state
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
-  const myAddress = walletInfo?.[myChainId]?.caAddress || ''; // get my address from url state
+  const myAddress = myChainId ? walletInfo?.[myChainId as ChainId]?.caAddress || '' : ''; // get my address from url state
 
   const chainInfo = useCurrentChain(targetChainId);
   const currentNetwork = useCurrentNetworkInfo();

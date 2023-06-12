@@ -15,6 +15,7 @@ import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import discoverSlice from '@portkey-wallet/store/store-ca/discover/slice';
 import switchSlice from '@portkey-wallet/store/store-ca/switch/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
+import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -45,6 +46,7 @@ const reduxPersistConfig = {
     activitySlice.name,
     discoverSlice.name,
     switchSlice.name,
+    dappSlice.name,
     cmsSlice.name,
   ],
 

@@ -21,6 +21,9 @@ import MyNav from 'pages/My/router';
 import BuyNav from 'pages/Buy';
 import DiscoverNav from 'pages/Discover/index';
 import { isIos } from '@portkey-wallet/utils/mobile/device';
+import Discover from 'Test/Discover';
+
+import TabsDrawer from 'components/TabsDrawer';
 
 const Stack = createStackNavigator();
 export const stackNav = [
@@ -33,6 +36,7 @@ export const stackNav = [
 
   // FIXME: test page
   { name: 'Home', component: Home },
+  { name: 'Discover', component: Discover },
 
   ...GuardianNav,
   ...ActivityNav,
@@ -57,19 +61,21 @@ export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {
   return (
     <NavigationContainer ref={navigationService.setTopLevelNavigator}>
-      <Stack.Navigator
-        initialRouteName="Referral"
-        screenOptions={{
-          headerShown: false,
-          gestureVelocityImpact: 1,
-          headerBackAllowFontScaling: false,
-          headerTitleAllowFontScaling: false,
-          cardStyleInterpolator: !isIos ? CardStyleInterpolators.forHorizontalIOS : undefined,
-        }}>
-        {stackNav.map((item, index) => (
-          <Stack.Screen options={(item as any).options} key={index} {...(item as any)} />
-        ))}
-      </Stack.Navigator>
+      <TabsDrawer>
+        <Stack.Navigator
+          initialRouteName="Referral"
+          screenOptions={{
+            headerShown: false,
+            gestureVelocityImpact: 1,
+            headerBackAllowFontScaling: false,
+            headerTitleAllowFontScaling: false,
+            cardStyleInterpolator: !isIos ? CardStyleInterpolators.forHorizontalIOS : undefined,
+          }}>
+          {stackNav.map((item, index) => (
+            <Stack.Screen options={(item as any).options} key={index} {...(item as any)} />
+          ))}
+        </Stack.Navigator>
+      </TabsDrawer>
     </NavigationContainer>
   );
 }

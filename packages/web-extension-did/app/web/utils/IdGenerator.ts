@@ -1,8 +1,3 @@
-/**
- * @file IdGenerator.js
- * @author Shai James; hzz780
- */
-
 export default class IdGenerator {
   static rand() {
     const arr = new Uint32Array(1);

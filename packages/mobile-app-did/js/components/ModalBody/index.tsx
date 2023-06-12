@@ -8,22 +8,35 @@ import { defaultColors } from 'assets/theme';
 import { TextXL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
+import fonts from 'assets/theme/fonts';
+import { useGStyles } from 'assets/theme/useGStyles';
+import ButtonRow from 'components/ButtonRow';
+import { CommonButtonProps } from 'components/CommonButton';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyle;
   onClose?: () => void;
+  bottomButtonGroup?: {
+    onPress?: () => void;
+    type?: CommonButtonProps['type'];
+    title: string;
+    loading?: CommonButtonProps['loading'];
+    disabled?: boolean;
+  }[];
 }
 
 export const ModalBody: React.FC<ModalBodyProps> = props => {
-  const { modalBodyType, title, children, style = {}, onClose } = props;
+  const { modalBodyType, title, children, style = {}, onClose, bottomButtonGroup } = props;
+
+  const gStyles = useGStyles();
 
   if (modalBodyType === 'bottom') {
     return (
-      <View style={[styles.commonBox, styles.bottomBox, style]}>
+      <View style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
         <View style={styles.topWrap}>
-          <TextXL suppressHighlighting={true} style={styles.titleStyle} onPress={Keyboard.dismiss}>
+          <TextXL suppressHighlighting={true} style={[styles.titleStyle, fonts.mediumFont]} onPress={Keyboard.dismiss}>
             {title}
           </TextXL>
           <View
@@ -38,6 +51,14 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
           </View>
         </View>
         {children}
+        {!!bottomButtonGroup && (
+          <ButtonRow
+            style={styles.buttonGroup}
+            buttonStyle={styles.buttonStyle}
+            titleStyle={styles.buttonTitleStyle}
+            buttons={bottomButtonGroup}
+          />
+        )}
       </View>
     );
   }
@@ -51,7 +72,7 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: 'white',
   },
-  bottomBox: {
+  wrapStyle: {
     width: screenWidth,
   },
   centerBox: {
@@ -84,5 +105,18 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(3),
     backgroundColor: defaultColors.bg7,
     width: pTd(48),
+  },
+  buttonGroup: {
+    position: 'absolute',
+    bottom: 0,
+    paddingRight: pTd(20),
+    ...GStyles.paddingArg(10, 20, 16, 20),
+  },
+  buttonStyle: {
+    height: pTd(48),
+    fontSize: pTd(18),
+  },
+  buttonTitleStyle: {
+    fontSize: pTd(16),
   },
 });

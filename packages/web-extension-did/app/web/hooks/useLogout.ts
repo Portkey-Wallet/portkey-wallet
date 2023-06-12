@@ -25,6 +25,7 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useNavigate } from 'react-router';
 import { clearLocalStorage } from 'utils/storage/chromeStorage';
 import { getWalletInfo, isCurrentCaHash } from 'store/utils/getStore';
+import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -37,6 +38,7 @@ export default function useLogOut() {
   return useCallback(async () => {
     try {
       resetStore();
+      dispatch(resetDappList(currentNetwork));
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
       } else {

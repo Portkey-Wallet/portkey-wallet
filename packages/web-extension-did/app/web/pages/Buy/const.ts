@@ -32,16 +32,6 @@ export const initFiat: PartialFiatType = {
   currency: 'USD',
 };
 
-export type Limit = {
-  min: number | null;
-  max: number | null;
-};
-
-export const initLimit = {
-  min: null,
-  max: null,
-};
-
 export const MAX_UPDATE_TIME = 15;
 export const initCurrency = '200';
 export const initCrypto = '300';

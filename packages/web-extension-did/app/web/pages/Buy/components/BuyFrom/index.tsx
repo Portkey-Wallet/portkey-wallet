@@ -40,7 +40,7 @@ export default function BuyFrom({
         <div className="label">{`I want to pay`}</div>
         <CurrencyInput
           value={currencyVal}
-          onChange={(val) => handleCurrencyChange(val)}
+          onChange={handleCurrencyChange}
           readOnly={false}
           onKeyDown={handleCurrencyKeyDown}
           curFiat={curFiat}
@@ -53,7 +53,7 @@ export default function BuyFrom({
 
         <TokenInput
           value={tokenVal}
-          onChange={(val) => handleTokenChange(val)}
+          onChange={handleTokenChange}
           readOnly={true}
           onKeyDown={handleTokenKeyDown}
           curToken={curToken}

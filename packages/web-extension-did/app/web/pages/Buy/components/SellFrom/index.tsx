@@ -33,11 +33,11 @@ export default function SellFrom({
         <div className="label">{`I want to sell`}</div>
         <TokenInput
           value={tokenVal}
-          onChange={(val) => tokenChange(val)}
+          onChange={tokenChange}
           readOnly={false}
           onKeyDown={handleTokenKeyDown}
           curToken={curToken}
-          onSelect={(v) => handleTokenSelect(v)}
+          onSelect={handleTokenSelect}
         />
         {!!errMsg && <div className="error-text">{errMsg}</div>}
       </div>
@@ -45,11 +45,11 @@ export default function SellFrom({
         <div className="label">{`I will receive≈`}</div>
         <CurrencyInput
           value={currencyVal}
-          onChange={(val) => handleCurrencyChange(val)}
+          onChange={handleCurrencyChange}
           readOnly={true}
           onKeyDown={handleCurrencyKeyDown}
           curFiat={curFiat}
-          onSelect={(v) => handleCurrencySelect(v)}
+          onSelect={handleCurrencySelect}
         />
       </div>
     </>

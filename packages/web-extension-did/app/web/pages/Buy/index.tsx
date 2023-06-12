@@ -12,10 +12,8 @@ import {
   initCrypto,
   initCurrency,
   initFiat,
-  initLimit,
   initToken,
   initValueSave,
-  Limit,
   MAX_UPDATE_TIME,
   PartialFiatType,
 } from './const';
@@ -50,7 +48,6 @@ export default function Buy() {
   const [amount, setAmount] = useState(initCurrency);
   const [receive, setReceive] = useState('');
   const [curToken, setCurToken] = useState(initToken);
-  const [limit, setLimit] = useState<Limit>(initLimit);
   const { setLoading } = useLoading();
   const [curFiat, setCurFiat] = useState<PartialFiatType>(initFiat);
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
@@ -196,13 +193,11 @@ export default function Buy() {
       const data = await getCryptoInfo({ fiat }, crypto, network, side);
       if (side === PaymentTypeEnum.BUY) {
         if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
-          setLimit({ max: data.maxPurchaseAmount, min: data.minPurchaseAmount });
           valueSaveRef.current.max = data.maxPurchaseAmount;
           valueSaveRef.current.min = data.minPurchaseAmount;
         }
       } else {
         if (data && data.maxSellAmount !== null && data.minSellAmount !== null) {
-          setLimit({ max: data.maxSellAmount, min: data.minSellAmount });
           valueSaveRef.current.max = data.maxSellAmount;
           valueSaveRef.current.min = data.minSellAmount;
         }
@@ -215,7 +210,7 @@ export default function Buy() {
     (v: string) => {
       setAmount(v);
       valueSaveRef.current.amount = v;
-      const { min, max } = limit;
+      const { min, max } = valueSaveRef.current;
       if (max !== null && min !== null) {
         if (!isValidValue({ amount: v, min, max })) {
           setErrMsgCase();
@@ -237,7 +232,7 @@ export default function Buy() {
         side,
       });
     },
-    [isValidValue, limit, setErrMsgCase, updateReceive],
+    [isValidValue, setErrMsgCase, updateReceive],
   );
 
   const getQuoteAndSetData = useCallback(async () => {
@@ -312,7 +307,6 @@ export default function Buy() {
           const data = await getCryptoInfo({ fiat: v.currency }, crypto, network, side);
           if (side === PaymentTypeEnum.BUY) {
             if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
-              setLimit({ max: data.maxPurchaseAmount, min: data.minPurchaseAmount });
               valueSaveRef.current.max = data.maxPurchaseAmount;
               valueSaveRef.current.min = data.minPurchaseAmount;
 
@@ -332,7 +326,6 @@ export default function Buy() {
             }
           } else {
             if (data && data.maxSellAmount !== null && data.minSellAmount !== null) {
-              setLimit({ max: data.maxSellAmount, min: data.minSellAmount });
               valueSaveRef.current.max = data.maxSellAmount;
               valueSaveRef.current.min = data.minSellAmount;
               setErrMsgCase();
@@ -354,6 +347,9 @@ export default function Buy() {
           }
         } catch (error) {
           console.log('error', error);
+          setErrMsg('');
+          setReceive('');
+          setRate('');
         } finally {
           setLoading(false);
         }
@@ -452,12 +448,12 @@ export default function Buy() {
           {page === PaymentTypeEnum.BUY && (
             <BuyFrom
               currencyVal={amount}
-              handleCurrencyChange={(val) => handleInputChange(val)}
+              handleCurrencyChange={handleInputChange}
               handleCurrencyKeyDown={handleKeyDown}
               handleCurrencySelect={(v) => handleSelect(v, DrawerType.currency)}
               curFiat={curFiat}
               tokenVal={receive}
-              handleTokenChange={(val) => handleInputChange(val)}
+              handleTokenChange={handleInputChange}
               handleTokenKeyDown={handleKeyDown}
               handleTokenSelect={(v) => handleSelect(v, DrawerType.token)}
               curToken={curToken}
@@ -467,12 +463,12 @@ export default function Buy() {
           {page === PaymentTypeEnum.SELL && (
             <SellFrom
               tokenVal={amount}
-              handleTokenChange={(val) => handleInputChange(val)}
+              handleTokenChange={handleInputChange}
               handleTokenKeyDown={handleKeyDown}
               handleTokenSelect={(v) => handleSelect(v, DrawerType.token)}
               curToken={curToken}
               currencyVal={receive}
-              handleCurrencyChange={(val) => handleInputChange(val)}
+              handleCurrencyChange={handleInputChange}
               handleCurrencyKeyDown={handleKeyDown}
               handleCurrencySelect={(v) => handleSelect(v, DrawerType.currency)}
               curFiat={curFiat}

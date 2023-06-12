@@ -30,8 +30,8 @@ export default function RecordSection() {
   }, [dispatch, networkType]);
 
   const showRecordList = useMemo(() => {
-    const recordsList = (JSON.parse(JSON.stringify(discoverMap?.[networkType]?.recordsList)) as ITabItem[]) || [];
-    return recordsList.reverse();
+    const recordsList = (discoverMap?.[networkType]?.recordsList as ITabItem[]) || [];
+    return recordsList.map(ele => ele).reverse();
   }, [discoverMap, networkType]);
 
   if (showRecordList?.length === 0) return null;

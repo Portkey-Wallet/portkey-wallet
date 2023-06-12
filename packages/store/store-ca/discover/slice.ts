@@ -19,6 +19,9 @@ export const discoverSlice = createSlice({
   name: 'discover',
   initialState,
   reducers: {
+    initNetworkDiscoverMap: (state, { payload }: { payload: NetworkType }) => {
+      state.discoverMap[payload] = JSON.parse(JSON.stringify(initNetworkData));
+    },
     addRecordsItem: (state, { payload }: { payload: ITabItem & { networkType: NetworkType } }) => {
       const { networkType, url } = payload;
       if (!state.discoverMap?.[networkType]) state.discoverMap[networkType] = initNetworkData;
@@ -58,10 +61,14 @@ export const discoverSlice = createSlice({
     createNewTab: (state, { payload }: { payload: ITabItem & { networkType: NetworkType } }) => {
       const { networkType, id } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
-      if (!targetNetworkDiscover?.tabs) targetNetworkDiscover.tabs = [];
+
+      if (!targetNetworkDiscover?.tabs) {
+        targetNetworkDiscover.tabs = [{ ...payload }];
+      } else {
+        targetNetworkDiscover.tabs.push({ ...payload });
+      }
 
       targetNetworkDiscover.activeTabId = id;
-      targetNetworkDiscover.tabs.push({ ...payload });
     },
     closeExistingTab: (state, { payload }: { payload: { id: number; networkType: NetworkType } }) => {
       const { networkType, id } = payload;
@@ -79,6 +86,7 @@ export const discoverSlice = createSlice({
       const { networkType, id } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
+      console.log('updateTab', payload);
       targetNetworkDiscover.tabs = targetNetworkDiscover.tabs.map(item =>
         item.id === id ? { ...item, ...payload } : item,
       );
@@ -87,12 +95,13 @@ export const discoverSlice = createSlice({
       state.isDrawerOpen = payload;
     },
     resetDiscover: (state, { payload }: { payload: NetworkType }) => {
-      state.discoverMap[payload] = initNetworkData;
+      state.discoverMap[payload] = JSON.parse(JSON.stringify(initNetworkData));
     },
   },
 });
 
 export const {
+  initNetworkDiscoverMap,
   addRecordsItem,
   upDateRecordsItem,
   clearRecordsList,

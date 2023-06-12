@@ -5,6 +5,7 @@ import {
   setActiveTab,
   addRecordsItem,
   createNewTab,
+  initNetworkDiscoverMap,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
@@ -15,11 +16,15 @@ export const useDiscoverJumpWithNetWork = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
+  const { discoverMap } = useAppCASelector(state => state.discover);
+
   const discoverJump = ({ item }: { item: ITabItem }) => {
-    dispatch(changeDrawerOpenStatus(true));
+    if (!discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
+
     dispatch(createNewTab({ ...item, networkType }));
     dispatch(setActiveTab({ ...item, networkType }));
     dispatch(addRecordsItem({ ...item, networkType }));
+    dispatch(changeDrawerOpenStatus(true));
   };
 
   return discoverJump;

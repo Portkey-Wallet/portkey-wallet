@@ -44,6 +44,8 @@ const TabsDrawerContent: React.FC = () => {
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
 
   const activeWebviewScreenShot = useCallback(() => {
+    console.log('==========activeTabRef==========================', activeTabRef);
+
     takeSnapshot(activeTabRef).then(
       uri => {
         console.log('Image saved to', uri);
@@ -100,6 +102,7 @@ const TabsDrawerContent: React.FC = () => {
         <BrowserTab
           key={ele.id}
           item={ele}
+          activeTabId={activeTabId}
           isHidden={activeTabId !== ele.id}
           setActiveTabRef={setActiveTabRef}
           setActiveWebViewRef={setActiveWebViewRef}

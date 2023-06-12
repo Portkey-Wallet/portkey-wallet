@@ -14,24 +14,28 @@ import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
-import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import { isIos } from '@portkey-wallet/utils/mobile/device';
 
 type BrowserTabProps = {
   isHidden: boolean;
   item: ITabItem;
+  activeTabId: number | undefined;
   setActiveTabRef: (ref: any) => void;
   setActiveWebViewRef: (ref: any) => void;
 };
 
-const BrowserTab: React.FC<BrowserTabProps> = ({ isHidden, item, setActiveTabRef, setActiveWebViewRef }) => {
+const BrowserTab: React.FC<BrowserTabProps> = ({
+  isHidden,
+  item,
+  activeTabId,
+  setActiveTabRef,
+  setActiveWebViewRef,
+}) => {
   const viewRef = useRef<any>(null);
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
-  const { activeTabId } = useAppCASelector(state => state.discover);
 
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
@@ -94,23 +98,25 @@ const BrowserTab: React.FC<BrowserTabProps> = ({ isHidden, item, setActiveTabRef
 
   if (!entryScriptWeb3) return null;
   return (
-    <WebView
-      ref={webViewRef}
-      style={styles.webView}
-      decelerationRate="normal"
-      source={{ uri }}
-      injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : ''}
-      onMessage={({ nativeEvent }) => {
-        operatorRef.current?.handleRequestMessage(nativeEvent.data);
-      }}
-      onLoadStart={onLoadStart}
-      onLoad={handleUpdate}
-      onLoadProgress={({ nativeEvent }) => {
-        console.log(nativeEvent.progress, '=onLoadProgress');
-      }}
-      onLoadEnd={handleUpdate}
-      applicationNameForUserAgent={'WebView Portkey did Mobile'}
-    />
+    <View ref={viewRef} style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
+      <WebView
+        ref={webViewRef}
+        style={styles.webView}
+        decelerationRate="normal"
+        source={{ uri: item.url }}
+        injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : ''}
+        onMessage={({ nativeEvent }) => {
+          operatorRef.current?.handleRequestMessage(nativeEvent.data);
+        }}
+        onLoadStart={onLoadStart}
+        onLoad={handleUpdate}
+        onLoadProgress={({ nativeEvent }) => {
+          console.log(nativeEvent.progress, '=onLoadProgress');
+        }}
+        onLoadEnd={handleUpdate}
+        applicationNameForUserAgent={'WebView Portkey did Mobile'}
+      />
+    </View>
   );
 };
 

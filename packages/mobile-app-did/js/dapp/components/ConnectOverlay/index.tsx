@@ -19,8 +19,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
-import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
-import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import DappInfoSection from '../DappInfoSection';
 
 interface ConnectModalType {
   dappInfo: DappStoreItem;
@@ -29,11 +28,7 @@ interface ConnectModalType {
 }
 
 const ConnectModal = (props: ConnectModalType) => {
-  const {
-    dappInfo: { origin, name, icon },
-    onReject,
-    onApprove,
-  } = props;
+  const { dappInfo, onReject, onApprove } = props;
   const { t } = useLanguage();
   const caInfo = useCurrentCaInfo();
   const { walletName, currentNetwork } = useWallet();
@@ -83,15 +78,7 @@ const ConnectModal = (props: ConnectModalType) => {
   return (
     <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} bottomButtonGroup={buttonList}>
       <View style={[styles.contentWrap, gStyles.overlayStyle]}>
-        <View style={GStyles.center}>
-          <DiscoverWebsiteImage size={pTd(48)} imageUrl={icon} style={styles.favIcon} />
-          <TextL numberOfLines={1} ellipsizeMode="tail" style={[fonts.mediumFont, styles.title]}>
-            {name || getHost(origin)}
-          </TextL>
-          <TextS numberOfLines={1} ellipsizeMode="tail" style={FontStyles.font7}>
-            {origin}
-          </TextS>
-        </View>
+        <DappInfoSection dappInfo={dappInfo} />
         <TextM style={[styles.walletTitle, FontStyles.font3]}>{t('Wallet')}</TextM>
         <View style={styles.group}>
           <TextL style={(FontStyles.font5, fonts.mediumFont)}>{walletName}</TextL>

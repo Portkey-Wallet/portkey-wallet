@@ -24,9 +24,8 @@ import { usePin } from 'hooks/store';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount } from 'utils/redux';
 import { customFetch } from '@portkey-wallet/utils/fetch';
-import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
-import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import DappInfoSection from '../DappInfoSection';
 
 interface TransactionModalPropsType {
   dappInfo: DappStoreItem;
@@ -35,12 +34,7 @@ interface TransactionModalPropsType {
   onSign: () => void;
 }
 const ConnectModal = (props: TransactionModalPropsType) => {
-  const {
-    dappInfo: { origin, name, icon },
-    transactionInfo,
-    onReject,
-    onSign,
-  } = props;
+  const { dappInfo, transactionInfo, onReject, onSign } = props;
   const { t } = useLanguage();
   const gStyles = useGStyles();
   const isMainnet = useIsMainnet();
@@ -173,8 +167,6 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const otherTransactionContent = useMemo(() => {
     const data = transactionInfo.params?.paramsOption || {};
 
-    console.log('================ transactionInfo.params?.paramsOption====================');
-
     return (
       <View>
         <View style={transferGroupStyle.card}>
@@ -219,7 +211,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
         </View>
 
         <View style={transferGroupStyle.card}>
-          <TextM>Card</TextM>
+          <TextM>Data</TextM>
           {Object.keys(data).map(item => (
             <>
               <TextL>{item}</TextL>
@@ -297,13 +289,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
     <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList}>
       <View style={[styles.contentWrap, gStyles.overlayStyle]}>
         <View style={GStyles.center}>
-          <DiscoverWebsiteImage size={pTd(48)} imageUrl={icon} style={styles.favIcon} />
-          <TextL numberOfLines={1} ellipsizeMode="tail" style={[fonts.mediumFont, styles.title]}>
-            {name || getHost(origin)}
-          </TextL>
-          <TextS numberOfLines={1} ellipsizeMode="tail" style={FontStyles.font7}>
-            {origin}
-          </TextS>
+          <DappInfoSection dappInfo={dappInfo} />
           <TextS style={styles.method}>{transactionInfo.method}</TextS>
           {isTransfer ? transferContent : otherTransactionContent}
         </View>
@@ -328,15 +314,7 @@ const styles = StyleSheet.create({
     paddingLeft: pTd(20),
     paddingRight: pTd(20),
   },
-  favIcon: {
-    width: pTd(48),
-    height: pTd(48),
-    borderRadius: pTd(24),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border6,
-    marginBottom: pTd(8),
-    marginTop: pTd(24),
-  },
+
   title: {
     marginBottom: pTd(2),
   },

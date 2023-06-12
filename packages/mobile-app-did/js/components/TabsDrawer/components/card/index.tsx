@@ -13,6 +13,7 @@ import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { closeExistingTab, setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { defaultColors } from 'assets/theme';
 
 interface ICardsProps {
   item: ITabItem;
@@ -56,8 +57,12 @@ const tabShowItemStyle = StyleSheet.create({
     width: pTd(160),
     height: pTd(214),
     marginTop: pTd(24),
-    borderColor: 'green',
-    borderWidth: StyleSheet.hairlineWidth,
+    shadowOffset: { width: 10, height: 10 },
+    backgroundColor: defaultColors.bg1,
+    shadowColor: defaultColors.shadow1,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 2,
   },
   header: {
     ...GStyles.paddingArg(6, 8),

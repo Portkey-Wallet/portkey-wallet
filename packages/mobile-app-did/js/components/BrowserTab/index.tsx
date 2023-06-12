@@ -16,6 +16,8 @@ import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { isIos } from '@portkey-wallet/utils/mobile/device';
 
 type BrowserTabProps = {
   isHidden: boolean;
@@ -43,15 +45,22 @@ const BrowserTab: React.FC<BrowserTabProps> = ({ isHidden, item, setActiveTabRef
     };
   });
 
-  const initOperator = useCallback((origin: string) => {
-    operatorRef.current = new DappMobileOperator({
-      origin,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      stream: new MobileStream(webViewRef.current!),
-      dappManager: new DappMobileManager({ store: store as any }),
-      dappOverlay: new DappOverlay(),
-    });
-  }, []);
+  const initOperator = useCallback(
+    (origin: string) => {
+      if (!isIos) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+      }
+      operatorRef.current = new DappMobileOperator({
+        origin,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        stream: new MobileStream(webViewRef.current!),
+        dappManager: new DappMobileManager({ store: store as any }),
+        dappOverlay: new DappOverlay(),
+      });
+    },
+    [entryScriptWeb3],
+  );
 
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
@@ -83,26 +92,25 @@ const BrowserTab: React.FC<BrowserTabProps> = ({ isHidden, item, setActiveTabRef
     }
   }, [webViewRef, setActiveWebViewRef]);
 
+  if (!entryScriptWeb3) return null;
   return (
-    <View ref={viewRef} style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
-      <WebView
-        ref={webViewRef}
-        style={styles.webView}
-        decelerationRate="normal"
-        source={{ uri: item.url }}
-        injectedJavaScriptBeforeContentLoaded={entryScriptWeb3}
-        onMessage={({ nativeEvent }) => {
-          operatorRef.current?.handleRequestMessage(nativeEvent.data);
-        }}
-        onLoadStart={onLoadStart}
-        onLoad={handleUpdate}
-        onLoadProgress={({ nativeEvent }) => {
-          console.log(nativeEvent.progress, '=onLoadProgress');
-        }}
-        onLoadEnd={handleUpdate}
-        applicationNameForUserAgent={'WebView Portkey did Mobile'}
-      />
-    </View>
+    <WebView
+      ref={webViewRef}
+      style={styles.webView}
+      decelerationRate="normal"
+      source={{ uri }}
+      injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : ''}
+      onMessage={({ nativeEvent }) => {
+        operatorRef.current?.handleRequestMessage(nativeEvent.data);
+      }}
+      onLoadStart={onLoadStart}
+      onLoad={handleUpdate}
+      onLoadProgress={({ nativeEvent }) => {
+        console.log(nativeEvent.progress, '=onLoadProgress');
+      }}
+      onLoadEnd={handleUpdate}
+      applicationNameForUserAgent={'WebView Portkey did Mobile'}
+    />
   );
 };
 

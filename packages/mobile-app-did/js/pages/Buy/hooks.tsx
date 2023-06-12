@@ -10,6 +10,7 @@ import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import BigNumber from 'bignumber.js';
 
 export const useReceive = (
   type: TypeEnum,
@@ -89,7 +90,7 @@ export const useReceive = (
       if (amountNum < min || amountNum > max) {
         setAmountError({
           ...INIT_HAS_ERROR,
-          errorMsg: `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${
+          errorMsg: `Limit Amount ${formatAmountShow(min, 4, BigNumber.ROUND_CEIL)}-${formatAmountShow(max, 4)} ${
             type === TypeEnum.BUY ? fiat?.currency : token.crypto
           }`,
         });
@@ -97,6 +98,8 @@ export const useReceive = (
         setReceiveAmount('');
         clearRefreshReceive();
         return;
+      } else {
+        setAmountError(INIT_NONE_ERROR);
       }
     }
 

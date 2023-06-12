@@ -33,7 +33,6 @@
     "test-badges": "jest --coverage && istanbul-badges-readme"
   },
   "devDependencies": {
-    "react-native": "0.69.7",
     "@babel/core": "^7.19.1",
     "@babel/plugin-proposal-decorators": "^7.19.1",
     "@babel/plugin-transform-modules-commonjs": "^7.21.2",

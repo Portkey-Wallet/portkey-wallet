@@ -173,6 +173,8 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const otherTransactionContent = useMemo(() => {
     const data = transactionInfo.params?.paramsOption || {};
 
+    console.log('================ transactionInfo.params?.paramsOption====================');
+
     return (
       <View>
         <View style={transferGroupStyle.card}>
@@ -220,8 +222,8 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           <TextM>Card</TextM>
           {Object.keys(data).map(item => (
             <>
-              <div className="title">{item}</div>
-              <div className="content">{data[item]}</div>
+              <TextL>{item}</TextL>
+              <TextL>{data[item]}</TextL>
             </>
           ))}
         </View>

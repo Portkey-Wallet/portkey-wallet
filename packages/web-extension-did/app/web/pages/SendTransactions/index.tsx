@@ -17,6 +17,7 @@ import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import getTransferFee from './utils/getTransferFee';
+import { ResponseCode } from '@portkey/provider-types';
 import './index.less';
 
 export default function SendTransactions() {
@@ -180,9 +181,14 @@ export default function SendTransactions() {
   const sendHandler = useCallback(async () => {
     try {
       if (!chainInfo?.endPoint || !wallet?.caHash) {
-        closePrompt({ ...errorHandler(400001), data: { code: 4002, msg: 'invalid chain id' } });
+        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' } });
         return;
       }
+      if (chainInfo?.endPoint !== payload?.params?.rpcUrl) {
+        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' } });
+        return;
+      }
+
       let paramsOption = payload?.params?.paramsOption;
 
       const functionName = isCAContract ? payload?.method : 'ManagerForwardCall';

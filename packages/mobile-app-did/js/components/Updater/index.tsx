@@ -15,7 +15,7 @@ import { useCheckManagerOnLogout } from 'hooks/useLogOut';
 import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
-import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useDiscoverGroupList, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useTabMenuList } from 'hooks/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 
@@ -57,6 +57,6 @@ export default function Updater() {
   usePhoneCountryCode(true);
   useSocialMediaList(true);
   useTabMenuList(true);
-  // useDiscoverGroupList(true);
+  useDiscoverGroupList(true);
   return null;
 }

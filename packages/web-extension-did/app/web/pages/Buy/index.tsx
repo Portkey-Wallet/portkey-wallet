@@ -33,6 +33,7 @@ import BuyFrom from './components/BuyFrom';
 import SellFrom from './components/SellFrom';
 import { useEffectOnce } from 'react-use';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import BigNumber from 'bignumber.js';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -95,7 +96,7 @@ export default function Buy() {
 
   const showLimitText = useCallback(
     (min: string | number, max: string | number, fiat = 'USD') =>
-      `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${fiat} `,
+      `Limit Amount ${formatAmountShow(min, 4, BigNumber.ROUND_CEIL)}-${formatAmountShow(max)} ${fiat} `,
     [],
   );
 

@@ -1,4 +1,6 @@
-export function handleKeyDown(e: { key: string; preventDefault: () => any }) {
+import { IKeyDownParams } from 'types';
+
+export function handleKeyDown(e: IKeyDownParams) {
   const allow = [
     ...Array(10)
       .fill('')
@@ -15,7 +17,7 @@ export function handleKeyDown(e: { key: string; preventDefault: () => any }) {
     e.preventDefault();
   }
 }
-export function handleKeyDownInt(e: { key: string; preventDefault: () => any }) {
+export function handleKeyDownInt(e: IKeyDownParams) {
   const allow = [
     ...Array(10)
       .fill('')

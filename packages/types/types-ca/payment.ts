@@ -21,3 +21,13 @@ export interface AchTxAddressReceivedType {
 export type SellTransferParams = Pick<AchTxAddressReceivedType, 'merchantName' | 'orderId'> & {
   paymentSellTransfer: (params: AchTxAddressReceivedType) => Promise<SendResult>;
 };
+
+export enum PaymentTypeEnum {
+  BUY = 'BUY',
+  SELL = 'SELL',
+}
+
+export interface PaymentLimitType {
+  min: number;
+  max: number;
+}

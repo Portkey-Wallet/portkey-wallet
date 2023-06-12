@@ -11,4 +11,5 @@ export interface IGameListItemType {
 export interface IRecordsItemType {
   title?: string;
   url?: string;
+  id: string | number;
 }

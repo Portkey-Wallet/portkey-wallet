@@ -1,71 +1,42 @@
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { GetSignatureParams, SendTransactionParams } from '@portkey/provider-types';
-import ActionSheet from 'components/ActionSheet';
+import ConnectOverlay from './components/ConnectOverlay';
+import SignOverlay from './components/SignOverlay';
+import TransactionOverlay from './components/TransactionOverlay';
 
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
-  sendTransaction(params: SendTransactionParams): Promise<boolean>;
-  wallet_getSignature(params: GetSignatureParams): Promise<boolean>;
+  sendTransaction(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean>;
+  wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams): Promise<boolean>;
 }
 
 export class DappOverlay implements IDappOverlay {
   async requestAccounts(dapp: DappStoreItem): Promise<boolean> {
     return new Promise(resolve => {
-      // mock approve
-      ActionSheet.alert({
-        title: 'approve',
-        message: dapp.origin,
-        buttons: [
-          {
-            title: 'OK',
-            type: 'solid',
-            onPress: () => resolve(true),
-          },
-          {
-            title: 'DENIED',
-            onPress: () => resolve(false),
-          },
-        ],
+      ConnectOverlay.showConnectModal({
+        dappInfo: dapp,
+        onApprove: () => resolve(true),
+        onReject: () => resolve(false),
       });
     });
   }
-  async sendTransaction(params: SendTransactionParams): Promise<boolean> {
+  async sendTransaction(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean> {
     return new Promise(resolve => {
-      // mock approve
-      ActionSheet.alert({
-        title: 'send',
-        message: JSON.stringify(params),
-        buttons: [
-          {
-            title: 'OK',
-            type: 'solid',
-            onPress: () => resolve(true),
-          },
-          {
-            title: 'DENIED',
-            onPress: () => resolve(false),
-          },
-        ],
+      TransactionOverlay.showTransactionModal({
+        dappInfo: dapp,
+        transactionInfo: params as any,
+        onSign: () => resolve(true),
+        onReject: () => resolve(false),
       });
     });
   }
-  async wallet_getSignature(params: GetSignatureParams): Promise<boolean> {
+  async wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams): Promise<boolean> {
     return new Promise(resolve => {
-      // mock approve
-      ActionSheet.alert({
-        title: 'send',
-        message: JSON.stringify(params),
-        buttons: [
-          {
-            title: 'OK',
-            type: 'solid',
-            onPress: () => resolve(true),
-          },
-          {
-            title: 'DENIED',
-            onPress: () => resolve(false),
-          },
-        ],
+      SignOverlay.showSignModal({
+        dappInfo: dapp,
+        signInfo: params,
+        onSign: () => resolve(true),
+        onReject: () => resolve(false),
       });
     });
   }

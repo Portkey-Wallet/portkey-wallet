@@ -1,5 +1,5 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
 import { pTd } from 'utils/unit';
@@ -12,17 +12,31 @@ import URL from 'url-parse';
 import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
-import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { isIos } from '@portkey-wallet/utils/mobile/device';
 
 type BrowserTabProps = {
-  uri: string;
+  isHidden: boolean;
+  item: ITabItem;
+  activeTabId: number | undefined;
+  setActiveTabRef: (ref: any) => void;
+  setActiveWebViewRef: (ref: any) => void;
 };
 
-const BrowserTab: React.FC<BrowserTabProps> = ({ uri }) => {
+const BrowserTab: React.FC<BrowserTabProps> = ({
+  isHidden,
+  item,
+  activeTabId,
+  setActiveTabRef,
+  setActiveWebViewRef,
+}) => {
+  const viewRef = useRef<any>(null);
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
+
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
@@ -62,32 +76,47 @@ const BrowserTab: React.FC<BrowserTabProps> = ({ uri }) => {
   const handleUpdate = useCallback(({ nativeEvent }: WebViewNavigationEvent | WebViewErrorEvent) => {
     const { origin, pathname = '', query = '' } = new URL(nativeEvent.url);
     const realUrl = `${origin}${pathname}${query}`;
-    const icon = `https://api.faviconkit.com/${getHost(realUrl)}/50`;
+    const icon = getFaviconUrl(realUrl, 50);
     operatorRef.current?.updateDappInfo({
       origin,
       name: nativeEvent.title,
       icon,
     });
   }, []);
+
+  useEffect(() => {
+    if (viewRef && viewRef.current && activeTabId === item.id) {
+      setActiveTabRef(viewRef);
+    }
+  }, [activeTabId, item.id, setActiveTabRef, viewRef]);
+
+  useEffect(() => {
+    if (webViewRef && webViewRef.current) {
+      setActiveWebViewRef(webViewRef);
+    }
+  }, [webViewRef, setActiveWebViewRef]);
+
   if (!entryScriptWeb3) return null;
   return (
-    <WebView
-      ref={webViewRef}
-      style={styles.webView}
-      decelerationRate="normal"
-      source={{ uri }}
-      injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : ''}
-      onMessage={({ nativeEvent }) => {
-        operatorRef.current?.handleRequestMessage(nativeEvent.data);
-      }}
-      onLoadStart={onLoadStart}
-      onLoad={handleUpdate}
-      onLoadProgress={({ nativeEvent }) => {
-        console.log(nativeEvent.progress, '=onLoadProgress');
-      }}
-      onLoadEnd={handleUpdate}
-      applicationNameForUserAgent={'WebView Portkey did Mobile'}
-    />
+    <View ref={viewRef} style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
+      <WebView
+        ref={webViewRef}
+        style={styles.webView}
+        decelerationRate="normal"
+        source={{ uri: item.url }}
+        injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : ''}
+        onMessage={({ nativeEvent }) => {
+          operatorRef.current?.handleRequestMessage(nativeEvent.data);
+        }}
+        onLoadStart={onLoadStart}
+        onLoad={handleUpdate}
+        onLoadProgress={({ nativeEvent }) => {
+          console.log(nativeEvent.progress, '=onLoadProgress');
+        }}
+        onLoadEnd={handleUpdate}
+        applicationNameForUserAgent={'WebView Portkey did Mobile'}
+      />
+    </View>
   );
 };
 
@@ -102,13 +131,20 @@ export const styles = StyleSheet.create({
   svgWrap: {
     marginRight: pTd(16),
   },
+  webViewContainerHidden: {
+    flex: 0,
+    opacity: 0,
+    display: 'none',
+    width: 0,
+    height: 0,
+  },
   webViewContainer: {
-    flex: 1,
-    backgroundColor: 'red',
+    width: screenWidth,
+    height: screenHeight,
   },
   webView: {
-    width: '100%',
     flex: 1,
+    zIndex: 1,
   },
   noResult: {},
 });

@@ -1,12 +1,13 @@
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { SendTransactionParams } from '@portkey/provider-types';
+import { GetSignatureParams, SendTransactionParams } from '@portkey/provider-types';
 import ConnectOverlay from './components/ConnectOverlay';
+import SignOverlay from './components/SignOverlay';
 import TransactionOverlay from './components/TransactionOverlay';
 
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
   sendTransaction(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean>;
-  wallet_getSignature(dapp: DappStoreItem, params: any): Promise<boolean>;
+  wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams): Promise<boolean>;
 }
 
 export class DappOverlay implements IDappOverlay {
@@ -29,9 +30,14 @@ export class DappOverlay implements IDappOverlay {
       });
     });
   }
-  async wallet_getSignature(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean> {
+  async wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams): Promise<boolean> {
     return new Promise(resolve => {
-      // mock approve
+      SignOverlay.showSignModal({
+        dappInfo: dapp,
+        signInfo: params,
+        onSign: () => resolve(true),
+        onReject: () => resolve(false),
+      });
     });
   }
 }

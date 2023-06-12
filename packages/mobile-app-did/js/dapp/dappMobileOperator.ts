@@ -147,8 +147,10 @@ export default class DappMobileOperator extends Operator {
       if (!params || !params.params || !params.method || !params.contractAddress || !params.chainId)
         return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
 
-      const chainInfo = await this.dappManager.getChainInfo(params.chainId);
-      const caInfo = await this.dappManager.getCaInfo(params.chainId);
+      const [chainInfo, caInfo] = await Promise.all([
+        this.dappManager.getChainInfo(params.chainId),
+        this.dappManager.getCaInfo(params.chainId),
+      ]);
 
       if (!chainInfo?.endPoint || !caInfo?.caHash)
         return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' });

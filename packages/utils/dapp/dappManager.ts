@@ -61,24 +61,37 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
     this.store.dispatch(addDapp({ networkType: currentNetwork, dapp: dapp }));
   }
   async updateDapp(dapp: DappStoreItem): Promise<void> {
-    const { currentNetwork } = await this.getWallet();
-    const originInfo = await this.getOriginInfo(dapp.origin);
+    const [{ currentNetwork }, originInfo] = await Promise.all([this.getWallet(), this.getOriginInfo(dapp.origin)]);
     if (isEqDapp(dapp, originInfo)) return;
     this.store.dispatch(updateDapp({ origin: dapp.origin, networkType: currentNetwork, dapp: dapp }));
   }
+
+  async getOriginChainId() {
+    const [{ originChainId: walletOriginChainId }, currentCAInfo] = await Promise.all([
+      this.getWallet(),
+      this.getCurrentCAInfo(),
+    ]);
+    return currentCAInfo?.originChainId || walletOriginChainId || DefaultChainId;
+  }
+
   async isLogged(): Promise<boolean> {
-    const { walletInfo, currentNetwork, originChainId: walletOriginChainId } = await this.getWallet();
-    const originChainId = (await this.getCurrentCAInfo())?.originChainId || walletOriginChainId || DefaultChainId;
+    const [{ walletInfo, currentNetwork }, originChainId] = await Promise.all([
+      this.getWallet(),
+      this.getOriginChainId(),
+    ]);
     return !!(originChainId && walletInfo?.caInfo[currentNetwork]?.managerInfo);
   }
+
   async isActive(origin: string) {
     return (await this.originIsAuthorized(origin)) && (await this.isLogged());
   }
+
   async accounts(origin: string) {
-    const wallet = await this.getWallet();
-    if (!(await this.isActive(origin)) || !wallet.walletInfo?.caInfo) return {};
+    const [wallet, active] = await Promise.all([this.getWallet(), this.isActive(origin)]);
+    if (!active || !wallet.walletInfo?.caInfo) return {};
     return handleAccounts(wallet);
   }
+
   async chainId() {
     return this.chainIds();
   }

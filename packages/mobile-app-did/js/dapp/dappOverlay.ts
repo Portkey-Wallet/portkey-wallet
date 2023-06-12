@@ -5,6 +5,7 @@ import ActionSheet from 'components/ActionSheet';
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
   sendTransaction(params: SendTransactionParams): Promise<boolean>;
+  wallet_getSignature(params: any): Promise<boolean>;
 }
 
 export class DappOverlay implements IDappOverlay {
@@ -29,6 +30,26 @@ export class DappOverlay implements IDappOverlay {
     });
   }
   async sendTransaction(params: SendTransactionParams): Promise<boolean> {
+    return new Promise(resolve => {
+      // mock approve
+      ActionSheet.alert({
+        title: 'send',
+        message: JSON.stringify(params),
+        buttons: [
+          {
+            title: 'OK',
+            type: 'solid',
+            onPress: () => resolve(true),
+          },
+          {
+            title: 'DENIED',
+            onPress: () => resolve(false),
+          },
+        ],
+      });
+    });
+  }
+  async wallet_getSignature(params: SendTransactionParams): Promise<boolean> {
     return new Promise(resolve => {
       // mock approve
       ActionSheet.alert({

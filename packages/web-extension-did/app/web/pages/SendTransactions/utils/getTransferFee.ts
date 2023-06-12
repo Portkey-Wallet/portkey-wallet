@@ -18,20 +18,25 @@ const getTransferFee = async ({
   methodName: string;
   privateKey: string;
 }) => {
-  const transactionRes = await getTransactionFee({
-    rpcUrl,
-    contractAddress,
-    paramsOption,
-    chainType,
-    methodName,
-    privateKey,
-  });
-  const feeRes = transactionRes.result['ELF'];
-  const fee = divDecimalsStr(ZERO.plus(feeRes), 8);
-  if (Number.isNaN(ZERO.plus(fee).toNumber())) {
-    return '0';
-  } else {
-    return fee;
+  try {
+    const transactionRes = await getTransactionFee({
+      rpcUrl,
+      contractAddress,
+      paramsOption,
+      chainType,
+      methodName,
+      privateKey,
+    });
+    const feeRes = transactionRes.result['ELF'];
+    const fee = divDecimalsStr(ZERO.plus(feeRes), 8);
+    if (Number.isNaN(ZERO.plus(fee).toNumber())) {
+      return '0';
+    } else {
+      return fee;
+    }
+  } catch (error) {
+    console.error('getTransactionFee', error);
+    return '--';
   }
 };
 

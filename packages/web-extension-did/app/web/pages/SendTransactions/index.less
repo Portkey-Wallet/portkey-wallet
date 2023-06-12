@@ -2,7 +2,7 @@
 
 .send-transaction {
   width: 328px;
-  margin: 40px auto;
+  margin: 40px auto 16px;
   flex-direction: column;
   font-size: 12px;
   line-height: 16px;
@@ -19,10 +19,14 @@
     padding: 8px 16px;
     border-radius: 24px;
     border: 1px solid @border-2;
-    .aelf-icon {
+    .aelf-icon, .elf-icon-icon {
       width: 24px;
       height: 24px;
       margin-right: 8px;
+      svg {
+        width: 24px;
+        height: 24px;
+      }
     }
   }
   .account {
@@ -76,21 +80,21 @@
       border-radius: 6px;
     }
     .fee, .total {
-      margin-bottom: 12px;
       .fee-amount, .total-amount {
         text-align: right;
       }
       .elf {
+        margin-left: 4px;
         font-size: 14px;
         line-height: 20px;
         font-weight: 500;
         color: @font-11;
+        white-space: nowrap;
       }
     }
   }
   .message-wrapper {
     color: @font-13;
-    margin-bottom: 42px;
     .title {
       margin-bottom: 4px;
     }
@@ -125,8 +129,13 @@
       }
     }
   }
+  .error-message {
+    margin-top: 16px;
+    color: @font-14;
+  }
   .btn {
     width: 100%;
+    margin-top: 40px;
     .@{app-prefix}-btn {
       width: 156px;
       height: 48px;

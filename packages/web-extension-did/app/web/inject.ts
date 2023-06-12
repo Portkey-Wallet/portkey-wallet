@@ -1,6 +1,5 @@
-import { InitializeProvider } from '@portkey/extension-provider';
+import { InitializeProvider, InpagePostStream } from '@portkey/extension-provider';
 import { shouldInjectProvider } from '@portkey/provider-utils';
-import { PortkeyPostStream } from '@portkey/providers';
 const INPAGE_TARGET = 'portkey-inpage';
 
 export default class Inject {
@@ -10,10 +9,8 @@ export default class Inject {
 
   initPortKey() {
     if (shouldInjectProvider()) {
-      const portkeyStream = new PortkeyPostStream({
+      const portkeyStream = new InpagePostStream({
         name: INPAGE_TARGET,
-        postWindow: window,
-        originWindow: window,
       });
       new InitializeProvider({
         connectionStream: portkeyStream,

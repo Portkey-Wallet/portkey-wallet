@@ -13,6 +13,15 @@ export function getUrlObj(url: string) {
 }
 
 /**
+ * check if url is ip
+ * @param url
+ * @returns
+ */
+const isIp = (url: string): boolean => {
+  return /((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))/.test(url);
+};
+
+/**
  * Returns URL prefixed with protocol
  *
  * @param url - String corresponding to url
@@ -20,6 +29,7 @@ export function getUrlObj(url: string) {
  * @returns - String corresponding to sanitized input depending if it's a search or url
  */
 export const prefixUrlWithProtocol = (url: string, defaultProtocol = 'https://') => {
+  if (isIp(url)) defaultProtocol = 'http://';
   const hasProtocol = /^[a-z]*:\/\//.test(url);
   const sanitizedURL = hasProtocol ? url : `${defaultProtocol}${url}`;
   return sanitizedURL;
@@ -58,24 +68,11 @@ export function getFaviconUrl(url: string, size: number = 50): string {
  * a keyword is detected instead of a url
  *
  * @param input - String corresponding to url input
- * @param searchEngine - Protocol string to append to URLs that have none
  * @param defaultProtocol - Protocol string to append to URLs that have none
  * @returns - String corresponding to sanitized input depending if it's a search or url
  */
-export default function onUrlSubmit(input: string, searchEngine = 'Google', defaultProtocol = 'https://') {
+export default function getFullUrl(input: string, defaultProtocol = 'https://') {
   //Check if it's a url or a keyword
-  const regEx = new RegExp(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!&',;=.+]+$/g);
-  if (!isUrl(input) && !regEx.test(input)) {
-    // Add exception for localhost
-    if (!input.startsWith('http://localhost') && !input.startsWith('localhost')) {
-      // In case of keywords we default to google search
-      let searchUrl = 'https://www.google.com/search?q=' + encodeURIComponent(input);
-      if (searchEngine === 'DuckDuckGo') {
-        searchUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(input);
-      }
-      return searchUrl;
-    }
-  }
   return prefixUrlWithProtocol(input, defaultProtocol);
 }
 

@@ -34,7 +34,7 @@ export const initFiat: PartialFiatType = {
 
 export const MAX_UPDATE_TIME = 15;
 export const initCurrency = '200';
-export const initCrypto = '300';
+export const initCrypto = '400';
 export const initValueSave: {
   amount: string;
   currency: string;

@@ -203,7 +203,7 @@ export default class ServiceWorkerInstantiate {
           this.getSocialLogin(sendResponse, message.payload);
           break;
         case WalletMessageTypes.ACH_SELL_REDIRECT:
-          ServiceWorkerInstantiate.expandHome(message.payload);
+          this.expandHomeAndCloseOrigin(sendResponse, message.payload);
           break;
 
         default:
@@ -349,7 +349,7 @@ export default class ServiceWorkerInstantiate {
     );
   }
 
-  static async expandHome(payload: any) {
+  async expandHomeAndCloseOrigin(sendResponse: SendResponseFun, payload: any) {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.EXPAND_FULL_SCREEN,
@@ -357,6 +357,7 @@ export default class ServiceWorkerInstantiate {
       },
       'tabs',
     );
+    sendResponse(errorHandler(0));
   }
 
   /**

@@ -133,6 +133,7 @@ export default function Buy() {
   const setErrMsgCase = useCallback(() => {
     const { min, max, currency, crypto, side } = valueSaveRef.current;
     if (min !== null && max !== null) {
+      clearInterval(updateTimerRef.current);
       if (side === PaymentTypeEnum.SELL) {
         setErrMsg(showLimitText(min, max, crypto));
       }
@@ -275,13 +276,15 @@ export default function Buy() {
         setLoading(true);
         await getQuoteAndSetData();
         await updateCrypto();
+
+        handleInputChange(valueSaveRef.current.amount);
       } catch (error) {
         console.log('error', error);
       } finally {
         setLoading(false);
       }
     },
-    [getQuoteAndSetData, setLoading, updateCrypto],
+    [getQuoteAndSetData, handleInputChange, setLoading, updateCrypto],
   );
 
   const handleSelect = useCallback(
@@ -328,7 +331,7 @@ export default function Buy() {
             if (data && data.maxSellAmount !== null && data.minSellAmount !== null) {
               valueSaveRef.current.max = data.maxSellAmount;
               valueSaveRef.current.min = data.minSellAmount;
-              setErrMsgCase();
+              // setErrMsgCase();
 
               if (isValidValue({ amount, max: data.maxSellAmount, min: data.minSellAmount })) {
                 await getQuoteAndSetData();

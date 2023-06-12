@@ -6,6 +6,7 @@ import TransactionOverlay from './components/TransactionOverlay';
 export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
   sendTransaction(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean>;
+  wallet_getSignature(dapp: DappStoreItem, params: any): Promise<boolean>;
 }
 
 export class DappOverlay implements IDappOverlay {
@@ -26,6 +27,11 @@ export class DappOverlay implements IDappOverlay {
         onSign: () => resolve(true),
         onReject: () => resolve(false),
       });
+    });
+  }
+  async wallet_getSignature(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean> {
+    return new Promise(resolve => {
+      // mock approve
     });
   }
 }

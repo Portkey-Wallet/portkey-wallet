@@ -6,19 +6,19 @@
   flex-direction: column;
   font-size: 12px;
   line-height: 16px;
+  color: @font-13;
+  .value {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
   color: @font-11;
-  .title {
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 500;
-    color: @font-11;
   }
   .chain {
     align-self: center;
-    margin-bottom: 24px;
     padding: 8px 16px;
     border-radius: 24px;
     border: 1px solid @border-2;
+    font-weight: 500;
     .aelf-icon, .elf-icon-icon {
       width: 24px;
       height: 24px;
@@ -31,13 +31,14 @@
   }
   .account {
     position: relative;
-    margin: 0 auto 16px;
+    margin: 24px auto 0;
     padding: 17px 15px;
     width: 328px;
     border: 1px solid @border-2;
     border-radius: 6px;
     align-items: center;
     gap: 44px;
+    color: @font-1;
     .address,
     .name {
       flex: 1;
@@ -61,54 +62,46 @@
       border-left: 1px solid @border-2;
     }
   }
+  .amount {
+    .amount-number {
+      margin-top: 4px;
+    }
+  }
   .method {
-    margin-bottom: 16px;
+    margin-top: 16px;
     color: @font-13;
-    .title {
-      margin-bottom: 4px;
+    .method-name {
+      margin-top: 4px;
     }
   }
   .detail {
+    margin-top: 16px;
     color: @font-13;
     .title {
       margin-bottom: 4px;
     }
     .amount {
       padding: 16px;
-      margin-bottom: 18px;
       border: 1px solid @border-2;
       border-radius: 6px;
     }
     .fee, .total {
-      .fee-amount, .total-amount {
-        text-align: right;
-      }
-      .elf {
-        margin-left: 4px;
-        font-size: 14px;
-        line-height: 20px;
-        font-weight: 500;
-        color: @font-11;
-        white-space: nowrap;
+      margin-top: 16px;
+      .amount-show {
+        margin-top: 4px;
       }
     }
   }
   .message-wrapper {
-    color: @font-13;
-    .title {
-      margin-bottom: 4px;
-    }
+    margin-top: 16px;
     .message {
       width: 328px;
       padding: 16px;
-      margin-bottom: 18px;
+      margin-top: 4px;
       border: 1px solid @border-2;
       border-radius: 6px;
-      .title {
-        margin-bottom: 4px;
-      }
       .content {
-        margin-bottom: 16px;
+        margin: 4px 0 16px;
         width: 100%;
         line-break: anywhere;
         white-space: pre-wrap;
@@ -118,14 +111,9 @@
       }
     }
     .fee {
+      margin-top: 16px;
       .fee-amount {
-        text-align: right;
-        .elf {
-          font-size: 14px;
-          line-height: 20px;
-          font-weight: 500;
-          color: @font-11;
-        }
+        margin-top: 4px;
       }
     }
   }

@@ -9,6 +9,7 @@ import {
   SendTransactionParams,
   NotificationEvents,
   WalletState,
+  GetSignatureParams,
 } from '@portkey/provider-types';
 import DappEventBus from './dappEventBus';
 import { generateNormalResponse, generateErrorResponse } from '@portkey/provider-utils';
@@ -20,16 +21,21 @@ import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount, getPin } from 'utils/redux';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
-
+import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
+  [MethodsUnimplemented.GET_WALLET_SIGNATURE]: true,
 };
 
-function getContract({ rpcUrl, contractAddress }: { rpcUrl: string; contractAddress: string }) {
+function getManager() {
   const pin = getPin();
   if (!pin) return;
-  const manager = getManagerAccount(pin);
+  return getManagerAccount(pin);
+}
+
+function getContract({ rpcUrl, contractAddress }: { rpcUrl: string; contractAddress: string }) {
+  const manager = getManager();
   if (!manager) return;
   return getContractBasic({ rpcUrl, contractAddress, account: manager });
 }
@@ -109,6 +115,12 @@ export default class DappMobileOperator extends Operator {
           data: await this.dappManager.walletName(),
         });
       }
+      case MethodsBase.NETWORK: {
+        return generateNormalResponse({
+          eventName,
+          data: await this.dappManager.networkType(),
+        });
+      }
       case MethodsUnimplemented.GET_WALLET_STATE: {
         const [isActive, isLocked] = await Promise.all([this.isActive(), this.dappManager.isLocked()]);
         const data: WalletState = { isConnected: isActive, isUnlocked: !isLocked };
@@ -177,6 +189,13 @@ export default class DappMobileOperator extends Operator {
         functionName = 'ManagerForwardCall';
       }
 
+      if (!CA_METHOD_WHITELIST.includes(functionName))
+        return generateErrorResponse({
+          eventName,
+          code: ResponseCode.CONTRACT_ERROR,
+          msg: 'method is not in the whitelist',
+        });
+
       const data = await contract!.callSendMethod(functionName, '', paramsOption, { onMethod: 'transactionHash' });
       if (!data?.error) {
         return generateNormalResponse({
@@ -198,7 +217,24 @@ export default class DappMobileOperator extends Operator {
       });
     }
   };
-
+  protected handleSignature: SendRequest<GetSignatureParams> = async (eventName, params) => {
+    try {
+      if (!params.data) return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+      const manager = getManager();
+      if (!manager?.keyPair) return generateErrorResponse({ eventName, code: ResponseCode.INTERNAL_ERROR });
+      const data = manager.keyPair.sign(params.data);
+      return generateNormalResponse({
+        eventName,
+        data,
+      });
+    } catch (error) {
+      return generateErrorResponse({
+        eventName,
+        code: ResponseCode.CONTRACT_ERROR,
+        msg: handleErrorMessage(error),
+      });
+    }
+  };
   protected async sendRequest({
     eventName,
     params,
@@ -242,6 +278,12 @@ export default class DappMobileOperator extends Operator {
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSendTransaction;
+        params = request.payload;
+        break;
+      }
+      case MethodsUnimplemented.GET_WALLET_SIGNATURE: {
+        if (!isActive) return this.unauthenticated(eventName);
+        callBack = this.handleSignature;
         params = request.payload;
         break;
       }

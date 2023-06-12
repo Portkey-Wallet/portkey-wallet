@@ -11,7 +11,7 @@ import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import './index.less';
 
 const allowItem = [
-  'viewing wallet balance and activity Allow',
+  'viewing wallet balance and activity',
   'sending requests for transactions',
   'moving funds without your permission',
 ];

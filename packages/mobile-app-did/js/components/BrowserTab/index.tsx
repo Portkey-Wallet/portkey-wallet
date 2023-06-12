@@ -13,6 +13,7 @@ import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { isIos } from '@portkey-wallet/utils/mobile/device';
 
 type BrowserTabProps = {
   uri: string;
@@ -34,15 +35,22 @@ const BrowserTab: React.FC<BrowserTabProps> = ({ uri }) => {
     };
   });
 
-  const initOperator = useCallback((origin: string) => {
-    operatorRef.current = new DappMobileOperator({
-      origin,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      stream: new MobileStream(webViewRef.current!),
-      dappManager: new DappMobileManager({ store: store as any }),
-      dappOverlay: new DappOverlay(),
-    });
-  }, []);
+  const initOperator = useCallback(
+    (origin: string) => {
+      if (!isIos) {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+      }
+      operatorRef.current = new DappMobileOperator({
+        origin,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        stream: new MobileStream(webViewRef.current!),
+        dappManager: new DappMobileManager({ store: store as any }),
+        dappOverlay: new DappOverlay(),
+      });
+    },
+    [entryScriptWeb3],
+  );
 
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
@@ -61,14 +69,14 @@ const BrowserTab: React.FC<BrowserTabProps> = ({ uri }) => {
       icon,
     });
   }, []);
-
+  if (!entryScriptWeb3) return null;
   return (
     <WebView
       ref={webViewRef}
       style={styles.webView}
       decelerationRate="normal"
       source={{ uri }}
-      injectedJavaScriptBeforeContentLoaded={entryScriptWeb3}
+      injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : ''}
       onMessage={({ nativeEvent }) => {
         operatorRef.current?.handleRequestMessage(nativeEvent.data);
       }}

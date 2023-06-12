@@ -27,37 +27,41 @@ import { captureRef } from 'react-native-view-shot';
 import { showWalletInfo } from './components/WalletInfoOverlay';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+
 const takeSnapshot = (viewRef: any) => captureRef(viewRef?.current, { format: 'jpg', quality: 0.2 });
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
+  const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
-  const { activeTabId, tabs, isDrawerOpen } = useAppCASelector(state => state.discover);
+  const { isDrawerOpen, discoverMap } = useAppCASelector(state => state.discover);
+  const { activeTabId, tabs } = discoverMap[networkType] ?? {};
 
   const [activeTabRef, setActiveTabRef] = React.useState<any>(null);
   const [activeWebViewRef, setActiveWebViewRef] = React.useState<any>(null);
 
-  const [preActiveTabId, setPreActiveTabId] = useState(activeTabId);
+  const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
 
   const activeWebviewScreenShot = useCallback(() => {
     takeSnapshot(activeTabRef).then(
       uri => {
         console.log('Image saved to', uri);
-        dispatch(updateTab({ id: activeTabId, screenShotUrl: uri }));
+        dispatch(updateTab({ id: activeTabId || 0, screenShotUrl: uri, networkType }));
       },
       error => console.error('Oops, snapshot failed', error),
     );
-  }, [activeTabId, activeTabRef, dispatch]);
+  }, [activeTabId, activeTabRef, dispatch, networkType]);
 
   const backToSearchPage = useCallback(() => {
     activeWebviewScreenShot();
-    dispatch(setActiveTab(undefined));
+    dispatch(setActiveTab({ id: undefined, networkType }));
     dispatch(changeDrawerOpenStatus(false));
-  }, [activeWebviewScreenShot, dispatch]);
+  }, [activeWebviewScreenShot, dispatch, networkType]);
 
   // header right
   const rightDom = useMemo(() => {
-    const activeItem = tabs.find(ele => ele.id === activeTabId) as ITabItem;
+    const activeItem = tabs?.find(ele => ele.id === activeTabId) as ITabItem;
 
     if (activeTabId)
       return (
@@ -80,7 +84,7 @@ const TabsDrawerContent: React.FC = () => {
         </View>
       );
     return null;
-  }, [tabs, activeTabId, activeWebViewRef, activeWebviewScreenShot]);
+  }, [activeTabId, activeWebViewRef, activeWebviewScreenShot, tabs]);
 
   return (
     <PageContainer
@@ -107,13 +111,13 @@ const TabsDrawerContent: React.FC = () => {
         <>
           <ScrollView>
             <View style={styles.cardsContainer}>
-              {tabs.map(ele => (
+              {tabs?.map(ele => (
                 <Card key={ele.id} item={ele} />
               ))}
             </View>
           </ScrollView>
           <View style={handleButtonStyle.container}>
-            <TextM style={FontStyles.font4} onPress={() => dispatch(closeAllTabs())}>
+            <TextM style={FontStyles.font4} onPress={() => dispatch(closeAllTabs({ networkType }))}>
               {t('Close All')}
             </TextM>
             <TouchableOpacity onPress={() => dispatch(changeDrawerOpenStatus(false))}>
@@ -122,11 +126,11 @@ const TabsDrawerContent: React.FC = () => {
             <TextM
               style={FontStyles.font4}
               onPress={() => {
-                if (tabs.length === 0) return;
-                if (tabs.find(ele => ele.id === preActiveTabId)) {
-                  dispatch(setActiveTab(preActiveTabId));
+                if (tabs?.length === 0) return;
+                if (tabs?.find(ele => ele.id === preActiveTabId)) {
+                  dispatch(setActiveTab({ id: preActiveTabId, networkType }));
                 } else {
-                  dispatch(setActiveTab(tabs[tabs.length - 1].id));
+                  dispatch(setActiveTab({ id: tabs?.[tabs?.length - 1]?.id, networkType }));
                 }
               }}>
               {t('Done')}

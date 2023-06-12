@@ -5,14 +5,14 @@ import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { Image } from 'react-native';
 
-interface CommonAvatarProps {
+interface DiscoverWebsiteImageProps {
   imageUrl?: string;
   size?: number;
   style?: any;
 }
 
-export default function RecordImage(props: CommonAvatarProps) {
-  const { size = pTd(32), imageUrl } = props;
+export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
+  const { size = pTd(32), imageUrl, style } = props;
 
   const sizeStyle = {
     width: size,
@@ -22,7 +22,7 @@ export default function RecordImage(props: CommonAvatarProps) {
 
   const [isError, setError] = React.useState(false);
 
-  if (isError) return <Svg icon="default_record" size={size} />;
+  if (isError) return <Svg icon="default_record" size={size} iconStyle={style} />;
   return (
     <Image
       resizeMode={'contain'}

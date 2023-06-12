@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import GStyles from 'assets/theme/GStyles';
@@ -12,35 +12,40 @@ import { useFocusEffect } from '@react-navigation/native';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import RecordSection from '../components/RecordSection';
-import GameSection from '../components/GameSection';
-import { GamesList } from '../DiscoverHome/GameData';
-import { IGameListItemType } from '@portkey-wallet/types/types-ca/discover';
-import { isValidUrl } from '@portkey-wallet/utils/reg';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import {
-  addRecordsItem,
-  changeDrawerOpenStatus,
-  createNewTab,
-  setActiveTab,
-} from '@portkey-wallet/store/store-ca/discover/slice';
+import SearchDiscoverSection from '../components/SearchDiscoverSection';
 import { isIOS } from '@rneui/base';
-import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { checkIsUrl, getHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 
 let timer: any = null;
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
 
-  const dispatch = useAppCommonDispatch();
+  const discoverGroupList = useDiscoverGroupList();
+  const jumpToWebview = useDiscoverJumpWithNetWork();
 
   const iptRef = useRef<any>();
   const [value, setValue] = useState<string>('');
   const [showRecord, setShowRecord] = useState<boolean>(true);
-  const [filterGameList] = useState<IGameListItemType[]>(GamesList);
+  const [filteredDiscoverList, setFilteredDiscoverList] = useState<DiscoverItem[]>([]);
 
   const navBack = useCallback(() => {
     navigationService.goBack();
   }, []);
+
+  const flatList = useMemo((): DiscoverItem[] => {
+    const list = [] as DiscoverItem[];
+    discoverGroupList.map(group => {
+      group?.items?.map(item => {
+        list.push(item);
+      });
+    });
+
+    return list;
+  }, [discoverGroupList]);
 
   const clearText = useCallback(() => setValue(''), []);
 
@@ -50,27 +55,23 @@ export default function DiscoverSearch() {
 
   const onSearch = useCallback(() => {
     const newValue = value.trim().replace(' ', '');
-    const id = Date.now();
+    if (!newValue) return;
 
-    dispatch(addRecordsItem({ id, title: newValue, url: prefixUrlWithProtocol(newValue) }));
-    dispatch(createNewTab({ id, url: prefixUrlWithProtocol(newValue) }));
-    dispatch(changeDrawerOpenStatus(true));
-
-    return;
-    // if (checkIsUrl(newValue)) {
-    //   dispatch(addRecordsItem({ title: newValue, url: prefixUrlWithProtocol(newValue) }));
-    //   navigationService.navigate('ViewOnWebView', {
-    //     url: prefixUrlWithProtocol(newValue),
-    //     webViewPageType: 'discover',
-    //   });
-    //   setShowRecord(true);
-    // } else {
-    //   // else search in game list
-    //   const filterList = GamesList.filter(item => item.name.replace(' ', '').includes(newValue));
-    //   setFilterGameList(filterList);
-    //   setShowRecord(false);
-    // }
-  }, [dispatch, value]);
+    if (checkIsUrl(newValue)) {
+      jumpToWebview({
+        item: {
+          id: Date.now(),
+          name: getHost(prefixUrlWithProtocol(newValue)),
+          url: prefixUrlWithProtocol(newValue),
+        },
+      });
+    } else {
+      // else search in Discover list
+      const filterList = flatList.filter(item => item.title.replace(' ', '').includes(newValue));
+      setFilteredDiscoverList(filterList);
+      setShowRecord(false);
+    }
+  }, [flatList, jumpToWebview, value]);
 
   useFocusEffect(
     useCallback(() => {
@@ -115,7 +116,7 @@ export default function DiscoverSearch() {
           <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
         </TouchableOpacity>
       </View>
-      {showRecord ? <RecordSection /> : <GameSection data={filterGameList} />}
+      {showRecord ? <RecordSection /> : <SearchDiscoverSection searchedDiscoverList={filteredDiscoverList || []} />}
     </PageContainer>
   );
 }

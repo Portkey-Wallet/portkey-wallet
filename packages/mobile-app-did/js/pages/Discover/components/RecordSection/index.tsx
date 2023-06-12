@@ -15,24 +15,26 @@ import {
   clearRecordsList,
   createNewTab,
 } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
 export default function RecordSection() {
   const { t } = useLanguage();
 
   const dispatch = useAppCommonDispatch();
-  const { recordsList } = useAppCASelector(state => state.discover);
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverMap } = useAppCASelector(state => state.discover);
 
   const clearRecord = useCallback(() => {
-    dispatch(clearRecordsList());
-  }, [dispatch]);
+    dispatch(clearRecordsList({ networkType }));
+  }, [dispatch, networkType]);
 
   const showRecordList = useMemo(() => {
-    return [...recordsList].reverse();
-  }, [recordsList]);
+    const recordsList = (JSON.parse(JSON.stringify(discoverMap?.[networkType]?.recordsList)) as ITabItem[]) || [];
+    return recordsList.reverse();
+  }, [discoverMap, networkType]);
 
-  if (recordsList?.length === 0) return null;
-
-  console.log('showRecordList', showRecordList);
+  if (showRecordList?.length === 0) return null;
 
   return (
     <ScrollView style={styles.sectionWrap}>
@@ -48,8 +50,8 @@ export default function RecordSection() {
           item={item}
           onPress={() => {
             const id = Date.now();
-            dispatch(addRecordsItem(item));
-            dispatch(createNewTab({ id, url: item.url }));
+            dispatch(addRecordsItem({ ...item, networkType }));
+            dispatch(createNewTab({ id, url: item.url, name: '', networkType }));
             dispatch(changeDrawerOpenStatus(true));
           }}
         />

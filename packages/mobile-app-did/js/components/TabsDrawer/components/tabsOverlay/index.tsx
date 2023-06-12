@@ -8,17 +8,18 @@ import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
-import CommonAvatar from 'components/CommonAvatar';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { FontStyles } from 'assets/theme/styles';
 import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
-import { getFaviconUrl } from 'utils';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 
 import { isIOS } from '@rneui/base';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -49,6 +50,7 @@ const BrowserEditModal = ({
 }) => {
   const { t } = useLanguage();
   const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
 
   const handleUrl = useCallback(
     async (type: HANDLE_TYPE) => {
@@ -86,7 +88,7 @@ const BrowserEditModal = ({
         case HANDLE_TYPE.SWITCH:
           OverlayModal.hide();
           activeWebviewScreenShot();
-          dispatch(setActiveTab(undefined));
+          dispatch(setActiveTab({ id: undefined, networkType }));
           setPreActiveTabId(Number(browserInfo?.id));
 
           break;
@@ -103,6 +105,7 @@ const BrowserEditModal = ({
       t,
       activeWebviewScreenShot,
       dispatch,
+      networkType,
       setPreActiveTabId,
     ],
   );
@@ -110,7 +113,7 @@ const BrowserEditModal = ({
   return (
     <View style={styles.modalStyle}>
       <View style={[GStyles.flexRow, GStyles.center]}>
-        <CommonAvatar avatarSize={pTd(32)} imageUrl={getFaviconUrl(browserInfo?.url || '')} />
+        <DiscoverWebsiteImage size={pTd(32)} imageUrl={getFaviconUrl(browserInfo?.url || '')} />
         <TextL ellipsizeMode="tail" style={[GStyles.flex1, styles.title]}>
           {browserInfo?.name}
         </TextL>

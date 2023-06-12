@@ -1,15 +1,22 @@
-import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
+import { NetworkType } from '@portkey-wallet/types';
 
 export interface ITabItem {
-  id: string | number;
+  id: number;
   name: string;
   url: string;
-  screenShotUrl: string;
+  screenShotUrl?: string;
 }
-export interface IDiscoverStateType {
-  isDrawerOpen: boolean;
-  recordsList: IRecordsItemType[];
+
+export interface IDiscoverNetworkStateType {
+  recordsList: ITabItem[];
   whiteList: any[];
   activeTabId?: number;
   tabs: ITabItem[];
+}
+
+export interface IDiscoverStateType {
+  isDrawerOpen: boolean;
+  discoverMap: {
+    [key in NetworkType]?: IDiscoverNetworkStateType;
+  };
 }

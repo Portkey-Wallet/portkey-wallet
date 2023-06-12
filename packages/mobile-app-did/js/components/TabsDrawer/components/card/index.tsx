@@ -7,11 +7,12 @@ import { pTd } from 'utils/unit';
 
 import Svg from 'components/Svg';
 
-import { useLanguage } from 'i18n/hooks';
 import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { closeExistingTab, setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
+import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface ICardsProps {
   item: ITabItem;
@@ -19,21 +20,22 @@ interface ICardsProps {
 
 const Card: React.FC<ICardsProps> = (props: ICardsProps) => {
   const { item } = props;
-  const { t } = useLanguage();
+
   const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
 
   return (
     <View style={tabShowItemStyle.cardWrap}>
       <View style={tabShowItemStyle.header}>
-        <Image style={tabShowItemStyle.icon} source={{ uri: getFaviconUrl(item.url) }} />
+        <DiscoverWebsiteImage size={pTd(20)} imageUrl={getFaviconUrl(item.url)} />
         <TextM numberOfLines={1} ellipsizeMode="tail" style={tabShowItemStyle.title}>
           {item?.name ?? getHost(item?.url)}
         </TextM>
-        <TouchableOpacity onPress={() => dispatch(closeExistingTab(item.id))}>
+        <TouchableOpacity onPress={() => dispatch(closeExistingTab({ id: item?.id, networkType }))}>
           <Svg icon="close" size={12} />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => dispatch(setActiveTab(item.id))}>
+      <TouchableOpacity onPress={() => dispatch(setActiveTab({ id: item.id, networkType }))}>
         <Image
           resizeMode="cover"
           style={tabShowItemStyle.screenshot}
@@ -63,10 +65,6 @@ const tabShowItemStyle = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  icon: {
-    width: pTd(20),
-    height: pTd(20),
   },
   title: {
     flex: 1,

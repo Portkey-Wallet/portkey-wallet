@@ -19,6 +19,8 @@ import { FontStyles } from 'assets/theme/styles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
+import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import { getHost } from '@portkey-wallet/utils/dapp/browser';
 
 interface ConnectModalType {
   dappInfo: DappStoreItem;
@@ -82,9 +84,9 @@ const ConnectModal = (props: ConnectModalType) => {
     <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} bottomButtonGroup={buttonList}>
       <View style={[styles.contentWrap, gStyles.overlayStyle]}>
         <View style={GStyles.center}>
-          <Image source={{ uri: icon }} style={styles.favIcon} />
+          <DiscoverWebsiteImage size={pTd(48)} imageUrl={icon} style={styles.favIcon} />
           <TextL numberOfLines={1} ellipsizeMode="tail" style={[fonts.mediumFont, styles.title]}>
-            {name}
+            {name || getHost(origin)}
           </TextL>
           <TextS numberOfLines={1} ellipsizeMode="tail" style={FontStyles.font7}>
             {origin}

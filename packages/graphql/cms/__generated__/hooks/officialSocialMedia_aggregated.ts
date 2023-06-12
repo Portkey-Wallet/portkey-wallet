@@ -3,11 +3,11 @@ import * as Types from '../types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type DiscoverItem_AggregatedQueryVariables = Types.Exact<{
+export type OfficialSocialMedia_AggregatedQueryVariables = Types.Exact<{
   groupBy?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
-  filter?: Types.InputMaybe<Types.DiscoverItem_Filter>;
+  filter?: Types.InputMaybe<Types.OfficialSocialMedia_Filter>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
@@ -15,82 +15,74 @@ export type DiscoverItem_AggregatedQueryVariables = Types.Exact<{
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
 }>;
 
-export type DiscoverItem_AggregatedQuery = {
+export type OfficialSocialMedia_AggregatedQuery = {
   __typename?: 'Query';
-  discoverItem_aggregated: Array<{
-    __typename?: 'discoverItem_aggregated';
+  officialSocialMedia_aggregated: Array<{
+    __typename?: 'officialSocialMedia_aggregated';
     group?: any | null;
     countAll?: number | null;
     count?: {
-      __typename?: 'discoverItem_aggregated_count';
+      __typename?: 'officialSocialMedia_aggregated_count';
+      activeSvg?: number | null;
       date_created?: number | null;
       date_updated?: number | null;
-      description?: number | null;
-      group?: number | null;
       id?: number | null;
-      imgUrl?: number | null;
       index?: number | null;
+      link?: number | null;
+      name?: number | null;
       sort?: number | null;
       status?: number | null;
-      title?: number | null;
-      url?: number | null;
+      svg?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
     } | null;
     countDistinct?: {
-      __typename?: 'discoverItem_aggregated_count';
+      __typename?: 'officialSocialMedia_aggregated_count';
+      activeSvg?: number | null;
       date_created?: number | null;
       date_updated?: number | null;
-      description?: number | null;
-      group?: number | null;
       id?: number | null;
-      imgUrl?: number | null;
       index?: number | null;
+      link?: number | null;
+      name?: number | null;
       sort?: number | null;
       status?: number | null;
-      title?: number | null;
-      url?: number | null;
+      svg?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
     } | null;
     avg?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'officialSocialMedia_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
     } | null;
     sum?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'officialSocialMedia_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
     } | null;
     avgDistinct?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'officialSocialMedia_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
     } | null;
     sumDistinct?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'officialSocialMedia_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
     } | null;
     min?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'officialSocialMedia_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
     } | null;
     max?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'officialSocialMedia_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
@@ -98,17 +90,17 @@ export type DiscoverItem_AggregatedQuery = {
   }>;
 };
 
-export const DiscoverItem_AggregatedDocument = gql`
-  query discoverItem_aggregated(
+export const OfficialSocialMedia_AggregatedDocument = gql`
+  query officialSocialMedia_aggregated(
     $groupBy: [String]
-    $filter: discoverItem_filter
+    $filter: officialSocialMedia_filter
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
     $sort: [String]
   ) {
-    discoverItem_aggregated(
+    officialSocialMedia_aggregated(
       groupBy: $groupBy
       filter: $filter
       limit: $limit
@@ -120,67 +112,59 @@ export const DiscoverItem_AggregatedDocument = gql`
       group
       countAll
       count {
+        activeSvg
         date_created
         date_updated
-        description
-        group
         id
-        imgUrl
         index
+        link
+        name
         sort
         status
-        title
-        url
+        svg
         user_created
         user_updated
       }
       countDistinct {
+        activeSvg
         date_created
         date_updated
-        description
-        group
         id
-        imgUrl
         index
+        link
+        name
         sort
         status
-        title
-        url
+        svg
         user_created
         user_updated
       }
       avg {
-        group
         id
         index
         sort
       }
       sum {
-        group
         id
         index
         sort
       }
       avgDistinct {
-        group
         id
         index
         sort
       }
       sumDistinct {
-        group
         id
         index
         sort
       }
       min {
-        group
         id
         index
         sort
       }
       max {
-        group
         id
         index
         sort
@@ -190,16 +174,16 @@ export const DiscoverItem_AggregatedDocument = gql`
 `;
 
 /**
- * __useDiscoverItem_AggregatedQuery__
+ * __useOfficialSocialMedia_AggregatedQuery__
  *
- * To run a query within a React component, call `useDiscoverItem_AggregatedQuery` and pass it any options that fit your needs.
- * When your component renders, `useDiscoverItem_AggregatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useOfficialSocialMedia_AggregatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useOfficialSocialMedia_AggregatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useDiscoverItem_AggregatedQuery({
+ * const { data, loading, error } = useOfficialSocialMedia_AggregatedQuery({
  *   variables: {
  *      groupBy: // value for 'groupBy'
  *      filter: // value for 'filter'
@@ -211,27 +195,35 @@ export const DiscoverItem_AggregatedDocument = gql`
  *   },
  * });
  */
-export function useDiscoverItem_AggregatedQuery(
-  baseOptions?: Apollo.QueryHookOptions<DiscoverItem_AggregatedQuery, DiscoverItem_AggregatedQueryVariables>,
+export function useOfficialSocialMedia_AggregatedQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    OfficialSocialMedia_AggregatedQuery,
+    OfficialSocialMedia_AggregatedQueryVariables
+  >,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<DiscoverItem_AggregatedQuery, DiscoverItem_AggregatedQueryVariables>(
-    DiscoverItem_AggregatedDocument,
+  return Apollo.useQuery<OfficialSocialMedia_AggregatedQuery, OfficialSocialMedia_AggregatedQueryVariables>(
+    OfficialSocialMedia_AggregatedDocument,
     options,
   );
 }
-export function useDiscoverItem_AggregatedLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<DiscoverItem_AggregatedQuery, DiscoverItem_AggregatedQueryVariables>,
+export function useOfficialSocialMedia_AggregatedLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    OfficialSocialMedia_AggregatedQuery,
+    OfficialSocialMedia_AggregatedQueryVariables
+  >,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<DiscoverItem_AggregatedQuery, DiscoverItem_AggregatedQueryVariables>(
-    DiscoverItem_AggregatedDocument,
+  return Apollo.useLazyQuery<OfficialSocialMedia_AggregatedQuery, OfficialSocialMedia_AggregatedQueryVariables>(
+    OfficialSocialMedia_AggregatedDocument,
     options,
   );
 }
-export type DiscoverItem_AggregatedQueryHookResult = ReturnType<typeof useDiscoverItem_AggregatedQuery>;
-export type DiscoverItem_AggregatedLazyQueryHookResult = ReturnType<typeof useDiscoverItem_AggregatedLazyQuery>;
-export type DiscoverItem_AggregatedQueryResult = Apollo.QueryResult<
-  DiscoverItem_AggregatedQuery,
-  DiscoverItem_AggregatedQueryVariables
+export type OfficialSocialMedia_AggregatedQueryHookResult = ReturnType<typeof useOfficialSocialMedia_AggregatedQuery>;
+export type OfficialSocialMedia_AggregatedLazyQueryHookResult = ReturnType<
+  typeof useOfficialSocialMedia_AggregatedLazyQuery
+>;
+export type OfficialSocialMedia_AggregatedQueryResult = Apollo.QueryResult<
+  OfficialSocialMedia_AggregatedQuery,
+  OfficialSocialMedia_AggregatedQueryVariables
 >;

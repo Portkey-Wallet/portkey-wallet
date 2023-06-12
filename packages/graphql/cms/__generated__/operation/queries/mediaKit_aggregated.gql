@@ -1,69 +1,61 @@
-query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
-    discoverItem_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+query mediaKit_aggregated($groupBy: [String], $filter: mediaKit_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    mediaKit_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
         group
         countAll
         count{
+            backgroundColor
             date_created
             date_updated
-            description
-            group
             id
-            imgUrl
             index
+            name
+            png
             sort
             status
-            title
-            url
+            svg
             user_created
             user_updated
         }
         countDistinct{
+            backgroundColor
             date_created
             date_updated
-            description
-            group
             id
-            imgUrl
             index
+            name
+            png
             sort
             status
-            title
-            url
+            svg
             user_created
             user_updated
         }
         avg{
-            group
             id
             index
             sort
         }
         sum{
-            group
             id
             index
             sort
         }
         avgDistinct{
-            group
             id
             index
             sort
         }
         sumDistinct{
-            group
             id
             index
             sort
         }
         min{
-            group
             id
             index
             sort
         }
         max{
-            group
             id
             index
             sort

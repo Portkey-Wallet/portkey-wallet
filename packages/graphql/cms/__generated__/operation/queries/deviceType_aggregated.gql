@@ -1,72 +1,58 @@
-query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
-    discoverItem_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+query deviceType_aggregated($groupBy: [String], $filter: deviceType_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    deviceType_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
         group
         countAll
         count{
             date_created
             date_updated
-            description
-            group
             id
-            imgUrl
-            index
+            label
             sort
             status
-            title
-            url
             user_created
             user_updated
+            value
         }
         countDistinct{
             date_created
             date_updated
-            description
-            group
             id
-            imgUrl
-            index
+            label
             sort
             status
-            title
-            url
             user_created
             user_updated
+            value
         }
         avg{
-            group
             id
-            index
             sort
+            value
         }
         sum{
-            group
             id
-            index
             sort
+            value
         }
         avgDistinct{
-            group
             id
-            index
             sort
+            value
         }
         sumDistinct{
-            group
             id
-            index
             sort
+            value
         }
         min{
-            group
             id
-            index
             sort
+            value
         }
         max{
-            group
             id
-            index
             sort
+            value
         }
     }
 }

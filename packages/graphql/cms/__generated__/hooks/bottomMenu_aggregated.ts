@@ -3,11 +3,11 @@ import * as Types from '../types';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type DiscoverItem_AggregatedQueryVariables = Types.Exact<{
+export type BottomMenu_AggregatedQueryVariables = Types.Exact<{
   groupBy?: Types.InputMaybe<
     Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>
   >;
-  filter?: Types.InputMaybe<Types.DiscoverItem_Filter>;
+  filter?: Types.InputMaybe<Types.BottomMenu_Filter>;
   limit?: Types.InputMaybe<Types.Scalars['Int']>;
   offset?: Types.InputMaybe<Types.Scalars['Int']>;
   page?: Types.InputMaybe<Types.Scalars['Int']>;
@@ -15,100 +15,98 @@ export type DiscoverItem_AggregatedQueryVariables = Types.Exact<{
   sort?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']>> | Types.InputMaybe<Types.Scalars['String']>>;
 }>;
 
-export type DiscoverItem_AggregatedQuery = {
+export type BottomMenu_AggregatedQuery = {
   __typename?: 'Query';
-  discoverItem_aggregated: Array<{
-    __typename?: 'discoverItem_aggregated';
+  bottomMenu_aggregated: Array<{
+    __typename?: 'bottomMenu_aggregated';
     group?: any | null;
     countAll?: number | null;
     count?: {
-      __typename?: 'discoverItem_aggregated_count';
+      __typename?: 'bottomMenu_aggregated_count';
       date_created?: number | null;
       date_updated?: number | null;
-      description?: number | null;
-      group?: number | null;
       id?: number | null;
-      imgUrl?: number | null;
       index?: number | null;
+      path?: number | null;
       sort?: number | null;
       status?: number | null;
       title?: number | null;
-      url?: number | null;
+      type?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
+      children?: number | null;
     } | null;
     countDistinct?: {
-      __typename?: 'discoverItem_aggregated_count';
+      __typename?: 'bottomMenu_aggregated_count';
       date_created?: number | null;
       date_updated?: number | null;
-      description?: number | null;
-      group?: number | null;
       id?: number | null;
-      imgUrl?: number | null;
       index?: number | null;
+      path?: number | null;
       sort?: number | null;
       status?: number | null;
       title?: number | null;
-      url?: number | null;
+      type?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
+      children?: number | null;
     } | null;
     avg?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'bottomMenu_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
+      type?: number | null;
     } | null;
     sum?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'bottomMenu_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
+      type?: number | null;
     } | null;
     avgDistinct?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'bottomMenu_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
+      type?: number | null;
     } | null;
     sumDistinct?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'bottomMenu_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
+      type?: number | null;
     } | null;
     min?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'bottomMenu_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
+      type?: number | null;
     } | null;
     max?: {
-      __typename?: 'discoverItem_aggregated_fields';
-      group?: number | null;
+      __typename?: 'bottomMenu_aggregated_fields';
       id?: number | null;
       index?: number | null;
       sort?: number | null;
+      type?: number | null;
     } | null;
   }>;
 };
 
-export const DiscoverItem_AggregatedDocument = gql`
-  query discoverItem_aggregated(
+export const BottomMenu_AggregatedDocument = gql`
+  query bottomMenu_aggregated(
     $groupBy: [String]
-    $filter: discoverItem_filter
+    $filter: bottomMenu_filter
     $limit: Int
     $offset: Int
     $page: Int
     $search: String
     $sort: [String]
   ) {
-    discoverItem_aggregated(
+    bottomMenu_aggregated(
       groupBy: $groupBy
       filter: $filter
       limit: $limit
@@ -122,84 +120,82 @@ export const DiscoverItem_AggregatedDocument = gql`
       count {
         date_created
         date_updated
-        description
-        group
         id
-        imgUrl
         index
+        path
         sort
         status
         title
-        url
+        type
         user_created
         user_updated
+        children
       }
       countDistinct {
         date_created
         date_updated
-        description
-        group
         id
-        imgUrl
         index
+        path
         sort
         status
         title
-        url
+        type
         user_created
         user_updated
+        children
       }
       avg {
-        group
         id
         index
         sort
+        type
       }
       sum {
-        group
         id
         index
         sort
+        type
       }
       avgDistinct {
-        group
         id
         index
         sort
+        type
       }
       sumDistinct {
-        group
         id
         index
         sort
+        type
       }
       min {
-        group
         id
         index
         sort
+        type
       }
       max {
-        group
         id
         index
         sort
+        type
       }
     }
   }
 `;
 
 /**
- * __useDiscoverItem_AggregatedQuery__
+ * __useBottomMenu_AggregatedQuery__
  *
- * To run a query within a React component, call `useDiscoverItem_AggregatedQuery` and pass it any options that fit your needs.
- * When your component renders, `useDiscoverItem_AggregatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useBottomMenu_AggregatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBottomMenu_AggregatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useDiscoverItem_AggregatedQuery({
+ * const { data, loading, error } = useBottomMenu_AggregatedQuery({
  *   variables: {
  *      groupBy: // value for 'groupBy'
  *      filter: // value for 'filter'
@@ -211,27 +207,27 @@ export const DiscoverItem_AggregatedDocument = gql`
  *   },
  * });
  */
-export function useDiscoverItem_AggregatedQuery(
-  baseOptions?: Apollo.QueryHookOptions<DiscoverItem_AggregatedQuery, DiscoverItem_AggregatedQueryVariables>,
+export function useBottomMenu_AggregatedQuery(
+  baseOptions?: Apollo.QueryHookOptions<BottomMenu_AggregatedQuery, BottomMenu_AggregatedQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<DiscoverItem_AggregatedQuery, DiscoverItem_AggregatedQueryVariables>(
-    DiscoverItem_AggregatedDocument,
+  return Apollo.useQuery<BottomMenu_AggregatedQuery, BottomMenu_AggregatedQueryVariables>(
+    BottomMenu_AggregatedDocument,
     options,
   );
 }
-export function useDiscoverItem_AggregatedLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<DiscoverItem_AggregatedQuery, DiscoverItem_AggregatedQueryVariables>,
+export function useBottomMenu_AggregatedLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<BottomMenu_AggregatedQuery, BottomMenu_AggregatedQueryVariables>,
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<DiscoverItem_AggregatedQuery, DiscoverItem_AggregatedQueryVariables>(
-    DiscoverItem_AggregatedDocument,
+  return Apollo.useLazyQuery<BottomMenu_AggregatedQuery, BottomMenu_AggregatedQueryVariables>(
+    BottomMenu_AggregatedDocument,
     options,
   );
 }
-export type DiscoverItem_AggregatedQueryHookResult = ReturnType<typeof useDiscoverItem_AggregatedQuery>;
-export type DiscoverItem_AggregatedLazyQueryHookResult = ReturnType<typeof useDiscoverItem_AggregatedLazyQuery>;
-export type DiscoverItem_AggregatedQueryResult = Apollo.QueryResult<
-  DiscoverItem_AggregatedQuery,
-  DiscoverItem_AggregatedQueryVariables
+export type BottomMenu_AggregatedQueryHookResult = ReturnType<typeof useBottomMenu_AggregatedQuery>;
+export type BottomMenu_AggregatedLazyQueryHookResult = ReturnType<typeof useBottomMenu_AggregatedLazyQuery>;
+export type BottomMenu_AggregatedQueryResult = Apollo.QueryResult<
+  BottomMenu_AggregatedQuery,
+  BottomMenu_AggregatedQueryVariables
 >;

@@ -1,72 +1,76 @@
-query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
-    discoverItem_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
+query bottomSecondMenu_aggregated($groupBy: [String], $filter: bottomSecondMenu_filter, $limit: Int, $offset: Int, $page: Int, $search: String, $sort: [String]){
+    bottomSecondMenu_aggregated(groupBy: $groupBy, filter: $filter, limit: $limit, offset: $offset, page: $page, search: $search, sort: $sort){
         group
         countAll
         count{
             date_created
             date_updated
-            description
-            group
             id
-            imgUrl
             index
+            parent
+            path
             sort
             status
             title
-            url
+            type
             user_created
             user_updated
         }
         countDistinct{
             date_created
             date_updated
-            description
-            group
             id
-            imgUrl
             index
+            parent
+            path
             sort
             status
             title
-            url
+            type
             user_created
             user_updated
         }
         avg{
-            group
             id
             index
+            parent
             sort
+            type
         }
         sum{
-            group
             id
             index
+            parent
             sort
+            type
         }
         avgDistinct{
-            group
             id
             index
+            parent
             sort
+            type
         }
         sumDistinct{
-            group
             id
             index
+            parent
             sort
+            type
         }
         min{
-            group
             id
             index
+            parent
             sort
+            type
         }
         max{
-            group
             id
             index
+            parent
             sort
+            type
         }
     }
 }

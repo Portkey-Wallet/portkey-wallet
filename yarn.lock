@@ -4706,15 +4706,6 @@
   resolved "https://registry.yarnpkg.com/@metamask/detect-provider/-/detect-provider-1.2.0.tgz#3667a7531f2a682e3c3a43eaf3a1958bdb42a696"
   integrity sha512-ocA76vt+8D0thgXZ7LxFPyqw3H7988qblgzddTDA6B8a/yU0uKV42QR/DhA+Jh11rJjxW0jKvwb5htA6krNZDQ==
 
-"@metamask/object-multiplex@^1.1.0":
-  version "1.2.0"
-  resolved "https://registry.npmjs.org/@metamask/object-multiplex/-/object-multiplex-1.2.0.tgz#38fc15c142f61939391e1b9a8eed679696c7e4f4"
-  integrity sha512-hksV602d3NWE2Q30Mf2Np1WfVKaGqfJRy9vpHAmelbaD0OkDt06/0KQkRR6UVYdMbTbkuEu8xN5JDUU80inGwQ==
-  dependencies:
-    end-of-stream "^1.4.4"
-    once "^1.4.0"
-    readable-stream "^2.3.3"
-
 "@metamask/safe-event-emitter@2.0.0", "@metamask/safe-event-emitter@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmmirror.com/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz#af577b477c683fad17c619a78208cede06f9605c"
@@ -5193,76 +5184,53 @@
   resolved "https://registry.npmmirror.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@portkey/chain@^0.0.1-alpha.19":
-  version "0.0.1-alpha.19"
-  resolved "https://registry.npmjs.org/@portkey/chain/-/chain-0.0.1-alpha.19.tgz#e9f291ed100c7dfd9353ccb49fe3fa1df9ecc8e9"
-  integrity sha512-mhxUT9IT6sWfE9DFcJx9NKMhwLk+NsGEceG2t0d6uI9Wm9hTZp78S5RWr/dkG0I/br2Y8xf3ZSDUmU1bdLnzRg==
+"@portkey/chain@^0.0.1-alpha.22":
+  version "0.0.1-alpha.22"
+  resolved "https://registry.yarnpkg.com/@portkey/chain/-/chain-0.0.1-alpha.22.tgz#484f4ad889b8f3f02aa7b5dae48d3648eb225f93"
+  integrity sha512-2Z/yI6Ze0Of2HFdReOzVqXgTPULg4uEfKZ1GUqr4piRBYCbBmmrl0nhABuJIxOsNuW+5OQYRwFD5C3SJ4g26xA==
   dependencies:
-    "@portkey/provider-types" "^0.0.1-alpha.19"
+    "@portkey/provider-types" "^0.0.1-alpha.22"
     aelf-sdk "^3.2.44"
 
-"@portkey/extension-provider@0.0.1-alpha.21":
-  version "0.0.1-alpha.21"
-  resolved "https://registry.yarnpkg.com/@portkey/extension-provider/-/extension-provider-0.0.1-alpha.21.tgz#388c6ce3a8832a9bd869854fe7cff46f398eb465"
-  integrity sha512-Cy+JrhCZde8h10iG9pyXD9uHtv/IVsc7HRLgrC0X1KBNWM60TFxhHsCVHyQcVivvRooFbGDxqlQpGWbwqlJNIw==
+"@portkey/extension-provider@0.0.1-alpha.22":
+  version "0.0.1-alpha.22"
+  resolved "https://registry.yarnpkg.com/@portkey/extension-provider/-/extension-provider-0.0.1-alpha.22.tgz#29ffc0a057a5fb5deeb538240a28718e15983fb3"
+  integrity sha512-tKAceyXZ1tD0JuwBC+0T1ZHD2umTmQz3lBQNF/LQ7RtIC5e7MyycXot2aBVYFBh8Ia0f4EjRAnl+EDm4eJII+Q==
   dependencies:
-    "@portkey/provider-types" "^0.0.1-alpha.19"
-    "@portkey/providers" "^0.0.1-alpha.21"
+    "@portkey/provider-types" "^0.0.1-alpha.22"
+    "@portkey/providers" "^0.0.1-alpha.22"
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
-"@portkey/mobile-provider@^0.0.1-alpha.19":
-  version "0.0.1-alpha.19"
-  resolved "https://registry.npmjs.org/@portkey/mobile-provider/-/mobile-provider-0.0.1-alpha.19.tgz#2c20c58aa914145119dc865b644299f37fe7344e"
-  integrity sha512-aPZP3Ud+xroya1s9bGdQ/RCXsvuzUegw40lMFV2hj8vHMhlFbd90R4U0tlITRJYModxjs8mUB81CMoH+6C+vFg==
+"@portkey/mobile-provider@^0.0.1-alpha.22":
+  version "0.0.1-alpha.22"
+  resolved "https://registry.yarnpkg.com/@portkey/mobile-provider/-/mobile-provider-0.0.1-alpha.22.tgz#890de64cca9812bb02ee100d2dd3fcbfa5300215"
+  integrity sha512-d5pOIIRq4wWIZzEYp1R/dO99V4cEgJE4Sb1jJMJWaXltHCrBdQhxa0WMRm6LppTPTuH07RHlKtglG1ZKy0N+wg==
 
-"@portkey/provider-types@0.0.1-alpha.21", "@portkey/provider-types@^0.0.1-alpha.19":
-  version "0.0.1-alpha.19"
-  resolved "https://registry.npmjs.org/@portkey/provider-types/-/provider-types-0.0.1-alpha.19.tgz#d67194cda11641c6b9ad2b10d8421ee159fd214f"
-  integrity sha512-nNV2tk+ttNTItZwVRuvWh5OlUPPw5rv0C68n/b73BksJ8ChRh7kK0Bmc6mQkKsmx2J6IWTMtMQix+3VbINS9EA==
+"@portkey/provider-types@0.0.1-alpha.22", "@portkey/provider-types@^0.0.1-alpha.22":
+  version "0.0.1-alpha.22"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-types/-/provider-types-0.0.1-alpha.22.tgz#89aef3b358650bcea3ddccfdc8c865e7bd7e814a"
+  integrity sha512-0EWV2a2v8+ZvHhs6RLtegMJUYPAHB3aeLWgzKMU5vUqG6OzOtmTAFbTvIBmZcW3xSHxyPDkkvMwjxPiSaSCigw==
   dependencies:
     "@types/readable-stream" "^2.3.15"
 
-"@portkey/provider-utils@0.0.1-alpha.21", "@portkey/provider-utils@^0.0.1-alpha.21":
-  version "0.0.1-alpha.21"
-  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.21.tgz#6548ecd3a9d9abd809a968bc0700deae6c8bc0e9"
-  integrity sha512-BXihRsZyMNrvN2PM8AP0GyglzbtAwULE6wfjqY4bjaOLkvT48jZ/VmQy7nvMpYaQciXEMiL0tUooOCqlQ0W1Sg==
+"@portkey/provider-utils@0.0.1-alpha.22", "@portkey/provider-utils@^0.0.1-alpha.22":
+  version "0.0.1-alpha.22"
+  resolved "https://registry.yarnpkg.com/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.22.tgz#a9e25bb0ccec4c11626da2e30b4aae03d249753f"
+  integrity sha512-n8z4gGeWohRR/o2cDfqyxFCtMyCarXqgwu3pae1dT3FWRgEJi7dO1kPrQ7cK0zS2opltgfr4KbeARYZIwU4rDg==
   dependencies:
-    "@portkey/provider-types" "^0.0.1-alpha.19"
+    "@portkey/provider-types" "^0.0.1-alpha.22"
 
-"@portkey/provider-utils@^0.0.1-alpha.19":
-  version "0.0.1-alpha.19"
-  resolved "https://registry.npmjs.org/@portkey/provider-utils/-/provider-utils-0.0.1-alpha.19.tgz#0917943b88e91456e989c51e60f0a186fc6395cc"
-  integrity sha512-RiTE21bl1fEfvsth97L8gyfRanYyQy1H69ozMdltW+FFb3bd6Skcd1qMJgNQwQVsiVTepjpzvxqJuHWM/N4Wvw==
+"@portkey/providers@0.0.1-alpha.22", "@portkey/providers@^0.0.1-alpha.22":
+  version "0.0.1-alpha.22"
+  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-0.0.1-alpha.22.tgz#38b35865724dd6936df3f2901371413ca4f6e6c5"
+  integrity sha512-Rx7Rhuw56ibkB4iS1CglK5kA92iWSB4YOA2ylwZ+bY0jXJf3lw5grrk7s38ur133Ig8D7SW4AZp9jaD+G7TjLg==
   dependencies:
-    "@portkey/provider-types" "^0.0.1-alpha.19"
-
-"@portkey/providers@0.0.1-alpha.21", "@portkey/providers@^0.0.1-alpha.21":
-  version "0.0.1-alpha.21"
-  resolved "https://registry.yarnpkg.com/@portkey/providers/-/providers-0.0.1-alpha.21.tgz#c233c0deab104dafb83a8975316d5cbd936c9f76"
-  integrity sha512-0iBi0VD5i6/HJOf+0Xw3e7Lv1fyL8aR/zNcEu/3UYjsxjFGZys55mhK1Pe8XHTRgQPJY6RpU1DTecmquFwG2ew==
-  dependencies:
-    "@metamask/object-multiplex" "^1.1.0"
-    "@portkey/chain" "^0.0.1-alpha.19"
-    "@portkey/provider-types" "^0.0.1-alpha.19"
-    "@portkey/provider-utils" "^0.0.1-alpha.21"
+    "@portkey/chain" "^0.0.1-alpha.22"
+    "@portkey/provider-types" "^0.0.1-alpha.22"
+    "@portkey/provider-utils" "^0.0.1-alpha.22"
     "@types/readable-stream" "^2.3.15"
     lodash "^4.17.21"
-    pump "^3.0.0"
-    readable-stream "^4.4.0"
-
-"@portkey/providers@^0.0.1-alpha.19":
-  version "0.0.1-alpha.19"
-  resolved "https://registry.npmjs.org/@portkey/providers/-/providers-0.0.1-alpha.19.tgz#fbaa9ebfed3dd3f1b96945f4bde4bdb100f027e9"
-  integrity sha512-IJm19Fbl2pBxNCLS9cgd0qQ06ZCyqpdTghlFliD6XppUzy01wpOSiF7NujAWUntMn7lCV6eSuAtoJ4/gW1aEyA==
-  dependencies:
-    "@metamask/object-multiplex" "^1.1.0"
-    "@portkey/chain" "^0.0.1-alpha.19"
-    "@portkey/provider-types" "^0.0.1-alpha.19"
-    "@portkey/provider-utils" "^0.0.1-alpha.19"
-    "@types/readable-stream" "^2.3.15"
-    lodash "^4.17.21"
-    pump "^3.0.0"
     readable-stream "^4.4.0"
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
@@ -13016,7 +12984,7 @@ encoding@^0.1.11, encoding@^0.1.13:
   dependencies:
     iconv-lite "^0.6.2"
 
-end-of-stream@^1.0.0, end-of-stream@^1.1.0, end-of-stream@^1.4.1, end-of-stream@^1.4.4:
+end-of-stream@^1.0.0, end-of-stream@^1.1.0, end-of-stream@^1.4.1:
   version "1.4.4"
   resolved "https://registry.npmmirror.com/end-of-stream/-/end-of-stream-1.4.4.tgz#5ae64a5f45057baf3626ec14da0ca5e4b2431eb0"
   integrity sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
@@ -23399,10 +23367,10 @@ react-native-fs@^2.20.0:
     base-64 "^0.1.0"
     utf8 "^3.0.0"
 
-react-native-gesture-handler@2.10.2:
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.10.2.tgz#0d7d82de767a551157eaedc5f74e389c5fc357b9"
-  integrity sha512-yUwTrgLinaGRdJN3igL5/QP+09B294EKgoCH7QJ4ABKb4W2mUvSDbbuGMaYBNnwMKAD87Ns2q/qibLWy3E3LTw==
+react-native-gesture-handler@2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-gesture-handler/-/react-native-gesture-handler-2.9.0.tgz#2f63812e523c646f25b9ad660fc6f75948e51241"
+  integrity sha512-a0BcH3Qb1tgVqUutc6d3VuWQkI1AM3+fJx8dkxzZs9t06qA27QgURYFoklpabuWpsUTzuKRpxleykp25E8m7tg==
   dependencies:
     "@egjs/hammerjs" "^2.0.17"
     hoist-non-react-statics "^3.3.0"

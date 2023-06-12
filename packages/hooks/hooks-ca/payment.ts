@@ -69,7 +69,6 @@ export const useSellTransfer = () => {
       }
 
       const result = await paymentSellTransfer(achTxAddressReceived);
-      console.log('🌹 🌹 🌹 paymentSellTransfer', result);
       if (result.error) {
         throw result.error;
       }

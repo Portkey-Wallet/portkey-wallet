@@ -34,7 +34,6 @@ export default function Home() {
       // // TODO SELL LOCKED
       // }
       if (detail && method === walletMessage.ACH_SELL_REDIRECT && !locked && isSell.current === 0) {
-        console.log('🌹 🌹 🌹', '');
         isSell.current = 1;
         handleAchSell(detail);
       }

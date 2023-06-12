@@ -17,6 +17,7 @@ import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import getTransferFee from './utils/getTransferFee';
+import { ResponseCode } from '@portkey/provider-types';
 import './index.less';
 
 export default function SendTransactions() {
@@ -43,6 +44,18 @@ export default function SendTransactions() {
   const privateKey = useMemo(
     () => aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed),
     [passwordSeed, wallet.AESEncryptPrivateKey],
+  );
+
+  const formatAmountInUsdShow = useCallback(
+    (amount: string | number, decimals: string | number, symbol: string) => {
+      const value = amountInUsdShow(amount, decimals, symbol);
+      if (symbol === 'ELF') {
+        return value === '$ 0' ? '<$ 0.01' : value;
+      } else {
+        return value;
+      }
+    },
+    [amountInUsdShow],
   );
 
   const getFee = useCallback(async () => {
@@ -111,78 +124,87 @@ export default function SendTransactions() {
 
     return (
       <div className="detail">
-        <div className="title">Details</div>
+        <div>Details</div>
         <div className="amount">
-          <div className="title">Amount</div>
-          <div className="amount-number flex-between">
-            <div>{`${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}</div>
-            {isMainnet && <div>{amountInUsdShow(amount, decimals, symbol)}</div>}
+          <div>Amount</div>
+          <div className="amount-number flex-between-center">
+            <div className="value">{`${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}</div>
+            {isMainnet && <div>{formatAmountInUsdShow(amount, decimals, symbol)}</div>}
           </div>
         </div>
-        <div className="fee flex-between">
+        <div className="fee">
           <div>Transaction Fee</div>
-          <div className="fee-amount">
-            <div className="elf">{`${formatAmountShow(fee, 8)} ELF`}</div>
-            {isMainnet && <div>{amountInUsdShow(fee, 0, 'ELF')}</div>}
+          <div className="fee-amount flex-between-center">
+            <div className="value">{`${formatAmountShow(fee, 8)} ELF`}</div>
+            {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
           </div>
         </div>
-        <div className="total flex-between">
+        <div className="total">
           <div>Total (Amount + Transaction Fee)</div>
-          <div className="total-amount">
-            {symbol === 'ELF' ? (
-              <>
-                <div className="elf">{`${formatAmountShow(
-                  ZERO.plus(divDecimals(amount, decimals)).plus(fee),
-                  8,
-                )} ${symbol}`}</div>
-                {isMainnet && (
-                  <div>{amountInUsdShow(ZERO.plus(divDecimals(amount, decimals)).plus(fee).toNumber(), 0, symbol)}</div>
-                )}
-              </>
-            ) : (
-              <>
-                <div className="elf">{`${formatAmountShow(fee, 8)} ELF`}</div>
-                {isMainnet && <div>{amountInUsdShow(fee, 0, 'ELF')}</div>}
-                <div className="elf">{`${formatAmountShow(amount)} ${symbol}`}</div>
-                {isMainnet && <div>{amountInUsdShow(amount, 0, symbol)}</div>}
-              </>
-            )}
-          </div>
+          {symbol === 'ELF' ? (
+            <div className="amount-show flex-between-center">
+              <div className="value">{`${formatAmountShow(
+                ZERO.plus(divDecimals(amount, decimals)).plus(fee),
+                8,
+              )} ${symbol}`}</div>
+              {isMainnet && (
+                <div>
+                  {formatAmountInUsdShow(ZERO.plus(divDecimals(amount, decimals)).plus(fee).toNumber(), 0, symbol)}
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="amount-show flex-between-center">
+                <div className="value">{`${formatAmountShow(fee, 8)} ELF`}</div>
+                {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
+              </div>
+              <div className="amount-show flex-between-center">
+                <div className="value">{`${formatAmountShow(amount)} ${symbol}`}</div>
+                {isMainnet && <div>{formatAmountInUsdShow(amount, 0, symbol)}</div>}
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
-  }, [amountInUsdShow, fee, isMainnet, payload?.params?.paramsOption]);
+  }, [formatAmountInUsdShow, fee, isMainnet, payload?.params?.paramsOption]);
 
   const renderMessage = useMemo(() => {
     const params = payload?.params?.paramsOption || {};
     return (
       <div className="message-wrapper">
-        <div className="title">Message</div>
+        <div>Message</div>
         <div className="message">
           {Object.keys(params).map((item) => (
             <>
-              <div className="title">{item}</div>
+              <div className="value">{item}</div>
               <div className="content">{params[item]}</div>
             </>
           ))}
         </div>
-        <div className="fee flex-between">
+        <div className="fee">
           <div>Transaction Fee</div>
-          <div className="fee-amount">
-            <div className="elf">{`${formatAmountShow(fee)} ELF`}</div>
-            {isMainnet && <div>{amountInUsdShow(fee, 0, 'ELF')}</div>}
+          <div className="fee-amount flex-between-center">
+            <div className="value">{`${formatAmountShow(fee)} ELF`}</div>
+            {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
           </div>
         </div>
       </div>
     );
-  }, [amountInUsdShow, fee, isMainnet, payload?.params?.paramsOption]);
+  }, [formatAmountInUsdShow, fee, isMainnet, payload?.params?.paramsOption]);
 
   const sendHandler = useCallback(async () => {
     try {
       if (!chainInfo?.endPoint || !wallet?.caHash) {
-        closePrompt({ ...errorHandler(400001), data: { code: 4002, msg: 'invalid chain id' } });
+        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' } });
         return;
       }
+      if (chainInfo?.endPoint !== payload?.params?.rpcUrl) {
+        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' } });
+        return;
+      }
+
       let paramsOption = payload?.params?.paramsOption;
 
       const functionName = isCAContract ? payload?.method : 'ManagerForwardCall';
@@ -223,8 +245,8 @@ export default function SendTransactions() {
       </div>
       {renderAccountInfo}
       <div className="method">
-        <div className="title">Method</div>
-        <div className="method-name">{payload?.method}</div>
+        <div>Method</div>
+        <div className="value method-name">{payload?.method}</div>
       </div>
       {payload?.method.toLowerCase() === 'transfer' ? renderDetail : renderMessage}
       {errMsg && <div className="error-message">{errMsg}</div>}

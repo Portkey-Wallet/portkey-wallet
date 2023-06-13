@@ -20,10 +20,15 @@ export const discoverSlice = createSlice({
   initialState,
   reducers: {
     initNetworkDiscoverMap: (state, { payload }: { payload: NetworkType }) => {
-      state.discoverMap[payload] = JSON.parse(JSON.stringify(initNetworkData));
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload]: JSON.parse(JSON.stringify(initNetworkData)),
+      };
     },
     addRecordsItem: (state, { payload }: { payload: ITabItem & { networkType: NetworkType } }) => {
       const { networkType, url } = payload;
+      if (!state.discoverMap) return;
+
       if (!state.discoverMap?.[networkType]) state.discoverMap[networkType] = initNetworkData;
 
       const targetItem = state.discoverMap?.[networkType]?.recordsList.find(item => item.url === url);
@@ -95,7 +100,10 @@ export const discoverSlice = createSlice({
       state.isDrawerOpen = payload;
     },
     resetDiscover: (state, { payload }: { payload: NetworkType }) => {
-      state.discoverMap[payload] = JSON.parse(JSON.stringify(initNetworkData));
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload]: JSON.parse(JSON.stringify(initNetworkData)),
+      };
     },
   },
 });

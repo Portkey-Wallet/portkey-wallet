@@ -223,7 +223,7 @@ export default class AELFMethodController {
         ...errorHandler(400001),
         data: {
           code: ResponseCode.CONTRACT_ERROR,
-          msg: 'method is not in the whitelist',
+          msg: 'The current method is not supported',
         },
       });
 

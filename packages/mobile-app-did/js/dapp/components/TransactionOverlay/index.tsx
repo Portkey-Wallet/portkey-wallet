@@ -13,7 +13,6 @@ import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
 import { SendTransactionParams } from '@portkey/provider-types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -24,11 +23,10 @@ import { usePin } from 'hooks/store';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount } from 'utils/redux';
 import { customFetch } from '@portkey-wallet/utils/fetch';
-import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight } from '@portkey-wallet/utils/mobile/device';
 import DappInfoSection from '../DappInfoSection';
 import TransactionDataSection from '../TransactionDataSection';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 
 interface TransactionModalPropsType {
   dappInfo: DappStoreItem;
@@ -39,7 +37,6 @@ interface TransactionModalPropsType {
 const ConnectModal = (props: TransactionModalPropsType) => {
   const { dappInfo, transactionInfo, onReject, onSign } = props;
   const { t } = useLanguage();
-  const gStyles = useGStyles();
   const isMainnet = useIsMainnet();
   const pin = usePin();
 
@@ -49,7 +46,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const amountInUsdShow = useAmountInUsdShow();
 
   const chainInfo = useCurrentChain(transactionInfo.chainId);
-  const [tokenPriceObject, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
+  const [, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
 
   const isCAContract = useMemo(
     () => chainInfo?.caContractAddress === transactionInfo?.contractAddress,
@@ -101,11 +98,15 @@ const ConnectModal = (props: TransactionModalPropsType) => {
 
     return (
       <>
-        <Text style={[transferGroupStyle.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-          {`${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}
-        </Text>
-        {isMainnet && (
-          <TextM style={transferGroupStyle.tokenUSD}>{`${formatAmountInUsdShow(amount, decimals, symbol)}`}</TextM>
+        {isTransfer && (
+          <>
+            <Text style={[transferGroupStyle.tokenCount, FontStyles.font5, fonts.mediumFont]}>
+              {`${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}
+            </Text>
+            {isMainnet && (
+              <TextM style={transferGroupStyle.tokenUSD}>{`${formatAmountInUsdShow(amount, decimals, symbol)}`}</TextM>
+            )}
+          </>
         )}
         <View style={transferGroupStyle.card}>
           {/* From */}
@@ -144,7 +145,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                 8,
               )} ELF`}</TextM>
             </View>
-            {!isMainnet && (
+            {isMainnet && (
               <View style={[transferGroupStyle.flexSpaceBetween]}>
                 <TextM />
                 <TextS style={transferGroupStyle.lightGrayFontColor}>
@@ -155,58 +156,64 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           </View>
 
           {/* total */}
-          <Text style={[transferGroupStyle.divider, transferGroupStyle.marginTop0]} />
-          {symbol === 'ELF' ? (
-            <View style={transferGroupStyle.section}>
-              <View style={[transferGroupStyle.flexSpaceBetween]}>
-                <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
-                <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
-                  divDecimals(ZERO.plus(amount).plus(fee), decimals),
-                  8,
-                )} ${symbol}`}</TextM>
-              </View>
-              {!isMainnet && (
-                <View style={[transferGroupStyle.flexSpaceBetween]}>
-                  <TextM />
-                  <TextS style={transferGroupStyle.blackFontColor}>
-                    {formatAmountInUsdShow(divDecimals(ZERO.plus(amount).plus(fee)).toNumber(), 0, symbol)}
-                  </TextS>
+          {isTransfer && (
+            <>
+              <Text style={[transferGroupStyle.divider, transferGroupStyle.marginTop0]} />
+              {symbol === 'ELF' ? (
+                <View style={transferGroupStyle.section}>
+                  <View style={[transferGroupStyle.flexSpaceBetween]}>
+                    <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
+                    <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
+                      divDecimals(ZERO.plus(amount).plus(fee), decimals),
+                      8,
+                    )} ${symbol}`}</TextM>
+                  </View>
+                  {isMainnet && (
+                    <View style={[transferGroupStyle.flexSpaceBetween]}>
+                      <TextM />
+                      <TextS style={transferGroupStyle.blackFontColor}>
+                        {formatAmountInUsdShow(divDecimals(ZERO.plus(amount).plus(fee)).toNumber(), 0, symbol)}
+                      </TextS>
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <View style={transferGroupStyle.section}>
+                  <View style={[transferGroupStyle.flexSpaceBetween]}>
+                    <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
+                    <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
+                      divDecimals(ZERO.plus(fee), ELF_DECIMAL),
+                      8,
+                    )} ELF`}</TextM>
+                  </View>
+                  {isMainnet && (
+                    <View style={[transferGroupStyle.flexSpaceBetween]}>
+                      <TextM />
+                      <TextS style={transferGroupStyle.lightGrayFontColor}>
+                        {fee === '0'
+                          ? '$ 0'
+                          : formatAmountInUsdShow(divDecimals(fee, ELF_DECIMAL).toNumber(), 0, 'ELF')}
+                      </TextS>
+                    </View>
+                  )}
+                  <View style={[transferGroupStyle.flexSpaceBetween]}>
+                    <TextM />
+                    <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
+                      divDecimals(ZERO.plus(amount), decimals),
+                      8,
+                    )} ${symbol}`}</TextM>
+                  </View>
+                  {isMainnet && (
+                    <View style={[transferGroupStyle.flexSpaceBetween]}>
+                      <TextM />
+                      <TextM style={transferGroupStyle.lightGrayFontColor}>
+                        {formatAmountInUsdShow(divDecimals(ZERO.plus(amount), decimals).toNumber(), 0, symbol)}
+                      </TextM>
+                    </View>
+                  )}
                 </View>
               )}
-            </View>
-          ) : (
-            <View style={transferGroupStyle.section}>
-              <View style={[transferGroupStyle.flexSpaceBetween]}>
-                <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
-                <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
-                  divDecimals(ZERO.plus(fee), ELF_DECIMAL),
-                  8,
-                )} ELF`}</TextM>
-              </View>
-              {!isMainnet && (
-                <View style={[transferGroupStyle.flexSpaceBetween]}>
-                  <TextM />
-                  <TextS style={transferGroupStyle.lightGrayFontColor}>
-                    {fee === '0' ? '$ 0' : formatAmountInUsdShow(divDecimals(fee, ELF_DECIMAL).toNumber(), 0, 'ELF')}
-                  </TextS>
-                </View>
-              )}
-              <View style={[transferGroupStyle.flexSpaceBetween]}>
-                <TextM />
-                <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
-                  divDecimals(ZERO.plus(amount), decimals),
-                  8,
-                )} ${symbol}`}</TextM>
-              </View>
-              {!isMainnet && (
-                <View style={[transferGroupStyle.flexSpaceBetween]}>
-                  <TextM />
-                  <TextM style={transferGroupStyle.lightGrayFontColor}>
-                    {formatAmountInUsdShow(divDecimals(ZERO.plus(amount), decimals).toNumber(), 0, symbol)}
-                  </TextM>
-                </View>
-              )}
-            </View>
+            </>
           )}
         </View>
         {noEnoughFee && <TextS style={styles.error}>Insufficient funds for transaction fee</TextS>}
@@ -216,6 +223,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
     fee,
     formatAmountInUsdShow,
     isMainnet,
+    isTransfer,
     noEnoughFee,
     t,
     transactionInfo.chainId,
@@ -295,7 +303,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
         <TextS style={styles.method}>{transactionInfo?.method}</TextS>
         <ScrollView style={styles.scrollSection}>
           {transferContent}
-          {isTransfer && (
+          {!isTransfer && (
             <TransactionDataSection
               dataInfo={transactionInfo?.params?.paramsOption}
               style={styles.transactionDataSection}
@@ -325,6 +333,7 @@ const styles = StyleSheet.create({
   },
 
   method: {
+    overflow: 'hidden',
     borderRadius: pTd(6),
     marginTop: pTd(24),
     textAlign: 'center',
@@ -337,7 +346,7 @@ const styles = StyleSheet.create({
   },
   scrollSection: {
     height: screenHeight / 2,
-    paddingLeft: pTd(20),
+    paddingBottom: pTd(100),
   },
   error: {
     color: defaultColors.error,
@@ -350,20 +359,18 @@ const transferGroupStyle = StyleSheet.create({
   tokenCount: {
     marginTop: pTd(4),
     fontSize: pTd(28),
-    width: screenWidth,
     textAlign: 'center',
+    width: pTd(335),
   },
   tokenUSD: {
     color: defaultColors.font3,
-    width: screenWidth,
     textAlign: 'center',
     marginTop: pTd(4),
+    width: pTd(335),
   },
   group: {
     backgroundColor: defaultColors.bg1,
     marginTop: pTd(24),
-    paddingLeft: pTd(16),
-    paddingRight: pTd(16),
     borderRadius: pTd(6),
   },
   tokenNum: {
@@ -398,16 +405,16 @@ const transferGroupStyle = StyleSheet.create({
   },
   divider: {
     marginTop: pTd(24),
-    width: '100%',
+    width: pTd(335),
     height: StyleSheet.hairlineWidth,
     backgroundColor: defaultColors.border6,
   },
   card: {
     marginTop: pTd(24),
+    width: pTd(335),
     borderRadius: pTd(6),
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: defaultColors.border1,
-    width: pTd(335),
   },
   section: {
     ...GStyles.paddingArg(16, 12),

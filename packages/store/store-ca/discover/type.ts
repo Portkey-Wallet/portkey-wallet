@@ -16,7 +16,7 @@ export interface IDiscoverNetworkStateType {
 
 export interface IDiscoverStateType {
   isDrawerOpen: boolean;
-  discoverMap: {
+  discoverMap?: {
     [key in NetworkType]?: IDiscoverNetworkStateType;
   };
 }

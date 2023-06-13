@@ -172,7 +172,11 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                     <View style={[transferGroupStyle.flexSpaceBetween]}>
                       <TextM />
                       <TextS style={transferGroupStyle.blackFontColor}>
-                        {formatAmountInUsdShow(divDecimals(ZERO.plus(amount).plus(fee)).toNumber(), 0, symbol)}
+                        {formatAmountInUsdShow(
+                          divDecimals(ZERO.plus(amount).plus(fee), ELF_DECIMAL).toNumber(),
+                          0,
+                          symbol,
+                        )}
                       </TextS>
                     </View>
                   )}
@@ -309,6 +313,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
               style={styles.transactionDataSection}
             />
           )}
+          <View style={styles.blank} />
         </ScrollView>
       </View>
     </ModalBody>
@@ -346,7 +351,9 @@ const styles = StyleSheet.create({
   },
   scrollSection: {
     height: screenHeight / 2,
-    paddingBottom: pTd(100),
+  },
+  blank: {
+    height: pTd(300),
   },
   error: {
     color: defaultColors.error,

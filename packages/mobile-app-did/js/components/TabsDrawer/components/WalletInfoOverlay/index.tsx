@@ -57,7 +57,7 @@ const MyWalletModal = () => {
               </View>
               <View>
                 <TextS style={styles.itemBalance}>
-                  {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol}`}
+                  {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol || '0'}`}
                 </TextS>
                 <TextS style={styles.itemChainInfo} />
               </View>

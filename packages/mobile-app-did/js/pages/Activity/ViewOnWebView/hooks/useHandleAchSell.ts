@@ -67,17 +67,16 @@ export const useHandleAchSell = () => {
   return useCallback(
     async (orderId: string) => {
       try {
-        Loading.show();
+        Loading.show({ text: 'Payment is being processed and may take around 10 seconds to complete.' });
         await sellTransfer({
           merchantName: ACH_MERCHANT_NAME,
           orderId,
           paymentSellTransfer,
         });
-        // TODO: add success Toast
+        CommonToast.success('Transaction completed.');
       } catch (error) {
         console.log('error', error);
-        // TODO: add Error Toast
-        CommonToast.fail('Transfer Error');
+        CommonToast.failError(error);
       } finally {
         Loading.hide();
       }

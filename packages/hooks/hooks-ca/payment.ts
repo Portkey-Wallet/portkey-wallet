@@ -43,46 +43,59 @@ export const useSellTransfer = () => {
     async ({ merchantName, orderId, paymentSellTransfer }: SellTransferParams) => {
       if (!isMainnet || merchantName !== ACH_MERCHANT_NAME) return;
 
-      const clientId = randomId();
-      await signalrSell.doOpen({
-        url: `${request.defaultConfig.baseURL}/ca`,
-        clientId,
-      });
-
-      const timerPromise = new Promise<null>(resolve =>
-        setTimeout(() => {
-          resolve(null);
-        }, SELL_SOCKET_TIMEOUT),
-      );
-      const signalrSellPromise = new Promise<AchTxAddressReceivedType>(resolve => {
-        const { remove } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, data => {
-          resolve(data);
-          remove();
+      let achTxAddressReceived: AchTxAddressReceivedType;
+      try {
+        const clientId = randomId();
+        await signalrSell.doOpen({
+          url: `${request.defaultConfig.baseURL}/ca`,
+          clientId,
         });
-        signalrSell.requestAchTxAddress(clientId, orderId);
-      });
 
-      const achTxAddressReceived = await Promise.race([timerPromise, signalrSellPromise]);
-      signalrSell.stop();
-      if (achTxAddressReceived === null) {
-        throw new Error('requestAchTxAddress timeout');
+        const timerPromise = new Promise<null>(resolve =>
+          setTimeout(() => {
+            resolve(null);
+          }, SELL_SOCKET_TIMEOUT),
+        );
+        const signalrSellPromise = new Promise<AchTxAddressReceivedType>(resolve => {
+          const { remove } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, data => {
+            resolve(data);
+            remove();
+          });
+          signalrSell.requestAchTxAddress(clientId, orderId);
+        });
+
+        const signalrSellResult = await Promise.race([timerPromise, signalrSellPromise]);
+        signalrSell.stop();
+        if (signalrSellResult === null) {
+          throw new Error('Transaction failed.');
+        }
+        achTxAddressReceived = signalrSellResult;
+      } catch (error) {
+        throw {
+          code: 'TIMEOUT',
+          message: 'Transaction failed.',
+        };
       }
 
-      const result = await paymentSellTransfer(achTxAddressReceived);
-      if (result.error) {
-        throw result.error;
-      }
-      if (!result.transactionId) {
-        throw new Error('transaction is error');
-      }
+      try {
+        const result = await paymentSellTransfer(achTxAddressReceived);
+        if (result.error || !result.transactionId) {
+          throw new Error('Transaction failed.');
+        }
 
-      await request.payment.updateAlchemyOrderTxHash({
-        params: {
-          merchantName: ACH_MERCHANT_NAME,
-          orderId,
-          txHash: result.transactionId,
-        },
-      });
+        await request.payment.updateAlchemyOrderTxHash({
+          params: {
+            merchantName: ACH_MERCHANT_NAME,
+            orderId,
+            txHash: result.transactionId,
+          },
+        });
+      } catch (error) {
+        throw {
+          code: 'NO_TX_HASH',
+          message: 'Transaction failed. Please contact the team for assistance.',
+        };
+      }
     },
     [isMainnet],
   );

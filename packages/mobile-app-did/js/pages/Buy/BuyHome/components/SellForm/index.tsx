@@ -34,6 +34,7 @@ import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import BigNumber from 'bignumber.js';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
@@ -44,6 +45,7 @@ export default function SellForm() {
   const [token, setToken] = useState<CryptoItemType>(tokenList[0]);
   const [amount, setAmount] = useState<string>(INIT_SELL_AMOUNT);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
+
   const { accountToken } = useAssets();
   const aelfToken = useMemo(
     () => accountToken.accountTokenList.find(item => item.symbol === 'ELF' && item.chainId === 'AELF'),
@@ -54,7 +56,6 @@ export default function SellForm() {
   const wallet = useCurrentWalletInfo();
 
   const limitAmountRef = useRef<LimitType>();
-  const refreshReceiveRef = useRef<() => void>();
   const cryptoListRef = useRef<CryptoInfoType[]>();
   const isRefreshReceiveValid = useRef<boolean>(false);
   const cryptoListCurrency = useRef<string>();
@@ -85,16 +86,14 @@ export default function SellForm() {
       item => item.crypto === token.crypto && item.network === token.network && Number(item.sellEnable) === 1,
     );
 
-    console.log('cryptoInfo', cryptoInfo);
-
     if (cryptoInfo === undefined || cryptoInfo.minSellAmount === null || cryptoInfo.maxSellAmount === null) {
       limitAmountRef.current = undefined;
       return;
     }
 
     limitAmountRef.current = {
-      min: cryptoInfo.minSellAmount,
-      max: cryptoInfo.maxSellAmount,
+      min: Number(ZERO.plus(cryptoInfo.minSellAmount).decimalPlaces(4, BigNumber.ROUND_UP).valueOf()),
+      max: Number(ZERO.plus(cryptoInfo.maxSellAmount).decimalPlaces(4, BigNumber.ROUND_DOWN).valueOf()),
     };
   }, [fiat, token]);
 
@@ -106,6 +105,7 @@ export default function SellForm() {
     amountError: amountFetchError,
     isAllowAmount,
   } = useReceive(TypeEnum.SELL, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
+  const refreshReceiveRef = useRef<typeof refreshReceive>();
   refreshReceiveRef.current = refreshReceive;
 
   const amountError = useMemo(() => {
@@ -142,13 +142,13 @@ export default function SellForm() {
   }, []);
 
   const onNext = useCallback(async () => {
-    if (limitAmountRef.current === undefined) return;
+    if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
     const { min, max } = limitAmountRef.current;
     if (amountNum < min || amountNum > max) {
       setAmountLocalError({
         ...INIT_HAS_ERROR,
-        errorMsg: `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${fiat?.currency}`,
+        errorMsg: `Limit Amount ${formatAmountShow(min, 4)}-${formatAmountShow(max, 4)} ${token.crypto}`,
       });
       return;
     }
@@ -159,10 +159,14 @@ export default function SellForm() {
     const { endPoint } = chainInfo || {};
     if (!tokenContractAddress || decimals === undefined || !symbol || !chainId) return;
     if (!pin || !endPoint) return;
-    if (ZERO.plus(amount).isLessThanOrEqualTo(DEFAULT_FEE)) return;
 
     try {
       Loading.show();
+      if (ZERO.plus(amount).isLessThanOrEqualTo(DEFAULT_FEE)) {
+        throw new Error('Insufficient funds');
+      }
+      const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
+
       const account = getManagerAccount(pin);
       if (!account) return;
 
@@ -175,18 +179,17 @@ export default function SellForm() {
       const balance = await getELFChainBalance(tokenContract, symbol, wallet?.[chainId]?.caAddress || '');
 
       if (divDecimals(balance, decimals).minus(DEFAULT_FEE).isLessThan(amount)) {
-        // TODO: add Toast
-        return;
+        throw new Error('Insufficient funds');
       }
 
-      if (isRefreshReceiveValid.current === false) {
-        const rst = await refreshReceive();
-        if (rst === undefined) return;
+      if (isRefreshReceiveValidValue === false) {
+        const rst = await refreshReceiveRef.current();
+        if (!rst) return;
         _rate = rst.rate;
         _receiveAmount = rst.receiveAmount;
       }
     } catch (error) {
-      // TODO: add Toast
+      setAmountLocalError({ ...INIT_HAS_ERROR, errorMsg: 'Insufficient funds' });
       console.log('error', error);
       return;
     } finally {
@@ -201,13 +204,13 @@ export default function SellForm() {
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, rate, receiveAmount, aelfToken, chainInfo, pin, fiat, token, wallet, refreshReceive]);
+  }, [amount, rate, receiveAmount, aelfToken, chainInfo, pin, fiat, token, wallet]);
 
   return (
     <View style={styles.formContainer}>
       <View>
         <CommonInput
-          label={'I want to pay'}
+          label={'I want to sell'}
           inputStyle={styles.inputStyle}
           inputContainerStyle={styles.inputContainerStyle}
           value={amount}

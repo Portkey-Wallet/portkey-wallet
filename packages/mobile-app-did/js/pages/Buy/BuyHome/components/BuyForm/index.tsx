@@ -26,6 +26,8 @@ import { INIT_BUY_AMOUNT, tokenList } from 'pages/Buy/constants';
 import Loading from 'components/Loading';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from 'pages/Buy/hooks';
+import BigNumber from 'bignumber.js';
+import { ZERO } from '@portkey-wallet/constants/misc';
 
 export default function BuyForm() {
   const { buyFiatList: fiatList } = usePayment();
@@ -35,11 +37,9 @@ export default function BuyForm() {
   );
   const [token, setToken] = useState<CryptoItemType>(tokenList[0]);
   const [amount, setAmount] = useState<string>(INIT_BUY_AMOUNT);
-
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
 
   const limitAmountRef = useRef<LimitType>();
-  const refreshReceiveRef = useRef<() => void>();
   const cryptoListRef = useRef<CryptoInfoType[]>();
   const isRefreshReceiveValid = useRef<boolean>(false);
   const cryptoListCurrency = useRef<string>();
@@ -76,8 +76,8 @@ export default function BuyForm() {
     }
 
     limitAmountRef.current = {
-      min: cryptoInfo.minPurchaseAmount,
-      max: cryptoInfo.maxPurchaseAmount,
+      min: Number(ZERO.plus(cryptoInfo.minPurchaseAmount).decimalPlaces(4, BigNumber.ROUND_UP).valueOf()),
+      max: Number(ZERO.plus(cryptoInfo.maxPurchaseAmount).decimalPlaces(4, BigNumber.ROUND_DOWN).valueOf()),
     };
   }, [fiat, token]);
 
@@ -89,6 +89,7 @@ export default function BuyForm() {
     amountError: amountFetchError,
     isAllowAmount,
   } = useReceive(TypeEnum.BUY, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
+  const refreshReceiveRef = useRef<typeof refreshReceive>();
   refreshReceiveRef.current = refreshReceive;
 
   const amountError = useMemo(() => {
@@ -122,13 +123,13 @@ export default function BuyForm() {
   }, []);
 
   const onNext = useCallback(async () => {
-    if (limitAmountRef.current === undefined) return;
+    if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
     const { min, max } = limitAmountRef.current;
     if (amountNum < min || amountNum > max) {
       setAmountLocalError({
         ...INIT_HAS_ERROR,
-        errorMsg: `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${fiat?.currency}`,
+        errorMsg: `Limit Amount ${formatAmountShow(min, 4)}-${formatAmountShow(max, 4)} ${fiat?.currency}`,
       });
       return;
     }
@@ -137,9 +138,9 @@ export default function BuyForm() {
 
     if (isRefreshReceiveValid.current === false) {
       Loading.show();
-      const rst = await refreshReceive();
+      const rst = await refreshReceiveRef.current();
       Loading.hide();
-      if (rst === undefined) return;
+      if (!rst) return;
       _rate = rst.rate;
       _receiveAmount = rst.receiveAmount;
     }
@@ -151,7 +152,7 @@ export default function BuyForm() {
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, fiat, rate, receiveAmount, refreshReceive, token]);
+  }, [amount, fiat, rate, receiveAmount, token]);
 
   return (
     <View style={styles.formContainer}>

@@ -10,6 +10,7 @@ import { MethodsBase, ResponseCode, MethodsUnimplemented } from '@portkey/provid
 import { ExtensionDappManager } from './ExtensionDappManager';
 import { getSWReduxState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
+import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -25,6 +26,8 @@ const aelfMethodList = [
   MethodsBase.CHAINS_INFO,
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
+  MethodsUnimplemented.GET_WALLET_SIGNATURE,
+  MethodsBase.NETWORK,
   MethodsUnimplemented.GET_WALLET_STATE,
   MethodsUnimplemented.GET_WALLET_NAME,
 ];
@@ -71,6 +74,12 @@ export default class AELFMethodController {
         break;
       case MethodsBase.REQUEST_ACCOUNTS:
         this.requestAccounts(sendResponse, message.payload);
+        break;
+      case MethodsBase.NETWORK:
+        this.getNetwork(sendResponse, message.payload);
+        break;
+      case MethodsUnimplemented.GET_WALLET_SIGNATURE:
+        this.getSignature(sendResponse, message.payload);
         break;
       case MethodsUnimplemented.GET_WALLET_STATE:
         this.getWalletState(sendResponse, message.payload);
@@ -206,6 +215,18 @@ export default class AELFMethodController {
         },
       });
 
+    const isForward = chainInfo?.caContractAddress !== payload?.contractAddress;
+    const mth = isForward ? 'ManagerForwardCall' : payload?.method;
+
+    if (!CA_METHOD_WHITELIST.includes(mth))
+      return sendResponse({
+        ...errorHandler(400001),
+        data: {
+          code: ResponseCode.CONTRACT_ERROR,
+          msg: 'method is not in the whitelist',
+        },
+      });
+
     const result = await this.approvalController.authorizedToSendTransactions({
       origin,
       payload: message.payload,
@@ -225,5 +246,46 @@ export default class AELFMethodController {
         },
       });
     sendResponse(result);
+  };
+
+  getSignature: RequestCommonHandler = async (sendResponse, message) => {
+    if (!message?.payload?.data)
+      return sendResponse({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
+
+    if (!(await this.dappManager.isActive(message.origin)))
+      return sendResponse({
+        ...errorHandler(200004),
+        data: {
+          code: ResponseCode.UNAUTHENTICATED,
+        },
+      });
+
+    const result = await this.approvalController.authorizedToGetSignature({
+      origin,
+      payload: {
+        data: message.payload.data,
+        origin: message.origin,
+      },
+    });
+    if (result.error === 200003)
+      return sendResponse({
+        ...errorHandler(200003),
+        data: {
+          code: ResponseCode.USER_DENIED,
+        },
+      });
+    if (result.error)
+      return sendResponse({
+        ...errorHandler(700002),
+        data: {
+          code: ResponseCode.CONTRACT_ERROR,
+        },
+      });
+    sendResponse(result);
+  };
+
+  getNetwork: RequestCommonHandler = async (sendResponse) => {
+    const networkType = await this.dappManager.networkType();
+    sendResponse({ ...errorHandler(0), data: networkType });
   };
 }

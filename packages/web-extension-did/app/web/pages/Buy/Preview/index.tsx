@@ -162,7 +162,7 @@ export default function Preview() {
       <div className={clsx(['preview-frame flex-column', isPrompt ? 'detail-page-prompt' : ''])}>
         <div className="preview-title">
           <BackHeader
-            title={`Buy ${state.crypto}`}
+            title={`${data.side === PaymentTypeEnum.BUY ? 'Buy' : 'Sell'} ${state.crypto}`}
             leftCallBack={handleBack}
             rightElement={<CustomSvg type="Close2" onClick={handleBack} />}
           />

@@ -326,6 +326,16 @@ export default function Buy() {
   const currentNetwork = useCurrentNetworkInfo();
   const wallet = useCurrentWalletInfo();
 
+  const setInsufficientFundsMsg = useCallback(() => {
+    stopInterval();
+
+    setErrMsg('Insufficient funds');
+    valueSaveRef.current.isShowErrMsg = true;
+
+    setReceive('');
+    valueSaveRef.current.receive = '';
+  }, [stopInterval]);
+
   const handleNext = useCallback(async () => {
     if (valueSaveRef.current.side === PaymentTypeEnum.SELL) {
       if (!currentChain) return;
@@ -344,7 +354,8 @@ export default function Buy() {
       if (
         ZERO.plus(divDecimals(balance, 8)).isLessThanOrEqualTo(ZERO.plus(DEFAULT_FEE).plus(valueSaveRef.current.amount))
       ) {
-        return message.error('balance is not enough'); // TODO SELL
+        setInsufficientFundsMsg();
+        return;
       }
     }
 

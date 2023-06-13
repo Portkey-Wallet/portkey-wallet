@@ -371,7 +371,7 @@ export default function Buy() {
         tokenInfo: state ? state.tokenInfo : null,
       },
     });
-  }, [accountTokenList, currentChain, currentNetwork.walletType, navigate, state, wallet]);
+  }, [accountTokenList, currentChain, currentNetwork.walletType, navigate, setInsufficientFundsMsg, state, wallet]);
 
   const handleBack = useCallback(() => {
     if (state && state.tokenInfo) {

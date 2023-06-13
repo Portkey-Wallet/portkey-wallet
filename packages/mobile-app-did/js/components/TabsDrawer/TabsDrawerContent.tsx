@@ -43,14 +43,8 @@ const TabsDrawerContent: React.FC = () => {
 
   const activeWebviewScreenShot = useCallback(() => {
     if (!activeTabId) return;
-    tabRef.current?.capture?.().then(
-      uri => {
-        console.log('Image saved to', uri);
-        dispatch(updateTab({ id: activeTabId, screenShotUrl: uri, networkType }));
-      },
-      error => console.error('Oops, snapshot failed', error),
-    );
-  }, [activeTabId, dispatch, networkType]);
+    return tabRef.current?.capture?.();
+  }, [activeTabId]);
 
   const backToSearchPage = useCallback(() => {
     activeWebviewScreenShot();

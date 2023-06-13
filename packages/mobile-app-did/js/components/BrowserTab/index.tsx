@@ -31,7 +31,10 @@ const BrowserTab = forwardRef<any, BrowserTabProps>(function BrowserTab({ isHidd
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHidden, options]);
   return (
-    <View ref={viewRef} style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
+    <View
+      ref={viewRef}
+      collapsable={false}
+      style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
       <ProviderWebview ref={webViewRef} source={{ uri }} />
     </View>
   );

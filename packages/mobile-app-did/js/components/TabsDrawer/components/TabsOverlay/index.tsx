@@ -15,8 +15,8 @@ import CommonToast from 'components/CommonToast';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 
 import { isIOS } from '@rneui/base';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { setActiveTab, updateTab } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -45,16 +45,18 @@ const BrowserEditModal = ({
 }: {
   browserInfo: ITabItem;
   activeWebViewRef: any;
-  activeWebviewScreenShot: () => void;
+  activeWebviewScreenShot: () => Promise<any>;
   setPreActiveTabId: Dispatch<SetStateAction<number | undefined>>;
 }) => {
   const { t } = useLanguage();
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
+  const { activeTabId } = useAppCASelector(state => state.discover);
 
   const handleUrl = useCallback(
     async (type: HANDLE_TYPE) => {
       let isCopy = false;
+      let uri = '';
 
       switch (type) {
         case HANDLE_TYPE.REFRESH:
@@ -86,10 +88,18 @@ const BrowserEditModal = ({
           break;
 
         case HANDLE_TYPE.SWITCH:
-          OverlayModal.hide();
-          activeWebviewScreenShot();
-          dispatch(setActiveTab({ id: undefined, networkType }));
-          setPreActiveTabId(Number(browserInfo?.id));
+          if (!activeTabId) return;
+
+          try {
+            uri = await activeWebviewScreenShot();
+
+            OverlayModal.hide();
+            dispatch(setActiveTab({ id: undefined, networkType }));
+            dispatch(updateTab({ id: activeTabId, screenShotUrl: uri, networkType }));
+            setPreActiveTabId(Number(browserInfo?.id));
+          } catch (error) {
+            console.error('Oops, snapshot failed', error);
+          }
 
           break;
 
@@ -103,6 +113,7 @@ const BrowserEditModal = ({
       browserInfo?.name,
       browserInfo?.id,
       t,
+      activeTabId,
       activeWebviewScreenShot,
       dispatch,
       networkType,

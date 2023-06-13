@@ -103,7 +103,10 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   async chainsInfo() {
     const chainsInfo: ChainsInfo = {};
     (await this.getCurrentChainList())?.forEach(chainInfo => {
-      chainsInfo[chainInfo.chainId] = [chainInfo];
+      const tmpChainInfo: any = { ...chainInfo };
+      tmpChainInfo.lastModifyTime && delete tmpChainInfo.lastModifyTime;
+      tmpChainInfo.id && delete tmpChainInfo.id;
+      chainsInfo[chainInfo.chainId] = [tmpChainInfo];
     });
     return chainsInfo;
   }

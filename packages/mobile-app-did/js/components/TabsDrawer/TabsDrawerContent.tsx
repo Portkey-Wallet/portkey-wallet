@@ -3,7 +3,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import { TouchableOpacity } from 'react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
@@ -22,38 +22,35 @@ import {
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import BrowserTab from 'components/BrowserTab';
 import { showBrowserModal } from './components/TabsOverlay';
-import { captureRef } from 'react-native-view-shot';
 
 import { showWalletInfo } from './components/WalletInfoOverlay';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-
-const takeSnapshot = (viewRef: any) => captureRef(viewRef?.current, { format: 'jpg', quality: 0.2 });
+import { BrowserContext, IBrowserTab } from './context';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
-  const { isDrawerOpen, discoverMap = {} } = useAppCASelector(state => state.discover);
-  const { activeTabId, tabs } = discoverMap[networkType] ?? {};
+  const { isDrawerOpen, discoverMap = {}, initializedList, activeTabId } = useAppCASelector(state => state.discover);
 
-  const [activeTabRef, setActiveTabRef] = React.useState<any>(null);
-  const [activeWebViewRef, setActiveWebViewRef] = React.useState<any>(null);
+  const { tabs } = discoverMap[networkType] ?? {};
+
+  const tabRef = useRef<IBrowserTab | null>(null);
 
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
 
   const activeWebviewScreenShot = useCallback(() => {
-    console.log('==========activeTabRef==========================', activeTabRef);
-
-    takeSnapshot(activeTabRef).then(
+    if (!activeTabId) return;
+    tabRef.current?.capture?.().then(
       uri => {
         console.log('Image saved to', uri);
-        dispatch(updateTab({ id: activeTabId || 0, screenShotUrl: uri, networkType }));
+        dispatch(updateTab({ id: activeTabId, screenShotUrl: uri, networkType }));
       },
       error => console.error('Oops, snapshot failed', error),
     );
-  }, [activeTabId, activeTabRef, dispatch, networkType]);
+  }, [activeTabId, dispatch, networkType]);
 
   const backToSearchPage = useCallback(() => {
     activeWebviewScreenShot();
@@ -64,7 +61,6 @@ const TabsDrawerContent: React.FC = () => {
   // header right
   const rightDom = useMemo(() => {
     const activeItem = tabs?.find(ele => ele.id === activeTabId) as ITabItem;
-
     if (activeTabId)
       return (
         <View style={rightDomStyle.iconGroupWrap}>
@@ -75,7 +71,7 @@ const TabsDrawerContent: React.FC = () => {
             onPress={() =>
               showBrowserModal({
                 browserInfo: activeItem,
-                activeWebViewRef,
+                activeWebViewRef: tabRef.current,
                 activeWebviewScreenShot,
                 setPreActiveTabId,
               })
@@ -86,62 +82,72 @@ const TabsDrawerContent: React.FC = () => {
         </View>
       );
     return null;
-  }, [activeTabId, activeWebViewRef, activeWebviewScreenShot, tabs]);
+  }, [activeTabId, activeWebviewScreenShot, tabs]);
+
+  const tabsDom = useMemo(() => {
+    return tabs?.map(ele => {
+      const isHidden = activeTabId !== ele.id;
+      const initialized = initializedList?.has(ele.id);
+      if (isHidden && !initialized) return;
+      return <BrowserTab key={ele.id} uri={ele.url} isHidden={isHidden} />;
+    });
+  }, [activeTabId, initializedList, tabs]);
+
+  const value = useMemo(
+    () => ({
+      setTabRef: (ref: IBrowserTab) => {
+        tabRef.current = ref;
+      },
+    }),
+    [],
+  );
 
   return (
-    <PageContainer
-      hideTouchable
-      leftDom={!activeTabId && <View />}
-      leftCallback={backToSearchPage}
-      rightDom={rightDom}
-      safeAreaColor={['blue', 'white']}
-      containerStyles={styles.container}
-      scrollViewProps={{ disabled: true }}
-      titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
-      {tabs?.map(ele => (
-        <BrowserTab
-          key={ele.id}
-          item={ele}
-          activeTabId={activeTabId}
-          isHidden={activeTabId !== ele.id}
-          setActiveTabRef={setActiveTabRef}
-          setActiveWebViewRef={setActiveWebViewRef}
-        />
-      ))}
-
-      {/* card group */}
-      {!activeTabId && isDrawerOpen && (
-        <>
-          <ScrollView>
-            <View style={styles.cardsContainer}>
-              {tabs?.map(ele => (
-                <Card key={ele.id} item={ele} />
-              ))}
+    <BrowserContext.Provider value={value}>
+      <PageContainer
+        hideTouchable
+        leftDom={!activeTabId && <View />}
+        leftCallback={backToSearchPage}
+        rightDom={rightDom}
+        safeAreaColor={['blue', 'white']}
+        containerStyles={styles.container}
+        scrollViewProps={{ disabled: true }}
+        titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
+        {tabsDom}
+        {/* card group */}
+        {!activeTabId && isDrawerOpen && (
+          <>
+            <ScrollView>
+              <View style={styles.cardsContainer}>
+                {tabs?.map(ele => (
+                  <Card key={ele.id} item={ele} />
+                ))}
+              </View>
+            </ScrollView>
+            <View style={handleButtonStyle.container}>
+              <TextM style={FontStyles.font4} onPress={() => dispatch(closeAllTabs({ networkType }))}>
+                {t('Close All')}
+              </TextM>
+              <TouchableOpacity onPress={() => dispatch(changeDrawerOpenStatus(false))}>
+                <Svg icon="add-blue" size={pTd(28)} />
+              </TouchableOpacity>
+              <TextM
+                style={FontStyles.font4}
+                onPress={() => {
+                  if (tabs?.length === 0) return;
+                  if (tabs?.find(ele => ele.id === preActiveTabId)) {
+                    dispatch(setActiveTab({ id: preActiveTabId, networkType }));
+                  } else {
+                    dispatch(setActiveTab({ id: tabs?.[tabs?.length - 1]?.id, networkType }));
+                  }
+                }}>
+                {t('Done')}
+              </TextM>
             </View>
-          </ScrollView>
-          <View style={handleButtonStyle.container}>
-            <TextM style={FontStyles.font4} onPress={() => dispatch(closeAllTabs({ networkType }))}>
-              {t('Close All')}
-            </TextM>
-            <TouchableOpacity onPress={() => dispatch(changeDrawerOpenStatus(false))}>
-              <Svg icon="add-blue" size={pTd(28)} />
-            </TouchableOpacity>
-            <TextM
-              style={FontStyles.font4}
-              onPress={() => {
-                if (tabs?.length === 0) return;
-                if (tabs?.find(ele => ele.id === preActiveTabId)) {
-                  dispatch(setActiveTab({ id: preActiveTabId, networkType }));
-                } else {
-                  dispatch(setActiveTab({ id: tabs?.[tabs?.length - 1]?.id, networkType }));
-                }
-              }}>
-              {t('Done')}
-            </TextM>
-          </View>
-        </>
-      )}
-    </PageContainer>
+          </>
+        )}
+      </PageContainer>
+    </BrowserContext.Provider>
   );
 };
 

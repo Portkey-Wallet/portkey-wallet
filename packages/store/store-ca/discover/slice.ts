@@ -1,17 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { IDiscoverStateType, IDiscoverNetworkStateType, ITabItem } from './type';
 import { NetworkType } from '@portkey-wallet/types';
-
+import { enableMapSet } from 'immer';
+enableMapSet();
 const initNetworkData: IDiscoverNetworkStateType = {
   recordsList: [],
   whiteList: [],
-  activeTabId: undefined,
   tabs: [],
 };
 
 const initialState: IDiscoverStateType = {
   isDrawerOpen: false,
   discoverMap: {},
+  activeTabId: undefined,
+  initializedList: new Set<number>(),
 };
 
 //it automatically uses the immer library to let you write simpler immutable updates with normal mutative code
@@ -61,7 +63,7 @@ export const discoverSlice = createSlice({
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
       targetNetworkDiscover.tabs = [];
-      targetNetworkDiscover.activeTabId = undefined;
+      state.activeTabId = undefined;
     },
     createNewTab: (state, { payload }: { payload: ITabItem & { networkType: NetworkType } }) => {
       const { networkType, id } = payload;
@@ -73,7 +75,7 @@ export const discoverSlice = createSlice({
         targetNetworkDiscover.tabs.push({ ...payload });
       }
 
-      targetNetworkDiscover.activeTabId = id;
+      state.activeTabId = id;
     },
     closeExistingTab: (state, { payload }: { payload: { id: number; networkType: NetworkType } }) => {
       const { networkType, id } = payload;
@@ -82,10 +84,12 @@ export const discoverSlice = createSlice({
       targetNetworkDiscover.tabs = targetNetworkDiscover.tabs.filter(item => item.id !== id);
     },
     setActiveTab: (state, { payload }: { payload: { id: number | undefined; networkType: NetworkType } }) => {
-      const { networkType, id } = payload;
-      const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
-
-      targetNetworkDiscover.activeTabId = id;
+      const { id } = payload;
+      if (!state.initializedList) state.initializedList = new Set<number>();
+      console.log(state.activeTabId, '====state.activeTabId1');
+      id && state.initializedList.add(id);
+      state.activeTabId = id;
+      console.log(state.activeTabId, '====state.activeTabId2');
     },
     updateTab: (state, { payload }: { payload: { networkType: NetworkType; id: number; [key: string]: any } }) => {
       const { networkType, id } = payload;

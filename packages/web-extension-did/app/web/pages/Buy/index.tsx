@@ -144,9 +144,8 @@ export default function Buy() {
       valueSaveRef.current.receive = '';
     }
   }, [showLimitText]);
-
-  const updateReceive = useCallback(
-    async (
+  const { updateReceive, stopInterval } = useMemo(() => {
+    const updateReceive = async (
       params = {
         crypto: valueSaveRef.current.crypto,
         network: valueSaveRef.current.network,
@@ -164,45 +163,47 @@ export default function Buy() {
         setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
         setRate(cryptoPrice);
         setErrMsg('');
+        if (!updateTimerRef.current && valueSaveRef.current.receive) {
+          resetTimer();
+        }
       } catch (error) {
         setReceive('');
         valueSaveRef.current.receive = '';
-        setRate('');
+        stopInterval();
         setErrMsg('');
-
         console.log('error', error);
       }
-    },
-    [setReceiveCase],
-  );
+    };
 
-  const handleSetTimer = useCallback(() => {
-    const timer = setInterval(() => {
-      updateTimerRef.current = timer;
-      --updateTimeRef.current;
+    const handleSetTimer = () => {
+      const timer = setInterval(() => {
+        updateTimerRef.current = timer;
+        --updateTimeRef.current;
 
-      if (updateTimeRef.current === 0) {
-        updateReceive();
-        updateTimeRef.current = MAX_UPDATE_TIME;
-      }
+        if (updateTimeRef.current === 0) {
+          updateReceive();
+          updateTimeRef.current = MAX_UPDATE_TIME;
+        }
 
-      setRateUpdateTime(updateTimeRef.current);
-    }, 1000);
-  }, [updateReceive]);
+        setRateUpdateTime(updateTimeRef.current);
+      }, 1000);
+    };
+    const stopInterval = () => {
+      clearInterval(updateTimerRef.current);
+      updateTimerRef.current = undefined;
+      setRate('');
+    };
 
-  const stopInterval = useCallback(() => {
-    clearInterval(updateTimerRef.current);
-    updateTimerRef.current = undefined;
-    setRate('');
-  }, []);
+    const resetTimer = () => {
+      clearInterval(updateTimerRef.current);
+      updateTimerRef.current = undefined;
+      updateTimeRef.current = MAX_UPDATE_TIME;
+      setRateUpdateTime(MAX_UPDATE_TIME);
+      handleSetTimer();
+    };
 
-  const resetTimer = useCallback(() => {
-    clearInterval(updateTimerRef.current);
-    updateTimerRef.current = undefined;
-    updateTimeRef.current = MAX_UPDATE_TIME;
-    setRateUpdateTime(MAX_UPDATE_TIME);
-    handleSetTimer();
-  }, [handleSetTimer]);
+    return { updateReceive, handleSetTimer, stopInterval, resetTimer };
+  }, [setReceiveCase]);
 
   const updateCrypto = useCallback(async () => {
     const { currency, crypto, network, side } = valueSaveRef.current;
@@ -225,12 +226,9 @@ export default function Buy() {
         stopInterval();
       } else {
         await updateReceive();
-        if (!updateTimerRef.current && valueSaveRef.current.receive) {
-          resetTimer();
-        }
       }
     }
-  }, [isValidValue, resetTimer, setErrMsgCase, stopInterval, updateReceive]);
+  }, [isValidValue, setErrMsgCase, stopInterval, updateReceive]);
 
   const handleInputChange = useCallback(
     async (v: string) => {
@@ -251,11 +249,8 @@ export default function Buy() {
         amount: v,
         side,
       });
-      if (!updateTimerRef.current && valueSaveRef.current.receive) {
-        resetTimer();
-      }
     },
-    [isValidValue, resetTimer, setErrMsgCase, stopInterval, updateReceive],
+    [isValidValue, setErrMsgCase, stopInterval, updateReceive],
   );
 
   const handlePageChange = useCallback(
@@ -302,10 +297,6 @@ export default function Buy() {
           return;
         }
 
-        setErrMsg('');
-        setReceive('');
-        valueSaveRef.current.receive = '';
-        setRate('');
         try {
           setLoading(true);
           await updateCrypto();

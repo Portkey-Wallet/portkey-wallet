@@ -3,6 +3,7 @@ import { ScreenWidth } from '@rneui/base';
 import React from 'react';
 import { Drawer } from 'react-native-drawer-layout';
 import TabsDrawerContent from './TabsDrawerContent';
+import { usePin } from 'hooks/store';
 
 interface TabsDrawerPropsType {
   children: React.ReactNode;
@@ -11,16 +12,14 @@ interface TabsDrawerPropsType {
 export default function TabsDrawer(props: TabsDrawerPropsType) {
   const { children } = props;
 
+  const pin = usePin();
   const { isDrawerOpen } = useAppCASelector(state => state.discover);
 
   const tabsDrawerContent = React.useMemo(() => <TabsDrawerContent />, []);
-
   return (
     <Drawer
-      open={isDrawerOpen}
+      open={!!pin && isDrawerOpen}
       swipeEnabled={false}
-      onOpen={() => console.log('open')}
-      onClose={() => console.log('close')}
       drawerPosition="right"
       drawerStyle={{ width: ScreenWidth }}
       renderDrawerContent={() => {

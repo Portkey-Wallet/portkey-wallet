@@ -75,22 +75,16 @@ export default function Buy() {
         max: null,
         min: null,
         side,
+        receive: '',
+        isShowErrMsg: false,
       };
-      updateReceive({
-        crypto,
-        network,
-        fiat,
-        country,
-        amount,
-        side,
-      });
-      updateCrypto(fiat);
+      updateCrypto();
     } else {
       updateCrypto();
-      updateReceive();
     }
     return () => {
       clearInterval(updateTimerRef.current);
+      updateTimerRef.current = undefined;
     };
   });
 
@@ -121,11 +115,14 @@ export default function Buy() {
       cryptoQuantity?: string;
     }) => {
       if (valueSaveRef.current.side === PaymentTypeEnum.SELL && fiatQuantity && rampFee) {
-        const receive = Number(fiatQuantity) - Number(rampFee);
-        setReceive(formatAmountShow(receive, 4));
+        const receive = formatAmountShow(Number(fiatQuantity) - Number(rampFee), 4);
+        setReceive(receive);
+        valueSaveRef.current.receive = receive;
       }
       if (valueSaveRef.current.side === PaymentTypeEnum.BUY) {
-        setReceive(formatAmountShow(cryptoQuantity || '', 4));
+        const receive = formatAmountShow(cryptoQuantity || '', 4);
+        setReceive(receive);
+        valueSaveRef.current.receive = receive;
       }
     },
     [],
@@ -135,17 +132,21 @@ export default function Buy() {
     const { min, max, currency, crypto, side } = valueSaveRef.current;
     if (min !== null && max !== null) {
       clearInterval(updateTimerRef.current);
+      updateTimerRef.current = undefined;
       if (side === PaymentTypeEnum.SELL) {
         setErrMsg(showLimitText(min, max, crypto));
       }
       if (side === PaymentTypeEnum.BUY) {
         setErrMsg(showLimitText(min, max, currency));
       }
+      valueSaveRef.current.isShowErrMsg = true;
+      setReceive('');
+      valueSaveRef.current.receive = '';
     }
   }, [showLimitText]);
 
-  const { updateReceive, handleSetTimer } = useMemo(() => {
-    const updateReceive = async (
+  const updateReceive = useCallback(
+    async (
       params = {
         crypto: valueSaveRef.current.crypto,
         network: valueSaveRef.current.network,
@@ -155,7 +156,6 @@ export default function Buy() {
         side: valueSaveRef.current.side,
       },
     ) => {
-      clearInterval(updateTimerRef.current);
       try {
         const rst = await getOrderQuote(params);
         if (params.amount !== valueSaveRef.current.amount) return;
@@ -164,68 +164,86 @@ export default function Buy() {
         setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
         setRate(cryptoPrice);
         setErrMsg('');
-        handleSetTimer();
       } catch (error) {
         setReceive('');
+        valueSaveRef.current.receive = '';
         setRate('');
-        setErrMsgCase();
-        setRateUpdateTime(MAX_UPDATE_TIME);
-        updateTimeRef.current = MAX_UPDATE_TIME;
+        setErrMsg('');
+
         console.log('error', error);
       }
-    };
-
-    const handleSetTimer = () => {
-      const timer = setInterval(() => {
-        --updateTimeRef.current;
-        if (updateTimeRef.current === 0) {
-          updateReceive();
-          updateTimeRef.current = MAX_UPDATE_TIME;
-        }
-        updateTimerRef.current = timer;
-        setRateUpdateTime(updateTimeRef.current);
-      }, 1000);
-    };
-    return { updateReceive, handleSetTimer };
-  }, [setErrMsgCase, setReceiveCase]);
-
-  const updateCrypto = useCallback(
-    async (fiat = curFiat.currency || 'USD') => {
-      const { crypto, network, side } = valueSaveRef.current;
-      const data = await getCryptoInfo({ fiat }, crypto, network, side);
-      if (side === PaymentTypeEnum.BUY) {
-        if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
-          valueSaveRef.current.max = data.maxPurchaseAmount;
-          valueSaveRef.current.min = data.minPurchaseAmount;
-        }
-      } else {
-        if (data && data.maxSellAmount !== null && data.minSellAmount !== null) {
-          valueSaveRef.current.max = data.maxSellAmount;
-          valueSaveRef.current.min = data.minSellAmount;
-        }
-      }
     },
-    [curFiat.currency],
+    [setReceiveCase],
   );
 
+  const handleSetTimer = useCallback(() => {
+    const timer = setInterval(() => {
+      updateTimerRef.current = timer;
+      --updateTimeRef.current;
+
+      if (updateTimeRef.current === 0) {
+        updateReceive();
+        updateTimeRef.current = MAX_UPDATE_TIME;
+      }
+
+      setRateUpdateTime(updateTimeRef.current);
+    }, 1000);
+  }, [updateReceive]);
+
+  const stopInterval = useCallback(() => {
+    clearInterval(updateTimerRef.current);
+    updateTimerRef.current = undefined;
+    setRate('');
+  }, []);
+
+  const resetTimer = useCallback(() => {
+    clearInterval(updateTimerRef.current);
+    updateTimerRef.current = undefined;
+    updateTimeRef.current = MAX_UPDATE_TIME;
+    setRateUpdateTime(MAX_UPDATE_TIME);
+    handleSetTimer();
+  }, [handleSetTimer]);
+
+  const updateCrypto = useCallback(async () => {
+    const { currency, crypto, network, side } = valueSaveRef.current;
+    const data = await getCryptoInfo({ fiat: currency }, crypto, network, side);
+    if (side === PaymentTypeEnum.BUY) {
+      if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
+        valueSaveRef.current.max = data.maxPurchaseAmount;
+        valueSaveRef.current.min = data.minPurchaseAmount;
+      }
+    } else {
+      if (data && data.maxSellAmount !== null && data.minSellAmount !== null) {
+        valueSaveRef.current.max = data.maxSellAmount;
+        valueSaveRef.current.min = data.minSellAmount;
+      }
+    }
+    const { amount, min, max } = valueSaveRef.current;
+    if (min && max) {
+      if (!isValidValue({ amount, min, max })) {
+        setErrMsgCase();
+        stopInterval();
+      } else {
+        await updateReceive();
+        if (!updateTimerRef.current && valueSaveRef.current.receive) {
+          resetTimer();
+        }
+      }
+    }
+  }, [isValidValue, resetTimer, setErrMsgCase, stopInterval, updateReceive]);
+
   const handleInputChange = useCallback(
-    (v: string) => {
+    async (v: string) => {
       setAmount(v);
       valueSaveRef.current.amount = v;
       const { min, max } = valueSaveRef.current;
-      if (max !== null && min !== null) {
-        if (!isValidValue({ amount: v, min, max })) {
-          setErrMsgCase();
-          clearInterval(updateTimerRef.current);
-          setRateUpdateTime(MAX_UPDATE_TIME);
-          updateTimeRef.current = MAX_UPDATE_TIME;
-          setReceive('');
-          setRate('');
-          return;
-        }
+      if (max && min && !isValidValue({ amount: v, min, max })) {
+        setErrMsgCase();
+        stopInterval();
+        return;
       }
       const { crypto, network, country, currency, side } = valueSaveRef.current;
-      updateReceive({
+      await updateReceive({
         crypto,
         network,
         fiat: currency,
@@ -233,31 +251,16 @@ export default function Buy() {
         amount: v,
         side,
       });
+      if (!updateTimerRef.current && valueSaveRef.current.receive) {
+        resetTimer();
+      }
     },
-    [isValidValue, setErrMsgCase, updateReceive],
+    [isValidValue, resetTimer, setErrMsgCase, stopInterval, updateReceive],
   );
-
-  const getQuoteAndSetData = useCallback(async () => {
-    const { crypto, currency, country, network, amount, side } = valueSaveRef.current;
-    const rst = await getOrderQuote({
-      crypto,
-      network,
-      fiat: currency,
-      country,
-      amount,
-      side,
-    });
-    const { cryptoPrice, cryptoQuantity, fiatQuantity, rampFee } = rst;
-    setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
-    setRate(cryptoPrice);
-    setRateUpdateTime(MAX_UPDATE_TIME);
-    updateTimeRef.current = MAX_UPDATE_TIME;
-    handleSetTimer();
-  }, [handleSetTimer, setReceiveCase]);
 
   const handlePageChange = useCallback(
     async (e: RadioChangeEvent) => {
-      clearInterval(updateTimerRef.current);
+      stopInterval();
       setPage(e.target.value);
       // BUY
       valueSaveRef.current = initValueSave;
@@ -272,26 +275,24 @@ export default function Buy() {
       setCurFiat(initFiat);
       setErrMsg('');
       setReceive('');
+      valueSaveRef.current.receive = '';
       setRate('');
       try {
         setLoading(true);
-        await getQuoteAndSetData();
         await updateCrypto();
-
-        handleInputChange(valueSaveRef.current.amount);
       } catch (error) {
         console.log('error', error);
       } finally {
         setLoading(false);
       }
     },
-    [getQuoteAndSetData, handleInputChange, setLoading, updateCrypto],
+    [setLoading, stopInterval, updateCrypto],
   );
 
   const handleSelect = useCallback(
     async (v: PartialFiatType, drawerType: DrawerType) => {
       if (drawerType === DrawerType.token) {
-        // setCurToken(v);
+        // only elf for now
       } else {
         if (v.currency && v.country) {
           setCurFiat(v);
@@ -300,66 +301,22 @@ export default function Buy() {
         } else {
           return;
         }
-        if (v.currency === curFiat.currency) return;
+
+        setErrMsg('');
+        setReceive('');
+        valueSaveRef.current.receive = '';
+        setRate('');
         try {
-          clearInterval(updateTimerRef.current);
-          setErrMsg('');
-          setReceive('');
-          setRate('');
           setLoading(true);
-          const { crypto, network, amount, side } = valueSaveRef.current;
-          const data = await getCryptoInfo({ fiat: v.currency }, crypto, network, side);
-          if (side === PaymentTypeEnum.BUY) {
-            if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
-              valueSaveRef.current.max = data.maxPurchaseAmount;
-              valueSaveRef.current.min = data.minPurchaseAmount;
-
-              if (isValidValue({ amount, min: data.minPurchaseAmount, max: data.maxPurchaseAmount })) {
-                await getQuoteAndSetData();
-                setErrMsg('');
-              } else {
-                setErrMsgCase();
-                setReceive('');
-                setRate('');
-              }
-            } else {
-              // not maxPurchaseAmount and minPurchaseAmount
-              setErrMsg('');
-              setReceive('');
-              setRate('');
-            }
-          } else {
-            if (data && data.maxSellAmount !== null && data.minSellAmount !== null) {
-              valueSaveRef.current.max = data.maxSellAmount;
-              valueSaveRef.current.min = data.minSellAmount;
-              // setErrMsgCase();
-
-              if (isValidValue({ amount, max: data.maxSellAmount, min: data.minSellAmount })) {
-                await getQuoteAndSetData();
-                setErrMsg('');
-              } else {
-                setErrMsgCase();
-                setReceive('');
-                setRate('');
-              }
-            } else {
-              // not maxSellAmount and minSellAmount
-              setErrMsg('');
-              setReceive('');
-              setRate('');
-            }
-          }
+          await updateCrypto();
         } catch (error) {
           console.log('error', error);
-          setErrMsg('');
-          setReceive('');
-          setRate('');
         } finally {
           setLoading(false);
         }
       }
     },
-    [curFiat.currency, getQuoteAndSetData, isValidValue, setErrMsgCase, setLoading],
+    [setLoading, updateCrypto],
   );
 
   const {
@@ -368,6 +325,16 @@ export default function Buy() {
   const currentChain = useCurrentChain('AELF');
   const currentNetwork = useCurrentNetworkInfo();
   const wallet = useCurrentWalletInfo();
+
+  const setInsufficientFundsMsg = useCallback(() => {
+    stopInterval();
+
+    setErrMsg('Insufficient funds');
+    valueSaveRef.current.isShowErrMsg = true;
+
+    setReceive('');
+    valueSaveRef.current.receive = '';
+  }, [stopInterval]);
 
   const handleNext = useCallback(async () => {
     if (valueSaveRef.current.side === PaymentTypeEnum.SELL) {
@@ -387,7 +354,8 @@ export default function Buy() {
       if (
         ZERO.plus(divDecimals(balance, 8)).isLessThanOrEqualTo(ZERO.plus(DEFAULT_FEE).plus(valueSaveRef.current.amount))
       ) {
-        return message.error('balance is not enough'); // TODO SELL
+        setInsufficientFundsMsg();
+        return;
       }
     }
 

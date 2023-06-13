@@ -44,6 +44,8 @@ export const initValueSave: {
   min: number | null;
   max: number | null;
   side: PaymentTypeEnum;
+  receive: string;
+  isShowErrMsg: boolean;
 } = {
   amount: initCurrency,
   currency: 'USD',
@@ -53,6 +55,8 @@ export const initValueSave: {
   min: null,
   max: null,
   side: PaymentTypeEnum.BUY,
+  receive: '',
+  isShowErrMsg: false,
 };
 
 export interface IFetchOrderQuote {

@@ -34,7 +34,7 @@ export default function ConnectWallet() {
             loadEle={detail.appName?.[0]}
             errorEle={detail.appName?.[0]}
           />
-          <span>{detail.appHref}</span>
+          <span className="origin">{detail.appHref}</span>
         </div>
       ),
     [detail],

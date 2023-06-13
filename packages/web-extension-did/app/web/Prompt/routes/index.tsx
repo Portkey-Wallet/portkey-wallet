@@ -50,6 +50,7 @@ import Permission from 'pages/Permission';
 import ConnectWallet from 'pages/ConnectWallet';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SendTransactions from 'pages/SendTransactions';
+import GetSignature from 'pages/GetSignature';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -180,6 +181,10 @@ export const PageRouter = () => {
     {
       path: '/send-transactions',
       element: <SendTransactions />,
+    },
+    {
+      path: '/get-signature',
+      element: <GetSignature />,
     },
 
     {

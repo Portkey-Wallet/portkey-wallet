@@ -61,7 +61,7 @@ export default function SendTransactions() {
   const getFee = useCallback(async () => {
     if (!privateKey) return;
     if (!chainInfo?.endPoint || !wallet?.caHash || !chainInfo.caContractAddress) return;
-    const mth = isCAContract ? payload?.method : 'ManagerForwardCall';
+    const method = isCAContract ? payload?.method : 'ManagerForwardCall';
     const paramsOption = isCAContract
       ? payload?.params?.paramsOption
       : {
@@ -73,7 +73,7 @@ export default function SendTransactions() {
     const fee = await getTransferFee({
       rpcUrl: chainInfo.endPoint,
       chainType: 'aelf',
-      methodName: mth,
+      methodName: method,
       paramsOption,
       privateKey,
       contractAddress: chainInfo.caContractAddress,

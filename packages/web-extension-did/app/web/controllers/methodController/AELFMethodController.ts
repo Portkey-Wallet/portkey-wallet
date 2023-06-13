@@ -216,9 +216,9 @@ export default class AELFMethodController {
       });
 
     const isForward = chainInfo?.caContractAddress !== payload?.contractAddress;
-    const mth = isForward ? 'ManagerForwardCall' : payload?.method;
+    const method = isForward ? 'ManagerForwardCall' : payload?.method;
 
-    if (!CA_METHOD_WHITELIST.includes(mth))
+    if (!CA_METHOD_WHITELIST.includes(method))
       return sendResponse({
         ...errorHandler(400001),
         data: {

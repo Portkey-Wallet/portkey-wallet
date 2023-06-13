@@ -20,6 +20,8 @@ export default function TabsDrawer(props: TabsDrawerPropsType) {
     <Drawer
       open={!!pin && isDrawerOpen}
       swipeEnabled={false}
+      onOpen={() => console.log('open')}
+      onClose={() => console.log('close')}
       drawerPosition="right"
       drawerStyle={{ width: ScreenWidth }}
       renderDrawerContent={() => {

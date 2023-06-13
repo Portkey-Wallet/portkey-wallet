@@ -13,6 +13,7 @@ import { upDateRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice
 import navigationService from 'utils/navigationService';
 import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useHandleAchSell } from './hooks/useHandleAchSell';
+import CommonToast from 'components/CommonToast';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -77,10 +78,9 @@ const ViewOnWebView: React.FC = () => {
           navigationService.navigate('Tab');
           const { orderNo } = (params as AchSellParams) || {};
           if (!orderNo) {
-            // TODO: add Toast
+            CommonToast.failError('Transaction failed.');
             return;
           }
-
           handleAchSell(orderNo);
         }
       }

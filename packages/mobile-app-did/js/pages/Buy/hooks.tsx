@@ -10,7 +10,6 @@ import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import BigNumber from 'bignumber.js';
 
 export const useReceive = (
   type: TypeEnum,
@@ -90,7 +89,7 @@ export const useReceive = (
       if (amountNum < min || amountNum > max) {
         setAmountError({
           ...INIT_HAS_ERROR,
-          errorMsg: `Limit Amount ${formatAmountShow(min, 4, BigNumber.ROUND_CEIL)}-${formatAmountShow(max, 4)} ${
+          errorMsg: `Limit Amount ${formatAmountShow(min, 4)}-${formatAmountShow(max, 4)} ${
             type === TypeEnum.BUY ? fiat?.currency : token.crypto
           }`,
         });
@@ -133,7 +132,6 @@ export const useReceive = (
       }
 
       if (isRefreshReceiveValid) isRefreshReceiveValid.current = true;
-
       const _rate = Number(rst.cryptoPrice).toFixed(2) + '';
       let _receiveAmount = '';
       if (type === TypeEnum.BUY) {
@@ -151,9 +149,6 @@ export const useReceive = (
       };
     } catch (error) {
       console.log('error', error);
-      // CommonToast.failError(error);
-      // TODO: add error
-      // CommonToast.failError('get order error');
     }
   }, [amount, clearRefreshReceive, fiat, isRefreshReceiveValid, limitAmountRef, registerRefreshReceive, token, type]);
   refreshReceiveRef.current = refreshReceive;

@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import ProviderWebview, { IWebView } from 'components/ProviderWebview';
@@ -16,23 +16,20 @@ const BrowserTab = forwardRef<any, BrowserTabProps>(function BrowserTab({ isHidd
 
   const { setTabRef } = useBrowser();
 
-  useImperativeHandle(
-    forward,
+  const options = useMemo(
     () => ({
-      capture: () => captureRef(viewRef?.current),
+      capture: () => captureRef(viewRef?.current, { quality: 0.2, format: 'jpg' }),
       reload: () => webViewRef.current?.reload(),
     }),
     [],
   );
+  useImperativeHandle(forward, () => options, [options]);
 
   useEffect(() => {
     if (isHidden) return;
-    setTabRef?.({
-      capture: () => captureRef(viewRef?.current),
-      reload: () => webViewRef.current?.reload(),
-    });
+    setTabRef?.(options);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHidden]);
+  }, [isHidden, options]);
   return (
     <View ref={viewRef} style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
       <ProviderWebview ref={webViewRef} source={{ uri }} />

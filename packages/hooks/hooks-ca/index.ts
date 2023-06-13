@@ -5,7 +5,6 @@ import { useAppCommonDispatch } from '../index';
 import { resetAssets } from '@portkey-wallet/store/store-ca/assets/slice';
 import { resetRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 import { resetActivity } from '@portkey-wallet/store/store-ca/activity/slice';
-import { resetDiscover } from '@portkey-wallet/store/store-ca/discover/slice';
 import { resetContact } from '@portkey-wallet/store/store-ca/contact/actions';
 import { resetGuardiansState } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { resetPayment } from '@portkey-wallet/store/store-ca/payment/actions';
@@ -21,6 +20,5 @@ export function useResetStore() {
     dispatch(resetGuardiansState());
     dispatch(resetContact());
     dispatch(resetPayment());
-    dispatch(resetDiscover());
   }, [dispatch]);
 }

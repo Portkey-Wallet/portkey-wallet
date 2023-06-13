@@ -37,7 +37,7 @@ export default function AccountConnectModal({ open, onCancel }: IAccountConnectM
       ) : (
         <div className="not-connected">
           <div className="origin">{origin}</div>
-          <div className="connect-tip">{t('To connect, locate the connect button on their site.')}</div>
+          <div className="connect-tip">{t('To connect, please find and click the "Connect" button on this site.')}</div>
         </div>
       ),
     [dapp, handleDisConnect, origin, t],

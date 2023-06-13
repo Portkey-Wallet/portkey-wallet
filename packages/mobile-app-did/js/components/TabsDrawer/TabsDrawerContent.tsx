@@ -33,7 +33,7 @@ const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
-  const { isDrawerOpen, discoverMap, initializedList, activeTabId } = useAppCASelector(state => state.discover);
+  const { isDrawerOpen, discoverMap = {}, initializedList, activeTabId } = useAppCASelector(state => state.discover);
 
   const { tabs } = discoverMap[networkType] ?? {};
 

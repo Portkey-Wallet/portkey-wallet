@@ -105,7 +105,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           {`${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}
         </Text>
         {isMainnet && (
-          <TextM style={transferGroupStyle.tokenUSD}>{`formatAmountInUsdShow(amount, decimals, symbol)`}</TextM>
+          <TextM style={transferGroupStyle.tokenUSD}>{`${formatAmountInUsdShow(amount, decimals, symbol)}`}</TextM>
         )}
         <View style={transferGroupStyle.card}>
           {/* From */}
@@ -144,11 +144,11 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                 8,
               )} ELF`}</TextM>
             </View>
-            {isMainnet && (
+            {!isMainnet && (
               <View style={[transferGroupStyle.flexSpaceBetween]}>
                 <TextM />
                 <TextS style={transferGroupStyle.lightGrayFontColor}>
-                  {fee === '0' ? '$ 0' : formatAmountInUsdShow(divDecimals(fee, ELF_DECIMAL).valueOf(), 0, 'ELF')}
+                  {fee === '0' ? '$ 0' : formatAmountInUsdShow(divDecimals(fee, ELF_DECIMAL).toNumber(), 0, 'ELF')}
                 </TextS>
               </View>
             )}
@@ -165,12 +165,12 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                   8,
                 )} ${symbol}`}</TextM>
               </View>
-              {isMainnet && (
+              {!isMainnet && (
                 <View style={[transferGroupStyle.flexSpaceBetween]}>
                   <TextM />
-                  <TextM style={transferGroupStyle.blackFontColor}>
+                  <TextS style={transferGroupStyle.blackFontColor}>
                     {formatAmountInUsdShow(divDecimals(ZERO.plus(amount).plus(fee)).toNumber(), 0, symbol)}
-                  </TextM>
+                  </TextS>
                 </View>
               )}
             </View>
@@ -179,16 +179,16 @@ const ConnectModal = (props: TransactionModalPropsType) => {
               <View style={[transferGroupStyle.flexSpaceBetween]}>
                 <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
                 <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
-                  divDecimals(ZERO.plus(amount), decimals),
+                  divDecimals(ZERO.plus(fee), ELF_DECIMAL),
                   8,
                 )} ELF`}</TextM>
               </View>
-              {isMainnet && (
+              {!isMainnet && (
                 <View style={[transferGroupStyle.flexSpaceBetween]}>
                   <TextM />
-                  <TextM style={transferGroupStyle.blackFontColor}>
-                    {formatAmountInUsdShow(divDecimals(ZERO.plus(amount), ELF_DECIMAL).toNumber(), 0, ELF_SYMBOL)}
-                  </TextM>
+                  <TextS style={transferGroupStyle.lightGrayFontColor}>
+                    {fee === '0' ? '$ 0' : formatAmountInUsdShow(divDecimals(fee, ELF_DECIMAL).toNumber(), 0, 'ELF')}
+                  </TextS>
                 </View>
               )}
               <View style={[transferGroupStyle.flexSpaceBetween]}>
@@ -198,10 +198,10 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                   8,
                 )} ${symbol}`}</TextM>
               </View>
-              {isMainnet && (
+              {!isMainnet && (
                 <View style={[transferGroupStyle.flexSpaceBetween]}>
                   <TextM />
-                  <TextM style={transferGroupStyle.blackFontColor}>
+                  <TextM style={transferGroupStyle.lightGrayFontColor}>
                     {formatAmountInUsdShow(divDecimals(ZERO.plus(amount), decimals).toNumber(), 0, symbol)}
                   </TextM>
                 </View>
@@ -256,7 +256,9 @@ const ConnectModal = (props: TransactionModalPropsType) => {
         },
       });
 
-      setFee(TransactionFee?.ELF);
+      if (!TransactionFee && !TransactionFee?.ELF) return setNoEnoughFee(true);
+
+      setFee(TransactionFee?.ELF || '0');
     } catch (e) {
       setFee('0');
       setNoEnoughFee(true);

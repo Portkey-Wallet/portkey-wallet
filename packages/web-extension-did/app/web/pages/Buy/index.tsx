@@ -90,7 +90,7 @@ export default function Buy() {
 
   const showLimitText = useCallback(
     (min: string | number, max: string | number, fiat = 'USD') =>
-      `Limit Amount ${formatAmountShow(min, 4, BigNumber.ROUND_CEIL)}-${formatAmountShow(max)} ${fiat} `,
+      `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${fiat} `,
     [],
   );
 
@@ -210,13 +210,19 @@ export default function Buy() {
     const data = await getCryptoInfo({ fiat: currency }, crypto, network, side);
     if (side === PaymentTypeEnum.BUY) {
       if (data && data.maxPurchaseAmount !== null && data.minPurchaseAmount !== null) {
-        valueSaveRef.current.max = data.maxPurchaseAmount;
-        valueSaveRef.current.min = data.minPurchaseAmount;
+        valueSaveRef.current.max = Number(
+          ZERO.plus(data.maxPurchaseAmount).decimalPlaces(4, BigNumber.ROUND_DOWN).valueOf(),
+        );
+        valueSaveRef.current.min = Number(
+          ZERO.plus(data.minPurchaseAmount).decimalPlaces(4, BigNumber.ROUND_UP).valueOf(),
+        );
       }
     } else {
       if (data && data.maxSellAmount !== null && data.minSellAmount !== null) {
-        valueSaveRef.current.max = data.maxSellAmount;
-        valueSaveRef.current.min = data.minSellAmount;
+        valueSaveRef.current.max = Number(
+          ZERO.plus(data.maxSellAmount).decimalPlaces(4, BigNumber.ROUND_DOWN).valueOf(),
+        );
+        valueSaveRef.current.min = Number(ZERO.plus(data.minSellAmount).decimalPlaces(4, BigNumber.ROUND_UP).valueOf());
       }
     }
     const { amount, min, max } = valueSaveRef.current;

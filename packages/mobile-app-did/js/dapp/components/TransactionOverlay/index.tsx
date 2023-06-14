@@ -54,12 +54,15 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   );
 
   const [fee, setFee] = useState('');
+  const [isFetchingFee, setIsFetchingFee] = useState(true);
   const [noEnoughFee, setNoEnoughFee] = useState(false);
 
   const isTransfer = useMemo(() => transactionInfo.method.toLowerCase() === 'transfer', [transactionInfo.method]);
 
-  const buttonList = useMemo(
-    () => [
+  const buttonList = useMemo(() => {
+    const disabled = isFetchingFee || noEnoughFee;
+
+    return [
       {
         title: t('Reject'),
         type: 'outline' as CommonButtonProps['type'],
@@ -75,10 +78,10 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           onSign?.();
           OverlayModal.hide();
         },
+        disabled: disabled,
       },
-    ],
-    [onReject, onSign, t],
-  );
+    ];
+  }, [isFetchingFee, noEnoughFee, onReject, onSign, t]);
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
@@ -271,10 +274,12 @@ const ConnectModal = (props: TransactionModalPropsType) => {
       if (!TransactionFee && !TransactionFee?.ELF) return setNoEnoughFee(true);
 
       setFee(TransactionFee?.ELF || '0');
+      setIsFetchingFee(false);
     } catch (e) {
       setFee('0');
       setNoEnoughFee(true);
       console.log('get fee error', e);
+      setIsFetchingFee(false);
     }
   }, [
     chainInfo,

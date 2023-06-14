@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
@@ -11,6 +11,8 @@ import { CommonButtonProps } from 'components/CommonButton';
 
 import DappInfoSection from '../DappInfoSection';
 import { GetSignatureParams } from '@portkey/provider-types';
+import TransactionDataSection from '../TransactionDataSection';
+import { TextL, TextXXXL } from 'components/CommonText';
 
 interface SignModalPropsType {
   dappInfo: DappStoreItem;
@@ -19,7 +21,7 @@ interface SignModalPropsType {
   onSign: () => void;
 }
 const SignModal = (props: SignModalPropsType) => {
-  const { dappInfo, onReject, onSign } = props;
+  const { dappInfo, signInfo, onReject, onSign } = props;
   const { t } = useLanguage();
 
   const buttonList = useMemo(
@@ -46,7 +48,11 @@ const SignModal = (props: SignModalPropsType) => {
 
   return (
     <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList}>
-      <DappInfoSection dappInfo={dappInfo} />
+      <View style={styles.contentWrap}>
+        <DappInfoSection dappInfo={dappInfo} />
+        <TextXXXL style={styles.signTitle}>Sign Message</TextXXXL>
+        <TransactionDataSection dataInfo={signInfo} />
+      </View>
     </ModalBody>
   );
 };
@@ -77,5 +83,10 @@ const styles = StyleSheet.create({
     color: defaultColors.primaryColor,
     backgroundColor: defaultColors.bg9,
     ...GStyles.paddingArg(2, 8),
+  },
+  signTitle: {
+    marginTop: pTd(24),
+    marginBottom: pTd(24),
+    textAlign: 'center',
   },
 });

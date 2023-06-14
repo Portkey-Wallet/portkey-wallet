@@ -10,13 +10,14 @@ export interface ITabItem {
 export interface IDiscoverNetworkStateType {
   recordsList: ITabItem[];
   whiteList: any[];
-  activeTabId?: number;
   tabs: ITabItem[];
 }
 
 export interface IDiscoverStateType {
   isDrawerOpen: boolean;
-  discoverMap: {
+  discoverMap?: {
     [key in NetworkType]?: IDiscoverNetworkStateType;
   };
+  initializedList?: Set<number>;
+  activeTabId?: number;
 }

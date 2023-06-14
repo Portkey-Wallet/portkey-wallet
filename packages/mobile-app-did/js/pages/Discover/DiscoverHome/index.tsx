@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
-import { useLanguage } from 'i18n/hooks';
 import SimulatedInputBox from '../components/SimulatedInputBox';
 import { DiscoverCmsListSection } from '../components/DiscoverCmsListSection';
 import { defaultColors } from 'assets/theme';

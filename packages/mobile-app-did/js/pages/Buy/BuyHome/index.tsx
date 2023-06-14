@@ -1,5 +1,5 @@
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
@@ -12,8 +12,6 @@ import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 
 import { TypeEnum } from '../types';
-import ActionSheet from 'components/ActionSheet';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 type TabItemType = {
   name: string;
@@ -37,27 +35,6 @@ const tabList: TabItemType[] = [
 export default function BuyHome() {
   const { t } = useLanguage();
   const [selectTab, setSelectTab] = useState<TypeEnum>(TypeEnum.BUY);
-  const isMainNetwork = useIsMainnet();
-
-  const switchTab = useCallback(
-    (tabItem: TabItemType) => {
-      if (tabItem.type === TypeEnum.SELL) {
-        ActionSheet.alert({
-          title2: (
-            <TextM style={[GStyles.textAlignCenter]}>
-              {isMainNetwork
-                ? `Off-ramp is currently not supported. It will be launched in the coming weeks.`
-                : `Off-ramp is currently not supported. It will be enabled once Portkey launches on aelf Mainnet.`}
-            </TextM>
-          ),
-          buttons: [{ title: 'OK' }],
-        });
-        return;
-      }
-      setSelectTab(tabItem.type);
-    },
-    [isMainNetwork],
-  );
 
   return (
     <PageContainer
@@ -71,7 +48,7 @@ export default function BuyHome() {
             <TouchableOpacity
               key={tabItem.name}
               onPress={() => {
-                switchTab(tabItem);
+                setSelectTab(tabItem.type);
               }}>
               <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
                 <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>

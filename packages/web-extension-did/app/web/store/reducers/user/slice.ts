@@ -4,6 +4,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface LoadingInfo {
   isLoading?: boolean | OpacityType;
   loadingText?: string;
+  isEllipsis?: boolean;
 }
 
 export interface UserState {
@@ -16,6 +17,7 @@ export const initialState: UserState = {
   loadingInfo: {
     isLoading: false,
     loadingText: 'Loading...',
+    isEllipsis: true,
   },
 };
 

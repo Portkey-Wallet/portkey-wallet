@@ -25,6 +25,12 @@ export const BackEndNetWorkMap: {
     apiUrl: 'https://localtest-applesign2.portkey.finance',
     graphqlUrl: 'http://192.168.67.51:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
     connectUrl: 'http://192.168.67.51:8080',
+    buyConfig: {
+      ach: {
+        appId: 'f83Is2y7L425rxl8',
+        baseUrl: 'https://ramptest.alchemypay.org',
+      },
+    },
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -48,5 +54,11 @@ export const BackEndNetWorkMap: {
     connectUrl: 'https://auth-portkey.portkey.finance',
     cmsUrl: 'https://cms.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
+    buyConfig: {
+      ach: {
+        appId: 'P0e0l39jipsNYT46',
+        baseUrl: 'https://ramp.alchemypay.org',
+      },
+    },
   },
 };

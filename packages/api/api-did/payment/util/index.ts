@@ -1,6 +1,7 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { CryptoInfoType, GetAchTokenDataType, OrderQuoteType } from '../type';
 import { TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export interface GetOrderQuoteParamsType {
   crypto: string;
@@ -23,7 +24,12 @@ export const getOrderQuote = async (params: GetOrderQuoteParamsType) => {
   return rst.data as OrderQuoteType;
 };
 
-export const getCryptoInfo = async (params: { fiat: string }, symbol: string, _chainId: string) => {
+export const getCryptoInfo = async (
+  params: { fiat: string },
+  symbol: string,
+  _chainId: string,
+  side: PaymentTypeEnum,
+) => {
   // FIXME _chainId to chainId
   console.log(
     'At present, only the main network is connected to legal currency, and the test is the faucet. If the test network is connected to legal currency, chainId will be used',
@@ -35,7 +41,12 @@ export const getCryptoInfo = async (params: { fiat: string }, symbol: string, _c
   if (rst.returnCode !== '0000') {
     throw new Error(rst.returnMsg);
   }
-  return (rst.data as CryptoInfoType[]).find((item: any) => item.crypto === symbol && item.network === symbol);
+  return (rst.data as CryptoInfoType[]).find(
+    (item: any) =>
+      item.crypto === symbol &&
+      item.network === symbol &&
+      (side === PaymentTypeEnum.BUY ? Number(item.buyEnable) === 1 : Number(item.sellEnable) === 1),
+  );
 };
 
 export const getCryptoList = async (params: { fiat: string }) => {

@@ -111,4 +111,15 @@ export default class ApprovalController {
       search: JSON.stringify(params),
     });
   }
+
+  /**
+   * Obtain authorization to get signature
+   *
+   */
+  async authorizedToGetSignature(params: any): Promise<SendResponseParams> {
+    return this.notificationService.openPrompt({
+      method: PromptRouteTypes.GET_SIGNATURE,
+      search: JSON.stringify(params),
+    });
+  }
 }

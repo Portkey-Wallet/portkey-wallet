@@ -143,7 +143,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           <View style={transferGroupStyle.section}>
             <View style={[transferGroupStyle.flexSpaceBetween]}>
               <TextM style={transferGroupStyle.fontBold}>{t('Transaction Fee')}</TextM>
-              <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
+              <TextM style={transferGroupStyle.fontBold}>{`${formatAmountShow(
                 divDecimals(fee, ELF_DECIMAL),
                 8,
               )} ELF`}</TextM>
@@ -166,7 +166,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                 <View style={transferGroupStyle.section}>
                   <View style={[transferGroupStyle.flexSpaceBetween]}>
                     <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
-                    <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
+                    <TextM style={transferGroupStyle.fontBold}>{`${formatAmountShow(
                       divDecimals(ZERO.plus(amount).plus(fee), decimals),
                       8,
                     )} ${symbol}`}</TextM>
@@ -188,7 +188,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                 <View style={transferGroupStyle.section}>
                   <View style={[transferGroupStyle.flexSpaceBetween]}>
                     <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
-                    <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
+                    <TextM style={transferGroupStyle.fontBold}>{`${formatAmountShow(
                       divDecimals(ZERO.plus(fee), ELF_DECIMAL),
                       8,
                     )} ELF`}</TextM>
@@ -205,7 +205,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                   )}
                   <View style={[transferGroupStyle.flexSpaceBetween]}>
                     <TextM />
-                    <TextM style={transferGroupStyle.blackFontColor}>{`${formatAmountShow(
+                    <TextM style={transferGroupStyle.fontBold}>{`${formatAmountShow(
                       divDecimals(ZERO.plus(amount), decimals),
                       8,
                     )} ${symbol}`}</TextM>

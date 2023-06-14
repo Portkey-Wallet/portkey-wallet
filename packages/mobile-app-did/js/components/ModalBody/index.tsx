@@ -89,7 +89,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   closeIcon: {
-    ...GStyles.paddingArg(21, 28),
+    ...GStyles.paddingArg(21, 20),
     position: 'absolute',
     right: 0,
   },

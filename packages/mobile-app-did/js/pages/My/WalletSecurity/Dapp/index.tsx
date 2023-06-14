@@ -95,6 +95,7 @@ const itemStyles = StyleSheet.create({
   },
   itemCenter: {
     flex: 1,
+    paddingRight: pTd(16),
   },
   itemDappTitle: {
     marginBottom: pTd(1),

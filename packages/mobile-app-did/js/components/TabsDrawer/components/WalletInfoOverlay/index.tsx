@@ -51,7 +51,7 @@ const MyWalletModal = () => {
             <View key={item?.chaiId} style={[styles.itemWrap, !!index && styles.itemBorderTop]}>
               <View>
                 <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chaiId as ChainId), 10)}</TextM>
-                <TextS style={styles.itemChainInfo}>
+                <TextS style={[styles.itemChainInfo, FontStyles.font3]}>
                   {formatChainInfoToShow(item?.chaiId as ChainId, currentNetwork)}
                 </TextS>
               </View>

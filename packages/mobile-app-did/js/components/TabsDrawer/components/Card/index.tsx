@@ -1,5 +1,5 @@
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import { TouchableOpacity } from 'react-native';
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
@@ -28,9 +28,9 @@ const Card: React.FC<ICardsProps> = (props: ICardsProps) => {
     <View style={tabShowItemStyle.cardWrap}>
       <View style={tabShowItemStyle.header}>
         <DiscoverWebsiteImage size={pTd(20)} imageUrl={getFaviconUrl(item.url)} />
-        <TextM numberOfLines={1} ellipsizeMode="tail" style={tabShowItemStyle.title}>
+        <TextS numberOfLines={1} ellipsizeMode="tail" style={tabShowItemStyle.title}>
           {item?.name ?? getHost(item?.url)}
-        </TextM>
+        </TextS>
         <TouchableOpacity onPress={() => dispatch(closeExistingTab({ id: item?.id, networkType }))}>
           <Svg icon="close" size={12} />
         </TouchableOpacity>

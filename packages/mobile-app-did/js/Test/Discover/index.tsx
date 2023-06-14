@@ -6,7 +6,7 @@ import navigationService from 'utils/navigationService';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import CommonButton from 'components/CommonButton';
 import DappEventBus from 'dapp/dappEventBus';
-import BrowserTab from 'components/BrowserTab';
+import ProviderWebview from 'components/ProviderWebview';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -22,8 +22,7 @@ const Discover: React.FC = () => {
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
       <CustomHeader titleDom="Discover" leftCallback={navigationService.goBack} />
-      <BrowserTab uri="http://localhost:3000/" />
-      <BrowserTab uri="http://localhost:3001/" />
+      <ProviderWebview source={{ uri: 'http://localhost:3000' }} />
       <CommonButton
         onPress={() => {
           DappEventBus.dispatchEvent({

@@ -12,7 +12,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { FontStyles } from 'assets/theme/styles';
 import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
-import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
 
 import { isIOS } from '@rneui/base';
 import { useAppCASelector } from '@portkey-wallet/hooks';
@@ -111,10 +111,14 @@ const BrowserEditModal = ({
     <View style={styles.modalStyle}>
       <View style={[GStyles.flexRow, GStyles.center]}>
         <DiscoverWebsiteImage size={pTd(32)} imageUrl={getFaviconUrl(browserInfo?.url || '')} />
-        <TextL ellipsizeMode="tail" style={[GStyles.flex1, styles.title]}>
-          {browserInfo?.name}
-        </TextL>
-
+        <View style={styles.headerCenter}>
+          <TextL numberOfLines={1} ellipsizeMode="tail" style={styles.title}>
+            {browserInfo?.name || getHost(browserInfo?.url)}
+          </TextL>
+          <TextS numberOfLines={1} ellipsizeMode="tail" style={styles.url}>
+            {browserInfo?.url}
+          </TextS>
+        </View>
         <TouchableOpacity onPress={() => handleUrl(HANDLE_TYPE.CANCEL)}>
           <Svg icon="close" size={pTd(12)} />
         </TouchableOpacity>
@@ -164,13 +168,18 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg6,
     width: screenWidth,
   },
+  headerCenter: {
+    paddingLeft: pTd(8),
+    paddingRight: pTd(16),
+    flex: 1,
+  },
   title: {
     textAlign: 'left',
-    height: pTd(22),
-    lineHeight: pTd(22),
-    marginVertical: pTd(13),
-    paddingLeft: pTd(8),
+    color: defaultColors.font5,
     ...fonts.mediumFont,
+  },
+  url: {
+    color: defaultColors.font7,
   },
   listWrap: {
     marginTop: pTd(24),

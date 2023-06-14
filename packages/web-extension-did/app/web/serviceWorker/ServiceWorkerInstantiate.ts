@@ -195,17 +195,15 @@ export default class ServiceWorkerInstantiate {
       case WalletMessageTypes.SOCIAL_LOGIN:
         this.getSocialLogin(sendResponse, message.payload);
         break;
-      // case PortkeyMessageTypes.FINISH_ASYNC_TASK:
-      //   this.dealNextTask(sendResponse, message.payload);
-      //   break;
+      case WalletMessageTypes.ACH_SELL_REDIRECT:
+        this.expandHomeAndCloseOrigin(sendResponse, message.payload);
+        break;
 
       default:
         if (this.aelfMethodController.aelfMethodList.includes(message.type)) {
           this.aelfMethodController.dispenseMessage(message, sendResponse);
           break;
         }
-        sendResponse(errorHandler(700001, `Portkey does not contain this method (${message.type})`));
-        break;
     }
   }
 
@@ -337,6 +335,41 @@ export default class ServiceWorkerInstantiate {
       },
       'tabs',
     );
+  }
+
+  async expandHomeAndCloseOrigin(sendResponse: SendResponseFun, payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.EXPAND_FULL_SCREEN,
+        search: `${payload.payload}&method=${payload.method}`,
+      },
+      'tabs',
+    );
+    sendResponse(errorHandler(0));
+  }
+
+  /**
+   * Determine whether the portkey is locked, and if not, get the list of authorized users
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getAddress(sendResponse: SendResponseFun, _message: any) {
+    try {
+      sendResponse(errorHandler(700001));
+    } catch (error) {
+      sendResponse(errorHandler(500001, error));
+    }
+  }
+
+  /**
+   * Dapp connection portkey
+   */
+  async connectWallet(sendResponse: SendResponseFun, message: any) {
+    try {
+      sendResponse(errorHandler(700001, message));
+    } catch (error) {
+      console.log(error, 'connectWallet==');
+      return sendResponse(errorHandler(500001, error));
+    }
   }
 
   async notificationServiceClose(

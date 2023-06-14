@@ -10,7 +10,7 @@ import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { ResponseCode } from '@portkey/provider-types';
 import { getWallet } from '@portkey-wallet/utils/aelf';
-import ImgLoading from 'components/ImgLoading';
+import ImageDisplay from 'pages/components/ImageDisplay';
 import './index.less';
 
 export default function GetSignature() {
@@ -38,13 +38,7 @@ export default function GetSignature() {
     () =>
       curDapp && (
         <div className="site flex-center">
-          <ImgLoading
-            defaultHeight={24}
-            className="icon"
-            src={curDapp?.icon}
-            loadEle={curDapp?.name?.[0]}
-            errorEle={curDapp.name?.[0]}
-          />
+          <ImageDisplay defaultHeight={24} className="icon" src={curDapp?.icon} backupSrc="DappDefault" />
           <span className="origin">{curDapp.origin}</span>
         </div>
       ),

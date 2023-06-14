@@ -1,8 +1,8 @@
 import { addDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import ImgLoading from 'components/ImgLoading';
 import usePromptSearch from 'hooks/usePromptSearch';
+import ImageDisplay from 'pages/components/ImageDisplay';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
@@ -23,13 +23,7 @@ export default function ConnectWallet() {
     () =>
       detail && (
         <div className="site flex-center">
-          <ImgLoading
-            defaultHeight={24}
-            className="icon"
-            src={detail.appLogo}
-            loadEle={detail.appName?.[0]}
-            errorEle={detail.appName?.[0]}
-          />
+          <ImageDisplay defaultHeight={24} className="icon" src={detail.appLogo} backupSrc="DappDefault" />
           <span className="origin">{detail.appHref}</span>
         </div>
       ),

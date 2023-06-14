@@ -176,7 +176,7 @@ export default function SendTransactions() {
     return (
       <div className="message-wrapper">
         <div>Message</div>
-        <div className="message">
+        <div className="message flex">
           {Object.keys(params).map((item) => (
             <div key={item}>
               <div className="value">{item}</div>

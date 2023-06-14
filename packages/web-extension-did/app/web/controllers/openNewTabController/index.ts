@@ -7,7 +7,10 @@ export default class OpenNewTabController {
   }
   openNewTab() {
     const createdListener = async (tab: chrome.tabs.Tab) => {
-      saveOpenTabs(tab.id || '');
+      const extId = apis.runtime.id;
+      if (tab.id && extId && (tab.id + '').includes(extId)) {
+        saveOpenTabs(tab.id);
+      }
     };
 
     apis.tabs.onCreated.addListener(createdListener);

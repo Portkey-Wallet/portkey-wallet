@@ -2,6 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import { IDiscoverStateType, IDiscoverNetworkStateType, ITabItem } from './type';
 import { NetworkType } from '@portkey-wallet/types';
 import { enableMapSet } from 'immer';
+import { RECORD_LIMIT, TAB_LIMIT } from '@portkey-wallet/constants/constants-ca/discover';
+
 enableMapSet();
 const initNetworkData: IDiscoverNetworkStateType = {
   recordsList: [],
@@ -35,6 +37,11 @@ export const discoverSlice = createSlice({
 
       const targetItem = state.discoverMap?.[networkType]?.recordsList.find(item => item.url === url);
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
+
+      // limit number
+      if (RECORD_LIMIT <= targetNetworkDiscover.recordsList.length) {
+        targetNetworkDiscover.tabs.shift();
+      }
 
       if (targetItem) {
         const arr = state.discoverMap?.[networkType]?.recordsList.filter(item => item.url !== url) || [];
@@ -72,6 +79,9 @@ export const discoverSlice = createSlice({
       if (!targetNetworkDiscover?.tabs) {
         targetNetworkDiscover.tabs = [{ ...payload }];
       } else {
+        if (TAB_LIMIT <= targetNetworkDiscover.tabs.length) {
+          targetNetworkDiscover.tabs.shift();
+        }
         targetNetworkDiscover.tabs.push({ ...payload });
       }
 
@@ -86,10 +96,8 @@ export const discoverSlice = createSlice({
     setActiveTab: (state, { payload }: { payload: { id: number | undefined; networkType: NetworkType } }) => {
       const { id } = payload;
       if (!state.initializedList) state.initializedList = new Set<number>();
-      console.log(state.activeTabId, '====state.activeTabId1');
       id && state.initializedList.add(id);
       state.activeTabId = id;
-      console.log(state.activeTabId, '====state.activeTabId2');
     },
     updateTab: (state, { payload }: { payload: { networkType: NetworkType; id: number; [key: string]: any } }) => {
       const { networkType, id } = payload;

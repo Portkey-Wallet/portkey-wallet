@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
@@ -11,7 +11,9 @@ import { pTd } from 'utils/unit';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { upDateRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice';
 import navigationService from 'utils/navigationService';
-import { ACH_REDIRECT_URL } from 'constants/common';
+import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
+import { useHandleAchSell } from './hooks/useHandleAchSell';
+import CommonToast from 'components/CommonToast';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -22,7 +24,11 @@ const safeAreaColorMap = {
 
 export type SafeAreaColorMapKeyUnit = keyof typeof safeAreaColorMap;
 
-type WebViewPageType = 'default' | 'discover' | 'ach';
+type WebViewPageType = 'default' | 'discover' | 'ach' | 'achSell';
+
+export interface AchSellParams {
+  orderNo?: string;
+}
 
 const ViewOnWebView: React.FC = () => {
   const {
@@ -30,11 +36,13 @@ const ViewOnWebView: React.FC = () => {
     url,
     webViewPageType = 'default',
     injectedJavaScript,
+    params,
   } = useRouterParams<{
     url: string;
     title?: string;
     webViewPageType?: WebViewPageType;
     injectedJavaScript?: string;
+    params?: any;
   }>();
 
   const [browserInfo, setBrowserInfo] = useState({ url, title });
@@ -52,6 +60,9 @@ const ViewOnWebView: React.FC = () => {
     BrowserOverlay.showBrowserModal({ browserInfo, setBrowserInfo, handleReload });
   }, [browserInfo, handleReload]);
 
+  const handleAchSell = useHandleAchSell();
+  const isAchSellHandled = useRef(false);
+
   const handleNavigationStateChange = useCallback(
     (navState: any) => {
       if (webViewPageType === 'default') return;
@@ -61,9 +72,21 @@ const ViewOnWebView: React.FC = () => {
         }
         return;
       }
+      if (webViewPageType === 'achSell') {
+        if (navState.url.startsWith(ACH_WITHDRAW_URL) && !isAchSellHandled.current) {
+          isAchSellHandled.current = true;
+          navigationService.navigate('Tab');
+          const { orderNo } = (params as AchSellParams) || {};
+          if (!orderNo) {
+            CommonToast.failError('Transaction failed.');
+            return;
+          }
+          handleAchSell(orderNo);
+        }
+      }
       dispatch(upDateRecordsItem({ url, title: title ? title : navState.title }));
     },
-    [dispatch, title, url, webViewPageType],
+    [dispatch, handleAchSell, params, title, url, webViewPageType],
   );
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>

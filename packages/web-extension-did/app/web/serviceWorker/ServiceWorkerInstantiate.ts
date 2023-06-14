@@ -195,9 +195,9 @@ export default class ServiceWorkerInstantiate {
       case WalletMessageTypes.SOCIAL_LOGIN:
         this.getSocialLogin(sendResponse, message.payload);
         break;
-      // case PortkeyMessageTypes.FINISH_ASYNC_TASK:
-      //   this.dealNextTask(sendResponse, message.payload);
-      //   break;
+      case WalletMessageTypes.ACH_SELL_REDIRECT:
+        this.expandHomeAndCloseOrigin(sendResponse, message.payload);
+        break;
 
       default:
         if (this.aelfMethodController.aelfMethodList.includes(message.type)) {
@@ -337,6 +337,17 @@ export default class ServiceWorkerInstantiate {
       },
       'tabs',
     );
+  }
+
+  async expandHomeAndCloseOrigin(sendResponse: SendResponseFun, payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.EXPAND_FULL_SCREEN,
+        search: `${payload.payload}&method=${payload.method}`,
+      },
+      'tabs',
+    );
+    sendResponse(errorHandler(0));
   }
 
   async notificationServiceClose(

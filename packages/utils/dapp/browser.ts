@@ -17,8 +17,18 @@ export function getUrlObj(url: string) {
  * @param url
  * @returns
  */
-const isIp = (url: string): boolean => {
+export const isIp = (url: string): boolean => {
   return /((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))/.test(url);
+};
+
+/**
+ * check if url is ip
+ * @param url
+ * @returns
+ */
+export const isDangerousLink = (url: string): boolean => {
+  if (isIp(url)) return true;
+  return /^(?:http:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!&',;=.+]+$/g.test(url);
 };
 
 /**

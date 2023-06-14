@@ -42,22 +42,22 @@ const TabsDrawerContent: React.FC = () => {
 
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
 
-  const activeWebviewScreenShot = useCallback(() => {
+  const activeWebviewScreenShot = useCallback(async () => {
     if (!activeTabId) return;
-    tabRef.current?.capture?.().then(
-      uri => {
-        console.log('Image saved to', uri);
-        dispatch(updateTab({ id: activeTabId, screenShotUrl: uri, networkType }));
-      },
-      error => console.error('Oops, snapshot failed', error),
-    );
+
+    try {
+      const uri = await tabRef.current?.capture?.();
+      dispatch(setActiveTab({ id: undefined, networkType }));
+      dispatch(updateTab({ id: activeTabId, screenShotUrl: uri, networkType }));
+    } catch (error) {
+      console.log(error);
+    }
   }, [activeTabId, dispatch, networkType]);
 
   const backToSearchPage = useCallback(() => {
     activeWebviewScreenShot();
-    dispatch(setActiveTab({ id: undefined, networkType }));
     dispatch(changeDrawerOpenStatus(false));
-  }, [activeWebviewScreenShot, dispatch, networkType]);
+  }, [activeWebviewScreenShot, dispatch]);
 
   // header right
   const rightDom = useMemo(() => {

@@ -64,14 +64,16 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
       />
     );
   }, [leftIconType, styles.leftBackTitle.color]);
-  useHardwareBackPress(() => {
-    if (notHandleHardwareBackPress) return false;
-    if (isFocused && leftCallback) {
-      leftCallback();
-      return true;
-    }
-    return false;
-  });
+  useHardwareBackPress(
+    useMemo(() => {
+      if (isFocused && leftCallback && !notHandleHardwareBackPress) {
+        return () => {
+          leftCallback();
+          return true;
+        };
+      }
+    }, [isFocused, leftCallback, notHandleHardwareBackPress]),
+  );
   useEffect(() => {
     if (onGestureStartCallback) {
       const unsubscribe = navigation.addListener('gestureStart' as any, () => {

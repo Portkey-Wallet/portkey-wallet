@@ -19,7 +19,7 @@ export const useDiscoverJumpWithNetWork = () => {
   const { discoverMap } = useAppCASelector(state => state.discover);
 
   const discoverJump = ({ item }: { item: ITabItem }) => {
-    if (!discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
+    if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
 
     dispatch(createNewTab({ ...item, networkType }));
     dispatch(setActiveTab({ ...item, networkType }));

@@ -15,11 +15,9 @@ import CommonToast from 'components/CommonToast';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 
 import { isIOS } from '@rneui/base';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -49,8 +47,7 @@ const BrowserEditModal = ({
   setPreActiveTabId: Dispatch<SetStateAction<number | undefined>>;
 }) => {
   const { t } = useLanguage();
-  const dispatch = useAppCommonDispatch();
-  const { networkType } = useCurrentNetworkInfo();
+  const { activeTabId } = useAppCASelector(state => state.discover);
 
   const handleUrl = useCallback(
     async (type: HANDLE_TYPE) => {
@@ -86,9 +83,10 @@ const BrowserEditModal = ({
           break;
 
         case HANDLE_TYPE.SWITCH:
-          OverlayModal.hide();
+          if (!activeTabId) return;
+
           activeWebviewScreenShot();
-          dispatch(setActiveTab({ id: undefined, networkType }));
+          OverlayModal.hide();
           setPreActiveTabId(Number(browserInfo?.id));
 
           break;
@@ -103,9 +101,8 @@ const BrowserEditModal = ({
       browserInfo?.name,
       browserInfo?.id,
       t,
+      activeTabId,
       activeWebviewScreenShot,
-      dispatch,
-      networkType,
       setPreActiveTabId,
     ],
   );

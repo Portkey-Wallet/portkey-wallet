@@ -25,6 +25,7 @@ import { getDappState, getWalletState } from 'utils/lib/SWGetReduxStore';
 import InternalMessage from 'messages/InternalMessage';
 import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
 import { addDapp, removeDapp, resetDapp, resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { sleep } from '@portkey-wallet/utils';
 
 export interface DappEventPack<T = DappEvents, D = any> {
   eventName: T;
@@ -131,6 +132,8 @@ export default class SWEventController {
   // Trigger events based on user operations to notify service workers
   public static async emit(action: string, payload: any) {
     console.log(action, payload, 'action==action');
+    // Asynchronous updates lead to data exceptions when emitting
+    await sleep(50);
     switch (action) {
       case changeNetworkType.toString(): {
         const { currentNetwork } = await getWalletState();

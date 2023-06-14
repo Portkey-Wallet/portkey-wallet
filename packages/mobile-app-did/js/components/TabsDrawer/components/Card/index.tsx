@@ -4,7 +4,6 @@ import { TouchableOpacity } from 'react-native';
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
-
 import Svg from 'components/Svg';
 
 import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
@@ -53,6 +52,7 @@ export default Card;
 
 const tabShowItemStyle = StyleSheet.create({
   cardWrap: {
+    overflow: 'hidden',
     borderRadius: pTd(8),
     width: pTd(160),
     height: pTd(214),

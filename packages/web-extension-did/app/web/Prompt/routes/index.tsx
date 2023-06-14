@@ -40,9 +40,6 @@ import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
 import Buy from 'pages/Buy';
 import BuyPreview from 'pages/Buy/Preview';
-import BuyTest from 'pages/BuyTest';
-import BuyTestPreview from 'pages/BuyTest/Preview';
-import BuyTestConfirm from 'pages/BuyTest/Confirm';
 import { useCommonState } from 'store/Provider/hooks';
 import My from 'pages/My';
 import RecentDetail from 'pages/Send/components/RecentDetail';
@@ -50,6 +47,7 @@ import Permission from 'pages/Permission';
 import ConnectWallet from 'pages/ConnectWallet';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SendTransactions from 'pages/SendTransactions';
+import GetSignature from 'pages/GetSignature';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -128,18 +126,6 @@ export const PageRouter = () => {
       element: <BuyPreview />,
     },
     {
-      path: '/buy-test',
-      element: <BuyTest />,
-    },
-    {
-      path: '/buy-test/preview',
-      element: <BuyTestPreview />,
-    },
-    {
-      path: '/buy-test/confirm',
-      element: <BuyTestConfirm />,
-    },
-    {
       path: '/nft',
       element: <NFT />,
     },
@@ -180,6 +166,10 @@ export const PageRouter = () => {
     {
       path: '/send-transactions',
       element: <SendTransactions />,
+    },
+    {
+      path: '/get-signature',
+      element: <GetSignature />,
     },
 
     {

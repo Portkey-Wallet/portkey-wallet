@@ -15,4 +15,5 @@ export default {
     config: { method: 'GET' },
   },
   updateAchOrder: '/api/app/thirdPart/order/alchemy',
+  updateAlchemyOrderTxHash: 'api/app/thirdPart/alchemy/txHash',
 } as const;

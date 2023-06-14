@@ -107,6 +107,7 @@ export const styles = StyleSheet.create({
     width: pTd(48),
   },
   buttonGroup: {
+    backgroundColor: defaultColors.bg1,
     position: 'absolute',
     bottom: 0,
     paddingRight: pTd(20),

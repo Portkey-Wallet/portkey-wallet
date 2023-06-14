@@ -10,11 +10,7 @@ import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import './index.less';
 
-const allowItem = [
-  'viewing wallet balance and activity',
-  'sending requests for transactions',
-  'moving funds without your permission',
-];
+const allowItem = ['view wallet balance and activities', 'send you transaction requests'];
 
 export default function ConnectWallet() {
   const detail = usePromptSearch();
@@ -34,7 +30,7 @@ export default function ConnectWallet() {
             loadEle={detail.appName?.[0]}
             errorEle={detail.appName?.[0]}
           />
-          <span>{detail.appHref}</span>
+          <span className="origin">{detail.appHref}</span>
         </div>
       ),
     [detail],
@@ -47,7 +43,7 @@ export default function ConnectWallet() {
           <div className="item" key={item}>
             <div className="flex allow-title">
               <CustomSvg type="TickFilled" className="flex-center" />
-              <span>{t('Allow')}</span>
+              <span>{t('Allow this site to')}</span>
             </div>
             <div className="allow-text">{item}</div>
           </div>
@@ -92,7 +88,7 @@ export default function ConnectWallet() {
           {t('Reject')}
         </Button>
         <Button disabled={disabled} type="primary" onClick={handleSign}>
-          {t('Sign')}
+          {t('Approve')}
         </Button>
       </div>
     </div>

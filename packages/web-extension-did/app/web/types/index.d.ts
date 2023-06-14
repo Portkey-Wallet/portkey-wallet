@@ -16,3 +16,8 @@ export type ReCaptchaResponseParams = {
   message?: string;
   name?: string;
 };
+
+export interface IKeyDownParams {
+  key: string;
+  preventDefault: () => any;
+}

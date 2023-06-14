@@ -182,7 +182,6 @@ const styles = StyleSheet.create({
   },
   listItem: {
     marginRight: pTd(34),
-    borderRadius: pTd(6),
     overflow: 'hidden',
   },
   listItemNoMarginRight: {
@@ -190,6 +189,8 @@ const styles = StyleSheet.create({
   },
   svgWrap: {
     backgroundColor: defaultColors.bg1,
+    borderRadius: pTd(6),
+    overflow: 'hidden',
   },
   itemTitle: {
     textAlign: 'center',

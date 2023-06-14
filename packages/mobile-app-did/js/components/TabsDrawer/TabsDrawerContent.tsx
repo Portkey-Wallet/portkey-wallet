@@ -28,6 +28,7 @@ import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { BrowserContext, IBrowserTab } from './context';
+import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
@@ -101,14 +102,21 @@ const TabsDrawerContent: React.FC = () => {
     }),
     [],
   );
-
+  useHardwareBackPress(() => {
+    if (isDrawerOpen) {
+      backToSearchPage();
+      return true;
+    }
+    return false;
+  });
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
+        rightDom={rightDom}
         leftDom={!activeTabId && <View />}
         leftCallback={backToSearchPage}
-        rightDom={rightDom}
+        notHandleHardwareBackPress
         safeAreaColor={['blue', 'white']}
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}

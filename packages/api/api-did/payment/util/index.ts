@@ -27,14 +27,9 @@ export const getOrderQuote = async (params: GetOrderQuoteParamsType) => {
 export const getCryptoInfo = async (
   params: { fiat: string },
   symbol: string,
-  _chainId: string,
+  network: string,
   side: PaymentTypeEnum,
 ) => {
-  // FIXME _chainId to chainId
-  console.log(
-    'At present, only the main network is connected to legal currency, and the test is the faucet. If the test network is connected to legal currency, chainId will be used',
-  );
-
   const rst = await request.payment.getCryptoList({
     params,
   });
@@ -44,7 +39,7 @@ export const getCryptoInfo = async (
   return (rst.data as CryptoInfoType[]).find(
     (item: any) =>
       item.crypto === symbol &&
-      item.network === symbol &&
+      item.network === network &&
       (side === PaymentTypeEnum.BUY ? Number(item.buyEnable) === 1 : Number(item.sellEnable) === 1),
   );
 };

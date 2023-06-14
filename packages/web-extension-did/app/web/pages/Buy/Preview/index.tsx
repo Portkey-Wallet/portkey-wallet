@@ -122,7 +122,9 @@ export default function Preview() {
         const signature = await getAchSignature({ address });
         achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
       } else {
-        const withdrawUrl = encodeURIComponent(ACH_WITHDRAW_URL + `&payload=${orderNo}`);
+        const withdrawUrl = encodeURIComponent(
+          ACH_WITHDRAW_URL + `&payload=${encodeURIComponent(JSON.stringify({ orderNo: orderNo }))}`,
+        );
 
         achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
       }

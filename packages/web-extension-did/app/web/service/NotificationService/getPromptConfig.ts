@@ -21,7 +21,6 @@ export default async function getPromptConfig({ message }: PromptConfigParam) {
   const lastFocused = await apis.windows.getLastFocused();
   if (lastFocused.state) isFullscreen = lastFocused.state === 'fullscreen';
   switch (method) {
-    case PromptRouteTypes.GET_SIGNATURE:
     case PromptRouteTypes.UNLOCK_WALLET:
     case PromptRouteTypes.REGISTER_WALLET:
     case PromptRouteTypes.REGISTER_START_WALLET:

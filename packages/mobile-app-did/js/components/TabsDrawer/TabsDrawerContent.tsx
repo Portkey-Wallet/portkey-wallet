@@ -72,7 +72,7 @@ const TabsDrawerContent: React.FC = () => {
             onPress={() =>
               showBrowserModal({
                 browserInfo: activeItem,
-                activeWebViewRef: tabRef.current,
+                activeWebViewRef: tabRef,
                 activeWebviewScreenShot,
                 setPreActiveTabId,
               })

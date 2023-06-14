@@ -1,5 +1,7 @@
 import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 import { ChainId } from '@portkey-wallet/types';
+import { ICurToken } from './components/TokenInput';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export const sellSoonText = 'Off-ramp is currently not supported. It will be launched in the coming weeks.';
 
@@ -13,11 +15,6 @@ export enum DrawerType {
   currency,
 }
 
-export enum PageType {
-  buy,
-  sell,
-}
-
 export type PartialFiatType = Partial<FiatType>;
 
 export type TokenType = {
@@ -25,7 +22,7 @@ export type TokenType = {
   chainId: ChainId;
 };
 
-export const initToken = {
+export const initToken: ICurToken = {
   crypto: 'ELF',
   network: 'ELF', // TODO 'AELF'
 };
@@ -35,19 +32,9 @@ export const initFiat: PartialFiatType = {
   currency: 'USD',
 };
 
-export type Limit = {
-  min: number | null;
-  max: number | null;
-};
-
-export const initLimit = {
-  min: null,
-  max: null,
-};
-
 export const MAX_UPDATE_TIME = 15;
 export const initCurrency = '200';
-export const initCrypto = '100';
+export const initCrypto = '400';
 export const initValueSave: {
   amount: string;
   currency: string;
@@ -56,7 +43,9 @@ export const initValueSave: {
   network: string;
   min: number | null;
   max: number | null;
-  side: string;
+  side: PaymentTypeEnum;
+  receive: string;
+  isShowErrMsg: boolean;
 } = {
   amount: initCurrency,
   currency: 'USD',
@@ -65,7 +54,9 @@ export const initValueSave: {
   network: 'ELF', // TODO 'AELF'
   min: null,
   max: null,
-  side: 'BUY',
+  side: PaymentTypeEnum.BUY,
+  receive: '',
+  isShowErrMsg: false,
 };
 
 export interface IFetchOrderQuote {
@@ -83,5 +74,5 @@ export const initPreviewData = {
   fiat: 'USD',
   country: 'US',
   amount: '200',
-  side: 'BUY',
+  side: PaymentTypeEnum.BUY,
 };

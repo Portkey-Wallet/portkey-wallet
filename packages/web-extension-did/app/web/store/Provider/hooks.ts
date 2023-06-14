@@ -26,7 +26,8 @@ export const useLoading = () => {
   const { loadingInfo } = useAppSelector((state) => state.userInfo);
   const dispatch = useAppDispatch();
   const setLoading = useCallback(
-    (isLoading: boolean | OpacityType, loadingText?: string) => dispatch(setGlobalLoading({ isLoading, loadingText })),
+    (isLoading: boolean | OpacityType, loadingText?: string, isEllipsis = true) =>
+      dispatch(setGlobalLoading({ isLoading, loadingText, isEllipsis })),
     [dispatch],
   );
   return useMemo(() => ({ isLoading: !!loadingInfo.isLoading, setLoading }), [loadingInfo.isLoading, setLoading]);

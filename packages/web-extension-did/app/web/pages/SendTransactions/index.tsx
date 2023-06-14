@@ -26,6 +26,7 @@ export default function SendTransactions() {
       chainId: ChainId;
       contractAddress: string;
       method: string;
+      rpcUrl: string;
       params: any;
     };
   }>();
@@ -177,10 +178,10 @@ export default function SendTransactions() {
         <div>Message</div>
         <div className="message">
           {Object.keys(params).map((item) => (
-            <>
+            <div key={item}>
               <div className="value">{item}</div>
               <div className="content">{params[item]}</div>
-            </>
+            </div>
           ))}
         </div>
         <div className="fee">
@@ -200,7 +201,7 @@ export default function SendTransactions() {
         closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' } });
         return;
       }
-      if (chainInfo?.endPoint !== payload?.params?.rpcUrl) {
+      if (chainInfo?.endPoint !== payload?.rpcUrl) {
         closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' } });
         return;
       }

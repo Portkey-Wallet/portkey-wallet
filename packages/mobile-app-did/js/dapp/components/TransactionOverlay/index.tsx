@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     height: screenHeight / 2,
   },
   blank: {
-    height: pTd(300),
+    height: pTd(200),
   },
   error: {
     color: defaultColors.error,

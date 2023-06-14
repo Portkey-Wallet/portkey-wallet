@@ -101,7 +101,7 @@ export default function DiscoverSearch() {
           onChangeText={v => setValue(v)}
           onSubmitEditing={onSearch}
           returnKeyType="search"
-          placeholder={t('Enter URL to explorer')}
+          placeholder={t('Search Dapp or enter URL')}
           containerStyle={styles.inputStyle}
           rightIcon={
             value ? (
@@ -111,6 +111,7 @@ export default function DiscoverSearch() {
             ) : undefined
           }
           rightIconContainerStyle={styles.rightIconContainerStyle}
+          style={styles.rnInputStyle}
         />
         <TouchableOpacity onPress={navBack}>
           <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
@@ -134,6 +135,9 @@ const styles = StyleSheet.create({
   },
   sectionWrap: {
     ...GStyles.paddingArg(24, 20),
+  },
+  rnInputStyle: {
+    fontSize: pTd(14),
   },
   headerWrap: {
     height: pTd(22),

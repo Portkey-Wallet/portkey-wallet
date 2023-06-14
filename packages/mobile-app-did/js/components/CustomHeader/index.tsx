@@ -24,7 +24,7 @@ export type CustomHeaderProps = {
   type?: 'leftBack' | 'default';
   leftIconType?: 'close' | 'back';
   style?: StyleProp<ViewStyle>;
-  isHardwareBackPress?: boolean;
+  notHandleHardwareBackPress?: boolean;
 };
 
 const CustomHeader: React.FC<CustomHeaderProps> = props => {
@@ -42,7 +42,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     style,
     leftIconType = 'back',
     onGestureStartCallback,
-    isHardwareBackPress,
+    notHandleHardwareBackPress,
   } = props;
 
   // theme change
@@ -65,7 +65,8 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     );
   }, [leftIconType, styles.leftBackTitle.color]);
   useHardwareBackPress(() => {
-    if ((isHardwareBackPress || isFocused) && leftCallback) {
+    if (notHandleHardwareBackPress) return false;
+    if (isFocused && leftCallback) {
       leftCallback();
       return true;
     }

@@ -14,7 +14,7 @@ import DiscoverHome from 'pages/Discover/DiscoverHome';
 const Tab = createBottomTabNavigator();
 type TabMenuTypeType = { icon: IconName; component: React.FC };
 export interface TabMenuItem extends TabMenuTypeType {
-  name: string;
+  name: 'Wallet' | 'Discover' | 'Settings';
   label: string;
   index: number;
 }
@@ -46,6 +46,7 @@ export default function TabRoot() {
   const tabMenuListStore = useTabMenuList();
 
   const tabMenuList = useMemo(() => {
+    return defaultTabMenuList;
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
       if (!acc.find(item => item.type.value === cur.type.value)) {
         acc.push(cur);

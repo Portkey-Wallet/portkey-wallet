@@ -176,8 +176,7 @@ export default function Buy() {
     };
 
     const handleSetTimer = () => {
-      const timer = setInterval(() => {
-        updateTimerRef.current = timer;
+      updateTimerRef.current = setInterval(() => {
         --updateTimeRef.current;
 
         if (updateTimeRef.current === 0) {

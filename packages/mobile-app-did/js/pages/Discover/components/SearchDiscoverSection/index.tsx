@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { useLanguage } from 'i18n/hooks';
-import { TextL, TextS } from 'components/CommonText';
+import { TextM, TextS } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import NoData from 'components/NoData';
@@ -41,9 +41,9 @@ export default function SearchDiscoverSection(props: SearchDiscoverSectionProps)
           <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(32)} />
           <View style={itemStyle.right}>
             <View style={itemStyle.infoWrap}>
-              <TextL numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.gameName}>
+              <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.gameName}>
                 {item?.title}
-              </TextL>
+              </TextM>
               <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3, itemStyle.gameInfo]}>
                 {item?.description}
               </TextS>

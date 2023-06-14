@@ -40,7 +40,7 @@ export function DiscoverCmsListSection() {
               <TouchableOpacity key={i} style={styles.itemWrap} onPress={() => onJump(item)}>
                 <Image style={styles.image} source={{ uri: `${s3Url}/${item?.imgUrl?.filename_disk}` }} />
                 <View style={styles.right}>
-                  <TextM style={[FontStyles.font5, fonts.regularFont]} numberOfLines={1} ellipsizeMode="tail">
+                  <TextM style={[FontStyles.font5]} numberOfLines={1} ellipsizeMode="tail">
                     {item.title}
                   </TextM>
                   <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     display: 'flex',
     flexDirection: 'row',
-    ...GStyles.paddingArg(12, 16),
+    ...GStyles.paddingArg(16, 12),
     width: '100%',
   },
   image: {

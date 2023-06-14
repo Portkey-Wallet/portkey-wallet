@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { Button } from 'antd';
 import { useMemo } from 'react';
-import ImgLoading from 'components/ImgLoading';
+import ImageDisplay from 'pages/components/ImageDisplay';
 import './index.less';
 
 export interface IConnectedSiteListProps {
@@ -19,13 +19,7 @@ export default function ConnectedSiteList({ list, onDisconnect }: IConnectedSite
         {list.map((item) => (
           <div className="connected-site-item flex-between-center" key={item.origin}>
             <div className="content flex">
-              <ImgLoading
-                defaultHeight={32}
-                className="icon"
-                src={item.icon}
-                loadEle={item?.name?.[0] || ''}
-                errorEle={item?.name?.[0] || ''}
-              />
+              <ImageDisplay defaultHeight={32} className="icon" src={item.icon} backupSrc="DappDefault" />
               <div className="desc flex-column">
                 <div className="text name">{item.name}</div>
                 <div className="text origin">{item.origin}</div>

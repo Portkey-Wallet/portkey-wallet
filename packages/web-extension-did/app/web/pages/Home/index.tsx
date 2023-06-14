@@ -29,6 +29,7 @@ export default function Home() {
     if (search) {
       const { detail, method } = qs.parse(search);
       if (detail && method === walletMessage.ACH_SELL_REDIRECT && !locked && isSell.current === 0) {
+        history.replaceState(null, '', location.pathname);
         isSell.current = 1;
         await handleAchSell(detail);
       }

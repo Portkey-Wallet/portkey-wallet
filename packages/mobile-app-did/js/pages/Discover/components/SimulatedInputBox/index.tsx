@@ -17,7 +17,7 @@ export default function SimulatedInputBox({ onClickInput }: SimulatedInputBoxPro
       <TouchableWithoutFeedback onPress={onClickInput}>
         <View style={styles.innerInput}>
           <Svg icon="search" size={pTd(16)} />
-          <TextM style={[FontStyles.font7, styles.content]}>Search Dapp or enter URL to explore</TextM>
+          <TextM style={[FontStyles.font7, styles.content]}>Search Dapp or enter URL</TextM>
         </View>
       </TouchableWithoutFeedback>
     </View>

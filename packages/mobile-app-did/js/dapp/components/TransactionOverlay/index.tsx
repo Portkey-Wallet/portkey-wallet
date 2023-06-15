@@ -77,6 +77,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           OverlayModal.hide();
         },
         disabled: disabled,
+        loading: disabled,
       },
     ];
   }, [isFetchingFee, noEnoughFee, onReject, onSign, t]);

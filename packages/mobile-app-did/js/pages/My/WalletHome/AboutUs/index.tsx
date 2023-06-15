@@ -11,9 +11,14 @@ import MenuItem from '../../components/MenuItem';
 import Divider from 'components/Divider';
 import navigationService from 'utils/navigationService';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
+import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const AboutUs = () => {
   const { t } = useLanguage();
+  const socialMediaList = useSocialMediaList();
+  const { s3Url } = useCurrentNetworkInfo();
+
   return (
     <PageContainer
       titleDom={t('About Us')}
@@ -27,29 +32,18 @@ const AboutUs = () => {
       <TextM style={styles.version}>V {Application.nativeApplicationVersion}</TextM>
 
       <View style={styles.btnContainer}>
-        <MenuItem
-          icon="twitter"
-          title="Follow us on Twitter"
-          onPress={() => {
-            Linking.openURL('https://twitter.com/Portkey_DID');
-          }}
-        />
-        <Divider style={styles.dividerStyle} />
-        <MenuItem
-          icon="discord"
-          title="Join us on Discord"
-          onPress={() => {
-            Linking.openURL('https://discord.com/invite/EUBq3rHQhr');
-          }}
-        />
-        <Divider style={styles.dividerStyle} />
-        <MenuItem
-          icon="telegram"
-          title="Join us on Telegram"
-          onPress={() => {
-            Linking.openURL('https://t.me/Portkey_Official_Group');
-          }}
-        />
+        {socialMediaList.map((item, index) => (
+          <>
+            <MenuItem
+              svgUrl={s3Url && item.svgUrl?.filename_disk ? `${s3Url}/${item.svgUrl.filename_disk}` : ''}
+              title={item.title}
+              onPress={() => {
+                Linking.openURL(item.link);
+              }}
+            />
+            {index !== socialMediaList.length - 1 && <Divider style={styles.dividerStyle} />}
+          </>
+        ))}
       </View>
 
       <MenuItem

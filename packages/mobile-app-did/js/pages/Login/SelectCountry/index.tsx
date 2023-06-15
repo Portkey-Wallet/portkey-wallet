@@ -25,7 +25,11 @@ const IndexHeight = 56,
 export default function SelectCountry() {
   const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
 
-  const { phoneCountryCodeIndex: countryCodeIndex, phoneCountryCodeList } = usePhoneCountryCode();
+  const {
+    phoneCountryCodeIndex: countryCodeIndex,
+    phoneCountryCodeList,
+    setLocalPhoneCountryCode,
+  } = usePhoneCountryCode();
   const List = useMemo(() => countryCodeIndex.map(i => ({ index: i[0], items: i[1] })), [countryCodeIndex]);
 
   const [searchList, setSearchList] = useState<CountryItem[]>();
@@ -43,6 +47,7 @@ export default function SelectCountry() {
       <Touchable
         style={[styles.itemRow, GStyles.itemCenter, GStyles.spaceBetween]}
         onPress={() => {
+          setLocalPhoneCountryCode(item);
           myEvents.setCountry.emit(item);
           navigationService.goBack();
         }}>

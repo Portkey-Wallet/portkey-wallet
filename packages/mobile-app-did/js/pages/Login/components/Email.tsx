@@ -17,8 +17,6 @@ import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
 import { useFocusEffect } from '@react-navigation/native';
 
-let timer: string | number | NodeJS.Timeout | undefined;
-
 const TitleMap = {
   [PageType.login]: {
     button: 'Log In',
@@ -38,6 +36,7 @@ export default function Email({
   const { t } = useLanguage();
   const iptRef = useRef<any>();
 
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -66,14 +65,16 @@ export default function Email({
   useFocusEffect(
     useCallback(() => {
       if (!iptRef || !iptRef?.current) return;
-      timer = setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         iptRef.current.focus();
       }, 200);
     }, []),
   );
 
   useEffect(() => {
-    return () => clearTimeout(timer);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, []);
 
   return (

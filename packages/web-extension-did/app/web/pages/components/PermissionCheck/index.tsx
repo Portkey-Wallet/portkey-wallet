@@ -11,7 +11,6 @@ import { getLocalStorage } from 'utils/storage/chromeStorage';
 import { useEffectOnce } from 'react-use';
 import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
-// import useCheckRegisterOnNetwork from 'hooks/useCheckRegisterOnNetwork';
 
 export default function PermissionCheck({
   children,
@@ -115,7 +114,7 @@ export default function PermissionCheck({
     if (location.pathname.includes('/test')) return;
     if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
     checkRegisterHandler();
-  }, [isRegisterPage, locked, noCheckRegister, navigate, getPassword, checkRegisterHandler, location.pathname]);
+  }, [checkRegisterHandler, isRegisterPage, location.pathname, locked, navigate, noCheckRegister]);
 
   return <>{children}</>;
 }

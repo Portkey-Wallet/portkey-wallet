@@ -142,7 +142,7 @@ export const fetchNFTAsync = createAsyncThunk(
     // has cache data
     if ((pageNum + 1) * maxResultCount <= children.length) return;
 
-    if (totalRecordCount === 0 || totalRecordCount > children.length) {
+    if (totalRecordCount === 0 || Number(totalRecordCount) > children.length) {
       const response = await fetchNFTList({ symbol, caAddresses, caAddressInfos, skipCount, maxResultCount });
       return { symbol, chainId, list: response.data, totalRecordCount: response.totalRecordCount, skipCount };
     }

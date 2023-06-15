@@ -32,7 +32,7 @@ export interface RecentContactItemType extends ContactItemType {
   chainId: ChainId;
   caAddress: string;
   address: string;
-  addressChainId: string;
+  addressChainId: ChainId;
   transactionTime: string;
   name: string;
   addresses: RecentAddressItem[];

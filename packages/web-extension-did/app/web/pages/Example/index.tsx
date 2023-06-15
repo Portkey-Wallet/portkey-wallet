@@ -1,35 +1,83 @@
-import { Button, Input } from 'antd';
-import { useState } from 'react';
-import { useAppDispatch, useLoginInfo } from 'store/Provider/hooks';
+import { addDapp, removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { Button } from 'antd';
+import { useAppDispatch } from 'store/Provider/hooks';
 import { setCountryModal } from 'store/reducers/modal/slice';
+import { clearLocalStorage } from 'utils/storage/chromeStorage';
 
 export default function Example() {
   const dispatch = useAppDispatch();
-  const { countryCode } = useLoginInfo();
-  const [phoneNum, setPhoneNum] = useState<string>();
 
   return (
     <div>
-      <Input
-        value={phoneNum}
-        onChange={(e) => {
-          setPhoneNum(e.target.value);
-        }}
-        addonBefore={
-          <div
-            onClick={() => {
-              dispatch(setCountryModal(true));
-            }}>
-            {countryCode ? `+${countryCode.country.code}` : ''}
-          </div>
-        }
-      />
+      <Button
+        onClick={async () => {
+          await clearLocalStorage();
+          console.log('clearLocalStorage');
+        }}>
+        clearLocalStorage
+      </Button>
       <Button
         onClick={() => {
           dispatch(setCountryModal(true));
         }}>
         CountryCode
       </Button>
+      <div className="flex">
+        <Button
+          onClick={() => {
+            dispatch(
+              addDapp({
+                networkType: 'TESTNET',
+                dapp: {
+                  origin: 'http://localhost:3000',
+                  name: 'test',
+                  icon: 'https://www.baidu.com/img/flexible/logo/pc/result.png',
+                },
+              }),
+            );
+          }}>
+          addDapp
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(
+              addDapp({
+                networkType: 'TESTNET',
+                dapp: {
+                  origin: 'http://192.168.11.251:3000',
+                  name: 'test',
+                  icon: 'https://www.baidu.com/img/flexible/logo/pc/result.png',
+                },
+              }),
+            );
+          }}>
+          addDapp ip
+        </Button>
+      </div>
+      <div className="flex">
+        <Button
+          onClick={() => {
+            dispatch(
+              removeDapp({
+                networkType: 'TESTNET',
+                origin: 'http://localhost:3000',
+              }),
+            );
+          }}>
+          removeDapp
+        </Button>
+        <Button
+          onClick={() => {
+            dispatch(
+              removeDapp({
+                networkType: 'TESTNET',
+                origin: 'http://192.168.11.251:3000',
+              }),
+            );
+          }}>
+          removeDapp ip
+        </Button>
+      </div>
     </div>
   );
 }

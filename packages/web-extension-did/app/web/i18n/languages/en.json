@@ -50,6 +50,7 @@
   "There is no search result.": "There is no search result.",
   "There is no contacts": "There is no contacts",
   "There is no recents": "There is no recents",
+  "There is no address": "There is no address",
   "Loading": "Loading",
   "No Data": "No Data",
   "Scan the QR code to receive": "Scan the QR code to receive",
@@ -414,5 +415,7 @@
   "guardianApprovalTip": "You will need a certain number of guardians to confirm your action. The requirements differ depending on your guardian counts. ",
   "verificationCodeTip1": "{{verifier}} will send a verification code to",
   "verificationCodeTip2": "to verify your {{type}} address.",
-  "returnTip": "Are you sure you want to leave this page? All changes will not be saved."
+  "returnTip": "Are you sure you want to leave this page? All changes will not be saved.",
+  "This guardian is the only login account and cannot be removed": "This guardian is the only login account and cannot be removed",
+  "This guardian is set as a login account. Click \"Confirm\" to unset and remove this guardian": "This guardian is set as a login account. Click \"Confirm\" to unset and remove this guardian"
 }

@@ -1,8 +1,7 @@
 import { Button } from 'antd';
 import PhoneNumberInput from 'components/PhoneNumberInput';
 import { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
-import { useAppDispatch, useLoginInfo } from 'store/Provider/hooks';
-import { setCountryCodeAction } from 'store/reducers/loginCache/actions';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { ValidateHandler } from 'types/wallet';
 import './index.less';
 
@@ -14,7 +13,7 @@ interface PhoneTabProps {
 }
 
 const PhoneTab = forwardRef(({ confirmText, error, validate, onFinish }: PhoneTabProps, ref) => {
-  const { countryCode } = useLoginInfo();
+  const { localPhoneCountryCode: countryCode, setLocalPhoneCountryCode } = usePhoneCountryCode();
 
   const validatePhone = useCallback(
     async (phone?: string) => {
@@ -25,8 +24,6 @@ const PhoneTab = forwardRef(({ confirmText, error, validate, onFinish }: PhoneTa
 
   useImperativeHandle(ref, () => ({ validatePhone }));
 
-  const dispatch = useAppDispatch();
-
   const [phoneNumber, setPhoneNumber] = useState<string>('');
 
   return (
@@ -34,7 +31,7 @@ const PhoneTab = forwardRef(({ confirmText, error, validate, onFinish }: PhoneTa
       <PhoneNumberInput
         area={countryCode}
         phoneNumber={phoneNumber}
-        onAreaChange={(v) => dispatch(setCountryCodeAction(v))}
+        onAreaChange={(v) => setLocalPhoneCountryCode(v)}
         onPhoneNumberChange={(v) => setPhoneNumber(v)}
       />
       {error && <span className="error-text">{error}</span>}
@@ -44,9 +41,9 @@ const PhoneTab = forwardRef(({ confirmText, error, validate, onFinish }: PhoneTa
         className="login-btn"
         type="primary"
         onClick={async () => {
-          await validatePhone(`+${countryCode.country.code} ${phoneNumber}`);
+          await validatePhone(`+${countryCode.code} ${phoneNumber}`);
           onFinish?.({
-            code: countryCode.country.code,
+            code: countryCode.code,
             phoneNumber,
           });
         }}>

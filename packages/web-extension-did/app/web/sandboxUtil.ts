@@ -232,7 +232,7 @@ class SandboxUtil {
     const data = event.data.data ?? {};
 
     try {
-      const { rpcUrl, address, methodName, privateKey, paramsOption, chainType, isGetSignTx = 0, sendOptions } = data;
+      const { rpcUrl, address, methodName, privateKey, paramsOption, chainType, sendOptions } = data;
       console.log(data, 'sendHandler=data');
       if (!rpcUrl || !address || !methodName)
         return callback(event, {
@@ -251,8 +251,9 @@ class SandboxUtil {
       const account = getWallet(privateKey);
       const contract = await SandboxUtil._getELFSendContract(rpcUrl, address, privateKey);
 
-      const contractMethod = !isGetSignTx ? contract?.callSendMethod : contract?.encodedTx;
+      const contractMethod = contract?.callSendMethod;
       const req = await contractMethod?.(methodName, account, paramsOption, sendOptions);
+      console.log(req, 'req===callSendMethod');
       if (req?.error)
         return callback(event, {
           code: SandboxErrorCode.error,
@@ -260,7 +261,11 @@ class SandboxUtil {
           sid: data.sid,
           error: req.error,
         });
-      return callback(event, { code: SandboxErrorCode.success, message: req?.data, sid: data.sid });
+      return callback(event, {
+        code: SandboxErrorCode.success,
+        message: req?.data || req,
+        sid: data.sid,
+      });
     } catch (e: any) {
       callback(event, {
         code: SandboxErrorCode.error,

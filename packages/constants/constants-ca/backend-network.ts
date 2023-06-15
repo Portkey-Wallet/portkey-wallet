@@ -14,6 +14,8 @@ export const BackEndNetWorkMap: {
     graphqlUrl: 'http://192.168.67.172:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
     connectUrl: 'http://192.168.66.240:8080',
     tokenClaimContractAddress: '2UM9eusxdRyCztbmMZadGXzwgwKfFdk8pF4ckw58D769ehaPSR',
+    cmsUrl: 'http://192.168.66.62:8055/graphql',
+    s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
   },
   'back-end-test2': {
     name: 'aelf Mainnet',
@@ -23,6 +25,12 @@ export const BackEndNetWorkMap: {
     apiUrl: 'https://localtest-applesign2.portkey.finance',
     graphqlUrl: 'http://192.168.67.51:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
     connectUrl: 'http://192.168.67.51:8080',
+    buyConfig: {
+      ach: {
+        appId: 'f83Is2y7L425rxl8',
+        baseUrl: 'https://ramptest.alchemypay.org',
+      },
+    },
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -33,6 +41,8 @@ export const BackEndNetWorkMap: {
     graphqlUrl: 'https://dapp-portkey-test.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
     connectUrl: 'https://auth-portkey-test.portkey.finance',
     tokenClaimContractAddress: '233wFn5JbyD4i8R5Me4cW4z6edfFGRn5bpWnGuY8fjR7b2kRsD',
+    cmsUrl: 'https://cms-test.portkey.finance/graphql',
+    s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -42,5 +52,13 @@ export const BackEndNetWorkMap: {
     apiUrl: 'https://did-portkey.portkey.finance',
     graphqlUrl: 'https://dapp-portkey.portkey.finance/Portkey_DID/PortKeyIndexerCASchema/graphql',
     connectUrl: 'https://auth-portkey.portkey.finance',
+    cmsUrl: 'https://cms.portkey.finance/graphql',
+    s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
+    buyConfig: {
+      ach: {
+        appId: 'P0e0l39jipsNYT46',
+        baseUrl: 'https://ramp.alchemypay.org',
+      },
+    },
   },
 };

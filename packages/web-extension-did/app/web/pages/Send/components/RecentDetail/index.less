@@ -1,0 +1,115 @@
+@import '../../../../assets/theme/color.less';
+
+.recent-detail {
+  background-color: @bg-11;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .recent-detail-header {
+    padding: 42px 24px 26px;
+    align-items: center;
+    background: @bg-13;
+    border-bottom: 1px solid @border-2;
+    margin-bottom: 16px;
+    .title-left-col {
+      .custom-svg {
+        width: 24px;
+        height: 24px;
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+    .title-center {
+      flex: 1;
+      padding: 0 12px;
+      color: @font-11;
+      line-height: 28px;
+      font-size: 24px;
+    }
+    .title-right-col {
+      .custom-svg {
+        width: 18px;
+        height: 18px;
+        svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+
+  .recent-detail-body {
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .recent-detail-address-wrap {
+      background: @bg-13;
+      padding: 24px 16px;
+      margin-bottom: 8px;
+      .recent-detail-contact {
+        font-weight: 400;
+        color: @font-11;
+        margin-bottom: 16px;
+        .avatar {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          border: 1px solid @border-1;
+          font-size: 24px;
+        }
+        .name {
+          font-size: 20px;
+          margin-left: 10px;
+          line-height: 24px;
+        }
+      }
+      .recent-detail-address-row {
+        display: flex;
+        flex-direction: column;
+        word-break: break-all;
+        gap: 4px;
+        margin: 0 4px;
+        .address {
+          color: @font-11;
+          line-height: 16px;
+        }
+        .network {
+          font-size: 12px;
+          color: @font-13;
+          line-height: 16px;
+        }
+      }
+    }
+
+    .recent-detail-action-row {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      gap: 24px;
+      margin-top: 8px;
+      .custom-svg {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+    }
+
+    .activity-list {
+      .adm-list-body {
+        border-top: none;
+        .adm-list-item {
+          &:first-child {
+            .adm-list-item-content {
+              border-top: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}

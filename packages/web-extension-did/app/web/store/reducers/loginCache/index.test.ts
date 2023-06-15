@@ -1,23 +1,12 @@
 import { loginSlice } from './slice';
-import {
-  setLoginAccountAction,
-  setWalletInfoAction,
-  resetLoginInfoAction,
-  setRegisterVerifierAction,
-  setCountryCodeAction,
-} from './actions';
+import { setLoginAccountAction, setWalletInfoAction, resetLoginInfoAction, setRegisterVerifierAction } from './actions';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 
 const reducer = loginSlice.reducer;
-const mockState = {
-  countryCode: {
-    index: DefaultCountry.country[0],
-    country: DefaultCountry,
-  },
-};
+const mockState = {};
 
 describe('setLoginAccountAction', () => {
   test('Params is valid, set loginAccount successful', () => {
@@ -80,29 +69,9 @@ describe('setRegisterVerifierAction', () => {
   });
 });
 
-describe('setCountryCodeAction', () => {
-  test('Params is valid, set countryCode successful', () => {
-    const mockPayload = {
-      index: 'C',
-      country: { country: 'China', code: '86', iso: 'ZH' },
-    };
-    const res = reducer(mockState, setCountryCodeAction(mockPayload));
-    expect(res.countryCode).toEqual(mockPayload);
-  });
-  test('Params is invalid, set countryCode failed', () => {
-    const res = reducer(mockState, setCountryCodeAction(undefined as any));
-    expect(res.countryCode).toBeUndefined();
-  });
-});
-
 describe('resetLoginInfoAction', () => {
   test('State only contains countryCode property', () => {
-    const mockState = {
-      countryCode: {
-        index: 'C',
-        country: { country: 'China', code: '86', iso: 'ZH' },
-      },
-    };
+    const mockState = {};
     const res = reducer(mockState, resetLoginInfoAction());
     expect(res).toEqual({
       countryCode: {

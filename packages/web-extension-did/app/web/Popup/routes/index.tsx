@@ -25,13 +25,12 @@ import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
 import Buy from 'pages/Buy';
 import BuyPreview from 'pages/Buy/Preview';
-import BuyTest from 'pages/BuyTest';
-import BuyTestPreview from 'pages/BuyTest/Preview';
-import BuyTestConfirm from 'pages/BuyTest/Confirm';
 import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
+import RecentDetail from 'pages/Send/components/RecentDetail';
+import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 
 export const PageRouter = () =>
   useRoutes([
@@ -104,6 +103,10 @@ export const PageRouter = () =>
       element: <Send />,
     },
     {
+      path: '/recent-detail',
+      element: <RecentDetail />,
+    },
+    {
       path: '/receive/:type/:symbol',
       element: <Receive />,
     },
@@ -114,18 +117,6 @@ export const PageRouter = () =>
     {
       path: '/buy/preview',
       element: <BuyPreview />,
-    },
-    {
-      path: '/buy-test',
-      element: <BuyTest />,
-    },
-    {
-      path: '/buy-test/preview',
-      element: <BuyTestPreview />,
-    },
-    {
-      path: '/buy-test/confirm',
-      element: <BuyTestConfirm />,
     },
     {
       path: '/nft',
@@ -170,6 +161,10 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/manage-devices/guardian-approval',
       element: <GuardianApproval />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites',
+      element: <ConnectedSites />,
     },
     {
       path: '/unlock',

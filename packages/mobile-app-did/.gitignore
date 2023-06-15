@@ -63,8 +63,11 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
-#svg 
+# svg 
 handleSvg.js
 
-#env
+# env
 .env
+
+# InpageBridgeWeb3
+**/InpageBridgeWeb3.js

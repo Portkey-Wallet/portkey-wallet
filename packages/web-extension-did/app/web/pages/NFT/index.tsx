@@ -11,7 +11,7 @@ import Copy from 'components/Copy';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 
 export default function NFT() {
@@ -19,10 +19,11 @@ export default function NFT() {
   const { state } = useLocation();
   const { isPrompt } = useCommonState();
   const isMainNet = useIsMainnet();
+  const currentNetwork = useCurrentNetworkInfo();
 
   const renderDetail = useMemo(() => {
     const { address, chainId } = state;
-    const formatTokenContractAds = addressFormat(address, chainId, 'aelf');
+    const formatTokenContractAds = addressFormat(address, chainId, currentNetwork.walletType);
     return (
       <div className="info">
         <div className="title">Basic info</div>

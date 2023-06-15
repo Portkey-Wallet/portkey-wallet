@@ -6,6 +6,8 @@ import { sleep } from '@portkey-wallet/utils';
 
 const methodsMap: { [key: string]: any } = {};
 
+const contractMap: { [key: string]: ContractBasic } = {};
+
 export async function getContractBasic({
   contractAddress,
   aelfInstance,
@@ -20,13 +22,17 @@ export async function getContractBasic({
   let instance = aelfInstance;
   if (rpcUrl) instance = getAelfInstance(rpcUrl);
   if (!instance) throw new Error('Get instance error');
-  const aelfContract = await instance.chain.contractAt(contractAddress, account);
-  return new ContractBasic({
-    aelfContract,
-    contractAddress,
-    aelfInstance: instance,
-    rpcUrl: instance.currentProvider.host,
-  });
+  const key = contractAddress + account.address + instance.currentProvider.host;
+  if (!contractMap[key]) {
+    const aelfContract = await instance.chain.contractAt(contractAddress, account);
+    contractMap[key] = new ContractBasic({
+      aelfContract,
+      contractAddress,
+      aelfInstance: instance,
+      rpcUrl: instance.currentProvider.host,
+    });
+  }
+  return contractMap[key];
 }
 
 export async function getTxResult(

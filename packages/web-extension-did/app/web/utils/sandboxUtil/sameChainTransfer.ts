@@ -22,7 +22,7 @@ const sameChainTransfer = async ({
   toAddress: string;
   memo?: string;
 }) => {
-  await managerForwardCall({
+  return await managerForwardCall({
     rpcUrl: chainInfo.endPoint,
     chainType,
     address: chainInfo.caContractAddress,

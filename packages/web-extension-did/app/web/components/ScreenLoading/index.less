@@ -10,11 +10,11 @@
 
   .loading-indicator {
     width: 224px;
-    height: 120px;
+    min-height: 120px;
     padding: 20px;
     background-color: @bg-11;
     border-radius: 6px;
-  
+
     .loading {
       width: 44px;
       height: 44px;
@@ -25,9 +25,14 @@
       font-size: 14px;
       line-height: 20px;
       color: @font-11;
+    }
+    .ellipsis {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+    .center {
+      text-align: center;
     }
   }
 }

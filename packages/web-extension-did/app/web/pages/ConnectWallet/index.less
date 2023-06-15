@@ -1,0 +1,93 @@
+@import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
+.connect-wallet {
+  margin: 40px auto;
+  width: 328px;
+  flex-direction: column;
+  align-items: center;
+  .site {
+    margin-bottom: 24px;
+    width: fit-content;
+    padding: 8px 16px;
+    border: 1px solid @border-2;
+    border-radius: 24px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @font-13;
+    .icon {
+      width: 24px;
+      border-radius: 50%;
+      margin-right: 8px;
+      .dappdefault-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    .origin {
+      line-break: anywhere;
+      .text-overflow(1)
+    }
+  }
+  .title {
+    margin-bottom: 16px;
+    font-size: 24px;
+    line-height: 28px;
+    font-weight: 700;
+    color: @font-11;
+  }
+  .allow {
+    width: 100%;
+    margin-bottom: 40px;
+    font-size: 12px;
+    line-height: 16px;
+    color: @font-13;
+    border: 1px solid @border-2;
+    border-radius: 6px;
+    .item {
+      padding-top: 16px;
+      margin: 0 16px 16px;
+      border-top: 1px solid @border-2;
+      .allow-title {
+        align-items: center;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 500;
+        color: @font-11;
+        .tickfilled-icon {
+          width: 14px;
+          height: 14px;
+          margin-left: 1px;
+          margin-right: 9px;
+        }
+      }
+      .allow-text {
+        margin-top: 4px;
+        margin-left: 24px;
+      }
+      &:first-child {
+        border-top: none;
+      }
+    }
+  }
+  .btn{
+    width: 100%;
+    .@{app-prefix}-btn {
+      width: 156px;
+      height: 48px;
+      font-size: 14px;
+      line-height: 22px;
+      text-align: center;
+      border-radius: 24px;
+    }
+    .@{app-prefix}-btn-text {
+      border: 1px solid @border-3;
+      color: @font-9;
+      background-color: @bg-11;
+    }
+    .@{app-prefix}-btn-primary {
+      color: @font-5;
+      background-color: @bg-7;
+    }
+  }
+}

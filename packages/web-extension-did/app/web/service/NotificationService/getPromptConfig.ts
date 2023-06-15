@@ -6,40 +6,48 @@ interface PromptConfigParam {
     method: keyof typeof PromptRouteTypes;
   };
 }
+const NOTIFICATION_WIDTH = 360;
+const NOTIFICATION_HEIGHT = 600 + 18;
+
 export default async function getPromptConfig({ message }: PromptConfigParam) {
-  const windows = await apis.windows.getCurrent();
-  const { width: innerWidth, height: innerHeight } = windows;
+  // const windows = await apis.windows.getCurrent();
+  // const { width: innerWidth, height: innerHeight } = windows;
   const method = message.method;
-  let width = undefined;
+  let width;
   let isFullscreen = false;
+  let left;
+  let top;
+  let height;
+  const lastFocused = await apis.windows.getLastFocused();
+  if (lastFocused.state) isFullscreen = lastFocused.state === 'fullscreen';
   switch (method) {
-    case PromptRouteTypes.GET_SIGNATURE:
     case PromptRouteTypes.UNLOCK_WALLET:
     case PromptRouteTypes.REGISTER_WALLET:
     case PromptRouteTypes.REGISTER_START_WALLET:
     case PromptRouteTypes.SWITCH_CHAIN:
-    case PromptRouteTypes.CONNECT_WALLET:
-    case PromptRouteTypes.SIGN_MESSAGE:
     case PromptRouteTypes.EXPAND_FULL_SCREEN:
     case PromptRouteTypes.SETTING:
     case PromptRouteTypes.ADD_GUARDIANS:
     case PromptRouteTypes.GUARDIANS_VIEW:
     case PromptRouteTypes.GUARDIANS_APPROVAL:
-      width = undefined;
       isFullscreen = true;
       break;
     default:
-      width = undefined;
       break;
   }
-  let left;
-  let top;
-  let height;
-  if (width && innerWidth && innerHeight) {
-    height = 600;
-    left = innerWidth / 2 - width / 2;
-    top = innerHeight / 2 - height / 2;
+  if (!isFullscreen) {
+    width = NOTIFICATION_WIDTH;
+    height = NOTIFICATION_HEIGHT;
+    try {
+      top = lastFocused.top;
+      left = (lastFocused?.left ?? 0) + ((lastFocused?.width ?? NOTIFICATION_WIDTH) - NOTIFICATION_WIDTH);
+    } catch (error) {
+      // TODO
+      left = NOTIFICATION_WIDTH;
+      top = 50;
+    }
   }
+
   return {
     height,
     width,

@@ -24,7 +24,6 @@ import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/ac
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { transactionTypesForActivityList as transactionList } from '@portkey-wallet/constants/constants-ca/activity';
 import fonts from 'assets/theme/fonts';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
@@ -77,7 +76,6 @@ const TokenDetail: React.FC = () => {
     () => ({
       caAddressInfos: caAddressInfos.filter(ele => ele.chainId === tokenInfo.chainId),
       caAddresses: [currentWallet.walletInfo[tokenInfo.chainId]?.caAddress || ''],
-      transactionTypes: transactionList,
       symbol: tokenInfo.symbol,
       chainId: tokenInfo.chainId,
     }),

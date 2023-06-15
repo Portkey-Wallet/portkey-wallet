@@ -34,6 +34,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
         rightIconContainerStyle={[searchStyle.rightIconContainerStyle, rightIconContainerStyle]}
         leftIconContainerStyle={[searchStyle.leftIconContainerStyle, leftIconContainerStyle]}
         placeholder={placeholder || t('Please enter')}
+        placeholderTextColor={defaultColors.font7}
         leftIcon={<Svg icon="search" size={pTd(16)} />}
         {...inputProps}
         ref={forwardedRef}
@@ -55,6 +56,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       leftIconContainerStyle={leftIconContainerStyle}
       errorStyle={[generalStyles.errorStyle]}
       placeholder={placeholder || t('Please enter')}
+      placeholderTextColor={defaultColors.font7}
       disabledInputStyle={[generalStyles.disabledInputStyle]}
       {...inputProps}
       ref={forwardedRef}

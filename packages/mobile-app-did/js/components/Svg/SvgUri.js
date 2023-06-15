@@ -117,7 +117,7 @@ class SvgUri extends Component {
     this.setState({
       isComponentMounted: true,
     });
-    // this.isComponentMounted = true;
+    this.isComponentMounted = true;
   }
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.source) {

@@ -23,7 +23,7 @@ export default function Receive() {
   const { currentNetwork } = useWalletInfo();
   const isTestNet = useIsTestnet();
   const caAddress = useMemo(
-    () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
+    () => `ELF_${wallet?.[(state.chainId as ChainId) || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
 

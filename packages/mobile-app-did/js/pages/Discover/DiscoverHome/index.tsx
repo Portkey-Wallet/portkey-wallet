@@ -1,41 +1,30 @@
-import React, { useCallback } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import CommonInput from 'components/CommonInput';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { BGStyles } from 'assets/theme/styles';
-import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
-import { useLanguage } from 'i18n/hooks';
-import GameSection from '../components/GameSection';
-import { GamesList } from './GameData';
+import SimulatedInputBox from '../components/SimulatedInputBox';
+import { DiscoverCmsListSection } from '../components/DiscoverCmsListSection';
+import { defaultColors } from 'assets/theme';
+import SafeAreaBox from 'components/SafeAreaBox';
+import CustomHeader from 'components/CustomHeader';
+import { BGStyles } from 'assets/theme/styles';
 
 export default function DiscoverHome() {
-  const { t } = useLanguage();
-
-  const navigateToSearch = useCallback(() => {
-    console.log('aaa');
-
-    return navigationService.navigate('DiscoverSearch');
-  }, []);
-
   return (
-    <PageContainer
-      hideHeader
-      safeAreaColor={['blue', 'white']}
-      containerStyles={styles.container}
-      scrollViewProps={{ disabled: true }}>
-      <View style={[BGStyles.bg5, styles.inputContainer]}>
-        <CommonInput placeholder={t('Enter URL to explore')} onFocus={() => navigateToSearch()} />
+    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bg5}>
+      <View style={styles.container}>
+        <CustomHeader themeType="blue" titleDom={'Discover'} noLeftDom />
+        <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
+        <DiscoverCmsListSection />
       </View>
-      <GameSection data={GamesList} />
-    </PageContainer>
+    </SafeAreaBox>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 0,
-    paddingRight: 0,
+    backgroundColor: defaultColors.bg4,
+    flex: 1,
   },
   inputContainer: {
     ...GStyles.paddingArg(8, 20),

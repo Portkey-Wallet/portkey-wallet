@@ -5,13 +5,21 @@ import { JOIN_AUTH_URL, RECAPTCHA_URL } from 'constants/index';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
-import { ReCaptchaResponseParams, SendResponseParams } from 'types';
+import { CloseParams } from 'service/NotificationService';
+import { CreatePromptType, ReCaptchaResponseParams, SendResponseParams } from 'types';
 import { setLocalStorage } from 'utils/storage/chromeStorage';
 
 export const completeRegistration = async () => {
   await setLocalStorage({ registerStatus: 'Registered' });
   await InternalMessage.payload(PortkeyMessageTypes.CLOSE_PROMPT, { isClose: false }).send();
 };
+
+export const closePrompt = async (closeParams?: CloseParams, promptType?: CreatePromptType) =>
+  InternalMessage.payload(PortkeyMessageTypes.CLOSE_PROMPT, {
+    promptType,
+    closeParams,
+    isClose: true,
+  }).send();
 
 export const useLockWallet = () => {
   return useCallback(async () => {

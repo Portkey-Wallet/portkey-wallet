@@ -1,4 +1,5 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
@@ -32,4 +33,17 @@ export function handleUserGuardiansList(
       isLoginAccount: item.isLoginGuardian,
     };
   });
+}
+
+export function checkIsLastLoginAccount(guardiansList: UserGuardianItem[], guardian: UserGuardianItem) {
+  const loginIndex = guardiansList.findIndex(
+    item =>
+      item.isLoginAccount &&
+      !(
+        item.guardianType === guardian.guardianType &&
+        item.guardianAccount === guardian.guardianAccount &&
+        item.verifier?.id === guardian.verifier?.id
+      ),
+  );
+  return loginIndex === -1;
 }

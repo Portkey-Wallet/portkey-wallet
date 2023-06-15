@@ -6,8 +6,15 @@ import { AddressItem, ContactIndexType } from '@portkey-wallet/types/types-ca/co
 import { useContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import ContactCard from './ContactCard';
 import { useTranslation } from 'react-i18next';
+import { ChainId } from '@portkey-wallet/types';
 
-export default function Contacts({ onChange }: { onChange: (account: AddressItem) => void }) {
+export default function Contacts({
+  chainId,
+  onChange,
+}: {
+  chainId: ChainId;
+  onChange: (account: AddressItem) => void;
+}) {
   const { t } = useTranslation();
   const { contactIndexList } = useContact();
 
@@ -38,7 +45,7 @@ export default function Contacts({ onChange }: { onChange: (account: AddressItem
                   <List>
                     {contacts.map((item) => (
                       <List.Item key={item.id}>
-                        <ContactCard user={item} onChange={onChange} fromRecents={false} />
+                        <ContactCard user={item} onChange={onChange} fromRecents={false} chainId={chainId} />
                       </List.Item>
                     ))}
                   </List>

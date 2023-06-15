@@ -145,6 +145,7 @@ describe('activitySlice', () => {
         {
           chainId: 'AELF',
           transactionType: 'SocialRecovery' as TransactionTypes,
+          transactionName: 'Social Recovery',
           from: 'wallet01',
           to: 'wallet02',
           fromAddress: 'fromAddress',
@@ -240,6 +241,7 @@ describe('activitySlice', () => {
             {
               chainId: 'AELF',
               transactionType: 'SocialRecovery' as TransactionTypes,
+              transactionName: 'Social Recovery',
               from: 'wallet01',
               to: 'wallet02',
               fromAddress: 'fromAddress',
@@ -278,6 +280,7 @@ describe('activitySlice', () => {
         {
           chainId: 'AELF',
           transactionType: 'SocialRecovery' as TransactionTypes,
+          transactionName: 'Social Recovery',
           from: 'wallet01',
           to: 'wallet02',
           fromAddress: 'fromAddress',

@@ -7,7 +7,13 @@ import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { ApprovalType, VerificationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import {
+  ApprovalType,
+  RecaptchaType,
+  VerificationType,
+  VerifierInfo,
+  VerifyStatus,
+} from '@portkey-wallet/types/verifier';
 import GuardianItem from '../components/GuardianItem';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
@@ -123,7 +129,7 @@ export default function VerifierDetails() {
 
         switch (verificationType) {
           case VerificationType.communityRecovery:
-          case VerificationType.editGuardianApproval:
+          case VerificationType.optGuardianApproval:
             setGuardianStatus({
               requestCodeResult: requestCodeResult,
               status: VerifyStatus.Verified,
@@ -168,12 +174,20 @@ export default function VerifierDetails() {
   const resendCode = useCallback(async () => {
     try {
       Loading.show();
+
+      let recaptchaType = RecaptchaType.optGuardian;
+      if (verificationType === VerificationType.register) {
+        recaptchaType = RecaptchaType.register;
+      } else if (verificationType === VerificationType.communityRecovery) {
+        recaptchaType = RecaptchaType.communityRecovery;
+      }
       const req = await verification.sendVerificationCode({
         params: {
           type: LoginType[guardianItem?.guardianType as LoginType],
           guardianIdentifier: guardianItem?.guardianAccount,
           verifierId: guardianItem?.verifier?.id,
           chainId: originChainId,
+          operationType: recaptchaType,
         },
       });
       if (req.verifierSessionId) {
@@ -195,6 +209,7 @@ export default function VerifierDetails() {
     guardianItem?.verifier?.id,
     originChainId,
     setGuardianStatus,
+    verificationType,
   ]);
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>

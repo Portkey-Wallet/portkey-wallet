@@ -1,8 +1,10 @@
 import { defaultColors } from 'assets/theme';
 import { TextL, TextM } from 'components/CommonText';
 import Svg, { IconName } from 'components/Svg';
+import SvgUri from 'components/Svg/SvgUri';
+
 import React, { memo } from 'react';
-import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps } from 'react-native';
+import { TouchableOpacity, StyleSheet, StyleProp, ViewStyle, TextProps, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
 interface MenuItemProps {
@@ -15,6 +17,7 @@ interface MenuItemProps {
   arrowSize?: number;
   suffix?: string | number;
   iconStyle?: StyleProp<ViewStyle>;
+  svgUrl?: string;
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({
@@ -26,10 +29,18 @@ const MenuItem: React.FC<MenuItemProps> = ({
   arrowSize = 20,
   suffix,
   iconStyle,
+  svgUrl,
 }) => {
   return (
     <TouchableOpacity style={[styles.itemWrap, style]} onPress={() => onPress?.()}>
+      {svgUrl !== undefined &&
+        (svgUrl !== '' ? (
+          <SvgUri source={{ uri: svgUrl }} width={size} height={size} style={[styles.menuIcon, iconStyle]} />
+        ) : (
+          <View style={[{ width: size, height: size }, styles.menuIcon, iconStyle]} />
+        ))}
       {icon && <Svg icon={icon} size={size} iconStyle={[styles.menuIcon, iconStyle]} />}
+
       <TextL style={styles.titleWrap}>{title}</TextL>
       {suffix !== undefined && <TextM style={styles.suffixWrap}>{suffix}</TextM>}
       <Svg icon="right-arrow" size={arrowSize} color={defaultColors.icon1} />
@@ -47,6 +58,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: pTd(16),
     borderRadius: pTd(6),
+    marginBottom: pTd(24),
   },
   menuIcon: {
     borderRadius: pTd(6),

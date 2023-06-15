@@ -14,9 +14,13 @@ import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckManagerOnLogout } from 'hooks/useLogOut';
 import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
-import { useFetchIsShowBuyButton } from 'hooks/useSwitchBuy';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useDiscoverGroupList, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useTabMenuList } from 'hooks/cms';
+import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
+import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 
+request.setExceptionManager(exceptionManager);
 export default function Updater() {
   // FIXME: delete language
   const { changeLanguage } = useLanguage();
@@ -33,7 +37,6 @@ export default function Updater() {
   useCaInfoOnChain();
   useCheckManager(checkManagerOnLogout);
 
-  useFetchIsShowBuyButton();
   useFetchSymbolImages();
   useMemo(() => {
     request.set('baseURL', apiUrl);
@@ -47,11 +50,16 @@ export default function Updater() {
   }, [onLocking]);
 
   useEffectOnce(() => {
+    // init entryScriptWeb3
+    EntryScriptWeb3.init();
     socket.onScanLoginSuccess(data => {
       CommonToast.success(data.body);
     });
   });
 
   usePhoneCountryCode(true);
+  useSocialMediaList(true);
+  useTabMenuList(true);
+  useDiscoverGroupList(true);
   return null;
 }

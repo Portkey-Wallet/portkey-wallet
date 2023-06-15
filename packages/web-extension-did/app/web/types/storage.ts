@@ -13,11 +13,6 @@ export interface ContractsItem {
   };
 }
 
-export interface ConnectPermissionType {
-  accountList?: string[];
-  contracts?: ContractsItem;
-}
-
 type origin = string;
 
 export interface ConnectTabItem {
@@ -29,7 +24,6 @@ export interface ConnectTabItem {
 export interface ConnectionsItem {
   id?: string;
   origin?: string;
-  permission: ConnectPermissionType;
   tabs: number[];
 }
 

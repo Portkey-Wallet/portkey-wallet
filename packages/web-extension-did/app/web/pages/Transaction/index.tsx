@@ -1,4 +1,4 @@
-import { SHOW_FROM_TRANSACTION_TYPES, transactionTypesMap } from '@portkey-wallet/constants/constants-ca/activity';
+import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
@@ -23,6 +23,8 @@ import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { ChainId } from '@portkey-wallet/types';
 
 export interface ITransactionQuery {
   item: ActivityItemType;
@@ -38,7 +40,7 @@ export default function Transaction() {
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
   const caAddresses = useCaAddresses();
-  const caAddress = chainId ? [walletInfo[chainId]?.caAddress] : '';
+  const caAddress = chainId ? [walletInfo?.[chainId as ChainId]?.caAddress] : '';
   const isTestNet = useIsTestnet();
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
@@ -143,10 +145,11 @@ export default function Transaction() {
     );
   }, [activityItem.timestamp, status.style, status.text, t]);
 
+  const currentNetwork = useCurrentNetworkInfo();
   const fromToUI = useCallback(() => {
     const { from, fromAddress, fromChainId, to, toAddress, toChainId, transactionType } = activityItem;
-    const transFromAddress = addressFormat(fromAddress, fromChainId, 'aelf');
-    const transToAddress = addressFormat(toAddress, toChainId, 'aelf');
+    const transFromAddress = addressFormat(fromAddress, fromChainId, currentNetwork.walletType);
+    const transToAddress = addressFormat(toAddress, toChainId, currentNetwork.walletType);
 
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
     return (
@@ -181,7 +184,7 @@ export default function Transaction() {
         </div>
       )
     );
-  }, [activityItem, t]);
+  }, [activityItem, currentNetwork.walletType, t]);
 
   const networkUI = useCallback(() => {
     /* Hidden during [SocialRecovery, AddManager, RemoveManager] */
@@ -212,12 +215,12 @@ export default function Transaction() {
 
   const feeUI = useCallback(() => {
     return activityItem.isDelegated ? (
-      <p className="value">
+      <div className="value">
         <span className="left">{t('Transaction Fee')}</span>
         {noFeeUI()}
-      </p>
+      </div>
     ) : (
-      <p className="value">
+      <div className="value">
         <span className="left">{t('Transaction Fee')}</span>
         <span className="right">
           {(!feeInfo || feeInfo?.length === 0) && noFeeUI()}
@@ -236,7 +239,7 @@ export default function Transaction() {
               );
             })}
         </span>
-      </p>
+      </div>
     );
   }, [activityItem.isDelegated, amountInUsdShow, feeInfo, isTestNet, noFeeUI, t]);
 
@@ -247,13 +250,13 @@ export default function Transaction() {
           <span className="left">{t('Transaction')}</span>
         </p>
         <div>
-          <p className="value">
+          <div className="value">
             <span className="left">{t('Transaction ID')}</span>
             <span className="right tx-id">
               {`${formatStr2EllipsisStr(activityItem.transactionId, [7, 4])} `}
               <Copy toCopy={activityItem.transactionId} />
             </span>
-          </p>
+          </div>
           {feeUI()}
         </div>
       </div>
@@ -283,9 +286,7 @@ export default function Transaction() {
           </div>
           <div className="transaction-info">
             <div className="method-wrap">
-              <p className="method-name">
-                {transactionTypesMap(activityItem.transactionType, activityItem.nftInfo?.nftId)}
-              </p>
+              <p className="method-name">{activityItem?.transactionName}</p>
               {isNft ? nftHeaderUI() : tokenHeaderUI()}
             </div>
             {statusAndDateUI()}
@@ -301,8 +302,7 @@ export default function Transaction() {
       </div>
     );
   }, [
-    activityItem.nftInfo?.nftId,
-    activityItem.transactionType,
+    activityItem?.transactionName,
     fromToUI,
     isNft,
     isPrompt,

@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import CommonTopTab from 'components/CommonTopTab';
 import GStyles from 'assets/theme/GStyles';
@@ -21,6 +21,8 @@ import { ChainId } from '@portkey-wallet/types';
 import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useRecent } from '@portkey-wallet/hooks/hooks-ca/useRecent';
 import { fetchRecentListAsync } from '@portkey-wallet/store/store-ca/recent/slice';
+import MyAddressItem from '../components/MyAddressItem';
+import myEvents from 'utils/deviceEvent';
 
 interface SelectContactProps {
   chainId: ChainId;
@@ -42,15 +44,19 @@ export default function SelectContact(props: SelectContactProps) {
 
   const renderItem = useCallback(
     ({ item }: { item: RecentContactItemType }) => {
-      return <RecentContactItem contact={item} onPress={onPress} />;
+      return <RecentContactItem fromChainId={chainId} contact={item} onPress={onPress} />;
     },
-    [onPress],
+    [chainId, onPress],
   );
 
   const isExistContact = useMemo<boolean>(
     () => contactIndexList.reduce((pv, cv) => pv + cv.contacts.length, 0) > 0,
     [contactIndexList],
   );
+
+  const myOtherAddressList = useMemo(() => {
+    return caAddressInfos.filter(item => item.chainId !== chainId);
+  }, [caAddressInfos, chainId]);
 
   const loadMore = useCallback(() => {
     dispatch(
@@ -77,6 +83,11 @@ export default function SelectContact(props: SelectContactProps) {
     init();
   });
 
+  useEffect(() => {
+    const listener = myEvents.refreshMyContactDetailInfo.addListener(() => init());
+    return () => listener.remove();
+  }, [init]);
+
   const tabList = useMemo(() => {
     return [
       {
@@ -86,8 +97,12 @@ export default function SelectContact(props: SelectContactProps) {
             <FlashList
               data={recentContactList || []}
               renderItem={renderItem}
-              ListFooterComponent={<TextS style={styles.footer}>{t('No More Data')}</TextS>}
-              ListEmptyComponent={<NoData noPic message={t('There is no recents.')} />}
+              ListFooterComponent={
+                <TextS style={styles.footer}>{recentContactList?.length === 0 ? '' : t('No More Data')}</TextS>
+              }
+              ListEmptyComponent={<NoData noPic message={t('There is no recents')} />}
+              refreshing={false}
+              onRefresh={() => init()}
               onEndReached={() => {
                 if (recentContactList.length >= totalRecordCount) return;
                 loadMore();
@@ -99,7 +114,7 @@ export default function SelectContact(props: SelectContactProps) {
       {
         name: t('Contacts'),
         tabItemDom: !isExistContact ? (
-          <NoData noPic message={t('There is no contacts.')} />
+          <NoData noPic message={t('There is no contacts')} />
         ) : (
           <ContactsList
             isReadOnly
@@ -107,14 +122,44 @@ export default function SelectContact(props: SelectContactProps) {
             isIndexBarShow={false}
             isSearchShow={false}
             renderContactItem={(item: ContactItemType) => (
-              <RecentContactItem isContacts={true} contact={item as RecentContactItemType} onPress={onPress} />
+              <RecentContactItem
+                fromChainId={chainId}
+                isContacts={true}
+                contact={item as RecentContactItemType}
+                onPress={onPress}
+              />
             )}
             ListFooterComponent={<View style={styles.footer} />}
           />
         ),
       },
+      {
+        name: t('My address'),
+        tabItemDom: (
+          <View style={styles.recentListWrap}>
+            <FlashList
+              data={myOtherAddressList || []}
+              renderItem={({ item }) => (
+                <MyAddressItem chainId={item.chainId} address={item.caAddress} onPress={onPress} />
+              )}
+              ListEmptyComponent={<NoData noPic message={t('There is no address')} />}
+            />
+          </View>
+        ),
+      },
     ];
-  }, [isExistContact, loadMore, onPress, recentContactList, renderItem, t, totalRecordCount]);
+  }, [
+    chainId,
+    init,
+    isExistContact,
+    loadMore,
+    myOtherAddressList,
+    onPress,
+    recentContactList,
+    renderItem,
+    t,
+    totalRecordCount,
+  ]);
 
   return <CommonTopTab tabList={tabList} />;
 }

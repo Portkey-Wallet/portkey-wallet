@@ -13,5 +13,5 @@ export function useBrowser(): BrowserState {
 
 export interface IBrowserTab {
   reload: IWebView['reload'];
-  capture: ViewShot['capture'];
+  capture?: ViewShot['capture'];
 }

@@ -1,5 +1,6 @@
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import walletMessage from 'messages/walletMessage';
+import { ThirdParty } from '@portkey-wallet/constants/constants-ca/network';
 
 export const prefixCls = 'portkey';
 // redux
@@ -44,4 +45,4 @@ export const AUTH_APPLE_URL = `${AUTH_HOST}/apple-auth`;
 export const RECAPTCHA_URL = `${AUTH_HOST}/recaptcha-check`;
 
 // after ach-sell, redirect url, then wake up extension.
-export const ACH_WITHDRAW_URL = `https://openlogin-test.portkey.finance/extension-bridge?method=${walletMessage.ACH_SELL_REDIRECT}`; // TODO: change url
+export const ACH_WITHDRAW_URL = `${ThirdParty}/extension-bridge?method=${walletMessage.ACH_SELL_REDIRECT}`;

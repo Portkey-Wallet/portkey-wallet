@@ -18,6 +18,7 @@ import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useDiscoverGroupList, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useTabMenuList } from 'hooks/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
+import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {
@@ -49,6 +50,8 @@ export default function Updater() {
   }, [onLocking]);
 
   useEffectOnce(() => {
+    // init entryScriptWeb3
+    EntryScriptWeb3.init();
     socket.onScanLoginSuccess(data => {
       CommonToast.success(data.body);
     });

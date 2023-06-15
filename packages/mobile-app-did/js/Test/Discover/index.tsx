@@ -3,7 +3,6 @@ import { defaultColors } from 'assets/theme';
 import CustomHeader from 'components/CustomHeader';
 import SafeAreaBox from 'components/SafeAreaBox';
 import navigationService from 'utils/navigationService';
-import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import CommonButton from 'components/CommonButton';
 import DappEventBus from 'dapp/dappEventBus';
 import ProviderWebview from 'components/ProviderWebview';
@@ -17,7 +16,6 @@ const safeAreaColorMap = {
 
 export type SafeAreaColorMapKeyUnit = keyof typeof safeAreaColorMap;
 
-EntryScriptWeb3.init();
 const Discover: React.FC = () => {
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>

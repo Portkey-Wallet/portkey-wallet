@@ -10,9 +10,9 @@ import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { getHost } from '@portkey-wallet/utils/dapp/browser';
 
-interface DappInfoSectionType {
+type DappInfoSectionType = {
   dappInfo: DappStoreItem;
-}
+};
 
 export const DappInfoSection = (props: DappInfoSectionType) => {
   const {

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -21,11 +21,11 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
 import DappInfoSection from '../DappInfoSection';
 
-interface ConnectModalType {
+type ConnectModalType = {
   dappInfo: DappStoreItem;
   onReject: () => void;
   onApprove: () => void;
-}
+};
 
 const ConnectModal = (props: ConnectModalType) => {
   const { dappInfo, onReject, onApprove } = props;

@@ -9,10 +9,10 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 
-interface TransactionDataSectionType {
+type TransactionDataSectionType = {
   dataInfo: { [key: string]: any };
   style?: ViewStyle;
-}
+};
 
 export const TransactionDataSection = (props: TransactionDataSectionType) => {
   const { dataInfo, style = {} } = props;

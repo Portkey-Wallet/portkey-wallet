@@ -1,9 +1,7 @@
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
-
 import { defaultColors } from 'assets/theme';
-import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';

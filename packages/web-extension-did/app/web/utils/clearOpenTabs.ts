@@ -1,3 +1,4 @@
+import { apis } from './BrowserApis';
 import { getLocalStorage, setLocalStorage } from './storage/chromeStorage';
 
 export default async function closeOpenTabs(keepCurTabAlive = false) {
@@ -12,11 +13,15 @@ export default async function closeOpenTabs(keepCurTabAlive = false) {
   }
 
   if (openTabs) {
-    openTabs.forEach((tab: string) => {
+    openTabs.forEach(async (tab: string) => {
       if (keepCurTabAlive) {
         if (Number(tab) === curTabId) return;
       }
-      chrome.tabs.remove(Number(tab));
+      const extId = apis.runtime.id;
+      const t = await apis.tabs.get(+tab);
+      if (t.pendingUrl?.includes(extId)) {
+        chrome.tabs.remove(Number(tab));
+      }
     });
     const openTabsId = keepCurTabAlive ? [curTabId] : [];
     setLocalStorage({ openTabsId });

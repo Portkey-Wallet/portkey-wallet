@@ -1,5 +1,4 @@
-import React, { useMemo } from 'react';
-import Svg from 'components/Svg';
+import React from 'react';
 import { pTd } from 'utils/unit';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';

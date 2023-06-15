@@ -4,10 +4,9 @@ import React from 'react';
 import { Drawer } from 'react-native-drawer-layout';
 import TabsDrawerContent from './TabsDrawerContent';
 import { usePin } from 'hooks/store';
-
-interface TabsDrawerPropsType {
+type TabsDrawerPropsType = {
   children: React.ReactNode;
-}
+};
 
 export default function TabsDrawer(props: TabsDrawerPropsType) {
   const { children } = props;
@@ -16,17 +15,22 @@ export default function TabsDrawer(props: TabsDrawerPropsType) {
   const { isDrawerOpen } = useAppCASelector(state => state.discover);
 
   const tabsDrawerContent = React.useMemo(() => <TabsDrawerContent />, []);
+
   return (
     <Drawer
       open={!!pin && isDrawerOpen}
+      onClose={() => {
+        // if no close, the drawer will crash
+        console.log('close');
+      }}
+      onOpen={() => {
+        // if no onOpen, the drawer will crash
+        console.log('open');
+      }}
       swipeEnabled={false}
-      onOpen={() => console.log('open')}
-      onClose={() => console.log('close')}
       drawerPosition="right"
       drawerStyle={{ width: ScreenWidth }}
-      renderDrawerContent={() => {
-        return tabsDrawerContent;
-      }}>
+      renderDrawerContent={() => tabsDrawerContent}>
       {children}
     </Drawer>
   );

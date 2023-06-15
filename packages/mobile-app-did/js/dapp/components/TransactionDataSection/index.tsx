@@ -9,17 +9,17 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 
-interface TransactionDataSectionType {
-  dataInfo: { [key: string]: any };
+type TransactionDataSectionType = {
+  dataInfo: { [key: string]: any } | string;
   style?: ViewStyle;
-}
+};
 
 export const TransactionDataSection = (props: TransactionDataSectionType) => {
   const { dataInfo, style = {} } = props;
 
   const [collapsed, setCollapsed] = useState<boolean>(true);
 
-  const topSection = useMemo(
+  const TopSection = useMemo(
     () => (
       <Touchable style={styles.topSection} onPress={() => setCollapsed(pre => !pre)}>
         <TextM style={[FontStyles.font5, fonts.mediumFont]}>Data</TextM>
@@ -29,16 +29,33 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
     [collapsed],
   );
 
+  const DataSection = useMemo(() => {
+    if (typeof dataInfo === 'string') {
+      return (
+        <View style={styles.dataInfoGroup}>
+          <TextS style={[FontStyles.font3, styles.dataValue]}>{dataInfo}</TextS>
+        </View>
+      );
+    } else if (typeof dataInfo === 'object') {
+      return Object.entries(dataInfo).map(([key, value], index) => (
+        <View key={index} style={styles.dataInfoGroup}>
+          <TextM style={FontStyles.font5}>{key}</TextM>
+          <TextS style={[FontStyles.font3, styles.dataValue]}>{JSON.stringify(value)}</TextS>
+        </View>
+      ));
+    } else {
+      return (
+        <View style={styles.dataInfoGroup}>
+          <TextS style={[FontStyles.font3, styles.dataValue]}>{JSON.stringify(dataInfo)}</TextS>
+        </View>
+      );
+    }
+  }, [dataInfo]);
+
   return (
     <View style={[styles.card, style]}>
-      {topSection}
-      {!collapsed &&
-        Object.entries(dataInfo).map(([key, value], index) => (
-          <View key={index} style={styles.dataInfoGroup}>
-            <TextM style={FontStyles.font5}>{key}</TextM>
-            <TextS style={[FontStyles.font3, styles.dataValue]}>{value}</TextS>
-          </View>
-        ))}
+      {TopSection}
+      {!collapsed && DataSection}
     </View>
   );
 };

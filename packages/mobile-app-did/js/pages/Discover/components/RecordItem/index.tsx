@@ -7,12 +7,12 @@ import { pTd } from 'utils/unit';
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
-interface TokenListItemType {
+type RecordListItemType = {
   item: IRecordsItemType;
   onPress?: () => void;
-}
+};
 
-const RecordItem: React.FC<TokenListItemType> = props => {
+const RecordItem: React.FC<RecordListItemType> = props => {
   const { item, onPress } = props;
 
   return (

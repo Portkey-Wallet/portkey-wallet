@@ -40,7 +40,7 @@ export const useHandleAchSell = () => {
         !aelfToken ||
         !caHash
       ) {
-        throw new Error('');
+        throw new Error('Incorrect preposition parameter.');
       }
 
       const account = getManagerAccount(pin);

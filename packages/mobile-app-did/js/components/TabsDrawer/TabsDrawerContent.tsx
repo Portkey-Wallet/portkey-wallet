@@ -116,8 +116,8 @@ const TabsDrawerContent: React.FC = () => {
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
+        noLeftDom={!activeTabId}
         rightDom={rightDom}
-        leftDom={!activeTabId && <View />}
         leftCallback={backToSearchPage}
         notHandleHardwareBackPress
         safeAreaColor={['blue', 'white']}

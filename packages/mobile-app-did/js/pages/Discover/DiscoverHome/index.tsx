@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
@@ -10,13 +10,11 @@ import CustomHeader from 'components/CustomHeader';
 import { BGStyles } from 'assets/theme/styles';
 
 export default function DiscoverHome() {
-  const navigateToSearch = useCallback(() => navigationService.navigate('DiscoverSearch'), []);
-
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bg5}>
       <View style={styles.container}>
         <CustomHeader themeType="blue" titleDom={'Discover'} noLeftDom />
-        <SimulatedInputBox onClickInput={navigateToSearch} />
+        <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
         <DiscoverCmsListSection />
       </View>
     </SafeAreaBox>

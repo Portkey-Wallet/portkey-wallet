@@ -7,11 +7,11 @@ import React from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { pTd } from 'utils/unit';
 
-interface SimulatedInputBoxProps {
-  onClickInput: () => any;
+interface ISimulatedInputBoxProps {
+  onClickInput: () => void;
 }
 
-export default function SimulatedInputBox({ onClickInput }: SimulatedInputBoxProps) {
+export default function SimulatedInputBox({ onClickInput }: ISimulatedInputBoxProps) {
   return (
     <View style={[styles.wrap, BGStyles.bg5]}>
       <TouchableWithoutFeedback onPress={onClickInput}>

@@ -21,7 +21,7 @@ import { getCryptoList } from '@portkey-wallet/api/api-did/payment/util';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import { CryptoInfoType } from '@portkey-wallet/api/api-did/payment/type';
-import { CryptoItemType, LimitType, TypeEnum } from 'pages/Buy/types';
+import { CryptoItemType } from 'pages/Buy/types';
 import { INIT_SELL_AMOUNT, tokenList } from 'pages/Buy/constants';
 import Loading from 'components/Loading';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
@@ -35,6 +35,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import BigNumber from 'bignumber.js';
+import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
@@ -55,7 +56,7 @@ export default function SellForm() {
   const pin = usePin();
   const wallet = useCurrentWalletInfo();
 
-  const limitAmountRef = useRef<LimitType>();
+  const limitAmountRef = useRef<PaymentLimitType>();
   const cryptoListRef = useRef<CryptoInfoType[]>();
   const isRefreshReceiveValid = useRef<boolean>(false);
   const cryptoListCurrency = useRef<string>();
@@ -104,7 +105,7 @@ export default function SellForm() {
     refreshReceive,
     amountError: amountFetchError,
     isAllowAmount,
-  } = useReceive(TypeEnum.SELL, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
+  } = useReceive(PaymentTypeEnum.SELL, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
   const refreshReceiveRef = useRef<typeof refreshReceive>();
   refreshReceiveRef.current = refreshReceive;
 
@@ -200,7 +201,7 @@ export default function SellForm() {
       amount,
       fiat,
       token,
-      type: TypeEnum.SELL,
+      type: PaymentTypeEnum.SELL,
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
@@ -235,7 +236,6 @@ export default function SellForm() {
           keyboardType="decimal-pad"
           onChangeText={onAmountInput}
           errorMessage={amountError.isError ? amountError.errorMsg : ''}
-          // placeholder={t('Enter Phone Number')}
         />
 
         <CommonInput

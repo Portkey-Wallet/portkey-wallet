@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { Image } from 'react-native';
+import Default_Image from 'assets/image/pngs/default_record.png';
 
 interface DiscoverWebsiteImageProps {
   imageUrl?: string;
@@ -20,17 +21,12 @@ export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
     borderRadius: size,
   };
 
-  const [isError, setError] = React.useState(false);
-
-  if (isError) return <Svg icon="default_record" size={size} iconStyle={style} />;
   return (
     <Image
       resizeMode={'contain'}
-      style={[styles.avatarWrap, sizeStyle]}
+      style={[styles.avatarWrap, sizeStyle, style]}
       source={{ uri: imageUrl }}
-      onError={() => {
-        setError(true);
-      }}
+      defaultSource={Default_Image}
     />
   );
 }

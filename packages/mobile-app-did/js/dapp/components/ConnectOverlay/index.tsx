@@ -39,18 +39,18 @@ const ConnectModal = (props: ConnectModalType) => {
   } = useAppCASelector(state => state.assets);
 
   const caInfoList = useMemo(() => {
-    return Object.entries(caInfo || {})
-      .map(([key, value]) => {
-        const info = value as CAInfo;
-        return info?.caAddress
-          ? {
-              chaiId: key,
-              caAddress: info.caAddress,
-              ...accountTokenList.find(token => token.chainId === key && token.symbol === ELF_SYMBOL),
-            }
-          : undefined;
-      })
-      .filter(item => !!item);
+    const list: any[] = [];
+    Object.entries(caInfo || {}).map(([key, value]) => {
+      const info = value as CAInfo;
+      if (info?.caAddress) {
+        list.push({
+          chaiId: key,
+          caAddress: info.caAddress,
+          ...accountTokenList.find(token => token.chainId === key && token.symbol === ELF_SYMBOL),
+        });
+      }
+    });
+    return list;
   }, [accountTokenList, caInfo]);
 
   const buttonList = useMemo(

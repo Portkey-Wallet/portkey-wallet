@@ -36,7 +36,7 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
         Object.entries(dataInfo).map(([key, value], index) => (
           <View key={index} style={styles.dataInfoGroup}>
             <TextM style={FontStyles.font5}>{key}</TextM>
-            <TextS style={[FontStyles.font3, styles.dataValue]}>{value}</TextS>
+            <TextS style={[FontStyles.font3, styles.dataValue]}>{JSON.stringify(value)}</TextS>
           </View>
         ))}
     </View>

@@ -53,7 +53,7 @@ export default function GuardianApproval() {
   const {
     loginAccount,
     userGuardiansList: paramUserGuardiansList,
-    approvalType = ApprovalType.register,
+    approvalType = ApprovalType.communityRecovery,
     guardianItem,
     verifierInfo,
     verifiedTime,
@@ -269,7 +269,7 @@ export default function GuardianApproval() {
 
   const onFinish = useCallback(async () => {
     switch (approvalType) {
-      case ApprovalType.register:
+      case ApprovalType.communityRecovery:
         registerAccount();
         break;
       case ApprovalType.addGuardian:
@@ -295,7 +295,7 @@ export default function GuardianApproval() {
       containerStyles={styles.containerStyle}
       leftIconType="close"
       leftCallback={onBack}
-      backTitle={approvalType === ApprovalType.register ? 'Wallet Login' : undefined}
+      backTitle={approvalType === ApprovalType.communityRecovery ? 'Wallet Login' : undefined}
       type="leftBack"
       titleDom
       hideTouchable>

@@ -19,14 +19,13 @@ import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 
-let timer: any = null;
-
 export default function DiscoverSearch() {
   const { t } = useLanguage();
 
   const discoverGroupList = useDiscoverGroupList();
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const iptRef = useRef<any>();
   const [value, setValue] = useState<string>('');
   const [showRecord, setShowRecord] = useState<boolean>(true);
@@ -54,7 +53,7 @@ export default function DiscoverSearch() {
   }, [value]);
 
   const onSearch = useCallback(() => {
-    const newValue = value.trim().replace(' ', '');
+    const newValue = value.replace(/\s+/g, '');
     if (!newValue) return;
 
     if (checkIsUrl(newValue)) {
@@ -67,7 +66,7 @@ export default function DiscoverSearch() {
       });
     } else {
       // else search in Discover list
-      const filterList = flatList.filter(item => item.title.replace(' ', '').includes(newValue));
+      const filterList = flatList.filter(item => item.title.replace(/\s+/g, '').includes(newValue));
       setFilteredDiscoverList(filterList);
       setShowRecord(false);
     }
@@ -76,7 +75,7 @@ export default function DiscoverSearch() {
   useFocusEffect(
     useCallback(() => {
       if (iptRef?.current && !isIOS) {
-        timer = setTimeout(() => {
+        timerRef.current = setTimeout(() => {
           iptRef.current.focus();
         }, 300);
       }
@@ -84,7 +83,9 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    return () => clearTimeout(timer);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, []);
 
   return (

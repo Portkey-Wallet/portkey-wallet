@@ -12,14 +12,14 @@ import { CommonButtonProps } from 'components/CommonButton';
 import DappInfoSection from '../DappInfoSection';
 import { GetSignatureParams } from '@portkey/provider-types';
 import TransactionDataSection from '../TransactionDataSection';
-import { TextL, TextXXXL } from 'components/CommonText';
+import { TextXXXL } from 'components/CommonText';
 
-interface SignModalPropsType {
+type SignModalPropsType = {
   dappInfo: DappStoreItem;
   signInfo: GetSignatureParams;
   onReject: () => void;
   onSign: () => void;
-}
+};
 const SignModal = (props: SignModalPropsType) => {
   const { dappInfo, signInfo, onReject, onSign } = props;
   const { t } = useLanguage();

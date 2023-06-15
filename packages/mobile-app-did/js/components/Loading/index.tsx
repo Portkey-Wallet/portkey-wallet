@@ -82,7 +82,8 @@ const styles = StyleSheet.create({
   },
   loadingWrap: {
     width: pTd(224),
-    height: pTd(120),
+    minHeight: pTd(120),
+    padding: pTd(16),
     backgroundColor: defaultColors.bg1,
     borderRadius: pTd(6),
   },

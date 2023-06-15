@@ -9,12 +9,12 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
 import { useTabMenuList } from 'hooks/cms';
-// import DiscoverHome from 'pages/Discover/DiscoverHome';
+import DiscoverHome from 'pages/Discover/DiscoverHome';
 
 const Tab = createBottomTabNavigator();
 type TabMenuTypeType = { icon: IconName; component: React.FC };
 export interface TabMenuItem extends TabMenuTypeType {
-  name: string;
+  name: 'Wallet' | 'Discover' | 'Settings';
   label: string;
   index: number;
 }
@@ -28,14 +28,15 @@ export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
     icon: 'my',
     component: MyMenu,
   },
-  // Discover: {
-  //   icon: 'discover',
-  //   component: DiscoverHome,
-  // },
+  Discover: {
+    icon: 'discover',
+    component: DiscoverHome,
+  },
 };
 
 export const defaultTabMenuList: TabMenuItem[] = [
   { name: 'Wallet', label: 'Wallet', index: 0, icon: 'logo-icon', component: DashBoard },
+  { name: 'Discover', label: 'Discover', index: 1, icon: 'discover', component: DiscoverHome },
   { name: 'Settings', label: 'My', index: 2, icon: 'my', component: MyMenu },
 ];
 
@@ -80,7 +81,7 @@ export default function TabRoot() {
         header: () => null,
         tabBarIcon: ({ focused }) => {
           const iconName: IconName = tabMenuList.find(tab => tab.name === route.name)?.icon ?? 'logo-icon';
-          return <Svg icon={iconName} size={20} color={focused ? defaultColors.font4 : defaultColors.font7} />;
+          return <Svg icon={iconName} size={22} color={focused ? defaultColors.font4 : defaultColors.font7} />;
         },
       })}>
       {tabMenuList.map(ele => (

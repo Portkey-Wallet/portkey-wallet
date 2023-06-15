@@ -82,6 +82,7 @@ export type DiscoverGroup_By_IdQuery = {
       sort?: number | null;
       status?: string | null;
       title?: string | null;
+      url?: string | null;
       user_created?: string | null;
       user_updated?: string | null;
       date_created_func?: {
@@ -149,6 +150,7 @@ export type DiscoverGroup_By_IdQuery = {
           sort?: number | null;
           status?: string | null;
           title?: string | null;
+          url?: string | null;
           user_created?: string | null;
           user_updated?: string | null;
           imgUrl?: {
@@ -377,6 +379,7 @@ export const DiscoverGroup_By_IdDocument = gql`
             sort
             status
             title
+            url
             user_created
             user_updated
           }
@@ -389,6 +392,7 @@ export const DiscoverGroup_By_IdDocument = gql`
         sort
         status
         title
+        url
         user_created
         user_updated
       }

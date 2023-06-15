@@ -33,6 +33,7 @@ export type DiscoverItem_AggregatedQuery = {
       sort?: number | null;
       status?: number | null;
       title?: number | null;
+      url?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
     } | null;
@@ -48,6 +49,7 @@ export type DiscoverItem_AggregatedQuery = {
       sort?: number | null;
       status?: number | null;
       title?: number | null;
+      url?: number | null;
       user_created?: number | null;
       user_updated?: number | null;
     } | null;
@@ -128,6 +130,7 @@ export const DiscoverItem_AggregatedDocument = gql`
         sort
         status
         title
+        url
         user_created
         user_updated
       }
@@ -142,6 +145,7 @@ export const DiscoverItem_AggregatedDocument = gql`
         sort
         status
         title
+        url
         user_created
         user_updated
       }

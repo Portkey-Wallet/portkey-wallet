@@ -17,7 +17,7 @@ const SUPPORT_TYPE = ['Google', 'Apple'];
 export default function SocialTem({ loginType }: { loginType: ISocialLogin }) {
   const onSuccess = useCallback(async (response: IResolveParams) => {
     console.log(response, 'response====');
-    window.portkey_did?.request({
+    window.portkey?.request({
       method: 'portkey_socialLogin',
       params: {
         response: { ...response.data, provider: response.provider },
@@ -27,7 +27,7 @@ export default function SocialTem({ loginType }: { loginType: ISocialLogin }) {
 
   const onError = useCallback((error: any) => {
     console.log(error, 'onError===LoginSocial');
-    window.portkey_did?.request({
+    window.portkey?.request({
       method: 'portkey_socialLogin',
       params: { error: typeof error === 'string' ? error : error?.err || error },
     });

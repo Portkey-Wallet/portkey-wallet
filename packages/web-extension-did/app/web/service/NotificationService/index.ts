@@ -40,7 +40,7 @@ export default class NotificationService {
         this.openWindow = null;
       }
       if (this.closeSender?.[number]) {
-        this.closeSender?.[number]?.sendResponse?.(errorHandler(200010));
+        this.closeSender?.[number]?.sendResponse?.(errorHandler(200003));
         delete this.closeSender?.[number];
       }
     });
@@ -50,7 +50,7 @@ export default class NotificationService {
         this.openTag = null;
       }
       if (this.closeSender?.[number]) {
-        this.closeSender?.[number]?.sendResponse?.(errorHandler(200010));
+        this.closeSender?.[number]?.sendResponse?.(errorHandler(200003));
         delete this.closeSender?.[number];
       }
     });
@@ -166,6 +166,7 @@ export default class NotificationService {
     promptType: CreatePromptType = 'windows',
   ): Promise<SendResponseParams> => {
     return new Promise((resolve) => {
+      console.log(message, 'openPrompt==message');
       const promptParam = {
         sendResponse: async (response?: SendResponseParams) => {
           await sleep(500);

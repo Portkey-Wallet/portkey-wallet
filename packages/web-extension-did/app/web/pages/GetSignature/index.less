@@ -1,0 +1,75 @@
+@import '../../assets/theme/color.less';
+@import '../../assets/theme/constants.less';
+
+.get-signature {
+  width: 328px;
+  margin: 40px auto 16px;
+  flex-direction: column;
+  font-size: 12px;
+  line-height: 16px;
+  color: @font-13;
+  .site {
+    align-self: center;
+    margin-bottom: 24px;
+    width: fit-content;
+    padding: 8px 16px;
+    border: 1px solid @border-2;
+    border-radius: 24px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @font-13;
+    .icon {
+      flex-shrink: 0;
+      width: 24px;
+      border-radius: 50%;
+      margin-right: 8px;
+      .dappdefault-icon {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    .origin {
+      font-size: 14px;
+      line-height: 20px;
+      color: @font-13;
+      line-break: anywhere;
+      .text-overflow(1)
+    }
+  }
+  .title {
+    font-size: 24px;
+    line-height: 28px;
+    font-weight: 700;
+    color: @font-11;
+  }
+  .message {
+    margin-top: 16px;
+    .data {
+      margin-top: 4px;
+      padding: 16px;
+      border: 1px solid @border-2;
+      border-radius: 6px;
+    }
+  }
+  .btn {
+    width: 100%;
+    margin-top: 40px;
+    .@{app-prefix}-btn {
+      width: 156px;
+      height: 48px;
+      font-size: 14px;
+      line-height: 22px;
+      text-align: center;
+      border-radius: 24px;
+    }
+    .@{app-prefix}-btn-text {
+      border: 1px solid @border-3;
+      color: @font-9;
+      background-color: @bg-11;
+    }
+    .@{app-prefix}-btn-primary {
+      color: @font-5;
+      background-color: @bg-7;
+    }
+  }
+}

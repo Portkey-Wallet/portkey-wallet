@@ -12,6 +12,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		19EC8BC9327908E9BDB886C0 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4EB37D631CAABEBC0CC18B /* ExpoModulesProvider.swift */; };
+		2B25ECFC2A1B48DC00586D7D /* InpageBridgeWeb3.js in Resources */ = {isa = PBXBuildFile; fileRef = 2B25ECFB2A1B48DC00586D7D /* InpageBridgeWeb3.js */; };
 		3652EFEAF7157AE32F0A183B /* libPods-Portkey-PortkeyTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2DDB7964DE97D61553C3007 /* libPods-Portkey-PortkeyTests.a */; };
 		6067DF7E96A3512FE02CDF4C /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB8AAA944A581AA64A54B32 /* ExpoModulesProvider.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
@@ -40,6 +41,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Portkey/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Portkey/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Portkey/main.m; sourceTree = "<group>"; };
+		2B25ECFB2A1B48DC00586D7D /* InpageBridgeWeb3.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = InpageBridgeWeb3.js; path = ../js/utils/InpageBridgeWeb3.js; sourceTree = "<group>"; };
 		2B4CF73429344C200071ED92 /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework"; sourceTree = "<group>"; };
 		2B96396A28ACF299003CD665 /* Portkey.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Portkey.entitlements; path = Portkey/Portkey.entitlements; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Portkey.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey.debug.xcconfig"; path = "Target Support Files/Pods-Portkey/Pods-Portkey.debug.xcconfig"; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 		13B07FAE1A68108700A75B9A /* Portkey */ = {
 			isa = PBXGroup;
 			children = (
+				2B25ECFB2A1B48DC00586D7D /* InpageBridgeWeb3.js */,
 				2B96396A28ACF299003CD665 /* Portkey.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -290,6 +293,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				2B25ECFC2A1B48DC00586D7D /* InpageBridgeWeb3.js in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				E5A1B79EA5754765B45B0F05 /* SplashScreen.storyboard in Resources */,
 				9C403D3329E5603000035DBC /* GoogleService-Info.plist in Resources */,

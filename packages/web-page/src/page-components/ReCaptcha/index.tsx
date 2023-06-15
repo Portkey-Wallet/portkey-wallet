@@ -6,21 +6,21 @@ import styles from './styles.module.less';
 
 export default function ReCaptcha() {
   const handleSuccess = useCallback((response: string) => {
-    window.portkey_did?.request({
+    window.portkey?.request({
       method: 'portkey_setReCaptchaCodeV2',
       params: { response },
     });
   }, []);
 
   const handleExpire = useCallback(() => {
-    window.portkey_did?.request({
+    window.portkey?.request({
       method: 'portkey_setReCaptchaCodeV2',
       params: { error: 'Verification has expired, re-verify.' },
     });
   }, []);
 
   const handleError = useCallback(() => {
-    window.portkey_did?.request({
+    window.portkey?.request({
       method: 'portkey_setReCaptchaCodeV2',
       params: { error: 'Something went wrong, check your connection' },
     });

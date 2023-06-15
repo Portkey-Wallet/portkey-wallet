@@ -14,7 +14,7 @@ import { useGuardiansInfo } from 'hooks/store';
 import { useGetGuardiansInfo } from 'hooks/guardian';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { VerificationType } from '@portkey-wallet/types/verifier';
+import { RecaptchaType, VerificationType } from '@portkey-wallet/types/verifier';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import myEvents from 'utils/deviceEvent';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
@@ -95,6 +95,7 @@ export default function GuardianDetail() {
           guardianIdentifier: guardian.guardianAccount,
           verifierId: guardian.verifier?.id,
           chainId: originChainId,
+          operationType: RecaptchaType.optGuardian,
         },
       });
       if (req.verifierSessionId) {

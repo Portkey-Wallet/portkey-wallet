@@ -9,7 +9,7 @@ const Unlock = () => {
   const navigate = useNavigate();
   const { isPrompt } = useCommonState();
   const locked = useStorage('locked');
-
+  console.log(locked, 'locked==');
   useEffect(() => {
     if (locked === false) {
       return navigate('/');

@@ -1,6 +1,6 @@
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
-import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { ApprovalType, RecaptchaType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
@@ -63,6 +63,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
             type: LoginType[item.guardianType],
             verifierId: item?.verifier?.id || '',
             chainId: originChainId,
+            operationType: RecaptchaType.optGuardian,
           },
         });
         setLoading(false);
@@ -107,12 +108,21 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
           throw 'User registration information is invalid, please fill in the registration method again';
         }
 
+        let approvalType = ApprovalType.communityRecovery;
+        if (query && query.indexOf('removeManage') !== -1) {
+          approvalType = ApprovalType.removeOtherManager;
+        }
+
         const result = await verification.sendVerificationCode({
           params: {
             guardianIdentifier: item?.guardianAccount,
             type: LoginType[item.guardianType],
             verifierId: item.verifier?.id || '',
             chainId: originChainId,
+            operationType:
+              approvalType === ApprovalType.communityRecovery
+                ? RecaptchaType.communityRecovery
+                : RecaptchaType.optGuardian,
           },
         });
         setLoading(false);
@@ -133,7 +143,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
               status: VerifyStatus.Verifying,
             }),
           );
-          if (query && query.indexOf('removeManage') !== -1) {
+          if (approvalType === ApprovalType.removeOtherManager) {
             navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
           } else {
             navigate('/login/verifier-account', { state: 'login' });

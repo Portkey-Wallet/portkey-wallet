@@ -14,7 +14,7 @@ import DiscoverHome from 'pages/Discover/DiscoverHome';
 const Tab = createBottomTabNavigator();
 type TabMenuTypeType = { icon: IconName; component: React.FC };
 export interface TabMenuItem extends TabMenuTypeType {
-  name: 'Wallet' | 'Discover' | 'My';
+  name: 'Wallet' | 'Discover' | 'Settings';
   label: string;
   index: number;
 }
@@ -24,7 +24,7 @@ export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
     icon: 'logo-icon',
     component: DashBoard,
   },
-  My: {
+  Settings: {
     icon: 'my',
     component: MyMenu,
   },
@@ -37,7 +37,7 @@ export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
 export const defaultTabMenuList: TabMenuItem[] = [
   { name: 'Wallet', label: 'Wallet', index: 0, icon: 'logo-icon', component: DashBoard },
   { name: 'Discover', label: 'Discover', index: 1, icon: 'discover', component: DiscoverHome },
-  { name: 'My', label: 'My', index: 2, icon: 'my', component: MyMenu },
+  { name: 'Settings', label: 'My', index: 2, icon: 'my', component: MyMenu },
 ];
 
 export default function TabRoot() {

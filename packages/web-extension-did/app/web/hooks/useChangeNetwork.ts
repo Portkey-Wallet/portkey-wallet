@@ -7,9 +7,9 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
-import closeOpenTabs from 'utils/clearOpenTabs';
 import { sleep } from '@portkey-wallet/utils';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import OpenNewTabController from 'controllers/openNewTabController';
 
 export function useChangeNetwork() {
   const dispatch = useAppDispatch();
@@ -29,11 +29,14 @@ export function useChangeNetwork() {
       dispatch(setWalletNameAction('Wallet 01'));
       dispatch(changeNetworkType(network.networkType));
       if (tmpCaInfo?.managerInfo && tmpCaInfo?.[tmpChainId]?.caAddress) {
-        await closeOpenTabs(true);
         if (!isPrompt) {
+          await OpenNewTabController.closeOpenTabs();
+
           await sleep(500);
           InternalMessage.payload(PortkeyMessageTypes.EXPAND_FULL_SCREEN).send();
         } else {
+          await OpenNewTabController.closeOpenTabs(true);
+
           navigate('/');
         }
       } else {
@@ -41,6 +44,7 @@ export function useChangeNetwork() {
           await sleep(500);
           InternalMessage.payload(PortkeyMessageTypes.REGISTER_START_WALLET).send();
         } else {
+          await OpenNewTabController.closeOpenTabs(true);
           navigate('/register/start');
         }
       }

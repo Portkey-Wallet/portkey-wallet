@@ -1,24 +1,24 @@
 import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
-import { CryptoItemType, LimitType, TypeEnum } from './types';
+import { CryptoItemType } from './types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MAX_REFRESH_TIME } from './constants';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { GetOrderQuoteParamsType, getOrderQuote } from '@portkey-wallet/api/api-did/payment/util';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
-import CommonToast from 'components/CommonToast';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export const useReceive = (
-  type: TypeEnum,
+  type: PaymentTypeEnum,
   amount: string,
   fiat?: FiatType,
   token?: CryptoItemType,
   initialReceiveAmount = '',
   initialRate = '',
-  limitAmountRef?: React.MutableRefObject<LimitType | undefined>,
+  limitAmountRef?: React.MutableRefObject<PaymentLimitType | undefined>,
   isRefreshReceiveValid?: React.MutableRefObject<boolean>,
 ) => {
   const [receiveAmount, setReceiveAmount] = useState<string>(initialReceiveAmount);
@@ -90,7 +90,7 @@ export const useReceive = (
         setAmountError({
           ...INIT_HAS_ERROR,
           errorMsg: `Limit Amount ${formatAmountShow(min, 4)}-${formatAmountShow(max, 4)} ${
-            type === TypeEnum.BUY ? fiat?.currency : token.crypto
+            type === PaymentTypeEnum.BUY ? fiat?.currency : token.crypto
           }`,
         });
         setRate('');
@@ -108,7 +108,7 @@ export const useReceive = (
       fiat: fiat.currency,
       country: fiat.country,
       amount,
-      side: type === TypeEnum.BUY ? 'BUY' : 'SELL',
+      side: type === PaymentTypeEnum.BUY ? 'BUY' : 'SELL',
     };
     lastParams.current = params;
 
@@ -123,8 +123,8 @@ export const useReceive = (
       if (
         !rst ||
         !rst.cryptoPrice ||
-        (type === TypeEnum.BUY && !rst.cryptoQuantity) ||
-        (type === TypeEnum.SELL && !rst.fiatQuantity)
+        (type === PaymentTypeEnum.BUY && !rst.cryptoQuantity) ||
+        (type === PaymentTypeEnum.SELL && !rst.fiatQuantity)
       ) {
         setRate('');
         setReceiveAmount('');
@@ -134,7 +134,7 @@ export const useReceive = (
       if (isRefreshReceiveValid) isRefreshReceiveValid.current = true;
       const _rate = Number(rst.cryptoPrice).toFixed(2) + '';
       let _receiveAmount = '';
-      if (type === TypeEnum.BUY) {
+      if (type === PaymentTypeEnum.BUY) {
         _receiveAmount = formatAmountShow(rst.cryptoQuantity || '', 4);
       } else {
         const fiatQuantity = ZERO.plus(rst.fiatQuantity || 0).minus(rst.rampFee || 0);

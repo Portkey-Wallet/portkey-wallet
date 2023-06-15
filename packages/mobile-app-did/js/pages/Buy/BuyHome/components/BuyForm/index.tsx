@@ -21,13 +21,14 @@ import { getCryptoList } from '@portkey-wallet/api/api-did/payment/util';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import { CryptoInfoType } from '@portkey-wallet/api/api-did/payment/type';
-import { CryptoItemType, LimitType, TypeEnum } from 'pages/Buy/types';
+import { CryptoItemType } from 'pages/Buy/types';
 import { INIT_BUY_AMOUNT, tokenList } from 'pages/Buy/constants';
 import Loading from 'components/Loading';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from 'pages/Buy/hooks';
 import BigNumber from 'bignumber.js';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export default function BuyForm() {
   const { buyFiatList: fiatList } = usePayment();
@@ -39,7 +40,7 @@ export default function BuyForm() {
   const [amount, setAmount] = useState<string>(INIT_BUY_AMOUNT);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
 
-  const limitAmountRef = useRef<LimitType>();
+  const limitAmountRef = useRef<PaymentLimitType>();
   const cryptoListRef = useRef<CryptoInfoType[]>();
   const isRefreshReceiveValid = useRef<boolean>(false);
   const cryptoListCurrency = useRef<string>();
@@ -88,7 +89,7 @@ export default function BuyForm() {
     refreshReceive,
     amountError: amountFetchError,
     isAllowAmount,
-  } = useReceive(TypeEnum.BUY, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
+  } = useReceive(PaymentTypeEnum.BUY, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
   const refreshReceiveRef = useRef<typeof refreshReceive>();
   refreshReceiveRef.current = refreshReceive;
 
@@ -148,7 +149,7 @@ export default function BuyForm() {
       amount,
       fiat,
       token,
-      type: TypeEnum.BUY,
+      type: PaymentTypeEnum.BUY,
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
@@ -183,7 +184,6 @@ export default function BuyForm() {
           keyboardType="decimal-pad"
           onChangeText={onAmountInput}
           errorMessage={amountError.isError ? amountError.errorMsg : ''}
-          // placeholder={t('Enter Phone Number')}
         />
 
         <CommonInput

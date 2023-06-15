@@ -12,7 +12,7 @@ import CommonButton from 'components/CommonButton';
 import achImg from 'assets/image/pngs/ach.png';
 import achPaymentImg from 'assets/image/pngs/ach_payment.png';
 import ActionSheet from 'components/ActionSheet';
-import { CryptoItemType, TypeEnum } from '../types';
+import { CryptoItemType } from '../types';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 import { useReceive } from '../hooks';
@@ -27,9 +27,10 @@ import Loading from 'components/Loading';
 import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 interface RouterParams {
-  type?: TypeEnum;
+  type?: PaymentTypeEnum;
   token?: CryptoItemType;
   fiat?: FiatType;
   amount?: string;
@@ -39,7 +40,7 @@ interface RouterParams {
 
 export default function BuyPreview() {
   const {
-    type = TypeEnum.BUY,
+    type = PaymentTypeEnum.BUY,
     token,
     fiat,
     amount,
@@ -49,7 +50,7 @@ export default function BuyPreview() {
 
   const { t } = useLanguage();
   const { rate, receiveAmount } = useReceive(type, amount || '', fiat, token, receiveAmountProps, rateProps);
-  const isBuy = useMemo(() => type === TypeEnum.BUY, [type]);
+  const isBuy = useMemo(() => type === PaymentTypeEnum.BUY, [type]);
   const apiUrl = useCurrentApiUrl();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
@@ -66,12 +67,12 @@ export default function BuyPreview() {
         let achUrl = `${baseUrl}/?crypto=${token.crypto}&network=${token.network}&country=${fiat.country}&fiat=${fiat.currency}&appId=${appId}&callbackUrl=${callbackUrl}`;
 
         const orderNo = await getPaymentOrderNo({
-          transDirect: type === TypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
+          transDirect: type === PaymentTypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
           merchantName: ACH_MERCHANT_NAME,
         });
         achUrl += `&merchantOrderNo=${orderNo}`;
 
-        if (type === TypeEnum.BUY) {
+        if (type === PaymentTypeEnum.BUY) {
           const achTokenInfo = await getAchTokenInfo();
           if (achTokenInfo !== undefined && isNoEmail === false) {
             achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
@@ -106,10 +107,10 @@ export default function BuyPreview() {
         navigationService.navigate('ViewOnWebView', {
           title: 'Alchemy Pay Ramp',
           url: achUrl,
-          webViewPageType: type === TypeEnum.BUY ? 'ach' : 'achSell',
+          webViewPageType: type === PaymentTypeEnum.BUY ? 'ach' : 'achSell',
           injectedJavaScript,
           params:
-            type === TypeEnum.BUY
+            type === PaymentTypeEnum.BUY
               ? undefined
               : {
                   orderNo,

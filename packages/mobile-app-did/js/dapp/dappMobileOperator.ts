@@ -147,8 +147,6 @@ export default class DappMobileOperator extends Operator {
   };
 
   protected handleRequestAccounts: SendRequest<DappStoreItem> = async (eventName, params) => {
-    console.log('===========params=========================', params);
-
     await this.dappManager.addDapp(params);
     return generateNormalResponse({
       eventName,
@@ -248,7 +246,6 @@ export default class DappMobileOperator extends Operator {
   }) {
     // user confirm
     const response = await this.userConfirmation({ eventName, method, params });
-    console.log('===response=================================', response);
     if (response) return response;
     return callBack(eventName, params);
   }

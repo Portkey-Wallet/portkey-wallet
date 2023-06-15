@@ -16,16 +16,21 @@ export default function TabsDrawer(props: TabsDrawerPropsType) {
 
   const tabsDrawerContent = React.useMemo(() => <TabsDrawerContent />, []);
 
-  const otherProps = {} as { onClose: () => void; onOpen: () => void };
-
   return (
     <Drawer
       open={!!pin && isDrawerOpen}
+      onClose={() => {
+        // if no close, the drawer will crash
+        console.log('close');
+      }}
+      onOpen={() => {
+        // if no onOpen, the drawer will crash
+        console.log('open');
+      }}
       swipeEnabled={false}
       drawerPosition="right"
       drawerStyle={{ width: ScreenWidth }}
-      renderDrawerContent={() => tabsDrawerContent}
-      {...otherProps}>
+      renderDrawerContent={() => tabsDrawerContent}>
       {children}
     </Drawer>
   );

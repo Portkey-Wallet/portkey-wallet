@@ -19,15 +19,21 @@ export enum VerificationType {
   addGuardian,
   setLoginAccount,
   addManager,
-  editGuardianApproval,
+  optGuardianApproval,
 }
 
 export enum ApprovalType {
-  register,
+  communityRecovery,
   addGuardian,
   deleteGuardian,
   editGuardian,
   removeOtherManager,
+}
+
+export enum RecaptchaType {
+  register = 0,
+  communityRecovery = 1,
+  optGuardian = 2,
 }
 
 export interface VerifierInfo {

@@ -102,13 +102,16 @@ const TabsDrawerContent: React.FC = () => {
     }),
     [],
   );
-  useHardwareBackPress(() => {
-    if (isDrawerOpen) {
-      backToSearchPage();
-      return true;
-    }
-    return false;
-  });
+  useHardwareBackPress(
+    useMemo(() => {
+      if (isDrawerOpen) {
+        return () => {
+          backToSearchPage();
+          return true;
+        };
+      }
+    }, [backToSearchPage, isDrawerOpen]),
+  );
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer

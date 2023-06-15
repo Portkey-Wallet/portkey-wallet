@@ -24,10 +24,12 @@ export const styles = StyleSheet.create({
     marginTop: pTd(16),
   },
   scrollSection: {
+    paddingLeft: pTd(20),
+    width: '100%',
     height: screenHeight / 2,
   },
   blank: {
-    height: pTd(200),
+    height: pTd(100),
   },
   error: {
     color: defaultColors.error,

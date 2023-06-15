@@ -4,7 +4,7 @@ import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import { TextM, TextS } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
@@ -38,9 +38,9 @@ export function DiscoverCmsListSection() {
               <TouchableOpacity key={i} style={styles.itemWrap} onPress={() => onJump(item)}>
                 <Image style={styles.image} source={{ uri: `${s3Url}/${item?.imgUrl?.filename_disk}` }} />
                 <View style={styles.right}>
-                  <TextM style={[FontStyles.font5]} numberOfLines={1} ellipsizeMode="tail">
+                  <TextL style={FontStyles.font5} numberOfLines={1} ellipsizeMode="tail">
                     {item.title}
-                  </TextM>
+                  </TextL>
                   <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
                     {item.description}
                   </TextS>

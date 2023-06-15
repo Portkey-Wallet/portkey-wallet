@@ -101,22 +101,19 @@ export default function SendTransactions() {
     }
   }, [getTokenPrice, getTokensPrice, payload, isMainnet]);
 
-  const renderAccountInfo = useMemo(
-    () =>
-      payload?.contractAddress ? (
-        <div className="account flex">
-          <div className="name">{walletName}</div>
-          <CustomSvg type="Oval" />
-          <div className="address">{`${payload?.contractAddress.slice(0, 10)}...${payload?.contractAddress.slice(
-            -4,
-          )}`}</div>
-          <div className="line" />
-        </div>
-      ) : (
-        <></>
-      ),
-    [payload, walletName],
-  );
+  const renderAccountInfo = useMemo(() => {
+    if (payload?.contractAddress || typeof payload.contractAddress !== 'string') return <></>;
+    return (
+      <div className="account flex">
+        <div className="name">{walletName}</div>
+        <CustomSvg type="Oval" />
+        <div className="address">{`${payload.contractAddress.slice(0, 10)}...${payload.contractAddress.slice(
+          -4,
+        )}`}</div>
+        <div className="line" />
+      </div>
+    );
+  }, [payload, walletName]);
 
   // Transfer
   const renderDetail = useMemo(() => {
@@ -180,7 +177,7 @@ export default function SendTransactions() {
           {Object.keys(params).map((item) => (
             <div key={item}>
               <div className="value">{item}</div>
-              <div className="content">{params[item]}</div>
+              <div className="content">{JSON.stringify(params[item])}</div>
             </div>
           ))}
         </div>

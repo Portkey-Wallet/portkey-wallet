@@ -18,8 +18,8 @@ export default async function closeOpenTabs(keepCurTabAlive = false) {
         if (Number(tab) === curTabId) return;
       }
       const extId = apis.runtime.id;
-      const t = await apis.tabs.get(+tab);
-      if (t.pendingUrl?.includes(extId)) {
+      const opTab = await apis.tabs.get(+tab);
+      if (opTab.pendingUrl?.includes(extId)) {
         chrome.tabs.remove(Number(tab));
       }
     });

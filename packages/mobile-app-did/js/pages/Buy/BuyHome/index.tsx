@@ -10,31 +10,30 @@ import fonts from 'assets/theme/fonts';
 import { FontStyles } from 'assets/theme/styles';
 import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
-
-import { TypeEnum } from '../types';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 type TabItemType = {
   name: string;
-  type: TypeEnum;
+  type: PaymentTypeEnum;
   component: JSX.Element;
 };
 
 const tabList: TabItemType[] = [
   {
     name: 'Buy',
-    type: TypeEnum.BUY,
+    type: PaymentTypeEnum.BUY,
     component: <BuyForm />,
   },
   {
     name: 'Sell',
-    type: TypeEnum.SELL,
+    type: PaymentTypeEnum.SELL,
     component: <SellForm />,
   },
 ];
 
 export default function BuyHome() {
   const { t } = useLanguage();
-  const [selectTab, setSelectTab] = useState<TypeEnum>(TypeEnum.BUY);
+  const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(PaymentTypeEnum.BUY);
 
   return (
     <PageContainer

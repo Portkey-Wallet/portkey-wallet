@@ -12,23 +12,25 @@ import CommonButton from 'components/CommonButton';
 import achImg from 'assets/image/pngs/ach.png';
 import achPaymentImg from 'assets/image/pngs/ach_payment.png';
 import ActionSheet from 'components/ActionSheet';
-import { CryptoItemType, TypeEnum } from '../types';
+import { CryptoItemType } from '../types';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 import { useReceive } from '../hooks';
 import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
 import { getAchSignature, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
-import { ACH_APP_ID, ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import { ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
 import navigationService from 'utils/navigationService';
 import { useCurrentApiUrl } from '@portkey-wallet/hooks/hooks-ca/network';
 import paymentApi from '@portkey-wallet/api/api-did/payment';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
-import { ACH_REDIRECT_URL } from 'constants/common';
+import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 interface RouterParams {
-  type?: TypeEnum;
+  type?: PaymentTypeEnum;
   token?: CryptoItemType;
   fiat?: FiatType;
   amount?: string;
@@ -38,7 +40,7 @@ interface RouterParams {
 
 export default function BuyPreview() {
   const {
-    type = TypeEnum.BUY,
+    type = PaymentTypeEnum.BUY,
     token,
     fiat,
     amount,
@@ -48,46 +50,49 @@ export default function BuyPreview() {
 
   const { t } = useLanguage();
   const { rate, receiveAmount } = useReceive(type, amount || '', fiat, token, receiveAmountProps, rateProps);
-  const isBuy = useMemo(() => type === TypeEnum.BUY, [type]);
+  const isBuy = useMemo(() => type === PaymentTypeEnum.BUY, [type]);
   const apiUrl = useCurrentApiUrl();
   const wallet = useCurrentWalletInfo();
+  const { buyConfig } = useCurrentNetworkInfo();
 
   const getAchTokenInfo = useGetAchTokenInfo();
   const goPayPage = useCallback(
     async (isNoEmail = false) => {
-      if (!amount || !receiveAmount || !fiat || !token) return;
+      const appId = buyConfig?.ach?.appId;
+      const baseUrl = buyConfig?.ach?.baseUrl;
+      if (!amount || !receiveAmount || !fiat || !token || !appId || !baseUrl) return;
       Loading.show();
       try {
-        let achUrl = `https://ramp.alchemypay.org/?crypto=${token.crypto}&network=${token.network}&country=${
-          fiat.country
-        }&fiat=${fiat.currency}&appId=${ACH_APP_ID}&redirectUrl=${encodeURIComponent(
-          ACH_REDIRECT_URL,
-        )}&callbackUrl=${encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`)}`;
-
-        if (type === TypeEnum.BUY) {
-          achUrl += `&type=buy&fiatAmount=${amount}`;
-        } else {
-          achUrl += `&type=sell&cryptoAmount=${amount}`;
-        }
-
-        const achTokenInfo = await getAchTokenInfo();
-        if (achTokenInfo !== undefined && isNoEmail === false) {
-          achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
-        }
+        const callbackUrl = encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`);
+        let achUrl = `${baseUrl}/?crypto=${token.crypto}&network=${token.network}&country=${fiat.country}&fiat=${fiat.currency}&appId=${appId}&callbackUrl=${callbackUrl}`;
 
         const orderNo = await getPaymentOrderNo({
-          transDirect: type === TypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
+          transDirect: type === PaymentTypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
           merchantName: ACH_MERCHANT_NAME,
         });
         achUrl += `&merchantOrderNo=${orderNo}`;
 
-        const address = wallet.AELF?.caAddress;
-        if (!address) {
-          throw new Error('address is undefined');
-        }
-        const signature = await getAchSignature({ address });
+        if (type === PaymentTypeEnum.BUY) {
+          const achTokenInfo = await getAchTokenInfo();
+          if (achTokenInfo !== undefined && isNoEmail === false) {
+            achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
+          }
 
-        achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
+          const address = wallet.AELF?.caAddress;
+          if (!address) {
+            throw new Error('address is undefined');
+          }
+          achUrl += `&address=${address}`;
+
+          const signature = await getAchSignature({ address });
+          achUrl += `&type=buy&fiatAmount=${amount}&redirectUrl=${encodeURIComponent(
+            ACH_REDIRECT_URL,
+          )}&sign=${encodeURIComponent(signature)}`;
+        } else {
+          const withdrawUrl = encodeURIComponent(ACH_WITHDRAW_URL);
+          achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
+        }
+
         console.log('achUrl', achUrl);
         // const injectedJavaScript: string | undefined =
         //   achTokenInfo === undefined || isNoEmail
@@ -102,8 +107,14 @@ export default function BuyPreview() {
         navigationService.navigate('ViewOnWebView', {
           title: 'Alchemy Pay Ramp',
           url: achUrl,
-          webViewPageType: 'ach',
+          webViewPageType: type === PaymentTypeEnum.BUY ? 'ach' : 'achSell',
           injectedJavaScript,
+          params:
+            type === PaymentTypeEnum.BUY
+              ? undefined
+              : {
+                  orderNo,
+                },
         });
       } catch (error) {
         CommonToast.fail(`There is a network error, please try again.`);
@@ -111,7 +122,7 @@ export default function BuyPreview() {
       }
       Loading.hide();
     },
-    [amount, apiUrl, fiat, getAchTokenInfo, receiveAmount, token, type, wallet.AELF?.caAddress],
+    [amount, apiUrl, buyConfig, fiat, getAchTokenInfo, receiveAmount, token, type, wallet.AELF?.caAddress],
   );
 
   return (

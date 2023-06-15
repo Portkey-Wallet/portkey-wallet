@@ -5,21 +5,19 @@ import React, { memo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
-import { getFaviconUrl } from 'utils';
-import RecordImage from '../RecordImage';
-interface TokenListItemType {
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
+type RecordListItemType = {
   item: IRecordsItemType;
   onPress?: () => void;
-}
+};
 
-const RecordItem: React.FC<TokenListItemType> = props => {
+const RecordItem: React.FC<RecordListItemType> = props => {
   const { item, onPress } = props;
-
-  console.log('getFaviconUrlgetFaviconUrlgetFaviconUrl', getFaviconUrl(item?.url || ''));
 
   return (
     <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.()}>
-      <RecordImage imageUrl={getFaviconUrl(item?.url || '')} />
+      <DiscoverWebsiteImage imageUrl={getFaviconUrl(item?.url || '')} />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
           <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.gameName}>

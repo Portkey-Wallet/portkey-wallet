@@ -20,7 +20,7 @@ import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/st
 import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
-import { fetchBuyFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
+import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
@@ -29,6 +29,7 @@ import { FaucetUrl } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import AccountConnect from 'pages/components/AccountConnect';
 import './index.less';
 
 export interface TransactionResult {
@@ -89,12 +90,12 @@ export default function MyBalance() {
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getWalletNameAsync());
     appDispatch(getSymbolImagesAsync());
-    // appDispatch(fetchSellFiatListAsync());
   }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
     isMainNet && appDispatch(fetchBuyFiatListAsync());
+    isMainNet && appDispatch(fetchSellFiatListAsync());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMainNet]);
 
@@ -167,7 +168,10 @@ export default function MyBalance() {
 
   return (
     <div className="balance">
-      <div className="wallet-name">{walletName}</div>
+      <div className="wallet-name">
+        {!isPrompt && <AccountConnect />}
+        {walletName}
+      </div>
       <div className="balance-amount">
         {isMainNet ? (
           <span className="amount">{`$ ${accountBalanceUSD}`}</span>

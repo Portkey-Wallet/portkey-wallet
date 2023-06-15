@@ -1,0 +1,147 @@
+@import '../../assets/theme/color.less';
+
+.send-transaction {
+  width: 328px;
+  margin: 40px auto 16px;
+  flex-direction: column;
+  font-size: 12px;
+  line-height: 16px;
+  color: @font-13;
+  .value {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  color: @font-11;
+  }
+  .chain {
+    align-self: center;
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: 1px solid @border-2;
+    font-weight: 500;
+    .aelf-icon, .elf-icon-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+  .account {
+    position: relative;
+    margin: 24px auto 0;
+    padding: 17px 15px;
+    width: 328px;
+    border: 1px solid @border-2;
+    border-radius: 6px;
+    align-items: center;
+    gap: 44px;
+    color: @font-1;
+    .address,
+    .name {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .oval-icon {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-10px) translateY(-10px);
+      z-index: 10;
+    }
+    .line {
+      position: absolute;
+      left: 50%;
+      height: 100%;
+      border-left: 1px solid @border-2;
+    }
+  }
+  .amount {
+    .amount-number {
+      margin-top: 4px;
+    }
+  }
+  .method {
+    margin-top: 16px;
+    color: @font-13;
+    .method-name {
+      margin-top: 4px;
+    }
+  }
+  .detail {
+    margin-top: 16px;
+    color: @font-13;
+    .title {
+      margin-bottom: 4px;
+    }
+    .amount {
+      padding: 16px;
+      border: 1px solid @border-2;
+      border-radius: 6px;
+    }
+    .fee, .total {
+      margin-top: 16px;
+      .amount-show {
+        margin-top: 4px;
+      }
+    }
+  }
+  .message-wrapper {
+    margin-top: 16px;
+    .message {
+      flex-direction: column;
+      gap: 16px;
+      width: 328px;
+      padding: 16px;
+      margin-top: 4px;
+      border: 1px solid @border-2;
+      border-radius: 6px;
+      .content {
+        margin-top: 4px;
+        width: 100%;
+        line-break: anywhere;
+        white-space: pre-wrap;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+    .fee {
+      margin-top: 16px;
+      .fee-amount {
+        margin-top: 4px;
+      }
+    }
+  }
+  .error-message {
+    margin-top: 16px;
+    color: @font-14;
+  }
+  .btn {
+    width: 100%;
+    margin-top: 40px;
+    .@{app-prefix}-btn {
+      width: 156px;
+      height: 48px;
+      font-size: 14px;
+      line-height: 22px;
+      text-align: center;
+      border-radius: 24px;
+    }
+    .@{app-prefix}-btn-text {
+      border: 1px solid @border-3;
+      color: @font-9;
+      background-color: @bg-11;
+    }
+    .@{app-prefix}-btn-primary {
+      color: @font-5;
+      background-color: @bg-7;
+    }
+  }
+}

@@ -7,9 +7,11 @@ import GStyles from 'assets/theme/GStyles';
 import { useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import navigationService from 'utils/navigationService';
 import MenuItem from '../components/MenuItem';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 
 const WalletSecurity: React.FC = () => {
   const { deviceAmount } = useDeviceList();
+  const dappList = useCurrentDappList();
 
   return (
     <PageContainer
@@ -22,6 +24,13 @@ const WalletSecurity: React.FC = () => {
         suffix={deviceAmount}
         onPress={() => {
           navigationService.navigate('DeviceList');
+        }}
+      />
+      <MenuItem
+        title="Connected Sites"
+        suffix={dappList?.length ?? 0}
+        onPress={() => {
+          navigationService.navigate('ConnectedSites');
         }}
       />
     </PageContainer>

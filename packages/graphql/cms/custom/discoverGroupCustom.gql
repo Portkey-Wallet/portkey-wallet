@@ -23,6 +23,7 @@ query discoverGroupCustom(
       status
       title
       description
+      url
       imgUrl {
         filename_disk
       }

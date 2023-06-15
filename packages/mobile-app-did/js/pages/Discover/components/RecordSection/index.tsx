@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { useLanguage } from 'i18n/hooks';
@@ -9,26 +9,32 @@ import fonts from 'assets/theme/fonts';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import RecordItem from '../RecordItem';
-import { addRecordsItem, clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice';
-import navigationService from 'utils/navigationService';
+import {
+  addRecordsItem,
+  changeDrawerOpenStatus,
+  clearRecordsList,
+  createNewTab,
+} from '@portkey-wallet/store/store-ca/discover/slice';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
 export default function RecordSection() {
   const { t } = useLanguage();
 
   const dispatch = useAppCommonDispatch();
-  const { recordsList } = useAppCASelector(state => state.discover);
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverMap } = useAppCASelector(state => state.discover);
 
   const clearRecord = useCallback(() => {
-    dispatch(clearRecordsList());
-  }, [dispatch]);
+    dispatch(clearRecordsList({ networkType }));
+  }, [dispatch, networkType]);
 
   const showRecordList = useMemo(() => {
-    return [...recordsList].reverse();
-  }, [recordsList]);
+    const recordsList = (discoverMap?.[networkType]?.recordsList as ITabItem[]) || [];
+    return recordsList.map(ele => ele).reverse();
+  }, [discoverMap, networkType]);
 
-  if (recordsList?.length === 0) return null;
-
-  console.log('showRecordList', showRecordList);
+  if (showRecordList?.length === 0) return null;
 
   return (
     <ScrollView style={styles.sectionWrap}>
@@ -43,12 +49,10 @@ export default function RecordSection() {
           key={index}
           item={item}
           onPress={() => {
-            navigationService.navigate('ViewOnWebView', {
-              url: item?.url,
-              title: item?.title ?? '',
-              webViewPageType: 'discover',
-            });
-            dispatch(addRecordsItem({ ...item }));
+            const id = Date.now();
+            dispatch(addRecordsItem({ ...item, networkType }));
+            dispatch(createNewTab({ id, url: item.url, name: '', networkType }));
+            dispatch(changeDrawerOpenStatus(true));
           }}
         />
       ))}

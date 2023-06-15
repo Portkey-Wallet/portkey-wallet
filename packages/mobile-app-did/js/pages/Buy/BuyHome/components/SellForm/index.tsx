@@ -2,7 +2,6 @@ import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
 
@@ -11,7 +10,7 @@ import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import SelectToken from '../SelectToken';
-import { usePayment } from 'hooks/store';
+import { usePayment, usePin } from 'hooks/store';
 import SelectCurrency from '../SelectCurrency';
 import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 
@@ -22,25 +21,42 @@ import { getCryptoList } from '@portkey-wallet/api/api-did/payment/util';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import { CryptoInfoType } from '@portkey-wallet/api/api-did/payment/type';
-import { CryptoItemType, LimitType, TypeEnum } from 'pages/Buy/types';
-import { INIT_BUY_AMOUNT, tokenList } from 'pages/Buy/constants';
+import { CryptoItemType } from 'pages/Buy/types';
+import { INIT_SELL_AMOUNT, tokenList } from 'pages/Buy/constants';
 import Loading from 'components/Loading';
-import { formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useReceive } from 'pages/Buy/hooks';
+import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { getManagerAccount } from 'utils/redux';
+import { getELFChainBalance } from '@portkey-wallet/utils/balance';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import BigNumber from 'bignumber.js';
+import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export default function SellForm() {
-  const { t } = useLanguage();
-  const { buyFiatList: fiatList } = usePayment();
+  const { sellFiatList: fiatList } = usePayment();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
   );
   const [token, setToken] = useState<CryptoItemType>(tokenList[0]);
-  const [amount, setAmount] = useState<string>(INIT_BUY_AMOUNT);
+  const [amount, setAmount] = useState<string>(INIT_SELL_AMOUNT);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
 
-  const limitAmountRef = useRef<LimitType>();
-  const refreshReceiveRef = useRef<() => void>();
+  const { accountToken } = useAssets();
+  const aelfToken = useMemo(
+    () => accountToken.accountTokenList.find(item => item.symbol === 'ELF' && item.chainId === 'AELF'),
+    [accountToken],
+  );
+  const chainInfo = useCurrentChain('AELF');
+  const pin = usePin();
+  const wallet = useCurrentWalletInfo();
+
+  const limitAmountRef = useRef<PaymentLimitType>();
   const cryptoListRef = useRef<CryptoInfoType[]>();
   const isRefreshReceiveValid = useRef<boolean>(false);
   const cryptoListCurrency = useRef<string>();
@@ -68,10 +84,8 @@ export default function SellForm() {
     }
     if (token === undefined || cryptoListRef.current === undefined) return;
     const cryptoInfo = cryptoListRef.current.find(
-      item => item.crypto === token.crypto && item.network === token.network,
+      item => item.crypto === token.crypto && item.network === token.network && Number(item.sellEnable) === 1,
     );
-
-    console.log('cryptoInfo', cryptoInfo);
 
     if (cryptoInfo === undefined || cryptoInfo.minSellAmount === null || cryptoInfo.maxSellAmount === null) {
       limitAmountRef.current = undefined;
@@ -79,8 +93,8 @@ export default function SellForm() {
     }
 
     limitAmountRef.current = {
-      min: cryptoInfo.minSellAmount,
-      max: cryptoInfo.maxSellAmount,
+      min: Number(ZERO.plus(cryptoInfo.minSellAmount).decimalPlaces(4, BigNumber.ROUND_UP).valueOf()),
+      max: Number(ZERO.plus(cryptoInfo.maxSellAmount).decimalPlaces(4, BigNumber.ROUND_DOWN).valueOf()),
     };
   }, [fiat, token]);
 
@@ -91,7 +105,8 @@ export default function SellForm() {
     refreshReceive,
     amountError: amountFetchError,
     isAllowAmount,
-  } = useReceive(TypeEnum.SELL, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
+  } = useReceive(PaymentTypeEnum.SELL, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
+  const refreshReceiveRef = useRef<typeof refreshReceive>();
   refreshReceiveRef.current = refreshReceive;
 
   const amountError = useMemo(() => {
@@ -121,46 +136,82 @@ export default function SellForm() {
       return;
     }
     if (!reg.test(text)) return;
+    const arr = text.split('.');
+    if (arr[1]?.length > 8) return;
+    if (arr.join('').length > 13) return;
     setAmount(text);
   }, []);
 
   const onNext = useCallback(async () => {
-    if (limitAmountRef.current === undefined) return;
+    if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
     const { min, max } = limitAmountRef.current;
     if (amountNum < min || amountNum > max) {
       setAmountLocalError({
         ...INIT_HAS_ERROR,
-        errorMsg: `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${fiat?.currency}`,
+        errorMsg: `Limit Amount ${formatAmountShow(min, 4)}-${formatAmountShow(max, 4)} ${token.crypto}`,
       });
       return;
     }
     let _rate = rate,
       _receiveAmount = receiveAmount;
 
-    if (isRefreshReceiveValid.current === false) {
+    const { tokenContractAddress, decimals, symbol, chainId } = aelfToken || {};
+    const { endPoint } = chainInfo || {};
+    if (!tokenContractAddress || decimals === undefined || !symbol || !chainId) return;
+    if (!pin || !endPoint) return;
+
+    try {
       Loading.show();
-      const rst = await refreshReceive();
+      if (ZERO.plus(amount).isLessThanOrEqualTo(DEFAULT_FEE)) {
+        throw new Error('Insufficient funds');
+      }
+      const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
+
+      const account = getManagerAccount(pin);
+      if (!account) return;
+
+      const tokenContract = await getContractBasic({
+        contractAddress: tokenContractAddress,
+        rpcUrl: endPoint,
+        account: account,
+      });
+
+      const balance = await getELFChainBalance(tokenContract, symbol, wallet?.[chainId]?.caAddress || '');
+
+      if (divDecimals(balance, decimals).minus(DEFAULT_FEE).isLessThan(amount)) {
+        throw new Error('Insufficient funds');
+      }
+
+      if (isRefreshReceiveValidValue === false) {
+        const rst = await refreshReceiveRef.current();
+        if (!rst) return;
+        _rate = rst.rate;
+        _receiveAmount = rst.receiveAmount;
+      }
+    } catch (error) {
+      setAmountLocalError({ ...INIT_HAS_ERROR, errorMsg: 'Insufficient funds' });
+      console.log('error', error);
+      return;
+    } finally {
       Loading.hide();
-      if (rst === undefined) return;
-      _rate = rst.rate;
-      _receiveAmount = rst.receiveAmount;
     }
+
     navigationService.navigate('BuyPreview', {
       amount,
       fiat,
       token,
-      type: TypeEnum.SELL,
+      type: PaymentTypeEnum.SELL,
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, fiat, rate, receiveAmount, refreshReceive, token]);
+  }, [amount, rate, receiveAmount, aelfToken, chainInfo, pin, fiat, token, wallet]);
 
   return (
     <View style={styles.formContainer}>
       <View>
         <CommonInput
-          label={'I want to pay'}
+          label={'I want to sell'}
           inputStyle={styles.inputStyle}
           inputContainerStyle={styles.inputContainerStyle}
           value={amount}
@@ -180,12 +231,11 @@ export default function SellForm() {
             </Touchable>
           }
           type="general"
-          maxLength={30}
+          maxLength={14}
           autoCorrect={false}
           keyboardType="decimal-pad"
           onChangeText={onAmountInput}
           errorMessage={amountError.isError ? amountError.errorMsg : ''}
-          // placeholder={t('Enter Phone Number')}
         />
 
         <CommonInput

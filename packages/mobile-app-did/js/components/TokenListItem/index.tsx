@@ -1,5 +1,4 @@
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
-import { ZERO } from '@portkey-wallet/constants/misc';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';

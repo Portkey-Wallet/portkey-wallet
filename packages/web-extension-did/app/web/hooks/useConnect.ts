@@ -17,7 +17,7 @@ export default function useConnect() {
     const url = currentTab?.url;
     if (!url) return;
     const origin = new URL(url).origin;
-    return origin ? currentDapps.find((dapp) => dapp.origin === origin) : undefined;
+    return currentDapps.find((dapp) => dapp.origin === origin);
   }, [currentDapps, currentTab?.url]);
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import { runWorkerKeepAliveInterval } from 'utils/keepAlive';
 import { checkForError } from 'utils';
 import { ContentPostStream } from '@portkey/extension-provider';
 import {
-  MethodsUnimplemented,
+  MethodsWallet,
   IRequestParams,
   MethodsType,
   ProviderError,
@@ -22,7 +22,7 @@ import { isMethodsWalletMessage } from 'messages/utils';
  * connected to the dapp or when the user is not interacting with the extension.
  * The keep-alive logic should not work for non-dapp pages.
  */
-const IGNORE_INIT_METHODS_FOR_KEEP_ALIVE: string[] = [MethodsUnimplemented.GET_WALLET_STATE];
+const IGNORE_INIT_METHODS_FOR_KEEP_ALIVE: string[] = [MethodsWallet.GET_WALLET_STATE];
 
 const EXTENSION_CONTEXT_INVALIDATED_CHROMIUM_ERROR = 'Extension context invalidated.';
 // The stream that connects between the content script and the website

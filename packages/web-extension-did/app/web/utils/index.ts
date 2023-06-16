@@ -1,3 +1,5 @@
+import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
+import { NetworkType } from '@portkey/provider-types';
 import {
   ENVIRONMENT_TYPE_POPUP,
   ENVIRONMENT_TYPE_PROMPT,
@@ -52,4 +54,13 @@ export const getEnvironmentType = (url: string) => {
   }
   // from  content js
   return ENVIRONMENT_TYPE_SERVICE_WORKER;
+};
+
+export const getPortkeyFinanceUrl = (currentNetwork: NetworkType) => {
+  const host = NetworkList.find((item) => item.networkType === currentNetwork)?.portkeyFinanceUrl || '';
+  return {
+    JOIN_AUTH_URL: `${host}/join`,
+    AUTH_APPLE_URL: `${host}/apple-auth`,
+    RECAPTCHA_URL: `${host}/recaptcha-check`,
+  };
 };

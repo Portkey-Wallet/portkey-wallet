@@ -309,7 +309,10 @@ export default class AELFMethodController {
 
   getSignature: RequestCommonHandler = async (sendResponse, message) => {
     try {
-      if (!message?.payload?.data || typeof message.payload.data !== 'string')
+      if (
+        !message?.payload?.data ||
+        (typeof message.payload.data !== 'string' && typeof message.payload.data !== 'number') // The problem left over from the browser history needs to pass the number type
+      )
         return sendResponse({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
 
       if (!(await this.dappManager.isActive(message.origin)))

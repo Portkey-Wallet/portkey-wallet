@@ -174,12 +174,16 @@ export default function SendTransactions() {
       <div className="message-wrapper">
         <div>Message</div>
         <div className="message flex">
-          {Object.keys(params).map((item) => (
-            <div key={item}>
-              <div className="value">{item}</div>
-              <div className="content">{JSON.stringify(params[item])}</div>
-            </div>
-          ))}
+          {typeof params === 'object' ? (
+            Object.keys(params).map((item) => (
+              <div key={item}>
+                <div className="value">{item}</div>
+                <div className="content">{JSON.stringify(params[item])}</div>
+              </div>
+            ))
+          ) : (
+            <div className="content">{`${params}`}</div>
+          )}
         </div>
         <div className="fee">
           <div>Transaction Fee</div>

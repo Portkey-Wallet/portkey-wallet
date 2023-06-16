@@ -313,7 +313,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           {transferContent}
           {!isTransfer && (
             <TransactionDataSection
-              dataInfo={transactionInfo?.params?.paramsOption}
+              dataInfo={transactionInfo?.params?.paramsOption || JSON.stringify(transactionInfo?.params)}
               style={styles.transactionDataSection}
             />
           )}

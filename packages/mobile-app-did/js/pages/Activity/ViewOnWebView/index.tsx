@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import WebView from 'react-native-webview';
 import CustomHeader from 'components/CustomHeader';
@@ -10,6 +10,7 @@ import navigationService from 'utils/navigationService';
 import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useHandleAchSell } from './hooks/useHandleAchSell';
 import CommonToast from 'components/CommonToast';
+import Progressbar, { IProgressbar } from 'components/Progressbar';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -44,6 +45,7 @@ const ViewOnWebView: React.FC = () => {
   const [browserInfo] = useState({ url, title });
 
   const webViewRef = React.useRef<WebView>(null);
+  const progressBarRef = React.useRef<IProgressbar>(null);
 
   const handleAchSell = useHandleAchSell();
   const isAchSellHandled = useRef(false);
@@ -72,18 +74,23 @@ const ViewOnWebView: React.FC = () => {
     },
     [handleAchSell, params, webViewPageType],
   );
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
       <CustomHeader themeType={'blue'} titleDom={browserInfo?.title} />
-      <WebView
-        ref={webViewRef}
-        style={pageStyles.webView}
-        source={{ uri: url ?? '' }}
-        onNavigationStateChange={handleNavigationStateChange}
-        // cacheEnabled={false}
-        injectedJavaScript={injectedJavaScript}
-        // incognito={incognito}
-      />
+      <View style={pageStyles.contentWrap}>
+        <Progressbar ref={progressBarRef} />
+        <WebView
+          ref={webViewRef}
+          style={pageStyles.webView}
+          source={{ uri: url ?? '' }}
+          onNavigationStateChange={handleNavigationStateChange}
+          // cacheEnabled={false}
+          injectedJavaScript={injectedJavaScript}
+          // incognito={incognito}
+          onLoadProgress={({ nativeEvent }) => progressBarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
+        />
+      </View>
     </SafeAreaBox>
   );
 };
@@ -98,6 +105,10 @@ export const pageStyles = StyleSheet.create({
   },
   svgWrap: {
     marginRight: pTd(16),
+  },
+  contentWrap: {
+    position: 'relative',
+    flex: 1,
   },
   webViewContainer: {
     flex: 1,

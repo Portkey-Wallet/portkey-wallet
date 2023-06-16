@@ -219,7 +219,7 @@ export default class AELFMethodController {
       if (isActive) {
         SWEventController.dispatchEvent({
           eventName: 'connected',
-          data: { chainIds: await this.dappManager.chainIds() },
+          data: { chainIds: await this.dappManager.chainIds(), origin: message.origin },
         });
         return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
       }

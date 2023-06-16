@@ -57,7 +57,7 @@ export const BackEndNetWorkMap: {
     connectUrl: 'https://auth-portkey.portkey.finance',
     cmsUrl: 'https://cms.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-mainnet.s3.ap-northeast-1.amazonaws.com',
-    portkeyFinanceUrl: 'https://portkey.finance',
+    portkeyFinanceUrl: 'https://test.portkey.finance', // TODO: change to https://portkey.finance
     buyConfig: {
       ach: {
         appId: 'P0e0l39jipsNYT46',

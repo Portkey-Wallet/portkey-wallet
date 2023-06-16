@@ -105,7 +105,11 @@ export default class ApprovalController {
    *
    */
   // TODO format params
-  async authorizedToSendTransactions(params: any): Promise<SendResponseParams> {
+  async authorizedToSendTransactions(params: {
+    origin: string;
+    transactionInfoId: string;
+    payload: any;
+  }): Promise<SendResponseParams> {
     return this.notificationService.openPrompt({
       method: PromptRouteTypes.SEND_TRANSACTION,
       search: JSON.stringify(params),

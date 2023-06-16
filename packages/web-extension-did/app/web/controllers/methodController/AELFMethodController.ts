@@ -11,6 +11,8 @@ import { ExtensionDappManager } from './ExtensionDappManager';
 import { getSWReduxState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
 import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import { randomId } from '@portkey-wallet/utils';
+import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -277,10 +279,16 @@ export default class AELFMethodController {
           },
         });
 
+      const key = randomId();
+      setLocalStorage({ txPayload: { [key]: JSON.stringify(payload.params) } });
+      delete message.payload?.params;
       const result = await this.approvalController.authorizedToSendTransactions({
         origin,
+        transactionInfoId: key,
         payload: message.payload,
       });
+      // TODO Only support open a window
+      removeLocalStorage('txPayload');
       if (result.error === 200003)
         return sendResponse({
           ...errorHandler(200003),

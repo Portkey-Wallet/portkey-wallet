@@ -47,10 +47,6 @@ export default function GetSignature() {
 
   const sendHandler = useCallback(async () => {
     try {
-      if (!payload?.data) {
-        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
-        return;
-      }
       if (!privateKey) throw 'Invalid user information, please check';
 
       const manager = getWallet(privateKey);

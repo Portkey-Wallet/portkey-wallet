@@ -18,15 +18,14 @@ import { CreatePromptType, SendResponseFun } from 'types';
 import errorHandler from 'utils/errorHandler';
 import { apis } from 'utils/BrowserApis';
 import SocialLoginController from 'controllers/socialLoginController';
-import OpenNewTabController from 'controllers/openNewTabController';
 import { LocalStream } from 'utils/extensionStreams';
-import { MethodsUnimplemented, MethodsBase } from '@portkey/provider-types';
+import { MethodsWallet, MethodsBase } from '@portkey/provider-types';
 import { getWalletState } from 'utils/lib/SWGetReduxStore';
+import OpenNewTabController from 'controllers/openNewTabController';
 
 const notificationService = new NotificationService();
 const socialLoginService = new SocialLoginController();
-
-new OpenNewTabController();
+OpenNewTabController.onOpenNewTab();
 
 // Get default data in redux
 const store = getStoreState();
@@ -56,7 +55,7 @@ const permissionWhitelist = [
   PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE,
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
-  MethodsUnimplemented.GET_WALLET_STATE,
+  MethodsWallet.GET_WALLET_STATE,
   // The method that requires the dapp not to trigger the lock call
   MethodsBase.ACCOUNTS,
   MethodsBase.CHAIN_ID,
@@ -269,7 +268,9 @@ export default class ServiceWorkerInstantiate {
     };
   };
 
-  static registerStartWallet = () => {
+  static registerStartWallet = async () => {
+    // close this(chrome.runtime.id) other tabs when register wallet
+    await OpenNewTabController.closeOpenTabs();
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.REGISTER_START_WALLET,

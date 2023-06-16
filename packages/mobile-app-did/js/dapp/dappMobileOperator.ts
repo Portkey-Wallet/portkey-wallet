@@ -5,7 +5,7 @@ import {
   IResponseType,
   ResponseCode,
   MethodsBase,
-  MethodsUnimplemented,
+  MethodsWallet,
   SendTransactionParams,
   NotificationEvents,
   WalletState,
@@ -25,7 +25,7 @@ import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
-  [MethodsUnimplemented.GET_WALLET_SIGNATURE]: true,
+  [MethodsWallet.GET_WALLET_SIGNATURE]: true,
 };
 
 function getManager() {
@@ -107,7 +107,7 @@ export default class DappMobileOperator extends Operator {
           data: await this.dappManager.chainsInfo(),
         });
       }
-      case MethodsUnimplemented.GET_WALLET_NAME: {
+      case MethodsWallet.GET_WALLET_NAME: {
         const isActive = await this.isActive();
         if (!isActive) return this.unauthenticated(eventName);
         return generateNormalResponse({
@@ -121,7 +121,7 @@ export default class DappMobileOperator extends Operator {
           data: await this.dappManager.networkType(),
         });
       }
-      case MethodsUnimplemented.GET_WALLET_STATE: {
+      case MethodsWallet.GET_WALLET_STATE: {
         const [isActive, isLocked] = await Promise.all([this.isActive(), this.dappManager.isLocked()]);
         const data: WalletState = { isConnected: isActive, isUnlocked: !isLocked };
         if (isActive) {
@@ -257,7 +257,7 @@ export default class DappMobileOperator extends Operator {
 
     const isActive = await this.isActive();
 
-    let callBack: SendRequest, params: any;
+    let callBack: SendRequest, payload: any;
     switch (method) {
       case MethodsBase.REQUEST_ACCOUNTS: {
         if (isActive)
@@ -266,36 +266,36 @@ export default class DappMobileOperator extends Operator {
             data: await this.dappManager.accounts(this.dapp.origin),
           });
         callBack = this.handleRequestAccounts;
-        params = this.dapp;
+        payload = this.dapp;
         break;
       }
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSendTransaction;
-        params = request.payload;
+        payload = request.payload;
         if (
-          !params ||
-          typeof params.params !== 'object' ||
-          !params.method ||
-          !params.contractAddress ||
-          !params.chainId ||
-          !params.rpcUrl
+          !payload ||
+          typeof payload.params !== 'object' ||
+          !payload.method ||
+          !payload.contractAddress ||
+          !payload.chainId ||
+          !payload.rpcUrl
         )
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
       }
-      case MethodsUnimplemented.GET_WALLET_SIGNATURE: {
+      case MethodsWallet.GET_WALLET_SIGNATURE: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSignature;
-        params = request.payload;
-        if (!params || typeof params.data !== 'string')
+        payload = request.payload;
+        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
       }
     }
     return this.sendRequest({
       eventName,
-      params,
+      params: payload,
       method: method as any,
       callBack: callBack!,
     });

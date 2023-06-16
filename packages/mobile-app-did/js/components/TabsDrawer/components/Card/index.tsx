@@ -29,7 +29,7 @@ const Card: React.FC<ICardsProps> = (props: ICardsProps) => {
       <View style={tabShowItemStyle.header}>
         <DiscoverWebsiteImage size={pTd(20)} imageUrl={getFaviconUrl(item.url)} />
         <TextS numberOfLines={1} ellipsizeMode="tail" style={tabShowItemStyle.title}>
-          {item?.name ?? getHost(item?.url)}
+          {item?.name || getHost(item?.url)}
         </TextS>
         <TouchableOpacity onPress={() => dispatch(closeExistingTab({ id: item?.id, networkType }))}>
           <Svg icon="close" size={12} />
@@ -52,15 +52,14 @@ export default Card;
 
 const tabShowItemStyle = StyleSheet.create({
   cardWrap: {
-    overflow: 'hidden',
     borderRadius: pTd(8),
     width: pTd(160),
     height: pTd(214),
     marginTop: pTd(24),
-    shadowOffset: { width: 2, height: 8 },
+    shadowOffset: { width: 2, height: 10 },
     backgroundColor: defaultColors.bg1,
     shadowColor: defaultColors.shadow1,
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 2,
   },
@@ -79,5 +78,7 @@ const tabShowItemStyle = StyleSheet.create({
   screenshot: {
     width: pTd(160),
     height: pTd(182),
+    overflow: 'hidden',
+    borderRadius: pTd(6),
   },
 });

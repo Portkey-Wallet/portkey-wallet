@@ -103,7 +103,6 @@ export const discoverSlice = createSlice({
       const { networkType, id } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
-      console.log('updateTab', payload);
       targetNetworkDiscover.tabs = targetNetworkDiscover.tabs.map(item =>
         item.id === id ? { ...item, ...payload } : item,
       );

@@ -156,9 +156,6 @@ export default class DappMobileOperator extends Operator {
 
   protected handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
     try {
-      if (!params || !params.params || !params.method || !params.contractAddress || !params.chainId)
-        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
-
       const [chainInfo, caInfo] = await Promise.all([
         this.dappManager.getChainInfo(params.chainId),
         this.dappManager.getCaInfo(params.chainId),
@@ -276,12 +273,23 @@ export default class DappMobileOperator extends Operator {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSendTransaction;
         params = request.payload;
+        if (
+          !params ||
+          typeof params.params !== 'object' ||
+          !params.method ||
+          !params.contractAddress ||
+          !params.chainId ||
+          !params.rpcUrl
+        )
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
       }
       case MethodsUnimplemented.GET_WALLET_SIGNATURE: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSignature;
         params = request.payload;
+        if (!params || typeof params.data !== 'string')
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
       }
     }

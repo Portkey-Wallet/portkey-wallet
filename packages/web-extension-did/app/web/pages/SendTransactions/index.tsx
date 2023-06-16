@@ -18,17 +18,18 @@ import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import getTransferFee from './utils/getTransferFee';
 import { ResponseCode } from '@portkey/provider-types';
+import { getLocalStorage } from 'utils/storage/chromeStorage';
 import './index.less';
 
 export default function SendTransactions() {
-  const { payload } = usePromptSearch<{
+  const { payload, transactionInfoId } = usePromptSearch<{
     payload: {
       chainId: ChainId;
       contractAddress: string;
       method: string;
       rpcUrl: string;
-      params: any;
     };
+    transactionInfoId: string;
   }>();
   const chainInfo = useCurrentChain(payload?.chainId);
   const wallet = useCurrentWalletInfo();
@@ -38,7 +39,8 @@ export default function SendTransactions() {
   const { t } = useTranslation();
   const { passwordSeed } = useUserInfo();
   const amountInUsdShow = useAmountInUsdShow();
-  const [_tokenPriceObject, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
   const [fee, setFee] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const isCAContract = useMemo(() => chainInfo?.caContractAddress === payload?.contractAddress, [chainInfo, payload]);
@@ -46,6 +48,7 @@ export default function SendTransactions() {
     () => aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed),
     [passwordSeed, wallet.AESEncryptPrivateKey],
   );
+  const [txParams, setTxParams] = useState<any>({});
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
@@ -59,50 +62,68 @@ export default function SendTransactions() {
     [amountInUsdShow],
   );
 
-  const getFee = useCallback(async () => {
-    if (!privateKey) return;
-    if (!chainInfo?.endPoint || !wallet?.caHash || !chainInfo.caContractAddress) return;
-    const method = isCAContract ? payload?.method : 'ManagerForwardCall';
-    const paramsOption = isCAContract
-      ? payload?.params?.paramsOption
-      : {
-          caHash: wallet.caHash,
-          methodName: payload?.method,
-          contractAddress: payload?.contractAddress,
-          args: payload?.params?.paramsOption,
-        };
-    const fee = await getTransferFee({
-      rpcUrl: chainInfo.endPoint,
-      chainType: 'aelf',
-      methodName: method,
-      paramsOption,
-      privateKey,
-      contractAddress: chainInfo.caContractAddress,
-    });
-    if (fee === '--') {
-      setFee('0');
-      setErrMsg('Insufficient funds for transaction fee');
-    } else {
-      setFee(fee);
+  const getFee = useCallback(
+    async (txInfo: any) => {
+      if (!privateKey) return;
+      if (!chainInfo?.endPoint || !wallet?.caHash || !chainInfo.caContractAddress) return;
+      const method = isCAContract ? payload?.method : 'ManagerForwardCall';
+      const paramsOption = isCAContract
+        ? txInfo.paramsOption
+        : {
+            caHash: wallet.caHash,
+            methodName: payload?.method,
+            contractAddress: payload?.contractAddress,
+            args: txInfo.paramsOption,
+          };
+      const fee = await getTransferFee({
+        rpcUrl: chainInfo.endPoint,
+        chainType: 'aelf',
+        methodName: method,
+        paramsOption,
+        privateKey,
+        contractAddress: chainInfo.caContractAddress,
+      });
+      if (fee === '--') {
+        setFee('0');
+        setErrMsg('Insufficient funds for transaction fee');
+      } else {
+        setFee(fee);
+      }
+    },
+    [chainInfo, isCAContract, payload, privateKey, wallet],
+  );
+
+  const getTxPayload = useCallback(async () => {
+    const txPayload = await getLocalStorage<{ [x: string]: any }>('txPayload');
+
+    if (!txPayload[transactionInfoId]) {
+      closePrompt({
+        ...errorHandler(400001),
+        data: { code: ResponseCode.ERROR_IN_PARAMS },
+      });
+      return;
     }
-  }, [chainInfo, isCAContract, payload, privateKey, wallet]);
+    const params = JSON.parse(txPayload[transactionInfoId]);
+    setTxParams(params);
+    getFee(params);
+  }, [getFee, transactionInfoId]);
 
   useEffect(() => {
-    getFee();
-  }, [getFee]);
+    getTxPayload();
+  }, [getTxPayload]);
 
   useEffect(() => {
-    const symbol = payload?.params?.paramsOption?.symbol;
+    const symbol = txParams.paramsOption?.symbol;
     if (!symbol || !isMainnet) return;
     if (symbol === 'ELF') {
       getTokenPrice(symbol);
     } else {
       getTokensPrice([symbol, 'ELF']);
     }
-  }, [getTokenPrice, getTokensPrice, payload, isMainnet]);
+  }, [getTokenPrice, getTokensPrice, payload, isMainnet, txParams.paramsOption?.symbol]);
 
   const renderAccountInfo = useMemo(() => {
-    if (payload?.contractAddress || typeof payload.contractAddress !== 'string') return <></>;
+    if (payload?.contractAddress || typeof payload?.contractAddress !== 'string') return <></>;
     return (
       <div className="account flex">
         <div className="name">{walletName}</div>
@@ -115,9 +136,8 @@ export default function SendTransactions() {
     );
   }, [payload, walletName]);
 
-  // Transfer
-  const renderDetail = useMemo(() => {
-    const { symbol, amount } = payload?.params?.paramsOption || {};
+  const renderTransfer = useMemo(() => {
+    const { symbol, amount } = txParams.paramsOption || {};
     const decimals = symbol === 'ELF' ? 8 : 0;
 
     return (
@@ -166,10 +186,10 @@ export default function SendTransactions() {
         </div>
       </div>
     );
-  }, [formatAmountInUsdShow, fee, isMainnet, payload?.params?.paramsOption]);
+  }, [txParams.paramsOption, isMainnet, formatAmountInUsdShow, fee]);
 
   const renderMessage = useMemo(() => {
-    const params = payload?.params?.paramsOption || {};
+    const params = txParams.paramsOption || {};
     return (
       <div className="message-wrapper">
         <div>Message</div>
@@ -194,7 +214,7 @@ export default function SendTransactions() {
         </div>
       </div>
     );
-  }, [formatAmountInUsdShow, fee, isMainnet, payload?.params?.paramsOption]);
+  }, [txParams.paramsOption, fee, isMainnet, formatAmountInUsdShow]);
 
   const sendHandler = useCallback(async () => {
     try {
@@ -207,7 +227,7 @@ export default function SendTransactions() {
         return;
       }
 
-      let paramsOption = payload?.params?.paramsOption;
+      let paramsOption = txParams.paramsOption;
 
       const functionName = isCAContract ? payload?.method : 'ManagerForwardCall';
 
@@ -237,7 +257,7 @@ export default function SendTransactions() {
       console.error(error, 'error===detail');
       message.error(handleErrorMessage(error));
     }
-  }, [chainInfo, wallet, payload, isCAContract, privateKey]);
+  }, [chainInfo, wallet.caHash, payload, txParams, isCAContract, privateKey]);
 
   return (
     <div className="send-transaction flex">
@@ -250,7 +270,7 @@ export default function SendTransactions() {
         <div>Method</div>
         <div className="value method-name">{payload?.method}</div>
       </div>
-      {payload?.method.toLowerCase() === 'transfer' ? renderDetail : renderMessage}
+      {payload?.method.toLowerCase() === 'transfer' ? renderTransfer : renderMessage}
       {errMsg && <div className="error-message">{errMsg}</div>}
       <div className="btn flex-between">
         <Button

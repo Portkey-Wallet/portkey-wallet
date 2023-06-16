@@ -425,25 +425,15 @@ export default class ServiceWorkerInstantiate {
         if (alarm.name !== 'timingLock') return;
         apis.alarms.clear(alarm.name);
         if (pageState.lockTime === AutoLockDataType.Never) return;
-        ServiceWorkerInstantiate.lockWallet(sendResponse, 'timingLock');
+        ServiceWorkerInstantiate.lockWallet(sendResponse);
       });
     } else {
       ServiceWorkerInstantiate.lockWallet(sendResponse);
     }
   }
 
-  static lockWallet(sendResponse?: SendResponseFun, message?: any) {
+  static lockWallet(sendResponse?: SendResponseFun) {
     try {
-      if (seed) {
-        console.log('lockWallet', message);
-        SWEventController.dispatchEvent({
-          eventName: 'disconnected',
-          data: {
-            code: 1000,
-            message: 'locked',
-          },
-        });
-      }
       seed = null;
       setLocalStorage({
         locked: true,

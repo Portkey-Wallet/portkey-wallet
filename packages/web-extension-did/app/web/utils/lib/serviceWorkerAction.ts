@@ -1,5 +1,6 @@
 import { NetworkType } from '@portkey-wallet/types';
 import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
+import { sleep } from '@portkey-wallet/utils';
 import { message } from 'antd';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
@@ -15,12 +16,15 @@ export const completeRegistration = async () => {
   await InternalMessage.payload(PortkeyMessageTypes.CLOSE_PROMPT, { isClose: false }).send();
 };
 
-export const closePrompt = async (closeParams?: CloseParams, promptType?: CreatePromptType) =>
-  InternalMessage.payload(PortkeyMessageTypes.CLOSE_PROMPT, {
+export const closePrompt = async (closeParams?: CloseParams, promptType?: CreatePromptType) => {
+  // await DappMiddle.middle
+  await sleep(100);
+  return InternalMessage.payload(PortkeyMessageTypes.CLOSE_PROMPT, {
     promptType,
     closeParams,
     isClose: true,
   }).send();
+};
 
 export const useLockWallet = () => {
   return useCallback(async () => {

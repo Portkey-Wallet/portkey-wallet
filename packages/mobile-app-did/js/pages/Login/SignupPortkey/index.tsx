@@ -20,6 +20,7 @@ import SwitchNetwork from '../components/SwitchNetwork';
 import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
+import { defaultColors } from 'assets/theme';
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
 
 const scrollViewProps = { extraHeight: 120 };
@@ -61,7 +62,7 @@ export default function SignupPortkey() {
                 navigationService.goBack();
               }
         }>
-        <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} />
+        <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (
             <View style={styles.labelBox}>

@@ -6,11 +6,14 @@ import NotificationService from 'service/NotificationService';
 import { SendResponseFun } from 'types';
 import { IPageState, RequestCommonHandler, RequestMessageData } from 'types/SW';
 import errorHandler from 'utils/errorHandler';
-import { MethodsBase, ResponseCode, MethodsUnimplemented } from '@portkey/provider-types';
+import { MethodsBase, ResponseCode, MethodsWallet } from '@portkey/provider-types';
 import { ExtensionDappManager } from './ExtensionDappManager';
 import { getSWReduxState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
 import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import { randomId } from '@portkey-wallet/utils';
+import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
+import SWEventController from 'controllers/SWEventController';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -26,10 +29,10 @@ const aelfMethodList = [
   MethodsBase.CHAINS_INFO,
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
-  MethodsUnimplemented.GET_WALLET_SIGNATURE,
+  MethodsWallet.GET_WALLET_SIGNATURE,
   MethodsBase.NETWORK,
-  MethodsUnimplemented.GET_WALLET_STATE,
-  MethodsUnimplemented.GET_WALLET_NAME,
+  MethodsWallet.GET_WALLET_STATE,
+  MethodsWallet.GET_WALLET_NAME,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
@@ -78,13 +81,13 @@ export default class AELFMethodController {
       case MethodsBase.NETWORK:
         this.getNetwork(sendResponse, message.payload);
         break;
-      case MethodsUnimplemented.GET_WALLET_SIGNATURE:
+      case MethodsWallet.GET_WALLET_SIGNATURE:
         this.getSignature(sendResponse, message.payload);
         break;
-      case MethodsUnimplemented.GET_WALLET_STATE:
+      case MethodsWallet.GET_WALLET_STATE:
         this.getWalletState(sendResponse, message.payload);
         break;
-      case MethodsUnimplemented.GET_WALLET_NAME:
+      case MethodsWallet.GET_WALLET_NAME:
         this.getWalletName(sendResponse, message.payload);
         break;
       default:
@@ -213,7 +216,13 @@ export default class AELFMethodController {
   requestAccounts: RequestCommonHandler = async (sendResponse, message) => {
     try {
       const isActive = await this.dappManager.isActive(message.origin);
-      if (isActive) return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
+      if (isActive) {
+        SWEventController.dispatchEvent({
+          eventName: 'connected',
+          data: { chainIds: await this.dappManager.chainIds(), origin: message.origin },
+        });
+        return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
+      }
       const result = await this.approvalController.authorizedToConnect(message);
       if (result.error === 200003)
         return sendResponse({
@@ -277,10 +286,16 @@ export default class AELFMethodController {
           },
         });
 
+      const key = randomId();
+      setLocalStorage({ txPayload: { [key]: JSON.stringify(payload.params) } });
+      delete message.payload?.params;
       const result = await this.approvalController.authorizedToSendTransactions({
         origin,
+        transactionInfoId: key,
         payload: message.payload,
       });
+      // TODO Only support open a window
+      removeLocalStorage('txPayload');
       if (result.error === 200003)
         return sendResponse({
           ...errorHandler(200003),
@@ -309,7 +324,10 @@ export default class AELFMethodController {
 
   getSignature: RequestCommonHandler = async (sendResponse, message) => {
     try {
-      if (!message?.payload?.data || typeof message.payload.data !== 'string')
+      if (
+        !message?.payload?.data ||
+        (typeof message.payload.data !== 'string' && typeof message.payload.data !== 'number') // The problem left over from the browser history needs to pass the number type
+      )
         return sendResponse({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS } });
 
       if (!(await this.dappManager.isActive(message.origin)))

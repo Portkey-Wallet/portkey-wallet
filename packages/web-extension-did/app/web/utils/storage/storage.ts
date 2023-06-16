@@ -10,6 +10,8 @@ const storage = {
   lastMessageTime: 'BG_LAST_MESSAGE_TIME',
   openTabsId: 'BG_OPEN_TABS_ID',
 
+  txPayload: 'BG_TX_PAYLOAD', // save send transaction payload params
+
   // Prompt
   // register wallet
   //  reduxStorageName "persist:" + config.key

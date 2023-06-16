@@ -11,6 +11,9 @@ import { ExtensionDappManager } from './ExtensionDappManager';
 import { getSWReduxState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
 import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import { randomId } from '@portkey-wallet/utils';
+import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
+import SWEventController from 'controllers/SWEventController';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -213,7 +216,13 @@ export default class AELFMethodController {
   requestAccounts: RequestCommonHandler = async (sendResponse, message) => {
     try {
       const isActive = await this.dappManager.isActive(message.origin);
-      if (isActive) return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
+      if (isActive) {
+        SWEventController.dispatchEvent({
+          eventName: 'connected',
+          data: { chainIds: await this.dappManager.chainIds(), origin: message.origin },
+        });
+        return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
+      }
       const result = await this.approvalController.authorizedToConnect(message);
       if (result.error === 200003)
         return sendResponse({
@@ -277,10 +286,16 @@ export default class AELFMethodController {
           },
         });
 
+      const key = randomId();
+      setLocalStorage({ txPayload: { [key]: JSON.stringify(payload.params) } });
+      delete message.payload?.params;
       const result = await this.approvalController.authorizedToSendTransactions({
         origin,
+        transactionInfoId: key,
         payload: message.payload,
       });
+      // TODO Only support open a window
+      removeLocalStorage('txPayload');
       if (result.error === 200003)
         return sendResponse({
           ...errorHandler(200003),

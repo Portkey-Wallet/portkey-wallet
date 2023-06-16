@@ -6,7 +6,7 @@ import NotificationService from 'service/NotificationService';
 import { SendResponseFun } from 'types';
 import { IPageState, RequestCommonHandler, RequestMessageData } from 'types/SW';
 import errorHandler from 'utils/errorHandler';
-import { MethodsBase, ResponseCode, MethodsUnimplemented } from '@portkey/provider-types';
+import { MethodsBase, ResponseCode, MethodsWallet } from '@portkey/provider-types';
 import { ExtensionDappManager } from './ExtensionDappManager';
 import { getSWReduxState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
@@ -26,10 +26,10 @@ const aelfMethodList = [
   MethodsBase.CHAINS_INFO,
   MethodsBase.REQUEST_ACCOUNTS,
   MethodsBase.SEND_TRANSACTION,
-  MethodsUnimplemented.GET_WALLET_SIGNATURE,
+  MethodsWallet.GET_WALLET_SIGNATURE,
   MethodsBase.NETWORK,
-  MethodsUnimplemented.GET_WALLET_STATE,
-  MethodsUnimplemented.GET_WALLET_NAME,
+  MethodsWallet.GET_WALLET_STATE,
+  MethodsWallet.GET_WALLET_NAME,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
@@ -78,13 +78,13 @@ export default class AELFMethodController {
       case MethodsBase.NETWORK:
         this.getNetwork(sendResponse, message.payload);
         break;
-      case MethodsUnimplemented.GET_WALLET_SIGNATURE:
+      case MethodsWallet.GET_WALLET_SIGNATURE:
         this.getSignature(sendResponse, message.payload);
         break;
-      case MethodsUnimplemented.GET_WALLET_STATE:
+      case MethodsWallet.GET_WALLET_STATE:
         this.getWalletState(sendResponse, message.payload);
         break;
-      case MethodsUnimplemented.GET_WALLET_NAME:
+      case MethodsWallet.GET_WALLET_NAME:
         this.getWalletName(sendResponse, message.payload);
         break;
       default:

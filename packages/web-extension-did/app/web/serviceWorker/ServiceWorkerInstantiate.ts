@@ -19,7 +19,7 @@ import errorHandler from 'utils/errorHandler';
 import { apis } from 'utils/BrowserApis';
 import SocialLoginController from 'controllers/socialLoginController';
 import { LocalStream } from 'utils/extensionStreams';
-import { MethodsUnimplemented, MethodsBase } from '@portkey/provider-types';
+import { MethodsWallet, MethodsBase } from '@portkey/provider-types';
 import { getWalletState } from 'utils/lib/SWGetReduxStore';
 import OpenNewTabController from 'controllers/openNewTabController';
 
@@ -55,7 +55,7 @@ const permissionWhitelist = [
   PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE,
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
-  MethodsUnimplemented.GET_WALLET_STATE,
+  MethodsWallet.GET_WALLET_STATE,
   // The method that requires the dapp not to trigger the lock call
   MethodsBase.ACCOUNTS,
   MethodsBase.CHAIN_ID,

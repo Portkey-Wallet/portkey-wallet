@@ -38,7 +38,6 @@ export default function useLogOut() {
   return useCallback(async () => {
     try {
       resetStore();
-      dispatch(resetDappList(currentNetwork));
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
       } else {
@@ -49,6 +48,7 @@ export default function useLogOut() {
         dispatch(resetLoginInfoAction());
         clearLocalStorage();
       }
+      dispatch(resetDappList(currentNetwork));
 
       if (!isPrompt) {
         InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();

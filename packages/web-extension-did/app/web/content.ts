@@ -207,6 +207,15 @@ class Content {
         this.respond(response);
       })
       .catch((error) => {
+        delete message.payload;
+        this.respond(
+          generateErrorResponse({
+            ...message,
+            code: ResponseCode.INTERNAL_ERROR,
+            msg: 'Chrome internal error, please reload page',
+            target: INPAGE_TARGET,
+          }),
+        );
         console.error('internalCommunicate', error);
       });
   }

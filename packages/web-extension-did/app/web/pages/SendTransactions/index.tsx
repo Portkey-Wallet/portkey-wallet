@@ -85,7 +85,7 @@ export default function SendTransactions() {
       });
       if (fee === '--') {
         setFee('0');
-        setErrMsg('Insufficient funds for transaction fee');
+        setErrMsg('Failed to estimate transaction fee');
       } else {
         setFee(fee);
       }
@@ -280,7 +280,7 @@ export default function SendTransactions() {
           }}>
           {t('Reject')}
         </Button>
-        <Button type="primary" onClick={sendHandler} disabled={!!errMsg}>
+        <Button type="primary" onClick={sendHandler}>
           {t('Sign')}
         </Button>
       </div>

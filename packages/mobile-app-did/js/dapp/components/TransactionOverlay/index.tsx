@@ -268,7 +268,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
         },
       });
 
-      if (!TransactionFee && !TransactionFee?.ELF) return setNoEnoughFee(true);
+      if (!TransactionFee && !TransactionFee?.ELF) setNoEnoughFee(true);
 
       setFee(TransactionFee?.ELF || '0');
       setIsFetchingFee(false);
@@ -303,7 +303,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   }, [getTokenPrice, getTokensPrice, transactionInfo?.params?.paramsOption?.symbol]);
 
   return (
-    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList}>
+    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList} onClose={onReject}>
       <View style={GStyles.center}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextS style={styles.method}>{transactionInfo?.method}</TextS>

@@ -44,7 +44,7 @@ export default function BuyFrom({
           readOnly={false}
           onKeyDown={handleCurrencyKeyDown}
           curFiat={curFiat}
-          onSelect={(v) => handleCurrencySelect(v)}
+          onSelect={handleCurrencySelect}
         />
         {!!errMsg && <div className="error-text">{errMsg}</div>}
       </div>
@@ -57,7 +57,7 @@ export default function BuyFrom({
           readOnly={true}
           onKeyDown={handleTokenKeyDown}
           curToken={curToken}
-          onSelect={(v) => handleTokenSelect(v)}
+          onSelect={handleTokenSelect}
         />
       </div>
     </>

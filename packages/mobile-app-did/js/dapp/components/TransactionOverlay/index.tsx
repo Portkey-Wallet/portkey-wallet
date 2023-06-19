@@ -58,8 +58,6 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const isTransfer = useMemo(() => transactionInfo.method.toLowerCase() === 'transfer', [transactionInfo.method]);
 
   const buttonList = useMemo(() => {
-    const disabled = isFetchingFee || noEnoughFee;
-
     return [
       {
         title: t('Reject'),
@@ -76,11 +74,11 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           onSign?.();
           OverlayModal.hide();
         },
-        disabled: disabled,
-        loading: disabled,
+        disabled: isFetchingFee,
+        loading: isFetchingFee,
       },
     ];
-  }, [isFetchingFee, noEnoughFee, onReject, onSign, t]);
+  }, [isFetchingFee, onReject, onSign, t]);
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
@@ -222,7 +220,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
             </>
           )}
         </View>
-        {noEnoughFee && <TextS style={styles.error}>Insufficient funds for transaction fee</TextS>}
+        {noEnoughFee && <TextS style={styles.error}>Failed to estimate transaction fee</TextS>}
       </>
     );
   }, [
@@ -270,7 +268,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
         },
       });
 
-      if (!TransactionFee && !TransactionFee?.ELF) return setNoEnoughFee(true);
+      if (!TransactionFee && !TransactionFee?.ELF) setNoEnoughFee(true);
 
       setFee(TransactionFee?.ELF || '0');
       setIsFetchingFee(false);
@@ -305,7 +303,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   }, [getTokenPrice, getTokensPrice, transactionInfo?.params?.paramsOption?.symbol]);
 
   return (
-    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList}>
+    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList} onClose={onReject}>
       <View style={GStyles.center}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextS style={styles.method}>{transactionInfo?.method}</TextS>
@@ -313,7 +311,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           {transferContent}
           {!isTransfer && (
             <TransactionDataSection
-              dataInfo={transactionInfo?.params?.paramsOption}
+              dataInfo={transactionInfo?.params?.paramsOption || JSON.stringify(transactionInfo?.params)}
               style={styles.transactionDataSection}
             />
           )}

@@ -29,14 +29,14 @@ export const useHandleAchSell = () => {
 
   const paymentSellTransfer = useCallback(
     async (params: AchTxAddressReceivedType) => {
-      if (!chainInfo) throw new Error('');
+      if (!chainInfo) throw new Error('Sell Transfer: No ChainInfo');
 
       const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
       const pin = getSeedResult.data.privateKey;
       const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, pin);
-      if (!privateKey) throw new Error('');
+      if (!privateKey) throw new Error('Sell Transfer: No PrivateKey');
 
-      if (!aelfToken) throw new Error('');
+      if (!aelfToken) throw new Error('Sell Transfer: No Token');
 
       const transferParams = {
         chainInfo,

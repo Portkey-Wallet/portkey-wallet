@@ -2,6 +2,7 @@ import { DrawerType, PartialFiatType } from 'pages/Buy/const';
 import { useCommonState } from 'store/Provider/hooks';
 import CustomModal from '../../components/CustomModal';
 import CustomDrawer from '../../components/CustomDrawer';
+import { useMemo } from 'react';
 
 interface ISuffixSelectProps {
   drawerType: DrawerType;
@@ -10,10 +11,18 @@ interface ISuffixSelectProps {
   onSelect: (v: PartialFiatType) => void;
 }
 
+const SelectCrypto = 'Select Crypto';
+const SelectCurrency = 'Select Currency';
+const SearchCrypto = 'Search crypto';
+const SearchCurrency = 'Search currency';
+
 export default function SuffixSelect({ drawerType, open, onClose, onSelect }: ISuffixSelectProps) {
   const { isPrompt } = useCommonState();
-  const title = drawerType === DrawerType.token ? 'Select Crypto' : 'Select Currency';
-  const searchPlaceHolder = drawerType === DrawerType.token ? 'Search crypto' : 'Search currency';
+  const title = useMemo(() => (drawerType === DrawerType.token ? SelectCrypto : SelectCurrency), [drawerType]);
+  const searchPlaceHolder = useMemo(
+    () => (drawerType === DrawerType.token ? SearchCrypto : SearchCurrency),
+    [drawerType],
+  );
   return isPrompt ? (
     <CustomModal
       open={open}
@@ -21,7 +30,7 @@ export default function SuffixSelect({ drawerType, open, onClose, onSelect }: IS
       title={title}
       searchPlaceHolder={searchPlaceHolder}
       onClose={onClose}
-      onChange={(v) => onSelect(v)}
+      onChange={onSelect}
     />
   ) : (
     <CustomDrawer
@@ -33,7 +42,7 @@ export default function SuffixSelect({ drawerType, open, onClose, onSelect }: IS
       maskClosable={true}
       placement="bottom"
       onClose={onClose}
-      onChange={(v) => onSelect(v)}
+      onChange={onSelect}
     />
   );
 }

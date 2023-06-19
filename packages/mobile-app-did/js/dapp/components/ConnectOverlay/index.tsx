@@ -106,6 +106,7 @@ export const showConnectModal = (props: ConnectModalType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    onCloseRequest: props.onReject,
   });
 };
 

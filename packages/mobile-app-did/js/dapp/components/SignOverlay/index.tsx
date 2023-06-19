@@ -61,6 +61,7 @@ export const showSignModal = (props: SignModalPropsType) => {
   OverlayModal.show(<SignModal {...props} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    onCloseRequest: props.onReject,
   });
 };
 

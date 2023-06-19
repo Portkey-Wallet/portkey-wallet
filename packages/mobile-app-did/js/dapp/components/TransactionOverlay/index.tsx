@@ -326,6 +326,7 @@ export const showTransactionModal = (props: TransactionModalPropsType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    onCloseRequest: props.onReject,
   });
 };
 

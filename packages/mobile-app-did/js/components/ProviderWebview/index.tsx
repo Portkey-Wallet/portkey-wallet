@@ -29,6 +29,7 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
       setEntryScriptWeb3(script);
+      if (!isIos) webViewRef.current?.injectJavaScript(script);
     };
 
     getEntryScriptWeb3();
@@ -39,10 +40,9 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
 
   const initOperator = useCallback(
     (origin: string) => {
-      if (!isIos) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        webViewRef.current?.injectJavaScript(entryScriptWeb3!);
-      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      if (!isIos) webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+
       operatorRef.current = new DappMobileOperator({
         origin,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

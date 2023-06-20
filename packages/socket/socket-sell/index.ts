@@ -13,14 +13,13 @@ export class SignalrSell extends Signalr {
 
   public onAchTxAddressReceived(
     { orderId }: { clientId: string; orderId: string },
-    callback: (data: AchTxAddressReceivedType) => void,
+    callback: (data: AchTxAddressReceivedType | null) => void,
   ) {
     return this.listen('onAchTxAddressReceived', (data: { body: AchTxAddressReceivedType }) => {
-      console.log('onAchTxAddressReceived: data', data);
       if (data?.body?.orderId === orderId) {
         callback(data.body);
       } else {
-        throw new Error('onAchTxAddressReceived error');
+        callback(null);
       }
     });
   }

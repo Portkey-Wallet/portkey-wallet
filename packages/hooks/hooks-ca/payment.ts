@@ -56,7 +56,7 @@ export const useSellTransfer = () => {
             resolve(null);
           }, SELL_SOCKET_TIMEOUT),
         );
-        const signalrSellPromise = new Promise<AchTxAddressReceivedType>(resolve => {
+        const signalrSellPromise = new Promise<AchTxAddressReceivedType | null>(resolve => {
           const { remove } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, data => {
             resolve(data);
             remove();

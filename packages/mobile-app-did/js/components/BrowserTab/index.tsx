@@ -54,7 +54,6 @@ export default memo(BrowserTab, (prevProps: BrowserTabProps, nextProps: BrowserT
 
 export const styles = StyleSheet.create({
   webViewContainerHidden: {
-    flex: 0,
     opacity: 0,
     display: 'none',
     width: 0,
@@ -62,7 +61,6 @@ export const styles = StyleSheet.create({
     position: 'relative',
   },
   webViewContainer: {
-    width: screenWidth,
-    height: screenHeight,
+    flex: 1,
   },
 });

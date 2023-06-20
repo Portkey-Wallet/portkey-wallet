@@ -3,6 +3,6 @@
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
-          </trust-anchors>
+        </trust-anchors>
     </base-config>
 </network-security-config>

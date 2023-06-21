@@ -5,7 +5,7 @@ import {
   IResponseType,
   ResponseCode,
   MethodsBase,
-  MethodsUnimplemented,
+  MethodsWallet,
   SendTransactionParams,
   NotificationEvents,
   WalletState,
@@ -25,7 +25,7 @@ import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
-  [MethodsUnimplemented.GET_WALLET_SIGNATURE]: true,
+  [MethodsWallet.GET_WALLET_SIGNATURE]: true,
 };
 
 function getManager() {
@@ -107,7 +107,7 @@ export default class DappMobileOperator extends Operator {
           data: await this.dappManager.chainsInfo(),
         });
       }
-      case MethodsUnimplemented.GET_WALLET_NAME: {
+      case MethodsWallet.GET_WALLET_NAME: {
         const isActive = await this.isActive();
         if (!isActive) return this.unauthenticated(eventName);
         return generateNormalResponse({
@@ -121,7 +121,7 @@ export default class DappMobileOperator extends Operator {
           data: await this.dappManager.networkType(),
         });
       }
-      case MethodsUnimplemented.GET_WALLET_STATE: {
+      case MethodsWallet.GET_WALLET_STATE: {
         const [isActive, isLocked] = await Promise.all([this.isActive(), this.dappManager.isLocked()]);
         const data: WalletState = { isConnected: isActive, isUnlocked: !isLocked };
         if (isActive) {
@@ -147,8 +147,6 @@ export default class DappMobileOperator extends Operator {
   };
 
   protected handleRequestAccounts: SendRequest<DappStoreItem> = async (eventName, params) => {
-    console.log('===========params=========================', params);
-
     await this.dappManager.addDapp(params);
     return generateNormalResponse({
       eventName,
@@ -158,9 +156,6 @@ export default class DappMobileOperator extends Operator {
 
   protected handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
     try {
-      if (!params || !params.params || !params.method || !params.contractAddress || !params.chainId)
-        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
-
       const [chainInfo, caInfo] = await Promise.all([
         this.dappManager.getChainInfo(params.chainId),
         this.dappManager.getCaInfo(params.chainId),
@@ -248,7 +243,6 @@ export default class DappMobileOperator extends Operator {
   }) {
     // user confirm
     const response = await this.userConfirmation({ eventName, method, params });
-    console.log('===response=================================', response);
     if (response) return response;
     return callBack(eventName, params);
   }
@@ -263,7 +257,7 @@ export default class DappMobileOperator extends Operator {
 
     const isActive = await this.isActive();
 
-    let callBack: SendRequest, params: any;
+    let callBack: SendRequest, payload: any;
     switch (method) {
       case MethodsBase.REQUEST_ACCOUNTS: {
         if (isActive)
@@ -272,25 +266,36 @@ export default class DappMobileOperator extends Operator {
             data: await this.dappManager.accounts(this.dapp.origin),
           });
         callBack = this.handleRequestAccounts;
-        params = this.dapp;
+        payload = this.dapp;
         break;
       }
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSendTransaction;
-        params = request.payload;
+        payload = request.payload;
+        if (
+          !payload ||
+          typeof payload.params !== 'object' ||
+          !payload.method ||
+          !payload.contractAddress ||
+          !payload.chainId ||
+          !payload.rpcUrl
+        )
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
       }
-      case MethodsUnimplemented.GET_WALLET_SIGNATURE: {
+      case MethodsWallet.GET_WALLET_SIGNATURE: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSignature;
-        params = request.payload;
+        payload = request.payload;
+        if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
+          return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
       }
     }
     return this.sendRequest({
       eventName,
-      params,
+      params: payload,
       method: method as any,
       callBack: callBack!,
     });

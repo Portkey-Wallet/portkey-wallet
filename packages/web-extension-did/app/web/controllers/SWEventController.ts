@@ -97,7 +97,7 @@ export default class SWEventController {
     if (origin && origin !== '*' && connections[origin]) {
       /** Send an event to the specified origin */
       connectionList.push(connections[origin]);
-    } else if (eventName === 'accountsChanged') {
+    } else if (eventName === 'accountsChanged' || eventName === 'connected') {
       /** Only send events to connected dapps */
       const { currentNetwork } = await getWalletState();
       const { dappMap } = await getDappState();

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import navigationService from 'utils/navigationService';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks/index';
@@ -14,8 +14,6 @@ import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/ho
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { REFRESH_TIME } from '@portkey-wallet/constants/constants-ca/assets';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-
-let timer2: string | number | NodeJS.Timer | undefined;
 
 export interface TokenSectionProps {
   getAccountBalance?: () => void;
@@ -33,6 +31,7 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   } = useCurrentWallet();
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const [isFetching] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const onNavigate = useCallback((tokenItem: TokenItemShowType) => {
     navigationService.navigate('TokenDetail', { tokenInfo: tokenItem });
@@ -56,11 +55,13 @@ export default function TokenSection({ getAccountBalance }: TokenSectionProps) {
   }, [caAddressList, getAccountTokenList]);
 
   useEffect(() => {
-    if (timer2) clearInterval(timer2);
-    timer2 = setInterval(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
       getAccountTokenList();
     }, REFRESH_TIME);
-    return () => clearInterval(timer2);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [getAccountTokenList]);
 
   return (

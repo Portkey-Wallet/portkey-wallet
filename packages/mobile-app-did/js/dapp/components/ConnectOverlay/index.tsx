@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -21,11 +21,11 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
 import DappInfoSection from '../DappInfoSection';
 
-interface ConnectModalType {
+type ConnectModalType = {
   dappInfo: DappStoreItem;
   onReject: () => void;
   onApprove: () => void;
-}
+};
 
 const ConnectModal = (props: ConnectModalType) => {
   const { dappInfo, onReject, onApprove } = props;
@@ -39,18 +39,18 @@ const ConnectModal = (props: ConnectModalType) => {
   } = useAppCASelector(state => state.assets);
 
   const caInfoList = useMemo(() => {
-    return Object.entries(caInfo || {})
-      .map(([key, value]) => {
-        const info = value as CAInfo;
-        return info?.caAddress
-          ? {
-              chaiId: key,
-              caAddress: info.caAddress,
-              ...accountTokenList.find(token => token.chainId === key && token.symbol === ELF_SYMBOL),
-            }
-          : undefined;
-      })
-      .filter(item => !!item);
+    const list: any[] = [];
+    Object.entries(caInfo || {}).map(([key, value]) => {
+      const info = value as CAInfo;
+      if (info?.caAddress) {
+        list.push({
+          chaiId: key,
+          caAddress: info.caAddress,
+          ...accountTokenList.find(token => token.chainId === key && token.symbol === ELF_SYMBOL),
+        });
+      }
+    });
+    return list;
   }, [accountTokenList, caInfo]);
 
   const buttonList = useMemo(
@@ -76,7 +76,7 @@ const ConnectModal = (props: ConnectModalType) => {
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} bottomButtonGroup={buttonList}>
+    <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} bottomButtonGroup={buttonList} onClose={onReject}>
       <View style={[styles.contentWrap, gStyles.overlayStyle]}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextM style={[styles.walletTitle, FontStyles.font3]}>{t('Wallet')}</TextM>
@@ -106,6 +106,7 @@ export const showConnectModal = (props: ConnectModalType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    onCloseRequest: props.onReject,
   });
 };
 

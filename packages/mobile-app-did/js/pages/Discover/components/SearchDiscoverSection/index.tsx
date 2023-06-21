@@ -12,11 +12,11 @@ import { defaultColors } from 'assets/theme';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-interface SearchDiscoverSectionProps {
+interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
 }
 
-export default function SearchDiscoverSection(props: SearchDiscoverSectionProps) {
+export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps) {
   const { t } = useLanguage();
   const { searchedDiscoverList } = props;
   const { s3Url } = useCurrentNetworkInfo();

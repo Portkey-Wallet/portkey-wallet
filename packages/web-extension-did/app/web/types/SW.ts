@@ -31,6 +31,7 @@ export interface BaseRequestMessagePayload {
   href: string;
   method: string;
   origin: string;
+  icon?: string;
 }
 
 export interface RequestMessagePayload<T = any> extends BaseRequestMessagePayload {

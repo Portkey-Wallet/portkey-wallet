@@ -163,14 +163,11 @@ export default function Buy() {
         setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
         setRate(cryptoPrice);
         setErrMsg('');
-        if (!updateTimerRef.current && valueSaveRef.current.receive) {
+        valueSaveRef.current.isShowErrMsg = false;
+        if (!updateTimerRef.current) {
           resetTimer();
         }
       } catch (error) {
-        setReceive('');
-        valueSaveRef.current.receive = '';
-        stopInterval();
-        setErrMsg('');
         console.log('error', error);
       }
     };
@@ -263,7 +260,7 @@ export default function Buy() {
       stopInterval();
       setPage(e.target.value);
       // BUY
-      valueSaveRef.current = initValueSave;
+      valueSaveRef.current = { ...initValueSave };
       valueSaveRef.current.side = e.target.value;
       setAmount(initCurrency);
       // SELL
@@ -274,6 +271,7 @@ export default function Buy() {
 
       setCurFiat(initFiat);
       setErrMsg('');
+      valueSaveRef.current.isShowErrMsg = false;
       setReceive('');
       valueSaveRef.current.receive = '';
       setRate('');
@@ -426,6 +424,7 @@ export default function Buy() {
               handleTokenSelect={(v) => handleSelect(v, DrawerType.token)}
               curToken={curToken}
               errMsg={errMsg}
+              side={PaymentTypeEnum.BUY}
             />
           )}
           {page === PaymentTypeEnum.SELL && (
@@ -441,6 +440,7 @@ export default function Buy() {
               handleCurrencySelect={(v) => handleSelect(v, DrawerType.currency)}
               curFiat={curFiat}
               errMsg={errMsg}
+              side={PaymentTypeEnum.SELL}
             />
           )}
           {rate !== '' && renderRate}

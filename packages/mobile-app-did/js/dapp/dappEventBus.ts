@@ -15,6 +15,7 @@ import { changeNetworkType, setCAInfo } from '@portkey-wallet/store/store-ca/wal
 import { getWallet } from 'utils/redux';
 import { handleAccounts, handleChainIds } from '@portkey-wallet/utils/dapp';
 import { addDapp, removeDapp, resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { sleep } from '@portkey-wallet/utils';
 
 export interface DappEventPack<T = DappEvents, D = any> {
   eventName: T;
@@ -33,7 +34,8 @@ export default class DappEventBus {
   public static unregisterOperator(operator: DappMobileOperator) {
     this.operators = this.operators.filter(item => item !== operator);
   }
-  public static emit(action: string, payload: any) {
+  public static async emit(action: string, payload: any) {
+    await sleep(100);
     switch (action) {
       case changeNetworkType.toString(): {
         const { currentNetwork } = getWallet();

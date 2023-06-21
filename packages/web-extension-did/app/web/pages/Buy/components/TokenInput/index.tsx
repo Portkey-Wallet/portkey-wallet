@@ -4,6 +4,7 @@ import { DrawerType, PartialFiatType } from 'pages/Buy/const';
 import { useState } from 'react';
 import SuffixSelect from '../SuffixSelect';
 import { IKeyDownParams } from 'types';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export interface ICurToken {
   crypto: string;
@@ -12,6 +13,7 @@ export interface ICurToken {
 
 export interface ITokenInputProps {
   value: string;
+  side: PaymentTypeEnum;
   onChange: (val: string) => void;
   readOnly: boolean;
   onKeyDown: (e: IKeyDownParams) => void;
@@ -19,7 +21,15 @@ export interface ITokenInputProps {
   onSelect: (v: PartialFiatType) => void;
 }
 
-export default function TokenInput({ value, onChange, readOnly, onKeyDown, curToken, onSelect }: ITokenInputProps) {
+export default function TokenInput({
+  value,
+  side,
+  onChange,
+  readOnly,
+  onKeyDown,
+  curToken,
+  onSelect,
+}: ITokenInputProps) {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   return (
@@ -40,6 +50,7 @@ export default function TokenInput({ value, onChange, readOnly, onKeyDown, curTo
       />
       <SuffixSelect
         drawerType={DrawerType.token}
+        side={side}
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
         onSelect={onSelect}

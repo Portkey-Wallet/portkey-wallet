@@ -12,14 +12,14 @@ import { CommonButtonProps } from 'components/CommonButton';
 import DappInfoSection from '../DappInfoSection';
 import { GetSignatureParams } from '@portkey/provider-types';
 import TransactionDataSection from '../TransactionDataSection';
-import { TextL, TextXXXL } from 'components/CommonText';
+import { TextXXXL } from 'components/CommonText';
 
-interface SignModalPropsType {
+type SignModalPropsType = {
   dappInfo: DappStoreItem;
   signInfo: GetSignatureParams;
   onReject: () => void;
   onSign: () => void;
-}
+};
 const SignModal = (props: SignModalPropsType) => {
   const { dappInfo, signInfo, onReject, onSign } = props;
   const { t } = useLanguage();
@@ -47,7 +47,7 @@ const SignModal = (props: SignModalPropsType) => {
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList}>
+    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList} onClose={onReject}>
       <View style={styles.contentWrap}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextXXXL style={styles.signTitle}>Sign Message</TextXXXL>
@@ -61,6 +61,7 @@ export const showSignModal = (props: SignModalPropsType) => {
   OverlayModal.show(<SignModal {...props} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    onCloseRequest: props.onReject,
   });
 };
 

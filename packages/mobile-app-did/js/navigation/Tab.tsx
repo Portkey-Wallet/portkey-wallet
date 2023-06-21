@@ -81,7 +81,7 @@ export default function TabRoot() {
         header: () => null,
         tabBarIcon: ({ focused }) => {
           const iconName: IconName = tabMenuList.find(tab => tab.name === route.name)?.icon ?? 'logo-icon';
-          return <Svg icon={iconName} size={20} color={focused ? defaultColors.font4 : defaultColors.font7} />;
+          return <Svg icon={iconName} size={22} color={focused ? defaultColors.font4 : defaultColors.font7} />;
         },
       })}>
       {tabMenuList.map(ele => (

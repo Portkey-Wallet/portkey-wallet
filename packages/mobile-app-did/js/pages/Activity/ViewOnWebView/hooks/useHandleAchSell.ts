@@ -53,6 +53,16 @@ export const useHandleAchSell = () => {
       });
 
       const amount = timesDecimals(params.cryptoAmount, decimals).toNumber();
+
+      // return managerTransfer({
+      //   contract,
+      //   paramsOption: {
+      //     caHash,
+      //     symbol: aelfToken.symbol,
+      //     to: params.address,
+      //     amount,
+      //   },
+      // });
       return await sameChainTransfer({
         contract,
         tokenInfo: { ...aelfToken, address: aelfToken.tokenContractAddress || '' },

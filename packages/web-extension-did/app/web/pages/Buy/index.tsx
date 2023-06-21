@@ -424,6 +424,7 @@ export default function Buy() {
               handleTokenSelect={(v) => handleSelect(v, DrawerType.token)}
               curToken={curToken}
               errMsg={errMsg}
+              side={PaymentTypeEnum.BUY}
             />
           )}
           {page === PaymentTypeEnum.SELL && (
@@ -439,6 +440,7 @@ export default function Buy() {
               handleCurrencySelect={(v) => handleSelect(v, DrawerType.currency)}
               curFiat={curFiat}
               errMsg={errMsg}
+              side={PaymentTypeEnum.SELL}
             />
           )}
           {rate !== '' && renderRate}

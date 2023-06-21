@@ -3,12 +3,14 @@ import BaseDrawer from 'components/BaseDrawer';
 import { DrawerType } from 'pages/Buy/const';
 import SelectList from '../SelectList';
 import './index.less';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 interface CustomSelectProps extends DrawerProps {
   onChange?: (v: any) => void;
   onClose?: () => void;
   searchPlaceHolder?: string;
   drawerType: DrawerType;
+  side: PaymentTypeEnum;
 }
 
 export default function CustomDrawer({
@@ -17,6 +19,7 @@ export default function CustomDrawer({
   title,
   searchPlaceHolder,
   drawerType,
+  side,
   ...props
 }: CustomSelectProps) {
   return (
@@ -24,6 +27,7 @@ export default function CustomDrawer({
       <SelectList
         drawerType={drawerType}
         title={title}
+        side={side}
         searchPlaceHolder={searchPlaceHolder}
         onClose={onClose}
         onChange={onChange}

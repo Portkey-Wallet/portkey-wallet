@@ -11,6 +11,7 @@ import { FontStyles } from 'assets/theme/styles';
 import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import ActionSheet from 'components/ActionSheet';
 
 type TabItemType = {
   name: string;
@@ -47,6 +48,18 @@ export default function BuyHome() {
             <TouchableOpacity
               key={tabItem.name}
               onPress={() => {
+                if (tabItem.type === PaymentTypeEnum.SELL) {
+                  ActionSheet.alert({
+                    title2: (
+                      <TextM style={[GStyles.textAlignCenter]}>
+                        Off-ramp is currently not supported. It will be launched in the coming weeks.
+                      </TextM>
+                    ),
+                    buttons: [{ title: 'OK' }],
+                  });
+                  return;
+                }
+
                 setSelectTab(tabItem.type);
               }}>
               <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>

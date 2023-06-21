@@ -1,6 +1,6 @@
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
+import { fetchBuyFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCallback } from 'react';
@@ -23,7 +23,7 @@ export default function useInitData() {
       // mainnet only
       if (isMainNetwork) {
         dispatch(fetchBuyFiatListAsync());
-        dispatch(fetchSellFiatListAsync());
+        // dispatch(fetchSellFiatListAsync());
       }
       getCurrentCAViewContract();
       dispatch(getWalletNameAsync());

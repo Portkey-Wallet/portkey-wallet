@@ -44,6 +44,7 @@ export const useSellTransfer = () => {
       if (!isMainnet || merchantName !== ACH_MERCHANT_NAME) return;
 
       let achTxAddressReceived: AchTxAddressReceivedType;
+      let signalrSellRemove: (() => void) | undefined;
       try {
         const clientId = randomId();
         await signalrSell.doOpen({
@@ -59,13 +60,13 @@ export const useSellTransfer = () => {
         const signalrSellPromise = new Promise<AchTxAddressReceivedType | null>(resolve => {
           const { remove } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, data => {
             resolve(data);
-            remove();
           });
+          signalrSellRemove = remove;
           signalrSell.requestAchTxAddress(clientId, orderId);
         });
 
         const signalrSellResult = await Promise.race([timerPromise, signalrSellPromise]);
-        signalrSell.stop();
+
         if (signalrSellResult === null) {
           throw new Error('Transaction failed.');
         }
@@ -75,6 +76,10 @@ export const useSellTransfer = () => {
           code: 'TIMEOUT',
           message: 'Transaction failed.',
         };
+      } finally {
+        signalrSellRemove?.();
+        signalrSellRemove = undefined;
+        signalrSell.stop();
       }
 
       try {

@@ -16,6 +16,7 @@ export default function SellFrom({
   curToken,
 
   errMsg,
+  side,
 }: IBuyOrSellFromProps) {
   const tokenChange = (val: string) => {
     const arr = val.split('.');
@@ -33,6 +34,7 @@ export default function SellFrom({
         <div className="label">{`I want to sell`}</div>
         <TokenInput
           value={tokenVal}
+          side={side}
           onChange={tokenChange}
           readOnly={false}
           onKeyDown={handleTokenKeyDown}
@@ -45,6 +47,7 @@ export default function SellFrom({
         <div className="label">{`I will receive≈`}</div>
         <CurrencyInput
           value={currencyVal}
+          side={side}
           onChange={handleCurrencyChange}
           readOnly={true}
           onKeyDown={handleCurrencyKeyDown}

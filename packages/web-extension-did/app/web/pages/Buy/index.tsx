@@ -16,6 +16,7 @@ import {
   initValueSave,
   MAX_UPDATE_TIME,
   PartialFiatType,
+  sellSoonText,
 } from './const';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
@@ -34,6 +35,7 @@ import SellFrom from './components/SellFrom';
 import { useEffectOnce } from 'react-use';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import BigNumber from 'bignumber.js';
+import CustomTipModal from 'pages/components/CustomModal';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -257,6 +259,12 @@ export default function Buy() {
 
   const handlePageChange = useCallback(
     async (e: RadioChangeEvent) => {
+      if (e.target.value === PaymentTypeEnum.SELL) {
+        CustomTipModal({
+          content: sellSoonText,
+        });
+        return;
+      }
       stopInterval();
       setPage(e.target.value);
       // BUY

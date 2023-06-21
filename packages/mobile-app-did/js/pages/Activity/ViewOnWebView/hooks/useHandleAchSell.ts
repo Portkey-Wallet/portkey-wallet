@@ -11,7 +11,7 @@ import Loading from 'components/Loading';
 import { usePin } from 'hooks/store';
 import { useCallback, useMemo } from 'react';
 import { getManagerAccount } from 'utils/redux';
-import { managerTransfer } from 'utils/transfer/managerTransfer';
+import sameChainTransfer from 'utils/transfer/sameChainTransfer';
 
 export const useHandleAchSell = () => {
   const sellTransfer = useSellTransfer();
@@ -54,14 +54,21 @@ export const useHandleAchSell = () => {
 
       const amount = timesDecimals(params.cryptoAmount, decimals).toNumber();
 
-      return managerTransfer({
+      // return managerTransfer({
+      //   contract,
+      //   paramsOption: {
+      //     caHash,
+      //     symbol: aelfToken.symbol,
+      //     to: params.address,
+      //     amount,
+      //   },
+      // });
+      return await sameChainTransfer({
         contract,
-        paramsOption: {
-          caHash,
-          symbol: aelfToken.symbol,
-          to: params.address,
-          amount,
-        },
+        tokenInfo: { ...aelfToken, address: aelfToken.tokenContractAddress || '' },
+        caHash: caHash,
+        amount,
+        toAddress: `ELF_${params.address}_AELF`,
       });
     },
     [aelfToken, chainInfo, pin, wallet],

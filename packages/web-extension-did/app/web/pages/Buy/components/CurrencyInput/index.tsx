@@ -5,9 +5,11 @@ import { useState } from 'react';
 import { countryCodeMap } from '@portkey-wallet/constants/constants-ca/payment';
 import SuffixSelect from '../SuffixSelect';
 import { IKeyDownParams } from 'types';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export interface ICurrencyInputProps {
   value: string;
+  side: PaymentTypeEnum;
   onChange: (val: string) => void;
   readOnly: boolean;
   onKeyDown: (e: IKeyDownParams) => void;
@@ -17,6 +19,7 @@ export interface ICurrencyInputProps {
 
 export default function CurrencyInput({
   value,
+  side,
   onChange,
   readOnly,
   onKeyDown,
@@ -45,6 +48,7 @@ export default function CurrencyInput({
       />
       <SuffixSelect
         drawerType={DrawerType.currency}
+        side={side}
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
         onSelect={onSelect}

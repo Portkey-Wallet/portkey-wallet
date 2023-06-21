@@ -223,7 +223,10 @@ export default class AELFMethodController {
         });
         return sendResponse({ ...errorHandler(0), data: await this.dappManager.accounts(message.origin) });
       }
-      const result = await this.approvalController.authorizedToConnect(message);
+      const result = await this.approvalController.authorizedToConnect({
+        ...message,
+        appLogo: message?.icon || '',
+      });
       if (result.error === 200003)
         return sendResponse({
           ...errorHandler(200003, 'User denied'),

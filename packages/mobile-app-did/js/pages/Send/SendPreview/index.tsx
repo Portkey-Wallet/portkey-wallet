@@ -220,7 +220,7 @@ const SendHome: React.FC = () => {
     try {
       await transfer();
     } catch (error: any) {
-      console.log('sendHandler==error2222', error);
+      console.log('sendHandler: error', error);
       if (error.type === 'managerTransfer') {
         console.log(error);
         CommonToast.failError(error.error);

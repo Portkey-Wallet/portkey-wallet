@@ -1,8 +1,7 @@
-import { LocalStream } from 'extension-streams';
-import { getAllStorageLocalData, getLocalStorage } from 'utils/storage/chromeStorage';
+import { getAllStorageLocalData, getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 import storage from 'utils/storage/storage';
 import { AutoLockDataKey, AutoLockDataType, DefaultLock } from 'constants/lock';
-import SWEventController from 'controllers/SWEventController';
+import SWEventController, { DappEventPack } from 'controllers/SWEventController';
 import PermissionController from 'controllers/PermissionController';
 import NotificationService, { CloseParams } from 'service/NotificationService';
 import ApprovalController from 'controllers/approval/ApprovalController';
@@ -10,8 +9,6 @@ import { getStoreState } from 'store/utils/getStore';
 import { InternalMessageData, IPageState } from 'types/SW';
 import AELFMethodController from 'controllers/methodController/AELFMethodController';
 import InternalMessageTypes, {
-  AelfMessageTypes,
-  MethodMessageTypes,
   PortkeyMessageTypes,
   PromptRouteTypes,
   WalletMessageTypes,
@@ -21,11 +18,14 @@ import { CreatePromptType, SendResponseFun } from 'types';
 import errorHandler from 'utils/errorHandler';
 import { apis } from 'utils/BrowserApis';
 import SocialLoginController from 'controllers/socialLoginController';
+import { LocalStream } from 'utils/extensionStreams';
+import { MethodsWallet, MethodsBase } from '@portkey/provider-types';
+import { getWalletState } from 'utils/lib/SWGetReduxStore';
 import OpenNewTabController from 'controllers/openNewTabController';
 
 const notificationService = new NotificationService();
 const socialLoginService = new SocialLoginController();
-new OpenNewTabController();
+OpenNewTabController.onOpenNewTab();
 
 // Get default data in redux
 const store = getStoreState();
@@ -38,9 +38,8 @@ let pageState: IPageState = {
   wallet: store.wallet,
 };
 
-const aelfValidMethodList: string[] = Object.values(AelfMessageTypes);
-
-const allowedMethod = [
+const permissionWhitelist = [
+  // portkey method
   PortkeyMessageTypes.GET_SEED,
   PortkeyMessageTypes.SET_SEED,
   PortkeyMessageTypes.LOCK_WALLET,
@@ -50,28 +49,27 @@ const allowedMethod = [
   PortkeyMessageTypes.LOGIN_WALLET,
   PortkeyMessageTypes.CHECK_WALLET_STATUS,
   PortkeyMessageTypes.EXPAND_FULL_SCREEN,
-  PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE,
+  PortkeyMessageTypes.ACTIVE_LOCK_STATUS,
+  PortkeyMessageTypes.PERMISSION_FINISH,
   PortkeyMessageTypes.SOCIAL_LOGIN,
-  WalletMessageTypes.REQUEST_ACCOUNTS,
-  MethodMessageTypes.GET_WALLET_STATE,
+  PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE,
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
-  PortkeyMessageTypes.ACTIVE_LOCK_STATUS,
-  PortkeyMessageTypes.SETTING,
-  PortkeyMessageTypes.ADD_GUARDIANS,
-  PortkeyMessageTypes.GUARDIANS_VIEW,
-  PortkeyMessageTypes.GUARDIANS_APPROVAL,
+  MethodsWallet.GET_WALLET_STATE,
+  // The method that requires the dapp not to trigger the lock call
+  MethodsBase.ACCOUNTS,
+  MethodsBase.CHAIN_ID,
+  MethodsBase.CHAIN_IDS,
+  MethodsBase.CHAINS_INFO,
 ];
-
-const PortkeyMethod = [...allowedMethod, WalletMessageTypes.CONNECT, WalletMessageTypes.SWITCH_CHAIN];
 
 const initPageState = async () => {
   const allStorage = await getAllStorageLocalData();
-  const reduxStore = JSON.parse(allStorage[storage.reduxStorageName] ?? null);
+  const wallet = await getWalletState();
   pageState = {
     registerStatus: allStorage[storage.registerStatus],
     lockTime: AutoLockDataType[allStorage[storage.lockTime] as AutoLockDataKey] ?? AutoLockDataType[DefaultLock],
-    wallet: JSON.parse(reduxStore?.['wallet'] ?? null),
+    wallet: wallet as IPageState['wallet'],
   };
   console.log(pageState, 'pageState===');
 };
@@ -82,11 +80,10 @@ export default class ServiceWorkerInstantiate {
   protected approvalController: ApprovalController;
   protected aelfMethodController: AELFMethodController;
   constructor() {
-    this.setupInternalMessaging();
     // Controller that handles portkey checks
     this.permissionController = new PermissionController({
       notificationService,
-      allowedMethod,
+      whitelist: permissionWhitelist,
       getPassword: () => seed,
     });
     // Controller that handles user authorization
@@ -97,10 +94,11 @@ export default class ServiceWorkerInstantiate {
     // Controller that handles aelf transactions
     this.aelfMethodController = new AELFMethodController({
       notificationService,
-      methodList: aelfValidMethodList,
+      approvalController: this.approvalController,
       getPageState: this.getPageState,
       getPassword: () => seed,
     });
+    this.setupInternalMessaging();
   }
 
   // Watches the internal messaging system ( LocalStream )
@@ -112,13 +110,24 @@ export default class ServiceWorkerInstantiate {
         // May not communicate via LocalStream.send
         if (!message.type) return;
         // reset lockout timer
+        console.log(message, 'LocalStream.watch message');
+
         const registerRes = await this.permissionController.checkIsRegisterOtherwiseRegister(message.type);
         if (registerRes.error !== 0) return sendResponse(registerRes);
+        // process events
+        if (SWEventController.check(message.type, message.payload?.data)) {
+          const payload = message.payload;
+          const data: DappEventPack['data'] = payload.data;
+          const origin = payload.origin;
+          SWEventController.dispatchEvent({ eventName: message.type as any, data, origin });
+          sendResponse(errorHandler(0));
+          return;
+        }
         await ServiceWorkerInstantiate.checkTimingLock();
         if (message.type === InternalMessageTypes.ACTIVE_LOCK_STATUS) return sendResponse(errorHandler(0));
         const isLocked = await this.permissionController.checkIsLockOtherwiseUnlock(message.type);
         if (isLocked.error !== 0) return sendResponse(isLocked);
-        await this.dispenseMessage(sendResponse, message);
+        this.dispenseMessage(sendResponse, message);
       });
     } catch (error) {
       console.log(error);
@@ -133,90 +142,69 @@ export default class ServiceWorkerInstantiate {
    */
   dispenseMessage(sendResponse: SendResponseFun, message: InternalMessageData) {
     console.log('dispenseMessage: ', message);
-    // // When message.type is aelf transaction type
-    // if (aelfValidMethodList.includes(message.type)) {
-    //   this.aelfMethodController.dispenseMessage(message, sendResponse);
-    //   return;
-    // }
-    if (PortkeyMethod.includes(message.type)) {
-      // When message.type is portkey internal type
-      switch (message.type) {
-        case PortkeyMessageTypes.GET_SEED:
-          ServiceWorkerInstantiate.getSeed(sendResponse);
-          break;
-        case PortkeyMessageTypes.SET_SEED:
-          ServiceWorkerInstantiate.setSeed(sendResponse, message.payload);
-          break;
-        case PortkeyMessageTypes.LOCK_WALLET:
-          ServiceWorkerInstantiate.lockWallet(sendResponse);
-          break;
-        case PortkeyMessageTypes.CHECK_WALLET_STATUS:
-          this.checkWalletStatus(sendResponse);
-          break;
-        case PortkeyMessageTypes.CLOSE_PROMPT:
-          this.notificationServiceClose(sendResponse, message.payload);
-          break;
-        case PortkeyMessageTypes.REGISTER_WALLET:
-          ServiceWorkerInstantiate.checkRegisterStatus();
-          break;
-        case PortkeyMessageTypes.REGISTER_START_WALLET:
-          ServiceWorkerInstantiate.registerStartWallet();
-          break;
-        case PortkeyMessageTypes.LOGIN_WALLET:
-          ServiceWorkerInstantiate.loginWallet();
-          break;
-        case PortkeyMessageTypes.EXPAND_FULL_SCREEN:
-          ServiceWorkerInstantiate.expandFullScreen();
-          break;
-        case PortkeyMessageTypes.SETTING:
-          ServiceWorkerInstantiate.expandSetting();
-          break;
-        case PortkeyMessageTypes.ADD_GUARDIANS:
-          ServiceWorkerInstantiate.expandAddGuardians();
-          break;
-        case PortkeyMessageTypes.GUARDIANS_VIEW:
-          ServiceWorkerInstantiate.expandGuardiansView();
-          break;
-        case PortkeyMessageTypes.GUARDIANS_APPROVAL:
-          ServiceWorkerInstantiate.expandGuardiansApproval(message.payload);
-          break;
-        case PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE:
-          this.openRecaptchaPage(sendResponse, message.payload);
-          break;
-        case PortkeyMessageTypes.SOCIAL_LOGIN:
-          this.socialLogin(sendResponse, message.payload);
-          break;
-        case WalletMessageTypes.CONNECT:
-          this.connectWallet(sendResponse, message.payload);
-          break;
-        case WalletMessageTypes.REQUEST_ACCOUNTS:
-          this.getAddress(sendResponse, message.payload);
-          break;
-        case MethodMessageTypes.GET_WALLET_STATE:
-          ServiceWorkerInstantiate.getWalletState(sendResponse);
-          break;
-        case WalletMessageTypes.SET_RECAPTCHA_CODE_V2:
-          this.getRecaptcha(sendResponse, message.payload);
-          break;
-        case WalletMessageTypes.SOCIAL_LOGIN:
-          this.getSocialLogin(sendResponse, message.payload);
-          break;
+    switch (message.type) {
+      case PortkeyMessageTypes.GET_SEED:
+        ServiceWorkerInstantiate.getSeed(sendResponse);
+        break;
+      case PortkeyMessageTypes.SET_SEED:
+        ServiceWorkerInstantiate.setSeed(sendResponse, message.payload);
+        break;
+      case PortkeyMessageTypes.LOCK_WALLET:
+        ServiceWorkerInstantiate.lockWallet(sendResponse);
+        break;
+      case PortkeyMessageTypes.CHECK_WALLET_STATUS:
+        this.checkWalletStatus(sendResponse);
+        break;
+      case PortkeyMessageTypes.CLOSE_PROMPT:
+        this.notificationServiceClose(sendResponse, message.payload);
+        break;
+      case PortkeyMessageTypes.REGISTER_WALLET:
+        ServiceWorkerInstantiate.checkRegisterStatus();
+        break;
+      case PortkeyMessageTypes.REGISTER_START_WALLET:
+        ServiceWorkerInstantiate.registerStartWallet();
+        break;
+      case PortkeyMessageTypes.LOGIN_WALLET:
+        ServiceWorkerInstantiate.loginWallet();
+        break;
+      case PortkeyMessageTypes.EXPAND_FULL_SCREEN:
+        ServiceWorkerInstantiate.expandFullScreen();
+        break;
+      case PortkeyMessageTypes.SETTING:
+        ServiceWorkerInstantiate.expandSetting();
+        break;
+      case PortkeyMessageTypes.ADD_GUARDIANS:
+        ServiceWorkerInstantiate.expandAddGuardians();
+        break;
+      case PortkeyMessageTypes.GUARDIANS_VIEW:
+        ServiceWorkerInstantiate.expandGuardiansView();
+        break;
+      case PortkeyMessageTypes.GUARDIANS_APPROVAL:
+        ServiceWorkerInstantiate.expandGuardiansApproval(message.payload);
+        break;
+      case PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE:
+        this.openRecaptchaPage(sendResponse, message.payload);
+        break;
+      case PortkeyMessageTypes.SOCIAL_LOGIN:
+        this.socialLogin(sendResponse, message.payload);
+        break;
+      case WalletMessageTypes.SET_RECAPTCHA_CODE_V2:
+        this.getRecaptcha(sendResponse, message.payload);
+        break;
+      case WalletMessageTypes.SOCIAL_LOGIN:
+        this.getSocialLogin(sendResponse, message.payload);
+        break;
+      case WalletMessageTypes.ACH_SELL_REDIRECT:
+        this.expandHomeAndCloseOrigin(sendResponse, message.payload);
+        break;
 
-        default:
-          sendResponse(errorHandler(700001, `Portkey does not contain this method (${message.type})`));
+      default:
+        if (this.aelfMethodController.aelfMethodList.includes(message.type)) {
+          this.aelfMethodController.dispenseMessage(message, sendResponse);
           break;
-      }
-      // } else if (pageState.chain.currentChain.chainType === 'aelf') {
-      //   this.aelfMethodController.dispenseMessage(message, sendResponse);
-      //   return;
-    } else {
-      sendResponse(
-        errorHandler(
-          700001,
-          'Not Support',
-          // `The current network is ${pageState.chain.currentChain.chainType}, which cannot match this method (${message.type})`,
-        ),
-      );
+        }
+        sendResponse(errorHandler(700001, `Portkey does not contain this method (${message.type})`));
+        break;
     }
   }
 
@@ -247,13 +235,18 @@ export default class ServiceWorkerInstantiate {
   }
 
   async getRecaptcha(sendResponse: SendResponseFun, message: any) {
-    this.notificationServiceClose(sendResponse, { closeParams: message.params, promptType: 'windows' });
+    this.notificationServiceClose(sendResponse, { closeParams: message.payload, promptType: 'windows' });
   }
 
   async getSocialLogin(sendResponse: SendResponseFun, message: any) {
     socialLoginService.finishSocialLogin();
-    this.notificationServiceClose(sendResponse, { closeParams: message.params, promptType: 'windows' });
+    this.notificationServiceClose(sendResponse, { closeParams: message.payload, promptType: 'windows' });
   }
+
+  // async dealNextTask(sendResponse: SendResponseFun, message: any) {
+  //   //
+  //   // const { taskEvent } = message;
+  // }
 
   async openRecaptchaPage(sendResponse: SendResponseFun, message: any) {
     if (!message.externalLink) return sendResponse(errorHandler(400001, 'Missing param externalLink'));
@@ -275,7 +268,9 @@ export default class ServiceWorkerInstantiate {
     };
   };
 
-  static registerStartWallet = () => {
+  static registerStartWallet = async () => {
+    // close this(chrome.runtime.id) other tabs when register wallet
+    await OpenNewTabController.closeOpenTabs();
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.REGISTER_START_WALLET,
@@ -345,28 +340,15 @@ export default class ServiceWorkerInstantiate {
     );
   }
 
-  /**
-   * Determine whether the portkey is locked, and if not, get the list of authorized users
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getAddress(sendResponse: SendResponseFun, _message: any) {
-    try {
-      sendResponse(errorHandler(700001));
-    } catch (error) {
-      sendResponse(errorHandler(500001, error));
-    }
-  }
-
-  /**
-   * Dapp connection portkey
-   */
-  async connectWallet(sendResponse: SendResponseFun, message: any) {
-    try {
-      sendResponse(errorHandler(700001, message));
-    } catch (error) {
-      console.log(error, 'connectWallet==');
-      return sendResponse(errorHandler(500001, error));
-    }
+  async expandHomeAndCloseOrigin(sendResponse: SendResponseFun, payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.EXPAND_FULL_SCREEN,
+        search: `${payload.payload?.orderNo || ''}&method=${payload.method}`,
+      },
+      'tabs',
+    );
+    sendResponse(errorHandler(0));
   }
 
   async notificationServiceClose(
@@ -396,7 +378,7 @@ export default class ServiceWorkerInstantiate {
   }
 
   async checkWalletStatus(sendResponse: SendResponseFun) {
-    const registerStatus = await this.permissionController.checkRegisterStatus();
+    const registerStatus = await this.permissionController.getRegisterStatus();
     console.log(registerStatus, 'registerStatus===');
     return sendResponse({
       ...errorHandler(0),
@@ -405,14 +387,6 @@ export default class ServiceWorkerInstantiate {
         privateKey: seed,
       },
     });
-  }
-
-  static async getWalletState(sendResponse: SendResponseFun) {
-    try {
-      sendResponse(errorHandler(0));
-    } catch (error) {
-      sendResponse(errorHandler(200004, error));
-    }
   }
 
   /***
@@ -436,27 +410,13 @@ export default class ServiceWorkerInstantiate {
     apis.alarms.clear('timingLock');
 
     if (pageState.lockTime === AutoLockDataType.Immediately) {
-      pageState.lockTime = 5;
+      pageState.lockTime = 5 as any;
       return;
     }
     if (seed && pageState.lockTime === AutoLockDataType.Never) {
       return;
     }
     if (seed) {
-      // const lastTime = await getLocalStorage('lastMessageTime');
-      // const timeLock = moment().isSameOrAfter(lastTime);
-      // setLocalStorage({
-      //   [storage.lastMessageTime]: moment().add(pageState.lockTime, 'm').format(),
-      // });
-      // console.log(
-      //   timeLock,
-      //   lastTime,
-      //   pageState.lockTime,
-      //   moment().format(),
-      //   moment().add(pageState.lockTime, 'm').format(),
-      //   'timeLock==',
-      // );
-      // lastTime && timeLock && ServiceWorkerInstantiate.lockWallet(sendResponse, 'timingLock');
       // MV2 -> MV3 setTimeout -> alarms.create
       apis.alarms.create('timingLock', {
         delayInMinutes: pageState.lockTime ?? AutoLockDataType.OneHour,
@@ -465,18 +425,20 @@ export default class ServiceWorkerInstantiate {
         if (alarm.name !== 'timingLock') return;
         apis.alarms.clear(alarm.name);
         if (pageState.lockTime === AutoLockDataType.Never) return;
-        ServiceWorkerInstantiate.lockWallet(sendResponse, 'timingLock');
+        ServiceWorkerInstantiate.lockWallet(sendResponse);
       });
     } else {
       ServiceWorkerInstantiate.lockWallet(sendResponse);
     }
   }
 
-  static lockWallet(sendResponse?: SendResponseFun, message?: any) {
+  static lockWallet(sendResponse?: SendResponseFun) {
     try {
-      console.log('lockWallet', message);
       seed = null;
-      SWEventController.lockStateChanged(true, sendResponse);
+      setLocalStorage({
+        locked: true,
+      });
+      sendResponse?.(errorHandler(0));
     } catch (e) {
       sendResponse?.(errorHandler(500001, e));
     }
@@ -484,12 +446,14 @@ export default class ServiceWorkerInstantiate {
 
   static unlockWallet(sendResponse: SendResponseFun, _seed: string | null) {
     if (!_seed) return sendResponse(errorHandler(500001, 'unlockWallet error'));
-    SWEventController.lockStateChanged(false, sendResponse);
+    sendResponse(errorHandler(0));
+    setLocalStorage({
+      locked: false,
+    });
   }
 
   static async checkRegisterStatus() {
     const registerStatus = await getLocalStorage('registerStatus');
-    console.log('checkRegisterStatus==');
     if (registerStatus !== 'Registered') {
       return await notificationService.open({
         sendResponse: (response) => {

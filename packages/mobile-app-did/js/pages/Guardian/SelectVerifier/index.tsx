@@ -23,7 +23,7 @@ import { VerifierImage } from '../components/VerifierImage';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import myEvents from 'utils/deviceEvent';
 import { verification } from 'utils/api';
-import { AuthenticationInfo, VerificationType, VerifierItem } from '@portkey-wallet/types/verifier';
+import { AuthenticationInfo, RecaptchaType, VerificationType, VerifierItem } from '@portkey-wallet/types/verifier';
 import { useVerifyToken } from 'hooks/authentication';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnRequestOrSetPin } from 'hooks/login';
@@ -94,6 +94,7 @@ export default function SelectVerifier() {
             guardianIdentifier: loginAccount,
             verifierId: selectedVerifier?.id,
             chainId: originChainId,
+            operationType: RecaptchaType.register,
           },
         });
         if (requestCodeResult.verifierSessionId) {

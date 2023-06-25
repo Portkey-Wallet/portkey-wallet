@@ -1,0 +1,73 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.connected-site-list {
+  .connected-site-item {
+    height: 92px;
+    padding: 24px;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid @bg-15;
+    color: black;
+    .content {
+      align-items: center;
+      width: 100%;
+      .icon {
+        flex-shrink: 0;
+        width: 32px;
+        border-radius: 50%;
+        .dappdefault-icon {
+          width: 32px;
+          height: 32px;
+          svg {
+            width: 32px;
+            height: 32px;
+          }
+        }
+      }
+      .desc {
+        flex: 1;
+        width: 0;
+        word-wrap: break-word;
+        margin-left: 16px;
+        .text {
+          .text-overflow(1);
+        }
+        .name {
+          font-size: 16px;
+          line-height: 22px;
+          color: @font-11;
+        }
+        .origin {
+          margin-top: 2px;
+          font-size: 14px;
+          line-height: 20px;
+          color: @font-12;
+        }
+      }
+    }
+    .btn {
+      width: 79px;
+      height: 24px;
+      margin-left: 16px;
+      .@{app-prefix}-btn-text {
+        width: 79px;
+        height: 24px;
+        font-size: 12px;
+        line-height: 16px;
+        color: @font-14;
+        background-color: @bg-11;
+        border-radius: 24px;
+        border: 1px solid @border-7;
+        text-shadow: none;
+      }
+    }
+  }
+}
+
+.no-data {
+  margin-top: 160px;
+  font-size: 14px;
+  line-height: 20px;
+  color: @font-12;
+}

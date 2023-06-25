@@ -21,11 +21,13 @@ export const useCustomModal = () => useAppSelector((state) => state.modal);
 export const useMiscState = () => useAppSelector((state) => state.misc);
 export const useCommonState = () => useAppSelector((state) => state.common);
 export const usePayment = () => useAppSelector((state) => state.payment);
+export const useDapp = () => useAppSelector((state) => state.dapp);
 export const useLoading = () => {
   const { loadingInfo } = useAppSelector((state) => state.userInfo);
   const dispatch = useAppDispatch();
   const setLoading = useCallback(
-    (isLoading: boolean | OpacityType, loadingText?: string) => dispatch(setGlobalLoading({ isLoading, loadingText })),
+    (isLoading: boolean | OpacityType, loadingText?: string, isEllipsis = true) =>
+      dispatch(setGlobalLoading({ isLoading, loadingText, isEllipsis })),
     [dispatch],
   );
   return useMemo(() => ({ isLoading: !!loadingInfo.isLoading, setLoading }), [loadingInfo.isLoading, setLoading]);

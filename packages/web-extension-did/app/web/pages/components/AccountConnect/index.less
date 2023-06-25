@@ -1,0 +1,39 @@
+@import '../../../assets/theme/color.less';
+
+.account-connect {
+  padding: 8px;
+  max-width: fit-content;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: @font-13;
+  border-radius: 20px;
+  cursor: pointer;
+  &:hover {
+    background-color: @bg-13;
+  }
+  .status {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    border: 1px solid @border-8;
+    &.connected {
+      position: relative;
+      border-color: @border-11;
+      background-color: @bg-11;
+      &::after {
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background-color: @bg-21;
+      }
+    }
+  }
+}

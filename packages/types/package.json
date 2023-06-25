@@ -5,6 +5,9 @@
   },
   "version": "0.0.1",
   "type": "commonjs",
+  "dependencies": {
+    "@portkey/provider-types": "0.0.1-alpha.24"
+  },
   "scripts": {
     "prebuild": "rm -rf dist",
     "build": "tsc",

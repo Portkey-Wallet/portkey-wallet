@@ -34,6 +34,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
 import './index.less';
+import { RecaptchaType } from '@portkey-wallet/types/verifier';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -184,6 +185,7 @@ export default function GuardiansView() {
             type: LoginType[opGuardian?.guardianType as LoginType],
             verifierId: opGuardian?.verifier?.id || '',
             chainId: originChainId,
+            operationType: RecaptchaType.optGuardian,
           },
         });
         setLoading(false);

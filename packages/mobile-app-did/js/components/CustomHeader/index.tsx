@@ -14,6 +14,7 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 
 export type CustomHeaderProps = {
   themeType?: SafeAreaColorMapKeyUnit;
+  noLeftDom?: boolean;
   leftDom?: ReactNode;
   titleDom?: ReactNode | string;
   rightDom?: ReactNode;
@@ -23,12 +24,14 @@ export type CustomHeaderProps = {
   type?: 'leftBack' | 'default';
   leftIconType?: 'close' | 'back';
   style?: StyleProp<ViewStyle>;
+  notHandleHardwareBackPress?: boolean;
 };
 
 const CustomHeader: React.FC<CustomHeaderProps> = props => {
   const { t } = useLanguage();
 
   const {
+    noLeftDom = false,
     leftDom = null,
     titleDom = 'title',
     rightDom = null,
@@ -39,6 +42,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     style,
     leftIconType = 'back',
     onGestureStartCallback,
+    notHandleHardwareBackPress,
   } = props;
 
   // theme change
@@ -60,13 +64,16 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
       />
     );
   }, [leftIconType, styles.leftBackTitle.color]);
-  useHardwareBackPress(() => {
-    if (isFocused && leftCallback) {
-      leftCallback();
-      return true;
-    }
-    return false;
-  });
+  useHardwareBackPress(
+    useMemo(() => {
+      if (isFocused && leftCallback && !notHandleHardwareBackPress) {
+        return () => {
+          leftCallback();
+          return true;
+        };
+      }
+    }, [isFocused, leftCallback, notHandleHardwareBackPress]),
+  );
   useEffect(() => {
     if (onGestureStartCallback) {
       const unsubscribe = navigation.addListener('gestureStart' as any, () => {
@@ -77,6 +84,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   }, [navigation, onGestureStartCallback]);
 
   const letElement = useMemo(() => {
+    if (noLeftDom) return null;
     if (leftDom) return leftDom;
     if (!isCanGoBack && !leftCallback) return null;
     const onPress = leftCallback ? leftCallback : () => navigationService.goBack();
@@ -93,7 +101,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
         {leftIcon}
       </TouchableOpacity>
     );
-  }, [backTitle, isCanGoBack, leftCallback, leftDom, leftIcon, styles.leftBackTitle, t, type]);
+  }, [backTitle, isCanGoBack, leftCallback, leftDom, leftIcon, noLeftDom, styles.leftBackTitle, t, type]);
 
   const centerElement = useMemo(() => {
     if (typeof titleDom === 'string')

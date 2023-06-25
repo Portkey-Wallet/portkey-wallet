@@ -13,6 +13,7 @@ query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, 
             sort
             status
             title
+            url
             user_created
             user_updated
         }
@@ -27,6 +28,7 @@ query discoverItem_aggregated($groupBy: [String], $filter: discoverItem_filter, 
             sort
             status
             title
+            url
             user_created
             user_updated
         }

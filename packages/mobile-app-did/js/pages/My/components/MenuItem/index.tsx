@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: pTd(16),
     borderRadius: pTd(6),
+    marginBottom: pTd(24),
   },
   menuIcon: {
     borderRadius: pTd(6),

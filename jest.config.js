@@ -66,5 +66,28 @@ module.exports = {
       },
       coveragePathIgnorePatterns: ['/node_modules/', '/store/', '/hooks-ca/', '/utils/'],
     },
+    {
+      displayName: 'mobile-app-did',
+      roots: ['<rootDir>/packages/mobile-app-did'],
+      preset: 'react-native',
+      transform: {
+        '^.+\\.(ts|tsx)$': [`ts-jest`, { isolatedModules: true, tsconfig: './packages/mobile-app-did/tsconfig.json' }],
+      },
+      transformIgnorePatterns: ['<rootDir>/node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)'],
+      testEnvironment: 'react-native',
+      globals: {
+        __DEV__: true,
+      },
+      setupFilesAfterEnv: ['./packages/mobile-app-did/jest-setup/mockAsyncStorage.ts'],
+      moduleNameMapper: {
+        '^react$': '<rootDir>/node_modules/react',
+        '^utils/(.*)$': '<rootDir>/packages/mobile-app-did/js/utils/$1',
+        '^store/(.*)$': '<rootDir>/packages/mobile-app-did/js/store/$1',
+        '^@portkey-wallet/store/(.*)$': '<rootDir>/packages/store/$1',
+        store: '<rootDir>/packages/mobile-app-did/js/store/index',
+        '^dapp/(.*)$': '<rootDir>/packages/mobile-app-did/js/dapp/$1',
+      },
+      coveragePathIgnorePatterns: ['/node_modules/', '/store/', '/Test/', '/utils/'],
+    },
   ],
 };

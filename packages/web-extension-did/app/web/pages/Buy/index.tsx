@@ -65,8 +65,6 @@ export default function Buy() {
   );
 
   useEffectOnce(() => {
-    refreshBuyButton(); // fetch on\off ramp is display
-
     if (state && state.amount !== undefined) {
       const { amount, country, fiat, crypto, network, side } = state;
       setAmount(amount);
@@ -360,17 +358,19 @@ export default function Buy() {
 
   const handleNext = useCallback(async () => {
     const { side } = valueSaveRef.current;
+    setLoading(true);
     const result = await refreshBuyButton();
     const isBuySectionShow = result.isBuySectionShow;
     const isSellSectionShow = result.isSellSectionShow;
     // Compatible with the situation where the function is turned off when the user is on the page.
     if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
+      setLoading(false);
       message.error(serviceUnavailableText);
       return navigate('/');
     }
 
     if (side === PaymentTypeEnum.SELL) {
-      if (!currentChain) return;
+      if (!currentChain) return setLoading(false);
       // search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
@@ -381,6 +381,7 @@ export default function Buy() {
           symbol: 'ELF',
         },
       });
+      setLoading(false);
       const balance = result.result.balance;
 
       if (
@@ -390,6 +391,7 @@ export default function Buy() {
         return;
       }
     }
+    setLoading(false);
 
     const { amount, currency, country, crypto, network } = valueSaveRef.current;
     navigate('/buy/preview', {
@@ -410,6 +412,7 @@ export default function Buy() {
     navigate,
     refreshBuyButton,
     setInsufficientFundsMsg,
+    setLoading,
     state,
     wallet,
   ]);

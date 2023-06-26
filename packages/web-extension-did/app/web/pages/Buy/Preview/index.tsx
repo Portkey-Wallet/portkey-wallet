@@ -78,9 +78,8 @@ export default function Preview() {
   }, [data, setReceiveCase]);
 
   useEffect(() => {
-    refreshBuyButton();
     updateReceive();
-  }, [refreshBuyButton, updateReceive]);
+  }, [updateReceive]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -98,18 +97,20 @@ export default function Preview() {
 
   const goPayPage = useCallback(async () => {
     const { side } = data;
+    setLoading(true);
     const result = await refreshBuyButton();
     const isBuySectionShow = result.isBuySectionShow;
     const isSellSectionShow = result.isSellSectionShow;
     // Compatible with the situation where the function is turned off when the user is on the page.
     if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
+      setLoading(false);
       message.error(serviceUnavailableText);
       return navigate('/');
     }
 
     const appId = buyConfig?.ach?.appId;
     const baseUrl = buyConfig?.ach?.baseUrl;
-    if (!appId || !baseUrl) return;
+    if (!appId || !baseUrl) return setLoading(false);
     try {
       setLoading(true);
       const { network, country, fiat, amount, crypto } = data;
@@ -161,9 +162,8 @@ export default function Preview() {
     buyConfig?.ach?.baseUrl,
     data,
     getAchTokenInfo,
-    isBuySectionShow,
-    isSellSectionShow,
     navigate,
+    refreshBuyButton,
     setLoading,
     wallet?.AELF?.caAddress,
   ]);

@@ -81,7 +81,7 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
-  const { isBuyButtonShow, refreshBuyButton } = useBuyButtonShow();
+  const { isBuyButtonShow } = useBuyButtonShow();
 
   useEffect(() => {
     if (state?.key) {
@@ -92,8 +92,7 @@ export default function MyBalance() {
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getWalletNameAsync());
     appDispatch(getSymbolImagesAsync());
-    refreshBuyButton();
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, refreshBuyButton]);
+  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });

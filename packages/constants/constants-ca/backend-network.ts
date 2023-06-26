@@ -26,6 +26,8 @@ export const BackEndNetWorkMap: {
     apiUrl: 'https://localtest-applesign2.portkey.finance',
     graphqlUrl: 'http://192.168.67.51:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
     connectUrl: 'http://192.168.67.51:8080',
+    cmsUrl: 'http://192.168.66.62:8055/graphql',
+    s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     buyConfig: {
       ach: {

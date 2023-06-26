@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getDiscoverGroupAsync, getSocialMediaAsync, getTabMenuAsync } from './actions';
+import { getDiscoverGroupAsync, getSocialMediaAsync, getTabMenuAsync, getBuyButtonAsync } from './actions';
 import { CMSState } from './types';
 
 const initialState: CMSState = {
   socialMediaListNetMap: {},
   tabMenuListNetMap: {},
   discoverGroupListNetMap: {},
+  buyButtonNetMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -39,6 +40,15 @@ export const cmsSlice = createSlice({
       })
       .addCase(getDiscoverGroupAsync.rejected, (_state, action) => {
         console.log('getDiscoverGroupAsync error', action);
+      })
+      .addCase(getBuyButtonAsync.fulfilled, (state, action) => {
+        state.buyButtonNetMap = {
+          ...state.buyButtonNetMap,
+          ...action.payload.buyButtonNetMap,
+        };
+      })
+      .addCase(getBuyButtonAsync.rejected, (_state, action) => {
+        console.log('getBuyButtonAsync error', action);
       });
   },
 });

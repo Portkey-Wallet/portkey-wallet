@@ -13,6 +13,7 @@ import {
   setManagerInfo,
   setOriginChainId,
   setWalletNameAction,
+  updateCASyncState,
 } from './actions';
 import { WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
@@ -60,6 +61,16 @@ export const walletSlice = createSlice({
           [chainId]: caInfo,
         } as any;
       })
+      .addCase(updateCASyncState, (state, action) => {
+        const { chainId, networkType } = action.payload;
+        // check pin
+        const currentNetwork = networkType || state.currentNetwork || initialState.currentNetwork;
+        if (!state.walletInfo?.AESEncryptMnemonic) throw new Error(WalletError.noCreateWallet);
+        const caInfo = state.walletInfo.caInfo[currentNetwork][chainId];
+        if (!caInfo) throw new Error(WalletError.caAccountNotExists);
+        state.walletInfo.caInfo[currentNetwork][chainId] = { ...caInfo, isSync: true };
+      })
+
       .addCase(setManagerInfo, (state, action) => {
         const { pin, managerInfo } = action.payload;
         // check pin

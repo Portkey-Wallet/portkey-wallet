@@ -50,3 +50,17 @@ export default class ReactErrorBoundary extends Component<
     return this.props.children;
   }
 }
+
+export function handleReportError({
+  error,
+  componentStack,
+  view,
+}: Omit<ErrorBoundaryTrue, 'hasError'> & {
+  view: string;
+}) {
+  const message = error.toString();
+  const sendError = new Error(message);
+  sendError.stack = componentStack || '';
+  sendError.name = `Message:${message}, View:${view}`;
+  return sendError;
+}

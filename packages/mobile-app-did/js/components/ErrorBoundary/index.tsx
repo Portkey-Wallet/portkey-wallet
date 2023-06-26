@@ -1,17 +1,16 @@
 import React, { ReactNode, useCallback } from 'react';
-import { Fallback, IErrorBoundary } from 'components/Fallback';
+import { Fallback } from 'components/Fallback';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import { Severity } from '@portkey-wallet/utils/ExceptionManager';
-import ReactErrorBoundary from '@portkey-wallet/utils/errorBoundary';
+import ReactErrorBoundary, { ErrorBoundaryTrue, handleReportError } from '@portkey-wallet/utils/errorBoundary';
 import * as errorUtils from 'utils/errorUtils';
 export type ErrorBoundaryProps = {
   children: ReactNode;
   view: string;
 };
-
+const originHandler = errorUtils.getGlobalHandler();
 class ReactNativeErrorBoundary extends ReactErrorBoundary {
   componentDidMount() {
-    const originHandler = errorUtils.getGlobalHandler();
     errorUtils.setGlobalHandler((error: any, isFatal?: boolean) => {
       if (isFatal && !__DEV__) {
         const componentStack = error.stack;
@@ -26,12 +25,8 @@ class ReactNativeErrorBoundary extends ReactErrorBoundary {
 
 export default function ErrorBoundary({ children, view }: ErrorBoundaryProps) {
   const onCaptureException = useCallback(
-    ({ error, componentStack }: IErrorBoundary) => {
-      const message = error.toString();
-      const sendError = new Error(message);
-      sendError.stack = componentStack || '';
-      sendError.name = `Message:${message}, View:${view}`;
-      exceptionManager.reportError(sendError, Severity.Error);
+    ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
+      exceptionManager.reportError(handleReportError({ error, componentStack: componentStack, view }), Severity.Error);
     },
     [view],
   );

@@ -53,8 +53,8 @@ export default function ContextProviders({
   }, [language]);
 
   return (
-    <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
-      <ErrorBoundary>
+    <ErrorBoundary view="root">
+      <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
         <ReduxProvider>
           <ScreenLoading />
           <HashRouter>
@@ -63,7 +63,7 @@ export default function ContextProviders({
             <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
           </HashRouter>
         </ReduxProvider>
-      </ErrorBoundary>
-    </ConfigProvider>
+      </ConfigProvider>
+    </ErrorBoundary>
   );
 }

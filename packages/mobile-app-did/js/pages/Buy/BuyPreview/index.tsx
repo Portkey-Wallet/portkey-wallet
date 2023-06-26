@@ -28,6 +28,7 @@ import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface RouterParams {
   type?: PaymentTypeEnum;
@@ -54,6 +55,7 @@ export default function BuyPreview() {
   const apiUrl = useCurrentApiUrl();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
+  const { refreshBuyButton } = useBuyButtonShow();
 
   const getAchTokenInfo = useGetAchTokenInfo();
   const goPayPage = useCallback(
@@ -62,6 +64,21 @@ export default function BuyPreview() {
       const baseUrl = buyConfig?.ach?.baseUrl;
       if (!amount || !receiveAmount || !fiat || !token || !appId || !baseUrl) return;
       Loading.show();
+
+      let isSectionShow = false;
+      try {
+        const result = await refreshBuyButton();
+        isSectionShow = type === PaymentTypeEnum.BUY ? result.isBuySectionShow : result.isSellSectionShow;
+      } catch (error) {
+        console.log(error);
+      }
+      if (!isSectionShow) {
+        CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
+        navigationService.navigate('Tab');
+        Loading.hide();
+        return;
+      }
+
       try {
         const callbackUrl = encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`);
         let achUrl = `${baseUrl}/?crypto=${token.crypto}&network=${token.network}&country=${fiat.country}&fiat=${fiat.currency}&appId=${appId}&callbackUrl=${callbackUrl}`;
@@ -122,7 +139,19 @@ export default function BuyPreview() {
       }
       Loading.hide();
     },
-    [amount, apiUrl, buyConfig, fiat, getAchTokenInfo, receiveAmount, token, type, wallet.AELF?.caAddress],
+    [
+      amount,
+      apiUrl,
+      buyConfig?.ach?.appId,
+      buyConfig?.ach?.baseUrl,
+      fiat,
+      getAchTokenInfo,
+      receiveAmount,
+      refreshBuyButton,
+      token,
+      type,
+      wallet.AELF?.caAddress,
+    ],
   );
 
   return (

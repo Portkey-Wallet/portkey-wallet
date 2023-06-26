@@ -7,6 +7,8 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { DrawerType, PartialFiatType } from 'pages/Buy/const';
 import './index.less';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 
 export interface ICustomTokenListProps {
   onChange?: (v: PartialFiatType) => void;
@@ -14,6 +16,7 @@ export interface ICustomTokenListProps {
   title?: ReactNode;
   searchPlaceHolder?: string;
   drawerType: DrawerType;
+  side: PaymentTypeEnum;
 }
 
 const tokenList = [
@@ -23,21 +26,32 @@ const tokenList = [
   },
 ];
 
-export default function CustomList({ onChange, onClose, title, searchPlaceHolder, drawerType }: ICustomTokenListProps) {
+export default function CustomList({
+  onChange,
+  onClose,
+  title,
+  searchPlaceHolder,
+  drawerType,
+  side,
+}: ICustomTokenListProps) {
   const { t } = useTranslation();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
   const [filterWord, setFilterWord] = useState<string>('');
   const isTestNet = useIsTestnet();
-  const { buyFiatList } = usePayment();
+  const { buyFiatList, sellFiatList } = usePayment();
+  const fiatList: FiatType[] = useMemo(() => {
+    return side === PaymentTypeEnum.SELL ? sellFiatList : buyFiatList;
+  }, [buyFiatList, sellFiatList, side]);
+
   const showFiatList = useMemo(() => {
     return filterWord === ''
-      ? buyFiatList
-      : buyFiatList.filter(
+      ? fiatList
+      : fiatList.filter(
           (item) =>
             item.currency.toLowerCase().includes(filterWord.toLowerCase()) ||
             item.countryName?.toLowerCase().includes(filterWord.toLowerCase()),
         );
-  }, [buyFiatList, filterWord]);
+  }, [fiatList, filterWord]);
   const showTokenList = useMemo(() => {
     return filterWord === '' ? tokenList : tokenList.filter((item) => filterWord === item.symbol);
   }, [filterWord]);

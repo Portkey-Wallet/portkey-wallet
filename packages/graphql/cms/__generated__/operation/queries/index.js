@@ -10,6 +10,7 @@ module.exports.bottomSecondMenu_aggregated = fs.readFileSync(
   path.join(__dirname, 'bottomSecondMenu_aggregated.gql'),
   'utf8',
 );
+module.exports.buyButton = fs.readFileSync(path.join(__dirname, 'buyButton.gql'), 'utf8');
 module.exports.deviceBrand = fs.readFileSync(path.join(__dirname, 'deviceBrand.gql'), 'utf8');
 module.exports.deviceBrand_by_id = fs.readFileSync(path.join(__dirname, 'deviceBrand_by_id.gql'), 'utf8');
 module.exports.deviceBrand_aggregated = fs.readFileSync(path.join(__dirname, 'deviceBrand_aggregated.gql'), 'utf8');

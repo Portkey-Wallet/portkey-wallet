@@ -34,8 +34,7 @@ export interface DiscoverGroup {
   items: DiscoverItem[];
 }
 
-export interface BuyButton {
-  id: string;
+export interface BuyButtonType {
   isBuySectionShow: boolean;
   isSellSectionShow: boolean;
 }
@@ -51,6 +50,6 @@ export interface CMSState {
     [T in NetworkType]?: DiscoverGroup[];
   };
   buyButtonNetMap?: {
-    [T in NetworkType]?: BuyButton;
+    [T in NetworkType]?: BuyButtonType;
   };
 }

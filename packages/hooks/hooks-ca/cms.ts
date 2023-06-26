@@ -7,6 +7,7 @@ import {
   getSocialMediaAsync,
   getBuyButtonAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
+import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -114,8 +115,11 @@ export const useBuyButtonShow = () => {
 
   const refreshBuyButton = useCallback(async () => {
     const result = await dispatch(getBuyButtonAsync(networkType));
-    console.log(result);
-    return result;
+    const buyButtonResult: BuyButtonType = result?.payload?.buyButtonNetMap?.[networkType] || {
+      isBuySectionShow: false,
+      isSellSectionShow: false,
+    };
+    return buyButtonResult;
   }, [dispatch, networkType]);
 
   return {

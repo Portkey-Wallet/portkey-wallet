@@ -19,11 +19,12 @@ import TopView from 'rn-teaset/components/Overlay/TopView';
 import AppListener from 'components/AppListener/index';
 import InterfaceProvider from 'contexts/useInterface';
 import GlobalStyleHandler from 'components/GlobalStyleHandler';
+import ErrorBoundary from 'components/ErrorBoundary';
 import { lockScreenOrientation } from 'utils/screenOrientation';
 import Updater from 'components/Updater';
 import CodePush from 'react-native-code-push';
 import 'utils/sentryInit';
-
+import 'utils/logBox';
 const codePushOptions = {
   updateDialog: false,
   installMode: CodePush.InstallMode.ON_NEXT_RESTART,
@@ -53,25 +54,27 @@ const App = () => {
   }, []);
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <AppListener>
-          <GlobalStyleHandler>
-            <ThemeProvider theme={myTheme}>
-              <InterfaceProvider>
-                <TopView>
-                  <SafeAreaProvider>
-                    <StatusBar {...statusBarProps} />
-                    <NavigationRoot />
-                    <Updater />
-                  </SafeAreaProvider>
-                </TopView>
-              </InterfaceProvider>
-            </ThemeProvider>
-          </GlobalStyleHandler>
-        </AppListener>
-      </PersistGate>
-    </Provider>
+    <ErrorBoundary view="root">
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <AppListener>
+            <GlobalStyleHandler>
+              <ThemeProvider theme={myTheme}>
+                <InterfaceProvider>
+                  <TopView>
+                    <SafeAreaProvider>
+                      <StatusBar {...statusBarProps} />
+                      <NavigationRoot />
+                      <Updater />
+                    </SafeAreaProvider>
+                  </TopView>
+                </InterfaceProvider>
+              </ThemeProvider>
+            </GlobalStyleHandler>
+          </AppListener>
+        </PersistGate>
+      </Provider>
+    </ErrorBoundary>
   );
 };
 

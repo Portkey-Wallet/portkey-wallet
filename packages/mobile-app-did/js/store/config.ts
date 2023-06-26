@@ -61,6 +61,7 @@ const defaultMiddlewareOptions: DefaultMiddlewareOptions = {
   serializableCheck: {
     // https://redux-toolkit.js.org/usage/usage-guide#use-with-redux-persist
     ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+    ignoreState: true,
   },
 };
 

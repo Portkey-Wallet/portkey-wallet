@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useAppCASelector } from '.';
 import { useAppCommonDispatch } from '../index';
-import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   getDiscoverGroupAsync,
   getSocialMediaAsync,
@@ -94,11 +94,23 @@ export const useBuyButton = (isInit = false) => {
 export const useBuyButtonShow = () => {
   const buyButton = useBuyButton();
   const { networkType } = useCurrentNetworkInfo();
+  const isMainnet = useIsMainnet();
   const dispatch = useAppCommonDispatch();
 
-  const isBuyButtonShow = useMemo(() => {
-    buyButton?.isBuySectionShow || buyButton?.isSellSectionShow;
-  }, [buyButton]);
+  const isBuyButtonShow = useMemo(
+    () => isMainnet && (buyButton?.isBuySectionShow || buyButton?.isSellSectionShow || false),
+    [buyButton?.isBuySectionShow, buyButton?.isSellSectionShow, isMainnet],
+  );
+
+  const isBuySectionShow = useMemo(
+    () => isMainnet && (buyButton?.isBuySectionShow || false),
+    [buyButton?.isBuySectionShow, isMainnet],
+  );
+
+  const isSellSectionShow = useMemo(
+    () => isMainnet && (buyButton?.isSellSectionShow || false),
+    [buyButton?.isSellSectionShow, isMainnet],
+  );
 
   const refreshBuyButton = useCallback(async () => {
     const result = await dispatch(getBuyButtonAsync(networkType));
@@ -108,8 +120,8 @@ export const useBuyButtonShow = () => {
 
   return {
     isBuyButtonShow,
-    isBuySectionShow: buyButton?.isBuySectionShow || false,
-    isSellSectionShow: buyButton?.isSellSectionShow || false,
+    isBuySectionShow,
+    isSellSectionShow,
     refreshBuyButton,
   };
 };

@@ -8,7 +8,7 @@ import { defaultColors } from 'assets/theme';
 
 import { useLanguage } from 'i18n/hooks';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { handleQRCodeData, invalidQRCode, RouteInfoType } from 'utils/qrcode';
+import { handleQRCodeData, invalidQRCode, InvalidQRCodeText, RouteInfoType } from 'utils/qrcode';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
@@ -18,7 +18,6 @@ import { isIos, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/d
 
 import { Camera } from 'expo-camera';
 import { expandQrData } from '@portkey-wallet/utils/qrCode';
-
 interface QrScannerProps {
   route?: any;
   type?: 'login' | 'send';
@@ -46,12 +45,13 @@ const QrScanner: React.FC<QrScannerProps> = () => {
           const qrCodeData = expandQrData(JSON.parse(data));
 
           // if not currentNetwork
-          if (currentNetwork !== qrCodeData.netWorkType) return invalidQRCode();
+          if (currentNetwork !== qrCodeData.netWorkType) return invalidQRCode(InvalidQRCodeText.DIFFERENT_NETWORK);
+
           handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
         }
       } catch (error) {
         console.log(error);
-        return invalidQRCode();
+        return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
       }
     },
     [currentNetwork, previousRouteInfo],

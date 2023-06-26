@@ -5,6 +5,8 @@ import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export const sellSoonText = 'Off-ramp is currently not supported. It will be launched in the coming weeks.';
 
+export const serviceUnavailableText = 'Sorry, the service you are using is temporarily unavailable.';
+
 export const soonText = 'On-ramp is not supported on the Testnet. The on-ramp service on Mainnet is coming soon.';
 
 export const disclaimer =

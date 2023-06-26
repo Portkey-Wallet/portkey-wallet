@@ -20,7 +20,7 @@ import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/st
 import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
-import { fetchBuyFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
+import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
@@ -31,6 +31,7 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import './index.less';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export interface TransactionResult {
   total: number;
@@ -80,6 +81,7 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
+  const { isBuyButtonShow, refreshBuyButton } = useBuyButtonShow();
 
   useEffect(() => {
     if (state?.key) {
@@ -90,12 +92,13 @@ export default function MyBalance() {
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getWalletNameAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
+    refreshBuyButton();
+  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, refreshBuyButton]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
     isMainNet && appDispatch(fetchBuyFiatListAsync());
-    // isMainNet && appDispatch(fetchSellFiatListAsync());
+    isMainNet && appDispatch(fetchSellFiatListAsync());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMainNet]);
 
@@ -181,7 +184,7 @@ export default function MyBalance() {
       </div>
       <BalanceCard
         amount={accountBalance}
-        isShowBuy={true}
+        isShowBuy={isBuyButtonShow}
         onBuy={handleBuy}
         onSend={() => {
           setNavTarget('send');

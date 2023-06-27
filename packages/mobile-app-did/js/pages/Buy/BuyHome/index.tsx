@@ -1,5 +1,5 @@
 import { defaultColors } from 'assets/theme';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
@@ -13,9 +13,6 @@ import SellForm from './components/SellForm';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import ActionSheet from 'components/ActionSheet';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useIsFocused } from '@react-navigation/native';
-import navigationService from 'utils/navigationService';
-import CommonToast from 'components/CommonToast';
 
 type TabItemType = {
   name: string;
@@ -39,22 +36,9 @@ const tabList: TabItemType[] = [
 export default function BuyHome() {
   const { t } = useLanguage();
   const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow();
-  const isFocused = useIsFocused();
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
     isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
   );
-
-  useEffect(() => {
-    if (!isFocused) return;
-    if (
-      (selectTab === PaymentTypeEnum.BUY && !isBuySectionShow) ||
-      (selectTab === PaymentTypeEnum.SELL && !isSellSectionShow)
-    ) {
-      CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
-      navigationService.navigate('Tab');
-      return;
-    }
-  }, [isBuySectionShow, isFocused, isSellSectionShow, selectTab]);
 
   const onTabPress = (type: PaymentTypeEnum) => {
     if (type === PaymentTypeEnum.BUY && !isBuySectionShow) {

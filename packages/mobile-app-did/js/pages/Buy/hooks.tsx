@@ -119,6 +119,7 @@ export const useReceive = (
         registerRefreshReceive();
       }
 
+      if (!isFocusedRef.current) return;
       if (!isEqual(params, lastParams.current)) return;
       if (
         !rst ||

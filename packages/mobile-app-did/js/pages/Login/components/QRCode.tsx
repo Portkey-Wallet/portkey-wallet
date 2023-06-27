@@ -10,7 +10,7 @@ import navigationService from 'utils/navigationService';
 import styles from '../styles';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { TextS, TextXXXL } from 'components/CommonText';
+import { TextM, TextS, TextXXXL } from 'components/CommonText';
 import { PageLoginType } from '../types';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
@@ -25,6 +25,8 @@ import { useGetDeviceInfo } from 'hooks/device';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useCheckManager } from 'hooks/useLogOut';
+import Lottie from 'lottie-react-native';
+import { pTd } from 'utils/unit';
 
 export default function QRCode({ setLoginType }: { setLoginType: (type: PageLoginType) => void }) {
   const { walletInfo, currentNetwork } = useCurrentWallet();
@@ -108,14 +110,22 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
   }, [currentNetwork, getDeviceInfo, newWallet]);
 
   return (
-    <View style={[BGStyles.bg1, styles.card]}>
+    <View style={[BGStyles.bg1, styles.card, styles.qrCodeCard]}>
       <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.referral)}>
         <Image source={phone} style={styles.iconStyle} />
       </Touchable>
-      <TextXXXL style={[styles.qrCodeTitle, GStyles.textAlignCenter]}>Scan code to log in</TextXXXL>
-      <TextS style={[GStyles.textAlignCenter, FontStyles.font3]}>Please use the Portkey DApp to scan the QR code</TextS>
-      <View style={[GStyles.alignCenter, styles.qrCodeBox]}>
-        <CommonQRCodeStyled qrData={qrData} hasMask={!newWallet} />
+      <View style={[GStyles.flex1]}>
+        <TextXXXL style={[styles.qrCodeTitle, GStyles.textAlignCenter]}>Scan code to log in</TextXXXL>
+        <TextS style={[GStyles.textAlignCenter, FontStyles.font3]}>
+          Please use the Portkey DApp to scan the QR code
+        </TextS>
+        <View style={[GStyles.alignCenter, styles.qrCodeBox, GStyles.flex1]}>
+          <CommonQRCodeStyled qrData={qrData} hasMask={!newWallet} />
+          <View style={[GStyles.flex1, GStyles.center, GStyles.flexRow]}>
+            <Lottie source={require('./scanLoading.json')} style={styles.scanLoading} autoPlay loop />
+            <TextM style={[GStyles.textAlignCenter, FontStyles.font3]}>Waiting for authorization...</TextM>
+          </View>
+        </View>
       </View>
     </View>
   );

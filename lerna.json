@@ -2,7 +2,13 @@
   "$schema": "node_modules/lerna/schemas/lerna-schema.json",
   "useNx": true,
   "useWorkspaces": true,
-  "version": "0.0.0",
+  "version": "1.3.0",
   "packages": ["packages/*"],
-  "npmClient": "yarn"
+  "npmClient": "yarn",
+  "command": {
+    "publish": {
+      "allowBranch": ["release/*"],
+      "message": "chore: 🤖 release %s"
+    }
+  }
 }

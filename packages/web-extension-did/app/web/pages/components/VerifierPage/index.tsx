@@ -17,7 +17,7 @@ import { verification } from 'utils/api';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCommonState } from 'store/Provider/hooks';
 import { useLocation } from 'react-router';
-import { RecaptchaType } from '@portkey-wallet/types/verifier';
+import { RecaptchaType, VerifierCodeOperationType } from '@portkey-wallet/types/verifier';
 
 const MAX_TIMER = 60;
 
@@ -28,6 +28,7 @@ enum VerificationError {
 
 interface VerifierPageProps {
   recaptchaType: RecaptchaType;
+  verifierCodeOperationType: VerifierCodeOperationType;
   loginAccount?: LoginInfo;
   currentGuardian?: UserGuardianItem;
   guardianType?: LoginType;
@@ -37,6 +38,7 @@ interface VerifierPageProps {
 
 export default function VerifierPage({
   recaptchaType,
+  verifierCodeOperationType,
   currentGuardian,
   guardianType,
   isInitStatus,
@@ -79,6 +81,7 @@ export default function VerifierPage({
               verificationCode: code,
               verifierId: currentGuardian.verifier?.id || '',
               chainId: originChainId,
+              verifierCodeOperationType,
             },
           });
 
@@ -100,7 +103,7 @@ export default function VerifierPage({
         message.error(_error);
       }
     },
-    [guardianType, originChainId, currentGuardian, setLoading, onSuccess, t],
+    [guardianType, originChainId, currentGuardian, setLoading, onSuccess, t, verifierCodeOperationType],
   );
 
   const resendCode = useCallback(async () => {

@@ -11,6 +11,7 @@ import {
   ApprovalType,
   RecaptchaType,
   VerificationType,
+  VerifierCodeOperationType,
   VerifierInfo,
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
@@ -110,6 +111,32 @@ export default function VerifierDetails() {
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
       Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
       try {
+        let verifierCodeOperationType: VerifierCodeOperationType;
+        switch (verificationType) {
+          case VerificationType.register:
+            verifierCodeOperationType = VerifierCodeOperationType.register;
+            break;
+          case VerificationType.communityRecovery:
+            verifierCodeOperationType = VerifierCodeOperationType.communityRecovery;
+            break;
+          case VerificationType.addGuardian:
+          case VerificationType.addGuardianByApprove:
+            verifierCodeOperationType = VerifierCodeOperationType.addGuardian;
+            break;
+          case VerificationType.deleteGuardian:
+            verifierCodeOperationType = VerifierCodeOperationType.removeGuardian;
+            break;
+          case VerificationType.editGuardian:
+            verifierCodeOperationType = VerifierCodeOperationType.editGuardian;
+            break;
+          case VerificationType.removeOtherManager:
+            verifierCodeOperationType = VerifierCodeOperationType.removeOtherManager;
+            break;
+          default:
+            verifierCodeOperationType = VerifierCodeOperationType.unknown;
+            break;
+        }
+
         const rst = await verification.checkVerificationCode({
           params: {
             type: LoginType[guardianItem?.guardianType as LoginType],
@@ -118,6 +145,7 @@ export default function VerifierDetails() {
             ...requestCodeResult,
             verifierId: guardianItem?.verifier?.id,
             chainId: originChainId,
+            verifierCodeOperationType,
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -129,7 +157,10 @@ export default function VerifierDetails() {
 
         switch (verificationType) {
           case VerificationType.communityRecovery:
-          case VerificationType.optGuardianApproval:
+          case VerificationType.addGuardianByApprove:
+          case VerificationType.editGuardian:
+          case VerificationType.deleteGuardian:
+          case VerificationType.removeOtherManager:
             setGuardianStatus({
               requestCodeResult: requestCodeResult,
               status: VerifyStatus.Verified,

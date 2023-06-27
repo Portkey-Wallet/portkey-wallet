@@ -64,9 +64,24 @@ function GuardianItemButton({
   const { status, requestCodeResult } = itemStatus || {};
   const verifyToken = useVerifyToken();
   const guardianInfo = useMemo(() => {
-    let _verificationType = VerificationType.optGuardianApproval;
-    if (approvalType === ApprovalType.communityRecovery) {
-      _verificationType = VerificationType.communityRecovery;
+    let _verificationType: VerificationType;
+    switch (approvalType) {
+      case ApprovalType.addGuardian:
+        _verificationType = VerificationType.addGuardianByApprove;
+        break;
+      case ApprovalType.editGuardian:
+        _verificationType = VerificationType.editGuardian;
+        break;
+      case ApprovalType.deleteGuardian:
+        _verificationType = VerificationType.deleteGuardian;
+        break;
+      case ApprovalType.removeOtherManager:
+        _verificationType = VerificationType.removeOtherManager;
+        break;
+      case ApprovalType.communityRecovery:
+      default:
+        _verificationType = VerificationType.communityRecovery;
+        break;
     }
     return {
       guardianItem,

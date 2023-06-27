@@ -4,7 +4,7 @@ import { useAppDispatch, useLoginInfo, useGuardiansInfo, useUserInfo, useLoading
 import { useCallback, useMemo } from 'react';
 import { message } from 'antd';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { RecaptchaType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { RecaptchaType, VerifierCodeOperationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import useLocationState from 'hooks/useLocationState';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -198,6 +198,27 @@ export default function VerifierAccount() {
     return RecaptchaType.optGuardian;
   }, [state]);
 
+  const verifierCodeOperationType = useMemo(() => {
+    switch (state) {
+      case 'register':
+        return VerifierCodeOperationType.register;
+      case 'login':
+        return VerifierCodeOperationType.communityRecovery;
+      case 'guardians/add':
+        return VerifierCodeOperationType.addGuardian;
+      case 'guardians/edit':
+        return VerifierCodeOperationType.editGuardian;
+      case 'guardians/del':
+        return VerifierCodeOperationType.removeGuardian;
+      default:
+        if (state?.indexOf('removeManage') !== -1) {
+          return VerifierCodeOperationType.removeOtherManager;
+        } else {
+          return VerifierCodeOperationType.unknown;
+        }
+    }
+  }, [state]);
+
   const renderContent = useMemo(
     () => (
       <div className="common-content1 verifier-account-content">
@@ -208,10 +229,11 @@ export default function VerifierAccount() {
           guardianType={loginAccount?.loginType}
           onSuccess={onSuccess}
           recaptchaType={recaptchaType}
+          verifierCodeOperationType={verifierCodeOperationType}
         />
       </div>
     ),
-    [currentGuardian, isInitStatus, loginAccount, onSuccess, recaptchaType],
+    [currentGuardian, isInitStatus, loginAccount, onSuccess, recaptchaType, verifierCodeOperationType],
   );
 
   const props = useMemo(

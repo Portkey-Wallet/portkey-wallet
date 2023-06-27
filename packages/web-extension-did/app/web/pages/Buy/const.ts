@@ -3,6 +3,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { ICurToken } from './components/TokenInput';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
+export const buySoonText = 'On-ramp is currently not supported. It will be launched in the coming weeks.';
 export const sellSoonText = 'Off-ramp is currently not supported. It will be launched in the coming weeks.';
 
 export const serviceUnavailableText = 'Sorry, the service you are using is temporarily unavailable.';

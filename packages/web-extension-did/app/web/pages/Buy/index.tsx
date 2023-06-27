@@ -16,6 +16,7 @@ import {
   initValueSave,
   MAX_UPDATE_TIME,
   PartialFiatType,
+  buySoonText,
   sellSoonText,
   serviceUnavailableText,
 } from './const';
@@ -273,10 +274,13 @@ export default function Buy() {
 
       const side = e.target.value;
       // Compatible with the situation where the function is turned off when the user is on the page.
-      if (
-        (side === PaymentTypeEnum.BUY && !isBuySectionShow) ||
-        (side === PaymentTypeEnum.SELL && !isSellSectionShow)
-      ) {
+      if (side === PaymentTypeEnum.BUY && !isBuySectionShow) {
+        CustomTipModal({
+          content: buySoonText,
+        });
+        return;
+      }
+      if (side === PaymentTypeEnum.SELL && !isSellSectionShow) {
         CustomTipModal({
           content: sellSoonText,
         });

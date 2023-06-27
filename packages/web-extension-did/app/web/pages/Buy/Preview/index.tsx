@@ -33,7 +33,7 @@ export default function Preview() {
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
-  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow();
+  const { refreshBuyButton } = useBuyButtonShow();
 
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
   const showRateText = useMemo(() => `1 ${data.crypto} ≈ ${formatAmountShow(rate, 2)} ${data.fiat}`, [data, rate]);
@@ -112,7 +112,6 @@ export default function Preview() {
     const baseUrl = buyConfig?.ach?.baseUrl;
     if (!appId || !baseUrl) return setLoading(false);
     try {
-      setLoading(true);
       const { network, country, fiat, amount, crypto } = data;
       let achUrl = `${baseUrl}/?crypto=${crypto}&network=${network}&country=${country}&fiat=${fiat}&appId=${appId}&callbackUrl=${encodeURIComponent(
         `${apiUrl}${paymentApi.updateAchOrder}`,

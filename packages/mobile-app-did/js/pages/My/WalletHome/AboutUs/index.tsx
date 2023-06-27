@@ -24,7 +24,7 @@ const AboutUs = () => {
         <Svg icon="app-blue-logo" oblongSize={[pTd(48.89), pTd(48.89)]} />
       </View>
       <TextXXXL>Portkey</TextXXXL>
-      <TextM style={styles.version}>V {Application.nativeApplicationVersion}</TextM>
+      <TextM style={styles.version}>{`V${Application.nativeApplicationVersion} beta`}</TextM>
 
       <View style={styles.btnContainer}>
         <MenuItem

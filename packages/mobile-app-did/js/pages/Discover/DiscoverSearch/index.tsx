@@ -14,16 +14,24 @@ import fonts from 'assets/theme/fonts';
 import RecordSection from '../components/RecordSection';
 import SearchDiscoverSection from '../components/SearchDiscoverSection';
 import { isIOS } from '@rneui/base';
-import { checkIsUrl, getHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import {
+  checkIsUrl,
+  getHost,
+  getProtocolAndHost,
+  isDangerousLink,
+  prefixUrlWithProtocol,
+} from '@portkey-wallet/utils/dapp/browser';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import { useDiscoverJumpWithNetWork, useDiscoverWhiteList } from 'hooks/discover';
+import ActionSheet from 'components/ActionSheet';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
 
   const discoverGroupList = useDiscoverGroupList();
   const jumpToWebview = useDiscoverJumpWithNetWork();
+  const { checkIsInWhiteList, upDateWhiteList } = useDiscoverWhiteList();
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const iptRef = useRef<any>();
@@ -31,9 +39,8 @@ export default function DiscoverSearch() {
   const [showRecord, setShowRecord] = useState<boolean>(true);
   const [filteredDiscoverList, setFilteredDiscoverList] = useState<DiscoverItem[]>([]);
 
-  const navBack = useCallback(() => {
-    navigationService.goBack();
-  }, []);
+  const clearText = useCallback(() => setValue(''), []);
+  const navBack = useCallback(() => navigationService.goBack(), []);
 
   const flatList = useMemo((): DiscoverItem[] => {
     const list = [] as DiscoverItem[];
@@ -46,31 +53,62 @@ export default function DiscoverSearch() {
     return list;
   }, [discoverGroupList]);
 
-  const clearText = useCallback(() => setValue(''), []);
-
   useEffect(() => {
     if (!value) setShowRecord(true);
   }, [value]);
 
-  const onSearch = useCallback(() => {
-    const newValue = value.replace(/\s+/g, '');
-    if (!newValue) return;
-
-    if (checkIsUrl(newValue)) {
+  const onDiscoverJump = useCallback(
+    (name: string, url: string) => {
       jumpToWebview({
         item: {
           id: Date.now(),
-          name: getHost(prefixUrlWithProtocol(newValue)),
-          url: prefixUrlWithProtocol(newValue),
+          name,
+          url,
         },
       });
+    },
+    [jumpToWebview],
+  );
+
+  const onSearch = useCallback(() => {
+    const newValue = value.replace(/\s+/g, '').toLocaleLowerCase();
+    if (!newValue) return;
+
+    if (checkIsUrl(newValue)) {
+      const protocolAndHost = getProtocolAndHost(newValue);
+      console.log(protocolAndHost, checkIsInWhiteList(protocolAndHost), !isDangerousLink(protocolAndHost));
+      if (checkIsInWhiteList(protocolAndHost) || !isDangerousLink(protocolAndHost)) {
+        onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
+      } else {
+        ActionSheet.alert({
+          title: 'title',
+          message: 'message',
+          buttons: [
+            {
+              title: 'Get it',
+              type: 'solid',
+              onPress: () => {
+                onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
+              },
+            },
+            {
+              title: 'Disable notification',
+              type: 'solid',
+              onPress: () => {
+                onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
+                upDateWhiteList(protocolAndHost);
+              },
+            },
+          ],
+        });
+      }
     } else {
       // else search in Discover list
       const filterList = flatList.filter(item => item.title.replace(/\s+/g, '').includes(newValue));
       setFilteredDiscoverList(filterList);
       setShowRecord(false);
     }
-  }, [flatList, jumpToWebview, value]);
+  }, [checkIsInWhiteList, flatList, onDiscoverJump, upDateWhiteList, value]);
 
   useFocusEffect(
     useCallback(() => {

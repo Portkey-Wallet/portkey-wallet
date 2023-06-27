@@ -5,8 +5,9 @@
   "version": "1.3.0",
   "packages": ["packages/*"],
   "npmClient": "yarn",
-  "command":{
+  "command": {
     "publish": {
+      "allowBranch": ["release/*"],
       "message": "chore: 🤖 release %s"
     }
   }

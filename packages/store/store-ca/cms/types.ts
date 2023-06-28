@@ -34,6 +34,11 @@ export interface DiscoverGroup {
   items: DiscoverItem[];
 }
 
+export interface BuyButtonType {
+  isBuySectionShow: boolean;
+  isSellSectionShow: boolean;
+}
+
 export interface CMSState {
   socialMediaListNetMap: {
     [T in NetworkType]?: SocialMediaItem[];
@@ -43,5 +48,8 @@ export interface CMSState {
   };
   discoverGroupListNetMap: {
     [T in NetworkType]?: DiscoverGroup[];
+  };
+  buyButtonNetMap?: {
+    [T in NetworkType]?: BuyButtonType;
   };
 }

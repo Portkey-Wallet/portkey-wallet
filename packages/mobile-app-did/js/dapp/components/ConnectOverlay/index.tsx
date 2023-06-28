@@ -76,7 +76,7 @@ const ConnectModal = (props: ConnectModalType) => {
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} bottomButtonGroup={buttonList}>
+    <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} bottomButtonGroup={buttonList} onClose={onReject}>
       <View style={[styles.contentWrap, gStyles.overlayStyle]}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextM style={[styles.walletTitle, FontStyles.font3]}>{t('Wallet')}</TextM>
@@ -106,6 +106,7 @@ export const showConnectModal = (props: ConnectModalType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    onCloseRequest: props.onReject,
   });
 };
 

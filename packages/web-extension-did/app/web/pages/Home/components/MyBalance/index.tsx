@@ -31,6 +31,7 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import './index.less';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export interface TransactionResult {
   total: number;
@@ -80,6 +81,7 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
+  const { isBuyButtonShow } = useBuyButtonShow();
 
   useEffect(() => {
     if (state?.key) {
@@ -181,7 +183,7 @@ export default function MyBalance() {
       </div>
       <BalanceCard
         amount={accountBalance}
-        isShowBuy={true}
+        isShowBuy={isBuyButtonShow}
         onBuy={handleBuy}
         onSend={() => {
           setNavTarget('send');

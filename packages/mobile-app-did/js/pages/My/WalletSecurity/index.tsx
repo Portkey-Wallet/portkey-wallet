@@ -8,6 +8,7 @@ import { useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import navigationService from 'utils/navigationService';
 import MenuItem from '../components/MenuItem';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { pTd } from 'utils/unit';
 
 const WalletSecurity: React.FC = () => {
   const { deviceAmount } = useDeviceList();
@@ -20,6 +21,7 @@ const WalletSecurity: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <MenuItem
+        style={pageStyles.menuStyle}
         title="Login Devices"
         suffix={deviceAmount}
         onPress={() => {
@@ -27,6 +29,7 @@ const WalletSecurity: React.FC = () => {
         }}
       />
       <MenuItem
+        style={pageStyles.menuStyle}
         title="Connected Sites"
         suffix={dappList?.length ?? 0}
         onPress={() => {
@@ -42,6 +45,9 @@ const pageStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: defaultColors.bg4,
     ...GStyles.paddingArg(24, 20, 18),
+  },
+  menuStyle: {
+    marginBottom: pTd(24),
   },
 });
 

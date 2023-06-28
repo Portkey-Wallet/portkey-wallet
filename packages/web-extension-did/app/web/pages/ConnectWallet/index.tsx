@@ -47,7 +47,7 @@ export default function ConnectWallet() {
     [t],
   );
 
-  const handleSign = useCallback(() => {
+  const handleSign = useCallback(async () => {
     try {
       dispatch(
         addDapp({

@@ -16,7 +16,7 @@ import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useLocation } from 'react-router';
-import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBuyButton, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 keepAliveOnPages({});
 
@@ -56,5 +56,6 @@ export default function Updater() {
   }, [onLocking]);
   usePhoneCountryCode(true);
   useSocialMediaList(true);
+  useBuyButton(true);
   return null;
 }

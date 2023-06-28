@@ -36,9 +36,12 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import BigNumber from 'bignumber.js';
 import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import CommonToast from 'components/CommonToast';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
+  const { refreshBuyButton } = useBuyButtonShow();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -161,8 +164,22 @@ export default function SellForm() {
     if (!tokenContractAddress || decimals === undefined || !symbol || !chainId) return;
     if (!pin || !endPoint) return;
 
+    Loading.show();
+    let isSellSectionShow = false;
     try {
-      Loading.show();
+      const result = await refreshBuyButton();
+      isSellSectionShow = result.isSellSectionShow;
+    } catch (error) {
+      console.log(error);
+    }
+    if (!isSellSectionShow) {
+      CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
+      navigationService.navigate('Tab');
+      Loading.hide();
+      return;
+    }
+
+    try {
       if (ZERO.plus(amount).isLessThanOrEqualTo(DEFAULT_FEE)) {
         throw new Error('Insufficient funds');
       }
@@ -205,7 +222,7 @@ export default function SellForm() {
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, rate, receiveAmount, aelfToken, chainInfo, pin, fiat, token, wallet]);
+  }, [amount, rate, receiveAmount, aelfToken, chainInfo, pin, refreshBuyButton, fiat, token, wallet]);
 
   return (
     <View style={styles.formContainer}>

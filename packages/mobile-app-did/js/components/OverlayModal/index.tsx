@@ -32,6 +32,7 @@ export type OverlayModalProps = {
   autoKeyboardInsets?: boolean;
   animated?: boolean;
   enabledNestScrollView?: boolean;
+  onCloseRequest?: () => void;
 };
 
 export function OverlayTransformView({
@@ -80,13 +81,23 @@ export default class OverlayModal extends React.Component {
     }
     propsStyle && style.push(propsStyle);
     propsContainerStyle && containerStyle.push(propsContainerStyle);
-    let overlayView;
+    let overlayView, currentRef: OverlayInterface | undefined;
+    const onCloseRequest = props.onCloseRequest;
+    if (onCloseRequest) {
+      props.onCloseRequest = () => {
+        currentRef ? currentRef.close?.() : OverlayModal.hide();
+        onCloseRequest();
+      };
+    }
     if (position === 'bottom') {
       overlayView = (
         <Overlay.PopView
           {...DefaultOverlayProps}
           containerStyle={[GStyles.flex1, style]}
-          ref={(v: OverlayInterface) => elements.push(v)}
+          ref={(v: OverlayInterface) => {
+            currentRef = v;
+            elements.push(v);
+          }}
           {...props}>
           <OverlayTransformView containerStyle={containerStyle} enabledNestScrollView={!!enabledNestScrollView}>
             {component}
@@ -105,7 +116,7 @@ export default class OverlayModal extends React.Component {
         </Overlay.PopView>
       );
     }
-    return Overlay.show(overlayView);
+    return Overlay.show(overlayView) as number;
   }
 
   static hide() {

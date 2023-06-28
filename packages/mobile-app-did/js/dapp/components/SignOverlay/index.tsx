@@ -47,7 +47,7 @@ const SignModal = (props: SignModalPropsType) => {
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList}>
+    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList} onClose={onReject}>
       <View style={styles.contentWrap}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextXXXL style={styles.signTitle}>Sign Message</TextXXXL>
@@ -61,6 +61,7 @@ export const showSignModal = (props: SignModalPropsType) => {
   OverlayModal.show(<SignModal {...props} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    onCloseRequest: props.onReject,
   });
 };
 

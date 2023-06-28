@@ -7,7 +7,7 @@ import { StyleSheet, View } from 'react-native';
 export default function Welcome() {
   return (
     <View style={styles.container}>
-      <Svg iconStyle={styles.iconStyle} size={100} icon="logo-icon" />
+      <Svg iconStyle={styles.iconStyle} size={100} icon="logo-icon" color={defaultColors.bg1} />
       <TextXXXL style={styles.title}>Welcome to Portkey</TextXXXL>
       <TextL style={styles.tip}>Your key to play and earn in Web 3</TextL>
     </View>

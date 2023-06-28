@@ -22,3 +22,9 @@ export const getDappState = async () => {
   if (!dapp) dapp = getDefaultState().dapp;
   return dapp as IDappStoreState;
 };
+
+export const getCurrentNetworkWallet = async () => {
+  const wallet = await getWalletState();
+  const currentNetwork = wallet.currentNetwork;
+  return wallet.walletInfo?.caInfo?.[currentNetwork];
+};

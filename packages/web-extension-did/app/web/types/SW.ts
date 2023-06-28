@@ -1,11 +1,8 @@
-import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 import { AutoLockDataType } from 'constants/lock';
-import { RegisterStatus, SendResponseFun } from 'types';
+import { SendResponseFun } from 'types';
 
 export interface IPageState {
   lockTime: AutoLockDataType;
-  registerStatus: RegisterStatus;
-  wallet?: WalletState;
 }
 
 export interface BaseInternalMessagePayload {

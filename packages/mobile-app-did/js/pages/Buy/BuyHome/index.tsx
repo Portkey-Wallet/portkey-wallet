@@ -1,5 +1,5 @@
 import { defaultColors } from 'assets/theme';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
@@ -12,6 +12,7 @@ import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import ActionSheet from 'components/ActionSheet';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 type TabItemType = {
   name: string;
@@ -34,7 +35,41 @@ const tabList: TabItemType[] = [
 
 export default function BuyHome() {
   const { t } = useLanguage();
-  const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(PaymentTypeEnum.BUY);
+  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow();
+  const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
+    isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
+  );
+
+  const onTabPress = useCallback(
+    (type: PaymentTypeEnum) => {
+      if (type === PaymentTypeEnum.BUY && !isBuySectionShow) {
+        ActionSheet.alert({
+          title2: (
+            <TextM style={[GStyles.textAlignCenter]}>
+              On-ramp is currently not supported. It will be launched in the coming weeks.
+            </TextM>
+          ),
+          buttons: [{ title: 'OK' }],
+        });
+        refreshBuyButton();
+        return;
+      }
+      if (type === PaymentTypeEnum.SELL && !isSellSectionShow) {
+        ActionSheet.alert({
+          title2: (
+            <TextM style={[GStyles.textAlignCenter]}>
+              Off-ramp is currently not supported. It will be launched in the coming weeks.
+            </TextM>
+          ),
+          buttons: [{ title: 'OK' }],
+        });
+        refreshBuyButton();
+        return;
+      }
+      setSelectTab(type);
+    },
+    [isBuySectionShow, isSellSectionShow, refreshBuyButton],
+  );
 
   return (
     <PageContainer
@@ -48,19 +83,7 @@ export default function BuyHome() {
             <TouchableOpacity
               key={tabItem.name}
               onPress={() => {
-                if (tabItem.type === PaymentTypeEnum.SELL) {
-                  ActionSheet.alert({
-                    title2: (
-                      <TextM style={[GStyles.textAlignCenter]}>
-                        Off-ramp is currently not supported. It will be launched in the coming weeks.
-                      </TextM>
-                    ),
-                    buttons: [{ title: 'OK' }],
-                  });
-                  return;
-                }
-
-                setSelectTab(tabItem.type);
+                onTabPress(tabItem.type);
               }}>
               <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
                 <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>

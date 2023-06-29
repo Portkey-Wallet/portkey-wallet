@@ -29,9 +29,12 @@ import { useReceive } from 'pages/Buy/hooks';
 import BigNumber from 'bignumber.js';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import CommonToast from 'components/CommonToast';
 
 export default function BuyForm() {
   const { buyFiatList: fiatList } = usePayment();
+  const { refreshBuyButton } = useBuyButtonShow();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -134,16 +137,33 @@ export default function BuyForm() {
       });
       return;
     }
+
+    Loading.show();
+    let isBuySectionShow = false;
+    try {
+      const result = await refreshBuyButton();
+      isBuySectionShow = result.isBuySectionShow;
+    } catch (error) {
+      console.log(error);
+    }
+    if (!isBuySectionShow) {
+      CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
+      navigationService.navigate('Tab');
+      Loading.hide();
+      return;
+    }
+
     let _rate = rate,
       _receiveAmount = receiveAmount;
 
     if (isRefreshReceiveValid.current === false) {
-      Loading.show();
       const rst = await refreshReceiveRef.current();
       Loading.hide();
       if (!rst) return;
       _rate = rst.rate;
       _receiveAmount = rst.receiveAmount;
+    } else {
+      Loading.hide();
     }
     navigationService.navigate('BuyPreview', {
       amount,
@@ -153,7 +173,7 @@ export default function BuyForm() {
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, fiat, rate, receiveAmount, token]);
+  }, [amount, fiat, rate, receiveAmount, refreshBuyButton, token]);
 
   return (
     <View style={styles.formContainer}>

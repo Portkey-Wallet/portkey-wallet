@@ -19,26 +19,38 @@ import { addManager } from 'utils/wallet';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
 import socket from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
+import useEffectOnce from 'hooks/useEffectOnce';
+
 const ScrollViewProps = { disabled: true };
+
 export default function ScanLogin() {
   const { data } = useRouterParams<{ data?: LoginQRData }>();
-  const { address: managerAddress, extraData: qrExtraData, deviceType } = data || {};
+  const { address: managerAddress, extraData: qrExtraData, deviceType, time } = data || {};
 
   const { caHash, address } = useCurrentWalletInfo();
   const [loading, setLoading] = useState<boolean>();
   const getCurrentCAContract = useGetCurrentCAContract();
+
+  useEffectOnce(() => {
+    const timeData = time || Math.floor(Date.now() / 1000);
+    try {
+      request.message.sendScanLogin({
+        params: {
+          targetClientId: `${managerAddress}_${timeData}`,
+        },
+      });
+    } catch (error) {
+      console.log('sendScanLogin: error', error);
+    }
+  });
 
   const onLogin = useCallback(async () => {
     if (!caHash || loading || !managerAddress) return;
     try {
       setLoading(true);
       const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
-      console.log('qrExtraData', qrExtraData, deviceType);
-      console.log('deviceInfo', deviceInfo);
       const contract = await getCurrentCAContract();
       const extraData = await extraDataEncode(deviceInfo || {}, true);
-      console.log('extraData===', extraData);
-
       const req = await addManager({ contract, caHash, address, managerAddress, extraData });
       if (req?.error) throw req?.error;
       socket.doOpen({

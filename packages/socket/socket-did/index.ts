@@ -1,6 +1,7 @@
 import Signalr from '../index';
 import { CaAccountRecoverResult, CaAccountRegisterResult } from '@portkey-wallet/types/types-ca/wallet';
 import { listenList } from '@portkey-wallet/constants/constants-ca/socket';
+import { onScanLoginDataType } from './types';
 
 export class SignalrDid extends Signalr {
   public Ack(clientId: string, requestId: string) {
@@ -39,6 +40,16 @@ export class SignalrDid extends Signalr {
       if (typeof data?.body === 'string') {
         callback(data);
         this.stop();
+      }
+    });
+  }
+
+  public onScanLogin(callback: (data: onScanLoginDataType | null) => void) {
+    return this.listen('onScanLogin', (data: { body: string }) => {
+      if (typeof data?.body === 'string') {
+        callback(data);
+      } else {
+        callback(null);
       }
     });
   }

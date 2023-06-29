@@ -53,7 +53,7 @@ export default function ContextProviders({
   }, [language]);
 
   return (
-    <ErrorBoundary view="root">
+    <ErrorBoundary view="root" pageType={pageType}>
       <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
         <ReduxProvider>
           <ScreenLoading />

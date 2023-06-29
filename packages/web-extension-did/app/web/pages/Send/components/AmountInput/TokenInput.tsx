@@ -14,6 +14,7 @@ import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import CustomSvg from 'components/CustomSvg';
 import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useCheckManagerSyncState } from 'hooks/wallet';
 
 export default function TokenInput({
   fromAccount,
@@ -22,6 +23,7 @@ export default function TokenInput({
   errorMsg,
   onChange,
   getTranslationInfo,
+  setErrorMsg,
 }: {
   fromAccount: { address: string; AESEncryptPrivateKey: string };
   toAccount: { address: string };
@@ -30,6 +32,7 @@ export default function TokenInput({
   errorMsg: string;
   onChange: (params: { amount: string; balance: string }) => void;
   getTranslationInfo: (num: string) => any;
+  setErrorMsg: (v: string) => void;
 }) {
   const currentNetwork = useCurrentNetworkInfo();
   const currentChain = useCurrentChain(token.chainId as ChainId);
@@ -40,6 +43,7 @@ export default function TokenInput({
   const [maxAmount, setMaxAmount] = useState('');
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
+  const checkManagerSyncState = useCheckManagerSyncState();
 
   const amountInUsd = useMemo(
     () => amountInUsdShow(value || amount, 0, token.symbol),
@@ -77,6 +81,8 @@ export default function TokenInput({
         setMaxAmount(divDecimals(balance, token.decimals).toString());
         return;
       }
+      const _isManagerSynced = await checkManagerSyncState(token.chainId);
+      if (!_isManagerSynced) return;
       const fee = await getTranslationInfo(divDecimals(balance, token.decimals).toString());
       if (fee) {
         setMaxAmount(divDecimals(balance, token.decimals).toString());
@@ -86,7 +92,7 @@ export default function TokenInput({
     } else {
       setMaxAmount(divDecimals(balance, token.decimals).toString());
     }
-  }, [balance, getTranslationInfo, token]);
+  }, [balance, checkManagerSyncState, getTranslationInfo, token.chainId, token.decimals, token.symbol]);
 
   useEffect(() => {
     getTokenBalance();
@@ -111,10 +117,15 @@ export default function TokenInput({
     onChange({ amount, balance });
   }, [amount, balance, onChange]);
 
-  const handleMax = useCallback(() => {
-    setAmount(maxAmount);
-    onChange({ amount: maxAmount, balance });
-  }, [balance, maxAmount, onChange]);
+  const handleMax = useCallback(async () => {
+    const _isManagerSynced = await checkManagerSyncState(token.chainId);
+    if (_isManagerSynced) {
+      setAmount(maxAmount);
+      onChange({ amount: maxAmount, balance });
+    } else {
+      setErrorMsg('Synchronizing on-chain account information...');
+    }
+  }, [balance, checkManagerSyncState, maxAmount, onChange, setErrorMsg, token.chainId]);
 
   return (
     <div className="amount-wrap">

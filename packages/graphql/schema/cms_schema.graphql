@@ -5,6 +5,7 @@ type Query {
   bottomSecondMenu(filter: bottomSecondMenu_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [bottomSecondMenu!]!
   bottomSecondMenu_by_id(id: ID!): bottomSecondMenu
   bottomSecondMenu_aggregated(groupBy: [String], filter: bottomSecondMenu_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [bottomSecondMenu_aggregated!]!
+  buyButton: buyButton
   deviceBrand(filter: deviceBrand_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [deviceBrand!]!
   deviceBrand_by_id(id: ID!): deviceBrand
   deviceBrand_aggregated(groupBy: [String], filter: deviceBrand_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [deviceBrand_aggregated!]!
@@ -188,6 +189,19 @@ type bottomSecondMenu_aggregated_fields {
   parent: Float
   sort: Float
   type: Float
+}
+
+type buyButton {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  isBuySectionShow: Boolean
+  isSellSectionShow: Boolean
+  status: String
+  user_created: String
+  user_updated: String
 }
 
 type count_functions {

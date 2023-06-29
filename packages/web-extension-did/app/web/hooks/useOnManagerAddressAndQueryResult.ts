@@ -16,6 +16,8 @@ import useFetchDidWallet from './useFetchDidWallet';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
 import { message } from 'antd';
 import ModalTip from 'pages/components/ModalTip';
+import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useTranslation } from 'react-i18next';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -25,6 +27,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const getWalletCAAddressResult = useFetchDidWallet(true);
   const { loginAccount, registerVerifier } = useLoginInfo();
   const network = useCurrentNetworkInfo();
+  const { t } = useTranslation();
 
   const originChainId = useOriginChainId();
 
@@ -109,7 +112,13 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       try {
         if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
           return message.error('Missing account!!! Please login/register again');
-        setLoading(true, 'Creating address on the chain...');
+
+        if (loginAccount.createType === 'register') {
+          setLoading(true, t(CreateAddressLoading));
+        } else {
+          setLoading(true, t(InitLoginLoading));
+        }
+
         const _walletInfo = walletInfo.address ? walletInfo : AElf.wallet.createNewWallet();
         console.log(walletInfo.address, 'onCreate==');
 
@@ -176,6 +185,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       requestRegisterDIDWallet,
       setLoading,
       state,
+      t,
       walletInfo,
     ],
   );

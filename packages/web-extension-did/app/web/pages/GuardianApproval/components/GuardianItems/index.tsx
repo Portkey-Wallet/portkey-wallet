@@ -1,6 +1,12 @@
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
-import { ApprovalType, RecaptchaType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import {
+  ApprovalType,
+  RecaptchaType,
+  VerifierCodeOperationType,
+  VerifierInfo,
+  VerifyStatus,
+} from '@portkey-wallet/types/verifier';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
@@ -165,11 +171,34 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
     async (item: UserGuardianItem) => {
       try {
         setLoading(true);
+        let verifierCodeOperation: VerifierCodeOperationType;
+        switch (query) {
+          case 'login':
+            verifierCodeOperation = VerifierCodeOperationType.communityRecovery;
+            break;
+          case 'guardians/add':
+            verifierCodeOperation = VerifierCodeOperationType.addGuardian;
+            break;
+          case 'guardians/edit':
+            verifierCodeOperation = VerifierCodeOperationType.editGuardian;
+            break;
+          case 'guardians/del':
+            verifierCodeOperation = VerifierCodeOperationType.deleteGuardian;
+            break;
+          default:
+            if (query?.indexOf('removeManage') !== -1) {
+              verifierCodeOperation = VerifierCodeOperationType.removeOtherManager;
+            } else {
+              verifierCodeOperation = VerifierCodeOperationType.unknown;
+            }
+            break;
+        }
         const result = await verifyToken(item.guardianType, {
           accessToken: loginAccount?.authenticationInfo?.[item.guardianAccount],
           id: item.guardianAccount,
           verifierId: item.verifier?.id,
           chainId: originChainId,
+          verifierCodeOperation,
         });
         const verifierInfo: VerifierInfo = { ...result, verifierId: item?.verifier?.id };
         const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
@@ -189,7 +218,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
         setLoading(false);
       }
     },
-    [dispatch, loginAccount, originChainId, setLoading, verifyToken],
+    [dispatch, loginAccount, originChainId, setLoading, verifyToken, query],
   );
 
   const verifyingHandler = useCallback(

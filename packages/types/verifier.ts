@@ -45,7 +45,7 @@ export enum VerifierCodeOperationType {
   register = 1,
   communityRecovery = 2,
   addGuardian = 3,
-  removeGuardian = 4,
+  deleteGuardian = 4,
   editGuardian = 5,
   removeOtherManager = 6,
 }

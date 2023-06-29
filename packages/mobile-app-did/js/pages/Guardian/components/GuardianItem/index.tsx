@@ -17,6 +17,7 @@ import {
   AuthenticationInfo,
   RecaptchaType,
   VerificationType,
+  VerifierCodeOperationType,
   VerifierInfo,
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
@@ -136,11 +137,34 @@ function GuardianItemButton({
   const onVerifierAuth = useCallback(async () => {
     try {
       Loading.show();
+      let verifierCodeOperation: VerifierCodeOperationType;
+      switch (approvalType) {
+        case ApprovalType.addGuardian:
+          verifierCodeOperation = VerifierCodeOperationType.addGuardian;
+          break;
+        case ApprovalType.editGuardian:
+          verifierCodeOperation = VerifierCodeOperationType.editGuardian;
+          break;
+        case ApprovalType.deleteGuardian:
+          verifierCodeOperation = VerifierCodeOperationType.deleteGuardian;
+          break;
+        case ApprovalType.removeOtherManager:
+          verifierCodeOperation = VerifierCodeOperationType.removeOtherManager;
+          break;
+        case ApprovalType.communityRecovery:
+          verifierCodeOperation = VerifierCodeOperationType.communityRecovery;
+          break;
+        default:
+          verifierCodeOperation = VerifierCodeOperationType.unknown;
+          break;
+      }
+
       const rst = await verifyToken(guardianItem.guardianType, {
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,
+        verifierCodeOperation,
       });
 
       if (rst.accessToken) {
@@ -160,6 +184,7 @@ function GuardianItemButton({
     }
     Loading.hide();
   }, [
+    approvalType,
     authenticationInfo,
     guardianItem.guardianAccount,
     guardianItem.guardianType,

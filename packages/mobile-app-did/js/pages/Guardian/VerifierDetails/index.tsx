@@ -124,7 +124,7 @@ export default function VerifierDetails() {
             verifierCodeOperationType = VerifierCodeOperationType.addGuardian;
             break;
           case VerificationType.deleteGuardian:
-            verifierCodeOperationType = VerifierCodeOperationType.removeGuardian;
+            verifierCodeOperationType = VerifierCodeOperationType.deleteGuardian;
             break;
           case VerificationType.editGuardian:
             verifierCodeOperationType = VerifierCodeOperationType.editGuardian;
@@ -132,6 +132,7 @@ export default function VerifierDetails() {
           case VerificationType.removeOtherManager:
             verifierCodeOperationType = VerifierCodeOperationType.removeOtherManager;
             break;
+          case VerificationType.setLoginAccount:
           default:
             verifierCodeOperationType = VerifierCodeOperationType.unknown;
             break;

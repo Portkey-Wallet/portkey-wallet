@@ -29,7 +29,7 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
-import { RecaptchaType, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { RecaptchaType, VerifierCodeOperationType, VerifyStatus } from '@portkey-wallet/types/verifier';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import GuardianAddPrompt from './Prompt';
 import GuardianAddPopup from './Popup';
@@ -376,6 +376,7 @@ export default function AddGuardian() {
         verifierId: verifierVal,
         chainId: currentChain?.chainId || originChainId,
         accessToken: socialValue?.accessToken,
+        verifierCodeOperation: VerifierCodeOperationType.addGuardian,
       };
       let res;
       if (guardianType === LoginType.Apple) {

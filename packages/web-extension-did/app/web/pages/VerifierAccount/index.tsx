@@ -209,7 +209,8 @@ export default function VerifierAccount() {
       case 'guardians/edit':
         return VerifierCodeOperationType.editGuardian;
       case 'guardians/del':
-        return VerifierCodeOperationType.removeGuardian;
+        return VerifierCodeOperationType.deleteGuardian;
+      case 'guardians/setLoginAccount':
       default:
         if (state?.indexOf('removeManage') !== -1) {
           return VerifierCodeOperationType.removeOtherManager;

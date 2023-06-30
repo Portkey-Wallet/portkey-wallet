@@ -11,9 +11,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { defaultColors } from 'assets/theme';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
-import { useDiscoverJumpWithNetWork, useDiscoverWhiteList } from 'hooks/discover';
-import { isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
-import ActionSheet from 'components/ActionSheet';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
 }
@@ -23,9 +21,8 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
   const { searchedDiscoverList } = props;
   const { s3Url } = useCurrentNetworkInfo();
   const jumpToWebview = useDiscoverJumpWithNetWork();
-  const { checkIsInWhiteList, upDateWhiteList } = useDiscoverWhiteList();
 
-  const onDiscoverJump = useCallback(
+  const onClickJump = useCallback(
     (i: DiscoverItem) => {
       jumpToWebview({
         item: {
@@ -36,37 +33,6 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
       });
     },
     [jumpToWebview],
-  );
-
-  const onClickJump = useCallback(
-    (i: DiscoverItem) => {
-      if (checkIsInWhiteList(i.url) || !isDangerousLink(i.url)) {
-        onDiscoverJump(i);
-      } else {
-        ActionSheet.alert({
-          title: 'title',
-          message: 'message',
-          buttons: [
-            {
-              title: 'Get it',
-              type: 'solid',
-              onPress: () => {
-                onDiscoverJump(i);
-              },
-            },
-            {
-              title: 'Disable notification',
-              type: 'solid',
-              onPress: () => {
-                onDiscoverJump(i);
-                upDateWhiteList(i.url);
-              },
-            },
-          ],
-        });
-      }
-    },
-    [checkIsInWhiteList, onDiscoverJump, upDateWhiteList],
   );
 
   if (searchedDiscoverList.length === 0) return <NoData noPic message={t('There is no search result.')} />;

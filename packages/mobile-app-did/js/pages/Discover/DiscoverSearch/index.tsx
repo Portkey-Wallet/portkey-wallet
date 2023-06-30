@@ -14,24 +14,16 @@ import fonts from 'assets/theme/fonts';
 import RecordSection from '../components/RecordSection';
 import SearchDiscoverSection from '../components/SearchDiscoverSection';
 import { isIOS } from '@rneui/base';
-import {
-  checkIsUrl,
-  getHost,
-  getProtocolAndHost,
-  isDangerousLink,
-  prefixUrlWithProtocol,
-} from '@portkey-wallet/utils/dapp/browser';
+import { checkIsUrl, getHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
-import { useDiscoverJumpWithNetWork, useDiscoverWhiteList } from 'hooks/discover';
-import ActionSheet from 'components/ActionSheet';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
 
   const discoverGroupList = useDiscoverGroupList();
   const jumpToWebview = useDiscoverJumpWithNetWork();
-  const { checkIsInWhiteList, upDateWhiteList } = useDiscoverWhiteList();
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const iptRef = useRef<any>();
@@ -75,40 +67,14 @@ export default function DiscoverSearch() {
     if (!newValue) return;
 
     if (checkIsUrl(newValue)) {
-      const protocolAndHost = getProtocolAndHost(newValue);
-      console.log(protocolAndHost, checkIsInWhiteList(protocolAndHost), !isDangerousLink(protocolAndHost));
-      if (checkIsInWhiteList(protocolAndHost) || !isDangerousLink(protocolAndHost)) {
-        onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
-      } else {
-        ActionSheet.alert({
-          title: 'title',
-          message: 'message',
-          buttons: [
-            {
-              title: 'Get it',
-              type: 'solid',
-              onPress: () => {
-                onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
-              },
-            },
-            {
-              title: 'Disable notification',
-              type: 'solid',
-              onPress: () => {
-                onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
-                upDateWhiteList(protocolAndHost);
-              },
-            },
-          ],
-        });
-      }
+      onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
     } else {
       // else search in Discover list
       const filterList = flatList.filter(item => item.title.replace(/\s+/g, '').includes(newValue));
       setFilteredDiscoverList(filterList);
       setShowRecord(false);
     }
-  }, [checkIsInWhiteList, flatList, onDiscoverJump, upDateWhiteList, value]);
+  }, [flatList, onDiscoverJump, value]);
 
   useFocusEffect(
     useCallback(() => {
@@ -120,11 +86,12 @@ export default function DiscoverSearch() {
     }, []),
   );
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
+    },
+    [],
+  );
 
   return (
     <PageContainer

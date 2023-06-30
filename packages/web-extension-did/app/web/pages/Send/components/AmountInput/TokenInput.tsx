@@ -44,6 +44,7 @@ export default function TokenInput({
   const [, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
   const checkManagerSyncState = useCheckManagerSyncState();
+  const [isManagerSynced, setIsManagerSynced] = useState(true);
 
   const amountInUsd = useMemo(
     () => amountInUsdShow(value || amount, 0, token.symbol),
@@ -82,6 +83,7 @@ export default function TokenInput({
         return;
       }
       const _isManagerSynced = await checkManagerSyncState(token.chainId);
+      setIsManagerSynced(_isManagerSynced);
       if (!_isManagerSynced) return;
       const fee = await getTranslationInfo(divDecimals(balance, token.decimals).toString());
       if (fee) {
@@ -119,6 +121,7 @@ export default function TokenInput({
 
   const handleMax = useCallback(async () => {
     const _isManagerSynced = await checkManagerSyncState(token.chainId);
+    setIsManagerSynced(_isManagerSynced);
     if (_isManagerSynced) {
       setAmount(maxAmount);
       onChange({ amount: maxAmount, balance });
@@ -176,7 +179,7 @@ export default function TokenInput({
           </div>
         </div>
       </div>
-      {errorMsg && <span className="error-msg">{errorMsg}</span>}
+      {errorMsg && <span className={clsx([!isManagerSynced && 'error-warning', 'error-msg'])}>{errorMsg}</span>}
     </div>
   );
 }

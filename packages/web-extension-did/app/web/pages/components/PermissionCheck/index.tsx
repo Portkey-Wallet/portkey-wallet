@@ -10,6 +10,7 @@ import { useStorage } from 'hooks/useStorage';
 import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
 import { useEffectOnce } from 'react-use';
+import OpenNewTabController from 'controllers/openNewTabController';
 
 const timeout = async () => {
   // TODO This is a bug
@@ -94,6 +95,7 @@ export default function PermissionCheck({
     if (caHash) return getPassword();
 
     if (pageType == 'Popup') {
+      await OpenNewTabController.closeOpenTabs();
       return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
     } else {
       if (caInfo?.managerInfo) return navigate('/query-page');

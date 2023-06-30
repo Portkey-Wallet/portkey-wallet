@@ -43,19 +43,20 @@ export default function CustomToken() {
     [chainList, isMainnet],
   );
 
-  const handleChangeChainId = useCallback((chainId: ChainId) => {
-    setCurChain(chainId);
-  }, []);
-
   const handleSearch = useCallback(
-    async (keyword: string) => {
+    async (keyword: string, chainId = curChainId) => {
       try {
-        if (!keyword) return;
+        if (!keyword) {
+          setCurToken({});
+          setValue('');
+          setErrorMsg('');
+          return;
+        }
         setLoading(true);
         const res = await request.token.fetchTokenItemBySearch({
           params: {
             symbol: keyword,
-            chainId: curChainId,
+            chainId,
           },
         });
         const { symbol, decimals, id } = res;
@@ -63,6 +64,7 @@ export default function CustomToken() {
           setCurToken(res);
           setValue(symbol);
         }
+        setErrorMsg('');
       } catch (error) {
         setCurToken({});
         console.log('filter search error', error);
@@ -74,6 +76,14 @@ export default function CustomToken() {
   );
 
   const searchDebounce = useDebounceCallback(handleSearch, [value], 500);
+
+  const handleChangeChainId = useCallback(
+    (chainId: ChainId) => {
+      setCurChain(chainId);
+      if (value) handleSearch(value, chainId);
+    },
+    [handleSearch, value],
+  );
 
   const handleBack = useCallback(() => {
     navigate('/add-token');

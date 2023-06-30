@@ -13,7 +13,6 @@ import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
@@ -28,7 +27,7 @@ export default function AddToken() {
   const appDispatch = useAppDispatch();
   const chainIdArray = useChainIdList();
   const isMainnet = useIsMainnet();
-  const [tokenShowList, setTokenShowList] = useState(tokenDataShowInMarket);
+  const [tokenShowList, setTokenShowList] = useState<TokenItemShowType[]>(tokenDataShowInMarket);
 
   useEffect(() => {
     if (!filterWord) {
@@ -55,8 +54,10 @@ export default function AddToken() {
             chainIds: chainIdArray,
           },
         });
+        // TODO transfer data structure, includes isAdded, userTokenId
         setTokenShowList(res?.data || []);
       } catch (error) {
+        setTokenShowList([]);
         console.log('filter search error', error);
       }
     },
@@ -102,6 +103,8 @@ export default function AddToken() {
     [appDispatch, chainIdArray, filterWord, handleSearch],
   );
 
+  const displayToken = useDebounceCallback(handleUserTokenDisplay, [], 500);
+
   const renderTokenItemBtn = useCallback(
     (item: TokenItemShowType) => {
       const { isDefault = false, isAdded = true } = item;
@@ -117,13 +120,13 @@ export default function AddToken() {
         <Button
           className="add-token-btn"
           onClick={() => {
-            handleUserTokenDisplay(item);
+            displayToken(item);
           }}>
           {t(isAdded ? 'Hide' : 'Add')}
         </Button>
       );
     },
-    [handleUserTokenDisplay, t],
+    [displayToken, t],
   );
 
   const renderTokenItem = useCallback(
@@ -211,7 +214,6 @@ export default function AddToken() {
           />
         </div>
         {renderTokenList}
-        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );
   }, [filterWord, isPrompt, navigate, renderTokenList, rightElement, searchDebounce, t]);

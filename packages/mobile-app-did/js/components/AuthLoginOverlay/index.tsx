@@ -180,17 +180,6 @@ const styles = StyleSheet.create({
   tips: {
     marginTop: pTd(16),
   },
-  loginTypeIcon: {
-    width: pTd(64),
-  },
-  bottomBox: {
-    marginTop: pTd(80),
-    marginHorizontal: pTd(16),
-  },
-  cancelButtonStyle: {
-    marginTop: pTd(8),
-    backgroundColor: 'transparent',
-  },
   baseImage: {
     width: pTd(64),
     height: pTd(64),
@@ -203,8 +192,5 @@ const styles = StyleSheet.create({
     width: pTd(64),
     height: pTd(64),
     marginRight: -pTd(12),
-  },
-  iconWrap: {
-    marginLeft: pTd(21),
   },
 });

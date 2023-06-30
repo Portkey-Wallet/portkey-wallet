@@ -6,8 +6,6 @@ import { PromptRouteTypes } from 'messages/InternalMessageTypes';
 import NotificationService from 'service/NotificationService';
 import { SendResponseParams } from 'types';
 import { IPageState } from 'types/SW';
-import errorHandler from 'utils/errorHandler';
-import { getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 
 interface ApprovalControllerProps {
   getPageState: () => IPageState;
@@ -91,50 +89,41 @@ export default class ApprovalController {
     appLogo?: string;
     origin: string;
   }): Promise<SendResponseParams> {
-    const connections = (await getLocalStorage('connections')) ?? {};
-    const pageState: any = this._getPageState();
-    let connectAccount: string[];
-    if (!connections[origin]) return errorHandler(600001);
-    const permission = connections[origin].permission;
+    const permissionData = await this.notificationService.openPrompt({
+      method: PromptRouteTypes.CONNECT_WALLET,
+      search: JSON.stringify({
+        appName: appName ?? origin,
+        appLogo,
+        appHref: origin,
+      }),
+    });
+    return permissionData;
+  }
 
-    if (!permission || !permission?.accountList || !permission?.accountList?.length) {
-      const permissionData = await this.notificationService.openPrompt({
-        method: PromptRouteTypes.CONNECT_WALLET,
-        search: JSON.stringify({
-          appName: appName ?? origin,
-          appLogo,
-          appHref: origin,
-        }),
-      });
-      await setLocalStorage({
-        connections: {
-          ...connections,
-          [origin]: {
-            ...connections[origin],
-            permission: {
-              ...connections[origin].permission,
-              accountList: permissionData.data ?? [],
-            },
-          },
-        },
-      });
-      const isHas = permissionData?.data?.some((item: string) => item === pageState.wallet.currentAccount?.address);
-      if (isHas && pageState.wallet.currentAccount?.address) {
-        connectAccount = [pageState.wallet.currentAccount.address];
-      } else {
-        connectAccount = permissionData?.data?.[0] ? [permissionData?.data?.[0]] : [];
-      }
-      return {
-        ...permissionData,
-        data: connectAccount,
-      };
-    } else {
-      const accountList = connections[origin].permission.accountList;
-      connectAccount = [accountList[0]];
-      return {
-        ...errorHandler(0),
-        data: connectAccount,
-      };
-    }
+  /**
+   * Obtain authorization to send transactions
+   *
+   */
+  // TODO format params
+  async authorizedToSendTransactions(params: {
+    origin: string;
+    transactionInfoId: string;
+    payload: any;
+  }): Promise<SendResponseParams> {
+    return this.notificationService.openPrompt({
+      method: PromptRouteTypes.SEND_TRANSACTION,
+      search: JSON.stringify(params),
+    });
+  }
+
+  /**
+   * Obtain authorization to get signature
+   *
+   */
+  async authorizedToGetSignature(params: any): Promise<SendResponseParams> {
+    return this.notificationService.openPrompt({
+      method: PromptRouteTypes.GET_SIGNATURE,
+      search: JSON.stringify(params),
+    });
   }
 }

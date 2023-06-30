@@ -23,3 +23,5 @@ export const NetworkList: NetworkItem[] = [
 export const DefaultChainId = 'AELF';
 
 export const OfficialWebsite = 'https://portkey.finance';
+
+export const ThirdParty = `https://openlogin-test.portkey.finance`;

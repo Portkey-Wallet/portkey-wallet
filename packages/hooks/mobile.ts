@@ -1,18 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { BackHandler } from 'react-native';
 export function useHardwareBackPress(callback?: () => boolean) {
-  const savedCallback = useRef<() => boolean>();
   useEffect(() => {
-    savedCallback.current = callback;
-  });
-  useEffect(() => {
+    if (!callback) return;
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      return savedCallback.current?.();
+      return callback();
     });
     return () => {
       backHandler.remove();
     };
-  }, []);
+  }, [callback]);
 }
 
 export function usePreventHardwareBack(callback?: () => void) {

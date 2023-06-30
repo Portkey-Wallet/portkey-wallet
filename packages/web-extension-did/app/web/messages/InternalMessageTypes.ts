@@ -1,15 +1,4 @@
-import aelfMessage from './aelfMessage';
-import ethMessage from './ethMessage';
 import walletMessage from './walletMessage';
-
-export const NOTIFICATION_NAMES = {
-  ACCOUNTS_CHANGED: 'portkey_accountsChanged',
-  UNLOCK_STATE_CHANGED: 'portkey_unlockStateChanged',
-  CHAIN_CHANGED: 'portkey_chainChanged',
-  DISCONNECT: 'portkey_disconnect',
-  // TODO
-  MESSAGE: 'portkey_message',
-};
 
 export const PromptRouteTypes = {
   UNLOCK_WALLET: 'UNLOCK_WALLET',
@@ -20,7 +9,7 @@ export const PromptRouteTypes = {
   PERMISSION_CONTROLLER: 'PERMISSION_CONTROLLER',
   SWITCH_CHAIN: 'SWITCH_CHAIN',
   CONNECT_WALLET: 'CONNECT_WALLET',
-  SIGN_MESSAGE: 'SIGN_MESSAGE',
+  SEND_TRANSACTION: 'SEND_TRANSACTION',
   EXPAND_FULL_SCREEN: 'EXPAND_FULL_SCREEN',
 
   // my
@@ -32,13 +21,14 @@ export const PromptRouteTypes = {
   GUARDIANS_APPROVAL: 'GUARDIANS_APPROVAL',
 } as const;
 
-export const AelfMessageTypes = aelfMessage;
 export const WalletMessageTypes = walletMessage;
+export type WalletMessageType = typeof walletMessage[keyof typeof walletMessage];
+
 export const MethodMessageTypes = {
   GET_WALLET_STATE: 'wallet_getState',
 };
 
-export const messageType = Object.assign(ethMessage, AelfMessageTypes, MethodMessageTypes);
+export const messageType = Object.assign({}, MethodMessageTypes);
 
 export const PortkeyMessageTypes = {
   // SEED
@@ -51,10 +41,11 @@ export const PortkeyMessageTypes = {
   LOGIN_WALLET: 'LOGIN_WALLET',
   ACTIVE_LOCK_STATUS: 'ACTIVE_LOCK_STATUS',
 
+  PERMISSION_FINISH: 'PERMISSION_FINISH',
+
   OPEN_PROMPT: 'OPEN_PROMPT',
   CLOSE_PROMPT: 'CLOSE_PROMPT',
 
-  CHECK_CONTENT: 'CHECK_CONTENT',
   CHECK_WALLET_STATUS: 'CHECK_WALLET_STATUS',
   EXPAND_FULL_SCREEN: 'EXPAND_FULL_SCREEN',
 

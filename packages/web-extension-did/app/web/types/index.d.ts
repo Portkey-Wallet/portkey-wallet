@@ -8,11 +8,14 @@ export interface CustomEventType extends Event {
   detail?: string;
 }
 
-export type RegisterStatus = undefined | null | 'notRegistered' | 'registeredNotGetCaAddress' | 'Registered';
-
 export type ReCaptchaResponseParams = {
   response?: string;
   error?: number;
   message?: string;
   name?: string;
 };
+
+export interface IKeyDownParams {
+  key: string;
+  preventDefault: () => any;
+}

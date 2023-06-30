@@ -5,7 +5,7 @@ import errorHandler from 'utils/errorHandler';
 import getPromptConfig from 'service/NotificationService/getPromptConfig';
 import ExtensionPlatform from 'utils/platforms/extension';
 import { sleep } from '@portkey-wallet/utils';
-import { removeOpenTabs, saveOpenTabs } from 'utils/clearOpenTabs';
+import OpenNewTabController from 'controllers/openNewTabController';
 
 export interface NotificationType {
   sendResponse?: SendResponseFun;
@@ -40,7 +40,7 @@ export default class NotificationService {
         this.openWindow = null;
       }
       if (this.closeSender?.[number]) {
-        this.closeSender?.[number]?.sendResponse?.(errorHandler(200010));
+        this.closeSender?.[number]?.sendResponse?.(errorHandler(200003));
         delete this.closeSender?.[number];
       }
     });
@@ -50,7 +50,7 @@ export default class NotificationService {
         this.openTag = null;
       }
       if (this.closeSender?.[number]) {
-        this.closeSender?.[number]?.sendResponse?.(errorHandler(200010));
+        this.closeSender?.[number]?.sendResponse?.(errorHandler(200003));
         delete this.closeSender?.[number];
       }
     });
@@ -108,7 +108,7 @@ export default class NotificationService {
     });
     this.openTag = tag;
     this.closeSender = { ...this.closeSender, [tag.id?.toString() ?? '']: notification };
-    saveOpenTabs(tag.id || '');
+    OpenNewTabController.saveOpenTabs(tag.id || '');
     return tag;
   };
 
@@ -134,7 +134,7 @@ export default class NotificationService {
       // virus-like behavior as apps overflow the queue causing the user
       // to have to quit the apis to regain control.
     } else if (promptType === 'tabs' && this.openTag) {
-      removeOpenTabs(this.openTag.id || '');
+      OpenNewTabController.removeOpenTabs(this.openTag.id || '');
       this.platform.closeTab(this.openTag.id);
       this.openTag = null;
     }
@@ -166,6 +166,7 @@ export default class NotificationService {
     promptType: CreatePromptType = 'windows',
   ): Promise<SendResponseParams> => {
     return new Promise((resolve) => {
+      console.log(message, 'openPrompt==message');
       const promptParam = {
         sendResponse: async (response?: SendResponseParams) => {
           await sleep(500);

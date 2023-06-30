@@ -23,6 +23,7 @@ export default function useInitData() {
       // mainnet only
       if (isMainNetwork) {
         dispatch(fetchBuyFiatListAsync());
+        // dispatch(fetchSellFiatListAsync());
       }
       getCurrentCAViewContract();
       dispatch(getWalletNameAsync());

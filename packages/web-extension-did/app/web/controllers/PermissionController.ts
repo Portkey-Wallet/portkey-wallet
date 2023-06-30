@@ -1,32 +1,39 @@
+import { isNotificationEvents } from '@portkey/providers';
 import { PromptRouteTypes } from 'messages/InternalMessageTypes';
 import NotificationService from 'service/NotificationService';
 import { CreatePromptType } from 'types';
 import type { PortKeyResultType } from 'utils/errorHandler';
-import { getLocalStorage } from 'utils/storage/chromeStorage';
+import { getCurrentNetworkWallet } from 'utils/lib/SWGetReduxStore';
 
 export default class PermissionController {
   notificationService: NotificationService;
-  allowedMethod?: string[];
+  whitelist: string[];
   getPassword?: () => string | null;
   constructor({
     notificationService,
-    allowedMethod,
+    whitelist = [],
     getPassword,
   }: {
     notificationService: NotificationService;
-    allowedMethod?: string[];
+    whitelist?: string[];
     getPassword?: () => string | null;
   }) {
     this.notificationService = notificationService;
-    this.allowedMethod = allowedMethod;
+    this.whitelist = whitelist;
     this.getPassword = getPassword;
   }
 
-  async checkIsLock(seed?: string | null, promptType: CreatePromptType = 'windows'): Promise<PortKeyResultType> {
+  async checkIsLock(
+    seed?: string | null,
+    promptType: CreatePromptType = 'windows',
+    search?: object,
+  ): Promise<PortKeyResultType> {
     if (!seed) {
+      if (!search) search = { from: 'sw', type: 'unlock' };
       return await this.notificationService.openPrompt(
         {
           method: PromptRouteTypes.PERMISSION_CONTROLLER,
+          search: JSON.stringify(search),
         },
         promptType,
       );
@@ -38,9 +45,10 @@ export default class PermissionController {
   }
 
   async checkIsLockOtherwiseUnlock(method: string): Promise<PortKeyResultType> {
-    if (this.allowedMethod?.includes(method))
+    if (this.whitelist?.includes(method))
       return {
         error: 0,
+        data: { method },
         message: 'no check',
       };
     const seed = this?.getPassword?.() ?? null;
@@ -55,38 +63,39 @@ export default class PermissionController {
     }
   }
 
-  async checkRegisterStatus() {
-    return await getLocalStorage('registerStatus');
+  checkAllowMethod(methodName: string) {
+    return this.whitelist.includes(methodName) || isNotificationEvents(methodName);
   }
 
-  async checkIsRegister() {
-    const registerStatus = await getLocalStorage('registerStatus');
-    if (registerStatus === 'Registered') {
-      return true;
-    } else {
-      return false;
-    }
+  async checkCurrentNetworkIsRegister() {
+    const currentNetworkWallet = await getCurrentNetworkWallet();
+    const originChainId = currentNetworkWallet?.originChainId;
+    return Boolean(originChainId && currentNetworkWallet?.[originChainId]?.caHash);
   }
 
-  async checkIsRegisterOtherwiseRegister(method: string): Promise<PortKeyResultType> {
-    if (this.allowedMethod?.includes(method))
+  async registerCurrentNetworkWallet(): Promise<PortKeyResultType> {
+    if (await this.checkCurrentNetworkIsRegister())
+      return {
+        error: 0,
+        message: 'The current network has completed login',
+      };
+    // Not yet registered or logged in
+    let routerType: keyof typeof PromptRouteTypes = 'REGISTER_WALLET';
+    const currentNetworkWallet = await getCurrentNetworkWallet();
+    if (currentNetworkWallet?.managerInfo) routerType = 'BLANK_PAGE';
+    return await this.notificationService.openPrompt(
+      {
+        method: PromptRouteTypes[routerType],
+      },
+      'tabs',
+    );
+  }
+  async checkCurrentNetworkOtherwiseRegister(methodName: string): Promise<PortKeyResultType> {
+    if (this.checkAllowMethod(methodName))
       return {
         error: 0,
         message: 'no check',
       };
-    const registerStatus = await this.checkRegisterStatus();
-    if (registerStatus !== 'Registered') {
-      return await this.notificationService.openPrompt(
-        {
-          method: PromptRouteTypes[registerStatus === 'registeredNotGetCaAddress' ? 'BLANK_PAGE' : 'REGISTER_WALLET'],
-        },
-        'tabs',
-      );
-    } else {
-      return {
-        error: 0,
-        message: 'Registered',
-      };
-    }
+    return await this.registerCurrentNetworkWallet();
   }
 }

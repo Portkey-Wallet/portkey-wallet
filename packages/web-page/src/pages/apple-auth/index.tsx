@@ -8,7 +8,7 @@ export default function AppleAuth() {
     const response = {
       access_token: id_token,
     };
-    window.portkey_did?.request({
+    window.portkey?.request({
       method: 'portkey_socialLogin',
       params: {
         response,
@@ -17,10 +17,10 @@ export default function AppleAuth() {
   }, []);
 
   useEffect(() => {
-    if (!window.portkey_did) {
+    if (!window.portkey) {
       const ids = setTimeout(() => {
         clearTimeout(ids);
-        if (!window.portkey_did) message.error('Timeout, please download and install the Portkey did extension');
+        if (!window.portkey) message.error('Timeout, please download and install the Portkey did extension');
         handler();
       }, 500);
       return;

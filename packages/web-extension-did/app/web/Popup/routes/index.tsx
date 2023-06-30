@@ -4,6 +4,7 @@ import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
 import GuardianApproval from 'pages/GuardianApproval';
 import AddToken from 'pages/Token/Manage';
+import CustomToken from 'pages/Token/Custom';
 import Receive from 'pages/Receive';
 import TokenDetail from 'pages/Token/Detail';
 import AccountSetting from 'pages/AccountSetting';
@@ -25,14 +26,12 @@ import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
 import Buy from 'pages/Buy';
 import BuyPreview from 'pages/Buy/Preview';
-import BuyTest from 'pages/BuyTest';
-import BuyTestPreview from 'pages/BuyTest/Preview';
-import BuyTestConfirm from 'pages/BuyTest/Confirm';
 import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
 import RecentDetail from 'pages/Send/components/RecentDetail';
+import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 
 export const PageRouter = () =>
   useRoutes([
@@ -93,6 +92,10 @@ export const PageRouter = () =>
       element: <AddToken />,
     },
     {
+      path: '/custom-token',
+      element: <CustomToken />,
+    },
+    {
       path: '/transaction',
       element: <Transaction />,
     },
@@ -119,18 +122,6 @@ export const PageRouter = () =>
     {
       path: '/buy/preview',
       element: <BuyPreview />,
-    },
-    {
-      path: '/buy-test',
-      element: <BuyTest />,
-    },
-    {
-      path: '/buy-test/preview',
-      element: <BuyTestPreview />,
-    },
-    {
-      path: '/buy-test/confirm',
-      element: <BuyTestConfirm />,
     },
     {
       path: '/nft',
@@ -175,6 +166,10 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/manage-devices/guardian-approval',
       element: <GuardianApproval />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites',
+      element: <ConnectedSites />,
     },
     {
       path: '/unlock',

@@ -570,6 +570,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-spinkit (1.4.1):
     - React
+  - react-native-view-shot (3.6.0):
+    - React-Core
   - react-native-webview (11.23.1):
     - React-Core
   - React-perflogger (0.69.7)
@@ -665,7 +667,9 @@ PODS:
     - RNFBApp
   - RNFlashList (1.4.0):
     - React-Core
-  - RNGestureHandler (2.7.0):
+  - RNFS (2.20.0):
+    - React-Core
+  - RNGestureHandler (2.9.0):
     - React-Core
   - RNGoogleSignin (8.2.2):
     - GoogleSignIn (~> 6.2)
@@ -677,6 +681,33 @@ PODS:
     - RNNotifee/NotifeeCore (= 5.7.0)
   - RNNotifee/NotifeeCore (5.7.0):
     - React-Core
+  - RNReanimated (2.17.0):
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - glog
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-callinvoker
+    - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (3.18.0):
     - React-Core
     - React-RCTImage
@@ -793,6 +824,7 @@ DEPENDENCIES:
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-spinkit (from `../node_modules/react-native-spinkit`)
+  - react-native-view-shot (from `../node_modules/react-native-view-shot`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -814,10 +846,12 @@ DEPENDENCIES:
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - "RNFBPerf (from `../node_modules/@react-native-firebase/perf`)"
   - "RNFlashList (from `../node_modules/@shopify/flash-list`)"
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
   - RNLocalize (from `../node_modules/react-native-localize`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
+  - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSpringScrollView (from `../node_modules/react-native-spring-scrollview`)
@@ -987,6 +1021,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-spinkit:
     :path: "../node_modules/react-native-spinkit"
+  react-native-view-shot:
+    :path: "../node_modules/react-native-view-shot"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -1029,6 +1065,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/perf"
   RNFlashList:
     :path: "../node_modules/@shopify/flash-list"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
@@ -1037,6 +1075,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-localize"
   RNNotifee:
     :path: "../node_modules/@notifee/react-native"
+  RNReanimated:
+    :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSentry:
@@ -1148,6 +1188,7 @@ SPEC CHECKSUMS:
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
   react-native-spinkit: da294fd828216ad211fe36a5c14c1e09f09e62db
+  react-native-view-shot: 705f999ac2a24e4e6c909c0ca65c732ed33ca2ff
   react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 8e832d4e21fdfa613033c76d58d7e617341e804b
   React-RCTActionSheet: 9ca778182a9523991bff6381045885b6e808bb73
@@ -1169,10 +1210,12 @@ SPEC CHECKSUMS:
   RNFBMessaging: a006029b26c2d7b34c93c45ff1b8fedb5fae35d5
   RNFBPerf: 789e745a88bc520bcab1fcc9e6cc80d3c9aaa6aa
   RNFlashList: 399bf6a0db68f594ad2c86aaff3ea39564f39f8a
-  RNGestureHandler: 7673697e7c0e9391adefae4faa087442bc04af33
+  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
+  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNGoogleSignin: 81521697b2c8f97f9a586ac7257b1a1d9b51b115
   RNLocalize: 0df7970cfc60389f00eb62fd7c097dc75af3fb4f
   RNNotifee: 5155e0a5e0a97d0c839030d8192783cd63053999
+  RNReanimated: c6f8f70e96dd6ca21b65aef9b3e4efe4965db905
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSentry: acebe4104a6f5915ae871eb59dc73f13dcc92ef7
   RNSpringScrollView: e354167d96f2c3d2f20b186990b2c3946987cb3c

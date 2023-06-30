@@ -14,6 +14,8 @@ import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 
+let childrenNode: any = undefined;
+
 const bodyRootWrapper = document.body;
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -39,6 +41,9 @@ export default function ContextProviders({
   pageType?: 'Popup' | 'Prompt';
 }) {
   const { language } = useLanguage();
+
+  console.log(children === childrenNode, pageType, 'PermissionCheck=ContextProviders');
+  if (childrenNode === undefined) childrenNode = children;
   useEffect(() => {
     let preLanguageWrapper: string | null = null;
     bodyRootWrapper.classList.forEach((item) => {
@@ -51,8 +56,8 @@ export default function ContextProviders({
   }, [language]);
 
   return (
-    <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
-      <ErrorBoundary>
+    <ErrorBoundary view="root" pageType={pageType}>
+      <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
         <ReduxProvider>
           <ScreenLoading />
           <HashRouter>
@@ -61,7 +66,7 @@ export default function ContextProviders({
             <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
           </HashRouter>
         </ReduxProvider>
-      </ErrorBoundary>
-    </ConfigProvider>
+      </ConfigProvider>
+    </ErrorBoundary>
   );
 }

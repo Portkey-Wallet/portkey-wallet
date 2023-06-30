@@ -2,9 +2,8 @@ import ServiceWorkerInstantiate from './ServiceWorkerInstantiate';
 import serviceWorkerListener from './serviceWorkerListener';
 
 /**
- * Initializes the MetaMask controller, and sets up all platform configuration.
+ * Initializes the Portkey controller, and sets up all platform configuration.
  *
- * @param {string} remotePort - remote application port connecting to extension.
  */
 // async function initialize(remotePort: any) {
 //   console.log(remotePort, 'remotePort===');
@@ -24,10 +23,9 @@ import serviceWorkerListener from './serviceWorkerListener';
 // };
 
 // apis.runtime.onConnect.addListener(initApp);
-new ServiceWorkerInstantiate();
-
+const service = new ServiceWorkerInstantiate();
 serviceWorkerListener({
   pageStateChange: ServiceWorkerInstantiate.setPageState,
-  checkRegisterStatus: ServiceWorkerInstantiate.checkRegisterStatus,
+  checkRegisterStatus: service.checkRegisterStatus,
   checkTimingLock: ServiceWorkerInstantiate.checkTimingLock,
 });

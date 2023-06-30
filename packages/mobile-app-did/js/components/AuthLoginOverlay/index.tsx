@@ -100,7 +100,6 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
   return (
     <ModalBody
       modalBodyType="bottom"
-      title=""
       onClose={minimizer.goBack}
       bottomButtonGroup={[{ title: t('Allow'), type: 'primary', loading: loading, onPress: onLogin }]}>
       <View style={[styles.topSection, GStyles.itemCenter]}>

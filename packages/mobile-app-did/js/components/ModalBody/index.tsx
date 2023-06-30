@@ -110,7 +110,6 @@ export const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     position: 'absolute',
     bottom: 0,
-    paddingRight: pTd(20),
     ...GStyles.paddingArg(10, 20, 16, 20),
   },
   buttonStyle: {

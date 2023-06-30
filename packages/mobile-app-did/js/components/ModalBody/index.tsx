@@ -28,7 +28,7 @@ export interface ModalBodyProps extends ViewProps {
 }
 
 export const ModalBody: React.FC<ModalBodyProps> = props => {
-  const { modalBodyType, title, children, style = {}, onClose, bottomButtonGroup } = props;
+  const { modalBodyType, title = '', children, style = {}, onClose, bottomButtonGroup } = props;
 
   const gStyles = useGStyles();
 
@@ -110,7 +110,6 @@ export const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
     position: 'absolute',
     bottom: 0,
-    paddingRight: pTd(20),
     ...GStyles.paddingArg(10, 20, 16, 20),
   },
   buttonStyle: {

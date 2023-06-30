@@ -7,7 +7,6 @@ import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/c
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import signalrDid from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
-import { onScanLoginDataType } from '@portkey-wallet/socket/socket-did/types';
 
 export const useMisc = () => useAppCASelector(state => state.misc);
 
@@ -103,21 +102,13 @@ export const useIsScanQRCode = (clientId: string | undefined) => {
       if (!isActiveRef.current) {
         throw new Error('isActiveRef.current is false');
       }
-
-      const signalrSellResult = await new Promise<onScanLoginDataType | null>(resolve => {
-        const { remove } = signalrDid.onScanLogin(data => {
-          resolve(data);
-        });
-        signalrDidRemoveRef.current = remove;
-      });
-
-      if (signalrSellResult !== null) {
+      const { remove } = signalrDid.onScanLogin(() => {
         setIsScanQRCode(true);
-      }
+        cleanSignalrRef.current();
+      });
+      signalrDidRemoveRef.current = remove;
     } catch (error) {
       console.log('registerSignalr: error', error);
-    } finally {
-      cleanSignalrRef.current();
     }
   }, []);
   const registerSignalrRef = useRef(registerSignalr);

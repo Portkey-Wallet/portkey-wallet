@@ -17,8 +17,10 @@ import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useLocation } from 'react-router';
 import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 
 keepAliveOnPages({});
+request.setExceptionManager(exceptionManager);
 
 export default function Updater() {
   const onLocking = useLocking();

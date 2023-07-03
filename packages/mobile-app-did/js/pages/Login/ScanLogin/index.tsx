@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -20,6 +20,7 @@ import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/devi
 import socket from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
 
 const ScrollViewProps = { disabled: true };
 
@@ -31,12 +32,14 @@ export default function ScanLogin() {
   const [loading, setLoading] = useState<boolean>();
   const getCurrentCAContract = useGetCurrentCAContract();
 
+  const targetClientId = useMemo(() => (time ? `${managerAddress}_${time}` : undefined), [managerAddress, time]);
+
   useEffectOnce(() => {
-    const timeData = time || Math.floor(Date.now() / 1000);
+    if (!targetClientId) return;
     try {
       request.message.sendScanLogin({
         params: {
-          targetClientId: `${managerAddress}_${timeData}`,
+          targetClientId,
         },
       });
     } catch (error) {
@@ -48,6 +51,13 @@ export default function ScanLogin() {
     if (!caHash || loading || !managerAddress) return;
     try {
       setLoading(true);
+      if (targetClientId) {
+        const isQRCodeExist = await checkQRCodeExist(targetClientId);
+        if (isQRCodeExist) {
+          // TODO: add Toast
+        }
+      }
+
       const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
       const contract = await getCurrentCAContract();
       const extraData = await extraDataEncode(deviceInfo || {}, true);
@@ -62,7 +72,7 @@ export default function ScanLogin() {
       CommonToast.failError(error);
     }
     setLoading(false);
-  }, [caHash, loading, qrExtraData, deviceType, getCurrentCAContract, address, managerAddress]);
+  }, [caHash, loading, managerAddress, targetClientId, qrExtraData, deviceType, getCurrentCAContract, address]);
   return (
     <PageContainer
       scrollViewProps={ScrollViewProps}

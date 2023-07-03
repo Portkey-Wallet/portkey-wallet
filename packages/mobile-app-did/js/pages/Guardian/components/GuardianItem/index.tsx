@@ -15,9 +15,8 @@ import { sleep } from '@portkey-wallet/utils';
 import {
   ApprovalType,
   AuthenticationInfo,
-  RecaptchaType,
   VerificationType,
-  VerifierCodeOperationType,
+  OperationTypeEnum,
   VerifierInfo,
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
@@ -89,6 +88,24 @@ function GuardianItemButton({
       verificationType: _verificationType,
     };
   }, [approvalType, guardianItem]);
+
+  const operationType: OperationTypeEnum = useMemo(() => {
+    switch (approvalType) {
+      case ApprovalType.addGuardian:
+        return OperationTypeEnum.addGuardian;
+      case ApprovalType.editGuardian:
+        return OperationTypeEnum.editGuardian;
+      case ApprovalType.deleteGuardian:
+        return OperationTypeEnum.deleteGuardian;
+      case ApprovalType.removeOtherManager:
+        return OperationTypeEnum.removeOtherManager;
+      case ApprovalType.communityRecovery:
+        return OperationTypeEnum.communityRecovery;
+      default:
+        return OperationTypeEnum.unknown;
+    }
+  }, [approvalType]);
+
   const onSetGuardianStatus = useCallback(
     (guardianStatus: GuardiansStatusItem) => {
       setGuardianStatus?.({ key: guardianItem.key, status: guardianStatus });
@@ -106,10 +123,7 @@ function GuardianItemButton({
           guardianIdentifier: guardianInfo.guardianItem.guardianAccount,
           verifierId: guardianInfo.guardianItem.verifier?.id,
           chainId: originChainId,
-          operationType:
-            approvalType === ApprovalType.communityRecovery
-              ? RecaptchaType.communityRecovery
-              : RecaptchaType.optGuardian,
+          operationType,
         },
       });
       if (req.verifierSessionId) {
@@ -132,39 +146,18 @@ function GuardianItemButton({
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [onSetGuardianStatus, guardianInfo, approvalType, originChainId]);
+  }, [guardianInfo, originChainId, operationType, onSetGuardianStatus]);
 
   const onVerifierAuth = useCallback(async () => {
     try {
       Loading.show();
-      let verifierCodeOperation: VerifierCodeOperationType;
-      switch (approvalType) {
-        case ApprovalType.addGuardian:
-          verifierCodeOperation = VerifierCodeOperationType.addGuardian;
-          break;
-        case ApprovalType.editGuardian:
-          verifierCodeOperation = VerifierCodeOperationType.editGuardian;
-          break;
-        case ApprovalType.deleteGuardian:
-          verifierCodeOperation = VerifierCodeOperationType.deleteGuardian;
-          break;
-        case ApprovalType.removeOtherManager:
-          verifierCodeOperation = VerifierCodeOperationType.removeOtherManager;
-          break;
-        case ApprovalType.communityRecovery:
-          verifierCodeOperation = VerifierCodeOperationType.communityRecovery;
-          break;
-        default:
-          verifierCodeOperation = VerifierCodeOperationType.unknown;
-          break;
-      }
 
       const rst = await verifyToken(guardianItem.guardianType, {
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,
-        verifierCodeOperation,
+        operationType,
       });
 
       if (rst.accessToken) {
@@ -184,12 +177,12 @@ function GuardianItemButton({
     }
     Loading.hide();
   }, [
-    approvalType,
     authenticationInfo,
     guardianItem.guardianAccount,
     guardianItem.guardianType,
     guardianItem.verifier?.id,
     onSetGuardianStatus,
+    operationType,
     originChainId,
     verifyToken,
   ]);

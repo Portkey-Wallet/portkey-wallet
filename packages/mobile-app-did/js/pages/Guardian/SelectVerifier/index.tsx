@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { TextL, TextM, TextS, TextXXXL } from 'components/CommonText';
@@ -23,13 +23,7 @@ import { VerifierImage } from '../components/VerifierImage';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import myEvents from 'utils/deviceEvent';
 import { verification } from 'utils/api';
-import {
-  AuthenticationInfo,
-  RecaptchaType,
-  VerificationType,
-  VerifierCodeOperationType,
-  VerifierItem,
-} from '@portkey-wallet/types/verifier';
+import { AuthenticationInfo, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { useVerifyToken } from 'hooks/authentication';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnRequestOrSetPin } from 'hooks/login';
@@ -64,7 +58,7 @@ export default function SelectVerifier() {
         id: loginAccount,
         verifierId: selectedVerifier?.id,
         chainId: originChainId,
-        verifierCodeOperation: VerifierCodeOperationType.register,
+        operationType: OperationTypeEnum.register,
       });
       onRequestOrSetPin({
         showLoading: !isRequestResult,
@@ -101,7 +95,7 @@ export default function SelectVerifier() {
             guardianIdentifier: loginAccount,
             verifierId: selectedVerifier?.id,
             chainId: originChainId,
-            operationType: RecaptchaType.register,
+            operationType: OperationTypeEnum.register,
           },
         });
         if (requestCodeResult.verifierSessionId) {

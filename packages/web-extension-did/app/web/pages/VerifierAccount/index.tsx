@@ -4,7 +4,7 @@ import { useAppDispatch, useLoginInfo, useGuardiansInfo, useUserInfo, useLoading
 import { useCallback, useMemo } from 'react';
 import { message } from 'antd';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { RecaptchaType, VerifierCodeOperationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import useLocationState from 'hooks/useLocationState';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -189,33 +189,24 @@ export default function VerifierAccount() {
     return !!currentGuardian?.isInitStatus;
   }, [currentGuardian, state]);
 
-  const recaptchaType = useMemo(() => {
-    if (state === 'register') {
-      return RecaptchaType.register;
-    } else if (state === 'login') {
-      return RecaptchaType.communityRecovery;
-    }
-    return RecaptchaType.optGuardian;
-  }, [state]);
-
-  const verifierCodeOperationType = useMemo(() => {
+  const operationType: OperationTypeEnum = useMemo(() => {
     switch (state) {
       case 'register':
-        return VerifierCodeOperationType.register;
+        return OperationTypeEnum.register;
       case 'login':
-        return VerifierCodeOperationType.communityRecovery;
+        return OperationTypeEnum.communityRecovery;
       case 'guardians/add':
-        return VerifierCodeOperationType.addGuardian;
+        return OperationTypeEnum.addGuardian;
       case 'guardians/edit':
-        return VerifierCodeOperationType.editGuardian;
+        return OperationTypeEnum.editGuardian;
       case 'guardians/del':
-        return VerifierCodeOperationType.deleteGuardian;
+        return OperationTypeEnum.deleteGuardian;
       case 'guardians/setLoginAccount':
       default:
         if (state?.indexOf('removeManage') !== -1) {
-          return VerifierCodeOperationType.removeOtherManager;
+          return OperationTypeEnum.removeOtherManager;
         } else {
-          return VerifierCodeOperationType.unknown;
+          return OperationTypeEnum.unknown;
         }
     }
   }, [state]);
@@ -229,12 +220,11 @@ export default function VerifierAccount() {
           currentGuardian={currentGuardian}
           guardianType={loginAccount?.loginType}
           onSuccess={onSuccess}
-          recaptchaType={recaptchaType}
-          verifierCodeOperationType={verifierCodeOperationType}
+          operationType={operationType}
         />
       </div>
     ),
-    [currentGuardian, isInitStatus, loginAccount, onSuccess, recaptchaType, verifierCodeOperationType],
+    [currentGuardian, isInitStatus, loginAccount, onSuccess, operationType],
   );
 
   const props = useMemo(

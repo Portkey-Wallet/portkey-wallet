@@ -15,13 +15,7 @@ import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
 import { LOGIN_TYPE_LIST } from '@portkey-wallet/constants/verifier';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
-import {
-  ApprovalType,
-  RecaptchaType,
-  VerificationType,
-  VerifierCodeOperationType,
-  VerifierItem,
-} from '@portkey-wallet/types/verifier';
+import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import GuardianTypeSelectOverlay from '../components/GuardianTypeSelectOverlay';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
@@ -171,7 +165,7 @@ const GuardianEdit: React.FC = () => {
         id: thirdPartyInfo.id,
         verifierId: verifierInfo.id,
         chainId: originChainId,
-        verifierCodeOperation: VerifierCodeOperationType.addGuardian,
+        operationType: OperationTypeEnum.addGuardian,
       });
       Loading.hide();
 
@@ -256,7 +250,7 @@ const GuardianEdit: React.FC = () => {
                     guardianIdentifier: guardianAccount,
                     verifierId: selectedVerifier.id,
                     chainId: originChainId,
-                    operationType: RecaptchaType.optGuardian,
+                    operationType: OperationTypeEnum.addGuardian,
                   },
                 });
                 if (req.verifierSessionId) {

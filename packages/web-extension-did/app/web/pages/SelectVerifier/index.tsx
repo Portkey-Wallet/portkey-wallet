@@ -19,7 +19,7 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import './index.less';
-import { RecaptchaType, VerifierCodeOperationType } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 export default function SelectVerifier() {
   const { verifierMap } = useGuardiansInfo();
@@ -67,7 +67,7 @@ export default function SelectVerifier() {
           type: LoginType[loginAccount.loginType],
           verifierId: selectItem.id,
           chainId: originChainId,
-          operationType: RecaptchaType.register,
+          operationType: OperationTypeEnum.register,
         },
       });
       setLoading(false);
@@ -109,7 +109,7 @@ export default function SelectVerifier() {
         id: loginAccount.guardianAccount,
         verifierId: selectItem?.id,
         chainId: originChainId,
-        verifierCodeOperation: VerifierCodeOperationType.register,
+        operationType: OperationTypeEnum.register,
       });
       dispatch(
         setRegisterVerifierAction({

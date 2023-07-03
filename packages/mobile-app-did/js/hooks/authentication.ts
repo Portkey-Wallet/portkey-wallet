@@ -16,7 +16,7 @@ import { changeCanLock } from 'utils/LockManager';
 import { AppState } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { VerifierCodeOperationType } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 if (!isIos) {
   GoogleSignin.configure({
@@ -246,7 +246,7 @@ export type VerifyTokenParams = {
   verifierId?: string;
   chainId: ChainId;
   id: string;
-  verifierCodeOperation: VerifierCodeOperationType;
+  operationType: OperationTypeEnum;
 };
 
 export function useVerifyGoogleToken() {

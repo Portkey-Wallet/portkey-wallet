@@ -9,9 +9,8 @@ import { StyleSheet, Text } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import {
   ApprovalType,
-  RecaptchaType,
   VerificationType,
-  VerifierCodeOperationType,
+  OperationTypeEnum,
   VerifierInfo,
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
@@ -105,39 +104,34 @@ export default function VerifierDetails() {
     }
   }, [caHash, getCurrentCAContract, guardianItem, managerAddress]);
 
+  const operationType: OperationTypeEnum = useMemo(() => {
+    switch (verificationType) {
+      case VerificationType.register:
+        return OperationTypeEnum.register;
+      case VerificationType.communityRecovery:
+        return OperationTypeEnum.communityRecovery;
+      case VerificationType.addGuardian:
+      case VerificationType.addGuardianByApprove:
+        return OperationTypeEnum.addGuardian;
+      case VerificationType.deleteGuardian:
+        return OperationTypeEnum.deleteGuardian;
+      case VerificationType.editGuardian:
+        return OperationTypeEnum.editGuardian;
+      case VerificationType.removeOtherManager:
+        return OperationTypeEnum.removeOtherManager;
+      case VerificationType.setLoginAccount:
+        return OperationTypeEnum.setLoginAccount;
+      default:
+        return OperationTypeEnum.unknown;
+    }
+  }, [verificationType]);
+
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
       Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
       try {
-        let verifierCodeOperationType: VerifierCodeOperationType;
-        switch (verificationType) {
-          case VerificationType.register:
-            verifierCodeOperationType = VerifierCodeOperationType.register;
-            break;
-          case VerificationType.communityRecovery:
-            verifierCodeOperationType = VerifierCodeOperationType.communityRecovery;
-            break;
-          case VerificationType.addGuardian:
-          case VerificationType.addGuardianByApprove:
-            verifierCodeOperationType = VerifierCodeOperationType.addGuardian;
-            break;
-          case VerificationType.deleteGuardian:
-            verifierCodeOperationType = VerifierCodeOperationType.deleteGuardian;
-            break;
-          case VerificationType.editGuardian:
-            verifierCodeOperationType = VerifierCodeOperationType.editGuardian;
-            break;
-          case VerificationType.removeOtherManager:
-            verifierCodeOperationType = VerifierCodeOperationType.removeOtherManager;
-            break;
-          case VerificationType.setLoginAccount:
-          default:
-            verifierCodeOperationType = VerifierCodeOperationType.unknown;
-            break;
-        }
-
         const rst = await verification.checkVerificationCode({
           params: {
             type: LoginType[guardianItem?.guardianType as LoginType],
@@ -146,7 +140,7 @@ export default function VerifierDetails() {
             ...requestCodeResult,
             verifierId: guardianItem?.verifier?.id,
             chainId: originChainId,
-            verifierCodeOperationType,
+            operationType,
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -201,25 +195,31 @@ export default function VerifierDetails() {
       }
       !isRequestResult && Loading.hide();
     },
-    [requestCodeResult, guardianItem, originChainId, verificationType, setGuardianStatus, onSetLoginAccount],
+    [
+      requestCodeResult,
+      guardianItem,
+      pin,
+      verificationType,
+      managerAddress,
+      originChainId,
+      operationType,
+      setGuardianStatus,
+      onSetLoginAccount,
+      onRequestOrSetPin,
+    ],
   );
+
   const resendCode = useCallback(async () => {
     try {
       Loading.show();
 
-      let recaptchaType = RecaptchaType.optGuardian;
-      if (verificationType === VerificationType.register) {
-        recaptchaType = RecaptchaType.register;
-      } else if (verificationType === VerificationType.communityRecovery) {
-        recaptchaType = RecaptchaType.communityRecovery;
-      }
       const req = await verification.sendVerificationCode({
         params: {
           type: LoginType[guardianItem?.guardianType as LoginType],
           guardianIdentifier: guardianItem?.guardianAccount,
           verifierId: guardianItem?.verifier?.id,
           chainId: originChainId,
-          operationType: recaptchaType,
+          operationType,
         },
       });
       if (req.verifierSessionId) {
@@ -235,14 +235,8 @@ export default function VerifierDetails() {
     }
     digitInput.current?.reset();
     Loading.hide();
-  }, [
-    guardianItem?.guardianAccount,
-    guardianItem?.guardianType,
-    guardianItem?.verifier?.id,
-    originChainId,
-    setGuardianStatus,
-    verificationType,
-  ]);
+  }, [guardianItem, operationType, originChainId, setGuardianStatus]);
+
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>
       {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null}

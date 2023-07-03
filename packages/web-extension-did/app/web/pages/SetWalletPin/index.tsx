@@ -7,7 +7,6 @@ import { useNavigate, useParams } from 'react-router';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { setLocalStorage } from 'utils/storage/chromeStorage';
 import { createWallet, setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useTranslation } from 'react-i18next';
 import { recoveryDIDWallet, registerDIDWallet } from '@portkey-wallet/api/api-did/utils/wallet';
@@ -131,12 +130,11 @@ export default function SetWalletPin() {
           caInfo: scanCaWalletInfo,
         }),
       );
-      await setLocalStorage({
-        registerStatus: 'Registered',
-      });
+
+      setPinAction(pin);
+
       dispatch(setPasswordSeed(pin));
       scanWallet?.address && sendScanLoginSuccess({ targetClientId: scanWallet.address });
-      await setPinAction(pin);
       navigate(`/success-page/${state}`);
     },
     [dispatch, navigate, scanCaWalletInfo, scanWalletInfo, state],
@@ -174,8 +172,9 @@ export default function SetWalletPin() {
           type: loginAccount.loginType,
           verificationType: state === 'login' ? VerificationType.communityRecovery : VerificationType.register,
         };
-        console.log(managerInfo, 'managerInfo====1');
+
         dispatch(setPasswordSeed(pin));
+
         !walletInfo.address
           ? dispatch(
               createWallet({
@@ -191,11 +190,8 @@ export default function SetWalletPin() {
                 managerInfo,
               }),
             );
-        console.log(managerInfo, 'managerInfo====');
-        await setLocalStorage({
-          registerStatus: 'registeredNotGetCaAddress',
-        });
-        await setPinAction(pin);
+
+        setPinAction(pin);
 
         // TODO Step 14 Only get Main Chain caAddress
 

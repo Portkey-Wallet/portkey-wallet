@@ -1,32 +1,43 @@
-import { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import ReactErrorBoundary, { ErrorBoundaryTrue, handleReportError } from '@portkey-wallet/utils/errorBoundary';
+import CustomSvg from 'components/CustomSvg';
+import { Button } from 'antd';
+import clsx from 'clsx';
+import * as Sentry from '@sentry/react';
+import './index.less';
 
 export type ErrorBoundaryProps = {
   children: ReactNode;
   view: string;
+  pageType: string;
 };
 
-export default function ErrorBoundary({ children, view }: ErrorBoundaryProps) {
+export default function ErrorBoundary({ children, view, pageType }: ErrorBoundaryProps) {
+  const isPrompt = useMemo(() => pageType === 'Prompt', [pageType]);
   const onError = useCallback(
     ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
       const sendError = handleReportError({ error, componentStack, view });
       console.log(sendError, '====sendError');
-      // TODO: reportError
+      Sentry.captureException({ error, componentStack, view });
     },
     [view],
   );
   return (
     <ReactErrorBoundary
       onError={(error, componentStack) => onError({ error, componentStack })}
-      fallback={({ error, componentStack, resetError }) => {
+      fallback={({ resetError }) => {
         return (
-          <>
-            <h1>Something went wrong.</h1>
-            {error.toString()}
-            <br />
-            {componentStack}
-            <button onClick={resetError}>resetError</button>
-          </>
+          <div className={clsx(!isPrompt && 'error-body-popup', 'error-body', 'flex')}>
+            <div className="flex-column-center">
+              <CustomSvg type="ErrorIcon" />
+              <div className="tip">
+                {"Oops! Looks like something went wrong. But don't worry, your wallet and funds are safe and sound."}
+              </div>
+            </div>
+            <div className="btn-wrap">
+              <Button onClick={resetError}>Reload</Button>
+            </div>
+          </div>
         );
       }}>
       {children}

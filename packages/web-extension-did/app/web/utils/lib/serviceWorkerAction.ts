@@ -8,13 +8,7 @@ import { useCallback } from 'react';
 import { CloseParams } from 'service/NotificationService';
 import { CreatePromptType, ReCaptchaResponseParams, SendResponseParams } from 'types';
 import { getPortkeyFinanceUrl } from 'utils';
-import { setLocalStorage } from 'utils/storage/chromeStorage';
 import { getWalletState } from './SWGetReduxStore';
-
-export const completeRegistration = async () => {
-  await setLocalStorage({ registerStatus: 'Registered' });
-  await InternalMessage.payload(PortkeyMessageTypes.CLOSE_PROMPT, { isClose: false }).send();
-};
 
 export const closePrompt = async (closeParams?: CloseParams, promptType?: CreatePromptType) => {
   // await DappMiddle.middle
@@ -46,9 +40,7 @@ export const useActiveLockStatusAction = () => {
   }, []);
 };
 
-export const setPinAction = async (pin: string) => {
-  await InternalMessage.payload(PortkeyMessageTypes.SET_SEED, pin).send();
-};
+export const setPinAction = (pin: string) => InternalMessage.payload(PortkeyMessageTypes.SET_SEED, pin).send();
 
 export const socialLoginAction = async (type: ISocialLogin, network: NetworkType): Promise<SendResponseParams> => {
   const { JOIN_AUTH_URL } = getPortkeyFinanceUrl(network);

@@ -5194,12 +5194,13 @@
     aelf-sdk "^3.2.44"
 
 "@portkey/contracts@^1.0.0-alpha.4":
-  version "1.0.0-alpha.4"
-  resolved "https://registry.npmjs.org/@portkey/contracts/-/contracts-1.0.0-alpha.4.tgz#eb69538b5188a578794090f2694a5ef3ba1a05bb"
-  integrity sha512-JkIbQwqFOOKMGBEKN9ax//9xJlzLVLvZchod5uhKO9tMQYCUmRS6ZLFUhlS0kwe0xyFoqk2CkPkDw+A8dWJ2xQ==
+  version "1.0.0-alpha.5"
+  resolved "https://registry.npmjs.org/@portkey/contracts/-/contracts-1.0.0-alpha.5.tgz#75147e6110f2d7dfdd1b50bac23d6a1e5a9151f7"
+  integrity sha512-oDBHLMv8v+o9YzgpXU/HII8AjNdXsuNeFrs4C5IbfwEVAQ+TizDaYJ/ij+Xa+Z6tCG6zl9A/vQ9N6yqSpl7H2A==
   dependencies:
-    "@portkey/types" "^1.0.0-alpha.4"
-    "@portkey/utils" "^1.0.0-alpha.4"
+    "@portkey/provider-types" "^1.0.1-alpha.0"
+    "@portkey/types" "^1.0.0-alpha.5"
+    "@portkey/utils" "^1.0.0-alpha.5"
     aelf-sdk "^3.2.44"
 
 "@portkey/extension-provider@1.0.1-alpha.0":
@@ -5244,17 +5245,39 @@
     lodash "^4.17.21"
     readable-stream "^4.4.0"
 
-"@portkey/types@1.0.0-alpha.4", "@portkey/types@^1.0.0-alpha.4":
+"@portkey/socket@1.0.0-alpha.2":
+  version "1.0.0-alpha.2"
+  resolved "https://registry.npmjs.org/@portkey/socket/-/socket-1.0.0-alpha.2.tgz#fc243b61c03d2d5c0856190478af566841c00c0e"
+  integrity sha512-B2qr5wIYMS1A0d7UtnfhRJtOPJ+S51tf8Vyp3UdND5BT4d9b63XdeSjSnaBmzLuxXwT9zVP4kRJNkhLPaMpGQA==
+  dependencies:
+    "@abp/signalr" "^7.0.0"
+    "@portkey/utils" "^1.0.0-alpha.2"
+
+"@portkey/types@1.0.0-alpha.4":
   version "1.0.0-alpha.4"
   resolved "https://registry.npmjs.org/@portkey/types/-/types-1.0.0-alpha.4.tgz#2f22a75a1af6df31db15fce1c473ca9e1f07f127"
   integrity sha512-mOSl89fN+hQ4zun6MF2uuQH5Bz8Owf6eA+N1HJ5fwKUMbQqr+7uI1HJZstoTSLFTLPjVSAIaIauXb2sfdRIm7A==
   dependencies:
     "@types/elliptic" "^6.4.14"
 
-"@portkey/utils@^1.0.0-alpha.4":
-  version "1.0.0-alpha.4"
-  resolved "https://registry.npmjs.org/@portkey/utils/-/utils-1.0.0-alpha.4.tgz#54565ff7018cdafb1604ad27ffc95e0a64bcf7fc"
-  integrity sha512-lw1mp6/U74fTHL8IQj9yn8orxDjsvkt1M9Klae0+eFnluudn78ELSP40HN96Ix2uFO5pEueJWIzpnYwCGUiJhA==
+"@portkey/types@^1.0.0-alpha.5":
+  version "1.0.0-alpha.5"
+  resolved "https://registry.npmjs.org/@portkey/types/-/types-1.0.0-alpha.5.tgz#a7183f4634a28008cd9f0d10c6de5cb94528f4b0"
+  integrity sha512-RH2VyRrrjJPvBeOBxodQNEEuvn60ihgth3Ci/N2bt1ZdIxGe5+O5oLHQmfPPiP55kw76pX4l9JlDP4B536lEDw==
+  dependencies:
+    "@types/elliptic" "^6.4.14"
+
+"@portkey/utils@^1.0.0-alpha.2":
+  version "1.0.0-alpha.2"
+  resolved "https://registry.npmjs.org/@portkey/utils/-/utils-1.0.0-alpha.2.tgz#719184830e520976c35db44ed131bcd95923df0b"
+  integrity sha512-Q+6yQuOPqXk/I4QzJD8AgEP/FhBd1NjnPkoEn1rjWAskONaVlBDKWL3lB2ihtGoSK+kn/c5YJ5aNLZJ4KLbkog==
+  dependencies:
+    aelf-sdk "^3.2.44"
+
+"@portkey/utils@^1.0.0-alpha.5":
+  version "1.0.0-alpha.5"
+  resolved "https://registry.npmjs.org/@portkey/utils/-/utils-1.0.0-alpha.5.tgz#adf53c29d15376b3b4dea90e7a619ccab9b314e9"
+  integrity sha512-/4vXkn4WSMfG3zpz3Ntp2umGQmH8/W0ziLrXkmRt+q/WovG983Y7smP7RAWabNQ2jdq+vh93EKqDpr2YitsRPw==
   dependencies:
     aelf-sdk "^3.2.44"
 

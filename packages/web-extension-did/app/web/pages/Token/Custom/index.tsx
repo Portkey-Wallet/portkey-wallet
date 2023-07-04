@@ -1,6 +1,6 @@
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { Button, Input } from 'antd';
+import { Button, Input, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { useCallback, useMemo, useState } from 'react';
@@ -15,6 +15,7 @@ import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import './index.less';
 
 export default function CustomToken() {
@@ -101,11 +102,13 @@ export default function CustomToken() {
             isDisplay: !curToken?.isDisplay,
           },
         });
-        setLoading(false);
         navigate('/add-token');
-      } catch (error) {
-        setLoading(false);
+      } catch (error: any) {
+        const err = handleErrorMessage(error, 'add custom token error');
+        message.error(err);
         console.log('add custom token error', error);
+      } finally {
+        setLoading(false);
       }
     }
   }, [curToken?.id, curToken?.isDefault, curToken?.isDisplay, navigate, setLoading]);

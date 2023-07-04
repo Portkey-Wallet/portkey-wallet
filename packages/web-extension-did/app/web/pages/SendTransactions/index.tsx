@@ -106,7 +106,7 @@ export default function SendTransactions() {
     try {
       const tokenDetail = await request.token.fetchTokenItemBySearch({
         params: {
-          token,
+          symbol: token,
           chainId,
         },
       });
@@ -129,14 +129,14 @@ export default function SendTransactions() {
       return;
     }
     const params = JSON.parse(txPayload[transactionInfoId]);
-    getTokenDecimals(params.symbol, payload?.chainId);
+    getTokenDecimals(params?.paramsOption?.symbol, payload?.chainId);
     setTxParams(params);
     const _isManagerSynced = await checkManagerSyncState(payload?.chainId);
     setIsManagerSynced(_isManagerSynced);
     if (_isManagerSynced) {
       getFee(params);
     } else {
-      setErrMsg('the manager has not been synchronized yet'); // TODO
+      setErrMsg('Synchronizing on-chain account information...');
     }
   }, [checkManagerSyncState, getFee, getTokenDecimals, payload?.chainId, transactionInfoId]);
 

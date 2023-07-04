@@ -25,6 +25,7 @@ import DappInfoSection from '../DappInfoSection';
 import TransactionDataSection from '../TransactionDataSection';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { styles, transferGroupStyle } from './styles/index';
+import Lottie from 'lottie-react-native';
 
 type TransactionModalPropsType = {
   dappInfo: DappStoreItem;
@@ -46,14 +47,17 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const chainInfo = useCurrentChain(transactionInfo.chainId);
   const [, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
 
-  const isCAContract = useMemo(
-    () => chainInfo?.caContractAddress === transactionInfo?.contractAddress,
-    [chainInfo?.caContractAddress, transactionInfo?.contractAddress],
-  );
+  const [decimal, setDecimal] = useState('0');
+  const [isFetchingDecimal, setIsFetchingDecimal] = useState(false);
 
   const [fee, setFee] = useState('');
   const [isFetchingFee, setIsFetchingFee] = useState(true);
   const [noEnoughFee, setNoEnoughFee] = useState(false);
+
+  const isCAContract = useMemo(
+    () => chainInfo?.caContractAddress === transactionInfo?.contractAddress,
+    [chainInfo?.caContractAddress, transactionInfo?.contractAddress],
+  );
 
   const isTransfer = useMemo(() => transactionInfo.method.toLowerCase() === 'transfer', [transactionInfo.method]);
 
@@ -100,9 +104,19 @@ const ConnectModal = (props: TransactionModalPropsType) => {
       <>
         {isTransfer && (
           <>
-            <Text style={[transferGroupStyle.tokenCount, FontStyles.font5, fonts.mediumFont]}>
-              {`${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}
-            </Text>
+            <View style={transferGroupStyle.tokenWrap}>
+              {isFetchingDecimal && (
+                <Lottie
+                  style={transferGroupStyle.loadingIcon}
+                  source={require('assets/lottieFiles/loading.json')}
+                  autoPlay
+                  loop
+                />
+              )}
+              <Text style={[transferGroupStyle.tokenCount, FontStyles.font5, fonts.mediumFont]}>
+                {isFetchingDecimal ? symbol : `${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}
+              </Text>
+            </View>
             {isMainnet && (
               <TextM style={transferGroupStyle.tokenUSD}>{`${formatAmountInUsdShow(amount, decimals, symbol)}`}</TextM>
             )}
@@ -140,10 +154,20 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           <View style={transferGroupStyle.section}>
             <View style={[transferGroupStyle.flexSpaceBetween]}>
               <TextM style={transferGroupStyle.fontBold}>{t('Transaction Fee')}</TextM>
-              <TextM style={transferGroupStyle.fontBold}>{`${formatAmountShow(
-                divDecimals(fee, ELF_DECIMAL),
-                8,
-              )} ELF`}</TextM>
+
+              <View style={transferGroupStyle.tokenWrap}>
+                {isFetchingFee && (
+                  <Lottie
+                    style={transferGroupStyle.smallLoadingIcon}
+                    source={require('assets/lottieFiles/loading.json')}
+                    autoPlay
+                    loop
+                  />
+                )}
+                <TextM style={transferGroupStyle.fontBold}>
+                  {isFetchingFee ? 'ELF' : `${formatAmountShow(divDecimals(fee, ELF_DECIMAL), 8)} ELF`}
+                </TextM>
+              </View>
             </View>
             {isMainnet && (
               <View style={[transferGroupStyle.flexSpaceBetween]}>
@@ -163,10 +187,22 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                 <View style={transferGroupStyle.section}>
                   <View style={[transferGroupStyle.flexSpaceBetween]}>
                     <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
-                    <TextM style={transferGroupStyle.fontBold}>{`${formatAmountShow(
-                      divDecimals(ZERO.plus(amount).plus(fee), decimals),
-                      8,
-                    )} ${symbol}`}</TextM>
+
+                    <View style={transferGroupStyle.tokenWrap}>
+                      {isFetchingFee && (
+                        <Lottie
+                          style={transferGroupStyle.smallLoadingIcon}
+                          source={require('assets/lottieFiles/loading.json')}
+                          autoPlay
+                          loop
+                        />
+                      )}
+                      <TextM style={transferGroupStyle.fontBold}>
+                        {isFetchingFee
+                          ? 'ELF'
+                          : `${formatAmountShow(divDecimals(ZERO.plus(amount).plus(fee), decimals), 8)} ${symbol}`}
+                      </TextM>
+                    </View>
                   </View>
                   {isMainnet && (
                     <View style={[transferGroupStyle.flexSpaceBetween]}>
@@ -185,10 +221,19 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                 <View style={transferGroupStyle.section}>
                   <View style={[transferGroupStyle.flexSpaceBetween]}>
                     <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
-                    <TextM style={transferGroupStyle.fontBold}>{`${formatAmountShow(
-                      divDecimals(ZERO.plus(fee), ELF_DECIMAL),
-                      8,
-                    )} ELF`}</TextM>
+                    <View style={transferGroupStyle.tokenWrap}>
+                      {isFetchingFee && (
+                        <Lottie
+                          style={transferGroupStyle.smallLoadingIcon}
+                          source={require('assets/lottieFiles/loading.json')}
+                          autoPlay
+                          loop
+                        />
+                      )}
+                      <TextM style={transferGroupStyle.fontBold}>
+                        {isFetchingFee ? 'ELF' : `${formatAmountShow(divDecimals(ZERO.plus(fee), ELF_DECIMAL), 8)} ELF`}
+                      </TextM>
+                    </View>
                   </View>
                   {isMainnet && (
                     <View style={[transferGroupStyle.flexSpaceBetween]}>
@@ -202,10 +247,21 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                   )}
                   <View style={[transferGroupStyle.flexSpaceBetween]}>
                     <TextM />
-                    <TextM style={transferGroupStyle.fontBold}>{`${formatAmountShow(
-                      divDecimals(ZERO.plus(amount), decimals),
-                      8,
-                    )} ${symbol}`}</TextM>
+                    <View style={transferGroupStyle.tokenWrap}>
+                      {isFetchingDecimal && (
+                        <Lottie
+                          style={transferGroupStyle.smallLoadingIcon}
+                          source={require('assets/lottieFiles/loading.json')}
+                          autoPlay
+                          loop
+                        />
+                      )}
+                      <TextM style={transferGroupStyle.fontBold}>
+                        {isFetchingDecimal
+                          ? symbol
+                          : `${formatAmountShow(divDecimals(ZERO.plus(amount), decimals), 8)} ${symbol}`}
+                      </TextM>
+                    </View>
                   </View>
                   {isMainnet && (
                     <View style={[transferGroupStyle.flexSpaceBetween]}>
@@ -226,6 +282,8 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   }, [
     fee,
     formatAmountInUsdShow,
+    isFetchingDecimal,
+    isFetchingFee,
     isMainnet,
     isTransfer,
     noEnoughFee,

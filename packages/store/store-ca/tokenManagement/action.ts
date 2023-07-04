@@ -12,6 +12,7 @@ export const fetchAllTokenListAsync = createAsyncThunk(
   'tokenManagement/fetchAllTokenListAsync',
   async ({ keyword = '', chainIdArray }: { keyword?: string; chainIdArray?: string[] }) => {
     const response = await fetchAllTokenList({ keyword, chainIdArray: chainIdArray || [] });
+
     return { list: response.items, totalRecordCount: response.totalRecordCount };
   },
 );

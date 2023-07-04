@@ -54,7 +54,9 @@ export default function ScanLogin() {
       if (targetClientId) {
         const isQRCodeExist = await checkQRCodeExist(targetClientId);
         if (isQRCodeExist) {
-          // TODO: add Toast
+          CommonToast.warn('The QR code has already been scanned by another device.');
+          setLoading(false);
+          return;
         }
       }
 

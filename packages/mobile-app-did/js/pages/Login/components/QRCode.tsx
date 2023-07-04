@@ -143,7 +143,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
           {isScanQRCode && (
             <View style={[GStyles.flex1, GStyles.center, GStyles.flexRow]}>
               <Lottie source={require('./scanLoading.json')} style={styles.scanLoading} autoPlay loop />
-              <TextM style={[GStyles.textAlignCenter, FontStyles.font3]}>Waiting for authorization...</TextM>
+              <TextM style={[GStyles.textAlignCenter, FontStyles.font3]}>Waiting for authorization....</TextM>
             </View>
           )}
         </View>

@@ -9,6 +9,7 @@ import { setIsPrompt } from 'store/reducers/common/slice';
 import { useStorage } from 'hooks/useStorage';
 import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
+import { useEffectOnce } from 'react-use';
 
 const timeout = async () => {
   // TODO This is a bug
@@ -93,18 +94,8 @@ export default function PermissionCheck({
     if (caHash) return getPassword();
 
     if (pageType == 'Popup') {
-      await sleep(500);
       return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
     } else {
-      // Already request not get register result
-      console.log(caInfo?.managerInfo, 'checkCurrentNetworkRegisterHandler==');
-      // const otherNetwork = networkList.filter((item) => item.networkType !== currentNetwork);
-      // const otherNetworkType = otherNetwork.length ? otherNetwork[0].networkType : undefined;
-      // const ortherCaInfo = otherNetworkType ? walletInfo?.caInfo?.[otherNetworkType] : undefined;
-      // const otherNetworkCaHash = ortherCaInfo
-      //   ? ortherCaInfo?.[ortherCaInfo.originChainId || 'AELF']?.caHash
-      //   : undefined;
-
       if (caInfo?.managerInfo) return navigate('/query-page');
       const isRegisterPage =
         location.pathname.includes('/login') ||
@@ -118,11 +109,13 @@ export default function PermissionCheck({
   }, [currentNetwork, getPassword, pageType, walletInfo?.caInfo]);
 
   useEffect(() => {
-    if (location.pathname.includes('/test')) return;
     if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
+  }, [isRegisterPage, locked, navigate, noCheckRegister]);
+
+  useEffectOnce(() => {
+    if (location.pathname.includes('/test')) return;
     checkCurrentNetworkRegisterHandler();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkCurrentNetworkRegisterHandler, locked]);
+  });
 
   return <>{children}</>;
 }

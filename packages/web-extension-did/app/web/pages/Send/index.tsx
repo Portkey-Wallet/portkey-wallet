@@ -70,7 +70,6 @@ export default function Send() {
   const [balance, setBalance] = useState('');
   const isValidSuffix = useIsValidSuffix();
   const checkManagerSyncState = useCheckManagerSyncState();
-  const [isManagerSynced, setIsManagerSynced] = useState(true);
   const [txFee, setTxFee] = useState<string>();
   const currentChain = useCurrentChain(state.chainId);
 
@@ -197,6 +196,10 @@ export default function Send() {
     try {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
+      const _isManagerSynced = await checkManagerSyncState(state.chainId);
+      if (!_isManagerSynced) {
+        return 'Synchronizing on-chain account information...';
+      }
       if (type === 'token') {
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(ZERO.plus(balance))) {
           return TransactionError.TOKEN_NOT_ENOUGH;
@@ -212,11 +215,6 @@ export default function Send() {
         }
       } else {
         return 'input error';
-      }
-      const _isManagerSynced = await checkManagerSyncState(state.chainId);
-      setIsManagerSynced(_isManagerSynced);
-      if (!_isManagerSynced) {
-        return 'Synchronizing on-chain account information...';
       }
       const fee = await getTranslationInfo();
       console.log('---getTranslationInfo', fee);
@@ -390,7 +388,7 @@ export default function Send() {
               setBalance(balance);
             }}
             getTranslationInfo={getTranslationInfo}
-            setErrorMsg={setErrorMsg}
+            setErrorMsg={setTipMsg}
           />
         ),
       },
@@ -475,7 +473,7 @@ export default function Send() {
                 )}
               </div>
             </div>
-            {errorMsg && <span className={clsx(!isManagerSynced && 'error-warning', 'error-msg')}>{errorMsg}</span>}
+            {errorMsg && <span className="error-msg">{errorMsg}</span>}
           </div>
         )}
         <div className="stage-ele">{StageObj[stage].element}</div>
@@ -487,20 +485,7 @@ export default function Send() {
         {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );
-  }, [
-    StageObj,
-    btnDisabled,
-    errorMsg,
-    isManagerSynced,
-    isPrompt,
-    navigate,
-    stage,
-    symbol,
-    t,
-    toAccount,
-    type,
-    walletName,
-  ]);
+  }, [StageObj, btnDisabled, errorMsg, isPrompt, navigate, stage, symbol, t, toAccount, type, walletName]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

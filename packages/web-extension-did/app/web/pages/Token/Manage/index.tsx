@@ -6,17 +6,17 @@ import CustomSvg from 'components/CustomSvg';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import DropdownSearch from 'components/DropdownSearch';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useCommonState, useTokenInfo, useUserInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useLoading, useTokenInfo, useUserInfo } from 'store/Provider/hooks';
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
-import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import './index.less';
 
 export default function AddToken() {
@@ -28,7 +28,8 @@ export default function AddToken() {
   const appDispatch = useAppDispatch();
   const chainIdArray = useChainIdList();
   const isMainnet = useIsMainnet();
-  const [tokenShowList, setTokenShowList] = useState(tokenDataShowInMarket);
+  const { setLoading } = useLoading();
+  const [tokenShowList, setTokenShowList] = useState<TokenItemShowType[]>(tokenDataShowInMarket);
 
   useEffect(() => {
     if (!filterWord) {
@@ -37,8 +38,8 @@ export default function AddToken() {
   }, [filterWord, tokenDataShowInMarket]);
 
   useEffect(() => {
-    passwordSeed && appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
-  }, [passwordSeed, appDispatch, chainIdArray]);
+    !filterWord && passwordSeed && appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
+  }, [passwordSeed, appDispatch, chainIdArray, filterWord]);
 
   const handleAddCustomToken = useCallback(() => {
     setFilterWord('');
@@ -49,18 +50,27 @@ export default function AddToken() {
     async (keyword: string) => {
       try {
         if (!keyword) return;
+        setLoading(true);
         const res = await request.token.fetchTokenListBySearch({
           params: {
             symbol: keyword,
             chainIds: chainIdArray,
           },
         });
-        setTokenShowList(res?.data || []);
+        const _target = (res || []).map((item: any) => ({
+          ...item,
+          isAdded: item.isDisplay,
+          userTokenId: item.id,
+        }));
+        setTokenShowList(_target);
       } catch (error) {
+        setTokenShowList([]);
         console.log('filter search error', error);
+      } finally {
+        setLoading(false);
       }
     },
-    [chainIdArray],
+    [chainIdArray, setLoading],
   );
 
   const searchDebounce = useDebounceCallback(handleSearch, [filterWord], 500);
@@ -95,12 +105,15 @@ export default function AddToken() {
         }, 1000);
         message.success('success');
       } catch (error: any) {
-        message.error(error?.message || 'handle display error');
+        const err = handleErrorMessage(error, 'handle display error');
+        message.error(err);
         console.log('=== userToken display', error);
       }
     },
     [appDispatch, chainIdArray, filterWord, handleSearch],
   );
+
+  const displayToken = useDebounceCallback(handleUserTokenDisplay, [], 500);
 
   const renderTokenItemBtn = useCallback(
     (item: TokenItemShowType) => {
@@ -117,13 +130,13 @@ export default function AddToken() {
         <Button
           className="add-token-btn"
           onClick={() => {
-            handleUserTokenDisplay(item);
+            displayToken(item);
           }}>
           {t(isAdded ? 'Hide' : 'Add')}
         </Button>
       );
     },
-    [handleUserTokenDisplay, t],
+    [displayToken, t],
   );
 
   const renderTokenItem = useCallback(
@@ -211,7 +224,6 @@ export default function AddToken() {
           />
         </div>
         {renderTokenList}
-        {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );
   }, [filterWord, isPrompt, navigate, renderTokenList, rightElement, searchDebounce, t]);

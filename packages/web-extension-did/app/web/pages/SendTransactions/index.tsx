@@ -56,7 +56,7 @@ export default function SendTransactions() {
   );
   const [txParams, setTxParams] = useState<any>({});
   const checkManagerSyncState = useCheckManagerSyncState();
-  const [isManagerSynced, setIsManagerSynced] = useState(true);
+  const [isManagerSynced, setIsManagerSynced] = useState(false);
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
@@ -106,7 +106,7 @@ export default function SendTransactions() {
     try {
       const tokenDetail = await request.token.fetchTokenItemBySearch({
         params: {
-          token,
+          symbol: token,
           chainId,
         },
       });
@@ -129,16 +129,16 @@ export default function SendTransactions() {
       return;
     }
     const params = JSON.parse(txPayload[transactionInfoId]);
-    getTokenDecimals(params.symbol, params.chainId);
+    getTokenDecimals(params?.paramsOption?.symbol, payload?.chainId);
     setTxParams(params);
-    const _isManagerSynced = await checkManagerSyncState(params?.chainId);
+    const _isManagerSynced = await checkManagerSyncState(payload?.chainId);
     setIsManagerSynced(_isManagerSynced);
     if (_isManagerSynced) {
       getFee(params);
     } else {
-      setErrMsg('the manager has not been synchronized yet'); // TODO
+      setErrMsg('Synchronizing on-chain account information...');
     }
-  }, [checkManagerSyncState, getFee, getTokenDecimals, transactionInfoId]);
+  }, [checkManagerSyncState, getFee, getTokenDecimals, payload?.chainId, transactionInfoId]);
 
   useEffect(() => {
     getTxPayload();
@@ -180,7 +180,7 @@ export default function SendTransactions() {
           <div className="amount-number flex-between-center">
             <div className="value">
               <span>{loading ? <CircleLoading /> : `${formatAmountShow(divDecimals(amount, decimals), 8)}`}</span>
-              <span>{symbol}</span>
+              <span>&nbsp;{symbol}</span>
             </div>
             {isMainnet && <div>{formatAmountInUsdShow(amount, decimals, symbol)}</div>}
           </div>
@@ -190,7 +190,7 @@ export default function SendTransactions() {
           <div className="fee-amount flex-between-center">
             <div className="value">
               <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee, 8)}`}</span>
-              <span>ELF</span>
+              <span>&nbsp;ELF</span>
             </div>
             {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
           </div>
@@ -207,7 +207,7 @@ export default function SendTransactions() {
                     `${formatAmountShow(ZERO.plus(divDecimals(amount, decimals)).plus(fee), 8)}`
                   )}
                 </span>
-                <span>{symbol}</span>
+                <span>&nbsp;{symbol}</span>
               </div>
               {isMainnet && (
                 <div>
@@ -220,14 +220,14 @@ export default function SendTransactions() {
               <div className="amount-show flex-between-center">
                 <div className="value">
                   <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee, 8)}`}</span>
-                  <span>ELF</span>
+                  <span>&nbsp;ELF</span>
                 </div>
                 {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
               </div>
               <div className="amount-show flex-between-center">
                 <div className="value">
-                  <span>{loading ? <CircleLoading /> : `${formatAmountShow(amount)}`}</span>
-                  <span>{symbol}</span>
+                  <span>{loading ? <CircleLoading /> : `${formatAmountShow(divDecimals(amount, decimals), 8)}`}</span>
+                  <span>&nbsp;{symbol}</span>
                 </div>
                 {isMainnet && <div>{formatAmountInUsdShow(amount, 0, symbol)}</div>}
               </div>
@@ -260,7 +260,7 @@ export default function SendTransactions() {
           <div className="fee-amount flex-between-center">
             <div className="value">
               <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee)}`}</span>
-              <span>ELF</span>
+              <span>&nbsp;ELF</span>
             </div>
             {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
           </div>

@@ -1,91 +1,34 @@
 import PageContainer from 'components/PageContainer';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
-import { TextL, TextS } from 'components/CommonText';
-import { pTd } from 'utils/unit';
-import Svg from 'components/Svg';
-import CommonSwitch from 'components/CommonSwitch';
-import CommonAvatar from 'components/CommonAvatar';
 import { useLanguage } from 'i18n/hooks';
-import NoData from 'components/NoData';
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import useDebounce from 'hooks/useDebounce';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCaAddresses, useCaAddressInfoList, useChainIdList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import Loading from 'components/Loading';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import { FontStyles } from 'assets/theme/styles';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
-import { NetworkType } from '@portkey-wallet/types';
+import FilterTokenSection from './components/FilterToken';
+import PopularTokenSection from './components/PopularToken';
+import { pTd } from 'utils/unit';
+import navigationService from 'utils/navigationService';
+import Svg from 'components/Svg';
 
 interface ManageTokenListProps {
   route?: any;
 }
-
-type ItemProps = {
-  networkType: NetworkType;
-  item: TokenItemShowType;
-  onHandleToken: (item: TokenItemShowType, type: 'add' | 'delete') => void;
-};
-
-const Item = ({ networkType, item, onHandleToken }: ItemProps) => {
-  const symbolImages = useSymbolImages();
-  return (
-    <TouchableOpacity style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
-      <CommonAvatar
-        hasBorder
-        shapeType="circular"
-        title={item.symbol}
-        svgName={item.symbol === ELF_SYMBOL ? 'elf-icon' : undefined}
-        imageUrl={symbolImages[item.symbol]}
-        avatarSize={pTd(48)}
-        style={itemStyle.left}
-      />
-
-      <View style={itemStyle.right}>
-        <View>
-          <TextL numberOfLines={1} ellipsizeMode={'tail'}>
-            {item.symbol}
-          </TextL>
-          <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3]}>
-            {`${formatChainInfoToShow(item.chainId, networkType)}`}
-          </TextS>
-        </View>
-
-        {item.isDefault ? (
-          <Svg icon="lock" size={pTd(20)} iconStyle={itemStyle.addedStyle} />
-        ) : (
-          <TouchableOpacity
-            onPress={() => {
-              onHandleToken(item, item.isAdded ? 'delete' : 'add');
-            }}>
-            <View pointerEvents="none">
-              <CommonSwitch value={!!item.isAdded} />
-            </View>
-          </TouchableOpacity>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-};
 const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const { t } = useLanguage();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const currentNetworkInfo = useCurrentNetworkInfo();
-  const { currentNetwork } = useWallet();
-
-  const chainList = useChainIdList();
+  const chainIdList = useChainIdList();
 
   const dispatch = useAppCommonDispatch();
   const caAddressArray = useCaAddresses();
@@ -94,14 +37,9 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
 
   const [keyword, setKeyword] = useState<string>('');
+  const [filterTokenList, setFilterTokenList] = useState([]);
 
   const debounceWord = useDebounce(keyword, 500);
-
-  useEffect(() => {
-    if (tokenDataShowInMarket.length) return;
-    dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainList }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const onHandleTokenItem = useCallback(
     async (item: TokenItemShowType, isAdded: boolean) => {
@@ -109,7 +47,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       Loading.show();
       await request.token
         .displayUserToken({
-          baseURL: currentNetworkInfo.apiUrl,
           resourceUrl: `${item.userTokenId}/display`,
           params: {
             isDisplay: isAdded,
@@ -117,8 +54,8 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         })
         .then(res => {
           console.log(res);
-          setTimeout(() => {
-            dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainList }));
+          timerRef.current = setTimeout(() => {
+            dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
             dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
             Loading.hide();
 
@@ -130,18 +67,60 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           CommonToast.fail('Fail');
         });
     },
-    [caAddressArray, caAddressInfos, chainList, currentNetworkInfo.apiUrl, debounceWord, dispatch],
+    [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch],
   );
 
+  const fetchSearchedTokenList = useCallback(async () => {
+    try {
+      if (!debounceWord) return;
+      const res = await request.token.fetchTokenListBySearch({
+        params: {
+          symbol: debounceWord,
+          chainIds: chainIdList,
+        },
+      });
+      console.log('res', res);
+      setFilterTokenList(res?.data || []);
+    } catch (error) {
+      console.log('filter search error', error);
+    }
+  }, [chainIdList, debounceWord]);
+
   useEffect(() => {
-    dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainList }));
-  }, [chainList, debounceWord, dispatch]);
+    if (tokenDataShowInMarket.length) return;
+    dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (debounceWord) {
+      // get filter token
+      fetchSearchedTokenList();
+    } else {
+      dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
+    }
+  }, [chainIdList, debounceWord, dispatch, fetchSearchedTokenList]);
+
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    },
+    [],
+  );
 
   return (
     <PageContainer
       titleDom={t('Add Tokens')}
       safeAreaColor={['blue', 'white']}
-      rightDom={<View />}
+      rightDom={
+        <TouchableOpacity
+          style={{ padding: pTd(16) }}
+          onPress={() => {
+            navigationService.navigate('CustomToken');
+          }}>
+          <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+        </TouchableOpacity>
+      }
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
@@ -153,20 +132,12 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           }}
         />
       </View>
-      {!!keyword && !tokenDataShowInMarket.length && <NoData noPic message={t('There is no search result.')} />}
-      <FlatList
-        style={pageStyles.list}
-        data={tokenDataShowInMarket || []}
-        renderItem={({ item }: { item: TokenItemShowType }) => (
-          <Item
-            networkType={currentNetwork}
-            item={item}
-            onHandleToken={() => onHandleTokenItem(item, !item?.isAdded)}
-          />
-        )}
-        keyExtractor={(item: TokenItemShowType) => item?.id || item?.symbol}
-      />
-      {/* {isLoading && <Dialog.Loading />} */}
+
+      {debounceWord ? (
+        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
+      ) : (
+        <PopularTokenSection tokenDataShowInMarket={tokenDataShowInMarket} onHandleTokenItem={onHandleTokenItem} />
+      )}
     </PageContainer>
   );
 };
@@ -184,58 +155,5 @@ export const pageStyles = StyleSheet.create({
   },
   list: {
     flex: 1,
-  },
-  noResult: {
-    marginTop: pTd(40),
-    textAlign: 'center',
-    color: defaultColors.font7,
-  },
-});
-
-const itemStyle = StyleSheet.create({
-  wrap: {
-    height: pTd(72),
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  left: {
-    marginLeft: pTd(16),
-  },
-  right: {
-    height: pTd(72),
-    marginLeft: pTd(16),
-    paddingRight: pTd(16),
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomColor: defaultColors.border6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  addedStyle: {
-    marginRight: pTd(14),
-  },
-  tokenName: {
-    flex: 1,
-  },
-  balanceWrap: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-  },
-  token: {
-    color: defaultColors.font5,
-    lineHeight: pTd(22),
-    overflow: 'hidden',
-  },
-  dollar: {
-    marginTop: pTd(2),
-    lineHeight: pTd(16),
-    color: defaultColors.font7,
   },
 });

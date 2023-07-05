@@ -25,6 +25,9 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     minHeight: Math.min(screenHeight * 0.58, 494),
   },
+  qrCodeCard: {
+    paddingBottom: 0,
+  },
   inputContainerStyle: {
     marginTop: 8,
     flex: 1,
@@ -81,6 +84,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(6),
     borderRadius: pTd(10),
     paddingVertical: 1,
+  },
+  scanLoading: {
+    height: pTd(18),
+    marginRight: pTd(8),
   },
 });
 export default styles;

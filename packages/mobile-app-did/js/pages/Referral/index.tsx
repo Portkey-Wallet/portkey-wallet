@@ -17,21 +17,22 @@ import { sleep } from '@portkey-wallet/utils';
 
 export default function Referral() {
   const credentials = useCredentials();
-  const { address } = useCurrentWalletInfo();
+  const { address, caHash } = useCurrentWalletInfo();
   const gStyles = useGStyles();
   const { t } = useLanguage();
+
   const init = useCallback(async () => {
     await sleep(200);
     if (address) {
       let name: keyof RootStackParamList = 'SecurityLock';
-      if (credentials) name = 'Tab';
+      if (credentials && caHash) name = 'Tab';
       navigationService.reset(name);
     }
 
     setTimeout(() => {
       SplashScreen.hideAsync();
     }, 500);
-  }, [credentials, address]);
+  }, [credentials, address, caHash]);
   useEffect(() => {
     init();
   }, [init]);

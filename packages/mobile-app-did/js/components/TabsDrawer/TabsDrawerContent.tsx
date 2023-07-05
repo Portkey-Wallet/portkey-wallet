@@ -7,7 +7,6 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca/index';
 import { pTd } from 'utils/unit';
-import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { FontStyles } from 'assets/theme/styles';
@@ -29,6 +28,8 @@ import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { BrowserContext, IBrowserTab } from './context';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
+import Svg from 'components/Svg';
+import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
@@ -102,6 +103,11 @@ const TabsDrawerContent: React.FC = () => {
     }),
     [],
   );
+
+  const activeItem = useMemo(() => {
+    return tabs?.find(ele => ele.id === activeTabId);
+  }, [activeTabId, tabs]);
+
   useHardwareBackPress(
     useMemo(() => {
       if (isDrawerOpen) {
@@ -112,13 +118,25 @@ const TabsDrawerContent: React.FC = () => {
       }
     }, [backToSearchPage, isDrawerOpen]),
   );
+
   return (
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
+        noCenterDom
         noLeftDom={!activeTabId}
+        leftDom={
+          <TouchableOpacity style={styles.leftWrap} onPress={backToSearchPage}>
+            <Svg icon="left-arrow" size={pTd(16)} color={defaultColors.bg1} iconStyle={styles.backIcon} />
+            <TextWithProtocolIcon
+              type="iconLeft"
+              location="header"
+              title={activeItem?.name}
+              url={activeItem?.url || ''}
+            />
+          </TouchableOpacity>
+        }
         rightDom={rightDom}
-        leftCallback={backToSearchPage}
         notHandleHardwareBackPress
         safeAreaColor={['blue', 'white']}
         containerStyles={styles.container}
@@ -186,6 +204,15 @@ const styles = StyleSheet.create({
   header: {
     ...fonts.mediumFont,
     lineHeight: pTd(24),
+  },
+  leftWrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: pTd(16),
+  },
+  backIcon: {
+    marginRight: pTd(4),
   },
   cancelButton: {
     paddingLeft: pTd(12),

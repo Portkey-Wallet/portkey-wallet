@@ -38,6 +38,9 @@ export const styles = StyleSheet.create({
     marginLeft: pTd(26),
     paddingLeft: pTd(8),
   },
+  warnMessage: {
+    color: defaultColors.font6,
+  },
   nftErrorMessage: {
     marginLeft: 0,
     paddingLeft: 0,

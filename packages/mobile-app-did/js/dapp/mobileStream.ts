@@ -1,4 +1,4 @@
-import { DappInteractionStream } from '@portkey/providers/dist/dappStream';
+import { DappInteractionStream } from '@portkey/providers';
 import type WebView from 'react-native-webview';
 export class MobileStream extends DappInteractionStream {
   private _webViewRef: WebView;

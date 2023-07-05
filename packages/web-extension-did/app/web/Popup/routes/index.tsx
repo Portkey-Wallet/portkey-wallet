@@ -4,6 +4,7 @@ import Wallet from 'pages/Wallet';
 import Contacts from 'pages/Contacts';
 import GuardianApproval from 'pages/GuardianApproval';
 import AddToken from 'pages/Token/Manage';
+import CustomToken from 'pages/Token/Custom';
 import Receive from 'pages/Receive';
 import TokenDetail from 'pages/Token/Detail';
 import AccountSetting from 'pages/AccountSetting';
@@ -89,6 +90,10 @@ export const PageRouter = () =>
     {
       path: '/add-token',
       element: <AddToken />,
+    },
+    {
+      path: '/custom-token',
+      element: <CustomToken />,
     },
     {
       path: '/transaction',

@@ -8,7 +8,6 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
-import { setLocalStorage } from 'utils/storage/chromeStorage';
 import { contractErrorHandler } from 'utils/tryErrorHandler';
 
 export default function useFetchDidWallet(isExistWallet = false) {
@@ -53,9 +52,6 @@ export default function useFetchDidWallet(isExistWallet = false) {
       if (walletResult.status !== 'pass') {
         const errorString = walletResult?.message || walletResult.status;
         if (!isExistWallet) {
-          await setLocalStorage({
-            registerStatus: null,
-          });
           dispatch(resetWallet());
         }
         throw (errorString as string) || 'Something error';
@@ -83,11 +79,7 @@ export default function useFetchDidWallet(isExistWallet = false) {
               chainId: originChainId,
             }),
           );
-          if (!isExistWallet) {
-            await setLocalStorage({
-              registerStatus: 'Registered',
-            });
-          }
+
           const path = VerificationType.register === verificationType ? 'register' : 'login';
           navigate(`/success-page/${path}`);
         } catch (error: any) {

@@ -1,10 +1,10 @@
-import React, { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
+import React, { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import ProviderWebview, { IWebView } from 'components/ProviderWebview';
 import { captureRef } from 'react-native-view-shot';
 import { IBrowserTab, useBrowser } from 'components/TabsDrawer/context';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
+import HttpModal from './components/HttpModal';
 
 type BrowserTabProps = {
   isHidden: boolean;
@@ -44,6 +44,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
         source={{ uri }}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
       />
+      <HttpModal uri={uri} />
     </View>
   );
 });

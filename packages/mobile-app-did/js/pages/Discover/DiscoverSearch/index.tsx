@@ -31,9 +31,8 @@ export default function DiscoverSearch() {
   const [showRecord, setShowRecord] = useState<boolean>(true);
   const [filteredDiscoverList, setFilteredDiscoverList] = useState<DiscoverItem[]>([]);
 
-  const navBack = useCallback(() => {
-    navigationService.goBack();
-  }, []);
+  const clearText = useCallback(() => setValue(''), []);
+  const navBack = useCallback(() => navigationService.goBack(), []);
 
   const flatList = useMemo((): DiscoverItem[] => {
     const list = [] as DiscoverItem[];
@@ -46,31 +45,36 @@ export default function DiscoverSearch() {
     return list;
   }, [discoverGroupList]);
 
-  const clearText = useCallback(() => setValue(''), []);
-
   useEffect(() => {
     if (!value) setShowRecord(true);
   }, [value]);
 
-  const onSearch = useCallback(() => {
-    const newValue = value.replace(/\s+/g, '');
-    if (!newValue) return;
-
-    if (checkIsUrl(newValue)) {
+  const onDiscoverJump = useCallback(
+    (name: string, url: string) => {
       jumpToWebview({
         item: {
           id: Date.now(),
-          name: getHost(prefixUrlWithProtocol(newValue)),
-          url: prefixUrlWithProtocol(newValue),
+          name,
+          url,
         },
       });
+    },
+    [jumpToWebview],
+  );
+
+  const onSearch = useCallback(() => {
+    const newValue = value.replace(/\s+/g, '').toLocaleLowerCase();
+    if (!newValue) return;
+
+    if (checkIsUrl(newValue)) {
+      onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
     } else {
       // else search in Discover list
       const filterList = flatList.filter(item => item.title.replace(/\s+/g, '').includes(newValue));
       setFilteredDiscoverList(filterList);
       setShowRecord(false);
     }
-  }, [flatList, jumpToWebview, value]);
+  }, [flatList, onDiscoverJump, value]);
 
   useFocusEffect(
     useCallback(() => {
@@ -82,11 +86,12 @@ export default function DiscoverSearch() {
     }, []),
   );
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
+    },
+    [],
+  );
 
   return (
     <PageContainer

@@ -24,7 +24,7 @@ type LoadingPositionType = 'center' | 'bottom';
 function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; iconType: IconType }) {
   return (
     <View style={[GStyles.center, styles.loadingWrap]}>
-      <Lottie source={require('./data.json')} style={styles.loadingStyle} autoPlay loop />
+      <Lottie source={require('assets/lottieFiles/globalLoading.json')} style={styles.loadingStyle} autoPlay loop />
       <TextM style={styles.textStyles}>{text}</TextM>
     </View>
   );
@@ -50,6 +50,11 @@ export default class Loading extends React.Component {
     // timer = setBackgroundTimeout(() => {
     //   Loading.hide();
     // }, duration);
+  }
+
+  static showOnce(options?: ShowOptionsType) {
+    if (elements.length) return;
+    Loading.show(options);
   }
 
   static hide() {

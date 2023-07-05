@@ -1,16 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, ScrollView, View } from 'react-native';
 import Touchable from 'components/Touchable';
 import styles from './styles';
 import Svg from 'components/Svg';
-import { TextL, TextXL } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
-import CommonInput from 'components/CommonInput';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 
 type ValueType = string | number;
 type DefaultValueType = string;
@@ -35,29 +34,13 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
 }: SelectListProps<ItemType, ItemValueType>) => {
   const { t } = useLanguage();
   const gStyle = useGStyles();
-  const [keyWord, setKeyWord] = useState<string>('');
-
-  const _list = useMemo(() => {
-    const _keyWord = keyWord?.trim();
-    return _keyWord === '' ? list : list.filter(item => item[labelAttrName] === _keyWord);
-  }, [keyWord, labelAttrName, list]);
+  const networkType = useCurrentNetwork();
 
   return (
     <ModalBody style={gStyle.overlayStyle} title={t('Select Network')} modalBodyType="bottom">
-      <View style={styles.titleWrap}>
-        <CommonInput
-          containerStyle={styles.titleInputWrap}
-          inputContainerStyle={styles.titleInputWrap}
-          inputStyle={styles.titleInput}
-          leftIconContainerStyle={styles.titleIcon}
-          value={keyWord}
-          placeholder={t('Search network')}
-          onChangeText={setKeyWord}
-        />
-      </View>
-      {_list.length ? (
-        <ScrollView alwaysBounceVertical={false}>
-          {_list.map(item => {
+      {list.length ? (
+        <ScrollView alwaysBounceVertical={false} style={styles.scrollWrap}>
+          {list.map(item => {
             return (
               <Touchable
                 key={item.chainId}
@@ -66,7 +49,7 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
                   callBack(item);
                 }}>
                 <View style={styles.itemRow}>
-                  {item.chainId === MAIN_CHAIN_ID ? (
+                  {networkType === 'MAIN' ? (
                     <Svg icon="mainnet" size={pTd(40)} />
                   ) : (
                     <Svg icon="testnet" size={pTd(40)} />

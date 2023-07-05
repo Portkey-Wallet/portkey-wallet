@@ -18,7 +18,7 @@ import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import { ADDRESS_NUM_LIMIT } from '@portkey-wallet/constants/constants-ca/contact';
 import ContactAddress from './components/ContactAddress';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
-import ChainOverlay from './components/ChainOverlay';
+import ChainOverlay from 'components/ChainOverlay';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';

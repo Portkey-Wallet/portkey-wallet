@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -19,26 +19,50 @@ import { addManager } from 'utils/wallet';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
 import socket from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
+import useEffectOnce from 'hooks/useEffectOnce';
+import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
+
 const ScrollViewProps = { disabled: true };
+
 export default function ScanLogin() {
   const { data } = useRouterParams<{ data?: LoginQRData }>();
-  const { address: managerAddress, extraData: qrExtraData, deviceType } = data || {};
+  const { address: managerAddress, extraData: qrExtraData, deviceType, id } = data || {};
 
   const { caHash, address } = useCurrentWalletInfo();
   const [loading, setLoading] = useState<boolean>();
   const getCurrentCAContract = useGetCurrentCAContract();
 
+  const targetClientId = useMemo(() => (id ? `${managerAddress}_${id}` : undefined), [managerAddress, id]);
+
+  useEffectOnce(() => {
+    if (!targetClientId) return;
+    try {
+      request.message.sendScanLogin({
+        params: {
+          targetClientId,
+        },
+      });
+    } catch (error) {
+      console.log('sendScanLogin: error', error);
+    }
+  });
+
   const onLogin = useCallback(async () => {
     if (!caHash || loading || !managerAddress) return;
     try {
       setLoading(true);
+      if (targetClientId) {
+        const isQRCodeExist = await checkQRCodeExist(targetClientId);
+        if (!isQRCodeExist) {
+          CommonToast.warn('The QR code has already been scanned by another device.');
+          setLoading(false);
+          return;
+        }
+      }
+
       const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
-      console.log('qrExtraData', qrExtraData, deviceType);
-      console.log('deviceInfo', deviceInfo);
       const contract = await getCurrentCAContract();
       const extraData = await extraDataEncode(deviceInfo || {}, true);
-      console.log('extraData===', extraData);
-
       const req = await addManager({ contract, caHash, address, managerAddress, extraData });
       if (req?.error) throw req?.error;
       socket.doOpen({
@@ -50,7 +74,7 @@ export default function ScanLogin() {
       CommonToast.failError(error);
     }
     setLoading(false);
-  }, [caHash, loading, qrExtraData, deviceType, getCurrentCAContract, address, managerAddress]);
+  }, [caHash, loading, managerAddress, targetClientId, qrExtraData, deviceType, getCurrentCAContract, address]);
   return (
     <PageContainer
       scrollViewProps={ScrollViewProps}

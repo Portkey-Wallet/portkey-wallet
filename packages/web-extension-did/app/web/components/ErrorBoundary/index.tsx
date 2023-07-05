@@ -1,51 +1,46 @@
-import React, { Component } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
+import ReactErrorBoundary, { ErrorBoundaryTrue, handleReportError } from '@portkey-wallet/utils/errorBoundary';
+import CustomSvg from 'components/CustomSvg';
+import { Button } from 'antd';
+import clsx from 'clsx';
+import * as Sentry from '@sentry/react';
+import './index.less';
 
-interface ErrorBoundaryProps {
-  message?: React.ReactNode;
-  description?: React.ReactNode;
-  children?: React.ReactNode;
-}
+export type ErrorBoundaryProps = {
+  children: ReactNode;
+  view: string;
+  pageType: string;
+};
 
-const whiteSpace = 'pre-wrap';
-
-export default class ErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  {
-    error?: Error | null;
-    info: any;
-  }
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { error: null, info: null };
-  }
-
-  // static getDerivedStateFromError(error:any) {
-  //   // Update state so the next render will show the fallback UI.
-  //   return { error: error };
-  // }
-
-  componentDidCatch(error: Error | null, info: any) {
-    // Display fallback UI
-    this.setState({ error, info });
-    // You can also log the error to an error reporting service
-    // logErrorToMyService(error, info);
-  }
-
-  render() {
-    if (this.state.error) {
-      // You can render any custom fallback UI
-      return (
-        <>
-          <h1>Something went wrong.</h1>
-          <details style={{ whiteSpace: whiteSpace }}>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.info.componentStack}
-          </details>
-        </>
-      );
-    }
-    return this.props.children;
-  }
+export default function ErrorBoundary({ children, view, pageType }: ErrorBoundaryProps) {
+  const isPrompt = useMemo(() => pageType === 'Prompt', [pageType]);
+  const onError = useCallback(
+    ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
+      const sendError = handleReportError({ error, componentStack, view });
+      console.log(sendError, '====sendError');
+      Sentry.captureException({ error, componentStack, view });
+    },
+    [view],
+  );
+  return (
+    <ReactErrorBoundary
+      onError={(error, componentStack) => onError({ error, componentStack })}
+      fallback={({ resetError }) => {
+        return (
+          <div className={clsx(!isPrompt && 'error-body-popup', 'error-body', 'flex')}>
+            <div className="flex-column-center">
+              <CustomSvg type="ErrorIcon" />
+              <div className="tip">
+                {"Oops! Looks like something went wrong. But don't worry, your wallet and funds are safe and sound."}
+              </div>
+            </div>
+            <div className="btn-wrap">
+              <Button onClick={resetError}>Reload</Button>
+            </div>
+          </div>
+        );
+      }}>
+      {children}
+    </ReactErrorBoundary>
+  );
 }

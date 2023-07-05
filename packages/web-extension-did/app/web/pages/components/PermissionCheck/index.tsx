@@ -7,10 +7,16 @@ import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
 import { setIsPrompt } from 'store/reducers/common/slice';
 import { useStorage } from 'hooks/useStorage';
-import { getLocalStorage } from 'utils/storage/chromeStorage';
-import { useEffectOnce } from 'react-use';
 import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
+import { useEffectOnce } from 'react-use';
+import OpenNewTabController from 'controllers/openNewTabController';
+
+const timeout = async () => {
+  // TODO This is a bug
+  await sleep(2000);
+  return 'Chrome serviceworker is not working';
+};
 
 export default function PermissionCheck({
   children,
@@ -22,6 +28,7 @@ export default function PermissionCheck({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { walletInfo, currentNetwork } = useWalletInfo();
+  // const networkList = useNetworkList();
   const location = useLocation();
 
   const appDispatch = useAppDispatch();
@@ -33,7 +40,6 @@ export default function PermissionCheck({
   useIsNotLessThan768();
 
   // Check register on current network, if registered and current page is register page, redirect to home page
-  // useCheckRegisterOnNetwork();
 
   const noCheckRegister = useMemo(
     () =>
@@ -52,69 +58,66 @@ export default function PermissionCheck({
     [location.pathname, pageType],
   );
 
-  const locked = useStorage('locked');
-
-  const _sleep = useCallback(async () => {
-    // TODO This is a bug
-    await sleep(2000);
-    return 'Extension error';
-  }, []);
+  const locked = useStorage<boolean>('locked');
 
   const getPassword = useCallback(async () => {
     try {
       const res = await Promise.race([
         InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send(),
-        _sleep(),
+        timeout(),
       ]);
       console.log(res, 'CHECK_WALLET_STATUS');
-      if (typeof res === 'string') return chrome.runtime.reload(); // navigate('/unlock');
+      if (typeof res === 'string') return chrome.runtime.reload();
       const detail = (res as any)?.data;
-      if (detail?.registerStatus === 'Registered') {
+      if (detail?.registerStatus) {
         detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
         !detail?.privateKey && navigate('/unlock');
-      } else if (detail?.registerStatus === 'registeredNotGetCaAddress') {
-        navigate('/query-page');
       } else {
-        navigate('/register/start');
+        InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
       }
     } catch (error) {
       console.error(error, 'CHECK_WALLET_STATUS==error');
     }
-  }, [_sleep, dispatch, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const goQueryPage = useCallback(async () => {
-    const registerStatus = await getLocalStorage('registerStatus');
-    if (!location.pathname.includes('/query-page') && registerStatus === 'registeredNotGetCaAddress')
-      return navigate('/query-page');
-  }, [location.pathname, navigate]);
+  const checkCurrentNetworkRegisterHandler = useCallback(async () => {
+    const caInfo = walletInfo?.caInfo?.[currentNetwork];
+    const caHash = caInfo?.[caInfo?.originChainId || 'AELF']?.caHash;
 
-  useEffectOnce(() => {
-    goQueryPage();
-  });
+    console.log(caInfo, 'caInfo===');
+    const res = await Promise.race([
+      InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send(),
+      timeout(),
+    ]);
+    if (typeof res === 'string') return chrome.runtime.reload();
 
-  const checkRegisterHandler = useCallback(async () => {
-    const registerStatus = await getLocalStorage('registerStatus');
-    if (registerStatus !== 'Registered' && pageType === 'Popup') {
+    if (caHash) return getPassword();
+
+    if (pageType == 'Popup') {
+      await OpenNewTabController.closeOpenTabs();
       return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
+    } else {
+      if (caInfo?.managerInfo) return navigate('/query-page');
+      const isRegisterPage =
+        location.pathname.includes('/login') ||
+        location.pathname.includes('/register') ||
+        location.pathname.includes('/success-page') ||
+        location.pathname === '/query-page';
+      if (isRegisterPage) return;
+      return navigate('/register');
     }
-    if (noCheckRegister) return;
-    if (isRegisterPage) return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
-    if (!walletInfo?.caInfo?.[currentNetwork]) {
-      if (pageType === 'Popup') {
-        await sleep(500);
-        return InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();
-      } else {
-        return navigate('/register');
-      }
-    }
-    getPassword();
-  }, [pageType, noCheckRegister, isRegisterPage, walletInfo, currentNetwork, getPassword, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentNetwork, getPassword, pageType, walletInfo?.caInfo]);
 
   useEffect(() => {
-    if (location.pathname.includes('/test')) return;
     if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
-    checkRegisterHandler();
-  }, [checkRegisterHandler, isRegisterPage, location.pathname, locked, navigate, noCheckRegister]);
+  }, [isRegisterPage, locked, navigate, noCheckRegister]);
+
+  useEffectOnce(() => {
+    if (location.pathname.includes('/test')) return;
+    checkCurrentNetworkRegisterHandler();
+  });
 
   return <>{children}</>;
 }

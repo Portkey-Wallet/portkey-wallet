@@ -22,8 +22,6 @@ const PopularTokenSection: React.FC<IPopularTokenSectionProps> = (props: IPopula
 
   const { currentNetwork } = useWallet();
 
-  console.log('tokenDataShowInMarket', tokenDataShowInMarket);
-
   return (
     <FlatList
       style={pageStyles.list}

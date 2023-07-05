@@ -12,7 +12,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { FontStyles } from 'assets/theme/styles';
 import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
-import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isIOS } from '@rneui/base';
 import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';

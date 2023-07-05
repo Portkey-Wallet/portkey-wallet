@@ -16,7 +16,7 @@ import clsx from 'clsx';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import './index.less';
 
 export default function AddToken() {
@@ -50,7 +50,6 @@ export default function AddToken() {
     async (keyword: string) => {
       try {
         if (!keyword) return;
-        setLoading(true);
         const res = await request.token.fetchTokenListBySearch({
           params: {
             symbol: keyword,
@@ -66,14 +65,20 @@ export default function AddToken() {
       } catch (error) {
         setTokenShowList([]);
         console.log('filter search error', error);
-      } finally {
-        setLoading(false);
       }
     },
-    [chainIdArray, setLoading],
+    [chainIdArray],
   );
 
-  const searchDebounce = useDebounceCallback(handleSearch, [filterWord], 500);
+  const searchDebounce = useDebounceCallback(
+    async (params) => {
+      setLoading(true);
+      await handleSearch(params);
+      setLoading(false);
+    },
+    [filterWord],
+    500,
+  );
 
   const rightElement = useMemo(
     () => (
@@ -90,30 +95,30 @@ export default function AddToken() {
   const handleUserTokenDisplay = useCallback(
     async (item: TokenItemShowType) => {
       try {
+        setLoading(true);
         await request.token.displayUserToken({
           resourceUrl: `${item.userTokenId}/display`,
           params: {
             isDisplay: !item.isAdded,
           },
         });
-        setTimeout(() => {
-          if (!filterWord) {
-            appDispatch(fetchAllTokenListAsync({ chainIdArray }));
-          } else {
-            handleSearch(filterWord);
-          }
-        }, 1000);
+        sleep(800);
+        if (!filterWord) {
+          await appDispatch(fetchAllTokenListAsync({ chainIdArray }));
+        } else {
+          await handleSearch(filterWord);
+        }
         message.success('success');
       } catch (error: any) {
         const err = handleErrorMessage(error, 'handle display error');
         message.error(err);
         console.log('=== userToken display', error);
+      } finally {
+        setLoading(false);
       }
     },
-    [appDispatch, chainIdArray, filterWord, handleSearch],
+    [appDispatch, chainIdArray, filterWord, handleSearch, setLoading],
   );
-
-  const displayToken = useDebounceCallback(handleUserTokenDisplay, [], 500);
 
   const renderTokenItemBtn = useCallback(
     (item: TokenItemShowType) => {
@@ -130,13 +135,13 @@ export default function AddToken() {
         <Button
           className="add-token-btn"
           onClick={() => {
-            displayToken(item);
+            handleUserTokenDisplay(item);
           }}>
           {t(isAdded ? 'Hide' : 'Add')}
         </Button>
       );
     },
-    [displayToken, t],
+    [handleUserTokenDisplay, t],
   );
 
   const renderTokenItem = useCallback(

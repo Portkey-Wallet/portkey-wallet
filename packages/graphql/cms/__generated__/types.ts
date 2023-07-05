@@ -28,6 +28,7 @@ export type Query = {
   bottomSecondMenu: Array<BottomSecondMenu>;
   bottomSecondMenu_aggregated: Array<BottomSecondMenu_Aggregated>;
   bottomSecondMenu_by_id?: Maybe<BottomSecondMenu>;
+  buyButton?: Maybe<BuyButton>;
   deviceBrand: Array<DeviceBrand>;
   deviceBrand_aggregated: Array<DeviceBrand_Aggregated>;
   deviceBrand_by_id?: Maybe<DeviceBrand>;
@@ -602,6 +603,20 @@ export type BottomSecondMenu_Filter = {
   type?: InputMaybe<NavigationType_Filter>;
   user_created?: InputMaybe<String_Filter_Operators>;
   user_updated?: InputMaybe<String_Filter_Operators>;
+};
+
+export type BuyButton = {
+  __typename?: 'buyButton';
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  id: Scalars['ID'];
+  isBuySectionShow?: Maybe<Scalars['Boolean']>;
+  isSellSectionShow?: Maybe<Scalars['Boolean']>;
+  status?: Maybe<Scalars['String']>;
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
 };
 
 export type Count_Function_Filter_Operators = {

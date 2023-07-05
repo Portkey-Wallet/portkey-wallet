@@ -105,7 +105,7 @@ export function useOnManagerAddressAndQueryResult() {
       verifierInfo?: VerifierInfo;
       guardiansApproved?: GuardiansApproved;
     }) => {
-      showLoading && Loading.show({ text: t('Working on recovery...') });
+      showLoading && Loading.show({ text: t('Initiating social recovery...') });
       await sleep(500);
       const isRecovery = managerInfo.verificationType === VerificationType.communityRecovery;
       try {

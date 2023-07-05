@@ -31,8 +31,8 @@ import BuyButton from 'components/BuyButton';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useIsShowBuy } from 'hooks/useSwitchBuy';
 import FaucetButton from 'components/FaucetButton';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -50,7 +50,6 @@ const TokenDetail: React.FC = () => {
 
   const isMainnet = useIsMainnet();
   const currentWallet = useCurrentWallet();
-  const isShowBuy = useIsShowBuy();
   const caAddressInfos = useCaAddressInfoList();
   const navigation = useNavigation();
   const dispatch = useAppCommonDispatch();
@@ -58,6 +57,7 @@ const TokenDetail: React.FC = () => {
   const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
+  const { isBuyButtonShow: isBuyButtonShowStore } = useBuyButtonShow();
 
   const [reFreshing, setFreshing] = useState(false);
 
@@ -127,13 +127,13 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => isMainnet && tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
-    [isMainnet, isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
+    () => tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isBuyButtonShowStore,
+    [isBuyButtonShowStore, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   const isFaucetButtonShow = useMemo(
-    () => !isMainnet && tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isShowBuy,
-    [isMainnet, isShowBuy, tokenInfo.chainId, tokenInfo.symbol],
+    () => !isMainnet && tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF',
+    [isMainnet, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   return (

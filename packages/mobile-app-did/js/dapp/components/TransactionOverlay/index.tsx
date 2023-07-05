@@ -86,11 +86,9 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           onSign?.();
           OverlayModal.hide();
         },
-        disabled: isFetchingFee,
-        loading: isFetchingFee,
       },
     ];
-  }, [isFetchingFee, onReject, onSign, t]);
+  }, [onReject, onSign, t]);
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
@@ -309,6 +307,9 @@ const ConnectModal = (props: TransactionModalPropsType) => {
     const account = getManagerAccount(pin);
     if (!account) return;
 
+    const _isManagerSynced = await checkManagerSyncState(transactionInfo.chainId);
+    if (!_isManagerSynced) return setErrorText('Synchronizing on-chain account information...');
+
     const contract = await getContractBasic({
       contractAddress: chainInfo.caContractAddress,
       rpcUrl: chainInfo?.endPoint,
@@ -347,8 +348,10 @@ const ConnectModal = (props: TransactionModalPropsType) => {
     }
   }, [
     chainInfo,
+    checkManagerSyncState,
     isCAContract,
     pin,
+    transactionInfo.chainId,
     transactionInfo.contractAddress,
     transactionInfo.method,
     transactionInfo.params?.paramsOption,
@@ -378,15 +381,8 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   }, [transactionInfo.chainId, transactionInfo?.params?.paramsOption?.symbol]);
 
   useEffect(() => {
-    (async () => {
-      // checkIsManagerSynced
-      const _isManagerSynced = await checkManagerSyncState(transactionInfo.chainId);
-
-      if (!_isManagerSynced) return setErrorText('Synchronizing on-chain account information...');
-
-      getFee();
-      getDecimals();
-    })();
+    getFee();
+    getDecimals();
   }, [checkManagerSyncState, getDecimals, getFee, transactionInfo.chainId]);
 
   useEffect(() => {

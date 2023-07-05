@@ -96,6 +96,8 @@ export const customTokenTipsStyle = StyleSheet.create({
     alignItems: 'center',
   },
   addButton: {
+    paddingLeft: pTd(16),
+    paddingRight: pTd(16),
     borderRadius: pTd(6),
     height: pTd(44),
   },

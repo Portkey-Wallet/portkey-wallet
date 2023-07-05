@@ -49,8 +49,10 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const fetchTokenItem = useCallback(async () => {
+    if (!keyword) return;
+
     Loading.show();
-    setBtnDisable(false);
+    setBtnDisable(true);
     setTokenItem(pre => ({ ...pre, decimals: '--', symbol: '' }));
 
     try {
@@ -76,9 +78,18 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
 
   const fetchTokenItemDebounce = useDebounceCallback(fetchTokenItem, [tokenItem], 800);
 
-  const onValueChange = useCallback(
+  const onKeywordChange = useCallback(
     (v: string) => {
       setKeyword(v.trim());
+      fetchTokenItemDebounce();
+    },
+    [fetchTokenItemDebounce],
+  );
+
+  const onChainChange = useCallback(
+    (_chainId: ChainId) => {
+      setBtnDisable(true);
+      setTokenItem(pre => ({ ...pre, chainId: _chainId }));
       fetchTokenItemDebounce();
     },
     [fetchTokenItemDebounce],
@@ -102,8 +113,6 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
         navigationService.goBack();
       } catch (error: any) {
         console.log('add custom token error', error);
-      } finally {
-        Loading.hide();
       }
     }
   }, [tokenItem]);
@@ -124,7 +133,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           currentNetwork={currentNetwork}
           chainId={tokenItem.chainId || originChainId}
           chainList={chainList}
-          onChainPress={(_chainId: ChainId) => setTokenItem(pre => ({ ...pre, chainId: _chainId }))}
+          onChainPress={onChainChange}
         />
       </FormItem>
       <FormItem title={'Token Symbol'}>
@@ -135,7 +144,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           value={keyword}
           theme={'white-bg'}
           placeholder={t('Enter Symbol')}
-          onChangeText={onValueChange}
+          onChangeText={onKeywordChange}
           errorMessage={errorMessage}
         />
       </FormItem>

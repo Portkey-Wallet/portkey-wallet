@@ -1,4 +1,4 @@
-import { isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
+import { getProtocolAndHost, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
 import { defaultColors } from 'assets/theme';
 
 import { TextM } from 'components/CommonText';
@@ -28,7 +28,7 @@ export default function TextWithProtocolIcon({
 }: ITextWithProtocolIconProps) {
   const isDanger = isDangerousLink(url);
 
-  const fontSizeObj: any = {
+  const textStyleObj: any = {
     fontSize: textFontSize,
   };
 
@@ -52,8 +52,11 @@ export default function TextWithProtocolIcon({
   return (
     <View style={[styles.wrap, wrapStyle]}>
       {type === 'iconLeft' && ProtocolIcon}
-      <TextM numberOfLines={1} ellipsizeMode="tail" style={[styles.text, fontSizeObj]}>
-        {title || url}
+      <TextM
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        style={[styles.text, location === 'header' && styles.headerTextColor, textStyleObj]}>
+        {title || getProtocolAndHost(url)}
       </TextM>
       {type === 'iconRight' && ProtocolIcon}
     </View>
@@ -75,5 +78,8 @@ const styles = StyleSheet.create({
   iconStyle: {
     marginRight: pTd(4),
     marginLeft: pTd(4),
+  },
+  headerTextColor: {
+    color: defaultColors.bg1,
   },
 });

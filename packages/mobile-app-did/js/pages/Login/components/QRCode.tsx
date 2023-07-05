@@ -115,7 +115,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
             type: 'login',
             address: newWallet.address,
             netWorkType: currentNetwork,
-            time: Math.floor(Date.now() / 1000),
+            id: Math.floor(Date.now() / 1000),
             extraData: {
               deviceInfo: getDeviceInfo(),
               version: DEVICE_INFO_VERSION,
@@ -125,7 +125,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
     [currentNetwork, getDeviceInfo, newWallet],
   );
   const qrDataStr = useMemo(() => JSON.stringify(qrData), [qrData]);
-  const clientId = useMemo(() => (qrData.time ? `${qrData.address}_${qrData.time}` : undefined), [qrData]);
+  const clientId = useMemo(() => (qrData.id ? `${qrData.address}_${qrData.id}` : undefined), [qrData]);
   const isScanQRCode = useIsScanQRCode(clientId);
 
   return (

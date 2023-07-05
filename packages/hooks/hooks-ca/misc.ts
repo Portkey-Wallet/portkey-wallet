@@ -7,6 +7,7 @@ import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/c
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import signalrDid from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
+import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
 
 export const useMisc = () => useAppCASelector(state => state.misc);
 
@@ -95,6 +96,11 @@ export const useIsScanQRCode = (clientId: string | undefined) => {
 
   const registerSignalr = useCallback(async (clientId: string) => {
     try {
+      const { remove } = signalrDid.onScanLogin(() => {
+        setIsScanQRCode(true);
+        cleanSignalrRef.current();
+      });
+      signalrDidRemoveRef.current = remove;
       await signalrDid.doOpen({
         url: `${request.defaultConfig.baseURL}/ca`,
         clientId,
@@ -102,11 +108,6 @@ export const useIsScanQRCode = (clientId: string | undefined) => {
       if (!isActiveRef.current) {
         throw new Error('isActiveRef.current is false');
       }
-      const { remove } = signalrDid.onScanLogin(() => {
-        setIsScanQRCode(true);
-        cleanSignalrRef.current();
-      });
-      signalrDidRemoveRef.current = remove;
     } catch (error) {
       console.log('registerSignalr: error', error);
     }

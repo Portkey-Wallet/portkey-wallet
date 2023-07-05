@@ -26,13 +26,13 @@ const ScrollViewProps = { disabled: true };
 
 export default function ScanLogin() {
   const { data } = useRouterParams<{ data?: LoginQRData }>();
-  const { address: managerAddress, extraData: qrExtraData, deviceType, time } = data || {};
+  const { address: managerAddress, extraData: qrExtraData, deviceType, id } = data || {};
 
   const { caHash, address } = useCurrentWalletInfo();
   const [loading, setLoading] = useState<boolean>();
   const getCurrentCAContract = useGetCurrentCAContract();
 
-  const targetClientId = useMemo(() => (time ? `${managerAddress}_${time}` : undefined), [managerAddress, time]);
+  const targetClientId = useMemo(() => (id ? `${managerAddress}_${id}` : undefined), [managerAddress, id]);
 
   useEffectOnce(() => {
     if (!targetClientId) return;
@@ -53,7 +53,7 @@ export default function ScanLogin() {
       setLoading(true);
       if (targetClientId) {
         const isQRCodeExist = await checkQRCodeExist(targetClientId);
-        if (isQRCodeExist) {
+        if (!isQRCodeExist) {
           CommonToast.warn('The QR code has already been scanned by another device.');
           setLoading(false);
           return;

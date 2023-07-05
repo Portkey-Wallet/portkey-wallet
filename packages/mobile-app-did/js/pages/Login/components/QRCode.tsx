@@ -27,6 +27,7 @@ import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useCheckManager } from 'hooks/useLogOut';
 import Lottie from 'lottie-react-native';
 import { useIsScanQRCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { usePreventScreenCapture } from 'expo-screen-capture';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -51,6 +52,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
   const checkManager = useCheckManager();
   const caWalletInfo = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address, checkManager);
   const isFocused = useIsFocused();
+  usePreventScreenCapture('LoginQRCode');
 
   useEffect(() => {
     if (!isFocused) return;

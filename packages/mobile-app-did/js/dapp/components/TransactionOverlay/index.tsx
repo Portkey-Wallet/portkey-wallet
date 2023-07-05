@@ -26,6 +26,13 @@ import TransactionDataSection from '../TransactionDataSection';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { styles, transferGroupStyle } from './styles/index';
 import Lottie from 'lottie-react-native';
+import { useCheckManagerSyncState } from 'hooks/wallet';
+import { request } from '@portkey-wallet/api/api-did';
+
+enum ErrorText {
+  ESTIMATE_ERROR = 'Failed to estimate transaction fee',
+  SYNCHRONIZING = 'Synchronizing on-chain account information...',
+}
 
 type TransactionModalPropsType = {
   dappInfo: DappStoreItem;
@@ -41,18 +48,19 @@ const ConnectModal = (props: TransactionModalPropsType) => {
 
   const { walletName } = useWallet();
   const wallet = useCurrentWalletInfo();
+  const checkManagerSyncState = useCheckManagerSyncState();
 
   const amountInUsdShow = useAmountInUsdShow();
 
   const chainInfo = useCurrentChain(transactionInfo.chainId);
   const [, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
 
-  const [decimal, setDecimal] = useState('0');
+  const [tokenDecimal, setTokenDecimal] = useState('0');
   const [isFetchingDecimal, setIsFetchingDecimal] = useState(false);
 
   const [fee, setFee] = useState('');
   const [isFetchingFee, setIsFetchingFee] = useState(true);
-  const [noEnoughFee, setNoEnoughFee] = useState(false);
+  const [errorText, setErrorText] = useState('');
 
   const isCAContract = useMemo(
     () => chainInfo?.caContractAddress === transactionInfo?.contractAddress,
@@ -98,7 +106,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
 
   const transferContent = useMemo(() => {
     const { symbol, amount } = transactionInfo?.params?.paramsOption || {};
-    const decimals = symbol === 'ELF' ? 8 : 0;
+    const decimals = symbol === 'ELF' ? 8 : tokenDecimal;
 
     return (
       <>
@@ -276,18 +284,19 @@ const ConnectModal = (props: TransactionModalPropsType) => {
             </>
           )}
         </View>
-        {noEnoughFee && <TextS style={styles.error}>Failed to estimate transaction fee</TextS>}
+        {!!errorText && <TextS style={styles.error}>{errorText}</TextS>}
       </>
     );
   }, [
+    errorText,
     fee,
     formatAmountInUsdShow,
     isFetchingDecimal,
     isFetchingFee,
     isMainnet,
     isTransfer,
-    noEnoughFee,
     t,
+    tokenDecimal,
     transactionInfo.chainId,
     transactionInfo?.params?.paramsOption,
     wallet,
@@ -326,14 +335,14 @@ const ConnectModal = (props: TransactionModalPropsType) => {
         },
       });
 
-      if (!TransactionFee && !TransactionFee?.ELF) setNoEnoughFee(true);
+      if (!TransactionFee && !TransactionFee?.ELF) setErrorText(ErrorText.ESTIMATE_ERROR);
 
       setFee(TransactionFee?.ELF || '0');
+
       setIsFetchingFee(false);
     } catch (e) {
       setFee('0');
-      setNoEnoughFee(true);
-      console.log('get fee error', e);
+      setErrorText(ErrorText.ESTIMATE_ERROR);
       setIsFetchingFee(false);
     }
   }, [
@@ -346,9 +355,39 @@ const ConnectModal = (props: TransactionModalPropsType) => {
     wallet.caHash,
   ]);
 
+  // get decimals
+  const getDecimals = useCallback(async () => {
+    setIsFetchingDecimal(true);
+    try {
+      const res = await request.token.fetchTokenItemBySearch({
+        params: {
+          symbol: transactionInfo?.params?.paramsOption?.symbol,
+          chainId: transactionInfo.chainId,
+        },
+      });
+      const { symbol, decimals } = res;
+
+      if (symbol && decimals) {
+        setTokenDecimal(decimals);
+      }
+    } catch (error) {
+      console.log('filter search error', error);
+    } finally {
+      setIsFetchingDecimal(false);
+    }
+  }, [transactionInfo.chainId, transactionInfo?.params?.paramsOption?.symbol]);
+
   useEffect(() => {
-    getFee();
-  }, [getFee]);
+    (async () => {
+      // checkIsManagerSynced
+      const _isManagerSynced = await checkManagerSyncState(transactionInfo.chainId);
+
+      if (!_isManagerSynced) return setErrorText('Synchronizing on-chain account information...');
+
+      getFee();
+      getDecimals();
+    })();
+  }, [checkManagerSyncState, getDecimals, getFee, transactionInfo.chainId]);
 
   useEffect(() => {
     const symbol = transactionInfo?.params?.paramsOption?.symbol;

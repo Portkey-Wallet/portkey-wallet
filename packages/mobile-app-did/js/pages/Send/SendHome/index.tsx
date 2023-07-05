@@ -44,6 +44,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/send';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import { useCheckManagerSyncState } from 'hooks/wallet';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
@@ -73,6 +74,8 @@ const SendHome: React.FC = () => {
   const [isLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<any[]>([]);
 
+  const checkManagerSyncState = useCheckManagerSyncState();
+
   useEffect(() => {
     setSelectedToContact(toInfo);
   }, [toInfo]);
@@ -83,6 +86,11 @@ const SendHome: React.FC = () => {
       if (!chainInfo || !pin) return;
       const account = getManagerAccount(pin);
       if (!account) return;
+
+      const _isManagerSynced = await checkManagerSyncState(chainInfo.chainId);
+      if (!_isManagerSynced) {
+        return setErrorMessage([TransactionError.SYNCHRONIZING]);
+      }
 
       const contract = await getContractBasic({
         contractAddress: chainInfo.caContractAddress,
@@ -124,6 +132,7 @@ const SendHome: React.FC = () => {
     },
     [
       chainInfo,
+      checkManagerSyncState,
       debounceSendNumber,
       pin,
       selectedAssets.decimals,
@@ -265,8 +274,9 @@ const SendHome: React.FC = () => {
   const previewDisable = useMemo(() => {
     if (!selectedToContact?.address) return true;
     if (sendNumber === '0' || !sendNumber) return true;
+    if (errorMessage?.length > 0) return true;
     return false;
-  }, [selectedToContact?.address, sendNumber]);
+  }, [selectedToContact?.address, sendNumber, errorMessage]);
 
   const checkCanNext = useCallback(() => {
     const suffix = getAddressChainId(selectedToContact.address, chainInfo?.chainId || 'AELF');
@@ -494,7 +504,13 @@ const SendHome: React.FC = () => {
       )}
 
       {TransactionErrorArray.filter(ele => errorMessage.includes(ele)).map(err => (
-        <Text key={err} style={[styles.errorMessage, sendType === 'nft' && styles.nftErrorMessage]}>
+        <Text
+          key={err}
+          style={[
+            styles.errorMessage,
+            sendType === 'nft' && styles.nftErrorMessage,
+            err === TransactionError.SYNCHRONIZING && styles.warnMessage,
+          ]}>
           {t(err)}
         </Text>
       ))}

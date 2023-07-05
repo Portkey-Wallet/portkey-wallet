@@ -34,15 +34,16 @@ export default function HttpModal(props: HttpModalPropsType) {
   return (
     <View style={[styles.wrap, !isShowHttpModal && styles.hidden]}>
       <TextL style={styles.tips}>
-        You are accessing an insecure http connection. Please be mindful of protecting your personal information and
-        account security.
+        {t(
+          'You are accessing an insecure site. Please be cautious about safeguarding your personal information and account security.',
+        )}
       </TextL>
       <View style={styles.buttonGroupWrap}>
         <TouchableOpacity onPress={disableHttp}>
-          <TextM style={[styles.buttonBaseStyle, buttonStyles.type1Button]}>{t('Disable notification')}</TextM>
+          <TextM style={[styles.buttonBaseStyle, buttonStyles.type1Button]}>{t('Disable notifications')}</TextM>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setIsShowHttpModal(false)}>
-          <TextM style={[styles.buttonBaseStyle, buttonStyles.type2Button]}>{t('Get it')}</TextM>
+          <TextM style={[styles.buttonBaseStyle, buttonStyles.type2Button]}>{t('Continue')}</TextM>
         </TouchableOpacity>
       </View>
     </View>

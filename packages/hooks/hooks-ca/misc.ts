@@ -7,7 +7,6 @@ import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/c
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import signalrDid from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
-import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
 
 export const useMisc = () => useAppCASelector(state => state.misc);
 

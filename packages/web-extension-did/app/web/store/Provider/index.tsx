@@ -13,6 +13,8 @@ import Updater from './Updater';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
+import { PortkeyConfigProvider } from '@portkey/did-ui-react';
+import '@portkey/did-ui-react/dist/assets/index.css';
 
 let childrenNode: any = undefined;
 
@@ -57,16 +59,18 @@ export default function ContextProviders({
 
   return (
     <ErrorBoundary view="root" pageType={pageType}>
-      <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
-        <ReduxProvider>
-          <ScreenLoading />
-          <HashRouter>
-            <Modals />
-            <Updater />
-            <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
-          </HashRouter>
-        </ReduxProvider>
-      </ConfigProvider>
+      <PortkeyConfigProvider>
+        <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
+          <ReduxProvider>
+            <ScreenLoading />
+            <HashRouter>
+              <Modals />
+              <Updater />
+              <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
+            </HashRouter>
+          </ReduxProvider>
+        </ConfigProvider>
+      </PortkeyConfigProvider>
     </ErrorBoundary>
   );
 }

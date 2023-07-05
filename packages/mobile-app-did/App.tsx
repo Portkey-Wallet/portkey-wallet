@@ -54,27 +54,27 @@ const App = () => {
   }, []);
 
   return (
-    <ErrorBoundary view="root">
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <AppListener>
-            <GlobalStyleHandler>
-              <ThemeProvider theme={myTheme}>
-                <InterfaceProvider>
-                  <TopView>
-                    <SafeAreaProvider>
+    <SafeAreaProvider>
+      <ErrorBoundary view="root">
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <AppListener>
+              <GlobalStyleHandler>
+                <ThemeProvider theme={myTheme}>
+                  <InterfaceProvider>
+                    <TopView>
                       <StatusBar {...statusBarProps} />
                       <NavigationRoot />
                       <Updater />
-                    </SafeAreaProvider>
-                  </TopView>
-                </InterfaceProvider>
-              </ThemeProvider>
-            </GlobalStyleHandler>
-          </AppListener>
-        </PersistGate>
-      </Provider>
-    </ErrorBoundary>
+                    </TopView>
+                  </InterfaceProvider>
+                </ThemeProvider>
+              </GlobalStyleHandler>
+            </AppListener>
+          </PersistGate>
+        </Provider>
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
 };
 

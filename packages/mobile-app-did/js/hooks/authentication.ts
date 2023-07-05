@@ -146,7 +146,7 @@ export function useAppleAuthentication() {
   const iosPromptAsync = useCallback(async () => {
     setResponse(undefined);
     try {
-      const appleInfo = await await appleAuth.performRequest({
+      const appleInfo = await appleAuth.performRequest({
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       });

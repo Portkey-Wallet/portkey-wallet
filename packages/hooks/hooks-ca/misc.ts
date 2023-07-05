@@ -1,10 +1,13 @@
 import { useAppCASelector } from '.';
 import { getPhoneCountryCode, setLocalPhoneCountryCodeAction } from '@portkey-wallet/store/store-ca/misc/actions';
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState, useRef } from 'react';
 import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAppCommonDispatch } from '../index';
 import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
+import signalrDid from '@portkey-wallet/socket/socket-did';
+import { request } from '@portkey-wallet/api/api-did';
+import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
 
 export const useMisc = () => useAppCASelector(state => state.misc);
 
@@ -66,3 +69,56 @@ export function usePhoneCountryCode(isInit = false) {
 
   return { phoneCountryCodeList, phoneCountryCodeIndex, localPhoneCountryCode, setLocalPhoneCountryCode };
 }
+
+export const useIsScanQRCode = (clientId: string | undefined) => {
+  const [isScanQRCode, setIsScanQRCode] = useState(false);
+  const signalrDidRemoveRef = useRef<() => void>();
+
+  const isActiveRef = useRef(true);
+  useEffect(() => {
+    isActiveRef.current = true;
+    return () => {
+      isActiveRef.current = false;
+    };
+  }, []);
+
+  const cleanSignalr = useCallback(() => {
+    try {
+      signalrDidRemoveRef.current?.();
+      signalrDidRemoveRef.current = undefined;
+      signalrDid.stop();
+      signalrDid.signalr = null;
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+  const cleanSignalrRef = useRef(cleanSignalr);
+
+  const registerSignalr = useCallback(async (clientId: string) => {
+    try {
+      const { remove } = signalrDid.onScanLogin(() => {
+        setIsScanQRCode(true);
+        cleanSignalrRef.current();
+      });
+      signalrDidRemoveRef.current = remove;
+      await signalrDid.doOpen({
+        url: `${request.defaultConfig.baseURL}/ca`,
+        clientId,
+      });
+      if (!isActiveRef.current) {
+        throw new Error('isActiveRef.current is false');
+      }
+    } catch (error) {
+      console.log('registerSignalr: error', error);
+    }
+  }, []);
+  const registerSignalrRef = useRef(registerSignalr);
+
+  useEffect(() => {
+    if (!clientId) return;
+    registerSignalrRef.current(clientId);
+    return cleanSignalrRef.current;
+  }, [clientId]);
+
+  return isScanQRCode;
+};

@@ -13,6 +13,7 @@ export interface LoginQRData extends QRData {
   type: 'login';
   extraData?: QRExtraDataType;
   deviceType?: DeviceType; // 0.0.1
+  id?: number;
 }
 
 export interface SendTokenQRDataType extends QRData {

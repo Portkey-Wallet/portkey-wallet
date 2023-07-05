@@ -13,11 +13,11 @@ import { FontStyles } from 'assets/theme/styles';
 import { setStringAsync } from 'expo-clipboard';
 import CommonToast from 'components/CommonToast';
 import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
-
 import { isIOS } from '@rneui/base';
 import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -112,9 +112,7 @@ const BrowserEditModal = ({
       <View style={[GStyles.flexRow, GStyles.center]}>
         <DiscoverWebsiteImage size={pTd(32)} imageUrl={getFaviconUrl(browserInfo?.url || '')} />
         <View style={styles.headerCenter}>
-          <TextL numberOfLines={1} ellipsizeMode="tail" style={styles.title}>
-            {browserInfo?.name || getHost(browserInfo?.url)}
-          </TextL>
+          <TextWithProtocolIcon title={browserInfo?.name} url={browserInfo.url} />
           <TextS numberOfLines={1} ellipsizeMode="tail" style={styles.url}>
             {browserInfo?.url}
           </TextS>

@@ -12,6 +12,7 @@ import ReduxProvider from './ReduxProvider';
 import Updater from './Updater';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
+import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 
 let childrenNode: any = undefined;
 
@@ -24,8 +25,10 @@ Sentry.init({
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
   // release: 'v1.0.0',
-  // environment: process.env.NODE_ENV,
+  environment: process.env.NODE_ENV,
 });
+exceptionManager.setSentryInstance(Sentry);
+
 ConfigProvider.config({
   prefixCls,
 });
@@ -53,8 +56,8 @@ export default function ContextProviders({
   }, [language]);
 
   return (
-    <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
-      <ErrorBoundary>
+    <ErrorBoundary view="root" pageType={pageType}>
+      <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
         <ReduxProvider>
           <ScreenLoading />
           <HashRouter>
@@ -63,7 +66,7 @@ export default function ContextProviders({
             <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
           </HashRouter>
         </ReduxProvider>
-      </ErrorBoundary>
-    </ConfigProvider>
+      </ConfigProvider>
+    </ErrorBoundary>
   );
 }

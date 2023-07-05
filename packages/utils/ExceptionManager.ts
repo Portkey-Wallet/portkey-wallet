@@ -20,8 +20,6 @@ export interface SentryInstance {
 }
 
 export interface IExceptionManager {
-  initGlobalJSErrorHandler(): void;
-  initGlobalUnHandledPromiseErr(): void;
   reportErrorMessage(error: any, level: Severity, extra?: Extras): void;
   reportError(error: any, level: Severity, extra?: Extras): void;
 }
@@ -34,8 +32,6 @@ export abstract class ExceptionManager implements IExceptionManager {
 
   private init(sentryInstance: SentryInstance) {
     this.sentryInstance = sentryInstance;
-    this.initGlobalJSErrorHandler();
-    this.initGlobalUnHandledPromiseErr();
   }
   public setSentryInstance(sentryInstance: SentryInstance) {
     this.sentryInstance = sentryInstance;
@@ -52,6 +48,4 @@ export abstract class ExceptionManager implements IExceptionManager {
       extra,
     });
   }
-  abstract initGlobalJSErrorHandler(): void;
-  abstract initGlobalUnHandledPromiseErr(): void;
 }

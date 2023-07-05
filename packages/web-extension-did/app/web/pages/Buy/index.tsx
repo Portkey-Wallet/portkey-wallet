@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Radio, RadioChangeEvent } from 'antd';
+import { Button, Radio, RadioChangeEvent, message } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
@@ -16,7 +16,9 @@ import {
   initValueSave,
   MAX_UPDATE_TIME,
   PartialFiatType,
+  buySoonText,
   sellSoonText,
+  serviceUnavailableText,
 } from './const';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
@@ -36,6 +38,7 @@ import { useEffectOnce } from 'react-use';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import BigNumber from 'bignumber.js';
 import CustomTipModal from 'pages/components/CustomModal';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -54,6 +57,7 @@ export default function Buy() {
   const { setLoading } = useLoading();
   const [curFiat, setCurFiat] = useState<PartialFiatType>(initFiat);
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
+  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow();
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(
@@ -82,6 +86,13 @@ export default function Buy() {
       };
       updateCrypto();
     } else {
+      if (!isBuySectionShow && isSellSectionShow) {
+        const side = PaymentTypeEnum.SELL;
+        setPage(side);
+        valueSaveRef.current.side = side;
+        setAmount(initCrypto);
+        valueSaveRef.current.amount = initCrypto;
+      }
       updateCrypto();
     }
     return () => {
@@ -259,20 +270,31 @@ export default function Buy() {
 
   const handlePageChange = useCallback(
     async (e: RadioChangeEvent) => {
-      if (e.target.value === PaymentTypeEnum.SELL) {
+      refreshBuyButton(); // fetch on\off ramp is display
+
+      const side = e.target.value;
+      // Compatible with the situation where the function is turned off when the user is on the page.
+      if (side === PaymentTypeEnum.BUY && !isBuySectionShow) {
+        CustomTipModal({
+          content: buySoonText,
+        });
+        return;
+      }
+      if (side === PaymentTypeEnum.SELL && !isSellSectionShow) {
         CustomTipModal({
           content: sellSoonText,
         });
         return;
       }
+
       stopInterval();
-      setPage(e.target.value);
+      setPage(side);
       // BUY
       valueSaveRef.current = { ...initValueSave };
-      valueSaveRef.current.side = e.target.value;
+      valueSaveRef.current.side = side;
       setAmount(initCurrency);
       // SELL
-      if (e.target.value === PaymentTypeEnum.SELL) {
+      if (side === PaymentTypeEnum.SELL) {
         setAmount(initCrypto);
         valueSaveRef.current.amount = initCrypto;
       }
@@ -292,7 +314,7 @@ export default function Buy() {
         setLoading(false);
       }
     },
-    [setLoading, stopInterval, updateCrypto],
+    [isBuySectionShow, isSellSectionShow, refreshBuyButton, setLoading, stopInterval, updateCrypto],
   );
 
   const handleSelect = useCallback(
@@ -339,8 +361,20 @@ export default function Buy() {
   }, [stopInterval]);
 
   const handleNext = useCallback(async () => {
-    if (valueSaveRef.current.side === PaymentTypeEnum.SELL) {
-      if (!currentChain) return;
+    const { side } = valueSaveRef.current;
+    setLoading(true);
+    const result = await refreshBuyButton();
+    const isBuySectionShow = result.isBuySectionShow;
+    const isSellSectionShow = result.isSellSectionShow;
+    // Compatible with the situation where the function is turned off when the user is on the page.
+    if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
+      setLoading(false);
+      message.error(serviceUnavailableText);
+      return navigate('/');
+    }
+
+    if (side === PaymentTypeEnum.SELL) {
+      if (!currentChain) return setLoading(false);
       // search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
@@ -351,6 +385,7 @@ export default function Buy() {
           symbol: 'ELF',
         },
       });
+      setLoading(false);
       const balance = result.result.balance;
 
       if (
@@ -360,8 +395,9 @@ export default function Buy() {
         return;
       }
     }
+    setLoading(false);
 
-    const { amount, currency, country, crypto, network, side } = valueSaveRef.current;
+    const { amount, currency, country, crypto, network } = valueSaveRef.current;
     navigate('/buy/preview', {
       state: {
         crypto,
@@ -373,7 +409,17 @@ export default function Buy() {
         tokenInfo: state ? state.tokenInfo : null,
       },
     });
-  }, [accountTokenList, currentChain, currentNetwork.walletType, navigate, setInsufficientFundsMsg, state, wallet]);
+  }, [
+    accountTokenList,
+    currentChain,
+    currentNetwork.walletType,
+    navigate,
+    refreshBuyButton,
+    setInsufficientFundsMsg,
+    setLoading,
+    state,
+    wallet,
+  ]);
 
   const handleBack = useCallback(() => {
     if (state && state.tokenInfo) {

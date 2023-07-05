@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
@@ -17,16 +17,16 @@ import { useLanguage } from 'i18n/hooks';
 import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
-import { useIsShowBuy } from 'hooks/useSwitchBuy';
 import FaucetButton from 'components/FaucetButton';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const Card: React.FC = () => {
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const { walletName } = useWallet();
-  const isShowBuy = useIsShowBuy();
   const accountBalanceUSD = useAccountBalanceUSD();
   const [, requestQrPermission] = useQrScanPermission();
+  const { isBuyButtonShow } = useBuyButtonShow();
 
   const showDialog = useCallback(
     () =>
@@ -59,7 +59,7 @@ const Card: React.FC = () => {
       <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
       <TextM style={styles.accountName}>{walletName}</TextM>
       <View style={styles.buttonGroupWrap}>
-        {isMainnet && isShowBuy && (
+        {isBuyButtonShow && (
           <>
             <BuyButton themeType="dashBoard" />
             <View style={styles.spacerStyle} />

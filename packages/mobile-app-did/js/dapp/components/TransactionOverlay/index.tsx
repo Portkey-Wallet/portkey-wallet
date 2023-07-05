@@ -86,11 +86,9 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           onSign?.();
           OverlayModal.hide();
         },
-        disabled: isFetchingFee,
-        loading: isFetchingFee,
       },
     ];
-  }, [isFetchingFee, onReject, onSign, t]);
+  }, [onReject, onSign, t]);
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {

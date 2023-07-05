@@ -87,11 +87,6 @@ const SendHome: React.FC = () => {
       const account = getManagerAccount(pin);
       if (!account) return;
 
-      const _isManagerSynced = await checkManagerSyncState(chainInfo.chainId);
-      if (!_isManagerSynced) {
-        return setErrorMessage([TransactionError.SYNCHRONIZING]);
-      }
-
       const contract = await getContractBasic({
         contractAddress: chainInfo.caContractAddress,
         rpcUrl: chainInfo?.endPoint,
@@ -132,7 +127,6 @@ const SendHome: React.FC = () => {
     },
     [
       chainInfo,
-      checkManagerSyncState,
       debounceSendNumber,
       pin,
       selectedAssets.decimals,
@@ -145,6 +139,12 @@ const SendHome: React.FC = () => {
   );
 
   const onPressMax = useCallback(async () => {
+    // check is SYNCHRONIZING
+    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+    if (_isManagerSynced) {
+      return setErrorMessage([TransactionError.SYNCHRONIZING]);
+    }
+
     // balance 0
     if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isEqualTo(0)) return setSendNumber('0');
 
@@ -181,6 +181,8 @@ const SendHome: React.FC = () => {
     }
     Loading.hide();
   }, [
+    chainInfo?.chainId,
+    checkManagerSyncState,
     getTransactionFee,
     selectedAssets.balance,
     selectedAssets.chainId,
@@ -274,9 +276,8 @@ const SendHome: React.FC = () => {
   const previewDisable = useMemo(() => {
     if (!selectedToContact?.address) return true;
     if (sendNumber === '0' || !sendNumber) return true;
-    if (errorMessage?.length > 0) return true;
     return false;
-  }, [selectedToContact?.address, sendNumber, errorMessage]);
+  }, [selectedToContact?.address, sendNumber]);
 
   const checkCanNext = useCallback(() => {
     const suffix = getAddressChainId(selectedToContact.address, chainInfo?.chainId || 'AELF');
@@ -328,6 +329,13 @@ const SendHome: React.FC = () => {
   const checkCanPreview = useCallback(async () => {
     let fee;
     setErrorMessage([]);
+
+    // check is SYNCHRONIZING
+    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+    if (!_isManagerSynced) {
+      setErrorMessage([TransactionError.SYNCHRONIZING]);
+      return { status: false };
+    }
 
     const sendBigNumber = timesDecimals(sendNumber, selectedAssets.decimals || '0');
     const assetBalanceBigNumber = ZERO.plus(selectedAssets.balance);
@@ -382,6 +390,8 @@ const SendHome: React.FC = () => {
   }, [
     assetInfo.chainId,
     assetInfo.symbol,
+    chainInfo?.chainId,
+    checkManagerSyncState,
     getTransactionFee,
     selectedAssets.balance,
     selectedAssets.decimals,

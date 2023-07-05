@@ -4,18 +4,19 @@ import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import { TextL, TextM, TextS } from 'components/CommonText';
+import { TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
+import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 
 export function DiscoverCmsListSection() {
   const GroupList = useDiscoverGroupList();
   const { s3Url } = useCurrentNetworkInfo();
   const discoverJump = useDiscoverJumpWithNetWork();
 
-  const onJump = useCallback(
+  const onClickJump = useCallback(
     (i: DiscoverItem) => {
       discoverJump({
         item: {
@@ -35,12 +36,10 @@ export function DiscoverCmsListSection() {
           <TextM style={[FontStyles.font3, styles.groupTitle]}>{group.title}</TextM>
           <View style={styles.itemsGroup}>
             {group.items.map((item, i) => (
-              <TouchableOpacity key={i} style={styles.itemWrap} onPress={() => onJump(item)}>
+              <TouchableOpacity key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
                 <Image style={styles.image} source={{ uri: `${s3Url}/${item?.imgUrl?.filename_disk}` }} />
                 <View style={styles.right}>
-                  <TextL style={FontStyles.font5} numberOfLines={1} ellipsizeMode="tail">
-                    {item.title}
-                  </TextL>
+                  <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} />
                   <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
                     {item.description}
                   </TextS>

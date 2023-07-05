@@ -23,6 +23,7 @@ export const defaultColors = {
   bg14: '#CEDDFC',
   bg15: 'rgba(104，170，253，.2)',
   bg16: '#C5CBD5',
+  bg17: '#EA4F45',
 
   font1: '#464B53',
   font2: 'white',
@@ -36,6 +37,7 @@ export const defaultColors = {
   font10: '#34C759',
   font11: '#ffffff',
   font12: '#B34B4B',
+  font13: '#EA4F45',
 
   icon1: '#515A62',
   icon2: '#ffffff',

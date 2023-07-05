@@ -17,6 +17,12 @@ import {
   DiscoverGroupCustomQueryVariables,
 } from './__generated__/hooks/discoverGroupCustom';
 
+import {
+  BuyButtonCustomDocument,
+  BuyButtonCustomQuery,
+  BuyButtonCustomQueryVariables,
+} from './__generated__/hooks/buyButtonCustom';
+
 // SocialMedia
 const getSocialMedia = async (network: NetworkType, params: SocialMediaCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
@@ -46,4 +52,13 @@ const getDiscoverGroup = async (network: NetworkType, params: DiscoverGroupCusto
   return result;
 };
 
-export { getSocialMedia, getTabMenu, getDiscoverGroup };
+const getBuyButton = async (network: NetworkType, params: BuyButtonCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<BuyButtonCustomQuery>({
+    query: BuyButtonCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
+export { getSocialMedia, getTabMenu, getDiscoverGroup, getBuyButton };

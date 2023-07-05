@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { Button } from 'antd';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import ImageDisplay from 'pages/components/ImageDisplay';
+import CustomSvg from 'components/CustomSvg';
 import './index.less';
 
 export interface IConnectedSiteListProps {
@@ -12,6 +13,7 @@ export interface IConnectedSiteListProps {
 
 export default function ConnectedSiteList({ list, onDisconnect }: IConnectedSiteListProps) {
   const { t } = useTranslation();
+  const isSafeOrigin = useCallback((origin: string) => origin.startsWith('https://'), []);
 
   const renderList = useMemo(
     () => (
@@ -21,7 +23,10 @@ export default function ConnectedSiteList({ list, onDisconnect }: IConnectedSite
             <div className="content flex">
               <ImageDisplay defaultHeight={32} className="icon" src={item.icon} backupSrc="DappDefault" />
               <div className="desc flex-column">
-                <div className="text name">{item.name}</div>
+                <div className="text name">
+                  <span className="dapp-name">{item.name}</span>
+                  <CustomSvg type={isSafeOrigin(item.origin) ? 'DappLock' : 'DappWarn'} />
+                </div>
                 <div className="text origin">{item.origin}</div>
               </div>
             </div>
@@ -34,7 +39,7 @@ export default function ConnectedSiteList({ list, onDisconnect }: IConnectedSite
         ))}
       </div>
     ),
-    [list, onDisconnect, t],
+    [isSafeOrigin, list, onDisconnect, t],
   );
 
   return list.length === 0 ? <div className="no-data flex-center">{t('No Connected Sites')}</div> : renderList;

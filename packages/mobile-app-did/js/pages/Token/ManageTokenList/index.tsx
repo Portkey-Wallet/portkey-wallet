@@ -40,12 +40,12 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const [keyword, setKeyword] = useState<string>('');
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
-  const debounceWord = useDebounce(keyword, 500);
+  const debounceWord = useDebounce(keyword, 800);
 
   const fetchSearchedTokenList = useCallback(async () => {
     try {
       if (!debounceWord) return;
-      Loading.show();
+      Loading.showOnce();
       const list = await request.token.fetchTokenListBySearch({
         params: {
           symbol: debounceWord,
@@ -68,32 +68,30 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
 
   const onHandleTokenItem = useCallback(
     async (item: TokenItemShowType, isDisplay: boolean) => {
-      Loading.show();
+      Loading.showOnce();
 
-      await request.token
-        .displayUserToken({
+      try {
+        await request.token.displayUserToken({
           resourceUrl: `${item.userTokenId}/display`,
           params: {
             isDisplay,
           },
-        })
-        .then(() => {
-          timerRef.current = setTimeout(async () => {
-            dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
-            if (debounceWord) {
-              await fetchSearchedTokenList();
-            } else {
-              await dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
-            }
-            Loading.hide();
-            CommonToast.success('Success');
-          }, 800);
-        })
-        .catch(err => {
-          console.log(err);
-          Loading.hide();
-          CommonToast.fail('Fail');
         });
+        timerRef.current = setTimeout(async () => {
+          dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
+          if (debounceWord) {
+            await fetchSearchedTokenList();
+          } else {
+            await dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
+          }
+          Loading.hide();
+          CommonToast.success('Success');
+        }, 800);
+      } catch (err) {
+        console.log(err);
+        Loading.hide();
+        CommonToast.fail('Fail');
+      }
     },
     [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
   );

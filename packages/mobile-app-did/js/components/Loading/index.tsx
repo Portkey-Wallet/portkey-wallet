@@ -52,6 +52,11 @@ export default class Loading extends React.Component {
     // }, duration);
   }
 
+  static showOnce(options?: ShowOptionsType) {
+    if (elements.length) return;
+    Loading.show(options);
+  }
+
   static hide() {
     timer && clearTimeout(timer);
     timer = null;

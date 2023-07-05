@@ -20,6 +20,7 @@ import PopularTokenSection from './components/PopularToken';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface ManageTokenListProps {
   route?: any;
@@ -37,54 +38,72 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
 
   const [keyword, setKeyword] = useState<string>('');
-  const [filterTokenList, setFilterTokenList] = useState([]);
+  const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
   const debounceWord = useDebounce(keyword, 500);
-
-  const onHandleTokenItem = useCallback(
-    async (item: TokenItemShowType, isAdded: boolean) => {
-      // TODO
-      Loading.show();
-      await request.token
-        .displayUserToken({
-          resourceUrl: `${item.userTokenId}/display`,
-          params: {
-            isDisplay: isAdded,
-          },
-        })
-        .then(res => {
-          console.log(res);
-          timerRef.current = setTimeout(() => {
-            dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
-            dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
-            Loading.hide();
-
-            CommonToast.success('Success');
-          }, 1000);
-        })
-        .catch(err => {
-          console.log(err);
-          CommonToast.fail('Fail');
-        });
-    },
-    [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch],
-  );
 
   const fetchSearchedTokenList = useCallback(async () => {
     try {
       if (!debounceWord) return;
-      const res = await request.token.fetchTokenListBySearch({
+      Loading.show();
+      const list = await request.token.fetchTokenListBySearch({
         params: {
           symbol: debounceWord,
           chainIds: chainIdList,
         },
       });
-      console.log('res', res);
-      setFilterTokenList(res?.data || []);
+
+      const tmpToken: TokenItemShowType[] = list.map((item: any) => ({
+        ...item,
+        isAdded: item.isDisplay,
+        userTokenId: item.id,
+      }));
+      setFilterTokenList(tmpToken);
+      Loading.hide();
     } catch (error) {
       console.log('filter search error', error);
+      Loading.hide();
     }
   }, [chainIdList, debounceWord]);
+
+  const onHandleTokenItem = useCallback(
+    async (item: TokenItemShowType, isDisplay: boolean) => {
+      Loading.show();
+
+      await request.token
+        .displayUserToken({
+          resourceUrl: `${item.userTokenId}/display`,
+          params: {
+            isDisplay,
+          },
+        })
+        .then(() => {
+          timerRef.current = setTimeout(async () => {
+            dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
+            if (debounceWord) {
+              await fetchSearchedTokenList();
+            } else {
+              await dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
+            }
+            Loading.hide();
+            CommonToast.success('Success');
+          }, 800);
+        })
+        .catch(err => {
+          console.log(err);
+          Loading.hide();
+          CommonToast.fail('Fail');
+        });
+    },
+    [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchSearchedTokenList();
+      dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
+    }, [chainIdList, dispatch, fetchSearchedTokenList]),
+  );
 
   useEffect(() => {
     if (tokenDataShowInMarket.length) return;
@@ -95,12 +114,14 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   useEffect(() => {
     if (debounceWord) {
       // get filter token
+      setFilterTokenList([]);
       fetchSearchedTokenList();
     } else {
       dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
     }
   }, [chainIdList, debounceWord, dispatch, fetchSearchedTokenList]);
 
+  // clear timer
   useEffect(
     () => () => {
       if (timerRef.current) clearInterval(timerRef.current);

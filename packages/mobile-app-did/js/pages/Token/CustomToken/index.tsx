@@ -17,6 +17,9 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
+import { sleep } from '@portkey-wallet/utils';
+import CommonToast from 'components/CommonToast';
+import { FontStyles } from 'assets/theme/styles';
 
 interface CustomTokenProps {
   route?: any;
@@ -32,14 +35,14 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
   const [tokenItem, setTokenItem] = useState<{
     symbol: string;
     chainId: ChainId;
-    decimal: string;
+    decimals: string;
     id: string;
     isDefault?: boolean;
     isDisplay?: boolean;
   }>({
     symbol: '',
     chainId: originChainId,
-    decimal: '--',
+    decimals: '--',
     id: '',
   });
   const [btnDisable, setBtnDisable] = useState(true);
@@ -47,10 +50,13 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
 
   const fetchTokenItem = useCallback(async () => {
     Loading.show();
+    setBtnDisable(false);
+    setTokenItem(pre => ({ ...pre, decimals: '--', symbol: '' }));
+
     try {
       const res = await request.token.fetchTokenItemBySearch({
         params: {
-          symbol: tokenItem.symbol,
+          symbol: keyword,
           chainId: tokenItem.chainId,
         },
       });
@@ -59,15 +65,14 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
       if (symbol && decimals && id) {
         setTokenItem(pre => ({ ...pre, ...res }));
         setKeyword(symbol);
-        setBtnDisable(true);
+        setBtnDisable(false);
       }
     } catch (error) {
       setBtnDisable(true);
-      console.log('filter search error', error);
     } finally {
       Loading.hide();
     }
-  }, [tokenItem.chainId, tokenItem.symbol]);
+  }, [keyword, tokenItem.chainId]);
 
   const fetchTokenItemDebounce = useDebounceCallback(fetchTokenItem, [tokenItem], 500);
 
@@ -91,6 +96,9 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
             isDisplay: true,
           },
         });
+        Loading.hide();
+        CommonToast.success('success');
+        await sleep(500);
         navigationService.goBack();
       } catch (error: any) {
         console.log('add custom token error', error);
@@ -98,7 +106,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
         Loading.hide();
       }
     }
-  }, [tokenItem?.id, tokenItem?.isDefault, tokenItem?.isDisplay]);
+  }, [tokenItem]);
 
   return (
     <PageContainer
@@ -132,7 +140,9 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
         />
       </FormItem>
       <FormItem title={'Token Decimal'}>
-        <TextM style={pageStyles.tokenDecimal}>{tokenItem.decimal}</TextM>
+        <TextM style={[pageStyles.tokenDecimal, tokenItem.decimals !== '--' && FontStyles.font5]}>
+          {tokenItem.decimals}
+        </TextM>
       </FormItem>
 
       <View style={pageStyles.btnContainer}>

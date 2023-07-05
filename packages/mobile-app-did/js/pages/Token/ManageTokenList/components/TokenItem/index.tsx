@@ -16,7 +16,7 @@ import { NetworkType } from '@portkey-wallet/types';
 type TokenItemProps = {
   networkType: NetworkType;
   item: TokenItemShowType;
-  onHandleToken: (item: TokenItemShowType, type: 'add' | 'delete') => void;
+  onHandleToken: (item: TokenItemShowType, isDisplay: boolean) => void;
 };
 
 const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
@@ -48,7 +48,7 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
         ) : (
           <TouchableOpacity
             onPress={() => {
-              onHandleToken(item, item.isAdded ? 'delete' : 'add');
+              onHandleToken(item, !!item.isAdded);
             }}>
             <View pointerEvents="none">
               <CommonSwitch value={!!item.isAdded} />

@@ -125,6 +125,7 @@ export default function TokenInput({
     if (_isManagerSynced) {
       setAmount(maxAmount);
       onChange({ amount: maxAmount, balance });
+      setErrorMsg('');
     } else {
       setErrorMsg('Synchronizing on-chain account information...');
     }

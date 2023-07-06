@@ -50,8 +50,6 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
 
   const operationType: OperationTypeEnum = useMemo(() => {
     switch (query) {
-      case 'login':
-        return OperationTypeEnum.communityRecovery;
       case 'guardians/add':
         return OperationTypeEnum.addGuardian;
       case 'guardians/edit':
@@ -59,12 +57,13 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
       case 'guardians/del':
         return OperationTypeEnum.deleteGuardian;
       default:
-        if (query?.indexOf('removeManage') !== -1) {
+        if (query && query?.indexOf('removeManage') !== -1) {
           return OperationTypeEnum.removeOtherManager;
         }
-        return OperationTypeEnum.unknown;
+        return OperationTypeEnum.communityRecovery;
     }
   }, [query]);
+  console.log('operationType====', operationType);
 
   const guardianSendCode = useCallback(
     async (item: UserGuardianItem) => {

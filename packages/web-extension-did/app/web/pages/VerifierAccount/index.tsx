@@ -30,7 +30,13 @@ export default function VerifierAccount() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { state } = useLocationState<
-    'register' | 'login' | 'guardians/add' | 'guardians/edit' | 'guardians/del' | 'guardians/setLoginAccount'
+    | 'register'
+    | 'login'
+    | 'guardians/add'
+    | 'guardians/edit'
+    | 'guardians/del'
+    | 'guardians/setLoginAccount'
+    | 'removeManage'
   >();
   const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
@@ -202,8 +208,9 @@ export default function VerifierAccount() {
       case 'guardians/del':
         return OperationTypeEnum.deleteGuardian;
       case 'guardians/setLoginAccount':
+        return OperationTypeEnum.setLoginAccount;
       default:
-        if (state?.indexOf('removeManage') !== -1) {
+        if (state && state?.indexOf('removeManage') !== -1) {
           return OperationTypeEnum.removeOtherManager;
         } else {
           return OperationTypeEnum.unknown;

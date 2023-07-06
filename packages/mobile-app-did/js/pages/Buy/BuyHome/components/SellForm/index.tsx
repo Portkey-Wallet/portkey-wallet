@@ -38,10 +38,12 @@ import BigNumber from 'bignumber.js';
 import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CommonToast from 'components/CommonToast';
+import { useCheckManagerSyncState } from 'hooks/wallet';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
   const { refreshBuyButton } = useBuyButtonShow();
+  const checkManagerSyncState = useCheckManagerSyncState();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -180,6 +182,18 @@ export default function SellForm() {
     }
 
     try {
+      Loading.show();
+      const _isManagerSynced = await checkManagerSyncState(chainId);
+      if (!_isManagerSynced) {
+        setAmountLocalError({
+          ...INIT_HAS_ERROR,
+          isWarning: true,
+          errorMsg: 'Synchronizing on-chain account information...',
+        });
+        Loading.hide();
+        return;
+      }
+
       if (ZERO.plus(amount).isLessThanOrEqualTo(DEFAULT_FEE)) {
         throw new Error('Insufficient funds');
       }
@@ -222,7 +236,19 @@ export default function SellForm() {
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, rate, receiveAmount, aelfToken, chainInfo, pin, refreshBuyButton, fiat, token, wallet]);
+  }, [
+    amount,
+    rate,
+    receiveAmount,
+    aelfToken,
+    chainInfo,
+    pin,
+    fiat,
+    token,
+    refreshBuyButton,
+    checkManagerSyncState,
+    wallet,
+  ]);
 
   return (
     <View style={styles.formContainer}>
@@ -252,6 +278,7 @@ export default function SellForm() {
           autoCorrect={false}
           keyboardType="decimal-pad"
           onChangeText={onAmountInput}
+          errorStyle={amountError.isWarning && FontStyles.font6}
           errorMessage={amountError.isError ? amountError.errorMsg : ''}
         />
 

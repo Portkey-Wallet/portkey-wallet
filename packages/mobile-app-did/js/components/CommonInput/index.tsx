@@ -20,6 +20,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     labelStyle,
     rightIconContainerStyle,
     leftIconContainerStyle,
+    errorStyle,
     ...inputProps
   } = props;
 
@@ -54,7 +55,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       labelStyle={[generalStyles.labelStyle, labelStyle]}
       rightIconContainerStyle={[generalStyles.rightIconContainerStyle, rightIconContainerStyle]}
       leftIconContainerStyle={leftIconContainerStyle}
-      errorStyle={[generalStyles.errorStyle]}
+      errorStyle={[generalStyles.errorStyle, errorStyle]}
       placeholder={placeholder || t('Please enter')}
       placeholderTextColor={defaultColors.font7}
       disabledInputStyle={[generalStyles.disabledInputStyle]}

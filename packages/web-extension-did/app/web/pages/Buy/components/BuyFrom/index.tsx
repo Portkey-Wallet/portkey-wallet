@@ -3,6 +3,7 @@ import CurrencyInput from '../CurrencyInput';
 import TokenInput, { ICurToken } from '../TokenInput';
 import { IKeyDownParams } from 'types';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { useTranslation } from 'react-i18next';
 
 export interface IBuyOrSellFromProps {
   currencyVal: string;
@@ -18,6 +19,7 @@ export interface IBuyOrSellFromProps {
   curToken: ICurToken;
 
   errMsg: string;
+  warningMsg: string;
   side: PaymentTypeEnum;
 }
 
@@ -35,8 +37,10 @@ export default function BuyFrom({
   curToken,
 
   errMsg,
+  warningMsg,
   side,
 }: IBuyOrSellFromProps) {
+  const { t } = useTranslation();
   return (
     <>
       <div className="buy-input">
@@ -50,7 +54,8 @@ export default function BuyFrom({
           curFiat={curFiat}
           onSelect={handleCurrencySelect}
         />
-        {!!errMsg && <div className="error-text">{errMsg}</div>}
+        {!!errMsg && <div className="error-text">{t(errMsg)}</div>}
+        {!!warningMsg && <div className="warning-text">{t(warningMsg)}</div>}
       </div>
       <div className="buy-input">
         <div className="label">{`I will receive≈`}</div>

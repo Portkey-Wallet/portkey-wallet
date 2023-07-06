@@ -1,6 +1,7 @@
 import CurrencyInput from '../CurrencyInput';
 import TokenInput from '../TokenInput';
 import { IBuyOrSellFromProps } from '../BuyFrom';
+import { useTranslation } from 'react-i18next';
 
 export default function SellFrom({
   currencyVal,
@@ -16,8 +17,10 @@ export default function SellFrom({
   curToken,
 
   errMsg,
+  warningMsg,
   side,
 }: IBuyOrSellFromProps) {
+  const { t } = useTranslation();
   const tokenChange = (val: string) => {
     const arr = val.split('.');
     // No more than eight digits after the decimal point
@@ -41,7 +44,8 @@ export default function SellFrom({
           curToken={curToken}
           onSelect={handleTokenSelect}
         />
-        {!!errMsg && <div className="error-text">{errMsg}</div>}
+        {!!errMsg && <div className="error-text">{t(errMsg)}</div>}
+        {!!warningMsg && <div className="warning-text">{t(warningMsg)}</div>}
       </div>
       <div className="buy-input">
         <div className="label">{`I will receive≈`}</div>

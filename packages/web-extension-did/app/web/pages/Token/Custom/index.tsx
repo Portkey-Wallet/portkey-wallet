@@ -1,5 +1,5 @@
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useChainIdList, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { Button, Input, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
@@ -24,7 +24,8 @@ export default function CustomToken() {
   const { t } = useTranslation();
   const [errorMsg, setErrorMsg] = useState('');
   const [curToken, setCurToken] = useState<any>({});
-  const [curChainId, setCurChain] = useState<ChainId>('AELF');
+  const originChainId = useOriginChainId();
+  const [curChainId, setCurChain] = useState<ChainId>(originChainId);
   const [value, setValue] = useState<string>('');
   const { isPrompt } = useCommonState();
   const chainList = useChainIdList();

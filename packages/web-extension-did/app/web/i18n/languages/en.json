@@ -419,5 +419,11 @@
   "This guardian is the only login account and cannot be removed": "This guardian is the only login account and cannot be removed",
   "This guardian is set as a login account. Click \"Confirm\" to unset and remove this guardian": "This guardian is set as a login account. Click \"Confirm\" to unset and remove this guardian",
   "Creating address on the chain...": "Creating address on the chain...",
-  "Initiating social recovery...": "Initiating social recovery..."
+  "On-ramp is not supported on the Testnet. The on-ramp service on Mainnet is coming soon.": "On-ramp is not supported on the Testnet. The on-ramp service on Mainnet is coming soon.",
+  "On-ramp is currently not supported. It will be launched in the coming weeks.": "On-ramp is currently not supported. It will be launched in the coming weeks.",
+  "Off-ramp is currently not supported. It will be launched in the coming weeks.": "Off-ramp is currently not supported. It will be launched in the coming weeks.",
+  "Initiating social recovery...": "Initiating social recovery...",
+  "Sorry, the service you are using is temporarily unavailable.": "Sorry, the service you are using is temporarily unavailable.",
+  "Synchronizing on-chain account information...": "Synchronizing on-chain account information...",
+  "AlchemyPay is a fiat-to-crypto platform independently operated by a third-party entity. Portkey shall not be held liable for any losses or damages suffered as a result of using AlchemyPay services.": "AlchemyPay is a fiat-to-crypto platform independently operated by a third-party entity. Portkey shall not be held liable for any losses or damages suffered as a result of using AlchemyPay services."
 }

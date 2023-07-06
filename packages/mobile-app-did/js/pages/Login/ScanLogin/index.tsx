@@ -49,17 +49,21 @@ export default function ScanLogin() {
 
   const onLogin = useCallback(async () => {
     if (!caHash || loading || !managerAddress) return;
+    setLoading(true);
     try {
-      setLoading(true);
       if (targetClientId) {
         const isQRCodeExist = await checkQRCodeExist(targetClientId);
-        if (isQRCodeExist === true) {
+        if (isQRCodeExist === false) {
           CommonToast.warn('The QR code has already been scanned by another device.');
           setLoading(false);
           return;
         }
       }
+    } catch (error) {
+      console.log(error);
+    }
 
+    try {
       const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
       const contract = await getCurrentCAContract();
       const extraData = await extraDataEncode(deviceInfo || {}, true);

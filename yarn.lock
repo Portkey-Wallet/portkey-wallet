@@ -5203,14 +5203,14 @@
   resolved "https://registry.npmmirror.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@portkey/accounts@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/accounts/-/accounts-1.0.0-alpha.6.tgz#eddde767b6140fb27dc214e0eb79d9020c189fdd"
-  integrity sha512-+Zc8a0umPfrJYL7NvDTFzJ3xoUkgODqsduXfn8IF5qWRGd8dky22kGYug9oOK0S9fPBe3Phr116ra8iV98Kx1g==
+"@portkey/accounts@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/accounts/-/accounts-1.0.0-alpha.8.tgz#101190172e8c4c6f44d2dca220c91b4f00bbd1fc"
+  integrity sha512-oduw84UzaPNsbQtNJgHMoMx0FUl4b86IGjd0jEAY0M9z3gag2M8fjYZDIbkqMcpIOXMG0tMTDhrQzQSjFhvjjQ==
   dependencies:
-    "@portkey/types" "^1.0.0-alpha.6"
-    "@portkey/utils" "^1.0.0-alpha.6"
-    "@portkey/validator" "^1.0.0-alpha.6"
+    "@portkey/types" "^1.0.0-alpha.8"
+    "@portkey/utils" "^1.0.0-alpha.8"
+    "@portkey/validator" "^1.0.0-alpha.8"
     aelf-sdk "^3.2.44"
 
 "@portkey/chain@^1.0.1-alpha.0":
@@ -5232,24 +5232,24 @@
     "@portkey/utils" "^1.0.0-alpha.5"
     aelf-sdk "^3.2.44"
 
-"@portkey/contracts@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/contracts/-/contracts-1.0.0-alpha.6.tgz#79e763b988a1492cfffd019d0b39e55f09b4c947"
-  integrity sha512-X7sRX6vCqQL9e7ZmAOz3efzLPOp9foJZRkncPEZnAXayQNSK5+DSIKCC9lUSXqDON3pRmnVayg0KMOR0dSN9jA==
+"@portkey/contracts@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/contracts/-/contracts-1.0.0-alpha.8.tgz#2d2faab25005acae50418a162e8f520b211d8e17"
+  integrity sha512-sNZtrQmC+ZLaOK2ZGwpbC1nlmWwVj775oWT5V/EsudBKrnldcCoZMshBFJyNj0EVoGzXjqwLFfHDP8rC4LyRkQ==
   dependencies:
     "@portkey/provider-types" "^1.0.1-alpha.0"
-    "@portkey/types" "^1.0.0-alpha.6"
-    "@portkey/utils" "^1.0.0-alpha.6"
+    "@portkey/types" "^1.0.0-alpha.8"
+    "@portkey/utils" "^1.0.0-alpha.8"
     aelf-sdk "^3.2.44"
 
-"@portkey/did-ui-react@1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-1.0.0-alpha.6.tgz#96aa51a9da9268204cb42a3b0054dda6a4921f3f"
-  integrity sha512-yw6nxqRB2Z4bfFbOkTM3nwL710wo35wz2D1NbZ1vmbg0wgTV4TAPU2XAPZG+QqWDynYUmM3J22L592LkZghseQ==
+"@portkey/did-ui-react@1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/did-ui-react/-/did-ui-react-1.0.0-alpha.8.tgz#84135ed6cdc0fdec2c1dae54f2e2897a38c14ba9"
+  integrity sha512-bOKf58tbw+eugNbdSwbR/bEGXtvq+Lysk93zp2MXuxnOdKJj46Wib9fTq7EghQdJK1E2TpuOJ+eLO+897srD6g==
   dependencies:
     "@matt-block/react-recaptcha-v2" "^2.0.0"
-    "@portkey/did" "^1.0.0-alpha.6"
-    "@portkey/socket" "^1.0.0-alpha.6"
+    "@portkey/did" "^1.0.0-alpha.8"
+    "@portkey/socket" "^1.0.0-alpha.8"
     "@rc-component/portal" "1.0.2"
     aelf-sdk "^3.2.40"
     antd "4.24.4"
@@ -5264,18 +5264,18 @@
     reactjs-social-login "^2.6.2"
     uuid "^8.3.2"
 
-"@portkey/did@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/did/-/did-1.0.0-alpha.6.tgz#d22a6b64f59748d0e2398d27e75839f6d8587c87"
-  integrity sha512-vDNM7EyPDXZZv27Bo1bNRBzrCOKK+eG5tMSoSmxr962GqcWr3xAprtAmdoHnejIzEUatBaD+GV1pS3s4I8rfqA==
+"@portkey/did@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/did/-/did-1.0.0-alpha.8.tgz#5f5c5c8dd59f0a971aa293ee51b482761c7e3f8a"
+  integrity sha512-5wP8t7ZXQskgSoPk2ef3hA7tHILsmhrCVmg9B/2oMILFBmQ3Woe8fNkDgT8ECUDsjE/fSlj7ytrtpxc2QSjxog==
   dependencies:
-    "@portkey/accounts" "^1.0.0-alpha.6"
-    "@portkey/contracts" "^1.0.0-alpha.6"
-    "@portkey/graphql" "^1.0.0-alpha.6"
-    "@portkey/request" "^1.0.0-alpha.6"
-    "@portkey/services" "^1.0.0-alpha.6"
-    "@portkey/types" "^1.0.0-alpha.6"
-    "@portkey/utils" "^1.0.0-alpha.6"
+    "@portkey/accounts" "^1.0.0-alpha.8"
+    "@portkey/contracts" "^1.0.0-alpha.8"
+    "@portkey/graphql" "^1.0.0-alpha.8"
+    "@portkey/request" "^1.0.0-alpha.8"
+    "@portkey/services" "^1.0.0-alpha.8"
+    "@portkey/types" "^1.0.0-alpha.8"
+    "@portkey/utils" "^1.0.0-alpha.8"
     aelf-sdk "^3.2.44"
     react "^18.2.0"
 
@@ -5289,13 +5289,13 @@
     "@types/elliptic" "^6.4.14"
     readable-stream "^4.4.0"
 
-"@portkey/graphql@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/graphql/-/graphql-1.0.0-alpha.6.tgz#bbf9cdb6f460d54e036eadbf9d9876dc5e5633f3"
-  integrity sha512-O5144dCMaSkP5HV8sA8Pfh8fIMwsE+EFYQXX3NpPVBgSThEDDYU3a1M+AwpC1e5f//ANMnOAIPc4QT7lZgYvpw==
+"@portkey/graphql@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/graphql/-/graphql-1.0.0-alpha.8.tgz#4aa5c1d6d5fda63c15a053650aa64bf6e9b803a8"
+  integrity sha512-luksErVuyAlQJeYkqVofwx7vxHJuW7o0JlT5yhGWWSE4XUro8H49FTfLJ+zxkRvhU/iG69KeeStY+wuw3z1gJA==
   dependencies:
     "@apollo/client" "^3.7.3"
-    "@portkey/types" "^1.0.0-alpha.6"
+    "@portkey/types" "^1.0.0-alpha.8"
     graphql "^16.6.0"
     subscriptions-transport-ws "^0.11.0"
 
@@ -5331,22 +5331,22 @@
     lodash "^4.17.21"
     readable-stream "^4.4.0"
 
-"@portkey/request@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/request/-/request-1.0.0-alpha.6.tgz#67d724d7d2363ad828c1ae323d550991b0b30828"
-  integrity sha512-MctgldYxpEo5TvX/hR7fa60LvvgNEwXTX+77dZ1UlTJtVwVUEZ5Tpjusks0Ao3jVt/WVe7STToq9pcAr1IGT0Q==
+"@portkey/request@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/request/-/request-1.0.0-alpha.8.tgz#af86f263289966afc1200c07058610650e75d807"
+  integrity sha512-y6WnZGyyN6kdr9sXcCvXo27xB10j6MqIOAd1rrnCyCZewAxM2OdoK5JgAZEd8phqltCGuME6Uw5HuL1URU4Y8w==
   dependencies:
-    "@portkey/types" "^1.0.0-alpha.6"
+    "@portkey/types" "^1.0.0-alpha.8"
     query-string "^6.14.1"
 
-"@portkey/services@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/services/-/services-1.0.0-alpha.6.tgz#c0dab0f3edef4678c9ee20ffce8b6711bed29dd6"
-  integrity sha512-nKdyY6BpHKcWfSfZd3yQ8Scsz5kblu2GDNhT6dV7WRamxE6P95GY2Z8gWPE1Vv8DavK5e3Io4GS9EN/kxBt+MA==
+"@portkey/services@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/services/-/services-1.0.0-alpha.8.tgz#0a804ef26917e2d1c6fc4e9839e77d81670234f6"
+  integrity sha512-5sZ8S7ITl7Smzx769aAg+4OCufOYrAmxgtU3JMXh9iP9LDVjNmvHeAfrMY7OVFb5MtFkJOSralxkH0O16Pg1mA==
   dependencies:
-    "@portkey/graphql" "^1.0.0-alpha.6"
-    "@portkey/request" "^1.0.0-alpha.6"
-    "@portkey/types" "^1.0.0-alpha.6"
+    "@portkey/graphql" "^1.0.0-alpha.8"
+    "@portkey/request" "^1.0.0-alpha.8"
+    "@portkey/types" "^1.0.0-alpha.8"
     aelf-sdk "^3.2.44"
     query-string "^7.1.1"
 
@@ -5358,13 +5358,13 @@
     "@abp/signalr" "^7.0.0"
     "@portkey/utils" "^1.0.0-alpha.2"
 
-"@portkey/socket@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/socket/-/socket-1.0.0-alpha.6.tgz#cbf61c5cadf49218c56c20fad6fae56522cc32b0"
-  integrity sha512-FP29M/aYU84v2owQZUQiFCmFeIxd0lBI+s5ysCaP88kqHqmhgqCr32hw31kNlC7KIcMvBCtza99Dj13ChSYl7g==
+"@portkey/socket@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/socket/-/socket-1.0.0-alpha.8.tgz#b929ead80dd48e473bc851f98ec03f1c8801b371"
+  integrity sha512-SHsX1a4/LnmZcutR9cXs49EsigdIcHfqS69ezPGvPFZoZCSrqmkCi6Amj3mETRMWx3nfmgJlcBlwjlnwq14tGw==
   dependencies:
     "@abp/signalr" "^7.0.0"
-    "@portkey/utils" "^1.0.0-alpha.6"
+    "@portkey/utils" "^1.0.0-alpha.8"
 
 "@portkey/types@1.0.0-alpha.4":
   version "1.0.0-alpha.4"
@@ -5380,10 +5380,10 @@
   dependencies:
     "@types/elliptic" "^6.4.14"
 
-"@portkey/types@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/types/-/types-1.0.0-alpha.6.tgz#e15f90432c785ea500f62e0c83995a185bdd162b"
-  integrity sha512-JCIKVWZqO5POy1cIaxIJcsIWyjT1q1eb/uMxkNhzenBQP58nXfPerbu2zx6FsA3XdwoqtzibJBYOSddA0Jr3Wg==
+"@portkey/types@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/types/-/types-1.0.0-alpha.8.tgz#cdafac8f96102250ba5c8346142f018ac595331c"
+  integrity sha512-RTTK8+PdUbVCpArjrQxyG7CZKDzb9f4TBs/2nkmlkwhyZpm4PoWD87gcpSoYHbJN5WDMJ0N4I4N8AO6rnivn5g==
   dependencies:
     "@types/elliptic" "^6.4.14"
 
@@ -5401,17 +5401,17 @@
   dependencies:
     aelf-sdk "^3.2.44"
 
-"@portkey/utils@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/utils/-/utils-1.0.0-alpha.6.tgz#935a959761f22f79c97f8fc1ee359fc215cf7879"
-  integrity sha512-akvB4Z5OO1j7J1UcklblaJa4qlUzUNS7AivHQgdRVVdA0xpn9JamDtWUsLJk3iPG3WTRwN52O5zyoDHjZs7reA==
+"@portkey/utils@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/utils/-/utils-1.0.0-alpha.8.tgz#3fc0d2858888761008e3366c0ff8e3032caf36ea"
+  integrity sha512-n4E2WZ89sarg0GsQrEtMSv6mI5sq4kxPwkXMqfdjmGFvZmDr7RoDp2BHhKdGbDXBJUJgCvSsSm2r1mg72hwaIA==
   dependencies:
     aelf-sdk "^3.2.44"
 
-"@portkey/validator@^1.0.0-alpha.6":
-  version "1.0.0-alpha.6"
-  resolved "https://registry.npmjs.org/@portkey/validator/-/validator-1.0.0-alpha.6.tgz#2e106cb66a620c1052b7713513f1245a4652b15e"
-  integrity sha512-/WxtzawTDp56/uP88QarEnKKECR9Ep8eBbpBFSaXWrXyMDZU4uPndvVSJN4+5EKNFB2P0FG8Tx2Ldl8Pn5F1Xw==
+"@portkey/validator@^1.0.0-alpha.8":
+  version "1.0.0-alpha.8"
+  resolved "https://registry.npmjs.org/@portkey/validator/-/validator-1.0.0-alpha.8.tgz#2a0ee1465dfd2360169ffb553040f6416e21c3fb"
+  integrity sha512-8ePgVtXi3juMB0WYxtnRVgqAo8lr8Lglst4kUAr9mmk0wdQPgnd4vH9PuqcKw/1p7oJcff3wjxjgp0MV3g4jBw==
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"

@@ -16,6 +16,6 @@ export const MainnetNetworkInfo = {
   graphqlUrl: 'https://localhost/graphql/main',
   isActive: true,
   name: 'aelf Mainnet',
-  networkType: 'MAINNET' as NetworkType,
+  networkType: 'MAIN' as NetworkType,
   walletType: 'aelf' as ChainType,
 };

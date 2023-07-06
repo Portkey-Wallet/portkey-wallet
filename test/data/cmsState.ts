@@ -75,5 +75,15 @@ export const CmsState: { cms: CMSState } = {
       ],
     },
     tabMenuListNetMap: {},
+    buyButtonNetMap: {
+      MAIN: {
+        isBuySectionShow: true,
+        isSellSectionShow: true,
+      },
+      TESTNET: {
+        isBuySectionShow: false,
+        isSellSectionShow: false,
+      },
+    },
   },
 };

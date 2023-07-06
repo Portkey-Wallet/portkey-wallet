@@ -16,8 +16,8 @@ import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/
 import { useCheckManager } from 'hooks/useLogout';
 import { message } from 'antd';
 import './index.less';
-import didSignalr from '@portkey-wallet/socket/socket-did';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+// import didSignalr from '@portkey-wallet/socket/socket-did';
+// import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { randomId } from '@portkey-wallet/utils';
 
 export default function ScanCard() {
@@ -29,8 +29,8 @@ export default function ScanCard() {
   const checkManager = useCheckManager();
   const { passwordSeed: pin } = useUserInfo();
   const caWallet = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address, checkManager);
-  const [isWaitingAuth, setIsWaitingAuth] = useState<boolean>();
-  const networkItem = useCurrentNetworkInfo();
+  // const [isWaitingAuth, setIsWaitingAuth] = useState<boolean>();
+  // const networkItem = useCurrentNetworkInfo();
 
   const generateKeystore = useCallback(() => {
     try {
@@ -67,21 +67,21 @@ export default function ScanCard() {
   }, [currentNetwork, deviceInfo, newWallet]);
 
   // Listen whether the user is authorized
-  useEffect(() => {
-    try {
-      const data: LoginQRData = JSON.parse(qrData);
-      if (!data?.id) return;
-      const clientId = `${data.address}_${data.id}`;
-      didSignalr.onScanLogin(() => {
-        setIsWaitingAuth(true);
-      });
-      didSignalr.doOpen({ url: `${networkItem.apiUrl}/ca`, clientId }).catch((error) => {
-        console.warn('Socket:', error);
-      });
-    } catch (error) {
-      console.warn('Socket:', error);
-    }
-  }, [networkItem.apiUrl, qrData]);
+  // useEffect(() => {
+  //   try {
+  //     const data: LoginQRData = JSON.parse(qrData);
+  //     if (!data?.id) return;
+  // const clientId = `${data.address}_${data.id}`;
+  // didSignalr.onScanLogin(() => {
+  //   setIsWaitingAuth(true);
+  // });
+  // didSignalr.doOpen({ url: `${networkItem.apiUrl}/ca`, clientId }).catch((error) => {
+  //   console.warn('Socket:', error);
+  // });
+  //   } catch (error) {
+  //     console.warn('Socket:', error);
+  //   }
+  // }, [networkItem.apiUrl, qrData]);
 
   useEffect(() => {
     const { caInfo, originChainId } = caWallet || {};
@@ -110,7 +110,7 @@ export default function ScanCard() {
     <div className="scan-card">
       <ScanBase
         wrapperClassName="scan-card-inner"
-        isWaitingAuth={isWaitingAuth}
+        // isWaitingAuth={isWaitingAuth}
         backIcon={<CustomSvg type="PC" />}
         onBack={() => navigate('/register/start')}
         qrData={qrData}

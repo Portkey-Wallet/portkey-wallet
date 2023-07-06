@@ -102,7 +102,7 @@ export default function AddToken() {
             isDisplay: !item.isAdded,
           },
         });
-        sleep(800);
+        await sleep(1000);
         if (!filterWord) {
           await appDispatch(fetchAllTokenListAsync({ chainIdArray }));
         } else {

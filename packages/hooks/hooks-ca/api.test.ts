@@ -5,7 +5,7 @@ import * as walletHooks from './wallet';
 import aes from '@portkey-wallet/utils/aes';
 import AElf from 'aelf-sdk';
 import * as utils from '@portkey-wallet/api/api-did/utils';
-import { NetworkInfo } from '../../../test/data/networkState';
+import { TestnetNetworkInfo } from '../../../test/data/networkState';
 import { currentWallet } from '../../../test/data/chainInfo';
 
 describe('useRefreshTokenConfig', () => {
@@ -13,7 +13,7 @@ describe('useRefreshTokenConfig', () => {
     jest.restoreAllMocks();
   });
   test('no pin, and decrypt is not been called', () => {
-    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(NetworkInfo);
+    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
     jest.spyOn(walletHooks, 'useCurrentWalletInfo').mockReturnValue(currentWallet('TESTNET').walletInfo);
     jest.spyOn(walletHooks, 'useOriginChainId').mockReturnValue('AELF');
     jest.spyOn(aes, 'decrypt').mockReturnValue('');
@@ -26,7 +26,7 @@ describe('useRefreshTokenConfig', () => {
     expect(aes.decrypt).toBeCalledTimes(0);
   });
   test('no privateKey, and getWalletByPrivateKey is not called', () => {
-    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(NetworkInfo);
+    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
     jest.spyOn(walletHooks, 'useCurrentWalletInfo').mockReturnValue(currentWallet('TESTNET').walletInfo);
     jest.spyOn(walletHooks, 'useOriginChainId').mockReturnValue('AELF');
     jest.spyOn(aes, 'decrypt').mockReturnValue('');
@@ -40,7 +40,7 @@ describe('useRefreshTokenConfig', () => {
     expect(utils.setRefreshTokenConfig).toBeCalledTimes(0);
   });
   test('complete data, and all methods are called ', () => {
-    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(NetworkInfo);
+    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
     jest.spyOn(walletHooks, 'useCurrentWalletInfo').mockReturnValue(currentWallet('TESTNET').walletInfo);
     jest.spyOn(walletHooks, 'useOriginChainId').mockReturnValue('AELF');
     jest.spyOn(aes, 'decrypt').mockReturnValue('123...rgt');

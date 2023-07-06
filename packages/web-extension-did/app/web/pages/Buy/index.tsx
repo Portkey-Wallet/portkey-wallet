@@ -384,18 +384,19 @@ export default function Buy() {
       return navigate('/');
     }
 
-    const _isManagerSynced = await checkManagerSyncState('AELF');
-
-    if (!_isManagerSynced) {
-      setLoading(false);
-      setWarningMsg(SynchronizingChainText);
-      return;
-    } else {
-      setWarningMsg('');
-    }
-
     if (side === PaymentTypeEnum.SELL) {
       if (!currentChain) return setLoading(false);
+
+      const _isManagerSynced = await checkManagerSyncState('AELF');
+
+      if (!_isManagerSynced) {
+        setLoading(false);
+        setWarningMsg(SynchronizingChainText);
+        return;
+      } else {
+        setWarningMsg('');
+      }
+
       // search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,

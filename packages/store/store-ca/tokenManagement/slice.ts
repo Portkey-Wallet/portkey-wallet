@@ -49,9 +49,6 @@ export const tokenManagementSlice = createSlice({
         }));
 
         state.tokenDataShowInMarket = tmpToken;
-        // state.tokenDataShowInMarket = [...state.tokenDataShowInMarket, ...tmpToken];
-        // state.skipCount = tmpToken.length;
-        // state.totalRecordCount = totalRecordCount;
         state.isFetching = false;
       })
       .addCase(fetchAllTokenListAsync.rejected, state => {

@@ -4,12 +4,17 @@ import { Button, message } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
-import { disclaimer, initPreviewData, MAX_UPDATE_TIME } from '../const';
+import { initPreviewData, MAX_UPDATE_TIME } from '../const';
 import { getAchSignature, getOrderQuote, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import { ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import {
+  ACH_MERCHANT_NAME,
+  TransDirectEnum,
+  disclaimer,
+  serviceUnavailableText,
+} from '@portkey-wallet/constants/constants-ca/payment';
 import clsx from 'clsx';
 import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
 import paymentApi from '@portkey-wallet/api/api-did/payment';
@@ -20,6 +25,7 @@ import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { ACH_WITHDRAW_URL } from 'constants/index';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -32,6 +38,7 @@ export default function Preview() {
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
+  const { refreshBuyButton } = useBuyButtonShow();
 
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
   const showRateText = useMemo(() => `1 ${data.crypto} ≈ ${formatAmountShow(rate, 2)} ${data.fiat}`, [data, rate]);
@@ -94,12 +101,23 @@ export default function Preview() {
   }, []);
 
   const goPayPage = useCallback(async () => {
+    const { side } = data;
+    setLoading(true);
+    const result = await refreshBuyButton();
+    const isBuySectionShow = result.isBuySectionShow;
+    const isSellSectionShow = result.isSellSectionShow;
+    // Compatible with the situation where the function is turned off when the user is on the page.
+    if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
+      setLoading(false);
+      message.error(serviceUnavailableText);
+      return navigate('/');
+    }
+
     const appId = buyConfig?.ach?.appId;
     const baseUrl = buyConfig?.ach?.baseUrl;
-    if (!appId || !baseUrl) return;
+    if (!appId || !baseUrl) return setLoading(false);
     try {
-      setLoading(true);
-      const { network, country, fiat, side, amount, crypto } = data;
+      const { network, country, fiat, amount, crypto } = data;
       let achUrl = `${baseUrl}/?crypto=${crypto}&network=${network}&country=${country}&fiat=${fiat}&appId=${appId}&callbackUrl=${encodeURIComponent(
         `${apiUrl}${paymentApi.updateAchOrder}`,
       )}`;
@@ -142,18 +160,28 @@ export default function Preview() {
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, buyConfig, data, getAchTokenInfo, navigate, setLoading, wallet?.AELF?.caAddress]);
+  }, [
+    apiUrl,
+    buyConfig?.ach?.appId,
+    buyConfig?.ach?.baseUrl,
+    data,
+    getAchTokenInfo,
+    navigate,
+    refreshBuyButton,
+    setLoading,
+    wallet?.AELF?.caAddress,
+  ]);
 
   const showDisclaimerTipModal = useCallback(() => {
     CustomModal({
       content: (
         <>
           <div className="title">Disclaimer</div>
-          {disclaimer}
+          {t(disclaimer)}
         </>
       ),
     });
-  }, []);
+  }, [t]);
 
   const handleBack = useCallback(() => {
     navigate('/buy', { state: state });

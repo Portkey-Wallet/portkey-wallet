@@ -20,6 +20,7 @@
     "@portkey/provider-utils": "1.0.1-alpha.0",
     "@portkey/provider-types": "1.0.1-alpha.0",
     "@portkey/providers": "1.0.1-alpha.0",
+    "@portkey/did-ui-react": "1.0.0-alpha.8",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/browser": "^7.37.1",
     "@sentry/core": "^7.37.1",

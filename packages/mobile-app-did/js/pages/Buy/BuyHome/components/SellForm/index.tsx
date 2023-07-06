@@ -36,9 +36,14 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import BigNumber from 'bignumber.js';
 import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import CommonToast from 'components/CommonToast';
+import { useCheckManagerSyncState } from 'hooks/wallet';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
+  const { refreshBuyButton } = useBuyButtonShow();
+  const checkManagerSyncState = useCheckManagerSyncState();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -161,8 +166,34 @@ export default function SellForm() {
     if (!tokenContractAddress || decimals === undefined || !symbol || !chainId) return;
     if (!pin || !endPoint) return;
 
+    Loading.show();
+    let isSellSectionShow = false;
+    try {
+      const result = await refreshBuyButton();
+      isSellSectionShow = result.isSellSectionShow;
+    } catch (error) {
+      console.log(error);
+    }
+    if (!isSellSectionShow) {
+      CommonToast.fail('Sorry, the service you are using is temporarily unavailable.');
+      navigationService.navigate('Tab');
+      Loading.hide();
+      return;
+    }
+
     try {
       Loading.show();
+      const _isManagerSynced = await checkManagerSyncState(chainId);
+      if (!_isManagerSynced) {
+        setAmountLocalError({
+          ...INIT_HAS_ERROR,
+          isWarning: true,
+          errorMsg: 'Synchronizing on-chain account information...',
+        });
+        Loading.hide();
+        return;
+      }
+
       if (ZERO.plus(amount).isLessThanOrEqualTo(DEFAULT_FEE)) {
         throw new Error('Insufficient funds');
       }
@@ -205,7 +236,19 @@ export default function SellForm() {
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
-  }, [amount, rate, receiveAmount, aelfToken, chainInfo, pin, fiat, token, wallet]);
+  }, [
+    amount,
+    rate,
+    receiveAmount,
+    aelfToken,
+    chainInfo,
+    pin,
+    fiat,
+    token,
+    refreshBuyButton,
+    checkManagerSyncState,
+    wallet,
+  ]);
 
   return (
     <View style={styles.formContainer}>
@@ -235,6 +278,7 @@ export default function SellForm() {
           autoCorrect={false}
           keyboardType="decimal-pad"
           onChangeText={onAmountInput}
+          errorStyle={amountError.isWarning && FontStyles.font6}
           errorMessage={amountError.isError ? amountError.errorMsg : ''}
         />
 

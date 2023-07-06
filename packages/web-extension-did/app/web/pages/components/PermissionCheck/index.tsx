@@ -111,7 +111,9 @@ export default function PermissionCheck({
   }, [currentNetwork, getPassword, pageType, walletInfo?.caInfo]);
 
   useEffect(() => {
+    if (location.pathname.includes('/test')) return;
     if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRegisterPage, locked, navigate, noCheckRegister]);
 
   useEffectOnce(() => {

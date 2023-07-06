@@ -16,8 +16,9 @@ import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useLocation } from 'react-router';
-import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBuyButton, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
+import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -46,6 +47,9 @@ export default function Updater() {
   useMemo(() => {
     request.set('baseURL', apiUrl);
   }, [apiUrl]);
+
+  usePortkeyUIConfig();
+
   useCaInfoOnChain();
   useActiveLockStatus();
   useEffect(() => {
@@ -58,5 +62,6 @@ export default function Updater() {
   }, [onLocking]);
   usePhoneCountryCode(true);
   useSocialMediaList(true);
+  useBuyButton(true);
   return null;
 }

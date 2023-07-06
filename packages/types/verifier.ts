@@ -19,7 +19,10 @@ export enum VerificationType {
   addGuardian,
   setLoginAccount,
   addManager,
-  optGuardianApproval,
+  editGuardian,
+  removeOtherManager,
+  addGuardianByApprove,
+  deleteGuardian,
 }
 
 export enum ApprovalType {
@@ -30,10 +33,16 @@ export enum ApprovalType {
   removeOtherManager,
 }
 
-export enum RecaptchaType {
-  register = 0,
-  communityRecovery = 1,
-  optGuardian = 2,
+// Indicates the type of operation to generate a signature file
+export enum OperationTypeEnum {
+  unknown = 0,
+  register = 1,
+  communityRecovery = 2,
+  addGuardian = 3,
+  deleteGuardian = 4,
+  editGuardian = 5,
+  removeOtherManager = 6,
+  setLoginAccount = 7,
 }
 
 export interface VerifierInfo {

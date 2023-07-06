@@ -2,7 +2,7 @@ import { IStorage, StorageBaseLoader } from '@portkey-wallet/types/storage';
 import { request } from '@portkey-wallet/api/api-did';
 import { RequestConfig } from '../../types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
-import { RecaptchaType } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 type VerifierInfo = {
   verifierSessionId: string;
@@ -15,7 +15,7 @@ export interface SendVerificationConfig extends RequestConfig {
     guardianIdentifier?: string;
     verifierId?: string;
     chainId: string | number;
-    operationType: RecaptchaType;
+    operationType: OperationTypeEnum;
   };
 }
 

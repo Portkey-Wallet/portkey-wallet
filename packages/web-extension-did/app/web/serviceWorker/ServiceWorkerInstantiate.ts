@@ -100,9 +100,6 @@ export default class ServiceWorkerInstantiate {
         // reset lockout timer
         console.log(message, 'LocalStream.watch message');
         if (message.type === InternalMessageTypes.ACTIVE_LOCK_STATUS) return sendResponse(errorHandler(0));
-
-        const registerRes = await this.permissionController.checkCurrentNetworkOtherwiseRegister(message.type);
-        if (registerRes.error !== 0) return sendResponse(registerRes);
         // process events
         if (SWEventController.check(message.type, message.payload?.data)) {
           const payload = message.payload;
@@ -112,6 +109,9 @@ export default class ServiceWorkerInstantiate {
           sendResponse(errorHandler(0));
           return;
         }
+        const registerRes = await this.permissionController.checkCurrentNetworkOtherwiseRegister(message.type);
+        if (registerRes.error !== 0) return sendResponse(registerRes);
+
         await ServiceWorkerInstantiate.checkTimingLock();
         const isLocked = await this.permissionController.checkIsLockOtherwiseUnlock(message.type);
         if (isLocked.error !== 0) return sendResponse(isLocked);

@@ -5,7 +5,7 @@ import {
   Verification,
 } from '@portkey-wallet/api/api-did/verification/utils';
 import { IStorage } from '@portkey-wallet/types/storage';
-import { RecaptchaType } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
@@ -22,7 +22,7 @@ class MobileVerification extends Verification {
       if (item) {
         return item;
       } else {
-        let isNeedRecaptcha = operationType === RecaptchaType.register;
+        let isNeedRecaptcha = operationType === OperationTypeEnum.register;
         if (!isNeedRecaptcha) {
           const result = await request.verify.checkGoogleRecaptcha({
             params: {

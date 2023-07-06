@@ -1,6 +1,6 @@
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { Button, Input } from 'antd';
+import { Button, Input, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
 import { useCallback, useMemo, useState } from 'react';
@@ -15,6 +15,7 @@ import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { ChainId } from '@portkey-wallet/types';
 import { request } from '@portkey-wallet/api/api-did';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import './index.less';
 
 export default function CustomToken() {
@@ -43,19 +44,20 @@ export default function CustomToken() {
     [chainList, isMainnet],
   );
 
-  const handleChangeChainId = useCallback((chainId: ChainId) => {
-    setCurChain(chainId);
-  }, []);
-
   const handleSearch = useCallback(
-    async (keyword: string) => {
+    async (keyword: string, chainId = curChainId) => {
       try {
-        if (!keyword) return;
+        if (!keyword) {
+          setCurToken({});
+          setValue('');
+          setErrorMsg('');
+          return;
+        }
         setLoading(true);
         const res = await request.token.fetchTokenItemBySearch({
           params: {
             symbol: keyword,
-            chainId: curChainId,
+            chainId,
           },
         });
         const { symbol, decimals, id } = res;
@@ -63,6 +65,7 @@ export default function CustomToken() {
           setCurToken(res);
           setValue(symbol);
         }
+        setErrorMsg('');
       } catch (error) {
         setCurToken({});
         console.log('filter search error', error);
@@ -74,6 +77,14 @@ export default function CustomToken() {
   );
 
   const searchDebounce = useDebounceCallback(handleSearch, [value], 500);
+
+  const handleChangeChainId = useCallback(
+    (chainId: ChainId) => {
+      setCurChain(chainId);
+      if (value) handleSearch(value, chainId);
+    },
+    [handleSearch, value],
+  );
 
   const handleBack = useCallback(() => {
     navigate('/add-token');
@@ -91,11 +102,13 @@ export default function CustomToken() {
             isDisplay: !curToken?.isDisplay,
           },
         });
-        setLoading(false);
         navigate('/add-token');
-      } catch (error) {
-        setLoading(false);
+      } catch (error: any) {
+        const err = handleErrorMessage(error, 'add custom token error');
+        message.error(err);
         console.log('add custom token error', error);
+      } finally {
+        setLoading(false);
       }
     }
   }, [curToken?.id, curToken?.isDefault, curToken?.isDisplay, navigate, setLoading]);

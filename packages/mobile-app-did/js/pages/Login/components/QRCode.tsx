@@ -115,7 +115,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
             type: 'login',
             address: newWallet.address,
             netWorkType: currentNetwork,
-            // id: Math.floor(Date.now() / 1000),
+            id: Math.floor(Date.now() / 1000),
             extraData: {
               deviceInfo: getDeviceInfo(),
               version: DEVICE_INFO_VERSION,

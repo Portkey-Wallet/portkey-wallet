@@ -23,7 +23,7 @@ import { useCaHolderManagerInfoQuery } from '@portkey-wallet/graphql/contract/__
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { ExtraDataDecodeType } from '@portkey-wallet/types/types-ca/device';
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client';
-import { NetworkInfo } from '../../../test/data/networkState';
+import { TestnetNetworkInfo } from '../../../test/data/networkState';
 
 jest.mock('./network');
 jest.mock('@portkey-wallet/api/api-did');
@@ -160,7 +160,7 @@ describe('useDeviceList', () => {
     };
   });
   test('useCaHolderManagerInfoQuery.data is undefined, and return deviceAmount is 0', () => {
-    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NetworkInfo);
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(TestnetNetworkInfo);
     jest
       .mocked(useCaHolderManagerInfoQuery)
       .mockReturnValue({ data: undefined, error: undefined, refetch: jest.fn(), loading: true } as any);
@@ -171,7 +171,7 @@ describe('useDeviceList', () => {
   });
 
   test('complete wallet data, and return deviceAmount is 1', async () => {
-    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NetworkInfo);
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(TestnetNetworkInfo);
     jest.mocked(useCaHolderManagerInfoQuery).mockReturnValue({
       data: CA_HOLDER_MANAGER_INFO_DATA,
       error: undefined,
@@ -189,7 +189,7 @@ describe('useDeviceList', () => {
   });
 
   test('managerInfos is undefined, and return deviceAmount is 0', async () => {
-    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NetworkInfo);
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(TestnetNetworkInfo);
     const caHolderManagerInfoData = {
       caHolderManagerInfo: [{ ...CA_HOLDER_MANAGER_INFO_DATA.caHolderManagerInfo[0], managerInfos: undefined }],
     };
@@ -210,7 +210,7 @@ describe('useDeviceList', () => {
   });
 
   test('complete wallet data, and return deviceAmount is 1', async () => {
-    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NetworkInfo);
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(TestnetNetworkInfo);
     const caHolderManagerInfoData = {
       caHolderManagerInfo: [
         {
@@ -255,7 +255,7 @@ describe('useCaAddressInfoList', () => {
 
 describe('useSetWalletName', () => {
   test('the useSetWalletName method was successfully called', async () => {
-    jest.mocked(useCurrentNetworkInfo).mockReturnValue(NetworkInfo);
+    jest.mocked(useCurrentNetworkInfo).mockReturnValue(TestnetNetworkInfo);
     jest.mocked(request.wallet.editWalletName).mockReturnValue(Promise.resolve(() => jest.fn()));
 
     const { result } = renderHookWithProvider(useSetWalletName, setupStore(COMPLETE_WALLET_STATE));

@@ -29,8 +29,8 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
-import BuyFrom from './components/BuyFrom';
-import SellFrom from './components/SellFrom';
+import BuyForm from './components/BuyForm';
+import SellForm from './components/SellForm';
 import { useEffectOnce } from 'react-use';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import BigNumber from 'bignumber.js';
@@ -489,7 +489,7 @@ export default function Buy() {
             </Radio.Group>
           </div>
           {page === PaymentTypeEnum.BUY && (
-            <BuyFrom
+            <BuyForm
               currencyVal={amount}
               handleCurrencyChange={handleInputChange}
               handleCurrencyKeyDown={handleKeyDown}
@@ -501,12 +501,11 @@ export default function Buy() {
               handleTokenSelect={(v) => handleSelect(v, DrawerType.token)}
               curToken={curToken}
               errMsg={errMsg}
-              warningMsg={warningMsg}
               side={PaymentTypeEnum.BUY}
             />
           )}
           {page === PaymentTypeEnum.SELL && (
-            <SellFrom
+            <SellForm
               tokenVal={amount}
               handleTokenChange={handleInputChange}
               handleTokenKeyDown={handleKeyDown}

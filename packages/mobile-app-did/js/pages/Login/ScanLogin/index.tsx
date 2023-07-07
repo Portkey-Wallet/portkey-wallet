@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
@@ -19,6 +19,8 @@ import { addManager } from 'utils/wallet';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
 import socket from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
+import useEffectOnce from 'hooks/useEffectOnce';
+import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
 
 const ScrollViewProps = { disabled: true };
 
@@ -30,36 +32,36 @@ export default function ScanLogin() {
   const [loading, setLoading] = useState<boolean>();
   const getCurrentCAContract = useGetCurrentCAContract();
 
-  // const targetClientId = useMemo(() => (id ? `${managerAddress}_${id}` : undefined), [managerAddress, id]);
+  const targetClientId = useMemo(() => (id ? `${managerAddress}_${id}` : undefined), [managerAddress, id]);
 
-  // useEffectOnce(() => {
-  //   if (!targetClientId) return;
-  //   try {
-  //     request.message.sendScanLogin({
-  //       params: {
-  //         targetClientId,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     console.log('sendScanLogin: error', error);
-  //   }
-  // });
+  useEffectOnce(() => {
+    if (!targetClientId) return;
+    try {
+      request.message.sendScanLogin({
+        params: {
+          targetClientId,
+        },
+      });
+    } catch (error) {
+      console.log('sendScanLogin: error', error);
+    }
+  });
 
   const onLogin = useCallback(async () => {
     if (!caHash || loading || !managerAddress) return;
     setLoading(true);
-    // try {
-    //   if (targetClientId) {
-    //     const isQRCodeExist = await checkQRCodeExist(targetClientId);
-    //     if (isQRCodeExist === false) {
-    //       CommonToast.warn('The QR code has already been scanned by another device.');
-    //       setLoading(false);
-    //       return;
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      if (targetClientId) {
+        const isQRCodeExist = await checkQRCodeExist(targetClientId);
+        if (isQRCodeExist === false) {
+          CommonToast.warn('The QR code has already been scanned by another device.');
+          setLoading(false);
+          return;
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
 
     try {
       const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
@@ -76,7 +78,7 @@ export default function ScanLogin() {
       CommonToast.failError(error);
     }
     setLoading(false);
-  }, [caHash, loading, managerAddress, qrExtraData, deviceType, getCurrentCAContract, address]);
+  }, [caHash, loading, managerAddress, targetClientId, qrExtraData, deviceType, getCurrentCAContract, address]);
   return (
     <PageContainer
       scrollViewProps={ScrollViewProps}

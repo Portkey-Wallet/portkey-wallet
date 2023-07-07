@@ -59,10 +59,13 @@ module.exports = {
       roots: ['<rootDir>/packages/web-extension-did'],
       moduleNameMapper: {
         '^react$': '<rootDir>/node_modules/react',
+        '^utils$': '<rootDir>/packages/web-extension-did/app/web/utils',
         '^utils/(.*)$': '<rootDir>/packages/web-extension-did/app/web/utils/$1',
         '^store/(.*)$': '<rootDir>/packages/web-extension-did/app/web/store/$1',
         '^constants/(.*)$': '<rootDir>/packages/web-extension-did/app/web/constants/$1',
         '^messages/(.*)$': '<rootDir>/packages/web-extension-did/app/web/messages/$1',
+        '^service/(.*)$': '<rootDir>/packages/web-extension-did/app/web/service/$1',
+        '^controllers/(.*)$': '<rootDir>/packages/web-extension-did/app/web/controllers/$1',
       },
       coveragePathIgnorePatterns: ['/node_modules/', '/store/', '/hooks-ca/', '/utils/'],
     },

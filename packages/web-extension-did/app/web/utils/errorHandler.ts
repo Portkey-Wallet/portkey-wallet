@@ -73,7 +73,7 @@ export default function errorHandler(code: keyof typeof errorMap, error?: any | 
       name: error.name,
       message: error.message || error.Error?.Message || error.Error,
       stack: error.stack,
-      data: error?.data,
+      data: error.data,
     };
   } else if (typeof error === 'string') {
     output = {

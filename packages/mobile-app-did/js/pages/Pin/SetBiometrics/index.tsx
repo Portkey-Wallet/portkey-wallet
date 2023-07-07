@@ -72,7 +72,7 @@ export default function SetBiometrics() {
     }
     if (managerInfo) {
       timer.current?.remove();
-      Loading.show({ text: t('Creating address on the chain...') });
+      Loading.show({ text: t('Initiating social recovery') });
       timer.current = onIntervalGetResult({
         managerInfo,
         onPass: (info: CAInfo) => {

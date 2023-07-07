@@ -2,7 +2,7 @@ import { getDeviceInfo, getDeviceIcon } from './device';
 import { DeviceInfoType, DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { IconType } from 'types/icon';
 describe('getDeviceInfo', () => {
-  it('should return correct device info for MAC', () => {
+  test('should return correct device info for MAC', () => {
     const deviceType = DeviceType.MAC;
     const expectedDeviceInfo: DeviceInfoType = { deviceName: 'macOS', deviceType };
 
@@ -11,7 +11,7 @@ describe('getDeviceInfo', () => {
     expect(result).toEqual(expectedDeviceInfo);
   });
 
-  it('should return correct device info for WINDOWS', () => {
+  test('should return correct device info for WINDOWS', () => {
     const deviceType = DeviceType.WINDOWS;
     const expectedDeviceInfo: DeviceInfoType = { deviceName: 'Windows', deviceType };
 
@@ -20,7 +20,7 @@ describe('getDeviceInfo', () => {
     expect(result).toEqual(expectedDeviceInfo);
   });
 
-  it('should return correct device info for other devices', () => {
+  test('should return correct device info for other devices', () => {
     const deviceType = DeviceType.OTHER;
     const expectedDeviceInfo: DeviceInfoType = { deviceName: 'Other', deviceType };
 
@@ -31,7 +31,7 @@ describe('getDeviceInfo', () => {
 });
 
 describe('getDeviceIcon', () => {
-  it('should return correct icon for ANDROID', () => {
+  test('should return correct icon for ANDROID', () => {
     const deviceType = DeviceType.ANDROID;
     const expectedIcon: IconType = 'phone-Android';
 
@@ -40,7 +40,7 @@ describe('getDeviceIcon', () => {
     expect(result).toEqual(expectedIcon);
   });
 
-  it('should return correct icon for IOS', () => {
+  test('should return correct icon for IOS', () => {
     const deviceType = DeviceType.IOS;
     const expectedIcon: IconType = 'phone-iOS';
 
@@ -49,7 +49,7 @@ describe('getDeviceIcon', () => {
     expect(result).toEqual(expectedIcon);
   });
 
-  it('should return correct icon for MAC', () => {
+  test('should return correct icon for MAC', () => {
     const deviceType = DeviceType.MAC;
     const expectedIcon: IconType = 'desk-mac';
 
@@ -58,7 +58,7 @@ describe('getDeviceIcon', () => {
     expect(result).toEqual(expectedIcon);
   });
 
-  it('should return correct icon for WINDOWS', () => {
+  test('should return correct icon for WINDOWS', () => {
     const deviceType = DeviceType.WINDOWS;
     const expectedIcon: IconType = 'desk-win';
 
@@ -67,7 +67,7 @@ describe('getDeviceIcon', () => {
     expect(result).toEqual(expectedIcon);
   });
 
-  it('should return default icon for other devices', () => {
+  test('should return default icon for other devices', () => {
     const deviceType = DeviceType.OTHER;
     const expectedIcon: IconType = 'desk-win';
 

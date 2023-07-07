@@ -9,6 +9,10 @@ module.exports = {
     '**/packages/store/store-ca/**/slice.{ts,tsx}',
     '**/packages/utils/wallet/index.ts',
     '**/packages/web-extension-did/app/web/store/reducers/**/*.{ts,tsx}',
+    '**/packages/web-extension-did/app/web/controllers/approval/*.ts',
+    '**/packages/web-extension-did/app/web/controllers/methodController/*.ts',
+    '**/packages/web-extension-did/app/web/utils/device.ts',
+    '**/packages/web-extension-did/app/web/utils/errorHandle.ts',
     '**/packages/web-extension-did/app/web/hooks/useActiveLockStatus.ts',
     '**/packages/web-extension-did/app/web/hooks/useCaInfoOnChain.ts',
     '**/packages/web-extension-did/app/web/hooks/useNetwork.ts',
@@ -48,7 +52,13 @@ module.exports = {
     {
       displayName: 'web-extension-did-hooks',
       preset: 'ts-jest',
-      testMatch: ['<rootDir>/packages/web-extension-did/app/web/hooks/*.test.{ts,tsx}'],
+      testMatch: [
+        '<rootDir>/packages/web-extension-did/app/web/hooks/*.test.{ts,tsx}',
+        '<rootDir>/packages/web-extension-did/app/web/controllers/approval/*.test.ts',
+        '<rootDir>/packages/web-extension-did/app/web/controllers/methodController/*.test.ts',
+        '<rootDir>/packages/web-extension-did/app/web/utils/errorHandle.test.ts',
+        '<rootDir>/packages/web-extension-did/app/web/utils/device/*.test.ts',
+      ],
       testEnvironment: 'jsdom',
       transform: {
         '^.+\\.(ts|tsx)$': [

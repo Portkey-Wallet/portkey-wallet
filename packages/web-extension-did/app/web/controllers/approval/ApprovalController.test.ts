@@ -22,7 +22,7 @@ describe('ApprovalController', () => {
   });
 
   describe('authorizedToConnect', () => {
-    it('should return permissionData', async () => {
+    test('should return permissionData', async () => {
       const promptData = { appName: 'My App', appLogo: 'logo.png', origin: 'https://example.com' };
       const permissionData = { success: true, message: 'Authorized' };
       notificationService.openPrompt.mockResolvedValue(permissionData);
@@ -40,7 +40,7 @@ describe('ApprovalController', () => {
       expect(result).toEqual(permissionData);
     });
 
-    it('should use origin as appName when appName is not provided', async () => {
+    test('should use origin as appName when appName is not provided', async () => {
       const promptData = { appLogo: 'logo.png', origin: 'https://example.com' };
       const permissionData = { success: true, message: 'Authorized' };
       notificationService.openPrompt.mockResolvedValue(permissionData);
@@ -60,7 +60,7 @@ describe('ApprovalController', () => {
   });
 
   describe('authorizedToSendTransactions', () => {
-    it('should return permissionData', async () => {
+    test('should return permissionData', async () => {
       const promptData = {
         origin: 'https://example.com',
         transactionInfoId: '123',
@@ -80,7 +80,7 @@ describe('ApprovalController', () => {
   });
 
   describe('authorizedToGetSignature', () => {
-    it('should return permissionData', async () => {
+    test('should return permissionData', async () => {
       const promptData = { message: 'Sign this data' };
       const permissionData = { success: true, message: 'Authorized' };
       notificationService.openPrompt.mockResolvedValue(permissionData);

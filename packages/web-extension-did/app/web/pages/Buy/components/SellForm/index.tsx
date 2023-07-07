@@ -1,6 +1,6 @@
 import CurrencyInput from '../CurrencyInput';
 import TokenInput from '../TokenInput';
-import { IBuyOrSellFromProps } from '../BuyFrom';
+import { IBuyOrSellFromProps } from '../BuyForm';
 import { useTranslation } from 'react-i18next';
 
 export default function SellFrom({

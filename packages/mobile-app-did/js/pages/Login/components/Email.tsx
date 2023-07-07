@@ -71,11 +71,12 @@ export default function Email({
     }, []),
   );
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, []);
+    },
+    [],
+  );
 
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>

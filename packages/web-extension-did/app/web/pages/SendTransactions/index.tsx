@@ -135,6 +135,7 @@ export default function SendTransactions() {
     setIsManagerSynced(_isManagerSynced);
     if (_isManagerSynced) {
       getFee(params);
+      setErrMsg('');
     } else {
       setErrMsg('Synchronizing on-chain account information...');
     }

@@ -10,7 +10,7 @@ import navigationService from 'utils/navigationService';
 import styles from '../styles';
 import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
-import { TextM, TextS, TextXXXL } from 'components/CommonText';
+import { TextS, TextXXXL } from 'components/CommonText';
 import { PageLoginType } from '../types';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
@@ -25,8 +25,6 @@ import { useGetDeviceInfo } from 'hooks/device';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useCheckManager } from 'hooks/useLogOut';
-import Lottie from 'lottie-react-native';
-import { useIsScanQRCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { usePreventScreenCapture } from 'expo-screen-capture';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
@@ -127,8 +125,8 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
     [currentNetwork, getDeviceInfo, newWallet],
   );
   const qrDataStr = useMemo(() => JSON.stringify(qrData), [qrData]);
-  const clientId = useMemo(() => (qrData.id ? `${qrData.address}_${qrData.id}` : undefined), [qrData]);
-  const isScanQRCode = useIsScanQRCode(clientId);
+  // const clientId = useMemo(() => (qrData.id ? `${qrData.address}_${qrData.id}` : undefined), [qrData]);
+  // const isScanQRCode = useIsScanQRCode(clientId);
 
   return (
     <View style={[BGStyles.bg1, styles.card, styles.qrCodeCard]}>
@@ -142,12 +140,12 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
         </TextS>
         <View style={[GStyles.alignCenter, styles.qrCodeBox, GStyles.flex1]}>
           <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} />
-          {isScanQRCode && (
+          {/* {isScanQRCode && (
             <View style={[GStyles.flex1, GStyles.center, GStyles.flexRow]}>
               <Lottie source={require('./scanLoading.json')} style={styles.scanLoading} autoPlay loop />
               <TextM style={[GStyles.textAlignCenter, FontStyles.font3]}>Waiting for authorization....</TextM>
             </View>
-          )}
+          )} */}
         </View>
       </View>
     </View>

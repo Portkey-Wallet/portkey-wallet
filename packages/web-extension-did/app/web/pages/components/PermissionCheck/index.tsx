@@ -71,7 +71,8 @@ export default function PermissionCheck({
       const detail = (res as any)?.data;
       if (detail?.registerStatus) {
         detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
-        !detail?.privateKey && navigate('/unlock');
+        // navigate to unlock expect dapp connect
+        location.pathname !== '/permission' && !detail?.privateKey && navigate('/unlock');
       } else {
         InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
       }
@@ -111,7 +112,9 @@ export default function PermissionCheck({
   }, [currentNetwork, getPassword, pageType, walletInfo?.caInfo]);
 
   useEffect(() => {
+    if (location.pathname.includes('/test')) return;
     if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRegisterPage, locked, navigate, noCheckRegister]);
 
   useEffectOnce(() => {

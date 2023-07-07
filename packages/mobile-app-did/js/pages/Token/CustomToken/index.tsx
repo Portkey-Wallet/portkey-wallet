@@ -52,6 +52,8 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
     if (!keyword) return;
 
     Loading.show();
+
+    setErrorMessage('');
     setBtnDisable(true);
     setTokenItem(pre => ({ ...pre, decimals: '--', symbol: '' }));
 
@@ -192,8 +194,8 @@ export const pageStyles = StyleSheet.create({
   },
   tokenDecimal: {
     lineHeight: pTd(56),
-    backgroundColor: defaultColors.bg7,
-    opacity: 0.3,
+    backgroundColor: defaultColors.bg18,
+    color: defaultColors.font7,
     overflow: 'hidden',
     borderRadius: pTd(6),
     paddingLeft: pTd(16),

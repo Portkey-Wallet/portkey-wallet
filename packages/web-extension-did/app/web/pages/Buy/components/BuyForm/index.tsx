@@ -19,7 +19,7 @@ export interface IBuyOrSellFromProps {
   curToken: ICurToken;
 
   errMsg: string;
-  warningMsg: string;
+  warningMsg?: string;
   side: PaymentTypeEnum;
 }
 
@@ -37,7 +37,6 @@ export default function BuyFrom({
   curToken,
 
   errMsg,
-  warningMsg,
   side,
 }: IBuyOrSellFromProps) {
   const { t } = useTranslation();
@@ -55,7 +54,6 @@ export default function BuyFrom({
           onSelect={handleCurrencySelect}
         />
         {!!errMsg && <div className="error-text">{t(errMsg)}</div>}
-        {!!warningMsg && <div className="warning-text">{t(warningMsg)}</div>}
       </div>
       <div className="buy-input">
         <div className="label">{`I will receive≈`}</div>

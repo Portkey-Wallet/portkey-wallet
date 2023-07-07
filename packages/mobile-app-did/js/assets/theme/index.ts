@@ -24,6 +24,7 @@ export const defaultColors = {
   bg15: 'rgba(104, 170, 253, .2)',
   bg16: '#C5CBD5',
   bg17: '#EA4F45',
+  bg18: '#F0F1F4',
 
   font1: '#464B53',
   font2: 'white',

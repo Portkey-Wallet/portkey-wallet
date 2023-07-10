@@ -1,6 +1,5 @@
 import { ConfigProvider } from 'antd';
 import ErrorBoundary from 'components/ErrorBoundary';
-import ScreenLoading from 'components/ScreenLoading';
 import { useLanguage } from 'i18n';
 import { ANTD_LOCAL } from 'i18n/config';
 import Modals from 'models';
@@ -62,7 +61,6 @@ export default function ContextProviders({
       <PortkeyConfigProvider>
         <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
           <ReduxProvider>
-            <ScreenLoading />
             <HashRouter>
               <Modals />
               <Updater />

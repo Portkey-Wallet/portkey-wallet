@@ -69,7 +69,7 @@ export const useHandleAchSell = () => {
   return useCallback(
     async (orderId: string) => {
       try {
-        setLoading(true, 'Payment is being processed and may take around 10 seconds to complete.', false);
+        setLoading(true, 'Payment is being processed and may take around 10 seconds to complete.');
         await sellTransfer({
           merchantName: ACH_MERCHANT_NAME,
           orderId,

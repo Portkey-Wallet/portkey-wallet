@@ -1,13 +1,13 @@
 import { defaultColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 import React, { ReactNode } from 'react';
-import { View, StyleSheet, ViewProps, StyleProp } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 
 export type FormItemType = {
   title: string;
   children: ReactNode;
-  style?: StyleProp<ViewProps>;
+  style?: any;
 };
 
 export default function FormItem(props: FormItemType) {

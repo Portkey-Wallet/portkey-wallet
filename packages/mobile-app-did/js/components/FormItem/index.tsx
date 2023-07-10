@@ -7,16 +7,17 @@ import { pTd } from 'utils/unit';
 export type FormItemType = {
   title: string;
   children: ReactNode;
+  style?: any;
 };
 
 export default function FormItem(props: FormItemType) {
-  const { title, children } = props;
+  const { title, children, style = {} } = props;
 
   return (
-    <>
+    <View style={style}>
       <TextM style={styles.titleStyle}>{title}</TextM>
       <View style={styles.childrenWrap}>{children}</View>
-    </>
+    </View>
   );
 }
 

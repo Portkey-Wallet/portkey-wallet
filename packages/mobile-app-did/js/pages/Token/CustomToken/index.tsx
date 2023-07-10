@@ -20,6 +20,7 @@ import navigationService from 'utils/navigationService';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { FontStyles } from 'assets/theme/styles';
+import GStyles from 'assets/theme/GStyles';
 
 interface CustomTokenProps {
   route?: any;
@@ -134,7 +135,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           'To add a token, you need to select the network that it belongs to and enter its symbol for automatic recognition.',
         )}
       </TextM>
-      <FormItem title={'Network'}>
+      <FormItem title={'Network'} style={pageStyles.networkWrap}>
         <SelectChain
           currentNetwork={currentNetwork}
           chainId={tokenItem.chainId || originChainId}
@@ -181,6 +182,9 @@ export const pageStyles = StyleSheet.create({
     color: defaultColors.font3,
     marginBottom: pTd(24),
   },
+  networkWrap: {
+    paddingBottom: pTd(24),
+  },
   list: {
     flex: 1,
   },
@@ -193,8 +197,7 @@ export const pageStyles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: screenWidth,
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
+    ...GStyles.paddingArg(20, 16),
   },
   tokenDecimal: {
     lineHeight: pTd(56),

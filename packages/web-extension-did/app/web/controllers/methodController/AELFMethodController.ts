@@ -268,7 +268,7 @@ export default class AELFMethodController {
       const { payload, origin } = message;
       const chainInfo = await this.dappManager.getChainInfo(payload.chainId);
       const caInfo = await this.dappManager.getCaInfo(payload.chainId);
-      if (!chainInfo || !chainInfo.endPoint || !payload.params || !caInfo)
+      if (!chainInfo || !chainInfo.endPoint || !caInfo)
         return sendResponse({
           ...errorHandler(200005),
           data: {

@@ -171,7 +171,7 @@ export default class SWEventController {
       case resetDapp.toString():
       case resetDappList.toString(): {
         await InternalMessage.payload(NotificationEvents.DISCONNECTED, {
-          data: { message: 'user logout', code: ResponseCode.USER_DENIED },
+          data: { message: 'user logout', code: ResponseCode.USER_DENIED, origin: '*' },
         }).send();
         break;
       }

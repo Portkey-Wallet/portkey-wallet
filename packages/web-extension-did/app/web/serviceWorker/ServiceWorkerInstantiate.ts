@@ -1,11 +1,9 @@
-import { getAllStorageLocalData, getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
-import storage from 'utils/storage/storage';
+import { getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 import { AutoLockDataKey, AutoLockDataType, DefaultLock } from 'constants/lock';
 import SWEventController, { DappEventPack } from 'controllers/SWEventController';
 import PermissionController from 'controllers/PermissionController';
 import NotificationService, { CloseParams } from 'service/NotificationService';
 import ApprovalController from 'controllers/approval/ApprovalController';
-import { getStoreState } from 'store/utils/getStore';
 import { InternalMessageData, IPageState } from 'types/SW';
 import AELFMethodController from 'controllers/methodController/AELFMethodController';
 import InternalMessageTypes, {
@@ -20,22 +18,16 @@ import { apis } from 'utils/BrowserApis';
 import SocialLoginController from 'controllers/socialLoginController';
 import { LocalStream } from 'utils/extensionStreams';
 import { MethodsWallet, MethodsBase } from '@portkey/provider-types';
-import { getWalletState } from 'utils/lib/SWGetReduxStore';
 import OpenNewTabController from 'controllers/openNewTabController';
 
 const notificationService = new NotificationService();
 const socialLoginService = new SocialLoginController();
 OpenNewTabController.onOpenNewTab();
 
-// Get default data in redux
-const store = getStoreState();
-
 let seed: string | null = null;
 
 let pageState: IPageState = {
   lockTime: AutoLockDataType[DefaultLock], // minutes
-  registerStatus: undefined,
-  wallet: store.wallet,
 };
 
 const permissionWhitelist = [
@@ -64,14 +56,10 @@ const permissionWhitelist = [
 ];
 
 const initPageState = async () => {
-  const allStorage = await getAllStorageLocalData();
-  const wallet = await getWalletState();
+  const lockTime = await getLocalStorage('lockTime');
   pageState = {
-    registerStatus: allStorage[storage.registerStatus],
-    lockTime: AutoLockDataType[allStorage[storage.lockTime] as AutoLockDataKey] ?? AutoLockDataType[DefaultLock],
-    wallet: wallet as IPageState['wallet'],
+    lockTime: AutoLockDataType[lockTime as AutoLockDataKey] ?? AutoLockDataType[DefaultLock],
   };
-  console.log(pageState, 'pageState===');
 };
 
 // This is the script that runs in the extension's serviceWorker ( singleton )
@@ -111,9 +99,7 @@ export default class ServiceWorkerInstantiate {
         if (!message.type) return;
         // reset lockout timer
         console.log(message, 'LocalStream.watch message');
-
-        const registerRes = await this.permissionController.checkIsRegisterOtherwiseRegister(message.type);
-        if (registerRes.error !== 0) return sendResponse(registerRes);
+        if (message.type === InternalMessageTypes.ACTIVE_LOCK_STATUS) return sendResponse(errorHandler(0));
         // process events
         if (SWEventController.check(message.type, message.payload?.data)) {
           const payload = message.payload;
@@ -123,8 +109,10 @@ export default class ServiceWorkerInstantiate {
           sendResponse(errorHandler(0));
           return;
         }
+        const registerRes = await this.permissionController.checkCurrentNetworkOtherwiseRegister(message.type);
+        if (registerRes.error !== 0) return sendResponse(registerRes);
+
         await ServiceWorkerInstantiate.checkTimingLock();
-        if (message.type === InternalMessageTypes.ACTIVE_LOCK_STATUS) return sendResponse(errorHandler(0));
         const isLocked = await this.permissionController.checkIsLockOtherwiseUnlock(message.type);
         if (isLocked.error !== 0) return sendResponse(isLocked);
         this.dispenseMessage(sendResponse, message);
@@ -159,7 +147,7 @@ export default class ServiceWorkerInstantiate {
         this.notificationServiceClose(sendResponse, message.payload);
         break;
       case PortkeyMessageTypes.REGISTER_WALLET:
-        ServiceWorkerInstantiate.checkRegisterStatus();
+        this.checkRegisterStatus(sendResponse);
         break;
       case PortkeyMessageTypes.REGISTER_START_WALLET:
         ServiceWorkerInstantiate.registerStartWallet();
@@ -378,12 +366,11 @@ export default class ServiceWorkerInstantiate {
   }
 
   async checkWalletStatus(sendResponse: SendResponseFun) {
-    const registerStatus = await this.permissionController.getRegisterStatus();
-    console.log(registerStatus, 'registerStatus===');
+    const isRegisterOnCurrentNetwork = await this.permissionController.checkCurrentNetworkIsRegister();
     return sendResponse({
       ...errorHandler(0),
       data: {
-        registerStatus,
+        registerStatus: isRegisterOnCurrentNetwork,
         privateKey: seed,
       },
     });
@@ -452,19 +439,8 @@ export default class ServiceWorkerInstantiate {
     });
   }
 
-  static async checkRegisterStatus() {
-    const registerStatus = await getLocalStorage('registerStatus');
-    if (registerStatus !== 'Registered') {
-      return await notificationService.open({
-        sendResponse: (response) => {
-          console.log(response);
-        },
-        message: {
-          method: PromptRouteTypes[registerStatus === 'registeredNotGetCaAddress' ? 'BLANK_PAGE' : 'REGISTER_WALLET'],
-        },
-        promptType: 'tabs',
-      });
-    }
-    return true;
-  }
+  checkRegisterStatus = async (sendResponse?: SendResponseFun) => {
+    const registerStatus = await this.permissionController.registerCurrentNetworkWallet();
+    sendResponse?.(registerStatus);
+  };
 }

@@ -8,7 +8,7 @@ const wallet1 = AElf.wallet.getWalletByPrivateKey(privateKey1);
 export const getELFChainBalance = async (tokenContract: any, symbol: string, owner: string) => {
   let balance;
   if (tokenContract instanceof ContractBasic) {
-    const req = await await tokenContract.callViewMethod('GetBalance', {
+    const req = await tokenContract.callViewMethod('GetBalance', {
       symbol,
       owner,
     });

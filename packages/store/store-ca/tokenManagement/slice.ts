@@ -4,7 +4,6 @@ import { fetchAllTokenListAsync, getSymbolImagesAsync } from './action';
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 
 const initialState: TokenState = {
-  // addedTokenData: {},
   tokenDataShowInMarket: [],
   isFetching: false,
   skipCount: 0,
@@ -23,9 +22,9 @@ export const tokenManagementSlice = createSlice({
       state.tokenDataShowInMarket = [];
     },
     resetToken: state => {
-      // state.addedTokenData = {};
       state.tokenDataShowInMarket = [];
     },
+    resetTokenManagement: () => initialState,
   },
   extraReducers: builder => {
     builder
@@ -49,9 +48,6 @@ export const tokenManagementSlice = createSlice({
         }));
 
         state.tokenDataShowInMarket = tmpToken;
-        // state.tokenDataShowInMarket = [...state.tokenDataShowInMarket, ...tmpToken];
-        // state.skipCount = tmpToken.length;
-        // state.totalRecordCount = totalRecordCount;
         state.isFetching = false;
       })
       .addCase(fetchAllTokenListAsync.rejected, state => {
@@ -67,6 +63,6 @@ export const tokenManagementSlice = createSlice({
   },
 });
 
-export const { clearMarketToken, resetToken } = tokenManagementSlice.actions;
+export const { clearMarketToken, resetToken, resetTokenManagement } = tokenManagementSlice.actions;
 
 export default tokenManagementSlice;

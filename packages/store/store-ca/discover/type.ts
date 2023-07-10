@@ -9,7 +9,7 @@ export interface ITabItem {
 
 export interface IDiscoverNetworkStateType {
   recordsList: ITabItem[];
-  whiteList: any[];
+  whiteList: string[];
   tabs: ITabItem[];
 }
 

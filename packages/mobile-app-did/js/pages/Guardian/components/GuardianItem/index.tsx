@@ -15,8 +15,8 @@ import { sleep } from '@portkey-wallet/utils';
 import {
   ApprovalType,
   AuthenticationInfo,
-  RecaptchaType,
   VerificationType,
+  OperationTypeEnum,
   VerifierInfo,
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
@@ -64,15 +64,48 @@ function GuardianItemButton({
   const { status, requestCodeResult } = itemStatus || {};
   const verifyToken = useVerifyToken();
   const guardianInfo = useMemo(() => {
-    let _verificationType = VerificationType.optGuardianApproval;
-    if (approvalType === ApprovalType.communityRecovery) {
-      _verificationType = VerificationType.communityRecovery;
+    let _verificationType: VerificationType;
+    switch (approvalType) {
+      case ApprovalType.addGuardian:
+        _verificationType = VerificationType.addGuardianByApprove;
+        break;
+      case ApprovalType.editGuardian:
+        _verificationType = VerificationType.editGuardian;
+        break;
+      case ApprovalType.deleteGuardian:
+        _verificationType = VerificationType.deleteGuardian;
+        break;
+      case ApprovalType.removeOtherManager:
+        _verificationType = VerificationType.removeOtherManager;
+        break;
+      case ApprovalType.communityRecovery:
+      default:
+        _verificationType = VerificationType.communityRecovery;
+        break;
     }
     return {
       guardianItem,
       verificationType: _verificationType,
     };
   }, [approvalType, guardianItem]);
+
+  const operationType: OperationTypeEnum = useMemo(() => {
+    switch (approvalType) {
+      case ApprovalType.addGuardian:
+        return OperationTypeEnum.addGuardian;
+      case ApprovalType.editGuardian:
+        return OperationTypeEnum.editGuardian;
+      case ApprovalType.deleteGuardian:
+        return OperationTypeEnum.deleteGuardian;
+      case ApprovalType.removeOtherManager:
+        return OperationTypeEnum.removeOtherManager;
+      case ApprovalType.communityRecovery:
+        return OperationTypeEnum.communityRecovery;
+      default:
+        return OperationTypeEnum.unknown;
+    }
+  }, [approvalType]);
+
   const onSetGuardianStatus = useCallback(
     (guardianStatus: GuardiansStatusItem) => {
       setGuardianStatus?.({ key: guardianItem.key, status: guardianStatus });
@@ -90,10 +123,7 @@ function GuardianItemButton({
           guardianIdentifier: guardianInfo.guardianItem.guardianAccount,
           verifierId: guardianInfo.guardianItem.verifier?.id,
           chainId: originChainId,
-          operationType:
-            approvalType === ApprovalType.communityRecovery
-              ? RecaptchaType.communityRecovery
-              : RecaptchaType.optGuardian,
+          operationType,
         },
       });
       if (req.verifierSessionId) {
@@ -116,16 +146,18 @@ function GuardianItemButton({
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [onSetGuardianStatus, guardianInfo, approvalType, originChainId]);
+  }, [guardianInfo, originChainId, operationType, onSetGuardianStatus]);
 
   const onVerifierAuth = useCallback(async () => {
     try {
       Loading.show();
+
       const rst = await verifyToken(guardianItem.guardianType, {
         accessToken: authenticationInfo?.[guardianItem.guardianAccount],
         id: guardianItem.guardianAccount,
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,
+        operationType,
       });
 
       if (rst.accessToken) {
@@ -150,6 +182,7 @@ function GuardianItemButton({
     guardianItem.guardianType,
     guardianItem.verifier?.id,
     onSetGuardianStatus,
+    operationType,
     originChainId,
     verifyToken,
   ]);

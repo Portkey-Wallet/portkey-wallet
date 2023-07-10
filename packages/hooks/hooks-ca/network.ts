@@ -7,8 +7,13 @@ export function useNetworkList() {
   return NetworkList;
 }
 
-export function useCurrentNetworkInfo() {
+export function useCurrentNetwork() {
   const { currentNetwork } = useCurrentWallet();
+  return useMemo(() => currentNetwork, [currentNetwork]);
+}
+
+export function useCurrentNetworkInfo() {
+  const currentNetwork = useCurrentNetwork();
   const networkList = useNetworkList();
   return useMemo(
     () => networkList.find(item => item.networkType === currentNetwork) || networkList[0],
@@ -17,8 +22,8 @@ export function useCurrentNetworkInfo() {
 }
 
 export function useCurrentApiUrl() {
-  const currentNetwork = useCurrentNetworkInfo();
-  return useMemo(() => currentNetwork.apiUrl, [currentNetwork.apiUrl]);
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  return useMemo(() => currentNetworkInfo.apiUrl, [currentNetworkInfo.apiUrl]);
 }
 
 export function useVerifierList() {
@@ -27,11 +32,11 @@ export function useVerifierList() {
 }
 
 export function useIsTestnet() {
-  const currentNetwork = useCurrentNetworkInfo();
-  return useMemo(() => currentNetwork.networkType === 'TESTNET', [currentNetwork]);
+  const currentNetwork = useCurrentNetwork();
+  return useMemo(() => currentNetwork === 'TESTNET', [currentNetwork]);
 }
 
 export function useIsMainnet() {
-  const currentNetwork = useCurrentNetworkInfo();
-  return useMemo(() => currentNetwork.networkType === 'MAIN', [currentNetwork]);
+  const currentNetwork = useCurrentNetwork();
+  return useMemo(() => currentNetwork === 'MAIN', [currentNetwork]);
 }

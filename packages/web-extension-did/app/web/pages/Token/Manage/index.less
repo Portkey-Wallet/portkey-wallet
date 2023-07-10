@@ -5,6 +5,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #fff;
 
   .add-token-top {
     margin-bottom: 1px;
@@ -22,6 +23,15 @@
 
       .title-center {
         text-align: left;
+      }
+
+      .title-right-col {
+        .@{app-prefix}-btn.custom-token-add-btn {
+          width: 120px;
+          height: 44px;
+          border-radius: 22px;
+          margin-right: 10px;
+        }
       }
 
       .header-title {
@@ -43,6 +53,14 @@
     flex: 1;
     background-color: #fff;
     overflow: auto;
+    font-size: 16px;
+    line-height: 22px;
+    color: @font-11;
+
+    .token-title {
+      margin: 16px 16px 8px;
+      font-weight: 500;
+    }
 
     .token-item {
       display: flex;
@@ -85,10 +103,7 @@
           flex-direction: column;
           .token-item-symbol {
             width: 232px;
-            font-size: 16px;
-            color: @font-11;
             height: 22px;
-            line-height: 22px;
           }
           .token-item-net {
             line-height: 16px;
@@ -97,30 +112,85 @@
           }
         }
       }
+
+      .token-item-action {
+        .add-token-btn-icon {
+          display: flex;
+          width: 48px;
+          justify-content: center;
+          height: 16px;
+        }
+
+        .add-token-btn {
+          min-width: 48px;
+          padding: 2px 8px;
+          font-size: 12px;
+          border-color: @border-3;
+          color: @font-9;
+          border-radius: 11px;
+
+          & > span {
+            display: block;
+            height: 16px;
+            line-height: 16px;
+          }
+        }
+      }
     }
   }
 
-  .add-token-btn {
-    min-width: 48px;
-    padding: 2px 8px;
-    font-size: 12px;
-    border-color: @border-3;
+  .add-button {
+    width: fit-content;
+    background-color: transparent;
     color: @font-9;
-    border-radius: 11px;
-
-    & > span {
-      display: block;
-      height: 16px;
-      line-height: 16px;
+    border: none;
+    box-shadow: none;
+    text-shadow: none;
+    justify-content: space-between;
+    .plus-icon {
+      width: 12px;
+      height: 12px;
+      margin-right: 8px;
+      /* stylelint-disable-next-line no-descending-specificity */
+      & > svg {
+        display: block;
+      }
     }
   }
 
-  .add-token-btn-icon {
-    display: flex;
-    width: 48px;
-    justify-content: center;
-    height: 16px;
+  .no-result {
+    flex: 1;
+    background-color: #fff;
+    overflow: auto;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    .no-token-svg {
+      width: 64px;
+      height: 64px;
+      margin-top: 56px;
+    }
+    .desc {
+      margin: 24px 0 40px;
+      color: @font-13;
+    }
   }
+
+  .search-result-tip {
+    margin: 32px auto;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    .desc {
+      margin-bottom: 16px;
+      color: @font-13;
+    }
+  }
+
+}
+
+.add-token.detail-page-prompt {
+  margin-bottom: 24px;
 }
 
 .left-icon {

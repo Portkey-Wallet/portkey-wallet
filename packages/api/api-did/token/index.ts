@@ -7,4 +7,12 @@ export default {
     target: '/api/app/userTokens',
     config: { method: 'PUT' },
   },
+  fetchTokenListBySearch: {
+    target: 'api/app/tokens/list',
+    config: { method: 'GET' },
+  },
+  fetchTokenItemBySearch: {
+    target: 'api/app/tokens/token',
+    config: { method: 'GET' },
+  },
 } as const;

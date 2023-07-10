@@ -8,12 +8,14 @@ import { resetActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { resetContact } from '@portkey-wallet/store/store-ca/contact/actions';
 import { resetGuardiansState } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { resetPayment } from '@portkey-wallet/store/store-ca/payment/actions';
+import { resetTokenManagement } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
 
 export const useAppCASelector: TypedUseSelectorHook<CACommonState> = useSelector;
 
 export function useResetStore() {
   const dispatch = useAppCommonDispatch();
   return useCallback(() => {
+    dispatch(resetTokenManagement());
     dispatch(resetAssets());
     dispatch(resetRecent());
     dispatch(resetActivity());

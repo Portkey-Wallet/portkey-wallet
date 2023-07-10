@@ -20,13 +20,14 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
     labelStyle,
     rightIconContainerStyle,
     leftIconContainerStyle,
+    errorStyle,
     ...inputProps
   } = props;
 
   if (type === 'search')
     return (
       <Input
-        selectionColor={defaultColors.bg15}
+        selectionColor={defaultColors.bg13}
         containerStyle={[searchStyle.containerStyle, containerStyle]}
         inputContainerStyle={[searchStyle.inputContainerStyle, inputContainerStyle]}
         inputStyle={[searchStyle.inputStyle, inputStyle]}
@@ -54,7 +55,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
       labelStyle={[generalStyles.labelStyle, labelStyle]}
       rightIconContainerStyle={[generalStyles.rightIconContainerStyle, rightIconContainerStyle]}
       leftIconContainerStyle={leftIconContainerStyle}
-      errorStyle={[generalStyles.errorStyle]}
+      errorStyle={[generalStyles.errorStyle, errorStyle]}
       placeholder={placeholder || t('Please enter')}
       placeholderTextColor={defaultColors.font7}
       disabledInputStyle={[generalStyles.disabledInputStyle]}

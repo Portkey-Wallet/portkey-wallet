@@ -19,6 +19,10 @@ import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wal
 import getTransferFee from './utils/getTransferFee';
 import { ResponseCode } from '@portkey/provider-types';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
+import { useCheckManagerSyncState } from 'hooks/wallet';
+import CircleLoading from 'components/CircleLoading';
+import { request } from '@portkey-wallet/api/api-did';
+import clsx from 'clsx';
 import './index.less';
 
 export default function SendTransactions() {
@@ -43,12 +47,16 @@ export default function SendTransactions() {
   const [_, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
   const [fee, setFee] = useState('');
   const [errMsg, setErrMsg] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [tokenDecimals, setTokenDecimals] = useState(0);
   const isCAContract = useMemo(() => chainInfo?.caContractAddress === payload?.contractAddress, [chainInfo, payload]);
   const privateKey = useMemo(
     () => aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed),
     [passwordSeed, wallet.AESEncryptPrivateKey],
   );
   const [txParams, setTxParams] = useState<any>({});
+  const checkManagerSyncState = useCheckManagerSyncState();
+  const [isManagerSynced, setIsManagerSynced] = useState(false);
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
@@ -88,10 +96,27 @@ export default function SendTransactions() {
         setErrMsg('Failed to estimate transaction fee');
       } else {
         setFee(fee);
+        setErrMsg('');
       }
     },
     [chainInfo, isCAContract, payload, privateKey, wallet],
   );
+
+  const getTokenDecimals = useCallback(async (token: string, chainId: ChainId) => {
+    try {
+      const tokenDetail = await request.token.fetchTokenItemBySearch({
+        params: {
+          symbol: token,
+          chainId,
+        },
+      });
+      setTokenDecimals(tokenDetail?.decimals ?? 0);
+    } catch (err) {
+      console.log('get token decimals error', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const getTxPayload = useCallback(async () => {
     const txPayload = await getLocalStorage<{ [x: string]: any }>('txPayload');
@@ -104,9 +129,17 @@ export default function SendTransactions() {
       return;
     }
     const params = JSON.parse(txPayload[transactionInfoId]);
+    getTokenDecimals(params?.paramsOption?.symbol, payload?.chainId);
     setTxParams(params);
-    getFee(params);
-  }, [getFee, transactionInfoId]);
+    const _isManagerSynced = await checkManagerSyncState(payload?.chainId);
+    setIsManagerSynced(_isManagerSynced);
+    if (_isManagerSynced) {
+      getFee(params);
+      setErrMsg('');
+    } else {
+      setErrMsg('Synchronizing on-chain account information...');
+    }
+  }, [checkManagerSyncState, getFee, getTokenDecimals, payload?.chainId, transactionInfoId]);
 
   useEffect(() => {
     getTxPayload();
@@ -138,7 +171,7 @@ export default function SendTransactions() {
 
   const renderTransfer = useMemo(() => {
     const { symbol, amount } = txParams.paramsOption || {};
-    const decimals = symbol === 'ELF' ? 8 : 0;
+    const decimals = symbol === 'ELF' ? 8 : tokenDecimals;
 
     return (
       <div className="detail">
@@ -146,14 +179,20 @@ export default function SendTransactions() {
         <div className="amount">
           <div>Amount</div>
           <div className="amount-number flex-between-center">
-            <div className="value">{`${formatAmountShow(divDecimals(amount, decimals), 8)} ${symbol}`}</div>
+            <div className="value">
+              <span>{loading ? <CircleLoading /> : `${formatAmountShow(divDecimals(amount, decimals), 8)}`}</span>
+              <span>&nbsp;{symbol}</span>
+            </div>
             {isMainnet && <div>{formatAmountInUsdShow(amount, decimals, symbol)}</div>}
           </div>
         </div>
         <div className="fee">
           <div>Transaction Fee</div>
           <div className="fee-amount flex-between-center">
-            <div className="value">{`${formatAmountShow(fee, 8)} ELF`}</div>
+            <div className="value">
+              <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee, 8)}`}</span>
+              <span>&nbsp;ELF</span>
+            </div>
             {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
           </div>
         </div>
@@ -161,10 +200,16 @@ export default function SendTransactions() {
           <div>Total (Amount + Transaction Fee)</div>
           {symbol === 'ELF' ? (
             <div className="amount-show flex-between-center">
-              <div className="value">{`${formatAmountShow(
-                ZERO.plus(divDecimals(amount, decimals)).plus(fee),
-                8,
-              )} ${symbol}`}</div>
+              <div className="value">
+                <span>
+                  {loading ? (
+                    <CircleLoading />
+                  ) : (
+                    `${formatAmountShow(ZERO.plus(divDecimals(amount, decimals)).plus(fee), 8)}`
+                  )}
+                </span>
+                <span>&nbsp;{symbol}</span>
+              </div>
               {isMainnet && (
                 <div>
                   {formatAmountInUsdShow(ZERO.plus(divDecimals(amount, decimals)).plus(fee).toNumber(), 0, symbol)}
@@ -174,11 +219,17 @@ export default function SendTransactions() {
           ) : (
             <>
               <div className="amount-show flex-between-center">
-                <div className="value">{`${formatAmountShow(fee, 8)} ELF`}</div>
+                <div className="value">
+                  <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee, 8)}`}</span>
+                  <span>&nbsp;ELF</span>
+                </div>
                 {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
               </div>
               <div className="amount-show flex-between-center">
-                <div className="value">{`${formatAmountShow(amount)} ${symbol}`}</div>
+                <div className="value">
+                  <span>{loading ? <CircleLoading /> : `${formatAmountShow(divDecimals(amount, decimals), 8)}`}</span>
+                  <span>&nbsp;{symbol}</span>
+                </div>
                 {isMainnet && <div>{formatAmountInUsdShow(amount, 0, symbol)}</div>}
               </div>
             </>
@@ -186,7 +237,7 @@ export default function SendTransactions() {
         </div>
       </div>
     );
-  }, [txParams.paramsOption, isMainnet, formatAmountInUsdShow, fee]);
+  }, [txParams.paramsOption, tokenDecimals, loading, isMainnet, formatAmountInUsdShow, fee]);
 
   const renderMessage = useMemo(() => {
     const params = txParams.paramsOption || {};
@@ -208,13 +259,16 @@ export default function SendTransactions() {
         <div className="fee">
           <div>Transaction Fee</div>
           <div className="fee-amount flex-between-center">
-            <div className="value">{`${formatAmountShow(fee)} ELF`}</div>
+            <div className="value">
+              <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee)}`}</span>
+              <span>&nbsp;ELF</span>
+            </div>
             {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
           </div>
         </div>
       </div>
     );
-  }, [txParams.paramsOption, fee, isMainnet, formatAmountInUsdShow]);
+  }, [txParams.paramsOption, loading, fee, isMainnet, formatAmountInUsdShow]);
 
   const sendHandler = useCallback(async () => {
     try {
@@ -271,7 +325,7 @@ export default function SendTransactions() {
         <div className="value method-name">{payload?.method}</div>
       </div>
       {payload?.method.toLowerCase() === 'transfer' ? renderTransfer : renderMessage}
-      {errMsg && <div className="error-message">{errMsg}</div>}
+      {errMsg && <div className={clsx(!isManagerSynced && 'error-warning', 'error-message')}>{errMsg}</div>}
       <div className="btn flex-between">
         <Button
           type="text"

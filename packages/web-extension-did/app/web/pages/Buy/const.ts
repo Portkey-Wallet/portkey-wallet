@@ -3,16 +3,6 @@ import { ChainId } from '@portkey-wallet/types';
 import { ICurToken } from './components/TokenInput';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
-export const buySoonText = 'On-ramp is currently not supported. It will be launched in the coming weeks.';
-export const sellSoonText = 'Off-ramp is currently not supported. It will be launched in the coming weeks.';
-
-export const serviceUnavailableText = 'Sorry, the service you are using is temporarily unavailable.';
-
-export const soonText = 'On-ramp is not supported on the Testnet. The on-ramp service on Mainnet is coming soon.';
-
-export const disclaimer =
-  'AlchemyPay is a fiat-to-crypto platform independently operated by a third-party entity. Portkey shall not be held liable for any losses or damages suffered as a result of using AlchemyPay services. ';
-
 export enum DrawerType {
   token,
   currency,
@@ -61,15 +51,6 @@ export const initValueSave: {
   receive: '',
   isShowErrMsg: false,
 };
-
-export interface IFetchOrderQuote {
-  crypto: string;
-  network: string;
-  fiat: string;
-  country: string;
-  amount: string;
-  side: string;
-}
 
 export const initPreviewData = {
   crypto: 'ELF',

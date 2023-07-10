@@ -34,7 +34,7 @@ export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
       <QRCodeStyled
         data={qrData}
         padding={0}
-        pieceSize={5}
+        pieceSize={4.8}
         isPiecesGlued
         pieceBorderRadius={2}
         color={'#000000'}

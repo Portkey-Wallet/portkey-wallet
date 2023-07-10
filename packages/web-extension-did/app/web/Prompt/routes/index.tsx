@@ -19,6 +19,7 @@ import AddGuardian from 'pages/Guardians/GuardiansAdd';
 import GuardiansEdit from 'pages/Guardians/GuardiansEdit';
 import GuardiansView from 'pages/Guardians/GuardiansView';
 import AddToken from 'pages/Token/Manage';
+import CustomToken from 'pages/Token/Custom';
 import Transaction from 'pages/Transaction';
 import TokenDetail from 'pages/Token/Detail';
 import Send from 'pages/Send';
@@ -96,6 +97,10 @@ export const PageRouter = () => {
     {
       path: '/add-token',
       element: <AddToken />,
+    },
+    {
+      path: '/custom-token',
+      element: <CustomToken />,
     },
     {
       path: '/transaction',

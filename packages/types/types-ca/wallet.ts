@@ -26,6 +26,7 @@ export type ISocialLogin = LoginKey;
 export interface CAInfo {
   caAddress: string;
   caHash: string;
+  isSync?: boolean;
   // TODO: id
 }
 export type CAInfoType = {

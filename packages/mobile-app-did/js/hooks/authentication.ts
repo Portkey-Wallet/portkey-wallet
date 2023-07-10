@@ -16,6 +16,7 @@ import { changeCanLock } from 'utils/LockManager';
 import { AppState } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 if (!isIos) {
   GoogleSignin.configure({
@@ -146,7 +147,7 @@ export function useAppleAuthentication() {
   const iosPromptAsync = useCallback(async () => {
     setResponse(undefined);
     try {
-      const appleInfo = await await appleAuth.performRequest({
+      const appleInfo = await appleAuth.performRequest({
         requestedOperation: appleAuth.Operation.LOGIN,
         requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       });
@@ -245,6 +246,7 @@ export type VerifyTokenParams = {
   verifierId?: string;
   chainId: ChainId;
   id: string;
+  operationType: OperationTypeEnum;
 };
 
 export function useVerifyGoogleToken() {

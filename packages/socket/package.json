@@ -11,6 +11,6 @@
     "start": "tsc --watch"
   },
   "dependencies": {
-    "@abp/signalr": "^7.0.0"
+    "@portkey/socket": "1.0.0-alpha.2"
   }
 }

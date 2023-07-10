@@ -1,5 +1,5 @@
 import { defaultColors } from 'assets/theme';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
@@ -40,33 +40,36 @@ export default function BuyHome() {
     isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
   );
 
-  const onTabPress = (type: PaymentTypeEnum) => {
-    if (type === PaymentTypeEnum.BUY && !isBuySectionShow) {
-      ActionSheet.alert({
-        title2: (
-          <TextM style={[GStyles.textAlignCenter]}>
-            On-ramp is currently not supported. It will be launched in the coming weeks.
-          </TextM>
-        ),
-        buttons: [{ title: 'OK' }],
-      });
-      refreshBuyButton();
-      return;
-    }
-    if (type === PaymentTypeEnum.SELL && !isSellSectionShow) {
-      ActionSheet.alert({
-        title2: (
-          <TextM style={[GStyles.textAlignCenter]}>
-            Off-ramp is currently not supported. It will be launched in the coming weeks.
-          </TextM>
-        ),
-        buttons: [{ title: 'OK' }],
-      });
-      refreshBuyButton();
-      return;
-    }
-    setSelectTab(type);
-  };
+  const onTabPress = useCallback(
+    (type: PaymentTypeEnum) => {
+      if (type === PaymentTypeEnum.BUY && !isBuySectionShow) {
+        ActionSheet.alert({
+          title2: (
+            <TextM style={[GStyles.textAlignCenter]}>
+              On-ramp is currently not supported. It will be launched in the coming weeks.
+            </TextM>
+          ),
+          buttons: [{ title: 'OK' }],
+        });
+        refreshBuyButton();
+        return;
+      }
+      if (type === PaymentTypeEnum.SELL && !isSellSectionShow) {
+        ActionSheet.alert({
+          title2: (
+            <TextM style={[GStyles.textAlignCenter]}>
+              Off-ramp is currently not supported. It will be launched in the coming weeks.
+            </TextM>
+          ),
+          buttons: [{ title: 'OK' }],
+        });
+        refreshBuyButton();
+        return;
+      }
+      setSelectTab(type);
+    },
+    [isBuySectionShow, isSellSectionShow, refreshBuyButton],
+  );
 
   return (
     <PageContainer

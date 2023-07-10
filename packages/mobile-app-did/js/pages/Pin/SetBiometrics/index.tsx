@@ -72,7 +72,8 @@ export default function SetBiometrics() {
     }
     if (managerInfo) {
       timer.current?.remove();
-      Loading.show({ text: t('Creating address on the chain...') });
+      const isRecovery = managerInfo?.verificationType === VerificationType.communityRecovery;
+      Loading.show({ text: t(isRecovery ? 'Initiating social recovery' : 'Creating address on the chain...') });
       timer.current = onIntervalGetResult({
         managerInfo,
         onPass: (info: CAInfo) => {
@@ -86,8 +87,7 @@ export default function SetBiometrics() {
           Loading.hide();
           navigationService.reset('Tab');
         },
-        onFail: message =>
-          onResultFail(message, managerInfo?.verificationType === VerificationType.communityRecovery, true),
+        onFail: message => onResultFail(message, isRecovery, true),
       });
     }
   }, [caInfo, dispatch, isSyncCAInfo, managerInfo, onIntervalGetResult, onResultFail, originChainId, pin, t]);

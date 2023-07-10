@@ -1,4 +1,4 @@
-import { screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -25,7 +25,8 @@ export const styles = StyleSheet.create({
   },
   scrollSection: {
     paddingLeft: pTd(20),
-    width: '100%',
+    paddingRight: pTd(20),
+    width: screenWidth,
     height: screenHeight / 2,
   },
   blank: {
@@ -43,7 +44,20 @@ export const transferGroupStyle = StyleSheet.create({
     marginTop: pTd(4),
     fontSize: pTd(28),
     textAlign: 'center',
-    width: pTd(335),
+  },
+  tokenWrap: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingIcon: {
+    width: pTd(20),
+    marginRight: pTd(8),
+  },
+  smallLoadingIcon: {
+    width: pTd(12),
+    marginRight: pTd(4),
   },
   tokenUSD: {
     color: defaultColors.font3,

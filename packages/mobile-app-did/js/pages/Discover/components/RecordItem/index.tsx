@@ -1,12 +1,14 @@
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
-import { TextM, TextS } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import React, { memo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
+import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+
 type RecordListItemType = {
   item: IRecordsItemType;
   onPress?: () => void;
@@ -20,9 +22,7 @@ const RecordItem: React.FC<RecordListItemType> = props => {
       <DiscoverWebsiteImage imageUrl={getFaviconUrl(item?.url || '')} />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
-          <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.gameName}>
-            {item?.title || item?.url}
-          </TextM>
+          <TextWithProtocolIcon title={item?.title || ''} url={item.url || ''} />
           <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.gameInfo]}>
             {item?.url || ''}
           </TextS>

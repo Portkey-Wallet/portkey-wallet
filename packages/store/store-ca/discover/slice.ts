@@ -29,6 +29,9 @@ export const discoverSlice = createSlice({
         [payload]: JSON.parse(JSON.stringify(initNetworkData)),
       };
     },
+    addUrlToWhiteList: (state, { payload }: { payload: { url: string; networkType: NetworkType } }) => {
+      state.discoverMap?.[payload.networkType]?.whiteList.push(payload.url);
+    },
     addRecordsItem: (state, { payload }: { payload: ITabItem & { networkType: NetworkType } }) => {
       const { networkType, url } = payload;
       if (!state.discoverMap) return;
@@ -121,6 +124,7 @@ export const discoverSlice = createSlice({
 
 export const {
   initNetworkDiscoverMap,
+  addUrlToWhiteList,
   addRecordsItem,
   upDateRecordsItem,
   clearRecordsList,

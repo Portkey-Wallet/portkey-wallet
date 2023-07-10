@@ -71,7 +71,7 @@ export default function PermissionCheck({
       const detail = (res as any)?.data;
       if (detail?.registerStatus) {
         detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
-        // navigate to unlock expect dapp connect
+        // navigate to unlock except dapp connect
         location.pathname !== '/permission' && !detail?.privateKey && navigate('/unlock');
       } else {
         InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();

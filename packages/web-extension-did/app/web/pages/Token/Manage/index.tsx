@@ -198,7 +198,7 @@ export default function AddToken() {
       tokenShowList.length ? (
         <div className="add-token-content flex-column-between">
           <div>
-            <div className="token-title">{t('Popular Assets')}</div>
+            {!filterWord.length && <div className="token-title">{t('Popular Assets')}</div>}
             {tokenShowList.map((item) => renderTokenItem(item))}
           </div>
           {filterWord && renderSearchResultTip}

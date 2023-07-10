@@ -162,7 +162,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
       </FormItem>
 
       <View style={pageStyles.btnContainer}>
-        <CommonButton onPress={addToken} disabled={btnDisable} type="solid">
+        <CommonButton onPress={addToken} disabled={btnDisable} type="primary">
           {t('Add')}
         </CommonButton>
       </View>

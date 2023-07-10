@@ -69,7 +69,7 @@ export function getProtocolAndHost(url: string) {
  * @returns string
  */
 export function getFaviconUrl(url: string, size: number = 50): string {
-  return `https://api.faviconkit.com/${getHost(url)}/${size}`;
+  return `https://icon.horse/icon/${getHost(url)}/${size}`;
 }
 
 /**

@@ -27,7 +27,7 @@ const CommonInput = forwardRef(function CommonInput(props: CommonInputProps, for
   if (type === 'search')
     return (
       <Input
-        selectionColor={defaultColors.bg15}
+        selectionColor={defaultColors.bg13}
         containerStyle={[searchStyle.containerStyle, containerStyle]}
         inputContainerStyle={[searchStyle.inputContainerStyle, inputContainerStyle]}
         inputStyle={[searchStyle.inputStyle, inputStyle]}

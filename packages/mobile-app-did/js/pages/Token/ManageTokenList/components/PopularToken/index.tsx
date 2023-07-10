@@ -49,6 +49,7 @@ export const pageStyles = StyleSheet.create({
     ...fonts.mediumFont,
     paddingLeft: pTd(16),
     paddingTop: pTd(16),
+    marginBottom: pTd(8),
   },
   noResult: {
     marginTop: pTd(40),

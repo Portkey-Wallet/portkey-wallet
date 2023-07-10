@@ -123,7 +123,7 @@ const TabsDrawerContent: React.FC = () => {
     <BrowserContext.Provider value={value}>
       <PageContainer
         hideTouchable
-        noCenterDom
+        noCenterDom={!!activeTabId}
         noLeftDom={!activeTabId}
         leftDom={
           <TouchableOpacity style={styles.leftWrap} onPress={backToSearchPage}>

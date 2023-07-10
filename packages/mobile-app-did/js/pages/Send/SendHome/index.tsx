@@ -141,7 +141,7 @@ const SendHome: React.FC = () => {
   const onPressMax = useCallback(async () => {
     // check is SYNCHRONIZING
     const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-    if (_isManagerSynced) {
+    if (!_isManagerSynced) {
       return setErrorMessage([TransactionError.SYNCHRONIZING]);
     }
 

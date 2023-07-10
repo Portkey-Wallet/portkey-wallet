@@ -23,7 +23,7 @@ export const blueStyles = StyleSheet.create({
     flex: 1,
   },
   centerWrap: {
-    flex: 1,
+    flex: 1.2,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -61,7 +61,7 @@ export const whitStyles = StyleSheet.create({
     flex: 1,
   },
   centerWrap: {
-    flex: 1,
+    flex: 1.2,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

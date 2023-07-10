@@ -20,6 +20,7 @@ import navigationService from 'utils/navigationService';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { FontStyles } from 'assets/theme/styles';
+import GStyles from 'assets/theme/GStyles';
 
 interface CustomTokenProps {
   route?: any;
@@ -196,8 +197,7 @@ export const pageStyles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: screenWidth,
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
+    ...GStyles.paddingArg(20, 16),
   },
   tokenDecimal: {
     lineHeight: pTd(56),

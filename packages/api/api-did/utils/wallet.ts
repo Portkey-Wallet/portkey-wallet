@@ -1,4 +1,4 @@
-import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
+import type { GuardiansApproved } from '@portkey/services';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import { request } from '..';
@@ -35,7 +35,7 @@ interface RecoveryDIDWalletParams extends IContext {
   manager: string;
   extraData: string;
   chainId: string;
-  guardiansApproved: GuardiansApprovedType[];
+  guardiansApproved: GuardiansApproved[];
 }
 
 export const recoveryDIDWallet = async (

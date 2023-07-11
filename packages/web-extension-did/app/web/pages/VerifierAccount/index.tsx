@@ -245,7 +245,6 @@ export default function VerifierAccount() {
     () => (
       <div className="common-content1 verifier-account-content">
         <CodeVerify
-          className="verifier-account-content"
           chainId={originChainId}
           isCountdownNow={isInitStatus}
           verifier={currentGuardian?.verifier as VerifierItem}

@@ -65,9 +65,9 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           chainId: tokenItem.chainId,
         },
       });
-      const { symbol, decimals, id } = res;
+      const { symbol, id } = res || {};
 
-      if (symbol && decimals && id) {
+      if (symbol && id) {
         setTokenItem(pre => ({ ...pre, ...res }));
         setKeyword(symbol);
         setBtnDisable(false);

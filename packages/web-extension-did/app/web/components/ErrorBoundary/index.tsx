@@ -16,9 +16,7 @@ export default function ErrorBoundary({ children, view, pageType }: ErrorBoundar
   const isPrompt = useMemo(() => pageType === 'Prompt', [pageType]);
   const onError = useCallback(
     ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
-      const sendError = handleReportError({ error, componentStack, view });
-      console.log(sendError, '====sendError');
-      Sentry.captureException({ error, componentStack, view });
+      Sentry.captureException(handleReportError({ error, componentStack, view }), { level: 'error' });
     },
     [view],
   );

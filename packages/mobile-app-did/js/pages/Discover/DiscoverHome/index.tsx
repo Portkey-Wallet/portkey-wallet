@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
-import SimulatedInputBox from '../components/SimulatedInputBox';
+import SimulatedInputBox from 'components/SimulatedInputBox';
 import { DiscoverCmsListSection } from '../components/DiscoverCmsListSection';
 import { defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';

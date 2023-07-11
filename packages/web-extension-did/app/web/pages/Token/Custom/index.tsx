@@ -61,8 +61,8 @@ export default function CustomToken() {
             chainId,
           },
         });
-        const { symbol, decimals, id } = res;
-        if (symbol && decimals && id) {
+        const { symbol, id } = res;
+        if (symbol && id) {
           setCurToken(res);
           setValue(symbol);
         }

@@ -3,7 +3,7 @@ import CommonInput from 'components/CommonInput';
 import { StyleSheet, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
@@ -114,7 +114,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
         });
         CommonToast.success('success');
         await sleep(500);
-        navigationService.goBack();
+        navigationService.navigate('ManageTokenList');
       } catch (err: any) {
         CommonToast.fail(handleErrorMessage(err));
         console.log('add custom token error', err);

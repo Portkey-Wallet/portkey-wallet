@@ -7,7 +7,6 @@ import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
-import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import useDebounce from 'hooks/useDebounce';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
@@ -17,7 +16,6 @@ import Loading from 'components/Loading';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
-import { useFocusEffect } from '@react-navigation/native';
 import FilterTokenSection from '../components/FilterToken';
 
 interface ManageTokenListProps {
@@ -26,6 +24,7 @@ interface ManageTokenListProps {
 const SearchTokenList: React.FC<ManageTokenListProps> = () => {
   const { t } = useLanguage();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const iptRef = useRef<any>();
 
   const chainIdList = useChainIdList();
 
@@ -36,7 +35,7 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
   const [keyword, setKeyword] = useState<string>('');
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
-  const debounceWord = useDebounce(keyword, 800);
+  const debounceWord = useDebounce(keyword, 500);
 
   const fetchSearchedTokenList = useCallback(async () => {
     try {
@@ -88,31 +87,24 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
     [caAddressArray, caAddressInfos, dispatch, fetchSearchedTokenList],
   );
 
-  const backToAddTokenHome = useCallback(() => {
-    if (keyword) setKeyword('');
-  }, [keyword]);
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchSearchedTokenList();
-    }, [fetchSearchedTokenList]),
-  );
+  useEffect(() => {
+    setFilterTokenList([]);
+    fetchSearchedTokenList();
+  }, [chainIdList, setFilterTokenList, debounceWord, fetchSearchedTokenList]);
 
   useEffect(() => {
-    dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
-  }, [chainIdList, debounceWord, dispatch, fetchSearchedTokenList]);
+    // input focus
+    timerRef.current = setTimeout(() => {
+      if (iptRef && iptRef?.current) iptRef.current.focus();
+    }, 200);
 
-  // clear timer
-  useEffect(
-    () => () => {
+    return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-    },
-    [],
-  );
+    };
+  }, []);
 
   return (
     <PageContainer
-      leftCallback={keyword ? backToAddTokenHome : undefined}
       titleDom={t('Add Tokens')}
       safeAreaColor={['blue', 'white']}
       rightDom={
@@ -128,6 +120,7 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
         <CommonInput
+          ref={iptRef}
           value={keyword}
           placeholder={t('Token Name')}
           onChangeText={v => {
@@ -156,7 +149,7 @@ export const pageStyles = StyleSheet.create({
   },
   inputWrap: {
     backgroundColor: defaultColors.bg5,
-    ...gStyles.paddingArg(0, 16, 16),
+    ...gStyles.paddingArg(8, 20),
   },
   list: {
     flex: 1,

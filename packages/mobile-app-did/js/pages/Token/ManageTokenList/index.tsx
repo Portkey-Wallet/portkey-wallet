@@ -101,9 +101,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       }
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <View style={pageStyles.inputWrap}>
-        <SimulatedInputBox onClickInput={() => navigationService.navigate('SearchTokenList')} />
-      </View>
+      <SimulatedInputBox onClickInput={() => navigationService.navigate('SearchTokenList')} />
       <PopularTokenSection tokenDataShowInMarket={tokenDataShowInMarket} onHandleTokenItem={onHandleTokenItem} />
     </PageContainer>
   );

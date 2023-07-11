@@ -5,7 +5,7 @@ import { CAInfoType } from '@portkey-wallet/types/types-ca/wallet';
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 import { useCurrentNetworkInfo } from './network';
 import { useCurrentChain, useCurrentChainList } from './chainList';
-import { useCaHolderManagerInfoQuery } from '@portkey-wallet/graphql/contract/__generated__/hooks/caHolderManagerInfo';
+import { useCaHolderManagerInfoLazyQuery } from '@portkey-wallet/graphql/contract/__generated__/hooks/caHolderManagerInfo';
 import { getApolloClient } from '@portkey-wallet/graphql/contract/apollo';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
@@ -14,13 +14,14 @@ import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
 import { ChainId } from '@portkey-wallet/types';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
   caAddressList?: string[];
 }
 
-export interface IDeviceList {
+export interface IDeviceItem {
   managerAddress: string | null | undefined;
   deviceInfo: DeviceInfoType;
   transactionTime: number;
@@ -75,12 +76,13 @@ export const useCurrentWallet = () => {
   }, [originChainId, wallet]);
 };
 
-export const useDeviceList = () => {
+export const useDeviceList = (isInitLoad = true) => {
   const networkInfo = useCurrentNetworkInfo();
   const walletInfo = useCurrentWalletInfo();
   const originChainId = useOriginChainId();
   const chainInfo = useCurrentChain(originChainId);
-  const { data, error, refetch, loading } = useCaHolderManagerInfoQuery({
+
+  const [load, { data, error, loading, refetch }] = useCaHolderManagerInfoLazyQuery({
     client: getApolloClient(networkInfo.networkType),
     variables: {
       dto: {
@@ -90,10 +92,10 @@ export const useDeviceList = () => {
         maxResultCount: 100,
       },
     },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'no-cache',
   });
 
-  const [deviceList, setDeviceList] = useState<IDeviceList[]>([]);
+  const [deviceList, setDeviceList] = useState<IDeviceItem[]>([]);
   const [deviceAmount, setDeviceAmount] = useState(0);
   const [decodeLoading, setDecodeLoading] = useState(false);
 
@@ -128,7 +130,11 @@ export const useDeviceList = () => {
     getDeviceList();
   }, [getDeviceList]);
 
-  return { deviceList, refetch, deviceAmount, loading: loading || decodeLoading };
+  useEffectOnce(() => {
+    isInitLoad && load();
+  });
+
+  return { load, deviceList, refetch, deviceAmount, loading: loading || decodeLoading };
 };
 
 export const useSetWalletName = () => {

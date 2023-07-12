@@ -71,10 +71,12 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
         setTokenItem(pre => ({ ...pre, ...res }));
         setKeyword(symbol);
         setBtnDisable(false);
+      } else {
+        setErrorMessage('Unable to recognize token');
+        setBtnDisable(true);
       }
     } catch (err) {
       setBtnDisable(true);
-      Loading.hide();
       CommonToast.fail(handleErrorMessage(err));
     } finally {
       Loading.hide();

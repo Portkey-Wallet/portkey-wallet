@@ -65,11 +65,15 @@ export default function CustomToken() {
         if (symbol && id) {
           setCurToken(res);
           setValue(symbol);
+          setErrorMsg('');
+        } else {
+          setCurToken({});
+          setErrorMsg('Unable to recognize token');
         }
-        setErrorMsg('');
       } catch (error) {
         setCurToken({});
-        console.log('filter search error', error);
+        setErrorMsg('Unable to recognize token');
+        console.log('filter search token error', error);
       } finally {
         setLoading(false);
       }

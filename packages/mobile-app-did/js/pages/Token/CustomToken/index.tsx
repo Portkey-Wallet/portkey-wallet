@@ -74,7 +74,6 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
       }
     } catch (err) {
       setBtnDisable(true);
-      Loading.hide();
       CommonToast.fail(handleErrorMessage(err));
     } finally {
       Loading.hide();

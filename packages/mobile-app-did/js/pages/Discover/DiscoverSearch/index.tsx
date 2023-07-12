@@ -32,7 +32,6 @@ export default function DiscoverSearch() {
   const [filteredDiscoverList, setFilteredDiscoverList] = useState<DiscoverItem[]>([]);
 
   const clearText = useCallback(() => setValue(''), []);
-  const navBack = useCallback(() => navigationService.goBack(), []);
 
   const flatList = useMemo((): DiscoverItem[] => {
     const list = [] as DiscoverItem[];
@@ -119,7 +118,7 @@ export default function DiscoverSearch() {
           rightIconContainerStyle={styles.rightIconContainerStyle}
           style={styles.rnInputStyle}
         />
-        <TouchableOpacity onPress={navBack}>
+        <TouchableOpacity onPress={navigationService.goBack}>
           <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
         </TouchableOpacity>
       </View>

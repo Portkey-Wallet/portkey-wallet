@@ -7,31 +7,28 @@ import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import React, { useCallback } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import { useLanguage } from 'i18n/hooks';
 
-export function DiscoverCmsListSection() {
-  const GroupList = useDiscoverGroupList();
-  const { s3Url } = useCurrentNetworkInfo();
-  const discoverJump = useDiscoverJumpWithNetWork();
-
-  const onClickJump = useCallback(
-    (i: DiscoverItem) => {
-      discoverJump({
-        item: {
-          id: Date.now(),
-          name: i.title,
-          url: i?.url ?? i?.description,
-        },
-      });
-    },
-    [discoverJump],
-  );
+export function DiscoverRecordListSection() {
+  const { t } = useLanguage();
 
   return (
-    <View style={styles.wrap}>
-      {GroupList.map((group, index) => (
+    <ScrollView style={styles.wrap}>
+      <View style={styles.header}>
+        <TextS>{t('Records')}</TextS>
+        <TextS>{t('See All')}</TextS>
+      </View>
+
+      <View>
+        {[1, 2, 3].map(ele => (
+          <TextM key={ele}>{ele}</TextM>
+        ))}
+      </View>
+
+      {/* {[].map((group, index) => (
         <View key={index}>
           <TextM style={[FontStyles.font3, styles.groupTitle]}>{group.title}</TextM>
           <View style={styles.itemsGroup}>
@@ -48,8 +45,8 @@ export function DiscoverCmsListSection() {
             ))}
           </View>
         </View>
-      ))}
-    </View>
+      ))} */}
+    </ScrollView>
   );
 }
 
@@ -57,6 +54,9 @@ const styles = StyleSheet.create({
   wrap: {
     ...GStyles.paddingArg(8, 20),
     flex: 1,
+  },
+  header: {
+    display: 'flex',
   },
   groupTitle: {
     marginBottom: pTd(8),

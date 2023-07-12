@@ -30,6 +30,7 @@ import { BrowserContext, IBrowserTab } from './context';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import Svg from 'components/Svg';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import ActionSheet from 'components/ActionSheet';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
@@ -108,6 +109,28 @@ const TabsDrawerContent: React.FC = () => {
     return tabs?.find(ele => ele.id === activeTabId);
   }, [activeTabId, tabs]);
 
+  const closeAll = useCallback(() => {
+    if (tabs?.length === 0) return;
+
+    ActionSheet.alert({
+      title: 'Close all tabs?',
+      buttons: [
+        {
+          title: t('Cancel'),
+          type: 'outline',
+        },
+        {
+          title: t('Confirm'),
+          type: 'solid',
+          onPress: () => {
+            dispatch(closeAllTabs({ networkType }));
+            dispatch(changeDrawerOpenStatus(false));
+          },
+        },
+      ],
+    });
+  }, [dispatch, networkType, t, tabs?.length]);
+
   useHardwareBackPress(
     useMemo(() => {
       if (isDrawerOpen) {
@@ -154,16 +177,20 @@ const TabsDrawerContent: React.FC = () => {
               </View>
             </ScrollView>
             <View style={handleButtonStyle.container}>
-              <TextM style={FontStyles.font4} onPress={() => dispatch(closeAllTabs({ networkType }))}>
+              <TextM
+                style={[handleButtonStyle.handleItem, FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}
+                onPress={closeAll}>
                 {t('Close All')}
               </TextM>
-              <TouchableOpacity onPress={() => dispatch(changeDrawerOpenStatus(false))}>
+              <TouchableOpacity
+                style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
+                onPress={() => dispatch(changeDrawerOpenStatus(false))}>
                 <Svg icon="add-blue" size={pTd(28)} />
               </TouchableOpacity>
               <TextM
-                style={FontStyles.font4}
+                style={[handleButtonStyle.handleItem, handleButtonStyle.done, FontStyles.font4]}
                 onPress={() => {
-                  if (tabs?.length === 0) return;
+                  if (tabs?.length === 0) return dispatch(changeDrawerOpenStatus(false));
                   if (tabs?.find(ele => ele.id === preActiveTabId)) {
                     dispatch(setActiveTab({ id: preActiveTabId, networkType }));
                   } else {
@@ -241,14 +268,29 @@ const handleButtonStyle = StyleSheet.create({
     alignItems: 'center',
     width: screenWidth,
     height: pTd(44),
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
     position: 'absolute',
     bottom: 0,
     backgroundColor: defaultColors.bg1,
   },
   handleItem: {
     flex: 1,
+    lineHeight: pTd(30),
+    paddingLeft: pTd(20),
+    paddingRight: pTd(20),
+  },
+  close: {
+    textAlign: 'left',
+  },
+  add: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  done: {
+    textAlign: 'right',
+  },
+  noTap: {
+    color: 'red',
   },
 });
 

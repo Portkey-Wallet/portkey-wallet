@@ -1,5 +1,4 @@
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
-import CustomSvg from 'components/CustomSvg';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import AElf from 'aelf-sdk';
@@ -12,11 +11,14 @@ import { setWalletInfoAction } from 'store/reducers/loginCache/actions';
 import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
-import QRCodeCommon from 'pages/components/QRCodeCommon';
+import { ScanBase, CustomSvg } from '@portkey/did-ui-react';
 import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCheckManager } from 'hooks/useLogout';
 import { message } from 'antd';
 import './index.less';
+// import didSignalr from '@portkey-wallet/socket/socket-did';
+// import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { randomId } from '@portkey-wallet/utils';
 
 export default function ScanCard() {
   const navigate = useNavigate();
@@ -27,6 +29,9 @@ export default function ScanCard() {
   const checkManager = useCheckManager();
   const { passwordSeed: pin } = useUserInfo();
   const caWallet = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address, checkManager);
+  // const [isWaitingAuth, setIsWaitingAuth] = useState<boolean>();
+  // const networkItem = useCurrentNetworkInfo();
+
   const generateKeystore = useCallback(() => {
     try {
       const wallet = walletInfo?.address ? walletInfo : AElf.wallet.createNewWallet();
@@ -51,6 +56,7 @@ export default function ScanCard() {
       type: 'login',
       address: newWallet.address,
       netWorkType: currentNetwork,
+      id: randomId(),
       chainType: 'aelf',
       extraData: {
         deviceInfo,
@@ -59,6 +65,23 @@ export default function ScanCard() {
     };
     return JSON.stringify(data);
   }, [currentNetwork, deviceInfo, newWallet]);
+
+  // Listen whether the user is authorized
+  // useEffect(() => {
+  //   try {
+  //     const data: LoginQRData = JSON.parse(qrData);
+  //     if (!data?.id) return;
+  // const clientId = `${data.address}_${data.id}`;
+  // didSignalr.onScanLogin(() => {
+  //   setIsWaitingAuth(true);
+  // });
+  // didSignalr.doOpen({ url: `${networkItem.apiUrl}/ca`, clientId }).catch((error) => {
+  //   console.warn('Socket:', error);
+  // });
+  //   } catch (error) {
+  //     console.warn('Socket:', error);
+  //   }
+  // }, [networkItem.apiUrl, qrData]);
 
   useEffect(() => {
     const { caInfo, originChainId } = caWallet || {};
@@ -84,13 +107,14 @@ export default function ScanCard() {
   }, [caWallet, dispatch, navigate, newWallet, pin]);
 
   return (
-    <div className="register-start-card scan-card-wrapper">
-      <h2 className="title">
-        Scan code to log in
-        <CustomSvg type="PC" onClick={() => navigate('/register/start')} />
-      </h2>
-      <p>Please use the portkey Dapp to scan the QR code</p>
-      <div className="login-content">{qrData && <QRCodeCommon value={qrData} />}</div>
+    <div className="scan-card">
+      <ScanBase
+        wrapperClassName="scan-card-inner"
+        // isWaitingAuth={isWaitingAuth}
+        backIcon={<CustomSvg type="PC" />}
+        onBack={() => navigate('/register/start')}
+        qrData={qrData}
+      />
     </div>
   );
 }

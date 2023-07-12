@@ -12,37 +12,41 @@ export interface RouteInfoType {
   };
 }
 
-export function invalidQRCode() {
-  CommonToast.fail('Invalid QR code, please re-confirm');
-  navigationService.goBack();
+export enum InvalidQRCodeText {
+  SWITCH_TO_MAINNET = 'Please switch to aelf Mainnet before scanning the QR code',
+  SWITCH_TO_TESTNET = 'Please switch to aelf Testnet before scanning the QR code',
+  INVALID_QR_CODE = 'The QR code is invalid',
+}
+
+export function invalidQRCode(text: InvalidQRCodeText, isBack?: boolean) {
+  CommonToast.fail(text);
+  isBack && navigationService.goBack();
 }
 
 export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType, setRefresh: (v: boolean) => void) {
   const { type, address, chainType } = data;
-  if (!isAddress(address, chainType)) return invalidQRCode();
+  if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
 
-  if (type !== 'login') {
+  if (type === 'login') {
+    navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+  } else {
     // send event
-
     const newData: SendTokenQRDataType = { ...data } as SendTokenQRDataType;
 
-    if (
-      previousRouteInfo.name === 'SendHome' &&
-      previousRouteInfo.params.assetInfo.symbol !== newData.assetInfo.symbol
-    ) {
-      return invalidQRCode();
-    }
-    if (previousRouteInfo.name !== 'Tab') {
-      const previousAssetsInfo = { ...previousRouteInfo.params.assetInfo };
-      navigationService.navigate('SendHome', {
-        ...newData,
-        assetInfo: { ...newData.assetInfo, ...previousAssetsInfo },
-      });
+    if (previousRouteInfo.name === 'SendHome') {
+      if (previousRouteInfo.params.assetInfo.symbol !== newData.assetInfo.symbol) {
+        // different symbol
+        return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE, false);
+      } else {
+        const previousAssetsInfo = { ...previousRouteInfo.params.assetInfo };
+        navigationService.navigate('SendHome', {
+          ...newData,
+          assetInfo: { ...newData.assetInfo, ...previousAssetsInfo },
+        });
+      }
     } else {
       navigationService.navigate('SendHome', newData);
     }
-  } else {
-    navigationService.navigate('ScanLogin', { data: data as LoginQRData });
   }
   setRefresh(true);
 }

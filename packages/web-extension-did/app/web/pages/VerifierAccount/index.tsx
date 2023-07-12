@@ -4,7 +4,7 @@ import { useAppDispatch, useLoginInfo, useGuardiansInfo, useUserInfo, useLoading
 import { useCallback, useMemo } from 'react';
 import { message } from 'antd';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { RecaptchaType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import useLocationState from 'hooks/useLocationState';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -30,7 +30,13 @@ export default function VerifierAccount() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { state } = useLocationState<
-    'register' | 'login' | 'guardians/add' | 'guardians/edit' | 'guardians/del' | 'guardians/setLoginAccount'
+    | 'register'
+    | 'login'
+    | 'guardians/add'
+    | 'guardians/edit'
+    | 'guardians/del'
+    | 'guardians/setLoginAccount'
+    | 'removeManage'
   >();
   const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
@@ -189,13 +195,27 @@ export default function VerifierAccount() {
     return !!currentGuardian?.isInitStatus;
   }, [currentGuardian, state]);
 
-  const recaptchaType = useMemo(() => {
-    if (state === 'register') {
-      return RecaptchaType.register;
-    } else if (state === 'login') {
-      return RecaptchaType.communityRecovery;
+  const operationType: OperationTypeEnum = useMemo(() => {
+    switch (state) {
+      case 'register':
+        return OperationTypeEnum.register;
+      case 'login':
+        return OperationTypeEnum.communityRecovery;
+      case 'guardians/add':
+        return OperationTypeEnum.addGuardian;
+      case 'guardians/edit':
+        return OperationTypeEnum.editGuardian;
+      case 'guardians/del':
+        return OperationTypeEnum.deleteGuardian;
+      case 'guardians/setLoginAccount':
+        return OperationTypeEnum.setLoginAccount;
+      default:
+        if (state && state?.indexOf('removeManage') !== -1) {
+          return OperationTypeEnum.removeOtherManager;
+        } else {
+          return OperationTypeEnum.unknown;
+        }
     }
-    return RecaptchaType.optGuardian;
   }, [state]);
 
   const renderContent = useMemo(
@@ -207,11 +227,11 @@ export default function VerifierAccount() {
           currentGuardian={currentGuardian}
           guardianType={loginAccount?.loginType}
           onSuccess={onSuccess}
-          recaptchaType={recaptchaType}
+          operationType={operationType}
         />
       </div>
     ),
-    [currentGuardian, isInitStatus, loginAccount, onSuccess, recaptchaType],
+    [currentGuardian, isInitStatus, loginAccount, onSuccess, operationType],
   );
 
   const props = useMemo(

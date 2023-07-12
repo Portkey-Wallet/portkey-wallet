@@ -11,13 +11,10 @@ export const deleteTokenInCurrentAccount = createAction<HandleTokenArgTypes>('to
 export const fetchAllTokenListAsync = createAsyncThunk(
   'tokenManagement/fetchAllTokenListAsync',
   async ({ keyword = '', chainIdArray }: { keyword?: string; chainIdArray?: string[] }) => {
-    // if (totalRecordCount === 0 || totalRecordCount > accountTokenList.length) {
     const response = await fetchAllTokenList({ keyword, chainIdArray: chainIdArray || [] });
+
     return { list: response.items, totalRecordCount: response.totalRecordCount };
   },
-
-  // return { list: [], totalRecordCount };
-  // },
 );
 
 export const getSymbolImagesAsync = createAsyncThunk('tokenManagement/getSymbolImagesAsync', async () => {

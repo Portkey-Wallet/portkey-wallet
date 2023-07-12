@@ -20,10 +20,10 @@ export const blueStyles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    width: pTd(80),
+    flex: 1,
   },
   centerWrap: {
-    flex: 1,
+    flex: 1.2,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -33,7 +33,7 @@ export const blueStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   rightDomWrap: {
-    width: pTd(80),
+    flex: 1,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-end',
@@ -58,10 +58,10 @@ export const whitStyles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    width: pTd(80),
+    flex: 1,
   },
   centerWrap: {
-    flex: 1,
+    flex: 1.2,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -71,7 +71,7 @@ export const whitStyles = StyleSheet.create({
     fontWeight: 'bold',
   },
   rightDomWrap: {
-    width: pTd(80),
+    flex: 1,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'flex-end',

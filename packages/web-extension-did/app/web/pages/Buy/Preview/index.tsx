@@ -4,12 +4,17 @@ import { Button, message } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
-import { disclaimer, initPreviewData, MAX_UPDATE_TIME, serviceUnavailableText } from '../const';
+import { initPreviewData, MAX_UPDATE_TIME } from '../const';
 import { getAchSignature, getOrderQuote, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import { ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import {
+  ACH_MERCHANT_NAME,
+  TransDirectEnum,
+  DISCLAIMER_TEXT,
+  SERVICE_UNAVAILABLE_TEXT,
+} from '@portkey-wallet/constants/constants-ca/payment';
 import clsx from 'clsx';
 import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
 import paymentApi from '@portkey-wallet/api/api-did/payment';
@@ -104,7 +109,7 @@ export default function Preview() {
     // Compatible with the situation where the function is turned off when the user is on the page.
     if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
       setLoading(false);
-      message.error(serviceUnavailableText);
+      message.error(SERVICE_UNAVAILABLE_TEXT);
       return navigate('/');
     }
 
@@ -172,11 +177,11 @@ export default function Preview() {
       content: (
         <>
           <div className="title">Disclaimer</div>
-          {disclaimer}
+          {t(DISCLAIMER_TEXT)}
         </>
       ),
     });
-  }, []);
+  }, [t]);
 
   const handleBack = useCallback(() => {
     navigate('/buy', { state: state });

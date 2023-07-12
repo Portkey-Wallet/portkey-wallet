@@ -105,9 +105,10 @@ export default function VerifierDetails() {
     }
   }, [caHash, getCurrentCAContract, guardianItem, managerAddress]);
 
-  const operationType: OperationTypeEnum = useMemo(() => {
-    return VERIFICATION_TO_OPERATION_MAP[verificationType as VerificationType] || OperationTypeEnum.unknown;
-  }, [verificationType]);
+  const operationType: OperationTypeEnum = useMemo(
+    () => VERIFICATION_TO_OPERATION_MAP[verificationType as VerificationType] || OperationTypeEnum.unknown,
+    [verificationType],
+  );
 
   const onFinish = useLockCallback(
     async (code: string) => {

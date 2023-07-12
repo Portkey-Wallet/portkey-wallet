@@ -37,7 +37,7 @@ import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-c
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
 
 const APPROVAL_TO_VERIFICATION_MAP = {
-  [ApprovalType.addGuardian]: VerificationType.addGuardian,
+  [ApprovalType.addGuardian]: VerificationType.addGuardianByApprove,
   [ApprovalType.editGuardian]: VerificationType.editGuardian,
   [ApprovalType.deleteGuardian]: VerificationType.deleteGuardian,
   [ApprovalType.removeOtherManager]: VerificationType.removeOtherManager,
@@ -80,9 +80,10 @@ function GuardianItemButton({
     };
   }, [approvalType, guardianItem]);
 
-  const operationType: OperationTypeEnum = useMemo(() => {
-    return APPROVAL_TO_OPERATION_MAP[approvalType as ApprovalType] || OperationTypeEnum.unknown;
-  }, [approvalType]);
+  const operationType: OperationTypeEnum = useMemo(
+    () => APPROVAL_TO_OPERATION_MAP[approvalType as ApprovalType] || OperationTypeEnum.unknown,
+    [approvalType],
+  );
 
   const onSetGuardianStatus = useCallback(
     (guardianStatus: GuardiansStatusItem) => {

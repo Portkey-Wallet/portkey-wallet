@@ -18,8 +18,14 @@ export interface AchTxAddressReceivedType {
   address: string;
 }
 
+export interface PaymentSellTransferResult {
+  publicKey: string;
+  signature: string; // sign(md5(orderId + rawTransaction))
+  rawTransaction: string;
+}
+
 export type SellTransferParams = Pick<AchTxAddressReceivedType, 'merchantName' | 'orderId'> & {
-  paymentSellTransfer: (params: AchTxAddressReceivedType) => Promise<SendResult>;
+  paymentSellTransfer: (params: AchTxAddressReceivedType) => Promise<PaymentSellTransferResult>;
 };
 
 export enum PaymentTypeEnum {

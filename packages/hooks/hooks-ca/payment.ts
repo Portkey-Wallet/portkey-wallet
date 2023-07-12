@@ -84,15 +84,14 @@ export const useSellTransfer = () => {
 
       try {
         const result = await paymentSellTransfer(achTxAddressReceived);
-        if (result.error || !result.transactionId) {
-          throw new Error('Transaction failed.');
-        }
 
-        await request.payment.updateAlchemyOrderTxHash({
+        await request.payment.sendSellTransaction({
           params: {
             merchantName: ACH_MERCHANT_NAME,
             orderId,
-            txHash: result.transactionId,
+            rawTransaction: result.rawTransaction,
+            signature: result.signature,
+            publicKey: result.publicKey,
           },
         });
       } catch (error) {

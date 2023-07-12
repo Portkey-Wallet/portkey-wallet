@@ -287,7 +287,7 @@ class SandboxUtil {
       const transaction = await customFetch(`${rpcUrl}/api/blockChain/calculateTransactionFee`, {
         method: 'POST',
         params: {
-          RawTransaction: raw,
+          RawTransaction: raw.data,
         },
       });
       if (!transaction?.Success) throw 'Transaction failed';

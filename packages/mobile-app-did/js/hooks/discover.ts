@@ -7,6 +7,7 @@ import {
   addRecordsItem,
   createNewTab,
   initNetworkDiscoverMap,
+  addAutoApproveItem,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -20,13 +21,14 @@ export const useDiscoverJumpWithNetWork = () => {
 
   const { discoverMap } = useAppCASelector(state => state.discover);
 
-  const discoverJump = ({ item }: { item: ITabItem }) => {
+  const discoverJump = ({ item, autoApprove }: { item: ITabItem; autoApprove?: boolean }) => {
     if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
 
     dispatch(createNewTab({ ...item, networkType }));
     dispatch(setActiveTab({ ...item, networkType }));
     dispatch(addRecordsItem({ ...item, networkType }));
     dispatch(changeDrawerOpenStatus(true));
+    if (autoApprove) dispatch(addAutoApproveItem(item.id));
   };
 
   return discoverJump;

@@ -300,6 +300,15 @@ export default class DappMobileOperator extends Operator {
       callBack: callBack!,
     });
   };
+  public autoApprove = () => {
+    // auto approve
+    this.handleSendRequest({
+      origin: this.dapp.origin,
+      // no feedback required
+      eventName: 'event',
+      method: MethodsBase.REQUEST_ACCOUNTS,
+    });
+  };
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
     if (SEND_METHOD[request.method]) return this.handleSendRequest(request);

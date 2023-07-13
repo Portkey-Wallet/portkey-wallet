@@ -66,7 +66,13 @@ export default function errorHandler(code: keyof typeof errorMap, error?: any | 
   };
   if (code === 0) {
     // success
-  } else if (error && typeof error !== 'string') {
+  } else if (typeof error === 'string') {
+    output = {
+      ...output,
+      name: 'customError',
+      message: error,
+    };
+  } else if (typeof error === 'object') {
     console.log(error, 'errorHandler');
     output = {
       ...output,
@@ -74,12 +80,6 @@ export default function errorHandler(code: keyof typeof errorMap, error?: any | 
       message: error.message || error.Error?.Message || error.Error,
       stack: error.stack,
       data: error.data,
-    };
-  } else if (typeof error === 'string') {
-    output = {
-      ...output,
-      name: 'customError',
-      message: error,
     };
   } else {
     output = {

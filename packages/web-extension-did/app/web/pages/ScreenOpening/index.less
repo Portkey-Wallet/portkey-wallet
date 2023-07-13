@@ -1,9 +1,10 @@
 @import '../../assets/theme/color.less';
 .open-page-wrapper {
-  height: 100%;
+  min-height: 600px;
   background: url('./bg.svg') no-repeat;
   background-size: cover;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   .open-page-content {
@@ -34,5 +35,13 @@
       color: @font-9;
       font-size: 16px;
     }
+  }
+  .version {
+    position: absolute;
+    bottom: 48px;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: @font-5;
   }
 }

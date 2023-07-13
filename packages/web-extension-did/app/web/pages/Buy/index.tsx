@@ -28,7 +28,7 @@ import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { useEffectOnce } from 'react-use';
@@ -65,6 +65,8 @@ export default function Buy() {
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
   const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow();
   const checkManagerSyncState = useCheckManagerSyncState();
+  useFetchTxFee();
+  const { ach: achFee } = useGetTxFee('AELF');
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(
@@ -410,9 +412,7 @@ export default function Buy() {
       setLoading(false);
       const balance = result.result.balance;
 
-      if (
-        ZERO.plus(divDecimals(balance, 8)).isLessThanOrEqualTo(ZERO.plus(DEFAULT_FEE).plus(valueSaveRef.current.amount))
-      ) {
+      if (ZERO.plus(divDecimals(balance, 8)).isLessThanOrEqualTo(ZERO.plus(achFee).plus(valueSaveRef.current.amount))) {
         setInsufficientFundsMsg();
         return;
       }
@@ -433,6 +433,7 @@ export default function Buy() {
     });
   }, [
     accountTokenList,
+    achFee,
     checkManagerSyncState,
     currentChain,
     currentNetwork.walletType,

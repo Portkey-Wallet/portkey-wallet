@@ -10,9 +10,9 @@ import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import CustomSvg from 'components/CustomSvg';
-import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 
@@ -45,6 +45,7 @@ export default function TokenInput({
   const amountInUsdShow = useAmountInUsdShow();
   const checkManagerSyncState = useCheckManagerSyncState();
   const [isManagerSynced, setIsManagerSynced] = useState(true);
+  const { max: maxFee } = useGetTxFee(token.chainId);
 
   const amountInUsd = useMemo(
     () => amountInUsdShow(value || amount, 0, token.symbol),
@@ -78,7 +79,7 @@ export default function TokenInput({
       return;
     }
     if (token.symbol === 'ELF') {
-      if (ZERO.plus(divDecimals(balance, token.decimals)).isLessThanOrEqualTo(ZERO.plus(DEFAULT_FEE))) {
+      if (ZERO.plus(divDecimals(balance, token.decimals)).isLessThanOrEqualTo(ZERO.plus(maxFee))) {
         setMaxAmount(divDecimals(balance, token.decimals).toString());
         return;
       }
@@ -89,12 +90,12 @@ export default function TokenInput({
       if (fee) {
         setMaxAmount(divDecimals(balance, token.decimals).toString());
       } else {
-        setMaxAmount(ZERO.plus(divDecimals(balance, token.decimals)).minus(DEFAULT_FEE).toString());
+        setMaxAmount(ZERO.plus(divDecimals(balance, token.decimals)).minus(maxFee).toString());
       }
     } else {
       setMaxAmount(divDecimals(balance, token.decimals).toString());
     }
-  }, [balance, checkManagerSyncState, getTranslationInfo, token.chainId, token.decimals, token.symbol]);
+  }, [balance, checkManagerSyncState, getTranslationInfo, maxFee, token.chainId, token.decimals, token.symbol]);
 
   useEffect(() => {
     getTokenBalance();

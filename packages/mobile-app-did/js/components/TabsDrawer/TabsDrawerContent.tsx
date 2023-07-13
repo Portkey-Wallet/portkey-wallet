@@ -16,6 +16,7 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import {
   changeDrawerOpenStatus,
   closeAllTabs,
+  removeAutoApproveItem,
   setActiveTab,
   updateTab,
 } from '@portkey-wallet/store/store-ca/discover/slice';
@@ -35,7 +36,13 @@ const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
-  const { isDrawerOpen, discoverMap = {}, initializedList, activeTabId } = useAppCASelector(state => state.discover);
+  const {
+    isDrawerOpen,
+    discoverMap = {},
+    initializedList,
+    activeTabId,
+    autoApproveMap,
+  } = useAppCASelector(state => state.discover);
 
   const { tabs } = discoverMap[networkType] ?? {};
 
@@ -91,9 +98,18 @@ const TabsDrawerContent: React.FC = () => {
       const isHidden = activeTabId !== ele.id;
       const initialized = initializedList?.has(ele.id);
       if (isHidden && !initialized) return;
-      return <BrowserTab key={ele.id} uri={ele.url} isHidden={isHidden} />;
+      const autoApprove = autoApproveMap?.[ele.id];
+      return (
+        <BrowserTab
+          key={ele.id}
+          uri={ele.url}
+          isHidden={isHidden}
+          autoApprove={autoApprove}
+          onLoadEnd={autoApprove ? () => dispatch(removeAutoApproveItem(ele.id)) : undefined}
+        />
+      );
     });
-  }, [activeTabId, initializedList, tabs]);
+  }, [activeTabId, autoApproveMap, dispatch, initializedList, tabs]);
 
   const value = useMemo(
     () => ({

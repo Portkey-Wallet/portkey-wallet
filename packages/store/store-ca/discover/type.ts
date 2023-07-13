@@ -20,4 +20,5 @@ export interface IDiscoverStateType {
   };
   initializedList?: Set<number>;
   activeTabId?: number;
+  autoApproveMap?: { [id: number]: true };
 }

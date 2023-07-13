@@ -119,6 +119,14 @@ export const discoverSlice = createSlice({
         [payload]: JSON.parse(JSON.stringify(initNetworkData)),
       };
     },
+    addAutoApproveItem: (state, { payload }: { payload: number }) => {
+      if (!state.autoApproveMap) state.autoApproveMap = {};
+      state.autoApproveMap = { ...state.autoApproveMap, [payload]: true };
+    },
+    removeAutoApproveItem: (state, { payload }: { payload: number }) => {
+      if (!state.autoApproveMap) state.autoApproveMap = {};
+      if (state.autoApproveMap[payload]) delete state.autoApproveMap[payload];
+    },
   },
 });
 
@@ -135,6 +143,8 @@ export const {
   setActiveTab,
   updateTab,
   changeDrawerOpenStatus,
+  addAutoApproveItem,
+  removeAutoApproveItem,
 } = discoverSlice.actions;
 
 export default discoverSlice;

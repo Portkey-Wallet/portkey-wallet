@@ -290,7 +290,7 @@ const handleButtonStyle = StyleSheet.create({
     textAlign: 'right',
   },
   noTap: {
-    color: 'red',
+    opacity: 0.3,
   },
 });
 

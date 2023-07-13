@@ -4,7 +4,7 @@ import CommonInput from 'components/CommonInput';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
@@ -17,6 +17,8 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import FilterTokenSection from '../components/FilterToken';
+import Lottie from 'lottie-react-native';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 interface ManageTokenListProps {
   route?: any;
@@ -32,6 +34,7 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
   const caAddressArray = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
 
+  const [isSearching, setIsSearching] = useState<boolean>(false);
   const [keyword, setKeyword] = useState<string>('');
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
@@ -40,7 +43,8 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
   const fetchSearchedTokenList = useCallback(async () => {
     try {
       if (!debounceWord) return;
-      Loading.showOnce();
+      setIsSearching(true);
+
       const list = await request.token.fetchTokenListBySearch({
         params: {
           symbol: debounceWord,
@@ -54,10 +58,11 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
         userTokenId: item.id,
       }));
       setFilterTokenList(tmpToken);
-      Loading.hide();
+      setIsSearching(false);
     } catch (error) {
       console.log('filter search error', error);
       Loading.hide();
+      setIsSearching(false);
     }
   }, [chainIdList, debounceWord]);
 
@@ -79,12 +84,38 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
           CommonToast.success('Success');
         }, 800);
       } catch (err) {
-        console.log(err);
         Loading.hide();
-        CommonToast.fail('Fail');
+        setIsSearching(false);
+        CommonToast.fail(handleErrorMessage(err));
       }
     },
     [caAddressArray, caAddressInfos, dispatch, fetchSearchedTokenList],
+  );
+
+  const IptRightIcon = useMemo(() => {
+    if (isSearching)
+      return (
+        <Lottie style={pageStyles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
+      );
+
+    return keyword ? (
+      <TouchableOpacity onPress={() => setKeyword('')}>
+        <Svg icon="clear3" size={pTd(16)} />
+      </TouchableOpacity>
+    ) : undefined;
+  }, [isSearching, keyword]);
+
+  const HeaderRightIcon = useMemo(
+    () => (
+      <TouchableOpacity
+        style={{ padding: pTd(16) }}
+        onPress={() => {
+          navigationService.navigate('CustomToken');
+        }}>
+        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+      </TouchableOpacity>
+    ),
+    [],
   );
 
   useEffect(() => {
@@ -107,15 +138,7 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
     <PageContainer
       titleDom={t('Add Tokens')}
       safeAreaColor={['blue', 'white']}
-      rightDom={
-        <TouchableOpacity
-          style={{ padding: pTd(16) }}
-          onPress={() => {
-            navigationService.navigate('CustomToken');
-          }}>
-          <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-        </TouchableOpacity>
-      }
+      rightDom={HeaderRightIcon}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
@@ -126,13 +149,7 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
           onChangeText={v => {
             setKeyword(v.trim());
           }}
-          rightIcon={
-            keyword ? (
-              <TouchableOpacity onPress={() => setKeyword('')}>
-                <Svg icon="clear3" size={pTd(16)} />
-              </TouchableOpacity>
-            ) : undefined
-          }
+          rightIcon={IptRightIcon}
         />
       </View>
       <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
@@ -153,5 +170,8 @@ export const pageStyles = StyleSheet.create({
   },
   list: {
     flex: 1,
+  },
+  loadingIcon: {
+    width: pTd(20),
   },
 });

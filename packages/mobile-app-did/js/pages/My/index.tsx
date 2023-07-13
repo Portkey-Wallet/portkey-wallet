@@ -42,11 +42,6 @@ const MenuList: Array<MenuItemType> = [
     label: 'Wallet Security',
     icon: 'wallet-security',
   },
-  {
-    name: 'Bookmark',
-    label: 'Bookmark',
-    icon: 'wallet-security',
-  },
 ];
 
 export default function MyMenu() {

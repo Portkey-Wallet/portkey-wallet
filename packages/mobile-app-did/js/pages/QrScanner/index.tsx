@@ -18,14 +18,18 @@ import { isIos, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/d
 
 import { Camera } from 'expo-camera';
 import { expandQrData } from '@portkey-wallet/utils/qrCode';
+import { checkIsUrl } from '@portkey-wallet/utils/dapp/browser';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+
 interface QrScannerProps {
   route?: any;
-  type?: 'login' | 'send';
 }
 
 const QrScanner: React.FC<QrScannerProps> = () => {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
+  const jumpToWebview = useDiscoverJumpWithNetWork();
+
   const navigation = useNavigation();
   const routesArr: RouteInfoType[] = navigation.getState().routes;
   const previousRouteInfo = routesArr[routesArr.length - 2];
@@ -40,21 +44,31 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
   const handleBarCodeScanned = useCallback(
     ({ data = '' }) => {
+      if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
       try {
-        if (typeof data === 'string') {
-          const qrCodeData = expandQrData(JSON.parse(data));
-
-          // if not currentNetwork
-          if (currentNetwork !== qrCodeData.netWorkType) return invalidQRCode(InvalidQRCodeText.DIFFERENT_NETWORK);
-
-          handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
+        // if is link
+        const str = data.replace(/("|')/g, '');
+        if (checkIsUrl(str)) {
+          jumpToWebview({
+            item: {
+              id: Date.now(),
+              name: str,
+              url: str,
+            },
+          });
+          return navigationService.goBack();
         }
+
+        const qrCodeData = expandQrData(JSON.parse(data));
+        // if not currentNetwork
+        if (currentNetwork !== qrCodeData.netWorkType) return invalidQRCode(InvalidQRCodeText.DIFFERENT_NETWORK);
+        handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
       } catch (error) {
         console.log(error);
         return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
       }
     },
-    [currentNetwork, previousRouteInfo],
+    [currentNetwork, jumpToWebview, previousRouteInfo],
   );
 
   const selectImage = async () => {
@@ -103,8 +117,6 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 };
 
 export default QrScanner;
-
-defaultColors;
 
 export const PageStyle = StyleSheet.create({
   wrapper: {

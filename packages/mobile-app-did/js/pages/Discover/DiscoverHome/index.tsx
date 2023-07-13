@@ -45,6 +45,7 @@ export default function DiscoverHome() {
               style={styles.svgWrap}
               onPress={async () => {
                 if (!(await requestQrPermission())) return showDialog();
+                navigationService.navigate('QrScanner');
               }}>
               <Svg icon="scan" size={22} color={defaultColors.font2} />
             </TouchableOpacity>

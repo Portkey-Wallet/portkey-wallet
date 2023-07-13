@@ -9,7 +9,7 @@ import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { FaucetUrl } from '@portkey-wallet/constants/constants-ca/payment';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -36,7 +36,7 @@ function TokenDetail() {
     if (isMainNet) {
       navigate('/buy', { state: { tokenInfo: currentToken } });
     } else {
-      const openWinder = window.open(FaucetUrl, '_blank');
+      const openWinder = window.open(FAUCET_URL, '_blank');
       if (openWinder) {
         openWinder.opener = null;
       }

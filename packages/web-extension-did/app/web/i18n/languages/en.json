@@ -419,7 +419,6 @@
   "This guardian is the only login account and cannot be removed": "This guardian is the only login account and cannot be removed",
   "This guardian is set as a login account. Click \"Confirm\" to unset and remove this guardian": "This guardian is set as a login account. Click \"Confirm\" to unset and remove this guardian",
   "Creating address on the chain...": "Creating address on the chain...",
-  "On-ramp is not supported on the Testnet. The on-ramp service on Mainnet is coming soon.": "On-ramp is not supported on the Testnet. The on-ramp service on Mainnet is coming soon.",
   "On-ramp is currently not supported. It will be launched in the coming weeks.": "On-ramp is currently not supported. It will be launched in the coming weeks.",
   "Off-ramp is currently not supported. It will be launched in the coming weeks.": "Off-ramp is currently not supported. It will be launched in the coming weeks.",
   "Initiating social recovery...": "Initiating social recovery...",

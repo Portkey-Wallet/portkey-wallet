@@ -32,8 +32,17 @@ import { useVerifyToken } from 'hooks/authentication';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import myEvents from 'utils/deviceEvent';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
+
+const APPROVAL_TO_VERIFICATION_MAP = {
+  [ApprovalType.addGuardian]: VerificationType.addGuardianByApprove,
+  [ApprovalType.editGuardian]: VerificationType.editGuardian,
+  [ApprovalType.deleteGuardian]: VerificationType.deleteGuardian,
+  [ApprovalType.removeOtherManager]: VerificationType.removeOtherManager,
+  [ApprovalType.communityRecovery]: VerificationType.communityRecovery,
+};
 
 interface GuardianAccountItemProps {
   guardianItem: UserGuardianItem;
@@ -64,47 +73,17 @@ function GuardianItemButton({
   const { status, requestCodeResult } = itemStatus || {};
   const verifyToken = useVerifyToken();
   const guardianInfo = useMemo(() => {
-    let _verificationType: VerificationType;
-    switch (approvalType) {
-      case ApprovalType.addGuardian:
-        _verificationType = VerificationType.addGuardianByApprove;
-        break;
-      case ApprovalType.editGuardian:
-        _verificationType = VerificationType.editGuardian;
-        break;
-      case ApprovalType.deleteGuardian:
-        _verificationType = VerificationType.deleteGuardian;
-        break;
-      case ApprovalType.removeOtherManager:
-        _verificationType = VerificationType.removeOtherManager;
-        break;
-      case ApprovalType.communityRecovery:
-      default:
-        _verificationType = VerificationType.communityRecovery;
-        break;
-    }
     return {
       guardianItem,
-      verificationType: _verificationType,
+      verificationType:
+        APPROVAL_TO_VERIFICATION_MAP[approvalType as ApprovalType] || VerificationType.communityRecovery,
     };
   }, [approvalType, guardianItem]);
 
-  const operationType: OperationTypeEnum = useMemo(() => {
-    switch (approvalType) {
-      case ApprovalType.addGuardian:
-        return OperationTypeEnum.addGuardian;
-      case ApprovalType.editGuardian:
-        return OperationTypeEnum.editGuardian;
-      case ApprovalType.deleteGuardian:
-        return OperationTypeEnum.deleteGuardian;
-      case ApprovalType.removeOtherManager:
-        return OperationTypeEnum.removeOtherManager;
-      case ApprovalType.communityRecovery:
-        return OperationTypeEnum.communityRecovery;
-      default:
-        return OperationTypeEnum.unknown;
-    }
-  }, [approvalType]);
+  const operationType: OperationTypeEnum = useMemo(
+    () => APPROVAL_TO_OPERATION_MAP[approvalType as ApprovalType] || OperationTypeEnum.unknown,
+    [approvalType],
+  );
 
   const onSetGuardianStatus = useCallback(
     (guardianStatus: GuardiansStatusItem) => {

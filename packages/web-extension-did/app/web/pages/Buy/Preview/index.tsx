@@ -12,8 +12,8 @@ import PromptFrame from 'pages/components/PromptFrame';
 import {
   ACH_MERCHANT_NAME,
   TransDirectEnum,
-  disclaimer,
-  serviceUnavailableText,
+  DISCLAIMER_TEXT,
+  SERVICE_UNAVAILABLE_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
 import clsx from 'clsx';
 import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
@@ -109,7 +109,7 @@ export default function Preview() {
     // Compatible with the situation where the function is turned off when the user is on the page.
     if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
       setLoading(false);
-      message.error(serviceUnavailableText);
+      message.error(SERVICE_UNAVAILABLE_TEXT);
       return navigate('/');
     }
 
@@ -177,7 +177,7 @@ export default function Preview() {
       content: (
         <>
           <div className="title">Disclaimer</div>
-          {t(disclaimer)}
+          {t(DISCLAIMER_TEXT)}
         </>
       ),
     });

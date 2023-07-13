@@ -13,7 +13,8 @@ export interface RouteInfoType {
 }
 
 export enum InvalidQRCodeText {
-  DIFFERENT_NETWORK = 'Please ensure that you are connected to the same network',
+  SWITCH_TO_MAINNET = 'Please switch to aelf Mainnet before scanning the QR code',
+  SWITCH_TO_TESTNET = 'Please switch to aelf Testnet before scanning the QR code',
   INVALID_QR_CODE = 'The QR code is invalid',
 }
 

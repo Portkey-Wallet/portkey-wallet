@@ -31,6 +31,7 @@ import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
+import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -104,27 +105,10 @@ export default function VerifierDetails() {
     }
   }, [caHash, getCurrentCAContract, guardianItem, managerAddress]);
 
-  const operationType: OperationTypeEnum = useMemo(() => {
-    switch (verificationType) {
-      case VerificationType.register:
-        return OperationTypeEnum.register;
-      case VerificationType.communityRecovery:
-        return OperationTypeEnum.communityRecovery;
-      case VerificationType.addGuardian:
-      case VerificationType.addGuardianByApprove:
-        return OperationTypeEnum.addGuardian;
-      case VerificationType.deleteGuardian:
-        return OperationTypeEnum.deleteGuardian;
-      case VerificationType.editGuardian:
-        return OperationTypeEnum.editGuardian;
-      case VerificationType.removeOtherManager:
-        return OperationTypeEnum.removeOtherManager;
-      case VerificationType.setLoginAccount:
-        return OperationTypeEnum.setLoginAccount;
-      default:
-        return OperationTypeEnum.unknown;
-    }
-  }, [verificationType]);
+  const operationType: OperationTypeEnum = useMemo(
+    () => VERIFICATION_TO_OPERATION_MAP[verificationType as VerificationType] || OperationTypeEnum.unknown,
+    [verificationType],
+  );
 
   const onFinish = useLockCallback(
     async (code: string) => {

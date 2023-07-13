@@ -45,7 +45,10 @@ const QrScanner: React.FC<QrScannerProps> = () => {
           const qrCodeData = expandQrData(JSON.parse(data));
 
           // if not currentNetwork
-          if (currentNetwork !== qrCodeData.netWorkType) return invalidQRCode(InvalidQRCodeText.DIFFERENT_NETWORK);
+          if (currentNetwork !== qrCodeData.netWorkType)
+            return invalidQRCode(
+              currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
+            );
 
           handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
         }

@@ -38,11 +38,11 @@ import CustomTipModal from 'pages/components/CustomModal';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import {
-  buySoonText,
-  InsufficientFundsText,
-  sellSoonText,
-  serviceUnavailableText,
-  SynchronizingChainText,
+  BUY_SOON_TEXT,
+  INSUFFICIENT_FUNDS_TEXT,
+  SELL_SOON_TEXT,
+  SERVICE_UNAVAILABLE_TEXT,
+  SYNCHRONIZING_CHAIN_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
 
 export default function Buy() {
@@ -286,13 +286,13 @@ export default function Buy() {
       // Compatible with the situation where the function is turned off when the user is on the page.
       if (side === PaymentTypeEnum.BUY && !isBuySectionShow) {
         CustomTipModal({
-          content: t(buySoonText),
+          content: t(BUY_SOON_TEXT),
         });
         return;
       }
       if (side === PaymentTypeEnum.SELL && !isSellSectionShow) {
         CustomTipModal({
-          content: t(sellSoonText),
+          content: t(SELL_SOON_TEXT),
         });
         return;
       }
@@ -364,7 +364,7 @@ export default function Buy() {
   const setInsufficientFundsMsg = useCallback(() => {
     stopInterval();
 
-    setErrMsg(InsufficientFundsText);
+    setErrMsg(INSUFFICIENT_FUNDS_TEXT);
     valueSaveRef.current.isShowErrMsg = true;
 
     setReceive('');
@@ -380,7 +380,7 @@ export default function Buy() {
     // Compatible with the situation where the function is turned off when the user is on the page.
     if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
       setLoading(false);
-      message.error(serviceUnavailableText);
+      message.error(SERVICE_UNAVAILABLE_TEXT);
       return navigate('/');
     }
 
@@ -391,7 +391,7 @@ export default function Buy() {
 
       if (!_isManagerSynced) {
         setLoading(false);
-        setWarningMsg(SynchronizingChainText);
+        setWarningMsg(SYNCHRONIZING_CHAIN_TEXT);
         return;
       } else {
         setWarningMsg('');

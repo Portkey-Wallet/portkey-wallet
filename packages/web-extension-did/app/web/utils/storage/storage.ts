@@ -3,7 +3,6 @@ import { reduxStorageName, reduxStorageToken, reduxStorageWallet } from 'constan
 const storage = {
   // in background.js
   aelfCrossMeta: 'BG_AELF_CROSSMETA',
-  registerStatus: 'BG_REGISTER',
   lockTime: 'BG_LOCK_TIME',
   locked: 'BG_LOCKED',
   connections: 'BG_CONNECTIONS',

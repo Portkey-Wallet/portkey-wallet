@@ -105,9 +105,11 @@ export function useOnManagerAddressAndQueryResult() {
       verifierInfo?: VerifierInfo;
       guardiansApproved?: GuardiansApproved;
     }) => {
-      showLoading && Loading.show({ text: t('Creating address on the chain...') });
-      await sleep(500);
       const isRecovery = managerInfo.verificationType === VerificationType.communityRecovery;
+      showLoading &&
+        Loading.show({ text: t(isRecovery ? 'Initiating social recovery' : 'Creating address on the chain...') });
+
+      await sleep(500);
       try {
         const tmpWalletInfo = walletInfo?.address ? walletInfo : AElf.wallet.createNewWallet();
         const extraData = await extraDataEncode(getDeviceInfo());

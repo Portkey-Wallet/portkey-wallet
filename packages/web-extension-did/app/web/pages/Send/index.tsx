@@ -33,6 +33,7 @@ import clsx from 'clsx';
 import { AddressCheckError } from '@portkey-wallet/store/store-ca/assets/type';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ChainId } from '@portkey-wallet/types';
+import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
 
 export type Account = { address: string; name?: string };
@@ -68,7 +69,7 @@ export default function Send() {
   const [amount, setAmount] = useState('');
   const [balance, setBalance] = useState('');
   const isValidSuffix = useIsValidSuffix();
-
+  const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
   const currentChain = useCurrentChain(state.chainId);
 
@@ -195,6 +196,10 @@ export default function Send() {
     try {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
+      const _isManagerSynced = await checkManagerSyncState(state.chainId);
+      if (!_isManagerSynced) {
+        return 'Synchronizing on-chain account information...';
+      }
       if (type === 'token') {
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(ZERO.plus(balance))) {
           return TransactionError.TOKEN_NOT_ENOUGH;
@@ -229,6 +234,8 @@ export default function Send() {
     setLoading,
     amount,
     type,
+    checkManagerSyncState,
+    state.chainId,
     getTranslationInfo,
     tokenInfo.decimals,
     balance,
@@ -341,7 +348,6 @@ export default function Send() {
                 address: `ELF_${account.address}_${account?.addressChainId || account?.chainId}`,
               };
               setToAccount(value);
-              // validateToAddress(value);
             }}
             chainId={tokenInfo.chainId}
           />
@@ -350,7 +356,6 @@ export default function Send() {
       1: {
         btnText: 'Preview',
         handler: async () => {
-          // if (!validateToAddress(toAccount)) return;
           const res = await handleCheckPreview();
           console.log('handleCheckPreview res', res);
           if (!res) {
@@ -383,6 +388,7 @@ export default function Send() {
               setBalance(balance);
             }}
             getTranslationInfo={getTranslationInfo}
+            setErrorMsg={setTipMsg}
           />
         ),
       },
@@ -455,12 +461,7 @@ export default function Send() {
             <div className="item to">
               <span className="label">{t('To_with_colon')}</span>
               <div className="control">
-                <ToAccount
-                  value={toAccount}
-                  onChange={(v) => setToAccount(v)}
-                  focus={stage !== Stage.Amount}
-                  // onBlur={() => validateToAddress(toAccount)}
-                />
+                <ToAccount value={toAccount} onChange={(v) => setToAccount(v)} focus={stage !== Stage.Amount} />
                 {stage === Stage.Amount && (
                   <CustomSvg
                     type="Close2"
@@ -476,19 +477,11 @@ export default function Send() {
           </div>
         )}
         <div className="stage-ele">{StageObj[stage].element}</div>
-        {stage === Stage.Preview ? (
-          <div className="btn-wrap">
-            <Button disabled={btnDisabled} className="stage-btn" type="primary" onClick={StageObj[stage].handler}>
-              {StageObj[stage].btnText}
-            </Button>
-          </div>
-        ) : (
-          <p className="btn-wrap">
-            <Button disabled={btnDisabled} className="stage-btn" type="primary" onClick={StageObj[stage].handler}>
-              {StageObj[stage].btnText}
-            </Button>
-          </p>
-        )}
+        <div className="btn-wrap">
+          <Button disabled={btnDisabled} className="stage-btn" type="primary" onClick={StageObj[stage].handler}>
+            {StageObj[stage].btnText}
+          </Button>
+        </div>
         {isPrompt ? <PromptEmptyElement /> : null}
       </div>
     );

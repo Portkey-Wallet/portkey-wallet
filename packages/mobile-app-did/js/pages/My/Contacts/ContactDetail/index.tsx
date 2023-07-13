@@ -72,7 +72,7 @@ const ContactDetail: React.FC = () => {
       </ScrollView>
 
       <CommonButton
-        type="solid"
+        type="primary"
         containerStyle={GStyles.paddingTop(16)}
         onPress={() => {
           navigationService.navigate('ContactEdit', { contact });

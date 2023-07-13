@@ -11,6 +11,7 @@ export enum BaseWalletError {
   invalidPrivateKey = 'Invalid Private Key',
   walletExists = 'Wallet Already Exists!',
   caAccountExists = 'Account Already Exists!',
+  caAccountNotExists = 'CA Account Not Exists!',
 }
 export const WalletError = Object.assign({}, BaseWalletError, PinErrorMessage);
 

@@ -28,7 +28,7 @@ import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { useEffectOnce } from 'react-use';
@@ -65,7 +65,8 @@ export default function Buy() {
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
   const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow();
   const checkManagerSyncState = useCheckManagerSyncState();
-  const getTxFeeByChainId = useFetchTxFee();
+  useFetchTxFee();
+  const { ach: achFee } = useGetTxFee('AELF');
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(
@@ -373,7 +374,6 @@ export default function Buy() {
   }, [stopInterval]);
 
   const handleNext = useCallback(async () => {
-    const { ach: achFee } = getTxFeeByChainId('AELF');
     const { side } = valueSaveRef.current;
     setLoading(true);
     const result = await refreshBuyButton();
@@ -433,6 +433,7 @@ export default function Buy() {
     });
   }, [
     accountTokenList,
+    achFee,
     checkManagerSyncState,
     currentChain,
     currentNetwork.walletType,

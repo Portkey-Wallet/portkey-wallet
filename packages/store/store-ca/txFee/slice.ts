@@ -23,7 +23,7 @@ export const txFeeSlice = createSlice({
           if (txFeeValue?.[action.payload]) delete txFeeValue[action.payload];
           state = txFeeValue;
         } else {
-          state = {};
+          state = initialState;
         }
       });
   },

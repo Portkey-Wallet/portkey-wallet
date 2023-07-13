@@ -1,6 +1,5 @@
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
-import { TxFeeItem } from '@portkey-wallet/store/store-ca/txFee/type';
 import { ChainId } from '@portkey/provider-types';
 import { store } from 'store/Provider/store';
 
@@ -22,6 +21,6 @@ export const isCurrentCaHash = (caHash: string) => {
 
 export const getTxFee = (chainId: ChainId) => {
   const currentNetwork = getStoreState().wallet.currentNetwork;
-  const targetTxFee = getStoreState().txFee[currentNetwork]?.filter((txf: TxFeeItem) => txf.chainId === chainId);
-  return targetTxFee?.[0].transactionFee ?? InitialTxFee;
+  const targetTxFee = getStoreState().txFee?.[currentNetwork]?.[chainId];
+  return targetTxFee ?? InitialTxFee;
 };

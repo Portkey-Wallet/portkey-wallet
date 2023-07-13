@@ -1,18 +1,16 @@
 import { useAppCASelector } from './index';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAppCommonDispatch } from '../index';
 import { useCurrentNetwork } from './network';
 import { fetchTxFeeAsync } from '@portkey-wallet/store/store-ca/txFee/actions';
 import { ChainId } from '@portkey-wallet/types';
-import { TxFeeItem } from '@portkey-wallet/store/store-ca/txFee/type';
 import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useCurrentChainList } from './chainList';
 
 export const useFetchTxFee = () => {
-  const txFee = useAppCASelector(state => state.txFee);
-  const { chainInfo } = useAppCASelector(state => state.wallet);
   const dispatch = useAppCommonDispatch();
-  const currentNetwork = useCurrentNetwork();
-  const chainIds = useMemo(() => chainInfo?.[currentNetwork]?.map(chain => chain.chainId), [chainInfo, currentNetwork]);
+  const chainList = useCurrentChainList();
+  const chainIds = useMemo(() => chainList?.map(chain => chain.chainId), [chainList]);
 
   useEffect(() => {
     if (chainIds?.length) {
@@ -20,23 +18,12 @@ export const useFetchTxFee = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainIds]);
-
-  return useCallback(
-    (chainId: ChainId) => {
-      const targetTxFee = txFee[currentNetwork]?.filter((txf: TxFeeItem) => txf.chainId === chainId);
-      return targetTxFee?.[0].transactionFee ?? InitialTxFee;
-    },
-    [currentNetwork, txFee],
-  );
 };
 
 export const useGetTxFee = (chainId: ChainId) => {
   const txFee = useAppCASelector(state => state.txFee);
   const currentNetwork = useCurrentNetwork();
-  const targetTxFee = useMemo(
-    () => txFee[currentNetwork]?.filter((txf: TxFeeItem) => txf.chainId === chainId),
-    [chainId, currentNetwork, txFee],
-  );
+  const targetTxFee = useMemo(() => txFee[currentNetwork]?.[chainId], [chainId, currentNetwork, txFee]);
 
-  return useMemo(() => targetTxFee?.[0].transactionFee ?? InitialTxFee, [targetTxFee]);
+  return useMemo(() => targetTxFee ?? InitialTxFee, [targetTxFee]);
 };

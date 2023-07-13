@@ -10,9 +10,15 @@ export const fetchTxFeeAsync = createAsyncThunk('fetchTxFeeAsync', async (chainI
   const {
     wallet: { currentNetwork },
   } = getState() as { wallet: WalletState };
+
+  const fee: any = {};
+  result?.forEach((item: any) => {
+    fee[item.chainId] = item.transactionFee;
+  });
+
   return {
     currentNetwork,
-    fee: result,
+    fee,
   };
 });
 

@@ -1,8 +1,7 @@
 import { ChainId, NetworkType } from '@portkey-wallet/types';
 
 export type TxFeeItem = {
-  chainId: ChainId;
-  transactionFee: {
+  [key in ChainId]?: {
     ach: number;
     crossChain: number;
     max: number;
@@ -10,5 +9,5 @@ export type TxFeeItem = {
 };
 
 export type TxFeeType = {
-  [key in NetworkType]?: TxFeeItem[];
+  [key in NetworkType]?: TxFeeItem;
 };

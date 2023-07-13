@@ -20,7 +20,7 @@ import { Camera } from 'expo-camera';
 import { expandQrData } from '@portkey-wallet/utils/qrCode';
 import { checkIsUrl } from '@portkey-wallet/utils/dapp/browser';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-
+import Loading from 'components/Loading';
 interface QrScannerProps {
   route?: any;
 }
@@ -45,8 +45,8 @@ const QrScanner: React.FC<QrScannerProps> = () => {
   const handleBarCodeScanned = useCallback(
     ({ data = '' }) => {
       if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
+
       try {
-        // if is link
         const str = data.replace(/("|')/g, '');
         if (checkIsUrl(str)) {
           jumpToWebview({
@@ -61,11 +61,17 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
         const qrCodeData = expandQrData(JSON.parse(data));
         // if not currentNetwork
-        if (currentNetwork !== qrCodeData.netWorkType) return invalidQRCode(InvalidQRCodeText.DIFFERENT_NETWORK);
+        if (currentNetwork !== qrCodeData.netWorkType) return;
+        invalidQRCode(
+          currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
+        );
+
         handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
       } catch (error) {
         console.log(error);
         return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
+      } finally {
+        Loading.hide();
       }
     },
     [currentNetwork, jumpToWebview, previousRouteInfo],

@@ -2,7 +2,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
 import { useBookmark } from '../context';
@@ -37,9 +37,8 @@ export default memo(
           swipeEnabled={false}
           snapPointsLeft={[80]}
           renderUnderlayLeft={renderUnderlayLeft}>
-          <Touchable
-            onLongPress={drag}
-            disabled={!isEdit || isActive}
+          <View
+            // disabled={!isEdit || isActive}
             style={[
               GStyles.flexRow,
               styles.itemRow,
@@ -52,8 +51,12 @@ export default memo(
                 <TextM>open</TextM>
               </Touchable>
             )}
+
             <TextM>{item}</TextM>
-          </Touchable>
+            {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
+              <TextM>drag</TextM>
+            </Touchable> */}
+          </View>
         </SwipeableItem>
       </ScaleDecorator>
     );
@@ -65,7 +68,7 @@ export default memo(
 
 const styles = StyleSheet.create({
   marginContainer: {
-    marginHorizontal: 16,
+    // marginHorizontal: 16,
   },
   underlayLeftBox: {
     flex: 1,

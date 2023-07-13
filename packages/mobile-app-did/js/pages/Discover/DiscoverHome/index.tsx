@@ -8,6 +8,7 @@ import { defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
 import { BGStyles } from 'assets/theme/styles';
+import { DiscoverArchivedSection } from '../components/DiscoverArchivedSection';
 
 export default function DiscoverHome() {
   return (
@@ -15,6 +16,7 @@ export default function DiscoverHome() {
       <View style={styles.container}>
         <CustomHeader themeType="blue" titleDom={'Discover'} noLeftDom />
         <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
+        <DiscoverArchivedSection />
         <DiscoverCmsListSection />
       </View>
     </SafeAreaBox>

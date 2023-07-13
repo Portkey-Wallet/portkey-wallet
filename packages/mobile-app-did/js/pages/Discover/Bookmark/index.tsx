@@ -1,61 +1,101 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PageContainer from 'components/PageContainer';
-import DraggableFlatList from 'react-native-draggable-flatlist';
 import GStyles from 'assets/theme/GStyles';
-import { StyleSheet, View } from 'react-native';
-import { BookmarkProvider, setEdit, useBookmark } from './context';
-import CommonButton from 'components/CommonButton';
-import BookmarkItem from './components/BookmarkItem';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { FontStyles } from 'assets/theme/styles';
+import { ArchivedTabEnum } from 'pages/Discover/types';
+import { defaultColors } from 'assets/theme';
+import { pTd } from 'utils/unit';
+import fonts from 'assets/theme/fonts';
+import { TextM } from 'components/CommonText';
+import BookmarksSection from './components/BookmarksSection';
 
-const mockData = ['1', '2', '3', '4'];
+type TabItemType = {
+  name: string;
+  type: ArchivedTabEnum;
+  component: JSX.Element;
+};
 
-function Bookmark() {
-  const [list, setList] = useState(mockData);
-  const [{ isEdit }, dispatch] = useBookmark();
+const tabList: TabItemType[] = [
+  {
+    name: 'Bookmarks',
+    type: ArchivedTabEnum.Bookmarks,
+    component: <BookmarksSection />,
+  },
+  {
+    name: 'History',
+    type: ArchivedTabEnum.History,
+    component: <></>,
+  },
+];
 
-  const BottomBox = useMemo(
-    () => (
-      <View style={styles.paddingContainer}>
-        {isEdit ? (
-          <>
-            <CommonButton titleStyle={FontStyles.font4} type="outline" title="Delete All" />
-            <CommonButton onPress={() => dispatch(setEdit(false))} title="Done" type="primary" />
-          </>
-        ) : (
-          <CommonButton onPress={() => dispatch(setEdit(true))} title="Edit" type="primary" />
-        )}
-      </View>
-    ),
-    [dispatch, isEdit],
-  );
+export default function Bookmark() {
+  const [selectTab, setSelectTab] = useState<ArchivedTabEnum>(ArchivedTabEnum.Bookmarks);
+
+  const onTabPress = useCallback((type: ArchivedTabEnum) => {
+    setSelectTab(type);
+  }, []);
+
   return (
-    <PageContainer scrollViewProps={{ disabled: true }} containerStyles={styles.containerStyles} titleDom="Bookmark">
-      <View style={GStyles.flex1}>
-        <DraggableFlatList
-          data={list}
-          keyExtractor={_item => _item}
-          renderItem={props => <BookmarkItem {...props} />}
-          onDragEnd={({ data }) => setList(data)}
-        />
+    <PageContainer
+      safeAreaColor={['blue', 'gray']}
+      scrollViewProps={{ disabled: true }}
+      containerStyles={styles.containerStyles}
+      titleDom="Bookmarks">
+      <View style={[GStyles.flexRow, GStyles.alignCenter]}>
+        <View style={styles.tabHeader}>
+          {tabList.map(tabItem => (
+            <TouchableOpacity
+              key={tabItem.name}
+              onPress={() => {
+                onTabPress(tabItem.type);
+              }}>
+              <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
+                <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
+                  {tabItem.name}
+                </TextM>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-      {BottomBox}
+      <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
     </PageContainer>
   );
 }
 
-export default function Container() {
-  return (
-    <BookmarkProvider>
-      <Bookmark />
-    </BookmarkProvider>
-  );
-}
-
 const styles = StyleSheet.create({
-  // remove padding to scale item
-  containerStyles: { ...GStyles.paddingArg(0) },
-  paddingContainer: {
-    paddingHorizontal: 16,
+  containerStyles: { ...GStyles.paddingArg(0), flex: 1, backgroundColor: defaultColors.bg1 },
+
+  tabHeader: {
+    width: pTd(214),
+    backgroundColor: defaultColors.bg6,
+    borderRadius: pTd(6),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    ...GStyles.paddingArg(3),
+    marginVertical: pTd(16),
+  },
+  tabWrap: {
+    width: pTd(100),
+    height: pTd(30),
+    borderRadius: pTd(6),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectTabStyle: {
+    shadowColor: defaultColors.shadow1,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.09,
+    shadowRadius: 4,
+    elevation: 2,
+    backgroundColor: defaultColors.bg1,
+  },
+  selectTabTextStyle: {
+    color: defaultColors.font5,
+    ...fonts.mediumFont,
   },
 });

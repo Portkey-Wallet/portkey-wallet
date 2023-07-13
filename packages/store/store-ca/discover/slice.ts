@@ -9,6 +9,7 @@ const initNetworkData: IDiscoverNetworkStateType = {
   recordsList: [],
   whiteList: [],
   tabs: [],
+  bookmarkList: [],
 };
 
 const initialState: IDiscoverStateType = {

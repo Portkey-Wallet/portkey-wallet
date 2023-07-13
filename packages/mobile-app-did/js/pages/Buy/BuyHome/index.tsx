@@ -94,7 +94,7 @@ export default function BuyHome() {
           ))}
         </View>
       </View>
-      <View style={[GStyles.flex1]}>{tabList.find(item => item.type === selectTab)?.component}</View>
+      <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
     </PageContainer>
   );
 }

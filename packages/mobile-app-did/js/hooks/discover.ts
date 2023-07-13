@@ -9,7 +9,7 @@ import {
   initNetworkDiscoverMap,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
 
@@ -55,4 +55,43 @@ export const useDiscoverWhiteList = () => {
   );
 
   return { checkIsInWhiteList, upDateWhiteList };
+};
+
+export const useBookmarkList = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+  const { discoverMap } = useAppCASelector(state => state.discover);
+
+  useEffect(() => {
+    //
+  }, []);
+
+  const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);
+
+  return [
+    {
+      id: 1,
+      name: 'portkey1',
+      url: 'https://portkey.finance/',
+      sortWeight: 1,
+    },
+    {
+      id: 2,
+      name: 'portkey2',
+      url: 'https://portkey.finance/',
+      sortWeight: 2,
+    },
+    {
+      id: 3,
+      name: 'portkey3',
+      url: 'https://portkey.finance/',
+      sortWeight: 3,
+    },
+    {
+      id: 4,
+      name: 'portkey4',
+      url: 'https://portkey.finance/',
+      sortWeight: 4,
+    },
+  ];
 };

@@ -19,6 +19,7 @@ import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { useFocusEffect } from '@react-navigation/native';
 import SimulatedInputBox from 'components/SimulatedInputBox';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 interface ManageTokenListProps {
   route?: any;
@@ -54,9 +55,8 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           CommonToast.success('Success');
         }, 800);
       } catch (err) {
-        console.log(err);
         Loading.hide();
-        CommonToast.fail('Fail');
+        CommonToast.fail(handleErrorMessage(err));
       }
     },
     [caAddressArray, caAddressInfos, chainIdList, dispatch],

@@ -8,16 +8,20 @@ import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { pTd } from 'utils/unit';
 
 interface ISimulatedInputBoxProps {
-  onClickInput: () => void;
+  placeholder?: string;
+  onClickInput?: () => void;
 }
 
-export default function SimulatedInputBox({ onClickInput }: ISimulatedInputBoxProps) {
+export default function SimulatedInputBox({
+  placeholder = 'Search Dapp or enter URL',
+  onClickInput,
+}: ISimulatedInputBoxProps) {
   return (
     <View style={[styles.wrap, BGStyles.bg5]}>
-      <TouchableWithoutFeedback onPress={onClickInput}>
+      <TouchableWithoutFeedback onPress={() => onClickInput?.()}>
         <View style={styles.innerInput}>
           <Svg icon="search" size={pTd(16)} />
-          <TextM style={[FontStyles.font7, styles.content]}>Search Dapp or enter URL</TextM>
+          <TextM style={[FontStyles.font7, styles.content]}>{placeholder}</TextM>
         </View>
       </TouchableWithoutFeedback>
     </View>

@@ -1,11 +1,9 @@
 import React, { useCallback } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBox';
 import { DiscoverCmsListSection } from '../components/DiscoverCmsListSection';
-import { DiscoverRecordListSection } from '../components/DiscoverRecordListSection';
-
 import { defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
@@ -15,6 +13,7 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
+import { DiscoverArchivedSection } from '../components/DiscoverArchivedSection';
 
 export default function DiscoverHome() {
   const [, requestQrPermission] = useQrScanPermission();
@@ -54,10 +53,8 @@ export default function DiscoverHome() {
           titleDom={'Discover'}
         />
         <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
-        <ScrollView>
-          <DiscoverRecordListSection />
-          <DiscoverCmsListSection />
-        </ScrollView>
+        <DiscoverArchivedSection />
+        <DiscoverCmsListSection />
       </View>
     </SafeAreaBox>
   );

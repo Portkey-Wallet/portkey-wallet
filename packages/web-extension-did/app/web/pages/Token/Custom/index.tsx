@@ -61,15 +61,19 @@ export default function CustomToken() {
             chainId,
           },
         });
-        const { symbol, decimals, id } = res;
-        if (symbol && decimals && id) {
+        const { symbol, id } = res;
+        if (symbol && id) {
           setCurToken(res);
           setValue(symbol);
+          setErrorMsg('');
+        } else {
+          setCurToken({});
+          setErrorMsg('Unable to recognize token');
         }
-        setErrorMsg('');
       } catch (error) {
         setCurToken({});
-        console.log('filter search error', error);
+        setErrorMsg('Unable to recognize token');
+        console.log('filter search token error', error);
       } finally {
         setLoading(false);
       }
@@ -143,6 +147,7 @@ export default function CustomToken() {
             <Input
               className="symbol-input input"
               value={value}
+              placeholder="Enter Symbol"
               onChange={(e) => {
                 const _value = e.target.value.replaceAll(' ', '');
                 setValue(_value);
@@ -153,7 +158,7 @@ export default function CustomToken() {
           </div>
           <div>
             <p className="label">{t('Token Decimal')}</p>
-            <Input disabled={true} className="decimals-input input" value={curToken?.decimals} />
+            <Input disabled={true} placeholder="-" className="decimals-input input" value={curToken?.decimals} />
           </div>
         </div>
         <div className="btn-wrap">

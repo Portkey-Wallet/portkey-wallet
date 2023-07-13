@@ -5,7 +5,7 @@ import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
@@ -88,12 +88,24 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           CommonToast.success('Success');
         }, 800);
       } catch (err) {
-        console.log(err);
         Loading.hide();
         CommonToast.fail('Fail');
       }
     },
     [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
+  );
+
+  const RightDom = useMemo(
+    () => (
+      <TouchableOpacity
+        style={{ padding: pTd(16) }}
+        onPress={() => {
+          navigationService.navigate('CustomToken');
+        }}>
+        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+      </TouchableOpacity>
+    ),
+    [],
   );
 
   useFocusEffect(
@@ -131,15 +143,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     <PageContainer
       titleDom={t('Add Tokens')}
       safeAreaColor={['blue', 'white']}
-      rightDom={
-        <TouchableOpacity
-          style={{ padding: pTd(16) }}
-          onPress={() => {
-            navigationService.navigate('CustomToken');
-          }}>
-          <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-        </TouchableOpacity>
-      }
+      rightDom={RightDom}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>

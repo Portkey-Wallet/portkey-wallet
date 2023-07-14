@@ -102,9 +102,7 @@ export const useRecordsList = (isReverse: boolean): ITabItem[] => {
   const { discoverMap } = useAppCASelector(state => state.discover);
 
   const list = useMemo(() => {
-    return isReverse
-      ? (discoverMap?.[networkType]?.recordsList as ITabItem[]).reverse()
-      : (discoverMap?.[networkType]?.recordsList as ITabItem[]);
+    return [];
   }, [discoverMap, isReverse, networkType]);
 
   return list || [];

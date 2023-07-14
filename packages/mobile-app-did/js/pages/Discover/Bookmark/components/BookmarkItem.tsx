@@ -27,7 +27,7 @@ export default memo(
     const renderUnderlayLeft = useCallback(
       () => (
         <Touchable style={styles.underlayLeftBox} onPress={() => swipeableRef.current?.close()}>
-          <TextM style={[FontStyles.font2, GStyles.flexCol, GStyles.center]}>Delete</TextM>
+          <TextM style={[FontStyles.font2]}>Delete</TextM>
         </Touchable>
       ),
       [],
@@ -81,10 +81,9 @@ const styles = StyleSheet.create({
   marginContainer: {},
   underlayLeftBox: {
     flex: 1,
-    paddingRight: pTd(12),
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 16,
+    paddingHorizontal: pTd(16),
     justifyContent: 'flex-end',
     backgroundColor: defaultColors.bg17,
     color: defaultColors.font1,

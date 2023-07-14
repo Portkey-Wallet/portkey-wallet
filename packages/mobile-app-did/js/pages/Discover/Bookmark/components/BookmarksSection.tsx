@@ -15,7 +15,8 @@ import { TextM } from 'components/CommonText';
 import { RefreshControl } from 'react-native-gesture-handler';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 
-const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+// const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+const mockData = ['1', '2', '3'];
 
 function BookmarksSection() {
   const [list, setList] = useState(mockData);
@@ -57,13 +58,12 @@ function BookmarksSection() {
 
   return (
     <View style={styles.containerStyles}>
-      <View style={[GStyles.flex1, styles.listWrap]}>
+      <View style={styles.listWrap}>
         <DraggableFlatList
-          style={{ height: '100%', paddingHorizontal: pTd(20) }}
+          style={styles.flatListWrap}
+          contentContainerStyle={styles.flatListContent}
           scrollEnabled
           data={list}
-          ListHeaderComponent={<View style={styles.headerBlank} />}
-          ListFooterComponent={<View style={styles.footerBlank} />}
           keyExtractor={_item => _item}
           renderItem={props => <BookmarkItem {...props} />}
           refreshControl={
@@ -94,23 +94,20 @@ const styles = StyleSheet.create({
   },
   listWrap: {
     paddingHorizontal: pTd(20),
+    flex: 1,
   },
   buttonGroupWrap: {
+    marginTop: pTd(16),
     paddingHorizontal: pTd(20),
   },
   deleteAll: {
     marginTop: pTd(10),
   },
-  headerBlank: {
-    borderTopLeftRadius: pTd(6),
-    borderTopRightRadius: pTd(6),
-    height: pTd(8),
+  flatListWrap: { height: '100%', borderRadius: pTd(6), overflow: 'hidden' },
+  flatListContent: {
     backgroundColor: defaultColors.bg1,
-  },
-  footerBlank: {
-    borderBottomLeftRadius: pTd(6),
-    borderBottomRightRadius: pTd(6),
-    height: pTd(8),
-    backgroundColor: defaultColors.bg1,
+    paddingVertical: pTd(8),
+    borderRadius: pTd(6),
+    overflow: 'hidden',
   },
 });

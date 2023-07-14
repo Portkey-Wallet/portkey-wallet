@@ -12,8 +12,7 @@ export interface IVerifierAccountPromptProps {
 
 const VerifierAccountPrompt = ({ renderContent, onBack, isBigScreenPrompt }: IVerifierAccountPromptProps) => {
   return (
-    <div
-      className={clsx('verifier-account-wrapper', isBigScreenPrompt ? 'big-screen-verifier-account' : 'common-page')}>
+    <div className={clsx('verifier-account', isBigScreenPrompt ? 'big-screen-verifier-account' : 'common-page')}>
       {isBigScreenPrompt ? (
         <SecondPageHeader className="guardian-header" title="" leftCallBack={onBack} />
       ) : (

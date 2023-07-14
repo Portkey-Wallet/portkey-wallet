@@ -1,66 +1,13 @@
 @import '../../assets/theme/color.less';
 
 .select-verifier-wrapper {
-  .description {
+  .portkey-ui-verifier-selector {
+    width: 350px;
+    margin: auto;
+  }
+
+.select-verifier-description {
     width: 600px;
     margin: auto;
-    font-size: 16px;
-    line-height: 22px;
-    text-align: center;
-  }
-
-  /** popular */
-  .popular-title {
-    line-height: 20px;
-    font-size: 14px;
-    margin-bottom: 16px;
-    color: @font-11;
-    padding-left: 5px;
-  }
-  .popular-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    row-gap: 5px;
-    text-align: center;
-    margin-bottom: 40px;
-    .popular-item-image {
-      border-radius: 54px;
-      display: block;
-      margin: 0 auto 8px;
-    }
-    .popular-item-name {
-      line-height: 16px;
-      font-size: 12px;
-      color: @font-13;
-    }
-  }
-  .confirm-btn {
-    line-height: 44px;
-    border-radius: 22px;
-  }
-
-  /** modal */
-
-  .verify-confirm-modal {
-    .@{app-prefix}-modal-header {
-      padding: 0;
-    }
-    .@{app-prefix}-modal-title {
-      display: none;
-    }
-    .@{app-prefix}-modal-body {
-      padding: 0;
-    }
-    .modal-content {
-      padding: 24px;
-      line-height: 20px;
-      color: @font-13;
-      font-size: 14px;
-      text-align: center;
-      border-bottom: 1px solid @border-2;
-      .bold {
-        font-weight: bold;
-      }
-    }
   }
 }

@@ -1,7 +1,7 @@
 import { MiscState } from '../../../test/data/miscState';
 import { renderHookWithProvider } from '../../../test/utils/render';
 import { setupStore } from '../../../test/utils/setup';
-import { useMisc, useSetLocalPhoneCountryCode, usePhoneCountryCode } from './misc';
+import { useMisc, useSetLocalPhoneCountryCode, usePhoneCountryCode, useIsScanQRCode } from './misc';
 import { useAppCommonDispatch } from '../index';
 import { renderHook } from '@testing-library/react';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
@@ -10,6 +10,7 @@ import * as indexHook from '.';
 import * as networkHook from '@portkey-wallet/hooks/hooks-ca/network';
 import { MainnetNetworkInfo, TestnetNetworkInfo } from '../../../test/data/networkState';
 import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
+import signalrDid from '@portkey-wallet/socket/socket-did';
 
 jest.mock('../index', () => ({
   useAppCommonDispatch: jest.fn(),
@@ -128,5 +129,54 @@ describe('usePhoneCountryCode', () => {
     expect(result.current.phoneCountryCodeList).toHaveLength(8);
     expect(result.current.phoneCountryCodeIndex).toHaveLength(7);
     expect(result.current.localPhoneCountryCode).toEqual(MiscState.misc.localPhoneCountryCode);
+  });
+});
+
+describe('useIsScanQRCode', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
+
+  it('should return false by default', () => {
+    const { result } = renderHook(() => useIsScanQRCode(undefined));
+    expect(result.current).toBe(false);
+  });
+
+  it('should set isScanQRCode to true when onScanLogin is called', () => {
+    jest.spyOn(signalrDid, 'stop').mockImplementation(jest.fn());
+    jest.spyOn(signalrDid, 'onScanLogin').mockImplementation(
+      jest.fn(callback => {
+        callback?.({} as any);
+        return {
+          remove: jest.fn(),
+        };
+      }),
+    );
+    jest.spyOn(signalrDid, 'doOpen').mockImplementation(jest.fn());
+
+    const { result } = renderHook(() => useIsScanQRCode('clientId'));
+
+    expect(result.current).toBe(true);
+  });
+
+  it('signalrDid.stop throw error, and catch error', async () => {
+    jest.spyOn(signalrDid, 'stop').mockImplementation(
+      jest.fn(() => {
+        throw Error;
+      }),
+    );
+    jest.spyOn(signalrDid, 'onScanLogin').mockImplementation(
+      jest.fn(callback => {
+        callback?.({} as any);
+        return {
+          remove: jest.fn(),
+        };
+      }),
+    );
+    jest.spyOn(signalrDid, 'doOpen').mockRejectedValue({ error: 'signalrDid.doOpen' });
+
+    const { result } = renderHook(() => useIsScanQRCode('clientId'));
+    expect(result.current).toBe(true);
   });
 });

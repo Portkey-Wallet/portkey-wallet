@@ -1,34 +1,41 @@
 import { useTranslation } from 'react-i18next';
-import { useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCallback, useEffect } from 'react';
+import { IDeviceItem, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCallback, useEffect, useState } from 'react';
 import { DeviceItemType } from '@portkey-wallet/types/types-ca/device';
-import { useLocation, useNavigate } from 'react-router';
-import { sleep } from '@portkey-wallet/utils';
+import { useNavigate } from 'react-router';
 import { useLoading } from 'store/Provider/hooks';
 import DevicesPopup from './Popup';
 import DevicesPrompt from './Prompt';
 import { useCommonState } from 'store/Provider/hooks';
+import { message } from 'antd';
 
 export default function Devices() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const { deviceList, refetch } = useDeviceList();
+  const onError = useCallback(() => {
+    message.error(`Loading failed. Please retry.`);
+  }, []);
+  const { deviceList, refresh, loading } = useDeviceList({
+    isInit: false,
+    onError,
+  });
+  const [devices, setDevices] = useState<IDeviceItem[]>([]);
   const { setLoading } = useLoading();
   const { isNotLessThan768 } = useCommonState();
 
-  const handleRefresh = useCallback(async () => {
-    setLoading(true);
-    await sleep(2000);
-    setLoading(false);
-    refetch();
-  }, [refetch, setLoading]);
+  useEffect(() => {
+    if (!loading) {
+      setDevices(deviceList);
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   useEffect(() => {
-    if (state === 'update') {
-      handleRefresh();
-    }
-  }, [handleRefresh, refetch, state]);
+    setLoading(true);
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleClick = useCallback(
     (item: DeviceItemType) => {
@@ -43,8 +50,8 @@ export default function Devices() {
   }, [navigate]);
 
   return isNotLessThan768 ? (
-    <DevicesPrompt headerTitle={title} goBack={handleBack} list={deviceList} onClick={handleClick} />
+    <DevicesPrompt headerTitle={title} goBack={handleBack} list={devices} onClick={handleClick} />
   ) : (
-    <DevicesPopup headerTitle={title} goBack={handleBack} list={deviceList} onClick={handleClick} />
+    <DevicesPopup headerTitle={title} goBack={handleBack} list={devices} onClick={handleClick} />
   );
 }

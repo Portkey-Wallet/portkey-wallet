@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router';
-import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import { resetUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
 import { useCurrentWallet, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -16,11 +16,11 @@ export default function DeviceDetail() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-
+  const { setLoading } = useLoading();
   const { managerAddress } = useParams();
   const dispatch = useAppDispatch();
   const userGuardianList = useGuardianList();
-  const { deviceList } = useDeviceList();
+  const { deviceList, loading } = useDeviceList();
   const { walletInfo } = useCurrentWallet();
   const device = useMemo(
     () => deviceList.filter((d) => d?.managerAddress === managerAddress)?.[0] || {},
@@ -30,7 +30,10 @@ export default function DeviceDetail() {
     if (device.managerAddress) return walletInfo.address === device?.managerAddress;
     return true;
   }, [device, walletInfo]);
-
+  useEffect(() => {
+    setLoading(loading);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
   const handleDelete = useCallback(async () => {
     dispatch(
       setLoginAccountAction({

@@ -49,6 +49,11 @@ export class DidService extends ServiceInit {
       };
     }
     this.refreshTokenConfig = config;
+    try {
+      this.getConnectToken();
+    } catch (error) {
+      console.log(error);
+    }
   };
   send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     try {

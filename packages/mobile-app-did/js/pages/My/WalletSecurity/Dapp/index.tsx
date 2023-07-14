@@ -4,11 +4,9 @@ import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
-import { useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-// import DeviceItem from './components/DeviceItem';
+
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
-import myEvents from 'utils/deviceEvent';
 
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { useAppDispatch } from 'store/hooks';
@@ -21,21 +19,11 @@ import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 
-const DeviceList: React.FC = () => {
-  const { refetch } = useDeviceList();
+const DappList: React.FC = () => {
   const currentNetwork = useCurrentNetworkInfo();
 
   const dispatch = useAppDispatch();
   const dappList = useCurrentDappList();
-
-  useEffect(() => {
-    const listener = myEvents.refreshDeviceList.addListener(() => {
-      refetch();
-    });
-    return () => {
-      listener.remove();
-    };
-  }, [refetch]);
 
   return (
     <PageContainer
@@ -114,4 +102,4 @@ const itemStyles = StyleSheet.create({
   },
 });
 
-export default DeviceList;
+export default DappList;

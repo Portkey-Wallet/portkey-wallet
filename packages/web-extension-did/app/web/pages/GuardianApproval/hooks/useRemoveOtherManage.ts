@@ -12,6 +12,7 @@ import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import qs from 'query-string';
 import ModalTip from 'pages/components/ModalTip';
+import { sleep } from '@portkey-wallet/utils';
 
 export const useRemoveOtherManage = () => {
   const { setLoading } = useLoading();
@@ -59,8 +60,9 @@ export const useRemoveOtherManage = () => {
       setLoading(false);
       ModalTip({
         content: 'Requested successfully',
-        onClose: () => {
-          navigate('/setting/wallet-security/manage-devices', { state: 'update' });
+        onClose: async () => {
+          await sleep(1000);
+          navigate('/setting/wallet-security/manage-devices');
         },
       });
     } catch (error: any) {

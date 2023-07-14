@@ -1,4 +1,4 @@
-import { IDeviceList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { IDeviceItem, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
@@ -8,7 +8,7 @@ import { getDeviceIcon } from 'utils/device';
 import './index.less';
 
 export interface IDeviceDetailComProps {
-  device: IDeviceList;
+  device: IDeviceItem;
   isCurrent: boolean;
   onDelete: () => Promise<void>;
 }

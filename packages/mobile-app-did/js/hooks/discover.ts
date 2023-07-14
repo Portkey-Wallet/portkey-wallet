@@ -13,7 +13,8 @@ import {
   addAutoApproveItem,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
-import { useCallback, useEffect, useMemo } from 'react';
+import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
+import { useCallback, useMemo } from 'react';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
 
@@ -75,7 +76,7 @@ export const useBookmarkList = () => {
   }, [dispatch, networkType]);
 
   const refresh = useCallback(
-    async (skipCount: number, maxResultCount: number) => {
+    async (skipCount = 0, maxResultCount = DISCOVER_BOOKMARK_MAX_COUNT) => {
       const result = await request.discover.getBookmarks({
         params: {
           skipCount,

@@ -45,7 +45,7 @@ const BrowserEditModal = ({
 }) => {
   const { t } = useLanguage();
   const { activeTabId } = useAppCASelector(state => state.discover);
-  const { bookmarkList } = useBookmarkList();
+  const { bookmarkList, refresh } = useBookmarkList();
   const isBookmarkLoading = useRef(false);
   const [bookmark, setBookmark] = useState(bookmarkList.find(item => item.url === browserInfo?.url));
 
@@ -101,6 +101,7 @@ const BrowserEditModal = ({
               });
               setBookmark(result);
               CommonToast.success('Added successfully');
+              refresh();
             } catch (error) {
               CommonToast.failError('Added failed');
             }
@@ -123,6 +124,7 @@ const BrowserEditModal = ({
                 },
               });
               CommonToast.success('Deleted successfully');
+              refresh();
               setBookmark(undefined);
             } catch (error) {
               CommonToast.failError('Deleted failed');

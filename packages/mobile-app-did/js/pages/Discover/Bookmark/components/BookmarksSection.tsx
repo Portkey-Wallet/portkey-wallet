@@ -20,8 +20,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import Loading from 'components/Loading';
 import ActionSheet from 'components/ActionSheet';
 import { TextXL } from 'components/CommonText';
-
-const DISCOVER_BOOKMARK_MAX_COUNT = 30;
+import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 
 function BookmarksSection() {
   const [{ isEdit }, dispatch] = useBookmark();
@@ -138,6 +137,9 @@ function BookmarksSection() {
             Loading.show();
             try {
               await request.discover.deleteAllBookmark();
+              setTimeout(() => {
+                getBookmarkListRef.current(true);
+              }, 100);
             } catch (error) {
               CommonToast.failError(error);
             }

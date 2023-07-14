@@ -12,9 +12,16 @@ import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import navigationService from 'utils/navigationService';
 import { ArchivedTabEnum } from 'pages/Discover/types';
 import NoDiscoverData from '../NoDiscoverData';
+import { useFocusEffect } from '@react-navigation/native';
 
 export function DiscoverArchivedSection() {
-  const { bookmarkList: bookmarkListStore } = useBookmarkList();
+  const { bookmarkList: bookmarkListStore, refresh } = useBookmarkList();
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh]),
+  );
+
   const recordsListStore = useRecordsList(true);
 
   const [index, setIndex] = React.useState(

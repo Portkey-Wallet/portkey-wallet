@@ -35,7 +35,6 @@ import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routePa
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import {
   clearNftCollection,
   fetchNFTCollectionsAsync,
@@ -47,13 +46,16 @@ import { ChainId } from '@portkey-wallet/types';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
-
   const isTestnet = useIsTestnet();
 
   const { sendType, assetInfo, toInfo, transactionFee, sendNumber } = useRouterParams<IToSendPreviewParamsType>();
+
+  useFetchTxFee();
+  const { crossChain: crossFee } = useGetTxFee(assetInfo.chainId);
 
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
@@ -351,12 +353,12 @@ const SendHome: React.FC = () => {
                 </TextM>
                 <View>
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                    CROSS_FEE,
+                    crossFee,
                   )} ELF`}</TextM>
                   {!isTestnet ? (
                     <TextS
                       style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                      ZERO.plus(CROSS_FEE).multipliedBy(tokenPriceObject[ELF_SYMBOL]),
+                      ZERO.plus(crossFee).multipliedBy(tokenPriceObject[ELF_SYMBOL]),
                     )}`}</TextS>
                   ) : (
                     <TextM />
@@ -374,17 +376,17 @@ const SendHome: React.FC = () => {
                 </TextM>
                 <View>
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
-                    {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(CROSS_FEE))
+                    {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossFee))
                       ? '0'
-                      : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(CROSS_FEE)))}{' '}
+                      : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(crossFee)))}{' '}
                     {'ELF'}
                   </TextM>
                   {!isTestnet ? (
                     <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${
-                      ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(CROSS_FEE))
+                      ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossFee))
                         ? '0'
                         : formatAmountShow(
-                            ZERO.plus(sendNumber).minus(ZERO.plus(CROSS_FEE)).times(tokenPriceObject[ELF_SYMBOL]),
+                            ZERO.plus(sendNumber).minus(ZERO.plus(crossFee)).times(tokenPriceObject[ELF_SYMBOL]),
                             2,
                           )
                     }`}</TextS>

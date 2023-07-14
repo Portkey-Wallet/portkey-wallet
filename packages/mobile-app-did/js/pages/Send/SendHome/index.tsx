@@ -34,7 +34,7 @@ import { BGStyles } from 'assets/theme/styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
 import { DEFAULT_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
-import { CROSS_FEE, DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
 import {
   TransactionError,
@@ -48,6 +48,7 @@ import { useCheckManagerSyncState } from 'hooks/wallet';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
+  useFetchTxFee();
 
   const isValidChainId = useIsValidSuffix();
 
@@ -59,6 +60,8 @@ const SendHome: React.FC = () => {
   const chainInfo = useCurrentChain(assetInfo?.chainId);
 
   const pin = usePin();
+
+  const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
 
   const [, requestQrPermission] = useQrScanPermission();
 
@@ -152,8 +155,8 @@ const SendHome: React.FC = () => {
     if (selectedAssets.symbol !== ELF_SYMBOL)
       return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
 
-    // elf <= DEFAULT_FEE
-    if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(DEFAULT_FEE))
+    // elf <= maxFee
+    if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
       return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
 
     Loading.show();
@@ -174,9 +177,9 @@ const SendHome: React.FC = () => {
       );
     } catch (err: any) {
       if (err?.code === 500) {
-        setTransactionFee(DEFAULT_FEE);
+        setTransactionFee(String(maxFee));
         const selectedAssetsNum = divDecimals(selectedAssets.balance, selectedAssets.decimals || '0');
-        setSendNumber(selectedAssetsNum.minus(DEFAULT_FEE).toString());
+        setSendNumber(selectedAssetsNum.minus(maxFee).toString());
       }
     }
     Loading.hide();
@@ -184,6 +187,7 @@ const SendHome: React.FC = () => {
     chainInfo?.chainId,
     checkManagerSyncState,
     getTransactionFee,
+    maxFee,
     selectedAssets.balance,
     selectedAssets.chainId,
     selectedAssets.decimals,
@@ -351,7 +355,7 @@ const SendHome: React.FC = () => {
           return { status: false };
         }
 
-        if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(CROSS_FEE, DEFAULT_DECIMAL))) {
+        if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, DEFAULT_DECIMAL))) {
           setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
           return { status: false };
         }
@@ -392,6 +396,7 @@ const SendHome: React.FC = () => {
     assetInfo.symbol,
     chainInfo?.chainId,
     checkManagerSyncState,
+    crossFee,
     getTransactionFee,
     selectedAssets.balance,
     selectedAssets.decimals,

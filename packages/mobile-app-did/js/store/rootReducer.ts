@@ -20,6 +20,7 @@ import { switchSlice } from '@portkey-wallet/store/store-ca/switch/slice';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
+import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -53,6 +54,7 @@ const rootReducer = combineReducers({
   [cmsSlice.name]: cmsSlice.reducer,
   [userSlice.name]: userReducer,
   [discoverSlice.name]: discoverReducer,
+  [txFeeSlice.name]: txFeeSlice.reducer,
 });
 
 export default rootReducer;

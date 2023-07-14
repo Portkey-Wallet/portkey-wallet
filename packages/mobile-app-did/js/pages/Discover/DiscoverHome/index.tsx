@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import SimulatedInputBox from 'components/SimulatedInputBox';
@@ -34,28 +34,28 @@ export default function DiscoverHome() {
     [t],
   );
 
+  const RightDom = useMemo(
+    () => (
+      <TouchableOpacity
+        style={styles.svgWrap}
+        onPress={async () => {
+          if (!(await requestQrPermission())) return showDialog();
+          navigationService.navigate('QrScanner');
+        }}>
+        <Svg icon="scan" size={22} color={defaultColors.font2} />
+      </TouchableOpacity>
+    ),
+    [requestQrPermission, showDialog],
+  );
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bg5}>
-      <View style={styles.container}>
-        <CustomHeader
-          noLeftDom
-          rightDom={
-            <TouchableOpacity
-              style={styles.svgWrap}
-              onPress={async () => {
-                if (!(await requestQrPermission())) return showDialog();
-                navigationService.navigate('QrScanner');
-              }}>
-              <Svg icon="scan" size={22} color={defaultColors.font2} />
-            </TouchableOpacity>
-          }
-          themeType="blue"
-          titleDom={'Discover'}
-        />
-        <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
+      <CustomHeader noLeftDom rightDom={RightDom} themeType="blue" titleDom={'Discover'} />
+      <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
+      <ScrollView style={styles.container}>
         <DiscoverArchivedSection />
         <DiscoverCmsListSection />
-      </View>
+      </ScrollView>
     </SafeAreaBox>
   );
 }
@@ -63,6 +63,7 @@ export default function DiscoverHome() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: defaultColors.bg4,
+    paddingTop: pTd(24),
     flex: 1,
   },
   inputContainer: {

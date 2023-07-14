@@ -21,8 +21,8 @@ const TextWithProtocolIcon = ({
   title = '',
   url,
   textFontSize = pTd(14),
-  wrapStyle = {},
   iconSize = pTd(14),
+  wrapStyle = {},
   type = 'iconRight',
   location = 'other',
 }: ITextWithProtocolIconProps) => {
@@ -31,8 +31,6 @@ const TextWithProtocolIcon = ({
   const textStyleObj: any = {
     fontSize: textFontSize,
   };
-
-  console.log(isDanger);
 
   const ProtocolIcon = useMemo(() => {
     if (isDanger) {
@@ -67,6 +65,8 @@ export default memo(TextWithProtocolIcon);
 
 const styles = StyleSheet.create({
   wrap: {
+    width: '100%',
+    paddingRight: pTd(16),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',

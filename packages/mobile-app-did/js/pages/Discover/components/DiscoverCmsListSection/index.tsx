@@ -10,11 +10,14 @@ import React, { useCallback } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import fonts from 'assets/theme/fonts';
 
 export function DiscoverCmsListSection() {
   const GroupList = useDiscoverGroupList();
   const { s3Url } = useCurrentNetworkInfo();
   const discoverJump = useDiscoverJumpWithNetWork();
+
+  console.log('===GroupListGroupList=================================', GroupList);
 
   const onClickJump = useCallback(
     (i: DiscoverItem) => {
@@ -32,8 +35,8 @@ export function DiscoverCmsListSection() {
   return (
     <View style={styles.wrap}>
       {GroupList.map((group, index) => (
-        <View key={index}>
-          <TextM style={[FontStyles.font3, styles.groupTitle]}>{group.title}</TextM>
+        <View key={index} style={styles.groupWrap}>
+          <TextM style={[FontStyles.font5, fonts.mediumFont, styles.groupTitle]}>{group.title}</TextM>
           <View style={styles.itemsGroup}>
             {group.items.map((item, i) => (
               <TouchableOpacity key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
@@ -55,12 +58,14 @@ export function DiscoverCmsListSection() {
 
 const styles = StyleSheet.create({
   wrap: {
-    ...GStyles.paddingArg(8, 20),
-    flex: 1,
+    ...GStyles.paddingArg(0, 20),
+    marginBottom: pTd(16),
+  },
+  groupWrap: {
+    marginBottom: pTd(16),
   },
   groupTitle: {
     marginBottom: pTd(8),
-    marginTop: pTd(16),
   },
   itemsGroup: {
     borderRadius: pTd(6),

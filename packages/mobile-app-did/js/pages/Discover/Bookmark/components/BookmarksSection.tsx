@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import GStyles from 'assets/theme/GStyles';
-import { FlatList, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
+import { FlatList, LayoutAnimation, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
 import { BookmarkProvider, setEdit, useBookmark } from '../context/bookmarksContext';
 import CommonButton from 'components/CommonButton';
 import BookmarkItem from './BookmarkItem';
@@ -15,6 +15,7 @@ import { TextM } from 'components/CommonText';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 import myEvents from 'utils/deviceEvent';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { nextAnimation } from 'utils/animation';
 
 const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -27,7 +28,14 @@ function BookmarksSection() {
       <View style={styles.buttonGroupWrap}>
         {isEdit ? (
           <>
-            <CommonButton onPress={() => dispatch(setEdit(false))} title="Done" type="primary" />
+            <CommonButton
+              onPress={() => {
+                nextAnimation();
+                dispatch(setEdit(false));
+              }}
+              title="Done"
+              type="primary"
+            />
             <CommonButton
               containerStyle={styles.deleteAll}
               titleStyle={FontStyles.font12}
@@ -36,7 +44,14 @@ function BookmarksSection() {
             />
           </>
         ) : (
-          <CommonButton onPress={() => dispatch(setEdit(true))} title="Edit" type="primary" />
+          <CommonButton
+            onPress={() => {
+              nextAnimation();
+              dispatch(setEdit(true));
+            }}
+            title="Edit"
+            type="primary"
+          />
         )}
       </View>
     ),

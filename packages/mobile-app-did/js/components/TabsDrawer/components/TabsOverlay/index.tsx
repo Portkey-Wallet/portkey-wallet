@@ -95,13 +95,11 @@ const BrowserEditModal = ({
             try {
               const result = await request.discover.addBookmark({
                 params: {
-                  name: browserInfo?.name || '',
+                  name: browserInfo?.name || browserInfo?.url || '',
                   url: browserInfo?.url || '',
                 },
               });
-              console.log('result', result);
-              // TODO: add Bookmark
-              setBookmark({} as any);
+              setBookmark(result);
               CommonToast.success('Added successfully');
             } catch (error) {
               CommonToast.failError('Added failed');

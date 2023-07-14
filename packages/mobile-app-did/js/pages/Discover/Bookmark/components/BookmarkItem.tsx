@@ -15,10 +15,16 @@ import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+
+type BookmarkItemProps<T> = RenderItemParams<T> & {
+  onDelete: (item: T) => void;
+};
 
 export default memo(
-  function BookmarkItem(props: RenderItemParams<string>) {
-    const { drag, isActive, item } = props;
+  function BookmarkItem(props: BookmarkItemProps<IBookmarkItem>) {
+    const { drag, isActive, item, onDelete } = props;
     const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
     const [{ isEdit }] = useBookmark();
     const preIsEdit = usePrevious(isEdit);
@@ -29,14 +35,21 @@ export default memo(
       const listener = myEvents.bookmark.closeSwipeable.addListener(() => swipeableRef.current?.close());
       return () => listener.remove();
     });
+
+    const deleteItem = useCallback(() => {
+      swipeableRef.current?.close();
+      onDelete(item);
+    }, [item, onDelete]);
+
     const renderUnderlayLeft = useCallback(
       () => (
-        <Touchable style={styles.underlayLeftBox} onPress={() => swipeableRef.current?.close()}>
+        <Touchable style={styles.underlayLeftBox} onPress={deleteItem}>
           <TextM style={[FontStyles.font2]}>Delete</TextM>
         </Touchable>
       ),
-      [],
+      [deleteItem],
     );
+
     const EditDom = useMemo(() => {
       if (!isEdit) return null;
       return (
@@ -50,13 +63,14 @@ export default memo(
         </Touchable>
       );
     }, [isEdit]);
+
     return (
       <ScaleDecorator activeScale={1.05}>
         <SwipeableItem
-          key={item}
+          key={item.id}
           item={props}
           ref={swipeableRef}
-          swipeEnabled={true}
+          swipeEnabled={false}
           snapPointsLeft={[80]}
           renderUnderlayLeft={renderUnderlayLeft}>
           <View
@@ -70,10 +84,12 @@ export default memo(
               styles.marginContainer,
             ]}>
             {EditDom}
-            <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} />
+            <DiscoverWebsiteImage imageUrl={getFaviconUrl(item.url)} size={pTd(40)} style={styles.websiteIconStyle} />
             <View style={styles.infoWrap}>
-              <TextWithProtocolIcon url={'https://wwww.baidu.com'} textFontSize={pTd(16)} />
-              <TextS style={[FontStyles.font7]}>dddddd</TextS>
+              <TextWithProtocolIcon title={item.name} url={item.url} textFontSize={pTd(16)} />
+              <TextS style={[FontStyles.font7]} numberOfLines={1} ellipsizeMode="tail">
+                {item.url}
+              </TextS>
             </View>
 
             {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
@@ -84,8 +100,8 @@ export default memo(
       </ScaleDecorator>
     );
   },
-  (prevProps: RenderItemParams<string>, nextProps: RenderItemParams<string>) => {
-    return prevProps.item === nextProps.item && prevProps.isActive === nextProps.isActive;
+  (prevProps: RenderItemParams<IBookmarkItem>, nextProps: RenderItemParams<IBookmarkItem>) => {
+    return prevProps.item.id === nextProps.item.id && prevProps.isActive === nextProps.isActive;
   },
 );
 

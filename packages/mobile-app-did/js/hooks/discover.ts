@@ -12,7 +12,7 @@ import {
   addBookmarkList,
   addAutoApproveItem,
 } from '@portkey-wallet/store/store-ca/discover/slice';
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useCallback, useEffect, useMemo } from 'react';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
@@ -65,34 +65,40 @@ export const useDiscoverWhiteList = () => {
   return { checkIsInWhiteList, upDateWhiteList };
 };
 
-const DISCOVER_BOOKMARK_MAX_COUNT = 30;
-
 export const useBookmarkList = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
   const { discoverMap } = useAppCASelector(state => state.discover);
 
+  const clean = useCallback(() => {
+    dispatch(cleanBookmarkList(networkType));
+  }, [dispatch, networkType]);
+
   const refresh = useCallback(
-    async (pager = 0) => {
+    async (skipCount: number, maxResultCount: number) => {
       const result = await request.discover.getBookmarks({
         params: {
-          skipCount: pager * DISCOVER_BOOKMARK_MAX_COUNT,
-          maxResultCount: DISCOVER_BOOKMARK_MAX_COUNT,
+          skipCount,
+          maxResultCount,
         },
       });
-      if (pager === 0) {
-        dispatch(cleanBookmarkList(networkType));
+      if (skipCount === 0) {
+        clean();
       }
       dispatch(addBookmarkList({ networkType, list: result.items || [] }));
-      return result;
+      return result as {
+        items: IBookmarkItem[];
+        totalCount: number;
+      };
     },
-    [dispatch, networkType],
+    [clean, dispatch, networkType],
   );
 
   const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);
 
   return {
     refresh,
+    clean,
     bookmarkList,
   };
 };

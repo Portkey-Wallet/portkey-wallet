@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
 
   tabHeader: {
     width: pTd(214),
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: defaultColors.bg18,
     borderRadius: pTd(6),
     flexDirection: 'row',
     justifyContent: 'space-between',

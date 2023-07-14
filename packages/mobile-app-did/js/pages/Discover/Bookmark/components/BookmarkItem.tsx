@@ -15,10 +15,13 @@ import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+
+type BookmarkItemType = RenderItemParams<any> & { onDelete: (item: { id: string; [key: string]: any }) => void };
 
 export default memo(
-  function BookmarkItem(props: RenderItemParams<string>) {
-    const { drag, isActive, item } = props;
+  function BookmarkItem(props: BookmarkItemType) {
+    const { item, onDelete } = props;
     const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
     const [{ isEdit }] = useBookmark();
     const preIsEdit = usePrevious(isEdit);
@@ -31,7 +34,11 @@ export default memo(
     });
     const renderUnderlayLeft = useCallback(
       () => (
-        <Touchable style={styles.underlayLeftBox} onPress={() => swipeableRef.current?.close()}>
+        <Touchable
+          style={styles.underlayLeftBox}
+          onPress={() => {
+            onDelete(item);
+          }}>
           <TextM style={[FontStyles.font2, GStyles.flexCol, GStyles.center]}>Delete</TextM>
         </Touchable>
       ),
@@ -53,10 +60,10 @@ export default memo(
     return (
       <ScaleDecorator activeScale={1.05}>
         <SwipeableItem
-          key={item}
+          key={item.id}
           item={props}
           ref={swipeableRef}
-          swipeEnabled={true}
+          swipeEnabled={false}
           snapPointsLeft={[80]}
           renderUnderlayLeft={renderUnderlayLeft}>
           <View
@@ -70,10 +77,14 @@ export default memo(
               styles.marginContainer,
             ]}>
             {EditDom}
-            <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} />
+            <DiscoverWebsiteImage
+              size={pTd(40)}
+              style={styles.websiteIconStyle}
+              imageUrl={getFaviconUrl(item?.url || '')}
+            />
             <View style={styles.infoWrap}>
-              <TextWithProtocolIcon url={'https://wwww.baidu.com'} textFontSize={pTd(16)} />
-              <TextS style={[FontStyles.font7]}>dddddd</TextS>
+              <TextWithProtocolIcon url={item.url} textFontSize={pTd(16)} />
+              <TextS style={[FontStyles.font7]}>{item.url}</TextS>
             </View>
 
             {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
@@ -84,7 +95,7 @@ export default memo(
       </ScaleDecorator>
     );
   },
-  (prevProps: RenderItemParams<string>, nextProps: RenderItemParams<string>) => {
+  (prevProps: RenderItemParams<any>, nextProps: RenderItemParams<any>) => {
     return prevProps.item === nextProps.item && prevProps.isActive === nextProps.isActive;
   },
 );

@@ -15,7 +15,10 @@ type BrowserTabProps = {
 
 const Options: CaptureOptions = { quality: 0.2, format: 'jpg' };
 
-const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab({ isHidden, uri, onLoadEnd }, forward) {
+const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
+  { isHidden, uri, onLoadEnd, autoApprove },
+  forward,
+) {
   const viewRef = useRef<any>(null);
   const webViewRef = useRef<IWebView | null>(null);
   const progressbarRef = useRef<IProgressbar>(null);
@@ -37,12 +40,12 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
   }, [isHidden, options]);
 
   const onPageLoadEnd = useCallback(() => {
-    if (!isApproved.current) {
+    if (!isApproved.current && autoApprove) {
       isApproved.current = true;
       webViewRef.current?.autoApprove();
     }
     onLoadEnd?.();
-  }, [onLoadEnd]);
+  }, [onLoadEnd, autoApprove]);
   return (
     <View
       ref={viewRef}

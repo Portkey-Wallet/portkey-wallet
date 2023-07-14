@@ -14,6 +14,7 @@ import { removeRecordsItems, clearRecordsList } from '@portkey-wallet/store/stor
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import ActionSheet from 'components/ActionSheet';
 
 // const mockData = ['1', '2', '3'];
 
@@ -33,7 +34,13 @@ function BookmarksSection() {
   );
 
   const onDeleteAll = useCallback(() => {
-    storeDispatch(clearRecordsList({ networkType }));
+    ActionSheet.alert({
+      title2: `Delete all records?`,
+      buttons: [
+        { title: 'Cancel', type: 'outline' },
+        { title: 'Confirm', type: 'primary', onPress: () => storeDispatch(clearRecordsList({ networkType })) },
+      ],
+    });
   }, [networkType, storeDispatch]);
   const BottomBox = useMemo(() => {
     if (recordList?.length === 0) return null;

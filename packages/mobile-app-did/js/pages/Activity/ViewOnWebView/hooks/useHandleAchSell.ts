@@ -72,7 +72,7 @@ export const useHandleAchSell = () => {
       const publicKey = (account.keyPair as any).getPublic('hex');
 
       const message = SparkMD5.hash(`${params.orderId}${rawResult.data}`);
-      const signature = AElf.wallet.sign(message, account.keyPair).toString('hex');
+      const signature = AElf.wallet.sign(Buffer.from(message).toString('hex'), account.keyPair).toString('hex');
       return {
         rawTransaction: rawResult.data,
         publicKey,

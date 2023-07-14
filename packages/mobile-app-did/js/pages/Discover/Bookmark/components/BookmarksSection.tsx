@@ -12,13 +12,14 @@ import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 import myEvents from 'utils/deviceEvent';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useBookmarkList } from 'hooks/discover';
+import { nextAnimation } from 'utils/animation';
 
 import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
 import CommonToast from 'components/CommonToast';
 import { request } from '@portkey-wallet/api/api-did';
 import Loading from 'components/Loading';
 import ActionSheet from 'components/ActionSheet';
-import { TextL, TextXL } from 'components/CommonText';
+import { TextXL } from 'components/CommonText';
 
 const DISCOVER_BOOKMARK_MAX_COUNT = 30;
 
@@ -95,6 +96,7 @@ function BookmarksSection() {
   const onEdit = useCallback(() => {
     deleteList.current = [];
     setEditList([...list]);
+    nextAnimation();
     dispatch(setEdit(true));
   }, [dispatch, list]);
 
@@ -118,6 +120,7 @@ function BookmarksSection() {
       }
       Loading.hide();
     }
+    nextAnimation();
     dispatch(setEdit(false));
   }, [dispatch]);
 
@@ -139,6 +142,7 @@ function BookmarksSection() {
               CommonToast.failError(error);
             }
             Loading.hide();
+            nextAnimation();
             dispatch(setEdit(false));
           },
         },

@@ -13,16 +13,22 @@ import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 
 const DeviceList: React.FC = () => {
-  const { deviceList, refetch, loading: isRefreshing } = useDeviceList(false);
+  const {
+    deviceList,
+    refresh,
+    loading: isRefreshing,
+  } = useDeviceList({
+    isInit: false,
+  });
   const walletInfo = useCurrentWalletInfo();
 
   const isLoadingRef = useRef(false);
   const getDeviceList = useCallback(async () => {
     if (isLoadingRef.current) return;
     isLoadingRef.current = true;
-    await refetch();
+    await refresh();
     isLoadingRef.current = false;
-  }, [refetch]);
+  }, [refresh]);
 
   useEffectOnce(() => {
     const timer = setTimeout(() => {

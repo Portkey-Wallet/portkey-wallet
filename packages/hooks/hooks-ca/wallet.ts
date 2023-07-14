@@ -14,7 +14,9 @@ import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
 import { ChainId } from '@portkey-wallet/types';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-import useEffectOnce from 'hooks/useEffectOnce';
+
+import { getCAHolderManagerInfo } from '@portkey-wallet/graphql/contract/queries';
+import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated__/types';
 
 export interface CurrentWalletType extends WalletInfoType, CAInfoType {
   caHash?: string;
@@ -76,44 +78,31 @@ export const useCurrentWallet = () => {
   }, [originChainId, wallet]);
 };
 
-export const useDeviceList = (isInitLoad = true) => {
+interface IUseDeviceListConfig {
+  isInit?: boolean;
+  isAmountOnly?: boolean;
+  onError?: (error: any) => void;
+}
+const defaultUseDeviceListConfig: IUseDeviceListConfig = {
+  isInit: true,
+  isAmountOnly: false,
+};
+export const useDeviceList = (config?: IUseDeviceListConfig) => {
+  const { isInit, isAmountOnly, onError } = { ...defaultUseDeviceListConfig, ...config };
+
   const networkInfo = useCurrentNetworkInfo();
   const walletInfo = useCurrentWalletInfo();
   const originChainId = useOriginChainId();
   const chainInfo = useCurrentChain(originChainId);
-
-  const [load, { data, error, loading, refetch }] = useCaHolderManagerInfoLazyQuery({
-    client: getApolloClient(networkInfo.networkType),
-    variables: {
-      dto: {
-        chainId: chainInfo?.chainId,
-        caHash: walletInfo.caHash,
-        skipCount: 0,
-        maxResultCount: 100,
-      },
-    },
-    fetchPolicy: 'no-cache',
-  });
+  const [loading, setLoading] = useState(false);
 
   const [deviceList, setDeviceList] = useState<IDeviceItem[]>([]);
   const [deviceAmount, setDeviceAmount] = useState(0);
-  const [decodeLoading, setDecodeLoading] = useState(false);
 
-  const getDeviceList = useCallback(async () => {
-    if (error || !data || !data.caHolderManagerInfo || data.caHolderManagerInfo.length < 1) {
-      setDeviceList([]);
-      setDeviceAmount(0);
-      return;
-    }
-
-    const caHolderManagerInfo = data.caHolderManagerInfo[0];
-    const managers = caHolderManagerInfo?.managerInfos || [];
-    // console.log('managers===', managers);
-    setDeviceAmount(managers.length);
-
-    setDecodeLoading(true);
-    const extraDataList = await extraDataListDecode(managers.map(item => item?.extraData || ''));
-    const _deviceList = managers
+  const getDeviceList = useCallback(async (managerInfos: Array<Maybe<ManagerInfo>>) => {
+    const extraDataStrList = managerInfos.map(item => item?.extraData || '');
+    const extraDataList = await extraDataListDecode(extraDataStrList);
+    const _deviceList = managerInfos
       .map((item, idx) => {
         return {
           ...extraDataList[idx],
@@ -123,18 +112,57 @@ export const useDeviceList = (isInitLoad = true) => {
       .reverse();
 
     setDeviceList(_deviceList);
-    setDecodeLoading(false);
-  }, [error, data]);
+  }, []);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await getCAHolderManagerInfo(networkInfo.networkType, {
+        dto: {
+          chainId: chainInfo?.chainId,
+          caHash: walletInfo.caHash,
+          skipCount: 0,
+          maxResultCount: 200,
+        },
+      });
+      const { data } = result || {};
+
+      if (!data || !data.caHolderManagerInfo || data.caHolderManagerInfo.length < 1) {
+        throw new Error('no data');
+      }
+      const caHolderManagerInfo = data.caHolderManagerInfo[0];
+      const managersInfos = caHolderManagerInfo?.managerInfos || [];
+
+      setDeviceAmount(managersInfos.length);
+      if (!isAmountOnly) {
+        await getDeviceList(managersInfos);
+      }
+    } catch (error) {
+      setDeviceList([]);
+      setDeviceAmount(0);
+      onError?.(error);
+    }
+  }, [chainInfo?.chainId, getDeviceList, isAmountOnly, networkInfo.networkType, onError, walletInfo.caHash]);
+
+  // const [load, { data, error, loading }] = useCaHolderManagerInfoLazyQuery({
+  //   client: getApolloClient(networkInfo.networkType),
+  //   variables: {
+  //     dto: {
+  //       chainId: chainInfo?.chainId,
+  //       caHash: walletInfo.caHash,
+  //       skipCount: 0,
+  //       maxResultCount: 100,
+  //     },
+  //   },
+  //   fetchPolicy: 'no-cache',
+  // });
 
   useEffect(() => {
-    getDeviceList();
-  }, [getDeviceList]);
+    isInit && refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  useEffectOnce(() => {
-    isInitLoad && load();
-  });
-
-  return { load, deviceList, refetch, deviceAmount, loading: loading || decodeLoading };
+  return { refresh, deviceList, deviceAmount, loading };
 };
 
 export const useSetWalletName = () => {

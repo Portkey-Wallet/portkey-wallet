@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import GStyles from 'assets/theme/GStyles';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
 import { BookmarkProvider, setEdit, useBookmark } from '../context/bookmarksContext';
 import CommonButton from 'components/CommonButton';
 import BookmarkItem from './BookmarkItem';
@@ -14,6 +14,8 @@ import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import { RefreshControl } from 'react-native-gesture-handler';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
+import myEvents from 'utils/deviceEvent';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 // const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const mockData = ['1', '2', '3'];
@@ -53,9 +55,8 @@ function BookmarksSection() {
     ),
     [dispatch, isEdit],
   );
-
+  const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
   if (list.length === 0) return <NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />;
-
   return (
     <View style={styles.containerStyles}>
       <View style={styles.listWrap}>
@@ -64,6 +65,7 @@ function BookmarksSection() {
           contentContainerStyle={styles.flatListContent}
           scrollEnabled
           data={list}
+          onTouchStart={closeSwipeable}
           keyExtractor={_item => _item}
           renderItem={props => <BookmarkItem {...props} />}
           refreshControl={

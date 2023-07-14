@@ -17,6 +17,7 @@ import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import assetsSlice from '@portkey-wallet/store/store-ca/assets/slice';
+import tokenManagementSlice from '@portkey-wallet/store/store-ca/tokenManagement/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -41,6 +42,7 @@ const reduxPersistConfig = {
     contactSlice.name,
     miscSlice.name,
     tokenBalanceSlice.name,
+    tokenManagementSlice.name,
     settingsSlice.name,
     chainSlice.name,
     recentSlice.name,
@@ -61,6 +63,7 @@ const defaultMiddlewareOptions: DefaultMiddlewareOptions = {
   serializableCheck: {
     // https://redux-toolkit.js.org/usage/usage-guide#use-with-redux-persist
     ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+    ignoreState: true,
   },
 };
 

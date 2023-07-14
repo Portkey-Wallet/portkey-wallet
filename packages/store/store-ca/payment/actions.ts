@@ -21,7 +21,6 @@ export const fetchBuyFiatListAsync = createAsyncThunk<FiatType[]>('payment/fetch
 
   return Object.values(fiatMap).map(item => ({
     ...item,
-    countryName: countryCodeMap[item.country]?.country,
     icon: countryCodeMap[item.country]?.icon,
   }));
 });
@@ -44,7 +43,6 @@ export const fetchSellFiatListAsync = createAsyncThunk<FiatType[]>('payment/fetc
 
   return Object.values(fiatMap).map(item => ({
     ...item,
-    countryName: countryCodeMap[item.country]?.country,
     icon: countryCodeMap[item.country]?.icon,
   }));
 });

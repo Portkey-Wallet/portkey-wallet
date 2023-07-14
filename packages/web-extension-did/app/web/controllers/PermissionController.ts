@@ -3,16 +3,15 @@ import { PromptRouteTypes } from 'messages/InternalMessageTypes';
 import NotificationService from 'service/NotificationService';
 import { CreatePromptType } from 'types';
 import type { PortKeyResultType } from 'utils/errorHandler';
-import { getLocalStorage } from 'utils/storage/chromeStorage';
-// import pendingTaskService from 'controllers/pendingController';
+import { getCurrentNetworkWallet } from 'utils/lib/SWGetReduxStore';
 
 export default class PermissionController {
   notificationService: NotificationService;
-  whitelist?: string[];
+  whitelist: string[];
   getPassword?: () => string | null;
   constructor({
     notificationService,
-    whitelist,
+    whitelist = [],
     getPassword,
   }: {
     notificationService: NotificationService;
@@ -64,40 +63,39 @@ export default class PermissionController {
     }
   }
 
-  getRegisterStatus() {
-    return getLocalStorage('registerStatus');
+  checkAllowMethod(methodName: string) {
+    return this.whitelist.includes(methodName) || isNotificationEvents(methodName);
   }
 
-  async checkIsRegister() {
-    const registerStatus = await getLocalStorage('registerStatus');
-    if (registerStatus === 'Registered') {
-      return true;
-    } else {
-      return false;
-    }
+  async checkCurrentNetworkIsRegister() {
+    const currentNetworkWallet = await getCurrentNetworkWallet();
+    const originChainId = currentNetworkWallet?.originChainId;
+    return Boolean(originChainId && currentNetworkWallet?.[originChainId]?.caHash);
   }
 
-  async checkIsRegisterOtherwiseRegister(method: string): Promise<PortKeyResultType> {
-    if (this.whitelist?.includes(method) || isNotificationEvents(method))
+  async registerCurrentNetworkWallet(): Promise<PortKeyResultType> {
+    if (await this.checkCurrentNetworkIsRegister())
+      return {
+        error: 0,
+        message: 'The current network has completed login',
+      };
+    // Not yet registered or logged in
+    let routerType: keyof typeof PromptRouteTypes = 'REGISTER_WALLET';
+    const currentNetworkWallet = await getCurrentNetworkWallet();
+    if (currentNetworkWallet?.managerInfo) routerType = 'BLANK_PAGE';
+    return await this.notificationService.openPrompt(
+      {
+        method: PromptRouteTypes[routerType],
+      },
+      'tabs',
+    );
+  }
+  async checkCurrentNetworkOtherwiseRegister(methodName: string): Promise<PortKeyResultType> {
+    if (this.checkAllowMethod(methodName))
       return {
         error: 0,
         message: 'no check',
       };
-    const registerStatus = await this.getRegisterStatus();
-    if (registerStatus !== 'Registered') {
-      // if (!search) search = { from: 'sw' };
-      return await this.notificationService.openPrompt(
-        {
-          method: PromptRouteTypes[registerStatus === 'registeredNotGetCaAddress' ? 'BLANK_PAGE' : 'REGISTER_WALLET'],
-          // search: JSON.stringify(search),
-        },
-        'tabs',
-      );
-    } else {
-      return {
-        error: 0,
-        message: 'Registered',
-      };
-    }
+    return await this.registerCurrentNetworkWallet();
   }
 }

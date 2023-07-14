@@ -17,17 +17,7 @@ export function getUrlObj(url: string) {
  * @param url
  * @returns
  */
-export const isIp = (url: string): boolean => {
-  return /((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))/.test(url);
-};
-
-/**
- * check if url is ip
- * @param url
- * @returns
- */
 export const isDangerousLink = (url: string): boolean => {
-  if (isIp(url)) return true;
   return /^(?:http:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!&',;=.+]+$/g.test(url);
 };
 
@@ -39,11 +29,11 @@ export const isDangerousLink = (url: string): boolean => {
  * @returns - String corresponding to sanitized input depending if it's a search or url
  */
 export const prefixUrlWithProtocol = (url: string, defaultProtocol = 'https://') => {
-  if (isIp(url)) defaultProtocol = 'http://';
   const hasProtocol = /^[a-z]*:\/\//.test(url);
   const sanitizedURL = hasProtocol ? url : `${defaultProtocol}${url}`;
   return sanitizedURL;
 };
+
 /**
  * Return host from url string
  *
@@ -62,6 +52,15 @@ export function getHost(url: string, defaultProtocol = 'https://') {
 
   return result;
 }
+/**
+ *
+ * @param url
+ * @returns
+ */
+export function getProtocolAndHost(url: string) {
+  const { protocol, hostname } = getUrlObj(url);
+  return `${protocol}//${hostname}`;
+}
 
 /**
  * getFaviconUrl
@@ -70,7 +69,7 @@ export function getHost(url: string, defaultProtocol = 'https://') {
  * @returns string
  */
 export function getFaviconUrl(url: string, size: number = 50): string {
-  return `https://api.faviconkit.com/${getHost(url)}/${size}`;
+  return `https://icon.horse/icon/${getHost(url)}/${size}`;
 }
 
 /**

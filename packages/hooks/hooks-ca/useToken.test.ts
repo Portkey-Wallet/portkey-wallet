@@ -12,7 +12,7 @@ import { TokenManagementState } from '../../../test/data/tokenManagementState';
 import * as baseHooks from '../index';
 import * as networkHooks from './network';
 import { request } from '@portkey-wallet/api/api-did';
-import { NetworkInfo } from '../../../test/data/networkState';
+import { TestnetNetworkInfo } from '../../../test/data/networkState';
 
 jest.mock('@portkey-wallet/store/store-ca/tokenManagement/action');
 jest.mock('@portkey-wallet/api/api-did');
@@ -31,7 +31,7 @@ describe('useToken', () => {
     jest.spyOn(baseHooks, 'useAppCommonDispatch').mockReturnValue(() => async (call: () => void) => {
       return call;
     });
-    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(NetworkInfo);
+    jest.spyOn(networkHooks, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
 
     jest.mocked(fetchAllTokenListAsync).mockReturnValue({ list: [{}, {}], totalRecordCount: 2 } as any);
     jest.mocked(request.token.displayUserToken).mockResolvedValue({});

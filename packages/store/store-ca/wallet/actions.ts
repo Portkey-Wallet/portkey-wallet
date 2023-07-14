@@ -54,6 +54,10 @@ export const setCAInfo = createAction<{
   networkType?: NetworkType;
 }>('wallet/setCAInfo');
 
+export const updateCASyncState = createAction<{
+  chainId: ChainId;
+  networkType?: NetworkType;
+}>('wallet/updateCASyncState');
 export const setCAInfoType = createAction<{
   caInfo: CAInfoType;
   pin: string;

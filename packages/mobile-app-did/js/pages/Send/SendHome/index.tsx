@@ -44,6 +44,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/send';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import { useCheckManagerSyncState } from 'hooks/wallet';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
@@ -72,6 +73,8 @@ const SendHome: React.FC = () => {
   const [step, setStep] = useState<1 | 2>(1);
   const [isLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<any[]>([]);
+
+  const checkManagerSyncState = useCheckManagerSyncState();
 
   useEffect(() => {
     setSelectedToContact(toInfo);
@@ -136,6 +139,12 @@ const SendHome: React.FC = () => {
   );
 
   const onPressMax = useCallback(async () => {
+    // check is SYNCHRONIZING
+    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+    if (!_isManagerSynced) {
+      return setErrorMessage([TransactionError.SYNCHRONIZING]);
+    }
+
     // balance 0
     if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isEqualTo(0)) return setSendNumber('0');
 
@@ -172,6 +181,8 @@ const SendHome: React.FC = () => {
     }
     Loading.hide();
   }, [
+    chainInfo?.chainId,
+    checkManagerSyncState,
     getTransactionFee,
     selectedAssets.balance,
     selectedAssets.chainId,
@@ -319,6 +330,13 @@ const SendHome: React.FC = () => {
     let fee;
     setErrorMessage([]);
 
+    // check is SYNCHRONIZING
+    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+    if (!_isManagerSynced) {
+      setErrorMessage([TransactionError.SYNCHRONIZING]);
+      return { status: false };
+    }
+
     const sendBigNumber = timesDecimals(sendNumber, selectedAssets.decimals || '0');
     const assetBalanceBigNumber = ZERO.plus(selectedAssets.balance);
     const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId);
@@ -372,6 +390,8 @@ const SendHome: React.FC = () => {
   }, [
     assetInfo.chainId,
     assetInfo.symbol,
+    chainInfo?.chainId,
+    checkManagerSyncState,
     getTransactionFee,
     selectedAssets.balance,
     selectedAssets.decimals,
@@ -494,7 +514,13 @@ const SendHome: React.FC = () => {
       )}
 
       {TransactionErrorArray.filter(ele => errorMessage.includes(ele)).map(err => (
-        <Text key={err} style={[styles.errorMessage, sendType === 'nft' && styles.nftErrorMessage]}>
+        <Text
+          key={err}
+          style={[
+            styles.errorMessage,
+            sendType === 'nft' && styles.nftErrorMessage,
+            err === TransactionError.SYNCHRONIZING && styles.warnMessage,
+          ]}>
           {t(err)}
         </Text>
       ))}

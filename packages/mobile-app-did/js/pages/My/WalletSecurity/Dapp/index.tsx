@@ -17,6 +17,7 @@ import fonts from 'assets/theme/fonts';
 import NoData from 'components/NoData';
 import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 
 const DappList: React.FC = () => {
   const currentNetwork = useCurrentNetworkInfo();
@@ -34,9 +35,7 @@ const DappList: React.FC = () => {
         <View key={item.name} style={itemStyles.itemWrap}>
           <DiscoverWebsiteImage size={pTd(32)} imageUrl={getFaviconUrl(item.origin)} style={itemStyles.itemImage} />
           <View style={itemStyles.itemCenter}>
-            <TextL numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font5, itemStyles.itemDappTitle]}>
-              {item?.name || getHost(item.origin)}
-            </TextL>
+            <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.name || getHost(item.origin)} url={item.origin} />
             <TextM numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7, itemStyles.itemDappUrl]}>
               {item?.origin || getHost(item.origin)}
             </TextM>

@@ -20,26 +20,24 @@ export default function BalanceCard({ onSend, onReceive, onBuy, isShowBuy }: Bal
 
   const renderBuy = useMemo(
     () =>
-      !!isShowBuy &&
-      isMainNet && (
+      !!isShowBuy && (
         <span className="send btn" onClick={onBuy}>
           <CustomSvg type="Buy" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Buy')}</span>
         </span>
       ),
-    [isShowBuy, isMainNet, onBuy, t],
+    [isShowBuy, onBuy, t],
   );
 
   const renderFaucet = useMemo(
     () =>
-      !!isShowBuy &&
       !isMainNet && (
         <span className="send btn" onClick={onBuy}>
           <CustomSvg type="Faucet" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Faucet')}</span>
         </span>
       ),
-    [isShowBuy, isMainNet, onBuy, t],
+    [isMainNet, onBuy, t],
   );
 
   return (

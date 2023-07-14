@@ -15,6 +15,7 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 export type CustomHeaderProps = {
   themeType?: SafeAreaColorMapKeyUnit;
   noLeftDom?: boolean;
+  noCenterDom?: boolean;
   leftDom?: ReactNode;
   titleDom?: ReactNode | string;
   rightDom?: ReactNode;
@@ -32,6 +33,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
 
   const {
     noLeftDom = false,
+    noCenterDom = false,
     leftDom = null,
     titleDom = 'title',
     rightDom = null,
@@ -132,7 +134,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   return (
     <View style={[styles.sectionContainer, style]}>
       <View style={headerStyles.leftDomWrap}>{letElement}</View>
-      <View style={headerStyles.centerWrap}>{centerElement}</View>
+      {!noCenterDom && <View style={headerStyles.centerWrap}>{centerElement}</View>}
       <View style={headerStyles.rightDomWrap}>{rightElement}</View>
     </View>
   );

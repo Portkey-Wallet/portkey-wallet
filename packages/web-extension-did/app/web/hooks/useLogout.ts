@@ -23,9 +23,9 @@ import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useNavigate } from 'react-router';
-import { clearLocalStorage } from 'utils/storage/chromeStorage';
 import { getWalletInfo, isCurrentCaHash } from 'store/utils/getStore';
 import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { resetTxFee } from '@portkey-wallet/store/store-ca/txFee/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -46,9 +46,9 @@ export default function useLogOut() {
         dispatch(resetSettings());
         dispatch(resetNetwork());
         dispatch(resetLoginInfoAction());
-        clearLocalStorage();
       }
       dispatch(resetDappList(currentNetwork));
+      dispatch(resetTxFee(currentNetwork));
 
       if (!isPrompt) {
         InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();

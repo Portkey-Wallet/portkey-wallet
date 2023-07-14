@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { useLanguage } from 'i18n/hooks';
-import { TextM, TextS } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import NoData from 'components/NoData';
@@ -12,6 +12,7 @@ import { defaultColors } from 'assets/theme';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 interface ISearchDiscoverSectionProps {
   searchedDiscoverList: DiscoverItem[];
 }
@@ -22,28 +23,29 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
   const { s3Url } = useCurrentNetworkInfo();
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
-  const onJump = (i: DiscoverItem) => {
-    jumpToWebview({
-      item: {
-        id: Date.now(),
-        name: i.title,
-        url: i?.url ?? i?.description,
-      },
-    });
-  };
+  const onClickJump = useCallback(
+    (i: DiscoverItem) => {
+      jumpToWebview({
+        item: {
+          id: Date.now(),
+          name: i.title,
+          url: i?.url ?? i?.description,
+        },
+      });
+    },
+    [jumpToWebview],
+  );
 
   if (searchedDiscoverList.length === 0) return <NoData noPic message={t('There is no search result.')} />;
 
   return (
     <ScrollView style={styles.sectionWrap}>
       {searchedDiscoverList?.map((item, index) => (
-        <TouchableOpacity key={index} style={itemStyle.wrap} onPress={() => onJump(item)}>
+        <TouchableOpacity key={index} style={itemStyle.wrap} onPress={() => onClickJump(item)}>
           <DiscoverWebsiteImage imageUrl={`${s3Url}/${item?.imgUrl?.filename_disk}`} size={pTd(32)} />
           <View style={itemStyle.right}>
             <View style={itemStyle.infoWrap}>
-              <TextM numberOfLines={1} ellipsizeMode={'tail'} style={itemStyle.gameName}>
-                {item?.title}
-              </TextM>
+              <TextWithProtocolIcon title={item?.title} url={item?.url} />
               <TextS numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font3, itemStyle.gameInfo]}>
                 {item?.description}
               </TextS>

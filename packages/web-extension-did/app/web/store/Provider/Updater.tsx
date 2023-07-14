@@ -15,10 +15,14 @@ import { useCheckManagerOnLogout } from 'hooks/useLogout';
 import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
 import { useBuyButton, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
+import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 
 keepAliveOnPages({});
+request.setExceptionManager(exceptionManager);
 
 export default function Updater() {
   const onLocking = useLocking();
@@ -36,7 +40,7 @@ export default function Updater() {
   const apiUrl = useCurrentApiUrl();
 
   useCheckManager(checkManagerOnLogout);
-
+  useFetchTxFee();
   useEffect(() => {
     checkUpdate();
   }, [checkUpdate]);
@@ -44,6 +48,9 @@ export default function Updater() {
   useMemo(() => {
     request.set('baseURL', apiUrl);
   }, [apiUrl]);
+
+  usePortkeyUIConfig();
+
   useCaInfoOnChain();
   useActiveLockStatus();
   useEffect(() => {

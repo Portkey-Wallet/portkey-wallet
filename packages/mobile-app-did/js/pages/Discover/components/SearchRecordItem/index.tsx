@@ -14,7 +14,7 @@ type RecordListItemType = {
   onPress?: () => void;
 };
 
-const RecordItem: React.FC<RecordListItemType> = props => {
+const SearchRecordItem: React.FC<RecordListItemType> = props => {
   const { item, onPress } = props;
 
   return (
@@ -32,7 +32,7 @@ const RecordItem: React.FC<RecordListItemType> = props => {
   );
 };
 
-export default memo(RecordItem);
+export default memo(SearchRecordItem);
 
 const itemStyle = StyleSheet.create({
   wrap: {

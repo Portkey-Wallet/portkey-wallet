@@ -1,5 +1,5 @@
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
@@ -7,7 +7,12 @@ import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlis
 import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
 import { useBookmark } from '../context';
 import usePrevious from 'hooks/usePrevious';
-import { BGStyles } from 'assets/theme/styles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
+import Svg from 'components/Svg';
+import { pTd } from 'utils/unit';
+import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
+import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import { defaultColors } from 'assets/theme';
 
 export default memo(
   function BookmarkItem(props: RenderItemParams<string>) {
@@ -22,7 +27,7 @@ export default memo(
     const renderUnderlayLeft = useCallback(
       () => (
         <Touchable style={styles.underlayLeftBox} onPress={() => swipeableRef.current?.close()}>
-          <TextM>close</TextM>
+          <TextM style={[FontStyles.font2, GStyles.flexCol, GStyles.center]}>Delete</TextM>
         </Touchable>
       ),
       [],
@@ -34,25 +39,31 @@ export default memo(
           key={item}
           item={props}
           ref={swipeableRef}
-          swipeEnabled={false}
+          swipeEnabled={true}
           snapPointsLeft={[80]}
           renderUnderlayLeft={renderUnderlayLeft}>
           <View
             // disabled={!isEdit || isActive}
             style={[
               GStyles.flexRow,
+              GStyles.itemCenter,
               styles.itemRow,
-              BGStyles.bg2,
+              BGStyles.bg1,
               // add margin to scale item
               styles.marginContainer,
             ]}>
             {isEdit && (
-              <Touchable onPress={() => swipeableRef.current?.open(OpenDirection.LEFT)}>
-                <TextM>open</TextM>
+              <Touchable style={styles.deleteIconWrap} onPress={() => swipeableRef.current?.open(OpenDirection.LEFT)}>
+                <Svg icon="red-delete" size={pTd(20)} />
               </Touchable>
             )}
 
-            <TextM>{item}</TextM>
+            <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} />
+            <View style={styles.infoWrap}>
+              <TextWithProtocolIcon url={'https://wwww.baidu.com'} textFontSize={pTd(16)} />
+              <TextS style={[FontStyles.font7]}>dddddd</TextS>
+            </View>
+
             {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
               <TextM>drag</TextM>
             </Touchable> */}
@@ -67,20 +78,30 @@ export default memo(
 );
 
 const styles = StyleSheet.create({
-  marginContainer: {
-    // marginHorizontal: 16,
-  },
+  marginContainer: {},
   underlayLeftBox: {
     flex: 1,
-    paddingRight: 30,
+    paddingRight: pTd(12),
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: 16,
     justifyContent: 'flex-end',
+    backgroundColor: defaultColors.bg17,
+    color: defaultColors.font1,
+    textAlign: 'center',
   },
   itemRow: {
-    padding: 20,
-    height: 80,
-    marginVertical: 10,
+    padding: pTd(12),
+    height: pTd(72),
+    // marginVertical: 10,
+  },
+  deleteIconWrap: {
+    marginRight: pTd(16),
+  },
+  websiteIconStyle: {
+    marginRight: pTd(16),
+  },
+  infoWrap: {
+    flex: 1,
   },
 });

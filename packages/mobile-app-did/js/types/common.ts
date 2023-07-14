@@ -12,3 +12,7 @@ export type SchemeParsedUrl = {
   action: SCHEME_ACTION;
   query: ParsedQuery<string>;
 };
+
+export type LinkDappData = {
+  url: string;
+};

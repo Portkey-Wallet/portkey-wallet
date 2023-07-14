@@ -57,13 +57,13 @@ export function useDiscoverGroupList(isInit = false) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!isInit) {
-      dispatch(getDiscoverGroupAsync(networkType));
-    }
-  }, [dispatch, isInit, networkType]);
+  // useEffect(() => {
+  //   if (!isInit) {
+  //     dispatch(getDiscoverGroupAsync(networkType));
+  //   }
+  // }, [dispatch, isInit, networkType]);
 
-  return discoverGroupList;
+  return discoverGroupList || [];
 }
 
 export const useBuyButton = (isInit = false) => {

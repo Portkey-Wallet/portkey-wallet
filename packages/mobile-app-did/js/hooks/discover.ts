@@ -10,6 +10,7 @@ import {
   initNetworkDiscoverMap,
   cleanBookmarkList,
   addBookmarkList,
+  addAutoApproveItem,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -23,19 +24,23 @@ export const useDiscoverJumpWithNetWork = () => {
 
   const { discoverMap } = useAppCASelector(state => state.discover);
 
-  const discoverJump = ({ item }: { item: ITabItem }) => {
-    if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
+  const discoverJump = useCallback(
+    ({ item, autoApprove }: { item: ITabItem; autoApprove?: boolean }) => {
+      if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
 
-    dispatch(createNewTab({ ...item, networkType }));
-    dispatch(setActiveTab({ ...item, networkType }));
-    dispatch(addRecordsItem({ ...item, networkType }));
-    dispatch(changeDrawerOpenStatus(true));
-  };
+      dispatch(createNewTab({ ...item, networkType }));
+      dispatch(setActiveTab({ ...item, networkType }));
+      dispatch(addRecordsItem({ ...item, networkType }));
+      dispatch(changeDrawerOpenStatus(true));
+      if (autoApprove) dispatch(addAutoApproveItem(item.id));
+    },
+    [discoverMap, dispatch, networkType],
+  );
 
   return discoverJump;
 };
 
-// discover whiteList
+// discover whiteList (http)
 export const useDiscoverWhiteList = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
@@ -90,4 +95,17 @@ export const useBookmarkList = () => {
     refresh,
     bookmarkList,
   };
+};
+
+export const useRecordsList = (isReverse: boolean): ITabItem[] => {
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverMap } = useAppCASelector(state => state.discover);
+
+  const list = useMemo(() => {
+    return isReverse
+      ? (discoverMap?.[networkType]?.recordsList as ITabItem[]).reverse()
+      : (discoverMap?.[networkType]?.recordsList as ITabItem[]);
+  }, [discoverMap, isReverse, networkType]);
+
+  return list || [];
 };

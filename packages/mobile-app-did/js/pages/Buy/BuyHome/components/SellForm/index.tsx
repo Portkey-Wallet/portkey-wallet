@@ -33,12 +33,12 @@ import { getManagerAccount } from 'utils/redux';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { DEFAULT_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import BigNumber from 'bignumber.js';
 import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
@@ -51,6 +51,8 @@ export default function SellForm() {
   const [token, setToken] = useState<CryptoItemType>(tokenList[0]);
   const [amount, setAmount] = useState<string>(INIT_SELL_AMOUNT);
   const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
+  useFetchTxFee();
+  const { ach: achFee } = useGetTxFee('AELF');
 
   const { accountToken } = useAssets();
   const aelfToken = useMemo(
@@ -194,7 +196,7 @@ export default function SellForm() {
         return;
       }
 
-      if (ZERO.plus(amount).isLessThanOrEqualTo(DEFAULT_FEE)) {
+      if (ZERO.plus(amount).isLessThanOrEqualTo(achFee)) {
         throw new Error('Insufficient funds');
       }
       const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
@@ -210,7 +212,7 @@ export default function SellForm() {
 
       const balance = await getELFChainBalance(tokenContract, symbol, wallet?.[chainId]?.caAddress || '');
 
-      if (divDecimals(balance, decimals).minus(DEFAULT_FEE).isLessThan(amount)) {
+      if (divDecimals(balance, decimals).minus(achFee).isLessThan(amount)) {
         throw new Error('Insufficient funds');
       }
 
@@ -247,6 +249,7 @@ export default function SellForm() {
     token,
     refreshBuyButton,
     checkManagerSyncState,
+    achFee,
     wallet,
   ]);
 

@@ -11,6 +11,7 @@ import { pTd } from 'utils/unit';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 import myEvents from 'utils/deviceEvent';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { nextAnimation } from 'utils/animation';
 
 const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -23,7 +24,14 @@ function BookmarksSection() {
       <View style={styles.buttonGroupWrap}>
         {isEdit ? (
           <>
-            <CommonButton onPress={() => dispatch(setEdit(false))} title="Done" type="primary" />
+            <CommonButton
+              onPress={() => {
+                nextAnimation();
+                dispatch(setEdit(false));
+              }}
+              title="Done"
+              type="primary"
+            />
             <CommonButton
               containerStyle={styles.deleteAll}
               titleStyle={FontStyles.font12}
@@ -32,7 +40,14 @@ function BookmarksSection() {
             />
           </>
         ) : (
-          <CommonButton onPress={() => dispatch(setEdit(true))} title="Edit" type="primary" />
+          <CommonButton
+            onPress={() => {
+              nextAnimation();
+              dispatch(setEdit(true));
+            }}
+            title="Edit"
+            type="primary"
+          />
         )}
       </View>
     ),

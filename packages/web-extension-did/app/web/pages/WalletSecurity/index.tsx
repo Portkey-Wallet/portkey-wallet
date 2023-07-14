@@ -16,7 +16,9 @@ export default function WalletSecurity() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { isNotLessThan768 } = useCommonState();
-  const { deviceAmount } = useDeviceList();
+  const { deviceAmount } = useDeviceList({
+    isAmountOnly: true,
+  });
   const { currentNetwork } = useWalletInfo();
   const { dappMap } = useDapp();
   const currentDapp = useMemo(() => dappMap[currentNetwork] || [], [currentNetwork, dappMap]);

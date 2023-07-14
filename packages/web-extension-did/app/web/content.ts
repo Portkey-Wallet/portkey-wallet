@@ -13,7 +13,7 @@ import {
   ResponseCode,
 } from '@portkey/provider-types';
 import { generateErrorResponse, generateNormalResponse } from '@portkey/provider-utils';
-import { getHost } from '@portkey-wallet/utils/dapp/browser';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isMethodsBase, isMethodsUnimplemented } from '@portkey/providers';
 import { isMethodsWalletMessage } from 'messages/utils';
 /**
@@ -164,7 +164,7 @@ class Content {
 
   contentListener(input: IRequestParams) {
     const URL = getUrl();
-    const icon = `https://api.faviconkit.com/${getHost(URL.href)}/50`;
+    const icon = getFaviconUrl(URL.href, 50);
 
     const message = Object.assign({}, input, {
       hostname: URL.hostname,

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { IDeviceList, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { IDeviceItem, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCallback, useEffect, useState } from 'react';
 import { DeviceItemType } from '@portkey-wallet/types/types-ca/device';
 import { useNavigate } from 'react-router';
@@ -7,12 +7,19 @@ import { useLoading } from 'store/Provider/hooks';
 import DevicesPopup from './Popup';
 import DevicesPrompt from './Prompt';
 import { useCommonState } from 'store/Provider/hooks';
+import { message } from 'antd';
 
 export default function Devices() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { deviceList, refetch, loading } = useDeviceList();
-  const [devices, setDevices] = useState<IDeviceList[]>([]);
+  const onError = useCallback(() => {
+    message.error(`Loading failed. Please retry.`);
+  }, []);
+  const { deviceList, refresh, loading } = useDeviceList({
+    isInit: false,
+    onError,
+  });
+  const [devices, setDevices] = useState<IDeviceItem[]>([]);
   const { setLoading } = useLoading();
   const { isNotLessThan768 } = useCommonState();
 
@@ -26,7 +33,7 @@ export default function Devices() {
 
   useEffect(() => {
     setLoading(true);
-    refetch();
+    refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

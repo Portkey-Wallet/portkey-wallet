@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IDiscoverStateType, IDiscoverNetworkStateType, ITabItem } from './type';
+import { IDiscoverStateType, IDiscoverNetworkStateType, ITabItem, IBookmarkItem } from './type';
 import { NetworkType } from '@portkey-wallet/types';
 import { enableMapSet } from 'immer';
 import { RECORD_LIMIT, TAB_LIMIT } from '@portkey-wallet/constants/constants-ca/discover';
@@ -131,6 +131,25 @@ export const discoverSlice = createSlice({
         [payload]: JSON.parse(JSON.stringify(initNetworkData)),
       };
     },
+    cleanBookmarkList: (state, { payload }: { payload: NetworkType }) => {
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload]: {
+          ...(state.discoverMap?.[payload] || {}),
+          bookmarkList: [],
+        },
+      };
+    },
+    addBookmarkList: (state, { payload }: { payload: { networkType: NetworkType; list: IBookmarkItem[] } }) => {
+      const preBookmarkList = state.discoverMap?.[payload.networkType]?.bookmarkList || [];
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload.networkType]: {
+          ...(state.discoverMap?.[payload.networkType] || {}),
+          bookmarkList: preBookmarkList.concat(payload.list),
+        },
+      };
+    },
     addAutoApproveItem: (state, { payload }: { payload: number }) => {
       if (!state.autoApproveMap) state.autoApproveMap = {};
       state.autoApproveMap = { ...state.autoApproveMap, [payload]: true };
@@ -156,6 +175,8 @@ export const {
   setActiveTab,
   updateTab,
   changeDrawerOpenStatus,
+  cleanBookmarkList,
+  addBookmarkList,
   addAutoApproveItem,
   removeAutoApproveItem,
 } = discoverSlice.actions;

@@ -18,7 +18,9 @@
 body.en-language-wrapper {
   font-family: Roboto-Regular;
 }
-#root {
+
+#root,
+#portkey-ui-root {
   overflow-y: auto;
   height: 100vh;
 }

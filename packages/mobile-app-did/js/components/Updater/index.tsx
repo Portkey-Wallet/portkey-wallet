@@ -19,6 +19,7 @@ import { useBuyButton, useDiscoverGroupList, useSocialMediaList } from '@portkey
 import { useTabMenuList } from 'hooks/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
+import { useBookmarkList } from 'hooks/discover';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {

@@ -9,6 +9,8 @@ import paymentApi from './payment';
 import deviceApi from './device';
 import messageApi from './message';
 import switchApi from './switch';
+import discoverApi from './discover';
+import txFeeApi from './txFee';
 
 import esApi from './es';
 import myServer, { DidService } from './server';
@@ -48,6 +50,8 @@ export const EXPAND_APIS = {
   device: deviceApi,
   message: messageApi,
   switch: switchApi,
+  discover: discoverApi,
+  txFee: txFeeApi,
 };
 
 export type BASE_REQ_TYPES = {

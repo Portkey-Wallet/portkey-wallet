@@ -1,76 +1,200 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import GStyles from 'assets/theme/GStyles';
-import { FlatList, View, StyleSheet, TouchableNativeFeedback, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { BookmarkProvider, setEdit, useBookmark } from '../context/bookmarksContext';
 import CommonButton from 'components/CommonButton';
 import BookmarkItem from './BookmarkItem';
 import { FontStyles } from 'assets/theme/styles';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
+import { RefreshControl } from 'react-native-gesture-handler';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 import myEvents from 'utils/deviceEvent';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useBookmarkList } from 'hooks/discover';
 import { nextAnimation } from 'utils/animation';
 
-const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
+import CommonToast from 'components/CommonToast';
+import { request } from '@portkey-wallet/api/api-did';
+import Loading from 'components/Loading';
+import ActionSheet from 'components/ActionSheet';
+import { TextXL } from 'components/CommonText';
+import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 
 function BookmarksSection() {
-  const [list, setList] = useState(mockData);
   const [{ isEdit }, dispatch] = useBookmark();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { refresh, clean } = useBookmarkList();
+  const [list, setList] = useState<IBookmarkItem[]>([]);
+  const [editList, setEditList] = useState<IBookmarkItem[]>([]);
+  const deleteList = useRef<IBookmarkItem[]>([]);
+  const pagerRef = useRef({
+    skipCount: 0,
+    maxCount: DISCOVER_BOOKMARK_MAX_COUNT,
+    totalCount: 0,
+  });
+
+  const loadingRef = useRef(false);
+  const getBookmarkList = useCallback(
+    async (isInit: boolean) => {
+      if (isEdit || loadingRef.current) return;
+      loadingRef.current = true;
+
+      let { skipCount } = pagerRef.current;
+      const { maxCount, totalCount } = pagerRef.current;
+      if (isInit) {
+        skipCount = 0;
+      }
+      if (skipCount >= totalCount && totalCount !== 0) {
+        loadingRef.current = false;
+        return;
+      }
+
+      if (isInit) {
+        setIsLoading(true);
+      }
+      try {
+        console.log('getBookmarkList', skipCount, maxCount);
+        const result = await refresh(skipCount, maxCount);
+        console.log('getBookmarkList result', result.totalCount);
+        if (isInit) {
+          setList(result.items);
+        } else {
+          setList(pre => [...pre, ...result.items]);
+        }
+        pagerRef.current.skipCount = result.items.length + skipCount;
+        pagerRef.current.totalCount = result.totalCount;
+      } catch (error) {
+        CommonToast.failError(error);
+      }
+
+      if (isInit) {
+        setIsLoading(false);
+      }
+      loadingRef.current = false;
+    },
+    [isEdit, refresh],
+  );
+  const getBookmarkListRef = useRef(getBookmarkList);
+  getBookmarkListRef.current = getBookmarkList;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      getBookmarkListRef.current(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [clean]);
+
+  const onItemDelete = useCallback((item: IBookmarkItem) => {
+    setEditList(pre => pre.filter(_item => _item.id !== item.id));
+    deleteList.current.push(item);
+  }, []);
+
+  const onEdit = useCallback(() => {
+    deleteList.current = [];
+    setEditList([...list]);
+    nextAnimation();
+    dispatch(setEdit(true));
+  }, [dispatch, list]);
+
+  const onDone = useCallback(async () => {
+    if (deleteList.current.length > 0) {
+      Loading.show();
+      try {
+        await request.discover.deleteBookmark({
+          params: {
+            deleteInfos: deleteList.current.map(item => ({
+              id: item.id,
+              index: item.index,
+            })),
+          },
+        });
+        setTimeout(() => {
+          getBookmarkListRef.current(true);
+        }, 100);
+      } catch (error) {
+        CommonToast.failError(error);
+      }
+      Loading.hide();
+    }
+    nextAnimation();
+    dispatch(setEdit(false));
+  }, [dispatch]);
+
+  const onDeleteAll = useCallback(() => {
+    ActionSheet.alert({
+      title2: <TextXL style={FontStyles.weight500}>Delete all bookmarks?</TextXL>,
+      buttons: [
+        {
+          title: 'Cancel',
+          type: 'outline',
+        },
+        {
+          title: 'Confirm',
+          onPress: async () => {
+            Loading.show();
+            try {
+              await request.discover.deleteAllBookmark();
+              setTimeout(() => {
+                getBookmarkListRef.current(true);
+              }, 100);
+            } catch (error) {
+              CommonToast.failError(error);
+            }
+            Loading.hide();
+            nextAnimation();
+            dispatch(setEdit(false));
+          },
+        },
+      ],
+    });
+  }, [dispatch]);
 
   const BottomBox = useMemo(
     () => (
       <View style={styles.buttonGroupWrap}>
         {isEdit ? (
           <>
-            <CommonButton
-              onPress={() => {
-                nextAnimation();
-                dispatch(setEdit(false));
-              }}
-              title="Done"
-              type="primary"
-            />
+            <CommonButton onPress={onDone} title="Done" type="primary" />
             <CommonButton
               containerStyle={styles.deleteAll}
               titleStyle={FontStyles.font12}
               type="outline"
               title="Delete All"
+              onPress={onDeleteAll}
             />
           </>
         ) : (
-          <CommonButton
-            onPress={() => {
-              nextAnimation();
-              dispatch(setEdit(true));
-            }}
-            title="Edit"
-            type="primary"
-          />
+          <CommonButton onPress={onEdit} title="Edit" type="primary" />
         )}
       </View>
     ),
-    [dispatch, isEdit],
+    [isEdit, onDeleteAll, onDone, onEdit],
   );
   const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
-  if (list.length === 0) return <NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />;
   return (
     <View style={styles.containerStyles}>
-      <View style={[GStyles.flex1, styles.listWrap]}>
+      <View style={styles.listWrap}>
         <DraggableFlatList
+          style={styles.flatListWrap}
+          contentContainerStyle={[styles.flatListContent, list.length !== 0 && styles.flatListPadding]}
           scrollEnabled
-          data={list}
-          ListEmptyComponent={<NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />}
+          data={isEdit ? editList : list}
           onTouchStart={closeSwipeable}
-          ListHeaderComponent={<View style={styles.headerBlank} />}
-          ListFooterComponent={<View style={styles.footerBlank} />}
-          keyExtractor={_item => _item}
-          renderItem={props => <BookmarkItem {...props} />}
-          onDragEnd={({ data }) => setList(data)}
+          keyExtractor={_item => _item.id}
+          renderItem={props => <BookmarkItem onDelete={onItemDelete} {...props} />}
+          refreshControl={
+            !isEdit ? (
+              <RefreshControl enabled={true} onRefresh={() => getBookmarkList(true)} refreshing={isLoading} />
+            ) : undefined
+          }
+          onEndReached={() => getBookmarkList(false)}
+          ListEmptyComponent={<NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />}
         />
       </View>
-      {BottomBox}
+      {list.length > 0 && BottomBox}
     </View>
   );
 }
@@ -92,23 +216,22 @@ const styles = StyleSheet.create({
   },
   listWrap: {
     paddingHorizontal: pTd(20),
+    flex: 1,
   },
   buttonGroupWrap: {
+    marginTop: pTd(16),
     paddingHorizontal: pTd(20),
   },
   deleteAll: {
     marginTop: pTd(10),
   },
-  headerBlank: {
-    borderTopLeftRadius: pTd(6),
-    borderTopRightRadius: pTd(6),
-    height: pTd(8),
+  flatListWrap: { borderRadius: pTd(6), overflow: 'hidden', height: '100%' },
+  flatListContent: {
     backgroundColor: defaultColors.bg1,
+    borderRadius: pTd(6),
+    overflow: 'hidden',
   },
-  footerBlank: {
-    borderBottomLeftRadius: pTd(6),
-    borderBottomRightRadius: pTd(6),
-    height: pTd(8),
-    backgroundColor: defaultColors.bg1,
+  flatListPadding: {
+    paddingVertical: pTd(8),
   },
 });

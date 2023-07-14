@@ -1,3 +1,4 @@
+import { request } from '@portkey-wallet/api/api-did';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
@@ -7,10 +8,13 @@ import {
   addRecordsItem,
   createNewTab,
   initNetworkDiscoverMap,
+  cleanBookmarkList,
+  addBookmarkList,
   addAutoApproveItem,
 } from '@portkey-wallet/store/store-ca/discover/slice';
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
-import { useCallback, useEffect, useMemo } from 'react';
+import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
+import { useCallback, useMemo } from 'react';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
 
@@ -63,42 +67,41 @@ export const useDiscoverWhiteList = () => {
 };
 
 export const useBookmarkList = () => {
-  // const { networkType } = useCurrentNetworkInfo();
-  // const dispatch = useAppCommonDispatch();
-  // const { discoverMap } = useAppCASelector(state => state.discover);
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+  const { discoverMap } = useAppCASelector(state => state.discover);
 
-  useEffect(() => {
-    //
-  }, []);
+  const clean = useCallback(() => {
+    dispatch(cleanBookmarkList(networkType));
+  }, [dispatch, networkType]);
 
-  // const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);
+  const refresh = useCallback(
+    async (skipCount = 0, maxResultCount = DISCOVER_BOOKMARK_MAX_COUNT) => {
+      const result = await request.discover.getBookmarks({
+        params: {
+          skipCount,
+          maxResultCount,
+        },
+      });
+      if (skipCount === 0) {
+        clean();
+      }
+      dispatch(addBookmarkList({ networkType, list: result.items || [] }));
+      return result as {
+        items: IBookmarkItem[];
+        totalCount: number;
+      };
+    },
+    [clean, dispatch, networkType],
+  );
 
-  return [
-    {
-      id: 1,
-      name: 'portkey1',
-      url: 'https://portkey.finance/',
-      sortWeight: 1,
-    },
-    {
-      id: 2,
-      name: 'portkey2',
-      url: 'https://portkey.finance/',
-      sortWeight: 2,
-    },
-    {
-      id: 3,
-      name: 'portkey3',
-      url: 'https://portkey.finance/',
-      sortWeight: 3,
-    },
-    {
-      id: 4,
-      name: 'portkey4',
-      url: 'https://portkey.finance/',
-      sortWeight: 4,
-    },
-  ];
+  const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);
+
+  return {
+    refresh,
+    clean,
+    bookmarkList,
+  };
 };
 
 export const useRecordsList = (isReverse = true): ITabItem[] => {

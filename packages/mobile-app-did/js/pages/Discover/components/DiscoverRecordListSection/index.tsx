@@ -1,15 +1,9 @@
-import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import React, { useCallback } from 'react';
-import { ScrollView, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
-import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { useLanguage } from 'i18n/hooks';
 
 export function DiscoverRecordListSection() {

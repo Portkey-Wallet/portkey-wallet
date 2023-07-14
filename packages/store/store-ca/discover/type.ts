@@ -8,10 +8,10 @@ export interface ITabItem {
 }
 
 export interface IBookmarkItem {
-  id: number;
+  id: string;
   name: string;
   url: string;
-  sortWeight: number;
+  index: number;
 }
 
 export interface IDiscoverNetworkStateType {

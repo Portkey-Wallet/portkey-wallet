@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles } from 'assets/theme/styles';
@@ -6,7 +6,6 @@ import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
-import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import { clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';

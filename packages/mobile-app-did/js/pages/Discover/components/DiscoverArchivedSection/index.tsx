@@ -13,10 +13,12 @@ import navigationService from 'utils/navigationService';
 import { ArchivedTabEnum } from 'pages/Discover/types';
 import NoDiscoverData from '../NoDiscoverData';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
+import { useFocusEffect } from '@react-navigation/native';
 
 export function DiscoverArchivedSection() {
   const discoverJump = useDiscoverJumpWithNetWork();
-  const bookmarkListStore = useBookmarkList();
+  const { bookmarkList: bookmarkListStore, refresh } = useBookmarkList();
+
   const recordsListStore = useRecordsList(true);
 
   const [index, setIndex] = React.useState(
@@ -46,6 +48,12 @@ export function DiscoverArchivedSection() {
       });
     },
     [discoverJump],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh]),
   );
 
   if (!isShowArchivedSections) return null;

@@ -44,9 +44,9 @@ export default function Bookmark() {
 
   return (
     <PageContainer
-      hideTouchable
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
+      hideTouchable={true}
       containerStyles={styles.containerStyles}
       titleDom="Bookmarks">
       <View style={[GStyles.flexRow, GStyles.alignCenter]}>
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
 
   tabHeader: {
     width: pTd(214),
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: defaultColors.bg18,
     borderRadius: pTd(6),
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -15,13 +15,18 @@ import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 
-type BookmarkItemType = RenderItemParams<any> & { onDelete: (item: { id: string; [key: string]: any }) => void };
+type BookmarkItemProps<T> = RenderItemParams<T> & {
+  onDelete: (item: T) => void;
+};
 
 export default memo(
-  function BookmarkItem(props: BookmarkItemType) {
-    const { item, onDelete } = props;
+  function BookmarkItem(props: BookmarkItemProps<IBookmarkItem>) {
+    const { drag, isActive, item, onDelete } = props;
     const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
     const [{ isEdit }] = useBookmark();
     const preIsEdit = usePrevious(isEdit);
@@ -32,18 +37,33 @@ export default memo(
       const listener = myEvents.bookmark.closeSwipeable.addListener(() => swipeableRef.current?.close());
       return () => listener.remove();
     });
+    const discoverJump = useDiscoverJumpWithNetWork();
+
+    const onClickJump = useCallback(() => {
+      if (isEdit) return;
+      discoverJump({
+        item: {
+          id: Date.now(),
+          name: item?.name || '',
+          url: item?.url || '',
+        },
+      });
+    }, [discoverJump, isEdit, item?.name, item?.url]);
+
+    const deleteItem = useCallback(() => {
+      swipeableRef.current?.close();
+      onDelete(item);
+    }, [item, onDelete]);
+
     const renderUnderlayLeft = useCallback(
       () => (
-        <Touchable
-          style={styles.underlayLeftBox}
-          onPress={() => {
-            onDelete(item);
-          }}>
-          <TextM style={[FontStyles.font2, GStyles.flexCol, GStyles.center]}>Delete</TextM>
+        <Touchable style={styles.underlayLeftBox} onPress={deleteItem}>
+          <TextM style={[FontStyles.font2]}>Delete</TextM>
         </Touchable>
       ),
-      [],
+      [deleteItem],
     );
+
     const EditDom = useMemo(() => {
       if (!isEdit) return null;
       return (
@@ -57,6 +77,7 @@ export default memo(
         </Touchable>
       );
     }, [isEdit]);
+
     return (
       <ScaleDecorator activeScale={1.05}>
         <SwipeableItem
@@ -66,37 +87,37 @@ export default memo(
           swipeEnabled={false}
           snapPointsLeft={[80]}
           renderUnderlayLeft={renderUnderlayLeft}>
-          <View
-            // disabled={!isEdit || isActive}
-            style={[
-              GStyles.flexRow,
-              GStyles.itemCenter,
-              styles.itemRow,
-              BGStyles.bg1,
-              // add margin to scale item
-              styles.marginContainer,
-            ]}>
-            {EditDom}
-            <DiscoverWebsiteImage
-              size={pTd(40)}
-              style={styles.websiteIconStyle}
-              imageUrl={getFaviconUrl(item?.url || '')}
-            />
-            <View style={styles.infoWrap}>
-              <TextWithProtocolIcon url={item.url} textFontSize={pTd(16)} />
-              <TextS style={[FontStyles.font7]}>{item.url}</TextS>
-            </View>
+          <Touchable onPress={onClickJump}>
+            <View
+              // disabled={!isEdit || isActive}
+              style={[
+                GStyles.flexRow,
+                GStyles.itemCenter,
+                styles.itemRow,
+                BGStyles.bg1,
+                // add margin to scale item
+                styles.marginContainer,
+              ]}>
+              {EditDom}
+              <DiscoverWebsiteImage imageUrl={getFaviconUrl(item.url)} size={pTd(40)} style={styles.websiteIconStyle} />
+              <View style={styles.infoWrap}>
+                <TextWithProtocolIcon title={item.name} url={item.url} textFontSize={pTd(16)} />
+                <TextS style={[FontStyles.font7]} numberOfLines={1} ellipsizeMode="tail">
+                  {item.url}
+                </TextS>
+              </View>
 
-            {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
+              {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
               <TextM>drag</TextM>
             </Touchable> */}
-          </View>
+            </View>
+          </Touchable>
         </SwipeableItem>
       </ScaleDecorator>
     );
   },
-  (prevProps: RenderItemParams<any>, nextProps: RenderItemParams<any>) => {
-    return prevProps.item === nextProps.item && prevProps.isActive === nextProps.isActive;
+  (prevProps: RenderItemParams<IBookmarkItem>, nextProps: RenderItemParams<IBookmarkItem>) => {
+    return prevProps.item.id === nextProps.item.id && prevProps.isActive === nextProps.isActive;
   },
 );
 
@@ -104,10 +125,9 @@ const styles = StyleSheet.create({
   marginContainer: {},
   underlayLeftBox: {
     flex: 1,
-    paddingRight: pTd(12),
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: 16,
+    paddingHorizontal: pTd(16),
     justifyContent: 'flex-end',
     backgroundColor: defaultColors.bg17,
     color: defaultColors.font1,

@@ -1,13 +1,13 @@
 import CustomSvg from 'components/CustomSvg';
 import { getDeviceIcon } from 'utils/device';
 import { DeviceItemType, DeviceType } from '@portkey-wallet/types/types-ca/device';
-import { IDeviceList, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { IDeviceItem, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { dateFormat } from 'utils';
 import { useTranslation } from 'react-i18next';
 import './index.less';
 
 export interface IDeviceListProps {
-  list: IDeviceList[];
+  list: IDeviceItem[];
   onClick: (item: DeviceItemType) => void;
 }
 

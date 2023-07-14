@@ -43,7 +43,7 @@ function ThirdAuthImage({ websiteIcon, domain, style }: { websiteIcon?: string; 
 function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverlayPropsTypes) {
   const { t } = useLanguage();
 
-  const { address: managerAddress, extraData: qrExtraData, deviceType } = loginData || {};
+  const { address: managerAddress, extraData: qrExtraData } = loginData || {};
 
   const { caHash, address } = useCurrentWalletInfo();
   const { currentNetwork } = useWallet();
@@ -71,7 +71,7 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
 
     try {
       setLoading(true);
-      const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
+      const deviceInfo = getDeviceInfoFromQR(qrExtraData);
       const contract = await getCurrentCAContract();
       const extraData = await extraDataEncode(deviceInfo || {}, true);
 
@@ -92,7 +92,6 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
     loading,
     managerAddress,
     qrExtraData,
-    deviceType,
     getCurrentCAContract,
     address,
   ]);

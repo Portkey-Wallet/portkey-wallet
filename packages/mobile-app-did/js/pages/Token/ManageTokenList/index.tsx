@@ -15,12 +15,14 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import Loading from 'components/Loading';
-import FilterTokenSection from './components/FilterToken';
-import PopularTokenSection from './components/PopularToken';
+import FilterTokenSection from '../components/FilterToken';
+import PopularTokenSection from '../components/PopularToken';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { useFocusEffect } from '@react-navigation/native';
+import Lottie from 'lottie-react-native';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 interface ManageTokenListProps {
   route?: any;
@@ -28,6 +30,8 @@ interface ManageTokenListProps {
 const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const { t } = useLanguage();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
   const chainIdList = useChainIdList();
 
@@ -45,7 +49,8 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const fetchSearchedTokenList = useCallback(async () => {
     try {
       if (!debounceWord) return;
-      Loading.showOnce();
+      setIsSearching(true);
+
       const list = await request.token.fetchTokenListBySearch({
         params: {
           symbol: debounceWord,
@@ -59,10 +64,10 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         userTokenId: item.id,
       }));
       setFilterTokenList(tmpToken);
-      Loading.hide();
     } catch (error) {
-      console.log('filter search error', error);
-      Loading.hide();
+      CommonToast.fail(handleErrorMessage(error));
+    } finally {
+      setIsSearching(false);
     }
   }, [chainIdList, debounceWord]);
 
@@ -82,30 +87,17 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
           if (debounceWord) {
             await fetchSearchedTokenList();
           } else {
-            await dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
+            await dispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray: chainIdList }));
           }
           Loading.hide();
           CommonToast.success('Success');
         }, 800);
       } catch (err) {
         Loading.hide();
-        CommonToast.fail('Fail');
+        CommonToast.fail(handleErrorMessage(err));
       }
     },
     [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
-  );
-
-  const RightDom = useMemo(
-    () => (
-      <TouchableOpacity
-        style={{ padding: pTd(16) }}
-        onPress={() => {
-          navigationService.navigate('CustomToken');
-        }}>
-        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-      </TouchableOpacity>
-    ),
-    [],
   );
 
   useFocusEffect(
@@ -139,6 +131,32 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     [],
   );
 
+  const RightDom = useMemo(
+    () => (
+      <TouchableOpacity
+        style={{ padding: pTd(16) }}
+        onPress={() => {
+          navigationService.navigate('CustomToken');
+        }}>
+        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+      </TouchableOpacity>
+    ),
+    [],
+  );
+
+  const IptRightIcon = useMemo(() => {
+    if (isSearching)
+      return (
+        <Lottie style={pageStyles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
+      );
+
+    return keyword ? (
+      <TouchableOpacity onPress={() => setKeyword('')}>
+        <Svg icon="clear3" size={pTd(16)} />
+      </TouchableOpacity>
+    ) : undefined;
+  }, [isSearching, keyword]);
+
   return (
     <PageContainer
       titleDom={t('Add Tokens')}
@@ -148,6 +166,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
         <CommonInput
+          rightIcon={IptRightIcon}
           value={keyword}
           placeholder={t('Token Name')}
           onChangeText={v => {
@@ -178,5 +197,8 @@ export const pageStyles = StyleSheet.create({
   },
   list: {
     flex: 1,
+  },
+  loadingIcon: {
+    width: pTd(20),
   },
 });

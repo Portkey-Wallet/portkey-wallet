@@ -1,11 +1,11 @@
-import React, { Dispatch, SetStateAction, useCallback } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useMemo, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { StyleSheet, TouchableOpacity, View, Share } from 'react-native';
 import { TextL, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import { useLanguage } from 'i18n/hooks';
 import GStyles from 'assets/theme/GStyles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
@@ -18,6 +18,8 @@ import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import { request } from '@portkey-wallet/api/api-did';
+import { useBookmarkList } from 'hooks/discover';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',
@@ -26,14 +28,9 @@ enum HANDLE_TYPE {
   CLOSE = 'Close',
   CANCEL = 'Cancel',
   SWITCH = 'Switch',
+  BOOKMARK = 'Bookmark',
+  UN_BOOKMARK = 'Delete Bookmark',
 }
-
-const handleArray = [
-  { title: HANDLE_TYPE.REFRESH, icon: 'refresh1' },
-  { title: HANDLE_TYPE.COPY, icon: 'copy1' },
-  { title: HANDLE_TYPE.SHARE, icon: 'share' },
-  { title: HANDLE_TYPE.SWITCH, icon: 'switch' },
-] as const;
 
 const BrowserEditModal = ({
   browserInfo,
@@ -48,6 +45,9 @@ const BrowserEditModal = ({
 }) => {
   const { t } = useLanguage();
   const { activeTabId } = useAppCASelector(state => state.discover);
+  const { bookmarkList, refresh } = useBookmarkList();
+  const isBookmarkLoading = useRef(false);
+  const [bookmark, setBookmark] = useState(bookmarkList.find(item => item.url === browserInfo?.url));
 
   const handleUrl = useCallback(
     async (type: HANDLE_TYPE) => {
@@ -84,13 +84,54 @@ const BrowserEditModal = ({
 
         case HANDLE_TYPE.SWITCH:
           if (!activeTabId) return;
-
           activeWebviewScreenShot();
           OverlayModal.hide();
           setPreActiveTabId(Number(browserInfo?.id));
-
           break;
 
+        case HANDLE_TYPE.BOOKMARK:
+          if (!isBookmarkLoading.current) {
+            isBookmarkLoading.current = true;
+            try {
+              const result = await request.discover.addBookmark({
+                params: {
+                  name: browserInfo?.name || browserInfo?.url || '',
+                  url: browserInfo?.url || '',
+                },
+              });
+              setBookmark(result);
+              CommonToast.success('Added successfully');
+              refresh();
+            } catch (error) {
+              CommonToast.failError('Added failed');
+            }
+            isBookmarkLoading.current = false;
+          }
+          break;
+
+        case HANDLE_TYPE.UN_BOOKMARK:
+          if (!isBookmarkLoading.current) {
+            isBookmarkLoading.current = true;
+            try {
+              await request.discover.deleteBookmark({
+                params: {
+                  deleteInfos: [
+                    {
+                      id: bookmark?.id,
+                      index: bookmark?.index,
+                    },
+                  ],
+                },
+              });
+              CommonToast.success('Deleted successfully');
+              refresh();
+              setBookmark(undefined);
+            } catch (error) {
+              CommonToast.failError('Deleted failed');
+            }
+            isBookmarkLoading.current = false;
+          }
+          break;
         default:
           break;
       }
@@ -104,8 +145,26 @@ const BrowserEditModal = ({
       activeTabId,
       activeWebviewScreenShot,
       setPreActiveTabId,
+      bookmark?.id,
+      bookmark?.index,
     ],
   );
+
+  const handleArray: Array<{
+    title: HANDLE_TYPE;
+    icon: IconName;
+  }> = useMemo(() => {
+    return [
+      { title: HANDLE_TYPE.REFRESH, icon: 'refresh1' },
+      { title: HANDLE_TYPE.COPY, icon: 'copy1' },
+      { title: HANDLE_TYPE.SHARE, icon: 'share' },
+      { title: HANDLE_TYPE.SWITCH, icon: 'switch' },
+      {
+        title: bookmark ? HANDLE_TYPE.UN_BOOKMARK : HANDLE_TYPE.BOOKMARK,
+        icon: bookmark ? 'bookmarked' : 'bookmark',
+      },
+    ];
+  }, [bookmark]);
 
   return (
     <View style={styles.modalStyle}>
@@ -123,10 +182,7 @@ const BrowserEditModal = ({
       </View>
       <View style={styles.listWrap}>
         {handleArray.map((ele, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.listItem, index % 4 === 3 && styles.listItemNoMarginRight]}
-            onPress={() => handleUrl(ele.title)}>
+          <TouchableOpacity key={index} style={[styles.listItem]} onPress={() => handleUrl(ele.title)}>
             <View style={[styles.svgWrap]}>
               <Svg icon={ele.icon} size={pTd(52)} />
             </View>
@@ -186,18 +242,19 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexWrap: 'wrap',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   listItem: {
-    marginRight: pTd(34),
+    width: pTd(60),
+    height: pTd(92),
     overflow: 'hidden',
-  },
-  listItemNoMarginRight: {
-    marginRight: 0,
+    alignItems: 'center',
   },
   svgWrap: {
     backgroundColor: defaultColors.bg1,
     borderRadius: pTd(6),
     overflow: 'hidden',
+    width: pTd(52),
   },
   itemTitle: {
     textAlign: 'center',

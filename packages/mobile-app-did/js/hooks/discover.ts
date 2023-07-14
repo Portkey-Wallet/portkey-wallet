@@ -1,3 +1,4 @@
+import { request } from '@portkey-wallet/api/api-did';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
@@ -7,9 +8,13 @@ import {
   addRecordsItem,
   createNewTab,
   initNetworkDiscoverMap,
+  cleanBookmarkList,
+  addBookmarkList,
+  addAutoApproveItem,
 } from '@portkey-wallet/store/store-ca/discover/slice';
-import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
-import { useCallback } from 'react';
+import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
+import { useCallback, useMemo } from 'react';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
 
@@ -20,19 +25,23 @@ export const useDiscoverJumpWithNetWork = () => {
 
   const { discoverMap } = useAppCASelector(state => state.discover);
 
-  const discoverJump = ({ item }: { item: ITabItem }) => {
-    if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
+  const discoverJump = useCallback(
+    ({ item, autoApprove }: { item: ITabItem; autoApprove?: boolean }) => {
+      if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
 
-    dispatch(createNewTab({ ...item, networkType }));
-    dispatch(setActiveTab({ ...item, networkType }));
-    dispatch(addRecordsItem({ ...item, networkType }));
-    dispatch(changeDrawerOpenStatus(true));
-  };
+      dispatch(createNewTab({ ...item, networkType }));
+      dispatch(setActiveTab({ ...item, networkType }));
+      dispatch(addRecordsItem({ ...item, networkType }));
+      dispatch(changeDrawerOpenStatus(true));
+      if (autoApprove) dispatch(addAutoApproveItem(item.id));
+    },
+    [discoverMap, dispatch, networkType],
+  );
 
   return discoverJump;
 };
 
-// discover whiteList
+// discover whiteList (http)
 export const useDiscoverWhiteList = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
@@ -55,4 +64,53 @@ export const useDiscoverWhiteList = () => {
   );
 
   return { checkIsInWhiteList, upDateWhiteList };
+};
+
+export const useBookmarkList = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+  const { discoverMap } = useAppCASelector(state => state.discover);
+
+  const clean = useCallback(() => {
+    dispatch(cleanBookmarkList(networkType));
+  }, [dispatch, networkType]);
+
+  const refresh = useCallback(
+    async (skipCount = 0, maxResultCount = DISCOVER_BOOKMARK_MAX_COUNT) => {
+      const result = await request.discover.getBookmarks({
+        params: {
+          skipCount,
+          maxResultCount,
+        },
+      });
+      if (skipCount === 0) {
+        clean();
+      }
+      dispatch(addBookmarkList({ networkType, list: result.items || [] }));
+      return result as {
+        items: IBookmarkItem[];
+        totalCount: number;
+      };
+    },
+    [clean, dispatch, networkType],
+  );
+
+  const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);
+
+  return {
+    refresh,
+    clean,
+    bookmarkList,
+  };
+};
+
+export const useRecordsList = (isReverse: boolean): ITabItem[] => {
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverMap } = useAppCASelector(state => state.discover);
+
+  const list = useMemo(() => {
+    return [];
+  }, [discoverMap, isReverse, networkType]);
+
+  return list || [];
 };

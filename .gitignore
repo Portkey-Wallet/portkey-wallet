@@ -19,3 +19,6 @@ ignore/
 **/*.zip
 
 coverage
+
+# network
+packages/constants/constants-ca/network.ts

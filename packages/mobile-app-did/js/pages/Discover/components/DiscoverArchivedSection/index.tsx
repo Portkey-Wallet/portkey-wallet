@@ -18,7 +18,6 @@ import { useFocusEffect } from '@react-navigation/native';
 export function DiscoverArchivedSection() {
   const discoverJump = useDiscoverJumpWithNetWork();
   const { bookmarkList: bookmarkListStore, refresh } = useBookmarkList();
-
   const recordsListStore = useRecordsList(true);
 
   const [index, setIndex] = React.useState(

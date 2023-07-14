@@ -19,7 +19,7 @@ import { useBuyButton, useDiscoverGroupList, useSocialMediaList } from '@portkey
 import { useTabMenuList } from 'hooks/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
-import { useBookmarkList } from 'hooks/discover';
+import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {
@@ -39,6 +39,7 @@ export default function Updater() {
   useCheckManager(checkManagerOnLogout);
 
   useFetchSymbolImages();
+  useFetchTxFee();
   useMemo(() => {
     request.set('baseURL', apiUrl);
     if (service.defaults.baseURL !== apiUrl) {

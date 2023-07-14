@@ -4,7 +4,7 @@ import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
 import { BookmarkProvider, setEdit, useBookmark } from '../context/bookmarksContext';
 import CommonButton from 'components/CommonButton';
-import BookmarkItem from './BookmarkItem';
+import RecordItem from './RecordItem';
 import { FontStyles } from 'assets/theme/styles';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
@@ -15,11 +15,11 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import ActionSheet from 'components/ActionSheet';
-
-// const mockData = ['1', '2', '3'];
+import { nextAnimation } from 'utils/animation';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import myEvents from 'utils/deviceEvent';
 
 function BookmarksSection() {
-  //   const [list, setList] = useState(mockData);
   const [{ isEdit }, dispatch] = useBookmark();
 
   const { networkType } = useCurrentNetworkInfo();
@@ -49,7 +49,14 @@ function BookmarksSection() {
       <View style={styles.buttonGroupWrap}>
         {isEdit ? (
           <>
-            <CommonButton onPress={() => dispatch(setEdit(false))} title="Done" type="primary" />
+            <CommonButton
+              onPress={() => {
+                nextAnimation();
+                dispatch(setEdit(false));
+              }}
+              title="Done"
+              type="primary"
+            />
             <CommonButton
               containerStyle={styles.deleteAll}
               titleStyle={FontStyles.font12}
@@ -59,11 +66,20 @@ function BookmarksSection() {
             />
           </>
         ) : (
-          <CommonButton onPress={() => dispatch(setEdit(true))} title="Edit" type="primary" />
+          <CommonButton
+            onPress={() => {
+              nextAnimation();
+              dispatch(setEdit(true));
+            }}
+            title="Edit"
+            type="primary"
+          />
         )}
       </View>
     );
   }, [dispatch, isEdit, onDeleteAll, recordList?.length]);
+
+  const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
 
   return (
     <View style={styles.containerStyles}>
@@ -72,12 +88,12 @@ function BookmarksSection() {
           data={recordList}
           style={styles.flatListStyle}
           contentContainerStyle={[styles.flatListContent, recordList.length === 0 && styles.noData]}
-          ListEmptyComponent={<NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />}
+          ListEmptyComponent={
+            <NoDiscoverData type="noRecords" location="top" size="large" backgroundColor={defaultColors.bg4} />
+          }
           keyExtractor={_item => String(_item.id)}
-          renderItem={props => <BookmarkItem onDelete={onDelete} {...props} />}
-          onDragEnd={({ data }) => {
-            console.log('===', data);
-          }}
+          renderItem={props => <RecordItem onDelete={onDelete} {...props} />}
+          onTouchStart={closeSwipeable}
         />
       </View>
       {BottomBox}

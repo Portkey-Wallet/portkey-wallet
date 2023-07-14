@@ -63,15 +63,15 @@ export const useDiscoverWhiteList = () => {
 };
 
 export const useBookmarkList = () => {
-  const { networkType } = useCurrentNetworkInfo();
-  const dispatch = useAppCommonDispatch();
-  const { discoverMap } = useAppCASelector(state => state.discover);
+  // const { networkType } = useCurrentNetworkInfo();
+  // const dispatch = useAppCommonDispatch();
+  // const { discoverMap } = useAppCASelector(state => state.discover);
 
   useEffect(() => {
     //
   }, []);
 
-  const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);
+  // const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);
 
   return [
     {
@@ -101,14 +101,14 @@ export const useBookmarkList = () => {
   ];
 };
 
-export const useRecordsList = (isReverse: boolean): ITabItem[] => {
+export const useRecordsList = (isReverse = true): ITabItem[] => {
   const { networkType } = useCurrentNetworkInfo();
   const { discoverMap } = useAppCASelector(state => state.discover);
 
   const list = useMemo(() => {
-    return isReverse
-      ? (discoverMap?.[networkType]?.recordsList as ITabItem[]).reverse()
-      : (discoverMap?.[networkType]?.recordsList as ITabItem[]);
+    const recordList = JSON.parse(JSON.stringify(discoverMap?.[networkType]?.recordsList || ([] as ITabItem[])));
+
+    return isReverse ? recordList.reverse() : recordList;
   }, [discoverMap, isReverse, networkType]);
 
   return list || [];

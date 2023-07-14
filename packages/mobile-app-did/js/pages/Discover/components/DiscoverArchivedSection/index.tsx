@@ -46,7 +46,7 @@ export function DiscoverArchivedSection() {
           <TextM
             onPress={() => setIndex(ArchivedTabEnum.History)}
             style={index === ArchivedTabEnum.History ? FontStyles.weight500 : FontStyles.font3}>
-            History
+            Records
           </TextM>
         </View>
         <TextS style={FontStyles.font4} onPress={onSeeAllPress}>

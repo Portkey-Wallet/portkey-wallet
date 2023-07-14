@@ -1,7 +1,6 @@
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
-import { ZERO } from '@portkey-wallet/constants/misc';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { formatChainInfoToShow, handleErrorMessage } from '@portkey-wallet/utils';
@@ -49,6 +48,7 @@ export default function SendTransactions() {
   const [errMsg, setErrMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [tokenDecimals, setTokenDecimals] = useState(0);
+  const defaultToken = useDefaultToken(payload?.chainId);
   const isCAContract = useMemo(() => chainInfo?.caContractAddress === payload?.contractAddress, [chainInfo, payload]);
   const privateKey = useMemo(
     () => aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed),
@@ -61,13 +61,13 @@ export default function SendTransactions() {
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
       const value = amountInUsdShow(amount, decimals, symbol);
-      if (symbol === 'ELF') {
+      if (symbol === defaultToken.symbol) {
         return value === '$ 0' ? '<$ 0.01' : value;
       } else {
         return value;
       }
     },
-    [amountInUsdShow],
+    [amountInUsdShow, defaultToken.symbol],
   );
 
   const getFee = useCallback(
@@ -148,12 +148,12 @@ export default function SendTransactions() {
   useEffect(() => {
     const symbol = txParams.paramsOption?.symbol;
     if (!symbol || !isMainnet) return;
-    if (symbol === 'ELF') {
+    if (symbol === defaultToken.symbol) {
       getTokenPrice(symbol);
     } else {
-      getTokensPrice([symbol, 'ELF']);
+      getTokensPrice([symbol, defaultToken.symbol]);
     }
-  }, [getTokenPrice, getTokensPrice, payload, isMainnet, txParams.paramsOption?.symbol]);
+  }, [getTokenPrice, getTokensPrice, payload, isMainnet, txParams.paramsOption?.symbol, defaultToken.symbol]);
 
   const renderAccountInfo = useMemo(() => {
     if (payload?.contractAddress || typeof payload?.contractAddress !== 'string') return <></>;
@@ -171,7 +171,7 @@ export default function SendTransactions() {
 
   const renderTransfer = useMemo(() => {
     const { symbol, amount } = txParams.paramsOption || {};
-    const decimals = symbol === 'ELF' ? 8 : tokenDecimals;
+    const decimals = symbol === defaultToken.symbol ? defaultToken.symbol : tokenDecimals;
 
     return (
       <div className="detail">
@@ -180,7 +180,13 @@ export default function SendTransactions() {
           <div>Amount</div>
           <div className="amount-number flex-between-center">
             <div className="value">
-              <span>{loading ? <CircleLoading /> : `${formatAmountShow(divDecimals(amount, decimals), 8)}`}</span>
+              <span>
+                {loading ? (
+                  <CircleLoading />
+                ) : (
+                  `${formatAmountShow(divDecimals(amount, decimals), defaultToken.decimals)}`
+                )}
+              </span>
               <span>&nbsp;{symbol}</span>
             </div>
             {isMainnet && <div>{formatAmountInUsdShow(amount, decimals, symbol)}</div>}
@@ -190,44 +196,48 @@ export default function SendTransactions() {
           <div>Transaction Fee</div>
           <div className="fee-amount flex-between-center">
             <div className="value">
-              <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee, 8)}`}</span>
-              <span>&nbsp;ELF</span>
+              <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee, defaultToken.decimals)}`}</span>
+              <span>&nbsp;{defaultToken.symbol}</span>
             </div>
-            {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
+            {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, defaultToken.symbol)}</div>}
           </div>
         </div>
         <div className="total">
           <div>Total (Amount + Transaction Fee)</div>
-          {symbol === 'ELF' ? (
+          {symbol === defaultToken.symbol ? (
             <div className="amount-show flex-between-center">
               <div className="value">
                 <span>
                   {loading ? (
                     <CircleLoading />
                   ) : (
-                    `${formatAmountShow(ZERO.plus(divDecimals(amount, decimals)).plus(fee), 8)}`
+                    `${formatAmountShow(divDecimals(amount, decimals).plus(fee), defaultToken.decimals)}`
                   )}
                 </span>
                 <span>&nbsp;{symbol}</span>
               </div>
               {isMainnet && (
-                <div>
-                  {formatAmountInUsdShow(ZERO.plus(divDecimals(amount, decimals)).plus(fee).toNumber(), 0, symbol)}
-                </div>
+                <div>{formatAmountInUsdShow(divDecimals(amount, decimals).plus(fee).toNumber(), 0, symbol)}</div>
               )}
             </div>
           ) : (
             <>
               <div className="amount-show flex-between-center">
                 <div className="value">
-                  <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee, 8)}`}</span>
-                  <span>&nbsp;ELF</span>
+                  <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee, defaultToken.decimals)}`}</span>
+                  <span>&nbsp;{defaultToken.symbol}</span>
                 </div>
-                {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
+                {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, defaultToken.symbol)}</div>}
               </div>
               <div className="amount-show flex-between-center">
                 <div className="value">
-                  <span>{loading ? <CircleLoading /> : `${formatAmountShow(divDecimals(amount, decimals), 8)}`}</span>
+                  <span>
+                    {loading ? (
+                      <CircleLoading />
+                    ) : (
+                      `${formatAmountShow(divDecimals(amount, decimals), defaultToken.decimals)}`
+                    )}
+                  </span>
                   <span>&nbsp;{symbol}</span>
                 </div>
                 {isMainnet && <div>{formatAmountInUsdShow(amount, 0, symbol)}</div>}
@@ -237,7 +247,16 @@ export default function SendTransactions() {
         </div>
       </div>
     );
-  }, [txParams.paramsOption, tokenDecimals, loading, isMainnet, formatAmountInUsdShow, fee]);
+  }, [
+    txParams.paramsOption,
+    defaultToken.symbol,
+    defaultToken.decimals,
+    tokenDecimals,
+    loading,
+    isMainnet,
+    formatAmountInUsdShow,
+    fee,
+  ]);
 
   const renderMessage = useMemo(() => {
     const params = txParams.paramsOption || {};
@@ -261,14 +280,14 @@ export default function SendTransactions() {
           <div className="fee-amount flex-between-center">
             <div className="value">
               <span>{loading ? <CircleLoading /> : `${formatAmountShow(fee)}`}</span>
-              <span>&nbsp;ELF</span>
+              <span>&nbsp;{defaultToken.symbol}</span>
             </div>
-            {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, 'ELF')}</div>}
+            {isMainnet && <div>{fee === '0' ? '$ 0' : formatAmountInUsdShow(fee, 0, defaultToken.symbol)}</div>}
           </div>
         </div>
       </div>
     );
-  }, [txParams.paramsOption, loading, fee, isMainnet, formatAmountInUsdShow]);
+  }, [txParams.paramsOption, loading, fee, defaultToken.symbol, isMainnet, formatAmountInUsdShow]);
 
   const sendHandler = useCallback(async () => {
     try {

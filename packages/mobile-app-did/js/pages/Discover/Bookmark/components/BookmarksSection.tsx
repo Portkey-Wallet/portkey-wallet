@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import GStyles from 'assets/theme/GStyles';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, TouchableNativeFeedback, TouchableOpacity, View } from 'react-native';
 import { BookmarkProvider, setEdit, useBookmark } from '../context/bookmarksContext';
 import CommonButton from 'components/CommonButton';
 import BookmarkItem from './BookmarkItem';
@@ -13,6 +13,7 @@ import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
+import myEvents from 'utils/deviceEvent';
 
 const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -44,20 +45,22 @@ function BookmarksSection() {
   if (list.length === 0) return <NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />;
 
   return (
-    <View style={styles.containerStyles}>
-      <View style={[GStyles.flex1, styles.listWrap]}>
-        <DraggableFlatList
-          scrollEnabled
-          data={list}
-          ListHeaderComponent={<View style={styles.headerBlank} />}
-          ListFooterComponent={<View style={styles.footerBlank} />}
-          keyExtractor={_item => _item}
-          renderItem={props => <BookmarkItem {...props} />}
-          onDragEnd={({ data }) => setList(data)}
-        />
+    <TouchableNativeFeedback onPress={myEvents.bookmark.closeSwipeable.emit}>
+      <View style={styles.containerStyles}>
+        <View style={[GStyles.flex1, styles.listWrap]}>
+          <DraggableFlatList
+            scrollEnabled
+            data={list}
+            ListHeaderComponent={<View style={styles.headerBlank} />}
+            ListFooterComponent={<View style={styles.footerBlank} />}
+            keyExtractor={_item => _item}
+            renderItem={props => <BookmarkItem {...props} />}
+            onDragEnd={({ data }) => setList(data)}
+          />
+        </View>
+        {BottomBox}
       </View>
-      {BottomBox}
-    </View>
+    </TouchableNativeFeedback>
   );
 }
 

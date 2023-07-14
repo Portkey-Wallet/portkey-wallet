@@ -9,6 +9,7 @@ import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import BookmarksSection from './components/BookmarksSection';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
 type TabItemType = {
   name: string;
@@ -23,21 +24,26 @@ const tabList: TabItemType[] = [
     component: <BookmarksSection />,
   },
   {
-    name: 'History',
+    name: 'Records',
     type: ArchivedTabEnum.History,
     component: <></>,
   },
 ];
 
 export default function Bookmark() {
-  const [selectTab, setSelectTab] = useState<ArchivedTabEnum>(ArchivedTabEnum.Bookmarks);
+  const {
+    params: { type = ArchivedTabEnum.Bookmarks },
+  } = useRoute<RouteProp<{ params: { type: ArchivedTabEnum } }>>();
 
-  const onTabPress = useCallback((type: ArchivedTabEnum) => {
-    setSelectTab(type);
+  const [selectTab, setSelectTab] = useState<ArchivedTabEnum>(type);
+
+  const onTabPress = useCallback((tabType: ArchivedTabEnum) => {
+    setSelectTab(tabType);
   }, []);
 
   return (
     <PageContainer
+      hideTouchable
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.containerStyles}
@@ -65,7 +71,7 @@ export default function Bookmark() {
 }
 
 const styles = StyleSheet.create({
-  containerStyles: { ...GStyles.paddingArg(0), flex: 1, backgroundColor: defaultColors.bg1 },
+  containerStyles: { ...GStyles.paddingArg(0), flex: 1, backgroundColor: defaultColors.bg4 },
 
   tabHeader: {
     width: pTd(214),

@@ -8,7 +8,7 @@ import { TextL, TextS } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import RecordItem from '../RecordItem';
+import SearchRecordItem from '../SearchRecordItem';
 import {
   addRecordsItem,
   changeDrawerOpenStatus,
@@ -18,7 +18,7 @@ import {
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
-export default function RecordSection() {
+export default function SearchRecordSection() {
   const { t } = useLanguage();
 
   const dispatch = useAppCommonDispatch();
@@ -45,7 +45,7 @@ export default function RecordSection() {
         </TextS>
       </View>
       {(showRecordList ?? []).map((item, index) => (
-        <RecordItem
+        <SearchRecordItem
           key={index}
           item={item}
           onPress={() => {

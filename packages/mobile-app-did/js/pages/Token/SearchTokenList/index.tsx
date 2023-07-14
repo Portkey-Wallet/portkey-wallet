@@ -1,37 +1,32 @@
 import PageContainer from 'components/PageContainer';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import CommonInput from 'components/CommonInput';
-import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import gStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommonToast from 'components/CommonToast';
 import { useLanguage } from 'i18n/hooks';
-import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import useDebounce from 'hooks/useDebounce';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { request } from '@portkey-wallet/api/api-did';
 import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import Loading from 'components/Loading';
-import FilterTokenSection from '../components/FilterToken';
-import PopularTokenSection from '../components/PopularToken';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
-import { useFocusEffect } from '@react-navigation/native';
+import FilterTokenSection from '../components/FilterToken';
 import Lottie from 'lottie-react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 
 interface ManageTokenListProps {
   route?: any;
 }
-const ManageTokenList: React.FC<ManageTokenListProps> = () => {
+const SearchTokenList: React.FC<ManageTokenListProps> = () => {
   const { t } = useLanguage();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const iptRef = useRef<any>();
 
   const chainIdList = useChainIdList();
 
@@ -39,12 +34,11 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const caAddressArray = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
 
-  const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
-
+  const [isSearching, setIsSearching] = useState<boolean>(false);
   const [keyword, setKeyword] = useState<string>('');
   const [filterTokenList, setFilterTokenList] = useState<TokenItemShowType[]>([]);
 
-  const debounceWord = useDebounce(keyword, 800);
+  const debounceWord = useDebounce(keyword, 500);
 
   const fetchSearchedTokenList = useCallback(async () => {
     try {
@@ -64,9 +58,10 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         userTokenId: item.id,
       }));
       setFilterTokenList(tmpToken);
+      setIsSearching(false);
     } catch (error) {
-      CommonToast.fail(handleErrorMessage(error));
-    } finally {
+      console.log('filter search error', error);
+      Loading.hide();
       setIsSearching(false);
     }
   }, [chainIdList, debounceWord]);
@@ -84,64 +79,17 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         });
         timerRef.current = setTimeout(async () => {
           dispatch(fetchTokenListAsync({ caAddresses: caAddressArray, caAddressInfos }));
-          if (debounceWord) {
-            await fetchSearchedTokenList();
-          } else {
-            await dispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray: chainIdList }));
-          }
+          await fetchSearchedTokenList();
           Loading.hide();
           CommonToast.success('Success');
         }, 800);
       } catch (err) {
         Loading.hide();
+        setIsSearching(false);
         CommonToast.fail(handleErrorMessage(err));
       }
     },
-    [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],
-  );
-
-  useFocusEffect(
-    useCallback(() => {
-      fetchSearchedTokenList();
-      dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
-    }, [chainIdList, dispatch, fetchSearchedTokenList]),
-  );
-
-  useEffect(() => {
-    if (tokenDataShowInMarket.length) return;
-    dispatch(fetchAllTokenListAsync({ keyword: debounceWord, chainIdArray: chainIdList }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (debounceWord) {
-      // get filter token
-      setFilterTokenList([]);
-      fetchSearchedTokenList();
-    } else {
-      dispatch(fetchAllTokenListAsync({ chainIdArray: chainIdList }));
-    }
-  }, [chainIdList, debounceWord, dispatch, fetchSearchedTokenList]);
-
-  // clear timer
-  useEffect(
-    () => () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    },
-    [],
-  );
-
-  const RightDom = useMemo(
-    () => (
-      <TouchableOpacity
-        style={{ padding: pTd(16) }}
-        onPress={() => {
-          navigationService.navigate('CustomToken');
-        }}>
-        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-      </TouchableOpacity>
-    ),
-    [],
+    [caAddressArray, caAddressInfos, dispatch, fetchSearchedTokenList],
   );
 
   const IptRightIcon = useMemo(() => {
@@ -157,34 +105,59 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     ) : undefined;
   }, [isSearching, keyword]);
 
+  const HeaderRightIcon = useMemo(
+    () => (
+      <TouchableOpacity
+        style={{ padding: pTd(16) }}
+        onPress={() => {
+          navigationService.navigate('CustomToken');
+        }}>
+        <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+      </TouchableOpacity>
+    ),
+    [],
+  );
+
+  useEffect(() => {
+    setFilterTokenList([]);
+    fetchSearchedTokenList();
+  }, [chainIdList, setFilterTokenList, debounceWord, fetchSearchedTokenList]);
+
+  useEffect(() => {
+    // input focus
+    timerRef.current = setTimeout(() => {
+      if (iptRef && iptRef?.current) iptRef.current.focus();
+    }, 200);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
   return (
     <PageContainer
       titleDom={t('Add Tokens')}
       safeAreaColor={['blue', 'white']}
-      rightDom={RightDom}
+      rightDom={HeaderRightIcon}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View style={pageStyles.inputWrap}>
         <CommonInput
-          rightIcon={IptRightIcon}
+          ref={iptRef}
           value={keyword}
           placeholder={t('Token Name')}
           onChangeText={v => {
             setKeyword(v.trim());
           }}
+          rightIcon={IptRightIcon}
         />
       </View>
-
-      {debounceWord ? (
-        <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
-      ) : (
-        <PopularTokenSection tokenDataShowInMarket={tokenDataShowInMarket} onHandleTokenItem={onHandleTokenItem} />
-      )}
+      <FilterTokenSection tokenList={filterTokenList} onHandleTokenItem={onHandleTokenItem} />
     </PageContainer>
   );
 };
 
-export default ManageTokenList;
+export default SearchTokenList;
 
 export const pageStyles = StyleSheet.create({
   pageWrap: {
@@ -193,7 +166,7 @@ export const pageStyles = StyleSheet.create({
   },
   inputWrap: {
     backgroundColor: defaultColors.bg5,
-    ...gStyles.paddingArg(0, 16, 16),
+    ...gStyles.paddingArg(8, 20),
   },
   list: {
     flex: 1,

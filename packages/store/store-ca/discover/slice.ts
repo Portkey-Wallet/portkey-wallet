@@ -63,6 +63,17 @@ export const discoverSlice = createSlice({
         return item.url === payload.url ? { ...item, ...payload } : item;
       });
     },
+    removeRecordsItems: (state, { payload }: { payload: { ids: number[]; networkType: NetworkType } }) => {
+      const { networkType, ids = [] } = payload;
+      const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
+
+      const idsObj: { [key: number]: number } = {};
+      ids.forEach(id => {
+        idsObj[id] = id;
+      });
+
+      targetNetworkDiscover.recordsList = targetNetworkDiscover.recordsList.filter(ele => !idsObj?.[ele?.id]);
+    },
     clearRecordsList: (state, { payload }: { payload: { networkType: NetworkType } }) => {
       const { networkType } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
@@ -120,6 +131,14 @@ export const discoverSlice = createSlice({
         [payload]: JSON.parse(JSON.stringify(initNetworkData)),
       };
     },
+    addAutoApproveItem: (state, { payload }: { payload: number }) => {
+      if (!state.autoApproveMap) state.autoApproveMap = {};
+      state.autoApproveMap = { ...state.autoApproveMap, [payload]: true };
+    },
+    removeAutoApproveItem: (state, { payload }: { payload: number }) => {
+      if (!state.autoApproveMap) state.autoApproveMap = {};
+      if (state.autoApproveMap[payload]) delete state.autoApproveMap[payload];
+    },
   },
 });
 
@@ -128,6 +147,7 @@ export const {
   addUrlToWhiteList,
   addRecordsItem,
   upDateRecordsItem,
+  removeRecordsItems,
   clearRecordsList,
   resetDiscover,
   closeAllTabs,
@@ -136,6 +156,8 @@ export const {
   setActiveTab,
   updateTab,
   changeDrawerOpenStatus,
+  addAutoApproveItem,
+  removeAutoApproveItem,
 } = discoverSlice.actions;
 
 export default discoverSlice;

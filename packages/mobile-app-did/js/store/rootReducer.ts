@@ -30,7 +30,7 @@ const userPersistConfig = {
 const discoverPersistConfig = {
   key: discoverSlice.name,
   storage: AsyncStorage,
-  blacklist: ['isDrawerOpen', 'initializedList', 'activeTabId'],
+  blacklist: ['isDrawerOpen', 'initializedList', 'activeTabId', 'autoApproveMap'],
 };
 
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);

@@ -78,7 +78,7 @@ export function DiscoverArchivedSection() {
             )}
           </TabView.Item>
           <TabView.Item style={GStyles.width100}>
-            {bookmarkList?.length === 0 ? (
+            {recordsList?.length === 0 ? (
               <NoDiscoverData type="noRecords" />
             ) : (
               <View style={styles.tabListWrap}>

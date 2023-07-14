@@ -12,7 +12,6 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
-import { RefreshControl } from 'react-native-gesture-handler';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 
 const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
@@ -20,17 +19,6 @@ const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 function BookmarksSection() {
   const [list, setList] = useState(mockData);
   const [{ isEdit }, dispatch] = useBookmark();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const getBookmarkList = useCallback(async (isInit: any) => {
-    setTimeout(() => {
-      console.log(123);
-
-      // setIsLoading(true);
-    }, 100);
-
-    // const { data, maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity;
-  }, []);
 
   const BottomBox = useMemo(
     () => (
@@ -59,17 +47,13 @@ function BookmarksSection() {
     <View style={styles.containerStyles}>
       <View style={[GStyles.flex1, styles.listWrap]}>
         <DraggableFlatList
-          style={{ height: '100%', paddingHorizontal: pTd(20) }}
           scrollEnabled
           data={list}
           ListHeaderComponent={<View style={styles.headerBlank} />}
           ListFooterComponent={<View style={styles.footerBlank} />}
           keyExtractor={_item => _item}
           renderItem={props => <BookmarkItem {...props} />}
-          refreshControl={
-            <RefreshControl enabled={true} onRefresh={() => getBookmarkList(true)} refreshing={isLoading} />
-          }
-          onEndReached={() => getBookmarkList(123)}
+          onDragEnd={({ data }) => setList(data)}
         />
       </View>
       {BottomBox}

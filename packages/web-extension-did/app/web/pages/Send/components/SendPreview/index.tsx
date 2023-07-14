@@ -5,7 +5,7 @@ import { useWalletInfo } from 'store/Provider/hooks';
 // import { useTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import './index.less';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ChainId } from '@portkey-wallet/types';
@@ -41,6 +41,7 @@ export default function SendPreview({
   const isTestNet = useIsTestnet();
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
+  const { crossChain: crossChainFee } = useGetTxFee(chainId);
 
   const toChain = useMemo(() => {
     const arr = toAccount.address.split('_');
@@ -54,7 +55,7 @@ export default function SendPreview({
     [chainId, wallet],
   );
   const renderEstimateAmount = useMemo(() => {
-    if (ZERO.plus(amount).isLessThanOrEqualTo(ZERO.plus(CROSS_FEE))) {
+    if (ZERO.plus(amount).isLessThanOrEqualTo(ZERO.plus(crossChainFee))) {
       return (
         <>
           <span className="usd">{!isTestNet && '$0'}</span>0
@@ -64,13 +65,13 @@ export default function SendPreview({
       return (
         <>
           <span className="usd">
-            {!isTestNet && amountInUsdShow(ZERO.plus(amount).minus(ZERO.plus(CROSS_FEE)).toString(), 0, symbol)}
+            {!isTestNet && amountInUsdShow(ZERO.plus(amount).minus(ZERO.plus(crossChainFee)).toString(), 0, symbol)}
           </span>
-          {formatAmountShow(ZERO.plus(amount).minus(ZERO.plus(CROSS_FEE)))}
+          {formatAmountShow(ZERO.plus(amount).minus(ZERO.plus(crossChainFee)))}
         </>
       );
     }
-  }, [amount, amountInUsdShow, isTestNet, symbol]);
+  }, [amount, amountInUsdShow, crossChainFee, isTestNet, symbol]);
 
   return (
     <div className="send-preview">
@@ -138,8 +139,8 @@ export default function SendPreview({
             <span className="label">Cross-chain Transaction fee</span>
             <p className="value">
               <span className="symbol">
-                <span className="usd">{!isTestNet && amountInUsdShow(CROSS_FEE, 0, symbol)}</span>
-                {` ${formatAmountShow(CROSS_FEE)} ELF`}
+                <span className="usd">{!isTestNet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
+                {` ${formatAmountShow(crossChainFee)} ELF`}
               </span>
             </p>
           </div>

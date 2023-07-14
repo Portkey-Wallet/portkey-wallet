@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCallback, useEffect } from 'react';
+import { IDeviceList, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCallback, useEffect, useState } from 'react';
 import { DeviceItemType } from '@portkey-wallet/types/types-ca/device';
-import { useLocation, useNavigate } from 'react-router';
-import { sleep } from '@portkey-wallet/utils';
+import { useNavigate } from 'react-router';
 import { useLoading } from 'store/Provider/hooks';
 import DevicesPopup from './Popup';
 import DevicesPrompt from './Prompt';
@@ -12,23 +11,24 @@ import { useCommonState } from 'store/Provider/hooks';
 export default function Devices() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { state } = useLocation();
-  const { deviceList, refetch } = useDeviceList();
+  const { deviceList, refetch, loading } = useDeviceList();
+  const [devices, setDevices] = useState<IDeviceList[]>([]);
   const { setLoading } = useLoading();
   const { isNotLessThan768 } = useCommonState();
 
-  const handleRefresh = useCallback(async () => {
-    setLoading(true);
-    await sleep(2000);
-    setLoading(false);
-    refetch();
-  }, [refetch, setLoading]);
+  useEffect(() => {
+    if (!loading) {
+      setDevices(deviceList);
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
 
   useEffect(() => {
-    if (state === 'update') {
-      handleRefresh();
-    }
-  }, [handleRefresh, refetch, state]);
+    setLoading(true);
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleClick = useCallback(
     (item: DeviceItemType) => {
@@ -43,8 +43,8 @@ export default function Devices() {
   }, [navigate]);
 
   return isNotLessThan768 ? (
-    <DevicesPrompt headerTitle={title} goBack={handleBack} list={deviceList} onClick={handleClick} />
+    <DevicesPrompt headerTitle={title} goBack={handleBack} list={devices} onClick={handleClick} />
   ) : (
-    <DevicesPopup headerTitle={title} goBack={handleBack} list={deviceList} onClick={handleClick} />
+    <DevicesPopup headerTitle={title} goBack={handleBack} list={devices} onClick={handleClick} />
   );
 }

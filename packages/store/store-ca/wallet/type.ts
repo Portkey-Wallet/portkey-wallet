@@ -15,12 +15,20 @@ export enum BaseWalletError {
 }
 export const WalletError = Object.assign({}, BaseWalletError, PinErrorMessage);
 
+export type DefaultToken = {
+  address: string;
+  decimals: string;
+  imageUrl: string;
+  name: string;
+  symbol: string;
+};
 export interface ChainItemType {
   chainId: ChainId;
   chainName: string;
   endPoint: string;
   explorerUrl: string;
   caContractAddress: string;
+  defaultToken: DefaultToken;
 }
 
 export interface WalletState {

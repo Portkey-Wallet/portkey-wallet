@@ -18,6 +18,7 @@ import { useAppCASelector } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import { request } from '@portkey-wallet/api/api-did';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',

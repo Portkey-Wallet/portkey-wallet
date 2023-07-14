@@ -40,6 +40,7 @@ export default function Bookmark() {
     <PageContainer
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
+      hideTouchable={true}
       containerStyles={styles.containerStyles}
       titleDom="Bookmarks">
       <View style={[GStyles.flexRow, GStyles.alignCenter]}>

@@ -1,3 +1,4 @@
+import { request } from '@portkey-wallet/api/api-did';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
@@ -7,6 +8,8 @@ import {
   addRecordsItem,
   createNewTab,
   initNetworkDiscoverMap,
+  cleanBookmarkList,
+  addBookmarkList,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useCallback, useEffect, useMemo } from 'react';
@@ -57,41 +60,34 @@ export const useDiscoverWhiteList = () => {
   return { checkIsInWhiteList, upDateWhiteList };
 };
 
+const DISCOVER_BOOKMARK_MAX_COUNT = 30;
+
 export const useBookmarkList = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
   const { discoverMap } = useAppCASelector(state => state.discover);
 
-  useEffect(() => {
-    //
-  }, []);
+  const refresh = useCallback(
+    async (pager = 0) => {
+      const result = await request.discover.getBookmarks({
+        params: {
+          skipCount: pager * DISCOVER_BOOKMARK_MAX_COUNT,
+          maxResultCount: DISCOVER_BOOKMARK_MAX_COUNT,
+        },
+      });
+      if (pager === 0) {
+        dispatch(cleanBookmarkList(networkType));
+      }
+      dispatch(addBookmarkList({ networkType, list: result.items || [] }));
+      return result;
+    },
+    [dispatch, networkType],
+  );
 
   const bookmarkList = useMemo(() => discoverMap?.[networkType]?.bookmarkList || [], [discoverMap, networkType]);
 
-  return [
-    {
-      id: 1,
-      name: 'portkey1',
-      url: 'https://portkey.finance/',
-      sortWeight: 1,
-    },
-    {
-      id: 2,
-      name: 'portkey2',
-      url: 'https://portkey.finance/',
-      sortWeight: 2,
-    },
-    {
-      id: 3,
-      name: 'portkey3',
-      url: 'https://portkey.finance/',
-      sortWeight: 3,
-    },
-    {
-      id: 4,
-      name: 'portkey4',
-      url: 'https://portkey.finance/',
-      sortWeight: 4,
-    },
-  ];
+  return {
+    refresh,
+    bookmarkList,
+  };
 };

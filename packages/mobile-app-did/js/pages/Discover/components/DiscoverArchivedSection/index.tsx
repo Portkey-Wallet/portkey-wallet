@@ -13,7 +13,7 @@ import navigationService from 'utils/navigationService';
 import { ArchivedTabEnum } from 'pages/Discover/types';
 
 export function DiscoverArchivedSection() {
-  const bookmarkListStore = useBookmarkList();
+  const { bookmarkList: bookmarkListStore } = useBookmarkList();
   const [index, setIndex] = React.useState(
     bookmarkListStore.length ? ArchivedTabEnum.Bookmarks : ArchivedTabEnum.History,
   );

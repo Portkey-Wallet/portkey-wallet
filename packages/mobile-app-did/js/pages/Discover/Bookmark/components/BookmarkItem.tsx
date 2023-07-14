@@ -5,7 +5,7 @@ import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
-import { useBookmark } from '../context';
+import { useBookmark } from '../context/bookmarksContext';
 import usePrevious from 'hooks/usePrevious';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import Svg from 'components/Svg';

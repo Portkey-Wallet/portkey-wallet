@@ -138,10 +138,12 @@ export const useDeviceList = (config?: IUseDeviceListConfig) => {
         await getDeviceList(managersInfos);
       }
     } catch (error) {
+      console.log('useDeviceList: error', error);
       setDeviceList([]);
       setDeviceAmount(0);
       onError?.(error);
     }
+    setLoading(false);
   }, [chainInfo?.chainId, getDeviceList, isAmountOnly, networkInfo.networkType, onError, walletInfo.caHash]);
 
   // const [load, { data, error, loading }] = useCaHolderManagerInfoLazyQuery({

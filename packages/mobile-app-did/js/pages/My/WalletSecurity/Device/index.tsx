@@ -11,14 +11,20 @@ import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
+import CommonToast from 'components/CommonToast';
 
 const DeviceList: React.FC = () => {
+  const onError = useCallback(() => {
+    CommonToast.failError(`Loading failed. Please retry.`);
+  }, []);
+
   const {
     deviceList,
     refresh,
     loading: isRefreshing,
   } = useDeviceList({
     isInit: false,
+    onError,
   });
   const walletInfo = useCurrentWalletInfo();
 
@@ -69,6 +75,7 @@ const DeviceList: React.FC = () => {
       titleDom={'Login Devices'}
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
+      hideTouchable={true}
       scrollViewProps={{ disabled: true }}>
       <FlatList
         style={pageStyles.listWrap}
@@ -92,7 +99,7 @@ Please note that when you log in again on a removed device, you will need to ver
 const pageStyles = StyleSheet.create({
   pageWrap: {
     backgroundColor: defaultColors.bg4,
-    padding: 0,
+    paddingHorizontal: 0,
   },
   listWrap: {
     ...GStyles.paddingArg(24, 20, 18),

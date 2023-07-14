@@ -27,7 +27,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { contractErrorHandler } from 'utils/tryErrorHandler';
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { AddressCheckError } from '@portkey-wallet/store/store-ca/assets/type';
@@ -72,7 +72,8 @@ export default function Send() {
   const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
   const currentChain = useCurrentChain(state.chainId);
-
+  useFetchTxFee();
+  const { crossChain: crossChainFee } = useGetTxFee(state.chainId);
   const tokenInfo = useMemo(
     () => ({
       chainId: state.chainId,
@@ -205,7 +206,7 @@ export default function Send() {
           return TransactionError.TOKEN_NOT_ENOUGH;
         }
         if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') && symbol === 'ELF') {
-          if (ZERO.plus(CROSS_FEE).isGreaterThanOrEqualTo(ZERO.plus(amount))) {
+          if (ZERO.plus(crossChainFee).isGreaterThanOrEqualTo(ZERO.plus(amount))) {
             return TransactionError.CROSS_NOT_ENOUGH;
           }
         }
@@ -242,6 +243,7 @@ export default function Send() {
     toAccount.address,
     chainInfo?.chainId,
     symbol,
+    crossChainFee,
   ]);
 
   const sendHandler = useCallback(async () => {

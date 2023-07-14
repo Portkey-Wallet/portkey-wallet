@@ -25,6 +25,8 @@ import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { IDappStoreState } from '@portkey-wallet/store/store-ca/dapp/type';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { CMSState } from '@portkey-wallet/store/store-ca/cms/types';
+import txFeeSlice from '@portkey-wallet/store/store-ca/txFee/slice';
+import { TxFeeType } from '@portkey-wallet/store/store-ca/txFee/type';
 
 export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;
@@ -41,4 +43,5 @@ export type CACommonState = RootCommonState & {
   [miscSlice.name]: MiscState;
   [dappSlice.name]: IDappStoreState;
   [cmsSlice.name]: CMSState;
+  [txFeeSlice.name]: TxFeeType;
 };

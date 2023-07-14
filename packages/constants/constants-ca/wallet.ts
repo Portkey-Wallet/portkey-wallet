@@ -12,3 +12,9 @@ export const DEFAULT_TOKEN = {
   name: 'AELF',
   symbol: 'ELF',
 };
+
+export const InitialTxFee = {
+  ach: 0.39,
+  crossChain: 0.35,
+  max: 0.39,
+};

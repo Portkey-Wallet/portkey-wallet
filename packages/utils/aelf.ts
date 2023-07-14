@@ -2,6 +2,7 @@ import AElf from 'aelf-sdk';
 import { COMMON_PRIVATE } from '@portkey-wallet/constants';
 import { AElfInterface } from '@portkey-wallet/types/aelf';
 import { ChainId } from '@portkey-wallet/types';
+import { isValidBase58 } from './reg';
 const Wallet = AElf.wallet;
 
 export function isEqAddress(a1?: string, a2?: string) {
@@ -9,8 +10,7 @@ export function isEqAddress(a1?: string, a2?: string) {
 }
 
 export function isAelfAddress(value?: string) {
-  if (!value) return false;
-  if (/[\u4e00-\u9fa5]/.test(value)) return false;
+  if (!value || !isValidBase58(value)) return false;
   if (value.includes('_') && value.split('_').length < 3) return false;
   try {
     return !!AElf.utils.decodeAddressRep(value);
@@ -24,8 +24,7 @@ export const getChainNumber = (chainId: string) => {
 };
 
 export function isDIDAelfAddress(value?: string) {
-  if (!value) return false;
-  if (/[\u4e00-\u9fa5]/.test(value)) return false;
+  if (!value || !isValidBase58(value)) return false;
   if (value.includes('_') && value.split('_').length === 2) {
     const arr = value.split('_');
     const res = arr[0].length > arr[1].length ? arr[0] : arr[1];

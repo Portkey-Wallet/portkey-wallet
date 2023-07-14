@@ -179,7 +179,10 @@ function BookmarksSection() {
       <View style={styles.listWrap}>
         <DraggableFlatList
           style={styles.flatListWrap}
-          contentContainerStyle={[styles.flatListContent, list.length !== 0 && styles.flatListPadding]}
+          contentContainerStyle={[
+            styles.flatListContent,
+            (isEdit ? editList.length !== 0 : list.length !== 0) && styles.flatListPadding,
+          ]}
           scrollEnabled
           data={isEdit ? editList : list}
           onTouchStart={closeSwipeable}

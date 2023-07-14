@@ -14,6 +14,7 @@ import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
 import myEvents from 'utils/deviceEvent';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
@@ -41,26 +42,24 @@ function BookmarksSection() {
     ),
     [dispatch, isEdit],
   );
-
+  const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
   if (list.length === 0) return <NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />;
-
   return (
-    <TouchableNativeFeedback onPress={myEvents.bookmark.closeSwipeable.emit}>
-      <View style={styles.containerStyles}>
-        <View style={[GStyles.flex1, styles.listWrap]}>
-          <DraggableFlatList
-            scrollEnabled
-            data={list}
-            ListHeaderComponent={<View style={styles.headerBlank} />}
-            ListFooterComponent={<View style={styles.footerBlank} />}
-            keyExtractor={_item => _item}
-            renderItem={props => <BookmarkItem {...props} />}
-            onDragEnd={({ data }) => setList(data)}
-          />
-        </View>
-        {BottomBox}
+    <View style={styles.containerStyles}>
+      <View style={[GStyles.flex1, styles.listWrap]}>
+        <DraggableFlatList
+          scrollEnabled
+          data={list}
+          onTouchStart={closeSwipeable}
+          ListHeaderComponent={<View style={styles.headerBlank} />}
+          ListFooterComponent={<View style={styles.footerBlank} />}
+          keyExtractor={_item => _item}
+          renderItem={props => <BookmarkItem {...props} />}
+          onDragEnd={({ data }) => setList(data)}
+        />
       </View>
-    </TouchableNativeFeedback>
+      {BottomBox}
+    </View>
   );
 }
 

@@ -9,6 +9,7 @@ import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import BookmarksSection from './components/BookmarksSection';
+import RecordsSection from './components/RecordsSection';
 import { RouteProp, useRoute } from '@react-navigation/native';
 
 type TabItemType = {
@@ -26,7 +27,7 @@ const tabList: TabItemType[] = [
   {
     name: 'Records',
     type: ArchivedTabEnum.History,
-    component: <></>,
+    component: <RecordsSection />,
   },
 ];
 
@@ -71,7 +72,7 @@ export default function Bookmark() {
 }
 
 const styles = StyleSheet.create({
-  containerStyles: { ...GStyles.paddingArg(0), flex: 1, backgroundColor: defaultColors.bg4 },
+  containerStyles: { ...GStyles.paddingArg(0), flex: 1, backgroundColor: defaultColors.bg6 },
 
   tabHeader: {
     width: pTd(214),

@@ -39,10 +39,12 @@ export function OverlayTransformView({
   containerStyle,
   children,
   enabledNestScrollView,
+  onCloseRequest,
 }: {
   containerStyle?: ViewStyleType;
   children: ReactNode;
   enabledNestScrollView?: boolean;
+  onCloseRequest?: OverlayModalProps['onCloseRequest'];
 }) {
   return (
     <TransformView
@@ -54,7 +56,10 @@ export function OverlayTransformView({
       disableScroll={['up', 'horizontal']}
       enabledNestScrollView={enabledNestScrollView}
       onDidTransform={(_: number, translateY: number) => {
-        translateY > 50 && OverlayModal.hide();
+        if (translateY > 50) {
+          onCloseRequest?.();
+          OverlayModal.hide();
+        }
       }}>
       {children}
     </TransformView>
@@ -99,7 +104,10 @@ export default class OverlayModal extends React.Component {
             elements.push(v);
           }}
           {...props}>
-          <OverlayTransformView containerStyle={containerStyle} enabledNestScrollView={!!enabledNestScrollView}>
+          <OverlayTransformView
+            onCloseRequest={props.onCloseRequest}
+            containerStyle={containerStyle}
+            enabledNestScrollView={!!enabledNestScrollView}>
             {component}
           </OverlayTransformView>
         </Overlay.PopView>

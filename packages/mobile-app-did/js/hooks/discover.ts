@@ -104,12 +104,14 @@ export const useBookmarkList = () => {
   };
 };
 
-export const useRecordsList = (isReverse: boolean): ITabItem[] => {
+export const useRecordsList = (isReverse = true): ITabItem[] => {
   const { networkType } = useCurrentNetworkInfo();
   const { discoverMap } = useAppCASelector(state => state.discover);
 
   const list = useMemo(() => {
-    return [];
+    const recordList = JSON.parse(JSON.stringify(discoverMap?.[networkType]?.recordsList || ([] as ITabItem[])));
+
+    return isReverse ? recordList.reverse() : recordList;
   }, [discoverMap, isReverse, networkType]);
 
   return list || [];

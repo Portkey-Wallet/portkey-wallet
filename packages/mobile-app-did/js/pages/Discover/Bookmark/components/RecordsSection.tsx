@@ -1,59 +1,99 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import PageContainer from 'components/PageContainer';
+import React, { useCallback, useMemo } from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import GStyles from 'assets/theme/GStyles';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { BookmarkProvider, setEdit, useBookmark } from '../context/bookmarksContext';
 import CommonButton from 'components/CommonButton';
-import BookmarkItem from './BookmarkItem';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { ArchivedTabEnum } from 'pages/Discover/types';
+import RecordItem from './RecordItem';
+import { FontStyles } from 'assets/theme/styles';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import fonts from 'assets/theme/fonts';
-import { TextM } from 'components/CommonText';
 import NoDiscoverData from 'pages/Discover/components/NoDiscoverData';
-
-const mockData = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+import { useRecordsList } from 'hooks/discover';
+import { removeRecordsItems, clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import ActionSheet from 'components/ActionSheet';
+import { nextAnimation } from 'utils/animation';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import myEvents from 'utils/deviceEvent';
 
 function BookmarksSection() {
-  const [list, setList] = useState(mockData);
   const [{ isEdit }, dispatch] = useBookmark();
 
-  const BottomBox = useMemo(
-    () => (
+  const { networkType } = useCurrentNetworkInfo();
+  const storeDispatch = useAppCommonDispatch();
+  const recordList = useRecordsList(true);
+
+  const onDelete = useCallback(
+    (item: ITabItem) => {
+      storeDispatch(removeRecordsItems({ ids: [item.id], networkType }));
+    },
+    [networkType, storeDispatch],
+  );
+
+  const onDeleteAll = useCallback(() => {
+    ActionSheet.alert({
+      title2: `Delete all records?`,
+      buttons: [
+        { title: 'Cancel', type: 'outline' },
+        { title: 'Confirm', type: 'primary', onPress: () => storeDispatch(clearRecordsList({ networkType })) },
+      ],
+    });
+  }, [networkType, storeDispatch]);
+  const BottomBox = useMemo(() => {
+    if (recordList?.length === 0) return null;
+
+    return (
       <View style={styles.buttonGroupWrap}>
         {isEdit ? (
           <>
-            <CommonButton onPress={() => dispatch(setEdit(false))} title="Done" type="primary" />
+            <CommonButton
+              onPress={() => {
+                nextAnimation();
+                dispatch(setEdit(false));
+              }}
+              title="Done"
+              type="primary"
+            />
             <CommonButton
               containerStyle={styles.deleteAll}
               titleStyle={FontStyles.font12}
               type="outline"
               title="Delete All"
+              onPress={onDeleteAll}
             />
           </>
         ) : (
-          <CommonButton onPress={() => dispatch(setEdit(true))} title="Edit" type="primary" />
+          <CommonButton
+            onPress={() => {
+              nextAnimation();
+              dispatch(setEdit(true));
+            }}
+            title="Edit"
+            type="primary"
+          />
         )}
       </View>
-    ),
-    [dispatch, isEdit],
-  );
+    );
+  }, [dispatch, isEdit, onDeleteAll, recordList?.length]);
 
-  if (list.length === 0) return <NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />;
+  const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
 
   return (
     <View style={styles.containerStyles}>
       <View style={[GStyles.flex1, styles.listWrap]}>
         <DraggableFlatList
-          scrollEnabled
-          data={list}
-          ListHeaderComponent={<View style={styles.headerBlank} />}
-          ListFooterComponent={<View style={styles.footerBlank} />}
-          keyExtractor={_item => _item}
-          renderItem={props => <BookmarkItem {...props} />}
-          onDragEnd={({ data }) => setList(data)}
+          data={recordList}
+          style={styles.flatListStyle}
+          contentContainerStyle={[styles.flatListContent, recordList.length === 0 && styles.noData]}
+          ListEmptyComponent={
+            <NoDiscoverData type="noRecords" location="top" size="large" backgroundColor={defaultColors.bg4} />
+          }
+          keyExtractor={_item => String(_item.id)}
+          renderItem={props => <RecordItem onDelete={onDelete} {...props} />}
+          onTouchStart={closeSwipeable}
         />
       </View>
       {BottomBox}
@@ -85,16 +125,19 @@ const styles = StyleSheet.create({
   deleteAll: {
     marginTop: pTd(10),
   },
-  headerBlank: {
-    borderTopLeftRadius: pTd(6),
-    borderTopRightRadius: pTd(6),
-    height: pTd(8),
-    backgroundColor: defaultColors.bg1,
+
+  flatListStyle: {
+    height: '100%',
+    borderRadius: pTd(6),
+    overflow: 'hidden',
   },
-  footerBlank: {
-    borderBottomLeftRadius: pTd(6),
-    borderBottomRightRadius: pTd(6),
-    height: pTd(8),
+  flatListContent: {
     backgroundColor: defaultColors.bg1,
+    borderRadius: pTd(6),
+    paddingVertical: pTd(8),
+    overflow: 'hidden',
+  },
+  noData: {
+    paddingVertical: 0,
   },
 });

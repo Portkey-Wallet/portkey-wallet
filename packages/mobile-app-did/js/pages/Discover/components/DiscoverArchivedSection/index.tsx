@@ -2,9 +2,9 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
-import { useBookmarkList, useRecordsList } from 'hooks/discover';
+import { useBookmarkList, useDiscoverJumpWithNetWork, useRecordsList } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, Easing } from 'react-native';
+import { StyleSheet, View, Easing, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TabView } from '@rneui/base';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
@@ -12,15 +12,12 @@ import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import navigationService from 'utils/navigationService';
 import { ArchivedTabEnum } from 'pages/Discover/types';
 import NoDiscoverData from '../NoDiscoverData';
+import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useFocusEffect } from '@react-navigation/native';
 
 export function DiscoverArchivedSection() {
+  const discoverJump = useDiscoverJumpWithNetWork();
   const { bookmarkList: bookmarkListStore, refresh } = useBookmarkList();
-  useFocusEffect(
-    useCallback(() => {
-      refresh();
-    }, [refresh]),
-  );
 
   const recordsListStore = useRecordsList(true);
 
@@ -28,16 +25,38 @@ export function DiscoverArchivedSection() {
     bookmarkListStore.length ? ArchivedTabEnum.Bookmarks : ArchivedTabEnum.History,
   );
 
+  const animateDuration = useMemo(() => (bookmarkListStore.length === 0 ? 0 : 250), [bookmarkListStore.length]);
   const bookmarkList = useMemo(() => bookmarkListStore.slice(0, 4), [bookmarkListStore]);
   const recordsList = useMemo(() => recordsListStore.slice(0, 4), [recordsListStore]);
+  const isShowArchivedSections = useMemo(
+    () => bookmarkList?.length > 0 || recordsList?.length > 0,
+    [bookmarkList?.length, recordsList?.length],
+  );
 
   const onSeeAllPress = useCallback(() => {
     navigationService.navigate('Bookmark', { type: index });
   }, [index]);
 
-  const isShowArchivedSections = false;
+  const onClickJump = useCallback(
+    (i: DiscoverItem) => {
+      discoverJump({
+        item: {
+          id: Date.now(),
+          name: i?.title || '',
+          url: i?.url ?? i?.description,
+        },
+      });
+    },
+    [discoverJump],
+  );
 
-  if (isShowArchivedSections) return null;
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh]),
+  );
+
+  if (!isShowArchivedSections) return null;
   return (
     <View style={styles.wrap}>
       <View style={styles.headerWrap}>
@@ -53,7 +72,7 @@ export function DiscoverArchivedSection() {
           <TextM
             onPress={() => setIndex(ArchivedTabEnum.History)}
             style={index === ArchivedTabEnum.History ? FontStyles.weight500 : FontStyles.font3}>
-            History
+            Records
           </TextM>
         </View>
         <TextS style={FontStyles.font4} onPress={onSeeAllPress}>
@@ -65,21 +84,21 @@ export function DiscoverArchivedSection() {
           value={index}
           disableSwipe={true}
           animationType="timing"
-          animationConfig={{ duration: 250, useNativeDriver: true, easing: Easing.linear }}>
+          animationConfig={{ duration: animateDuration, useNativeDriver: true, easing: Easing.linear }}>
           <TabView.Item style={GStyles.width100}>
             {bookmarkList?.length === 0 ? (
               <NoDiscoverData type="noBookmarks" />
             ) : (
               <View style={styles.tabListWrap}>
                 {bookmarkList.map((item, idx) => (
-                  <View key={idx} style={styles.tabItemWrap}>
+                  <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
                       <TextS style={GStyles.textAlignCenter} numberOfLines={2}>
                         {item.url}
                       </TextS>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 ))}
               </View>
             )}
@@ -90,14 +109,14 @@ export function DiscoverArchivedSection() {
             ) : (
               <View style={styles.tabListWrap}>
                 {recordsList.map((item, idx) => (
-                  <View key={idx} style={styles.tabItemWrap}>
+                  <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
                       <TextS style={GStyles.textAlignCenter} numberOfLines={2}>
                         {item.url}
                       </TextS>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 ))}
               </View>
             )}
@@ -127,15 +146,16 @@ const styles = StyleSheet.create({
   tabViewWrap: {
     width: '100%',
     overflow: 'hidden',
+    borderRadius: pTd(6),
     flex: 1,
   },
   tabListWrap: {
     width: '100%',
     height: '100%',
     backgroundColor: defaultColors.bg1,
-    borderRadius: pTd(6),
     paddingHorizontal: pTd(12),
     flexDirection: 'row',
+    overflow: 'hidden',
   },
   tabItemWrap: {
     width: '25%',

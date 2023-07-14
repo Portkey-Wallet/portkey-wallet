@@ -17,8 +17,6 @@ export function DiscoverCmsListSection() {
   const { s3Url } = useCurrentNetworkInfo();
   const discoverJump = useDiscoverJumpWithNetWork();
 
-  console.log('===GroupListGroupList=================================', GroupList);
-
   const onClickJump = useCallback(
     (i: DiscoverItem) => {
       discoverJump({

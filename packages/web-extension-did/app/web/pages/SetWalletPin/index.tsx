@@ -1,120 +1,74 @@
-import { Button, Form, message } from 'antd';
-import { FormItem } from 'components/BaseAntd';
-import ConfirmPassword from 'components/ConfirmPassword';
+import { Button, message } from 'antd';
 import PortKeyTitle from 'pages/components/PortKeyTitle';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
 import { setPinAction } from 'utils/lib/serviceWorkerAction';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { createWallet, setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { createWallet, resetWallet, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useTranslation } from 'react-i18next';
-import { recoveryDIDWallet, registerDIDWallet } from '@portkey-wallet/api/api-did/utils/wallet';
-import { VerificationType, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { VerificationType } from '@portkey-wallet/types/verifier';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
 import { useHardwareBack } from 'hooks/useHardwareBack';
-import CommonModal from 'components/CommonModal';
-import AElf from 'aelf-sdk';
-import { randomId } from '@portkey-wallet/utils';
-import useFetchDidWallet from 'hooks/useFetchDidWallet';
 import { setPasswordSeed } from 'store/reducers/user/slice';
-import { DEVICE_TYPE } from 'constants/index';
-import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { extraDataEncode } from '@portkey-wallet/utils/device';
-import { getDeviceInfo } from 'utils/device';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import ModalTip from 'pages/components/ModalTip';
 import './index.less';
-import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import {
+  SetPinAndAddManager,
+  AddManagerType,
+  DIDWalletInfo,
+  CommonModal,
+  PortkeyStyleProvider,
+  CreatePendingInfo,
+  handleErrorMessage,
+} from '@portkey/did-ui-react';
+import type { AccountType, GuardiansApproved } from '@portkey/services';
+import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 
 export default function SetWalletPin() {
-  const [form] = Form.useForm();
   const { t } = useTranslation();
-
   const { type: state } = useParams<{ type: 'login' | 'scan' | 'register' }>();
+  const loginType: AddManagerType = useMemo(() => (state === 'register' ? 'register' : 'recovery'), [state]);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const [returnOpen, setReturnOpen] = useState<boolean>();
   const { scanWalletInfo, scanCaWalletInfo, loginAccount, registerVerifier } = useLoginInfo();
-  const getWalletCAAddressResult = useFetchDidWallet();
-  const network = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
   const originChainId = useOriginChainId();
 
   console.log(walletInfo, state, scanWalletInfo, scanCaWalletInfo, 'walletInfo===caWallet');
 
-  const requestRegisterDIDWallet = useCallback(
-    async ({ managerAddress }: { managerAddress: string }) => {
-      console.log(loginAccount, registerVerifier, 'requestRegisterDIDWallet==');
-      if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
-        throw 'Missing account!!! Please login/register again';
-      const requestId = randomId();
-      if (!registerVerifier) throw 'Missing Verifier Server';
-      const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
-      const result = await registerDIDWallet({
-        type: LoginType[loginAccount.loginType],
-        loginGuardianIdentifier: loginAccount.guardianAccount.replaceAll(' ', ''),
-        manager: managerAddress,
-        extraData, //navigator.userAgent,
-        chainId: originChainId,
-        verifierId: registerVerifier.verifierId,
-        verificationDoc: registerVerifier.verificationDoc,
-        signature: registerVerifier.signature,
-        context: {
-          clientId: managerAddress,
-          requestId,
+  useEffect(() => {
+    if (state === 'scan' && (!scanWalletInfo || !scanCaWalletInfo)) {
+      message.error('Wallet information is wrong, please go back to scan the code and try again');
+      navigate('/register/start/scan');
+    }
+  }, [navigate, scanCaWalletInfo, scanWalletInfo, state]);
+
+  const approvedList: GuardiansApproved[] = useMemo(() => {
+    if (state === 'register') {
+      return [
+        {
+          type: LoginType[loginAccount?.loginType as any] as AccountType,
+          identifier: loginAccount?.guardianAccount || '',
+          verifierId: registerVerifier?.verifierId || '',
+          verificationDoc: registerVerifier?.verificationDoc || '',
+          signature: registerVerifier?.signature || '',
         },
-      });
-      return {
-        requestId,
-        sessionId: result.sessionId,
-      };
-    },
-    [loginAccount, originChainId, registerVerifier],
-  );
-
-  const getGuardiansApproved: () => GuardiansApprovedType[] = useCallback(() => {
-    return Object.values(userGuardianStatus ?? {})
-      .filter((guardian) => guardian.status === VerifyStatus.Verified)
-      .map((guardian) => ({
-        type: LoginType[guardian.guardianType],
-        identifier: guardian.guardianAccount,
-        verifierId: guardian.verifier?.id || '',
-        verificationDoc: guardian.verificationDoc || '',
-        signature: guardian.signature || '',
-      }));
-  }, [userGuardianStatus]);
-
-  const requestRecoveryDIDWallet = useCallback(
-    async ({ managerAddress }: { managerAddress: string }) => {
-      if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
-        throw 'Missing account!!! Please login/register again';
-      const guardiansApproved = getGuardiansApproved();
-      const requestId = randomId();
-      const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
-      const result = await recoveryDIDWallet({
-        loginGuardianIdentifier: loginAccount.guardianAccount.replaceAll(' ', ''),
-        manager: managerAddress,
-        extraData, //navigator.userAgent,
-        chainId: originChainId,
-        guardiansApproved,
-        context: {
-          clientId: managerAddress,
-          requestId,
-        },
-      });
-
-      return {
-        requestId,
-        sessionId: result.sessionId,
-      };
-    },
-    [loginAccount, getGuardiansApproved, originChainId],
-  );
+      ];
+    }
+    return Object.values(userGuardianStatus ?? {}).map((guardian) => ({
+      type: LoginType[guardian.guardianType] as AccountType,
+      identifier: guardian.guardianAccount,
+      verifierId: guardian.verifier?.id || '',
+      verificationDoc: guardian.verificationDoc || '',
+      signature: guardian.signature || '',
+    }));
+  }, [loginAccount, registerVerifier, state, userGuardianStatus]);
 
   const createByScan = useCallback(
     async (pin: string) => {
@@ -142,108 +96,76 @@ export default function SetWalletPin() {
   );
 
   const onCreate = useCallback(
-    async (values: any) => {
+    async (value: DIDWalletInfo | string) => {
       try {
-        const { pin } = values;
-        console.log(state, 'state===');
-
-        if (state === 'scan') return createByScan(pin);
-        if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
-          return message.error('Missing account!!! Please login/register again');
-
-        if (loginAccount.createType === 'register') {
-          setLoading(true, t(CreateAddressLoading));
-        } else {
-          setLoading(true, t(InitLoginLoading));
-        }
-        const _walletInfo = walletInfo.address ? walletInfo : AElf.wallet.createNewWallet();
-        console.log(pin, walletInfo.address, 'onCreate==');
-
-        // Step 9
-        let sessionInfo = {
-          requestId: walletInfo.address,
-          sessionId: '',
-        };
-
-        if (state === 'register') {
-          sessionInfo = await requestRegisterDIDWallet({ managerAddress: _walletInfo.address });
-        } else {
-          sessionInfo = await requestRecoveryDIDWallet({ managerAddress: _walletInfo.address });
-        }
-
-        const managerInfo = {
-          managerUniqueId: sessionInfo.sessionId,
-          requestId: sessionInfo.requestId,
-          loginAccount: loginAccount?.guardianAccount,
-          type: loginAccount.loginType,
-          verificationType: state === 'login' ? VerificationType.communityRecovery : VerificationType.register,
-        };
-
-        dispatch(setPasswordSeed(pin));
-
-        !walletInfo.address
-          ? dispatch(
-              createWallet({
-                walletInfo: _walletInfo,
-                pin,
-                caInfo: { managerInfo },
-              }),
-            )
-          : dispatch(
-              setManagerInfo({
-                networkType: network.networkType,
-                pin,
-                managerInfo,
-              }),
-            );
-
-        setPinAction(pin);
-
-        // TODO Step 14 Only get Main Chain caAddress
-
-        // Socket
-        await getWalletCAAddressResult({
-          requestId: sessionInfo.requestId,
-          clientId: _walletInfo.address,
-          verificationType: state === 'login' ? VerificationType.communityRecovery : VerificationType.register,
-          managerUniqueId: sessionInfo.sessionId,
-          pwd: pin,
-          managerAddress: _walletInfo.address,
+        if (state === 'scan' && typeof value === 'string') return createByScan(value);
+        if (typeof value !== 'object') return;
+        const result = await getHolderInfo({
+          chainId: originChainId,
+          caHash: value.caInfo.caHash,
         });
+
+        const managerList: any[] = result.managerInfos;
+
+        if (!managerList.find((info) => info?.address === value.walletInfo.address))
+          throw `${value.walletInfo.address} is not a manager`;
+
+        dispatch(
+          setCAInfo({
+            caInfo: value.caInfo,
+            pin: value.pin,
+            chainId: value.chainId,
+          }),
+        );
+        const path = state ? 'register' : 'login';
+        navigate(`/success-page/${path}`);
         setLoading(false);
+
         ModalTip({
           content: 'Requested successfully',
         });
       } catch (error: any) {
-        console.log(error, 'onCreate==error');
+        dispatch(resetWallet());
+        setLoading(false);
+
         const walletError = isWalletError(error);
         if (walletError) return message.error(walletError);
-        if (error?.message || error?.error?.message) return message.error(error?.message || error?.error?.message);
-        const errorString = typeof error === 'string' ? error : 'Something error';
-        message.error(walletError || errorString);
+        message.error(handleErrorMessage(error, 'Create wallet failed'));
       } finally {
         setLoading(false);
       }
     },
-    [
-      setLoading,
-      state,
-      network,
-      createByScan,
-      loginAccount,
-      walletInfo,
-      dispatch,
-      getWalletCAAddressResult,
-      requestRegisterDIDWallet,
-      requestRecoveryDIDWallet,
-      t,
-    ],
+    [state, createByScan, originChainId, dispatch, navigate, setLoading],
   );
 
-  const onFinishFailed = useCallback((errorInfo: any) => {
-    console.error(errorInfo, 'onFinishFailed==');
-    message.error('Something error');
-  }, []);
+  const onCreatePending = useCallback(
+    async (info: CreatePendingInfo) => {
+      try {
+        const verificationType = state === 'login' ? VerificationType.communityRecovery : VerificationType.register;
+        const managerInfo = {
+          managerUniqueId: info.sessionId,
+          requestId: info.requestId,
+          loginAccount: loginAccount?.guardianAccount as string,
+          type: loginAccount?.loginType as LoginType,
+          verificationType,
+        };
+
+        const pin = info.pin;
+        dispatch(setPasswordSeed(pin));
+        dispatch(
+          createWallet({
+            walletInfo: info.walletInfo,
+            pin,
+            caInfo: { managerInfo },
+          }),
+        );
+        await setPinAction(pin);
+      } catch (error) {
+        console.log('onCreatePending error:', error);
+      }
+    },
+    [dispatch, loginAccount?.guardianAccount, loginAccount?.loginType, state],
+  );
 
   const backHandler = useCallback(async () => {
     switch (state) {
@@ -275,54 +197,31 @@ export default function SetWalletPin() {
   });
 
   return (
-    <div className="common-page set-pin-wrapper" id="set-pin-wrapper">
+    <div className="common-page set-wallet-pin" id="set-wallet-pin">
       <PortKeyTitle leftElement leftCallBack={leftCallBack} />
       <div className="common-content1 set-pin-content">
-        <div className="title">{t('Enter Pin to Protect Your Wallet')}</div>
-        <Form
-          className="create-wallet-form"
-          name="CreateWalletForm"
-          form={form}
-          requiredMark={false}
+        <SetPinAndAddManager
+          accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}
+          type={loginType}
+          onlyGetPin={state === 'scan'}
+          guardianApprovedList={approvedList}
+          guardianIdentifier={loginAccount?.guardianAccount}
           onFinish={onCreate}
-          layout="vertical"
-          onFinishFailed={onFinishFailed}
-          autoComplete="off">
-          {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
-          <FormItem name="pin" style={{ marginBottom: 16 }}>
-            <ConfirmPassword validateFields={form.validateFields} isPasswordLengthTipShow={false} />
-          </FormItem>
-
-          <FormItem shouldUpdate>
-            {() => (
-              <Button
-                className="submit-btn"
-                type="primary"
-                htmlType="submit"
-                disabled={
-                  !form.isFieldsTouched(true) || !!form.getFieldsError().filter(({ errors }) => errors.length).length
-                }>
-                {t('Confirm')}
-              </Button>
-            )}
-          </FormItem>
-        </Form>
+          onCreatePending={onCreatePending}
+        />
       </div>
 
-      <CommonModal
-        closable={false}
-        open={returnOpen}
-        className="set-pin-modal"
-        title={t('Leave this page?')}
-        getContainer={'#set-pin-wrapper'}>
-        <p className="modal-content">{t('returnTip')}</p>
-        <div className="btn-wrapper">
-          <Button onClick={() => setReturnOpen(false)}>No</Button>
-          <Button type="primary" onClick={backHandler}>
-            Yes
-          </Button>
-        </div>
-      </CommonModal>
+      <PortkeyStyleProvider>
+        <CommonModal closable={false} open={returnOpen} title={t('Leave this page?')} getContainer={'#set-wallet-pin'}>
+          <p className="modal-content">{t('returnTip')}</p>
+          <div className="btn-wrapper">
+            <Button onClick={() => setReturnOpen(false)}>No</Button>
+            <Button type="primary" onClick={backHandler}>
+              Yes
+            </Button>
+          </div>
+        </CommonModal>
+      </PortkeyStyleProvider>
     </div>
   );
 }

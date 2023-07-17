@@ -8,7 +8,7 @@ export interface IVerifierAccountPopupProps {
 
 const VerifierAccountPopup = ({ renderContent, onBack }: IVerifierAccountPopupProps) => {
   return (
-    <div className="verifier-account-wrapper popup-page">
+    <div className="verifier-account popup-page">
       <SettingHeader leftCallBack={onBack} />
       {renderContent}
     </div>

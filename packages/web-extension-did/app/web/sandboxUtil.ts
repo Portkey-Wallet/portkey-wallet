@@ -6,6 +6,7 @@ import { TokenItemType } from '@portkey-wallet/types/types-ca/token';
 import { customFetch } from '@portkey-wallet/utils/fetch';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import UISdkSandboxEventTypes from 'messages/UISdkSandboxEventTypes';
 
 interface useBalancesProps {
   tokens: TokenItemType | TokenItemType[];
@@ -55,9 +56,11 @@ class SandboxUtil {
           SandboxUtil.getBalances(event, SandboxUtil.callback);
           break;
         case SandboxEventTypes.callViewMethod:
+        case UISdkSandboxEventTypes.callViewMethod:
           SandboxUtil.callViewMethod(event, SandboxUtil.callback);
           break;
         case SandboxEventTypes.callSendMethod:
+        case UISdkSandboxEventTypes.callSendMethod:
           SandboxUtil.callSendMethod(event, SandboxUtil.callback);
           break;
         case SandboxEventTypes.getTransactionFee:

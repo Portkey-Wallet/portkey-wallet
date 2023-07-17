@@ -66,6 +66,9 @@ class SandboxUtil {
         case SandboxEventTypes.initViewContract:
           SandboxUtil.initViewContract(event, SandboxUtil.callback);
           break;
+        case SandboxEventTypes.getTransactionRaw:
+          SandboxUtil.getTransactionRaw(event, SandboxUtil.callback);
+          break;
         default:
           break;
       }
@@ -294,6 +297,27 @@ class SandboxUtil {
       callback(event, {
         code: SandboxErrorCode.success,
         message: transaction.TransactionFee,
+        sid: data.sid,
+      });
+    } catch (e) {
+      return callback(event, {
+        code: SandboxErrorCode.error,
+        message: e,
+        sid: data.sid,
+      });
+    }
+  }
+
+  static async getTransactionRaw(event: MessageEvent<any>, callback: SendBack) {
+    const data = event.data.data ?? {};
+    try {
+      const { rpcUrl, address, paramsOption, chainType, methodName, privateKey } = data;
+      if (chainType !== 'aelf') throw 'Not support';
+      const aelfContract = await SandboxUtil._getELFSendContract(rpcUrl, address, privateKey);
+      const raw = await aelfContract.encodedTx(methodName, paramsOption);
+      callback(event, {
+        code: SandboxErrorCode.success,
+        message: raw,
         sid: data.sid,
       });
     } catch (e) {

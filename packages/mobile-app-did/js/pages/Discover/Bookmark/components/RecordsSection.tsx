@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
   deleteAll: {
     marginTop: pTd(10),
   },
-
   flatListStyle: {
     height: '100%',
     borderRadius: pTd(6),

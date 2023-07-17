@@ -231,7 +231,10 @@ const styles = StyleSheet.create({
   deleteAll: {
     marginTop: pTd(10),
   },
-  flatListWrap: { borderRadius: pTd(6), overflow: 'hidden', height: '100%' },
+  flatListWrap: {
+    borderRadius: pTd(6),
+    height: '100%',
+  },
   flatListContent: {
     backgroundColor: defaultColors.bg1,
     borderRadius: pTd(6),

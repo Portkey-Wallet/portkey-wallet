@@ -1,3 +1,5 @@
+@import '../../assets/theme/color.less';
+
 .verifier-account {
   .verifier-account-content {
     width: 350px;
@@ -6,6 +8,29 @@
   .verifier-account-wrapper .login-account {
     width: 0;
     flex: 1;
+  }
+  .verifier-account-wrapper {
+    .password-wrapper {
+      .resend-btn {
+        width: auto;
+        margin: auto;
+        display: block;
+        margin-top: 24px;
+        color: @font-9;
+        border: none;
+        background-color: transparent;
+        &:hover {
+          background-color: transparent;
+        }
+        span {
+          line-height: 20px;
+          font-size: 14px;
+        }
+        &.resend-after-btn {
+          color: @font-12;
+        }
+      }
+    }
   }
 }
 .verifier-account.big-screen-verifier-account {

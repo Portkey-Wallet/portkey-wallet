@@ -145,6 +145,7 @@ export default function VerifierPage({
       isLoginGuardian={currentGuardian?.isLoginAccount}
       accountType={LoginType[currentGuardian?.guardianType as LoginType] as AccountType}
       code={pinVal}
+      tipExtra={!isFromLoginOrRegister && 'Please contact your guardians, and enter '}
       onReSend={resendCode}
       onCodeFinish={onFinish}
       onCodeChange={setPinVal}

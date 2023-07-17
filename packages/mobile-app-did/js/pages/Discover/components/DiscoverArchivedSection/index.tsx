@@ -94,7 +94,7 @@ export function DiscoverArchivedSection() {
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
                       <TextS style={GStyles.textAlignCenter} numberOfLines={2}>
-                        {item.url}
+                        {item?.name || item?.url}
                       </TextS>
                     </View>
                   </TouchableOpacity>
@@ -112,7 +112,7 @@ export function DiscoverArchivedSection() {
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
                       <TextS style={GStyles.textAlignCenter} numberOfLines={2}>
-                        {item.url}
+                        {item?.name || item?.url}
                       </TextS>
                     </View>
                   </TouchableOpacity>

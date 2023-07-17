@@ -145,6 +145,7 @@ const BrowserEditModal = ({
       activeTabId,
       activeWebviewScreenShot,
       setPreActiveTabId,
+      refresh,
       bookmark?.id,
       bookmark?.index,
     ],
@@ -238,7 +239,6 @@ const styles = StyleSheet.create({
   listWrap: {
     marginTop: pTd(24),
     marginBottom: pTd(24),
-    paddingLeft: pTd(12),
     display: 'flex',
     flexWrap: 'wrap',
     flexDirection: 'row',

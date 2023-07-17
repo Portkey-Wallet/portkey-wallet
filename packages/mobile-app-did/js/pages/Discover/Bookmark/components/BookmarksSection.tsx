@@ -159,9 +159,12 @@ function BookmarksSection() {
           <>
             <CommonButton onPress={onDone} title="Done" type="primary" />
             <CommonButton
-              containerStyle={[styles.deleteAll, editList.length === 0 && styles.buttonDisabledStyle]}
+              containerStyle={[styles.deleteAll]}
+              disabled={editList.length === 0}
+              disabledStyle={styles.buttonDisabledStyle}
+              disabledTitleStyle={FontStyles.font12}
               titleStyle={FontStyles.font12}
-              type="outline"
+              type="clear"
               title="Delete All"
               onPress={onDeleteAll}
             />

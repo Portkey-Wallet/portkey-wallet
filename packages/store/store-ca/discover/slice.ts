@@ -133,8 +133,6 @@ export const discoverSlice = createSlice({
       };
     },
     cleanBookmarkList: (state, { payload }: { payload: NetworkType }) => {
-      console.log('cleanBookmarkList1', state.discoverMap);
-
       state.discoverMap = {
         ...(state.discoverMap || {}),
         [payload]: {
@@ -142,8 +140,6 @@ export const discoverSlice = createSlice({
           bookmarkList: [],
         },
       };
-
-      console.log('cleanBookmarkList2', state.discoverMap);
     },
     addBookmarkList: (state, { payload }: { payload: { networkType: NetworkType; list: IBookmarkItem[] } }) => {
       const preBookmarkList = state.discoverMap?.[payload.networkType]?.bookmarkList || [];
@@ -154,7 +150,6 @@ export const discoverSlice = createSlice({
           bookmarkList: preBookmarkList.concat(payload.list),
         },
       };
-      console.log('addBookmarkList', state.discoverMap);
     },
     addAutoApproveItem: (state, { payload }: { payload: number }) => {
       if (!state.autoApproveMap) state.autoApproveMap = {};

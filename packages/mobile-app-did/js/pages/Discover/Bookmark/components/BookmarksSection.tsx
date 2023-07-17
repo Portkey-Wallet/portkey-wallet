@@ -126,7 +126,7 @@ function BookmarksSection() {
 
   const onDeleteAll = useCallback(() => {
     ActionSheet.alert({
-      title2: <TextXL style={FontStyles.weight500}>Delete all bookmarks?</TextXL>,
+      title: 'Delete all bookmarks?',
       buttons: [
         {
           title: 'Cancel',

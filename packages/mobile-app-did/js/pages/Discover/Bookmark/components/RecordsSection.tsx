@@ -48,7 +48,7 @@ function BookmarksSection() {
 
   const onDeleteAll = useCallback(() => {
     ActionSheet.alert({
-      title2: `Delete all records?`,
+      title: `Delete all records?`,
       buttons: [
         { title: 'Cancel', type: 'outline' },
         { title: 'Confirm', type: 'primary', onPress: () => storeDispatch(clearRecordsList({ networkType })) },
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
   flatListStyle: {
     height: '100%',
     borderRadius: pTd(6),
-    overflow: 'hidden',
   },
   flatListContent: {
     backgroundColor: defaultColors.bg1,

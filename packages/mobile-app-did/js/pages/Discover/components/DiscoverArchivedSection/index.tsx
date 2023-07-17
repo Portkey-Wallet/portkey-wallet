@@ -4,7 +4,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
 import { useBookmarkList, useDiscoverJumpWithNetWork, useRecordsList } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View, Easing, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TabView } from '@rneui/base';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
@@ -59,19 +59,14 @@ export function DiscoverArchivedSection() {
     <View style={styles.wrap}>
       <View style={styles.headerWrap}>
         <View style={styles.archivedTabWrap}>
-          <TextM
-            onPress={() => setIndex(ArchivedTabEnum.Bookmarks)}
-            style={[
-              GStyles.marginRight(24),
-              index === ArchivedTabEnum.Bookmarks ? FontStyles.weight500 : FontStyles.font3,
-            ]}>
-            Bookmarks
-          </TextM>
-          <TextM
-            onPress={() => setIndex(ArchivedTabEnum.History)}
-            style={index === ArchivedTabEnum.History ? FontStyles.weight500 : FontStyles.font3}>
-            Records
-          </TextM>
+          <TouchableOpacity style={GStyles.marginRight(24)} onPress={() => setIndex(ArchivedTabEnum.Bookmarks)}>
+            <TextM style={[index === ArchivedTabEnum.Bookmarks ? FontStyles.weight500 : FontStyles.font3]}>
+              Bookmarks
+            </TextM>
+          </TouchableOpacity>
+          <TouchableOpacity style={GStyles.marginRight(24)} onPress={() => setIndex(ArchivedTabEnum.History)}>
+            <TextM style={index === ArchivedTabEnum.History ? FontStyles.weight500 : FontStyles.font3}>Records</TextM>
+          </TouchableOpacity>
         </View>
         <TextS style={FontStyles.font4} onPress={onSeeAllPress}>
           See All

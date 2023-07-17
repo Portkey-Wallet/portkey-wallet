@@ -20,6 +20,7 @@ import { useTabMenuList } from 'hooks/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {
@@ -38,6 +39,7 @@ export default function Updater() {
   useCaInfoOnChain();
   useCheckManager(checkManagerOnLogout);
 
+  useCheckAndInitNetworkDiscoverMap();
   useFetchSymbolImages();
   useFetchTxFee();
   useMemo(() => {

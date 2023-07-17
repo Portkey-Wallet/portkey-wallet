@@ -14,28 +14,35 @@ import {
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 export const useIsDrawerOpen = () => useAppCASelector(state => state.discover.isDrawerOpen);
+
+// check and init
+export const useCheckAndInitNetworkDiscoverMap = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+  const { discoverMap } = useAppCASelector(state => state.discover);
+
+  useEffect(() => {
+    if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
+  }, [discoverMap, dispatch, networkType]);
+};
 
 // discover jump
 export const useDiscoverJumpWithNetWork = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
-  const { discoverMap } = useAppCASelector(state => state.discover);
-
   const discoverJump = useCallback(
     ({ item, autoApprove }: { item: ITabItem; autoApprove?: boolean }) => {
-      if (!discoverMap || !discoverMap[networkType]) dispatch(initNetworkDiscoverMap(networkType));
-
       dispatch(createNewTab({ ...item, networkType }));
       dispatch(setActiveTab({ ...item, networkType }));
       dispatch(addRecordsItem({ ...item, networkType }));
       dispatch(changeDrawerOpenStatus(true));
       if (autoApprove) dispatch(addAutoApproveItem(item.id));
     },
-    [discoverMap, dispatch, networkType],
+    [dispatch, networkType],
   );
 
   return discoverJump;
@@ -51,7 +58,7 @@ export const useDiscoverWhiteList = () => {
   const checkIsInWhiteList = useCallback(
     (url: string) => {
       console.log('discoverMap', discoverMap && discoverMap[networkType]?.whiteList);
-      return discoverMap && discoverMap[networkType]?.whiteList.includes(url);
+      return discoverMap && discoverMap[networkType]?.whiteList?.includes(url);
     },
     [discoverMap, networkType],
   );
@@ -83,6 +90,7 @@ export const useBookmarkList = () => {
           maxResultCount,
         },
       });
+
       if (skipCount === 0) {
         clean();
       }

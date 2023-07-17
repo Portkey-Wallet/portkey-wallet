@@ -14,10 +14,13 @@ import { pTd } from 'utils/unit';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import { DiscoverArchivedSection } from '../components/DiscoverArchivedSection';
+import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 
 export default function DiscoverHome() {
   const [, requestQrPermission] = useQrScanPermission();
   const { t } = useLanguage();
+
+  useCheckAndInitNetworkDiscoverMap();
 
   const showDialog = useCallback(
     () =>

@@ -35,16 +35,17 @@ export const discoverSlice = createSlice({
     },
     addRecordsItem: (state, { payload }: { payload: ITabItem & { networkType: NetworkType } }) => {
       const { networkType, url } = payload;
-      if (!state.discoverMap) return;
 
-      if (!state.discoverMap?.[networkType]) state.discoverMap[networkType] = initNetworkData;
+      if (!state?.discoverMap) state.discoverMap = {};
 
-      const targetItem = state.discoverMap?.[networkType]?.recordsList.find(item => item.url === url);
-      const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
+      if (!state?.discoverMap?.[networkType]) state.discoverMap[networkType] = initNetworkData;
+
+      const targetItem = state.discoverMap?.[networkType]?.recordsList?.find(item => item.url === url);
+      const targetNetworkDiscover = state?.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
       // limit number
-      if (RECORD_LIMIT <= targetNetworkDiscover.recordsList.length) {
-        targetNetworkDiscover.tabs.shift();
+      if (RECORD_LIMIT <= targetNetworkDiscover?.recordsList.length) {
+        targetNetworkDiscover?.tabs.shift();
       }
 
       if (targetItem) {

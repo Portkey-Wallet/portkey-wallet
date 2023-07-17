@@ -54,6 +54,16 @@ export function DiscoverArchivedSection() {
     }, [refresh]),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      if (bookmarkList?.length > 0) {
+        setIndex(ArchivedTabEnum.Bookmarks);
+      } else {
+        setIndex(ArchivedTabEnum.History);
+      }
+    }, [bookmarkList?.length]),
+  );
+
   if (!isShowArchivedSections) return null;
   return (
     <View style={styles.wrap}>

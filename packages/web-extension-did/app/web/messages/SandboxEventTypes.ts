@@ -6,6 +6,8 @@ enum SandboxEventTypes {
   callSendMethod = 'callSendMethod',
   // getEncodedTx
   getTransactionFee = 'getTransactionFee',
+  // getTransactionRaw
+  getTransactionRaw = 'getTransactionRaw',
 
   initViewContract = 'initViewContract',
 }

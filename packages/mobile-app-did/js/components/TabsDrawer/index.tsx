@@ -1,6 +1,6 @@
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { ScreenWidth } from '@rneui/base';
-import React from 'react';
+import React, { memo } from 'react';
 import { Drawer } from 'react-native-drawer-layout';
 import TabsDrawerContent from './TabsDrawerContent';
 import { usePin } from 'hooks/store';
@@ -8,7 +8,7 @@ type TabsDrawerPropsType = {
   children: React.ReactNode;
 };
 
-export default function TabsDrawer(props: TabsDrawerPropsType) {
+const TabsDrawer = (props: TabsDrawerPropsType) => {
   const { children } = props;
 
   const pin = usePin();
@@ -34,4 +34,6 @@ export default function TabsDrawer(props: TabsDrawerPropsType) {
       {children}
     </Drawer>
   );
-}
+};
+
+export default memo(TabsDrawer);

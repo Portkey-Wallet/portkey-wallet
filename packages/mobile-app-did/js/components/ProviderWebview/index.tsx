@@ -19,6 +19,7 @@ export interface IWebView {
   postMessage: WebView['postMessage'];
   injectJavaScript: WebView['injectJavaScript'];
   goForward: WebView['goForward'];
+  autoApprove: () => void;
 }
 
 const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function ProviderWebview(props, forward) {
@@ -104,6 +105,10 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
        * Posts a message to WebView.
        */
       postMessage: (message: string) => webViewRef.current?.postMessage(message),
+      /**
+       * auto approve
+       */
+      autoApprove: () => operatorRef.current?.autoApprove(),
     }),
     [],
   );
@@ -114,17 +119,25 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
       style={styles.webView}
       decelerationRate="normal"
       injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : undefined}
-      onMessage={({ nativeEvent }) => {
-        operatorRef.current?.handleRequestMessage(nativeEvent.data);
-      }}
-      onLoadStart={onLoadStart}
-      onLoad={handleUpdate}
-      onLoadProgress={({ nativeEvent }) => {
-        console.log(nativeEvent.progress, '=onLoadProgress');
-      }}
-      onLoadEnd={handleUpdate}
       applicationNameForUserAgent={'WebView Portkey did Mobile'}
       {...props}
+      onLoadEnd={event => {
+        handleUpdate(event);
+        props.onLoadEnd?.(event);
+      }}
+      onLoadStart={event => {
+        onLoadStart(event);
+        props.onLoadStart?.(event);
+      }}
+      onLoad={event => {
+        handleUpdate(event);
+        props.onLoad?.(event);
+      }}
+      onMessage={event => {
+        const { nativeEvent } = event;
+        operatorRef.current?.handleRequestMessage(nativeEvent.data);
+        props.onMessage?.(event);
+      }}
     />
   );
 });

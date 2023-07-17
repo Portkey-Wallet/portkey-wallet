@@ -8,6 +8,7 @@ import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from './guardian';
 import useEffectOnce from './useEffectOnce';
+import { useBookmarkList, useCheckAndInitNetworkDiscoverMap } from './discover';
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
@@ -17,6 +18,9 @@ export default function useInitData() {
 
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   const isMainNetwork = useIsMainnet();
+  useCheckAndInitNetworkDiscoverMap();
+
+  const { refresh: loadBookmarkList } = useBookmarkList();
 
   const init = useCallback(async () => {
     try {
@@ -28,6 +32,8 @@ export default function useInitData() {
       getCurrentCAViewContract();
       dispatch(getWalletNameAsync());
       dispatch(getSymbolImagesAsync());
+
+      loadBookmarkList();
       // getGuardiansInfoWriteStore after getVerifierServers
       await getVerifierServers();
       getGuardiansInfoWriteStore({
@@ -36,7 +42,15 @@ export default function useInitData() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [caHash, dispatch, getCurrentCAViewContract, getGuardiansInfoWriteStore, getVerifierServers, isMainNetwork]);
+  }, [
+    caHash,
+    dispatch,
+    getCurrentCAViewContract,
+    getGuardiansInfoWriteStore,
+    getVerifierServers,
+    isMainNetwork,
+    loadBookmarkList,
+  ]);
   useEffectOnce(() => {
     // init data after transition animation
     const timer = setTimeout(init, 500);

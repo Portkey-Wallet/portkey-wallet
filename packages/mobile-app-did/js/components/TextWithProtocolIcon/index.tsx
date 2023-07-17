@@ -3,7 +3,7 @@ import { defaultColors } from 'assets/theme';
 
 import { TextM } from 'components/CommonText';
 import Svg from 'components/Svg';
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, View, ViewProps, StyleProp } from 'react-native';
 import { pTd } from 'utils/unit';
 
@@ -17,22 +17,20 @@ interface ITextWithProtocolIconProps {
   location?: 'header' | 'other';
 }
 
-export default function TextWithProtocolIcon({
+const TextWithProtocolIcon = ({
   title = '',
   url,
   textFontSize = pTd(14),
-  wrapStyle = {},
   iconSize = pTd(14),
+  wrapStyle = {},
   type = 'iconRight',
   location = 'other',
-}: ITextWithProtocolIconProps) {
+}: ITextWithProtocolIconProps) => {
   const isDanger = isDangerousLink(url);
 
   const textStyleObj: any = {
     fontSize: textFontSize,
   };
-
-  console.log(isDanger);
 
   const ProtocolIcon = useMemo(() => {
     if (isDanger) {
@@ -61,10 +59,14 @@ export default function TextWithProtocolIcon({
       {type === 'iconRight' && ProtocolIcon}
     </View>
   );
-}
+};
+
+export default memo(TextWithProtocolIcon);
 
 const styles = StyleSheet.create({
   wrap: {
+    width: '100%',
+    paddingRight: pTd(16),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',

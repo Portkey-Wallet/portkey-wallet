@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, View } from 'react-native';
@@ -26,12 +26,25 @@ function BookmarksSection() {
   const storeDispatch = useAppCommonDispatch();
   const recordList = useRecordsList(true);
 
-  const onDelete = useCallback(
+  const [deleteIdMap, setDeleteIdsMap] = useState<{ [key: number]: number }>({});
+
+  const onAddDelete = useCallback(
     (item: ITabItem) => {
-      storeDispatch(removeRecordsItems({ ids: [item.id], networkType }));
+      deleteIdMap[item.id] = item.id;
+      setDeleteIdsMap(JSON.parse(JSON.stringify(deleteIdMap)));
     },
-    [networkType, storeDispatch],
+    [deleteIdMap],
   );
+
+  const onDone = useCallback(() => {
+    nextAnimation();
+    dispatch(setEdit(false));
+    const ids = Object.keys(deleteIdMap).map(ele => Number(ele));
+    if (ids.length > 0) {
+      storeDispatch(removeRecordsItems({ ids: ids, networkType }));
+      setDeleteIdsMap({});
+    }
+  }, [deleteIdMap, dispatch, networkType, storeDispatch]);
 
   const onDeleteAll = useCallback(() => {
     ActionSheet.alert({
@@ -42,21 +55,16 @@ function BookmarksSection() {
       ],
     });
   }, [networkType, storeDispatch]);
+
+  const recordListShow = useMemo(() => recordList.filter(ele => !deleteIdMap[ele.id]), [deleteIdMap, recordList]);
+
   const BottomBox = useMemo(() => {
     if (recordList?.length === 0) return null;
-
     return (
       <View style={styles.buttonGroupWrap}>
         {isEdit ? (
           <>
-            <CommonButton
-              onPress={() => {
-                nextAnimation();
-                dispatch(setEdit(false));
-              }}
-              title="Done"
-              type="primary"
-            />
+            <CommonButton onPress={onDone} title="Done" type="primary" />
             <CommonButton
               containerStyle={styles.deleteAll}
               titleStyle={FontStyles.font12}
@@ -77,7 +85,7 @@ function BookmarksSection() {
         )}
       </View>
     );
-  }, [dispatch, isEdit, onDeleteAll, recordList?.length]);
+  }, [dispatch, isEdit, onDeleteAll, onDone, recordList?.length]);
 
   const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
 
@@ -85,14 +93,14 @@ function BookmarksSection() {
     <View style={styles.containerStyles}>
       <View style={[GStyles.flex1, styles.listWrap]}>
         <DraggableFlatList
-          data={recordList}
+          data={recordListShow}
           style={styles.flatListStyle}
-          contentContainerStyle={[styles.flatListContent, recordList.length === 0 && styles.noData]}
+          contentContainerStyle={[styles.flatListContent, recordListShow.length === 0 && styles.noData]}
           ListEmptyComponent={
             <NoDiscoverData type="noRecords" location="top" size="large" backgroundColor={defaultColors.bg4} />
           }
           keyExtractor={_item => String(_item.id)}
-          renderItem={props => <RecordItem onDelete={onDelete} {...props} />}
+          renderItem={props => <RecordItem onDelete={onAddDelete} {...props} />}
           onTouchStart={closeSwipeable}
         />
       </View>

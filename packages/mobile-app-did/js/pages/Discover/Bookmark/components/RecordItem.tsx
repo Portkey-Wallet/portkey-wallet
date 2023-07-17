@@ -40,6 +40,8 @@ export default memo(
 
     const onClickJump = useCallback(
       (i: any) => {
+        if (isEdit) return;
+
         discoverJump({
           item: {
             id: Date.now(),
@@ -48,7 +50,7 @@ export default memo(
           },
         });
       },
-      [discoverJump],
+      [discoverJump, isEdit],
     );
 
     const renderUnderlayLeft = useCallback(

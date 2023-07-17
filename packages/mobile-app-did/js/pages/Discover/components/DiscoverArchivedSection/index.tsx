@@ -24,7 +24,6 @@ export function DiscoverArchivedSection() {
     bookmarkListStore.length ? ArchivedTabEnum.Bookmarks : ArchivedTabEnum.History,
   );
 
-  const animateDuration = useMemo(() => (bookmarkListStore.length === 0 ? 0 : 250), [bookmarkListStore.length]);
   const bookmarkList = useMemo(() => bookmarkListStore.slice(0, 4), [bookmarkListStore]);
   const recordsList = useMemo(() => recordsListStore.slice(0, 4), [recordsListStore]);
   const isShowArchivedSections = useMemo(
@@ -79,11 +78,7 @@ export function DiscoverArchivedSection() {
         </TextS>
       </View>
       <View style={styles.tabViewWrap}>
-        <TabView
-          value={index}
-          disableSwipe={true}
-          animationType="timing"
-          animationConfig={{ duration: animateDuration, useNativeDriver: true, easing: Easing.linear }}>
+        <TabView value={index} disableTransition disableSwipe>
           <TabView.Item style={GStyles.width100}>
             {bookmarkList?.length === 0 ? (
               <NoDiscoverData type="noBookmarks" />

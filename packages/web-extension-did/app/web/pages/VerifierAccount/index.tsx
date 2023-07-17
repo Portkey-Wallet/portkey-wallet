@@ -2,11 +2,8 @@ import { useNavigate } from 'react-router';
 import { useAppDispatch, useLoginInfo, useGuardiansInfo, useUserInfo, useLoading } from 'store/Provider/hooks';
 import { useCallback, useMemo } from 'react';
 import { message } from 'antd';
-import {
-  setUserGuardianItemStatus,
-  setUserGuardianSessionIdAction,
-} from '@portkey-wallet/store/store-ca/guardians/actions';
-import { OperationTypeEnum, VerifierInfo, VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
+import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import useLocationState from 'hooks/useLocationState';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -25,9 +22,7 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import { useCommonState } from 'store/Provider/hooks';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
-import { CodeVerify, OnErrorFunc } from '@portkey/did-ui-react';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import type { AccountType } from '@portkey/services';
+import VerifierPage from 'pages/components/VerifierPage';
 
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
@@ -223,43 +218,20 @@ export default function VerifierAccount() {
     }
   }, [state]);
 
-  const onReSend = useCallback(
-    (res: { verifier: VerifierItem; verifierSessionId: string }) => {
-      dispatch(
-        setUserGuardianSessionIdAction({
-          key: currentGuardian?.key ?? `${currentGuardian?.guardianAccount}&${currentGuardian?.verifier?.name}`,
-          verifierInfo: {
-            sessionId: res.verifierSessionId,
-          },
-        }),
-      );
-    },
-    [currentGuardian, dispatch],
-  );
-
-  const onError: OnErrorFunc = useCallback((error) => {
-    console.log('CodeVerify:', error);
-  }, []);
-
   const renderContent = useMemo(
     () => (
       <div className="common-content1 verifier-account-content">
-        <CodeVerify
-          chainId={originChainId}
-          isCountdownNow={isInitStatus}
-          verifier={currentGuardian?.verifier as VerifierItem}
-          accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}
-          guardianIdentifier={currentGuardian?.guardianAccount as string}
-          verifierSessionId={currentGuardian?.verifierInfo?.sessionId as string}
-          isErrorTip
+        <VerifierPage
+          loginAccount={loginAccount}
+          isInitStatus={isInitStatus}
+          currentGuardian={currentGuardian}
+          guardianType={loginAccount?.loginType}
           onSuccess={onSuccess}
-          onReSend={onReSend}
-          onError={onError}
           operationType={operationType}
         />
       </div>
     ),
-    [currentGuardian, isInitStatus, loginAccount, onError, onReSend, onSuccess, operationType, originChainId],
+    [currentGuardian, isInitStatus, loginAccount, onSuccess, operationType],
   );
 
   const props = useMemo(

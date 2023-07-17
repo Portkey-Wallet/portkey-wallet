@@ -21,6 +21,7 @@ import Loading from 'components/Loading';
 import ActionSheet from 'components/ActionSheet';
 import { TextXL } from 'components/CommonText';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
+import { sleep } from '@portkey-wallet/utils';
 
 function BookmarksSection() {
   const [{ isEdit }, dispatch] = useBookmark();
@@ -39,7 +40,7 @@ function BookmarksSection() {
   const loadingRef = useRef(false);
   const getBookmarkList = useCallback(
     async (isInit: boolean) => {
-      if (isEdit || loadingRef.current) return;
+      if (loadingRef.current) return;
       loadingRef.current = true;
 
       let { skipCount } = pagerRef.current;
@@ -75,7 +76,7 @@ function BookmarksSection() {
       }
       loadingRef.current = false;
     },
-    [isEdit, refresh],
+    [refresh],
   );
   const getBookmarkListRef = useRef(getBookmarkList);
   getBookmarkListRef.current = getBookmarkList;
@@ -93,6 +94,7 @@ function BookmarksSection() {
   }, []);
 
   const onEdit = useCallback(() => {
+    if (loadingRef.current) return;
     deleteList.current = [];
     setEditList([...list]);
     nextAnimation();
@@ -111,9 +113,8 @@ function BookmarksSection() {
             })),
           },
         });
-        setTimeout(() => {
-          getBookmarkListRef.current(true);
-        }, 100);
+        await sleep(100);
+        getBookmarkListRef.current(true);
       } catch (error) {
         CommonToast.failError(error);
       }
@@ -137,9 +138,8 @@ function BookmarksSection() {
             Loading.show();
             try {
               await request.discover.deleteAllBookmark();
-              setTimeout(() => {
-                getBookmarkListRef.current(true);
-              }, 100);
+              await sleep(100);
+              getBookmarkListRef.current(true);
             } catch (error) {
               CommonToast.failError(error);
             }

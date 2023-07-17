@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
   flatListStyle: {
     height: '100%',
     borderRadius: pTd(6),
-    overflow: 'hidden',
   },
   flatListContent: {
     backgroundColor: defaultColors.bg1,

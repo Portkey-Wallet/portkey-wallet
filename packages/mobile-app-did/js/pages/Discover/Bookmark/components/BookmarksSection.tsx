@@ -159,7 +159,7 @@ function BookmarksSection() {
           <>
             <CommonButton onPress={onDone} title="Done" type="primary" />
             <CommonButton
-              containerStyle={styles.deleteAll}
+              containerStyle={[styles.deleteAll, editList.length === 0 && styles.buttonDisabledStyle]}
               titleStyle={FontStyles.font12}
               type="outline"
               title="Delete All"
@@ -171,7 +171,7 @@ function BookmarksSection() {
         )}
       </View>
     ),
-    [isEdit, onDeleteAll, onDone, onEdit],
+    [editList.length, isEdit, onDeleteAll, onDone, onEdit],
   );
   const closeSwipeable = useLockCallback(() => myEvents.bookmark.closeSwipeable.emit(), []);
   return (
@@ -236,5 +236,8 @@ const styles = StyleSheet.create({
   },
   flatListPadding: {
     paddingVertical: pTd(8),
+  },
+  buttonDisabledStyle: {
+    opacity: 0.3,
   },
 });

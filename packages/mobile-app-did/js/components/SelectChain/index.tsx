@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
     fontSize: pTd(14),
   },
   selectedItem: {
-    marginBottom: pTd(12),
     borderRadius: pTd(6),
     height: pTd(56),
   },

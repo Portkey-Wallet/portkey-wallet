@@ -17,9 +17,10 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
-import { sleep } from '@portkey-wallet/utils';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { FontStyles } from 'assets/theme/styles';
+import GStyles from 'assets/theme/GStyles';
 
 interface CustomTokenProps {
   route?: any;
@@ -52,6 +53,8 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
     if (!keyword) return;
 
     Loading.show();
+
+    setErrorMessage('');
     setBtnDisable(true);
     setTokenItem(pre => ({ ...pre, decimals: '--', symbol: '' }));
 
@@ -62,15 +65,17 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           chainId: tokenItem.chainId,
         },
       });
-      const { symbol, decimals, id } = res;
+      const { symbol, id } = res || {};
 
-      if (symbol && decimals && id) {
+      if (symbol && id) {
         setTokenItem(pre => ({ ...pre, ...res }));
         setKeyword(symbol);
         setBtnDisable(false);
       }
-    } catch (error) {
+    } catch (err) {
       setBtnDisable(true);
+      Loading.hide();
+      CommonToast.fail(handleErrorMessage(err));
     } finally {
       Loading.hide();
     }
@@ -107,12 +112,14 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
             isDisplay: true,
           },
         });
-        Loading.hide();
         CommonToast.success('success');
         await sleep(500);
         navigationService.goBack();
-      } catch (error: any) {
-        console.log('add custom token error', error);
+      } catch (err: any) {
+        CommonToast.fail(handleErrorMessage(err));
+        console.log('add custom token error', err);
+      } finally {
+        Loading.hide();
       }
     }
   }, [tokenItem]);
@@ -128,7 +135,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
           'To add a token, you need to select the network that it belongs to and enter its symbol for automatic recognition.',
         )}
       </TextM>
-      <FormItem title={'Network'}>
+      <FormItem title={'Network'} style={pageStyles.networkWrap}>
         <SelectChain
           currentNetwork={currentNetwork}
           chainId={tokenItem.chainId || originChainId}
@@ -155,7 +162,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
       </FormItem>
 
       <View style={pageStyles.btnContainer}>
-        <CommonButton onPress={addToken} disabled={btnDisable} type="solid">
+        <CommonButton onPress={addToken} disabled={btnDisable} type="primary">
           {t('Add')}
         </CommonButton>
       </View>
@@ -175,6 +182,9 @@ export const pageStyles = StyleSheet.create({
     color: defaultColors.font3,
     marginBottom: pTd(24),
   },
+  networkWrap: {
+    paddingBottom: pTd(24),
+  },
   list: {
     flex: 1,
   },
@@ -187,13 +197,12 @@ export const pageStyles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: screenWidth,
-    paddingLeft: pTd(20),
-    paddingRight: pTd(20),
+    ...GStyles.paddingArg(20, 16),
   },
   tokenDecimal: {
     lineHeight: pTd(56),
-    backgroundColor: defaultColors.bg7,
-    opacity: 0.3,
+    backgroundColor: defaultColors.bg18,
+    color: defaultColors.font7,
     overflow: 'hidden',
     borderRadius: pTd(6),
     paddingLeft: pTd(16),

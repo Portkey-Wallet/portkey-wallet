@@ -70,7 +70,7 @@ export default function DiscoverSearch() {
       onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
     } else {
       // else search in Discover list
-      const filterList = flatList.filter(item => item.title.replace(/\s+/g, '').includes(newValue));
+      const filterList = flatList.filter(item => item.title.replace(/\s+/g, '').toLocaleLowerCase().includes(newValue));
       setFilteredDiscoverList(filterList);
       setShowRecord(false);
     }

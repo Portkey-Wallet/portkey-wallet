@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingTop: pTd(10),
-    paddingBottom: pTd(16),
+    paddingBottom: pTd(26),
   },
   buttonBaseStyle: {
     width: pTd(160),

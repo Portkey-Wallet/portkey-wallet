@@ -152,11 +152,6 @@ let config = {
       template: './app/web/sandbox.html',
       filename: `./${outputDir}/sandbox.html`,
     }),
-    new HtmlWebpackPlugin({
-      chunks: [''],
-      template: './app/web/sandbox/index.html',
-      filename: `./${outputDir}/sandbox-index.html`,
-    }),
     new CopyWebpackPlugin({
       patterns: [
         {

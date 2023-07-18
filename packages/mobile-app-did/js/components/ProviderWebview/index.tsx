@@ -25,6 +25,8 @@ export interface IWebView {
 const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function ProviderWebview(props, forward) {
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
+  // Android will trigger onLoadEnd before onLoadStart, Mark start status.
+  const loadStartRef = useRef<boolean>(false);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
@@ -57,6 +59,7 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
 
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
+      if (!loadStartRef.current) loadStartRef.current = true;
       const { origin } = new URL(nativeEvent.url);
       initOperator(origin);
     },
@@ -121,15 +124,17 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
       injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : undefined}
       applicationNameForUserAgent={'WebView Portkey did Mobile'}
       {...props}
-      onLoadEnd={event => {
-        handleUpdate(event);
-        props.onLoadEnd?.(event);
-      }}
       onLoadStart={event => {
         onLoadStart(event);
         props.onLoadStart?.(event);
       }}
+      onLoadEnd={event => {
+        if (!loadStartRef.current) return;
+        handleUpdate(event);
+        props.onLoadEnd?.(event);
+      }}
       onLoad={event => {
+        if (!loadStartRef.current) return;
         handleUpdate(event);
         props.onLoad?.(event);
       }}

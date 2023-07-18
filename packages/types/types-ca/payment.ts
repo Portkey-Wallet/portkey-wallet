@@ -1,5 +1,4 @@
 import { ACH_MERCHANT_NAME } from '@portkey-wallet/constants/constants-ca/payment';
-import { SendResult } from '@portkey-wallet/contracts/types';
 
 export interface CountryItem {
   country: string;
@@ -16,6 +15,10 @@ export interface AchTxAddressReceivedType {
   network: string;
   cryptoAmount: string;
   address: string;
+}
+
+export interface RequestOrderTransferredType extends AchTxAddressReceivedType {
+  status: 'Transferred' | 'TransferFailed';
 }
 
 export interface PaymentSellTransferResult {

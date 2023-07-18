@@ -1,12 +1,12 @@
 import { useAppCASelector } from '.';
 import { getAchToken } from '@portkey-wallet/api/api-did/payment/util';
 import { AchTokenInfoType } from '@portkey-wallet/store/store-ca/payment/type';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useGuardiansInfo } from './guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useIsMainnet } from './network';
 import { ACH_MERCHANT_NAME, SELL_SOCKET_TIMEOUT } from '@portkey-wallet/constants/constants-ca/payment';
-import { AchTxAddressReceivedType, SellTransferParams } from '@portkey-wallet/types/types-ca/payment';
+import { RequestOrderTransferredType, SellTransferParams } from '@portkey-wallet/types/types-ca/payment';
 import signalrSell from '@portkey-wallet/socket/socket-sell';
 import { request } from '@portkey-wallet/api/api-did';
 import { randomId } from '@portkey-wallet/utils';
@@ -36,15 +36,23 @@ export const useGetAchTokenInfo = () => {
   }, [userGuardiansList]);
 };
 
+enum STAGE {
+  ACHTXADS, // onAchTxAddressReceived
+  TRANSACTION, // transaction
+  ORDER, // onRequestOrderTransferred
+}
+
 export const useSellTransfer = () => {
   const isMainnet = useIsMainnet();
+  const [status, setStatus] = useState<STAGE>(STAGE.ACHTXADS);
 
   return useCallback(
     async ({ merchantName, orderId, paymentSellTransfer }: SellTransferParams) => {
       if (!isMainnet || merchantName !== ACH_MERCHANT_NAME) return;
 
-      let achTxAddressReceived: AchTxAddressReceivedType;
-      let signalrSellRemove: (() => void) | undefined;
+      let signalrAchTxRemove: (() => void) | undefined;
+      let signalrOrderRemove: (() => void) | undefined;
+
       try {
         const clientId = randomId();
         await signalrSell.doOpen({
@@ -52,55 +60,70 @@ export const useSellTransfer = () => {
           clientId,
         });
 
-        const timerPromise = new Promise<null>(resolve =>
+        const timerPromise = new Promise<'timeout'>(resolve =>
           setTimeout(() => {
-            resolve(null);
+            resolve('timeout');
           }, SELL_SOCKET_TIMEOUT),
         );
-        const signalrSellPromise = new Promise<AchTxAddressReceivedType | null>(resolve => {
-          const { remove } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, data => {
-            resolve(data);
+
+        const signalrSellPromise = new Promise<RequestOrderTransferredType | null>(resolve => {
+          const { remove: removeAchTx } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, async data => {
+            if (data === null) {
+              throw new Error('Transaction failed.');
+            }
+
+            try {
+              setStatus(STAGE.TRANSACTION);
+              const result = await paymentSellTransfer(data);
+              await request.payment.sendSellTransaction({
+                params: {
+                  merchantName: ACH_MERCHANT_NAME,
+                  orderId,
+                  rawTransaction: result.rawTransaction,
+                  signature: result.signature,
+                  publicKey: result.publicKey,
+                },
+              });
+            } catch (e) {
+              throw {
+                code: 'NO_TX_HASH',
+                message: 'Transaction failed. Please contact the team for assistance.',
+              };
+            }
+
+            const { remove: removeRes } = signalrSell.onRequestOrderTransferred({ clientId, orderId }, async data => {
+              setStatus(STAGE.ORDER);
+              resolve(data);
+            });
+            signalrOrderRemove = removeRes;
+            signalrSell.RequestOrderTransferred(clientId, orderId);
           });
-          signalrSellRemove = remove;
+          signalrAchTxRemove = removeAchTx;
           signalrSell.requestAchTxAddress(clientId, orderId);
         });
-
         const signalrSellResult = await Promise.race([timerPromise, signalrSellPromise]);
-
-        if (signalrSellResult === null) {
-          throw new Error('Transaction failed.');
+        if (signalrSellResult === null) throw new Error('Transaction failed.');
+        if (signalrSellResult === 'timeout') {
+          if (status === STAGE.ACHTXADS) throw new Error('Transaction failed.');
+          throw {
+            code: 'TIMEOUT',
+            message: 'The waiting time is too long, it will be put on hold in the background.',
+          };
         }
-        achTxAddressReceived = signalrSellResult;
+        if (signalrSellResult.status === 'TransferFailed') throw new Error('Transaction failed.');
       } catch (error) {
         throw {
           code: 'TIMEOUT',
-          message: 'Transaction failed.',
+          message: 'The waiting time is too long, it will be put on hold in the background.',
         };
       } finally {
-        signalrSellRemove?.();
-        signalrSellRemove = undefined;
+        signalrAchTxRemove?.();
+        signalrAchTxRemove = undefined;
+        signalrOrderRemove?.();
+        signalrOrderRemove = undefined;
         signalrSell.stop();
       }
-
-      try {
-        const result = await paymentSellTransfer(achTxAddressReceived);
-
-        await request.payment.sendSellTransaction({
-          params: {
-            merchantName: ACH_MERCHANT_NAME,
-            orderId,
-            rawTransaction: result.rawTransaction,
-            signature: result.signature,
-            publicKey: result.publicKey,
-          },
-        });
-      } catch (error) {
-        throw {
-          code: 'NO_TX_HASH',
-          message: 'Transaction failed. Please contact the team for assistance.',
-        };
-      }
     },
-    [isMainnet],
+    [isMainnet, status],
   );
 };

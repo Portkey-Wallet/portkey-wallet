@@ -54,6 +54,16 @@ export function DiscoverArchivedSection() {
     }, [refresh]),
   );
 
+  useFocusEffect(
+    useCallback(() => {
+      if (bookmarkList?.length > 0) {
+        setIndex(ArchivedTabEnum.Bookmarks);
+      } else {
+        setIndex(ArchivedTabEnum.History);
+      }
+    }, [bookmarkList?.length]),
+  );
+
   if (!isShowArchivedSections) return null;
   return (
     <View style={styles.wrap}>
@@ -84,7 +94,7 @@ export function DiscoverArchivedSection() {
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
                       <TextS style={GStyles.textAlignCenter} numberOfLines={2}>
-                        {item.url}
+                        {item?.name || item?.url}
                       </TextS>
                     </View>
                   </TouchableOpacity>
@@ -102,7 +112,7 @@ export function DiscoverArchivedSection() {
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
                       <TextS style={GStyles.textAlignCenter} numberOfLines={2}>
-                        {item.url}
+                        {item?.name || item?.url}
                       </TextS>
                     </View>
                   </TouchableOpacity>

@@ -45,7 +45,7 @@ export const discoverSlice = createSlice({
 
       // limit number
       if (RECORD_LIMIT <= targetNetworkDiscover?.recordsList.length) {
-        targetNetworkDiscover?.tabs.shift();
+        targetNetworkDiscover?.recordsList.shift();
       }
 
       if (targetItem) {

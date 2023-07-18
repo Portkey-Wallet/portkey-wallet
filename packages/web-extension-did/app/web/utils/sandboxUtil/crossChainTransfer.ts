@@ -1,5 +1,5 @@
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
-import { ChainId, ChainType } from '@portkey-wallet/types';
+import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { getChainIdByAddress } from '@portkey-wallet/utils';
 import { crossChainTransferToCa } from './crossChainTransferToCa';
@@ -117,8 +117,7 @@ const crossChainTransfer = async ({
   // return;
   // TODO Only support chainType: aelf
   let _amount = amount;
-  const toChainId = getChainIdByAddress(toAddress, chainType);
-  const { crossChain: crossChainFee } = getTxFee(toChainId as ChainId);
+  const { crossChain: crossChainFee } = getTxFee(tokenInfo.chainId);
   if (tokenInfo.symbol === nativeToken.symbol) {
     _amount = ZERO.plus(amount).minus(timesDecimals(crossChainFee, 8)).toNumber();
   }

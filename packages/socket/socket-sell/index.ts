@@ -24,7 +24,7 @@ export class SignalrSell extends BaseSignalr {
     });
   }
 
-  public RequestOrderTransferred(clientId: string, orderId: string) {
+  public requestOrderTransferred(clientId: string, orderId: string) {
     console.log('invoke RequestOrderTransferred', clientId, orderId);
     this.invoke('RequestOrderTransferred', {
       TargetClientId: clientId,

@@ -1,7 +1,7 @@
 import { useAppCASelector } from '.';
 import { getAchToken } from '@portkey-wallet/api/api-did/payment/util';
 import { AchTokenInfoType } from '@portkey-wallet/store/store-ca/payment/type';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { useGuardiansInfo } from './guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { useIsMainnet } from './network';
@@ -44,7 +44,7 @@ enum STAGE {
 
 export const useSellTransfer = () => {
   const isMainnet = useIsMainnet();
-  const [status, setStatus] = useState<STAGE>(STAGE.ACHTXADS);
+  const status = useRef<STAGE>(STAGE.ACHTXADS);
 
   return useCallback(
     async ({ merchantName, orderId, paymentSellTransfer }: SellTransferParams) => {
@@ -73,7 +73,7 @@ export const useSellTransfer = () => {
             }
 
             try {
-              setStatus(STAGE.TRANSACTION);
+              status.current = STAGE.TRANSACTION;
               const result = await paymentSellTransfer(data);
               await request.payment.sendSellTransaction({
                 params: {
@@ -92,11 +92,11 @@ export const useSellTransfer = () => {
             }
 
             const { remove: removeRes } = signalrSell.onRequestOrderTransferred({ clientId, orderId }, async data => {
-              setStatus(STAGE.ORDER);
+              status.current = STAGE.ORDER;
               resolve(data);
             });
             signalrOrderRemove = removeRes;
-            signalrSell.RequestOrderTransferred(clientId, orderId);
+            signalrSell.requestOrderTransferred(clientId, orderId);
           });
           signalrAchTxRemove = removeAchTx;
           signalrSell.requestAchTxAddress(clientId, orderId);
@@ -104,7 +104,7 @@ export const useSellTransfer = () => {
         const signalrSellResult = await Promise.race([timerPromise, signalrSellPromise]);
         if (signalrSellResult === null) throw new Error('Transaction failed.');
         if (signalrSellResult === 'timeout') {
-          if (status === STAGE.ACHTXADS) throw new Error('Transaction failed.');
+          if (status.current === STAGE.ACHTXADS) throw new Error('Transaction failed.');
           throw {
             code: 'TIMEOUT',
             message: 'The waiting time is too long, it will be put on hold in the background.',

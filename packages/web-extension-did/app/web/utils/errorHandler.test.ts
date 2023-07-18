@@ -1,4 +1,5 @@
 import errorHandler from './errorHandler';
+
 describe('errorHandler', () => {
   test('should return the correct output for a success code', () => {
     const code = 0;

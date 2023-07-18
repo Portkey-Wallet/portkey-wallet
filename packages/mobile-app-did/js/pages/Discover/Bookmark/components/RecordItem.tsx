@@ -106,9 +106,9 @@ export default memo(
               imageUrl={getFaviconUrl(item?.url || '')}
             />
             <View style={styles.infoWrap}>
-              <TextWithProtocolIcon url={item.url} textFontSize={pTd(16)} />
+              <TextWithProtocolIcon url={item?.url} title={item?.name} textFontSize={pTd(16)} />
               <TextS numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7]}>
-                {item?.name || item?.url}
+                {item?.url}
               </TextS>
             </View>
 

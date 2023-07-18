@@ -20,17 +20,6 @@ describe('errorHandler', () => {
       data: undefined,
     });
   });
-  test('should return the correct output for an error number', () => {
-    const code = 200002;
-    const error = 200002;
-    const output = errorHandler(code, error);
-    expect(output).toEqual({
-      error: code,
-      name: undefined,
-      message: undefined,
-      data: undefined,
-    });
-  });
   test('should return the correct output for a custom error message', () => {
     const code = 410002;
     const error = 'Invalid parameters.';

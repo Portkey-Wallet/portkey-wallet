@@ -96,21 +96,32 @@ const SendHome: React.FC = () => {
         account: account,
       });
 
-      const raw = await contract.encodedTx('ManagerForwardCall', {
-        caHash: wallet.caHash,
-        contractAddress: selectedAssets.tokenContractAddress,
-        methodName: 'Transfer',
-        args: {
-          symbol: selectedAssets.symbol,
-          to: isCross ? wallet.address : selectedToContact.address,
-          amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
-        },
-      });
-      console.log('====raw======', {
-        symbol: selectedAssets.symbol,
-        to: isCross ? wallet.address : selectedToContact.address,
-        amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
-      });
+      const firstMethodName = isCross ? 'ManagerTransfer' : 'ManagerForwardCall';
+      const secondParams = isCross
+        ? {
+            contractAddress: selectedAssets.tokenContractAddress,
+            caHash: wallet.caHash,
+            symbol: selectedAssets.symbol,
+            to: wallet.address,
+            amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
+            memo: '',
+          }
+        : {
+            caHash: wallet.caHash,
+            contractAddress: selectedAssets.tokenContractAddress,
+            methodName: 'Transfer',
+            args: {
+              symbol: selectedAssets.symbol,
+              to: selectedToContact.address,
+              amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
+              memo: '',
+            },
+          };
+
+      const raw = await contract.encodedTx(firstMethodName, secondParams);
+
+      console.log('====raw======', firstMethodName, secondParams);
+
       const { TransactionFee } = await customFetch(`${chainInfo?.endPoint}/api/blockChain/calculateTransactionFee`, {
         method: 'POST',
         params: {

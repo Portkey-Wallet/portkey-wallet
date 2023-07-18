@@ -55,7 +55,7 @@ const SendHome: React.FC = () => {
   const { sendType, assetInfo, toInfo, transactionFee, sendNumber } = useRouterParams<IToSendPreviewParamsType>();
 
   useFetchTxFee();
-  const { crossChain: crossFee } = useGetTxFee(assetInfo.chainId);
+  const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
 
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
@@ -132,6 +132,7 @@ const SendHome: React.FC = () => {
         tokenInfo: { ...assetInfo, address: assetInfo.tokenContractAddress } as unknown as BaseToken,
         caHash: wallet.caHash || '',
         amount,
+        crossDefaultFee,
         toAddress: toInfo.address,
       });
 
@@ -171,6 +172,7 @@ const SendHome: React.FC = () => {
     caAddressInfos,
     caAddresses,
     chainInfo,
+    crossDefaultFee,
     currentNetwork.walletType,
     dispatch,
     isCrossChainTransfer,
@@ -353,12 +355,12 @@ const SendHome: React.FC = () => {
                 </TextM>
                 <View>
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                    crossFee,
+                    crossDefaultFee,
                   )} ELF`}</TextM>
                   {!isTestnet ? (
                     <TextS
                       style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                      ZERO.plus(crossFee).multipliedBy(tokenPriceObject[ELF_SYMBOL]),
+                      ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[ELF_SYMBOL]),
                     )}`}</TextS>
                   ) : (
                     <TextM />
@@ -376,17 +378,17 @@ const SendHome: React.FC = () => {
                 </TextM>
                 <View>
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
-                    {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossFee))
+                    {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
                       ? '0'
-                      : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(crossFee)))}{' '}
+                      : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)))}{' '}
                     {'ELF'}
                   </TextM>
                   {!isTestnet ? (
                     <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${
-                      ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossFee))
+                      ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
                         ? '0'
                         : formatAmountShow(
-                            ZERO.plus(sendNumber).minus(ZERO.plus(crossFee)).times(tokenPriceObject[ELF_SYMBOL]),
+                            ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)).times(tokenPriceObject[ELF_SYMBOL]),
                             2,
                           )
                     }`}</TextS>

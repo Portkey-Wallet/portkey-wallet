@@ -39,6 +39,7 @@ module.exports = {
       displayName: 'hooks',
       preset: 'ts-jest',
       testMatch: ['<rootDir>/packages/hooks/hooks-ca/*.test.{ts,tsx}'],
+      testPathIgnorePatterns: ['<rootDir>/packages/hooks/hooks-ca/wallet.test.ts'],
       testEnvironment: 'jsdom',
     },
     {

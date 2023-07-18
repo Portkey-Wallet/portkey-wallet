@@ -22,7 +22,7 @@ const SearchRecordItem: React.FC<RecordListItemType> = props => {
       <DiscoverWebsiteImage imageUrl={getFaviconUrl(item?.url || '')} />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
-          <TextWithProtocolIcon title={item?.title || ''} url={item.url || ''} />
+          <TextWithProtocolIcon title={item?.name || ''} url={item.url || ''} />
           <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.gameInfo]}>
             {item?.url || ''}
           </TextS>

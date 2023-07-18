@@ -19,7 +19,6 @@ import CommonToast from 'components/CommonToast';
 import { request } from '@portkey-wallet/api/api-did';
 import Loading from 'components/Loading';
 import ActionSheet from 'components/ActionSheet';
-import { TextXL } from 'components/CommonText';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 import { sleep } from '@portkey-wallet/utils';
 
@@ -116,7 +115,7 @@ function BookmarksSection() {
         await sleep(100);
         getBookmarkListRef.current(true);
       } catch (error) {
-        CommonToast.failError(error);
+        CommonToast.failError('Edit failed, please try again');
       }
       Loading.hide();
     }

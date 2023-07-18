@@ -18,7 +18,6 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 
 type BookmarkItemProps<T> = RenderItemParams<T> & {
   onDelete: (item: T) => void;
@@ -26,7 +25,7 @@ type BookmarkItemProps<T> = RenderItemParams<T> & {
 
 export default memo(
   function BookmarkItem(props: BookmarkItemProps<IBookmarkItem>) {
-    const { drag, isActive, item, onDelete } = props;
+    const { item, onDelete } = props;
     const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
     const [{ isEdit }] = useBookmark();
     const preIsEdit = usePrevious(isEdit);
@@ -101,9 +100,9 @@ export default memo(
               {EditDom}
               <DiscoverWebsiteImage imageUrl={getFaviconUrl(item.url)} size={pTd(40)} style={styles.websiteIconStyle} />
               <View style={styles.infoWrap}>
-                <TextWithProtocolIcon title={item.name} url={item.url} textFontSize={pTd(16)} />
+                <TextWithProtocolIcon title={item?.name} url={item.url} textFontSize={pTd(16)} />
                 <TextS style={[FontStyles.font7]} numberOfLines={1} ellipsizeMode="tail">
-                  {item?.name || item?.url}
+                  {item?.url}
                 </TextS>
               </View>
               {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>

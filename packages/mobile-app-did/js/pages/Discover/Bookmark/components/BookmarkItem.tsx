@@ -103,10 +103,9 @@ export default memo(
               <View style={styles.infoWrap}>
                 <TextWithProtocolIcon title={item.name} url={item.url} textFontSize={pTd(16)} />
                 <TextS style={[FontStyles.font7]} numberOfLines={1} ellipsizeMode="tail">
-                  {item.url}
+                  {item?.name || item?.url}
                 </TextS>
               </View>
-
               {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
               <TextM>drag</TextM>
             </Touchable> */}

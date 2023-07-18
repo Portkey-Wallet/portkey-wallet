@@ -108,7 +108,7 @@ export default memo(
             <View style={styles.infoWrap}>
               <TextWithProtocolIcon url={item.url} textFontSize={pTd(16)} />
               <TextS numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7]}>
-                {item.url}
+                {item?.name || item?.url}
               </TextS>
             </View>
 

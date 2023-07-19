@@ -86,7 +86,11 @@ export const useHandleAchSell = () => {
         });
         message.success('Transaction completed.');
       } catch (error: any) {
-        message.error(error.message);
+        if (error?.code === 'TIMEOUT') {
+          message.warn(error?.message || 'The waiting time is too long, it will be put on hold in the background.');
+        } else {
+          message.error(error.message);
+        }
       } finally {
         setLoading(false);
       }

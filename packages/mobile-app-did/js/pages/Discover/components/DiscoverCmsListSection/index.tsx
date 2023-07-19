@@ -42,7 +42,7 @@ export function DiscoverCmsListSection() {
                 <View style={styles.right}>
                   <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} />
                   <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">
-                    {item.description}
+                    {item?.description}
                   </TextS>
                 </View>
               </TouchableOpacity>

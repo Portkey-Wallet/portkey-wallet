@@ -95,15 +95,6 @@ const TabsDrawerContent: React.FC = () => {
     return null;
   }, [activeTabId, activeWebviewScreenShot, tabs]);
 
-  const onBrowserTabLoadEnd = useCallback(
-    ({ nativeEvent, autoApprove, item }: { nativeEvent: any; item: ITabItem; autoApprove?: boolean }) => {
-      if (autoApprove) dispatch(removeAutoApproveItem(item.id));
-      checkAndUpDateRecordItemName({ id: item.id, name: nativeEvent.title });
-      checkAndUpDateTabItemName({ id: item.id, name: nativeEvent.title });
-    },
-    [checkAndUpDateRecordItemName, checkAndUpDateTabItemName, dispatch],
-  );
-
   const TabsDom = useMemo(() => {
     return tabs?.map(ele => {
       const isHidden = activeTabId !== ele.id;
@@ -117,11 +108,23 @@ const TabsDrawerContent: React.FC = () => {
           uri={ele.url}
           isHidden={isHidden}
           autoApprove={autoApprove}
-          onLoadEnd={nativeEvent => onBrowserTabLoadEnd({ nativeEvent, item: ele, autoApprove })}
+          onLoadEnd={nativeEvent => {
+            if (autoApprove) dispatch(removeAutoApproveItem(ele.id));
+            checkAndUpDateRecordItemName({ id: ele.id, name: nativeEvent.title });
+            checkAndUpDateTabItemName({ id: ele.id, name: nativeEvent.title });
+          }}
         />
       );
     });
-  }, [activeTabId, autoApproveMap, initializedList, onBrowserTabLoadEnd, tabs]);
+  }, [
+    activeTabId,
+    autoApproveMap,
+    checkAndUpDateRecordItemName,
+    checkAndUpDateTabItemName,
+    dispatch,
+    initializedList,
+    tabs,
+  ]);
 
   const value = useMemo(
     () => ({

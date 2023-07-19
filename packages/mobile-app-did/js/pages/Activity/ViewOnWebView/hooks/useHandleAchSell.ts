@@ -92,9 +92,13 @@ export const useHandleAchSell = () => {
           paymentSellTransfer,
         });
         CommonToast.success('Transaction completed.');
-      } catch (error) {
+      } catch (error: any) {
         console.log('error', error);
-        CommonToast.failError(error);
+        if (error?.code === 'TIMEOUT') {
+          CommonToast.warn(error?.message || 'The waiting time is too long, it will be put on hold in the background.');
+        } else {
+          CommonToast.failError(error);
+        }
       } finally {
         Loading.hide();
       }

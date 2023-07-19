@@ -110,7 +110,7 @@ export const useSellTransfer = () => {
             message: 'The waiting time is too long, it will be put on hold in the background.',
           };
         }
-        if (signalrSellResult.status === 'TransferFailed') throw new Error('Transaction failed.');
+        if (signalrSellResult.status !== 'Transferred') throw new Error('Transaction failed.');
       } catch (error) {
         throw {
           code: 'TIMEOUT',
@@ -124,6 +124,6 @@ export const useSellTransfer = () => {
         signalrSell.stop();
       }
     },
-    [isMainnet, status],
+    [isMainnet],
   );
 };

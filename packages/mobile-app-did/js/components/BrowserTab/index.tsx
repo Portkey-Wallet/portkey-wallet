@@ -9,9 +9,10 @@ import { getProtocolAndHost, isDangerousLink } from '@portkey-wallet/utils/dapp/
 
 type BrowserTabProps = {
   isHidden: boolean;
+  id: string | number;
   uri: string;
   autoApprove?: boolean;
-  onLoadEnd?: () => void;
+  onLoadEnd?: (nativeEvent: any) => void;
 };
 
 const Options: CaptureOptions = { quality: 0.2, format: 'jpg' };
@@ -40,13 +41,16 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHidden, options]);
 
-  const onPageLoadEnd = useCallback(() => {
-    if (!isDangerousLink(getProtocolAndHost(uri)) && !isApproved.current && autoApprove) {
-      isApproved.current = true;
-      webViewRef.current?.autoApprove();
-    }
-    onLoadEnd?.();
-  }, [autoApprove, uri, onLoadEnd]);
+  const onPageLoadEnd = useCallback(
+    ({ nativeEvent }: any) => {
+      if (!isDangerousLink(getProtocolAndHost(uri)) && !isApproved.current && autoApprove) {
+        isApproved.current = true;
+        webViewRef.current?.autoApprove();
+      }
+      onLoadEnd?.(nativeEvent);
+    },
+    [autoApprove, uri, onLoadEnd],
+  );
   return (
     <View
       ref={viewRef}

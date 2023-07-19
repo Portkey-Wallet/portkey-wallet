@@ -11,8 +11,12 @@ import {
   cleanBookmarkList,
   addBookmarkList,
   addAutoApproveItem,
+  upDateRecordsItem,
+  updateTab,
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { isUrl } from '@portkey-wallet/utils';
+import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 import { useCallback, useEffect, useMemo } from 'react';
 
@@ -57,7 +61,6 @@ export const useDiscoverWhiteList = () => {
 
   const checkIsInWhiteList = useCallback(
     (url: string) => {
-      console.log('discoverMap', discoverMap && discoverMap[networkType]?.whiteList);
       return discoverMap && discoverMap[networkType]?.whiteList?.includes(url);
     },
     [discoverMap, networkType],
@@ -123,4 +126,44 @@ export const useRecordsList = (isReverse = true): ITabItem[] => {
   }, [discoverMap, isReverse, networkType]);
 
   return list || [];
+};
+
+export const useCheckAndUpDateRecordItemName = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverMap } = useAppCASelector(state => state.discover);
+  const dispatch = useAppCommonDispatch();
+
+  return useCallback(
+    ({ id, name }: { id: number; name: string }) => {
+      try {
+        const recordsItem = discoverMap?.[networkType]?.recordsList?.find(ele => ele.id === id);
+        if (recordsItem && (!recordsItem.name || isUrl(prefixUrlWithProtocol(recordsItem.name)))) {
+          dispatch(upDateRecordsItem({ ...recordsItem, name, networkType }));
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [discoverMap, dispatch, networkType],
+  );
+};
+
+export const useCheckAndUpDateTabItemName = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const { discoverMap } = useAppCASelector(state => state.discover);
+  const dispatch = useAppCommonDispatch();
+
+  return useCallback(
+    ({ id, name }: { id: number; name: string }) => {
+      try {
+        const tabItem = discoverMap?.[networkType]?.tabs?.find(ele => ele.id === id);
+        if (tabItem && (!tabItem.name || isUrl(prefixUrlWithProtocol(tabItem.name)))) {
+          dispatch(updateTab({ ...tabItem, name, networkType }));
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [discoverMap, dispatch, networkType],
+  );
 };

@@ -38,7 +38,7 @@ const SendButton = (props: SendButtonType) => {
             } as unknown as IToSendHomeParamsType);
           // if (currentTokenList.length === 1)
           // return navigationService.navigate('SendHome', { tokenItem: currentTokenList?.[0] });
-          AssetsOverlay.showAssetList({});
+          AssetsOverlay.showAssetList();
         }}>
         <Svg icon={themeType === 'dashBoard' ? 'send' : 'send1'} size={pTd(46)} />
       </TouchableOpacity>

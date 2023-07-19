@@ -1,4 +1,3 @@
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
@@ -12,6 +11,7 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 interface TokenListItemType {
   noBalanceShow?: boolean;
   item?: any;
@@ -21,6 +21,7 @@ interface TokenListItemType {
 const TokenListItem: React.FC<TokenListItemType> = props => {
   const { noBalanceShow = false, onPress, item } = props;
   const { currentNetwork } = useWallet();
+  const defaultToken = useDefaultToken();
 
   const isTokenHasPrice = useIsTokenHasPrice(item?.symbol);
   const isTestnet = useIsTestnet();
@@ -35,7 +36,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         style={itemStyle.left}
         title={item?.symbol}
         avatarSize={pTd(48)}
-        svgName={item?.symbol === ELF_SYMBOL ? 'elf-icon' : undefined}
+        svgName={item?.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
         imageUrl={symbolImages[item?.symbol]}
       />
       <View style={itemStyle.right}>

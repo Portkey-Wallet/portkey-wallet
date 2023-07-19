@@ -10,8 +10,8 @@ import CommonSwitch from 'components/CommonSwitch';
 import CommonAvatar from 'components/CommonAvatar';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { NetworkType } from '@portkey-wallet/types';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 type TokenItemProps = {
   networkType: NetworkType;
@@ -21,13 +21,15 @@ type TokenItemProps = {
 
 const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
   const symbolImages = useSymbolImages();
+  const defaultToken = useDefaultToken();
+
   return (
     <TouchableOpacity style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
       <CommonAvatar
         hasBorder
         shapeType="circular"
         title={item.symbol}
-        svgName={item.symbol === ELF_SYMBOL ? 'elf-icon' : undefined}
+        svgName={item.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
         imageUrl={symbolImages[item.symbol]}
         avatarSize={pTd(48)}
         style={itemStyle.left}

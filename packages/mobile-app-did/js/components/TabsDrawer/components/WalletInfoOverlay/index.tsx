@@ -12,15 +12,16 @@ import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 const MyWalletModal = () => {
   const { t } = useLanguage();
   const caInfo = useCurrentCaInfo();
   const { walletName, currentNetwork } = useWallet();
+  const defaultToken = useDefaultToken();
 
   const {
     accountToken: { accountTokenList },
@@ -34,12 +35,12 @@ const MyWalletModal = () => {
           ? {
               chaiId: key,
               caAddress: info.caAddress,
-              ...accountTokenList.find(token => token.chainId === key && token.symbol === ELF_SYMBOL),
+              ...accountTokenList.find(token => token.chainId === key && token.symbol === defaultToken.symbol),
             }
           : undefined;
       })
       .filter(item => !!item);
-  }, [accountTokenList, caInfo]);
+  }, [accountTokenList, caInfo, defaultToken.symbol]);
 
   return (
     <ModalBody modalBodyType="bottom" title={t('My Wallet')}>

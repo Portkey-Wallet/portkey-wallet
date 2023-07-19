@@ -84,6 +84,7 @@ export const useHandleAchSell = () => {
 
   return useCallback(
     async (orderId: string) => {
+      console.log('sell Transfer, Start', Date.now());
       try {
         Loading.show({ text: 'Payment is being processed and may take around 10 seconds to complete.' });
         await sellTransfer({
@@ -92,12 +93,17 @@ export const useHandleAchSell = () => {
           paymentSellTransfer,
         });
         CommonToast.success('Transaction completed.');
-      } catch (error) {
+      } catch (error: any) {
         console.log('error', error);
-        CommonToast.failError(error);
+        if (error?.code === 'TIMEOUT') {
+          CommonToast.warn(error?.message || 'The waiting time is too long, it will be put on hold in the background.');
+        } else {
+          CommonToast.failError(error);
+        }
       } finally {
         Loading.hide();
       }
+      console.log('sell Transfer, End', Date.now());
     },
     [paymentSellTransfer, sellTransfer],
   );

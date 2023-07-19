@@ -1,5 +1,5 @@
 import { sellListenList } from '@portkey-wallet/constants/constants-ca/socket';
-import { AchTxAddressReceivedType } from '@portkey-wallet/types/types-ca/payment';
+import { AchTxAddressReceivedType, RequestOrderTransferredType } from '@portkey-wallet/types/types-ca/payment';
 import { BaseSignalr } from '@portkey/socket';
 
 export class SignalrSell extends BaseSignalr {
@@ -16,6 +16,27 @@ export class SignalrSell extends BaseSignalr {
     callback: (data: AchTxAddressReceivedType | null) => void,
   ) {
     return this.listen('onAchTxAddressReceived', (data: { body: AchTxAddressReceivedType }) => {
+      if (data?.body?.orderId === orderId) {
+        callback(data.body);
+      } else {
+        callback(null);
+      }
+    });
+  }
+
+  public requestOrderTransferred(clientId: string, orderId: string) {
+    console.log('invoke RequestOrderTransferred', clientId, orderId);
+    this.invoke('RequestOrderTransferred', {
+      TargetClientId: clientId,
+      OrderId: orderId,
+    });
+  }
+
+  public onRequestOrderTransferred(
+    { orderId }: { clientId: string; orderId: string },
+    callback: (data: RequestOrderTransferredType | null) => void,
+  ) {
+    return this.listen('onOrderTransferredReceived', (data: { body: RequestOrderTransferredType }) => {
       if (data?.body?.orderId === orderId) {
         callback(data.body);
       } else {

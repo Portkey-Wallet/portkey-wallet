@@ -84,6 +84,7 @@ export const useHandleAchSell = () => {
 
   return useCallback(
     async (orderId: string) => {
+      console.log('sell Transfer, Start', Date.now());
       try {
         Loading.show({ text: 'Payment is being processed and may take around 10 seconds to complete.' });
         await sellTransfer({
@@ -102,6 +103,7 @@ export const useHandleAchSell = () => {
       } finally {
         Loading.hide();
       }
+      console.log('sell Transfer, End', Date.now());
     },
     [paymentSellTransfer, sellTransfer],
   );

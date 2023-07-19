@@ -52,77 +52,76 @@ export const useSellTransfer = () => {
 
       let signalrAchTxRemove: (() => void) | undefined;
       let signalrOrderRemove: (() => void) | undefined;
+      const clientId = randomId();
 
       try {
-        const clientId = randomId();
         await signalrSell.doOpen({
           url: `${request.defaultConfig.baseURL}/ca`,
           clientId,
         });
-
-        const timerPromise = new Promise<'timeout'>(resolve =>
-          setTimeout(() => {
-            resolve('timeout');
-          }, SELL_SOCKET_TIMEOUT),
-        );
-
-        const signalrSellPromise = new Promise<RequestOrderTransferredType | null>(resolve => {
-          const { remove: removeAchTx } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, async data => {
-            if (data === null) {
-              throw new Error('Transaction failed.');
-            }
-
-            try {
-              status.current = STAGE.TRANSACTION;
-              const result = await paymentSellTransfer(data);
-              await request.payment.sendSellTransaction({
-                params: {
-                  merchantName: ACH_MERCHANT_NAME,
-                  orderId,
-                  rawTransaction: result.rawTransaction,
-                  signature: result.signature,
-                  publicKey: result.publicKey,
-                },
-              });
-            } catch (e) {
-              throw {
-                code: 'NO_TX_HASH',
-                message: 'Transaction failed. Please contact the team for assistance.',
-              };
-            }
-
-            const { remove: removeRes } = signalrSell.onRequestOrderTransferred({ clientId, orderId }, async data => {
-              status.current = STAGE.ORDER;
-              resolve(data);
-            });
-            signalrOrderRemove = removeRes;
-            signalrSell.requestOrderTransferred(clientId, orderId);
-          });
-          signalrAchTxRemove = removeAchTx;
-          signalrSell.requestAchTxAddress(clientId, orderId);
-        });
-        const signalrSellResult = await Promise.race([timerPromise, signalrSellPromise]);
-        if (signalrSellResult === null) throw new Error('Transaction failed.');
-        if (signalrSellResult === 'timeout') {
-          if (status.current === STAGE.ACHTXADS) throw new Error('Transaction failed.');
-          throw {
-            code: 'TIMEOUT',
-            message: 'The waiting time is too long, it will be put on hold in the background.',
-          };
-        }
-        if (signalrSellResult.status !== 'Transferred') throw new Error('Transaction failed.');
       } catch (error) {
+        throw new Error('Transaction failed.');
+      }
+
+      const timerPromise = new Promise<'timeout'>(resolve =>
+        setTimeout(() => {
+          resolve('timeout');
+        }, SELL_SOCKET_TIMEOUT),
+      );
+
+      const signalrSellPromise = new Promise<RequestOrderTransferredType | null>(resolve => {
+        const { remove: removeAchTx } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, async data => {
+          if (data === null) {
+            throw new Error('Transaction failed.');
+          }
+
+          try {
+            status.current = STAGE.TRANSACTION;
+            const result = await paymentSellTransfer(data);
+            await request.payment.sendSellTransaction({
+              params: {
+                merchantName: ACH_MERCHANT_NAME,
+                orderId,
+                rawTransaction: result.rawTransaction,
+                signature: result.signature,
+                publicKey: result.publicKey,
+              },
+            });
+          } catch (e) {
+            throw {
+              code: 'NO_TX_HASH',
+              message: 'Transaction failed. Please contact the team for assistance.',
+            };
+          }
+
+          const { remove: removeRes } = signalrSell.onRequestOrderTransferred({ clientId, orderId }, async data => {
+            status.current = STAGE.ORDER;
+            resolve(data);
+          });
+          signalrOrderRemove = removeRes;
+          signalrSell.requestOrderTransferred(clientId, orderId);
+        });
+        signalrAchTxRemove = removeAchTx;
+        signalrSell.requestAchTxAddress(clientId, orderId);
+      });
+
+      const signalrSellResult = await Promise.race([timerPromise, signalrSellPromise]);
+
+      if (signalrSellResult === null) throw new Error('Transaction failed.');
+      if (signalrSellResult === 'timeout') {
+        if (status.current === STAGE.ACHTXADS) throw new Error('Transaction failed.');
         throw {
           code: 'TIMEOUT',
           message: 'The waiting time is too long, it will be put on hold in the background.',
         };
-      } finally {
-        signalrAchTxRemove?.();
-        signalrAchTxRemove = undefined;
-        signalrOrderRemove?.();
-        signalrOrderRemove = undefined;
-        signalrSell.stop();
       }
+      if (signalrSellResult.status !== 'Transferred') throw new Error('Transaction failed.');
+
+      signalrAchTxRemove?.();
+      signalrAchTxRemove = undefined;
+      signalrOrderRemove?.();
+      signalrOrderRemove = undefined;
+      signalrSell.stop();
     },
     [isMainnet],
   );

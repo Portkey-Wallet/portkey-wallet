@@ -12,8 +12,8 @@ import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import navigationService from 'utils/navigationService';
 import { ArchivedTabEnum } from 'pages/Discover/types';
 import NoDiscoverData from '../NoDiscoverData';
-import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useFocusEffect } from '@react-navigation/native';
+import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 
 export function DiscoverArchivedSection() {
   const discoverJump = useDiscoverJumpWithNetWork();
@@ -36,12 +36,12 @@ export function DiscoverArchivedSection() {
   }, [index]);
 
   const onClickJump = useCallback(
-    (i: DiscoverItem) => {
+    (i: ITabItem | IBookmarkItem) => {
       discoverJump({
         item: {
           id: Date.now(),
-          name: i?.title || '',
-          url: i?.url ?? i?.description,
+          name: i?.name || '',
+          url: i?.url,
         },
       });
     },

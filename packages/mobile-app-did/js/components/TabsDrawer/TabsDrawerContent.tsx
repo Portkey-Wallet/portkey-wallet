@@ -32,6 +32,7 @@ import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import Svg from 'components/Svg';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import ActionSheet from 'components/ActionSheet';
+import { useCheckAndUpDateRecordItemName, useCheckAndUpDateTabItemName } from 'hooks/discover';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
@@ -44,11 +45,11 @@ const TabsDrawerContent: React.FC = () => {
     activeTabId,
     autoApproveMap,
   } = useAppCASelector(state => state.discover);
-
   const { tabs } = discoverMap[networkType] ?? {};
+  const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
+  const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
 
   const tabRef = useRef<IBrowserTab | null>(null);
-
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
 
   const activeWebviewScreenShot = useCallback(async () => {
@@ -94,7 +95,16 @@ const TabsDrawerContent: React.FC = () => {
     return null;
   }, [activeTabId, activeWebviewScreenShot, tabs]);
 
-  const tabsDom = useMemo(() => {
+  const onBrowserTabLoadEnd = useCallback(
+    ({ nativeEvent, autoApprove, item }: { nativeEvent: any; item: ITabItem; autoApprove?: boolean }) => {
+      if (autoApprove) dispatch(removeAutoApproveItem(item.id));
+      checkAndUpDateRecordItemName({ id: item.id, name: nativeEvent.title });
+      checkAndUpDateTabItemName({ id: item.id, name: nativeEvent.title });
+    },
+    [checkAndUpDateRecordItemName, checkAndUpDateTabItemName, dispatch],
+  );
+
+  const TabsDom = useMemo(() => {
     return tabs?.map(ele => {
       const isHidden = activeTabId !== ele.id;
       const initialized = initializedList?.has(ele.id);
@@ -103,14 +113,15 @@ const TabsDrawerContent: React.FC = () => {
       return (
         <BrowserTab
           key={ele.id}
+          id={ele.id}
           uri={ele.url}
           isHidden={isHidden}
           autoApprove={autoApprove}
-          onLoadEnd={autoApprove ? () => dispatch(removeAutoApproveItem(ele.id)) : undefined}
+          onLoadEnd={nativeEvent => onBrowserTabLoadEnd({ nativeEvent, item: ele, autoApprove })}
         />
       );
     });
-  }, [activeTabId, autoApproveMap, dispatch, initializedList, tabs]);
+  }, [activeTabId, autoApproveMap, initializedList, onBrowserTabLoadEnd, tabs]);
 
   const value = useMemo(
     () => ({
@@ -147,6 +158,15 @@ const TabsDrawerContent: React.FC = () => {
     });
   }, [dispatch, networkType, t, tabs?.length]);
 
+  const onDone = useCallback(() => {
+    if (tabs?.length === 0) return dispatch(changeDrawerOpenStatus(false));
+    if (tabs?.find(ele => ele.id === preActiveTabId)) {
+      dispatch(setActiveTab({ id: preActiveTabId, networkType }));
+    } else {
+      dispatch(setActiveTab({ id: tabs?.[tabs?.length - 1]?.id, networkType }));
+    }
+  }, [dispatch, networkType, preActiveTabId, tabs]);
+
   useHardwareBackPress(
     useMemo(() => {
       if (isDrawerOpen) {
@@ -181,7 +201,7 @@ const TabsDrawerContent: React.FC = () => {
         containerStyles={styles.container}
         scrollViewProps={{ disabled: true }}
         titleDom={activeTabId ? '' : `${tabs?.length} Tabs`}>
-        {tabsDom}
+        {TabsDom}
         {/* card group */}
         {!activeTabId && isDrawerOpen && (
           <>
@@ -203,16 +223,7 @@ const TabsDrawerContent: React.FC = () => {
                 onPress={() => dispatch(changeDrawerOpenStatus(false))}>
                 <Svg icon="add-blue" size={pTd(28)} />
               </TouchableOpacity>
-              <TextM
-                style={[handleButtonStyle.handleItem, handleButtonStyle.done, FontStyles.font4]}
-                onPress={() => {
-                  if (tabs?.length === 0) return dispatch(changeDrawerOpenStatus(false));
-                  if (tabs?.find(ele => ele.id === preActiveTabId)) {
-                    dispatch(setActiveTab({ id: preActiveTabId, networkType }));
-                  } else {
-                    dispatch(setActiveTab({ id: tabs?.[tabs?.length - 1]?.id, networkType }));
-                  }
-                }}>
+              <TextM style={[handleButtonStyle.handleItem, handleButtonStyle.done, FontStyles.font4]} onPress={onDone}>
                 {t('Done')}
               </TextM>
             </View>

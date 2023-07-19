@@ -45,8 +45,8 @@ export default memo(
         discoverJump({
           item: {
             id: Date.now(),
-            name: i?.title || '',
-            url: i?.url ?? i?.description,
+            name: i?.name || '',
+            url: i?.url,
           },
         });
       },

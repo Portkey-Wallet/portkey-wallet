@@ -23,7 +23,7 @@ export function DiscoverCmsListSection() {
         item: {
           id: Date.now(),
           name: i.title,
-          url: i?.url ?? i?.description,
+          url: i?.url,
         },
       });
     },

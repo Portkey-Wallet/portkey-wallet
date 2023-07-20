@@ -39,7 +39,6 @@ export function DiscoverArchivedSection() {
     (i: ITabItem | IBookmarkItem) => {
       discoverJump({
         item: {
-          id: Date.now(),
           name: i?.name || '',
           url: i?.url,
         },

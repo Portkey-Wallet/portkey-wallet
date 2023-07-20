@@ -30,7 +30,6 @@ export function useHandleParsedUrl() {
             const fixUrl = prefixUrlWithProtocol(url);
             jumpToWebview({
               item: {
-                id: Date.now(),
                 name: fixUrl,
                 url: fixUrl,
               },

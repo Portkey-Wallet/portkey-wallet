@@ -43,7 +43,6 @@ export default memo(
       if (isEdit) return;
       discoverJump({
         item: {
-          id: Date.now(),
           name: item?.name || '',
           url: item?.url || '',
         },

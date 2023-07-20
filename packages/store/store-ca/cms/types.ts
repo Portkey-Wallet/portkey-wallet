@@ -39,6 +39,11 @@ export interface BuyButtonType {
   isSellSectionShow: boolean;
 }
 
+export interface RememberMeBlackListSiteItem {
+  name: string;
+  url: string;
+}
+
 export interface CMSState {
   socialMediaListNetMap: {
     [T in NetworkType]?: SocialMediaItem[];
@@ -51,5 +56,8 @@ export interface CMSState {
   };
   buyButtonNetMap?: {
     [T in NetworkType]?: BuyButtonType;
+  };
+  rememberMeBlackListMap?: {
+    [T in NetworkType]?: RememberMeBlackListSiteItem[];
   };
 }

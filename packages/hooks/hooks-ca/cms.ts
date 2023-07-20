@@ -6,6 +6,7 @@ import {
   getDiscoverGroupAsync,
   getSocialMediaAsync,
   getBuyButtonAsync,
+  getRememberMeBlackListAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
 
@@ -57,11 +58,11 @@ export function useDiscoverGroupList(isInit = false) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useEffect(() => {
-  //   if (!isInit) {
-  //     dispatch(getDiscoverGroupAsync(networkType));
-  //   }
-  // }, [dispatch, isInit, networkType]);
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getDiscoverGroupAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
 
   return discoverGroupList || [];
 }
@@ -128,4 +129,33 @@ export const useBuyButtonShow = () => {
     isSellSectionShow,
     refreshBuyButton,
   };
+};
+
+export const useRememberMeBlackList = (isInit = false) => {
+  const dispatch = useAppCommonDispatch();
+  const { rememberMeBlackListMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const rememberMeBlackList = useMemo(
+    () => rememberMeBlackListMap?.[networkType]?.map(ele => ele?.url) || [],
+    [networkType, rememberMeBlackListMap],
+  );
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getRememberMeBlackListAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getRememberMeBlackListAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return rememberMeBlackList || [];
 };

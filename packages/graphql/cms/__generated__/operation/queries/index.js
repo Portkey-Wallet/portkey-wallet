@@ -51,6 +51,15 @@ module.exports.officialSocialMedia_aggregated = fs.readFileSync(
   path.join(__dirname, 'officialSocialMedia_aggregated.gql'),
   'utf8',
 );
+module.exports.rememberMeBlackListSites = fs.readFileSync(path.join(__dirname, 'rememberMeBlackListSites.gql'), 'utf8');
+module.exports.rememberMeBlackListSites_by_id = fs.readFileSync(
+  path.join(__dirname, 'rememberMeBlackListSites_by_id.gql'),
+  'utf8',
+);
+module.exports.rememberMeBlackListSites_aggregated = fs.readFileSync(
+  path.join(__dirname, 'rememberMeBlackListSites_aggregated.gql'),
+  'utf8',
+);
 module.exports.socialMedia = fs.readFileSync(path.join(__dirname, 'socialMedia.gql'), 'utf8');
 module.exports.socialMedia_by_id = fs.readFileSync(path.join(__dirname, 'socialMedia_by_id.gql'), 'utf8');
 module.exports.socialMedia_aggregated = fs.readFileSync(path.join(__dirname, 'socialMedia_aggregated.gql'), 'utf8');

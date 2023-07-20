@@ -1,5 +1,6 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
+import { useRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   addUrlToWhiteList,
@@ -165,5 +166,20 @@ export const useCheckAndUpDateTabItemName = () => {
       }
     },
     [discoverMap, dispatch, networkType],
+  );
+};
+
+export const useCheckSiteIsInBlackList = () => {
+  const list = useRememberMeBlackList();
+
+  return useCallback(
+    (url: string) => {
+      try {
+        return list.indexOf(url) >= 0;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [list],
   );
 };

@@ -18,7 +18,7 @@ import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBuyButtonShow, useRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const Card: React.FC = () => {
   const { t } = useLanguage();
@@ -27,6 +27,9 @@ const Card: React.FC = () => {
   const accountBalanceUSD = useAccountBalanceUSD();
   const [, requestQrPermission] = useQrScanPermission();
   const { isBuyButtonShow } = useBuyButtonShow();
+
+  const list = useRememberMeBlackList();
+  console.log('list!!!!', list);
 
   const showDialog = useCallback(
     () =>

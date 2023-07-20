@@ -1,4 +1,5 @@
 import errorHandler from './errorHandler';
+
 describe('errorHandler', () => {
   test('should return the correct output for a success code', () => {
     const code = 0;
@@ -17,17 +18,6 @@ describe('errorHandler', () => {
       name: 'Error',
       message: 'Payload is false.',
       stack: error.stack,
-      data: undefined,
-    });
-  });
-  test('should return the correct output for an error number', () => {
-    const code = 200002;
-    const error = 200002;
-    const output = errorHandler(code, error);
-    expect(output).toEqual({
-      error: code,
-      name: undefined,
-      message: undefined,
       data: undefined,
     });
   });

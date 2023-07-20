@@ -30,7 +30,7 @@ describe('fetchRecentListAsync', () => {
     chainId: 'AELF' as ChainId,
     caAddress: 'caAddress',
     address: 'address',
-    addressChainId: 'AELF',
+    addressChainId: 'AELF' as ChainId,
     transactionTime: '123456789',
     name: '',
     addresses: [],

@@ -88,10 +88,8 @@ export const useSellTransfer = () => {
               },
             });
           } catch (e) {
-            throw {
-              code: 'NO_TX_HASH',
-              message: 'Transaction failed. Please contact the team for assistance.',
-            };
+            resolve(null);
+            return;
           }
 
           const { remove: removeRes } = signalrSell.onRequestOrderTransferred({ clientId, orderId }, async data => {

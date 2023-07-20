@@ -193,7 +193,7 @@ export const pageStyles = StyleSheet.create({
   },
   inputWrap: {
     backgroundColor: defaultColors.bg5,
-    ...gStyles.paddingArg(0, 16, 16),
+    ...gStyles.paddingArg(8, 20, 8),
   },
   list: {
     flex: 1,

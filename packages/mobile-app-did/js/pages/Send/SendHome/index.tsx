@@ -117,8 +117,6 @@ const SendHome: React.FC = () => {
 
       const raw = await contract.encodedTx(firstMethodName, secondParams);
 
-      console.log('====raw======', firstMethodName, secondParams);
-
       const { TransactionFee } = await customFetch(`${chainInfo?.endPoint}/api/blockChain/calculateTransactionFee`, {
         method: 'POST',
         params: {
@@ -126,15 +124,9 @@ const SendHome: React.FC = () => {
         },
       });
 
-      console.log(
-        '====TransactionFee======',
-        TransactionFee,
-        unitConverter(ZERO.plus(TransactionFee?.[defaultToken.decimals] || '0').div(`1e${defaultToken.decimals}`)),
-      );
-
       if (!TransactionFee) throw { code: 500, message: 'no enough fee' };
 
-      return unitConverter(ZERO.plus(TransactionFee?.[defaultToken.symbol]).div(`1e${defaultToken.decimals}`));
+      return unitConverter(divDecimals(TransactionFee?.[defaultToken.symbol], defaultToken.decimals));
     },
     [
       chainInfo,

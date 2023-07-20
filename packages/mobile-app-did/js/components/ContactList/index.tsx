@@ -130,7 +130,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
   return (
     <View style={[contactListStyles.listWrap, style]}>
       {isSearchShow && (
-        <View style={[BGStyles.bg5, GStyles.paddingArg(0, 20, 16)]}>
+        <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
           <CommonInput
             value={keyWord}
             placeholder={t('Name or address')}

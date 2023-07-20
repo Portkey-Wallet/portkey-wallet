@@ -203,6 +203,7 @@ export default function SetWalletPin() {
         <SetPinAndAddManager
           accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}
           type={loginType}
+          chainId={originChainId}
           onlyGetPin={state === 'scan'}
           guardianApprovedList={approvedList}
           guardianIdentifier={loginAccount?.guardianAccount}

@@ -116,7 +116,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
         });
         CommonToast.success('success');
         await sleep(500);
-        navigationService.goBack();
+        navigationService.navigate('ManageTokenList');
       } catch (err: any) {
         CommonToast.fail(handleErrorMessage(err));
         console.log('add custom token error', err);

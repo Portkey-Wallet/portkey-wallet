@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router';
-import VerifierPage from 'pages/components/VerifierPage';
 import { useAppDispatch, useLoginInfo, useGuardiansInfo, useUserInfo, useLoading } from 'store/Provider/hooks';
 import { useCallback, useMemo } from 'react';
 import { message } from 'antd';
@@ -23,6 +22,7 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import { useCommonState } from 'store/Provider/hooks';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import VerifierPage from 'pages/components/VerifierPage';
 
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();

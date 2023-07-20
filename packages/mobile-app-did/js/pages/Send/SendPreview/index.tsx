@@ -14,7 +14,7 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { Image } from '@rneui/base';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
@@ -35,7 +35,6 @@ import { IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routePa
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import {
   clearNftCollection,
   fetchNFTCollectionsAsync,
@@ -45,15 +44,18 @@ import { sleep } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { ChainId } from '@portkey-wallet/types';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
-
   const isTestnet = useIsTestnet();
+  const defaultToken = useDefaultToken();
 
   const { sendType, assetInfo, toInfo, transactionFee, sendNumber } = useRouterParams<IToSendPreviewParamsType>();
+
+  useFetchTxFee();
+  const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
 
   const dispatch = useAppCommonDispatch();
   const pin = usePin();
@@ -130,6 +132,7 @@ const SendHome: React.FC = () => {
         tokenInfo: { ...assetInfo, address: assetInfo.tokenContractAddress } as unknown as BaseToken,
         caHash: wallet.caHash || '',
         amount,
+        crossDefaultFee,
         toAddress: toInfo.address,
       });
 
@@ -169,6 +172,7 @@ const SendHome: React.FC = () => {
     caAddressInfos,
     caAddresses,
     chainInfo,
+    crossDefaultFee,
     currentNetwork.walletType,
     dispatch,
     isCrossChainTransfer,
@@ -250,7 +254,7 @@ const SendHome: React.FC = () => {
 
   useEffectOnce(() => {
     getTokenPrice(assetInfo.symbol);
-    getTokenPrice(ELF_SYMBOL);
+    getTokenPrice(defaultToken.symbol);
   });
 
   return (
@@ -330,20 +334,23 @@ const SendHome: React.FC = () => {
           <View style={styles.section}>
             <View style={[styles.flexSpaceBetween]}>
               <TextM style={[styles.blackFontColor, styles.fontBold]}>{t('Transaction Fee')}</TextM>
-              <TextM style={[styles.blackFontColor, styles.fontBold]}>{`${transactionFee} ${'ELF'}`}</TextM>
+              <TextM
+                style={[styles.blackFontColor, styles.fontBold]}>{`${transactionFee} ${defaultToken.symbol}`}</TextM>
             </View>
             {!isTestnet && (
               <View>
                 <TextM />
                 <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                  ZERO.plus(transactionFee).multipliedBy(tokenPriceObject[ELF_SYMBOL]),
+                  ZERO.plus(transactionFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
                 )}`}</TextS>
               </View>
             )}
           </View>
 
-          {isCrossChainTransfer && assetInfo.symbol === 'ELF' && <Text style={[styles.divider, styles.marginTop0]} />}
-          {isCrossChainTransfer && assetInfo.symbol === 'ELF' && (
+          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
+            <Text style={[styles.divider, styles.marginTop0]} />
+          )}
+          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
             <View style={styles.section}>
               <View style={[styles.flexSpaceBetween]}>
                 <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle]}>
@@ -351,12 +358,12 @@ const SendHome: React.FC = () => {
                 </TextM>
                 <View>
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                    CROSS_FEE,
-                  )} ELF`}</TextM>
+                    crossDefaultFee,
+                  )} ${defaultToken.symbol}`}</TextM>
                   {!isTestnet ? (
                     <TextS
                       style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                      ZERO.plus(CROSS_FEE).multipliedBy(tokenPriceObject[ELF_SYMBOL]),
+                      ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
                     )}`}</TextS>
                   ) : (
                     <TextM />
@@ -365,8 +372,10 @@ const SendHome: React.FC = () => {
               </View>
             </View>
           )}
-          {isCrossChainTransfer && assetInfo.symbol === 'ELF' && <Text style={[styles.divider, styles.marginTop0]} />}
-          {isCrossChainTransfer && assetInfo.symbol === 'ELF' && (
+          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
+            <Text style={[styles.divider, styles.marginTop0]} />
+          )}
+          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
             <View style={styles.section}>
               <View style={[styles.flexSpaceBetween]}>
                 <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle, GStyles.alignEnd]}>
@@ -374,17 +383,19 @@ const SendHome: React.FC = () => {
                 </TextM>
                 <View>
                   <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>
-                    {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(CROSS_FEE))
+                    {ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
                       ? '0'
-                      : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(CROSS_FEE)))}{' '}
-                    {'ELF'}
+                      : formatAmountShow(ZERO.plus(sendNumber).minus(ZERO.plus(crossDefaultFee)))}{' '}
+                    {defaultToken.symbol}
                   </TextM>
                   {!isTestnet ? (
                     <TextS style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${
-                      ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(CROSS_FEE))
+                      ZERO.plus(sendNumber).isLessThanOrEqualTo(ZERO.plus(crossDefaultFee))
                         ? '0'
                         : formatAmountShow(
-                            ZERO.plus(sendNumber).minus(ZERO.plus(CROSS_FEE)).times(tokenPriceObject[ELF_SYMBOL]),
+                            ZERO.plus(sendNumber)
+                              .minus(ZERO.plus(crossDefaultFee))
+                              .times(tokenPriceObject[defaultToken.symbol]),
                             2,
                           )
                     }`}</TextS>

@@ -3,12 +3,56 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 import { usePin } from './store';
 import useEffectOnce from './useEffectOnce';
-import { handleParsedUrl, handleScheme } from 'utils/scheme';
+import { checkAuthLoginData, handleScheme } from 'utils/scheme';
+import { useDiscoverJumpWithNetWork } from './discover';
+import { SchemeParsedUrl } from 'types/common';
+import { SCHEME_ACTION } from 'constants/scheme';
+import { showAuthLogin } from 'components/AuthLoginOverlay';
+import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+
+export function useHandleParsedUrl() {
+  const jumpToWebview = useDiscoverJumpWithNetWork();
+  return useCallback(
+    (parsedUrl: SchemeParsedUrl) => {
+      const { domain, action, query } = parsedUrl;
+      try {
+        switch (action) {
+          case SCHEME_ACTION.login: {
+            let { extraData, data } = query as any;
+            extraData = JSON.parse(extraData);
+            data = JSON.parse(data);
+            if (checkAuthLoginData(extraData, data)) showAuthLogin({ loginData: data, extraData: extraData, domain });
+            break;
+          }
+          case SCHEME_ACTION.linkDapp: {
+            const { url } = query;
+            if (typeof url !== 'string' || !checkIsUrl(url)) return;
+            const fixUrl = prefixUrlWithProtocol(url);
+            jumpToWebview({
+              item: {
+                name: fixUrl,
+                url: fixUrl,
+              },
+              autoApprove: true,
+            });
+            break;
+          }
+
+          default:
+            console.log('this action is not supported');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [jumpToWebview],
+  );
+}
 
 export default function useScheme() {
   const { address, caHash } = useCurrentWalletInfo();
   const [schemeUrl, setSchemeUrl] = useState<string>();
-
+  const handleParsedUrl = useHandleParsedUrl();
   const pin = usePin();
   const logged = useMemo(() => !!address && caHash, [address, caHash]);
 

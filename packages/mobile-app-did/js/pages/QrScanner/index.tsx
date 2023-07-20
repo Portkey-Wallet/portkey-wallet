@@ -18,14 +18,18 @@ import { isIos, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/d
 
 import { Camera } from 'expo-camera';
 import { expandQrData } from '@portkey-wallet/utils/qrCode';
+import { checkIsUrl } from '@portkey-wallet/utils/dapp/browser';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import Loading from 'components/Loading';
 interface QrScannerProps {
   route?: any;
-  type?: 'login' | 'send';
 }
 
 const QrScanner: React.FC<QrScannerProps> = () => {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
+  const jumpToWebview = useDiscoverJumpWithNetWork();
+
   const navigation = useNavigation();
   const routesArr: RouteInfoType[] = navigation.getState().routes;
   const previousRouteInfo = routesArr[routesArr.length - 2];
@@ -40,24 +44,37 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
   const handleBarCodeScanned = useCallback(
     ({ data = '' }) => {
+      if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
+
       try {
-        if (typeof data === 'string') {
-          const qrCodeData = expandQrData(JSON.parse(data));
-
-          // if not currentNetwork
-          if (currentNetwork !== qrCodeData.netWorkType)
-            return invalidQRCode(
-              currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
-            );
-
-          handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
+        const str = data.replace(/("|')/g, '');
+        if (checkIsUrl(str)) {
+          jumpToWebview({
+            item: {
+              name: str,
+              url: str,
+            },
+          });
+          return navigationService.goBack();
         }
+
+        const qrCodeData = expandQrData(JSON.parse(data));
+
+        // if not currentNetwork
+        if (currentNetwork !== qrCodeData.netWorkType)
+          return invalidQRCode(
+            currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
+          );
+
+        handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
       } catch (error) {
         console.log(error);
         return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
+      } finally {
+        Loading.hide();
       }
     },
-    [currentNetwork, previousRouteInfo],
+    [currentNetwork, jumpToWebview, previousRouteInfo],
   );
 
   const selectImage = async () => {
@@ -92,7 +109,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
               </TouchableOpacity>
             </View>
             <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
-            <TextM style={PageStyle.tips}>{t('Receive code / Login code')}</TextM>
+            <TextM style={PageStyle.tips}>{t('Receive code / Login code / URL code')}</TextM>
 
             <TouchableOpacity style={[PageStyle.albumWrap, GStyles.alignCenter]} onPress={selectImage}>
               <Svg icon="album" size={pTd(48)} />
@@ -106,8 +123,6 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 };
 
 export default QrScanner;
-
-defaultColors;
 
 export const PageStyle = StyleSheet.create({
   wrapper: {

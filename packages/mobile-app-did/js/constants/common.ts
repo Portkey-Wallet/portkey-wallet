@@ -35,3 +35,5 @@ export const APP_SCHEMA = 'portkey.did';
 export const ACH_REDIRECT_URL = 'http://portkey';
 
 export const ACH_WITHDRAW_URL = 'http://portkey_sell';
+
+export const DISCOVER_BOOKMARK_MAX_COUNT = 30;

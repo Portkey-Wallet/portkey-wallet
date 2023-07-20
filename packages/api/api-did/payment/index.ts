@@ -16,4 +16,5 @@ export default {
   },
   updateAchOrder: '/api/app/thirdPart/order/alchemy',
   updateAlchemyOrderTxHash: 'api/app/thirdPart/alchemy/txHash',
+  sendSellTransaction: 'api/app/thirdPart/alchemy/transaction',
 } as const;

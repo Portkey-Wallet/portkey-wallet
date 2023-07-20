@@ -6,9 +6,9 @@ import { crossChainTransferToCa } from './crossChainTransferToCa';
 import { managerTransfer } from './managerTransfer';
 import { getChainNumber } from '@portkey-wallet/utils/aelf';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
+import { getTxFee } from 'store/utils/getStore';
 
 const nativeToken = {
   symbol: 'ELF',
@@ -117,8 +117,9 @@ const crossChainTransfer = async ({
   // return;
   // TODO Only support chainType: aelf
   let _amount = amount;
+  const { crossChain: crossChainFee } = getTxFee(tokenInfo.chainId);
   if (tokenInfo.symbol === nativeToken.symbol) {
-    _amount = ZERO.plus(amount).minus(timesDecimals(CROSS_FEE, 8)).toNumber();
+    _amount = ZERO.plus(amount).minus(timesDecimals(crossChainFee, 8)).toNumber();
   }
   const crossChainTransferParams = {
     chainInfo,

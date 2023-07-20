@@ -63,7 +63,7 @@ export function useDiscoverGroupList(isInit = false) {
     }
   }, [dispatch, isInit, networkType]);
 
-  return discoverGroupList;
+  return discoverGroupList || [];
 }
 
 export const useBuyButton = (isInit = false) => {

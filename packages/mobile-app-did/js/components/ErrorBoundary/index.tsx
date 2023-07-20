@@ -26,7 +26,7 @@ class ReactNativeErrorBoundary extends ReactErrorBoundary {
 export default function ErrorBoundary({ children, view }: ErrorBoundaryProps) {
   const onCaptureException = useCallback(
     ({ error, componentStack }: Omit<ErrorBoundaryTrue, 'hasError'>) => {
-      exceptionManager.reportError(handleReportError({ error, componentStack: componentStack, view }), Severity.Error);
+      exceptionManager.reportError(handleReportError({ error, componentStack, view }), Severity.Error);
     },
     [view],
   );

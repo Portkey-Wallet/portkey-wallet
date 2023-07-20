@@ -14,7 +14,7 @@ type RecordListItemType = {
   onPress?: () => void;
 };
 
-const RecordItem: React.FC<RecordListItemType> = props => {
+const SearchRecordItem: React.FC<RecordListItemType> = props => {
   const { item, onPress } = props;
 
   return (
@@ -22,7 +22,7 @@ const RecordItem: React.FC<RecordListItemType> = props => {
       <DiscoverWebsiteImage imageUrl={getFaviconUrl(item?.url || '')} />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
-          <TextWithProtocolIcon title={item?.title || ''} url={item.url || ''} />
+          <TextWithProtocolIcon title={item?.name || ''} url={item.url || ''} />
           <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.gameInfo]}>
             {item?.url || ''}
           </TextS>
@@ -32,7 +32,7 @@ const RecordItem: React.FC<RecordListItemType> = props => {
   );
 };
 
-export default memo(RecordItem);
+export default memo(SearchRecordItem);
 
 const itemStyle = StyleSheet.create({
   wrap: {

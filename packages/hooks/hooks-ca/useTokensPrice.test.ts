@@ -52,6 +52,20 @@ describe('useGetCurrentAccountTokenPrice', () => {
     result.current[1]();
     expect(assetSlice.fetchTokensPriceAsync).toHaveBeenCalledTimes(0);
   });
+
+  test('set ELF params, and call getTokensPrice method', () => {
+    jest.spyOn(baseHooks, 'useAppCommonDispatch').mockReturnValue(() => async (call: () => void) => {
+      return call;
+    });
+    const { result } = renderHookWithProvider(
+      useGetCurrentAccountTokenPrice,
+      setupStore({ assets: { ...AssetsState.assets, accountToken: [] } }),
+    );
+    expect(result.current[2]).toBeInstanceOf(Function);
+
+    result.current[2]();
+    expect(assetSlice.fetchTokensPriceAsync).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe('useFreshTokenPrice', () => {

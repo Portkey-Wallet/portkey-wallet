@@ -183,7 +183,7 @@ const BrowserEditModal = ({
       </View>
       <View style={styles.listWrap}>
         {handleArray.map((ele, index) => (
-          <TouchableOpacity key={index} style={[styles.listItem]} onPress={() => handleUrl(ele.title)}>
+          <TouchableOpacity key={index} style={styles.listItem} onPress={() => handleUrl(ele.title)}>
             <View style={[styles.svgWrap]}>
               <Svg icon={ele.icon} size={pTd(52)} />
             </View>

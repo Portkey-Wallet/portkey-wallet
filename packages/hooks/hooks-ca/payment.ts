@@ -52,6 +52,7 @@ export const useSellTransfer = () => {
 
       let signalrAchTxRemove: (() => void) | undefined;
       let signalrOrderRemove: (() => void) | undefined;
+      let timer: NodeJS.Timeout | undefined = undefined;
       const clientId = randomId();
 
       try {
@@ -63,11 +64,11 @@ export const useSellTransfer = () => {
         throw new Error('Transaction failed.');
       }
 
-      const timerPromise = new Promise<'timeout'>(resolve =>
-        setTimeout(() => {
+      const timerPromise = new Promise<'timeout'>(resolve => {
+        timer = setTimeout(() => {
           resolve('timeout');
-        }, SELL_SOCKET_TIMEOUT),
-      );
+        }, SELL_SOCKET_TIMEOUT);
+      });
 
       const signalrSellPromise = new Promise<RequestOrderTransferredType | null>(resolve => {
         const { remove: removeAchTx } = signalrSell.onAchTxAddressReceived({ clientId, orderId }, async data => {
@@ -119,6 +120,11 @@ export const useSellTransfer = () => {
       signalrAchTxRemove = undefined;
       signalrOrderRemove?.();
       signalrOrderRemove = undefined;
+
+      if (timer) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
       signalrSell.stop();
     },
     [isMainnet],

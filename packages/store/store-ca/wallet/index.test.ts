@@ -522,6 +522,13 @@ describe('setChainListAction', () => {
         endPoint: 'http://localhost:1235',
         explorerUrl: 'http://localhost:1235',
         caContractAddress: 'caContractAddress',
+        defaultToken: {
+          address: 'address',
+          decimals: '8',
+          imageUrl: 'http://imageurl.icon',
+          name: 'ELF',
+          symbol: 'ELF',
+        },
       },
     ];
     const mockState = {
@@ -544,6 +551,13 @@ describe('setChainListAction', () => {
         endPoint: 'http://localhost:1235',
         explorerUrl: 'http://localhost:1235',
         caContractAddress: 'caContractAddress',
+        defaultToken: {
+          address: 'address',
+          decimals: '8',
+          imageUrl: 'http://imageurl.icon',
+          name: 'ELF',
+          symbol: 'ELF',
+        },
       },
     ];
     const mockState = {
@@ -560,6 +574,13 @@ describe('setChainListAction', () => {
             endPoint: 'http://localhost:1235',
             explorerUrl: 'http://localhost:1235',
             caContractAddress: 'caContractAddress',
+            defaultToken: {
+              address: 'address',
+              decimals: '8',
+              imageUrl: 'http://imageurl.icon',
+              name: 'ELF',
+              symbol: 'ELF',
+            },
           },
         ],
       },

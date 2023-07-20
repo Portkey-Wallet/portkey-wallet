@@ -1,5 +1,4 @@
 import { ACH_MERCHANT_NAME } from '@portkey-wallet/constants/constants-ca/payment';
-import { SendResult } from '@portkey-wallet/contracts/types';
 
 export interface CountryItem {
   country: string;
@@ -18,8 +17,18 @@ export interface AchTxAddressReceivedType {
   address: string;
 }
 
+export interface RequestOrderTransferredType extends AchTxAddressReceivedType {
+  status: 'Transferred' | 'TransferFailed';
+}
+
+export interface PaymentSellTransferResult {
+  publicKey: string;
+  signature: string; // sign(md5(orderId + rawTransaction))
+  rawTransaction: string;
+}
+
 export type SellTransferParams = Pick<AchTxAddressReceivedType, 'merchantName' | 'orderId'> & {
-  paymentSellTransfer: (params: AchTxAddressReceivedType) => Promise<SendResult>;
+  paymentSellTransfer: (params: AchTxAddressReceivedType) => Promise<PaymentSellTransferResult>;
 };
 
 export enum PaymentTypeEnum {

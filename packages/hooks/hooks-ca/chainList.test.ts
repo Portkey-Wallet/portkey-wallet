@@ -2,6 +2,7 @@ import {
   useChainListFetch,
   useCurrentChainList,
   useCurrentChain,
+  useDefaultToken,
   useIsValidSuffix,
   useGetChainInfo,
 } from './chainList';
@@ -63,6 +64,14 @@ describe('useCurrentChain', () => {
     jest.mocked(useCurrentWallet).mockReturnValue(currentWallet('MAIN'));
     const { result } = renderHook(() => useCurrentChain());
     expect(result.current).toBeUndefined();
+  });
+});
+
+describe('useDefaultToken', () => {
+  test('chainInfo have AELF info, and return AELF', () => {
+    jest.mocked(useOriginChainId).mockReturnValue('AELF');
+    const { result } = renderHook(() => useDefaultToken('AELF'));
+    expect(result.current?.decimals).toBe('8');
   });
 });
 

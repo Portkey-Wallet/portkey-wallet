@@ -49,7 +49,7 @@ export const discoverSlice = createSlice({
       }
 
       if (targetItem) {
-        const arr = state.discoverMap?.[networkType]?.recordsList.filter(item => item.url !== url) || [];
+        const arr = state.discoverMap?.[networkType]?.recordsList?.filter(item => item.url !== url) || [];
         arr.push(targetItem);
         targetNetworkDiscover.recordsList = arr;
       } else {
@@ -60,7 +60,7 @@ export const discoverSlice = createSlice({
       const { networkType } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
-      targetNetworkDiscover.recordsList = targetNetworkDiscover?.recordsList.map(item => {
+      targetNetworkDiscover.recordsList = targetNetworkDiscover?.recordsList?.map(item => {
         return item.url === payload.url ? { ...item, ...payload } : item;
       });
     },
@@ -73,7 +73,7 @@ export const discoverSlice = createSlice({
         idsObj[id] = id;
       });
 
-      targetNetworkDiscover.recordsList = targetNetworkDiscover.recordsList.filter(ele => !idsObj?.[ele?.id]);
+      targetNetworkDiscover.recordsList = targetNetworkDiscover?.recordsList?.filter(ele => !idsObj?.[ele?.id]);
     },
     clearRecordsList: (state, { payload }: { payload: { networkType: NetworkType } }) => {
       const { networkType } = payload;
@@ -96,9 +96,9 @@ export const discoverSlice = createSlice({
         targetNetworkDiscover.tabs = [{ ...payload }];
       } else {
         if (TAB_LIMIT <= targetNetworkDiscover.tabs.length) {
-          targetNetworkDiscover.tabs.shift();
+          targetNetworkDiscover?.tabs?.shift();
         }
-        targetNetworkDiscover.tabs.push({ ...payload });
+        targetNetworkDiscover?.tabs?.push({ ...payload });
       }
 
       state.activeTabId = id;
@@ -107,7 +107,7 @@ export const discoverSlice = createSlice({
       const { networkType, id } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
-      targetNetworkDiscover.tabs = targetNetworkDiscover.tabs.filter(item => item.id !== id);
+      targetNetworkDiscover.tabs = targetNetworkDiscover?.tabs?.filter(item => item.id !== id);
     },
     setActiveTab: (state, { payload }: { payload: { id: number | undefined; networkType: NetworkType } }) => {
       const { id } = payload;
@@ -119,7 +119,7 @@ export const discoverSlice = createSlice({
       const { networkType, id } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
-      targetNetworkDiscover.tabs = targetNetworkDiscover.tabs.map(item =>
+      targetNetworkDiscover.tabs = targetNetworkDiscover?.tabs?.map(item =>
         item.id === id ? { ...item, ...payload } : item,
       );
     },

@@ -134,12 +134,13 @@ const SendHome: React.FC = () => {
 
       if (!TransactionFee) throw { code: 500, message: 'no enough fee' };
 
-      return unitConverter(ZERO.plus(TransactionFee?.[defaultToken.decimals]).div(`1e${defaultToken.decimals}`));
+      return unitConverter(ZERO.plus(TransactionFee?.[defaultToken.symbol]).div(`1e${defaultToken.decimals}`));
     },
     [
       chainInfo,
       debounceSendNumber,
       defaultToken.decimals,
+      defaultToken.symbol,
       pin,
       selectedAssets.decimals,
       selectedAssets.symbol,

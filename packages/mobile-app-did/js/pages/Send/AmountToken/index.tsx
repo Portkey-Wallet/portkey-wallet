@@ -12,13 +12,13 @@ import CommonAvatar from 'components/CommonAvatar';
 import { IToSendAssetParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { FontStyles } from 'assets/theme/styles';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useFocusEffect } from '@react-navigation/native';
 import { TextM, TextS } from 'components/CommonText';
 
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 interface AmountTokenProps {
   onPressMax: () => void;
@@ -38,6 +38,7 @@ export default function AmountToken({
   selectedToken,
 }: AmountTokenProps) {
   const { t } = useLanguage();
+  const defaultToken = useDefaultToken();
   const iptRef = useRef<any>();
   const isTestNet = useIsTestnet();
   const isTokenHasPrice = useIsTokenHasPrice(selectedToken?.symbol);
@@ -73,10 +74,10 @@ export default function AmountToken({
       </View>
       <View style={styles.middle}>
         <View style={styles.middleLeft}>
-          {selectedToken.symbol === ELF_SYMBOL ? (
+          {selectedToken.symbol === defaultToken.symbol ? (
             <CommonAvatar
               shapeType="circular"
-              svgName={selectedToken.symbol === ELF_SYMBOL ? 'elf-icon' : undefined}
+              svgName={selectedToken.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
               imageUrl={symbolImages[selectedToken.symbol] || ''}
               avatarSize={28}
             />

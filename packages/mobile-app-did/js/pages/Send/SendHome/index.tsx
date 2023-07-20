@@ -22,7 +22,7 @@ import NFTInfo from '../NFTInfo';
 import CommonButton from 'components/CommonButton';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentChain, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getManagerAccount } from 'utils/redux';
 import { usePin } from 'hooks/store';
 import { divDecimals, divDecimalsStr, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
@@ -33,7 +33,6 @@ import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { BGStyles } from 'assets/theme/styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
-import { DEFAULT_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 
 import {
@@ -43,18 +42,16 @@ import {
   AddressErrorArray,
 } from '@portkey-wallet/constants/constants-ca/send';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 
 const SendHome: React.FC = () => {
-  const { t } = useLanguage();
-  useFetchTxFee();
-
-  const isValidChainId = useIsValidSuffix();
-
   const {
     params: { sendType = 'token', toInfo, assetInfo },
   } = useRoute<RouteProp<{ params: IToSendHomeParamsType }>>();
+  const { t } = useLanguage();
+  useFetchTxFee();
+  const isValidChainId = useIsValidSuffix();
+  const defaultToken = useDefaultToken();
 
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
@@ -132,16 +129,17 @@ const SendHome: React.FC = () => {
       console.log(
         '====TransactionFee======',
         TransactionFee,
-        unitConverter(ZERO.plus(TransactionFee?.ELF || '0').div('1e8')),
+        unitConverter(ZERO.plus(TransactionFee?.[defaultToken.decimals] || '0').div(`1e${defaultToken.decimals}`)),
       );
 
       if (!TransactionFee) throw { code: 500, message: 'no enough fee' };
 
-      return unitConverter(ZERO.plus(TransactionFee.ELF).div('1e8'));
+      return unitConverter(ZERO.plus(TransactionFee?.[defaultToken.decimals]).div(`1e${defaultToken.decimals}`));
     },
     [
       chainInfo,
       debounceSendNumber,
+      defaultToken.decimals,
       pin,
       selectedAssets.decimals,
       selectedAssets.symbol,
@@ -163,7 +161,7 @@ const SendHome: React.FC = () => {
     if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isEqualTo(0)) return setSendNumber('0');
 
     // other tokens
-    if (selectedAssets.symbol !== ELF_SYMBOL)
+    if (selectedAssets.symbol !== defaultToken.symbol)
       return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
 
     // elf <= maxFee
@@ -197,6 +195,7 @@ const SendHome: React.FC = () => {
   }, [
     chainInfo?.chainId,
     checkManagerSyncState,
+    defaultToken.symbol,
     getTransactionFee,
     maxFee,
     selectedAssets.balance,
@@ -359,14 +358,14 @@ const SendHome: React.FC = () => {
     // input check
     if (sendType === 'token') {
       // token
-      if (assetInfo.symbol === 'ELF') {
+      if (assetInfo.symbol === defaultToken.symbol) {
         // ELF
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
           return { status: false };
         }
 
-        if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, DEFAULT_DECIMAL))) {
+        if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
           setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
           return { status: false };
         }
@@ -408,6 +407,8 @@ const SendHome: React.FC = () => {
     chainInfo?.chainId,
     checkManagerSyncState,
     crossFee,
+    defaultToken.decimals,
+    defaultToken.symbol,
     getTransactionFee,
     selectedAssets.balance,
     selectedAssets.decimals,

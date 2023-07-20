@@ -15,13 +15,14 @@ import GStyles from 'assets/theme/GStyles';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 export default function Receive() {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
+  const defaultToken = useDefaultToken();
 
   const tokenItem = useRouterParams<TokenItemShowType>();
   const { chainId, symbol } = tokenItem;
@@ -40,7 +41,7 @@ export default function Receive() {
           style={styles.svgStyle}
           title={symbol}
           avatarSize={pTd(32)}
-          svgName={symbol === ELF_SYMBOL ? 'elf-icon' : undefined}
+          svgName={symbol === defaultToken.symbol ? 'elf-icon' : undefined}
           imageUrl={symbolImages?.[symbol] || ''}
         />
         <View>

@@ -29,6 +29,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 interface RouterParams {
   type?: PaymentTypeEnum;
@@ -50,6 +51,7 @@ export default function BuyPreview() {
   } = useRouterParams<RouterParams>();
 
   const { t } = useLanguage();
+  const defaultToken = useDefaultToken();
   const { rate, receiveAmount } = useReceive(type, amount || '', fiat, token, receiveAmountProps, rateProps);
   const isBuy = useMemo(() => type === PaymentTypeEnum.BUY, [type]);
   const apiUrl = useCurrentApiUrl();
@@ -157,7 +159,7 @@ export default function BuyPreview() {
   return (
     <PageContainer
       safeAreaColor={['blue', 'white']}
-      titleDom={isBuy ? t('Buy ELF') : t('Sell ELF')}
+      titleDom={`${t(isBuy ? 'Buy' : 'Sell')} ${defaultToken.symbol} `}
       containerStyles={styles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <View>

@@ -6,6 +6,7 @@ import { IBrowserTab, useBrowser } from 'components/TabsDrawer/context';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
 import HttpModal from './components/HttpModal';
 import { getProtocolAndHost, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
+import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 
 type BrowserTabProps = {
   isHidden: boolean;
@@ -42,7 +43,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
   }, [isHidden, options]);
 
   const onPageLoadEnd = useCallback(
-    ({ nativeEvent }: any) => {
+    ({ nativeEvent }: WebViewNavigationEvent | WebViewErrorEvent) => {
       if (!isDangerousLink(getProtocolAndHost(uri)) && !isApproved.current && autoApprove) {
         isApproved.current = true;
         webViewRef.current?.autoApprove();

@@ -14,7 +14,7 @@ import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { CommonButtonProps } from 'components/CommonButton';
 import { SendTransactionParams } from '@portkey/provider-types';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { usePin } from 'hooks/store';
@@ -44,6 +44,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const { dappInfo, transactionInfo, onReject, onSign } = props;
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
+  const defaultToken = useDefaultToken();
   const pin = usePin();
 
   const { walletName } = useWallet();
@@ -93,18 +94,18 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
       const value = amountInUsdShow(amount, decimals, symbol);
-      if (symbol === 'ELF') {
+      if (symbol === defaultToken.symbol) {
         return value === '$ 0' ? '<$ 0.01' : value;
       } else {
         return value;
       }
     },
-    [amountInUsdShow],
+    [amountInUsdShow, defaultToken.symbol],
   );
 
   const transferContent = useMemo(() => {
     const { symbol, amount } = transactionInfo?.params?.paramsOption || {};
-    const decimals = symbol === 'ELF' ? 8 : tokenDecimal;
+    const decimals = symbol === defaultToken.symbol ? defaultToken.decimals : tokenDecimal;
 
     return (
       <>
@@ -171,7 +172,11 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                   />
                 )}
                 <TextM style={transferGroupStyle.fontBold}>
-                  {isFetchingFee ? 'ELF' : `${formatAmountShow(divDecimals(fee, ELF_DECIMAL), 8)} ELF`}
+                  {isFetchingFee
+                    ? defaultToken.symbol
+                    : `${formatAmountShow(divDecimals(fee, defaultToken.decimals), defaultToken.decimals)} ${
+                        defaultToken.symbol
+                      }`}
                 </TextM>
               </View>
             </View>
@@ -179,7 +184,9 @@ const ConnectModal = (props: TransactionModalPropsType) => {
               <View style={[transferGroupStyle.flexSpaceBetween]}>
                 <TextM />
                 <TextS style={transferGroupStyle.lightGrayFontColor}>
-                  {fee === '0' ? '$ 0' : formatAmountInUsdShow(divDecimals(fee, ELF_DECIMAL).toNumber(), 0, 'ELF')}
+                  {fee === '0'
+                    ? '$ 0'
+                    : formatAmountInUsdShow(divDecimals(fee, defaultToken.decimals).toNumber(), 0, defaultToken.symbol)}
                 </TextS>
               </View>
             )}
@@ -189,7 +196,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           {isTransfer && (
             <>
               <Text style={[transferGroupStyle.divider, transferGroupStyle.marginTop0]} />
-              {symbol === 'ELF' ? (
+              {symbol === defaultToken.symbol ? (
                 <View style={transferGroupStyle.section}>
                   <View style={[transferGroupStyle.flexSpaceBetween]}>
                     <TextM style={transferGroupStyle.fontBold}>{t('Total')}</TextM>
@@ -205,7 +212,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                       )}
                       <TextM style={transferGroupStyle.fontBold}>
                         {isFetchingFee
-                          ? 'ELF'
+                          ? defaultToken.symbol
                           : `${formatAmountShow(divDecimals(ZERO.plus(amount).plus(fee), decimals), 8)} ${symbol}`}
                       </TextM>
                     </View>
@@ -237,7 +244,11 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                         />
                       )}
                       <TextM style={transferGroupStyle.fontBold}>
-                        {isFetchingFee ? 'ELF' : `${formatAmountShow(divDecimals(ZERO.plus(fee), ELF_DECIMAL), 8)} ELF`}
+                        {isFetchingFee
+                          ? defaultToken.symbol
+                          : `${formatAmountShow(divDecimals(ZERO.plus(fee), defaultToken.decimals), 8)} ${
+                              defaultToken.symbol
+                            }`}
                       </TextM>
                     </View>
                   </View>
@@ -247,7 +258,11 @@ const ConnectModal = (props: TransactionModalPropsType) => {
                       <TextS style={transferGroupStyle.lightGrayFontColor}>
                         {fee === '0'
                           ? '$ 0'
-                          : formatAmountInUsdShow(divDecimals(fee, ELF_DECIMAL).toNumber(), 0, 'ELF')}
+                          : formatAmountInUsdShow(
+                              divDecimals(fee, defaultToken.decimals).toNumber(),
+                              0,
+                              defaultToken.symbol,
+                            )}
                       </TextS>
                     </View>
                   )}
@@ -286,6 +301,8 @@ const ConnectModal = (props: TransactionModalPropsType) => {
       </>
     );
   }, [
+    defaultToken.decimals,
+    defaultToken.symbol,
     errorText,
     fee,
     formatAmountInUsdShow,
@@ -336,9 +353,9 @@ const ConnectModal = (props: TransactionModalPropsType) => {
         },
       });
 
-      if (!TransactionFee && !TransactionFee?.ELF) setErrorText(ErrorText.ESTIMATE_ERROR);
+      if (!TransactionFee && !TransactionFee?.[defaultToken.symbol]) setErrorText(ErrorText.ESTIMATE_ERROR);
 
-      setFee(TransactionFee?.ELF || '0');
+      setFee(TransactionFee?.[defaultToken.symbol] || '0');
 
       setIsFetchingFee(false);
     } catch (e) {
@@ -349,6 +366,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   }, [
     chainInfo,
     checkManagerSyncState,
+    defaultToken.symbol,
     isCAContract,
     pin,
     transactionInfo.chainId,
@@ -388,12 +406,12 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   useEffect(() => {
     const symbol = transactionInfo?.params?.paramsOption?.symbol;
     if (!symbol) return;
-    if (symbol === 'ELF') {
+    if (symbol === defaultToken.symbol) {
       getTokenPrice(symbol);
     } else {
-      getTokensPrice([symbol, 'ELF']);
+      getTokensPrice([symbol, defaultToken.symbol]);
     }
-  }, [getTokenPrice, getTokensPrice, transactionInfo?.params?.paramsOption?.symbol]);
+  }, [defaultToken.symbol, getTokenPrice, getTokensPrice, transactionInfo?.params?.paramsOption?.symbol]);
 
   return (
     <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList} onClose={onReject}>

@@ -28,7 +28,9 @@ export default memo(
     const { item, onDelete } = props;
     const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
     const [{ isEdit }] = useBookmark();
+    const discoverJump = useDiscoverJumpWithNetWork();
     const preIsEdit = usePrevious(isEdit);
+
     useEffect(() => {
       if (!isEdit && isEdit !== preIsEdit) swipeableRef.current?.close();
     }, [preIsEdit, isEdit]);
@@ -36,7 +38,6 @@ export default memo(
       const listener = myEvents.bookmark.closeSwipeable.addListener(() => swipeableRef.current?.close());
       return () => listener.remove();
     });
-    const discoverJump = useDiscoverJumpWithNetWork();
 
     const onClickJump = useCallback(() => {
       if (isEdit) return;
@@ -134,7 +135,6 @@ const styles = StyleSheet.create({
   itemRow: {
     padding: pTd(12),
     height: pTd(72),
-    // marginVertical: 10,
   },
   deleteIconWrap: {
     marginRight: pTd(16),

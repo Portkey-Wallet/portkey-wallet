@@ -16,6 +16,8 @@ const EventList = [
   'refreshMyContactDetailInfo',
 ] as const;
 
+const BookmarkEventList = ['closeSwipeable'] as const;
+
 // eslint-disable-next-line no-new-func
 const eventsServer = new Function();
 
@@ -38,12 +40,24 @@ eventsServer.prototype.addListener = function (eventType: string, listener: (dat
 
 eventsServer.prototype.parseEvent('base', EventList);
 
+eventsServer.prototype.parseEvent('bookmark', BookmarkEventList);
+
+export type BookmarkEventsTypes = {
+  [x in typeof BookmarkEventList[number]]: {
+    emit: (...params: any[]) => void;
+    addListener: (listener: (data: any) => void) => EmitterSubscription;
+  };
+};
+
 export type MyEventsTypes = {
   [x in typeof EventList[number]]: {
     emit: (...params: any[]) => void;
     addListener: (listener: (data: any) => void) => EmitterSubscription;
   };
+} & {
+  bookmark: BookmarkEventsTypes;
 };
-const myEvents = eventsServer.prototype.base;
+
+const myEvents = { ...eventsServer.prototype.base, bookmark: eventsServer.prototype.bookmark };
 
 export default myEvents as unknown as MyEventsTypes;

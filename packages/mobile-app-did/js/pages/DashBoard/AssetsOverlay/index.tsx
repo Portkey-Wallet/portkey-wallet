@@ -4,7 +4,6 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { TextL, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
-import { AccountType } from '@portkey-wallet/types/wallet';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
@@ -25,12 +24,6 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-
-type onFinishSelectTokenType = (tokenItem: any) => void;
-type TokenListProps = {
-  account?: AccountType;
-  onFinishSelectToken?: onFinishSelectTokenType;
-};
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
   const { symbol, onPress, item } = props;
@@ -84,7 +77,7 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ account }: TokenListProps) => {
+const AssetList = () => {
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
@@ -153,7 +146,6 @@ const AssetList = ({ account }: TokenListProps) => {
         item={item}
         onPress={() => {
           OverlayModal.hide();
-          // onFinishSelectToken?.(item);
           const routeParams = {
             sendType: item?.nftInfo ? 'nft' : 'token',
             assetInfo: item?.nftInfo
@@ -216,8 +208,8 @@ const AssetList = ({ account }: TokenListProps) => {
   );
 };
 
-export const showAssetList = (props: TokenListProps) => {
-  OverlayModal.show(<AssetList {...props} />, {
+export const showAssetList = () => {
+  OverlayModal.show(<AssetList />, {
     position: 'bottom',
     autoKeyboardInsets: false,
     enabledNestScrollView: true,

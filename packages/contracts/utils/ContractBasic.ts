@@ -119,15 +119,15 @@ export class AElfContractBasic {
         paramsOption,
         functionName: _functionName,
       });
-      const raw = await encodedTx({
+      const data = await encodedTx({
         instance: this.aelfInstance,
         contract: this.aelfContract,
         paramsOption: _params,
         functionName: _functionName,
       });
-      return raw;
+      return { data };
     } catch (error) {
-      return handleContractError(error);
+      return { error: handleContractError(error) };
     }
   };
 }

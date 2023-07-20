@@ -19,11 +19,14 @@ export interface IWebView {
   postMessage: WebView['postMessage'];
   injectJavaScript: WebView['injectJavaScript'];
   goForward: WebView['goForward'];
+  autoApprove: () => void;
 }
 
 const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function ProviderWebview(props, forward) {
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
+  // Android will trigger onLoadEnd before onLoadStart, Mark start status.
+  const loadStartRef = useRef<boolean>(false);
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
@@ -56,6 +59,7 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
 
   const onLoadStart = useCallback(
     ({ nativeEvent }: WebViewNavigationEvent) => {
+      if (!loadStartRef.current) loadStartRef.current = true;
       const { origin } = new URL(nativeEvent.url);
       initOperator(origin);
     },
@@ -104,6 +108,10 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
        * Posts a message to WebView.
        */
       postMessage: (message: string) => webViewRef.current?.postMessage(message),
+      /**
+       * auto approve
+       */
+      autoApprove: () => operatorRef.current?.autoApprove(),
     }),
     [],
   );
@@ -114,17 +122,27 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
       style={styles.webView}
       decelerationRate="normal"
       injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : undefined}
-      onMessage={({ nativeEvent }) => {
-        operatorRef.current?.handleRequestMessage(nativeEvent.data);
-      }}
-      onLoadStart={onLoadStart}
-      onLoad={handleUpdate}
-      onLoadProgress={({ nativeEvent }) => {
-        console.log(nativeEvent.progress, '=onLoadProgress');
-      }}
-      onLoadEnd={handleUpdate}
       applicationNameForUserAgent={'WebView Portkey did Mobile'}
       {...props}
+      onLoadStart={event => {
+        onLoadStart(event);
+        props.onLoadStart?.(event);
+      }}
+      onLoadEnd={event => {
+        if (!loadStartRef.current) return;
+        handleUpdate(event);
+        props.onLoadEnd?.(event);
+      }}
+      onLoad={event => {
+        if (!loadStartRef.current) return;
+        handleUpdate(event);
+        props.onLoad?.(event);
+      }}
+      onMessage={event => {
+        const { nativeEvent } = event;
+        operatorRef.current?.handleRequestMessage(nativeEvent.data);
+        props.onMessage?.(event);
+      }}
     />
   );
 });

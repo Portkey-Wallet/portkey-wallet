@@ -7,6 +7,8 @@ import { getChainNumber } from '@portkey-wallet/utils/aelf';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 
 export interface CrossChainTransferParamsType {
   tokenInfo: BaseToken;
@@ -66,6 +68,7 @@ interface CrossChainTransferParams extends CrossChainTransferParamsType {
   tokenContract: ContractBasic;
   contract: ContractBasic;
   caHash: string;
+  crossDefaultFee: number;
 }
 const crossChainTransfer = async ({
   tokenInfo,
@@ -77,6 +80,7 @@ const crossChainTransfer = async ({
   tokenContract,
   contract,
   caHash,
+  crossDefaultFee,
 }: CrossChainTransferParams) => {
   let managerTransferResult;
   try {
@@ -109,7 +113,10 @@ const crossChainTransfer = async ({
     tokenInfo,
     chainType,
     managerAddress,
-    amount: tokenInfo.symbol === 'ELF' ? ZERO.plus(amount).minus(timesDecimals(0.35, 8)).toFixed() : amount,
+    amount:
+      tokenInfo.symbol === ELF_SYMBOL
+        ? ZERO.plus(amount).minus(timesDecimals(crossDefaultFee, ELF_DECIMAL)).toFixed()
+        : amount,
     memo,
     toAddress,
   };

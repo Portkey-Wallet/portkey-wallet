@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { IDiscoverStateType, IDiscoverNetworkStateType, ITabItem } from './type';
+import { IDiscoverStateType, IDiscoverNetworkStateType, ITabItem, IBookmarkItem } from './type';
 import { NetworkType } from '@portkey-wallet/types';
 import { enableMapSet } from 'immer';
 import { RECORD_LIMIT, TAB_LIMIT } from '@portkey-wallet/constants/constants-ca/discover';
@@ -9,6 +9,7 @@ const initNetworkData: IDiscoverNetworkStateType = {
   recordsList: [],
   whiteList: [],
   tabs: [],
+  bookmarkList: [],
 };
 
 const initialState: IDiscoverStateType = {
@@ -34,20 +35,21 @@ export const discoverSlice = createSlice({
     },
     addRecordsItem: (state, { payload }: { payload: ITabItem & { networkType: NetworkType } }) => {
       const { networkType, url } = payload;
-      if (!state.discoverMap) return;
 
-      if (!state.discoverMap?.[networkType]) state.discoverMap[networkType] = initNetworkData;
+      if (!state?.discoverMap) state.discoverMap = {};
 
-      const targetItem = state.discoverMap?.[networkType]?.recordsList.find(item => item.url === url);
-      const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
+      if (!state?.discoverMap?.[networkType]) state.discoverMap[networkType] = initNetworkData;
+
+      const targetItem = state.discoverMap?.[networkType]?.recordsList?.find(item => item.url === url);
+      const targetNetworkDiscover = state?.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
       // limit number
-      if (RECORD_LIMIT <= targetNetworkDiscover.recordsList.length) {
-        targetNetworkDiscover.tabs.shift();
+      if (RECORD_LIMIT <= targetNetworkDiscover?.recordsList.length) {
+        targetNetworkDiscover?.recordsList.shift();
       }
 
       if (targetItem) {
-        const arr = state.discoverMap?.[networkType]?.recordsList.filter(item => item.url !== url) || [];
+        const arr = state.discoverMap?.[networkType]?.recordsList?.filter(item => item.url !== url) || [];
         arr.push(targetItem);
         targetNetworkDiscover.recordsList = arr;
       } else {
@@ -58,9 +60,20 @@ export const discoverSlice = createSlice({
       const { networkType } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
-      targetNetworkDiscover.recordsList = targetNetworkDiscover?.recordsList.map(item => {
+      targetNetworkDiscover.recordsList = targetNetworkDiscover?.recordsList?.map(item => {
         return item.url === payload.url ? { ...item, ...payload } : item;
       });
+    },
+    removeRecordsItems: (state, { payload }: { payload: { ids: number[]; networkType: NetworkType } }) => {
+      const { networkType, ids = [] } = payload;
+      const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
+
+      const idsObj: { [key: number]: number } = {};
+      ids.forEach(id => {
+        idsObj[id] = id;
+      });
+
+      targetNetworkDiscover.recordsList = targetNetworkDiscover?.recordsList?.filter(ele => !idsObj?.[ele?.id]);
     },
     clearRecordsList: (state, { payload }: { payload: { networkType: NetworkType } }) => {
       const { networkType } = payload;
@@ -83,9 +96,9 @@ export const discoverSlice = createSlice({
         targetNetworkDiscover.tabs = [{ ...payload }];
       } else {
         if (TAB_LIMIT <= targetNetworkDiscover.tabs.length) {
-          targetNetworkDiscover.tabs.shift();
+          targetNetworkDiscover?.tabs?.shift();
         }
-        targetNetworkDiscover.tabs.push({ ...payload });
+        targetNetworkDiscover?.tabs?.push({ ...payload });
       }
 
       state.activeTabId = id;
@@ -94,7 +107,7 @@ export const discoverSlice = createSlice({
       const { networkType, id } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
-      targetNetworkDiscover.tabs = targetNetworkDiscover.tabs.filter(item => item.id !== id);
+      targetNetworkDiscover.tabs = targetNetworkDiscover?.tabs?.filter(item => item.id !== id);
     },
     setActiveTab: (state, { payload }: { payload: { id: number | undefined; networkType: NetworkType } }) => {
       const { id } = payload;
@@ -106,7 +119,7 @@ export const discoverSlice = createSlice({
       const { networkType, id } = payload;
       const targetNetworkDiscover = state.discoverMap?.[networkType] || ({} as IDiscoverNetworkStateType);
 
-      targetNetworkDiscover.tabs = targetNetworkDiscover.tabs.map(item =>
+      targetNetworkDiscover.tabs = targetNetworkDiscover?.tabs?.map(item =>
         item.id === id ? { ...item, ...payload } : item,
       );
     },
@@ -119,6 +132,33 @@ export const discoverSlice = createSlice({
         [payload]: JSON.parse(JSON.stringify(initNetworkData)),
       };
     },
+    cleanBookmarkList: (state, { payload }: { payload: NetworkType }) => {
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload]: {
+          ...(state.discoverMap?.[payload] || {}),
+          bookmarkList: [],
+        },
+      };
+    },
+    addBookmarkList: (state, { payload }: { payload: { networkType: NetworkType; list: IBookmarkItem[] } }) => {
+      const preBookmarkList = state.discoverMap?.[payload.networkType]?.bookmarkList || [];
+      state.discoverMap = {
+        ...(state.discoverMap || {}),
+        [payload.networkType]: {
+          ...(state.discoverMap?.[payload.networkType] || {}),
+          bookmarkList: preBookmarkList.concat(payload.list),
+        },
+      };
+    },
+    addAutoApproveItem: (state, { payload }: { payload: number }) => {
+      if (!state.autoApproveMap) state.autoApproveMap = {};
+      state.autoApproveMap = { ...state.autoApproveMap, [payload]: true };
+    },
+    removeAutoApproveItem: (state, { payload }: { payload: number }) => {
+      if (!state.autoApproveMap) state.autoApproveMap = {};
+      if (state.autoApproveMap[payload]) delete state.autoApproveMap[payload];
+    },
   },
 });
 
@@ -127,6 +167,7 @@ export const {
   addUrlToWhiteList,
   addRecordsItem,
   upDateRecordsItem,
+  removeRecordsItems,
   clearRecordsList,
   resetDiscover,
   closeAllTabs,
@@ -135,6 +176,10 @@ export const {
   setActiveTab,
   updateTab,
   changeDrawerOpenStatus,
+  cleanBookmarkList,
+  addBookmarkList,
+  addAutoApproveItem,
+  removeAutoApproveItem,
 } = discoverSlice.actions;
 
 export default discoverSlice;

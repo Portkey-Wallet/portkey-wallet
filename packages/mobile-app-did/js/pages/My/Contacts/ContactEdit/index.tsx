@@ -31,6 +31,7 @@ import Loading from 'components/Loading';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import myEvents from 'utils/deviceEvent';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -57,6 +58,7 @@ const initEditContact: EditContactType = {
 
 const ContactEdit: React.FC = () => {
   const { contact, addressList } = useRouterParams<RouterParams>();
+  const defaultToken = useDefaultToken();
   const { t } = useLanguage();
   const addContactApi = useAddContact();
   const editContactApi = useEditContact();
@@ -345,7 +347,7 @@ const ContactEdit: React.FC = () => {
                   })
                 }
                 addressValue={addressItem.address}
-                affix={['ELF', addressItem.chainId]}
+                affix={[defaultToken.symbol, addressItem.chainId]}
                 onAddressChange={onAddressChange}
               />
             ))}

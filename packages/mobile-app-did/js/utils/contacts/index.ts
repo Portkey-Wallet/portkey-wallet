@@ -1,6 +1,7 @@
 import AElf from 'aelf-sdk';
 import { isAddress as web3IsAddress } from 'web3-utils';
 import { ChainType } from '@portkey-wallet/types';
+import { isValidBase58 } from '@portkey-wallet/utils/reg';
 
 export type ContactItemTypes = {
   id: string;
@@ -30,8 +31,7 @@ export const isAddress = (address: string, chainType: ChainType) => {
 };
 
 export const isAelfAddress = (value?: string) => {
-  if (!value) return false;
-  if (/[\u4e00-\u9fa5]/.test(value)) return false;
+  if (!value || !isValidBase58(value)) return false;
   try {
     return !!AElf.utils.decodeAddressRep(value);
   } catch {

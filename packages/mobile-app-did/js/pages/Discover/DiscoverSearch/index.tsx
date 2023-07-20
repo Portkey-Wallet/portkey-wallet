@@ -11,7 +11,7 @@ import { TextM } from 'components/CommonText';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
-import RecordSection from '../components/RecordSection';
+import RecordSection from '../components/SearchRecordSection';
 import SearchDiscoverSection from '../components/SearchDiscoverSection';
 import { isIOS } from '@rneui/base';
 import { checkIsUrl, getHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
@@ -52,7 +52,6 @@ export default function DiscoverSearch() {
     (name: string, url: string) => {
       jumpToWebview({
         item: {
-          id: Date.now(),
           name,
           url,
         },

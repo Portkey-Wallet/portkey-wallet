@@ -88,6 +88,7 @@ const ViewOnWebView: React.FC = () => {
           // cacheEnabled={false}
           injectedJavaScript={injectedJavaScript}
           // incognito={incognito}
+          applicationNameForUserAgent={'View Only WebView Portkey did Mobile'}
           onLoadProgress={({ nativeEvent }) => progressBarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
         />
       </View>

@@ -8,22 +8,19 @@ import { TextL, TextS } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import RecordItem from '../RecordItem';
-import {
-  addRecordsItem,
-  changeDrawerOpenStatus,
-  clearRecordsList,
-  createNewTab,
-} from '@portkey-wallet/store/store-ca/discover/slice';
+import SearchRecordItem from '../SearchRecordItem';
+import { clearRecordsList } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 
-export default function RecordSection() {
+export default function SearchRecordSection() {
   const { t } = useLanguage();
 
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
   const { discoverMap } = useAppCASelector(state => state.discover);
+  const discoverJump = useDiscoverJumpWithNetWork();
 
   const clearRecord = useCallback(() => {
     dispatch(clearRecordsList({ networkType }));
@@ -33,6 +30,18 @@ export default function RecordSection() {
     const recordsList = (discoverMap?.[networkType]?.recordsList as ITabItem[]) || [];
     return recordsList.map(ele => ele).reverse();
   }, [discoverMap, networkType]);
+
+  const onClickJump = useCallback(
+    (i: ITabItem) => {
+      discoverJump({
+        item: {
+          name: i?.name || '',
+          url: i?.url,
+        },
+      });
+    },
+    [discoverJump],
+  );
 
   if (showRecordList?.length === 0) return null;
 
@@ -45,16 +54,7 @@ export default function RecordSection() {
         </TextS>
       </View>
       {(showRecordList ?? []).map((item, index) => (
-        <RecordItem
-          key={index}
-          item={item}
-          onPress={() => {
-            const id = Date.now();
-            dispatch(addRecordsItem({ ...item, networkType }));
-            dispatch(createNewTab({ id, url: item.url, name: '', networkType }));
-            dispatch(changeDrawerOpenStatus(true));
-          }}
-        />
+        <SearchRecordItem key={index} item={item} onPress={() => onClickJump(item)} />
       ))}
     </ScrollView>
   );

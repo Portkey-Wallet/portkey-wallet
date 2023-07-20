@@ -28,11 +28,11 @@ import fonts from 'assets/theme/fonts';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import BuyButton from 'components/BuyButton';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import FaucetButton from 'components/FaucetButton';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -47,6 +47,7 @@ const INIT_PAGE_INFO = {
 const TokenDetail: React.FC = () => {
   const { t } = useLanguage();
   const { tokenInfo } = useRouterParams<RouterParams>();
+  const defaultToken = useDefaultToken();
 
   const isMainnet = useIsMainnet();
   const currentWallet = useCurrentWallet();
@@ -127,13 +128,13 @@ const TokenDetail: React.FC = () => {
   });
 
   const isBuyButtonShow = useMemo(
-    () => tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF' && isBuyButtonShowStore,
-    [isBuyButtonShowStore, tokenInfo.chainId, tokenInfo.symbol],
+    () => tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF' && isBuyButtonShowStore,
+    [defaultToken.symbol, isBuyButtonShowStore, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   const isFaucetButtonShow = useMemo(
-    () => !isMainnet && tokenInfo.symbol === ELF_SYMBOL && tokenInfo.chainId === 'AELF',
-    [isMainnet, tokenInfo.chainId, tokenInfo.symbol],
+    () => !isMainnet && tokenInfo.symbol === defaultToken.symbol && tokenInfo.chainId === 'AELF',
+    [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
   );
 
   return (

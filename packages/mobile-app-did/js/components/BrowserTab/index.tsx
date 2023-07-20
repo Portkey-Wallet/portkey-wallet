@@ -1,26 +1,35 @@
-import React, { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ProviderWebview, { IWebView } from 'components/ProviderWebview';
-import { captureRef } from 'react-native-view-shot';
+import { CaptureOptions, captureRef } from 'react-native-view-shot';
 import { IBrowserTab, useBrowser } from 'components/TabsDrawer/context';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
 import HttpModal from './components/HttpModal';
+import { getProtocolAndHost, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
+import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
 
 type BrowserTabProps = {
   isHidden: boolean;
+  id: string | number;
   uri: string;
+  autoApprove?: boolean;
+  onLoadEnd?: (nativeEvent: any) => void;
 };
 
-const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab({ isHidden, uri }, forward) {
+const Options: CaptureOptions = { quality: 0.2, format: 'jpg' };
+
+const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
+  { isHidden, uri, onLoadEnd, autoApprove },
+  forward,
+) {
   const viewRef = useRef<any>(null);
   const webViewRef = useRef<IWebView | null>(null);
   const progressbarRef = useRef<IProgressbar>(null);
-
   const { setTabRef } = useBrowser();
-
+  const isApproved = useRef<boolean>(false);
   const options = useMemo(
     () => ({
-      capture: () => captureRef(viewRef?.current, { quality: 0.2, format: 'jpg' }),
+      capture: () => captureRef(viewRef?.current, Options),
       reload: () => webViewRef.current?.reload(),
     }),
     [],
@@ -33,6 +42,16 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHidden, options]);
 
+  const onPageLoadEnd = useCallback(
+    ({ nativeEvent }: WebViewNavigationEvent | WebViewErrorEvent) => {
+      if (!isDangerousLink(getProtocolAndHost(uri)) && !isApproved.current && autoApprove) {
+        isApproved.current = true;
+        webViewRef.current?.autoApprove();
+      }
+      onLoadEnd?.(nativeEvent);
+    },
+    [autoApprove, uri, onLoadEnd],
+  );
   return (
     <View
       ref={viewRef}
@@ -42,6 +61,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
       <ProviderWebview
         ref={webViewRef}
         source={{ uri }}
+        onLoadEnd={onPageLoadEnd}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
       />
       <HttpModal uri={uri} />
@@ -50,7 +70,11 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
 });
 
 export default memo(BrowserTab, (prevProps: BrowserTabProps, nextProps: BrowserTabProps) => {
-  return prevProps.isHidden === nextProps.isHidden && prevProps.uri === nextProps.uri;
+  return (
+    prevProps.isHidden === nextProps.isHidden &&
+    prevProps.uri === nextProps.uri &&
+    prevProps.autoApprove === nextProps.autoApprove
+  );
 });
 
 export const styles = StyleSheet.create({

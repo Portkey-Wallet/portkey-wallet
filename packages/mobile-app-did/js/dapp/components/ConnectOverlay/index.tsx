@@ -12,7 +12,6 @@ import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -20,6 +19,7 @@ import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
 import DappInfoSection from '../DappInfoSection';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -30,6 +30,7 @@ type ConnectModalType = {
 const ConnectModal = (props: ConnectModalType) => {
   const { dappInfo, onReject, onApprove } = props;
   const { t } = useLanguage();
+  const defaultToken = useDefaultToken();
   const caInfo = useCurrentCaInfo();
   const { walletName, currentNetwork } = useWallet();
   const gStyles = useGStyles();
@@ -46,12 +47,12 @@ const ConnectModal = (props: ConnectModalType) => {
         list.push({
           chaiId: key,
           caAddress: info.caAddress,
-          ...accountTokenList.find(token => token.chainId === key && token.symbol === ELF_SYMBOL),
+          ...accountTokenList.find(token => token.chainId === key && token.symbol === defaultToken.symbol),
         });
       }
     });
     return list;
-  }, [accountTokenList, caInfo]);
+  }, [accountTokenList, caInfo, defaultToken.symbol]);
 
   const buttonList = useMemo(
     () => [
@@ -105,7 +106,6 @@ const ConnectModal = (props: ConnectModalType) => {
 export const showConnectModal = (props: ConnectModalType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
-    enabledNestScrollView: true,
     onCloseRequest: props.onReject,
   });
 };

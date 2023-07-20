@@ -11,7 +11,7 @@ import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { pTd } from 'utils/unit';
 
 const WalletSecurity: React.FC = () => {
-  const { deviceAmount } = useDeviceList();
+  const { deviceAmount } = useDeviceList({ isAmountOnly: true });
   const dappList = useCurrentDappList();
 
   return (

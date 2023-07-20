@@ -8,11 +8,14 @@ import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { message } from 'antd';
 import { useCallback, useMemo } from 'react';
 import { useLoading } from 'store/Provider/hooks';
-import sameChainTransfer from 'utils/sandboxUtil/sameChainTransfer';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import aes from '@portkey-wallet/utils/aes';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
+import getTransactionRaw from 'utils/sandboxUtil/getTransactionRaw';
+import AElf from 'aelf-sdk';
+import { getWallet } from '@portkey-wallet/utils/aelf';
+import SparkMD5 from 'spark-md5';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
@@ -37,30 +40,36 @@ export const useHandleAchSell = () => {
       if (!privateKey) throw new Error('Sell Transfer: No PrivateKey');
 
       if (!aelfToken) throw new Error('Sell Transfer: No Token');
+      const manager = getWallet(privateKey);
+      if (!manager?.keyPair) throw new Error('Sell Transfer: No keyPair');
 
-      const transferParams = {
-        chainInfo,
+      const rawResult = await getTransactionRaw({
+        contractAddress: chainInfo.caContractAddress,
+        rpcUrl: chainInfo?.endPoint || '',
         chainType: currentNetwork.walletType,
+        methodName: 'ManagerForwardCall',
         privateKey,
-        tokenInfo: {
-          id: aelfToken?.id,
-          chainId: aelfToken.chainId,
-          decimals: aelfToken.decimals,
-          address: aelfToken.tokenContractAddress || '',
-          symbol: aelfToken.symbol,
-          name: aelfToken?.name,
-          imageUrl: aelfToken?.imageUrl,
-          alias: aelfToken?.alias,
-          tokenId: aelfToken?.tokenId,
+        paramsOption: {
+          caHash: wallet?.caHash || '',
+          contractAddress: aelfToken.tokenContractAddress || '',
+          methodName: 'Transfer',
+          args: {
+            symbol: aelfToken.symbol,
+            to: `ELF_${params.address}_AELF`,
+            amount: timesDecimals(params.cryptoAmount, aelfToken.decimals).toNumber(),
+          },
         },
-        caHash: wallet?.caHash || '',
-        amount: timesDecimals(params.cryptoAmount, aelfToken.decimals).toNumber(),
-        toAddress: `ELF_${params.address}_AELF`,
-      };
-      const res = await sameChainTransfer(transferParams);
+      });
+      if (!rawResult || !rawResult.result) {
+        throw new Error('Failed to get raw transaction.');
+      }
+      const publicKey = manager.keyPair.getPublic('hex');
+      const message = SparkMD5.hash(`${params.orderId}${rawResult.result.data}`);
+      const signature = AElf.wallet.sign(Buffer.from(message).toString('hex'), manager.keyPair).toString('hex');
       return {
-        error: res?.result?.Error,
-        transactionId: res?.result.TransactionId || '',
+        rawTransaction: rawResult.result.data,
+        publicKey,
+        signature,
       };
     },
     [aelfToken, chainInfo, currentNetwork.walletType, wallet.AESEncryptPrivateKey, wallet?.caHash],
@@ -77,7 +86,11 @@ export const useHandleAchSell = () => {
         });
         message.success('Transaction completed.');
       } catch (error: any) {
-        message.error(error.message);
+        if (error?.code === 'TIMEOUT') {
+          message.warn(error?.message || 'The waiting time is too long, it will be put on hold in the background.');
+        } else {
+          message.error(error.message);
+        }
       } finally {
         setLoading(false);
       }

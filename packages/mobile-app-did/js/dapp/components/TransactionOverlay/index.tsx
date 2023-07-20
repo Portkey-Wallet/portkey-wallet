@@ -332,7 +332,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
       const { TransactionFee } = await customFetch(`${chainInfo?.endPoint}/api/blockChain/calculateTransactionFee`, {
         method: 'POST',
         params: {
-          RawTransaction: raw,
+          RawTransaction: raw.data,
         },
       });
 

@@ -31,7 +31,7 @@ export const ACH_MERCHANT_NAME = 'Alchemy';
 
 export const FAUCET_URL = 'https://testnet-faucet.aelf.io/';
 
-export const SELL_SOCKET_TIMEOUT = 20 * 1000;
+export const SELL_SOCKET_TIMEOUT = 15 * 1000;
 
 export const BUY_SOON_TEXT = 'On-ramp is currently not supported. It will be launched in the coming weeks.';
 

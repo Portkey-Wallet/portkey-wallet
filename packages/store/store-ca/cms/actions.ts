@@ -101,3 +101,20 @@ export const getBuyButtonAsync = createAsyncThunk<Required<Pick<CMSState, 'buyBu
     }
   },
 );
+
+export const getRememberMeBlackListAsync = createAsyncThunk<Required<Pick<CMSState, 'buyButtonNetMap'>>, NetworkType>(
+  'cms/getRememberMeBlackListAsync',
+  async (network: NetworkType) => {
+    const result = await getBuyButton(network, {});
+
+    if (result.data.buyButton) {
+      return {
+        buyButtonNetMap: {
+          [network]: result.data.buyButton,
+        },
+      };
+    } else {
+      throw new Error('discoverGroupListNetMap error');
+    }
+  },
+);

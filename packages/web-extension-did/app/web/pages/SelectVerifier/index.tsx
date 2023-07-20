@@ -6,9 +6,12 @@ import { useAppDispatch, useGuardiansInfo, useLoginInfo } from 'store/Provider/h
 import PortKeyTitle from 'pages/components/PortKeyTitle';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { VerifierSelect } from '@portkey/did-ui-react';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
 import './index.less';
 
 interface ConfirmResultInfo {
@@ -24,6 +27,8 @@ export default function SelectVerifier() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
+  const { walletInfo } = useCurrentWallet();
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult('register');
 
   const onConfirm = useCallback(
     async (result: ConfirmResultInfo) => {
@@ -55,12 +60,21 @@ export default function SelectVerifier() {
             signature: result.signature,
           }),
         );
-        navigate('/login/set-pin/register');
+        const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
+        if (walletInfo.address && res.data.privateKey) {
+          onManagerAddressAndQueryResult(res.data.privateKey, {
+            verifierId: result.verifier.id,
+            verificationDoc: result.verificationDoc,
+            signature: result.signature,
+          });
+        } else {
+          navigate('/login/set-pin/register');
+        }
       } else {
         message.error('Verification failed, please try again later');
       }
     },
-    [dispatch, loginAccount, navigate],
+    [dispatch, loginAccount, navigate, onManagerAddressAndQueryResult, walletInfo.address],
   );
 
   const authorized = useMemo(

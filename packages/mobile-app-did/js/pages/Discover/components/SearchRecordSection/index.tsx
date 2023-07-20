@@ -35,7 +35,6 @@ export default function SearchRecordSection() {
     (i: ITabItem) => {
       discoverJump({
         item: {
-          id: Date.now(),
           name: i?.name || '',
           url: i?.url,
         },

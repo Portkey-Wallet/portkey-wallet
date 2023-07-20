@@ -51,7 +51,6 @@ const QrScanner: React.FC<QrScannerProps> = () => {
         if (checkIsUrl(str)) {
           jumpToWebview({
             item: {
-              id: Date.now(),
               name: str,
               url: str,
             },

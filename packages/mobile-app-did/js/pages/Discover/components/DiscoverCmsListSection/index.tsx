@@ -21,7 +21,6 @@ export function DiscoverCmsListSection() {
     (i: DiscoverItem) => {
       discoverJump({
         item: {
-          id: Date.now(),
           name: i.title,
           url: i?.url,
         },

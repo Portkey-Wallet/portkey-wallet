@@ -27,7 +27,6 @@ export default function SearchDiscoverSection(props: ISearchDiscoverSectionProps
     (i: DiscoverItem) => {
       jumpToWebview({
         item: {
-          id: Date.now(),
           name: i.title,
           url: i?.url ?? i?.description,
         },

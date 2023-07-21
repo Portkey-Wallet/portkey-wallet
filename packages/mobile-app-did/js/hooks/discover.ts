@@ -17,7 +17,7 @@ import {
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { isUrl } from '@portkey-wallet/utils';
-import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { getProtocolAndHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 import { useCallback, useEffect, useMemo } from 'react';
 
@@ -175,7 +175,7 @@ export const useCheckSiteIsInBlackList = () => {
   return useCallback(
     (url: string) => {
       try {
-        return list.indexOf(url) >= 0;
+        return list.indexOf(getProtocolAndHost(url)) >= 0;
       } catch (err) {
         console.log(err);
       }

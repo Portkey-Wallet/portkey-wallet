@@ -21,6 +21,7 @@ import { expandQrData } from '@portkey-wallet/utils/qrCode';
 import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import Loading from 'components/Loading';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 interface QrScannerProps {
   route?: any;
 }
@@ -36,7 +37,6 @@ const QrScanner: React.FC<QrScannerProps> = () => {
   console.log(previousRouteInfo, '=====previousRouteInfo');
 
   const [refresh, setRefresh] = useState<boolean>();
-  const [scanUrlFinish, setScanUrlFinish] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -44,27 +44,23 @@ const QrScanner: React.FC<QrScannerProps> = () => {
     }, []),
   );
 
-  const handleBarCodeScanned = useCallback(
+  const handleBarCodeScanned = useThrottleCallback(
     ({ data = '' }) => {
       if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
 
       try {
         const str = prefixUrlWithProtocol(data.replace(/("|'|\s)/g, ''));
-
         if (checkIsUrl(str)) {
-          if (scanUrlFinish) return;
           jumpToWebview({
             item: {
               name: str,
               url: str,
             },
           });
-          setScanUrlFinish(true);
           return navigationService.goBack();
         }
 
         const qrCodeData = expandQrData(JSON.parse(data));
-
         // if not currentNetwork
         if (currentNetwork !== qrCodeData.netWorkType)
           return invalidQRCode(

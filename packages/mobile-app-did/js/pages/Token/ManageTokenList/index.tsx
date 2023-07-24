@@ -134,7 +134,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
   const RightDom = useMemo(
     () => (
       <TouchableOpacity
-        style={{ padding: pTd(16) }}
+        style={pageStyles.rightIconStyle}
         onPress={() => {
           navigationService.navigate('CustomToken');
         }}>
@@ -193,12 +193,15 @@ export const pageStyles = StyleSheet.create({
   },
   inputWrap: {
     backgroundColor: defaultColors.bg5,
-    ...gStyles.paddingArg(0, 16, 16),
+    ...gStyles.paddingArg(8, 20, 8),
   },
   list: {
     flex: 1,
   },
   loadingIcon: {
     width: pTd(20),
+  },
+  rightIconStyle: {
+    padding: pTd(16),
   },
 });

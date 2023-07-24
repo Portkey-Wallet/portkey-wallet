@@ -44,7 +44,6 @@ export default memo(
 
         discoverJump({
           item: {
-            id: Date.now(),
             name: i?.name || '',
             url: i?.url,
           },

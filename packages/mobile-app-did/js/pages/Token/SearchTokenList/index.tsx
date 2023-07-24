@@ -19,6 +19,7 @@ import Svg from 'components/Svg';
 import FilterTokenSection from '../components/FilterToken';
 import Lottie from 'lottie-react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { TextInput } from 'react-native-gesture-handler';
 
 interface ManageTokenListProps {
   route?: any;
@@ -26,7 +27,7 @@ interface ManageTokenListProps {
 const SearchTokenList: React.FC<ManageTokenListProps> = () => {
   const { t } = useLanguage();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const iptRef = useRef<any>();
+  const iptRef = useRef<TextInput>();
 
   const chainIdList = useChainIdList();
 
@@ -126,7 +127,7 @@ const SearchTokenList: React.FC<ManageTokenListProps> = () => {
   useEffect(() => {
     // input focus
     timerRef.current = setTimeout(() => {
-      if (iptRef && iptRef?.current) iptRef.current.focus();
+      iptRef.current?.focus();
     }, 200);
 
     return () => {

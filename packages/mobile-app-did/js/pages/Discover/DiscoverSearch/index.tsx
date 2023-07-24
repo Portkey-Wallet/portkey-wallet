@@ -52,7 +52,6 @@ export default function DiscoverSearch() {
     (name: string, url: string) => {
       jumpToWebview({
         item: {
-          id: Date.now(),
           name,
           url,
         },

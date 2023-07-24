@@ -40,12 +40,14 @@ export const useDiscoverJumpWithNetWork = () => {
   const dispatch = useAppCommonDispatch();
 
   const discoverJump = useCallback(
-    ({ item, autoApprove }: { item: ITabItem; autoApprove?: boolean }) => {
-      dispatch(createNewTab({ ...item, networkType }));
-      dispatch(setActiveTab({ ...item, networkType }));
-      dispatch(addRecordsItem({ ...item, networkType }));
+    ({ item, autoApprove }: { item: Omit<ITabItem, 'id'>; autoApprove?: boolean }) => {
+      const id = Date.now();
+
+      dispatch(createNewTab({ ...item, id, networkType }));
+      dispatch(setActiveTab({ ...item, id, networkType }));
+      dispatch(addRecordsItem({ ...item, id, networkType }));
       dispatch(changeDrawerOpenStatus(true));
-      if (autoApprove) dispatch(addAutoApproveItem(item.id));
+      if (autoApprove) dispatch(addAutoApproveItem(id));
     },
     [dispatch, networkType],
   );

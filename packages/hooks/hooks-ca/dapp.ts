@@ -47,6 +47,7 @@ export const useUpdateSessionInfo = () => {
 
         const signature = signSession(baseSession);
         sessionInfo = {
+          createTime: Date.now(),
           signature,
           expiredPlan,
           expiredTime,

@@ -13,10 +13,19 @@ export interface INoDiscoverDataProps {
   size?: 'small' | 'large';
   location?: 'top' | 'center';
   backgroundColor?: string;
+  style?: any;
+  iconStyle?: any;
 }
 
 const NoDiscoverData = (props: INoDiscoverDataProps) => {
-  const { type = 'noBookmarks', size = 'small', location = 'center', backgroundColor = defaultColors.bg1 } = props;
+  const {
+    type = 'noBookmarks',
+    size = 'small',
+    location = 'center',
+    backgroundColor = defaultColors.bg1,
+    style = {},
+    iconStyle = {},
+  } = props;
   const iconName = type === 'noBookmarks' ? 'no-bookmarks' : 'no-records';
   const noDataText = type === 'noBookmarks' ? 'No Bookmarks' : 'No Records';
 
@@ -25,8 +34,16 @@ const NoDiscoverData = (props: INoDiscoverDataProps) => {
   };
 
   return (
-    <View style={[GStyles.flex1, GStyles.center, BGStyles.bg1, wrapStyle, location === 'top' && styles.topNoDataStyle]}>
-      <Svg icon={iconName} size={pTd(size === 'large' ? 56 : 36)} iconStyle={styles.icon} />
+    <View
+      style={[
+        GStyles.flex1,
+        GStyles.center,
+        BGStyles.bg1,
+        wrapStyle,
+        location === 'top' && styles.topNoDataStyle,
+        style,
+      ]}>
+      <Svg icon={iconName} size={pTd(size === 'large' ? 56 : 36)} iconStyle={[styles.icon, iconStyle]} />
       <TextS style={[FontStyles.font7, size === 'large' && styles.largeText]}>{noDataText}</TextS>
     </View>
   );

@@ -112,6 +112,7 @@ function BookmarksSection() {
             })),
           },
         });
+        setList(pre => pre.filter(item => !deleteList.current.some(_item => _item.id === item.id)));
         await sleep(100);
         getBookmarkListRef.current(true);
       } catch (error) {
@@ -137,6 +138,7 @@ function BookmarksSection() {
             Loading.show();
             try {
               await request.discover.deleteAllBookmark();
+              setList([]);
               await sleep(100);
               getBookmarkListRef.current(true);
             } catch (error) {

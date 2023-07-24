@@ -92,7 +92,9 @@ export function DiscoverArchivedSection() {
                   <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
-                      <TextS style={[styles.websiteName]}>{item?.name || item?.url}</TextS>
+                      <TextS style={[styles.websiteName]} numberOfLines={2}>
+                        {item?.name || item?.url}
+                      </TextS>
                     </View>
                   </TouchableOpacity>
                 ))}

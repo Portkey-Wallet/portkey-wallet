@@ -1,4 +1,4 @@
-import { NetworkType } from '@portkey-wallet/types';
+import { NetworkType, Timestamp } from '@portkey-wallet/types';
 import { SessionInfo } from '@portkey-wallet/types/session';
 
 export type DappStoreItem = {
@@ -6,6 +6,7 @@ export type DappStoreItem = {
   name?: string;
   icon?: string;
   sessionInfo?: SessionInfo;
+  connectedTime?: Timestamp;
 };
 
 export interface IDappStoreState {

@@ -32,6 +32,7 @@ import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
+import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
 
 export const PageRouter = () =>
   useRoutes([
@@ -170,6 +171,10 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/connected-sites',
       element: <ConnectedSites />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites/:origin',
+      element: <SiteDetail />,
     },
     {
       path: '/unlock',

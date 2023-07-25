@@ -3,11 +3,12 @@ import { Button } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import usePromptSearch from 'hooks/usePromptSearch';
 import ImageDisplay from 'pages/components/ImageDisplay';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
+import DappSession from 'pages/components/DappSession';
 import './index.less';
 
 const allowItem = ['view wallet balance and activities', 'send you transaction requests'];
@@ -18,6 +19,8 @@ export default function ConnectWallet() {
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWalletInfo();
   const disabled = useMemo(() => !detail.appHref, [detail]);
+  const [open, setOpen] = useState(false);
+  const [exp, setExp] = useState('');
 
   const renderSite = useMemo(
     () =>
@@ -47,6 +50,15 @@ export default function ConnectWallet() {
     [t],
   );
 
+  const handleSessionChange = useCallback(
+    (flag: boolean, time: string) => {
+      setOpen(flag);
+      setExp(time);
+      console.log(open, exp);
+    },
+    [exp, open],
+  );
+
   const handleSign = useCallback(async () => {
     try {
       dispatch(
@@ -73,6 +85,7 @@ export default function ConnectWallet() {
       {renderSite}
       <div className="title">{t('Connect with Portkey')}</div>
       {renderAllow}
+      <DappSession onChange={handleSessionChange} />
       <div className="btn flex-between">
         <Button
           type="text"

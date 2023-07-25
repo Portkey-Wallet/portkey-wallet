@@ -4,7 +4,7 @@
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "name": "Portkey: DID & Crypto & NFT",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Identity System for Social Recover and Asset Management Tool",
   "icons": {
     "16": "assets/images/extension_logo.png",

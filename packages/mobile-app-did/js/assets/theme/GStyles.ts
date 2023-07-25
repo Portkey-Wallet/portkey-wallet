@@ -35,6 +35,9 @@ export default {
   alignEnd: {
     alignSelf: 'flex-end',
   },
+  flexCenter: {
+    justifyContent: 'center',
+  },
   flexEnd: {
     justifyContent: 'flex-end',
   },

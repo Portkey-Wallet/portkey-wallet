@@ -55,3 +55,5 @@ export function formatExpiredTime(plan: SessionExpiredPlan) {
     return Date.now();
   }
 }
+
+export function formatTimeToStr(plan: SessionExpiredPlan) {}

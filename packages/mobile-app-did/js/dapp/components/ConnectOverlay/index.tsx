@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -9,7 +9,7 @@ import { ModalBody } from 'components/ModalBody';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import { useCurrentCaInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
@@ -20,6 +20,12 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
 import DappInfoSection from '../DappInfoSection';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { RememberInfoType, RememberMe } from 'components/RemeberMe';
+import { OverlayBottomSection } from '../OverlayBottomSection';
+import { SessionExpiredPlan } from '@portkey-wallet/types/session';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { usePin } from 'hooks/store';
+import { getManagerAccount } from 'utils/redux';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -30,10 +36,17 @@ type ConnectModalType = {
 const ConnectModal = (props: ConnectModalType) => {
   const { dappInfo, onReject, onApprove } = props;
   const { t } = useLanguage();
+  const pin = usePin();
   const defaultToken = useDefaultToken();
   const caInfo = useCurrentCaInfo();
   const { walletName, currentNetwork } = useWallet();
   const gStyles = useGStyles();
+  const upDateSessionInfo = useUpdateSessionInfo();
+
+  const [rememberInfo, setRememberMeInfo] = useState<RememberInfoType>({
+    isRemember: false,
+    value: SessionExpiredPlan.hour1,
+  });
 
   const {
     accountToken: { accountTokenList },
@@ -54,7 +67,7 @@ const ConnectModal = (props: ConnectModalType) => {
     return list;
   }, [accountTokenList, caInfo, defaultToken.symbol]);
 
-  const buttonList = useMemo(
+  const ButtonList = useMemo(
     () => [
       {
         title: t('Reject'),
@@ -67,17 +80,27 @@ const ConnectModal = (props: ConnectModalType) => {
       {
         title: t('Approve'),
         type: 'primary' as CommonButtonProps['type'],
-        onPress: () => {
+        onPress: async () => {
           onApprove?.();
           OverlayModal.hide();
+
+          await sleep(500);
+          if (!pin) return;
+          if (rememberInfo.isRemember) {
+            upDateSessionInfo({
+              manager: getManagerAccount(pin),
+              origin: dappInfo.origin,
+              expiredPlan: SessionExpiredPlan.hour24,
+            });
+          }
         },
       },
     ],
-    [onApprove, onReject, t],
+    [dappInfo.origin, onApprove, onReject, pin, rememberInfo.isRemember, t, upDateSessionInfo],
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} bottomButtonGroup={buttonList} onClose={onReject}>
+    <ModalBody modalBodyType="bottom" title={t('Connect Wallet')} onClose={onReject}>
       <View style={[styles.contentWrap, gStyles.overlayStyle]}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextM style={[styles.walletTitle, FontStyles.font3]}>{t('Wallet')}</TextM>
@@ -99,6 +122,9 @@ const ConnectModal = (props: ConnectModalType) => {
           ))}
         </View>
       </View>
+      <OverlayBottomSection bottomButtonGroup={ButtonList}>
+        <RememberMe dappInfo={dappInfo} rememberInfo={rememberInfo} setRememberMeInfo={setRememberMeInfo} />
+      </OverlayBottomSection>
     </ModalBody>
   );
 };
@@ -157,15 +183,22 @@ const styles = StyleSheet.create({
   itemChainInfo: {
     marginTop: pTd(4),
   },
-
-  buttonGroup: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
   btn: {
     width: pTd(160),
     height: pTd(44),
+  },
+
+  buttonGroup: {
+    backgroundColor: defaultColors.bg1,
+    position: 'absolute',
+    bottom: 0,
+    ...GStyles.paddingArg(10, 20, 16, 20),
+  },
+  buttonStyle: {
+    height: pTd(48),
+    fontSize: pTd(18),
+  },
+  buttonTitleStyle: {
+    fontSize: pTd(16),
   },
 });

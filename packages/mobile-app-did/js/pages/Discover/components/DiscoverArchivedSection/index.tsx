@@ -6,7 +6,6 @@ import { useBookmarkList, useDiscoverJumpWithNetWork, useRecordsList } from 'hoo
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TabView } from '@rneui/base';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import navigationService from 'utils/navigationService';
@@ -92,7 +91,9 @@ export function DiscoverArchivedSection() {
                   <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
-                      <TextS style={[styles.websiteName]}>{item?.name || item?.url}</TextS>
+                      <TextS style={[styles.websiteName]} numberOfLines={2}>
+                        {item?.name || item?.url}
+                      </TextS>
                     </View>
                   </TouchableOpacity>
                 ))}

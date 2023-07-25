@@ -7,13 +7,14 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQueryResult';
-import { useAppDispatch, useLoading, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { useCallback } from 'react';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { message } from 'antd';
 import { useNavigate } from 'react-router';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
+import { LoginInfo } from 'store/reducers/loginCache/type';
 
 /**
  * Provides two verification processes
@@ -25,19 +26,19 @@ const useCheckVerifier = () => {
   const { setLoading } = useLoading();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loginAccount } = useLoginInfo();
   const originChainId = useOriginChainId();
   const { address: managerAddress } = useCurrentWalletInfo();
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult('register');
+
   // Send verifier verification code
   const sendVerifyCodeHandler = useCallback(
-    async (verifierItem: VerifierItem) => {
+    async (verifierItem: VerifierItem, loginAccount?: LoginInfo) => {
       try {
-        if (!loginAccount || !LoginType[loginAccount.loginType] || !loginAccount.guardianAccount)
+        if (!loginAccount || !LoginType[loginAccount?.loginType] || !loginAccount?.guardianAccount)
           return message.error(
             'User registration information is invalid, please fill in the registration method again',
           );
-        if (!verifierItem.id || !verifierItem.name) return message.error('Can not get verification');
+        if (!verifierItem?.id || !verifierItem?.name) return message.error('Can not get verification');
 
         setLoading(true);
 
@@ -77,26 +78,28 @@ const useCheckVerifier = () => {
         message.error(_error);
       }
     },
-    [dispatch, loginAccount, navigate, setLoading],
+    [dispatch, navigate, setLoading],
   );
 
   const verifyToken = useVerifyToken();
 
   const checkAuth = useCallback(
-    async (verifierItem: VerifierItem) => {
+    async (verifierItem: VerifierItem, loginAccount?: LoginInfo) => {
       try {
         setLoading(true);
         if (!loginAccount?.loginType) throw 'loginType is invalid';
+        if (!verifierItem?.id || !verifierItem?.name) return message.error('Can not get verification');
+
         const rst = await verifyToken(loginAccount.loginType, {
           accessToken: loginAccount.authenticationInfo?.[loginAccount.guardianAccount || ''],
           id: loginAccount.guardianAccount,
-          verifierId: verifierItem?.id,
+          verifierId: verifierItem.id,
           chainId: originChainId,
           operationType: OperationTypeEnum.register,
         });
         dispatch(
           setRegisterVerifierAction({
-            verifierId: verifierItem?.id as string,
+            verifierId: verifierItem.id as string,
             verificationDoc: rst.verificationDoc,
             signature: rst.signature,
           }),
@@ -105,7 +108,7 @@ const useCheckVerifier = () => {
         setLoading(false);
         if (managerAddress && res.data.privateKey) {
           onManagerAddressAndQueryResult(res.data.privateKey, {
-            verifierId: verifierItem?.id as string,
+            verifierId: verifierItem.id as string,
             verificationDoc: rst.verificationDoc,
             signature: rst.signature,
           });
@@ -118,16 +121,7 @@ const useCheckVerifier = () => {
         setLoading(false);
       }
     },
-    [
-      dispatch,
-      loginAccount,
-      managerAddress,
-      navigate,
-      onManagerAddressAndQueryResult,
-      originChainId,
-      setLoading,
-      verifyToken,
-    ],
+    [dispatch, managerAddress, navigate, onManagerAddressAndQueryResult, originChainId, setLoading, verifyToken],
   );
 
   return [checkAuth, sendVerifyCodeHandler];

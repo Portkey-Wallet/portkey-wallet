@@ -6,7 +6,7 @@ import ScanCard from './components/ScanCard';
 import SignCard from './components/SignCard';
 import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useAppDispatch, useLoading, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { NetworkType } from '@portkey-wallet/types';
 import CommonSelect from 'components/CommonSelect1';
@@ -47,16 +47,6 @@ export default function RegisterStart() {
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
-  const { loginAccount } = useLoginInfo();
-  const [checkAuth, sendVerifyCodeHandler] = useCheckVerifier();
-  const [openSendVerifyCode, setOpenSendVerifyCode] = useState<boolean>(false);
-  const [verifierItem, setVerifierItem] = useState<VerifierItem>({
-    id: '',
-    name: '',
-    imageUrl: '',
-    endPoints: [],
-    verifierAddresses: [],
-  });
 
   const networkList = useNetworkList();
 
@@ -139,23 +129,42 @@ export default function RegisterStart() {
 
   const saveState = useCallback(
     (data: LoginInfo) => {
+      // update page data
+      loginAccountRef.current = data;
+      setLoginAccount(data);
+      // update store data
       dispatch(setLoginAccountAction(data));
     },
     [dispatch],
   );
 
+  const [openSendVerifyCode, setOpenSendVerifyCode] = useState<boolean>(false);
+  const [verifierItem, setVerifierItem] = useState<VerifierItem>({
+    id: '',
+    name: '',
+    imageUrl: '',
+    endPoints: [],
+    verifierAddresses: [],
+  });
+  const loginAccountRef = useRef<LoginInfo>();
+  const [loginAccount, setLoginAccount] = useState<LoginInfo>();
+  const [checkAuth, sendVerifyCodeHandler] = useCheckVerifier();
+
   // According to the login type, execute different verifier judgment logic
-  const confirmRegisterOrLogin = useCallback(async () => {
-    switch (loginAccount?.loginType) {
-      case LoginType.Apple:
-      case LoginType.Google:
-        checkAuth(verifierItem);
-        break;
-      default:
-        setOpenSendVerifyCode(true);
-        break;
-    }
-  }, [checkAuth, loginAccount?.loginType, verifierItem]);
+  const confirmRegisterOrLogin = useCallback(
+    async (data: LoginInfo, verifierItem: VerifierItem) => {
+      switch (data?.loginType) {
+        case LoginType.Apple:
+        case LoginType.Google:
+          checkAuth(verifierItem, data);
+          break;
+        default:
+          setOpenSendVerifyCode(true);
+          break;
+      }
+    },
+    [checkAuth],
+  );
 
   const timer = useRef<NodeJS.Timeout | number>();
   const onSignFinish = useCallback(
@@ -165,22 +174,27 @@ export default function RegisterStart() {
       dispatch(resetGuardians());
 
       setLoading(true, 'Allocating verifier on-chain...');
-      timer.current = setTimeout(() => {
-        clearTimeout(timer.current);
-        setLoading(false);
-      }, 2000);
 
-      // Get the assigned verifier data from the backend api
-      const verifierReq = await request.verify.getVerifierServer({
-        params: {
-          chainId: DefaultChainId,
-        },
+      const loadingTimeout = new Promise((resolve) => {
+        timer.current = setTimeout(() => {
+          clearTimeout(timer.current);
+          setLoading(false);
+          resolve('timeout down');
+        }, 2000);
       });
 
-      setVerifierItem(verifierReq);
-      confirmRegisterOrLogin();
+      // Get the assigned verifier data from the backend api and guaranteed loading display 2s
+      const [verifierReq, _timeout] = await Promise.all([
+        request.verify.getVerifierServer({
+          params: {
+            chainId: DefaultChainId,
+          },
+        }),
+        loadingTimeout,
+      ]);
 
-      setLoading(false);
+      setVerifierItem(verifierReq);
+      confirmRegisterOrLogin(data, verifierReq);
     },
     [confirmRegisterOrLogin, dispatch, saveState, setLoading],
   );
@@ -324,15 +338,15 @@ export default function RegisterStart() {
           closable={false}
           open={openSendVerifyCode}
           width={320}
-          onCancel={() => setOpen(false)}>
+          onCancel={() => setOpenSendVerifyCode(false)}>
           <p className="modal-content">
             {`${t('verificationCodeTip1', { verifier: verifierItem?.name })} `}
             <span className="bold">{loginAccount.guardianAccount}</span>
             {` ${t('verificationCodeTip2', { type: LoginType[loginAccount.loginType] })}`}
           </p>
           <div className="btn-wrapper">
-            <Button onClick={() => setOpen(false)}>{t('Cancel')}</Button>
-            <Button type="primary" onClick={() => sendVerifyCodeHandler(verifierItem)}>
+            <Button onClick={() => setOpenSendVerifyCode(false)}>{t('Cancel')}</Button>
+            <Button type="primary" onClick={() => sendVerifyCodeHandler(verifierItem, loginAccountRef.current)}>
               {t('Confirm')}
             </Button>
           </div>

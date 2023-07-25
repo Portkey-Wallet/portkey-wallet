@@ -54,6 +54,7 @@ export default class DappMobileOperator extends Operator {
   protected stream: IDappInteractionStream;
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
+  public isLockDapp?: boolean;
   constructor({ stream, origin, dappManager, dappOverlay }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
@@ -318,6 +319,7 @@ export default class DappMobileOperator extends Operator {
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
     if (SEND_METHOD[request.method]) return this.handleSendRequest(request);
+    if (this.isLockDapp) return this.userDenied(request.eventName);
     return this.handleViewRequest(request);
   };
 
@@ -369,5 +371,9 @@ export default class DappMobileOperator extends Operator {
     } catch (error) {
       return false;
     }
+  };
+
+  public setIsLockDapp = (isLockDapp: boolean) => {
+    this.isLockDapp = isLockDapp;
   };
 }

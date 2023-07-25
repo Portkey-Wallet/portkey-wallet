@@ -9,6 +9,7 @@ export enum SessionExpiredPlan {
   always = 'Infinity',
 }
 export type SessionInfo = {
+  createTime: Timestamp;
   expiredPlan: SessionExpiredPlan;
   expiredTime: Timestamp;
   signature: string;

@@ -1,17 +1,19 @@
 import { Button, Switch, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
-import { dateFullFormat } from 'utils';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
 import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { useNavigate } from 'react-router';
 import CustomSelect from 'pages/components/CustomSelect';
-import { SessionExpiredPlan, SessionExpiredPlanShow } from '@portkey-wallet/types/session';
+import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import { hasSessionInfoExpired } from '@portkey-wallet/utils/session';
+import { formatTimeToStr, hasSessionInfoExpired } from '@portkey-wallet/utils/session';
 import getManager from 'utils/getManager';
+import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
+import ImageDisplay from 'pages/components/ImageDisplay';
+import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import './index.less';
 
 export interface ISiteItemProps {
@@ -26,14 +28,21 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
   const { sessionInfo } = siteItem;
   const [open, setOpen] = useState(!!sessionInfo?.expiredPlan);
   const updateSessionInfo = useUpdateSessionInfo();
-  console.log('sessionInfo', sessionInfo);
+  const checkSiteIsInBlackList = useCheckSiteIsInBlackList();
+  const isInBlackList = useMemo(
+    () => checkSiteIsInBlackList(siteItem.origin),
+    [checkSiteIsInBlackList, siteItem.origin],
+  );
 
   useEffect(() => {
     if (siteItem.sessionInfo) {
-      const isActive = hasSessionInfoExpired(siteItem.sessionInfo);
-      setOpen(isActive);
+      const isExp = hasSessionInfoExpired(siteItem.sessionInfo);
+      if (isExp) {
+        setOpen(!isExp);
+        updateSessionInfo({ origin: siteItem.origin });
+      }
     }
-  }, [sessionInfo, siteItem.sessionInfo]);
+  }, [siteItem.origin, siteItem.sessionInfo, updateSessionInfo]);
 
   const handleSwitch = useCallback(
     async (value: boolean) => {
@@ -82,8 +91,8 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
     <div className="site-item-content flex-column-between flex-1">
       <div>
         <div className="site-dapp flex-column-center">
-          <CustomSvg type="DappDefault" />
-          <div>{siteItem.name}</div>
+          <ImageDisplay defaultHeight={64} className="icon" src={siteItem.icon} backupSrc="DappDefault" />
+          <span>{siteItem.name}</span>
           <div className="origin flex">
             <CustomSvg type="DappWarn" />
             <span>{siteItem.origin}</span>
@@ -91,7 +100,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
         </div>
         <div className="content-item flex-column">
           <div className="label">{t('Connected time')}</div>
-          <div className="control flex">{dateFullFormat(sessionInfo?.createTime)}</div>
+          <div className="control flex">{siteItem.connectedTime ? formatTimeToStr(siteItem.connectedTime) : '-'}</div>
         </div>
         <div className="session-tip">
           <span className="label">{t('Remember me to skip authentication')}</span>
@@ -101,25 +110,31 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
             )}
           </span>
         </div>
-        <div className="session-switch flex">
-          <Switch className="switch" checked={open} onChange={handleSwitch} />
-          <span className="status">{open ? 'Open' : 'Close'}</span>
-        </div>
-        {open && (
+        {!isInBlackList && (
+          <div className="session-switch flex">
+            <Switch className="switch" checked={open} onChange={handleSwitch} />
+            <span className="status">{open ? 'Open' : 'Close'}</span>
+          </div>
+        )}
+        {open && !isInBlackList && (
           <div className="content-item flex-column">
-            <div className="label">{t('Connected time')}</div>
+            <div className="label">{t('Session key expiration')}</div>
             <CustomSelect
-              items={SessionExpiredPlanShow}
+              items={SessionKeyArray}
               defaultValue={SessionExpiredPlan.hour1}
               value={sessionInfo?.expiredPlan}
               onChange={handleSessionChange}
             />
           </div>
         )}
-        {open && (
+        {open && !isInBlackList && (
           <div className="content-item flex-column">
-            <div className="label">{t('Connected time')}</div>
-            <div className="control flex">{dateFullFormat(sessionInfo?.expiredTime)}</div>
+            <div className="label">{t('Expiration time')}</div>
+            <div className="control flex">
+              {sessionInfo?.expiredPlan === SessionExpiredPlan.always
+                ? '-'
+                : formatTimeToStr(sessionInfo?.expiredTime || 0)}
+            </div>
           </div>
         )}
       </div>

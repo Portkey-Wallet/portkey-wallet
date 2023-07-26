@@ -27,6 +27,7 @@ import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import './index.less';
 import getManager from 'utils/getManager';
+import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function SendTransactions() {
   const { payload, transactionInfoId, origin } = usePromptSearch<{
@@ -76,6 +77,7 @@ export default function SendTransactions() {
     },
     [amountInUsdShow, defaultToken.symbol],
   );
+  const checkOriginInBlackList = useCheckSiteIsInBlackList();
 
   const getFee = useCallback(
     async (txInfo: any) => {
@@ -382,7 +384,7 @@ export default function SendTransactions() {
       </div>
       {payload?.method.toLowerCase() === 'transfer' ? renderTransfer : renderMessage}
       {errMsg && <div className={clsx(!isManagerSynced && 'error-warning', 'error-message')}>{errMsg}</div>}
-      <DappSession onChange={handleSessionChange} />
+      {!checkOriginInBlackList(origin) && <DappSession onChange={handleSessionChange} />}
       <div className="btn flex-between">
         <Button
           type="text"

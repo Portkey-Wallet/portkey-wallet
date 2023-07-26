@@ -8,9 +8,10 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
 import aes from '@portkey-wallet/utils/aes';
-import { useUserInfo } from 'store/Provider/hooks';
 import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
 import { Loading } from '@portkey/did-ui-react';
+import InternalMessage from 'messages/InternalMessage';
+import InternalMessageTypes from 'messages/InternalMessageTypes';
 import './index.less';
 
 export default function DappAutoTx() {
@@ -19,11 +20,6 @@ export default function DappAutoTx() {
   const chainInfo = useCurrentChain(payload?.chainId);
   const wallet = useCurrentWalletInfo();
   const isCAContract = useMemo(() => chainInfo?.caContractAddress === payload?.contractAddress, [chainInfo, payload]);
-  const { passwordSeed } = useUserInfo();
-  const privateKey = useMemo(
-    () => aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed),
-    [passwordSeed, wallet.AESEncryptPrivateKey],
-  );
   const handleTransaction = useCallback(async () => {
     try {
       if (!chainInfo?.endPoint || !wallet?.caHash) {
@@ -35,6 +31,11 @@ export default function DappAutoTx() {
         closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' } });
         return;
       }
+
+      const passwordSeed = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
+      const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed.data.privateKey);
+
+      if (!privateKey) throw 'Invalid user information, please check';
 
       const txPayload = await getLocalStorage<{ [x: string]: any }>('txPayload');
       const { transactionInfoId } = txParams;
@@ -59,7 +60,6 @@ export default function DappAutoTx() {
             contractAddress: payload?.contractAddress,
             args: paramsOption,
           };
-      if (!privateKey) throw 'Invalid user information, please check';
 
       const result = await callSendMethod({
         rpcUrl: chainInfo.endPoint,
@@ -78,10 +78,19 @@ export default function DappAutoTx() {
       console.error(error, 'error===detail');
       closePrompt({
         ...errorHandler(400001),
-        data: { code: ResponseCode.ERROR_IN_PARAMS },
+        data: { code: ResponseCode.ERROR_IN_PARAMS, msg: error },
       });
     }
-  }, [chainInfo, wallet, payload, txParams, isCAContract, privateKey]);
+  }, [
+    chainInfo,
+    wallet.caHash,
+    wallet.AESEncryptPrivateKey,
+    payload?.rpcUrl,
+    payload?.method,
+    payload?.contractAddress,
+    txParams,
+    isCAContract,
+  ]);
 
   const executeFn = useCallback(() => {
     switch (txParams.method) {

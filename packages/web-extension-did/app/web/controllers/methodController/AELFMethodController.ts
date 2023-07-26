@@ -10,7 +10,7 @@ import { MethodsBase, ResponseCode, MethodsWallet } from '@portkey/provider-type
 import { ExtensionDappManager } from './ExtensionDappManager';
 import { getCurrentCaHash, getSWReduxState, getWalletState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
-import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
 import { randomId } from '@portkey-wallet/utils';
 import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 import SWEventController from 'controllers/SWEventController';
@@ -62,8 +62,11 @@ export default class AELFMethodController {
   }
 
   handleRequest = async ({ params, method, callBack }: { params: any; method: any; callBack: any }) => {
-    const validSession = await this.verifySessionInfo(params.origin);
+    if (!REMEMBER_ME_ACTION_WHITELIST.includes(method)) {
+      return await callBack(params);
+    }
 
+    const validSession = await this.verifySessionInfo(params.origin);
     let result;
     if (validSession) {
       result = await this.approvalController.authorizedToAutoExecute({
@@ -140,8 +143,8 @@ export default class AELFMethodController {
         signature: sessionInfo.signature,
       });
       if (!valid) return valid;
-      const res = hasSessionInfoExpired(sessionInfo);
-      return res;
+      const isExpired = hasSessionInfoExpired(sessionInfo);
+      return !isExpired;
     } catch (error) {
       console.log('verifySessionInfo error');
       return false;
@@ -339,33 +342,15 @@ export default class AELFMethodController {
       setLocalStorage({ txPayload: { [key]: JSON.stringify(payload.params) } });
       delete message.payload?.params;
 
-      // const result = await this.handleRequest({
-      //   params: {
-      //     origin,
-      //     transactionInfoId: key,
-      //     payload: message.payload,
-      //   },
-      //   method: MethodsBase.SEND_TRANSACTION,
-      //   callBack: (params: any) => this.approvalController.authorizedToSendTransactions(params),
-      // });
-
-      const validSession = await this.verifySessionInfo(origin);
-
-      let result;
-      if (validSession) {
-        result = await this.approvalController.authorizedToAutoExecute({
+      const result = await this.handleRequest({
+        params: {
           origin,
           transactionInfoId: key,
           payload: message.payload,
-          method: MethodsBase.SEND_TRANSACTION,
-        });
-      } else {
-        result = await this.approvalController.authorizedToSendTransactions({
-          origin,
-          transactionInfoId: key,
-          payload: message.payload,
-        });
-      }
+        },
+        method: MethodsBase.SEND_TRANSACTION,
+        callBack: (params: any) => this.approvalController.authorizedToSendTransactions(params),
+      });
 
       // TODO Only support open a window
       removeLocalStorage('txPayload');

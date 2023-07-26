@@ -12,6 +12,7 @@ import DappSession from 'pages/components/DappSession';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import getManager from 'utils/getManager';
+import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import './index.less';
 
 const allowItem = ['view wallet balance and activities', 'send you transaction requests'];
@@ -25,6 +26,7 @@ export default function ConnectWallet() {
   const [open, setOpen] = useState<boolean>(false);
   const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);
   const updateSessionInfo = useUpdateSessionInfo();
+  const checkOriginInBlackList = useCheckSiteIsInBlackList();
 
   const renderSite = useMemo(
     () =>
@@ -94,7 +96,7 @@ export default function ConnectWallet() {
       {renderSite}
       <div className="title">{t('Connect with Portkey')}</div>
       {renderAllow}
-      <DappSession onChange={handleSessionChange} />
+      {!checkOriginInBlackList(detail.appHref) && <DappSession onChange={handleSessionChange} />}
       <div className="btn flex-between">
         <Button
           type="text"

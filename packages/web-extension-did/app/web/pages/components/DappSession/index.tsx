@@ -1,7 +1,8 @@
 import { Switch } from 'antd';
-import CustomSelect from '../CustomSelect';
 import { useCallback, useState } from 'react';
-import { SessionExpiredPlan, SessionExpiredPlanShow } from '@portkey-wallet/types/session';
+import { SessionExpiredPlan } from '@portkey-wallet/types/session';
+import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
+import CustomShowSelect from '../CustomShowSelect';
 import './index.less';
 
 export interface IDappSessionProps {
@@ -37,8 +38,9 @@ export default function DappSession({ onChange }: IDappSessionProps) {
       </div>
       {open && (
         <div className="select">
-          <CustomSelect
-            items={SessionExpiredPlanShow}
+          <CustomShowSelect
+            showInValue={`Session key expiration`}
+            items={SessionKeyArray}
             defaultValue={SessionExpiredPlan.hour1}
             value={exp}
             onChange={handleSessionChange}

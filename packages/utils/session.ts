@@ -44,9 +44,9 @@ export function verifySession(params: IVerifySessionParams) {
 
 export function hasSessionInfoExpired(sessionInfo: SessionInfo) {
   // always
-  if (sessionInfo.expiredPlan === SessionExpiredPlan.always) return true;
-  if (Date.now() < sessionInfo.expiredTime) return true;
-  return false;
+  if (sessionInfo.expiredPlan === SessionExpiredPlan.always) return false;
+  if (Date.now() < sessionInfo.expiredTime) return false;
+  return true;
 }
 
 export function formatExpiredTime(plan: SessionExpiredPlan) {

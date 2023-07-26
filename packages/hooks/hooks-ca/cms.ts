@@ -9,6 +9,7 @@ import {
   getRememberMeBlackListAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
+import { getHost } from '@portkey-wallet/utils/dapp/browser';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -158,4 +159,19 @@ export const useRememberMeBlackList = (isInit = false) => {
   }, [dispatch, isInit, networkType]);
 
   return rememberMeBlackList || [];
+};
+
+export const useCheckSiteIsInBlackList = () => {
+  const list = useRememberMeBlackList();
+
+  return useCallback(
+    (url: string) => {
+      try {
+        return list.indexOf(getHost(url)) >= 0;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [list],
+  );
 };

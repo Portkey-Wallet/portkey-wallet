@@ -23,6 +23,10 @@ export const dateFormat = (ipt?: moment.MomentInput) => {
   return moment(ipt).format('MMM D , h:mm a').replace(',', 'at');
 };
 
+export const dateFullFormat = (ipt?: moment.MomentInput) => {
+  return moment(ipt).format('YYYY-MM-DD hh:mm:ss ');
+};
+
 export const dateFormatTransTo13 = (ipt?: moment.MomentInput) => {
   let time = String(ipt);
   while (time.length < 13) {

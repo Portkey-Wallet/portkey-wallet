@@ -14,3 +14,26 @@ export type SessionInfo = {
   expiredTime: Timestamp;
   signature: string;
 };
+
+export const SessionExpiredPlanShow = [
+  {
+    value: SessionExpiredPlan.hour1,
+    children: '1 hour',
+  },
+  {
+    value: SessionExpiredPlan.hour3,
+    children: '3 hours',
+  },
+  {
+    value: SessionExpiredPlan.hour12,
+    children: '12 hours',
+  },
+  {
+    value: SessionExpiredPlan.hour24,
+    children: '24 hours',
+  },
+  {
+    value: SessionExpiredPlan.always,
+    children: 'Never',
+  },
+];

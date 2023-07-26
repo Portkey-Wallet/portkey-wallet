@@ -9,6 +9,9 @@ import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
 import errorHandler from 'utils/errorHandler';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import DappSession from 'pages/components/DappSession';
+import { SessionExpiredPlan } from '@portkey-wallet/types/session';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import getManager from 'utils/getManager';
 import './index.less';
 
 const allowItem = ['view wallet balance and activities', 'send you transaction requests'];
@@ -19,8 +22,9 @@ export default function ConnectWallet() {
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWalletInfo();
   const disabled = useMemo(() => !detail.appHref, [detail]);
-  const [open, setOpen] = useState(false);
-  const [exp, setExp] = useState('');
+  const [open, setOpen] = useState<boolean>(false);
+  const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);
+  const updateSessionInfo = useUpdateSessionInfo();
 
   const renderSite = useMemo(
     () =>
@@ -50,14 +54,10 @@ export default function ConnectWallet() {
     [t],
   );
 
-  const handleSessionChange = useCallback(
-    (flag: boolean, time: string) => {
-      setOpen(flag);
-      setExp(time);
-      console.log(open, exp);
-    },
-    [exp, open],
-  );
+  const handleSessionChange = useCallback((flag: boolean, extTime: SessionExpiredPlan) => {
+    setOpen(flag);
+    setExp(extTime);
+  }, []);
 
   const handleSign = useCallback(async () => {
     try {
@@ -71,6 +71,15 @@ export default function ConnectWallet() {
           },
         }),
       );
+      if (open) {
+        const manager = await getManager();
+        updateSessionInfo({
+          networkType: currentNetwork,
+          origin: detail.appHref,
+          expiredPlan: exp,
+          manager,
+        });
+      }
       closePrompt({
         ...errorHandler(0),
         data: { origin: detail.appHref },
@@ -78,7 +87,7 @@ export default function ConnectWallet() {
     } catch (error) {
       console.log('add dapp error', error);
     }
-  }, [currentNetwork, detail, dispatch]);
+  }, [currentNetwork, detail.appHref, detail.appLogo, detail.appName, dispatch, exp, open, updateSessionInfo]);
 
   return (
     <div className="connect-wallet flex">

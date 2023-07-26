@@ -1,14 +1,18 @@
-import { Button, Switch } from 'antd';
+import { Button, Switch, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
-// import { dateFormat } from 'utils';
+import { dateFullFormat } from 'utils';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useWalletInfo } from 'store/Provider/hooks';
 import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { useNavigate } from 'react-router';
-import './index.less';
 import CustomSelect from 'pages/components/CustomSelect';
+import { SessionExpiredPlan, SessionExpiredPlanShow } from '@portkey-wallet/types/session';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { hasSessionInfoExpired } from '@portkey-wallet/utils/session';
+import getManager from 'utils/getManager';
+import './index.less';
 
 export interface ISiteItemProps {
   siteItem: DappStoreItem;
@@ -19,42 +23,60 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
   const dispatch = useAppDispatch();
   const { currentNetwork } = useWalletInfo();
   const navigate = useNavigate();
+  const { sessionInfo } = siteItem;
+  const [open, setOpen] = useState(!!sessionInfo?.expiredPlan);
+  const updateSessionInfo = useUpdateSessionInfo();
+  console.log('sessionInfo', sessionInfo);
 
-  const handleSwitch = useCallback(() => {
-    //
-  }, []);
+  useEffect(() => {
+    if (siteItem.sessionInfo) {
+      const isActive = hasSessionInfoExpired(siteItem.sessionInfo);
+      setOpen(isActive);
+    }
+  }, [sessionInfo, siteItem.sessionInfo]);
+
+  const handleSwitch = useCallback(
+    async (value: boolean) => {
+      setOpen(value);
+      if (value) {
+        const manager = await getManager();
+        if (manager) {
+          updateSessionInfo({
+            networkType: currentNetwork,
+            origin: siteItem.origin,
+            expiredPlan: SessionExpiredPlan.hour1,
+            manager,
+          });
+        }
+        message.success('Session Key enabled');
+      } else {
+        updateSessionInfo({ origin: siteItem.origin });
+        message.success('Session Key disabled');
+      }
+    },
+    [currentNetwork, siteItem.origin, updateSessionInfo],
+  );
 
   const handleDisconnect = useCallback(() => {
     dispatch(removeDapp({ networkType: currentNetwork, origin: siteItem.origin || '' }));
     navigate('/setting/wallet-security/connected-sites');
   }, [currentNetwork, dispatch, navigate, siteItem.origin]);
 
-  const SessionExpiredPlan = [
-    {
-      value: '1',
-      children: '1 hour',
+  const handleSessionChange = useCallback(
+    async (value: SessionExpiredPlan) => {
+      const manager = await getManager();
+      if (manager) {
+        updateSessionInfo({
+          networkType: currentNetwork,
+          origin: siteItem.origin,
+          expiredPlan: value,
+          manager,
+        });
+        message.success('Session key updated');
+      }
     },
-    {
-      value: '3',
-      children: '3 hour',
-    },
-    {
-      value: '12',
-      children: '12 hour',
-    },
-    {
-      value: '24',
-      children: '24 hour',
-    },
-    {
-      value: 'never',
-      children: 'Never',
-    },
-  ];
-
-  const handleSessionChange = useCallback(() => {
-    //
-  }, []);
+    [currentNetwork, siteItem.origin, updateSessionInfo],
+  );
 
   return (
     <div className="site-item-content flex-column-between flex-1">
@@ -69,7 +91,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
         </div>
         <div className="content-item flex-column">
           <div className="label">{t('Connected time')}</div>
-          <div className="control flex">2023-07-30 23:59:59</div>
+          <div className="control flex">{dateFullFormat(sessionInfo?.createTime)}</div>
         </div>
         <div className="session-tip">
           <span className="label">{t('Remember me to skip authentication')}</span>
@@ -80,17 +102,26 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
           </span>
         </div>
         <div className="session-switch flex">
-          <Switch className="switch" checked={false} onChange={handleSwitch} />
-          <span className="status">Close</span>
+          <Switch className="switch" checked={open} onChange={handleSwitch} />
+          <span className="status">{open ? 'Open' : 'Close'}</span>
         </div>
-        <div className="content-item flex-column">
-          <div className="label">{t('Connected time')}</div>
-          <CustomSelect items={SessionExpiredPlan} defaultValue={'1'} value={'1'} onChange={handleSessionChange} />
-        </div>
-        <div className="content-item flex-column">
-          <div className="label">{t('Connected time')}</div>
-          <div className="control flex">2023-07-30 23:59:59</div>
-        </div>
+        {open && (
+          <div className="content-item flex-column">
+            <div className="label">{t('Connected time')}</div>
+            <CustomSelect
+              items={SessionExpiredPlanShow}
+              defaultValue={SessionExpiredPlan.hour1}
+              value={sessionInfo?.expiredPlan}
+              onChange={handleSessionChange}
+            />
+          </div>
+        )}
+        {open && (
+          <div className="content-item flex-column">
+            <div className="label">{t('Connected time')}</div>
+            <div className="control flex">{dateFullFormat(sessionInfo?.expiredTime)}</div>
+          </div>
+        )}
       </div>
       <div className="btn-wrap">
         <Button onClick={handleDisconnect} type="default">

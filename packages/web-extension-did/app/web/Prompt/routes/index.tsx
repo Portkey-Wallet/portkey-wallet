@@ -179,7 +179,7 @@ export const PageRouter = () => {
       element: <GetSignature />,
     },
     {
-      path: '/auto-tx',
+      path: '/auto-execute-tx',
       element: <DappAutoTx />,
     },
     {

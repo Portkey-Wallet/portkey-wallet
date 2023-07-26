@@ -8,12 +8,14 @@ import { IPageState, RequestCommonHandler, RequestMessageData } from 'types/SW';
 import errorHandler from 'utils/errorHandler';
 import { MethodsBase, ResponseCode, MethodsWallet } from '@portkey/provider-types';
 import { ExtensionDappManager } from './ExtensionDappManager';
-import { getSWReduxState } from 'utils/lib/SWGetReduxStore';
+import { getCurrentCaHash, getSWReduxState, getWalletState } from 'utils/lib/SWGetReduxStore';
 import ApprovalController from 'controllers/approval/ApprovalController';
 import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
 import { randomId } from '@portkey-wallet/utils';
 import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 import SWEventController from 'controllers/SWEventController';
+import { hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
+import getManager from 'utils/lib/getManager';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -58,6 +60,22 @@ export default class AELFMethodController {
       store: storeInSW,
     });
   }
+
+  handleRequest = async ({ params, method, callBack }: { params: any; method: any; callBack: any }) => {
+    const validSession = await this.verifySessionInfo(params.origin);
+
+    let result;
+    if (validSession) {
+      result = await this.approvalController.authorizedToAutoExecute({
+        ...params,
+        method,
+      });
+    } else {
+      result = await callBack(params);
+    }
+    return result;
+  };
+
   dispenseMessage = (message: RequestMessageData, sendResponse: SendResponseFun) => {
     switch (message.type) {
       case MethodsBase.CHAIN_ID:
@@ -99,6 +117,34 @@ export default class AELFMethodController {
           ),
         );
         break;
+    }
+  };
+
+  verifySessionInfo = async (origin: string) => {
+    try {
+      const sessionInfo = await this.dappManager.getSessionInfo(origin);
+      const wallet = await getWalletState();
+      if (!wallet.walletInfo) return false;
+      const pin = this.getPassword();
+      if (!pin) return false;
+      const manager = await getManager(pin);
+      const caHash = await getCurrentCaHash();
+      if (!manager?.keyPair || !caHash || !sessionInfo) return false;
+      const valid = verifySession({
+        keyPair: manager.keyPair,
+        origin,
+        managerAddress: manager.address,
+        caHash,
+        expiredPlan: sessionInfo.expiredPlan,
+        expiredTime: sessionInfo.expiredTime,
+        signature: sessionInfo.signature,
+      });
+      if (!valid) return valid;
+      const res = hasSessionInfoExpired(sessionInfo);
+      return res;
+    } catch (error) {
+      console.log('verifySessionInfo error');
+      return false;
     }
   };
 
@@ -292,11 +338,35 @@ export default class AELFMethodController {
       const key = randomId();
       setLocalStorage({ txPayload: { [key]: JSON.stringify(payload.params) } });
       delete message.payload?.params;
-      const result = await this.approvalController.authorizedToSendTransactions({
-        origin,
-        transactionInfoId: key,
-        payload: message.payload,
-      });
+
+      // const result = await this.handleRequest({
+      //   params: {
+      //     origin,
+      //     transactionInfoId: key,
+      //     payload: message.payload,
+      //   },
+      //   method: MethodsBase.SEND_TRANSACTION,
+      //   callBack: (params: any) => this.approvalController.authorizedToSendTransactions(params),
+      // });
+
+      const validSession = await this.verifySessionInfo(origin);
+
+      let result;
+      if (validSession) {
+        result = await this.approvalController.authorizedToAutoExecute({
+          origin,
+          transactionInfoId: key,
+          payload: message.payload,
+          method: MethodsBase.SEND_TRANSACTION,
+        });
+      } else {
+        result = await this.approvalController.authorizedToSendTransactions({
+          origin,
+          transactionInfoId: key,
+          payload: message.payload,
+        });
+      }
+
       // TODO Only support open a window
       removeLocalStorage('txPayload');
       if (result.error === 200003)
@@ -306,13 +376,16 @@ export default class AELFMethodController {
             code: ResponseCode.USER_DENIED,
           },
         });
-      if (result.error)
+      if (result.error) {
+        console.log('error', result);
+
         return sendResponse({
           ...errorHandler(700002),
           data: {
             code: ResponseCode.CONTRACT_ERROR,
           },
         });
+      }
       sendResponse(result);
     } catch (error) {
       console.log('sendTransaction===', error);
@@ -341,13 +414,18 @@ export default class AELFMethodController {
           },
         });
 
-      const result = await this.approvalController.authorizedToGetSignature({
-        origin,
-        payload: {
-          data: message.payload.data,
+      const result = await this.handleRequest({
+        params: {
           origin: message.origin,
+          payload: {
+            data: message.payload.data,
+            origin: message.origin,
+          },
         },
+        method: MethodsWallet.GET_WALLET_SIGNATURE,
+        callBack: (params: any) => this.approvalController.authorizedToGetSignature(params),
       });
+
       if (result.error === 200003)
         return sendResponse({
           ...errorHandler(200003),

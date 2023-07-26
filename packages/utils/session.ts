@@ -2,6 +2,7 @@ import type { ec } from 'elliptic';
 import { SessionExpiredPlan, SessionInfo } from '../types/session';
 import { Timestamp } from '../types';
 import AElf from 'aelf-sdk';
+import dayjs from 'dayjs';
 
 const HOUR = 60 * 60 * 1000;
 
@@ -56,4 +57,6 @@ export function formatExpiredTime(plan: SessionExpiredPlan) {
   }
 }
 
-export function formatTimeToStr(plan: SessionExpiredPlan) {}
+export function formatTimeToStr(time: number) {
+  return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+}

@@ -3,10 +3,10 @@ import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer'];
 
 export const SessionKeyMap = {
-  [SessionExpiredPlan.hour1]: '1 hours',
-  [SessionExpiredPlan.hour3]: '3 hours',
-  [SessionExpiredPlan.hour12]: '12 hours',
-  [SessionExpiredPlan.hour24]: '24 hours',
+  [SessionExpiredPlan.hour1]: 'In 1 hour',
+  [SessionExpiredPlan.hour3]: 'In 3 hours',
+  [SessionExpiredPlan.hour12]: 'In 12 hours',
+  [SessionExpiredPlan.hour24]: 'In 24 hours',
   [SessionExpiredPlan.always]: 'Never',
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
@@ -13,12 +13,36 @@ import Svg from 'components/Svg';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 
 interface DappListItemProps {
+  type?: 'home' | 'detail';
   item?: DappStoreItem;
-  isShowArrow?: boolean;
   onPress?: (item?: DappStoreItem) => void;
 }
 
-const DappListItem: React.FC<DappListItemProps> = ({ item, isShowArrow, onPress }) => {
+const DappListItem: React.FC<DappListItemProps> = ({ item, type = 'home', onPress }) => {
+  if (type === 'detail') {
+    return (
+      <View key={item?.name} style={itemStyles.itemWrap}>
+        <DiscoverWebsiteImage
+          size={pTd(32)}
+          imageUrl={getFaviconUrl(item?.origin || '')}
+          style={itemStyles.itemImage}
+        />
+        <View style={itemStyles.itemCenter}>
+          <TextWithProtocolIcon
+            textFontSize={pTd(16)}
+            title={item?.name || getHost(item?.origin || '')}
+            url={item?.origin || ''}
+          />
+          <TouchableOpacity onPress={() => onPress?.(item)}>
+            <TextM numberOfLines={1} style={[FontStyles.font4, itemStyles.itemDappUrl]}>
+              {item?.origin || getHost(item?.origin || '')}
+            </TextM>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <Touchable key={item?.name} style={itemStyles.itemWrap} onPress={() => onPress?.(item)}>
       <DiscoverWebsiteImage size={pTd(32)} imageUrl={getFaviconUrl(item?.origin || '')} style={itemStyles.itemImage} />
@@ -28,11 +52,11 @@ const DappListItem: React.FC<DappListItemProps> = ({ item, isShowArrow, onPress 
           title={item?.name || getHost(item?.origin || '')}
           url={item?.origin || ''}
         />
-        <TextM numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7, itemStyles.itemDappUrl]}>
+        <TextM numberOfLines={1} style={[FontStyles.font7, itemStyles.itemDappUrl]}>
           {item?.origin || getHost(item?.origin || '')}
         </TextM>
       </View>
-      {isShowArrow && <Svg icon="right-arrow" size={pTd(20)} />}
+      <Svg icon="right-arrow" size={pTd(20)} />
     </Touchable>
   );
 };

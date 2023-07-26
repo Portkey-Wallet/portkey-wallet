@@ -1,6 +1,5 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCASelector, useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { useRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   addUrlToWhiteList,
@@ -17,7 +16,7 @@ import {
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { isUrl } from '@portkey-wallet/utils';
-import { getProtocolAndHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 import { useCallback, useEffect, useMemo } from 'react';
 
@@ -168,20 +167,5 @@ export const useCheckAndUpDateTabItemName = () => {
       }
     },
     [discoverMap, dispatch, networkType],
-  );
-};
-
-export const useCheckSiteIsInBlackList = () => {
-  const list = useRememberMeBlackList();
-
-  return useCallback(
-    (url: string) => {
-      try {
-        return list.indexOf(getProtocolAndHost(url)) >= 0;
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    [list],
   );
 };

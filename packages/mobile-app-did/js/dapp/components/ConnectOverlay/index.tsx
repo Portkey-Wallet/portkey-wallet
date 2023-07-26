@@ -41,7 +41,7 @@ const ConnectModal = (props: ConnectModalType) => {
   const caInfo = useCurrentCaInfo();
   const { walletName, currentNetwork } = useWallet();
   const gStyles = useGStyles();
-  const upDateSessionInfo = useUpdateSessionInfo();
+  const updateSessionInfo = useUpdateSessionInfo();
 
   const [rememberInfo, setRememberMeInfo] = useState<RememberInfoType>({
     isRemember: false,
@@ -87,16 +87,16 @@ const ConnectModal = (props: ConnectModalType) => {
           await sleep(500);
           if (!pin) return;
           if (rememberInfo.isRemember) {
-            upDateSessionInfo({
+            updateSessionInfo({
               manager: getManagerAccount(pin),
               origin: dappInfo.origin,
-              expiredPlan: SessionExpiredPlan.hour24,
+              expiredPlan: rememberInfo?.value || SessionExpiredPlan.hour1,
             });
           }
         },
       },
     ],
-    [dappInfo.origin, onApprove, onReject, pin, rememberInfo.isRemember, t, upDateSessionInfo],
+    [dappInfo.origin, onApprove, onReject, pin, rememberInfo.isRemember, rememberInfo?.value, t, updateSessionInfo],
   );
 
   return (

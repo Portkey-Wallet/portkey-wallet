@@ -10,16 +10,10 @@ import { FontStyles } from 'assets/theme/styles';
 import { useLanguage } from 'i18n/hooks';
 import fonts from 'assets/theme/fonts';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
-import { useCheckSiteIsInBlackList } from 'hooks/discover';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { SessionKeyMap, SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
 import GStyles from 'assets/theme/GStyles';
-
-type DappPeriodOverlayProps = {
-  value: SessionExpiredPlan;
-  onCancel?: () => void;
-  onConfirm: (value: SessionExpiredPlan) => void;
-};
+import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export type RememberInfoType = {
   isRemember: boolean;
@@ -32,7 +26,13 @@ type RememberMeProps = {
   setRememberMeInfo: Dispatch<SetStateAction<RememberInfoType>>;
 };
 
-function DappPeriodOverlay(props: DappPeriodOverlayProps) {
+type RememberMeOverlayProps = {
+  value: SessionExpiredPlan;
+  onCancel?: () => void;
+  onConfirm: (value: SessionExpiredPlan) => void;
+};
+
+function RememberMeOverlay(props: RememberMeOverlayProps) {
   const { value, onConfirm } = props;
   const { t } = useLanguage();
 
@@ -65,12 +65,45 @@ function DappPeriodOverlay(props: DappPeriodOverlayProps) {
   );
 }
 
-export const showDappPeriodOverlay = (props: RememberMeProps) => {
+function PeriodOverlay(props: RememberMeOverlayProps) {
+  const { value, onConfirm } = props;
+
+  const onPressItem = useCallback(
+    (v: SessionExpiredPlan) => {
+      if (String(value) === String(v)) return;
+      onConfirm(v);
+      OverlayModal.hide();
+    },
+    [onConfirm, value],
+  );
+
+  return (
+    <ModalBody modalBodyType="bottom" title={'Select Period'}>
+      <ScrollView style={Overlay.wrapStyle}>
+        {SessionKeyArray.map(ele => (
+          <TouchableOpacity key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
+            <TextL>{ele.label}</TextL>
+            {value === ele.value && <Svg icon="selected" size={pTd(24)} />}
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </ModalBody>
+  );
+}
+
+export const showPeriodOverlay = (props: RememberMeOverlayProps) => {
+  Keyboard.dismiss();
+  OverlayModal.show(<PeriodOverlay {...props} />, {
+    position: 'bottom',
+  });
+};
+
+const showRememberMeOverlay = (props: RememberMeProps) => {
   const { rememberInfo, setRememberMeInfo } = props;
 
   Keyboard.dismiss();
   OverlayModal.show(
-    <DappPeriodOverlay
+    <RememberMeOverlay
       value={rememberInfo?.value}
       onConfirm={value => {
         setRememberMeInfo(pre => ({ ...pre, value }));
@@ -84,8 +117,8 @@ export const showDappPeriodOverlay = (props: RememberMeProps) => {
 
 export const RememberMe = (props: RememberMeProps) => {
   const { dappInfo, rememberInfo, setRememberMeInfo } = props;
-  const checkOrigin = useCheckSiteIsInBlackList();
-  if (checkOrigin(dappInfo.origin)) return null;
+  const checkOriginInBlackList = useCheckSiteIsInBlackList();
+  if (checkOriginInBlackList(dappInfo.origin)) return null;
 
   return (
     <View style={styles.rememberWrap}>
@@ -99,13 +132,18 @@ export const RememberMe = (props: RememberMeProps) => {
       <TextM numberOfLines={2} style={styles.text}>
         <View>
           <TextM>Remember me to skip authentication for </TextM>
-          <TouchableOpacity style={(GStyles.flexRow, styles.label)} onPress={() => showDappPeriodOverlay(props)}>
+          <TouchableOpacity style={(GStyles.flexRow, styles.label)} onPress={() => showRememberMeOverlay(props)}>
             <TextM style={FontStyles.font4}>{SessionKeyMap[rememberInfo.value || SessionExpiredPlan.hour1]}</TextM>
           </TouchableOpacity>
         </View>
       </TextM>
     </View>
   );
+};
+
+export default {
+  RememberMe,
+  showPeriodOverlay,
 };
 
 const styles = StyleSheet.create({

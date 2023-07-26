@@ -1,28 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PageContainer from 'components/PageContainer';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextL, TextM, TextS } from 'components/CommonText';
-
-import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
-
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
-import { useAppDispatch } from 'store/hooks';
-import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
-import Touchable from 'components/Touchable';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import fonts from 'assets/theme/fonts';
 import NoData from 'components/NoData';
-import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
-import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
-import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import navigationService from 'utils/navigationService';
+import DappListItem from './components/DappListItem';
 
 const DappList: React.FC = () => {
-  const currentNetwork = useCurrentNetworkInfo();
-
-  const dispatch = useAppDispatch();
   const dappList = useCurrentDappList();
 
   return (
@@ -32,19 +19,12 @@ const DappList: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: false }}>
       {dappList?.map(item => (
-        <View key={item.name} style={itemStyles.itemWrap}>
-          <DiscoverWebsiteImage size={pTd(32)} imageUrl={getFaviconUrl(item.origin)} style={itemStyles.itemImage} />
-          <View style={itemStyles.itemCenter}>
-            <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.name || getHost(item.origin)} url={item.origin} />
-            <TextM numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7, itemStyles.itemDappUrl]}>
-              {item?.origin || getHost(item.origin)}
-            </TextM>
-          </View>
-          <Touchable
-            onPress={() => dispatch(removeDapp({ networkType: currentNetwork.networkType, origin: item.origin }))}>
-            <TextS style={[itemStyles.itemRight, fonts.mediumFont]}>Disconnect</TextS>
-          </Touchable>
-        </View>
+        <DappListItem
+          isShowArrow
+          key={item.origin}
+          item={item}
+          onPress={() => navigationService.navigate('DappDetail', { origin: item.origin })}
+        />
       ))}
       {(dappList ?? []).length === 0 && <NoData style={pageStyles.noData} message="No Connected Sites" />}
     </PageContainer>
@@ -62,43 +42,6 @@ const pageStyles = StyleSheet.create({
   },
   noData: {
     backgroundColor: defaultColors.bg4,
-  },
-});
-
-const itemStyles = StyleSheet.create({
-  itemWrap: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    ...GStyles.paddingArg(13, 16),
-    backgroundColor: defaultColors.bg1,
-    marginBottom: pTd(24),
-    borderRadius: pTd(6),
-  },
-  itemImage: {
-    marginRight: pTd(16),
-    borderRadius: pTd(16),
-  },
-  itemCenter: {
-    flex: 1,
-    paddingRight: pTd(16),
-  },
-  itemDappTitle: {
-    marginBottom: pTd(1),
-  },
-  itemDappUrl: {
-    marginTop: pTd(1),
-  },
-  itemRight: {
-    width: pTd(85),
-    height: pTd(24),
-    borderWidth: pTd(1),
-    borderColor: defaultColors.font12,
-    color: defaultColors.font12,
-    textAlign: 'center',
-    lineHeight: pTd(22),
-    borderRadius: pTd(6),
   },
 });
 

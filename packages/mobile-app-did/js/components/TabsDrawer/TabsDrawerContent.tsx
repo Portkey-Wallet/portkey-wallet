@@ -75,7 +75,7 @@ const TabsDrawerContent: React.FC = () => {
     if (activeTabId)
       return (
         <View style={rightDomStyle.iconGroupWrap}>
-          <TouchableOpacity style={rightDomStyle.iconWrap} onPress={() => showWalletInfo()}>
+          <TouchableOpacity style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
             <Svg icon="wallet-white" size={20} />
           </TouchableOpacity>
           <TouchableOpacity

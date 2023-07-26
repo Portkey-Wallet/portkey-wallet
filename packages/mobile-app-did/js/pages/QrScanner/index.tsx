@@ -49,12 +49,12 @@ const QrScanner: React.FC<QrScannerProps> = () => {
       if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
 
       try {
-        const str = prefixUrlWithProtocol(data.replace(/("|'|\s)/g, ''));
+        const str = data.replace(/("|'|\s)/g, '');
         if (checkIsUrl(str)) {
           jumpToWebview({
             item: {
-              name: str,
-              url: str,
+              name: prefixUrlWithProtocol(str),
+              url: prefixUrlWithProtocol(str),
             },
           });
           return navigationService.goBack();
@@ -86,6 +86,8 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
     if (result && result?.uri) {
       const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);
+
+      console.log('qrResult', scanResult[0]?.data, result);
 
       if (scanResult[0]?.data) handleBarCodeScanned({ data: scanResult[0]?.data || '' });
     }

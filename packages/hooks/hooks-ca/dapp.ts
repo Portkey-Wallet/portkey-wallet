@@ -18,6 +18,17 @@ export const useCurrentDappList = () => {
   }, [currentNetwork, dappMap]);
 };
 
+export const useIsInCurrentDappList = () => {
+  const list = useCurrentDappList();
+
+  return useCallback(
+    (origin: string) => {
+      return list?.some(ele => ele.origin === origin.trim());
+    },
+    [list],
+  );
+};
+
 export const useCurrentDappInfo = (origin: string) => {
   const list = useCurrentDappList();
   return useMemo(() => list?.find(item => item.origin === origin), [list, origin]);

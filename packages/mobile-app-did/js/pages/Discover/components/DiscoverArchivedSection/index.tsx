@@ -6,7 +6,6 @@ import { useBookmarkList, useDiscoverJumpWithNetWork, useRecordsList } from 'hoo
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TabView } from '@rneui/base';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import navigationService from 'utils/navigationService';
@@ -77,22 +76,22 @@ export function DiscoverArchivedSection() {
             <TextM style={index === ArchivedTabEnum.History ? FontStyles.weight500 : FontStyles.font3}>Records</TextM>
           </TouchableOpacity>
         </View>
-        <TextS style={FontStyles.font4} onPress={onSeeAllPress}>
-          See All
-        </TextS>
+        <TouchableOpacity onPress={onSeeAllPress}>
+          <TextS style={FontStyles.font4}>See All</TextS>
+        </TouchableOpacity>
       </View>
       <View style={styles.tabViewWrap}>
-        <TabView value={index} disableTransition disableSwipe>
-          <TabView.Item style={GStyles.width100}>
+        {index === ArchivedTabEnum.Bookmarks && (
+          <>
             {bookmarkList?.length === 0 ? (
-              <NoDiscoverData type="noBookmarks" />
+              <NoDiscoverData type="noBookmarks" iconStyle={styles.noData} />
             ) : (
               <View style={styles.tabListWrap}>
                 {bookmarkList.map((item, idx) => (
                   <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
-                      <TextS style={GStyles.textAlignCenter} numberOfLines={2}>
+                      <TextS style={[styles.websiteName]} numberOfLines={2}>
                         {item?.name || item?.url}
                       </TextS>
                     </View>
@@ -100,17 +99,19 @@ export function DiscoverArchivedSection() {
                 ))}
               </View>
             )}
-          </TabView.Item>
-          <TabView.Item style={GStyles.width100}>
+          </>
+        )}
+        {index === ArchivedTabEnum.History && (
+          <>
             {recordsList?.length === 0 ? (
-              <NoDiscoverData type="noRecords" />
+              <NoDiscoverData type="noRecords" style={styles.noData} />
             ) : (
               <View style={styles.tabListWrap}>
                 {recordsList.map((item, idx) => (
                   <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
-                      <TextS style={GStyles.textAlignCenter} numberOfLines={2}>
+                      <TextS style={[styles.websiteName]} numberOfLines={2}>
                         {item?.name || item?.url}
                       </TextS>
                     </View>
@@ -118,8 +119,8 @@ export function DiscoverArchivedSection() {
                 ))}
               </View>
             )}
-          </TabView.Item>
-        </TabView>
+          </>
+        )}
       </View>
     </View>
   );
@@ -127,7 +128,6 @@ export function DiscoverArchivedSection() {
 
 const styles = StyleSheet.create({
   wrap: {
-    height: pTd(144),
     marginBottom: pTd(16),
     ...GStyles.paddingArg(0, 20),
   },
@@ -145,25 +145,29 @@ const styles = StyleSheet.create({
     width: '100%',
     overflow: 'hidden',
     borderRadius: pTd(6),
+    paddingVertical: pTd(20),
+    paddingHorizontal: pTd(12),
+    backgroundColor: defaultColors.bg1,
     flex: 1,
   },
   tabListWrap: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: defaultColors.bg1,
-    paddingHorizontal: pTd(12),
     flexDirection: 'row',
     overflow: 'hidden',
   },
   tabItemWrap: {
     width: '25%',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   tabItemContent: {
     alignItems: 'center',
-    maxWidth: pTd(72),
-    height: pTd(76),
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+  },
+  websiteName: {
+    marginTop: pTd(4),
+    textAlign: 'center',
+  },
+  noData: {
+    height: pTd(60),
   },
 });

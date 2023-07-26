@@ -21,7 +21,7 @@ import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
-import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
 import { hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
@@ -245,8 +245,8 @@ export default class DappMobileOperator extends Operator {
   }) {
     const validSession = await this.verifySessionInfo();
 
-    // valid session
-    if (validSession) return callBack(eventName, params);
+    // valid session && is remember me actions
+    if (validSession && REMEMBER_ME_ACTION_WHITELIST.includes(method)) return callBack(eventName, params);
 
     // user confirm
     const response = await this.userConfirmation({ eventName, method, params });

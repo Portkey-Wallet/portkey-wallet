@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -16,12 +16,26 @@ import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { useAppDispatch } from 'store/hooks';
+import { useIsInCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 
-const MyWalletModal = () => {
+type MyWalletModalType = {
+  tabInfo: ITabItem;
+};
+
+const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const { t } = useLanguage();
+  const checkDapp = useIsInCurrentDappList();
+  const dispatch = useAppDispatch();
   const caInfo = useCurrentCaInfo();
   const { walletName, currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
+
+  const [showDisconnect, setShowDisconnect] = useState(false);
 
   const {
     accountToken: { accountTokenList },
@@ -42,6 +56,20 @@ const MyWalletModal = () => {
       .filter(item => !!item);
   }, [accountTokenList, caInfo, defaultToken.symbol]);
 
+  const disconnectDapp = useCallback(() => {
+    try {
+      dispatch(removeDapp({ networkType: currentNetwork, origin: getOrigin(tabInfo.url) }));
+      OverlayModal.hide();
+    } catch (error) {
+      console.log(error);
+    }
+  }, [currentNetwork, dispatch, tabInfo.url]);
+
+  useEffect(() => {
+    const result = checkDapp(getOrigin(tabInfo.url));
+    setShowDisconnect(!!result);
+  }, [checkDapp, tabInfo.url]);
+
   return (
     <ModalBody modalBodyType="bottom" title={t('My Wallet')}>
       <View style={styles.contentWrap}>
@@ -57,7 +85,7 @@ const MyWalletModal = () => {
                 </TextS>
               </View>
               <View>
-                <TextS style={styles.itemBalance}>
+                <TextS>
                   {`${formatAmountShow(divDecimals(item?.balance, item?.decimals))} ${item?.symbol || '0'}`}
                 </TextS>
                 <TextS style={styles.itemChainInfo} />
@@ -66,14 +94,21 @@ const MyWalletModal = () => {
           ))}
         </View>
       </View>
+
+      {showDisconnect && (
+        <View style={[GStyles.center, GStyles.paddingArg(10, 20, 16), styles.buttonContainer]}>
+          <TouchableOpacity style={[GStyles.center, styles.btnWrap]} onPress={disconnectDapp}>
+            <TextL style={[FontStyles.font12, fonts.mediumFont]}>Disconnect</TextL>
+          </TouchableOpacity>
+        </View>
+      )}
     </ModalBody>
   );
 };
 
-export const showWalletInfo = () => {
-  OverlayModal.show(<MyWalletModal />, {
+export const showWalletInfo = (props: MyWalletModalType) => {
+  OverlayModal.show(<MyWalletModal {...props} />, {
     position: 'bottom',
-    containerStyle: { backgroundColor: defaultColors.bg6 },
   });
 };
 
@@ -112,5 +147,13 @@ const styles = StyleSheet.create({
   itemChainInfo: {
     marginTop: pTd(4),
   },
-  itemBalance: {},
+  btnWrap: {
+    height: pTd(48),
+    width: '100%',
+  },
+  buttonContainer: {
+    width: screenWidth,
+    position: 'absolute',
+    bottom: 0,
+  },
 });

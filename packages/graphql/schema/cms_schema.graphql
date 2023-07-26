@@ -31,6 +31,9 @@ type Query {
   officialSocialMedia(filter: officialSocialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [officialSocialMedia!]!
   officialSocialMedia_by_id(id: ID!): officialSocialMedia
   officialSocialMedia_aggregated(groupBy: [String], filter: officialSocialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [officialSocialMedia_aggregated!]!
+  rememberMeBlackListSites(filter: rememberMeBlackListSites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [rememberMeBlackListSites!]!
+  rememberMeBlackListSites_by_id(id: ID!): rememberMeBlackListSites
+  rememberMeBlackListSites_aggregated(groupBy: [String], filter: rememberMeBlackListSites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [rememberMeBlackListSites_aggregated!]!
   socialMedia(filter: socialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [socialMedia!]!
   socialMedia_by_id(id: ID!): socialMedia
   socialMedia_aggregated(groupBy: [String], filter: socialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [socialMedia_aggregated!]!
@@ -634,6 +637,50 @@ type officialSocialMedia_aggregated_fields {
   sort: Float
 }
 
+type rememberMeBlackListSites {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  name: String
+  sort: Int
+  status: String
+  url: String
+  user_created: String
+  user_updated: String
+}
+
+type rememberMeBlackListSites_aggregated {
+  group: JSON
+  countAll: Int
+  count: rememberMeBlackListSites_aggregated_count
+  countDistinct: rememberMeBlackListSites_aggregated_count
+  avg: rememberMeBlackListSites_aggregated_fields
+  sum: rememberMeBlackListSites_aggregated_fields
+  avgDistinct: rememberMeBlackListSites_aggregated_fields
+  sumDistinct: rememberMeBlackListSites_aggregated_fields
+  min: rememberMeBlackListSites_aggregated_fields
+  max: rememberMeBlackListSites_aggregated_fields
+}
+
+type rememberMeBlackListSites_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  name: Int
+  sort: Int
+  status: Int
+  url: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type rememberMeBlackListSites_aggregated_fields {
+  id: Float
+  sort: Float
+}
+
 type socialMedia {
   date_created: Date
   date_created_func: datetime_functions
@@ -1145,6 +1192,22 @@ input officialSocialMedia_filter {
   user_updated: string_filter_operators
   _and: [officialSocialMedia_filter]
   _or: [officialSocialMedia_filter]
+}
+
+input rememberMeBlackListSites_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  name: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  url: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [rememberMeBlackListSites_filter]
+  _or: [rememberMeBlackListSites_filter]
 }
 
 input socialMedia_filter {

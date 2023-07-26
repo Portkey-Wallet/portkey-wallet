@@ -84,7 +84,7 @@ export function DiscoverArchivedSection() {
         {index === ArchivedTabEnum.Bookmarks && (
           <>
             {bookmarkList?.length === 0 ? (
-              <NoDiscoverData type="noBookmarks" iconStyle={styles.noData} />
+              <NoDiscoverData type="noBookmarks" style={styles.noData} />
             ) : (
               <View style={styles.tabListWrap}>
                 {bookmarkList.map((item, idx) => (

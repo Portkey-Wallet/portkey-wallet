@@ -367,7 +367,7 @@ export default class DappMobileOperator extends Operator {
         signature: sessionInfo.signature,
       });
       if (!valid) return valid;
-      return hasSessionInfoExpired(sessionInfo);
+      return !hasSessionInfoExpired(sessionInfo);
     } catch (error) {
       return false;
     }

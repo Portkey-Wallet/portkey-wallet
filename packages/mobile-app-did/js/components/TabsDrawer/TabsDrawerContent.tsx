@@ -216,19 +216,20 @@ const TabsDrawerContent: React.FC = () => {
               </View>
             </ScrollView>
             <View style={handleButtonStyle.container}>
-              <TextM
-                style={[handleButtonStyle.handleItem, FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}
-                onPress={closeAll}>
-                {t('Close All')}
-              </TextM>
+              <TouchableOpacity style={handleButtonStyle.handleItem} onPress={closeAll}>
+                <TextM style={[FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}>
+                  {t('Close All')}
+                </TextM>
+              </TouchableOpacity>
+
               <TouchableOpacity
                 style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
                 onPress={() => dispatch(changeDrawerOpenStatus(false))}>
                 <Svg icon="add-blue" size={pTd(28)} />
               </TouchableOpacity>
-              <TextM style={[handleButtonStyle.handleItem, handleButtonStyle.done, FontStyles.font4]} onPress={onDone}>
-                {t('Done')}
-              </TextM>
+              <TouchableOpacity style={handleButtonStyle.handleItem} onPress={onDone}>
+                <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
+              </TouchableOpacity>
             </View>
           </>
         )}

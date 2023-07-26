@@ -25,7 +25,7 @@ import { SessionKeyMap } from '@portkey-wallet/constants/constants-ca/dapp';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
-import { formatTimeToStr } from '@portkey-wallet/utils/session';
+import { formatTimeToStr, hasSessionInfoExpired } from '@portkey-wallet/utils/session';
 import CommonToast from 'components/CommonToast';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -43,16 +43,20 @@ const DappDetail: React.FC = () => {
   const { origin } = useRouterParams<RouterParams>();
   const dappInfo = useCurrentDappInfo(origin);
   const { sessionInfo } = dappInfo || {};
-
-  console.log('dappInfo', dappInfo?.sessionInfo?.expiredPlan);
   const dispatch = useAppCommonDispatch();
   const { currentNetwork } = useWallet();
   const updateSessionInfo = useUpdateSessionInfo();
   const discoverJump = useDiscoverJumpWithNetWork();
 
+  const isExpired = useMemo(() => {
+    if (!sessionInfo) return false;
+    return hasSessionInfoExpired(sessionInfo);
+  }, [sessionInfo]);
+
   const isRememberMe = useMemo(() => {
-    return !!sessionInfo?.expiredPlan;
-  }, [sessionInfo?.expiredPlan]);
+    if (!!sessionInfo?.expiredPlan && !isExpired) return true;
+    return false;
+  }, [isExpired, sessionInfo]);
 
   const isInBlackList = useMemo(
     () => checkOriginInBlackList(dappInfo?.origin || ''),
@@ -153,7 +157,7 @@ const DappDetail: React.FC = () => {
         </View>
       )}
 
-      {!isInBlackList && isRememberMe && (
+      {!isExpired && !isInBlackList && isRememberMe && (
         <View
           style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section1]}>
           <TextM>{t('Session key expiration')}</TextM>
@@ -164,7 +168,7 @@ const DappDetail: React.FC = () => {
         </View>
       )}
 
-      {!isInBlackList && isRememberMe && (
+      {!isExpired && !isInBlackList && isRememberMe && (
         <View
           style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section1]}>
           <TextM>{t('Expiration time')}</TextM>

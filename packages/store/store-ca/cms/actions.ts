@@ -120,8 +120,6 @@ export const getRememberMeBlackListAsync = createAsyncThunk<
     },
   });
 
-  console.log('getRememberMeBlackListSites result', result);
-
   if (result.data.rememberMeBlackListSites) {
     return {
       rememberMeBlackListMap: {

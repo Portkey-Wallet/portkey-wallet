@@ -4,6 +4,7 @@ import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { ChainId, NetworkType } from '../index';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { CAInfo } from './wallet';
+import { SessionInfo } from '../session';
 export interface IDappManager<T = CACommonState> {
   getState(): Promise<T>;
   isLogged(): Promise<boolean>;
@@ -21,6 +22,7 @@ export interface IDappManager<T = CACommonState> {
   getCaInfo(chainId: ChainId): Promise<CAInfo | undefined>;
   networkType(): Promise<NetworkType>;
   walletName(): Promise<WalletName>;
+  getSessionInfo(origin: string): Promise<SessionInfo | undefined>;
 }
 export interface IDappManagerStore<T = CACommonState> {
   getState(): Promise<T>;

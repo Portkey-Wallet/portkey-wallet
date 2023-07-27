@@ -54,6 +54,9 @@ export type Query = {
   officialSocialMedia: Array<OfficialSocialMedia>;
   officialSocialMedia_aggregated: Array<OfficialSocialMedia_Aggregated>;
   officialSocialMedia_by_id?: Maybe<OfficialSocialMedia>;
+  rememberMeBlackListSites: Array<RememberMeBlackListSites>;
+  rememberMeBlackListSites_aggregated: Array<RememberMeBlackListSites_Aggregated>;
+  rememberMeBlackListSites_by_id?: Maybe<RememberMeBlackListSites>;
   socialMedia: Array<SocialMedia>;
   socialMedia_aggregated: Array<SocialMedia_Aggregated>;
   socialMedia_by_id?: Maybe<SocialMedia>;
@@ -298,6 +301,29 @@ export type QueryOfficialSocialMedia_AggregatedArgs = {
 };
 
 export type QueryOfficialSocialMedia_By_IdArgs = {
+  id: Scalars['ID'];
+};
+
+export type QueryRememberMeBlackListSitesArgs = {
+  filter?: InputMaybe<RememberMeBlackListSites_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryRememberMeBlackListSites_AggregatedArgs = {
+  filter?: InputMaybe<RememberMeBlackListSites_Filter>;
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryRememberMeBlackListSites_By_IdArgs = {
   id: Scalars['ID'];
 };
 
@@ -1404,6 +1430,70 @@ export type OfficialSocialMedia_Filter = {
   sort?: InputMaybe<Number_Filter_Operators>;
   status?: InputMaybe<String_Filter_Operators>;
   svg?: InputMaybe<Directus_Files_Filter>;
+  user_created?: InputMaybe<String_Filter_Operators>;
+  user_updated?: InputMaybe<String_Filter_Operators>;
+};
+
+export type RememberMeBlackListSites = {
+  __typename?: 'rememberMeBlackListSites';
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  sort?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
+};
+
+export type RememberMeBlackListSites_Aggregated = {
+  __typename?: 'rememberMeBlackListSites_aggregated';
+  avg?: Maybe<RememberMeBlackListSites_Aggregated_Fields>;
+  avgDistinct?: Maybe<RememberMeBlackListSites_Aggregated_Fields>;
+  count?: Maybe<RememberMeBlackListSites_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<RememberMeBlackListSites_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<RememberMeBlackListSites_Aggregated_Fields>;
+  min?: Maybe<RememberMeBlackListSites_Aggregated_Fields>;
+  sum?: Maybe<RememberMeBlackListSites_Aggregated_Fields>;
+  sumDistinct?: Maybe<RememberMeBlackListSites_Aggregated_Fields>;
+};
+
+export type RememberMeBlackListSites_Aggregated_Count = {
+  __typename?: 'rememberMeBlackListSites_aggregated_count';
+  date_created?: Maybe<Scalars['Int']>;
+  date_updated?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+  name?: Maybe<Scalars['Int']>;
+  sort?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['Int']>;
+  url?: Maybe<Scalars['Int']>;
+  user_created?: Maybe<Scalars['Int']>;
+  user_updated?: Maybe<Scalars['Int']>;
+};
+
+export type RememberMeBlackListSites_Aggregated_Fields = {
+  __typename?: 'rememberMeBlackListSites_aggregated_fields';
+  id?: Maybe<Scalars['Float']>;
+  sort?: Maybe<Scalars['Float']>;
+};
+
+export type RememberMeBlackListSites_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<RememberMeBlackListSites_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<RememberMeBlackListSites_Filter>>>;
+  date_created?: InputMaybe<Date_Filter_Operators>;
+  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  date_updated?: InputMaybe<Date_Filter_Operators>;
+  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  name?: InputMaybe<String_Filter_Operators>;
+  sort?: InputMaybe<Number_Filter_Operators>;
+  status?: InputMaybe<String_Filter_Operators>;
+  url?: InputMaybe<String_Filter_Operators>;
   user_created?: InputMaybe<String_Filter_Operators>;
   user_updated?: InputMaybe<String_Filter_Operators>;
 };

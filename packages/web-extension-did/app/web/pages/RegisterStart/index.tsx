@@ -16,7 +16,7 @@ import { LoginInfo } from 'store/reducers/loginCache/type';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
-import { handleErrorCode, handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { Button, message } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
@@ -143,8 +143,6 @@ export default function RegisterStart() {
     id: '',
     name: '',
     imageUrl: '',
-    endPoints: [],
-    verifierAddresses: [],
   });
   const loginAccountRef = useRef<LoginInfo>();
   const [loginAccount, setLoginAccount] = useState<LoginInfo>();
@@ -166,7 +164,6 @@ export default function RegisterStart() {
     [checkAuth],
   );
 
-  const timer = useRef<NodeJS.Timeout | number>();
   const onSignFinish = useCallback(
     async (data: LoginInfo) => {
       dispatch(setOriginChainId(DefaultChainId));
@@ -175,12 +172,7 @@ export default function RegisterStart() {
 
       setLoading(true, 'Assigning a verifier on-chain…');
 
-      await new Promise((resolve) => {
-        timer.current = setTimeout(() => {
-          clearTimeout(timer.current);
-          resolve('timeout down');
-        }, 2000);
-      });
+      await sleep(2000);
 
       // Get the assigned verifier data from the backend api and guaranteed loading display 2s
       try {

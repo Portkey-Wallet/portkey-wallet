@@ -170,6 +170,7 @@ export const useCheckSiteIsInBlackList = () => {
         return list.indexOf(getOrigin(url)) >= 0;
       } catch (err) {
         console.log(err);
+        return false;
       }
     },
     [list],

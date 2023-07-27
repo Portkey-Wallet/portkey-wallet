@@ -10,11 +10,13 @@ import { useHandleAchSell } from 'pages/Buy/hooks/useHandleAchSell';
 import { useStorage } from 'hooks/useStorage';
 import walletMessage from 'messages/walletMessage';
 import { useEffectOnce } from 'react-use';
+import { getStoreState } from 'store/utils/getStore';
 
 export default function Home() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-
+  const store = getStoreState();
+  console.log('custom', store);
   const onUserClick = useCallback(() => {
     const url = isNotLessThan768 ? `/setting/wallet` : `/setting`;
     navigate(url);

@@ -14,6 +14,7 @@ export const SessionKeyMap = {
 export const SessionKeyArray = Object.entries(SessionKeyMap).map(([k, v]) => ({
   value: k === SessionExpiredPlan.always ? k : Number(k),
   label: v,
+  children: v,
 }));
 
 export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer'];

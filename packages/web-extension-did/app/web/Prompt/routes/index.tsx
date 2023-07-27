@@ -46,8 +46,10 @@ import RecentDetail from 'pages/Send/components/RecentDetail';
 import Permission from 'pages/Permission';
 import ConnectWallet from 'pages/ConnectWallet';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
+import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
 import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
+import DappAutoTx from 'pages/DappAutoTx';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -171,7 +173,10 @@ export const PageRouter = () => {
       path: '/get-signature',
       element: <GetSignature />,
     },
-
+    {
+      path: '/auto-execute-tx',
+      element: <DappAutoTx />,
+    },
     {
       path: '*',
       element: <NotFound />,
@@ -278,6 +283,10 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/connected-sites',
               element: <ConnectedSites />,
             },
+            {
+              path: '/setting/wallet-security/connected-sites/:origin',
+              element: <SiteDetail />,
+            },
           ],
         },
       ],
@@ -375,6 +384,10 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/connected-sites',
       element: <ConnectedSites />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites/:origin',
+      element: <SiteDetail />,
     },
   ];
 

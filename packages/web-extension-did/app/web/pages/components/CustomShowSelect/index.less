@@ -1,6 +1,6 @@
 @import '../../../assets/theme/color.less';
 
-.custom-select {
+.custom-show-select {
   width: 100%;
   &.@{app-prefix}-select-focused:not(.@{app-prefix}-select-disabled).@{app-prefix}-select:not(.@{app-prefix}-select-customize-input)
     .@{app-prefix}-select-selector {
@@ -13,6 +13,17 @@
     height: 48px;
     padding: 0 16px;
     box-shadow: none !important;
+    .custom-value-show {
+      height: 48px;
+      font-size: 14px;
+      line-height: 20px;
+      .custom-label {
+        color: @font-11;
+      }
+      .value-show {
+        color: @font-13;
+      }
+    }
   }
   .@{app-prefix}-select-arrow {
     color: @font-13;

@@ -17,7 +17,7 @@ import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
-import { useBuyButton, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBuyButton, useRememberMeBlackList, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 
@@ -64,5 +64,6 @@ export default function Updater() {
   usePhoneCountryCode(true);
   useSocialMediaList(true);
   useBuyButton(true);
+  useRememberMeBlackList(true);
   return null;
 }

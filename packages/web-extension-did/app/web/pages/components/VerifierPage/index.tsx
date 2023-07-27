@@ -11,7 +11,7 @@ import { verification } from 'utils/api';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCommonState } from 'store/Provider/hooks';
 import { useLocation } from 'react-router';
-import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { CodeVerifyUI } from '@portkey/did-ui-react';
 import { AccountType } from '@portkey/services';
 

@@ -175,26 +175,28 @@ export default function RegisterStart() {
 
       setLoading(true, 'Allocating verifier on-chain...');
 
-      const loadingTimeout = new Promise((resolve) => {
+      await new Promise((resolve) => {
         timer.current = setTimeout(() => {
           clearTimeout(timer.current);
-          setLoading(false);
           resolve('timeout down');
         }, 2000);
       });
 
       // Get the assigned verifier data from the backend api and guaranteed loading display 2s
-      const [verifierReq, _timeout] = await Promise.all([
-        request.verify.getVerifierServer({
+      try {
+        const verifierReq = await request.verify.getVerifierServer({
           params: {
             chainId: DefaultChainId,
           },
-        }),
-        loadingTimeout,
-      ]);
+        });
+        setLoading(false);
 
-      setVerifierItem(verifierReq);
-      confirmRegisterOrLogin(data, verifierReq);
+        setVerifierItem(verifierReq);
+        confirmRegisterOrLogin(data, verifierReq);
+      } catch (error) {
+        message.error(handleErrorMessage(error, 'Get verifier failed'));
+        throw handleErrorMessage(error, 'Get verifier failed');
+      }
     },
     [confirmRegisterOrLogin, dispatch, saveState, setLoading],
   );

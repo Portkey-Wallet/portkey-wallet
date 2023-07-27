@@ -12,6 +12,7 @@ import { AElfWallet } from '@portkey-wallet/types/aelf';
 import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
 import { StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 type RouterParams = {
   oldPin?: string;
@@ -32,13 +33,15 @@ const MessageMap: any = {
   [VerificationType.addManager]: 'After returning, you need to scan the code again to authorize login',
 };
 const RouterMap: any = {
-  [VerificationType.register]: 'SelectVerifier',
+  [VerificationType.register]: 'LoginPortkey',
   [VerificationType.communityRecovery]: 'GuardianApproval',
   [VerificationType.addManager]: 'LoginPortkey',
 };
 export default function SetPin() {
   const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved } = useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
+  const navigation = useNavigation();
+
   useEffectOnce(() => {
     const listener = myEvents.clearSetPin.addListener(() => digitInput.current?.reset());
     return () => listener.remove();
@@ -55,6 +58,16 @@ export default function SetPin() {
             title: 'Yes',
             onPress: () => {
               if (managerInfo.verificationType === VerificationType.addManager) myEvents.clearQRWallet.emit();
+              if (managerInfo.verificationType === VerificationType.register) {
+                const routesArr = navigation.getState().routes;
+                const isSignUpPageExist = routesArr.some(item => item.name === 'SignupPortkey');
+                if (isSignUpPageExist) {
+                  navigationService.navigate('SignupPortkey');
+                } else {
+                  navigationService.navigate('LoginPortkey');
+                }
+                return;
+              }
               navigationService.navigate(RouterMap[managerInfo.verificationType]);
             },
           },
@@ -65,7 +78,7 @@ export default function SetPin() {
       return navigationService.navigate(RouterMap[managerInfo.verificationType]);
 
     navigationService.goBack();
-  }, [managerInfo, oldPin]);
+  }, [managerInfo, navigation, oldPin]);
   return (
     <PageContainer
       scrollViewProps={scrollViewProps}

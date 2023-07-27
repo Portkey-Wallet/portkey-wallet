@@ -605,7 +605,12 @@ const GuardianEdit: React.FC = () => {
           }}
           titleLeftElement={
             selectedVerifier && (
-              <VerifierImage style={pageStyles.verifierImageStyle} size={pTd(30)} uri={selectedVerifier.imageUrl} />
+              <VerifierImage
+                style={pageStyles.verifierImageStyle}
+                size={pTd(30)}
+                label={selectedVerifier.name}
+                uri={selectedVerifier.imageUrl}
+              />
             )
           }
           titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}

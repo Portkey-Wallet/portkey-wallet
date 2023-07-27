@@ -17,7 +17,7 @@ import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
 import { handleErrorCode, handleErrorMessage } from '@portkey-wallet/utils';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
@@ -29,6 +29,11 @@ import CustomModal from 'pages/components/CustomModal';
 import { IconType } from 'types/icon';
 import LoginModal from './components/LoginModal';
 import './index.less';
+import { request } from '@portkey-wallet/api/api-did';
+import useCheckVerifier from 'hooks/useVerifier';
+import CommonModal from 'components/CommonModal';
+import { useTranslation } from 'react-i18next';
+import { VerifierItem } from '@portkey-wallet/types/verifier';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -41,6 +46,7 @@ export default function RegisterStart() {
   const changeNetworkModalText = useChangeNetworkText();
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
+  const { t } = useTranslation();
 
   const networkList = useNetworkList();
 
@@ -123,20 +129,76 @@ export default function RegisterStart() {
 
   const saveState = useCallback(
     (data: LoginInfo) => {
+      // update page data
+      loginAccountRef.current = data;
+      setLoginAccount(data);
+      // update store data
       dispatch(setLoginAccountAction(data));
     },
     [dispatch],
   );
 
+  const [openSendVerifyCode, setOpenSendVerifyCode] = useState<boolean>(false);
+  const [verifierItem, setVerifierItem] = useState<VerifierItem>({
+    id: '',
+    name: '',
+    imageUrl: '',
+    endPoints: [],
+    verifierAddresses: [],
+  });
+  const loginAccountRef = useRef<LoginInfo>();
+  const [loginAccount, setLoginAccount] = useState<LoginInfo>();
+  const [checkAuth, sendVerifyCodeHandler] = useCheckVerifier();
+
+  // According to the login type, execute different verifier judgment logic
+  const confirmRegisterOrLogin = useCallback(
+    async (data: LoginInfo, verifierItem: VerifierItem) => {
+      switch (data?.loginType) {
+        case LoginType.Apple:
+        case LoginType.Google:
+          checkAuth(verifierItem, data);
+          break;
+        default:
+          setOpenSendVerifyCode(true);
+          break;
+      }
+    },
+    [checkAuth],
+  );
+
+  const timer = useRef<NodeJS.Timeout | number>();
   const onSignFinish = useCallback(
-    (data: LoginInfo) => {
+    async (data: LoginInfo) => {
       dispatch(setOriginChainId(DefaultChainId));
       saveState(data);
       dispatch(resetGuardians());
-      navigate('/register/select-verifier');
-      setLoading(false);
+
+      setLoading(true, 'Assigning a verifier on-chain…');
+
+      await new Promise((resolve) => {
+        timer.current = setTimeout(() => {
+          clearTimeout(timer.current);
+          resolve('timeout down');
+        }, 2000);
+      });
+
+      // Get the assigned verifier data from the backend api and guaranteed loading display 2s
+      try {
+        const verifierReq = await request.verify.getVerifierServer({
+          params: {
+            chainId: DefaultChainId,
+          },
+        });
+        setLoading(false);
+
+        setVerifierItem(verifierReq);
+        confirmRegisterOrLogin(data, verifierReq);
+      } catch (error) {
+        message.error(handleErrorMessage(error, 'Get verifier failed'));
+        throw handleErrorMessage(error, 'Get verifier failed');
+      }
     },
-    [dispatch, navigate, saveState, setLoading],
+    [confirmRegisterOrLogin, dispatch, saveState, setLoading],
   );
 
   const onLoginFinish = useCallback(
@@ -269,8 +331,29 @@ export default function RegisterStart() {
           if (!loginInfoRef.current) return setOpen(false);
           if (isHasAccount?.current) return onLoginFinish(loginInfoRef.current);
           onSignFinish(loginInfoRef.current);
+          setOpen(false);
         }}
       />
+      {loginAccount && (
+        <CommonModal
+          className="verify-confirm-modal"
+          closable={false}
+          open={openSendVerifyCode}
+          width={320}
+          onCancel={() => setOpenSendVerifyCode(false)}>
+          <p className="modal-content">
+            {`${t('verificationCodeTip1', { verifier: verifierItem?.name })} `}
+            <span className="bold">{loginAccount.guardianAccount}</span>
+            {` ${t('verificationCodeTip2', { type: LoginType[loginAccount.loginType] })}`}
+          </p>
+          <div className="btn-wrapper">
+            <Button onClick={() => setOpenSendVerifyCode(false)}>{t('Cancel')}</Button>
+            <Button type="primary" onClick={() => sendVerifyCodeHandler(verifierItem, loginAccountRef.current)}>
+              {t('Confirm')}
+            </Button>
+          </div>
+        </CommonModal>
+      )}
     </div>
   );
 }

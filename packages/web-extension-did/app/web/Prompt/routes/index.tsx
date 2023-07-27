@@ -1,5 +1,4 @@
 import RegisterStart from 'pages/RegisterStart';
-import SelectVerifier from 'pages/SelectVerifier';
 import { useRoutes } from 'react-router-dom';
 import ScreenOpeningPage from 'pages/ScreenOpening';
 import VerifierAccount from 'pages/VerifierAccount';
@@ -69,10 +68,6 @@ export const PageRouter = () => {
     {
       path: '/register/start/:type',
       element: <RegisterStart />,
-    },
-    {
-      path: '/register/select-verifier',
-      element: <SelectVerifier />,
     },
     {
       path: '/register/verifier-account',

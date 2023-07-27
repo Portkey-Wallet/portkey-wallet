@@ -57,7 +57,8 @@ export function formatExpiredTime(plan: SessionExpiredPlan) {
   }
 }
 
-export function formatTimeToStr(time: number) {
+export function formatTimeToStr(time?: number): string {
+  if (time === undefined || time === null) return '--';
   return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
 }
 

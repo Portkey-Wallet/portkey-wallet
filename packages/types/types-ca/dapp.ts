@@ -23,6 +23,7 @@ export interface IDappManager<T = CACommonState> {
   networkType(): Promise<NetworkType>;
   walletName(): Promise<WalletName>;
   getSessionInfo(origin: string): Promise<SessionInfo | undefined>;
+  getRememberMeBlackList(): Promise<string[] | undefined>;
 }
 export interface IDappManagerStore<T = CACommonState> {
   getState(): Promise<T>;

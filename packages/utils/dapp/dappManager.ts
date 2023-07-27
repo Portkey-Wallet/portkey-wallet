@@ -118,4 +118,8 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
     const originInfo = await this.getOriginInfo(origin);
     return originInfo?.sessionInfo;
   }
+  async getRememberMeBlackList(): Promise<string[] | undefined> {
+    const [currentNetwork, state] = await Promise.all([this.networkType(), this.getState()]);
+    return state.cms.rememberMeBlackListMap?.[currentNetwork]?.map(({ url }) => url);
+  }
 }

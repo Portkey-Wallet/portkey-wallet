@@ -139,7 +139,7 @@ export default function VerifierPage({
     <CodeVerifyUI
       ref={uiRef}
       className={isNotLessThan768 ? '' : 'popup-page'}
-      verifier={currentGuardian.verifier}
+      verifier={currentGuardian.verifier as any}
       guardianIdentifier={currentGuardian?.guardianAccount || ''}
       isCountdownNow={isInitStatus}
       isLoginGuardian={currentGuardian?.isLoginAccount}

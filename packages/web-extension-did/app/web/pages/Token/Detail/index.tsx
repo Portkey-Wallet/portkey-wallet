@@ -61,7 +61,7 @@ function TokenDetail() {
           <div className="balance">
             <div className="balance-amount">
               <span className="amount">
-                {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals || 8))} {currentToken.symbol}
+                {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals))} {currentToken.symbol}
               </span>
               {isMainNet && (
                 <span className="convert">

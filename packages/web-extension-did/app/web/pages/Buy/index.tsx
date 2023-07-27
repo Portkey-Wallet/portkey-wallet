@@ -25,7 +25,7 @@ import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
@@ -67,6 +67,7 @@ export default function Buy() {
   const checkManagerSyncState = useCheckManagerSyncState();
   useFetchTxFee();
   const { ach: achFee } = useGetTxFee('AELF');
+  const defaultToken = useDefaultToken('AELF');
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(
@@ -118,10 +119,7 @@ export default function Buy() {
 
   const isValidValue = useCallback(
     ({ amount, min, max }: { amount: string; min: string | number; max: string | number }) => {
-      return (
-        ZERO.plus(amount).isGreaterThanOrEqualTo(ZERO.plus(min)) &&
-        ZERO.plus(amount).isLessThanOrEqualTo(ZERO.plus(max))
-      );
+      return ZERO.plus(amount).isGreaterThanOrEqualTo(min) && ZERO.plus(amount).isLessThanOrEqualTo(max);
     },
     [],
   );
@@ -406,13 +404,17 @@ export default function Buy() {
         chainType: currentNetwork.walletType,
         paramsOption: {
           owner: wallet['AELF']?.caAddress || '',
-          symbol: 'ELF',
+          symbol: defaultToken.symbol,
         },
       });
       setLoading(false);
       const balance = result.result.balance;
 
-      if (ZERO.plus(divDecimals(balance, 8)).isLessThanOrEqualTo(ZERO.plus(achFee).plus(valueSaveRef.current.amount))) {
+      if (
+        ZERO.plus(divDecimals(balance, defaultToken.decimals)).isLessThanOrEqualTo(
+          ZERO.plus(achFee).plus(valueSaveRef.current.amount),
+        )
+      ) {
         setInsufficientFundsMsg();
         return;
       }
@@ -437,6 +439,8 @@ export default function Buy() {
     checkManagerSyncState,
     currentChain,
     currentNetwork.walletType,
+    defaultToken.decimals,
+    defaultToken.symbol,
     navigate,
     refreshBuyButton,
     setInsufficientFundsMsg,

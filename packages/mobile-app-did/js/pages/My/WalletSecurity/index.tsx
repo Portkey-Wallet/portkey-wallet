@@ -33,7 +33,7 @@ const WalletSecurity: React.FC = () => {
         title="Connected Sites"
         suffix={dappList?.length ?? 0}
         onPress={() => {
-          navigationService.navigate('ConnectedSites');
+          navigationService.navigate('DappList');
         }}
       />
     </PageContainer>

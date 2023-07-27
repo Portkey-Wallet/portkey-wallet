@@ -46,11 +46,11 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
     ({ nativeEvent }: WebViewNavigationEvent | WebViewErrorEvent) => {
       if (!isDangerousLink(getProtocolAndHost(uri)) && !isApproved.current && autoApprove) {
         isApproved.current = true;
-        webViewRef.current?.autoApprove();
+        if (!isHidden) webViewRef.current?.autoApprove();
       }
       onLoadEnd?.(nativeEvent);
     },
-    [autoApprove, uri, onLoadEnd],
+    [uri, autoApprove, isHidden, onLoadEnd],
   );
   return (
     <View
@@ -61,6 +61,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
       <ProviderWebview
         ref={webViewRef}
         source={{ uri }}
+        isHidden={isHidden}
         onLoadEnd={onPageLoadEnd}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
       />

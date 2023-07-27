@@ -10,3 +10,5 @@ export type ConsoleLike = Pick<Console, 'log' | 'warn' | 'error' | 'debug' | 'in
 export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
 
 export type OpacityType = number; // 0-1
+
+export type Timestamp = number;

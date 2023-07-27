@@ -6,7 +6,6 @@ import { useBookmarkList, useDiscoverJumpWithNetWork, useRecordsList } from 'hoo
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TabView } from '@rneui/base';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import navigationService from 'utils/navigationService';
@@ -85,7 +84,7 @@ export function DiscoverArchivedSection() {
         {index === ArchivedTabEnum.Bookmarks && (
           <>
             {bookmarkList?.length === 0 ? (
-              <NoDiscoverData type="noBookmarks" iconStyle={styles.noData} />
+              <NoDiscoverData type="noBookmarks" style={styles.noData} />
             ) : (
               <View style={styles.tabListWrap}>
                 {bookmarkList.map((item, idx) => (

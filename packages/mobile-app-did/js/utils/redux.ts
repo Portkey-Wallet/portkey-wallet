@@ -49,9 +49,13 @@ export const getManagerAccount = (password: string): AElfWallet | undefined => {
 };
 
 export const isCurrentCaHash = (caHash: string) => {
+  return getCurrentCaHash() === caHash;
+};
+
+export const getCurrentCaHash = () => {
   const wallet = getWallet();
   const { walletInfo, currentNetwork } = wallet || {};
   const caInfo = walletInfo?.caInfo?.[currentNetwork];
   const originChainId = wallet.originChainId || caInfo?.originChainId;
-  return caInfo?.[originChainId || DefaultChainId]?.caHash === caHash;
+  return caInfo?.[originChainId || DefaultChainId]?.caHash;
 };

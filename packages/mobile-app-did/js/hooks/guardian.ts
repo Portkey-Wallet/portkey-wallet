@@ -76,10 +76,7 @@ export const useGetVerifierServers = () => {
       const caContract = await getCurrentCAViewContract(chainInfo);
       const res = await caContract?.callViewMethod('GetVerifierServers', '');
       if (res && !res.error) {
-        const verifierList: VerifierItem[] = res.data.verifierServers.map((item: VerifierItem) => ({
-          ...item,
-          url: item.endPoints[0],
-        }));
+        const verifierList: VerifierItem[] = res.data.verifierServers;
         dispatch(setVerifierListAction(verifierList));
         return verifierList;
       } else {

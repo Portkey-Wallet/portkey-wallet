@@ -171,7 +171,7 @@ export default function SendTransactions() {
 
   const renderTransfer = useMemo(() => {
     const { symbol, amount } = txParams.paramsOption || {};
-    const decimals = symbol === defaultToken.symbol ? defaultToken.symbol : tokenDecimals;
+    const decimals = symbol === defaultToken.symbol ? defaultToken.decimals : tokenDecimals;
 
     return (
       <div className="detail">

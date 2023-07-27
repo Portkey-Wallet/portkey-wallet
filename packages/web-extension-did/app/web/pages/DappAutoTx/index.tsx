@@ -12,6 +12,7 @@ import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
 import { Loading } from '@portkey/did-ui-react';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
+import { apis } from 'utils/BrowserApis';
 import './index.less';
 
 export default function DappAutoTx() {
@@ -21,14 +22,21 @@ export default function DappAutoTx() {
   const wallet = useCurrentWalletInfo();
   const isCAContract = useMemo(() => chainInfo?.caContractAddress === payload?.contractAddress, [chainInfo, payload]);
   const handleTransaction = useCallback(async () => {
+    const curWindow = await apis.windows.getCurrent();
     try {
       if (!chainInfo?.endPoint || !wallet?.caHash) {
-        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' } });
+        closePrompt({
+          ...errorHandler(400001),
+          data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id', windowId: curWindow.id },
+        });
         return;
       }
 
       if (chainInfo?.endPoint !== payload?.rpcUrl) {
-        closePrompt({ ...errorHandler(400001), data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' } });
+        closePrompt({
+          ...errorHandler(400001),
+          data: { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl', windowId: curWindow.id },
+        });
         return;
       }
 
@@ -43,6 +51,7 @@ export default function DappAutoTx() {
         closePrompt({
           ...errorHandler(400001),
           data: { code: ResponseCode.ERROR_IN_PARAMS },
+          windowId: curWindow.id,
         });
         return;
       }
@@ -73,12 +82,14 @@ export default function DappAutoTx() {
       closePrompt({
         ...errorHandler(0),
         data: result.result,
+        windowId: curWindow.id,
       });
     } catch (error) {
       console.error(error, 'error===detail');
       closePrompt({
         ...errorHandler(400001),
         data: { code: ResponseCode.ERROR_IN_PARAMS, msg: error },
+        windowId: curWindow.id,
       });
     }
   }, [

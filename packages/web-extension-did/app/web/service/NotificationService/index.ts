@@ -102,7 +102,7 @@ export default class NotificationService {
       console.log('popupWindow', popupWindow, promptConfig);
 
       // Firefox currently ignores left/top for create, but it works for update
-      if (popupWindow.left !== left && popupWindow.state !== 'fullscreen' && popupWindow.state !== 'minimized') {
+      if (popupWindow.left !== left && popupWindow.state !== 'fullscreen' && config.state !== 'minimized') {
         if (!popupWindow.id) return;
         await this.platform.updateWindowPosition(popupWindow.id, left, top);
       }

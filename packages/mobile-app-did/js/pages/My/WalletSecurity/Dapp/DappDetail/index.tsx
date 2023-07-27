@@ -140,7 +140,7 @@ const DappDetail: React.FC = () => {
       />
       <View style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section1]}>
         <TextM>{t('Connected time')}</TextM>
-        <TextM>{formatTimeToStr(dappInfo?.connectedTime || 0) || '--'}</TextM>
+        <TextM>{dappInfo?.connectedTime ? formatTimeToStr(dappInfo?.connectedTime) : '--'}</TextM>
       </View>
 
       {!isInBlackList && (

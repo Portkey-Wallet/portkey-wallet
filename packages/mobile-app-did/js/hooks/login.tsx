@@ -1,5 +1,6 @@
 import {
   CurrentWalletType,
+  useCurrentWalletInfo,
   useOriginChainId,
   useOtherNetworkLogged,
   useWallet,
@@ -13,12 +14,18 @@ import {
   setOriginChainId,
 } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { CAInfo, LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { AuthenticationInfo, VerificationType, VerifierInfo } from '@portkey-wallet/types/verifier';
+import {
+  AuthenticationInfo,
+  OperationTypeEnum,
+  VerificationType,
+  VerifierInfo,
+  VerifierItem,
+} from '@portkey-wallet/types/verifier';
 import { handleErrorCode, sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
 import AElf from 'aelf-sdk';
 import { request } from 'api';
-import { useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import useBiometricsReady from './useBiometrics';
 import navigationService from 'utils/navigationService';
@@ -42,6 +49,12 @@ import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { ChainId } from '@portkey-wallet/types';
 import ActionSheet from 'components/ActionSheet';
 import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { request as globalRequest } from '@portkey-wallet/api/api-did';
+import { useVerifyToken } from './authentication';
+import { verification } from 'utils/api';
+import { Text } from 'react-native';
+import { TextL } from 'components/CommonText';
+import fonts from 'assets/theme/fonts';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -241,29 +254,167 @@ export function useGoGuardianApproval(isLogin?: boolean) {
   );
 }
 
+type LoginConfirmParams = {
+  showLoginAccount: string;
+  loginAccount: string;
+  loginType: LoginType;
+  authenticationInfo?: AuthenticationInfo;
+};
+
+type LoginAuthParams = LoginConfirmParams & {
+  selectedVerifier: VerifierItem;
+  chainId: ChainId;
+};
+
+const ALLOCATE_SLEEP_TIME = 2 * 1000;
 export function useGoSelectVerifier(isLogin?: boolean) {
   const dispatch = useAppDispatch();
-  return useCallback(
-    ({
-      showLoginAccount,
-      loginAccount,
-      loginType,
-      authenticationInfo,
-    }: {
-      showLoginAccount: string;
-      loginAccount: string;
-      loginType: LoginType;
-      authenticationInfo?: AuthenticationInfo;
-    }) => {
-      const onConfirm = () => {
-        dispatch(setOriginChainId(DefaultChainId));
-        navigationService.navigate('SelectVerifier', {
-          showLoginAccount,
-          loginAccount,
-          loginType,
-          authenticationInfo,
+  const pin = usePin();
+  const { address } = useCurrentWalletInfo();
+  const verifyToken = useVerifyToken();
+  const onRequestOrSetPin = useOnRequestOrSetPin();
+
+  const onConfirmAuth = useCallback(
+    async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
+      const isRequestResult = !!(pin && address);
+
+      const loadingKey = Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
+
+      try {
+        const rst = await verifyToken(loginType, {
+          accessToken: authenticationInfo?.[loginAccount || ''],
+          id: loginAccount,
+          verifierId: selectedVerifier?.id,
+          chainId,
+          operationType: OperationTypeEnum.register,
         });
-      };
+        onRequestOrSetPin({
+          showLoading: !isRequestResult,
+          managerInfo: {
+            verificationType: VerificationType.register,
+            loginAccount: loginAccount,
+            type: loginType,
+          },
+          verifierInfo: { ...rst, verifierId: selectedVerifier?.id },
+        });
+      } catch (error) {
+        Loading.hide(loadingKey);
+        CommonToast.failError(error);
+      }
+      !isRequestResult && Loading.hide(loadingKey);
+    },
+    [address, onRequestOrSetPin, pin, verifyToken],
+  );
+
+  const onDefaultConfirm = useCallback(
+    async ({ loginAccount, loginType, selectedVerifier, chainId }: LoginAuthParams) => {
+      const loadingKey = Loading.show();
+      try {
+        const requestCodeResult = await verification.sendVerificationCode({
+          params: {
+            type: LoginType[loginType],
+            guardianIdentifier: loginAccount,
+            verifierId: selectedVerifier?.id,
+            chainId,
+            operationType: OperationTypeEnum.register,
+          },
+        });
+        if (requestCodeResult.verifierSessionId) {
+          navigationService.navigate('VerifierDetails', {
+            requestCodeResult,
+            verificationType: VerificationType.register,
+            guardianItem: {
+              isLoginAccount: true,
+              verifier: selectedVerifier,
+              guardianAccount: loginAccount,
+              guardianType: loginType,
+            },
+          });
+        } else {
+          throw new Error('send fail');
+        }
+      } catch (error) {
+        CommonToast.failError(error);
+      }
+      Loading.hide(loadingKey);
+    },
+    [],
+  );
+
+  const onConfirm = useCallback(
+    async (confirmParams: LoginConfirmParams) => {
+      const { loginType } = confirmParams;
+      dispatch(setOriginChainId(DefaultChainId));
+
+      const loadingKey = Loading.show({
+        text: 'Assigning a verifier on-chain...',
+      });
+      try {
+        await sleep(ALLOCATE_SLEEP_TIME);
+        const result = await globalRequest.verify.getVerifierServer({
+          params: {
+            chainId: DefaultChainId,
+          },
+        });
+        Loading.hide(loadingKey);
+
+        const allotVerifier: VerifierItem = result;
+        if (!allotVerifier || allotVerifier.id === undefined) {
+          throw new Error('No verifier found');
+        }
+        switch (loginType) {
+          case LoginType.Apple:
+          case LoginType.Google:
+            onConfirmAuth({
+              ...confirmParams,
+              selectedVerifier: allotVerifier,
+              chainId: DefaultChainId,
+            });
+            break;
+          default: {
+            ActionSheet.alert({
+              title2: (
+                <Text>
+                  <TextL>{`${allotVerifier?.name} will send a verification code to `}</TextL>
+                  <TextL style={fonts.mediumFont}>{confirmParams.showLoginAccount || ''}</TextL>
+                  <TextL>{` to verify your ${
+                    loginType === LoginType.Phone ? 'phone number' : 'email address'
+                  }.`}</TextL>
+                </Text>
+              ),
+              buttons: [
+                {
+                  title: 'Cancel',
+                  // type: 'solid',
+                  type: 'outline',
+                },
+                {
+                  title: 'Confirm',
+                  onPress: () => {
+                    onDefaultConfirm({
+                      ...confirmParams,
+                      selectedVerifier: allotVerifier,
+                      chainId: DefaultChainId,
+                    });
+                  },
+                },
+              ],
+            });
+            break;
+          }
+        }
+      } catch (error) {
+        Loading.hide(loadingKey);
+        CommonToast.failError(error);
+      }
+    },
+    [dispatch, onConfirmAuth, onDefaultConfirm],
+  );
+  const onConfirmRef = useRef(onConfirm);
+  onConfirmRef.current = onConfirm;
+
+  return useCallback(
+    async (params: LoginConfirmParams) => {
       if (isLogin) {
         ActionSheet.alert({
           title: 'Continue with this account?',
@@ -272,15 +423,15 @@ export function useGoSelectVerifier(isLogin?: boolean) {
             { title: 'Cancel', type: 'outline' },
             {
               title: 'Confirm',
-              onPress: () => onConfirm(),
+              onPress: () => onConfirmRef.current(params),
             },
           ],
         });
       } else {
-        onConfirm();
+        await onConfirmRef.current(params);
       }
     },
-    [dispatch, isLogin],
+    [isLogin],
   );
 }
 
@@ -315,7 +466,7 @@ export function useOnLogin(isLogin?: boolean) {
             authenticationInfo,
           });
         } else {
-          goSelectVerifier({
+          await goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
             loginAccount,
             loginType,
@@ -324,7 +475,7 @@ export function useOnLogin(isLogin?: boolean) {
         }
       } catch (error) {
         if (handleErrorCode(error) === '3002') {
-          goSelectVerifier({
+          await goSelectVerifier({
             showLoginAccount: showLoginAccount || loginAccount,
             loginAccount,
             loginType,

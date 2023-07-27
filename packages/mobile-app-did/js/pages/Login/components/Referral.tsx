@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
@@ -44,9 +44,13 @@ export default function Referral({
   const { googleSign } = useGoogleAuthentication();
 
   const onLogin = useOnLogin(type === PageType.login);
+
+  const isLoginRef = useRef(false);
   const onAppleSign = useCallback(async () => {
+    if (isLoginRef.current) return;
+    isLoginRef.current = true;
+    const loadingKey = Loading.show();
     try {
-      Loading.show();
       const userInfo = await appleSign();
       await onLogin({
         loginAccount: userInfo.user.id,
@@ -56,11 +60,15 @@ export default function Referral({
     } catch (error) {
       CommonToast.failError(error);
     }
-    Loading.hide();
+    Loading.hide(loadingKey);
+    isLoginRef.current = false;
   }, [appleSign, onLogin]);
   const onGoogleSign = useCallback(async () => {
+    if (isLoginRef.current) return;
+    isLoginRef.current = true;
+
+    const loadingKey = Loading.show();
     try {
-      Loading.show();
       const userInfo = await googleSign();
       await onLogin({
         loginAccount: userInfo.user.id,
@@ -70,7 +78,8 @@ export default function Referral({
     } catch (error) {
       CommonToast.failError(error);
     }
-    Loading.hide();
+    Loading.hide(loadingKey);
+    isLoginRef.current = false;
   }, [googleSign, onLogin]);
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>

@@ -10,5 +10,5 @@ export default {
     config: { method: 'GET' },
   },
   checkGoogleRecaptcha: '/api/app/account/isGoogleRecaptchaOpen',
-  getVerifierServer: 'api/app/account/getVerifierServer',
+  getVerifierServer: '/api/app/account/getVerifierServer',
 } as const;

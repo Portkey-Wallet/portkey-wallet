@@ -41,17 +41,22 @@ export default function Email({
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const onLogin = useOnLogin(type === PageType.login);
+
+  const isLoginRef = useRef(false);
   const onPageLogin = useCallback(async () => {
-    const message = checkEmail(loginAccount);
+    if (isLoginRef.current) return;
+    isLoginRef.current = true;
+    const message = checkEmail(loginAccount) || undefined;
     setErrorMessage(message);
     if (message) return;
-    Loading.show();
+    const loadingKey = Loading.show();
     try {
       await onLogin({ loginAccount: loginAccount as string });
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));
     }
-    Loading.hide();
+    Loading.hide(loadingKey);
+    isLoginRef.current = false;
   }, [loginAccount, onLogin]);
 
   useEffectOnce(() => {

@@ -31,7 +31,7 @@ function LoadingBody({ text }: { text?: string; position?: LoadingPositionType; 
 }
 
 export default class Loading extends React.Component {
-  static show(options?: ShowOptionsType) {
+  static show(options?: ShowOptionsType): number {
     const { text = 'Loading...', iconType = 'loading', isMaskTransparent = true, overlayProps = {} } = options || {};
     Keyboard.dismiss();
     Loading.hide();
@@ -45,7 +45,9 @@ export default class Loading extends React.Component {
         <LoadingBody text={text} iconType={iconType} />
       </Overlay.PopView>
     );
-    elements.push(Overlay.show(overlayView));
+    const key = Overlay.show(overlayView);
+    elements.push(key);
+    return key;
     // timer && clearBackgroundTimeout(timer);
     // timer = setBackgroundTimeout(() => {
     //   Loading.hide();
@@ -57,12 +59,18 @@ export default class Loading extends React.Component {
     Loading.show(options);
   }
 
-  static hide() {
+  static hide(key?: number) {
     timer && clearTimeout(timer);
     timer = null;
     elements = elements.filter(item => item); // Discard invalid data
-    const topItem = elements.pop();
-    Overlay.hide(topItem);
+    let keyItem: number | undefined;
+    if (key !== undefined) {
+      keyItem = elements.find(item => item === key);
+      elements = elements.filter(item => item !== key);
+    } else {
+      keyItem = elements.pop();
+    }
+    keyItem !== undefined && Overlay.hide(keyItem);
   }
 
   static destroy() {

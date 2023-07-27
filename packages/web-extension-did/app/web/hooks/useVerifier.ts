@@ -19,8 +19,8 @@ import { LoginInfo } from 'store/reducers/loginCache/type';
 /**
  * Provides two verification processes
  * @returns [checkAuth, sendVerifyCodeHandler]
- * @desc checkAuth: for social login
- * @desc sendVerifyCodeHandler: for Ordinary email address and mobile phone number
+ *   checkAuth: for social login
+ *   sendVerifyCodeHandler: for Ordinary email address and mobile phone number
  */
 const useCheckVerifier = () => {
   const { setLoading } = useLoading();

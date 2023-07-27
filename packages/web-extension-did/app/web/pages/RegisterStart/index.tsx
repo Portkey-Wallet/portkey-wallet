@@ -173,7 +173,7 @@ export default function RegisterStart() {
       saveState(data);
       dispatch(resetGuardians());
 
-      setLoading(true, 'Allocating verifier on-chain...');
+      setLoading(true, 'Assigning a verifier on-chain…');
 
       await new Promise((resolve) => {
         timer.current = setTimeout(() => {

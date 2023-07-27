@@ -10,6 +10,7 @@ import {
 } from '@portkey-wallet/store/store-ca/cms/actions';
 import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -163,15 +164,5 @@ export const useRememberMeBlackList = (isInit = false) => {
 
 export const useCheckSiteIsInBlackList = () => {
   const list = useRememberMeBlackList();
-
-  return useCallback(
-    (url: string) => {
-      try {
-        return list.indexOf(getOrigin(url)) >= 0;
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    [list],
-  );
+  return useCallback((url: string) => checkSiteIsInBlackList(list, getOrigin(url)), [list]);
 };

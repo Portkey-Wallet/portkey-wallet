@@ -22,7 +22,7 @@ import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
 import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
-import { hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
+import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
@@ -353,6 +353,10 @@ export default class DappMobileOperator extends Operator {
 
   public verifySessionInfo = async () => {
     try {
+      const rememberMeBlackList = await this.dappManager.getRememberMeBlackList();
+      // is remember me black list
+      if (checkSiteIsInBlackList(rememberMeBlackList || [], this.dapp.origin)) return false;
+
       const sessionInfo = await this.dappManager.getSessionInfo(this.dapp.origin);
       const manager = getManager();
       const caHash = getCurrentCaHash();

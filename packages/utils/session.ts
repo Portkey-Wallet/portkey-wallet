@@ -60,3 +60,8 @@ export function formatExpiredTime(plan: SessionExpiredPlan) {
 export function formatTimeToStr(time: number) {
   return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
 }
+
+export function checkSiteIsInBlackList(blackList: string[], origin: string): boolean {
+  if (blackList.includes(origin) || blackList.includes('**')) return true;
+  return false;
+}

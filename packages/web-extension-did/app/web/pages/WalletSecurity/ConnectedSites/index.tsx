@@ -8,6 +8,7 @@ import { MenuItemInfo } from 'pages/components/MenuList';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import CustomSvg from 'components/CustomSvg';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { isSafeOrigin } from '../utils';
 import './index.less';
 
 export default function ConnectedSites() {
@@ -15,7 +16,6 @@ export default function ConnectedSites() {
   const navigate = useNavigate();
   const currentDapp = useCurrentDappList();
   const { isNotLessThan768 } = useCommonState();
-  const isSafeOrigin = useCallback((origin: string) => origin.startsWith('https://'), []);
 
   const showDappList: MenuItemInfo[] = useMemo(
     () =>
@@ -37,7 +37,7 @@ export default function ConnectedSites() {
           navigate(`/setting/wallet-security/connected-sites/${encodeURIComponent(dapp.origin)}`);
         },
       })),
-    [currentDapp, isSafeOrigin, navigate],
+    [currentDapp, navigate],
   );
 
   const title = t('Connected Sites');

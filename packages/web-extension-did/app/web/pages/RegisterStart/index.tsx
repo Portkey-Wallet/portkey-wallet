@@ -186,6 +186,7 @@ export default function RegisterStart() {
         setVerifierItem(verifierReq);
         confirmRegisterOrLogin(data, verifierReq);
       } catch (error) {
+        setLoading(false);
         message.error(handleErrorMessage(error, 'Get verifier failed'));
         throw handleErrorMessage(error, 'Get verifier failed');
       }

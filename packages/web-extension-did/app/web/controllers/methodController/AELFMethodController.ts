@@ -14,7 +14,7 @@ import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wall
 import { randomId } from '@portkey-wallet/utils';
 import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
 import SWEventController from 'controllers/SWEventController';
-import { hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
+import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 import getManager from 'utils/lib/getManager';
 
 const storeInSW = {
@@ -125,6 +125,10 @@ export default class AELFMethodController {
 
   verifySessionInfo = async (origin: string) => {
     try {
+      const rememberMeBlackList = await this.dappManager.getRememberMeBlackList();
+      // is remember me black list
+      if (checkSiteIsInBlackList(rememberMeBlackList || [], origin)) return false;
+
       const sessionInfo = await this.dappManager.getSessionInfo(origin);
       const wallet = await getWalletState();
       if (!wallet.walletInfo) return false;

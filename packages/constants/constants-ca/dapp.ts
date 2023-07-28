@@ -18,3 +18,7 @@ export const SessionKeyArray = Object.entries(SessionKeyMap).map(([k, v]) => ({
 export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer'];
 
 export const REMEMBER_ME_ACTION_WHITELIST: string[] = [MethodsBase.SEND_TRANSACTION];
+
+export const DefaultDapp = {
+  origin: 'default',
+};

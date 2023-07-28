@@ -14,6 +14,7 @@ import getManager from 'utils/getManager';
 import { SessionKeyArray } from '@portkey-wallet/constants/constants-ca/dapp';
 import ImageDisplay from 'pages/components/ImageDisplay';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { isSafeOrigin } from 'pages/WalletSecurity/utils';
 import './index.less';
 
 export interface ISiteItemProps {
@@ -94,22 +95,28 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
           <ImageDisplay defaultHeight={64} className="icon" src={siteItem.icon} backupSrc="DappDefault" />
           <span>{siteItem.name}</span>
           <div className="origin flex">
-            <CustomSvg type="DappWarn" />
-            <span>{siteItem.origin}</span>
+            <CustomSvg type={isSafeOrigin(siteItem.origin) ? 'DappLock' : 'DappWarn'} />
+            <span>
+              <a href={siteItem.origin} target="_blank" rel="noreferrer">
+                {siteItem.origin}
+              </a>
+            </span>
           </div>
         </div>
         <div className="content-item flex-column">
           <div className="label">{t('Connected time')}</div>
           <div className="control flex">{siteItem.connectedTime ? formatTimeToStr(siteItem.connectedTime) : '-'}</div>
         </div>
-        <div className="session-tip">
-          <span className="label">{t('Remember me to skip authentication')}</span>
-          <span className="value">
-            {t(
-              "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.",
-            )}
-          </span>
-        </div>
+        {!isInBlackList && (
+          <div className="session-tip">
+            <span className="label">{t('Remember me to skip authentication')}</span>
+            <span className="value">
+              {t(
+                "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.",
+              )}
+            </span>
+          </div>
+        )}
         {!isInBlackList && (
           <div className="session-switch flex">
             <Switch className="switch" checked={open} onChange={handleSwitch} />

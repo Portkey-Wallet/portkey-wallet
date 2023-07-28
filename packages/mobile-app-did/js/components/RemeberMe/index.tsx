@@ -47,13 +47,14 @@ function RememberMeOverlay(props: RememberMeOverlayProps) {
 
   return (
     <ModalBody isShowLeftBackIcon isShowRightCloseIcon={false} modalBodyType="bottom" title={'Remember Me'}>
+      <TextM style={Overlay.tips}>
+        {t(
+          "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.",
+        )}
+      </TextM>
       <ScrollView style={Overlay.wrapStyle}>
-        <TextM style={Overlay.tips}>
-          {t(
-            "Once enabled, your session key will automatically approve all requests from this DApp, on this device only. You won't see pop-up notifications asking for your approvals until the session key expires. This feature is automatically off when you disconnect from the DApp or when the session key expires. You can also manually disable it or change the expiration time.",
-          )}
-        </TextM>
         <TextL style={[fonts.mediumFont, FontStyles.font5]}>{t('Session key expiration')}</TextL>
+
         {SessionKeyArray.map(ele => (
           <TouchableOpacity key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>
             <TextL>{ele.label}</TextL>
@@ -180,6 +181,7 @@ const Overlay = StyleSheet.create({
     borderBottomColor: defaultColors.border6,
   },
   tips: {
+    paddingHorizontal: pTd(20),
     color: defaultColors.font3,
     marginBottom: pTd(24),
   },

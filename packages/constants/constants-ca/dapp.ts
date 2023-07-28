@@ -2,8 +2,6 @@ import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { MethodsBase } from '@portkey/provider-types';
 
 export const SessionKeyMap = {
-  [SessionExpiredPlan.min6]: 'In 6 mins',
-  [SessionExpiredPlan.min12]: 'In 12 mins',
   [SessionExpiredPlan.hour1]: 'In 1 hour',
   [SessionExpiredPlan.hour3]: 'In 3 hours',
   [SessionExpiredPlan.hour12]: 'In 12 hours',

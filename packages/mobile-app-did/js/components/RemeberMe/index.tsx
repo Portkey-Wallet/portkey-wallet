@@ -53,7 +53,7 @@ function RememberMeOverlay(props: RememberMeOverlayProps) {
         )}
       </TextM>
       <ScrollView style={Overlay.wrapStyle}>
-        <TextL style={[fonts.mediumFont, FontStyles.font5]}>{t('Session key expiration in')}</TextL>
+        <TextL style={[fonts.mediumFont, FontStyles.font5]}>{t('Session key expires in')}</TextL>
 
         {SessionKeyArray.map(ele => (
           <TouchableOpacity key={ele.value} style={Overlay.itemRow} onPress={() => onPressItem(ele?.value)}>

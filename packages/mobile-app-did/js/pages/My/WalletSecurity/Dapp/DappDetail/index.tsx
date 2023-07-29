@@ -161,7 +161,7 @@ const DappDetail: React.FC = () => {
       {!isExpired && !isInBlackList && isRememberMe && (
         <View
           style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section1]}>
-          <TextM>{t('Session key expiration')}</TextM>
+          <TextM>{t('Session key expires in')}</TextM>
           <TouchableOpacity style={[GStyles.flexRow, GStyles.center]} onPress={showOverlay}>
             <TextM style={FontStyles.font3}>
               {SessionKeyMap[sessionInfo?.expiredPlan || SessionExpiredPlan.hour1]}

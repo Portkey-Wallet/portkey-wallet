@@ -125,7 +125,7 @@ export default function SiteItem({ siteItem }: ISiteItemProps) {
         )}
         {open && !isInBlackList && (
           <div className="content-item flex-column">
-            <div className="label">{t('Session key expiration')}</div>
+            <div className="label">{t('Session key expires in')}</div>
             <CustomSelect
               items={SessionKeyArray}
               defaultValue={SessionExpiredPlan.hour1}

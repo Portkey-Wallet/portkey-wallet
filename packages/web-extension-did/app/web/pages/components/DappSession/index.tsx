@@ -39,7 +39,7 @@ export default function DappSession({ onChange }: IDappSessionProps) {
       {open && (
         <div className="select">
           <CustomShowSelect
-            showInValue={`Session key expiration`}
+            showInValue={`Session key expires in`}
             items={SessionKeyArray}
             defaultValue={SessionExpiredPlan.hour1}
             value={exp}

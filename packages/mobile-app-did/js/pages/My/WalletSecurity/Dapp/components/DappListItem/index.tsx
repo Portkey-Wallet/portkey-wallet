@@ -66,6 +66,7 @@ export default DappListItem;
 const itemStyles = StyleSheet.create({
   itemWrap: {
     width: '100%',
+    height: pTd(72),
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',

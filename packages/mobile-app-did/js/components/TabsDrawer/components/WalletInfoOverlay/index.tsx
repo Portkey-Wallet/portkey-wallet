@@ -14,7 +14,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
-import { FontStyles } from 'assets/theme/styles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
@@ -22,6 +22,7 @@ import { removeDapp } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { useAppDispatch } from 'store/hooks';
 import { useIsInCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import CommonButton from 'components/CommonButton';
 
 type MyWalletModalType = {
   tabInfo: ITabItem;
@@ -96,10 +97,14 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
       </View>
 
       {showDisconnect && (
-        <View style={[GStyles.center, GStyles.paddingArg(10, 20, 16), styles.buttonContainer]}>
-          <TouchableOpacity style={[GStyles.center, styles.btnWrap]} onPress={disconnectDapp}>
-            <TextL style={[FontStyles.font12, fonts.mediumFont]}>Disconnect</TextL>
-          </TouchableOpacity>
+        <View style={[GStyles.center, GStyles.paddingArg(10, 20, 18), styles.buttonContainer]}>
+          <CommonButton
+            buttonStyle={BGStyles.bg1}
+            titleStyle={FontStyles.font12}
+            type="clear"
+            title="Disconnect"
+            onPress={disconnectDapp}
+          />
         </View>
       )}
     </ModalBody>

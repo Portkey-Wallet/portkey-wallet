@@ -162,6 +162,15 @@ export const useRememberMeBlackList = (isInit = false) => {
   return rememberMeBlackList || [];
 };
 
+export const useFetchCurrentRememberMeBlackList = () => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+
+  return useCallback(() => {
+    dispatch(getRememberMeBlackListAsync(networkType));
+  }, [dispatch, networkType]);
+};
+
 export const useCheckSiteIsInBlackList = () => {
   const list = useRememberMeBlackList();
   return useCallback((url: string) => checkSiteIsInBlackList(list, getOrigin(url)), [list]);

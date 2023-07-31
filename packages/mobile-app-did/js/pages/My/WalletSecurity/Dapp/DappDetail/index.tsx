@@ -29,6 +29,7 @@ import { formatTimeToStr, hasSessionInfoExpired } from '@portkey-wallet/utils/se
 import CommonToast from 'components/CommonToast';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import CommonButton from 'components/CommonButton';
 
 interface RouterParams {
   origin: string;
@@ -140,7 +141,7 @@ const DappDetail: React.FC = () => {
       />
       <View style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section1]}>
         <TextM>{t('Connected time')}</TextM>
-        <TextM>{formatTimeToStr(dappInfo?.connectedTime)}</TextM>
+        <TextM style={FontStyles.font3}>{formatTimeToStr(dappInfo?.connectedTime)}</TextM>
       </View>
 
       {!isInBlackList && (
@@ -151,7 +152,7 @@ const DappDetail: React.FC = () => {
               <TextM>{t('Remember me')}</TextM>
               <Svg icon="question-mark" size={pTd(16)} color={defaultColors.icon1} iconStyle={pageStyles.rightArrow} />
             </TouchableOpacity>
-            <TextS>{t('Skip authentication after enabled')}</TextS>
+            <TextS style={FontStyles.font3}>{t('Skip authentication after enabled')}</TextS>
           </View>
           <CommonSwitch value={isRememberMe} onChange={() => switchRememberMe(!isRememberMe)} />
         </View>
@@ -160,9 +161,11 @@ const DappDetail: React.FC = () => {
       {!isExpired && !isInBlackList && isRememberMe && (
         <View
           style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section1]}>
-          <TextM>{t('Session key expiration')}</TextM>
+          <TextM>{t('Session key expires in')}</TextM>
           <TouchableOpacity style={[GStyles.flexRow, GStyles.center]} onPress={showOverlay}>
-            <TextM>{SessionKeyMap[sessionInfo?.expiredPlan || SessionExpiredPlan.hour1]}</TextM>
+            <TextM style={FontStyles.font3}>
+              {SessionKeyMap[sessionInfo?.expiredPlan || SessionExpiredPlan.hour1]}
+            </TextM>
             <Svg icon="right-arrow" size={pTd(16)} color={defaultColors.icon1} iconStyle={pageStyles.rightArrow} />
           </TouchableOpacity>
         </View>
@@ -172,7 +175,7 @@ const DappDetail: React.FC = () => {
         <View
           style={[GStyles.flexRow, GStyles.spaceBetween, BGStyles.bg1, pageStyles.sectionWrap, pageStyles.section1]}>
           <TextM>{t('Expiration time')}</TextM>
-          <TextM>
+          <TextM style={FontStyles.font3}>
             {sessionInfo?.expiredPlan === SessionExpiredPlan.always
               ? '--'
               : formatTimeToStr(sessionInfo?.expiredTime || 0)}
@@ -180,10 +183,20 @@ const DappDetail: React.FC = () => {
         </View>
       )}
 
-      <View style={[GStyles.center, GStyles.paddingArg(10, 20, 16), pageStyles.buttonContainer]}>
+      {/* <View style={[GStyles.center, GStyles.paddingArg(10, 20, 16), pageStyles.buttonContainer]}>
         <TouchableOpacity style={[GStyles.center, pageStyles.btnWrap]} onPress={disconnectDapp}>
-          <TextL style={[FontStyles.font12, fonts.mediumFont]}>Disconnect</TextL>
+          <TextL style={FontStyles.font12}>Disconnect</TextL>
         </TouchableOpacity>
+      </View> */}
+
+      <View style={[GStyles.center, GStyles.paddingArg(10, 20, 18), pageStyles.buttonContainer]}>
+        <CommonButton
+          disabledTitleStyle={FontStyles.font12}
+          titleStyle={FontStyles.font12}
+          type="clear"
+          title="Disconnect"
+          onPress={disconnectDapp}
+        />
       </View>
     </PageContainer>
   );

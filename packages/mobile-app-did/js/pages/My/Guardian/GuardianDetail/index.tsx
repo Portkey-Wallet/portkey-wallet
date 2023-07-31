@@ -232,7 +232,12 @@ export default function GuardianDetail() {
           <GuardianAccountItem guardian={guardian} />
           <Divider style={pageStyles.dividerStyle} />
           <View style={pageStyles.verifierInfoWrap}>
-            <VerifierImage style={pageStyles.verifierImageStyle} size={pTd(28)} uri={guardian?.verifier?.imageUrl} />
+            <VerifierImage
+              style={pageStyles.verifierImageStyle}
+              size={pTd(28)}
+              label={guardian?.verifier?.name}
+              uri={guardian?.verifier?.imageUrl}
+            />
             <TextL>{guardian?.verifier?.name || ''}</TextL>
           </View>
         </View>

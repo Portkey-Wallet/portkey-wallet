@@ -1,3 +1,4 @@
+import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';
@@ -44,7 +45,7 @@ const getTransferFee = async ({
       },
     });
     const _firstFee = firstTxResult.result['ELF'];
-    const firstFee = divDecimalsStr(ZERO.plus(_firstFee), 8);
+    const firstFee = divDecimalsStr(_firstFee, DEFAULT_TOKEN.decimals);
     console.log(firstTxResult, 'transactionRes===cross');
     if (Number.isNaN(ZERO.plus(firstFee).toNumber())) {
       return '0';
@@ -73,7 +74,7 @@ const getTransferFee = async ({
     });
     console.log(transactionRes, 'transactionRes===');
     const feeRes = transactionRes.result['ELF'];
-    return divDecimalsStr(ZERO.plus(feeRes), 8);
+    return divDecimalsStr(feeRes, DEFAULT_TOKEN.decimals);
   }
 };
 

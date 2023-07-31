@@ -1,3 +1,4 @@
+import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { ChainType } from '@portkey-wallet/types';
 import { divDecimalsStr } from '@portkey-wallet/utils/converter';
@@ -28,7 +29,7 @@ const getTransferFee = async ({
       privateKey,
     });
     const feeRes = transactionRes.result['ELF'];
-    const fee = divDecimalsStr(ZERO.plus(feeRes), 8);
+    const fee = divDecimalsStr(feeRes, DEFAULT_TOKEN.decimals);
     if (Number.isNaN(ZERO.plus(fee).toNumber())) {
       return '0';
     } else {

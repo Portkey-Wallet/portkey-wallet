@@ -170,7 +170,7 @@ export default function SetWalletPin() {
   const backHandler = useCallback(async () => {
     switch (state) {
       case 'register':
-        navigate('/register/select-verifier');
+        navigate('/register/start/create');
         break;
       case 'login':
         navigate('/login/guardian-approval');

@@ -1,4 +1,4 @@
-import { getProtocolAndHost, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
+import { getOrigin, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
 import { defaultColors } from 'assets/theme';
 
 import { TextM } from 'components/CommonText';
@@ -54,7 +54,7 @@ const TextWithProtocolIcon = ({
         numberOfLines={1}
         ellipsizeMode="tail"
         style={[styles.text, location === 'header' && styles.headerTextColor, textStyleObj]}>
-        {title || getProtocolAndHost(url)}
+        {title || getOrigin(url)}
       </TextM>
       {type === 'iconRight' && ProtocolIcon}
     </View>

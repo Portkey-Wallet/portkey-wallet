@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
@@ -16,6 +16,7 @@ import { useOnLogin } from 'hooks/login';
 import PhoneInput from 'components/PhoneInput';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const TitleMap = {
   [PageType.login]: {
@@ -39,8 +40,9 @@ export default function Phone({
   const [errorMessage, setErrorMessage] = useState<string>();
   const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const onLogin = useOnLogin(type === PageType.login);
-  const onPageLogin = useCallback(async () => {
-    Loading.show();
+
+  const onPageLogin = useLockCallback(async () => {
+    const loadingKey = Loading.show();
     try {
       await onLogin({
         showLoginAccount: `+${country.code} ${loginAccount}`,
@@ -50,7 +52,7 @@ export default function Phone({
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));
     }
-    Loading.hide();
+    Loading.hide(loadingKey);
   }, [country.code, loginAccount, onLogin]);
 
   useEffectOnce(() => {

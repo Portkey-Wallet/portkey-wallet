@@ -61,6 +61,19 @@ export function getProtocolAndHost(url: string) {
   const { protocol, hostname } = getUrlObj(url);
   return `${protocol}//${hostname}`;
 }
+/**
+ *
+ * @param url
+ * @returns
+ */
+export function getOrigin(url: string) {
+  const { protocol, hostname, port } = getUrlObj(url);
+  if (port) {
+    return `${protocol}//${hostname}:${port}`;
+  } else {
+    return `${protocol}//${hostname}`;
+  }
+}
 
 /**
  * getFaviconUrl

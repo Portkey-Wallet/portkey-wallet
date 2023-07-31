@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import { pTd } from 'utils/unit';
@@ -36,8 +36,6 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const { walletName, currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
-  const [showDisconnect, setShowDisconnect] = useState(false);
-
   const {
     accountToken: { accountTokenList },
   } = useAppCASelector(state => state.assets);
@@ -66,10 +64,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
     }
   }, [currentNetwork, dispatch, tabInfo.url]);
 
-  useEffect(() => {
-    const result = checkDapp(getOrigin(tabInfo.url));
-    setShowDisconnect(!!result);
-  }, [checkDapp, tabInfo.url]);
+  const showDisconnect = useMemo(() => checkDapp(getOrigin(tabInfo.url)), [checkDapp, tabInfo.url]);
 
   return (
     <ModalBody modalBodyType="bottom" title={t('My Wallet')}>

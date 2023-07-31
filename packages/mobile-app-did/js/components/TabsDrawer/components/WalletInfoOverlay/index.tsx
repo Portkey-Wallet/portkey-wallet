@@ -36,8 +36,6 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const { walletName, currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
-  const [showDisconnect, setShowDisconnect] = useState(false);
-
   const {
     accountToken: { accountTokenList },
   } = useAppCASelector(state => state.assets);
@@ -66,10 +64,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
     }
   }, [currentNetwork, dispatch, tabInfo.url]);
 
-  useEffect(() => {
-    const result = checkDapp(getOrigin(tabInfo.url));
-    setShowDisconnect(!!result);
-  }, [checkDapp, tabInfo.url]);
+  const showDisconnect = useMemo(() => checkDapp(getOrigin(tabInfo.url)), [checkDapp, tabInfo.url]);
 
   return (
     <ModalBody modalBodyType="bottom" title={t('My Wallet')}>

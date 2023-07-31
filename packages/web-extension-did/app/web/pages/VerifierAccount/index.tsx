@@ -176,7 +176,7 @@ export default function VerifierAccount() {
 
   const handleBack = useCallback(() => {
     if (state === 'register') {
-      navigate('/register/select-verifier');
+      navigate('/register/start/create');
     } else if (state === 'login') {
       navigate('/login/guardian-approval');
     } else if (state === 'guardians/add' && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {

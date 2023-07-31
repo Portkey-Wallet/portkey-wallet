@@ -1,7 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { CMSState } from './types';
 import { NetworkType } from '@portkey-wallet/types';
-import { getDiscoverGroup, getSocialMedia, getTabMenu, getBuyButton } from '@portkey-wallet/graphql/cms/queries';
+import {
+  getDiscoverGroup,
+  getSocialMedia,
+  getTabMenu,
+  getBuyButton,
+  getRememberMeBlackListSites,
+} from '@portkey-wallet/graphql/cms/queries';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
   'cms/getSocialMediaAsync',
@@ -101,3 +107,26 @@ export const getBuyButtonAsync = createAsyncThunk<Required<Pick<CMSState, 'buyBu
     }
   },
 );
+
+export const getRememberMeBlackListAsync = createAsyncThunk<
+  Required<Pick<CMSState, 'rememberMeBlackListMap'>>,
+  NetworkType
+>('cms/getRememberMeBlackListAsync', async (network: NetworkType) => {
+  const result = await getRememberMeBlackListSites(network, {
+    filter: {
+      status: {
+        _eq: 'published',
+      },
+    },
+  });
+
+  if (result.data.rememberMeBlackListSites) {
+    return {
+      rememberMeBlackListMap: {
+        [network]: result.data.rememberMeBlackListSites,
+      },
+    };
+  } else {
+    throw new Error('rememberMeBlackListMap error');
+  }
+});

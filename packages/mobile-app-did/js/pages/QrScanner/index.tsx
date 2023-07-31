@@ -87,6 +87,8 @@ const QrScanner: React.FC<QrScannerProps> = () => {
     if (result && result?.uri) {
       const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);
 
+      console.log('qrResult', scanResult[0]?.data, result);
+
       if (scanResult[0]?.data) handleBarCodeScanned({ data: scanResult[0]?.data || '' });
     }
   };

@@ -18,10 +18,11 @@ import { IDappOverlay } from './dappOverlay';
 import { Operator } from '@portkey/providers';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { getManagerAccount, getPin } from 'utils/redux';
+import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
-import { CA_METHOD_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
@@ -53,6 +54,7 @@ export default class DappMobileOperator extends Operator {
   protected stream: IDappInteractionStream;
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
+  public isLockDapp?: boolean;
   constructor({ stream, origin, dappManager, dappOverlay }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
@@ -241,6 +243,11 @@ export default class DappMobileOperator extends Operator {
     method: keyof IDappOverlay;
     callBack: SendRequest;
   }) {
+    const validSession = await this.verifySessionInfo();
+
+    // valid session && is remember me actions
+    if (validSession && REMEMBER_ME_ACTION_WHITELIST.includes(method)) return callBack(eventName, params);
+
     // user confirm
     const response = await this.userConfirmation({ eventName, method, params });
     if (response) return response;
@@ -312,6 +319,7 @@ export default class DappMobileOperator extends Operator {
 
   handleRequest = async (request: IRequestParams): Promise<IResponseType> => {
     if (SEND_METHOD[request.method]) return this.handleSendRequest(request);
+    if (this.isLockDapp) return this.userDenied(request.eventName);
     return this.handleViewRequest(request);
   };
 
@@ -341,5 +349,35 @@ export default class DappMobileOperator extends Operator {
     this.dapp = dapp;
     const isActive = await this.isActive();
     if (isActive) this.dappManager.updateDapp(dapp);
+  };
+
+  public verifySessionInfo = async () => {
+    try {
+      const rememberMeBlackList = await this.dappManager.getRememberMeBlackList();
+      // is remember me black list
+      if (checkSiteIsInBlackList(rememberMeBlackList || [], this.dapp.origin)) return false;
+
+      const sessionInfo = await this.dappManager.getSessionInfo(this.dapp.origin);
+      const manager = getManager();
+      const caHash = getCurrentCaHash();
+      if (!manager?.keyPair || !caHash || !sessionInfo) return false;
+      const valid = verifySession({
+        keyPair: manager.keyPair,
+        origin: this.dapp.origin,
+        managerAddress: manager.address,
+        caHash,
+        expiredPlan: sessionInfo.expiredPlan,
+        expiredTime: sessionInfo.expiredTime,
+        signature: sessionInfo.signature,
+      });
+      if (!valid) return valid;
+      return !hasSessionInfoExpired(sessionInfo);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  public setIsLockDapp = (isLockDapp: boolean) => {
+    this.isLockDapp = isLockDapp;
   };
 }

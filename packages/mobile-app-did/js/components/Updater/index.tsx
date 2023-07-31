@@ -15,7 +15,12 @@ import { useCheckManagerOnLogout } from 'hooks/useLogOut';
 import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
-import { useBuyButton, useDiscoverGroupList, useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import {
+  useBuyButton,
+  useDiscoverGroupList,
+  useSocialMediaList,
+  useRememberMeBlackList,
+} from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useTabMenuList } from 'hooks/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
@@ -66,5 +71,6 @@ export default function Updater() {
   useTabMenuList(true);
   useDiscoverGroupList(true);
   useBuyButton(true);
+  useRememberMeBlackList(true);
   return null;
 }

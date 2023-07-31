@@ -126,4 +126,21 @@ export default class ApprovalController {
       search: JSON.stringify(params),
     });
   }
+
+  /**
+   * Obtain authorization to  auto execute
+   *
+   */
+  async authorizedToAutoExecute(params: any): Promise<SendResponseParams> {
+    return this.notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.AUTO_EXECUTE_TX,
+        search: JSON.stringify(params),
+      },
+      'windows',
+      {
+        state: 'minimized',
+      },
+    );
+  }
 }

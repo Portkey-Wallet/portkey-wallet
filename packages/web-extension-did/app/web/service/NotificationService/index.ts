@@ -11,6 +11,7 @@ export interface NotificationType {
   sendResponse?: SendResponseFun;
   message: PromptMessage & { externalLink?: string };
   promptType?: CreatePromptType;
+  promptConfig?: chrome.windows.CreateData;
 }
 
 export interface CloseParams extends SendResponseParams {
@@ -58,6 +59,8 @@ export default class NotificationService {
 
   showWindow = async (notification: Omit<NotificationType, 'promptType'>): Promise<void | chrome.windows.Window> => {
     try {
+      const promptConfig = notification?.promptConfig;
+
       const { height, width, top, left, isFullscreen } = await getPromptConfig({
         message: notification.message,
       });
@@ -77,19 +80,29 @@ export default class NotificationService {
       }
 
       // create new notification popup
-      const popupWindow = await this.platform.openWindow({
-        url,
-        height,
-        width,
-        type: 'popup',
-        focused: true,
-        state: isFullscreen ? 'fullscreen' : 'normal',
-        top,
-        left,
-      });
+      let config: chrome.windows.CreateData = { url };
+      if (promptConfig?.state === 'minimized') {
+        config = { ...config, ...promptConfig };
+      } else {
+        config = {
+          ...config,
+          height,
+          width,
+          type: 'popup',
+          focused: true,
+          state: isFullscreen ? 'fullscreen' : 'normal',
+          top,
+          left,
+          ...promptConfig,
+        };
+      }
+
+      // create new notification popup
+      const popupWindow = await this.platform.openWindow(config);
+      console.log('popupWindow', popupWindow, promptConfig);
 
       // Firefox currently ignores left/top for create, but it works for update
-      if (popupWindow.left !== left && popupWindow.state !== 'fullscreen') {
+      if (popupWindow.left !== left && popupWindow.state !== 'fullscreen' && config.state !== 'minimized') {
         if (!popupWindow.id) return;
         await this.platform.updateWindowPosition(popupWindow.id, left, top);
       }
@@ -164,6 +177,7 @@ export default class NotificationService {
   openPrompt = (
     message: NotificationType['message'],
     promptType: CreatePromptType = 'windows',
+    promptConfig?: NotificationType['promptConfig'],
   ): Promise<SendResponseParams> => {
     return new Promise((resolve) => {
       console.log(message, 'openPrompt==message');
@@ -174,6 +188,7 @@ export default class NotificationService {
         },
         message,
         promptType,
+        promptConfig,
       };
       this.open(promptParam);
     });

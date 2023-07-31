@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import WebView, { WebViewProps } from 'react-native-webview';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -12,6 +12,8 @@ import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import OverlayModal from 'components/OverlayModal';
 
 export interface IWebView {
   goBack: WebView['goBack'];
@@ -22,11 +24,19 @@ export interface IWebView {
   autoApprove: () => void;
 }
 
-const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function ProviderWebview(props, forward) {
+const ProviderWebview = forwardRef<
+  IWebView | undefined,
+  WebViewProps & {
+    isHidden?: boolean;
+  }
+>(function ProviderWebview(props, forward) {
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
   // Android will trigger onLoadEnd before onLoadStart, Mark start status.
   const loadStartRef = useRef<boolean>(false);
+
+  const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
+
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
@@ -34,12 +44,18 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
       setEntryScriptWeb3(script);
       if (!isIos) webViewRef.current?.injectJavaScript(script);
     };
+    OverlayModal.hide();
+    fetchCurrentRememberMeBlackList();
 
     getEntryScriptWeb3();
     return () => {
       operatorRef.current?.onDestroy();
     };
   });
+
+  useEffect(() => {
+    operatorRef.current?.setIsLockDapp(!!props.isHidden);
+  }, [props.isHidden]);
 
   const initOperator = useCallback(
     (origin: string) => {

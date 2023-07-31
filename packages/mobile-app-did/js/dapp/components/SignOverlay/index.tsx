@@ -13,6 +13,7 @@ import DappInfoSection from '../DappInfoSection';
 import { GetSignatureParams } from '@portkey/provider-types';
 import TransactionDataSection from '../TransactionDataSection';
 import { TextXXXL } from 'components/CommonText';
+import { OverlayBottomSection } from '../OverlayBottomSection';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -24,7 +25,7 @@ const SignModal = (props: SignModalPropsType) => {
   const { dappInfo, signInfo, onReject, onSign } = props;
   const { t } = useLanguage();
 
-  const buttonList = useMemo(
+  const ButtonList = useMemo(
     () => [
       {
         title: t('Reject'),
@@ -37,7 +38,7 @@ const SignModal = (props: SignModalPropsType) => {
       {
         title: t('Approve'),
         type: 'primary' as CommonButtonProps['type'],
-        onPress: () => {
+        onPress: async () => {
           onSign?.();
           OverlayModal.hide();
         },
@@ -47,12 +48,13 @@ const SignModal = (props: SignModalPropsType) => {
   );
 
   return (
-    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList} onClose={onReject}>
+    <ModalBody modalBodyType="bottom" title="" onClose={onReject}>
       <View style={styles.contentWrap}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextXXXL style={styles.signTitle}>Sign Message</TextXXXL>
         <TransactionDataSection dataInfo={signInfo} />
       </View>
+      <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>
   );
 };

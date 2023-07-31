@@ -587,7 +587,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = 956XWQ54U7;
+				DEVELOPMENT_TEAM = 56DKXVFJS2;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Portkey/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Portkey;
@@ -621,7 +621,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = 956XWQ54U7;
+				DEVELOPMENT_TEAM = 56DKXVFJS2;
 				INFOPLIST_FILE = Portkey/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Portkey;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.3;

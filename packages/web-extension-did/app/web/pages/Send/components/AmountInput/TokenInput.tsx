@@ -7,7 +7,7 @@ import { handleKeyDown } from 'pages/Send/utils/util.keyDown';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
@@ -46,6 +46,7 @@ export default function TokenInput({
   const checkManagerSyncState = useCheckManagerSyncState();
   const [isManagerSynced, setIsManagerSynced] = useState(true);
   const { max: maxFee } = useGetTxFee(token.chainId);
+  const defaultToken = useDefaultToken(token.chainId);
 
   const amountInUsd = useMemo(
     () => amountInUsdShow(value || amount, 0, token.symbol),
@@ -78,8 +79,8 @@ export default function TokenInput({
       setMaxAmount('0');
       return;
     }
-    if (token.symbol === 'ELF') {
-      if (ZERO.plus(divDecimals(balance, token.decimals)).isLessThanOrEqualTo(ZERO.plus(maxFee))) {
+    if (token.symbol === defaultToken.symbol) {
+      if (ZERO.plus(divDecimals(balance, token.decimals)).isLessThanOrEqualTo(maxFee)) {
         setMaxAmount(divDecimals(balance, token.decimals).toString());
         return;
       }
@@ -95,7 +96,16 @@ export default function TokenInput({
     } else {
       setMaxAmount(divDecimals(balance, token.decimals).toString());
     }
-  }, [balance, checkManagerSyncState, getTranslationInfo, maxFee, token.chainId, token.decimals, token.symbol]);
+  }, [
+    balance,
+    checkManagerSyncState,
+    defaultToken.symbol,
+    getTranslationInfo,
+    maxFee,
+    token.chainId,
+    token.decimals,
+    token.symbol,
+  ]);
 
   useEffect(() => {
     getTokenBalance();

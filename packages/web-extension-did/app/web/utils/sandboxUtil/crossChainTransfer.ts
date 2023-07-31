@@ -9,11 +9,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getTxFee } from 'store/utils/getStore';
-
-const nativeToken = {
-  symbol: 'ELF',
-  decimals: 8,
-};
+import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'>;
 
@@ -118,8 +114,8 @@ const crossChainTransfer = async ({
   // TODO Only support chainType: aelf
   let _amount = amount;
   const { crossChain: crossChainFee } = getTxFee(tokenInfo.chainId);
-  if (tokenInfo.symbol === nativeToken.symbol) {
-    _amount = ZERO.plus(amount).minus(timesDecimals(crossChainFee, 8)).toNumber();
+  if (tokenInfo.symbol === DEFAULT_TOKEN.symbol) {
+    _amount = ZERO.plus(amount).minus(timesDecimals(crossChainFee, DEFAULT_TOKEN.decimals)).toNumber();
   }
   const crossChainTransferParams = {
     chainInfo,

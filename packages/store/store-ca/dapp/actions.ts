@@ -1,6 +1,7 @@
 import { NetworkType } from '@portkey-wallet/types';
 import { createAction } from '@reduxjs/toolkit';
 import { DappStoreItem } from './type';
+import { SessionInfo } from '@portkey-wallet/types/session';
 
 export const addDapp = createAction<{
   networkType: NetworkType;
@@ -21,3 +22,9 @@ export const updateDapp = createAction<{
 export const resetDappList = createAction<NetworkType>('dapp/resetDappList');
 
 export const resetDapp = createAction('dapp/resetDapp');
+
+export const updateSessionInfo = createAction<{
+  networkType: NetworkType;
+  origin: string;
+  sessionInfo?: SessionInfo;
+}>('dapp/updateSessionInfo');

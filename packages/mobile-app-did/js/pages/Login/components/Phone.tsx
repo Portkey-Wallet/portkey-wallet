@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
@@ -39,8 +39,12 @@ export default function Phone({
   const [errorMessage, setErrorMessage] = useState<string>();
   const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const onLogin = useOnLogin(type === PageType.login);
+
+  const isLoginRef = useRef(false);
   const onPageLogin = useCallback(async () => {
-    Loading.show();
+    if (isLoginRef.current) return;
+    isLoginRef.current = true;
+    const loadingKey = Loading.show();
     try {
       await onLogin({
         showLoginAccount: `+${country.code} ${loginAccount}`,
@@ -50,7 +54,8 @@ export default function Phone({
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));
     }
-    Loading.hide();
+    Loading.hide(loadingKey);
+    isLoginRef.current = false;
   }, [country.code, loginAccount, onLogin]);
 
   useEffectOnce(() => {

@@ -1,4 +1,4 @@
-import { useCurrentChain, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
@@ -87,6 +87,7 @@ export default function Send() {
     }),
     [state],
   );
+  const defaultToken = useDefaultToken(state.chainId as ChainId);
 
   const validateToAddress = useCallback(
     (value: { name?: string; address: string } | undefined) => {
@@ -202,16 +203,16 @@ export default function Send() {
         return 'Synchronizing on-chain account information...';
       }
       if (type === 'token') {
-        if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(ZERO.plus(balance))) {
+        if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           return TransactionError.TOKEN_NOT_ENOUGH;
         }
-        if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') && symbol === 'ELF') {
-          if (ZERO.plus(crossChainFee).isGreaterThanOrEqualTo(ZERO.plus(amount))) {
+        if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') && symbol === defaultToken.symbol) {
+          if (ZERO.plus(crossChainFee).isGreaterThanOrEqualTo(amount)) {
             return TransactionError.CROSS_NOT_ENOUGH;
           }
         }
       } else if (type === 'nft') {
-        if (ZERO.plus(amount).isGreaterThan(ZERO.plus(balance))) {
+        if (ZERO.plus(amount).isGreaterThan(balance)) {
           return TransactionError.NFT_NOT_ENOUGH;
         }
       } else {
@@ -243,6 +244,7 @@ export default function Send() {
     toAccount.address,
     chainInfo?.chainId,
     symbol,
+    defaultToken.symbol,
     crossChainFee,
   ]);
 
@@ -264,7 +266,7 @@ export default function Send() {
           caHash: wallet?.caHash || '',
           amount: timesDecimals(amount, tokenInfo.decimals).toNumber(),
           toAddress: toAccount.address,
-          fee: timesDecimals(txFee, 8).toNumber(),
+          fee: timesDecimals(txFee, defaultToken.decimals).toNumber(),
         });
       } else {
         console.log('sameChainTransfers==sendHandler');
@@ -301,6 +303,7 @@ export default function Send() {
     amount,
     chainInfo,
     currentNetwork.walletType,
+    defaultToken.decimals,
     dispatch,
     navigate,
     passwordSeed,

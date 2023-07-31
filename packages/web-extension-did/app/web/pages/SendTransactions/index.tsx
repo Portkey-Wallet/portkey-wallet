@@ -22,16 +22,22 @@ import { useCheckManagerSyncState } from 'hooks/wallet';
 import CircleLoading from 'components/CircleLoading';
 import { request } from '@portkey-wallet/api/api-did';
 import clsx from 'clsx';
+import DappSession from 'pages/components/DappSession';
+import { SessionExpiredPlan } from '@portkey-wallet/types/session';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import './index.less';
+import getManager from 'utils/getManager';
+import { useCheckSiteIsInBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function SendTransactions() {
-  const { payload, transactionInfoId } = usePromptSearch<{
+  const { payload, transactionInfoId, origin } = usePromptSearch<{
     payload: {
       chainId: ChainId;
       contractAddress: string;
       method: string;
       rpcUrl: string;
     };
+    origin: string;
     transactionInfoId: string;
   }>();
   const chainInfo = useCurrentChain(payload?.chainId);
@@ -57,7 +63,9 @@ export default function SendTransactions() {
   const [txParams, setTxParams] = useState<any>({});
   const checkManagerSyncState = useCheckManagerSyncState();
   const [isManagerSynced, setIsManagerSynced] = useState(false);
-
+  const [open, setOpen] = useState<boolean>(false);
+  const [exp, setExp] = useState<SessionExpiredPlan>(SessionExpiredPlan.hour1);
+  const updateSessionInfo = useUpdateSessionInfo();
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
       const value = amountInUsdShow(amount, decimals, symbol);
@@ -69,6 +77,7 @@ export default function SendTransactions() {
     },
     [amountInUsdShow, defaultToken.symbol],
   );
+  const checkOriginInBlackList = useCheckSiteIsInBlackList();
 
   const getFee = useCallback(
     async (txInfo: any) => {
@@ -171,7 +180,7 @@ export default function SendTransactions() {
 
   const renderTransfer = useMemo(() => {
     const { symbol, amount } = txParams.paramsOption || {};
-    const decimals = symbol === defaultToken.symbol ? defaultToken.symbol : tokenDecimals;
+    const decimals = symbol === defaultToken.symbol ? defaultToken.decimals : tokenDecimals;
 
     return (
       <div className="detail">
@@ -289,6 +298,11 @@ export default function SendTransactions() {
     );
   }, [txParams.paramsOption, loading, fee, defaultToken.symbol, isMainnet, formatAmountInUsdShow]);
 
+  const handleSessionChange = useCallback((flag: boolean, extTime: SessionExpiredPlan) => {
+    setOpen(flag);
+    setExp(extTime);
+  }, []);
+
   const sendHandler = useCallback(async () => {
     try {
       if (!chainInfo?.endPoint || !wallet?.caHash) {
@@ -322,6 +336,17 @@ export default function SendTransactions() {
         address: chainInfo.caContractAddress,
         sendOptions: { onMethod: 'transactionHash' },
       });
+      if (open) {
+        const manager = await getManager();
+        updateSessionInfo({
+          networkType: currentNetwork,
+          origin,
+          expiredPlan: exp,
+          manager,
+        });
+      } else {
+        updateSessionInfo({ origin });
+      }
       closePrompt({
         ...errorHandler(0),
         data: result.result,
@@ -330,7 +355,21 @@ export default function SendTransactions() {
       console.error(error, 'error===detail');
       message.error(handleErrorMessage(error));
     }
-  }, [chainInfo, wallet.caHash, payload, txParams, isCAContract, privateKey]);
+  }, [
+    chainInfo,
+    wallet.caHash,
+    payload?.rpcUrl,
+    payload?.method,
+    payload?.contractAddress,
+    txParams.paramsOption,
+    isCAContract,
+    privateKey,
+    open,
+    updateSessionInfo,
+    currentNetwork,
+    origin,
+    exp,
+  ]);
 
   return (
     <div className="send-transaction flex">
@@ -345,6 +384,7 @@ export default function SendTransactions() {
       </div>
       {payload?.method.toLowerCase() === 'transfer' ? renderTransfer : renderMessage}
       {errMsg && <div className={clsx(!isManagerSynced && 'error-warning', 'error-message')}>{errMsg}</div>}
+      {!checkOriginInBlackList(origin) && <DappSession onChange={handleSessionChange} />}
       <div className="btn flex-between">
         <Button
           type="text"

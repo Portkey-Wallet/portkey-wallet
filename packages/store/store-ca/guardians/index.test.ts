@@ -23,11 +23,9 @@ const mockUserGuardiansListItem1 = {
   identifierHash: 'identifierHash1@q.com',
   salt: 'salt',
   verifier: {
-    endPoints: ['http://192.168.0.250:5555'],
     id: 'Gauss',
     imageUrl: 'https://x/Gauss.png',
     name: 'Gauss',
-    verifierAddresses: ['5M5sG4'],
   },
   guardianIdentifier: '1@q.com',
   isLoginGuardian: true,
@@ -43,11 +41,9 @@ const mockUserGuardiansListItem2 = {
   identifierHash: 'identifierHash2@q.com',
   salt: 'salt',
   verifier: {
-    endPoints: ['http://192.168.0.250:5555'],
     id: 'Gauss',
     imageUrl: 'https://x/Gauss.png',
     name: 'Gauss',
-    verifierAddresses: ['5M5sG4'],
   },
   guardianIdentifier: '2@q.com',
   isLoginGuardian: true,
@@ -63,11 +59,9 @@ const mockUserGuardiansListItem3 = {
   identifierHash: 'identifierHash3@q.com',
   salt: 'salt',
   verifier: {
-    endPoints: ['http://192.168.0.250:5555'],
     id: 'Gauss',
     imageUrl: 'https://x/Gauss.png',
     name: 'Gauss',
-    verifierAddresses: ['5M5sG4'],
   },
   guardianIdentifier: '3@q.com',
   isLoginGuardian: true,
@@ -76,11 +70,9 @@ const mockUserGuardiansListItem3 = {
   status: 'verified' as VerifyStatus,
 };
 const mockVerifierItem = {
-  endPoints: ['http://192.168.0.250:5555'],
   id: 'Gauss',
   imageUrl: 'https://x/Gauss.png',
   name: 'Gauss',
-  verifierAddresses: ['5M5sG4'],
 };
 const mockUserGuardianStatus = {
   '1@q.com&Gauss': {
@@ -91,11 +83,9 @@ const mockUserGuardianStatus = {
     identifierHash: 'identifierHash',
     salt: 'salt',
     verifier: {
-      endPoints: ['http://192.168.0.250:5555'],
       id: 'Gauss',
       imageUrl: 'https://x/Gauss.png',
       name: 'Gauss',
-      verifierAddresses: ['5M5sG4'],
     },
   },
   '2@q.com&Minerva': {
@@ -106,11 +96,9 @@ const mockUserGuardianStatus = {
     identifierHash: 'identifierHash',
     salt: 'salt',
     verifier: {
-      endPoints: ['http://192.168.0.250:5577'],
       id: 'Minerva',
       imageUrl: 'https://x/Minerva.png',
       name: 'Minerva',
-      verifierAddresses: ['3sWGDJ'],
     },
   },
 };
@@ -217,11 +205,9 @@ describe('setGuardiansAction', () => {
       identifierHash: '1@q.com',
       salt: 'salt',
       verifier: {
-        endPoints: ['http://192.168.0.250:5555'],
         id: 'Gauss',
         imageUrl: 'https://x/Gauss.png',
         name: 'Gauss',
-        verifierAddresses: ['5M5sG4'],
       },
       guardianIdentifier: '',
       isLoginGuardian: true,

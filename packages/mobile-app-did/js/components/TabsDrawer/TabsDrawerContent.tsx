@@ -33,10 +33,17 @@ import Svg from 'components/Svg';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import ActionSheet from 'components/ActionSheet';
 import { useCheckAndUpDateRecordItemName, useCheckAndUpDateTabItemName } from 'hooks/discover';
+import { useNavigation } from '@react-navigation/native';
+import navigationService from 'utils/navigationService';
+import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
   const { networkType } = useCurrentNetworkInfo();
+  const nav = useNavigation();
+  const dappList = useCurrentDappList();
+
   const dispatch = useAppCommonDispatch();
   const {
     isDrawerOpen,
@@ -65,9 +72,21 @@ const TabsDrawerContent: React.FC = () => {
   }, [activeTabId, dispatch, networkType]);
 
   const backToSearchPage = useCallback(() => {
+    if (nav) {
+      const routes = nav.getState().routes;
+      const currentRoute = routes[routes.length - 1];
+      const activeItem = tabs?.find(ele => ele.id === activeTabId) as ITabItem;
+      if (
+        currentRoute.name === 'DappDetail' &&
+        !dappList?.find(ele => ele.origin === getOrigin(activeItem?.url || ''))
+      ) {
+        navigationService.navigate('DappList');
+      }
+    }
+
     activeWebviewScreenShot();
     dispatch(changeDrawerOpenStatus(false));
-  }, [activeWebviewScreenShot, dispatch]);
+  }, [activeTabId, activeWebviewScreenShot, dappList, dispatch, nav, tabs]);
 
   // header right
   const rightDom = useMemo(() => {
@@ -75,7 +94,7 @@ const TabsDrawerContent: React.FC = () => {
     if (activeTabId)
       return (
         <View style={rightDomStyle.iconGroupWrap}>
-          <TouchableOpacity style={rightDomStyle.iconWrap} onPress={() => showWalletInfo()}>
+          <TouchableOpacity style={rightDomStyle.iconWrap} onPress={() => showWalletInfo({ tabInfo: activeItem })}>
             <Svg icon="wallet-white" size={20} />
           </TouchableOpacity>
           <TouchableOpacity
@@ -216,19 +235,20 @@ const TabsDrawerContent: React.FC = () => {
               </View>
             </ScrollView>
             <View style={handleButtonStyle.container}>
-              <TextM
-                style={[handleButtonStyle.handleItem, FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}
-                onPress={closeAll}>
-                {t('Close All')}
-              </TextM>
+              <TouchableOpacity style={handleButtonStyle.handleItem} onPress={closeAll}>
+                <TextM style={[FontStyles.font4, tabs?.length === 0 && handleButtonStyle.noTap]}>
+                  {t('Close All')}
+                </TextM>
+              </TouchableOpacity>
+
               <TouchableOpacity
                 style={[handleButtonStyle.handleItem, handleButtonStyle.add]}
                 onPress={() => dispatch(changeDrawerOpenStatus(false))}>
                 <Svg icon="add-blue" size={pTd(28)} />
               </TouchableOpacity>
-              <TextM style={[handleButtonStyle.handleItem, handleButtonStyle.done, FontStyles.font4]} onPress={onDone}>
-                {t('Done')}
-              </TextM>
+              <TouchableOpacity style={handleButtonStyle.handleItem} onPress={onDone}>
+                <TextM style={[handleButtonStyle.done, FontStyles.font4]}>{t('Done')}</TextM>
+              </TouchableOpacity>
             </View>
           </>
         )}

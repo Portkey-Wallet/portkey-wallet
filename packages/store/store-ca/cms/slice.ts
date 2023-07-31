@@ -1,5 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getDiscoverGroupAsync, getSocialMediaAsync, getTabMenuAsync, getBuyButtonAsync } from './actions';
+import {
+  getDiscoverGroupAsync,
+  getSocialMediaAsync,
+  getTabMenuAsync,
+  getBuyButtonAsync,
+  getRememberMeBlackListAsync,
+} from './actions';
 import { CMSState } from './types';
 
 const initialState: CMSState = {
@@ -7,6 +13,7 @@ const initialState: CMSState = {
   tabMenuListNetMap: {},
   discoverGroupListNetMap: {},
   buyButtonNetMap: {},
+  rememberMeBlackListMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -49,6 +56,15 @@ export const cmsSlice = createSlice({
       })
       .addCase(getBuyButtonAsync.rejected, (_state, action) => {
         console.log('getBuyButtonAsync error', action);
+      })
+      .addCase(getRememberMeBlackListAsync.fulfilled, (state, action) => {
+        state.rememberMeBlackListMap = {
+          ...state.rememberMeBlackListMap,
+          ...action.payload.rememberMeBlackListMap,
+        };
+      })
+      .addCase(getRememberMeBlackListAsync.rejected, (_state, action) => {
+        console.log('getRememberMeBlackListAsync error', action);
       });
   },
 });

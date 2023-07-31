@@ -22,8 +22,8 @@ export const useIsInCurrentDappList = () => {
   const list = useCurrentDappList();
 
   return useCallback(
-    (origin: string) => {
-      return list?.some(ele => ele.origin === origin.trim());
+    (origin: string): boolean => {
+      return !!list?.some(ele => ele.origin === origin.trim());
     },
     [list],
   );

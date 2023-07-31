@@ -12,9 +12,6 @@ import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isIos } from '@portkey-wallet/utils/mobile/device';
-import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
-import OverlayModal from 'components/OverlayModal';
-
 export interface IWebView {
   goBack: WebView['goBack'];
   reload: WebView['reload'];
@@ -35,8 +32,6 @@ const ProviderWebview = forwardRef<
   // Android will trigger onLoadEnd before onLoadStart, Mark start status.
   const loadStartRef = useRef<boolean>(false);
 
-  const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
-
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
@@ -44,8 +39,6 @@ const ProviderWebview = forwardRef<
       setEntryScriptWeb3(script);
       if (!isIos) webViewRef.current?.injectJavaScript(script);
     };
-    OverlayModal.hide();
-    fetchCurrentRememberMeBlackList();
 
     getEntryScriptWeb3();
     return () => {

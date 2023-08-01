@@ -23,6 +23,7 @@ import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
 import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import ActionSheet from 'components/ActionSheet';
+import { isUserBiometricsError } from 'utils/biometrics';
 let appState: AppStateStatus, verifyTime: number;
 export default function SecurityLock() {
   const { biometrics } = useUser();
@@ -133,13 +134,14 @@ export default function SecurityLock() {
         const securePassword = await getSecureStoreItem('Pin');
         if (!securePassword) throw new Error('No password');
         handlePassword(securePassword);
-      } catch (error) {
-        console.log(error);
-        ActionSheet.alert({
-          message: `Biometric authentication expired.Please re-enable it.`,
-          message2: 'After you are logged in, you can set it up in My - Account Setting - Biometric Authentication.',
-          buttons: [{ title: 'I Know', type: 'primary' }],
-        });
+      } catch (error: any) {
+        if (!isUserBiometricsError(error)) {
+          ActionSheet.alert({
+            message: `Biometric authentication expired.Please re-enable it.`,
+            message2: 'After you are logged in, you can set it up in My - Account Setting - Biometric Authentication.',
+            buttons: [{ title: 'I Know', type: 'primary' }],
+          });
+        }
       }
       verifyTime = Date.now();
     },

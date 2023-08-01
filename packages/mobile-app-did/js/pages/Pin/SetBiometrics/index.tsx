@@ -26,6 +26,7 @@ import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useSetBiometrics } from 'hooks/useBiometrics';
 import { useLanguage } from 'i18n/hooks';
+import { changeCanLock } from 'utils/LockManager';
 const ScrollViewProps = { disabled: true };
 export default function SetBiometrics() {
   const { t } = useLanguage();
@@ -93,6 +94,7 @@ export default function SetBiometrics() {
   }, [caInfo, dispatch, isSyncCAInfo, managerInfo, onIntervalGetResult, onResultFail, originChainId, pin, t]);
   const openBiometrics = useCallback(async () => {
     if (!pin) return;
+    changeCanLock(false);
     try {
       await setSecureStoreItem('Pin', pin);
       await setBiometrics(true);
@@ -100,6 +102,7 @@ export default function SetBiometrics() {
     } catch (error) {
       setErrorMessage(handleErrorMessage(error, 'Failed To Verify'));
     }
+    changeCanLock(true);
   }, [getResult, pin, setBiometrics]);
   const onSkip = useCallback(async () => {
     try {

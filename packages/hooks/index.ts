@@ -46,3 +46,21 @@ export function useDebounceCallback<T extends (...args: any[]) => any>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }
+
+export function useLatestRef<T>(value: T) {
+  const ref = useRef(value);
+  ref.current = value;
+
+  return ref;
+}
+
+export function useUnmountedRef() {
+  const unmountedRef = useRef(false);
+  useEffect(() => {
+    unmountedRef.current = false;
+    return () => {
+      unmountedRef.current = true;
+    };
+  }, []);
+  return unmountedRef;
+}

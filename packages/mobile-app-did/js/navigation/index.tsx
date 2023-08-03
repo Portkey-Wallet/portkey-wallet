@@ -20,7 +20,7 @@ import QrScanner from 'pages/QrScanner';
 import MyNav from 'pages/My/router';
 import BuyNav from 'pages/Buy';
 import DiscoverNav from 'pages/Discover/index';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import Discover from 'Test/Discover';
 
 import TabsDrawer from 'components/TabsDrawer';
@@ -74,7 +74,7 @@ export default function NavigationRoot() {
             gestureVelocityImpact: 1,
             headerBackAllowFontScaling: false,
             headerTitleAllowFontScaling: false,
-            cardStyleInterpolator: !isIos ? CardStyleInterpolators.forHorizontalIOS : undefined,
+            cardStyleInterpolator: !isIOS ? CardStyleInterpolators.forHorizontalIOS : undefined,
           }}>
           {stackNav.map((item, index) => (
             <Stack.Screen options={(item as any).options} key={index} {...(item as any)} />

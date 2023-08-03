@@ -11,7 +11,7 @@ import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 export interface IWebView {
   goBack: WebView['goBack'];
   reload: WebView['reload'];
@@ -37,7 +37,7 @@ const ProviderWebview = forwardRef<
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
       setEntryScriptWeb3(script);
-      if (!isIos) webViewRef.current?.injectJavaScript(script);
+      if (!isIOS) webViewRef.current?.injectJavaScript(script);
     };
 
     getEntryScriptWeb3();
@@ -53,7 +53,7 @@ const ProviderWebview = forwardRef<
   const initOperator = useCallback(
     (origin: string) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (!isIos) webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+      if (!isIOS) webViewRef.current?.injectJavaScript(entryScriptWeb3!);
 
       operatorRef.current = new DappMobileOperator({
         origin,
@@ -130,7 +130,7 @@ const ProviderWebview = forwardRef<
       ref={webViewRef}
       style={styles.webView}
       decelerationRate="normal"
-      injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : undefined}
+      injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
       applicationNameForUserAgent={'WebView Portkey did Mobile'}
       {...props}
       onLoadStart={event => {

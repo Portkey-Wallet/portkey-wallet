@@ -33,6 +33,8 @@ export type OverlayModalProps = {
   animated?: boolean;
   enabledNestScrollView?: boolean;
   onCloseRequest?: () => void;
+  customBounds?: { x: number; y: number; width: number; height: number };
+  overlayOpacity?: number;
 };
 
 export function OverlayTransformView({

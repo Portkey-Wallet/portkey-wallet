@@ -10,11 +10,12 @@ import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
 import { useTabMenuList } from 'hooks/cms';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
+import ChatHome from 'pages/Chat/ChatHome';
 
 const Tab = createBottomTabNavigator();
 type TabMenuTypeType = { icon: IconName; component: React.FC };
 export interface TabMenuItem extends TabMenuTypeType {
-  name: 'Wallet' | 'Discover' | 'Settings';
+  name: 'Wallet' | 'Discover' | 'Chat' | 'Settings';
   label: string;
   index: number;
 }
@@ -28,6 +29,10 @@ export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
     icon: 'my',
     component: MyMenu,
   },
+  Chat: {
+    icon: 'my',
+    component: ChatHome,
+  },
   Discover: {
     icon: 'discover',
     component: DiscoverHome,
@@ -37,6 +42,7 @@ export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
 export const defaultTabMenuList: TabMenuItem[] = [
   { name: 'Wallet', label: 'Wallet', index: 0, icon: 'logo-icon', component: DashBoard },
   { name: 'Discover', label: 'Discover', index: 1, icon: 'discover', component: DiscoverHome },
+  { name: 'Chat', label: 'Chat', index: 3, icon: 'my', component: ChatHome },
   { name: 'Settings', label: 'My', index: 2, icon: 'my', component: MyMenu },
 ];
 

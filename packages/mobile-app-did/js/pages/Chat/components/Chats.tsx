@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import initialMessages from './messages';
 import { CustomInputToolbar, renderActions, renderSend, renderAccessory } from '../components/InputToolbar';
-import {
-  RenderBubble,
-  renderSystemMessage,
-  renderMessage,
-  renderMessageText,
-  renderCustomView,
-} from '../components/MessageContainer';
+import { RenderBubble, renderSystemMessage, renderMessage, renderMessageText } from '../components/MessageContainer';
 import { randomId } from '@portkey-wallet/utils';
 import { Keyboard, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -81,26 +75,6 @@ const Chats = () => {
       renderMessageText={renderMessageText}
       // renderMessageImage
       // renderCustomView={renderCustomView}
-      messagesContainerStyle={{ backgroundColor: 'indigo' }}
-      parsePatterns={linkStyle => [
-        {
-          pattern: /#(\w+)/,
-          style: linkStyle,
-          onPress: tag => console.log(`Pressed on hashtag: ${tag}`),
-        },
-        {
-          pattern: /^https?:\/\/.+/,
-          style: { color: 'red' },
-          onPress: tag => {
-            jump({
-              item: {
-                url: tag,
-                name: tag,
-              },
-            });
-          },
-        },
-      ]}
     />
   );
 };

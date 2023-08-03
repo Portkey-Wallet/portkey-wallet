@@ -2,7 +2,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
 
-import Tab, { TabMenuItem } from './Tab';
+import Tab, { IRenderTabMenuItem } from './Tab';
 import navigationService from 'utils/navigationService';
 import LoginNav from 'pages/Login';
 import PinNav from 'pages/Pin';
@@ -60,7 +60,7 @@ export type RootStackParamList = {
   [key in typeof davNav[number]['name']]: undefined;
 };
 export type TabParamList = {
-  [key in TabMenuItem['name']]: undefined;
+  [key in IRenderTabMenuItem['name']]: undefined;
 };
 export type RootStackName = typeof davNav[number]['name'];
 

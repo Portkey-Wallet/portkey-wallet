@@ -8,9 +8,9 @@ export const screenWidth = Dimensions.get('screen').width;
 export const screenHeight = Dimensions.get('screen').height;
 export const windowWidth = Dimensions.get('window').width;
 
-export const isIos = Platform.OS === 'ios';
+export const isIOS = Platform.OS === 'ios';
 
-export const statusBarHeight = isIos ? 20 : StatusBar.currentHeight ?? 20;
+export const statusBarHeight = isIOS ? 20 : StatusBar.currentHeight ?? 20;
 
 export const isIphoneX = (() => {
   return (
@@ -33,13 +33,13 @@ export const isXiaoMi = (() => {
 
 export const bottomBarHeight = (() => {
   let height = 0;
-  if (!isIos) {
+  if (!isIOS) {
     height = screenHeight - Dimensions.get('window').height - (isXiaoMi ? 0 : statusBarHeight);
     if (height > 40) height = 40;
-  } else if (isIos && isIphoneX) {
+  } else if (isIOS && isIphoneX) {
     height = 34;
   }
   return height;
 })();
 
-export const windowHeight = isIos ? screenHeight - statusBarHeight - bottomBarHeight : Dimensions.get('window').height;
+export const windowHeight = isIOS ? screenHeight - statusBarHeight - bottomBarHeight : Dimensions.get('window').height;

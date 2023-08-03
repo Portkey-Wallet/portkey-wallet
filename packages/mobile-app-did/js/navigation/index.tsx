@@ -24,6 +24,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import Discover from 'Test/Discover';
 
 import TabsDrawer from 'components/TabsDrawer';
+import chatNav from 'pages/Chat/routes';
 
 const Stack = createStackNavigator();
 export const productionNav = [
@@ -48,6 +49,7 @@ export const productionNav = [
 // dav nav
 export const davNav = [
   ...productionNav,
+  ...chatNav,
   { name: 'Home', component: Home },
   { name: 'Discover', component: Discover },
 ] as const;

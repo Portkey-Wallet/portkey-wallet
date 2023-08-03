@@ -140,6 +140,7 @@
     "react-native-vector-icons": "^9.1.0",
     "react-native-view-shot": "^3.6.0",
     "react-native-webview": "^11.23.0",
+    "react-native-gifted-chat":"^2.4.0",
     "react-redux": "^8.0.2",
     "redux-flipper": "^2.0.2",
     "redux-persist": "^6.0.0",

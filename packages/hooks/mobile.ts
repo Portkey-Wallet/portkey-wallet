@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
+import { useLatestRef } from '.';
 export function useHardwareBackPress(callback?: () => boolean) {
   useEffect(() => {
     if (!callback) return;
@@ -13,10 +14,7 @@ export function useHardwareBackPress(callback?: () => boolean) {
 }
 
 export function usePreventHardwareBack(callback?: () => void) {
-  const savedCallback = useRef<() => void>();
-  useEffect(() => {
-    savedCallback.current = callback;
-  });
+  const savedCallback = useLatestRef(callback);
   useHardwareBackPress(() => {
     savedCallback.current?.();
     return true;

@@ -9,7 +9,7 @@ import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleQRCodeData, invalidQRCode, InvalidQRCodeText, RouteInfoType } from 'utils/qrcode';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import GStyles from 'assets/theme/GStyles';
-import { isIos, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 import { Camera } from 'expo-camera';
 import { expandQrData } from '@portkey-wallet/utils/qrCode';
@@ -74,7 +74,7 @@ const QrScanner: React.FC = () => {
       {refresh ? null : (
         <Camera
           ratio={'16:9'}
-          style={[PageStyle.barCodeScanner, !isIos && PageStyle.barCodeScannerAndroid]}
+          style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
           onBarCodeScanned={handleBarCodeScanned}>
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>

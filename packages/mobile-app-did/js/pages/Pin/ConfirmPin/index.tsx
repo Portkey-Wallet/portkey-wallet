@@ -22,6 +22,7 @@ import { GuardiansApproved } from 'pages/Guardian/types';
 import { StyleSheet } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
+import { changeCanLock } from 'utils/LockManager';
 type RouterParams = {
   oldPin?: string;
   pin?: string;
@@ -55,6 +56,7 @@ export default function ConfirmPin() {
   const onChangePin = useCallback(
     async (newPin: string) => {
       if (!oldPin) return;
+      changeCanLock(false);
       try {
         if (biometrics) await setSecureStoreItem('Pin', newPin);
         dispatch(changePin({ pin: oldPin, newPin }));
@@ -63,6 +65,7 @@ export default function ConfirmPin() {
       } catch (error) {
         CommonToast.failError(error);
       }
+      changeCanLock(true);
       navigationService.navigate('AccountSettings');
     },
     [biometrics, dispatch, oldPin, t],

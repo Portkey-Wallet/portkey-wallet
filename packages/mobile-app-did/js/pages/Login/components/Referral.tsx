@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
@@ -19,6 +19,7 @@ import { useAppleAuthentication, useGoogleAuthentication } from 'hooks/authentic
 import { useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 const TitleMap = {
   [PageType.login]: {
     apple: 'Login with Apple',
@@ -44,10 +45,7 @@ export default function Referral({
 
   const onLogin = useOnLogin(type === PageType.login);
 
-  const isLoginRef = useRef(false);
-  const onAppleSign = useCallback(async () => {
-    if (isLoginRef.current) return;
-    isLoginRef.current = true;
+  const onAppleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
       const userInfo = await appleSign();
@@ -60,12 +58,8 @@ export default function Referral({
       CommonToast.failError(error);
     }
     Loading.hide(loadingKey);
-    isLoginRef.current = false;
   }, [appleSign, onLogin]);
-  const onGoogleSign = useCallback(async () => {
-    if (isLoginRef.current) return;
-    isLoginRef.current = true;
-
+  const onGoogleSign = useLockCallback(async () => {
     const loadingKey = Loading.show();
     try {
       const userInfo = await googleSign();
@@ -78,7 +72,6 @@ export default function Referral({
       CommonToast.failError(error);
     }
     Loading.hide(loadingKey);
-    isLoginRef.current = false;
   }, [googleSign, onLogin]);
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>

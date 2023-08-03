@@ -74,7 +74,26 @@ export const CmsState: { cms: CMSState } = {
         },
       ],
     },
-    tabMenuListNetMap: {},
+    tabMenuListNetMap: {
+      TESTNET: [
+        {
+          index: 1,
+          title: 'Wallet',
+          type: {
+            value: 'Wallet',
+          },
+        },
+      ],
+      MAIN: [
+        {
+          index: 1,
+          title: 'Wallet',
+          type: {
+            value: 'Wallet',
+          },
+        },
+      ],
+    },
     buyButtonNetMap: {
       MAIN: {
         isBuySectionShow: true,
@@ -84,6 +103,10 @@ export const CmsState: { cms: CMSState } = {
         isBuySectionShow: false,
         isSellSectionShow: false,
       },
+    },
+    rememberMeBlackListMap: {
+      TESTNET: [{ name: 'bingoGame', url: 'https://portkey-bingo-game.vercel.app' }],
+      MAIN: [{ name: 'bingoGame', url: 'https://portkey-bingo-game.vercel.app' }],
     },
   },
 };

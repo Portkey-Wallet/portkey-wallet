@@ -16,6 +16,7 @@ import { useOnLogin } from 'hooks/login';
 import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
 import { useFocusEffect } from '@react-navigation/native';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const TitleMap = {
   [PageType.login]: {
@@ -42,10 +43,7 @@ export default function Email({
   const [errorMessage, setErrorMessage] = useState<string>();
   const onLogin = useOnLogin(type === PageType.login);
 
-  const isLoginRef = useRef(false);
-  const onPageLogin = useCallback(async () => {
-    if (isLoginRef.current) return;
-    isLoginRef.current = true;
+  const onPageLogin = useLockCallback(async () => {
     const message = checkEmail(loginAccount) || undefined;
     setErrorMessage(message);
     if (message) return;
@@ -56,7 +54,6 @@ export default function Email({
       setErrorMessage(handleErrorMessage(error));
     }
     Loading.hide(loadingKey);
-    isLoginRef.current = false;
   }, [loginAccount, onLogin]);
 
   useEffectOnce(() => {

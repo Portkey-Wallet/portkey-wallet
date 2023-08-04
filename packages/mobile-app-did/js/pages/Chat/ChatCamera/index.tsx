@@ -6,21 +6,14 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { handleQRCodeData, invalidQRCode, InvalidQRCodeText, RouteInfoType } from 'utils/qrcode';
+import { RouteInfoType } from 'utils/qrcode';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import GStyles from 'assets/theme/GStyles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
-
 import { Camera } from 'expo-camera';
-import { expandQrData } from '@portkey-wallet/utils/qrCode';
-import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
-import Loading from 'components/Loading';
-import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 const QrScanner: React.FC = () => {
   const { currentNetwork } = useWallet();
-  const jumpToWebview = useDiscoverJumpWithNetWork();
 
   const navigation = useNavigation();
   const routesArr: RouteInfoType[] = navigation.getState().routes;
@@ -35,47 +28,10 @@ const QrScanner: React.FC = () => {
     }, []),
   );
 
-  const handleBarCodeScanned = useThrottleCallback(
-    ({ data = '' }) => {
-      if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
-
-      try {
-        const str = data.replace(/("|'|\s)/g, '');
-        if (checkIsUrl(str)) {
-          jumpToWebview({
-            item: {
-              name: prefixUrlWithProtocol(str),
-              url: prefixUrlWithProtocol(str),
-            },
-          });
-          return navigationService.goBack();
-        }
-
-        const qrCodeData = expandQrData(JSON.parse(data));
-        // if not currentNetwork
-        if (currentNetwork !== qrCodeData.netWorkType)
-          return invalidQRCode(
-            currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
-          );
-
-        handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
-      } catch (error) {
-        console.log(error);
-        return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
-      } finally {
-        Loading.hide();
-      }
-    },
-    [currentNetwork, jumpToWebview, previousRouteInfo],
-  );
-
   return (
     <View style={PageStyle.wrapper}>
       {refresh ? null : (
-        <Camera
-          ratio={'16:9'}
-          style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
-          onBarCodeScanned={handleBarCodeScanned}>
+        <Camera ratio={'16:9'} style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>
               <Text style={PageStyle.leftBlock} />

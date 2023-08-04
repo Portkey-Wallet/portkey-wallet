@@ -1,30 +1,62 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
-import SafeAreaBox from 'components/SafeAreaBox';
-import { BGStyles } from 'assets/theme/styles';
 
 import { pTd } from 'utils/unit';
-import { useLanguage } from 'i18n/hooks';
 
-import { TextM } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
+import ChatListItem from '../components/ChatHomeListItem';
+import Svg from 'components/Svg';
+import SafeAreaBox from 'components/SafeAreaBox';
+import { BGStyles } from 'assets/theme/styles';
+import CustomHeader from 'components/CustomHeader';
+import ChatOverlay from '../components/ChatOverlay';
+import Touchable from 'components/Touchable';
 
 export default function DiscoverHome() {
-  const { t } = useLanguage();
+  const RightDom = useMemo(() => {
+    return (
+      <View style={GStyles.flexRow}>
+        <Touchable onPress={() => navigationService.navigate('SearchPeople')}>
+          <Svg icon="search" color={defaultColors.bg1} />
+        </Touchable>
+        <Touchable
+          onPress={event => {
+            const { pageX, pageY } = event.nativeEvent;
+            ChatOverlay.showChatPopover(
+              [
+                { title: 'New Chat', onPress: () => navigationService.navigate('NewChatHome') },
+                { title: 'Add Contact' },
+              ],
+              pageX,
+              pageY,
+              'left',
+            );
+          }}>
+          <Svg icon="add2" />
+        </Touchable>
+      </View>
+    );
+  }, []);
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bg5}>
-      <TextM onPress={() => navigationService.navigate('ChatDetails')}>ChatHome</TextM>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
+      <CustomHeader noLeftDom themeType="blue" titleDom="Web3 Chat" rightDom={RightDom} />
+      <FlatList
+        style={BGStyles.bg1}
+        data={new Array(20)}
+        renderItem={() => <ChatListItem onDelete={() => console.log('delete')} />}
+      />
     </SafeAreaBox>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  containerStyles: {
     backgroundColor: defaultColors.bg4,
-    paddingTop: pTd(24),
+    paddingHorizontal: 0,
+    paddingBottom: 0,
     flex: 1,
   },
   inputContainer: {

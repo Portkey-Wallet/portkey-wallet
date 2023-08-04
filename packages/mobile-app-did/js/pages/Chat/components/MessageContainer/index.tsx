@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BubbleProps, GiftedChatProps, IMessage } from 'react-native-gifted-chat';
 import { Avatar, Bubble, SystemMessage, Message, MessageText } from 'react-native-gifted-chat';
-import ChatOverlay from './ChatOverlay';
+import ChatOverlay from '../ChatOverlay';
 import Touchable from 'components/Touchable';
 export const renderAvatar: GiftedChatProps['renderAvatar'] = props => (
   <Avatar

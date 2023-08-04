@@ -38,26 +38,26 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     icon: 'logo-icon',
     component: DashBoard,
   },
-  [TabRouteNameEnum.SETTINGS]: {
-    name: TabRouteNameEnum.SETTINGS,
-    index: 1,
-    label: 'Wallet',
-    icon: 'my',
-    component: MyMenu,
-  },
-  [TabRouteNameEnum.CHAT]: {
-    name: TabRouteNameEnum.CHAT,
-    index: 1,
-    label: 'Chat',
-    icon: 'my',
-    component: ChatHome,
-  },
   [TabRouteNameEnum.DISCOVER]: {
     name: TabRouteNameEnum.DISCOVER,
     index: 1,
     label: 'Discover',
     icon: 'discover',
     component: DiscoverHome,
+  },
+  [TabRouteNameEnum.CHAT]: {
+    name: TabRouteNameEnum.CHAT,
+    index: 2,
+    label: 'Chat',
+    icon: 'my',
+    component: ChatHome,
+  },
+  [TabRouteNameEnum.SETTINGS]: {
+    name: TabRouteNameEnum.SETTINGS,
+    index: 3,
+    label: 'Wallet',
+    icon: 'my',
+    component: MyMenu,
   },
 };
 

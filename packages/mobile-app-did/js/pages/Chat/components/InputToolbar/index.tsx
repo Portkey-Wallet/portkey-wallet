@@ -10,19 +10,7 @@ import { pTd } from 'utils/unit';
 import * as ImagePicker from 'expo-image-picker';
 
 export const CustomInputToolbar = props => {
-  const { isShowTools } = props || {};
-
-  return (
-    <InputToolbar
-      {...props}
-      containerStyle={{
-        backgroundColor: '#222B45',
-        paddingTop: 6,
-      }}
-      accessoryStyle={{ height: isShowTools ? 350 : 0 }}
-      primaryStyle={{ alignItems: 'center' }}
-    />
-  );
+  return <InputToolbar {...props} />;
 };
 
 export const renderActions = props => (

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
-import initialMessages from './messages';
-import { CustomInputToolbar, renderActions, renderSend, renderAccessory } from '../components/InputToolbar';
-import { RenderBubble, renderSystemMessage, renderMessage, renderMessageText } from '../components/MessageContainer';
+import initialMessages from '../messages';
+import { CustomInputToolbar, renderActions, renderSend, renderAccessory } from '../InputToolbar';
+import { RenderBubble, renderSystemMessage, renderMessage, renderMessageText } from '../MessageContainer';
 import { randomId } from '@portkey-wallet/utils';
 import { Keyboard, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -19,26 +19,11 @@ const user = {
 const Chats = () => {
   const [text, setText] = useState('');
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [isShowTools, setIsShowTools] = useState(false);
 
   const jump = useDiscoverJumpWithNetWork();
 
   useEffect(() => {
     setMessages(initialMessages as IMessage[]);
-  }, []);
-
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
-      setIsShowTools(false);
-    });
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => {
-      setIsShowTools(true);
-    });
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
   }, []);
 
   const onSend = (newMessages: IMessage[]) => {
@@ -60,13 +45,12 @@ const Chats = () => {
       messageIdGenerator={randomId}
       onInputTextChanged={setText}
       onSend={onSend}
-      renderInputToolbar={props => <CustomInputToolbar isShowTools={isShowTools} {...props} />}
+      renderInputToolbar={props => <CustomInputToolbar {...props} />}
       renderActions={renderActions}
       onPressActionButton={() => {
-        setIsShowTools(!isShowTools);
         Keyboard.dismiss();
       }}
-      renderAccessory={() => (isShowTools ? renderAccessory(isShowTools) : null)}
+      renderAccessory={renderAccessory}
       // renderComposer={renderComposer}
       renderSend={renderSend}
       renderBubble={props => <RenderBubble {...props} />}
@@ -75,6 +59,26 @@ const Chats = () => {
       renderMessageText={renderMessageText}
       // renderMessageImage
       // renderCustomView={renderCustomView}
+      messagesContainerStyle={{ backgroundColor: 'indigo' }}
+      parsePatterns={linkStyle => [
+        {
+          pattern: /#(\w+)/,
+          style: linkStyle,
+          onPress: tag => console.log(`Pressed on hashtag: ${tag}`),
+        },
+        {
+          pattern: /^https?:\/\/.+/,
+          style: { color: 'red' },
+          onPress: tag => {
+            jump({
+              item: {
+                url: tag,
+                name: tag,
+              },
+            });
+          },
+        },
+      ]}
     />
   );
 };

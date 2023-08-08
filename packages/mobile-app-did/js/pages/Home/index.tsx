@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Button, Text } from '@rneui/base';
 import { ScrollView } from 'react-native-gesture-handler';
 import navigationService from '../../utils/navigationService';
@@ -25,7 +25,13 @@ import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { useGetDeviceInfo } from 'hooks/device';
 import * as Network from 'expo-network';
 
-export default function HomeScreen() {
+import { sign } from '@portkey-wallet/im/utils/sign';
+import im from '@portkey-wallet/im';
+import useEffectOnce from 'hooks/useEffectOnce';
+import { useChannel, useChannelList, useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ChannelProvider } from '@portkey-wallet/hooks/hooks-ca/im/channelContext';
+
+function HomeScreen() {
   const wallet = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
   const dispatch = useAppCommonDispatch();
@@ -37,14 +43,41 @@ export default function HomeScreen() {
   const chainInfo = useCurrentChain(originChainId);
   const getHolderInfo = useGetHolderInfo();
   const { userGuardiansList } = useGuardiansInfo();
-  console.log(userGuardiansList, '=====userGuardiansList');
+  const createChannel = useCreateP2pChannel();
+
+  const { list, sendMessage, init, next, hasNext } = useChannel('d82d02859ab34ee28a6d1a478c25021d');
+  const {
+    list: channelList,
+    init: initChannelList,
+    next: nextChannelList,
+    hasNext: hasNextChannelList,
+  } = useChannelList();
+
+  useEffect(() => {
+    console.log('channelList', channelList);
+  }, [channelList]);
+  useEffect(() => {
+    console.log('list', list);
+  }, [list]);
+
+  useEffectOnce(() => {
+    (async () => {
+      if (!pin) return;
+      const account = getManagerAccount(pin);
+      if (!account || !wallet.caHash) return;
+
+      try {
+        await im.init(account, wallet.caHash);
+      } catch (error) {
+        console.log('im init error', error);
+      }
+    })();
+  });
 
   return (
     <SafeAreaBox>
       <ScrollView>
-        <Text>Test Screen</Text>
-        <Text>Test Screen</Text>
-        <Button title="ActionSheet show" onPress={() => ActionSheet.show([{ title: '123' }, { title: '123' }])} />
+        {/* <Button title="ActionSheet show" onPress={() => ActionSheet.show([{ title: '123' }, { title: '123' }])} />
         <Button
           title="loading show"
           onPress={() => {
@@ -145,8 +178,8 @@ export default function HomeScreen() {
               console.log(error, '====error');
             }
           }}
-        />
-        <Button
+        /> */}
+        {/* <Button
           title="add contact"
           onPress={async () => {
             try {
@@ -173,8 +206,8 @@ export default function HomeScreen() {
               console.log(error, '====error-1');
             }
           }}
-        />
-        <Button
+        /> */}
+        {/* <Button
           title="add failedActivity"
           onPress={() => {
             // dispatch(addFailedActivity({ transactionId: String(Math.random()) }));
@@ -200,16 +233,74 @@ export default function HomeScreen() {
             const ipAddress2 = await customFetch('https://api.ipify.org/?format=json');
             console.log(ipAddress, ipAddress2, '======ipAddress');
           }}
-        />
+        /> */}
+
         <Button
-          title="Discover"
+          title="sendMessage"
+          onPress={() => {
+            // sendMessage('测试测试');
+            const imInstance = im.getInstance();
+            if (!imInstance) return;
+            imInstance.sendMessage({
+              toRelationId: 'ivu3i-7iaaa-aaaaj-zw47q-cai',
+              type: 'TEXT',
+              content: '测试',
+            });
+          }}
+        />
+
+        <Button
+          title="init Message List"
+          onPress={() => {
+            init();
+          }}
+        />
+
+        <Button
+          title="next Message List"
+          onPress={() => {
+            console.log('hasNext', hasNext);
+            next();
+          }}
+        />
+
+        <Button
+          title="createChannel"
           onPress={async () => {
-            navigationService.navigate('Discover');
+            try {
+              const result = await createChannel('wwlzb-sqaaa-aaaaj-vaiwq-cai');
+              console.log('result', result);
+            } catch (error) {
+              console.log('createChannel: error', error);
+            }
+          }}
+        />
+
+        <Button
+          title="init Channel List"
+          onPress={() => {
+            initChannelList();
+          }}
+        />
+
+        <Button
+          title="next Channel List"
+          onPress={() => {
+            console.log('hasNext', hasNextChannelList);
+            nextChannelList();
           }}
         />
 
         <CrashTest />
       </ScrollView>
     </SafeAreaBox>
+  );
+}
+
+export default function Container() {
+  return (
+    <ChannelProvider>
+      <HomeScreen />
+    </ChannelProvider>
   );
 }

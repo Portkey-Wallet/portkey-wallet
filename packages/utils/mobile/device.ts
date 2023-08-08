@@ -4,9 +4,15 @@ import * as Device from 'expo-device';
 const X_WIDTH = 375;
 const X_HEIGHT = 812;
 
-export const screenWidth = Dimensions.get('screen').width;
-export const screenHeight = Dimensions.get('screen').height;
-export const windowWidth = Dimensions.get('window').width;
+export let screenWidth = Dimensions.get('screen').width;
+export let screenHeight = Dimensions.get('screen').height;
+export let windowWidth = Dimensions.get('window').width;
+
+Dimensions.addEventListener('change', ({ window, screen }) => {
+  screenWidth = screen.height;
+  screenHeight = screen.width;
+  windowWidth = window.width;
+});
 
 export const isIOS = Platform.OS === 'ios';
 

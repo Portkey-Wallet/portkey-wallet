@@ -12,7 +12,7 @@ export const renderAvatar: GiftedChatProps['renderAvatar'] = props => (
   />
 );
 
-export const RenderBubble = (props: BubbleProps<IMessage>) => {
+export const renderBubble = (props: BubbleProps<IMessage>) => {
   return (
     <Touchable
       onLongPress={event => {

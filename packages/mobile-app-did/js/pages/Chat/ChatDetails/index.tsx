@@ -11,6 +11,7 @@ import Chats from '../components/Chats';
 const ChatDetails = () => {
   return (
     <PageContainer
+      hideTouchable
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}

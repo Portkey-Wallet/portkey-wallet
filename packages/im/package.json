@@ -1,0 +1,17 @@
+{
+  "name": "@portkey-wallet/im",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "1.3.0",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node ./__tests__/@portkey-wallet/im.test.js"
+  },
+  "dependencies": {
+    "@portkey-wallet/types": "^1.3.0",
+    "@portkey-wallet/api": "^1.3.0",
+    "@portkey-wallet/utils": "^1.3.0",
+    "@relationlabs/im": "^0.3.3"
+  }
+}

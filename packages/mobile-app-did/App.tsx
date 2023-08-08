@@ -4,7 +4,7 @@ import { StatusBar, StatusBarProps } from 'react-native';
 import { ThemeProvider } from '@rneui/themed';
 import NavigationRoot from './js/navigation';
 import { useMemo } from 'react';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { Provider } from 'react-redux';
 import { store } from 'store';
 import { persistStore } from 'redux-persist';
@@ -42,7 +42,7 @@ const persistor = persistStore(store);
 const App = () => {
   const statusBarProps = useMemo(() => {
     const barProps: StatusBarProps = { barStyle: 'light-content' };
-    if (!isIos) {
+    if (!isIOS) {
       barProps.translucent = true;
       barProps.backgroundColor = 'transparent';
     }

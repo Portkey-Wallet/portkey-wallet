@@ -10,35 +10,58 @@ import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
 import { useTabMenuList } from 'hooks/cms';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
+import ChatHome from 'pages/Chat/ChatHome';
+import { formatMessageNumToStr } from '@portkey-wallet/utils/chat';
 
 const Tab = createBottomTabNavigator();
-type TabMenuTypeType = { icon: IconName; component: React.FC };
-export interface TabMenuItem extends TabMenuTypeType {
-  name: 'Wallet' | 'Discover' | 'Settings';
-  label: string;
-  index: number;
+
+enum TabRouteNameEnum {
+  WALLET = 'Wallet',
+  DISCOVER = 'Discover',
+  CHAT = 'Chat',
+  SETTINGS = 'Settings',
 }
 
-export const tabMenuTypeMap: Record<string, TabMenuTypeType> = {
-  Wallet: {
+export interface IRenderTabMenuItem {
+  name: TabRouteNameEnum;
+  label: string;
+  index: number;
+  icon: IconName;
+  component: React.FC;
+}
+
+export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
+  [TabRouteNameEnum.WALLET]: {
+    name: TabRouteNameEnum.WALLET,
+    index: 0,
+    label: 'wallet',
     icon: 'logo-icon',
     component: DashBoard,
   },
-  Settings: {
-    icon: 'my',
-    component: MyMenu,
-  },
-  Discover: {
+  [TabRouteNameEnum.DISCOVER]: {
+    name: TabRouteNameEnum.DISCOVER,
+    index: 1,
+    label: 'Discover',
     icon: 'discover',
     component: DiscoverHome,
   },
+  [TabRouteNameEnum.CHAT]: {
+    name: TabRouteNameEnum.CHAT,
+    index: 2,
+    label: 'Chat',
+    icon: 'my',
+    component: ChatHome,
+  },
+  [TabRouteNameEnum.SETTINGS]: {
+    name: TabRouteNameEnum.SETTINGS,
+    index: 3,
+    label: 'Wallet',
+    icon: 'my',
+    component: MyMenu,
+  },
 };
 
-export const defaultTabMenuList: TabMenuItem[] = [
-  { name: 'Wallet', label: 'Wallet', index: 0, icon: 'logo-icon', component: DashBoard },
-  { name: 'Discover', label: 'Discover', index: 1, icon: 'discover', component: DiscoverHome },
-  { name: 'Settings', label: 'My', index: 2, icon: 'my', component: MyMenu },
-];
+export const defaultTabMenuList = Object.values(tabMenuTypeMap);
 
 export default function TabRoot() {
   const { t } = useLanguage();
@@ -46,6 +69,7 @@ export default function TabRoot() {
   const tabMenuListStore = useTabMenuList();
 
   const tabMenuList = useMemo(() => {
+    if (__DEV__) return defaultTabMenuList;
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
       if (!acc.find(item => item.type.value === cur.type.value)) {
         acc.push(cur);
@@ -53,14 +77,15 @@ export default function TabRoot() {
       return acc;
     }, []);
 
-    if (!_tabMenuListStore.length) return defaultTabMenuList;
+    if (_tabMenuListStore.length) return defaultTabMenuList;
 
     return _tabMenuListStore
       .map(item => ({
-        name: item.type.value,
-        label: item.title,
-        index: item.index,
-        ...tabMenuTypeMap[item.type.value],
+        name: item?.type?.value,
+        label: item?.title,
+        index: item?.index,
+        icon: tabMenuTypeMap?.[item?.type?.value as TabRouteNameEnum]?.icon || 'my',
+        component: tabMenuTypeMap?.[item?.type?.value as TabRouteNameEnum]?.component,
       }))
       .filter(item => item.component !== undefined);
   }, [tabMenuListStore]);
@@ -90,6 +115,7 @@ export default function TabRoot() {
           name={ele.name}
           component={ele.component}
           options={{
+            tabBarBadge: ele.name === TabRouteNameEnum.CHAT ? formatMessageNumToStr(200) : undefined,
             title: t(ele.label),
             tabBarActiveTintColor: defaultColors.font4,
           }}

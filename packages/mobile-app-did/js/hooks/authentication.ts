@@ -1,7 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
 import * as Application from 'expo-application';
@@ -18,7 +18,7 @@ import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authe
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
-if (!isIos) {
+if (!isIOS) {
   GoogleSignin.configure({
     offlineAccess: true,
     webClientId: Config.GOOGLE_WEB_CLIENT_ID,
@@ -114,7 +114,7 @@ export function useGoogleAuthentication() {
   const googleSign = useCallback(async () => {
     changeCanLock(false);
     try {
-      return await (isIos ? iosPromptAsync : androidPromptAsync)();
+      return await (isIOS ? iosPromptAsync : androidPromptAsync)();
     } finally {
       changeCanLock(true);
     }
@@ -122,7 +122,7 @@ export function useGoogleAuthentication() {
 
   return useMemo(
     () => ({
-      googleResponse: isIos ? response : androidResponse,
+      googleResponse: isIOS ? response : androidResponse,
       googleSign,
     }),
     [androidResponse, googleSign, response],
@@ -135,7 +135,7 @@ export function useAppleAuthentication() {
   const isMainnet = useIsMainnet();
 
   useEffect(() => {
-    if (isIos) return;
+    if (isIOS) return;
     appleAuthAndroid.configure({
       clientId: Config.APPLE_CLIENT_ID,
       redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
@@ -226,7 +226,7 @@ export function useAppleAuthentication() {
   const appleSign = useCallback(async () => {
     changeCanLock(false);
     try {
-      return await (isIos ? iosPromptAsync : androidPromptAsync)();
+      return await (isIOS ? iosPromptAsync : androidPromptAsync)();
     } finally {
       changeCanLock(true);
     }
@@ -234,7 +234,7 @@ export function useAppleAuthentication() {
 
   return useMemo(
     () => ({
-      appleResponse: isIos ? response : androidResponse,
+      appleResponse: isIOS ? response : androidResponse,
       appleSign,
     }),
     [androidResponse, appleSign, response],

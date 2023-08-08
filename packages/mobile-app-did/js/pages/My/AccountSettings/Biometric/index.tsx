@@ -16,6 +16,7 @@ import { TextM } from 'components/CommonText';
 import ActionSheet from 'components/ActionSheet';
 import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import myEvents from 'utils/deviceEvent';
+import { changeCanLock } from 'utils/LockManager';
 
 export default function Biometric() {
   const { biometrics } = useUser();
@@ -25,6 +26,7 @@ export default function Biometric() {
   const openBiometrics = useCallback(
     async (pin: string) => {
       if (checkPin(pin)) {
+        changeCanLock(false);
         try {
           await setSecureStoreItem('Pin', pin);
           await setBiometrics(true);
@@ -32,6 +34,7 @@ export default function Biometric() {
           CommonToast.failError(error, i18n.t('Failed to enable biometrics'));
           await setBiometrics(false);
         }
+        changeCanLock(true);
       }
     },
     [setBiometrics],
@@ -55,6 +58,7 @@ export default function Biometric() {
               type: 'primary',
               title: 'Confirm',
               onPress: async () => {
+                changeCanLock(false);
                 try {
                   const enrolled = await touchAuth();
                   if (enrolled.success) await setBiometrics(value);
@@ -62,6 +66,7 @@ export default function Biometric() {
                 } catch (error) {
                   CommonToast.failError(error, i18n.t('Failed to enable biometrics'));
                 }
+                changeCanLock(true);
               },
             },
           ],

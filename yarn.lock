@@ -6167,6 +6167,13 @@
     redux-thunk "^2.4.1"
     reselect "^4.1.5"
 
+"@relationlabs/im@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@relationlabs/im/-/im-0.3.3.tgz#b22a66ac064f72cefc579e8b23222d16c1bc02d5"
+  integrity sha512-O3cK1qrupf7VE7w/dPOv+vdgTwUBEsGRvWt+vCHZBTUwN+io5hFS07LnZ/WWDXyjxXVlIGU2vMXchXOCUAD3og==
+  dependencies:
+    axios "^0.27.2"
+
 "@remix-run/router@1.0.2":
   version "1.0.2"
   resolved "https://registry.npmmirror.com/@remix-run/router/-/router-1.0.2.tgz#1c17eadb2fa77f80a796ad5ea9bf108e6993ef06"

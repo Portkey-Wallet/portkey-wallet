@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { GiftedChat, GiftedChatProps, IMessage, MessageTextProps, Time } from 'react-native-gifted-chat';
 import initialMessages from '../messages';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
-import { renderSystemMessage, renderMessage, renderMessageText, renderBubble } from '../MessageContainer';
+import { renderSystemMessage, renderMessage, renderBubble } from '../MessageContainer';
 import { randomId } from '@portkey-wallet/utils';
 import { Keyboard } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
@@ -11,6 +11,7 @@ import Touchable from 'components/Touchable';
 import { useChatsDispatch } from '../context/hooks';
 import { setBottomBarStatus, setChatText } from '../context/chatsContext';
 import useEffectOnce from 'hooks/useEffectOnce';
+import MessageText from '../Message/MessageText';
 
 const user = {
   _id: 1,
@@ -20,7 +21,6 @@ const user = {
 
 const ChatsUI = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const parsePatterns = useParsePatterns();
   const dispatch = useChatsDispatch();
 
   useEffect(() => {
@@ -31,16 +31,26 @@ const ChatsUI = () => {
     console.log('=======newMessages=============================', newMessages);
     setMessages(prevMessages => GiftedChat.append(prevMessages, newMessages));
   };
+
   useEffectOnce(() => {
     return () => {
       dispatch(setChatText(''));
     };
   });
+
   const onDismiss = useCallback(() => {
     Keyboard.dismiss();
     dispatch(setBottomBarStatus(undefined));
   }, [dispatch]);
 
+  const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
+    (props: MessageTextProps<IMessage>) => <MessageText {...props} />,
+    [],
+  );
+  const renderTime: GiftedChatProps['renderTime'] = useCallback((props: MessageTextProps<IMessage>) => {
+    if (props.currentMessage?.text) return null;
+    return <Time {...props} />;
+  }, []);
   return (
     <>
       <Touchable activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
@@ -53,15 +63,16 @@ const ChatsUI = () => {
           onSend={onSend}
           messages={messages}
           showUserAvatar={false}
+          renderAvatar={() => null}
           renderInputToolbar={() => null}
           renderBubble={renderBubble}
-          parsePatterns={parsePatterns}
           messageIdGenerator={randomId}
           renderMessage={renderMessage}
           showAvatarForEveryMessage={false}
           isKeyboardInternallyHandled={false}
           renderMessageText={renderMessageText}
           renderSystemMessage={renderSystemMessage}
+          renderTime={renderTime}
         />
       </Touchable>
       <BottomBarContainer>

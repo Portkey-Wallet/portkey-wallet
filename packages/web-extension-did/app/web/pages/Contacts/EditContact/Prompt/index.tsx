@@ -20,8 +20,6 @@ export default function EditContactPrompt({
   handleInputRemarkChange,
   handleSelectNetwork,
   handleAddressChange,
-  handleDelete,
-  handleAdd,
   closeDrawer,
   handleNetworkChange,
 }: IEditContactProps) {
@@ -37,10 +35,8 @@ export default function EditContactPrompt({
         state={state}
         addressArr={addressArr}
         onFinish={onFinish}
-        handleDelete={handleDelete}
         handleSelectNetwork={handleSelectNetwork}
         handleAddressChange={handleAddressChange}
-        handleAdd={handleAdd}
         handleInputValueChange={handleInputValueChange}
         handleInputRemarkChange={handleInputRemarkChange}
       />

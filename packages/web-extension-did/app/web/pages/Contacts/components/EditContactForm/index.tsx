@@ -20,10 +20,8 @@ export interface IEditContactFormProps extends FormProps {
   addressArr: CustomAddressItem[];
   handleInputValueChange: (v: string) => void;
   handleInputRemarkChange: (v: string) => void;
-  handleDelete: (name: any, i: any, remove: (index: number | number[]) => void) => void;
   handleSelectNetwork: (i: number) => void;
   handleAddressChange: (i: number, value: string) => void;
-  handleAdd: (add: (defaultValue?: any, insertIndex?: number) => void) => void;
 }
 
 export default function EditContactForm({
@@ -39,8 +37,6 @@ export default function EditContactForm({
   handleInputRemarkChange,
   handleSelectNetwork,
   handleAddressChange,
-  handleDelete,
-  handleAdd,
 }: IEditContactFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -85,18 +81,11 @@ export default function EditContactForm({
           </FormItem>
 
           <Form.List name="addresses">
-            {(fields, { add, remove }) => (
+            {(fields) => (
               <div className="addresses">
                 {fields.map(({ key, name, ...restField }, i) => (
                   <div className="address-item" key={key}>
-                    <div className="flex-between address-item-title">
-                      <span>{`Address${i + 1}`}</span>
-                      <CustomSvg
-                        type="Delete"
-                        className="address-item-delete"
-                        onClick={() => handleDelete(name, i, remove)}
-                      />
-                    </div>
+                    <div className="flex-between address-item-title">{`Address${i + 1}`}</div>
                     <Input.Group compact className="flex-column address-item-body">
                       <FormItem {...restField} name={[name, 'networkName']} noStyle>
                         <Input
@@ -130,12 +119,6 @@ export default function EditContactForm({
                     </Input.Group>
                   </div>
                 ))}
-                {fields.length < 5 && (
-                  <div className="flex-center addresses-add-btn" onClick={() => handleAdd(add)}>
-                    <CustomSvg type="PlusFilled" className="plus-svg" />
-                    <span>{t('Add Address')}</span>
-                  </div>
-                )}
               </div>
             )}
           </Form.List>

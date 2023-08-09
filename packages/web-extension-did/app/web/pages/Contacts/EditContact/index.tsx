@@ -40,13 +40,6 @@ export interface IEditContactProps extends IEditContactFormProps, BaseHeaderProp
   handleNetworkChange: (v: any) => void;
 }
 
-const initAddress: CustomAddressItem = {
-  chainId: 'AELF',
-  address: '',
-  networkName: 'MainChain AELF Testnet',
-  validData: { validateStatus: '', errorMsg: '' },
-};
-
 export default function EditContact() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
@@ -103,13 +96,6 @@ export default function EditContact() {
       setDisabled(true);
     },
     [addressArr, form, index],
-  );
-
-  const handleRemoveAds = useCallback(
-    (i: number) => {
-      setAddressArr(addressArr.filter((_, j) => j !== i));
-    },
-    [addressArr],
   );
 
   const handleFormValueChange = useCallback(() => {
@@ -260,26 +246,6 @@ export default function EditContact() {
     }
   }, [isEdit, navigate, state]);
 
-  // delete address method
-  const deleteAddress = useCallback(
-    (name: any, i: any, remove: (index: number | number[]) => void) => {
-      remove(name);
-      handleFormValueChange();
-      handleRemoveAds(i);
-    },
-    [handleFormValueChange, handleRemoveAds],
-  );
-
-  // add address method
-  const handleAdd = useCallback(
-    (add: (defaultValue?: any, insertIndex?: number) => void) => {
-      add(initAddress);
-      setDisabled(true);
-      setAddressArr([...addressArr, initAddress]);
-    },
-    [addressArr],
-  );
-
   const handleCloseDrawer = () => {
     setNetOpen(false);
   };
@@ -299,10 +265,8 @@ export default function EditContact() {
       state={state}
       addressArr={addressArr}
       onFinish={onFinish}
-      handleDelete={deleteAddress}
       handleSelectNetwork={handleSelectNetwork}
       handleAddressChange={handleAddressChange}
-      handleAdd={handleAdd}
       handleInputValueChange={handleInputValueChange}
       handleInputRemarkChange={handleInputRemarkChange}
       isShowDrawer={netOpen}
@@ -321,10 +285,8 @@ export default function EditContact() {
       state={state}
       addressArr={addressArr}
       onFinish={onFinish}
-      handleDelete={deleteAddress}
       handleSelectNetwork={handleSelectNetwork}
       handleAddressChange={handleAddressChange}
-      handleAdd={handleAdd}
       handleInputValueChange={handleInputValueChange}
       handleInputRemarkChange={handleInputRemarkChange}
       isShowDrawer={netOpen}

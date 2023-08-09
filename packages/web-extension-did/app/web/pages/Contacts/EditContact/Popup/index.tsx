@@ -21,8 +21,6 @@ export default function EditContactPopup({
   handleInputRemarkChange,
   handleSelectNetwork,
   handleAddressChange,
-  handleDelete,
-  handleAdd,
   closeDrawer,
   handleNetworkChange,
 }: IEditContactProps) {
@@ -44,10 +42,8 @@ export default function EditContactPopup({
         state={state}
         addressArr={addressArr}
         onFinish={onFinish}
-        handleDelete={handleDelete}
         handleSelectNetwork={handleSelectNetwork}
         handleAddressChange={handleAddressChange}
-        handleAdd={handleAdd}
         handleInputValueChange={handleInputValueChange}
         handleInputRemarkChange={handleInputRemarkChange}
       />

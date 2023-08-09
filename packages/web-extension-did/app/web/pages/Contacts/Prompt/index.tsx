@@ -33,7 +33,16 @@ export default function ContactsPrompt({
           />
           <ContactsSearchInput handleChange={handleSearch} className={'search-input-prompt'} />
         </div>
-        <ContactsBody isSearch={isSearch} list={list} contactCount={contactCount} initData={initData} />
+        <ContactsBody
+          isSearch={isSearch}
+          list={list}
+          contactCount={contactCount}
+          initData={initData}
+          portkeyChatCount={0}
+          portkeyChatInitData={initData}
+          portkeyChatList={[]}
+          isSearchPortkeyChat={false}
+        />
       </div>
       <Outlet />
     </div>

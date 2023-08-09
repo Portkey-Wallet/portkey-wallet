@@ -36,3 +36,8 @@ export enum BalanceTab {
   NFT = 'nft',
   ACTIVITY = 'activity',
 }
+
+export enum ContactsTab {
+  ALL = 'All',
+  PORTKEY_CHAT = 'Portkey Chat',
+}

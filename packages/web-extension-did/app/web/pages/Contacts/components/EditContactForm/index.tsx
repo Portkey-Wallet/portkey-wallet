@@ -15,9 +15,11 @@ export interface IEditContactFormProps extends FormProps {
   isEdit: boolean;
   isDisable: boolean;
   validName: ValidData;
+  validRemark: ValidData;
   state: any;
   addressArr: CustomAddressItem[];
   handleInputValueChange: (v: string) => void;
+  handleInputRemarkChange: (v: string) => void;
   handleDelete: (name: any, i: any, remove: (index: number | number[]) => void) => void;
   handleSelectNetwork: (i: number) => void;
   handleAddressChange: (i: number, value: string) => void;
@@ -31,8 +33,10 @@ export default function EditContactForm({
   state,
   addressArr,
   validName,
+  validRemark,
   onFinish,
   handleInputValueChange,
+  handleInputRemarkChange,
   handleSelectNetwork,
   handleAddressChange,
   handleDelete,
@@ -68,6 +72,18 @@ export default function EditContactForm({
               maxLength={16}
             />
           </FormItem>
+          <FormItem
+            name="remark"
+            label={t('Remrk')}
+            validateStatus={validRemark.validateStatus}
+            help={validRemark.errorMsg}>
+            <Input
+              placeholder={t('Enter remark')}
+              onChange={(e) => handleInputRemarkChange(e.target.value)}
+              maxLength={16}
+            />
+          </FormItem>
+
           <Form.List name="addresses">
             {(fields, { add, remove }) => (
               <div className="addresses">

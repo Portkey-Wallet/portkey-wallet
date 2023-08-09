@@ -60,6 +60,7 @@ export default function EditContact() {
   const [index, setIndex] = useState<number>(-1);
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [addressArr, setAddressArr] = useState<CustomAddressItem[]>(state?.addresses);
+  const [validRemark, setValidRemark] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const addContactApi = useAddContact();
   const editContactApi = useEditContact();
   const checkExistNameApi = useCheckContactName();
@@ -121,6 +122,18 @@ export default function EditContact() {
   const handleInputValueChange = useCallback(
     (v: string) => {
       setValidName({ validateStatus: '', errorMsg: '' });
+      if (!v) {
+        setDisabled(true);
+      } else {
+        handleFormValueChange();
+      }
+    },
+    [handleFormValueChange],
+  );
+
+  const handleInputRemarkChange = useCallback(
+    (v: string) => {
+      setValidRemark({ validateStatus: '', errorMsg: '' });
       if (!v) {
         setDisabled(true);
       } else {
@@ -282,6 +295,7 @@ export default function EditContact() {
       isEdit={isEdit}
       isDisable={disable}
       validName={validName}
+      validRemark={validRemark}
       state={state}
       addressArr={addressArr}
       onFinish={onFinish}
@@ -290,6 +304,7 @@ export default function EditContact() {
       handleAddressChange={handleAddressChange}
       handleAdd={handleAdd}
       handleInputValueChange={handleInputValueChange}
+      handleInputRemarkChange={handleInputRemarkChange}
       isShowDrawer={netOpen}
       closeDrawer={handleCloseDrawer}
       handleNetworkChange={handleNetworkChange}
@@ -302,6 +317,7 @@ export default function EditContact() {
       isEdit={isEdit}
       isDisable={disable}
       validName={validName}
+      validRemark={validRemark}
       state={state}
       addressArr={addressArr}
       onFinish={onFinish}
@@ -310,6 +326,7 @@ export default function EditContact() {
       handleAddressChange={handleAddressChange}
       handleAdd={handleAdd}
       handleInputValueChange={handleInputValueChange}
+      handleInputRemarkChange={handleInputRemarkChange}
       isShowDrawer={netOpen}
       closeDrawer={handleCloseDrawer}
       handleNetworkChange={handleNetworkChange}

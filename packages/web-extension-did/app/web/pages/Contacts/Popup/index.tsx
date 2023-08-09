@@ -30,7 +30,16 @@ export default function ContactsPopup({
         />
         <ContactsSearchInput handleChange={handleSearch} />
       </div>
-      <ContactsBody isSearch={isSearch} list={list} contactCount={contactCount} initData={initData} />
+      <ContactsBody
+        isSearch={isSearch}
+        list={list}
+        contactCount={contactCount}
+        initData={initData}
+        portkeyChatCount={0}
+        portkeyChatInitData={initData}
+        portkeyChatList={[]}
+        isSearchPortkeyChat={false}
+      />
     </div>
   );
 }

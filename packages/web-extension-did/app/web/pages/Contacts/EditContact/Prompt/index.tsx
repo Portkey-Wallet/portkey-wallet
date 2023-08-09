@@ -11,11 +11,13 @@ export default function EditContactPrompt({
   state,
   addressArr,
   validName,
+  validRemark,
   headerTitle,
   isShowDrawer,
   goBack,
   onFinish,
   handleInputValueChange,
+  handleInputRemarkChange,
   handleSelectNetwork,
   handleAddressChange,
   handleDelete,
@@ -31,6 +33,7 @@ export default function EditContactPrompt({
         isEdit={isEdit}
         isDisable={isDisable}
         validName={validName}
+        validRemark={validRemark}
         state={state}
         addressArr={addressArr}
         onFinish={onFinish}
@@ -39,6 +42,7 @@ export default function EditContactPrompt({
         handleAddressChange={handleAddressChange}
         handleAdd={handleAdd}
         handleInputValueChange={handleInputValueChange}
+        handleInputRemarkChange={handleInputRemarkChange}
       />
       <NetworkModal open={isShowDrawer} onChange={handleNetworkChange} onClose={closeDrawer} />
     </div>

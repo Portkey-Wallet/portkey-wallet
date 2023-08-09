@@ -12,11 +12,13 @@ export default function EditContactPopup({
   state,
   addressArr,
   validName,
+  validRemark,
   headerTitle,
   isShowDrawer,
   goBack,
   onFinish,
   handleInputValueChange,
+  handleInputRemarkChange,
   handleSelectNetwork,
   handleAddressChange,
   handleDelete,
@@ -38,6 +40,7 @@ export default function EditContactPopup({
         isEdit={isEdit}
         isDisable={isDisable}
         validName={validName}
+        validRemark={validRemark}
         state={state}
         addressArr={addressArr}
         onFinish={onFinish}
@@ -46,6 +49,7 @@ export default function EditContactPopup({
         handleAddressChange={handleAddressChange}
         handleAdd={handleAdd}
         handleInputValueChange={handleInputValueChange}
+        handleInputRemarkChange={handleInputRemarkChange}
       />
       <NetworkDrawer
         open={isShowDrawer}

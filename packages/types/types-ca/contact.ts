@@ -14,6 +14,7 @@ export interface ContactItemType {
   id: string;
   index: string;
   name: string;
+  remark?: string;
   addresses: AddressItem[];
   modificationTime: number;
   isDeleted: boolean;

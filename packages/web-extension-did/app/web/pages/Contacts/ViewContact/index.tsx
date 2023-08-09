@@ -8,9 +8,21 @@ import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 
 export interface IViewContactProps extends BaseHeaderProps {
-  data: { name: string; index: string; addresses: AddressItem[] };
+  data: {
+    name: string;
+    remark: string;
+    portkeyId: string;
+    relationOneId: string;
+    index: string;
+    addresses: AddressItem[];
+  };
   editText: string;
+  chatText: string;
+  addContactText: string;
   handleEdit: () => void;
+  handleChat: () => void;
+  handleAdd: () => void;
+  handleCopy: (v: string) => void;
 }
 
 export default function ViewContact() {
@@ -21,6 +33,8 @@ export default function ViewContact() {
 
   const title = t('Contacts');
   const editText = t('Edit');
+  const chatText = t('Chat');
+  const addContactText = t('Add Contact');
 
   const goBack = useCallback(() => {
     navigate('/setting/contacts');
@@ -30,9 +44,43 @@ export default function ViewContact() {
     navigate('/setting/contacts/edit', { state: state });
   }, [navigate, state]);
 
+  const handleChat = useCallback(() => {
+    navigate('/chat-list', { state: state });
+  }, [navigate, state]);
+
+  const handleAdd = useCallback(() => {
+    navigate('/setting/contacts/add', { state: state });
+  }, [navigate, state]);
+
+  const handleCopy = useCallback((v: string) => {
+    console.log('🌈 🌈 🌈 🌈 🌈 🌈 v', v);
+  }, []);
+
   return isNotLessThan768 ? (
-    <ViewContactPrompt headerTitle={title} editText={editText} data={state} goBack={goBack} handleEdit={handleEdit} />
+    <ViewContactPrompt
+      headerTitle={title}
+      editText={editText}
+      chatText={chatText}
+      addContactText={addContactText}
+      data={state}
+      goBack={goBack}
+      handleEdit={handleEdit}
+      handleChat={handleChat}
+      handleAdd={handleAdd}
+      handleCopy={handleCopy}
+    />
   ) : (
-    <ViewContactPopup headerTitle={title} editText={editText} data={state} goBack={goBack} handleEdit={handleEdit} />
+    <ViewContactPopup
+      headerTitle={title}
+      editText={editText}
+      chatText={chatText}
+      addContactText={addContactText}
+      data={state}
+      goBack={goBack}
+      handleEdit={handleEdit}
+      handleChat={handleChat}
+      handleAdd={handleAdd}
+      handleCopy={handleCopy}
+    />
   );
 }

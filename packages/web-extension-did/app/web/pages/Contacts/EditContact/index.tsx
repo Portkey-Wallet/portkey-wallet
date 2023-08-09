@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
-import { Form, message } from 'antd';
+import { Form, Modal, message } from 'antd';
 import { useNavigate, useLocation, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType, AddressItem } from '@portkey-wallet/types/types-ca/contact';
@@ -178,6 +178,23 @@ export default function EditContact() {
     [checkExistName, form],
   );
 
+  const checkExistRemark = useCallback(
+    async (v: string) => {
+      if (isEdit && state.remark === v) {
+        return false;
+      }
+      const { existed } = await checkExistNameApi(v); // TODO remark
+      return existed;
+    },
+    [checkExistNameApi, isEdit, state.remark],
+  );
+
+  const handleCheckRemark = useCallback(async (v: string) => {
+    const existed = await checkExistRemark(v);
+
+    return existed;
+  }, []);
+
   const handleCheckAddress = useCallback(
     (addresses: AddressItem[]) => {
       let flag = 0;
@@ -199,20 +216,36 @@ export default function EditContact() {
 
   const onFinish = useCallback(
     async (values: ContactItemType) => {
-      const { name, addresses } = values;
+      const { name, remark, addresses } = values;
 
       try {
         setLoading(true);
         const checkName = await handleCheckName(name.trim());
+        const checkRemark = await handleCheckRemark(remark?.trim() || '');
         const checkAddress = handleCheckAddress(addresses);
-        if (checkName && checkAddress) {
+        if (checkName && checkRemark && checkAddress) {
           if (isEdit) {
+            // TODO remark
             await editContactApi({ name: name.trim(), addresses, id: state.id, index: state.index });
           } else {
+            // TODO remark
             await addContactApi({ name: name.trim(), addresses });
           }
           appDispatch(fetchContactListAsync());
-          navigate('/setting/contacts');
+          // navigate('/setting/contacts');
+          // TODO if can chat
+          Modal.confirm({
+            width: 320,
+            content: t('This contact is identified as a new portkey web3 chat friend.'),
+            className: 'cross-modal delete-modal',
+            autoFocusButton: null,
+            icon: null,
+            centered: true,
+            okText: t('Ok'),
+            cancelText: t('Cancel'),
+            onOk: () => navigate('/chat'),
+            onCancel: () => navigate('/setting/contacts/view', { state: {} }),
+          });
           message.success(isEdit ? 'Edit Contact Successful' : 'Add Contact Successful');
         }
       } catch (e: any) {
@@ -228,6 +261,7 @@ export default function EditContact() {
       editContactApi,
       handleCheckAddress,
       handleCheckName,
+      handleCheckRemark,
       isEdit,
       navigate,
       setLoading,

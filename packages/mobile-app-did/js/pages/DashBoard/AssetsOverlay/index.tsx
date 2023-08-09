@@ -52,7 +52,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
         <View style={itemStyle.right}>
           <View>
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font5]}>
-              {`${symbol || 'Name'} #${tokenId}`}
+              {`${symbol} #${tokenId}`}
             </TextL>
 
             <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
@@ -105,6 +105,7 @@ const AssetList = () => {
           skipCount: pageInfoRef.current.curPage * MAX_RESULT_COUNT,
           keyword: _keyword,
         });
+
         pageInfoRef.current.curPage = pageInfoRef.current.curPage + 1;
         pageInfoRef.current.total = response.totalRecordCount;
         console.log('fetchAccountAssetsByKeywords:', response);

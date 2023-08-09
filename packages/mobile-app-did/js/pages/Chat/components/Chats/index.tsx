@@ -2,13 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { GiftedChat, GiftedChatProps, IMessage, MessageTextProps, Time } from 'react-native-gifted-chat';
 import initialMessages from '../messages';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
-import { renderSystemMessage, renderMessage, renderBubble } from '../MessageContainer';
+import { renderSystemMessage, renderMessage } from '../MessageContainer';
 import { randomId } from '@portkey-wallet/utils';
 import { Keyboard } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { useParsePatterns } from 'pages/Chat/hooks';
 import Touchable from 'components/Touchable';
 import { useChatsDispatch } from '../context/hooks';
+import CustomBubble from '../CustomBubble';
 import { setBottomBarStatus, setChatText } from '../context/chatsContext';
 import useEffectOnce from 'hooks/useEffectOnce';
 import MessageText from '../Message/MessageText';
@@ -28,7 +28,6 @@ const ChatsUI = () => {
   }, []);
 
   const onSend = (newMessages: IMessage[]) => {
-    console.log('=======newMessages=============================', newMessages);
     setMessages(prevMessages => GiftedChat.append(prevMessages, newMessages));
   };
 
@@ -51,6 +50,10 @@ const ChatsUI = () => {
     if (props.currentMessage?.text) return null;
     return <Time {...props} />;
   }, []);
+  const renderBubble = useCallback((data: any) => {
+    return <CustomBubble {...data} />;
+  }, []);
+
   return (
     <>
       <Touchable activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>

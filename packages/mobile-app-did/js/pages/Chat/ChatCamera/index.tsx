@@ -1,51 +1,61 @@
-import React, { useCallback, useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
-
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { RouteInfoType } from 'utils/qrcode';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import GStyles from 'assets/theme/GStyles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { Camera } from 'expo-camera';
+import Touchable from 'components/Touchable';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const QrScanner: React.FC = () => {
-  const { currentNetwork } = useWallet();
+  const cameraRef = useRef<any>();
+  const [imgUrl, setImgUrl] = useState<string>('');
+  const [status, requestCameraPermission] = Camera.useCameraPermissions();
 
-  const navigation = useNavigation();
-  const routesArr: RouteInfoType[] = navigation.getState().routes;
-  const previousRouteInfo = routesArr[routesArr.length - 2];
-  console.log(previousRouteInfo, '=====previousRouteInfo');
+  const takePicture = useCallback(async () => {
+    if (!cameraRef?.current) return;
+    try {
+      const result = await cameraRef.current?.takePictureAsync();
+      console.log('======result===', result, result.uri);
+      setImgUrl(result.uri);
+    } catch (error) {
+      console.log('------', error);
+    }
+  }, []);
 
-  const [refresh, setRefresh] = useState<boolean>();
-
-  useFocusEffect(
-    useCallback(() => {
-      setRefresh(false);
-    }, []),
-  );
+  useEffectOnce(() => {
+    (async () => {
+      const result = await requestCameraPermission();
+      console.log('=====requestCameraPermission====result', result);
+    })();
+  });
 
   return (
     <View style={PageStyle.wrapper}>
-      {refresh ? null : (
-        <Camera ratio={'16:9'} style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
-          <SafeAreaView style={PageStyle.innerView}>
-            <View style={PageStyle.iconWrap}>
-              <Text style={PageStyle.leftBlock} />
-              <TouchableOpacity
-                style={PageStyle.svgWrap}
-                onPress={() => {
-                  navigationService.goBack();
-                }}>
-                <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
-              </TouchableOpacity>
-            </View>
-          </SafeAreaView>
-        </Camera>
-      )}
+      <Camera
+        ratio={'16:9'}
+        ref={cameraRef}
+        style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
+        <SafeAreaView style={PageStyle.innerView}>
+          <View style={PageStyle.iconWrap}>
+            <Text style={PageStyle.leftBlock} />
+            <TouchableOpacity
+              style={PageStyle.svgWrap}
+              onPress={() => {
+                navigationService.goBack();
+              }}>
+              <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Camera>
+      <View style={PageStyle.buttonWrap}>
+        <Touchable onPress={takePicture} style={PageStyle.button} />
+      </View>
+      <Image style={PageStyle.img} source={{ uri: imgUrl || '' }} />
     </View>
   );
 };
@@ -87,35 +97,30 @@ export const PageStyle = StyleSheet.create({
   svgWrap: {
     ...GStyles.paddingArg(16, 0, 16, 16),
   },
-  scan: {
-    marginTop: pTd(136),
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  },
-  title: {
-    marginTop: pTd(62),
-    fontSize: pTd(16),
-    color: defaultColors.font2,
-    textAlign: 'center',
-  },
-  tips: {
-    // position: 'absolute',
-    // bottom: 100,
-    color: defaultColors.font7,
-    textAlign: 'center',
-    width: screenWidth,
-    lineHeight: pTd(20),
-    marginTop: pTd(54),
-  },
-  albumWrap: {
-    position: 'absolute',
-    bottom: pTd(75),
-  },
-  albumText: {
-    marginTop: pTd(4),
-    textAlign: 'center',
-  },
   leftBlock: {
     flex: 1,
+  },
+  buttonWrap: {
+    width: screenWidth,
+    position: 'absolute',
+    zIndex: 100,
+    bottom: 100,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  button: {
+    marginHorizontal: 'auto',
+    borderRadius: 50,
+    height: 100,
+    width: 100,
+    backgroundColor: defaultColors.bg1,
+  },
+  img: {
+    position: 'absolute',
+    zIndex: 100,
+    top: 100,
+    width: 100,
+    height: 100,
   },
 });

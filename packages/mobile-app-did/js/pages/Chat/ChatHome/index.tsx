@@ -1,18 +1,16 @@
 import React, { useMemo } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 
-import { pTd } from 'utils/unit';
-
 import navigationService from 'utils/navigationService';
-import ChatListItem from '../components/ChatHomeListItem';
 import Svg from 'components/Svg';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 import CustomHeader from 'components/CustomHeader';
 import ChatOverlay from '../components/ChatOverlay';
 import Touchable from 'components/Touchable';
+import ChatList from '../components/ChatList';
 
 export default function DiscoverHome() {
   const RightDom = useMemo(() => {
@@ -43,26 +41,7 @@ export default function DiscoverHome() {
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <CustomHeader noLeftDom themeType="blue" titleDom="Web3 Chat" rightDom={RightDom} />
-      <FlatList
-        style={BGStyles.bg1}
-        data={new Array(20)}
-        renderItem={() => <ChatListItem onDelete={() => console.log('delete')} />}
-      />
+      <ChatList chatList={[{ id: 'chat', name: 'chat' }]} />
     </SafeAreaBox>
   );
 }
-
-const styles = StyleSheet.create({
-  containerStyles: {
-    backgroundColor: defaultColors.bg4,
-    paddingHorizontal: 0,
-    paddingBottom: 0,
-    flex: 1,
-  },
-  inputContainer: {
-    ...GStyles.paddingArg(8, 20),
-  },
-  svgWrap: {
-    padding: pTd(16),
-  },
-});

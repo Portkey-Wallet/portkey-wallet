@@ -1,11 +1,12 @@
 import { bottomBarHeight, isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useEffect, useMemo, useRef } from 'react';
 import { Animated } from 'react-native';
-import { ChatBottomBarStatus, setBottomBarStatus } from '../context/chatsContext';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import usePrevious from 'hooks/usePrevious';
 import { TextInput } from 'react-native';
 import { useBottomBarStatus, useChatsDispatch } from '../context/hooks';
+import { ChatBottomBarStatus } from 'store/chat/slice';
+import { setBottomBarStatus } from '../context/chatsContext';
 
 const TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight + 10);
 

@@ -1,19 +1,15 @@
-import { useMemo } from 'react';
-import { useChats } from './chatsContext';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 export function useBottomBarStatus() {
-  const [{ bottomBarStatus }] = useChats();
-  return useMemo(() => bottomBarStatus, [bottomBarStatus]);
+  return useAppSelector(state => state.chats.bottomBarStatus);
 }
 
 export function useChatText() {
-  const [{ text }] = useChats();
-  return useMemo(() => text, [text]);
+  return useAppSelector(state => state.chats.text);
 }
 export function useChatsDispatch() {
-  const [, dispatch] = useChats();
-  return useMemo(() => dispatch, [dispatch]);
+  return useAppDispatch();
 }
 
 export function useLatestText() {

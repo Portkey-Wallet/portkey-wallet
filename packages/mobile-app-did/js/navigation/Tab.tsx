@@ -11,7 +11,7 @@ import useInitData from 'hooks/useInitData';
 import { useTabMenuList } from 'hooks/cms';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
 import ChatHome from 'pages/Chat/ChatHome';
-import { formatMessageNumToStr } from '@portkey-wallet/utils/chat';
+import { formatMessageCountToStr } from '@portkey-wallet/utils/chat';
 
 const Tab = createBottomTabNavigator();
 
@@ -115,7 +115,7 @@ export default function TabRoot() {
           name={ele.name}
           component={ele.component}
           options={{
-            tabBarBadge: ele.name === TabRouteNameEnum.CHAT ? formatMessageNumToStr(200) : undefined,
+            tabBarBadge: ele.name === TabRouteNameEnum.CHAT ? formatMessageCountToStr(200) : undefined,
             title: t(ele.label),
             tabBarActiveTintColor: defaultColors.font4,
           }}

@@ -1,15 +1,57 @@
-import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FlatList, StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
 import InputWithCancel from 'components/InputWithCancel';
-import SearchPeopleItem from '../components/SearchPeopleItem';
+import CommonButton from 'components/CommonButton';
+import { useFocusEffect } from '@react-navigation/native';
+import NoData from 'components/NoData';
+import { Image } from '@rneui/base';
+import { TextM } from 'components/CommonText';
+import Touchable from 'components/Touchable';
+const mock_data = [0, 1, 2];
 
 export default function SearchPeople() {
+  const iptRef = useRef<any>();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   const [keyword, setKeyword] = useState('');
+  const [filterList, setFilterList] = useState(mock_data);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (iptRef?.current) {
+        timerRef.current = setTimeout(() => {
+          iptRef.current.focus();
+        }, 300);
+      }
+    }, []),
+  );
+
+  useEffect(() => {
+    setFilterList(mock_data);
+  }, [keyword]);
+
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    [],
+  );
+
+  const renderItem = useCallback((item: any) => {
+    console.log(item);
+    return (
+      <Touchable onPress={() => navigationService.navigate('ChatDetails')}>
+        <Image source={{ uri: '' }} />
+        <TextM>Sally</TextM>
+        <TextM>2</TextM>
+      </Touchable>
+    );
+  }, []);
 
   return (
     <PageContainer
@@ -20,13 +62,14 @@ export default function SearchPeople() {
       containerStyles={styles.containerStyles}
       titleDom="Search">
       <InputWithCancel
+        ref={iptRef}
         onChangeText={v => setKeyword(v)}
         value={keyword}
         clearText={() => setKeyword('')}
         onCancel={() => navigationService.goBack()}
       />
-
-      <SearchPeopleItem item={undefined} />
+      <CommonButton onPress={() => navigationService.navigate('FindMorePeople')}>FindMorePeople</CommonButton>
+      <FlatList data={filterList} ListEmptyComponent={<NoData />} renderItem={renderItem} />
     </PageContainer>
   );
 }

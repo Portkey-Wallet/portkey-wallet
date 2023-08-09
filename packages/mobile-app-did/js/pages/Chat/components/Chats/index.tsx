@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GiftedChat, IMessage } from 'react-native-gifted-chat';
 import initialMessages from '../messages';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
-import { renderSystemMessage, renderMessage, renderMessageText, renderBubble } from '../MessageContainer';
+import { renderSystemMessage, renderMessage, renderMessageText } from '../MessageContainer';
 import { randomId } from '@portkey-wallet/utils';
 import { Keyboard } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
@@ -10,6 +10,7 @@ import { ChatsProvider, setBottomBarStatus } from '../context/chatsContext';
 import { useParsePatterns } from 'pages/Chat/hooks';
 import Touchable from 'components/Touchable';
 import { useChatsDispatch } from '../context/hooks';
+import CustomBubble from '../CustomBubble';
 
 const user = {
   _id: 1,
@@ -27,9 +28,12 @@ const ChatsUI = () => {
   }, []);
 
   const onSend = (newMessages: IMessage[]) => {
-    console.log('=======newMessages=============================', newMessages);
     setMessages(prevMessages => GiftedChat.append(prevMessages, newMessages));
   };
+
+  const renderBubble = useCallback((data: any) => {
+    return <CustomBubble {...data} />;
+  }, []);
 
   return (
     <>

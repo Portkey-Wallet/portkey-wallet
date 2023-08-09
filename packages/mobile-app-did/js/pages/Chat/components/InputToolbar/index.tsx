@@ -7,7 +7,6 @@ import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import { TextM } from 'components/CommonText';
 import * as ImagePicker from 'expo-image-picker';
-import { ChatBottomBarStatus, setBottomBarStatus, setText } from '../context/chatsContext';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { Animated } from 'react-native';
 import { TextInput } from 'react-native';
@@ -17,6 +16,8 @@ import Emoticons from '../Emoticons';
 import { useKeyboardAnim } from '../hooks';
 import { BGStyles } from 'assets/theme/styles';
 import { useBottomBarStatus, useChatText, useChatsDispatch, useLatestText } from '../context/hooks';
+import { ChatBottomBarStatus } from 'store/chat/slice';
+import { setBottomBarStatus, setChatText } from '../context/chatsContext';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return <Actions onPressActionButton={onPress} icon={() => <Svg icon="add1" />} optionTintColor="#222B45" />;
@@ -104,7 +105,7 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
         {isIOS ? (
           <TextInput
-            onChangeText={v => dispatch(setText(v))}
+            onChangeText={v => dispatch(setChatText(v))}
             value={text}
             style={GStyles.flex1}
             ref={textInputRef as any}
@@ -113,7 +114,7 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
           <AndroidInputContainer textInputRef={textInputRef}>
             <TextInput
               value={text}
-              onChangeText={v => dispatch(setText(v))}
+              onChangeText={v => dispatch(setChatText(v))}
               style={GStyles.flex1}
               ref={textInputRef as any}
             />
@@ -167,7 +168,7 @@ export function AccessoryBar() {
           bottomBarStatus === ChatBottomBarStatus.emoji ? undefined : styles.hide,
           styles.absolute,
         ]}>
-        <Emoticons onPress={item => dispatch(setText(latestText.current + item.code))} />
+        <Emoticons onPress={item => dispatch(setChatText(latestText.current + item.code))} />
       </View>
       <ToolBar />
     </View>

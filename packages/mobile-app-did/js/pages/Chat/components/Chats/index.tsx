@@ -6,11 +6,12 @@ import { renderSystemMessage, renderMessage, renderMessageText } from '../Messag
 import { randomId } from '@portkey-wallet/utils';
 import { Keyboard } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { ChatsProvider, setBottomBarStatus } from '../context/chatsContext';
 import { useParsePatterns } from 'pages/Chat/hooks';
 import Touchable from 'components/Touchable';
 import { useChatsDispatch } from '../context/hooks';
 import CustomBubble from '../CustomBubble';
+import { setBottomBarStatus, setChatText } from '../context/chatsContext';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const user = {
   _id: 1,
@@ -30,6 +31,15 @@ const ChatsUI = () => {
   const onSend = (newMessages: IMessage[]) => {
     setMessages(prevMessages => GiftedChat.append(prevMessages, newMessages));
   };
+  useEffectOnce(() => {
+    return () => {
+      dispatch(setChatText(''));
+    };
+  });
+  const onDismiss = useCallback(() => {
+    Keyboard.dismiss();
+    dispatch(setBottomBarStatus(undefined));
+  }, [dispatch]);
 
   const renderBubble = useCallback((data: any) => {
     return <CustomBubble {...data} />;
@@ -37,13 +47,7 @@ const ChatsUI = () => {
 
   return (
     <>
-      <Touchable
-        activeOpacity={1}
-        onPress={() => {
-          Keyboard.dismiss();
-          dispatch(setBottomBarStatus(undefined));
-        }}
-        style={GStyles.flex1}>
+      <Touchable activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
         <GiftedChat
           alignTop
           user={user}
@@ -72,9 +76,5 @@ const ChatsUI = () => {
 };
 
 export default function Chats() {
-  return (
-    <ChatsProvider>
-      <ChatsUI />
-    </ChatsProvider>
-  );
+  return <ChatsUI />;
 }

@@ -22,6 +22,7 @@ import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
+import { chatSlice } from './chat/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -57,6 +58,7 @@ const rootReducer = combineReducers({
   [discoverSlice.name]: discoverReducer,
   [txFeeSlice.name]: txFeeSlice.reducer,
   [imSlice.name]: imSlice.reducer,
+  [chatSlice.name]: chatSlice.reducer,
 });
 
 export default rootReducer;

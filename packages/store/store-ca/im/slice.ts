@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { IMStateType } from './type';
-import { nextChannelList, resetIm, setChannelList, setHasNext } from './actions';
+import { removeChannel, nextChannelList, resetIm, setChannelList, setHasNext, updateChannelAttribute } from './actions';
+import { formatChannelList } from './util';
 
 const initialState: IMStateType = {
   channelListNetMap: {},
@@ -24,7 +25,7 @@ export const imSlice = createSlice({
       })
       .addCase(nextChannelList, (state, action) => {
         const originList = state.channelListNetMap[action.payload.network]?.list || [];
-        const chanelList = {
+        const channelList = {
           list: [...originList, ...action.payload.channelList.list],
           cursor: action.payload.channelList.cursor,
         };
@@ -32,7 +33,7 @@ export const imSlice = createSlice({
           ...state,
           channelListNetMap: {
             ...state.channelListNetMap,
-            [action.payload.network]: chanelList,
+            [action.payload.network]: channelList,
           },
         };
       })
@@ -42,6 +43,49 @@ export const imSlice = createSlice({
           hasNextNetMap: {
             ...state.hasNextNetMap,
             [action.payload.network]: action.payload.hasNext,
+          },
+        };
+      })
+      .addCase(updateChannelAttribute, (state, action) => {
+        const preChannelList = state.channelListNetMap[action.payload.network];
+        if (!preChannelList) return state;
+
+        let channelList = {
+          ...preChannelList,
+          list: preChannelList.list.map(item => {
+            if (item.channelUuid === action.payload.channelId) {
+              return {
+                ...item,
+                ...action.payload.value,
+              };
+            }
+            return item;
+          }),
+        };
+        channelList = formatChannelList(channelList);
+
+        return {
+          ...state,
+          channelListNetMap: {
+            ...state.channelListNetMap,
+            [action.payload.network]: channelList,
+          },
+        };
+      })
+      .addCase(removeChannel, (state, action) => {
+        const preChannelList = state.channelListNetMap[action.payload.network];
+        if (!preChannelList) return state;
+        let channelList = {
+          ...preChannelList,
+          list: preChannelList.list.filter(item => item.channelUuid !== action.payload.channelId),
+        };
+        channelList = formatChannelList(channelList);
+
+        return {
+          ...state,
+          channelListNetMap: {
+            ...state.channelListNetMap,
+            [action.payload.network]: channelList,
           },
         };
       })

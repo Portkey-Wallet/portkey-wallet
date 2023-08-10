@@ -28,7 +28,7 @@ import * as Network from 'expo-network';
 import { sign } from '@portkey-wallet/im/utils/sign';
 import im from '@portkey-wallet/im';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useChannel, useChannelList, useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useChannel, useChannelList, useCreateP2pChannel, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelProvider } from '@portkey-wallet/hooks/hooks-ca/im/channelContext';
 
 function HomeScreen() {
@@ -44,8 +44,9 @@ function HomeScreen() {
   const getHolderInfo = useGetHolderInfo();
   const { userGuardiansList } = useGuardiansInfo();
   const createChannel = useCreateP2pChannel();
+  const unreadCount = useUnreadCount();
 
-  const { list, sendMessage, init, next, hasNext } = useChannel('d82d02859ab34ee28a6d1a478c25021d');
+  const { list, sendMessage, init, next, hasNext } = useChannel('6d4ddb55feff42098d1badacbf3cd374');
   const {
     list: channelList,
     init: initChannelList,
@@ -59,6 +60,9 @@ function HomeScreen() {
   useEffect(() => {
     console.log('list', list);
   }, [list]);
+  useEffect(() => {
+    console.log('unreadCount', unreadCount);
+  }, [unreadCount]);
 
   useEffectOnce(() => {
     (async () => {
@@ -238,14 +242,14 @@ function HomeScreen() {
         <Button
           title="sendMessage"
           onPress={() => {
-            // sendMessage('测试测试');
-            const imInstance = im.getInstance();
-            if (!imInstance) return;
-            imInstance.sendMessage({
-              toRelationId: 'ivu3i-7iaaa-aaaaj-zw47q-cai',
-              type: 'TEXT',
-              content: '测试',
-            });
+            sendMessage('测试测试');
+            // const imInstance = im.getInstance();
+            // if (!imInstance) return;
+            // imInstance.sendMessage({
+            //   toRelationId: 'ivu3i-7iaaa-aaaaj-zw47q-cai',
+            //   type: 'TEXT',
+            //   content: '测试',
+            // });
           }}
         />
 

@@ -28,9 +28,7 @@ export const sign = async (message: string, account: AElfWallet, caHash: string)
     `0${signature.recoveryParam.toString()}`,
   ].join('');
 
-  const {
-    data: { token },
-  } = await fetchRequest.send({
+  const { data: verifyData } = await fetchRequest.send({
     url: '/api/v1/verify/aelf',
     method: 'POST',
     body: JSON.stringify({
@@ -40,6 +38,7 @@ export const sign = async (message: string, account: AElfWallet, caHash: string)
       caHash,
     }),
   });
+  const { token } = verifyData || {};
 
   // TODO: RelationIM test APIKEY
   const APIKEY = '581c6c4fa0b54912b00088aa563342a4';

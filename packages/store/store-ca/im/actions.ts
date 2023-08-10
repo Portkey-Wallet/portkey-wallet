@@ -1,5 +1,5 @@
 import { createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import { ChannelList, IMStateType } from './type';
+import { ChannelList, IMStateType, UpdateChannelAttributeTypeEnum } from './type';
 import { ChannelItem } from '@portkey-wallet/im';
 import { NetworkType } from '@portkey-wallet/types';
 
@@ -22,6 +22,7 @@ export const updateChannelAttribute = createAction<{
   network: NetworkType;
   channelId: string;
   value: Partial<ChannelItem>;
+  type?: UpdateChannelAttributeTypeEnum;
 }>('im/updateChannelAttribute');
 
 export const removeChannel = createAction<{

@@ -14,3 +14,7 @@ export interface IMStateType {
     [T in NetworkType]?: ChannelList;
   };
 }
+
+export enum UpdateChannelAttributeTypeEnum {
+  UPDATE_UNREAD_CHANNEL = 'updateUnreadChannel',
+}

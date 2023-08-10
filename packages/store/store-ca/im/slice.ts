@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { IMStateType } from './type';
+import { IMStateType, UpdateChannelAttributeTypeEnum } from './type';
 import { removeChannel, nextChannelList, resetIm, setChannelList, setHasNext, updateChannelAttribute } from './actions';
 import { formatChannelList } from './util';
 
@@ -57,6 +57,16 @@ export const imSlice = createSlice({
               return {
                 ...item,
                 ...action.payload.value,
+                ...((): typeof action.payload.value => {
+                  switch (action.payload.type) {
+                    case UpdateChannelAttributeTypeEnum.UPDATE_UNREAD_CHANNEL:
+                      return {
+                        unreadMessageCount: item.unreadMessageCount + 1,
+                      };
+                    default:
+                      return {};
+                  }
+                })(),
               };
             }
             return item;

@@ -22,6 +22,7 @@ import {
   setHasNext as setHasNextChannel,
   updateChannelAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
+import { UpdateChannelAttributeTypeEnum } from '@portkey-wallet/store/store-ca/im/type';
 
 export const useImState = () => useAppCASelector(state => state.im);
 
@@ -232,7 +233,7 @@ export const useChannel = (channelId: string) => {
         throw error;
       }
     },
-    [channelId, dispatch],
+    [appCommonDispatch, channelId, dispatch, networkType],
   );
 
   const deleteMessage = useCallback(
@@ -387,8 +388,38 @@ export const useChannelList = () => {
   const { channelListNetMap } = useImState();
   const { networkType } = useCurrentNetworkInfo();
   const { next, hasNext } = useNextChannelList();
+  const dispatch = useAppCommonDispatch();
 
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
+
+  const updateUnreadChannel = useCallback(
+    (message: Message) => {
+      console.log('updateUnreadChannel', message);
+      dispatch(
+        updateChannelAttribute({
+          network: networkType,
+          channelId: message.channelUuid,
+          value: {
+            lastMessageType: message.type,
+            lastMessageContent: message.content,
+            lastPostAt: message.createAt,
+          },
+          type: UpdateChannelAttributeTypeEnum.UPDATE_UNREAD_CHANNEL,
+        }),
+      );
+    },
+    [dispatch, networkType],
+  );
+  const updateUnreadChannelRef = useRef(updateUnreadChannel);
+  updateUnreadChannelRef.current = updateUnreadChannel;
+
+  useEffect(() => {
+    const { remove } = im.registerUnreadMsgObservers(e => {
+      const rawMsg: Message = e['im-message'];
+      updateUnreadChannelRef.current(rawMsg);
+    });
+    return remove;
+  }, []);
 
   const init = useCallback(() => {
     return next(true);
@@ -429,6 +460,7 @@ export const refreshMessageCount = async () => {
     };
   }
 
+  // TODO: add refreshMessageCount request
   const messageCount: MessageCount = {
     unreadCount: 0,
     mentionsCount: 0,

@@ -2,7 +2,7 @@ export interface ITokenInfoType {
   balance: string;
   decimals: string;
   balanceInUsd: string;
-  chainId: string;
+  tokenContractAddress: string;
 }
 
 export interface INftInfoType {
@@ -10,13 +10,11 @@ export interface INftInfoType {
   alias: string;
   tokenId: string;
   collectionName: string;
-  quantity: string;
-  chainId: string;
   balance: string;
+  chainId: string;
 }
 
 export interface IAssetItemType {
-  id: string;
   chainId: string;
   symbol: string;
   address: string;

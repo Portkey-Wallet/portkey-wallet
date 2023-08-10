@@ -83,12 +83,12 @@ const messages = [
   },
   {
     _id: 6,
-    text: 'Come on!',
-    createdAt: new Date(Date.UTC(2016, 5, 15, 18, 20, 0)),
+    text: 'Come on!1',
+    createdAt: new Date(Date.UTC(2016, 5, 12, 17, 20, 0)),
     user: {
       _id: 2,
       name: 'React Native',
-      avatar: 'https://placeimg.com/140/140/any',
+      avatar: 'https://lmg.jj20.com/up/allimg/1111/05161Q64001/1P516164001-3-1200.jpg',
     },
   },
   {

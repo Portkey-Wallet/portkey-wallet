@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import React, { useState, useEffect, useCallback } from 'react';
+import { GiftedChat, GiftedChatProps, IMessage, MessageTextProps, Time } from 'react-native-gifted-chat';
 import initialMessages from '../messages';
-import { CustomInputToolbar, renderActions, renderSend, renderAccessory } from '../InputToolbar';
-import { RenderBubble, renderSystemMessage, renderMessage, renderMessageText } from '../MessageContainer';
+import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
+import { renderSystemMessage, renderMessage } from '../MessageContainer';
 import { randomId } from '@portkey-wallet/utils';
-import { Keyboard, StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
+import { Keyboard } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { pTd } from 'utils/unit';
-import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import Touchable from 'components/Touchable';
+import { useChatsDispatch } from '../context/hooks';
+import CustomBubble from '../CustomBubble';
+import { setBottomBarStatus, setChatText } from '../context/chatsContext';
+import useEffectOnce from 'hooks/useEffectOnce';
+import MessageText from '../Message/MessageText';
 
 const user = {
   _id: 1,
@@ -16,82 +19,72 @@ const user = {
   avatar: 'https://lmg.jj20.com/up/allimg/1111/05161Q64001/1P516164001-3-1200.jpg',
 };
 
-const Chats = () => {
-  const [text, setText] = useState('');
+const ChatsUI = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
-
-  const jump = useDiscoverJumpWithNetWork();
+  const dispatch = useChatsDispatch();
 
   useEffect(() => {
     setMessages(initialMessages as IMessage[]);
   }, []);
 
   const onSend = (newMessages: IMessage[]) => {
-    console.log('=======newMessages=============================', newMessages);
     setMessages(prevMessages => GiftedChat.append(prevMessages, newMessages));
   };
 
+  useEffectOnce(() => {
+    return () => {
+      dispatch(setChatText(''));
+    };
+  });
+
+  const onDismiss = useCallback(() => {
+    Keyboard.dismiss();
+    dispatch(setBottomBarStatus(undefined));
+  }, [dispatch]);
+
+  const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
+    (props: MessageTextProps<IMessage>) => <MessageText {...props} />,
+    [],
+  );
+  const renderTime: GiftedChatProps['renderTime'] = useCallback((props: MessageTextProps<IMessage>) => {
+    if (props.currentMessage?.text) return null;
+    return <Time {...props} />;
+  }, []);
+  const renderBubble = useCallback((data: any) => {
+    return <CustomBubble {...data} />;
+  }, []);
+
   return (
-    <GiftedChat
-      showUserAvatar={false}
-      showAvatarForEveryMessage={false}
-      renderAvatar={() => null}
-      alignTop
-      alwaysShowSend
-      scrollToBottom
-      isCustomViewBottom
-      user={user}
-      messages={messages}
-      messageIdGenerator={randomId}
-      onInputTextChanged={setText}
-      onSend={onSend}
-      renderInputToolbar={props => <CustomInputToolbar {...props} />}
-      renderActions={renderActions}
-      onPressActionButton={() => {
-        Keyboard.dismiss();
-      }}
-      renderAccessory={renderAccessory}
-      // renderComposer={renderComposer}
-      renderSend={renderSend}
-      renderBubble={props => <RenderBubble {...props} />}
-      renderSystemMessage={renderSystemMessage}
-      renderMessage={renderMessage}
-      renderMessageText={renderMessageText}
-      // renderMessageImage
-      // renderCustomView={renderCustomView}
-      messagesContainerStyle={{ backgroundColor: 'indigo' }}
-      parsePatterns={linkStyle => [
-        {
-          pattern: /#(\w+)/,
-          style: linkStyle,
-          onPress: tag => console.log(`Pressed on hashtag: ${tag}`),
-        },
-        {
-          pattern: /^https?:\/\/.+/,
-          style: { color: 'red' },
-          onPress: tag => {
-            jump({
-              item: {
-                url: tag,
-                name: tag,
-              },
-            });
-          },
-        },
-      ]}
-    />
+    <>
+      <Touchable activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
+        <GiftedChat
+          alignTop
+          user={user}
+          alwaysShowSend
+          scrollToBottom
+          isCustomViewBottom
+          onSend={onSend}
+          messages={messages}
+          showUserAvatar={false}
+          renderAvatar={() => null}
+          renderInputToolbar={() => null}
+          renderBubble={renderBubble}
+          messageIdGenerator={randomId}
+          renderMessage={renderMessage}
+          showAvatarForEveryMessage={false}
+          isKeyboardInternallyHandled={false}
+          renderMessageText={renderMessageText}
+          renderSystemMessage={renderSystemMessage}
+          renderTime={renderTime}
+        />
+      </Touchable>
+      <BottomBarContainer>
+        <AccessoryBar />
+      </BottomBarContainer>
+    </>
   );
 };
 
-export default Chats;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: defaultColors.bg4,
-    flex: 1,
-    ...GStyles.paddingArg(0),
-  },
-  svgWrap: {
-    padding: pTd(16),
-  },
-});
+export default function Chats() {
+  return <ChatsUI />;
+}

@@ -9,8 +9,8 @@ export let screenHeight = Dimensions.get('screen').height;
 export let windowWidth = Dimensions.get('window').width;
 
 Dimensions.addEventListener('change', ({ window, screen }) => {
-  screenWidth = screen.height;
-  screenHeight = screen.width;
+  screenWidth = screen.width;
+  screenHeight = screen.height;
   windowWidth = window.width;
 });
 

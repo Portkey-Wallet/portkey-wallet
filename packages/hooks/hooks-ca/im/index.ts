@@ -1,4 +1,4 @@
-import im, { utils, MessageType, ChannelInfo } from '@portkey-wallet/im';
+import im, { utils, MessageType, ChannelInfo, MessageCount, Message } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppCASelector } from '../.';
 import {
@@ -7,23 +7,32 @@ import {
   nextList,
   setHasNext as setHasNextMessage,
   setList,
-  updateMessage,
   useChannelContext,
+  deleteMessage as deleteMessageAction,
 } from './channelContext';
 import { randomId } from '@portkey-wallet/utils';
 import { CHANNEL_LIST_LIMIT, IMErrorEnum, MESSAGE_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
-import { MessageStatusEnum, MessageWithStatus } from '@portkey-wallet/types/types-ca/im';
+
 import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../../index';
 import {
+  removeChannel,
   nextChannelList,
   setChannelList,
   setHasNext as setHasNextChannel,
+  updateChannelAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
 
 export const useImState = () => useAppCASelector(state => state.im);
 
-export const useChannel = (chanelId: string) => {
+export const useChannel = (channelId: string) => {
+  const { networkType } = useCurrentNetworkInfo();
+  const appCommonDispatch = useAppCommonDispatch();
+
+  const muteChannel = useMuteChannel();
+  const pinChannel = usePinChannel();
+  const hideChannel = useHideChannel();
+
   const [{ list, hasNext }, dispatch] = useChannelContext();
   const [info, setInfo] = useState<ChannelInfo>();
   const listRef = useRef(list);
@@ -31,6 +40,7 @@ export const useChannel = (chanelId: string) => {
 
   const [loading, setLoading] = useState(false);
   const isNextLoading = useRef(false);
+
   const next = useCallback(
     async (isInit = false) => {
       const imInstance = im.getInstance();
@@ -54,7 +64,7 @@ export const useChannel = (chanelId: string) => {
       setLoading(true);
       try {
         const result = await imInstance.messageList({
-          channelUuid: chanelId,
+          channelUuid: channelId,
           maxCreateAt,
           limit: MESSAGE_LIST_LIMIT,
         });
@@ -65,8 +75,17 @@ export const useChannel = (chanelId: string) => {
         const list = result.data.map((item: any) => utils.messageParser(item));
         if (isInit) {
           dispatch(setList(list));
-          imInstance.messageRead({ channelUuid: chanelId, total: 9999 }).then(() => {
-            // TODO: refresh total unread
+          imInstance.messageRead({ channelUuid: channelId, total: 9999 }).then(() => {
+            refreshMessageCount();
+            appCommonDispatch(
+              updateChannelAttribute({
+                network: networkType,
+                channelId: channelId,
+                value: {
+                  unreadMessageCount: 0,
+                },
+              }),
+            );
           });
         } else {
           dispatch(nextList(list));
@@ -79,7 +98,7 @@ export const useChannel = (chanelId: string) => {
         isNextLoading.current = false;
       }
     },
-    [chanelId, dispatch],
+    [appCommonDispatch, channelId, dispatch, networkType],
   );
 
   const init = useCallback(() => {
@@ -101,30 +120,54 @@ export const useChannel = (chanelId: string) => {
   const errorHandlerRef = useRef(errorHandler);
   errorHandlerRef.current = errorHandler;
 
+  const read = useCallback(() => {
+    const imInstance = im.getInstance();
+    if (!imInstance) {
+      console.log('read: No im instance');
+      return;
+    }
+
+    imInstance.messageRead({ channelUuid: channelId, total: 9999 }).then(() => {
+      // TODO: async portkey backend
+    });
+  }, [channelId]);
+
   const updateList = useCallback(
     (e: any) => {
       const rawMsg = e['im-message'];
-      if (rawMsg.channelUuid !== chanelId) return;
+      if (rawMsg.channelUuid !== channelId) return;
       const parseredMsg = utils.messageParser(rawMsg);
       dispatch(addMessage(parseredMsg));
+      read();
+      appCommonDispatch(
+        updateChannelAttribute({
+          network: networkType,
+          channelId: channelId,
+          value: {
+            lastMessageType: parseredMsg.type,
+            lastMessageContent: parseredMsg.content,
+            lastPostAt: parseredMsg.createAt,
+          },
+        }),
+      );
       console.log('result', parseredMsg);
     },
-    [chanelId, dispatch],
+    [appCommonDispatch, channelId, dispatch, networkType, read],
   );
   const updateListRef = useRef(updateList);
   updateListRef.current = updateList;
 
   useEffect(() => {
-    const msgKey = im.registerMsgObserver(e => {
+    const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
       updateListRef.current(e);
     });
-    const errorKey = im.registerErrorObserver(e => {
+    const { remove: removeErrorObserver } = im.registerErrorObserver(e => {
       errorHandlerRef.current(e);
     });
 
     const imInstance = im.getInstance();
     if (imInstance) {
-      imInstance.channelInfo(chanelId).then(result => {
+      imInstance.channelInfo(channelId).then(result => {
         console.log('channelInfo', result.data);
         setInfo(result.data);
       });
@@ -133,8 +176,8 @@ export const useChannel = (chanelId: string) => {
     }
 
     return () => {
-      im.removeMsgObserver(msgKey);
-      im.removeErrorObserver(errorKey);
+      removeMsgObserver();
+      removeErrorObserver();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -155,56 +198,95 @@ export const useChannel = (chanelId: string) => {
       }
       const uuid = randomId();
       const msgParams = {
-        channelUuid: chanelId,
+        channelUuid: channelId,
         type: 'TEXT' as MessageType,
         content: msg,
-        sendUuid: `${userInfo.relationId}-${chanelId}-${Date.now()}-${uuid}`,
+        sendUuid: `${userInfo.relationId}-${channelId}-${Date.now()}-${uuid}`,
       };
 
-      const msgObj: MessageWithStatus = {
+      const msgObj: Message = {
         ...msgParams,
         from: userInfo.relationId,
         fromAvatar: userInfo.avatar,
         fromName: userInfo.name,
         createAt: `${Date.now()}`,
         parsedContent: msgParams.content,
-        status: MessageStatusEnum.SENDING,
       };
       dispatch(addMessage(msgObj));
 
       try {
         await imInstance.sendMessage(msgParams);
-      } catch (error) {
-        dispatch(
-          updateMessage({
-            ...msgObj,
-            status: MessageStatusEnum.FAILED,
+        appCommonDispatch(
+          updateChannelAttribute({
+            network: networkType,
+            channelId: channelId,
+            value: {
+              lastMessageType: msgObj.type,
+              lastMessageContent: msgObj.content,
+              lastPostAt: msgObj.createAt,
+            },
           }),
         );
-
+      } catch (error) {
+        console.log('error', error);
         throw error;
       }
-      dispatch(
-        updateMessage({
-          ...msgObj,
-          status: MessageStatusEnum.SENT,
-        }),
-      );
     },
-    [chanelId, dispatch],
+    [channelId, dispatch],
   );
 
-  const deleteMessage = useCallback(async (msgId: string) => {
-    const imInstance = im.getInstance();
-    if (!imInstance) {
-      throw {
-        code: IMErrorEnum.NO_IM_INSTANCE,
-        message: 'No im instance',
-      };
-    }
+  const deleteMessage = useCallback(
+    async (sendUuid: string) => {
+      const imInstance = im.getInstance();
+      if (!imInstance) {
+        throw {
+          code: IMErrorEnum.NO_IM_INSTANCE,
+          message: 'No im instance',
+        };
+      }
 
-    //
-  }, []);
+      // TODO: add delete request
+
+      const list = listRef.current || [];
+      if (list.length <= 0) return;
+
+      const latestMsg = list[list.length - 1];
+      if (latestMsg.sendUuid === sendUuid) {
+        if (list.length <= 1) {
+          appCommonDispatch(
+            updateChannelAttribute({
+              network: networkType,
+              channelId: channelId,
+              value: {
+                lastMessageType: 'TEXT',
+                lastMessageContent: '',
+              },
+            }),
+          );
+        } else {
+          const nextMsg = list[list.length - 2];
+          appCommonDispatch(
+            updateChannelAttribute({
+              network: networkType,
+              channelId: channelId,
+              value: {
+                lastMessageType: nextMsg.type,
+                lastMessageContent: nextMsg.content,
+              },
+            }),
+          );
+        }
+      }
+      dispatch(deleteMessageAction(sendUuid));
+    },
+    [appCommonDispatch, channelId, dispatch, networkType],
+  );
+
+  const mute = useCallback(async (value: boolean) => muteChannel(channelId, value, false), [channelId, muteChannel]);
+
+  const pin = useCallback(async (value: boolean) => pinChannel(channelId, value), [channelId, pinChannel]);
+
+  const exit = useCallback(async () => hideChannel(channelId), [channelId, hideChannel]);
 
   return {
     info,
@@ -214,6 +296,9 @@ export const useChannel = (chanelId: string) => {
     sendMessage,
     init,
     loading,
+    mute,
+    pin,
+    exit,
     deleteMessage,
   };
 };
@@ -333,4 +418,112 @@ export const useCreateP2pChannel = () => {
     });
   }, []);
   return createChannel;
+};
+
+export const refreshMessageCount = async () => {
+  const imInstance = im.getInstance();
+  if (!imInstance) {
+    throw {
+      code: IMErrorEnum.NO_IM_INSTANCE,
+      message: 'No im instance',
+    };
+  }
+
+  const messageCount: MessageCount = {
+    unreadCount: 0,
+    mentionsCount: 0,
+  };
+
+  im.updateMessageCount(messageCount);
+  return messageCount;
+};
+
+export const useUnreadCount = () => {
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const { unreadCount } = im.getMessageCount();
+    setUnreadCount(unreadCount);
+
+    const { remove: removeMessageCountObserver } = im.registerMessageCountObserver(e => {
+      setUnreadCount(e.unreadCount);
+    });
+
+    return removeMessageCountObserver;
+  }, []);
+
+  return unreadCount;
+};
+
+export const useMuteChannel = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+
+  const mute = useCallback(
+    async (channelId: string, value: boolean, isRefreshTotal = true) => {
+      // TODO: add mute request
+
+      dispatch(
+        updateChannelAttribute({
+          network: networkType,
+          channelId: channelId,
+          value: {
+            mute: value,
+          },
+        }),
+      );
+      if (isRefreshTotal) {
+        //
+        refreshMessageCount();
+      }
+    },
+    [dispatch, networkType],
+  );
+
+  return mute;
+};
+
+export const usePinChannel = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+
+  const pin = useCallback(
+    async (channelId: string, value: boolean) => {
+      // TODO: add pin request
+
+      dispatch(
+        updateChannelAttribute({
+          network: networkType,
+          channelId: channelId,
+          value: {
+            pin: value,
+          },
+        }),
+      );
+    },
+    [dispatch, networkType],
+  );
+
+  return pin;
+};
+
+export const useHideChannel = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+
+  const hide = useCallback(
+    async (channelId: string) => {
+      // TODO: add hide request
+
+      dispatch(
+        removeChannel({
+          network: networkType,
+          channelId,
+        }),
+      );
+    },
+    [dispatch, networkType],
+  );
+
+  return hide;
 };

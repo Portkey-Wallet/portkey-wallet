@@ -18,4 +18,15 @@ export const setHasNext = createAction<{
   hasNext: boolean;
 }>('im/setHasNext');
 
+export const updateChannelAttribute = createAction<{
+  network: NetworkType;
+  channelId: string;
+  value: Partial<ChannelItem>;
+}>('im/updateChannelAttribute');
+
+export const removeChannel = createAction<{
+  network: NetworkType;
+  channelId: string;
+}>('im/removeChannel');
+
 export const resetIm = createAction<NetworkType>('im/resetIm');

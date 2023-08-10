@@ -67,3 +67,8 @@ export enum IMStatusEnum {
   CONNECTED = 'connected',
   ERROR = 'error',
 }
+
+export type MessageCount = {
+  unreadCount: number;
+  mentionsCount: number;
+};

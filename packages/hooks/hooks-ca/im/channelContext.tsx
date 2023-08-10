@@ -1,5 +1,5 @@
+import { Message } from '@portkey-wallet/im';
 import React, { ReactNode, createContext, useContext, useMemo, useReducer } from 'react';
-import { MessageWithStatus } from '@portkey-wallet/types/types-ca/im';
 
 export function basicActions<T extends string>(type: T, payload?: any) {
   return {
@@ -12,7 +12,7 @@ export type BasicActions<T = string> = {
 };
 
 export interface ChannelState {
-  list: MessageWithStatus[];
+  list: Message[];
   hasNext: boolean;
 }
 
@@ -30,10 +30,10 @@ export function useChannelContext() {
 export enum ChannelActions {
   CLEAR_CHANNEL = 'clearChannel',
   ADD_MESSAGE = 'addMessage',
-  UPDATE_MESSAGE = 'updateMessage',
   NEXT_LIST = 'nextList',
   SET_LIST = 'setList',
   SET_HAS_NEXT = 'setHasNext',
+  DELETE_MESSAGE = 'deleteMessage',
 }
 
 // reducer
@@ -42,16 +42,6 @@ export function reducer(state: ChannelState, { type, payload }: { type: ChannelA
     case ChannelActions.ADD_MESSAGE:
       return Object.assign({}, state, {
         list: [...state.list, payload],
-      });
-
-    case ChannelActions.UPDATE_MESSAGE:
-      return Object.assign({}, state, {
-        list: state.list.map(item => {
-          if (item.sendUuid === payload.sendUuid) {
-            return payload;
-          }
-          return item;
-        }),
       });
 
     case ChannelActions.NEXT_LIST:
@@ -68,6 +58,10 @@ export function reducer(state: ChannelState, { type, payload }: { type: ChannelA
       return Object.assign({}, state, {
         hasNext: payload,
       });
+    case ChannelActions.DELETE_MESSAGE:
+      return Object.assign({}, state, {
+        list: state.list.filter(item => item.sendUuid !== payload),
+      });
 
     default: {
       const { destroy } = payload;
@@ -83,14 +77,14 @@ export const basicChannelActions = {
     basicActions(ChannelActions.CLEAR_CHANNEL, {
       ...INITIAL_STATE,
     }),
-  addMessage: (message: MessageWithStatus) => basicActions(ChannelActions.ADD_MESSAGE, message),
-  updateMessage: (message: MessageWithStatus) => basicActions(ChannelActions.UPDATE_MESSAGE, message),
-  nextList: (list: MessageWithStatus[]) => basicActions(ChannelActions.NEXT_LIST, list),
-  setList: (list: MessageWithStatus[]) => basicActions(ChannelActions.NEXT_LIST, list),
+  addMessage: (message: Message) => basicActions(ChannelActions.ADD_MESSAGE, message),
+  nextList: (list: Message[]) => basicActions(ChannelActions.NEXT_LIST, list),
+  setList: (list: Message[]) => basicActions(ChannelActions.NEXT_LIST, list),
   setHasNext: (value: boolean) => basicActions(ChannelActions.SET_HAS_NEXT, value),
+  deleteMessage: (sendUuid: string) => basicActions(ChannelActions.DELETE_MESSAGE, sendUuid),
 };
 
-export const { clearChannel, addMessage, updateMessage, nextList, setList, setHasNext } = basicChannelActions;
+export const { clearChannel, addMessage, nextList, setList, setHasNext, deleteMessage } = basicChannelActions;
 
 // provider
 export function ChannelProvider({ children }: { children?: ReactNode | undefined }) {

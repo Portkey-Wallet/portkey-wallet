@@ -4,9 +4,10 @@ export const formatMessageCountToStr = (num: number): string | undefined => {
   return num > 99 ? '99+' : String(num);
 };
 
-export const formatChatListTime = (timeStamp: number): string => {
-  const chatTime = dayjs(timeStamp);
+export const formatChatListTime = (timeStamp?: number | string): string => {
+  if (!timeStamp) return '';
 
+  const chatTime = dayjs(Number(timeStamp));
   const now = dayjs();
   const today = now.startOf('date');
   const yesterday = today.subtract(1, 'day');

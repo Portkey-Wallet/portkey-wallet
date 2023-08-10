@@ -268,7 +268,7 @@ function HomeScreen() {
           title="createChannel"
           onPress={async () => {
             try {
-              const result = await createChannel('wwlzb-sqaaa-aaaaj-vaiwq-cai');
+              const result = await createChannel('nutbk-6aaaa-aaaaj-7hatq-cai');
               console.log('result', result);
             } catch (error) {
               console.log('createChannel: error', error);

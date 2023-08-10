@@ -1,23 +1,18 @@
 import Svg from 'components/Svg';
-import React, { ReactNode, memo, useCallback, useMemo, useRef, useState } from 'react';
+import React, { ReactNode, memo, useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Actions, Send, GiftedChatProps } from 'react-native-gifted-chat';
+import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
-import navigationService from 'utils/navigationService';
-import { TextM } from 'components/CommonText';
-import * as ImagePicker from 'expo-image-picker';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { Animated } from 'react-native';
 import { TextInput } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
-import Emoticons from '../Emoticons';
-import { useKeyboardAnim } from '../hooks';
-import { BGStyles } from 'assets/theme/styles';
-import { useBottomBarStatus, useChatText, useChatsDispatch, useLatestText } from '../context/hooks';
+import { useKeyboardAnim } from '../../hooks';
+import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
-import { setBottomBarStatus, setChatText } from '../context/chatsContext';
+import { setBottomBarStatus, setChatText } from '../../context/chatsContext';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return <Actions onPressActionButton={onPress} icon={() => <Svg icon="add1" />} optionTintColor="#222B45" />;
@@ -127,60 +122,6 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
   );
 }
 
-const ToolBar = memo(function ToolBar() {
-  return (
-    <View style={GStyles.flex1}>
-      <Touchable style={styles.toolsItem} onPress={() => navigationService.navigate('ChatCamera')}>
-        <TextM>camera</TextM>
-      </Touchable>
-
-      <Touchable
-        style={styles.toolsItem}
-        onPress={async () => {
-          const result = (await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,
-            selectionLimit: 9,
-            allowsMultipleSelection: true,
-          })) as unknown as { uri: string };
-          console.log(result);
-        }}>
-        <TextM>photo</TextM>
-      </Touchable>
-
-      <Touchable style={styles.toolsItem}>
-        <TextM>Bookmark</TextM>
-      </Touchable>
-    </View>
-  );
-});
-
-export function AccessoryBar() {
-  const bottomBarStatus = useBottomBarStatus();
-  const dispatch = useChatsDispatch();
-  const latestText = useLatestText();
-  const showTools = useMemo(() => !!bottomBarStatus, [bottomBarStatus]);
-  return (
-    <View style={!showTools ? styles.hide : GStyles.flex1}>
-      <View
-        style={[
-          BGStyles.bg4,
-          bottomBarStatus === ChatBottomBarStatus.emoji ? undefined : styles.hide,
-          styles.absolute,
-        ]}>
-        <Emoticons onPress={item => dispatch(setChatText(latestText.current + item.code))} />
-      </View>
-      <ToolBar />
-    </View>
-  );
-}
-
-export const renderSend: GiftedChatProps['renderSend'] = props => (
-  <Send {...props} disabled={!props.text}>
-    <Svg icon="send" color="red" />
-  </Send>
-);
-
 const styles = StyleSheet.create({
   toolsItem: {
     width: '25%',
@@ -200,7 +141,10 @@ const styles = StyleSheet.create({
     height: 80,
     ...GStyles.flex1,
   },
-  hide: { opacity: 0 },
+  hide: {
+    width: 0,
+    height: 0,
+  },
   absolute: {
     top: 0,
     bottom: 0,

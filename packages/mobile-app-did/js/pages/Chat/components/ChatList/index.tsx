@@ -7,9 +7,11 @@ import navigationService from 'utils/navigationService';
 import { BGStyles } from 'assets/theme/styles';
 import ChatOverlay from '../ChatOverlay';
 import ChatHomeListItemSwiped from '../ChatHomeListItemSwiper';
+import { ChannelItem } from '@portkey-wallet/im/types';
+import NoData from 'components/NoData';
 
 type ChatListType = {
-  chatList: { id: string; name: string }[];
+  chatList: ChannelItem[];
 };
 
 export default function ChatList(props: ChatListType) {
@@ -19,6 +21,7 @@ export default function ChatList(props: ChatListType) {
     <FlatList
       style={BGStyles.bg1}
       data={chatList}
+      ListEmptyComponent={<NoData />}
       renderItem={item => (
         <ChatHomeListItemSwiped
           onPress={() => navigationService.navigate('ChatDetails')}

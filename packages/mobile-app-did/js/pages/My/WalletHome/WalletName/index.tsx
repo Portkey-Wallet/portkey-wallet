@@ -11,6 +11,12 @@ import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
 import { useSetWalletName, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
+import FormItem from 'components/FormItem';
+import { View } from 'react-native';
+import { TextM } from 'components/CommonText';
+import Svg from 'components/Svg';
+import { pTd } from 'utils/unit';
+import Touchable from 'components/Touchable';
 
 const WalletName: React.FC = () => {
   const { t } = useLanguage();
@@ -61,18 +67,37 @@ const WalletName: React.FC = () => {
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <CommonInput
-        type="general"
-        spellCheck={false}
-        autoCorrect={false}
-        value={nameValue}
-        theme={'white-bg'}
-        placeholder={t('Enter Wallet Name')}
-        onChangeText={onNameChange}
-        maxLength={16}
-        errorMessage={nameError.errorMsg}
-      />
+      <FormItem title={'Wallet Name'}>
+        <CommonInput
+          type="general"
+          spellCheck={false}
+          autoCorrect={false}
+          value={nameValue}
+          theme={'white-bg'}
+          placeholder={t('Enter Wallet Name')}
+          onChangeText={onNameChange}
+          maxLength={16}
+          errorMessage={nameError.errorMsg}
+        />
+      </FormItem>
 
+      <FormItem title={'Portkey ID'}>
+        <View>
+          <TextM>xxxxxx-yyyy-zzzzz</TextM>
+          <Touchable>
+            <Svg icon="copy" size={pTd(20)} />
+          </Touchable>
+        </View>
+      </FormItem>
+      <FormItem title={'DID'}>
+        <View>
+          <Svg icon="elf-icon" />
+          <TextM>xxxxxx-yyyy-zzzzz</TextM>
+          <Touchable>
+            <Svg icon="copy" size={pTd(20)} />
+          </Touchable>
+        </View>
+      </FormItem>
       <CommonButton disabled={nameValue === ''} type="solid" onPress={onSave}>
         {t('Save')}
       </CommonButton>

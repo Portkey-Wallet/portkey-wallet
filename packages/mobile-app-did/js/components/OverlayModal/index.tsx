@@ -23,6 +23,8 @@ const DefaultOverlayProps = {
     height: 0,
   },
 };
+
+export type CustomBounds = { x: number; y: number; width: number; height: number };
 export type OverlayModalProps = {
   position?: 'bottom' | 'center';
   modal?: boolean;
@@ -33,7 +35,7 @@ export type OverlayModalProps = {
   animated?: boolean;
   enabledNestScrollView?: boolean;
   onCloseRequest?: () => void;
-  customBounds?: { x: number; y: number; width: number; height: number };
+  customBounds?: CustomBounds;
   overlayOpacity?: number;
 };
 

@@ -16,15 +16,15 @@ import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat'
 const ChatDetails = () => {
   const onPressMore = useCallback((event: { nativeEvent: { pageX: any; pageY: any } }) => {
     const { pageX, pageY } = event.nativeEvent;
-    ChatOverlay.showChatPopover(
-      [
+    ChatOverlay.showChatPopover({
+      list: [
         { title: ChatOperationsEnum.PROFILE, onPress: () => navigationService.navigate('Profile') },
         { title: ChatOperationsEnum.MUTE },
       ],
-      pageX,
-      pageY,
-      'left',
-    );
+      px: pageX,
+      py: pageY,
+      position: 'left',
+    });
   }, []);
 
   return (

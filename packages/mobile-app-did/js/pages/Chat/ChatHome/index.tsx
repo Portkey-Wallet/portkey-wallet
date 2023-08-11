@@ -15,6 +15,7 @@ import CommonButton from 'components/CommonButton';
 import { useChannelList, useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { pTd } from 'utils/unit';
 import im from '@portkey-wallet/im';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export default function DiscoverHome() {
   const createChannel = useCreateP2pChannel();
@@ -34,16 +35,20 @@ export default function DiscoverHome() {
         <Touchable
           style={styles.addIcon}
           onPress={event => {
-            const { pageX, pageY } = event.nativeEvent;
-            ChatOverlay.showChatPopover(
-              [
-                { title: 'New Chat', onPress: () => navigationService.navigate('NewChatHome') },
-                { title: 'Add Contact' },
+            const { pageY } = event.nativeEvent;
+
+            ChatOverlay.showChatPopover({
+              list: [
+                {
+                  title: 'New Chat',
+                  onPress: () => navigationService.navigate('NewChatHome'),
+                },
+                { title: 'Add Contact asdasd' },
               ],
-              pageX,
-              pageY,
-              'left',
-            );
+              formatType: 'dynamicWidth',
+              customPosition: { right: pTd(20), top: pageY + 20 },
+              customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
+            });
           }}>
           <Svg icon="add2" />
         </Touchable>
@@ -79,6 +84,7 @@ export default function DiscoverHome() {
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <CustomHeader noLeftDom themeType="blue" titleDom="Web3 Chat" rightDom={RightDom} />
       <ChatList chatList={channelList} />
+      <CommonButton title="createChannel" onPress={createCha} />
       <CommonButton title="createChannel" onPress={createCha} />
       <CommonButton title="initChannel" onPress={initChannel} />
       <CommonButton title="sendMessage" onPress={sendMess} />

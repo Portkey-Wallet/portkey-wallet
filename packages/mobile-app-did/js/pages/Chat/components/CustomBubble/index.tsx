@@ -16,12 +16,12 @@ export default function CustomBubble(props: BubbleProps<IMessage>) {
     <Touchable
       onLongPress={event => {
         const { pageX, pageY } = event.nativeEvent;
-        ChatOverlay.showChatPopover(
-          [{ title: '1111111' }, { title: '22222222' }],
-          pageX,
-          pageY,
-          props.position || 'left',
-        );
+        ChatOverlay.showChatPopover({
+          list: [{ title: '1111111' }, { title: '22222222' }],
+          px: pageX,
+          py: pageY,
+          position: props.position || 'left',
+        });
       }}>
       <Bubble touchableProps={{ disabled: true }} {...props} />
     </Touchable>

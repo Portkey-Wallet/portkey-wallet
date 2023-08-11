@@ -25,18 +25,18 @@ export default function ChatList(props: ChatListType) {
       renderItem={item => (
         <ChatHomeListItemSwiped
           onPress={() => navigationService.navigate('ChatDetails')}
-          onLongPress={(event, i) => {
+          onLongPress={event => {
             const { pageX, pageY } = event.nativeEvent;
-            ChatOverlay.showChatPopover(
-              [
+
+            ChatOverlay.showChatPopover({
+              list: [
                 { title: 'pin', onPress: () => navigationService.navigate('NewChatHome', { item }) },
                 { title: 'mute', onPress: () => navigationService.navigate('NewChatHome', { item }) },
                 { title: 'delete', onPress: () => navigationService.navigate('NewChatHome', { item }) },
               ],
-              pageX,
-              pageY,
-              'left',
-            );
+              px: pageX,
+              py: pageY,
+            });
           }}
           {...item}
           onDelete={() => console.log('delete')}

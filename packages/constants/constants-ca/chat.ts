@@ -49,3 +49,5 @@ export const ChatDetailsOperationList = [
     operation: ChatOperationsEnum.ADD_CONTACT,
   },
 ] as const;
+
+export const ChatTabName = 'Chat';

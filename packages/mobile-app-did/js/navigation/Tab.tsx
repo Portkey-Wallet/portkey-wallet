@@ -12,13 +12,14 @@ import { useTabMenuList } from 'hooks/cms';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
 import ChatHome from 'pages/Chat/ChatHome';
 import { formatMessageCountToStr } from '@portkey-wallet/utils/chat';
+import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 
 const Tab = createBottomTabNavigator();
 
 enum TabRouteNameEnum {
   WALLET = 'Wallet',
   DISCOVER = 'Discover',
-  CHAT = 'Chat',
+  CHAT = ChatTabName,
   SETTINGS = 'Settings',
 }
 

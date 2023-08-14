@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo, useState } from 'react';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import CustomModal from 'pages/components/CustomModal';
+import CustomSvg from 'components/CustomSvg';
 
 export interface IContactsBodyProps {
   isSearch: boolean;
@@ -79,7 +80,10 @@ export default function ContactsBody({
   const portkeyChatListUI = useMemo(() => {
     return (
       <>
-        <div onClick={findMoreHandler}>Find more people</div>
+        <div onClick={findMoreHandler} className="flex find-more-people">
+          <CustomSvg type="AddMorePeople" className="find-more-people-icon" />
+          <span className="find-more-people-text">Find more people</span>
+        </div>
         {portkeyChatCount === 0 ? (
           isSearchPortkeyChat ? (
             <div className="flex-center no-search-result">There is no search result.</div>

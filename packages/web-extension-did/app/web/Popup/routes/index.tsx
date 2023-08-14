@@ -33,6 +33,7 @@ import WalletName from 'pages/Wallet/WalletName';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
+import FindMorePeople from 'pages/Contacts/FindMorePeople';
 
 export const PageRouter = () =>
   useRoutes([
@@ -135,6 +136,10 @@ export const PageRouter = () =>
     {
       path: '/setting/contacts/:type',
       element: <Contact />,
+    },
+    {
+      path: '/setting/contacts/find-more-people',
+      element: <FindMorePeople />,
     },
     {
       path: '/setting/account-setting',

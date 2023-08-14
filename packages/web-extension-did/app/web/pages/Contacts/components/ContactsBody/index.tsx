@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import ContactList from '../ContactList';
+import ContactListIndexBar from '../ContactListIndexBar';
 import NoContacts from '../NoContacts';
 import { useNavigate } from 'react-router';
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
@@ -8,6 +8,7 @@ import { Tabs } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo, useState } from 'react';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import CustomModal from 'pages/components/CustomModal';
 
 export interface IContactsBodyProps {
   isSearch: boolean;
@@ -42,6 +43,15 @@ export default function ContactsBody({
     navigate('/setting/contacts/find-more-people');
   }, [navigate]);
 
+  const handleChat = useCallback((e: any) => {
+    e.stopPropagation();
+    CustomModal({
+      content: (
+        <>{`Please click on the Portkey browser extension in the top right corner to access the chat feature`}</>
+      ),
+    });
+  }, []);
+
   const allContactListUI = useMemo(() => {
     return (
       <>
@@ -52,17 +62,19 @@ export default function ContactsBody({
             <NoContacts initData={initData} />
           )
         ) : (
-          <ContactList
+          <ContactListIndexBar
             list={list}
             isSearch={isSearch}
-            clickItem={(item, index) => {
-              navigate('/setting/contacts/view', { state: { ...item, index: index } });
+            clickItem={(item) => {
+              console.log('🌈 🌈 🌈 🌈 🌈 🌈 ', JSON.stringify(item));
+              navigate('/setting/contacts/view', { state: item });
             }}
+            clickChat={handleChat}
           />
         )}
       </>
     );
-  }, [contactCount, initData, isSearch, list, navigate]);
+  }, [contactCount, handleChat, initData, isSearch, list, navigate]);
 
   const portkeyChatListUI = useMemo(() => {
     return (
@@ -75,17 +87,26 @@ export default function ContactsBody({
             <NoContacts initData={portkeyChatInitData} />
           )
         ) : (
-          <ContactList
+          <ContactListIndexBar
             list={portkeyChatList}
             isSearch={isSearchPortkeyChat}
-            clickItem={(item, index) => {
-              navigate('/setting/contacts/view', { state: { ...item, index: index } });
+            clickItem={(item) => {
+              navigate('/setting/contacts/view', { state: item });
             }}
+            clickChat={handleChat}
           />
         )}
       </>
     );
-  }, [findMoreHandler, isSearchPortkeyChat, navigate, portkeyChatCount, portkeyChatInitData, portkeyChatList]);
+  }, [
+    findMoreHandler,
+    handleChat,
+    isSearchPortkeyChat,
+    navigate,
+    portkeyChatCount,
+    portkeyChatInitData,
+    portkeyChatList,
+  ]);
 
   const renderTabsData = useMemo(
     () => [

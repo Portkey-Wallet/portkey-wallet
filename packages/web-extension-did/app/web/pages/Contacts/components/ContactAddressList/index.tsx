@@ -30,7 +30,10 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
             </div>
             <CustomSvg onClick={() => handleCopy(ads?.address)} type="Copy" className="address-copy-icon" />
           </div>
-          <div className="chain">{transNetworkText(ads.chainId, isTestNet)}</div>
+          <div className="flex-row-center chain">
+            <img src={ads?.imageUrl} className="chain-img" />
+            <span className="chain-text">{transNetworkText(ads.chainId, isTestNet)}</span>
+          </div>
         </div>
       ))}
     </div>

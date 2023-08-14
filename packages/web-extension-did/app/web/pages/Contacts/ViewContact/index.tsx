@@ -18,6 +18,7 @@ export interface IViewContactProps extends BaseHeaderProps {
   };
   editText: string;
   chatText: string;
+  addedText: string;
   addContactText: string;
   handleEdit: () => void;
   handleChat: () => void;
@@ -34,6 +35,7 @@ export default function ViewContact() {
   const title = t('Contacts');
   const editText = t('Edit');
   const chatText = t('Chat');
+  const addedText = t('Added');
   const addContactText = t('Add Contact');
 
   const goBack = useCallback(() => {
@@ -61,6 +63,7 @@ export default function ViewContact() {
       headerTitle={title}
       editText={editText}
       chatText={chatText}
+      addedText={addedText}
       addContactText={addContactText}
       data={state}
       goBack={goBack}
@@ -74,6 +77,7 @@ export default function ViewContact() {
       headerTitle={title}
       editText={editText}
       chatText={chatText}
+      addedText={addedText}
       addContactText={addContactText}
       data={state}
       goBack={goBack}

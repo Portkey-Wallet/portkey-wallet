@@ -11,6 +11,7 @@ export default function ViewContactPrompt({
   data,
   editText,
   chatText,
+  addedText,
   addContactText,
   handleEdit,
   handleChat,
@@ -20,44 +21,58 @@ export default function ViewContactPrompt({
   return (
     <div className="view-contact-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
-
-      <div className="name-section">
-        <div className="flex-center name-index">{data.index}</div>
-        <div className="name">{data.name}</div>
-      </div>
-
-      <div className="name-section">
-        <span>Remark</span>
-        <span>{data.remark}</span>
-      </div>
-
-      <div className="name-section">
-        <span>Portkey ID</span>
+      <div className="flex-column-between view-contact-content">
         <div>
-          <span>{data.portkeyId}</span>
-          <CustomSvg onClick={() => handleCopy(data.portkeyId)} type="Copy" className="address-copy-icon" />
-        </div>
-      </div>
+          <div className="info-section name-section">
+            <div className="flex-center name-index">{data.index}</div>
+            <div className="name">{data.name}</div>
+            <div className="remark">
+              <span>{`Remark: `}</span>
+              <span>{data?.remark || 'No set'}</span>
+            </div>
 
-      <div className="name-section">
-        <span>{`ID (relation one)`}</span>
-        <div>
-          <span>{data.relationOneId}</span>
-          <CustomSvg onClick={() => handleCopy(data.relationOneId)} type="Copy" className="address-copy-icon" />
-        </div>
-      </div>
+            <div className="flex-center action">
+              <div className="flex-column-center action-item added-contact">
+                <CustomSvg type="ContactAdded" />
+                <span>{addedText}</span>
+              </div>
+              <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
+                <CustomSvg type="ContactAdd" />
+                <span>{addContactText}</span>
+              </div>
+              <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
+                <CustomSvg type="ContactChat" />
+                <span>{chatText}</span>
+              </div>
+            </div>
+          </div>
 
-      <div className="contact-body">
-        <ContactAddressList list={data.addresses} />
-        <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
-          {editText}
-        </Button>
-        <Button type="primary" htmlType="submit" className="chat-btn" onClick={handleChat}>
-          {chatText}
-        </Button>
-        <Button type="primary" htmlType="submit" className="add-contact-btn" onClick={handleAdd}>
-          {addContactText}
-        </Button>
+          <div className="info-section section-border-bottom">
+            <div className="info-title">Portkey ID</div>
+            <div className="flex-row-between info-content">
+              <div className="info-desc">{data.portkeyId}</div>
+              <CustomSvg onClick={() => handleCopy(data.portkeyId)} type="Copy" className="address-copy-icon" />
+            </div>
+          </div>
+
+          <div className="info-section section-border-bottom">
+            <div className="info-title">{`ID (relation one)`}</div>
+            <div className="flex-row-between info-content">
+              <div className="info-desc">{data.relationOneId}</div>
+              <CustomSvg onClick={() => handleCopy(data.relationOneId)} type="Copy" className="address-copy-icon" />
+            </div>
+          </div>
+
+          <div className="info-section">
+            <div className="info-title">{`DID`}</div>
+            <ContactAddressList list={data.addresses} />
+          </div>
+        </div>
+        <div className="footer">
+          <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
+            {editText}
+          </Button>
+        </div>
       </div>
     </div>
   );

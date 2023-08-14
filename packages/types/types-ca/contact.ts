@@ -4,6 +4,7 @@ import { PartialOption } from '../common';
 export interface AddressItem {
   chainId: ChainId; // AELF tDVV tDVW
   address: string;
+  imageUrl?: string;
 }
 
 export interface RecentAddressItem extends AddressItem {

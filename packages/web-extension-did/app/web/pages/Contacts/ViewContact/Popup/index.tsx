@@ -11,6 +11,7 @@ export default function ViewContactPopup({
   data,
   editText,
   chatText,
+  addedText,
   addContactText,
   handleEdit,
   handleChat,

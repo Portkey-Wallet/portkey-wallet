@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import { TextM } from 'components/CommonText';
+import { TextM, TextL } from 'components/CommonText';
 
 import Chats from '../components/Chats';
 import Svg from 'components/Svg';
@@ -12,14 +12,22 @@ import Touchable from 'components/Touchable';
 import ChatOverlay from '../components/ChatOverlay';
 import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat';
+import CommonAvatar from 'components/CommonAvatar';
+import { FontStyles } from 'assets/theme/styles';
 
 const ChatDetails = () => {
   const onPressMore = useCallback((event: { nativeEvent: { pageX: any; pageY: any } }) => {
     const { pageX, pageY } = event.nativeEvent;
     ChatOverlay.showChatPopover({
       list: [
-        { title: ChatOperationsEnum.PROFILE, onPress: () => navigationService.navigate('Profile') },
-        { title: ChatOperationsEnum.MUTE },
+        {
+          title: ChatOperationsEnum.PROFILE,
+          iconName: 'chat-profile',
+          onPress: () => navigationService.navigate('Profile'),
+        },
+        { title: ChatOperationsEnum.PIN, iconName: 'chat-unpin' },
+        { title: ChatOperationsEnum.MUTE, iconName: 'chat-unmute' },
+        { title: ChatOperationsEnum.DELETE_CHAT, iconName: 'chat-delete' },
       ],
       px: pageX,
       py: pageY,
@@ -29,22 +37,23 @@ const ChatDetails = () => {
 
   return (
     <PageContainer
+      noCenterDom
       hideTouchable
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
-      titleDom={
-        <View style={GStyles.flexRow}>
-          <Image
-            source={{ uri: 'https://lmg.jj20.com/up/allimg/1111/05161Q64001/1P516164001-3-1200.jpg' }}
-            style={{ width: 40, height: 40 }}
-          />
-          <TextM>Masosn</TextM>
+      leftDom={
+        <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
+          <Touchable style={GStyles.marginRight(pTd(20))} onPress={navigationService.goBack}>
+            <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
+          </Touchable>
+          <CommonAvatar title="N" avatarSize={pTd(32)} style={styles.headerAvatar} />
+          <TextL style={[FontStyles.font2, GStyles.marginLeft(pTd(8))]}>Name</TextL>
         </View>
       }
       rightDom={
-        <Touchable onPress={onPressMore}>
-          <Svg size={30} icon="more" color={defaultColors.bg1} />
+        <Touchable style={GStyles.marginRight(pTd(16))} onPress={onPressMore}>
+          <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
       <Chats />
@@ -60,7 +69,7 @@ const styles = StyleSheet.create({
     flex: 1,
     ...GStyles.paddingArg(0),
   },
-  svgWrap: {
-    padding: pTd(16),
+  headerAvatar: {
+    fontSize: pTd(14),
   },
 });

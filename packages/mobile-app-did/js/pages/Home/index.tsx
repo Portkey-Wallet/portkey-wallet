@@ -29,9 +29,8 @@ import { sign } from '@portkey-wallet/im/utils/sign';
 import im from '@portkey-wallet/im';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useChannel, useChannelList, useCreateP2pChannel, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
-import { ChannelProvider } from '@portkey-wallet/hooks/hooks-ca/im/channelContext';
 
-function HomeScreen() {
+export default function HomeScreen() {
   const wallet = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
   const dispatch = useAppCommonDispatch();
@@ -58,7 +57,7 @@ function HomeScreen() {
     console.log('channelList', channelList);
   }, [channelList]);
   useEffect(() => {
-    console.log('list', list);
+    console.log('msg list', list);
   }, [list]);
   useEffect(() => {
     console.log('unreadCount', unreadCount);
@@ -298,13 +297,5 @@ function HomeScreen() {
         <CrashTest />
       </ScrollView>
     </SafeAreaBox>
-  );
-}
-
-export default function Container() {
-  return (
-    <ChannelProvider>
-      <HomeScreen />
-    </ChannelProvider>
   );
 }

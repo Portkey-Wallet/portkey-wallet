@@ -1,9 +1,13 @@
-import { ChannelItem } from '@portkey-wallet/im/types';
+import { ChannelItem, Message } from '@portkey-wallet/im/types';
 import { NetworkType } from '@portkey-wallet/types';
 
 export type ChannelList = {
   list: ChannelItem[];
   cursor: string;
+};
+
+export type ChannelMessageList = {
+  [channelId: string]: Message[];
 };
 
 export interface IMStateType {
@@ -12,6 +16,9 @@ export interface IMStateType {
   };
   channelListNetMap: {
     [T in NetworkType]?: ChannelList;
+  };
+  channelMessageListNetMap?: {
+    [T in NetworkType]?: ChannelMessageList;
   };
 }
 

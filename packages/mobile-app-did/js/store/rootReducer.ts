@@ -36,8 +36,15 @@ const discoverPersistConfig = {
   blacklist: ['isDrawerOpen', 'initializedList', 'activeTabId', 'autoApproveMap'],
 };
 
+const imPersistConfig = {
+  key: imSlice.name,
+  storage: AsyncStorage,
+  blacklist: ['channelMessageListNetMap'],
+};
+
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);
 export const discoverReducer = persistReducer(discoverPersistConfig, discoverSlice.reducer);
+export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
 
 const rootReducer = combineReducers({
   [walletSlice.name]: walletSlice.reducer,
@@ -57,7 +64,7 @@ const rootReducer = combineReducers({
   [userSlice.name]: userReducer,
   [discoverSlice.name]: discoverReducer,
   [txFeeSlice.name]: txFeeSlice.reducer,
-  [imSlice.name]: imSlice.reducer,
+  [imSlice.name]: imReducer,
   [chatSlice.name]: chatSlice.reducer,
 });
 

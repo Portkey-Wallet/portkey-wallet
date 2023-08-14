@@ -16,7 +16,7 @@ export type Message = {
   unidentified?: boolean | undefined;
 };
 
-export type MemberInfo = {
+export type ChannelMemberInfo = {
   relationId: string;
   name: string;
   avatar: string;
@@ -34,7 +34,7 @@ export type ChannelInfo = {
   pinAnnouncement: boolean;
   openAccess: boolean;
   type: ChannelTypeEnum;
-  members: MemberInfo[];
+  members: ChannelMemberInfo[];
   mute: boolean;
   pin: boolean;
 };

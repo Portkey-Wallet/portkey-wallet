@@ -44,7 +44,15 @@ export const ToolBar = memo(function ToolBar() {
       <Touchable style={styles.toolsItem} onPress={selectPhoto}>
         <TextM>photo</TextM>
       </Touchable>
-      <Touchable style={styles.toolsItem} onPress={() => BookmarkOverlay.showBookmarkList()}>
+      <Touchable
+        style={styles.toolsItem}
+        onPress={() =>
+          BookmarkOverlay.showBookmarkList({
+            onPressCallBack: item => {
+              console.log(item);
+            },
+          })
+        }>
         <TextM>Bookmark</TextM>
       </Touchable>
     </View>

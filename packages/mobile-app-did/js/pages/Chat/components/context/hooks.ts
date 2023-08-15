@@ -8,6 +8,11 @@ export function useBottomBarStatus() {
 export function useChatText() {
   return useAppSelector(state => state.chats.text);
 }
+
+export function useShowSoftInputOnFocus() {
+  return useAppSelector(state => state.chats.showSoftInputOnFocus);
+}
+
 export function useChatsDispatch() {
   return useAppDispatch();
 }

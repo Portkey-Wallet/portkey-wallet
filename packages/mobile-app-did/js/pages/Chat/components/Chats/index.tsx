@@ -9,9 +9,10 @@ import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 import { useChatsDispatch } from '../context/hooks';
 import CustomBubble from '../CustomBubble';
-import { setBottomBarStatus, setChatText } from '../context/chatsContext';
+import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../context/chatsContext';
 import useEffectOnce from 'hooks/useEffectOnce';
 import MessageText from '../Message/MessageText';
+import { destroyChatInputRecorder, initChatInputRecorder } from 'pages/Chat/utils';
 
 const user = {
   _id: 1,
@@ -22,7 +23,6 @@ const user = {
 const ChatsUI = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const dispatch = useChatsDispatch();
-
   useEffect(() => {
     setMessages(initialMessages as IMessage[]);
   }, []);
@@ -32,8 +32,11 @@ const ChatsUI = () => {
   };
 
   useEffectOnce(() => {
+    initChatInputRecorder();
     return () => {
       dispatch(setChatText(''));
+      dispatch(setShowSoftInputOnFocus(true));
+      destroyChatInputRecorder();
     };
   });
 
@@ -62,20 +65,20 @@ const ChatsUI = () => {
           user={user}
           alwaysShowSend
           scrollToBottom
-          isCustomViewBottom
           onSend={onSend}
+          isCustomViewBottom
           messages={messages}
           showUserAvatar={false}
+          renderTime={renderTime}
           renderAvatar={() => null}
-          renderInputToolbar={() => null}
           renderBubble={renderBubble}
           messageIdGenerator={randomId}
           renderMessage={renderMessage}
+          renderInputToolbar={() => null}
           showAvatarForEveryMessage={false}
           isKeyboardInternallyHandled={false}
           renderMessageText={renderMessageText}
           renderSystemMessage={renderSystemMessage}
-          renderTime={renderTime}
         />
       </Touchable>
       <BottomBarContainer>

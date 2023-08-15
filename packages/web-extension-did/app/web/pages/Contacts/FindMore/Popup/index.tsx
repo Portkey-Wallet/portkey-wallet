@@ -1,11 +1,11 @@
 import ContactsSearchInput from 'pages/Contacts/components/ContactsSearchInput';
-import { IFindMorePeopleProps } from '..';
+import { IFindMoreProps } from '..';
 import ContactList from 'pages/Contacts/components/ContactList';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
 
-export default function FindMorePeoplePopup({
+export default function FindMorePopup({
   headerTitle,
   myPortkeyId,
   contactList,
@@ -14,19 +14,19 @@ export default function FindMorePeoplePopup({
   handleSearch,
   clickItem,
   clickChat,
-}: IFindMorePeopleProps) {
+}: IFindMoreProps) {
   return (
-    <div className="find-more-people-popup min-width-max-height">
-      <div className="flex-column find-more-people-top">
+    <div className="find-more-popup min-width-max-height">
+      <div className="flex-column find-more-top">
         <BackHeader
           title={headerTitle}
           leftCallBack={goBack}
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
         <ContactsSearchInput placeholder="Portkey ID/Address" handleChange={handleSearch} />
-        <div className="find-more-people-id">My Portkey ID: {myPortkeyId}</div>
+        <div className="find-more-id">My Portkey ID: {myPortkeyId}</div>
       </div>
-      <div className="find-more-people-body">
+      <div className="find-more-body">
         {contactList && contactList.length > 0 && (
           <ContactList list={contactList} hasChatEntry={isMainnet} clickItem={clickItem} clickChat={clickChat} />
         )}

@@ -50,7 +50,7 @@ import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
 import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
 import DappAutoTx from 'pages/DappAutoTx';
-import FindMorePeople from 'pages/Contacts/FindMorePeople';
+import FindMore from 'pages/Contacts/FindMore';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -219,8 +219,8 @@ export const PageRouter = () => {
               element: <Contact />,
             },
             {
-              path: '/setting/contacts/find-more-people',
-              element: <FindMorePeople />,
+              path: '/setting/contacts/find-more',
+              element: <FindMore />,
             },
           ],
         },
@@ -355,8 +355,8 @@ export const PageRouter = () => {
       element: <Contact />,
     },
     {
-      path: '/setting/contacts/find-more-people',
-      element: <FindMorePeople />,
+      path: '/setting/contacts/find-more',
+      element: <FindMore />,
     },
     {
       path: '/setting/account-setting',

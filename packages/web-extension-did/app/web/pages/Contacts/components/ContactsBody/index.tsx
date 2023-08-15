@@ -41,7 +41,7 @@ export default function ContactsBody({
   }, []);
 
   const findMoreHandler = useCallback(() => {
-    navigate('/setting/contacts/find-more-people');
+    navigate('/setting/contacts/find-more');
   }, [navigate]);
 
   const handleChat = useCallback((e: any) => {
@@ -80,9 +80,9 @@ export default function ContactsBody({
   const portkeyChatListUI = useMemo(() => {
     return (
       <>
-        <div onClick={findMoreHandler} className="flex find-more-people">
-          <CustomSvg type="AddMorePeople" className="find-more-people-icon" />
-          <span className="find-more-people-text">Find more people</span>
+        <div onClick={findMoreHandler} className="flex find-more">
+          <CustomSvg type="AddMorePeople" className="find-more-icon" />
+          <span className="find-more-text">Find more</span>
         </div>
         {portkeyChatCount === 0 ? (
           isSearchPortkeyChat ? (
@@ -120,8 +120,8 @@ export default function ContactsBody({
         children: allContactListUI,
       },
       {
-        label: t('Portkey Chat'),
-        key: ContactsTab.PORTKEY_CHAT,
+        label: t('Chats'),
+        key: ContactsTab.Chats,
         children: portkeyChatListUI,
       },
     ],

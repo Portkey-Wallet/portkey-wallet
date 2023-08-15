@@ -2,37 +2,23 @@ import ViewContactPrompt from './Prompt';
 import ViewContactPopup from './Popup';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import { useCallback } from 'react';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
+import { IViewContactBodyProps } from '../components/ViewContactBody';
+import { useCopyToClipboard } from 'react-use';
+import { message } from 'antd';
+import CustomModal from 'pages/components/CustomModal';
 
-export interface IViewContactProps extends BaseHeaderProps {
-  data: {
-    name: string;
-    remark: string;
-    portkeyId: string;
-    relationOneId: string;
-    index: string;
-    addresses: AddressItem[];
-  };
-  editText: string;
-  chatText: string;
-  addedText: string;
-  addContactText: string;
-  handleEdit: () => void;
-  handleChat: () => void;
-  handleAdd: () => void;
-  handleCopy: (v: string) => void;
-}
+export type IViewContactProps = BaseHeaderProps & IViewContactBodyProps;
 
 export default function ViewContact() {
-  const { isNotLessThan768 } = useCommonState();
+  const { isPrompt, isNotLessThan768 } = useCommonState();
   const { state } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const title = t('Contacts');
+  const title = t('Details');
   const editText = t('Edit');
   const chatText = t('Chat');
   const addedText = t('Added');
@@ -46,17 +32,30 @@ export default function ViewContact() {
     navigate('/setting/contacts/edit', { state: state });
   }, [navigate, state]);
 
-  const handleChat = useCallback(() => {
-    navigate('/chat-list', { state: state });
-  }, [navigate, state]);
-
   const handleAdd = useCallback(() => {
     navigate('/setting/contacts/add', { state: state });
   }, [navigate, state]);
 
-  const handleCopy = useCallback((v: string) => {
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 v', v);
-  }, []);
+  const handleChat = useCallback(() => {
+    if (isPrompt) {
+      CustomModal({
+        content: (
+          <>{`Please click on the Portkey browser extension in the top right corner to access the chat feature`}</>
+        ),
+      });
+    } else {
+      navigate('/chat-list', { state: state });
+    }
+  }, [isPrompt, navigate, state]);
+
+  const [, setCopied] = useCopyToClipboard();
+  const handleCopy = useCallback(
+    (v: string) => {
+      setCopied(v);
+      message.success(t('Copy Success'));
+    },
+    [setCopied, t],
+  );
 
   return isNotLessThan768 ? (
     <ViewContactPrompt

@@ -39,5 +39,5 @@ export enum BalanceTab {
 
 export enum ContactsTab {
   ALL = 'All',
-  PORTKEY_CHAT = 'Portkey Chat',
+  Chats = 'Chats',
 }

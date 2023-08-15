@@ -4,11 +4,11 @@ import CustomModal from 'pages/components/CustomModal';
 import { useCommonState } from 'store/Provider/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import FindMorePeoplePrompt from './Prompt';
-import FindMorePeoplePopup from './Popup';
+import FindMorePrompt from './Prompt';
+import FindMorePopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 
-export interface IFindMorePeopleProps extends BaseHeaderProps {
+export interface IFindMoreProps extends BaseHeaderProps {
   myPortkeyId: string;
   contactList: ContactItemType[];
   isMainnet: boolean;
@@ -18,10 +18,12 @@ export interface IFindMorePeopleProps extends BaseHeaderProps {
   clickChat: (e: any, item: ContactItemType) => void;
 }
 
-export default function FindMorePeople() {
+export default function FindMore() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const isMainnet = useIsMainnet();
+
+  const headerTitle = 'Find More';
   const [portkeyId, setPortkeyId] = useState('mock portkey id');
   const [contactList, setContactList] = useState([]);
   // mock data
@@ -57,8 +59,8 @@ export default function FindMorePeople() {
   );
 
   return isNotLessThan768 ? (
-    <FindMorePeoplePrompt
-      headerTitle={'Find More People'}
+    <FindMorePrompt
+      headerTitle={headerTitle}
       myPortkeyId={portkeyId}
       contactList={contactList}
       isMainnet={isMainnet}
@@ -72,8 +74,8 @@ export default function FindMorePeople() {
       clickChat={(e, item) => handleChat(e, item)}
     />
   ) : (
-    <FindMorePeoplePopup
-      headerTitle={'Find More People'}
+    <FindMorePopup
+      headerTitle={headerTitle}
       myPortkeyId={portkeyId}
       contactList={contactList}
       isMainnet={isMainnet}
@@ -88,34 +90,3 @@ export default function FindMorePeople() {
     />
   );
 }
-
-// <div className="find-more-people-frame">
-//   <div className="flex-column find-more-people-top">
-//     <SecondPageHeader
-//       className="find-more-people-header"
-//       paddingLeft={12}
-//       title="Find More People"
-//       leftCallBack={goBack}
-//     />
-//     <ContactsSearchInput
-//       className="find-more-people-search"
-//       placeholder="Portkey ID/Address"
-//       handleChange={function (): void {
-//         console.log('🌈 🌈 🌈 🌈 🌈 🌈 search', '');
-//       }}
-//     />
-//     <div className="find-more-people-id">My Portkey ID: {portkeyId}</div>
-//   </div>
-//   <div className="find-more-people-body">
-//     {contactList && contactList.length > 0 && (
-//       <ContactList
-//         list={contactList}
-//         hasChatEntry={isMainnet}
-//         clickItem={(item) => {
-//           navigate('/setting/contacts/view', { state: item });
-//         }}
-//         clickChat={(e, item) => handleChat(e, item)}
-//       />
-//     )}
-//   </div>
-// </div>

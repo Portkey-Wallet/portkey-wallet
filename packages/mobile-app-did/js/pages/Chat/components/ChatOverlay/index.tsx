@@ -3,15 +3,19 @@ import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import OverlayModal, { CustomBounds } from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Svg, { IconName, SvgProps } from 'components/Svg';
+import { pTd } from 'utils/unit';
+import { defaultColors } from 'assets/theme';
+import { TextL } from 'components/CommonText';
 
 const vertical = 20;
 const horizontal = 20;
-const itemHeight = 40;
+const itemHeight = pTd(48);
 const BoxWidth = 100;
 const horizontalSpacing = 120;
 const verticalSpacing = 300;
 
-export type ListItemType = { onPress?: () => void; title: string };
+export type ListItemType = { onPress?: () => void; title: string; iconName: IconName };
 
 type ShowChatPopoverParams = {
   list: ListItemType[];
@@ -73,6 +77,7 @@ function ChatPopover({
                 OverlayModal.hide();
               }}
               style={formatType === 'fixedWidth' ? styles.itemStyles : styles.dynamicWidthItemStyles}>
+              <Svg size={pTd(20)} icon={item.iconName} color={defaultColors.icon1} />
               <Text style={styles.textStyles}>{item.title}</Text>
             </Touchable>
           );
@@ -117,10 +122,9 @@ export default {
 const itemStyle = StyleSheet.create({
   item: {
     height: itemHeight,
+    paddingHorizontal: pTd(16),
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(0,0,0,0.1)',
   },
 });
 
@@ -134,14 +138,21 @@ const styles = StyleSheet.create({
     ...itemStyle.item,
   },
   container: {
-    paddingTop: 5,
+    paddingVertical: pTd(4),
     position: 'absolute',
-    backgroundColor: 'white',
-    borderRadius: 5,
+    borderRadius: pTd(6),
     zIndex: 100,
+    minWidth: pTd(136),
+    shadowOffset: { width: 2, height: 5 },
+    backgroundColor: defaultColors.bg1,
+    shadowColor: defaultColors.shadow1,
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 2,
   },
   textStyles: {
-    marginLeft: 10,
+    marginLeft: pTd(16),
+    color: defaultColors.font5,
   },
   backgroundBox: { height: screenHeight, width: screenWidth, backgroundColor: 'transparent' },
 });

@@ -1,12 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { IMStateType } from './type';
-import { removeChannel, nextChannelList, resetIm, setChannelList, setHasNext, updateChannelAttribute } from './actions';
+import { IMStateType, UpdateChannelAttributeTypeEnum } from './type';
+import {
+  removeChannel,
+  nextChannelList,
+  resetIm,
+  setChannelList,
+  setHasNext,
+  updateChannelAttribute,
+  setChannelMessageList,
+  nextChannelMessageList,
+  addChannelMessage,
+  deleteChannelMessage,
+} from './actions';
 import { formatChannelList } from './util';
 
 const initialState: IMStateType = {
   channelListNetMap: {},
   hasNextNetMap: {},
+  channelMessageListNetMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -57,6 +69,16 @@ export const imSlice = createSlice({
               return {
                 ...item,
                 ...action.payload.value,
+                ...((): typeof action.payload.value => {
+                  switch (action.payload.type) {
+                    case UpdateChannelAttributeTypeEnum.UPDATE_UNREAD_CHANNEL:
+                      return {
+                        unreadMessageCount: item.unreadMessageCount + 1,
+                      };
+                    default:
+                      return {};
+                  }
+                })(),
               };
             }
             return item;
@@ -86,6 +108,64 @@ export const imSlice = createSlice({
           channelListNetMap: {
             ...state.channelListNetMap,
             [action.payload.network]: channelList,
+          },
+        };
+      })
+      .addCase(setChannelMessageList, (state, action) => {
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [action.payload.network]: {
+              ...state.channelMessageListNetMap?.[action.payload.network],
+              [action.payload.channelId]: action.payload.list,
+            },
+          },
+        };
+      })
+      .addCase(nextChannelMessageList, (state, action) => {
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [action.payload.network]: {
+              ...state.channelMessageListNetMap?.[action.payload.network],
+              [action.payload.channelId]: [
+                ...action.payload.list,
+                ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId] || []),
+              ],
+            },
+          },
+        };
+      })
+      .addCase(addChannelMessage, (state, action) => {
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [action.payload.network]: {
+              ...state.channelMessageListNetMap?.[action.payload.network],
+              [action.payload.channelId]: [
+                ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId] || []),
+                action.payload,
+              ],
+            },
+          },
+        };
+      })
+      .addCase(deleteChannelMessage, (state, action) => {
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [action.payload.network]: {
+              ...state.channelMessageListNetMap?.[action.payload.network],
+              [action.payload.channelId]: [
+                ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId]?.filter(
+                  item => item.sendUuid !== action.payload.sendUuid,
+                ) || []),
+              ],
+            },
           },
         };
       })

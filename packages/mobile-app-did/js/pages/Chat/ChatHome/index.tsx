@@ -30,7 +30,7 @@ export default function DiscoverHome() {
     return (
       <View style={GStyles.flexRow}>
         <Touchable style={styles.searchIcon} onPress={() => navigationService.navigate('SearchPeople')}>
-          <Svg icon="search" color={defaultColors.bg1} />
+          <Svg icon="search" color={defaultColors.bg1} size={pTd(20)} />
         </Touchable>
         <Touchable
           style={styles.addIcon}
@@ -41,16 +41,17 @@ export default function DiscoverHome() {
               list: [
                 {
                   title: 'New Chat',
+                  iconName: 'chat-new-chat',
                   onPress: () => navigationService.navigate('NewChatHome'),
                 },
-                { title: 'Add Contact asdasd' },
+                { title: 'Add Contact', iconName: 'chat-add-contact' },
               ],
               formatType: 'dynamicWidth',
               customPosition: { right: pTd(20), top: pageY + 20 },
               customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
             });
           }}>
-          <Svg icon="add2" />
+          <Svg size={pTd(20)} icon="chat-add" />
         </Touchable>
       </View>
     );

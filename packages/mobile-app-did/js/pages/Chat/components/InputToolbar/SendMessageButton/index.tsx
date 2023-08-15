@@ -1,9 +1,10 @@
 import Svg from 'components/Svg';
 import React from 'react';
-import { Send, GiftedChatProps } from 'react-native-gifted-chat';
+import { IMessage, Send, SendProps } from 'react-native-gifted-chat';
+import { pTd } from 'utils/unit';
 
-export const SendMessageButton: GiftedChatProps['renderSend'] = props => (
-  <Send {...props} disabled={!!props}>
-    <Svg icon="send" color="red" />
+export const SendMessageButton: React.FC<SendProps<IMessage>> = props => (
+  <Send {...props}>
+    <Svg icon="chat-send" size={pTd(24)} />
   </Send>
 );

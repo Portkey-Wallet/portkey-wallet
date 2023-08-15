@@ -13,6 +13,7 @@ import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../con
 import useEffectOnce from 'hooks/useEffectOnce';
 import MessageText from '../Message/MessageText';
 import { destroyChatInputRecorder, initChatInputRecorder } from 'pages/Chat/utils';
+import { BGStyles } from 'assets/theme/styles';
 
 const user = {
   _id: 1,
@@ -59,7 +60,7 @@ const ChatsUI = () => {
 
   return (
     <>
-      <Touchable activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
+      <Touchable activeOpacity={1} onPress={onDismiss} style={[GStyles.flex1, BGStyles.bg1]}>
         <GiftedChat
           alignTop
           user={user}

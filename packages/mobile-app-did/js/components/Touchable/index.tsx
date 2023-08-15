@@ -1,6 +1,7 @@
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import React, { memo } from 'react';
 import { TouchableOpacity, TouchableHighlight, TouchableOpacityProps } from 'react-native';
+import { pTd } from 'utils/unit';
 
 type TouchableProps = {
   onPressWithSecond?: number;
@@ -15,6 +16,7 @@ const Touchable: React.FC<TouchableOpacityProps & TouchableProps> = props => {
   if (highlight)
     return (
       <TouchableHighlight
+        hitSlop={{ left: pTd(10), right: pTd(10), top: pTd(10), bottom: pTd(10) }}
         {...props}
         onPressIn={onPressIn ? handleOnPressIn : undefined}
         onPress={onPress ? handleOnPress : undefined}
@@ -23,6 +25,7 @@ const Touchable: React.FC<TouchableOpacityProps & TouchableProps> = props => {
 
   return (
     <TouchableOpacity
+      hitSlop={{ left: pTd(10), right: pTd(10), top: pTd(10), bottom: pTd(10) }}
       activeOpacity={0.7}
       {...props}
       onPressIn={onPressIn ? handleOnPressIn : undefined}

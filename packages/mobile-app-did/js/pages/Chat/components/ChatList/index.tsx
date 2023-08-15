@@ -21,7 +21,7 @@ export default function ChatList(props: ChatListType) {
     <FlatList
       style={BGStyles.bg1}
       data={chatList}
-      ListEmptyComponent={<NoData />}
+      ListEmptyComponent={<NoData message="No message" />}
       renderItem={item => (
         <ChatHomeListItemSwiped
           onPress={() => navigationService.navigate('ChatDetails')}
@@ -30,12 +30,25 @@ export default function ChatList(props: ChatListType) {
 
             ChatOverlay.showChatPopover({
               list: [
-                { title: 'pin', onPress: () => navigationService.navigate('NewChatHome', { item }) },
-                { title: 'mute', onPress: () => navigationService.navigate('NewChatHome', { item }) },
-                { title: 'delete', onPress: () => navigationService.navigate('NewChatHome', { item }) },
+                {
+                  title: 'pin',
+                  iconName: 'chat-pin',
+                  onPress: () => navigationService.navigate('NewChatHome', { item }),
+                },
+                {
+                  title: 'mute',
+                  iconName: 'chat-mute',
+                  onPress: () => navigationService.navigate('NewChatHome', { item }),
+                },
+                {
+                  title: 'delete',
+                  iconName: 'chat-delete',
+                  onPress: () => navigationService.navigate('NewChatHome', { item }),
+                },
               ],
               px: pageX,
               py: pageY,
+              formatType: 'dynamicWidth',
             });
           }}
           {...item}
@@ -45,18 +58,3 @@ export default function ChatList(props: ChatListType) {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  containerStyles: {
-    backgroundColor: defaultColors.bg4,
-    paddingHorizontal: 0,
-    paddingBottom: 0,
-    flex: 1,
-  },
-  inputContainer: {
-    ...GStyles.paddingArg(8, 20),
-  },
-  svgWrap: {
-    padding: pTd(16),
-  },
-});

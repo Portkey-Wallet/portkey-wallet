@@ -12,13 +12,18 @@ import { useTabMenuList } from 'hooks/cms';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
 import ChatHome from 'pages/Chat/ChatHome';
 import { formatMessageCountToStr } from '@portkey-wallet/utils/chat';
+import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
+import { StyleSheet, View } from 'react-native';
+import { pTd } from 'utils/unit';
+import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import { TextS } from 'components/CommonText';
 
 const Tab = createBottomTabNavigator();
 
 enum TabRouteNameEnum {
   WALLET = 'Wallet',
   DISCOVER = 'Discover',
-  CHAT = 'Chat',
+  CHAT = ChatTabName,
   SETTINGS = 'Settings',
 }
 
@@ -34,7 +39,7 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
   [TabRouteNameEnum.WALLET]: {
     name: TabRouteNameEnum.WALLET,
     index: 0,
-    label: 'wallet',
+    label: 'Wallet',
     icon: 'logo-icon',
     component: DashBoard,
   },
@@ -49,13 +54,13 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     name: TabRouteNameEnum.CHAT,
     index: 2,
     label: 'Chat',
-    icon: 'my',
+    icon: 'chat-tab',
     component: ChatHome,
   },
   [TabRouteNameEnum.SETTINGS]: {
     name: TabRouteNameEnum.SETTINGS,
     index: 3,
-    label: 'Wallet',
+    label: 'My',
     icon: 'my',
     component: MyMenu,
   },
@@ -67,6 +72,7 @@ export default function TabRoot() {
   const { t } = useLanguage();
   const { address } = useCurrentWalletInfo();
   const tabMenuListStore = useTabMenuList();
+  const unreadCount = useUnreadCount();
 
   const tabMenuList = useMemo(() => {
     if (__DEV__) return defaultTabMenuList;
@@ -105,8 +111,23 @@ export default function TabRoot() {
         tabBarAllowFontScaling: false,
         header: () => null,
         tabBarIcon: ({ focused }) => {
-          const iconName: IconName = tabMenuList.find(tab => tab.name === route.name)?.icon ?? 'logo-icon';
-          return <Svg icon={iconName} size={22} color={focused ? defaultColors.font4 : defaultColors.font7} />;
+          const tabMenu = tabMenuList.find(tab => tab.name === route.name);
+          if (tabMenu?.name === TabRouteNameEnum.CHAT && unreadCount > 0) {
+            return (
+              <View style={styles.chatWrap}>
+                <TextS style={styles.messageCount}>{formatMessageCountToStr(unreadCount)}</TextS>
+                <Svg
+                  icon={tabMenu?.icon || 'my'}
+                  size={22}
+                  color={focused ? defaultColors.font4 : defaultColors.font7}
+                />
+              </View>
+            );
+          }
+
+          return (
+            <Svg icon={tabMenu?.icon || 'my'} size={22} color={focused ? defaultColors.font4 : defaultColors.font7} />
+          );
         },
       })}>
       {tabMenuList.map(ele => (
@@ -115,7 +136,6 @@ export default function TabRoot() {
           name={ele.name}
           component={ele.component}
           options={{
-            tabBarBadge: ele.name === TabRouteNameEnum.CHAT ? formatMessageCountToStr(200) : undefined,
             title: t(ele.label),
             tabBarActiveTintColor: defaultColors.font4,
           }}
@@ -124,3 +144,25 @@ export default function TabRoot() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  chatWrap: {
+    position: 'relative',
+  },
+  messageCount: {
+    position: 'absolute',
+    zIndex: 1000,
+    left: pTd(15),
+    top: -pTd(6),
+    height: pTd(18),
+    minWidth: pTd(18),
+    borderColor: defaultColors.bg1,
+    borderWidth: pTd(1),
+    borderRadius: pTd(9),
+    backgroundColor: defaultColors.bg17,
+    color: defaultColors.font2,
+    overflow: 'hidden',
+    textAlign: 'center',
+    paddingHorizontal: pTd(4),
+  },
+});

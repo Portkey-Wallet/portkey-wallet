@@ -1,8 +1,8 @@
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
-import { IViewContactProps } from '..';
 import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
+import { IProfileDetailProps } from 'types/Profile';
 
 export default function ViewContactPopup({
   headerTitle,
@@ -16,7 +16,7 @@ export default function ViewContactPopup({
   handleChat,
   handleAdd,
   handleCopy,
-}: IViewContactProps) {
+}: IProfileDetailProps) {
   return (
     <div className="view-contact-popup">
       <div className="view-contact-nav">

@@ -3,17 +3,11 @@ import ViewContactPopup from './Popup';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
-import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
-import { IViewContactBodyProps } from '../components/ViewContactBody';
-import { useCopyToClipboard } from 'react-use';
-import { message } from 'antd';
-import CustomModal from 'pages/components/CustomModal';
-
-export type IViewContactProps = BaseHeaderProps & IViewContactBodyProps;
+import { useProfileAddContact, useProfileChat, useProfileCopy, useProfileEdit } from 'hooks/useProfile';
 
 export default function ViewContact() {
-  const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { isNotLessThan768 } = useCommonState();
   const { state } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -28,35 +22,12 @@ export default function ViewContact() {
     navigate('/setting/contacts');
   }, [navigate]);
 
-  const handleEdit = useCallback(() => {
-    navigate('/setting/contacts/edit', { state: state });
-  }, [navigate, state]);
+  const handleEdit = useProfileEdit();
+  const handleAdd = useProfileAddContact();
+  const handleChat = useProfileChat();
+  const handleCopy = useProfileCopy();
 
-  const handleAdd = useCallback(() => {
-    navigate('/setting/contacts/add', { state: state });
-  }, [navigate, state]);
-
-  const handleChat = useCallback(() => {
-    if (isPrompt) {
-      CustomModal({
-        content: (
-          <>{`Please click on the Portkey browser extension in the top right corner to access the chat feature`}</>
-        ),
-      });
-    } else {
-      navigate('/chat-list', { state: state });
-    }
-  }, [isPrompt, navigate, state]);
-
-  const [, setCopied] = useCopyToClipboard();
-  const handleCopy = useCallback(
-    (v: string) => {
-      setCopied(v);
-      message.success(t('Copy Success'));
-    },
-    [setCopied, t],
-  );
-
+  // TODO btn show logic
   return isNotLessThan768 ? (
     <ViewContactPrompt
       headerTitle={title}
@@ -66,10 +37,10 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={state}
       goBack={goBack}
-      handleEdit={handleEdit}
-      handleChat={handleChat}
-      handleAdd={handleAdd}
-      handleCopy={handleCopy}
+      handleEdit={() => handleEdit(state)}
+      handleAdd={() => handleAdd(state)}
+      handleChat={() => handleChat(state)}
+      handleCopy={useProfileCopy}
     />
   ) : (
     <ViewContactPopup
@@ -80,9 +51,9 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={state}
       goBack={goBack}
-      handleEdit={handleEdit}
-      handleChat={handleChat}
-      handleAdd={handleAdd}
+      handleEdit={() => handleEdit(state)}
+      handleAdd={() => handleAdd(state)}
+      handleChat={() => handleChat(state)}
       handleCopy={handleCopy}
     />
   );

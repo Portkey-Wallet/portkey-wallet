@@ -24,6 +24,7 @@ export default function FindMore() {
   const isMainnet = useIsMainnet();
 
   const headerTitle = 'Find More';
+  const cantAddYourselfText = 'Unable to add yourself as a contact';
   const [portkeyId, setPortkeyId] = useState('mock portkey id');
   const [contactList, setContactList] = useState([]);
   // mock data

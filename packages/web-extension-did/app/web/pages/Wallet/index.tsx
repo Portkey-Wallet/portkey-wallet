@@ -8,6 +8,7 @@ import { MenuItemInfo } from 'pages/components/MenuList';
 import WalletPrompt from './Prompt';
 import { IExitWalletProps } from './components/ExitWallet';
 import { BaseHeaderProps } from 'types/UI';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export type WalletAvatar = keyof typeof svgsList;
 
@@ -23,11 +24,13 @@ export default function Wallet() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isPrompt, isNotLessThan768 } = useCommonState();
+  const isMainnet = useIsMainnet();
   const { walletName, walletAvatar } = useWalletInfo();
   const [exitVisible, setExitVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
 
   const WalletNameLabel = 'wallet-name';
+  const MyDidLabel = 'my-did';
   const AutoLockLabel = 'auto-lock';
   const SwitchNetworksLabel = 'switch-networks';
   const AboutUsLabel = 'about-us';
@@ -35,10 +38,14 @@ export default function Wallet() {
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
       {
-        element: 'Wallet Name',
-        key: WalletNameLabel,
+        element: isMainnet ? 'My DID' : 'Wallet Name',
+        key: isMainnet ? MyDidLabel : WalletNameLabel,
         click: () => {
-          setSelectedItem(WalletNameLabel);
+          if (isMainnet) {
+            setSelectedItem(MyDidLabel);
+          } else {
+            setSelectedItem(WalletNameLabel);
+          }
           navigate('/setting/wallet/wallet-name');
         },
       },

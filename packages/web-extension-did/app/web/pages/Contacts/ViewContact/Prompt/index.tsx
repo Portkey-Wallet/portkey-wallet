@@ -1,7 +1,7 @@
 import './index.less';
 import SecondPageHeader from 'pages/components/SecondPageHeader';
-import { IViewContactProps } from '..';
 import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
+import { IProfileDetailProps } from 'types/Profile';
 
 export default function ViewContactPrompt({
   headerTitle,
@@ -15,7 +15,7 @@ export default function ViewContactPrompt({
   handleChat,
   handleAdd,
   handleCopy,
-}: IViewContactProps) {
+}: IProfileDetailProps) {
   return (
     <div className="view-contact-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />

@@ -13,13 +13,30 @@ import { useKeyboardAnim } from '../../hooks';
 import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus, setChatText } from '../../context/chatsContext';
+import { BGStyles } from 'assets/theme/styles';
+import { defaultColors } from 'assets/theme';
+import { SendMessageButton } from '../SendMessageButton';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
-  return <Actions onPressActionButton={onPress} icon={() => <Svg icon="add1" />} optionTintColor="#222B45" />;
+  return (
+    <Actions
+      containerStyle={styles.fileSvg}
+      onPressActionButton={onPress}
+      icon={() => <Svg size={pTd(24)} icon="chat-file" />}
+      optionTintColor="#222B45"
+    />
+  );
 });
 
 export const EmojiIcon = memo(function EmojiIcon({ onPress }: { onPress?: () => void }) {
-  return <Actions onPressActionButton={onPress} icon={() => <Svg icon="add3" />} optionTintColor="#222B45" />;
+  return (
+    <Actions
+      containerStyle={styles.emojiSvg}
+      onPressActionButton={onPress}
+      icon={() => <Svg size={pTd(24)} icon="chat-emoji" />}
+      optionTintColor="#222B45"
+    />
+  );
 });
 
 export function AndroidInputContainer({
@@ -94,28 +111,37 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
       timer.current && clearTimeout(timer.current);
     };
   });
+
   return (
     <>
-      <Touchable style={GStyles.flexRow}>
+      <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.wrap]}>
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
         {isIOS ? (
-          <TextInput
-            onChangeText={v => dispatch(setChatText(v))}
-            value={text}
-            style={GStyles.flex1}
-            ref={textInputRef as any}
-          />
-        ) : (
-          <AndroidInputContainer textInputRef={textInputRef}>
+          <View style={[GStyles.flex1, styles.inputWrapStyle]}>
             <TextInput
-              value={text}
+              multiline
+              style={styles.input}
               onChangeText={v => dispatch(setChatText(v))}
-              style={GStyles.flex1}
+              value={text}
               ref={textInputRef as any}
             />
+            <EmojiIcon onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
+          </View>
+        ) : (
+          <AndroidInputContainer textInputRef={textInputRef}>
+            <View style={[GStyles.flex1, styles.inputWrapStyle]}>
+              <TextInput
+                multiline
+                value={text}
+                style={styles.input}
+                onChangeText={v => dispatch(setChatText(v))}
+                ref={textInputRef as any}
+              />
+              <EmojiIcon onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
+            </View>
           </AndroidInputContainer>
         )}
-        <EmojiIcon onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
+        <SendMessageButton text={text} containerStyle={styles.sendStyle} />
       </Touchable>
       <Animated.View style={{ height: keyboardAnim }}>{children}</Animated.View>
     </>
@@ -123,6 +149,44 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
 }
 
 const styles = StyleSheet.create({
+  wrap: {
+    position: 'relative',
+    paddingHorizontal: pTd(16),
+    paddingVertical: pTd(10),
+  },
+  fileSvg: {
+    marginLeft: 0,
+    marginBottom: pTd(8),
+    marginRight: pTd(8),
+  },
+  emojiSvg: {
+    marginLeft: 0,
+    marginBottom: 0,
+    position: 'absolute',
+    right: pTd(8),
+    bottom: pTd(8),
+  },
+  inputWrapStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: defaultColors.bg1,
+    borderRadius: pTd(20),
+    paddingRight: pTd(40),
+    paddingVertical: pTd(6),
+    minHeight: pTd(40),
+    maxHeight: pTd(200),
+  },
+  input: {
+    width: '100%',
+    paddingLeft: pTd(16),
+  },
+  sendStyle: {
+    marginBottom: pTd(8),
+    marginLeft: pTd(8),
+    width: pTd(24),
+    height: pTd(24),
+  },
   toolsItem: {
     width: '25%',
     margin: pTd(2),

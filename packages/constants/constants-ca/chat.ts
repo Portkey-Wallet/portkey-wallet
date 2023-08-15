@@ -1,11 +1,11 @@
 export enum ChatOperationsEnum {
-  PROFILE = 'profile',
-  MUTE = 'mute',
-  UNMUTE = 'unmute',
-  PIN = 'pin',
-  UNPIN = 'unPin',
-  DELETE_CHAT = 'deleteChat',
-  ADD_CONTACT = 'addContact',
+  PROFILE = 'Profile',
+  MUTE = 'Mute',
+  UNMUTE = 'Unmute',
+  PIN = 'Pin',
+  UNPIN = 'Unpin',
+  DELETE_CHAT = 'Delete',
+  ADD_CONTACT = 'Add Contact',
 }
 
 export const ChatHomeOperationList = [

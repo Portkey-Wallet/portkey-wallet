@@ -15,6 +15,13 @@ export const BGStyles = StyleSheet.create({
   bg10: { backgroundColor: defaultColors.bg10 },
   bg11: { backgroundColor: defaultColors.bg11 },
   bg12: { backgroundColor: defaultColors.bg12 },
+  bg13: { backgroundColor: defaultColors.bg13 },
+  bg14: { backgroundColor: defaultColors.bg14 },
+  bg15: { backgroundColor: defaultColors.bg15 },
+  bg16: { backgroundColor: defaultColors.bg16 },
+  bg17: { backgroundColor: defaultColors.bg17 },
+  bg18: { backgroundColor: defaultColors.bg18 },
+  bg19: { backgroundColor: defaultColors.bg19 },
   transparent: { backgroundColor: 'transparent' },
 });
 

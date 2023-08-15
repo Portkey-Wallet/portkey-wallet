@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
@@ -10,8 +10,11 @@ import CommonButton from 'components/CommonButton';
 import { useFocusEffect } from '@react-navigation/native';
 import NoData from 'components/NoData';
 import { Image } from '@rneui/base';
-import { TextM } from 'components/CommonText';
+import { TextM, TextL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
+import FindMoreButton from '../components/FindMoreButton';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import CommonAvatar from 'components/CommonAvatar';
 const mock_data = [0, 1, 2];
 
 export default function SearchPeople() {
@@ -45,10 +48,13 @@ export default function SearchPeople() {
   const renderItem = useCallback((item: any) => {
     console.log(item);
     return (
-      <Touchable onPress={() => navigationService.navigate('ChatDetails')}>
-        <Image source={{ uri: '' }} />
-        <TextM>Sally</TextM>
-        <TextM>2</TextM>
+      <Touchable
+        style={[GStyles.flexRow, GStyles.itemCenter, styles.itemWrap]}
+        onPress={() => navigationService.navigate('ChatDetails')}>
+        <CommonAvatar title="sally" hasBorder avatarSize={pTd(36)} style={styles.avatarStyle} />
+        <View style={styles.rightSection}>
+          <TextL numberOfLines={1}>Sally</TextL>
+        </View>
       </Touchable>
     );
   }, []);
@@ -68,8 +74,13 @@ export default function SearchPeople() {
         clearText={() => setKeyword('')}
         onCancel={() => navigationService.goBack()}
       />
-      <CommonButton onPress={() => navigationService.navigate('FindMorePeople')}>FindMorePeople</CommonButton>
-      <FlatList data={filterList} ListEmptyComponent={<NoData />} renderItem={renderItem} />
+      <FindMoreButton />
+      <FlatList
+        data={filterList}
+        ListHeaderComponent={<TextL style={styles.listHeader}>Chats</TextL>}
+        ListEmptyComponent={<NoData noPic message="No search result" />}
+        renderItem={renderItem}
+      />
     </PageContainer>
   );
 }
@@ -80,10 +91,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     flex: 1,
   },
-  inputContainer: {
-    ...GStyles.paddingArg(8, 20),
+  listHeader: {
+    ...GStyles.paddingArg(16, 20, 8),
+    color: defaultColors.font9,
   },
-  svgWrap: {
-    padding: pTd(16),
+  itemWrap: {
+    width: screenWidth,
+    height: pTd(72),
+  },
+  avatarStyle: {
+    marginHorizontal: pTd(20),
+    marginVertical: pTd(18),
+  },
+  rightSection: {
+    height: pTd(72),
+    flex: 1,
+    borderBottomColor: defaultColors.border1,
+    borderBottomWidth: 1,
+    paddingRight: pTd(20),
+    justifyContent: 'center',
   },
 });

@@ -9,6 +9,9 @@ import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/d
 import { Camera } from 'expo-camera';
 import Touchable from 'components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';
+import CommonButton from 'components/CommonButton';
+import { BGStyles } from 'assets/theme/styles';
+import SafeAreaBox from 'components/SafeAreaBox';
 
 const QrScanner: React.FC = () => {
   const cameraRef = useRef<any>();
@@ -21,9 +24,16 @@ const QrScanner: React.FC = () => {
       const result = await cameraRef.current?.takePictureAsync();
       console.log('======result===', result, result.uri);
       setImgUrl(result.uri);
+      cameraRef.current.pausePreview();
     } catch (error) {
       console.log('------', error);
     }
+  }, []);
+
+  const resetCamera = useCallback(() => {
+    if (!cameraRef?.current) return;
+    cameraRef.current.resumePreview();
+    setImgUrl('');
   }, []);
 
   useEffectOnce(() => {
@@ -34,12 +44,12 @@ const QrScanner: React.FC = () => {
   });
 
   return (
-    <View style={PageStyle.wrapper}>
-      <Camera
-        ratio={'16:9'}
-        ref={cameraRef}
-        style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
-        <SafeAreaView style={PageStyle.innerView}>
+    <SafeAreaBox edges={['bottom', 'right', 'left']} style={PageStyle.safeAreaBox}>
+      <View style={PageStyle.wrapper}>
+        <Camera
+          ratio={'16:9'}
+          ref={cameraRef}
+          style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
           <View style={PageStyle.iconWrap}>
             <Text style={PageStyle.leftBlock} />
             <TouchableOpacity
@@ -50,41 +60,55 @@ const QrScanner: React.FC = () => {
               <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
             </TouchableOpacity>
           </View>
-        </SafeAreaView>
-      </Camera>
-      <View style={PageStyle.buttonWrap}>
-        <Touchable onPress={takePicture} style={PageStyle.button} />
+        </Camera>
+        <View
+          style={[
+            GStyles.flexRow,
+            GStyles.center,
+            !!imgUrl && GStyles.spaceBetween,
+            BGStyles.bg19,
+            PageStyle.buttonWrap,
+          ]}>
+          {imgUrl && (
+            <Touchable style={PageStyle.reshutterWrap} onPress={resetCamera}>
+              <Svg size={pTd(40)} icon="chat-reshutter" />
+            </Touchable>
+          )}
+          {!imgUrl && (
+            <Touchable onPress={takePicture} style={[GStyles.center, PageStyle.shutter]}>
+              <Svg size={pTd(68)} icon="chat-shutter" />
+            </Touchable>
+          )}
+          {imgUrl && <CommonButton title="Send" type="primary" buttonStyle={PageStyle.sendButton} />}
+        </View>
+        <Image style={PageStyle.previewImage} source={{ uri: imgUrl || '' }} />
       </View>
-      <Image style={PageStyle.img} source={{ uri: imgUrl || '' }} />
-    </View>
+    </SafeAreaBox>
   );
 };
 
 export default QrScanner;
 
 export const PageStyle = StyleSheet.create({
+  safeAreaBox: {
+    backgroundColor: defaultColors.bg19,
+  },
   wrapper: {
     width: '100%',
     height: '100%',
-    opacity: 0.85,
     backgroundColor: defaultColors.bgColor1,
   },
   barCodeScanner: {
     width: '100%',
-    height: '100%',
-    position: 'absolute',
+    flex: 1,
     zIndex: 100,
   },
   barCodeScannerAndroid: {
     width: screenWidth,
     height: screenHeight,
   },
-  innerView: {
-    width: '100%',
-    height: '100%',
-  },
   iconWrap: {
-    marginTop: pTd(16),
+    marginTop: pTd(32),
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
@@ -102,25 +126,22 @@ export const PageStyle = StyleSheet.create({
   },
   buttonWrap: {
     width: screenWidth,
-    position: 'absolute',
+    height: pTd(112),
     zIndex: 100,
-    bottom: 100,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: pTd(20),
   },
-  button: {
-    marginHorizontal: 'auto',
-    borderRadius: 50,
-    height: 100,
-    width: 100,
-    backgroundColor: defaultColors.bg1,
+  reshutterWrap: {
+    borderRadius: pTd(20),
+    overflow: 'hidden',
   },
-  img: {
-    position: 'absolute',
-    zIndex: 100,
-    top: 100,
-    width: 100,
-    height: 100,
+  shutter: {
+    flex: 1,
+  },
+  sendButton: {
+    height: pTd(40),
+    paddingHorizontal: pTd(16),
+  },
+  previewImage: {
+    width: '100%',
   },
 });

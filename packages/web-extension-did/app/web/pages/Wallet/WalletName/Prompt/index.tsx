@@ -13,8 +13,6 @@ export default function WalletNamePrompt({
   isShowAddedBtn = false,
   isShowChatBtn = false,
   handleEdit,
-  handleChat,
-  handleAdd,
   handleCopy,
 }: IProfileDetailProps) {
   return (
@@ -28,8 +26,6 @@ export default function WalletNamePrompt({
         isShowAddedBtn={isShowAddedBtn}
         isShowChatBtn={isShowChatBtn}
         handleEdit={handleEdit}
-        handleChat={handleChat}
-        handleAdd={handleAdd}
         handleCopy={handleCopy}
       />
     </div>

@@ -7,15 +7,14 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
-import { useEditContact, useCheckContactName } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useAddContact, useCheckContactName } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useIsTestnet } from 'hooks/useNetwork';
 import { IAddContactFormProps } from '../components/AddContactForm';
-import EditContactPrompt from './Prompt';
-import EditContactPopup from './Popup';
+import AddContactPrompt from './Prompt';
+import AddContactPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
-import { useProfileCopy } from 'hooks/useProfile';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -37,15 +36,11 @@ export interface CustomAddressItem extends AddressItem {
 
 export interface IAddContactProps extends IAddContactFormProps, BaseHeaderProps {
   isShowDrawer: boolean;
-  isNameDisable?: boolean;
-  isShowRemark?: boolean;
-  canSave?: boolean;
   closeDrawer: () => void;
   handleNetworkChange: (v: any) => void;
-  handleCopy: (val: string) => void;
 }
 
-export default function EditContact() {
+export default function AddContact() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -57,7 +52,7 @@ export default function EditContact() {
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [addressArr, setAddressArr] = useState<CustomAddressItem[]>(state?.addresses);
   const [validRemark, setValidRemark] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
-  const editContactApi = useEditContact();
+  const addContactApi = useAddContact();
   const checkExistNameApi = useCheckContactName();
   const { setLoading } = useLoading();
 
@@ -191,11 +186,14 @@ export default function EditContact() {
     [checkExistNameApi, state.remark],
   );
 
-  const handleCheckRemark = useCallback(async (v: string) => {
-    const existed = await checkExistRemark(v);
+  const handleCheckRemark = useCallback(
+    async (v: string) => {
+      const existed = await checkExistRemark(v);
 
-    return existed;
-  }, []);
+      return existed;
+    },
+    [checkExistRemark],
+  );
 
   const handleCheckAddress = useCallback(
     (addresses: AddressItem[]) => {
@@ -227,7 +225,7 @@ export default function EditContact() {
         const checkAddress = handleCheckAddress(addresses);
         if (checkName && checkRemark && checkAddress) {
           // TODO remark
-          await editContactApi({ name: name.trim(), addresses, id: state.id, index: state.index });
+          await addContactApi({ name: name.trim(), addresses });
 
           appDispatch(fetchContactListAsync());
           // navigate('/setting/contacts');
@@ -244,7 +242,7 @@ export default function EditContact() {
             onOk: () => navigate('/chat'),
             onCancel: () => navigate('/setting/contacts/view', { state: {} }),
           });
-          message.success('Edit Contact Successful'); // 'Add Contact Successful'
+          message.success('Add Contact Successful');
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
@@ -253,18 +251,7 @@ export default function EditContact() {
         setLoading(false);
       }
     },
-    [
-      appDispatch,
-      editContactApi,
-      handleCheckAddress,
-      handleCheckName,
-      handleCheckRemark,
-      navigate,
-      setLoading,
-      state.id,
-      state.index,
-      t,
-    ],
+    [addContactApi, appDispatch, handleCheckAddress, handleCheckName, handleCheckRemark, navigate, setLoading, t],
   );
 
   // go back previous page
@@ -278,13 +265,11 @@ export default function EditContact() {
     setNetOpen(false);
   };
 
-  const handleCopy = useProfileCopy();
-
   const { isNotLessThan768 } = useCommonState();
 
-  const headerTitle = useMemo(() => t('Edit Contact'), [t]); // t('Add New Contact')
+  const headerTitle = useMemo(() => t('Add New Contact'), [t]);
   return isNotLessThan768 ? (
-    <EditContactPrompt
+    <AddContactPrompt
       headerTitle={headerTitle}
       goBack={handleGoBack}
       form={form}
@@ -301,10 +286,9 @@ export default function EditContact() {
       isShowDrawer={netOpen}
       closeDrawer={handleCloseDrawer}
       handleNetworkChange={handleNetworkChange}
-      handleCopy={handleCopy}
     />
   ) : (
-    <EditContactPopup
+    <AddContactPopup
       headerTitle={headerTitle}
       goBack={handleGoBack}
       form={form}
@@ -321,7 +305,6 @@ export default function EditContact() {
       isShowDrawer={netOpen}
       closeDrawer={handleCloseDrawer}
       handleNetworkChange={handleNetworkChange}
-      handleCopy={handleCopy}
     />
   );
 }

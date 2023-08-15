@@ -1,0 +1,37 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.id-and-address {
+  .info-section {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    color: @font-11;
+    width: 100%;
+
+    .info-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #262626;
+      margin-bottom: 16px;
+    }
+    .info-content {
+      .info-desc {
+        font-size: 14px;
+        font-weight: normal;
+        color: #515a62;
+        word-break: break-all;
+        margin-right: 16px;
+        .text-overflow(1);
+      }
+      .id-copy-icon {
+        display: inline-flex;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .section-border-bottom {
+    border-bottom: 1px solid #dee2e8;
+  }
+}

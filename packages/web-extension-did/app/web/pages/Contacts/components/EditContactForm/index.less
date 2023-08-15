@@ -1,9 +1,6 @@
 @import '../../../../assets/theme/color.less';
 
 .edit-contact-form {
-  height: 504px;
-  justify-content: space-between;
-
   .form-content {
     padding: 12px 24px 8px;
 
@@ -19,88 +16,12 @@
       color: @font-12;
       line-height: 20px;
     }
-    .address-item {
-      .address-item-title {
-        color: @font-11;
-        line-height: 20px;
-        .address-item-delete {
-          cursor: pointer;
-        }
-      }
-      .address-item-body {
-        margin-top: 8px;
-        .select-svg {
-          width: 24px;
-          height: 24px;
-        }
-        .@{app-prefix}-input-affix-wrapper {
-          height: 48px;
-          border-radius: 6px;
-          border: 1px solid @border-1;
-
-          .@{app-prefix}-input-prefix {
-            margin-right: 12px;
-          }
-        }
-        .@{app-prefix}-form-item {
-          width: 100%;
-          height: 48px;
-          margin-top: 8px;
-
-          .@{app-prefix}-input-group-wrapper-status-error .@{app-prefix}-input-group-addon {
-            color: @font-13;
-          }
-          .@{app-prefix}-input-group-addon {
-            border-radius: 6px;
-            border: 1px solid @border-1;
-            &:first-child {
-              border-right: 0;
-              border-top-right-radius: 0;
-              border-bottom-right-radius: 0;
-            }
-            &:last-child {
-              border-left: 0;
-              border-top-left-radius: 0;
-              border-bottom-left-radius: 0;
-            }
-          }
-        }
-      }
-    }
-    .addresses-add-btn {
-      margin-top: 8px;
-      margin-bottom: 24px;
-      color: @font-9;
-      font-size: 14px;
-      line-height: 20px;
-      cursor: pointer;
-      & > div {
-        display: flex;
-        margin-right: 8px;
-      }
-      .plus-svg {
-        width: 20px;
-        height: 20px;
-      }
-    }
   }
   .form-btn {
     width: 100%;
     padding: 16px;
     border-top: 1px solid @border-2;
-    .form-btn-add {
-      .@{app-prefix}-form-item {
-        margin-bottom: 0;
-      }
-      .add-btn {
-        color: @font-5;
-        font-size: 16px;
-        line-height: 22px;
-        height: 48px;
-        border-radius: 22px;
-        background-color: @bg-7;
-      }
-    }
+
     .form-btn-edit {
       gap: 16px;
       .@{app-prefix}-btn-dangerous,

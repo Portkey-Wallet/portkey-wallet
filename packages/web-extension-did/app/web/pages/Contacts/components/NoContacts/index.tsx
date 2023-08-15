@@ -18,7 +18,7 @@ export default function NoContacts({ initData }: { initData: Partial<ContactItem
         className="flex-row-center add-button"
         type="text"
         onClick={() => {
-          navigate('/setting/contacts/add', { state: initData });
+          navigate('/setting/contacts/add/2', { state: initData });
         }}>
         <CustomSvg type="Plus" className="plug-svg" /> {t('Add New Contact')}
       </Button>

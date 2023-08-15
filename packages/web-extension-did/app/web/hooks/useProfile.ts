@@ -5,13 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useCopyToClipboard } from 'react-use';
 import { useCommonState } from 'store/Provider/hooks';
+import { ChatType } from 'types/Profile';
 
 export const useProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (state: any) => {
-      navigate('/setting/contacts/edit', { state });
+    (chat: ChatType, state: any) => {
+      navigate(`/setting/contacts/edit/${chat}`, { state });
     },
     [navigate],
   );
@@ -21,8 +22,8 @@ export const useProfileAddContact = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (state: any) => {
-      navigate('/setting/contacts/add', { state });
+    (chat: ChatType, state: any) => {
+      navigate(`/setting/contacts/add/${chat}`, { state });
     },
     [navigate],
   );

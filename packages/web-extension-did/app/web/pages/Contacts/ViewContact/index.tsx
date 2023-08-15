@@ -37,10 +37,11 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={state}
       goBack={goBack}
-      handleEdit={() => handleEdit(state)}
-      handleAdd={() => handleAdd(state)}
+      // TODO 1 2
+      handleEdit={() => handleEdit('1', state)}
+      handleAdd={() => handleAdd('2', state)}
       handleChat={() => handleChat(state)}
-      handleCopy={useProfileCopy}
+      handleCopy={handleCopy}
     />
   ) : (
     <ViewContactPopup
@@ -51,8 +52,9 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={state}
       goBack={goBack}
-      handleEdit={() => handleEdit(state)}
-      handleAdd={() => handleAdd(state)}
+      // TODO 1 2
+      handleEdit={() => handleEdit('1', state)}
+      handleAdd={() => handleAdd('2', state)}
       handleChat={() => handleChat(state)}
       handleCopy={handleCopy}
     />

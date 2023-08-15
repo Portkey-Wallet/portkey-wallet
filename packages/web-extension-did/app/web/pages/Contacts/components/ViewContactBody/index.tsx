@@ -3,6 +3,7 @@ import './index.less';
 import ContactAddressList from 'pages/Contacts/components/ContactAddressList';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
+import IdAndAddress from '../IdAndAddress';
 
 export default function ViewContactBody({
   data,
@@ -64,32 +65,12 @@ export default function ViewContactBody({
           </div>
         </div>
 
-        {/* Section - ID */}
-        {data?.portkeyId && (
-          <div className="info-section section-border-bottom">
-            <div className="info-title">Portkey ID</div>
-            <div className="flex-row-between info-content">
-              <div className="info-desc">{data.portkeyId}</div>
-              <CustomSvg onClick={() => handleCopy(data.portkeyId)} type="Copy" className="id-copy-icon" />
-            </div>
-          </div>
-        )}
-
-        {!data?.portkeyId && data?.relationOneId && (
-          <div className="info-section section-border-bottom">
-            <div className="info-title">{`ID (relation one)`}</div>
-            <div className="flex-row-between info-content">
-              <div className="info-desc">{data.relationOneId}</div>
-              <CustomSvg onClick={() => handleCopy(data.relationOneId)} type="Copy" className="id-copy-icon" />
-            </div>
-          </div>
-        )}
-
-        {/* Section - Address */}
-        <div className="info-section">
-          <div className="info-title">{`DID`}</div>
-          <ContactAddressList list={data.addresses} />
-        </div>
+        <IdAndAddress
+          portkeyId={data?.portkeyId}
+          relationOneId={data?.relationOneId}
+          addresses={data?.addresses || []}
+          handleCopy={handleCopy}
+        />
       </div>
 
       <div className="footer">

@@ -102,7 +102,7 @@ export default function Contacts() {
   }, [navigate]);
 
   const handleAdd = useCallback(() => {
-    navigate('/setting/contacts/add', { state: initContactItem });
+    navigate('/setting/contacts/add/2', { state: initContactItem });
   }, [navigate]);
 
   return isNotLessThan768 ? (

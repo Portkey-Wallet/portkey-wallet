@@ -24,7 +24,7 @@ import TokenDetail from 'pages/Token/Detail';
 import Send from 'pages/Send';
 import Receive from 'pages/Receive';
 import NFT from 'pages/NFT';
-import Contact from 'pages/Contacts/ContactDetail';
+import ContactDetail from 'pages/Contacts/ContactDetail';
 import AccountSetting from 'pages/AccountSetting';
 import PromptMy from 'pages/PromptMy';
 import Guardians from 'pages/Guardians';
@@ -216,7 +216,11 @@ export const PageRouter = () => {
           children: [
             {
               path: '/setting/contacts/:type',
-              element: <Contact />,
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/contacts/:type/:chat',
+              element: <ContactDetail />,
             },
             {
               path: '/setting/contacts/find-more',
@@ -352,7 +356,11 @@ export const PageRouter = () => {
     },
     {
       path: '/setting/contacts/:type',
-      element: <Contact />,
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/:type/:chat',
+      element: <ContactDetail />,
     },
     {
       path: '/setting/contacts/find-more',

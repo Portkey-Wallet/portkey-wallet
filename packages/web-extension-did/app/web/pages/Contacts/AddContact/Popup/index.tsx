@@ -2,15 +2,14 @@ import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import NetworkDrawer from '../../NetworkDrawer';
 import BackHeader from 'components/BackHeader';
+import AddContactForm from '../../components/AddContactForm';
 import { IAddContactProps } from '..';
-import EditContactForm from 'pages/Contacts/components/EditContactForm';
 
-export default function EditContactPopup({
+export default function AddContactPopup({
   form,
-  isNameDisable = false,
-  isShowRemark = true,
-  canSave = false,
+  isDisable,
   state,
+  addressArr,
   validName,
   validRemark,
   headerTitle,
@@ -19,31 +18,32 @@ export default function EditContactPopup({
   onFinish,
   handleInputValueChange,
   handleInputRemarkChange,
+  handleSelectNetwork,
+  handleAddressChange,
   closeDrawer,
   handleNetworkChange,
-  handleCopy,
 }: IAddContactProps) {
   return (
-    <div className="edit-contact-popup min-width-max-height">
-      <div className="edit-contact-title">
+    <div className="add-contact-popup min-width-max-height">
+      <div className="add-contact-title">
         <BackHeader
           title={headerTitle}
           leftCallBack={goBack}
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
       </div>
-      <EditContactForm
+      <AddContactForm
         form={form}
-        isNameDisable={isNameDisable}
-        isShowRemark={isShowRemark}
-        canSave={canSave}
+        isDisable={isDisable}
         validName={validName}
         validRemark={validRemark}
         state={state}
+        addressArr={addressArr}
         onFinish={onFinish}
+        handleSelectNetwork={handleSelectNetwork}
+        handleAddressChange={handleAddressChange}
         handleInputValueChange={handleInputValueChange}
         handleInputRemarkChange={handleInputRemarkChange}
-        handleCopy={handleCopy}
       />
       <NetworkDrawer
         open={isShowDrawer}

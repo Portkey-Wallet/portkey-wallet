@@ -18,7 +18,7 @@ import GuardiansEdit from 'pages/Guardians/GuardiansEdit';
 import GuardiansView from 'pages/Guardians/GuardiansView';
 import VerifierAccount from 'pages/VerifierAccount';
 import Unlock from 'pages/Unlock';
-import Contact from 'pages/Contacts/ContactDetail';
+import ContactDetail from 'pages/Contacts/ContactDetail';
 import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
 import WalletSecurity from 'pages/WalletSecurity';
 import SetNewPin from 'pages/AccountSetting/SetNewPin';
@@ -135,7 +135,11 @@ export const PageRouter = () =>
     },
     {
       path: '/setting/contacts/:type',
-      element: <Contact />,
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/:type/:chat',
+      element: <ContactDetail />,
     },
     {
       path: '/setting/contacts/find-more',

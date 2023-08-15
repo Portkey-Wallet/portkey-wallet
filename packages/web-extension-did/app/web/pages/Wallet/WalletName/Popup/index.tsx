@@ -14,8 +14,6 @@ export default function WalletNamePopup({
   isShowAddedBtn = false,
   isShowChatBtn = false,
   handleEdit,
-  handleChat,
-  handleAdd,
   handleCopy,
 }: IProfileDetailProps) {
   return (
@@ -35,8 +33,6 @@ export default function WalletNamePopup({
         isShowAddedBtn={isShowAddedBtn}
         isShowChatBtn={isShowChatBtn}
         handleEdit={handleEdit}
-        handleChat={handleChat}
-        handleAdd={handleAdd}
         handleCopy={handleCopy}
       />
     </div>

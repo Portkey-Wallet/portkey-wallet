@@ -54,7 +54,7 @@ export default function RecentDetail() {
       name: '',
       addresses: [{ chainId: targetChainId || 'AELF', address: targetAddress || '' }],
     };
-    nav('/setting/contacts/add', { state: initContactItem });
+    nav('/setting/contacts/add/2', { state: initContactItem });
   }, [targetChainId, targetAddress, nav]);
 
   const viewOnExplorer = useCallback(() => {

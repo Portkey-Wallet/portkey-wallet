@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { IProfileDetailDataProps } from 'types/Profile';
-import { useProfileEdit, useProfileAddContact, useProfileChat, useProfileCopy } from 'hooks/useProfile';
+import { useProfileEdit, useProfileCopy } from 'hooks/useProfile';
 import { useTranslation } from 'react-i18next';
 
 export default function WalletName() {
@@ -28,8 +28,6 @@ export default function WalletName() {
   const headerTitle = isMainnet ? walletName : t('My DID');
 
   const handleEdit = useProfileEdit();
-  const handleAdd = useProfileAddContact();
-  const handleChat = useProfileChat();
   const handleCopy = useProfileCopy();
   const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);
 
@@ -39,9 +37,7 @@ export default function WalletName() {
       data={state}
       editText={editText}
       goBack={goBack}
-      handleEdit={() => handleEdit(state)}
-      handleAdd={() => handleAdd(state)}
-      handleChat={() => handleChat(state)}
+      handleEdit={() => handleEdit('1', state)}
       handleCopy={handleCopy}
     />
   ) : (
@@ -50,9 +46,7 @@ export default function WalletName() {
       data={state}
       editText={editText}
       goBack={goBack}
-      handleEdit={() => handleEdit(state)}
-      handleAdd={() => handleAdd(state)}
-      handleChat={() => handleChat(state)}
+      handleEdit={() => handleEdit('1', state)}
       handleCopy={handleCopy}
     />
   );

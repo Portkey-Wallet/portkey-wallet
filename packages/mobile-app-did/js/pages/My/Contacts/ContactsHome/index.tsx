@@ -1,9 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
-import { pageStyles } from './style';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
@@ -11,11 +9,13 @@ import { useLanguage } from 'i18n/hooks';
 import ContactsList from 'components/ContactList';
 import CommonTopTab from 'components/CommonTopTab';
 import { BGStyles } from 'assets/theme/styles';
-import GStyles from 'assets/theme/GStyles';
 import CommonInput from 'components/CommonInput';
 import { useContactList } from '@portkey-wallet/hooks/hooks-ca/contact';
 import useDebounce from 'hooks/useDebounce';
 import SearchContactListSection from '../SearchContactListSection';
+import { StyleSheet } from 'react-native';
+import GStyles from 'assets/theme/GStyles';
+import FindMoreButton from 'pages/Chat/components/FindMoreButton';
 
 const ContactsHome: React.FC = () => {
   const { t } = useLanguage();
@@ -27,8 +27,16 @@ const ContactsHome: React.FC = () => {
 
   const tabList = useMemo(
     () => [
-      { name: 'All', tabItemDom: <ContactsList isSearchShow={false} /> },
-      { name: 'Portkey Chat', tabItemDom: <ContactsList isSearchShow={false} /> },
+      { name: 'All', tabItemDom: <ContactsList isSearchShow={false} style={pageStyles.contactListStyle} /> },
+      {
+        name: 'Portkey Chat',
+        tabItemDom: (
+          <>
+            <FindMoreButton />
+            <ContactsList isSearchShow={false} style={pageStyles.contactListStyle} />
+          </>
+        ),
+      },
     ],
     [],
   );
@@ -65,3 +73,14 @@ const ContactsHome: React.FC = () => {
 };
 
 export default ContactsHome;
+
+export const pageStyles = StyleSheet.create({
+  pageWrap: {
+    flex: 1,
+    backgroundColor: defaultColors.bg1,
+    ...GStyles.paddingArg(0),
+  },
+  contactListStyle: {
+    backgroundColor: defaultColors.bg1,
+  },
+});

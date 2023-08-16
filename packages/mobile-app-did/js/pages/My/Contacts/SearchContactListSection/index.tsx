@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { StyleSheet, FlatList } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import ContactItem from 'components/ContactItem';
 
 type SearchContactListSectionType = {
   list: any[];
@@ -11,8 +11,8 @@ type SearchContactListSectionType = {
 const SearchContactListSection: React.FC<SearchContactListSectionType> = (props: SearchContactListSectionType) => {
   const { list } = props;
 
-  const renderItem = useCallback((item: any) => {
-    return <TextM>{JSON.stringify(item)}</TextM>;
+  const renderItem = useCallback(({ item }: any) => {
+    return <ContactItem contact={item} />;
   }, []);
 
   return <FlatList data={list} renderItem={renderItem} />;

@@ -44,12 +44,18 @@ const FindMorePeople = () => {
 
   return (
     <PageContainer
-      titleDom={'find more people'}
+      titleDom={'Find More'}
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      <CommonInput value={keyword} onChangeText={v => setKeyword(v)} />
-      {!keyword && <TextM>My Portkey Id: xxxxxxx</TextM>}
+      <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
+        <CommonInput value={keyword} onChangeText={v => setKeyword(v)} />
+      </View>
+      {!keyword && (
+        <View style={[GStyles.center, styles.portkeyId]}>
+          <TextM>{`My Portkey ID : xxxxxxx`}</TextM>
+        </View>
+      )}
       {list.length ? (
         <FlatList data={list} ListEmptyComponent={<NoData />} renderItem={renderItem} />
       ) : (
@@ -71,4 +77,11 @@ const styles = StyleSheet.create({
     padding: pTd(16),
   },
   buttonGroupWrap: {},
+  portkeyId: {
+    textAlign: 'center',
+    height: pTd(46),
+    lineHeight: pTd(46),
+    borderBottomColor: defaultColors.border6,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
 });

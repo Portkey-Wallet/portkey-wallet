@@ -44,7 +44,11 @@ export default function DiscoverHome() {
                   iconName: 'chat-new-chat',
                   onPress: () => navigationService.navigate('NewChatHome'),
                 },
-                { title: 'Add Contact', iconName: 'chat-add-contact' },
+                {
+                  title: 'Add Contact',
+                  iconName: 'chat-add-contact',
+                  onPress: () => navigationService.navigate('ContactEdit'),
+                },
               ],
               formatType: 'dynamicWidth',
               customPosition: { right: pTd(20), top: pageY + 20 },

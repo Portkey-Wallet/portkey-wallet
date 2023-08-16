@@ -17,7 +17,6 @@ export const ToolBar = memo(function ToolBar() {
       allowsEditing: false,
       allowsMultipleSelection: false,
     })) as unknown as { uri: string };
-    console.log(result);
 
     if (result.uri) {
       SendPicModal.showSendPic({

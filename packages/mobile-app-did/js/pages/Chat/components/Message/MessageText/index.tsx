@@ -5,6 +5,10 @@ import ParsedText from 'react-native-parsed-text';
 import { StyleSheet, Text, TextStyle, View } from 'react-native';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
+import { defaultColors } from 'assets/theme';
+import { pTd } from 'utils/unit';
+import Touchable from 'components/Touchable';
+import ChatOverlay from '../../ChatOverlay';
 const UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
@@ -31,7 +35,19 @@ function MessageText(props: MessageTextProps<IMessage>) {
   );
 
   return (
-    <View>
+    <Touchable
+      onLongPress={event => {
+        const { pageX, pageY } = event.nativeEvent;
+        ChatOverlay.showChatPopover({
+          list: [
+            { title: 'Copy', iconName: 'copy' },
+            { title: 'Delete', iconName: 'chat-delete' },
+          ],
+          px: pageX,
+          py: pageY,
+          formatType: 'dynamicWidth',
+        });
+      }}>
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
         <ParsedText
           style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}
@@ -41,8 +57,8 @@ function MessageText(props: MessageTextProps<IMessage>) {
         </ParsedText>
         {UNICODE_SPACE}
       </Text>
-      <Time containerStyle={textContainerStyle} {...props} />
-    </View>
+      <Time timeFormat="HH:mm" timeTextStyle={timeTextStyle} containerStyle={timeContainerStyle} {...props} />
+    </Touchable>
   );
 }
 
@@ -50,32 +66,39 @@ export default memo(MessageText);
 
 const styles = StyleSheet.create({
   textStyles: {
-    fontSize: 16,
-    lineHeight: 20,
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 10,
-    marginRight: 10,
+    fontSize: pTd(16),
+    lineHeight: pTd(24),
+    marginVertical: pTd(8),
+    marginHorizontal: pTd(12),
   },
   linkStyle: {
-    color: 'red',
+    color: defaultColors.font4,
   },
   timeBoxStyle: {
     position: 'absolute',
-    right: 10,
-    bottom: 2,
+    right: pTd(8),
+    bottom: pTd(0),
+  },
+  timeTextStyle: {
+    color: defaultColors.font7,
   },
 });
 
-const textContainerStyle = {
+const timeContainerStyle = {
   left: styles.timeBoxStyle,
   right: styles.timeBoxStyle,
 };
+
+const timeTextStyle = {
+  left: styles.timeTextStyle,
+  right: styles.timeTextStyle,
+};
+
 const messageStyles = {
   left: StyleSheet.create({
     container: {},
     text: {
-      color: 'black',
+      color: defaultColors.font5,
       ...styles.textStyles,
     },
     link: {
@@ -86,7 +109,7 @@ const messageStyles = {
   right: StyleSheet.create({
     container: {},
     text: {
-      color: 'white',
+      color: defaultColors.font5,
       ...styles.textStyles,
     },
     link: {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GiftedChat, GiftedChatProps, IMessage, MessageTextProps, Time } from 'react-native-gifted-chat';
+import { GiftedChat, GiftedChatProps, IMessage, MessageImageProps, MessageTextProps } from 'react-native-gifted-chat';
 import initialMessages from '../messages';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
 import { renderSystemMessage, renderMessage } from '../MessageContainer';
@@ -13,6 +13,8 @@ import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../con
 import useEffectOnce from 'hooks/useEffectOnce';
 import MessageText from '../Message/MessageText';
 import { destroyChatInputRecorder, initChatInputRecorder } from 'pages/Chat/utils';
+import MessageImage from '../Message/MessageImage';
+
 import { BGStyles } from 'assets/theme/styles';
 
 const user = {
@@ -20,6 +22,8 @@ const user = {
   name: 'Aaron',
   avatar: 'https://lmg.jj20.com/up/allimg/1111/05161Q64001/1P516164001-3-1200.jpg',
 };
+
+const Empty = () => null;
 
 const ChatsUI = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -51,10 +55,12 @@ const ChatsUI = () => {
     (props: MessageTextProps<IMessage>) => <MessageText {...props} />,
     [],
   );
-  const renderTime: GiftedChatProps['renderTime'] = useCallback((props: MessageTextProps<IMessage>) => {
-    if (props.currentMessage?.text) return null;
-    return <Time {...props} />;
-  }, []);
+
+  const renderMessageImage: GiftedChatProps['renderMessageImage'] = useCallback(
+    (props: MessageImageProps<IMessage>) => <MessageImage {...props} />,
+    [],
+  );
+
   const renderBubble = useCallback((data: any) => {
     return <CustomBubble {...data} />;
   }, []);
@@ -68,18 +74,20 @@ const ChatsUI = () => {
           alwaysShowSend
           scrollToBottom
           onSend={onSend}
+          renderTime={Empty}
           isCustomViewBottom
           messages={messages}
+          renderAvatar={Empty}
           showUserAvatar={false}
-          renderTime={renderTime}
-          renderAvatar={() => null}
+          minInputToolbarHeight={0}
+          renderInputToolbar={Empty}
           renderBubble={renderBubble}
           messageIdGenerator={randomId}
           renderMessage={renderMessage}
-          renderInputToolbar={() => null}
           showAvatarForEveryMessage={false}
           isKeyboardInternallyHandled={false}
           renderMessageText={renderMessageText}
+          renderMessageImage={renderMessageImage}
           renderSystemMessage={renderSystemMessage}
         />
       </Touchable>

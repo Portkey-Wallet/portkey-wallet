@@ -58,12 +58,12 @@ const ContactAddress: React.FC<ContactAddressProps> = ({
     <View style={GStyles.marginBottom(6)}>
       <View style={styles.addressHeader}>
         <TextM style={[FontStyles.font3, styles.addressTitle]}>{`${t('Address')} ${editAddressIdx + 1}`}</TextM>
-
+        {/* 
         {isDeleteShow && (
           <Touchable onPress={_onDelete}>
             <Svg icon="delete" size={pTd(16)} />
           </Touchable>
-        )}
+        )} */}
       </View>
       <ListItem
         onPress={_onChainPress}

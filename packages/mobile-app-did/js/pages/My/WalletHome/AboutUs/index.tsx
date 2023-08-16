@@ -33,7 +33,7 @@ const AboutUs = () => {
 
       <View style={styles.btnContainer}>
         {socialMediaList.map((item, index) => (
-          <>
+          <View key={index}>
             <MenuItem
               svgUrl={s3Url && item.svgUrl?.filename_disk ? `${s3Url}/${item.svgUrl.filename_disk}` : ''}
               title={item.title}
@@ -42,7 +42,7 @@ const AboutUs = () => {
               }}
             />
             {index !== socialMediaList.length - 1 && <Divider style={styles.dividerStyle} />}
-          </>
+          </View>
         ))}
       </View>
 

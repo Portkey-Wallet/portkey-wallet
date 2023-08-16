@@ -36,6 +36,7 @@ const ChatsUI = () => {
     initChatInputRecorder();
     return () => {
       dispatch(setChatText(''));
+      dispatch(setBottomBarStatus(undefined));
       dispatch(setShowSoftInputOnFocus(true));
       destroyChatInputRecorder();
     };

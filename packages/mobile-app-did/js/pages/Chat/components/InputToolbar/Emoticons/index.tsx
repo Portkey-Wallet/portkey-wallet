@@ -4,7 +4,6 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import GStyles from 'assets/theme/GStyles';
 import { windowWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
-import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 
 const NumColumns = 8;
@@ -31,9 +30,9 @@ function Emoticons({ onPress, onDelete }: { onPress?: (item: EmojiItem) => void;
         initialNumToRender={emojiList.length}
         onEndReachedThreshold={0.2}
       />
-      <Touchable onPress={onDelete}>
+      <TouchableOpacity onPress={onDelete}>
         <Svg icon="delete" />
-      </Touchable>
+      </TouchableOpacity>
     </View>
   );
 }

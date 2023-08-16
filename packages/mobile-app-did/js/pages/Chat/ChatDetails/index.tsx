@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import { TextM, TextL } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 
 import Chats from '../components/Chats';
 import Svg from 'components/Svg';
@@ -14,6 +14,7 @@ import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
+import AddContactButton from '../components/AddContactButton';
 
 const ChatDetails = () => {
   const onPressMore = useCallback((event: { nativeEvent: { pageX: any; pageY: any } }) => {
@@ -48,7 +49,8 @@ const ChatDetails = () => {
             <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
           </Touchable>
           <CommonAvatar title="N" avatarSize={pTd(32)} style={styles.headerAvatar} />
-          <TextL style={[FontStyles.font2, GStyles.marginLeft(pTd(8))]}>Name</TextL>
+          <TextL style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>Name</TextL>
+          <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />
         </View>
       }
       rightDom={
@@ -56,6 +58,7 @@ const ChatDetails = () => {
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
+      <AddContactButton />
       <Chats />
     </PageContainer>
   );
@@ -65,6 +68,7 @@ export default ChatDetails;
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
     backgroundColor: defaultColors.bg4,
     flex: 1,
     ...GStyles.paddingArg(0),

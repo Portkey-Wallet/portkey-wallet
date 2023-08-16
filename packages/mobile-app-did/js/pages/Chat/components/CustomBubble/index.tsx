@@ -1,47 +1,36 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { BubbleProps, IMessage } from 'react-native-gifted-chat';
 import { Bubble } from 'react-native-gifted-chat';
-import ChatOverlay from '../ChatOverlay';
 import Touchable from 'components/Touchable';
+import { defaultColors } from 'assets/theme';
+import { pTd } from 'utils/unit';
 
 export default function CustomBubble(props: BubbleProps<IMessage>) {
-  // return (
-  //   <View>
-  //     <TextM>BookMark</TextM>
-  //   </View>
-  // );
-
   return (
-    <Touchable
-      onLongPress={event => {
-        const { pageX, pageY } = event.nativeEvent;
-        ChatOverlay.showChatPopover({
-          list: [{ title: '1111111' }, { title: '22222222' }],
-          px: pageX,
-          py: pageY,
-          position: props.position || 'left',
-        });
-      }}>
-      <Bubble touchableProps={{ disabled: true }} {...props} />
+    <Touchable>
+      <Bubble
+        touchableProps={{ disabled: true }}
+        wrapperStyle={{ left: [styles.wrapperStyle, styles.wrapLeft], right: [styles.wrapperStyle, styles.wrapRight] }}
+        {...props}
+      />
     </Touchable>
   );
 }
 
 const styles = StyleSheet.create({
-  bubbleWrap: {},
-  bubbleToolWrap: {
-    zIndex: 1000,
-    position: 'absolute',
-    bottom: -30,
-    left: 100,
+  wrapperStyle: {
+    borderRadius: pTd(20),
+    color: defaultColors.font5,
+    padding: pTd(4),
   },
-  bubbleToolItem: {
-    width: 60,
-    height: 60,
-    // backgroundColor: 'green',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+  wrapLeft: {
+    backgroundColor: defaultColors.bg18,
+    borderTopLeftRadius: pTd(2),
+    marginLeft: -pTd(8),
+  },
+  wrapRight: {
+    backgroundColor: defaultColors.bg9,
+    borderTopRightRadius: pTd(2),
   },
 });

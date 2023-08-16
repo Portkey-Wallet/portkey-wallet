@@ -44,7 +44,39 @@ function handleInputText(code: string): string {
       return handleInputText(code);
     }
   } else {
-    text = chatInputRecorder?.text + code;
+    text = text + code;
+    chatInputRecorder?.setSelection({ start: text.length, end: text.length });
+  }
+  if (chatInputRecorder) {
+    chatInputRecorder.setText(text);
+  }
+  return text;
+}
+function isEmoji(character: string) {
+  return /\p{Emoji}/u.test(character);
+}
+function handleDeleteText(): string {
+  let text = chatInputRecorder?.text || '';
+  if (chatInputRecorder?.selection) {
+    const { start, end } = chatInputRecorder?.selection;
+    if (start === end) {
+      let first = text.slice(0, start);
+      const last = text.slice(start);
+      const code = isEmoji(first.slice(-2)) ? -2 : -1;
+      first = first.slice(0, code);
+      chatInputRecorder.setSelection({ start: first.length, end: first.length });
+      text = first + last;
+    } else {
+      const first = text.slice(0, start);
+      const last = text.slice(end);
+      text = first + last;
+      chatInputRecorder.setText(text);
+      chatInputRecorder.setSelection({ start: first.length, end: first.length });
+      return text;
+    }
+  } else {
+    const code = isEmoji(text.slice(-2)) ? -2 : -1;
+    text = text.slice(0, code);
     chatInputRecorder?.setSelection({ start: text.length, end: text.length });
   }
   if (chatInputRecorder) {
@@ -53,4 +85,4 @@ function handleInputText(code: string): string {
   return text;
 }
 
-export { chatInputRecorder, initChatInputRecorder, destroyChatInputRecorder, handleInputText };
+export { chatInputRecorder, initChatInputRecorder, destroyChatInputRecorder, handleInputText, handleDeleteText };

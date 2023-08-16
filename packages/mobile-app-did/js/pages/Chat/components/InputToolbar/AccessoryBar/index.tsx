@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
@@ -8,15 +8,29 @@ import { BGStyles } from 'assets/theme/styles';
 import { useBottomBarStatus, useChatsDispatch } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { ToolBar } from '../ToolBar';
-import { handleInputText } from 'pages/Chat/utils';
+import { handleDeleteText, handleInputText } from 'pages/Chat/utils';
 import { setChatText } from '../../context/chatsContext';
+import { EmojiItem } from '../Emoticons/config';
 
 export const AccessoryBar = memo(
   function AccessoryBar() {
     const bottomBarStatus = useBottomBarStatus();
     const dispatch = useChatsDispatch();
-
     const showTools = useMemo(() => !!bottomBarStatus, [bottomBarStatus]);
+
+    const onPress = useCallback(
+      (item: EmojiItem) => {
+        const text = handleInputText(item.code);
+        dispatch(setChatText(text));
+      },
+      [dispatch],
+    );
+    const onDelete = useCallback(() => {
+      const text = handleDeleteText();
+      console.log(text, '=====text');
+
+      dispatch(setChatText(text));
+    }, [dispatch]);
     return (
       <View style={!showTools ? styles.hide : GStyles.flex1}>
         <View
@@ -25,12 +39,7 @@ export const AccessoryBar = memo(
             bottomBarStatus === ChatBottomBarStatus.emoji ? undefined : styles.hide,
             styles.absolute,
           ]}>
-          <Emoticons
-            onPress={item => {
-              const text = handleInputText(item.code);
-              dispatch(setChatText(text));
-            }}
-          />
+          <Emoticons onPress={onPress} onDelete={onDelete} />
         </View>
         <ToolBar />
       </View>

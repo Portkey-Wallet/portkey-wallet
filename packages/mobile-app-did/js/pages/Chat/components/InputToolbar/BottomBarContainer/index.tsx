@@ -12,10 +12,10 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useKeyboardAnim } from '../../hooks';
 import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
-import { setBottomBarStatus, setChatText } from '../../context/chatsContext';
+import { setBottomBarStatus } from '../../context/chatsContext';
 import { BGStyles } from 'assets/theme/styles';
-import { defaultColors } from 'assets/theme';
 import { SendMessageButton } from '../SendMessageButton';
+import { ChatInput } from '../ChatInput';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -23,17 +23,6 @@ export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: ()
       containerStyle={styles.fileSvg}
       onPressActionButton={onPress}
       icon={() => <Svg size={pTd(24)} icon="chat-file" />}
-      optionTintColor="#222B45"
-    />
-  );
-});
-
-export const EmojiIcon = memo(function EmojiIcon({ onPress }: { onPress?: () => void }) {
-  return (
-    <Actions
-      containerStyle={styles.emojiSvg}
-      onPressActionButton={onPress}
-      icon={() => <Svg size={pTd(24)} icon="chat-emoji" />}
       optionTintColor="#222B45"
     />
   );
@@ -117,28 +106,10 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
       <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.wrap]}>
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
         {isIOS ? (
-          <View style={[GStyles.flex1, styles.inputWrapStyle]}>
-            <TextInput
-              multiline
-              style={styles.input}
-              onChangeText={v => dispatch(setChatText(v))}
-              value={text}
-              ref={textInputRef as any}
-            />
-            <EmojiIcon onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
-          </View>
+          <ChatInput ref={textInputRef} onPressActionButton={onPressActionButton} />
         ) : (
           <AndroidInputContainer textInputRef={textInputRef}>
-            <View style={[GStyles.flex1, styles.inputWrapStyle]}>
-              <TextInput
-                multiline
-                value={text}
-                style={styles.input}
-                onChangeText={v => dispatch(setChatText(v))}
-                ref={textInputRef as any}
-              />
-              <EmojiIcon onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
-            </View>
+            <ChatInput ref={textInputRef} onPressActionButton={onPressActionButton} />
           </AndroidInputContainer>
         )}
         <SendMessageButton text={text} containerStyle={styles.sendStyle} />
@@ -158,24 +129,6 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     marginBottom: pTd(8),
     marginRight: pTd(8),
-  },
-  emojiSvg: {
-    marginLeft: 0,
-    marginBottom: 0,
-    position: 'absolute',
-    right: pTd(8),
-    bottom: pTd(8),
-  },
-  inputWrapStyle: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    backgroundColor: defaultColors.bg1,
-    borderRadius: pTd(20),
-    paddingRight: pTd(40),
-    paddingVertical: pTd(6),
-    minHeight: pTd(40),
-    maxHeight: pTd(200),
   },
   input: {
     width: '100%',

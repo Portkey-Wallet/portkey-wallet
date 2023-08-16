@@ -1,4 +1,5 @@
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { ChatBottomBarStatus } from 'store/chat/slice';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 
 export function useBottomBarStatus() {
@@ -9,6 +10,12 @@ export function useChatText() {
   return useAppSelector(state => state.chats.text);
 }
 
+export function useIsShowInput() {
+  return useAppSelector(state => state.chats.bottomBarStatus) === ChatBottomBarStatus.input;
+}
+export function useIsShowEmoji() {
+  return useAppSelector(state => state.chats.bottomBarStatus) === ChatBottomBarStatus.emoji;
+}
 export function useShowSoftInputOnFocus() {
   return useAppSelector(state => state.chats.showSoftInputOnFocus);
 }

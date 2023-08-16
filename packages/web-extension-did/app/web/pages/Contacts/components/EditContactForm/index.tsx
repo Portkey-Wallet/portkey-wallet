@@ -55,37 +55,38 @@ export default function EditContactForm({
       initialValues={state}
       requiredMark={false}
       onFinish={onFinish}>
-      <div className="form-content">
-        <FormItem
-          name="name"
-          label={t('Wallet Name')}
-          validateStatus={validName.validateStatus}
-          help={validName.errorMsg}>
-          <Input
-            placeholder={t('Enter name')}
-            onChange={(e) => handleInputValueChange(e.target.value)}
-            maxLength={16}
-            disabled={isNameDisable}
-          />
-        </FormItem>
-
-        {isShowRemark && (
+      <div className="flex-1">
+        <div className="form-content">
           <FormItem
-            name="remark"
-            label={t('Remrk')}
-            validateStatus={validRemark?.validateStatus}
-            help={validRemark?.errorMsg}>
+            name="name"
+            label={t('Wallet Name')}
+            validateStatus={validName.validateStatus}
+            help={validName.errorMsg}>
             <Input
-              placeholder={t('Enter remark')}
-              onChange={(e) => handleInputRemarkChange(e.target.value)}
+              placeholder={t('Enter name')}
+              onChange={(e) => handleInputValueChange(e.target.value)}
               maxLength={16}
+              disabled={isNameDisable}
             />
           </FormItem>
-        )}
+
+          {isShowRemark && (
+            <FormItem
+              name="remark"
+              label={t('Remrk')}
+              validateStatus={validRemark?.validateStatus}
+              help={validRemark?.errorMsg}>
+              <Input
+                placeholder={t('Enter remark')}
+                onChange={(e) => handleInputRemarkChange(e.target.value)}
+                maxLength={16}
+              />
+            </FormItem>
+          )}
+        </div>
+
+        <IdAndAddress portkeyId={'22'} relationOneId={''} addresses={[]} handleCopy={handleCopy} />
       </div>
-
-      <IdAndAddress portkeyId={'22'} relationOneId={''} addresses={[]} handleCopy={handleCopy} />
-
       <div className="form-btn">
         <div className="flex-between form-btn-edit">
           <Button

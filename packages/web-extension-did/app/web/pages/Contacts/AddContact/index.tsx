@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
 import { Form, Modal, message } from 'antd';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate, useLocation, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType, AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
@@ -45,13 +45,13 @@ export default function AddContact() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
+  const { extra } = useParams();
   const appDispatch = useAppDispatch();
   const [disable, setDisabled] = useState<boolean>(true);
   const [netOpen, setNetOpen] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(-1);
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [addressArr, setAddressArr] = useState<CustomAddressItem[]>(state?.addresses);
-  const [validRemark, setValidRemark] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const addContactApi = useAddContact();
   const checkExistNameApi = useCheckContactName();
   const { setLoading } = useLoading();
@@ -114,18 +114,6 @@ export default function AddContact() {
     [handleFormValueChange],
   );
 
-  const handleInputRemarkChange = useCallback(
-    (v: string) => {
-      setValidRemark({ validateStatus: '', errorMsg: '' });
-      if (!v) {
-        setDisabled(true);
-      } else {
-        handleFormValueChange();
-      }
-    },
-    [handleFormValueChange],
-  );
-
   const handleAddressChange = useCallback(
     (i: number, value: string) => {
       value = getAelfAddress(value.trim());
@@ -175,26 +163,6 @@ export default function AddContact() {
     [checkExistName, form],
   );
 
-  const checkExistRemark = useCallback(
-    async (v: string) => {
-      if (state.remark === v) {
-        return false;
-      }
-      const { existed } = await checkExistNameApi(v); // TODO remark
-      return existed;
-    },
-    [checkExistNameApi, state.remark],
-  );
-
-  const handleCheckRemark = useCallback(
-    async (v: string) => {
-      const existed = await checkExistRemark(v);
-
-      return existed;
-    },
-    [checkExistRemark],
-  );
-
   const handleCheckAddress = useCallback(
     (addresses: AddressItem[]) => {
       let flag = 0;
@@ -216,15 +184,13 @@ export default function AddContact() {
 
   const onFinish = useCallback(
     async (values: ContactItemType) => {
-      const { name, remark, addresses } = values;
+      const { name, addresses } = values;
 
       try {
         setLoading(true);
         const checkName = await handleCheckName(name.trim());
-        const checkRemark = await handleCheckRemark(remark?.trim() || '');
         const checkAddress = handleCheckAddress(addresses);
-        if (checkName && checkRemark && checkAddress) {
-          // TODO remark
+        if (checkName && checkAddress) {
           await addContactApi({ name: name.trim(), addresses });
 
           appDispatch(fetchContactListAsync());
@@ -251,15 +217,17 @@ export default function AddContact() {
         setLoading(false);
       }
     },
-    [addContactApi, appDispatch, handleCheckAddress, handleCheckName, handleCheckRemark, navigate, setLoading, t],
+    [addContactApi, appDispatch, handleCheckAddress, handleCheckName, navigate, setLoading, t],
   );
 
   // go back previous page
   const handleGoBack = useCallback(() => {
-    navigate('/setting/contacts/view', { state: state });
-
-    // navigate('/setting/contacts');
-  }, [navigate, state]);
+    if (extra === '3') {
+      navigate('/setting/contacts');
+    } else {
+      navigate('/setting/contacts/view', { state: state });
+    }
+  }, [extra, navigate, state]);
 
   const handleCloseDrawer = () => {
     setNetOpen(false);
@@ -275,14 +243,12 @@ export default function AddContact() {
       form={form}
       isDisable={disable}
       validName={validName}
-      validRemark={validRemark}
       state={state}
       addressArr={addressArr}
       onFinish={onFinish}
       handleSelectNetwork={handleSelectNetwork}
       handleAddressChange={handleAddressChange}
       handleInputValueChange={handleInputValueChange}
-      handleInputRemarkChange={handleInputRemarkChange}
       isShowDrawer={netOpen}
       closeDrawer={handleCloseDrawer}
       handleNetworkChange={handleNetworkChange}
@@ -294,14 +260,12 @@ export default function AddContact() {
       form={form}
       isDisable={disable}
       validName={validName}
-      validRemark={validRemark}
       state={state}
       addressArr={addressArr}
       onFinish={onFinish}
       handleSelectNetwork={handleSelectNetwork}
       handleAddressChange={handleAddressChange}
       handleInputValueChange={handleInputValueChange}
-      handleInputRemarkChange={handleInputRemarkChange}
       isShowDrawer={netOpen}
       closeDrawer={handleCloseDrawer}
       handleNetworkChange={handleNetworkChange}

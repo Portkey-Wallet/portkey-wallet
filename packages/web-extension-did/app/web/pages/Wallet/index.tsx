@@ -75,7 +75,7 @@ export default function Wallet() {
       },
     ],
 
-    [navigate],
+    [isMainnet, navigate],
   );
 
   useEffect(() => {

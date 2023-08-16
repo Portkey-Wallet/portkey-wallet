@@ -11,6 +11,7 @@ import ContactsPopup from './Popup';
 import ContactsPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
+import { useProfileAddNewContact } from 'hooks/useProfile';
 
 const initContactItem: Partial<ContactItemType> = {
   id: '-1',
@@ -19,6 +20,7 @@ const initContactItem: Partial<ContactItemType> = {
 };
 
 export interface IContactsProps extends BaseHeaderProps {
+  searchPlaceholder?: string;
   addText: string;
   handleAdd: () => void;
   isSearch: boolean;
@@ -94,6 +96,7 @@ export default function Contacts() {
   }, [curList]);
 
   const { isNotLessThan768 } = useCommonState();
+  const searchPlaceholder = 'Wallet Name/Remark/ Portkey ID/Address';
   const title = t('Contacts');
   const addText = t('Add contact');
 
@@ -101,32 +104,32 @@ export default function Contacts() {
     navigate('/setting');
   }, [navigate]);
 
-  const handleAdd = useCallback(() => {
-    navigate('/setting/contacts/add/2', { state: initContactItem });
-  }, [navigate]);
+  const handleAdd = useProfileAddNewContact();
 
   return isNotLessThan768 ? (
     <ContactsPrompt
       headerTitle={title}
       goBack={goBack}
+      searchPlaceholder={searchPlaceholder}
       addText={addText}
       isSearch={isSearch}
       list={curList}
       contactCount={curTotalContactsNum}
       initData={initContactItem}
-      handleAdd={handleAdd}
+      handleAdd={() => handleAdd('3', initContactItem)}
       handleSearch={searchContacts}
     />
   ) : (
     <ContactsPopup
       headerTitle={title}
       goBack={goBack}
+      searchPlaceholder={searchPlaceholder}
       addText={addText}
       isSearch={isSearch}
       list={curList}
       contactCount={curTotalContactsNum}
       initData={initContactItem}
-      handleAdd={handleAdd}
+      handleAdd={() => handleAdd('3', initContactItem)}
       handleSearch={searchContacts}
     />
   );

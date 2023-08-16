@@ -8,6 +8,7 @@ import './index.less';
 export default function ContactsPopup({
   headerTitle,
   goBack,
+  searchPlaceholder,
   addText,
   handleAdd,
   isSearch,
@@ -28,7 +29,7 @@ export default function ContactsPopup({
             )
           }
         />
-        <ContactsSearchInput handleChange={handleSearch} />
+        <ContactsSearchInput placeholder={searchPlaceholder} handleChange={handleSearch} />
       </div>
       <ContactsBody
         isSearch={isSearch}

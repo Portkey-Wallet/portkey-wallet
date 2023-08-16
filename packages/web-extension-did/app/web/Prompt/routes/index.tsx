@@ -197,6 +197,14 @@ export const PageRouter = () => {
               element: <WalletName />,
             },
             {
+              path: '/setting/wallet/:type',
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/wallet/:type/:extra',
+              element: <ContactDetail />,
+            },
+            {
               path: '/setting/wallet/auto-lock',
               element: <AutoLock />,
             },
@@ -219,7 +227,7 @@ export const PageRouter = () => {
               element: <ContactDetail />,
             },
             {
-              path: '/setting/contacts/:type/:chat',
+              path: '/setting/contacts/:type/:extra',
               element: <ContactDetail />,
             },
             {
@@ -339,6 +347,14 @@ export const PageRouter = () => {
       element: <WalletName />,
     },
     {
+      path: '/setting/wallet/:type',
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/wallet/:type/:extra',
+      element: <ContactDetail />,
+    },
+    {
       path: '/setting/wallet/auto-lock',
       element: <AutoLock />,
     },
@@ -359,7 +375,7 @@ export const PageRouter = () => {
       element: <ContactDetail />,
     },
     {
-      path: '/setting/contacts/:type/:chat',
+      path: '/setting/contacts/:type/:extra',
       element: <ContactDetail />,
     },
     {

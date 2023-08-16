@@ -5,28 +5,43 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useCopyToClipboard } from 'react-use';
 import { useCommonState } from 'store/Provider/hooks';
-import { ChatType } from 'types/Profile';
+import { ExtraType } from 'types/Profile';
 
 export const useProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (chat: ChatType, state: any) => {
+    (chat: ExtraType, state: any) => {
       navigate(`/setting/contacts/edit/${chat}`, { state });
     },
     [navigate],
   );
 };
 
-export const useProfileAddContact = () => {
+export const useMyProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (chat: ChatType, state: any) => {
+    (chat: ExtraType, state: any) => {
+      navigate(`/setting/wallet/edit/${chat}`, { state });
+    },
+    [navigate],
+  );
+};
+
+export const useProfileAddNewContact = () => {
+  const navigate = useNavigate();
+
+  return useCallback(
+    (chat: ExtraType, state: any) => {
       navigate(`/setting/contacts/add/${chat}`, { state });
     },
     [navigate],
   );
+};
+
+export const useProfileAddContact = () => {
+  // TODO api
 };
 
 export const useProfileChat = () => {

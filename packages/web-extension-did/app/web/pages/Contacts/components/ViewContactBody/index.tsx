@@ -1,6 +1,5 @@
 import { Button } from 'antd';
 import './index.less';
-import ContactAddressList from 'pages/Contacts/components/ContactAddressList';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
@@ -73,6 +72,7 @@ export default function ViewContactBody({
         />
       </div>
 
+      {/* TODO No edit button for strangers */}
       <div className="footer">
         <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
           {editText}

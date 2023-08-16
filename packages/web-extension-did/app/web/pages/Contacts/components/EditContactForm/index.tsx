@@ -5,12 +5,12 @@ import { useDeleteContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import IdAndAddress from '../IdAndAddress';
-import { ValidData } from 'pages/Contacts/EditContact';
 import './index.less';
+import { ValidData } from 'pages/Contacts/AddContact';
 
 const { Item: FormItem } = Form;
 
-interface IEditContactFormProps extends FormProps {
+export interface IEditContactFormProps extends FormProps {
   state: any;
   validName: ValidData;
   validRemark?: ValidData;
@@ -27,7 +27,7 @@ export default function EditContactForm({
   state,
   validName,
   validRemark,
-  isNameDisable = false,
+  isNameDisable = true,
   isShowRemark = true,
   canSave = false,
   handleInputValueChange,
@@ -56,7 +56,11 @@ export default function EditContactForm({
       requiredMark={false}
       onFinish={onFinish}>
       <div className="form-content">
-        <FormItem name="name" label={t('Name')} validateStatus={validName.validateStatus} help={validName.errorMsg}>
+        <FormItem
+          name="name"
+          label={t('Wallet Name')}
+          validateStatus={validName.validateStatus}
+          help={validName.errorMsg}>
           <Input
             placeholder={t('Enter name')}
             onChange={(e) => handleInputValueChange(e.target.value)}

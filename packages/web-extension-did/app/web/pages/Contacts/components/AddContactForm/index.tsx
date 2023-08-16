@@ -1,20 +1,18 @@
 import { Button, Form, Input, FormProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CustomSvg from 'components/CustomSvg';
-import { CustomAddressItem, ValidData } from 'pages/Contacts/EditContact';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import './index.less';
+import { CustomAddressItem, ValidData } from 'pages/Contacts/AddContact';
 
 const { Item: FormItem } = Form;
 
 export interface IAddContactFormProps extends FormProps {
   isDisable: boolean;
   validName: ValidData;
-  validRemark: ValidData;
   state: any;
   addressArr: CustomAddressItem[];
   handleInputValueChange: (v: string) => void;
-  handleInputRemarkChange: (v: string) => void;
   handleSelectNetwork: (i: number) => void;
   handleAddressChange: (i: number, value: string) => void;
 }
@@ -25,10 +23,8 @@ export default function AddContactForm({
   state,
   addressArr,
   validName,
-  validRemark,
   onFinish,
   handleInputValueChange,
-  handleInputRemarkChange,
   handleSelectNetwork,
   handleAddressChange,
 }: IAddContactFormProps) {
@@ -52,17 +48,6 @@ export default function AddContactForm({
             maxLength={16}
           />
         </FormItem>
-        {/* <FormItem
-          name="remark"
-          label={t('Remrk')}
-          validateStatus={validRemark.validateStatus}
-          help={validRemark.errorMsg}>
-          <Input
-            placeholder={t('Enter remark')}
-            onChange={(e) => handleInputRemarkChange(e.target.value)}
-            maxLength={16}
-          />
-        </FormItem> */}
 
         <Form.List name="addresses">
           {(fields) => (
@@ -107,15 +92,11 @@ export default function AddContactForm({
           )}
         </Form.List>
       </div>
-      <div className="form-btn">
-        <div className="form-btn-add">
-          <FormItem>
-            <Button className="add-btn" type="primary" htmlType="submit" disabled={isDisable}>
-              {t('Add')}
-            </Button>
-          </FormItem>
-        </div>
-      </div>
+      <FormItem className="form-btn">
+        <Button className="add-btn" type="primary" htmlType="submit" disabled={isDisable}>
+          {t('Add')}
+        </Button>
+      </FormItem>
     </Form>
   );
 }

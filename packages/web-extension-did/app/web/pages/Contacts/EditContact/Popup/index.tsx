@@ -1,28 +1,24 @@
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
-import NetworkDrawer from '../../NetworkDrawer';
 import BackHeader from 'components/BackHeader';
-import { IAddContactProps } from '..';
+import { IEditContactProps } from '..';
 import EditContactForm from 'pages/Contacts/components/EditContactForm';
 
 export default function EditContactPopup({
   form,
-  isNameDisable = false,
-  isShowRemark = true,
-  canSave = false,
+  isNameDisable,
+  isShowRemark,
+  canSave,
   state,
   validName,
   validRemark,
   headerTitle,
-  isShowDrawer,
   goBack,
   onFinish,
   handleInputValueChange,
   handleInputRemarkChange,
-  closeDrawer,
-  handleNetworkChange,
   handleCopy,
-}: IAddContactProps) {
+}: IEditContactProps) {
   return (
     <div className="edit-contact-popup min-width-max-height">
       <div className="edit-contact-title">
@@ -44,14 +40,6 @@ export default function EditContactPopup({
         handleInputValueChange={handleInputValueChange}
         handleInputRemarkChange={handleInputRemarkChange}
         handleCopy={handleCopy}
-      />
-      <NetworkDrawer
-        open={isShowDrawer}
-        height={528}
-        maskClosable={true}
-        placement="bottom"
-        onChange={handleNetworkChange}
-        onClose={closeDrawer}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import { BaseHeaderProps } from './UI';
 
-export type ChatType = '1' | '2'; // '1' can chat, '2' cont chat or not sure
+export type ExtraType = '1' | '2' | '3'; // '1' can chat, '2' cont chat , '3' no status（add new chat）
 
 export interface IProfileDetailDataProps {
   name: string;
@@ -10,6 +10,8 @@ export interface IProfileDetailDataProps {
   relationOneId: string;
   index: string;
   addresses: AddressItem[];
+  isNameDisable?: boolean;
+  isShowRemark?: boolean;
 }
 
 export interface IProfileDetailBodyProps {

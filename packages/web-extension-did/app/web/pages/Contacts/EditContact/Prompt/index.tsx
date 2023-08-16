@@ -1,27 +1,23 @@
 import './index.less';
 import SecondPageHeader from 'pages/components/SecondPageHeader';
-import { IAddContactProps } from '..';
-import NetworkModal from 'pages/Contacts/NetworkModal';
+import { IEditContactProps } from '..';
 import EditContactForm from 'pages/Contacts/components/EditContactForm';
 
 export default function EditContactPrompt({
   form,
-  isNameDisable = false,
-  isShowRemark = true,
-  canSave = false,
+  isNameDisable,
+  isShowRemark,
+  canSave,
   state,
   validName,
   validRemark,
   headerTitle,
-  isShowDrawer,
   goBack,
   onFinish,
   handleInputValueChange,
   handleInputRemarkChange,
-  closeDrawer,
-  handleNetworkChange,
   handleCopy,
-}: IAddContactProps) {
+}: IEditContactProps) {
   return (
     <div className="edit-contact-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
@@ -38,7 +34,6 @@ export default function EditContactPrompt({
         handleInputRemarkChange={handleInputRemarkChange}
         handleCopy={handleCopy}
       />
-      <NetworkModal open={isShowDrawer} onChange={handleNetworkChange} onClose={closeDrawer} />
     </div>
   );
 }

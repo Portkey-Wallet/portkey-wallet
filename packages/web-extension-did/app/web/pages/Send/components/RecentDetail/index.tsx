@@ -18,6 +18,7 @@ import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/act
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
 import { ChainId } from '@portkey-wallet/types';
+import { useProfileAddNewContact } from 'hooks/useProfile';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -48,14 +49,15 @@ export default function RecentDetail() {
     nav(-1);
   }, [nav]);
 
+  const handleAdd = useProfileAddNewContact();
   const goAddContact = useCallback(() => {
     const initContactItem: Partial<ContactItemType> = {
       id: '-1',
       name: '',
       addresses: [{ chainId: targetChainId || 'AELF', address: targetAddress || '' }],
     };
-    nav('/setting/contacts/add/2', { state: initContactItem });
-  }, [targetChainId, targetAddress, nav]);
+    handleAdd('3', initContactItem);
+  }, [targetChainId, targetAddress, handleAdd]);
 
   const viewOnExplorer = useCallback(() => {
     const openWinder = window.open(

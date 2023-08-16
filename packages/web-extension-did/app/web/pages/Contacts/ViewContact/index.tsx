@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
-import { useProfileAddContact, useProfileChat, useProfileCopy, useProfileEdit } from 'hooks/useProfile';
+import { useProfileChat, useProfileCopy, useProfileEdit } from 'hooks/useProfile';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -23,9 +23,11 @@ export default function ViewContact() {
   }, [navigate]);
 
   const handleEdit = useProfileEdit();
-  const handleAdd = useProfileAddContact();
   const handleChat = useProfileChat();
   const handleCopy = useProfileCopy();
+  const handleAdd = () => {
+    console.log('add');
+  };
 
   // TODO btn show logic
   return isNotLessThan768 ? (
@@ -37,9 +39,8 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={state}
       goBack={goBack}
-      // TODO 1 2
-      handleEdit={() => handleEdit('1', state)}
-      handleAdd={() => handleAdd('2', state)}
+      handleEdit={() => handleEdit('1', state)} // TODO add or edit 1 2
+      handleAdd={handleAdd}
       handleChat={() => handleChat(state)}
       handleCopy={handleCopy}
     />
@@ -52,9 +53,8 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={state}
       goBack={goBack}
-      // TODO 1 2
-      handleEdit={() => handleEdit('1', state)}
-      handleAdd={() => handleAdd('2', state)}
+      handleEdit={() => handleEdit('1', state)} // TODO add or edit 1 2
+      handleAdd={handleAdd}
       handleChat={() => handleChat(state)}
       handleCopy={handleCopy}
     />

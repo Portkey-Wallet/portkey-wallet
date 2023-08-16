@@ -133,23 +133,23 @@ const ContactEdit: React.FC = () => {
     }));
   }, []);
 
-  const addAddress = useCallback(() => {
-    if (editContact.addresses.length >= ADDRESS_NUM_LIMIT) return;
-    if (chainList.length < 1) return;
-    setEditContact(preEditContact => ({
-      ...preEditContact,
-      addresses: [
-        ...preEditContact.addresses,
-        {
-          id: '',
-          chainType: currentNetwork,
-          chainId: chainList[0].chainId,
-          address: '',
-          error: { ...INIT_HAS_ERROR },
-        },
-      ],
-    }));
-  }, [chainList, currentNetwork, editContact.addresses.length]);
+  // const addAddress = useCallback(() => {
+  //   if (editContact.addresses.length >= ADDRESS_NUM_LIMIT) return;
+  //   if (chainList.length < 1) return;
+  //   setEditContact(preEditContact => ({
+  //     ...preEditContact,
+  //     addresses: [
+  //       ...preEditContact.addresses,
+  //       {
+  //         id: '',
+  //         chainType: currentNetwork,
+  //         chainId: chainList[0].chainId,
+  //         address: '',
+  //         error: { ...INIT_HAS_ERROR },
+  //       },
+  //     ],
+  //   }));
+  // }, [chainList, currentNetwork, editContact.addresses.length]);
 
   const deleteAddress = useCallback((deleteIdx: number) => {
     setEditContact(preEditContact => ({
@@ -352,14 +352,14 @@ const ContactEdit: React.FC = () => {
               />
             ))}
 
-            {editContact.addresses.length < 5 && (
+            {/* {editContact.addresses.length < 5 && (
               <View>
                 <Touchable onPress={addAddress} style={pageStyles.addAddressBtn}>
                   <Svg icon="add-token" size={pTd(20)} />
                   <TextM style={pageStyles.addAddressText}>{t('Add Address')}</TextM>
                 </Touchable>
               </View>
-            )}
+            )} */}
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAwareScrollView>

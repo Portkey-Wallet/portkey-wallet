@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GiftedChat, GiftedChatProps, IMessage, MessageTextProps, Time } from 'react-native-gifted-chat';
+import { GiftedChat, GiftedChatProps, IMessage, MessageImageProps, MessageTextProps } from 'react-native-gifted-chat';
 import initialMessages from '../messages';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
 import { renderSystemMessage, renderMessage } from '../MessageContainer';
@@ -12,6 +12,8 @@ import CustomBubble from '../CustomBubble';
 import { setBottomBarStatus, setChatText } from '../context/chatsContext';
 import useEffectOnce from 'hooks/useEffectOnce';
 import MessageText from '../Message/MessageText';
+import MessageImage from '../Message/MessageImage';
+
 import { BGStyles } from 'assets/theme/styles';
 
 const user = {
@@ -47,10 +49,12 @@ const ChatsUI = () => {
     (props: MessageTextProps<IMessage>) => <MessageText {...props} />,
     [],
   );
-  const renderTime: GiftedChatProps['renderTime'] = useCallback((props: MessageTextProps<IMessage>) => {
-    if (props.currentMessage?.text) return null;
-    return <Time {...props} />;
-  }, []);
+
+  const renderMessageImage: GiftedChatProps['renderMessageImage'] = useCallback(
+    (props: MessageImageProps<IMessage>) => <MessageImage {...props} />,
+    [],
+  );
+
   const renderBubble = useCallback((data: any) => {
     return <CustomBubble {...data} />;
   }, []);
@@ -65,17 +69,18 @@ const ChatsUI = () => {
           isCustomViewBottom
           onSend={onSend}
           messages={messages}
-          showUserAvatar={false}
+          minInputToolbarHeight={0}
           renderAvatar={() => null}
           renderInputToolbar={() => null}
-          renderBubble={renderBubble}
+          renderTime={() => null}
           messageIdGenerator={randomId}
-          renderMessage={renderMessage}
           showAvatarForEveryMessage={false}
           isKeyboardInternallyHandled={false}
+          renderBubble={renderBubble}
+          renderMessage={renderMessage}
           renderMessageText={renderMessageText}
+          renderMessageImage={renderMessageImage}
           renderSystemMessage={renderSystemMessage}
-          renderTime={renderTime}
         />
       </Touchable>
       <BottomBarContainer>

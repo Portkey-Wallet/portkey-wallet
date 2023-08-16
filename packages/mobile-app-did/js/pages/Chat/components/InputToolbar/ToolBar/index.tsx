@@ -9,8 +9,9 @@ import * as ImagePicker from 'expo-image-picker';
 import GStyles from 'assets/theme/GStyles';
 import SendPicModal from '../SendPicModal';
 import BookmarkOverlay from '../../BookmarkOverlay';
+import { ViewStyleType } from 'types/styles';
 
-export const ToolBar = memo(function ToolBar() {
+export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const selectPhoto = useCallback(async () => {
     const result = (await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -36,7 +37,7 @@ export const ToolBar = memo(function ToolBar() {
   }, []);
 
   return (
-    <View style={GStyles.flex1}>
+    <View style={[GStyles.flex1, style]}>
       <Touchable style={styles.toolsItem} onPress={() => navigationService.navigate('ChatCamera')}>
         <TextM>camera</TextM>
       </Touchable>

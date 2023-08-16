@@ -17,7 +17,6 @@ export const AccessoryBar = memo(
     const bottomBarStatus = useBottomBarStatus();
     const dispatch = useChatsDispatch();
     const showTools = useMemo(() => !!bottomBarStatus, [bottomBarStatus]);
-
     const onPress = useCallback(
       (item: EmojiItem) => {
         const text = handleInputText(item.code);
@@ -27,8 +26,6 @@ export const AccessoryBar = memo(
     );
     const onDelete = useCallback(() => {
       const text = handleDeleteText();
-      console.log(text, '=====text');
-
       dispatch(setChatText(text));
     }, [dispatch]);
     return (
@@ -41,7 +38,7 @@ export const AccessoryBar = memo(
           ]}>
           <Emoticons onPress={onPress} onDelete={onDelete} />
         </View>
-        <ToolBar />
+        <ToolBar style={bottomBarStatus === ChatBottomBarStatus.tools ? undefined : styles.hide} />
       </View>
     );
   },

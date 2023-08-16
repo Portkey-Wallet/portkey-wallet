@@ -7,11 +7,23 @@ import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
 
+const MockImgSource = {
+  uri: 'https://img0.baidu.com/it/u=3021883569,1259262591&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1692291600&t=d4573ac68a9f7486240eec1718ee9275',
+};
+
 function MessageImage(props: MessageImageProps<IMessage>) {
   const { currentMessage } = props;
 
   return (
     <Touchable
+      onPress={event => {
+        const { pageX, pageY } = event.nativeEvent;
+        ChatOverlay.showPreviewImage({
+          source: MockImgSource,
+          thumb: MockImgSource,
+          customBounds: { x: pageX, y: pageY, width: 0, height: 0 },
+        });
+      }}
       onLongPress={event => {
         const { pageX, pageY } = event.nativeEvent;
         ChatOverlay.showChatPopover({
@@ -24,13 +36,7 @@ function MessageImage(props: MessageImageProps<IMessage>) {
           formatType: 'dynamicWidth',
         });
       }}>
-      <CacheImage
-        style={styles.image}
-        resizeMode="contain"
-        source={{
-          uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbxIduwVS7PV83GF5JAyWr9LcDuf0xIgonra3pClCZ&s',
-        }}
-      />
+      <CacheImage style={styles.image} resizeMode="contain" source={MockImgSource} />
       <Time
         timeFormat="HH:mm"
         timeTextStyle={timeTextStyle}

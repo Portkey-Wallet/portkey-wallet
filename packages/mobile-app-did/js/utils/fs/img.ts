@@ -13,7 +13,7 @@ export const getCacheImage = async (source: ImageURISource) => {
     const fileInfo = await getInfo(path);
     if (fileInfo.exists) return { uri: path };
     const existsDirectory = await checkAndMakeDirectory(directory);
-    if (!existsDirectory) return;
+    if (!existsDirectory) return source;
     await downloadFile(source.uri, path);
     return { uri: path };
   } catch (error) {

@@ -1,27 +1,61 @@
+import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import useEffectOnce from 'hooks/useEffectOnce';
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Image, ImageProps, StyleSheet } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, Image, ImageProps, StyleSheet, View } from 'react-native';
 import { getCacheImage, isURISource } from 'utils/fs/img';
-import { pTd } from 'utils/unit';
+import Default_Image from 'assets/image/pngs/default_record.png';
 
-export default function CacheImage(props: ImageProps) {
-  const [source, setSource] = useState<ImageProps['source']>();
+export interface CacheImageProps extends ImageProps {
+  thumb?: ImageProps['source'];
+}
+
+export default function CacheImage(props: CacheImageProps) {
+  const [source, setSource] = useState<CacheImageProps['source']>();
+  const [thumb, setThumb] = useState<CacheImageProps['thumb']>();
+
   const init = useCallback(async () => {
     // is ImageRequireSource
     if (!isURISource(props.source)) return setSource(props.source);
     const localSource = await getCacheImage(props.source);
     localSource && setSource(localSource);
-  }, [props.source]);
+    if (props.thumb) {
+      if (!isURISource(props.thumb)) return setThumb(props.thumb);
+      const localThumb = await getCacheImage(props.thumb);
+      localThumb && setThumb(localThumb);
+    }
+  }, [props.source, props.thumb]);
 
   useEffectOnce(() => {
     init();
   });
-  if (!source) return <ActivityIndicator size={'small'} color={FontStyles.font4.color} style={styles.indicatorStyle} />;
-  return <Image {...props} style={props.style} source={source} />;
+
+  const indicator = useMemo(
+    () => (
+      <View style={styles.indicatorBox}>
+        <ActivityIndicator size={'small'} color={FontStyles.font4.color} />
+      </View>
+    ),
+    [],
+  );
+
+  return (
+    <View style={props.style}>
+      {thumb && !source && <Image defaultSource={Default_Image} {...props} style={props.style} source={thumb} />}
+      {!source ? indicator : <Image defaultSource={Default_Image} {...props} style={props.style} source={source} />}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   backgroundStyle: { overflow: 'hidden' },
-  indicatorStyle: { marginHorizontal: pTd(5) },
+  indicatorBox: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    ...GStyles.center,
+    backgroundColor: 'transparent',
+  },
 });

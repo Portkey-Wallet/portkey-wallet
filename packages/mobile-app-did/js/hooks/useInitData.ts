@@ -2,7 +2,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
-import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
@@ -55,7 +55,7 @@ export default function useInitData() {
         dispatch(fetchSellFiatListAsync());
       }
       getCurrentCAViewContract();
-      dispatch(getWalletNameAsync());
+      dispatch(getCaHolderInfoAsync());
       dispatch(getSymbolImagesAsync());
 
       loadBookmarkList();

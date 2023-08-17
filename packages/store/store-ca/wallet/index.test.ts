@@ -10,7 +10,7 @@ import {
   setWalletNameAction,
   setOriginChainId,
   resetCaInfo,
-  getWalletNameAsync,
+  getCaHolderInfoAsync,
   setChainListAction,
   createWalletAction,
 } from './actions';
@@ -399,7 +399,7 @@ describe('setCAInfoType', () => {
   });
 });
 
-describe('getWalletNameAsync', () => {
+describe('getCaHolderInfoAsync', () => {
   const preloadedState = {
     wallet: {
       walletAvatar: 'master1',
@@ -437,7 +437,7 @@ describe('getWalletNameAsync', () => {
         },
       ],
     });
-    await store.dispatch(getWalletNameAsync());
+    await store.dispatch(getCaHolderInfoAsync());
     expect(getCaHolder).toBeCalled();
     expect(store.getState().walletName).toEqual('nickName');
   });
@@ -445,7 +445,7 @@ describe('getWalletNameAsync', () => {
     jest.mocked(getCaHolder).mockRejectedValue({
       error: 'error',
     });
-    await store.dispatch(getWalletNameAsync());
+    await store.dispatch(getCaHolderInfoAsync());
     expect(getCaHolder).toBeCalled();
   });
 });

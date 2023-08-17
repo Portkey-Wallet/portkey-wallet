@@ -1,5 +1,5 @@
 import { Popover } from 'antd';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, PopoverMenuList } from '@portkey-wallet/im-ui-web';
@@ -7,175 +7,21 @@ import { ChatList as ChannelList, PopoverMenuList } from '@portkey-wallet/im-ui-
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import './index.less';
-
-// TODO
-type IChatItemProps = any;
-const mockChatList: IChatItemProps[] = [
-  {
-    id: 'id1',
-    avatar: '',
-    letterItem: 'E',
-    alt: 'p',
-    title: 'EmreEmreEmreEmreEmreEmreEmreEmreEmre',
-    subtitle: 'What are you doing ?',
-    date: new Date(),
-    showMute: true,
-    muted: true,
-    pin: true,
-    unread: 0,
-    // customStatusComponents: [() => UnreadTip({ unread: 10 })],
-  },
-  {
-    id: 'id2',
-    avatar: '',
-    letterItem: 'B',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    date: new Date(),
-    showMute: true,
-    muted: true,
-    unread: 1,
-    // customStatusComponents: [() => UnreadTip({ unread: 10 })],
-  },
-  {
-    id: 'id3',
-    avatar: '',
-    letterItem: 'C',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    date: new Date(),
-    muted: true,
-    showMute: true,
-    showVideoCall: true,
-    statusColor: 'red',
-    statusColorType: 'badge',
-    statusText: '99+',
-    unread: 99,
-  },
-  {
-    id: 'id4',
-    avatar: 'p',
-    letterItem: 'P',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    date: new Date(),
-    muted: true,
-    showMute: true,
-    showVideoCall: true,
-    statusColor: 'red',
-    statusColorType: 'badge',
-    statusText: '9',
-    unread: 100,
-  },
-  {
-    id: 'id5',
-    avatar: 'p',
-    letterItem: 'E',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    date: new Date(),
-    muted: false,
-    showMute: true,
-    showVideoCall: true,
-    statusColor: 'red',
-    statusColorType: 'badge',
-    statusText: '99',
-    unread: 1,
-  },
-  {
-    id: 'id6',
-    avatar: 'p',
-    letterItem: '2',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    date: new Date(),
-    muted: false,
-    showMute: true,
-    // customStatusComponents: [() => UnreadTip({ unread: 101 })],
-    unread: 99,
-  },
-  {
-    id: 'id7',
-    avatar: 'p',
-    letterItem: 'd',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    // date: new Date(),
-    date: undefined,
-    muted: false,
-    showMute: true,
-    showVideoCall: true,
-    statusColor: 'red',
-    statusColorType: 'badge',
-    statusText: '99+',
-    unread: 100,
-  },
-  {
-    id: 'id8',
-    avatar: 'p',
-    letterItem: 'd',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    // date: new Date(),
-    date: undefined,
-    muted: false,
-    showMute: true,
-    showVideoCall: true,
-    statusColor: 'red',
-    statusColorType: 'badge',
-    statusText: '99+',
-    unread: 100,
-  },
-  {
-    id: 'id9',
-    avatar: 'p',
-    letterItem: 'd',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    // date: new Date(),
-    date: undefined,
-    muted: false,
-    showMute: true,
-    showVideoCall: true,
-    statusColor: 'red',
-    statusColorType: 'badge',
-    statusText: '99+',
-    unread: 100,
-  },
-  {
-    id: 'id10',
-    avatar: 'p',
-    letterItem: 'd',
-    alt: 'p',
-    title: 'Emre',
-    subtitle: 'What are you doing ?',
-    // date: new Date(),
-    date: undefined,
-    muted: false,
-    showMute: true,
-    showVideoCall: true,
-    statusColor: 'red',
-    statusColorType: 'badge',
-    statusText: '99+',
-    unread: 100,
-  },
-];
+import { useChannelList } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useEffectOnce } from 'react-use';
+import { formatChatListTime } from '@portkey-wallet/utils/chat';
 
 export default function ChatList() {
   const navigate = useNavigate();
 
   const { t } = useTranslation();
-  const [chatList, setChatList] = useState(mockChatList);
-  // TODO
-  const hasMore = false;
+
+  const {
+    list: chatList,
+    init: initChannelList,
+    next: nextChannelList,
+    hasNext: hasNextChannelList,
+  } = useChannelList();
 
   const onConfirm = () => {
     // TODO
@@ -216,12 +62,27 @@ export default function ChatList() {
     [navigate, popoverList],
   );
 
-  const handleLoadMore = async () => {
-    return Promise.resolve().then(() => {
-      // TODO
-      setChatList([...chatList, ...mockChatList]);
+  const transChatList = useMemo(() => {
+    return chatList.map((item) => {
+      return {
+        id: item.channelUuid,
+        avatar: '',
+        letterItem: item.displayName.substring(0, 1).toLocaleUpperCase(),
+        alt: 'p',
+        title: item.displayName,
+        subtitle: item.lastMessageContent,
+        dateString: formatChatListTime(item.lastPostAt),
+        showMute: true,
+        muted: item.mute,
+        pin: item.pin,
+        unread: item.unreadMessageCount,
+      };
     });
-  };
+  }, [chatList]);
+
+  useEffectOnce(() => {
+    initChannelList();
+  });
 
   return (
     <div className="chat-list-page">
@@ -236,11 +97,11 @@ export default function ChatList() {
           </div>
         ) : (
           <ChannelList
-            dataSource={mockChatList}
+            dataSource={transChatList}
             id="channel-list"
             onClick={() => navigate('/chat-box')}
-            hasMore={hasMore}
-            loadMore={handleLoadMore}
+            hasMore={hasNextChannelList}
+            loadMore={nextChannelList}
           />
         )}
       </div>

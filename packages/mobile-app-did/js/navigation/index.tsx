@@ -44,25 +44,25 @@ export const productionNav = [
   ...MyNav,
   ...BuyNav,
   ...DiscoverNav,
+  ...chatNav,
 ] as const;
 
-// dav nav
-export const davNav = [
+// dev nav
+export const devNav = [
   ...productionNav,
-  ...chatNav,
   { name: 'Home', component: Home },
   { name: 'Discover', component: Discover },
 ] as const;
 
-const stackNav = __DEV__ ? davNav : productionNav;
+const stackNav = __DEV__ ? devNav : productionNav;
 
 export type RootStackParamList = {
-  [key in typeof davNav[number]['name']]: undefined;
+  [key in typeof devNav[number]['name']]: undefined;
 };
 export type TabParamList = {
   [key in IRenderTabMenuItem['name']]: undefined;
 };
-export type RootStackName = typeof davNav[number]['name'];
+export type RootStackName = typeof devNav[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {

@@ -8,7 +8,7 @@ import navigationService from 'utils/navigationService';
 import background from '../img/background.png';
 import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import myEvents from 'utils/deviceEvent';
 import styles from '../styles';
 import Email from '../components/Email';
@@ -49,7 +49,7 @@ export default function SignupPortkey() {
         titleDom
         type="leftBack"
         themeType="blue"
-        pageSafeBottomPadding={!isIos}
+        pageSafeBottomPadding={!isIOS}
         style={BGStyles.transparent}
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}

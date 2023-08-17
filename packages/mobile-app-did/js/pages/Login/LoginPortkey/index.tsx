@@ -3,7 +3,7 @@ import PageContainer, { SafeAreaColorMapKeyUnit } from 'components/PageContainer
 import { TextM, TextXXXL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { ImageBackground, View } from 'react-native';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useLanguage } from 'i18n/hooks';
 import background from '../img/background.png';
 import Svg from 'components/Svg';
@@ -48,7 +48,7 @@ export default function LoginPortkey() {
         type="leftBack"
         themeType="blue"
         style={BGStyles.transparent}
-        pageSafeBottomPadding={!isIos}
+        pageSafeBottomPadding={!isIOS}
         containerStyles={styles.containerStyles}
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}

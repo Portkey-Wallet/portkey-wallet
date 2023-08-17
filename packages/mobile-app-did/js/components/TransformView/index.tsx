@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { ViewStyleType } from 'types/styles';
 import myEvents from 'utils/deviceEvent';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type ScrollType = 'up' | 'down' | 'left' | 'right' | 'vertical' | 'horizontal';
 type PanResponderCallback = (e: GestureResponderEvent, gestureState: PanResponderGestureState) => void;
@@ -126,7 +126,7 @@ export default class TransformView extends Component<TransformViewProps, Transfo
   }
 
   initResponderStatus() {
-    this.panResponderStatus = isIos ? !this.props.enabledNestScrollView : true;
+    this.panResponderStatus = isIOS ? !this.props.enabledNestScrollView : true;
   }
   initListeners() {
     const listener1 = myEvents.nestScrollViewScrolledTop.addListener(() => {
@@ -162,7 +162,7 @@ export default class TransformView extends Component<TransformViewProps, Transfo
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         const { pageY } = evt.nativeEvent;
         const { dx, dy } = gestureState;
-        if (isIos) {
+        if (isIOS) {
           const isNotNestScrollViewArea = pageY < this.viewLayout.y + this.nestScrollViewLayout.y;
           return isNotNestScrollViewArea || (!!this.panResponderStatus && dx !== 0 && dy > 5);
         }

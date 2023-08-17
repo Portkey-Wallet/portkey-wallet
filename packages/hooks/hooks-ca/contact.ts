@@ -2,7 +2,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { CheckContactNameResponseType } from '@portkey-wallet/api/api-did/contact/type';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { AddContactItemApiType, ContactItemType, EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import {
   addContactAction,
   deleteContactAction,
@@ -92,4 +92,18 @@ export const useContact = (isFetch = true, isInit = false) => {
     isFetch && dispatch(fetchContactListAsync(isInit));
   }, [dispatch, isFetch, isInit]);
   return useAppCommonSelector(state => state.contact);
+};
+
+export const useContactList = () => {
+  const contact = useAppCommonSelector(state => state.contact);
+
+  return useMemo(() => {
+    let result: ContactItemType[] = [];
+    contact.contactIndexList
+      .filter(ele => ele.contacts.length !== 0)
+      .map(ele => {
+        result = [...result, ...ele.contacts];
+      });
+    return result;
+  }, [contact.contactIndexList]);
 };

@@ -11,6 +11,7 @@ import {
 import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
+import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -174,4 +175,17 @@ export const useFetchCurrentRememberMeBlackList = () => {
 export const useCheckSiteIsInBlackList = () => {
   const list = useRememberMeBlackList();
   return useCallback((url: string) => checkSiteIsInBlackList(list, getOrigin(url)), [list]);
+};
+
+export const useIsChatShow = () => {
+  const { tabMenuListNetMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+
+  const IsChatShow = useMemo(() => {
+    const tabMenuList = tabMenuListNetMap[networkType];
+    if (!tabMenuList) return false;
+    return tabMenuList.find(item => item.type.value === ChatTabName);
+  }, [networkType, tabMenuListNetMap]);
+
+  return IsChatShow;
 };

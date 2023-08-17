@@ -9,11 +9,24 @@ import { useGetCurrentCAViewContract } from './contract';
 import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from './guardian';
 import useEffectOnce from './useEffectOnce';
 import { useBookmarkList, useCheckAndInitNetworkDiscoverMap } from './discover';
+import { usePin } from './store';
+import { getManagerAccount } from 'utils/redux';
+import im from '@portkey-wallet/im';
+
+// const getCurrentCAContract = useGetCurrentCAContract();
+
+// const getDeviceInfo = useGetDeviceInfo();
+// const originChainId = useOriginChainId();
+// const chainInfo = useCurrentChain(originChainId);
+// const getHolderInfo = useGetHolderInfo();
+// const { userGuardiansList } = useGuardiansInfo();
+// const createChannel = useCreateP2pChannel();
 
 export default function useInitData() {
   const dispatch = useAppDispatch();
+  const pin = usePin();
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
-  const { caHash } = useCurrentWalletInfo();
+  const wallet = useCurrentWalletInfo();
   const getVerifierServers = useGetVerifierServers();
 
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
@@ -21,6 +34,18 @@ export default function useInitData() {
   useCheckAndInitNetworkDiscoverMap();
 
   const { refresh: loadBookmarkList } = useBookmarkList();
+
+  const initIM = useCallback(async () => {
+    if (!pin) return;
+    const account = getManagerAccount(pin);
+    if (!account || !wallet.caHash) return;
+
+    try {
+      await im.init(account, wallet.caHash);
+    } catch (error) {
+      console.log('im init error', error);
+    }
+  }, [pin, wallet.caHash]);
 
   const init = useCallback(async () => {
     try {
@@ -34,23 +59,26 @@ export default function useInitData() {
       dispatch(getSymbolImagesAsync());
 
       loadBookmarkList();
+      initIM();
       // getGuardiansInfoWriteStore after getVerifierServers
       await getVerifierServers();
       getGuardiansInfoWriteStore({
-        caHash,
+        caHash: wallet.caHash,
       });
     } catch (error) {
       console.log(error, '====error');
     }
   }, [
-    caHash,
     dispatch,
     getCurrentCAViewContract,
     getGuardiansInfoWriteStore,
     getVerifierServers,
+    initIM,
     isMainNetwork,
     loadBookmarkList,
+    wallet.caHash,
   ]);
+
   useEffectOnce(() => {
     // init data after transition animation
     const timer = setTimeout(init, 500);

@@ -51,7 +51,14 @@ export const setChannelMessageList = createAction<{
 export const deleteChannelMessage = createAction<{
   network: NetworkType;
   channelId: string;
-  sendUuid: string;
+  id: string;
 }>('im/deleteChannelMessage');
+
+export const updateChannelMessageAttribute = createAction<{
+  network: NetworkType;
+  channelId: string;
+  sendUuid: string;
+  value: Partial<Message>;
+}>('im/updateChannelMessageAttribute');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');

@@ -17,6 +17,8 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'http://192.168.66.62:8055/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
+    imApiUrl: 'http://192.168.66.243:5007',
+    imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
   },
   'back-end-test2': {
     name: 'aelf Mainnet',

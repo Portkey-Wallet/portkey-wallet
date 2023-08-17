@@ -14,7 +14,7 @@ import FormItem from 'components/FormItem';
 import { ScrollView, StyleSheet } from 'react-native';
 import ProfilePortkeyIDSection from 'pages/My/components/ProfilePortkeyIDSection';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
-import ProfileDIDSection from 'pages/My/components/ProfileDIDSection';
+import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -108,7 +108,7 @@ const WalletName: React.FC = () => {
           <ProfileHeaderSection name={nameValue} />
         )}
         <ProfilePortkeyIDSection disable={editing} portkeyID={userId || ''} />
-        <ProfileDIDSection disable={editing} addressList={caInfoList} />
+        <ProfileAddressSection disable={editing} addressList={caInfoList} />
       </ScrollView>
 
       <CommonButton

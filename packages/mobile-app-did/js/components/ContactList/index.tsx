@@ -117,7 +117,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
         key={item.id}
         contact={item}
         onPress={() => {
-          navigationService.navigate('ContactDetail', { contact: item });
+          navigationService.navigate('NoChatContactProfile', { contact: item });
         }}
       />
     );

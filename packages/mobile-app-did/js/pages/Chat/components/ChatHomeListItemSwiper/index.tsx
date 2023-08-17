@@ -88,7 +88,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
                 {/* TODO: Remark */}
                 {item.displayName}
               </TextL>
-              <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.font7} />
+              <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />
             </View>
             <TextS style={FontStyles.font7}>{formatChatListTime(item.lastPostAt)}</TextS>
           </View>
@@ -99,7 +99,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
               {item.lastMessageContent ? item.lastMessageContent : '[Image]'}
             </TextS>
             {item.pin ? (
-              <Svg size={pTd(16)} icon="chat-pin" color={defaultColors.font7} />
+              <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
             ) : (
               <TextS
                 style={[styles.messageNum, item.mute && styles.muteMessage, !item.unreadMessageCount && styles.hide]}>

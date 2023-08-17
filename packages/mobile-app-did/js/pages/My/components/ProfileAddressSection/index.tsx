@@ -20,13 +20,15 @@ type addressItemType = {
   chainType?: ChainType;
 };
 
-type PortkeyIDItemPropsType = {
+type ProfileAddressSectionPropsType = {
+  title?: string;
   disable?: boolean;
+  noMarginTop?: boolean;
   addressList: addressItemType[];
 };
 
-const PortkeyIDItem: React.FC<PortkeyIDItemPropsType> = props => {
-  const { disable, addressList } = props;
+const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
+  const { title = 'DID', disable, noMarginTop, addressList } = props;
   const { currentNetwork } = useWallet();
 
   const copyId = useCallback(
@@ -36,7 +38,7 @@ const PortkeyIDItem: React.FC<PortkeyIDItemPropsType> = props => {
   );
 
   return (
-    <FormItem title="DID" style={GStyles.marginTop(pTd(24))}>
+    <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
       {addressList.map((ele, index) => (
         <View key={index} style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap]}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
@@ -57,7 +59,7 @@ const PortkeyIDItem: React.FC<PortkeyIDItemPropsType> = props => {
   );
 };
 
-export default memo(PortkeyIDItem);
+export default memo(ProfileAddressSection);
 
 const styles = StyleSheet.create({
   itemWrap: {

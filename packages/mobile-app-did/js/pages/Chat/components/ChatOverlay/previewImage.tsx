@@ -9,6 +9,17 @@ type PreviewImageProps = { source: ImageProps['source']; thumb?: ImageProps['sou
 
 function PreviewImage({ source, thumb }: PreviewImageProps) {
   const scaleRef = useRef<number>(1);
+  // const [init, setInit] = useState(true);
+  // useEffectOnce(() => {
+  //   const timer = setTimeout(() => {
+  //     setInit(false);
+  //   }, 200);
+  //   return () => {
+  //     timer && clearTimeout(timer);
+  //   };
+  // });
+  // if (init) return null;
+
   return (
     <TransformView
       onPress={OverlayModal.hide}

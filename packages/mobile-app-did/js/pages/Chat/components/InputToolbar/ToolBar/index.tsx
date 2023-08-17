@@ -10,15 +10,17 @@ import GStyles from 'assets/theme/GStyles';
 import SendPicModal from '../SendPicModal';
 import BookmarkOverlay from '../../BookmarkOverlay';
 import { ViewStyleType } from 'types/styles';
+import { bindUriToLocalImage } from 'utils/fs/img';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const selectPhoto = useCallback(async () => {
-    const result = (await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       allowsMultipleSelection: false,
-    })) as unknown as { uri: string };
-
+    });
+    if (result.cancelled) return;
+    await bindUriToLocalImage(result.uri, 'https://google.com');
     if (result.uri) {
       SendPicModal.showSendPic({
         uri: result.uri,

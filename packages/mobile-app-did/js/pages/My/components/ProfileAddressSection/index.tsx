@@ -24,7 +24,7 @@ type ProfileAddressSectionPropsType = {
   title?: string;
   disable?: boolean;
   noMarginTop?: boolean;
-  addressList: addressItemType[];
+  addressList?: addressItemType[];
 };
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
@@ -39,7 +39,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
 
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
-      {addressList.map((ele, index) => (
+      {addressList?.map((ele, index) => (
         <View key={index} style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap]}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
             <TextM style={styles.address}>{formatStr2EllipsisStr(addressFormat(ele.address, ele.chainId), 20)}</TextM>

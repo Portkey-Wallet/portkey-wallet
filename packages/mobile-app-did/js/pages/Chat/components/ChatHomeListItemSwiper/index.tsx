@@ -2,7 +2,7 @@ import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo, useCallback, useRef, useState } from 'react';
-import { StyleSheet, View, Image, GestureResponderEvent } from 'react-native';
+import { StyleSheet, View, GestureResponderEvent } from 'react-native';
 import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import Svg from 'components/Svg';

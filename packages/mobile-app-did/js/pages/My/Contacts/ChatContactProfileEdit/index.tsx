@@ -3,7 +3,6 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
-import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import CommonToast from 'components/CommonToast';
@@ -140,9 +139,3 @@ export const pageStyles = StyleSheet.create({
     marginTop: pTd(8),
   },
 });
-function deleteContactApi(editContact: any) {
-  throw new Error('Function not implemented.');
-}
-function editContactApi(editContact: any) {
-  throw new Error('Function not implemented.');
-}

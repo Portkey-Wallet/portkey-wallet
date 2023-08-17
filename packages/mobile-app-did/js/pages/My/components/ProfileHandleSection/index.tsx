@@ -1,6 +1,3 @@
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { ChainId, ChainType } from '@portkey-wallet/types';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';

@@ -34,7 +34,7 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
     if (preToValue !== toValue)
       Animated.timing(keyboardAnim, {
         toValue,
-        duration: toValue > 0 ? 250 : 300,
+        duration: toValue > 0 ? 250 : 150,
         useNativeDriver: false,
       }).start();
   }, [keyboardAnim, preToValue, toValue]);

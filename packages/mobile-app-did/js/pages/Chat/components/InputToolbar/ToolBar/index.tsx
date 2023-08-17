@@ -12,15 +12,18 @@ import BookmarkOverlay from '../../BookmarkOverlay';
 import Svg, { IconName } from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
+import { ViewStyleType } from 'types/styles';
+import { bindUriToLocalImage } from 'utils/fs/img';
 
-export const ToolBar = memo(function ToolBar() {
+export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const selectPhoto = useCallback(async () => {
-    const result = (await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       allowsMultipleSelection: false,
-    })) as unknown as { uri: string };
-
+    });
+    if (result.cancelled) return;
+    await bindUriToLocalImage(result.uri, 'https://google.com');
     if (result.uri) {
       SendPicModal.showSendPic({
         uri: result.uri,
@@ -65,7 +68,7 @@ export const ToolBar = memo(function ToolBar() {
   }, [selectPhoto]);
 
   return (
-    <View style={[GStyles.flex1, GStyles.flexRowWrap, styles.wrap]}>
+    <View style={[GStyles.flex1, GStyles.flexRowWrap, styles.wrap, style]}>
       {toolList.map(ele => (
         <Touchable key={ele.label} style={[GStyles.center, styles.toolsItem]} onPress={ele.onPress}>
           <View style={[GStyles.center, styles.toolsItemIconWrap]}>

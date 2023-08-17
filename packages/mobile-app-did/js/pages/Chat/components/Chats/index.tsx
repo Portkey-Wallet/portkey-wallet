@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { GiftedChat, GiftedChatProps, IMessage, MessageImageProps, MessageTextProps } from 'react-native-gifted-chat';
 import initialMessages from '../messages';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
@@ -16,6 +16,7 @@ import { destroyChatInputRecorder, initChatInputRecorder } from 'pages/Chat/util
 import MessageImage from '../Message/MessageImage';
 
 import { BGStyles } from 'assets/theme/styles';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 const user = {
   _id: 1,
@@ -24,6 +25,13 @@ const user = {
 };
 
 const Empty = () => null;
+
+const ListViewProps = {
+  windowSize: 50,
+  maxToRenderPerBatch: 5,
+  removeClippedSubviews: false,
+  legacyImplementation: true,
+};
 
 const ChatsUI = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -46,7 +54,7 @@ const ChatsUI = () => {
     };
   });
 
-  const onDismiss = useCallback(() => {
+  const onDismiss = useThrottleCallback(() => {
     Keyboard.dismiss();
     dispatch(setBottomBarStatus(undefined));
   }, [dispatch]);
@@ -64,7 +72,9 @@ const ChatsUI = () => {
   const renderBubble = useCallback((data: any) => {
     return <CustomBubble {...data} />;
   }, []);
-
+  const listViewProps = useMemo(() => {
+    return { ...ListViewProps, onScrollBeginDrag: onDismiss };
+  }, [onDismiss]);
   return (
     <>
       <Touchable activeOpacity={1} onPress={onDismiss} style={[GStyles.flex1, BGStyles.bg1]}>
@@ -84,6 +94,7 @@ const ChatsUI = () => {
           renderBubble={renderBubble}
           messageIdGenerator={randomId}
           renderMessage={renderMessage}
+          listViewProps={listViewProps}
           showAvatarForEveryMessage={false}
           isKeyboardInternallyHandled={false}
           renderMessageText={renderMessageText}

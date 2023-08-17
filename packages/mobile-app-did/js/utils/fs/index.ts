@@ -1,6 +1,7 @@
 import * as FileSystem from 'expo-file-system';
 import AElf from 'aelf-sdk';
 import { CreateDownloadResumableParams, FileEnum, ProgressData } from './types';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export const getInfo = FileSystem.getInfoAsync;
 
@@ -51,4 +52,17 @@ export const getFilePath = ({ id, name, type }: { id?: string; name: string; typ
 
 export const urlToLocalName = (url: string) => {
   return AElf.utils.sha256(url) + url.split('/').splice(-1);
+};
+
+export const formatFilePath = (filePath: string) => {
+  if (!isIOS) {
+    if (!filePath.includes('file://')) return 'file://' + filePath;
+  }
+  return filePath;
+};
+
+export const copyFileToPath = async (originPath: string, newPath: string) => {
+  originPath = formatFilePath(originPath);
+  newPath = formatFilePath(newPath);
+  return FileSystem.copyAsync({ from: originPath, to: newPath });
 };

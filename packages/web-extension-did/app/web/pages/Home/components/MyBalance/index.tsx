@@ -30,8 +30,9 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
-import './index.less';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import ChatEntry from 'pages/ChatEntry';
+import './index.less';
 
 export interface TransactionResult {
   total: number;
@@ -82,6 +83,10 @@ export default function MyBalance() {
   useFreshTokenPrice();
   useVerifierList();
   const { isBuyButtonShow } = useBuyButtonShow();
+  // TODO isShowChat
+  const isShowChat = true;
+  // TODO get chat unread num
+  const unread = 100;
 
   useEffect(() => {
     if (state?.key) {
@@ -170,6 +175,12 @@ export default function MyBalance() {
 
   return (
     <div className="balance">
+      {/* TODO isPrompt */}
+      {isShowChat && (
+        <div className="chat-body">
+          <ChatEntry unread={unread} />
+        </div>
+      )}
       <div className="wallet-name">
         {!isPrompt && <AccountConnect />}
         {walletName}

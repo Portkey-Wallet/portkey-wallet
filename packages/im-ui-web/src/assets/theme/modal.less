@@ -1,0 +1,126 @@
+@import './color.less';
+.utils-modal {
+  .@{app-prefix}-modal-content {
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 500px;
+  }
+  .@{app-prefix}-modal-body {
+    padding: 24px 40px;
+    .@{app-prefix}-modal-confirm-title {
+      text-align: center;
+      font-size: 22px;
+      padding-bottom: 15px;
+    }
+    .@{app-prefix}-modal-confirm-content {
+      margin: 20px 30px;
+      margin-top: 40px;
+      text-align: center;
+    }
+  }
+  .@{app-prefix}-modal-confirm-btns {
+    width: 100%;
+    display: flex;
+  }
+  .@{app-prefix}-modal-close-x {
+    line-height: 30px;
+    margin-top: 24px;
+    height: 20px;
+  }
+}
+
+.dapp-modal {
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100vh;
+
+  .tips-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 328px;
+    .primary {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      color: @font-11;
+      line-height: 28px;
+    }
+    .secondary {
+      line-height: 16px;
+      font-size: 12px;
+      text-align: center;
+      color: @font-13;
+    }
+  }
+  .chain-wrap {
+    width: fit-content;
+    margin: 0 auto 8px;
+    line-break: anywhere;
+    border-radius: 100px;
+    border: 1px solid @border-1;
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    line-height: 16px;
+    .status {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 6px;
+      border: 1px solid @border-9;
+      background-color: @border-9;
+      font-weight: 500;
+      color: @font-13;
+      font-size: 12px;
+      line-height: 16px;
+    }
+    .network-name {
+      color: @font-11;
+    }
+  }
+  .dapp-info-wrap {
+    display: flex;
+    margin: 0 auto 24px;
+    border-radius: 100px;
+    line-break: anywhere;
+    align-items: center;
+    padding: 9px 16px;
+    border: 1px solid @border-1;
+    gap: 8px;
+    width: fit-content;
+    max-width: 100%;
+    img,
+    svg,
+    .custom-svg {
+      width: 24px;
+      height: 24px;
+    }
+    span {
+      line-height: 20px;
+      color: @font-13;
+      font-size: 14px;
+    }
+  }
+  .btn-wrap {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 0;
+    gap: 16px;
+    width: fit-content;
+    button {
+      height: 48px;
+      width: 156px;
+      padding: 12px 0;
+      border-radius: 100px;
+      span {
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+}

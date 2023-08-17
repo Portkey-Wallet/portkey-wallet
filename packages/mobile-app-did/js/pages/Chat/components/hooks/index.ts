@@ -8,7 +8,7 @@ import { useBottomBarStatus, useChatsDispatch } from '../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../context/chatsContext';
 
-const TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight + 10);
+const TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
 
 const ToolsHeight = 100;
 
@@ -34,7 +34,7 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
     if (preToValue !== toValue)
       Animated.timing(keyboardAnim, {
         toValue,
-        duration: toValue > 0 ? 250 : 150,
+        duration: toValue > 0 ? 150 : 100,
         useNativeDriver: false,
       }).start();
   }, [keyboardAnim, preToValue, toValue]);

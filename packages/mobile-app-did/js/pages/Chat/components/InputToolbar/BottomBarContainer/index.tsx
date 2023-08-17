@@ -1,12 +1,10 @@
 import Svg from 'components/Svg';
-import React, { ReactNode, memo, useCallback, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { ReactNode, memo, useCallback, useRef } from 'react';
+import { StyleSheet } from 'react-native';
 import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { Animated } from 'react-native';
-import { TextInput } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useKeyboardAnim } from '../../hooks';
@@ -15,7 +13,8 @@ import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../../context/chatsContext';
 import { BGStyles } from 'assets/theme/styles';
 import { SendMessageButton } from '../SendMessageButton';
-import { ChatInput } from '../ChatInput';
+import { ChatInput, ChatInputBar } from '../ChatInput';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -28,65 +27,29 @@ export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: ()
   );
 });
 
-export function AndroidInputContainer({
-  children,
-  textInputRef,
-}: {
-  children?: ReactNode;
-  textInputRef: React.RefObject<TextInput>;
-}) {
-  const timer = useRef<NodeJS.Timeout>();
-
-  const [hide, setHide] = useState<boolean>();
-  const bottomBarStatus = useBottomBarStatus();
-
-  const onPressIn = useCallback(() => {
-    if (bottomBarStatus === undefined) {
-      setHide(true);
-      timer.current = setTimeout(() => {
-        setHide(false);
-      }, 300);
-    }
-    textInputRef.current?.focus();
-  }, [bottomBarStatus, textInputRef]);
-  useEffectOnce(() => {
-    return () => {
-      timer.current && clearTimeout(timer.current);
-    };
-  });
-  return (
-    <Touchable
-      activeOpacity={1}
-      disabled={bottomBarStatus === ChatBottomBarStatus.input || hide}
-      onPressIn={onPressIn}
-      style={styles.inputContainerStyle}>
-      <View style={hide ? styles.hideInput : GStyles.flex1} pointerEvents="box-only">
-        {children}
-      </View>
-    </Touchable>
-  );
-}
-
 export function BottomBarContainer({ children }: { children?: ReactNode; showKeyboard?: () => void }) {
   const bottomBarStatus = useBottomBarStatus();
   const dispatch = useChatsDispatch();
   const text = useChatText();
-  const textInputRef = useRef<TextInput>(null);
+  const textInputRef = useRef<ChatInput>(null);
   const keyboardAnim = useKeyboardAnim({ textInputRef });
   const timer = useRef<NodeJS.Timeout>();
 
-  const inputFocus = useCallback(() => {
-    textInputRef.current?.focus();
-    timer.current && clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      dispatch(setBottomBarStatus(ChatBottomBarStatus.input));
-    }, 300);
-  }, [dispatch]);
+  const inputFocus = useCallback(
+    (autoHide?: boolean) => {
+      textInputRef.current?.focus(autoHide);
+      timer.current && clearTimeout(timer.current);
+      timer.current = setTimeout(() => {
+        dispatch(setBottomBarStatus(ChatBottomBarStatus.input));
+      }, 300);
+    },
+    [dispatch],
+  );
 
   const onPressActionButton = useCallback(
     (status: ChatBottomBarStatus) => {
       if (bottomBarStatus === status) {
-        inputFocus();
+        inputFocus(bottomBarStatus === ChatBottomBarStatus.tools);
       } else {
         dispatch(setBottomBarStatus(status));
         textInputRef.current?.blur();
@@ -105,13 +68,7 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
     <>
       <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.wrap]}>
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
-        {isIOS ? (
-          <ChatInput ref={textInputRef} onPressActionButton={onPressActionButton} />
-        ) : (
-          <AndroidInputContainer textInputRef={textInputRef}>
-            <ChatInput ref={textInputRef} onPressActionButton={onPressActionButton} />
-          </AndroidInputContainer>
-        )}
+        <ChatInputBar ref={textInputRef} onPressActionButton={onPressActionButton} />
         <SendMessageButton text={text} containerStyle={styles.sendStyle} />
       </Touchable>
       <Animated.View style={{ height: keyboardAnim }}>{children}</Animated.View>
@@ -124,6 +81,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     paddingHorizontal: pTd(16),
     paddingVertical: pTd(10),
+    marginBottom: isIOS ? 0 : 5,
   },
   fileSvg: {
     marginLeft: 0,

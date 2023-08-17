@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { IMessage, MessageTextProps, Time } from 'react-native-gifted-chat';
 import ParsedText from 'react-native-parsed-text';
-import { StyleSheet, Text, TextStyle, View } from 'react-native';
+import { StyleSheet, Text, TextStyle } from 'react-native';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { defaultColors } from 'assets/theme';
@@ -11,7 +11,7 @@ import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
 const UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-  : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+  : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
 const WWW_URL_PATTERN = /^www\./i;
 
 function MessageText(props: MessageTextProps<IMessage>) {

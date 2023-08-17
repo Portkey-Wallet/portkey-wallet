@@ -24,7 +24,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import Discover from 'Test/Discover';
 
 import TabsDrawer from 'components/TabsDrawer';
-import chatNav from 'pages/Chat/routes';
+import ChatNav from 'pages/Chat/routes';
 
 const Stack = createStackNavigator();
 export const productionNav = [
@@ -43,26 +43,26 @@ export const productionNav = [
   ...PinNav,
   ...MyNav,
   ...BuyNav,
+  ...ChatNav,
   ...DiscoverNav,
 ] as const;
 
 // dav nav
-export const davNav = [
+export const devNav = [
   ...productionNav,
-  ...chatNav,
   { name: 'Home', component: Home },
   { name: 'Discover', component: Discover },
 ] as const;
 
-const stackNav = __DEV__ ? davNav : productionNav;
+const stackNav = __DEV__ ? devNav : productionNav;
 
 export type RootStackParamList = {
-  [key in typeof davNav[number]['name']]: undefined;
+  [key in typeof devNav[number]['name']]: undefined;
 };
 export type TabParamList = {
   [key in IRenderTabMenuItem['name']]: undefined;
 };
-export type RootStackName = typeof davNav[number]['name'];
+export type RootStackName = typeof devNav[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {

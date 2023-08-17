@@ -1,6 +1,6 @@
 import Svg from 'components/Svg';
 import React, { ReactNode, memo, useCallback, useRef } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -91,44 +91,10 @@ const styles = StyleSheet.create({
     marginBottom: pTd(8),
     marginRight: pTd(8),
   },
-  input: {
-    width: '100%',
-    paddingLeft: pTd(16),
-  },
   sendStyle: {
     marginBottom: pTd(8),
     marginLeft: pTd(8),
     width: pTd(24),
     height: pTd(24),
-  },
-  toolsItem: {
-    width: '25%',
-    margin: pTd(2),
-    backgroundColor: 'skyblue',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  hideInput: {
-    position: 'absolute',
-    top: -1000,
-    opacity: 0,
-    ...GStyles.flex1,
-  },
-  inputContainerStyle: {
-    height: 80,
-    ...GStyles.flex1,
-  },
-  hide: {
-    width: 0,
-    height: 0,
-  },
-  absolute: {
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    position: 'absolute',
-    zIndex: 999,
   },
 });

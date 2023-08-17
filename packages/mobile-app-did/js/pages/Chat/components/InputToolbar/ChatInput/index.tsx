@@ -200,10 +200,6 @@ const styles = StyleSheet.create({
     padding: 0,
     paddingLeft: pTd(16),
   },
-  hide: {
-    width: 0,
-    height: 0,
-  },
   hideInput: {
     position: 'absolute',
     top: -1000,

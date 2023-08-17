@@ -45,7 +45,6 @@ export const productionNav = [
   ...BuyNav,
   ...ChatNav,
   ...DiscoverNav,
-  ...ChatNav,
 ] as const;
 
 // dev nav

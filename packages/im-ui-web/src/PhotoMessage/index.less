@@ -1,0 +1,41 @@
+@import '../assets/theme/color.less';
+
+.portkey-message-photo {
+  margin-top: 8px;
+  justify-content: flex-start;
+  &.right {
+    justify-content: flex-end;
+  }
+  .photo-body {
+    max-width: 280px;
+    position: relative;
+    justify-content: flex-start;
+    padding: 4px;
+    border-radius: 2px 20px 20px 20px;
+    background: @bg-22;
+    object-fit: contain;
+    img {
+      width: 100%;
+      border-radius: 2px 20px 20px 20px;
+    }
+
+    &.right {
+      border-radius: 20px 2px 20px 20px;
+      background: @bg-27;
+      img {
+        border-radius: 20px 2px 20px 20px;
+      }
+    }
+    .photo-date {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      padding: 1px 8px;
+      font-size: 10px;
+      line-height: 14px;
+      color: @font-5;
+      border-radius: 8px;
+      background-color: rgba(81, 90, 98, 0.8);
+    }
+  }
+}

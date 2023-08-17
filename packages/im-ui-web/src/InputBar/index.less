@@ -1,0 +1,102 @@
+@import '../assets/theme/color.less';
+
+.portkey-input-bar {
+  position: relative;
+  border-top: 1px solid @border-2;
+  font-size: 14px;
+  line-height: 20px;
+  color: @font-1;
+  .input-emoji {
+    position: absolute;
+    top: -176px;
+    width: 100%;
+    height: 176px;
+    padding: 16px;
+    overflow-y: auto;
+    background-color: @bg-11;
+    box-shadow: 0 -4px 10px 0 rgba(77, 78, 89, 0.01);
+    .show-icon {
+      flex-wrap: wrap;
+      gap: 10px;
+      .icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+    }
+  }
+  .input-box {
+    align-items: flex-end;
+    height: 60px;
+    padding: 10px;
+    background-color: @bg-13;
+
+    .custom-svg {
+      margin: 8px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    .has-show-icon.custom-svg {
+      svg {
+        path {
+          fill: rgba(91, 142, 244, 1);
+        }
+      }
+    }
+    .input-text {
+      flex: 1;
+      position: relative;
+      height: 40px;
+      .custom-svg {
+        margin: 0;
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+      }
+    }
+    .rce-container-input {
+      min-width: calc(100% - 120px);
+      border-radius: 20px;
+      .rce-input-textarea {
+        height: 40px;
+        padding: 10px 40px 10px 16px;
+      }
+      .rce-input {
+        border-radius: 20px;
+      }
+    }
+  }
+  .input-more {
+    padding: 10px;
+    .more-type {
+      flex-wrap: wrap;
+      gap: 10px;
+      .image {
+        width: 60px;
+        height: 60px;
+        background-color: gray;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+.portkey-input-more-popover {
+  width: max-content;
+  padding: 0 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px 0 rgba(77, 78, 89, 0.02);
+  background-color: @bg-11;
+}

@@ -1,22 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { TouchableWithoutFeedback, View } from 'react-native';
-import { pageStyles } from './style';
+import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { AddressItem, ContactItemType, EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
 import Input from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
-import { TextM } from 'components/CommonText';
-import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import { ErrorType } from 'types/common';
 import { FontStyles } from 'assets/theme/styles';
-import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
-import { ADDRESS_NUM_LIMIT } from '@portkey-wallet/constants/constants-ca/contact';
-import ContactAddress from './components/ContactAddress';
+import ContactAddress from '../ContactEdit/components/ContactAddress';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import ChainOverlay from 'components/ChainOverlay';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -32,6 +27,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import myEvents from 'utils/deviceEvent';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { defaultColors } from 'assets/theme';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -60,6 +56,7 @@ const ContactEdit: React.FC = () => {
   const { contact, addressList } = useRouterParams<RouterParams>();
   const defaultToken = useDefaultToken();
   const { t } = useLanguage();
+
   const addContactApi = useAddContact();
   const editContactApi = useEditContact();
   const deleteContactApi = useDeleteContact();
@@ -331,7 +328,6 @@ const ContactEdit: React.FC = () => {
           <View style={GStyles.paddingArg(0, 4)}>
             {editContact.addresses.map((addressItem, addressIdx) => (
               <ContactAddress
-                isDeleteShow={false}
                 key={addressIdx}
                 editAddressItem={addressItem}
                 editAddressIdx={addressIdx}
@@ -364,7 +360,6 @@ const ContactEdit: React.FC = () => {
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAwareScrollView>
-
       <View style={pageStyles.btnContainer}>
         <CommonButton onPress={onFinish} disabled={isSaveDisable} type="solid">
           {isEdit ? t('Save') : t('Add')}
@@ -384,3 +379,40 @@ const ContactEdit: React.FC = () => {
 };
 
 export default ContactEdit;
+
+const { error1, bg4, font5, font4 } = defaultColors;
+
+export const pageStyles = StyleSheet.create({
+  pageWrap: {
+    flex: 1,
+    backgroundColor: bg4,
+    ...GStyles.paddingArg(24, 16, 20),
+  },
+  addAddressBtn: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: pTd(110),
+  },
+  nameInputStyle: {
+    color: font5,
+    fontSize: pTd(14),
+  },
+  nameLabelStyle: {
+    marginLeft: pTd(4),
+  },
+  deleteTitle: {
+    color: error1,
+  },
+  addAddressText: {
+    color: font4,
+    marginLeft: pTd(8),
+  },
+  btnContainer: {
+    paddingTop: pTd(16),
+  },
+  deleteBtnStyle: {
+    marginTop: pTd(8),
+  },
+});

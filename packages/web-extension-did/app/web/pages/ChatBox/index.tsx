@@ -7,168 +7,19 @@ import { PopoverMenuList, MessageList, InputBar } from '@portkey-wallet/im-ui-we
 // import PhotoSendModal from './components/PhotoSendModal';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import './index.less';
+import { useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useEffectOnce } from 'react-use';
+import { formatChatListTime } from '@portkey-wallet/utils/chat';
+import im from '@portkey-wallet/im';
 
-const mockTemp: any = [
-  {
-    id: 'id',
-    title: '',
-    position: 'right',
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'text',
-    date: new Date(),
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'left',
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'text',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'right',
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'bookmark',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'left',
-    data: {
-      id: 'img1',
-      uri: 'https://avatars.githubusercontent.com/u/80540635?v=4',
-      alt: 'alt',
-      status: {
-        download: true,
-      },
-    },
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'photo',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'right',
-    data: {
-      id: 'img2',
-      uri: 'https://avatars.githubusercontent.com/u/80540635?v=4',
-      alt: 'alt',
-      status: {
-        download: true,
-      },
-    },
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'photo',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'right',
-    text: '07-30',
-    type: 'system',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'right',
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'text',
-    date: new Date(),
-    // focus: false,
-    // titleColor: '',
-    // retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'left',
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'text',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'right',
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'bookmark',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'left',
-    data: {
-      id: 'img3',
-      uri: 'https://avatars.githubusercontent.com/u/80540635?v=4',
-      alt: 'alt',
-      status: {
-        download: true,
-      },
-    },
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'photo',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-  {
-    id: 'id',
-    title: '',
-    position: 'right',
-    data: {
-      id: 'img4',
-      uri: 'https://avatars.githubusercontent.com/u/80540635?v=4',
-      alt: 'alt',
-      status: {
-        download: true,
-      },
-    },
-    text: 'Hi, Do you want to buy or sell some tokens? Buy or sell some tokens?',
-    type: 'photo',
-    date: new Date(),
-    focus: false,
-    titleColor: '',
-    notch: false,
-    retracted: false,
-  },
-];
+enum MessageTypeWeb {
+  'SYS' = 'system',
+  'TEXT' = 'text',
+  'CARD' = '',
+  'IMAGE' = 'photo',
+  'ANNOUNCEMENT' = '',
+  'BATCH_TRANSFER' = '',
+}
 
 export default function Session() {
   const navigate = useNavigate();
@@ -177,6 +28,29 @@ export default function Session() {
   // const [showBookmark, setShowBookmark] = useState(false);
   // TODO
   const isStranger = true;
+
+  const { list, init } = useChannel('e7554d14bf7d4a12a40698138f7a7d8c');
+  // e7554d14bf7d4a12a40698138f7a7d8c
+  // 1689b154c49946a0a4324b339b83b194
+
+  useEffectOnce(() => {
+    init();
+    // sendMessage('hello', 'TEXT');
+  });
+
+  const messageList: any = useMemo(() => {
+    return list.map((item) => {
+      return {
+        id: item.id,
+        // sendUuid: item.sendUuid, // TODO
+        title: item.fromName,
+        position: item.from === im.userInfo?.relationId ? 'right' : 'left', // TODO '5h7d6-liaaa-aaaaj-vgmya-cai'
+        text: item.parsedContent,
+        type: MessageTypeWeb[item.type],
+        dateString: formatChatListTime(item.createAt),
+      };
+    });
+  }, [list]);
 
   // const menuListData = useMemo(
   //   () => [
@@ -357,7 +231,7 @@ export default function Session() {
         </div>
       )}
       <div className="chat-box-content">
-        <MessageList referance={null} lockable dataSource={mockTemp} />
+        <MessageList referance={null} lockable dataSource={messageList} />
       </div>
       <div className="chat-box-footer">
         <InputBar moreData={morePopoverList} />

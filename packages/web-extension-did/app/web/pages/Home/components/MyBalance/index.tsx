@@ -28,11 +28,18 @@ import useGuardianList from 'hooks/useGuardianList';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/ChatEntry';
 import './index.less';
+import im from '@portkey-wallet/im';
+import { getWallet } from '@portkey-wallet/utils/aelf';
+import InternalMessage from 'messages/InternalMessage';
+import InternalMessageTypes from 'messages/InternalMessageTypes';
+import aes from '@portkey-wallet/utils/aes';
+import { useChannel, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import { request } from '@portkey-wallet/api/api-did';
 
 export interface TransactionResult {
   total: number;
@@ -85,10 +92,45 @@ export default function MyBalance() {
   const { isBuyButtonShow } = useBuyButtonShow();
   // TODO isShowChat
   const isShowChat = true;
-  // TODO get chat unread num
-  const unread = 100;
+  const unreadCount = useUnreadCount();
+
+  // IM START
+  const { sendMessage } = useChannel('1689b154c49946a0a4324b339b83b194');
+
+  const { apiUrl, imApiUrl, imWsUrl } = useCurrentNetworkInfo();
+  useMemo(() => {
+    request.set('baseURL', apiUrl);
+    if (request.defaultConfig.baseURL !== apiUrl) {
+      request.defaultConfig.baseURL = apiUrl;
+    }
+  }, [apiUrl]);
+  useMemo(() => {
+    im.setUrl({
+      apiUrl: imApiUrl || '',
+      wsUrl: imWsUrl || '',
+    });
+  }, [imApiUrl, imWsUrl]);
+
+  const initIM = useCallback(async () => {
+    const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
+    const pin = getSeedResult.data.privateKey;
+    if (!pin) return;
+
+    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+    const account = getWallet(privateKey || '');
+    if (!account || !walletInfo.caHash) return;
+
+    try {
+      await im.init(account, walletInfo.caHash);
+    } catch (error) {
+      console.log('im init error', error);
+    }
+  }, [walletInfo.AESEncryptPrivateKey, walletInfo.caHash]);
+  // IM END
 
   useEffect(() => {
+    // sendMessage('hi', 'TEXT');
+
     if (state?.key) {
       setActiveKey(state.key);
     }
@@ -97,7 +139,18 @@ export default function MyBalance() {
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
+    initIM();
+  }, [
+    passwordSeed,
+    appDispatch,
+    caAddresses,
+    chainIdArray,
+    caAddressInfos,
+    isMainNet,
+    state?.key,
+    initIM,
+    sendMessage,
+  ]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
@@ -178,7 +231,7 @@ export default function MyBalance() {
       {/* TODO isPrompt */}
       {isShowChat && (
         <div className="chat-body">
-          <ChatEntry unread={unread} />
+          <ChatEntry unread={unreadCount} />
         </div>
       )}
       <div className="wallet-name">

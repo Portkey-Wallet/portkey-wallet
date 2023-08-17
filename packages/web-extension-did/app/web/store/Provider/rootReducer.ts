@@ -26,6 +26,7 @@ import {
   cmsPersistConfig,
   dappPersistConfig,
   txFeePersistConfig,
+  imPersistConfig,
 } from './config';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
@@ -34,6 +35,7 @@ import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
+import { imSlice } from '@portkey-wallet/store/store-ca/im/slice';
 
 export const tokenReducer = persistReducer(tokenPersistConfig, tokenSlice.reducer);
 export const assetReducer = persistReducer(assetPersistConfig, assetsSlice.reducer);
@@ -49,6 +51,7 @@ export const cmsReducer = persistReducer(cmsPersistConfig, cmsSlice.reducer);
 export const dappReducer = persistReducer(dappPersistConfig, dappSlice.reducer);
 export const discoverReducer = persistReducer(dappPersistConfig, discoverSlice.reducer);
 export const txFeeReducer = persistReducer(txFeePersistConfig, txFeeSlice.reducer);
+export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
 
 const rootReducer = customCombineReducers({
   [walletSlice.name]: walletReducer,
@@ -70,6 +73,7 @@ const rootReducer = customCombineReducers({
   [dappSlice.name]: dappReducer,
   [discoverSlice.name]: discoverReducer,
   [txFeeSlice.name]: txFeeReducer,
+  [imSlice.name]: imReducer,
 });
 
 export default rootReducer;

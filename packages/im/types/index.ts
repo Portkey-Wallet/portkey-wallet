@@ -1,4 +1,4 @@
-export type MessageType = 'SYS' | 'TEXT' | 'CARD' | 'ANNOUNCEMENT' | 'BATCH_TRANSFER';
+export type MessageType = 'SYS' | 'TEXT' | 'CARD' | 'ANNOUNCEMENT' | 'BATCH_TRANSFER' | 'IMAGE';
 export type ParsedContent = string;
 
 export type Message = {
@@ -11,6 +11,7 @@ export type Message = {
   fromAvatar?: string;
   fromName?: string;
 
+  id?: string;
   quote?: Message;
   parsedContent?: ParsedContent;
   unidentified?: boolean | undefined;
@@ -22,10 +23,12 @@ export type ChannelMemberInfo = {
   avatar: string;
   isAdmin: boolean;
 };
+
 export enum ChannelTypeEnum {
   GROUP = 'G',
   P2P = 'P',
 }
+
 export type ChannelInfo = {
   uuid: string;
   name: string;
@@ -72,3 +75,8 @@ export type MessageCount = {
   unreadCount: number;
   mentionsCount: number;
 };
+
+export enum TriggerMessageEventActionEnum {
+  ENTER_CHANNEL = 1,
+  EXIT_CHANNEL = 2,
+}

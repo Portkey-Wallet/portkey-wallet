@@ -8,7 +8,7 @@ import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
 
 const MockImgSource = {
-  uri: 'https://img0.baidu.com/it/u=3021883569,1259262591&fm=253&app=120&size=w931&n=0&f=JPEG&fmt=auto?sec=1692291600&t=d4573ac68a9f7486240eec1718ee9275',
+  uri: 'https://img0.baidu.com/it/u=925843206,3288141497&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=769',
 };
 
 function MessageImage(props: MessageImageProps<IMessage>) {
@@ -36,7 +36,7 @@ function MessageImage(props: MessageImageProps<IMessage>) {
           formatType: 'dynamicWidth',
         });
       }}>
-      <CacheImage style={styles.image} resizeMode="contain" source={MockImgSource} />
+      <CacheImage style={styles.image} resizeMode="cover" source={MockImgSource} />
       <Time
         timeFormat="HH:mm"
         timeTextStyle={timeTextStyle}
@@ -51,7 +51,8 @@ export default memo(MessageImage);
 
 const styles = StyleSheet.create({
   image: {
-    borderRadius: pTd(20),
+    borderTopRightRadius: 0,
+    borderRadius: pTd(18),
     width: pTd(280),
     height: pTd(280),
   },

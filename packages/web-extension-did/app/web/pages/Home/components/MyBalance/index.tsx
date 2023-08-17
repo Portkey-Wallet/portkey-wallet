@@ -17,7 +17,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
-import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
 import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
@@ -95,7 +95,7 @@ export default function MyBalance() {
     if (!passwordSeed) return;
     appDispatch(fetchTokenListAsync({ caAddresses, caAddressInfos }));
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
-    appDispatch(getWalletNameAsync());
+    appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
   }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
 

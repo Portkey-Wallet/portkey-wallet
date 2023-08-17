@@ -4,7 +4,7 @@ import { checkPassword } from './utils';
 import {
   changePin,
   createWalletAction,
-  getWalletNameAsync,
+  getCaHolderInfoAsync,
   resetCaInfo,
   resetWallet,
   setCAInfo,
@@ -22,6 +22,7 @@ const initialState: WalletState = {
   walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`,
   walletType: 'aelf',
   walletName: 'Wallet 01',
+  userId: '',
   currentNetwork: 'MAIN',
   chainList: [],
 };
@@ -101,8 +102,11 @@ export const walletSlice = createSlice({
         if (!state.walletInfo?.AESEncryptMnemonic) throw new Error(WalletError.noCreateWallet);
         state.walletInfo.caInfo = { ...state.walletInfo.caInfo, [currentNetwork]: caInfo };
       })
-      .addCase(getWalletNameAsync.fulfilled, (state, action) => {
-        if (action.payload) state.walletName = action.payload;
+      .addCase(getCaHolderInfoAsync.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.walletName = action.payload.nickName;
+          state.userId = action.payload.userId;
+        }
       })
       .addCase(setWalletNameAction, (state, action) => {
         state.walletName = action.payload;

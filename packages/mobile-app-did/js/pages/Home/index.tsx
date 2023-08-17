@@ -25,7 +25,6 @@ import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { useGetDeviceInfo } from 'hooks/device';
 import * as Network from 'expo-network';
 
-import { sign } from '@portkey-wallet/im/utils/sign';
 import im from '@portkey-wallet/im';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useChannel, useChannelList, useCreateP2pChannel, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -45,13 +44,17 @@ export default function HomeScreen() {
   const createChannel = useCreateP2pChannel();
   const unreadCount = useUnreadCount();
 
-  const { list, sendMessage, init, next, hasNext } = useChannel('6d4ddb55feff42098d1badacbf3cd374');
+  const { list, sendMessage, sendImage, init, next, hasNext } = useChannel('2fe812efc5954c79ac3acd934bbb5d78');
+  // const { list, sendMessage, init, next, hasNext } = {} as any;
+
   const {
     list: channelList,
     init: initChannelList,
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
+
+  // const { list: channelList, init: initChannelList, next: nextChannelList, hasNext: hasNextChannelList } = {} as any;
 
   useEffect(() => {
     console.log('channelList', channelList);
@@ -241,14 +244,8 @@ export default function HomeScreen() {
         <Button
           title="sendMessage"
           onPress={() => {
-            sendMessage('test message');
-            // const imInstance = im.getInstance();
-            // if (!imInstance) return;
-            // imInstance.sendMessage({
-            //   toRelationId: 'ivu3i-7iaaa-aaaaj-zw47q-cai',
-            //   type: 'TEXT',
-            //   content: 'test message',
-            // });
+            // sendMessage('test message');
+            sendImage();
           }}
         />
 
@@ -271,8 +268,13 @@ export default function HomeScreen() {
           title="createChannel"
           onPress={async () => {
             try {
-              const result = await createChannel('nutbk-6aaaa-aaaaj-7hatq-cai');
-              console.log('result', result);
+              // const result = await im.service.sendMessage({
+              //   toRelationId: 'ibjqo-cqaaa-aaaaj-5np2q-cai',
+              //   content: 'test message',
+              //   sendUuid: `${Date.now()}`,
+              //   type: 'TEXT',
+              // });
+              // console.log('result', result);
             } catch (error) {
               console.log('createChannel: error', error);
             }

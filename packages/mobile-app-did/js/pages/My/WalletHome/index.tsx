@@ -17,7 +17,7 @@ import useLogOut from 'hooks/useLogOut';
 import { removeManager } from 'utils/guardian';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { useAppDispatch } from 'store/hooks';
-import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 
@@ -30,14 +30,13 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   const appDispatch = useAppDispatch();
   const {
     walletAvatar,
-    walletName,
     walletInfo: { caHash, address: managerAddress },
   } = useCurrentWallet();
   const getCurrentCAContract = useGetCurrentCAContract();
   const logout = useLogOut();
 
   useEffect(() => {
-    appDispatch(getWalletNameAsync());
+    appDispatch(getCaHolderInfoAsync());
   }, [appDispatch]);
 
   const onExitClick = useCallback(

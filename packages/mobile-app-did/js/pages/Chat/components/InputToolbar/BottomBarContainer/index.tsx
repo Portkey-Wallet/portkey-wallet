@@ -65,19 +65,22 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
   });
 
   return (
-    <>
-      <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.wrap]}>
+    <View style={styles.wrap}>
+      <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
         <ChatInputBar ref={textInputRef} onPressActionButton={onPressActionButton} />
         <SendMessageButton text={text} containerStyle={styles.sendStyle} />
       </Touchable>
       <Animated.View style={{ height: keyboardAnim }}>{children}</Animated.View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
+    overflow: 'hidden',
+  },
+  barWrap: {
     position: 'relative',
     paddingHorizontal: pTd(16),
     paddingVertical: pTd(10),

@@ -45,9 +45,10 @@ export const productionNav = [
   ...BuyNav,
   ...ChatNav,
   ...DiscoverNav,
+  ...ChatNav,
 ] as const;
 
-// dav nav
+// dev nav
 export const devNav = [
   ...productionNav,
   { name: 'Home', component: Home },

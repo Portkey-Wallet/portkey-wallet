@@ -2,6 +2,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import './index.less';
 import CommonModal from 'components/CommonModal';
+import { useState } from 'react';
 
 interface PhotoSendModalProps {
   open: boolean;
@@ -12,6 +13,12 @@ interface PhotoSendModalProps {
 
 export default function PhotoSendModal({ open, url, onConfirm, onCancel }: PhotoSendModalProps) {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+
+  const handleConfirm = () => {
+    setLoading(true);
+    onConfirm();
+  };
 
   return (
     <CommonModal
@@ -24,8 +31,8 @@ export default function PhotoSendModal({ open, url, onConfirm, onCancel }: Photo
           <Button type="default" onClick={onCancel}>
             {t('Cancel')}
           </Button>
-          <Button type="primary" onClick={onConfirm}>
-            {t('Send')}
+          <Button type="primary" onClick={handleConfirm} loading={loading}>
+            {!loading && t('Send')}
           </Button>
         </div>
       }>

@@ -6,11 +6,11 @@ import UnreadTip from '../UnreadTip';
 import CustomSvg from '../components/CustomSvg';
 
 import { IChatItemProps } from '../type';
-import { formatDate } from '../utils';
+import { formatChatListTime } from '../utils';
 
 import './index.less';
 
-const ChannelItem: React.FC<IChatItemProps> = ({ date = new Date(), unread = 0, ...props }) => {
+const ChannelItem: React.FC<IChatItemProps> = ({ date = new Date().getTime(), unread = 0, ...props }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     props.onClick?.(e);
@@ -32,7 +32,7 @@ const ChannelItem: React.FC<IChatItemProps> = ({ date = new Date(), unread = 0, 
               <span className="body-top-title-text">{props.title}</span>
               {props.showMute && props.muted === true && <CustomSvg type="Mute" />}
             </div>
-            <div className="body--top-time">{props.dateString || formatDate(date as any)}</div>
+            <div className="body--top-time">{props.dateString || formatChatListTime(`${date}`)}</div>
           </div>
 
           <div className="body-bottom flex">

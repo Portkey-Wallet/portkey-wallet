@@ -1,26 +1,29 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { Image } from 'antd';
 import clsx from 'clsx';
 
 import { IPhotoMessageProps } from '../type';
 import { formatTime } from '../utils';
+import CustomSvg from '../components/CustomSvg';
 import './index.less';
 
 const PhotoMessage: React.FC<IPhotoMessageProps> = props => {
   const showDate = useMemo(() => (props.dateString ? props.dateString : formatTime(props.date as any)), []);
-  const error = props?.data?.status && props?.data?.status.error === true;
+  const [loadErr, setLoadErr] = useState(false);
 
   return (
     <div className={clsx(['portkey-message-photo', 'flex', props.position])}>
       <div className={clsx(['photo-body', props.position])}>
-        <img
-          src={props?.data?.uri}
-          alt={props?.data?.alt}
-          onClick={props.onOpen}
-          onLoad={props.onLoad}
-          onError={props.onPhotoError}
-        />
-        {/* TODO */}
-        {error && <div>Error</div>}
+        {loadErr ? (
+          <div className="photo-error">
+            <CustomSvg type="ImgErr" />
+          </div>
+        ) : (
+          <>
+            <Image src={props?.data?.uri} onError={() => setLoadErr(true)} />
+            <div className="photo-date">{showDate}</div>
+          </>
+        )}
         {/* {!error && props?.data?.status && !props?.data?.status?.download && (
           <div className="portkey-mbox-photo--img__block">
             {!props?.data?.status.click && (
@@ -36,7 +39,6 @@ const PhotoMessage: React.FC<IPhotoMessageProps> = props => {
             )}
           </div>
         )} */}
-        <div className="photo-date">{showDate}</div>
       </div>
     </div>
   );

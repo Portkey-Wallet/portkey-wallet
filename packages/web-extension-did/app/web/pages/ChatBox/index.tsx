@@ -1,11 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { Popover } from 'antd';
-import { PopoverMenuList, MessageList, InputBar } from '@portkey-wallet/im-ui-web';
-// import PhotoSendModal from './components/PhotoSendModal';
+import { Popover, Upload, UploadFile } from 'antd';
+import { PopoverMenuList, MessageList, InputBar, StyleProvider } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
+import { RcFile } from 'antd/lib/upload/interface';
+import PhotoSendModal from './components/PhotoSendModal';
 import './index.less';
 import { useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
@@ -23,6 +24,8 @@ enum MessageTypeWeb {
 
 export default function Session() {
   const navigate = useNavigate();
+  const [file, setFile] = useState<UploadFile>();
+  const [previewImage, setPreviewImage] = useState<string>();
   // const [messageList, setMessageList] = useState([]);
   // const [showStrangerTip, setShowStrangerTip] = useState(true);
   // const [showBookmark, setShowBookmark] = useState(false);
@@ -126,7 +129,7 @@ export default function Session() {
   // TODO
   const isMute = true;
   // TODO
-  const popoverList = useMemo(
+  const contactPopList = useMemo(
     () => [
       {
         key: 'profile',
@@ -181,12 +184,34 @@ export default function Session() {
   const onClick = () => {
     // TODO
   };
-  //
-  const morePopoverList = [
+
+  const uploadProps = {
+    className: 'chat-input-upload',
+    showUploadList: false,
+    accept: 'image/*',
+    beforeUpload: async (paramFile: RcFile) => {
+      setFile(paramFile);
+      const src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(paramFile);
+        reader.onload = () => {
+          resolve(reader.result);
+        };
+      });
+      setPreviewImage(src as string);
+      return false;
+    },
+  };
+
+  const inputMorePopList = [
     {
       key: 'album',
       leftIcon: <CustomSvg type="Album" />,
-      children: 'Picture',
+      children: (
+        <Upload {...uploadProps}>
+          <span className="upload-text">Picture</span>
+        </Upload>
+      ),
       onClick: onClick,
     },
     {
@@ -196,6 +221,27 @@ export default function Session() {
       onClick: onClick,
     },
   ];
+
+  const handleUpload = () => {
+    const formData = new FormData();
+    formData.append('file', file as any);
+    // You can use any AJAX library you like
+    fetch('https://www.mocky.io/v2/5cc8019d300000980a055e76', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then(() => {
+        // setFileList([]);
+        // message.success('upload successfully.');
+      })
+      .catch(() => {
+        // message.error('upload failed.');
+      })
+      .finally(() => {
+        // setUploading(false);
+      });
+  };
 
   return (
     <div className="chat-box-page flex-column">
@@ -213,10 +259,9 @@ export default function Session() {
             <div className="flex-center right-element">
               <Popover
                 overlayClassName="chat-box-popover"
-                placement="bottom"
                 trigger="click"
                 showArrow={false}
-                content={<PopoverMenuList data={popoverList} />}>
+                content={<PopoverMenuList data={contactPopList} />}>
                 <CustomSvg type="More" />
               </Popover>
               <CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />
@@ -231,20 +276,24 @@ export default function Session() {
         </div>
       )}
       <div className="chat-box-content">
-        <MessageList referance={null} lockable dataSource={messageList} />
+        <StyleProvider prefixCls="portkey">
+          <MessageList referance={null} lockable dataSource={messageList} />
+        </StyleProvider>
       </div>
       <div className="chat-box-footer">
-        <InputBar moreData={morePopoverList} />
+        <StyleProvider prefixCls="portkey">
+          <InputBar moreData={inputMorePopList} />
+        </StyleProvider>
       </div>
-      {/* <Button onClick={() => setCurUrl('https://avatars.githubusercontent.com/u/80540635?v=4')}>ShowImage</Button>
-  {curUrl && <PhotoPreview uri={curUrl} onClose={() => setCurUrl('')} />} */}
-      {/* <CustomChat dataSource={[]} lazyLoadingImage="false" id="id" /> */}
-      {/* <PhotoSendModal
-    open={true}
-    url="https://avatars.githubusercontent.com/u/80540635?v=4"
-    onCancel={onCancel}
-    onConfirm={onConfirm}
-  /> */}
+      <PhotoSendModal
+        open={!!previewImage}
+        url={previewImage || ''}
+        onConfirm={handleUpload}
+        onCancel={() => {
+          setPreviewImage('');
+          setFile(undefined);
+        }}
+      />
       {/* <BookmarkListDrawer onClick={onCancel} /> */}
     </div>
   );

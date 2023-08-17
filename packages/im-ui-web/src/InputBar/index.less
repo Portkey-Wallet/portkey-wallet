@@ -14,14 +14,15 @@
     padding: 16px;
     overflow-y: auto;
     background-color: @bg-11;
+    border-radius: 8px 8px 0 0;
     box-shadow: 0 -4px 10px 0 rgba(77, 78, 89, 0.01);
     .show-icon {
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
       .icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 6px;
+        font-size: 30px;
+        width: 30px;
+        height: 30px;
         cursor: pointer;
       }
     }
@@ -93,10 +94,21 @@
     }
   }
 }
+.portkey-input-more-popover.portkey-popover-placement-top {
+  padding: 0;
+}
 .portkey-input-more-popover {
+  left: 16px !important;
+  top: 470px !important;
   width: max-content;
-  padding: 0 12px;
   border-radius: 6px;
-  box-shadow: 0 2px 12px 0 rgba(77, 78, 89, 0.02);
   background-color: @bg-11;
+  .portkey-popover-inner {
+    border-radius: 6px;
+    box-shadow: 0 2px 12px 0 rgba(77, 78, 89, 0.02);
+    .portkey-popover-inner-content {
+      padding: 0 12px;
+    }
+  }
+  
 }

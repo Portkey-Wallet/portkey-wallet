@@ -1,7 +1,6 @@
 @import '../../assets/theme/color.less';
 
 .chat-box-page {
-  width: 360px;
   height: 600px;
   background-color: @bg-11;;
   .chat-box-top {
@@ -43,23 +42,40 @@
     }
   }
   .add-contact-tip {
+    position: relative;
     flex-shrink: 0;
     height: 48px;
-    gap: 16px;
     border-bottom: 1px solid @border-2;
     font-size: 16px;
     line-height: 22px;
     color: @font-9;
-    cursor: pointer;
-    .addcontact-icon {
-      width: 20px;
-      height: 20px;
+    .content {
+      position: relative;
+      height: 100%;
+      margin: auto;
+      gap: 16px;
+      .text {
+        cursor: pointer;
+      }
+      .addcontact-icon {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+      }
+    }
+    .close2-icon {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 12px;
+      height: 12px;
+      cursor: pointer;
     }
   }
   .chat-box-content {
     width: 100%;
     flex: 1;
-    max-height: 395px;
+    overflow: auto;
     ::-webkit-scrollbar {
       display: none;
     }

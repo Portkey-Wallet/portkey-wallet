@@ -10,9 +10,10 @@ import './index.less';
 interface IInputBar {
   moreData?: IPopoverMenuListData[];
   showEmoji?: boolean;
+  onSendMessage: (v: string) => void;
 }
 
-export default function InputBar({ moreData, showEmoji = true, ...props }: IInputBar) {
+export default function InputBar({ moreData, showEmoji = true, onSendMessage, ...props }: IInputBar) {
   console.log(props);
   const [showIcon, setShowIcon] = useState(false);
   const [value, setValue] = useState('');
@@ -27,6 +28,11 @@ export default function InputBar({ moreData, showEmoji = true, ...props }: IInpu
 
   const handleChange = (e: any) => {
     setValue(e.target.value);
+  };
+
+  const handleSend = () => {
+    onSendMessage(value);
+    setValue('');
   };
 
   return (
@@ -63,7 +69,7 @@ export default function InputBar({ moreData, showEmoji = true, ...props }: IInpu
               <CustomSvg className={clsx([showIcon && 'has-show-icon'])} type="Emoji" onClick={handleShowIcon} />
             )}
           </div>
-          {value && <CustomSvg type="Send" onClick={handleShowIcon} />}
+          {value && <CustomSvg type="Send" onClick={handleSend} />}
         </div>
       </div>
     </div>

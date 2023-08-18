@@ -38,7 +38,7 @@ import { getWallet } from '@portkey-wallet/utils/aelf';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
-import { useChannel, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { request } from '@portkey-wallet/api/api-did';
 
 export interface TransactionResult {
@@ -90,13 +90,12 @@ export default function MyBalance() {
   useFreshTokenPrice();
   useVerifierList();
   const { isBuyButtonShow } = useBuyButtonShow();
-  // TODO isShowChat
+  // TODO
   const isShowChat = true;
+  // const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
 
   // IM START
-  const { sendMessage } = useChannel('1689b154c49946a0a4324b339b83b194');
-
   const { apiUrl, imApiUrl, imWsUrl } = useCurrentNetworkInfo();
   useMemo(() => {
     request.set('baseURL', apiUrl);
@@ -129,8 +128,6 @@ export default function MyBalance() {
   // IM END
 
   useEffect(() => {
-    // sendMessage('hi', 'TEXT');
-
     if (state?.key) {
       setActiveKey(state.key);
     }
@@ -139,18 +136,11 @@ export default function MyBalance() {
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-    initIM();
-  }, [
-    passwordSeed,
-    appDispatch,
-    caAddresses,
-    chainIdArray,
-    caAddressInfos,
-    isMainNet,
-    state?.key,
-    initIM,
-    sendMessage,
-  ]);
+  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
+
+  useEffect(() => {
+    isShowChat && initIM();
+  }, [initIM, isShowChat]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });

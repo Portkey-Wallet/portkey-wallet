@@ -12,6 +12,18 @@ const ChannelList: React.FC<IChatListProps> = ({ dataSource, hasMore = false, lo
     if (props.onClick instanceof Function) props.onClick(item, index, event);
   };
 
+  const onClickMute: ChatListEvent = (item, index, event) => {
+    if (props.onClickMute instanceof Function) props.onClickMute(item, index, event);
+  };
+
+  const onClickPin: ChatListEvent = (item, index, event) => {
+    if (props.onClickMute instanceof Function) props.onClickMute(item, index, event);
+  };
+
+  const onClickDelete: ChatListEvent = (item, index, event) => {
+    if (props.onClickMute instanceof Function) props.onClickMute(item, index, event);
+  };
+
   const onContextMenu: ChatListEvent = (item, index, event) => {
     event.preventDefault();
     if (props.onContextMenu instanceof Function) props.onContextMenu(item, index, event);
@@ -25,6 +37,9 @@ const ChannelList: React.FC<IChatListProps> = ({ dataSource, hasMore = false, lo
           key={x.id}
           onContextMenu={(e: React.MouseEvent<HTMLElement>) => onContextMenu(x, i, e)}
           onClick={(e: React.MouseEvent<HTMLElement>) => onClick(x, i, e)}
+          onClickPin={(e: React.MouseEvent<HTMLElement>) => onClickPin(x, i, e)}
+          onClickMute={(e: React.MouseEvent<HTMLElement>) => onClickMute(x, i, e)}
+          onClickDelete={(e: React.MouseEvent<HTMLElement>) => onClickDelete(x, i, e)}
         />
       ))}
       <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />

@@ -86,6 +86,7 @@ const Input: React.FC<IInputProps> = ({
         />
       ) : (
         <textarea
+          value={props.value}
           ref={props.referance}
           className={classNames('rce-input', 'rce-input-textarea')}
           placeholder={props.placeholder}

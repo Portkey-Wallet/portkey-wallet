@@ -1,7 +1,6 @@
 @import '../../assets/theme/color.less';
 
 .chat-list-page {
-  width: 360px;
   height: 100%;
   background-color: @bg-11;
   ::-webkit-scrollbar {
@@ -28,12 +27,12 @@
   .chat-list-content {
     overflow-y: auto;
     height: calc(100% - 96px);
-    .custom-svg.search-icon,
-    .custom-svg.addcircle-icon {
-      width: 64px;
-      height: 64px;
-    }
     .no-message {
+      .message-icon {
+        width: 64px;
+        height: 64px;
+      }
+
       margin-top: 100px;
       gap: 24px;
       font-size: 14px;

@@ -4,15 +4,16 @@ import BookmarkList from '../BookmarkList';
 import './index.less';
 
 interface CustomSelectProps extends DrawerProps {
+  open: boolean;
   onClose?: () => void;
-  onClick: () => void;
+  onClick: (url: string) => void;
 }
 
-export default function BookmarkListDrawer({ onClose, onClick, ...props }: CustomSelectProps) {
+export default function BookmarkListDrawer({ open, onClose, onClick, ...props }: CustomSelectProps) {
   return (
     <BaseDrawer
       {...props}
-      open={true}
+      open={open}
       height={528}
       placement="bottom"
       destroyOnClose

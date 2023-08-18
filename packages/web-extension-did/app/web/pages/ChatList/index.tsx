@@ -6,16 +6,17 @@ import { ChatList as ChannelList, PopoverMenuList } from '@portkey-wallet/im-ui-
 
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
-import './index.less';
-import { useChannelList } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
+import './index.less';
 
 export default function ChatList() {
   const navigate = useNavigate();
-
   const { t } = useTranslation();
-
+  const pinChannel = usePinChannel();
+  const muteChannel = useMuteChannel();
+  const hideChannel = useHideChannel();
   const {
     list: chatList,
     init: initChannelList,
@@ -26,8 +27,7 @@ export default function ChatList() {
   const onConfirm = () => {
     // TODO
   };
-
-  const popoverList = useMemo(
+  const popList = useMemo(
     () => [
       {
         key: 'newChat',
@@ -53,26 +53,23 @@ export default function ChatList() {
           placement="bottom"
           trigger="click"
           showArrow={false}
-          content={<PopoverMenuList data={popoverList} />}>
+          content={<PopoverMenuList data={popList} />}>
           <CustomSvg type="AddCircle" />
         </Popover>
         <CustomSvg type="Close2" onClick={() => navigate('/')} />
       </div>
     ),
-    [navigate, popoverList],
+    [navigate, popList],
   );
 
   const transChatList = useMemo(() => {
     return chatList.map((item) => {
       return {
         id: item.channelUuid,
-        avatar: '',
-        letterItem: item.displayName.substring(0, 1).toLocaleUpperCase(),
-        alt: 'p',
+        letterItem: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
         subtitle: item.lastMessageContent,
         dateString: formatChatListTime(item.lastPostAt),
-        showMute: true,
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
@@ -97,9 +94,12 @@ export default function ChatList() {
           </div>
         ) : (
           <ChannelList
-            dataSource={transChatList}
             id="channel-list"
-            onClick={() => navigate('/chat-box')}
+            dataSource={transChatList}
+            onClickPin={(chatItem) => pinChannel(`${chatItem.id}`, !chatItem.pin)}
+            onClickMute={(chatItem) => muteChannel(`${chatItem.id}`, !chatItem.muted)}
+            onClickDelete={(chatItem) => hideChannel(`${chatItem.id}`)}
+            onClick={(chatItem) => navigate(`/chat-box/${chatItem.id}`, { state: chatItem })}
             hasMore={hasNextChannelList}
             loadMore={nextChannelList}
           />

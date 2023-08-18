@@ -13,7 +13,7 @@ export interface ILoadingMoreProps {
 export default function LoadMore({
   hasMore = false,
   loadingText = 'Loading',
-  noDataText = 'No Data',
+  noDataText = '',
   className = '',
   loadMore,
 }: ILoadingMoreProps) {

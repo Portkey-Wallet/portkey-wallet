@@ -10,11 +10,22 @@ import { formatChatListTime } from '../utils';
 
 import './index.less';
 
-const ChannelItem: React.FC<IChatItemProps> = ({ date = new Date().getTime(), unread = 0, ...props }) => {
+const ChannelItem: React.FC<IChatItemProps> = ({
+  date = new Date().getTime(),
+  unread = 0,
+  alt = 'avatar',
+  showMute = true,
+  onClickDelete,
+  onClickMute,
+  onClickPin,
+  ...props
+}) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     props.onClick?.(e);
   };
+  // TODO
+  // const isShowPop = useMemo(() => onClickDelete || onClickMute || onClickPin, []);
 
   return (
     <div
@@ -24,13 +35,13 @@ const ChannelItem: React.FC<IChatItemProps> = ({ date = new Date().getTime(), un
       onContextMenu={props.onContextMenu}>
       <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
         <div key={'avatar'} className="chat-item-avatar flex-center">
-          <Avatar src={props.avatar} alt={props.alt} letterItem={props.letterItem} />
+          <Avatar src={props.avatar} alt={alt} letterItem={props.letterItem} />
         </div>
         <div key={'chat-item-body'} className="chat-item-body flex-column">
           <div className="body-top flex">
             <div className="body-top-title flex">
               <span className="body-top-title-text">{props.title}</span>
-              {props.showMute && props.muted === true && <CustomSvg type="Mute" />}
+              {showMute && props.muted === true && <CustomSvg type="Mute" />}
             </div>
             <div className="body--top-time">{props.dateString || formatChatListTime(`${date}`)}</div>
           </div>
@@ -39,7 +50,7 @@ const ChannelItem: React.FC<IChatItemProps> = ({ date = new Date().getTime(), un
             <div className="body-bottom-title">{props.subtitle}</div>
             <div className="body-bottom-status">
               {unread && unread > 0 ? (
-                <UnreadTip unread={unread} muted={props.showMute && props.muted} />
+                <UnreadTip unread={unread} muted={showMute && props.muted} />
               ) : props.pin ? (
                 <CustomSvg type="Pin" />
               ) : null}

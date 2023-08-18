@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import { Popover, Upload, UploadFile } from 'antd';
@@ -7,11 +7,12 @@ import { PopoverMenuList, MessageList, InputBar, StyleProvider } from '@portkey-
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
 import PhotoSendModal from './components/PhotoSendModal';
-import './index.less';
 import { useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
+import BookmarkListDrawer from './components/BookmarkListDrawer';
 import im from '@portkey-wallet/im';
+import './index.less';
 
 enum MessageTypeWeb {
   'SYS' = 'system',
@@ -23,23 +24,22 @@ enum MessageTypeWeb {
 }
 
 export default function Session() {
+  const { channelUuid } = useParams();
+  const { state } = useLocation();
   const navigate = useNavigate();
   const [file, setFile] = useState<UploadFile>();
   const [previewImage, setPreviewImage] = useState<string>();
-  // const [messageList, setMessageList] = useState([]);
-  // const [showStrangerTip, setShowStrangerTip] = useState(true);
-  // const [showBookmark, setShowBookmark] = useState(false);
+  const [showBookmark, setShowBookmark] = useState(false);
   // TODO
   const isStranger = true;
-
-  const { list, init } = useChannel('e7554d14bf7d4a12a40698138f7a7d8c');
-  // e7554d14bf7d4a12a40698138f7a7d8c
-  // 1689b154c49946a0a4324b339b83b194
-
+  const [showStrangerTip, setShowStrangerTip] = useState(true);
+  const { list, init, sendMessage, pin, mute, exit } = useChannel(`${channelUuid}`);
+  console.log(file);
   useEffectOnce(() => {
     init();
-    // sendMessage('hello', 'TEXT');
   });
+
+  // TODO photo
 
   const messageList: any = useMemo(() => {
     return list.map((item) => {
@@ -54,137 +54,43 @@ export default function Session() {
       };
     });
   }, [list]);
-
-  // const menuListData = useMemo(
-  //   () => [
-  //     {
-  //       key: 'profile',
-  //       // LeftIcon: <div>L</div>,
-  //       // rightIcon: '>',
-  //       children: 'profile',
-  //       // onClick?: () => {};
-  //       height: 32,
-  //     },
-  //     {
-  //       key: 'mute',
-  //       // LeftIcon: <div>O</div>,
-  //       // rightIcon: '>',
-  //       children: 'mute',
-  //       // onClick?: () => {};
-  //       height: 32,
-  //     },
-  //     {
-  //       key: 'pin',
-  //       // LeftIcon: <div>V</div>,
-  //       // rightIcon: '>',
-  //       children: 'pin',
-  //       // onClick?: () => {};
-  //       height: 32,
-  //     },
-  //     {
-  //       key: 'delete',
-  //       // LeftIcon: <div>V</div>,
-  //       // rightIcon: '>',
-  //       children: 'delete',
-  //       // onClick?: () => {};
-  //       height: 32,
-  //     },
-  //   ],
-  //   [],
-  // );
-
-  // const handleAddContact = useCallback(() => {
-  //   // TODO
-  // }, []);
-  // const showTopBarTip = useMemo(() => {
-  //   if (isStranger && showStrangerTip) {
-  //     return {
-  //       center: (
-  //         <div className="add-contact" onClick={handleAddContact}>
-  //           ADD CONTACT
-  //         </div>
-  //       ),
-  //       right: (
-  //         <div className="close-icon" onClick={() => setShowStrangerTip(false)}>
-  //           X
-  //         </div>
-  //       ),
-  //       className: 'add-contact-tip',
-  //     };
-  //   } else {
-  //     return undefined;
-  //   }
-  // }, [handleAddContact, isStranger, showStrangerTip]);
-
-  // const [curUrl, setCurUrl] = useState('');
-  // const onCancel = () => {
-  //   // TODO
-  // };
-  const onConfirm = () => {
-    // TODO
-  };
-
-  // TODO
-  const contactName = useMemo(() => 'contactTestName', []);
-  // TODO
-  const isMute = true;
-  // TODO
-  const contactPopList = useMemo(
+  const chatPopList = useMemo(
     () => [
       {
         key: 'profile',
         leftIcon: <CustomSvg type="Profile" />,
         children: 'Profile',
-        onClick: onConfirm,
+        // TODO
+        onClick: () => navigate('/profile'),
       },
       {
-        key: 'pin',
-        // TODO isPin
-        leftIcon: <CustomSvg type="Pin" />,
-        children: 'Pin',
-        onClick: onConfirm,
+        key: state?.pin ? 'un-pin' : 'pin',
+        leftIcon: <CustomSvg type={state?.pin ? 'UnPin' : 'Pin'} />,
+        children: state?.pin ? 'Unpin' : 'Pin',
+        onClick: () => pin(!state.pin),
       },
       {
-        key: 'un-pin',
-        // TODO isPin
-        leftIcon: <CustomSvg type="UnPin" />,
-        children: 'Unpin',
-        onClick: onConfirm,
-      },
-      {
-        key: 'mute',
-        // TODO isPin
-        leftIcon: <CustomSvg type="Mute" />,
-        children: 'Mute',
-        onClick: onConfirm,
-      },
-      {
-        key: 'un-mute',
-        // TODO isPin
-        leftIcon: <CustomSvg type="UnMute" />,
-        children: 'Unmute',
-        onClick: onConfirm,
+        key: state?.muted ? 'un-mute' : 'mute',
+        leftIcon: <CustomSvg type={state?.muted ? 'UnMute' : 'Mute'} />,
+        children: state?.muted ? 'Unmute' : 'Mute',
+        onClick: () => mute(!state?.muted),
       },
       {
         key: 'delete',
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
-        onClick: onConfirm,
+        onClick: exit,
       },
-      // TODO isStranger
-      {
+      isStranger && {
         key: 'add-contact',
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Add Contact',
-        onClick: onConfirm,
+        // TODO
+        onClick: () => navigate('/add-contact'),
       },
     ],
-    [],
+    [exit, isStranger, mute, navigate, pin, state?.muted, state.pin],
   );
-  const onClick = () => {
-    // TODO
-  };
-
   const uploadProps = {
     className: 'chat-input-upload',
     showUploadList: false,
@@ -212,35 +118,18 @@ export default function Session() {
           <span className="upload-text">Picture</span>
         </Upload>
       ),
-      onClick: onClick,
     },
     {
       key: 'bookmark',
       leftIcon: <CustomSvg type="Bookmark" />,
       children: 'Bookmark',
-      onClick: onClick,
+      onClick: () => setShowBookmark(true),
     },
   ];
 
+  // TODO
   const handleUpload = () => {
-    const formData = new FormData();
-    formData.append('file', file as any);
-    // You can use any AJAX library you like
-    fetch('https://www.mocky.io/v2/5cc8019d300000980a055e76', {
-      method: 'POST',
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then(() => {
-        // setFileList([]);
-        // message.success('upload successfully.');
-      })
-      .catch(() => {
-        // message.error('upload failed.');
-      })
-      .finally(() => {
-        // setUploading(false);
-      });
+    // sendImage(file)
   };
 
   return (
@@ -249,9 +138,9 @@ export default function Session() {
         <SettingHeader
           title={
             <div className="flex title-element">
-              <Avatar letterItem={contactName?.slice(0, 1).toUpperCase()} />
-              <div className="name-text">{contactName}</div>
-              {isMute && <CustomSvg type="Mute" />}
+              <Avatar letterItem={state?.letterItem} />
+              <div className="name-text">{state?.title}</div>
+              {state?.muted && <CustomSvg type="Mute" />}
             </div>
           }
           leftCallBack={() => navigate('/chat-list')}
@@ -261,7 +150,7 @@ export default function Session() {
                 overlayClassName="chat-box-popover"
                 trigger="click"
                 showArrow={false}
-                content={<PopoverMenuList data={contactPopList} />}>
+                content={<PopoverMenuList data={chatPopList} />}>
                 <CustomSvg type="More" />
               </Popover>
               <CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />
@@ -269,10 +158,13 @@ export default function Session() {
           }
         />
       </div>
-      {isStranger && (
-        <div className="add-contact-tip flex-center">
-          <CustomSvg type="AddContact" />
-          Add Contact
+      {isStranger && showStrangerTip && (
+        <div className="add-contact-tip">
+          <div className="content flex-center">
+            <CustomSvg type="AddContact" />
+            <span className="text">Add Contact</span>
+          </div>
+          <CustomSvg type="Close2" onClick={() => setShowStrangerTip(false)} />
         </div>
       )}
       <div className="chat-box-content">
@@ -282,7 +174,7 @@ export default function Session() {
       </div>
       <div className="chat-box-footer">
         <StyleProvider prefixCls="portkey">
-          <InputBar moreData={inputMorePopList} />
+          <InputBar moreData={inputMorePopList} onSendMessage={sendMessage} />
         </StyleProvider>
       </div>
       <PhotoSendModal
@@ -294,7 +186,12 @@ export default function Session() {
           setFile(undefined);
         }}
       />
-      {/* <BookmarkListDrawer onClick={onCancel} /> */}
+      <BookmarkListDrawer
+        destroyOnClose
+        open={showBookmark}
+        onClose={() => setShowBookmark(false)}
+        onClick={sendMessage}
+      />
     </div>
   );
 }

@@ -30,11 +30,12 @@ import React from 'react';
  */
 export interface IChatItemProps {
   id: string | number;
-  avatar: string;
+  avatar?: string;
+  letterItem?: string;
   unread?: number;
   className?: string;
   alt?: string;
-  title?: string;
+  title: string;
   subtitle?: string;
   date?: Date;
   dateString?: string;
@@ -47,6 +48,8 @@ export interface IChatItemProps {
   onContextMenu?: React.MouseEventHandler;
   onClick?: React.MouseEventHandler;
   onClickMute?: React.MouseEventHandler;
+  onClickPin?: React.MouseEventHandler;
+  onClickDelete?: React.MouseEventHandler;
   onClickVideoCall?: React.MouseEventHandler;
   onDragOver?: Function;
   onDragEnter?: Function;
@@ -54,7 +57,6 @@ export interface IChatItemProps {
   onDragLeave?: Function;
   setDragStates?: Function;
   onDragComponent?: any;
-  letterItem?: string;
   customStatusComponents?: React.ElementType<any>[];
 }
 
@@ -83,6 +85,8 @@ export interface IChatListProps {
   onContextMenu?: ChatListEvent;
   onClick?: ChatListEvent;
   onClickMute?: ChatListEvent;
+  onClickPin?: ChatListEvent;
+  onClickDelete?: ChatListEvent;
   onClickVideoCall?: ChatListEvent;
   onDragOver?: Function;
   onDragEnter?: Function;

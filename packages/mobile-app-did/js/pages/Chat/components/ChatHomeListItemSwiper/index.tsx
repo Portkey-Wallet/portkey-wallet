@@ -88,15 +88,14 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
                 {/* TODO: Remark */}
                 {item.displayName}
               </TextL>
-              <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />
+              {item.mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />}
             </View>
             <TextS style={FontStyles.font7}>{formatChatListTime(item.lastPostAt)}</TextS>
           </View>
           <View style={styles.blank} />
-          <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.paddingRight(20)]}>
-            {/* TODO: Image */}
-            <TextS numberOfLines={1} style={[FontStyles.font7, GStyles.marginRight(pTd(20))]}>
-              {item.lastMessageContent ? item.lastMessageContent : '[Image]'}
+          <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
+            <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
+              {item.lastMessageType === 'TEXT' ? item.lastMessageContent : '[Image]'}
             </TextS>
             {item.pin ? (
               <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
@@ -152,10 +151,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: pTd(2),
   },
+  message: {
+    maxWidth: pTd(270),
+  },
   messageNum: {
     borderRadius: pTd(8),
     backgroundColor: 'red',
     minWidth: pTd(16),
+    marginRight: pTd(0),
     paddingHorizontal: pTd(4),
     textAlign: 'center',
     overflow: 'hidden',

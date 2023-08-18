@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -15,26 +15,78 @@ import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat'
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import AddContactButton from '../components/AddContactButton';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { ChannelItem } from '@portkey-wallet/im/types';
+import { useChannel, useMuteChannel, usePinChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import ActionSheet from 'components/ActionSheet';
+
+type RouterParams = {
+  channelInfo?: ChannelItem;
+};
 
 const ChatDetails = () => {
-  const onPressMore = useCallback((event: { nativeEvent: { pageX: any; pageY: any } }) => {
-    const { pageX, pageY } = event.nativeEvent;
-    ChatOverlay.showChatPopover({
-      list: [
-        {
-          title: ChatOperationsEnum.PROFILE,
-          iconName: 'chat-profile',
-          onPress: () => navigationService.navigate('Profile'),
-        },
-        { title: ChatOperationsEnum.PIN, iconName: 'chat-unpin' },
-        { title: ChatOperationsEnum.MUTE, iconName: 'chat-unmute' },
-        { title: ChatOperationsEnum.DELETE_CHAT, iconName: 'chat-delete' },
-      ],
-      px: pageX,
-      py: pageY,
-      position: 'left',
-    });
-  }, []);
+  const { channelInfo } = useRouterParams<RouterParams>();
+  const { mute, pin, displayName } = channelInfo || {};
+
+  const pinChannel = usePinChannel();
+  const muteChannel = useMuteChannel();
+  const hideChannel = useHideChannel();
+  const { sendMessage } = useChannel(channelInfo?.channelUuid || '');
+
+  const onPressMore = useCallback(
+    (event: { nativeEvent: { pageX: any; pageY: any } }) => {
+      const { pageX, pageY } = event.nativeEvent;
+      ChatOverlay.showChatPopover({
+        list: [
+          {
+            title: ChatOperationsEnum.PROFILE,
+            iconName: 'chat-profile',
+            onPress: () => navigationService.navigate('Profile'),
+          },
+          {
+            title: pin ? ChatOperationsEnum.UNPIN : ChatOperationsEnum.PIN,
+            iconName: pin ? 'chat-unpin' : 'chat-pin',
+            onPress: () => {
+              pinChannel(channelInfo?.channelUuid || '', !pin);
+            },
+          },
+          {
+            title: mute ? ChatOperationsEnum.UNMUTE : ChatOperationsEnum.MUTE,
+            iconName: mute ? 'chat-unmute' : 'chat-mute',
+            onPress: () => {
+              muteChannel(channelInfo?.channelUuid || '', !channelInfo?.channelUuid);
+            },
+          },
+          {
+            title: ChatOperationsEnum.DELETE_CHAT,
+            iconName: 'chat-delete',
+            onPress: () => {
+              ActionSheet.alert({
+                title: 'Delete chat?',
+                buttons: [
+                  {
+                    title: 'Cancel',
+                    type: 'outline',
+                  },
+                  {
+                    title: 'Confirm',
+                    type: 'primary',
+                    onPress: () => {
+                      hideChannel(channelInfo?.channelUuid || '');
+                    },
+                  },
+                ],
+              });
+            },
+          },
+        ],
+        px: pageX,
+        py: pageY,
+        position: 'left',
+      });
+    },
+    [channelInfo?.channelUuid, hideChannel, mute, muteChannel, pin, pinChannel],
+  );
 
   return (
     <PageContainer
@@ -48,9 +100,11 @@ const ChatDetails = () => {
           <Touchable style={GStyles.marginRight(pTd(20))} onPress={navigationService.goBack}>
             <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
           </Touchable>
-          <CommonAvatar title="N" avatarSize={pTd(32)} style={styles.headerAvatar} />
-          <TextL style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>Name</TextL>
-          <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />
+          <CommonAvatar title={displayName} avatarSize={pTd(32)} style={styles.headerAvatar} />
+          <TextL style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
+            {displayName}
+          </TextL>
+          {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
         </View>
       }
       rightDom={

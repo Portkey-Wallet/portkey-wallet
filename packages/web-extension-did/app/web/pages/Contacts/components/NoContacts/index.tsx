@@ -3,11 +3,11 @@ import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import './index.less';
-import { useProfileAddNewContact } from 'hooks/useProfile';
+import { useGoAddNewContact } from 'hooks/useProfile';
 
 export default function NoContacts({ initData }: { initData: Partial<ContactItemType> }) {
   const { t } = useTranslation();
-  const handleAdd = useProfileAddNewContact();
+  const handleAdd = useGoAddNewContact();
 
   return (
     <div className="flex-column no-contacts">

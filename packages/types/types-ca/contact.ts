@@ -1,8 +1,10 @@
 import { ChainId } from '..';
-import { PartialOption } from '../common';
+import { CaHolderInfo } from './wallet';
+import { IImInfo } from './im';
 
 export interface AddressItem {
   chainId: ChainId; // AELF tDVV tDVW
+  chainName: string;
   address: string;
   imageUrl?: string;
 }
@@ -14,16 +16,28 @@ export interface RecentAddressItem extends AddressItem {
 export interface ContactItemType {
   id: string;
   index: string;
-  name: string;
-  remark?: string;
+  name: string; // remark
+  avatar: string;
   addresses: AddressItem[];
   modificationTime: number;
   isDeleted: boolean;
   userId: string;
+  caHolderInfo: CaHolderInfo;
+  imInfo: IImInfo;
+  isImputation: boolean;
 }
 
-export type EditContactItemApiType = PartialOption<ContactItemType, 'isDeleted' | 'modificationTime' | 'userId'>;
-export type AddContactItemApiType = PartialOption<EditContactItemApiType, 'id' | 'index'>;
+export interface EditContactItemApiType {
+  name: string;
+  id: string;
+  relationId?: string;
+}
+
+export interface AddContactItemApiType {
+  name: string;
+  relationId?: string;
+  addresses: AddressItem[];
+}
 
 export type GetContractListApiType = {
   totalCount: number;
@@ -32,6 +46,7 @@ export type GetContractListApiType = {
 
 export interface RecentContactItemType extends ContactItemType {
   chainId: ChainId;
+  chainName: string;
   caAddress: string;
   address: string;
   addressChainId: ChainId;
@@ -48,6 +63,7 @@ export interface IClickAddressProps {
   name?: string;
   isDisable?: boolean;
   chainId: ChainId;
+  chainName: string;
   addressChainId?: string;
   address: string;
 }

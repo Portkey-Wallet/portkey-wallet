@@ -7,7 +7,18 @@ import { useCopyToClipboard } from 'react-use';
 import { useCommonState } from 'store/Provider/hooks';
 import { ExtraType } from 'types/Profile';
 
-export const useProfileEdit = () => {
+export const useGoProfile = () => {
+  const navigate = useNavigate();
+
+  return useCallback(
+    (state: any) => {
+      navigate(`/setting/contacts/view`, { state });
+    },
+    [navigate],
+  );
+};
+
+export const useGoProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
@@ -18,7 +29,7 @@ export const useProfileEdit = () => {
   );
 };
 
-export const useMyProfileEdit = () => {
+export const useGoMyProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
@@ -29,7 +40,7 @@ export const useMyProfileEdit = () => {
   );
 };
 
-export const useProfileAddNewContact = () => {
+export const useGoAddNewContact = () => {
   const navigate = useNavigate();
 
   return useCallback(
@@ -40,7 +51,7 @@ export const useProfileAddNewContact = () => {
   );
 };
 
-export const useProfileAddContact = () => {
+export const useGoAddContact = () => {
   // TODO api
 };
 

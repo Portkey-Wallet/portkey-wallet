@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
-import { Form, Modal, message } from 'antd';
+import { Form, message } from 'antd';
 import { useNavigate, useLocation, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType, AddressItem } from '@portkey-wallet/types/types-ca/contact';
@@ -15,6 +15,8 @@ import AddContactPrompt from './Prompt';
 import AddContactPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
+import CustomModal from 'pages/components/CustomModal';
+import { useGoProfile } from 'hooks/useProfile';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -82,6 +84,7 @@ export default function AddContact() {
         address: '',
         networkName: v.networkName,
         chainId: v.chainId,
+        chainName: v.chainName,
         validData: { validateStatus: '', errorMsg: '' },
       });
       form.setFieldValue('addresses', [...prevAddresses]);
@@ -182,6 +185,7 @@ export default function AddContact() {
     [addressArr],
   );
 
+  const handleView = useGoProfile();
   const onFinish = useCallback(
     async (values: ContactItemType) => {
       const { name, addresses } = values;
@@ -191,24 +195,22 @@ export default function AddContact() {
         const checkName = await handleCheckName(name.trim());
         const checkAddress = handleCheckAddress(addresses);
         if (checkName && checkAddress) {
-          await addContactApi({ name: name.trim(), addresses });
-
+          const contactDetail = await addContactApi({ name: name.trim(), addresses });
           appDispatch(fetchContactListAsync());
-          // navigate('/setting/contacts');
-          // TODO if can chat
-          Modal.confirm({
-            width: 320,
-            content: t('This contact is identified as a new portkey web3 chat friend.'),
-            className: 'cross-modal delete-modal',
-            autoFocusButton: null,
-            icon: null,
-            centered: true,
-            okText: t('Ok'),
-            cancelText: t('Cancel'),
-            onOk: () => navigate('/chat'),
-            onCancel: () => navigate('/setting/contacts/view', { state: {} }),
-          });
-          message.success('Add Contact Successful');
+
+          if (contactDetail?.imInfo?.relationId) {
+            // CAN CHAT
+            CustomModal({
+              type: 'confirm',
+              content: 'This contact is identified as a new portkey web3 chat friend.',
+              onOk: () => handleView(contactDetail),
+              okText: 'Ok',
+            });
+          } else {
+            // CANT CHAT
+            handleView(contactDetail);
+            message.success('Add Contact Successful');
+          }
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
@@ -217,7 +219,7 @@ export default function AddContact() {
         setLoading(false);
       }
     },
-    [addContactApi, appDispatch, handleCheckAddress, handleCheckName, navigate, setLoading, t],
+    [addContactApi, appDispatch, handleCheckAddress, handleCheckName, handleView, setLoading, t],
   );
 
   // go back previous page

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Form, Modal, message } from 'antd';
+import { Form, message } from 'antd';
 import { useNavigate, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
@@ -11,9 +11,10 @@ import EditContactPrompt from './Prompt';
 import EditContactPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
-import { useProfileCopy } from 'hooks/useProfile';
+import { useGoProfile, useProfileCopy } from 'hooks/useProfile';
 import { IEditContactFormProps } from '../components/EditContactForm';
 import { ContactInfoError, ValidData } from '../AddContact';
+import CustomModal from 'pages/components/CustomModal';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 
@@ -117,34 +118,40 @@ export default function EditContact() {
     [checkExistRemark],
   );
 
+  const handleView = useGoProfile();
   const onFinish = useCallback(
     async (values: ContactItemType) => {
-      const { name, remark } = values;
+      const {
+        name,
+        caHolderInfo: { walletName },
+      } = values;
 
       try {
         setLoading(true);
-        const checkName = await handleCheckName(name.trim());
-        const checkRemark = await handleCheckRemark(remark?.trim() || '');
+        const checkName = await handleCheckName(walletName.trim());
+        const checkRemark = await handleCheckRemark(name.trim());
         if (checkName && checkRemark) {
-          // TODO remark
-          // await editContactApi({ name: name.trim(), remark: remark?.trim(), id: state.id, index: state.index });
+          // TODO wallet name
+          const contactDetail = await editContactApi({
+            name: name.trim(),
+            id: state.id,
+          });
 
           appDispatch(fetchContactListAsync());
-          // navigate('/setting/contacts');
-          // TODO if can chat
-          Modal.confirm({
-            width: 320,
-            content: t('This contact is identified as a new portkey web3 chat friend.'),
-            className: 'cross-modal delete-modal',
-            autoFocusButton: null,
-            icon: null,
-            centered: true,
-            okText: t('Ok'),
-            cancelText: t('Cancel'),
-            onOk: () => navigate('/chat'),
-            onCancel: () => navigate('/setting/contacts/view', { state: {} }),
-          });
-          message.success('Edit Contact Successful');
+
+          if (contactDetail?.imInfo?.relationId) {
+            // CAN CHAT
+            CustomModal({
+              type: 'confirm',
+              content: 'This contact is identified as a new portkey web3 chat friend.',
+              onOk: () => handleView(contactDetail),
+              okText: 'Ok',
+            });
+          } else {
+            // CANT CHAT
+            handleView(contactDetail);
+            message.success('Edit Contact Successful');
+          }
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
@@ -153,7 +160,7 @@ export default function EditContact() {
         setLoading(false);
       }
     },
-    [appDispatch, handleCheckName, handleCheckRemark, navigate, setLoading, t],
+    [appDispatch, editContactApi, handleCheckName, handleCheckRemark, handleView, setLoading, state.id, t],
   );
 
   // go back previous page

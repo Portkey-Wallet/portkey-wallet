@@ -11,12 +11,12 @@ import ContactsPopup from './Popup';
 import ContactsPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
-import { useProfileAddNewContact } from 'hooks/useProfile';
+import { useGoAddNewContact } from 'hooks/useProfile';
 
 const initContactItem: Partial<ContactItemType> = {
   id: '-1',
   name: '',
-  addresses: [{ chainId: 'AELF', address: '' }],
+  addresses: [{ chainId: 'AELF', address: '', chainName: 'aelf' }],
 };
 
 export interface IContactsProps extends BaseHeaderProps {
@@ -104,7 +104,7 @@ export default function Contacts() {
     navigate('/setting');
   }, [navigate]);
 
-  const handleAdd = useProfileAddNewContact();
+  const handleAdd = useGoAddNewContact();
 
   return isNotLessThan768 ? (
     <ContactsPrompt

@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
-import { useProfileChat, useProfileCopy, useProfileEdit } from 'hooks/useProfile';
+import { useProfileChat, useProfileCopy, useGoProfileEdit } from 'hooks/useProfile';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -22,7 +22,7 @@ export default function ViewContact() {
     navigate('/setting/contacts');
   }, [navigate]);
 
-  const handleEdit = useProfileEdit();
+  const handleEdit = useGoProfileEdit();
   const handleChat = useProfileChat();
   const handleCopy = useProfileCopy();
   const handleAdd = () => {

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { IProfileDetailDataProps } from 'types/Profile';
-import { useMyProfileEdit, useProfileCopy } from 'hooks/useProfile';
+import { useGoMyProfileEdit, useProfileCopy } from 'hooks/useProfile';
 import { useTranslation } from 'react-i18next';
 
 export default function WalletName() {
@@ -21,7 +21,7 @@ export default function WalletName() {
   const state: IProfileDetailDataProps = {
     index: 'B',
     name: 'by',
-    addresses: [{ chainId: 'AELF', address: 'H8CXvfy8hm' }],
+    addresses: [{ chainId: 'AELF', address: 'H8CXvfy8hm', chainName: 'aelf' }],
     portkeyId: '111111',
     relationOneId: '111',
     isNameDisable: false,
@@ -29,7 +29,7 @@ export default function WalletName() {
   };
   const headerTitle = isMainnet ? walletName : t('My DID');
 
-  const handleEdit = useMyProfileEdit();
+  const handleEdit = useGoMyProfileEdit();
 
   const handleCopy = useProfileCopy();
   const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);

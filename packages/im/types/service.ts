@@ -78,7 +78,7 @@ export type SendMessageParams = {
   toRelationId?: string;
   type?: string;
   content: string;
-  sendUuid?: string;
+  sendUuid: string;
   quoteId?: string;
   mentionedUser?: string[];
 };

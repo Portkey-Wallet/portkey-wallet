@@ -25,6 +25,11 @@ export const updateChannelAttribute = createAction<{
   type?: UpdateChannelAttributeTypeEnum;
 }>('im/updateChannelAttribute');
 
+export const addChannel = createAction<{
+  network: NetworkType;
+  channel: ChannelItem;
+}>('im/addChannel');
+
 export const removeChannel = createAction<{
   network: NetworkType;
   channelId: string;

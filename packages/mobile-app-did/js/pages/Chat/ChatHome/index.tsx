@@ -66,11 +66,6 @@ export default function DiscoverHome() {
 
   useEffect(() => {
     console.log('channelList', channelList);
-    const imInstance = im.getInstance();
-    if (!imInstance) return;
-    imInstance.getUserInfo().then(e => {
-      console.log('getUserInfo', e);
-    });
   }, [channelList]);
 
   const createCha = useCallback(async () => {

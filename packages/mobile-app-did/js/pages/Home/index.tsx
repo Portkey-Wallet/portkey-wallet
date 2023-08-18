@@ -27,7 +27,16 @@ import * as Network from 'expo-network';
 
 import im from '@portkey-wallet/im';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useChannel, useChannelList, useCreateP2pChannel, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useChannel,
+  useChannelList,
+  useCreateP2pChannel,
+  useHideChannel,
+  useMuteChannel,
+  usePinChannel,
+  useUnreadCount,
+} from '@portkey-wallet/hooks/hooks-ca/im';
+import dayjs from 'dayjs';
 
 export default function HomeScreen() {
   const wallet = useCurrentWalletInfo();
@@ -44,8 +53,8 @@ export default function HomeScreen() {
   const createChannel = useCreateP2pChannel();
   const unreadCount = useUnreadCount();
 
-  const { list, sendMessage, sendImage, init, next, hasNext } = useChannel('2fe812efc5954c79ac3acd934bbb5d78');
-  // const { list, sendMessage, init, next, hasNext } = {} as any;
+  const { list, sendMessage, sendImage, init, next, hasNext, info } = useChannel('ef4c6a65e4774171b973503c7373b563');
+  // const { list, sendMessage, sendImage, init, next, hasNext, info } = useChannel('cb911c8a381a442ba672feb70d43dd93');
 
   const {
     list: channelList,
@@ -54,7 +63,9 @@ export default function HomeScreen() {
     hasNext: hasNextChannelList,
   } = useChannelList();
 
-  // const { list: channelList, init: initChannelList, next: nextChannelList, hasNext: hasNextChannelList } = {} as any;
+  const pinChannel = usePinChannel();
+  const muteChannel = useMuteChannel();
+  const hideChannel = useHideChannel();
 
   useEffect(() => {
     console.log('channelList', channelList);
@@ -73,7 +84,7 @@ export default function HomeScreen() {
       if (!account || !wallet.caHash) return;
 
       try {
-        await im.init(account, wallet.caHash);
+        // await im.init(account, wallet.caHash);
       } catch (error) {
         console.log('im init error', error);
       }
@@ -245,7 +256,12 @@ export default function HomeScreen() {
           title="sendMessage"
           onPress={() => {
             // sendMessage('test message');
-            sendImage();
+            im.service.sendMessage({
+              channelUuid: 'ef4c6a65e4774171b973503c7373b563',
+              sendUuid: `${Date.now()}`,
+              type: 'TEXT',
+              content: `im thomas ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`,
+            });
           }}
         />
 
@@ -268,13 +284,10 @@ export default function HomeScreen() {
           title="createChannel"
           onPress={async () => {
             try {
-              // const result = await im.service.sendMessage({
-              //   toRelationId: 'ibjqo-cqaaa-aaaaj-5np2q-cai',
-              //   content: 'test message',
-              //   sendUuid: `${Date.now()}`,
-              //   type: 'TEXT',
-              // });
-              // console.log('result', result);
+              // const result = await createChannel('nbkqm-oyaaa-aaaaj-7whqq-cai');
+              // console.log('createChannel', result);
+              const result = await hideChannel('cb911c8a381a442ba672feb70d43dd93');
+              console.log('test', result);
             } catch (error) {
               console.log('createChannel: error', error);
             }

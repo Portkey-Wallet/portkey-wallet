@@ -1,0 +1,42 @@
+@import '../assets/theme/color.less';
+
+.portkey-message-text {
+  justify-content: flex-start;
+  margin-top: 8px;
+  font-size: 16px;
+  line-height: 24px;
+  color: @font-11;
+  &.right {
+    justify-content: flex-end;
+  }
+  .text-body {
+    position: relative;
+    flex-direction: column;
+    padding: 8px 12px;
+    border-radius: 2px 20px 20px 20px;
+    background: @bg-22;
+    max-width: calc(100% - 30px);
+    &.right {
+      border-radius: 20px 2px 20px 20px;
+      background: @bg-27;
+    }
+    .text-text {
+      display: inline-block;
+      font-size: 15px;
+      .text-date-hidden {
+        visibility: hidden;
+      }
+      .text-link {
+        color: @font-9;
+      }
+    }
+    .text-date {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 10px;
+      line-height: 16px;
+      color: @font-12;
+    }
+  }
+}

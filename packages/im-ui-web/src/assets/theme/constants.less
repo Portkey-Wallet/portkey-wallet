@@ -1,0 +1,52 @@
+@import './color.less';
+
+@page-width: 740px;
+@page-width1: 900px;
+@page-content: 560px;
+@page-content1: 350px;
+@footer-height: 70px;
+@header-height: 72px;
+
+// screen
+@max-screen: 1820px;
+@mid-screen: 1280px;
+@min-screen: 768px;
+// width
+@max-width: 1440px;
+@mid-width: 1024px;
+@detail-width: 440px;
+@min-width: 360px;
+// height
+@max-detail-height: 884px; // height:860 + padding-bottom:24
+@min-detail-height: 624px; // height:600 + padding-bottom:24
+// margin
+@max-margin: 190px;
+@min-margin: 44px;
+
+@box-shadow1: 0px 2px 4px 0px rgba(0, 0, 0, 0.06);
+@box-shadow2: 0px 2px 16px 0px rgba(0, 0, 0, 0.08), 0px 4px 8px 0px rgba(0, 0, 0, 0.08);
+@box-shadow3: 0px 12px 48px 16px rgba(0, 0, 0, 0.05), 0px 9px 28px 0px rgba(0, 0, 0, 0.08),
+  0px 6px 12px -8px rgba(0, 0, 0, 0.12);
+@box-shadow4: 0px 9px 28px 8px rgba(0, 0, 0, 0.05), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
+  0px 3px 6px -4px rgba(0, 0, 0, 0.12);
+@box-shadow5: 0 3px 10px 0 rgb(77 78 89 / 24%);
+
+@box-shadow-style: @box-shadow1, @box-shadow2, @box-shadow3, @box-shadow4;
+
+.text-overflow(@n) {
+  text-overflow: -o-ellipsis-lastline;
+  overflow: hidden;
+  /* stylelint-disable-next-line declaration-block-no-duplicate-properties */
+  text-overflow: ellipsis;
+  /* stylelint-disable-next-line value-no-vendor-prefix */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: @n;
+  -webkit-line-clamp: @n;
+}
+
+each(@box-shadow-style, {
+  .box-shadow-@{index} {
+    background: extract(@box-shadow-style, @index);
+  }
+});

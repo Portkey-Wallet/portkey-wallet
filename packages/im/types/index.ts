@@ -1,5 +1,15 @@
-export type MessageType = 'SYS' | 'TEXT' | 'CARD' | 'ANNOUNCEMENT' | 'BATCH_TRANSFER';
-export type ParsedContent = string;
+export type MessageType = 'SYS' | 'TEXT' | 'CARD' | 'ANNOUNCEMENT' | 'BATCH_TRANSFER' | 'IMAGE';
+export type ParsedContent = string | ParsedImage;
+export type ParsedImage = {
+  type: string;
+  action: string;
+  imgUrl: string;
+  s3Key: string;
+  thumbImgUrl?: string;
+  thumbS3Key?: string;
+  width?: string;
+  height?: string;
+};
 
 export type Message = {
   channelUuid: string;
@@ -11,9 +21,14 @@ export type Message = {
   fromAvatar?: string;
   fromName?: string;
 
+  id?: string;
   quote?: Message;
   parsedContent?: ParsedContent;
   unidentified?: boolean | undefined;
+};
+
+export type SocketMessage = Message & {
+  mute: boolean;
 };
 
 export type ChannelMemberInfo = {
@@ -22,10 +37,12 @@ export type ChannelMemberInfo = {
   avatar: string;
   isAdmin: boolean;
 };
+
 export enum ChannelTypeEnum {
   GROUP = 'G',
   P2P = 'P',
 }
+
 export type ChannelInfo = {
   uuid: string;
   name: string;
@@ -72,3 +89,8 @@ export type MessageCount = {
   unreadCount: number;
   mentionsCount: number;
 };
+
+export enum TriggerMessageEventActionEnum {
+  ENTER_CHANNEL = 1,
+  EXIT_CHANNEL = 2,
+}

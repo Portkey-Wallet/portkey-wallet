@@ -2,19 +2,16 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { BubbleProps, IMessage } from 'react-native-gifted-chat';
 import { Bubble } from 'react-native-gifted-chat';
-import Touchable from 'components/Touchable';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 
 export default function CustomBubble(props: BubbleProps<IMessage>) {
   return (
-    <Touchable>
-      <Bubble
-        touchableProps={{ disabled: true }}
-        wrapperStyle={{ left: [styles.wrapperStyle, styles.wrapLeft], right: [styles.wrapperStyle, styles.wrapRight] }}
-        {...props}
-      />
-    </Touchable>
+    <Bubble
+      touchableProps={{ disabled: true }}
+      wrapperStyle={{ left: [styles.wrapperStyle, styles.wrapLeft], right: [styles.wrapperStyle, styles.wrapRight] }}
+      {...props}
+    />
   );
 }
 

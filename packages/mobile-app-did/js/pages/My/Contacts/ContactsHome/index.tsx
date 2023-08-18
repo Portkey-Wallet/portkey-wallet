@@ -53,7 +53,7 @@ const ContactsHome: React.FC = () => {
         <TouchableOpacity
           style={{ padding: pTd(16) }}
           onPress={() => {
-            navigationService.navigate('ContactEdit');
+            navigationService.navigate('NoChatContactProfileEdit');
           }}>
           <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
         </TouchableOpacity>

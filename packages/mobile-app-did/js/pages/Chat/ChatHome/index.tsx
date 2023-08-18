@@ -16,6 +16,9 @@ import { useChannelList, useCreateP2pChannel } from '@portkey-wallet/hooks/hooks
 import { pTd } from 'utils/unit';
 import im from '@portkey-wallet/im';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { v4 } from 'uuid';
+import useEffectOnce from 'hooks/useEffectOnce';
+import { formatChatListTime } from '@portkey-wallet/utils/chat';
 
 export default function DiscoverHome() {
   const createChannel = useCreateP2pChannel();
@@ -63,14 +66,11 @@ export default function DiscoverHome() {
 
   useEffect(() => {
     console.log('channelList', channelList);
-    const imInstance = im.getInstance();
-    if (!imInstance) return;
-    imInstance.getUserInfo().then(e => console.log(e));
   }, [channelList]);
 
   const createCha = useCallback(async () => {
     try {
-      const result = await createChannel('nutbk-6aaaa-aaaaj-7hatq-cai');
+      const result = await createChannel('5h7d6-liaaa-aaaaj-vgmya-cai');
       console.log('result', result);
     } catch (error) {
       console.log('createChannel: error', error);
@@ -82,14 +82,23 @@ export default function DiscoverHome() {
   }, [initChannelList]);
 
   const sendMess = useCallback(async () => {
-    console.log('===      c7b961729aaa46e6ab73f70fa0ee6055');
+    im.service.sendMessage({
+      toRelationId: 'e7i7y-giaaa-aaaaj-2ooma-cai',
+      type: 'TEXT',
+      sendUuid: v4(),
+      content: ` hello tho---  ${formatChatListTime(Date.now())} `,
+    });
+    console.log('sendMess', v4());
   }, []);
+
+  useEffectOnce(() => {
+    initChannelList();
+  });
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <CustomHeader noLeftDom themeType="blue" titleDom="Web3 Chat" rightDom={RightDom} />
       <ChatList chatList={channelList} />
-      <CommonButton title="createChannel" onPress={createCha} />
       <CommonButton title="createChannel" onPress={createCha} />
       <CommonButton title="initChannel" onPress={initChannel} />
       <CommonButton title="sendMessage" onPress={sendMess} />

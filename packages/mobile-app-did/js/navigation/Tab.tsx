@@ -112,10 +112,21 @@ export default function TabRoot() {
         header: () => null,
         tabBarIcon: ({ focused }) => {
           const tabMenu = tabMenuList.find(tab => tab.name === route.name);
-          if (tabMenu?.name === TabRouteNameEnum.CHAT && unreadCount > 0) {
+          if (tabMenu?.name === TabRouteNameEnum.CHAT) {
             return (
               <View style={styles.chatWrap}>
-                <TextS style={styles.messageCount}>{formatMessageCountToStr(unreadCount)}</TextS>
+                {unreadCount > 0 && <TextS style={styles.messageCount}>{formatMessageCountToStr(unreadCount)}</TextS>}
+                <Svg
+                  icon={tabMenu?.icon || 'my'}
+                  size={22}
+                  color={focused ? defaultColors.font4 : defaultColors.font7}
+                />
+              </View>
+            );
+          } else if (tabMenu?.name === TabRouteNameEnum.SETTINGS) {
+            return (
+              <View style={styles.chatWrap}>
+                <TextS style={styles.warningCycle} />
                 <Svg
                   icon={tabMenu?.icon || 'my'}
                   size={22}
@@ -154,8 +165,8 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     left: pTd(15),
     top: -pTd(6),
-    height: pTd(18),
-    minWidth: pTd(18),
+    height: pTd(17),
+    minWidth: pTd(17),
     borderColor: defaultColors.bg1,
     borderWidth: pTd(1),
     borderRadius: pTd(9),
@@ -164,5 +175,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     textAlign: 'center',
     paddingHorizontal: pTd(4),
+  },
+  warningCycle: {
+    position: 'absolute',
+    zIndex: 1000,
+    right: -pTd(3),
+    top: -pTd(3),
+    borderRadius: pTd(4),
+    width: pTd(8),
+    height: pTd(8),
+    backgroundColor: defaultColors.bg17,
+    overflow: 'hidden',
   },
 });

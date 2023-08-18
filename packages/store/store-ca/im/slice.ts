@@ -12,6 +12,8 @@ import {
   nextChannelMessageList,
   addChannelMessage,
   deleteChannelMessage,
+  updateChannelMessageAttribute,
+  addChannel,
 } from './actions';
 import { formatChannelList } from './util';
 
@@ -94,6 +96,27 @@ export const imSlice = createSlice({
           },
         };
       })
+      .addCase(addChannel, (state, action) => {
+        if (
+          state.channelListNetMap[action.payload.network]?.list?.find(
+            item => item.channelUuid === action.payload.channel.channelUuid,
+          )
+        ) {
+          return state;
+        }
+
+        return {
+          ...state,
+          channelListNetMap: {
+            ...state.channelListNetMap,
+            [action.payload.network]: {
+              ...state.channelListNetMap?.[action.payload.network],
+              list: [action.payload.channel, ...(state.channelListNetMap?.[action.payload.network]?.list || [])],
+              cursor: state.channelListNetMap?.[action.payload.network]?.cursor || '',
+            },
+          },
+        };
+      })
       .addCase(removeChannel, (state, action) => {
         const preChannelList = state.channelListNetMap[action.payload.network];
         if (!preChannelList) return state;
@@ -147,7 +170,7 @@ export const imSlice = createSlice({
               ...state.channelMessageListNetMap?.[action.payload.network],
               [action.payload.channelId]: [
                 ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId] || []),
-                action.payload,
+                action.payload.message,
               ],
             },
           },
@@ -162,8 +185,30 @@ export const imSlice = createSlice({
               ...state.channelMessageListNetMap?.[action.payload.network],
               [action.payload.channelId]: [
                 ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId]?.filter(
-                  item => item.sendUuid !== action.payload.sendUuid,
+                  item => item.id !== action.payload.id,
                 ) || []),
+              ],
+            },
+          },
+        };
+      })
+      .addCase(updateChannelMessageAttribute, (state, action) => {
+        return {
+          ...state,
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [action.payload.network]: {
+              ...state.channelMessageListNetMap?.[action.payload.network],
+              [action.payload.channelId]: [
+                ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId]?.map(item => {
+                  if (item.sendUuid === action.payload.sendUuid) {
+                    return {
+                      ...item,
+                      ...action.payload.value,
+                    };
+                  }
+                  return item;
+                }) || []),
               ],
             },
           },

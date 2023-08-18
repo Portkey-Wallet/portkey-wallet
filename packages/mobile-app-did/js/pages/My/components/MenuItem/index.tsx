@@ -18,6 +18,7 @@ interface MenuItemProps {
   suffix?: string | number;
   iconStyle?: StyleProp<ViewStyle>;
   svgUrl?: string;
+  showWarningCycle?: boolean;
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({
@@ -30,6 +31,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
   suffix,
   iconStyle,
   svgUrl,
+  showWarningCycle = false,
 }) => {
   return (
     <TouchableOpacity style={[styles.itemWrap, style]} onPress={() => onPress?.()}>
@@ -39,7 +41,12 @@ const MenuItem: React.FC<MenuItemProps> = ({
         ) : (
           <View style={[{ width: size, height: size }, styles.menuIcon, iconStyle]} />
         ))}
-      {icon && <Svg icon={icon} size={size} iconStyle={[styles.menuIcon, iconStyle]} />}
+      {icon && (
+        <View style={styles.svgWrap}>
+          {showWarningCycle && <View style={styles.warningCycle} />}
+          <Svg icon={icon} size={size} iconStyle={[styles.menuIcon, iconStyle]} />
+        </View>
+      )}
 
       <TextL style={styles.titleWrap}>{title}</TextL>
       {suffix !== undefined && <TextM style={styles.suffixWrap}>{suffix}</TextM>}
@@ -73,4 +80,8 @@ const styles = StyleSheet.create({
     marginRight: pTd(4),
     color: defaultColors.font3,
   },
+  svgWrap: {
+    position: 'relative',
+  },
+  warningCycle: {},
 });

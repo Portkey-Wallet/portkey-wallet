@@ -331,6 +331,7 @@ const ContactEdit: React.FC = () => {
           <View style={GStyles.paddingArg(0, 4)}>
             {editContact.addresses.map((addressItem, addressIdx) => (
               <ContactAddress
+                isDeleteShow={false}
                 key={addressIdx}
                 editAddressItem={addressItem}
                 editAddressIdx={addressIdx}

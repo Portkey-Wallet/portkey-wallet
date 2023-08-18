@@ -1,22 +1,17 @@
-import { ChannelMemberInfo, ChannelTypeEnum, Message } from '.';
+import {
+  ChannelItem,
+  ChannelMemberInfo,
+  ChannelTypeEnum,
+  Message,
+  MessageCount,
+  TriggerMessageEventActionEnum,
+} from '.';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
   message: string;
   data: T;
 }>;
-
-export type MessageListParams = {
-  channelUuid: string;
-  maxCreateAt: number;
-  toRelationId?: string;
-  limit?: number;
-};
-
-export type MessageReadParams = {
-  channelUuid: string;
-  total: number;
-};
 
 export type VerifySignatureParams = {
   message: string;
@@ -62,6 +57,7 @@ export type CreateChannelResult = {
 export type GetChannelInfoParams = {
   channelUuid: string;
 };
+
 export type GetChannelMembersParams = GetChannelInfoParams;
 
 export type GetChannelInfoResult = {
@@ -77,14 +73,91 @@ export type GetChannelInfoResult = {
   members: ChannelMemberInfo[];
 };
 
+export type SendMessageParams = {
+  channelUuid?: string;
+  toRelationId?: string;
+  type?: string;
+  content: string;
+  sendUuid: string;
+  quoteId?: string;
+  mentionedUser?: string[];
+};
+
+export type SendMessageResult = {
+  id: string;
+  channelUuid: string;
+};
+
+export type ReadMessageParams = {
+  channelUuid: string;
+  total: number;
+};
+
+export type GetMessageListParams = {
+  channelUuid: string;
+  maxCreateAt: number;
+  toRelationId?: string;
+  limit?: number;
+};
+
+export type DeleteMessageParams = {
+  id: string;
+};
+
+export type TriggerMessageEvent = {
+  channelUuid?: string;
+  toRelationId?: string;
+  fromRelationId: string;
+  action: TriggerMessageEventActionEnum;
+};
+
+export type GetChannelListParams = {
+  keyword?: string;
+  cursor?: string;
+  skipCount?: number;
+  maxResultCount?: number;
+};
+
+export type GetChannelListResult = {
+  totalCount: number;
+  cursor: string;
+  list: ChannelItem[];
+};
+
+export type UpdateChannelPinParams = {
+  channelUuid: string;
+  pin: boolean;
+};
+
+export type UpdateChannelMuteParams = {
+  channelUuid: string;
+  mute: boolean;
+};
+
+export type HideChannelParams = {
+  channelUuid: string;
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
+  verifySignatureLoop(params: VerifySignatureParams, times?: number): IMServiceCommon<VerifySignatureResult>;
   getAuthToken(params: GetAuthTokenParams): IMServiceCommon<GetAuthTokenResult>;
-  getUserInfo<T = GetUserInfoDefaultResult>(params: GetUserInfoParams): IMServiceCommon<T>;
+  getAuthTokenLoop(params: GetAuthTokenParams, times?: number): IMServiceCommon<GetAuthTokenResult>;
+  getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;
+
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
   getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<GetChannelInfoResult>;
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
 
-  messageList(params: MessageListParams): IMServiceCommon<Message[]>;
-  messageRead(params: MessageReadParams): IMServiceCommon<null>;
+  sendMessage(params: SendMessageParams): IMServiceCommon<SendMessageResult>;
+  readMessage(params: ReadMessageParams): IMServiceCommon<number>;
+  getMessageList(params: GetMessageListParams): IMServiceCommon<Message[]>;
+  deleteMessage(params: DeleteMessageParams): IMServiceCommon<null>;
+  getUnreadCount(): IMServiceCommon<MessageCount>;
+  triggerMessageEvent(params: TriggerMessageEvent): IMServiceCommon<null>;
+
+  getChannelList(params: GetChannelListParams): IMServiceCommon<GetChannelListResult>;
+  updateChannelPin(params: UpdateChannelPinParams): IMServiceCommon<null>;
+  updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
+  hideChannel(params: HideChannelParams): IMServiceCommon<null>;
 }

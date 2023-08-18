@@ -23,7 +23,7 @@ const messages = [
       name: 'React Native',
       avatar: 'https://placeimg.com/140/140/any',
     },
-    image: 'https://placeimg.com/960/540/any',
+    image: 'https://img1.baidu.com/it/u=3539595421,754041626&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500',
   },
   {
     _id: 4,

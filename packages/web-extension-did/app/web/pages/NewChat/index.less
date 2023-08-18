@@ -1,0 +1,36 @@
+@import '../../assets/theme/color.less';
+
+.new-chat-page {
+  width: 360px;
+  height: 100%;
+  background-color: @bg-11;
+  font-size: 16px;
+  line-height: 22px;
+
+  .new-chat-top {
+    flex-shrink: 0;
+    padding-top: 16px;
+    background-color: @bg-13;
+    border-bottom: 1px solid @border-2;
+    .close2-icon {
+      width: 18px;
+      height: 18px;
+    }
+    .setting-header-wrapper {
+      border: none;
+      background-color: @bg-13;
+      height: 62px;
+    }
+    .dropdown-search-wrapper {
+      padding: 0 24px 10px;
+    }
+  }
+  .new-chat-content {
+    .empty {
+      margin-top: 60px;
+      font-size: 16px;
+      line-height: 22px;
+      color: @font-12;
+    }
+  }
+}

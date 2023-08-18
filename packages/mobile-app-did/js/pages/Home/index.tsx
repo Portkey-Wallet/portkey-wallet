@@ -25,10 +25,18 @@ import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { useGetDeviceInfo } from 'hooks/device';
 import * as Network from 'expo-network';
 
-import { sign } from '@portkey-wallet/im/utils/sign';
 import im from '@portkey-wallet/im';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useChannel, useChannelList, useCreateP2pChannel, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useChannel,
+  useChannelList,
+  useCreateP2pChannel,
+  useHideChannel,
+  useMuteChannel,
+  usePinChannel,
+  useUnreadCount,
+} from '@portkey-wallet/hooks/hooks-ca/im';
+import dayjs from 'dayjs';
 
 export default function HomeScreen() {
   const wallet = useCurrentWalletInfo();
@@ -45,13 +53,19 @@ export default function HomeScreen() {
   const createChannel = useCreateP2pChannel();
   const unreadCount = useUnreadCount();
 
-  const { list, sendMessage, init, next, hasNext } = useChannel('6d4ddb55feff42098d1badacbf3cd374');
+  const { list, sendMessage, sendImage, init, next, hasNext, info } = useChannel('ef4c6a65e4774171b973503c7373b563');
+  // const { list, sendMessage, sendImage, init, next, hasNext, info } = useChannel('cb911c8a381a442ba672feb70d43dd93');
+
   const {
     list: channelList,
     init: initChannelList,
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
+
+  const pinChannel = usePinChannel();
+  const muteChannel = useMuteChannel();
+  const hideChannel = useHideChannel();
 
   useEffect(() => {
     console.log('channelList', channelList);
@@ -70,7 +84,7 @@ export default function HomeScreen() {
       if (!account || !wallet.caHash) return;
 
       try {
-        await im.init(account, wallet.caHash);
+        // await im.init(account, wallet.caHash);
       } catch (error) {
         console.log('im init error', error);
       }
@@ -241,14 +255,13 @@ export default function HomeScreen() {
         <Button
           title="sendMessage"
           onPress={() => {
-            sendMessage('test message');
-            // const imInstance = im.getInstance();
-            // if (!imInstance) return;
-            // imInstance.sendMessage({
-            //   toRelationId: 'ivu3i-7iaaa-aaaaj-zw47q-cai',
-            //   type: 'TEXT',
-            //   content: 'test message',
-            // });
+            // sendMessage('test message');
+            im.service.sendMessage({
+              channelUuid: 'ef4c6a65e4774171b973503c7373b563',
+              sendUuid: `${Date.now()}`,
+              type: 'TEXT',
+              content: `im thomas ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`,
+            });
           }}
         />
 
@@ -271,8 +284,10 @@ export default function HomeScreen() {
           title="createChannel"
           onPress={async () => {
             try {
-              const result = await createChannel('nutbk-6aaaa-aaaaj-7hatq-cai');
-              console.log('result', result);
+              // const result = await createChannel('nbkqm-oyaaa-aaaaj-7whqq-cai');
+              // console.log('createChannel', result);
+              const result = await hideChannel('cb911c8a381a442ba672feb70d43dd93');
+              console.log('test', result);
             } catch (error) {
               console.log('createChannel: error', error);
             }

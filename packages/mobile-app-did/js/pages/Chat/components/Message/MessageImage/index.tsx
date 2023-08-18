@@ -7,11 +7,23 @@ import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
 
+const MockImgSource = {
+  uri: 'https://img0.baidu.com/it/u=925843206,3288141497&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=769',
+};
+
 function MessageImage(props: MessageImageProps<IMessage>) {
   const { currentMessage } = props;
 
   return (
     <Touchable
+      onPress={event => {
+        const { pageX, pageY } = event.nativeEvent;
+        ChatOverlay.showPreviewImage({
+          source: MockImgSource,
+          thumb: MockImgSource,
+          customBounds: { x: pageX, y: pageY, width: 0, height: 0 },
+        });
+      }}
       onLongPress={event => {
         const { pageX, pageY } = event.nativeEvent;
         ChatOverlay.showChatPopover({
@@ -24,13 +36,7 @@ function MessageImage(props: MessageImageProps<IMessage>) {
           formatType: 'dynamicWidth',
         });
       }}>
-      <CacheImage
-        style={styles.image}
-        resizeMode="contain"
-        source={{
-          uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbxIduwVS7PV83GF5JAyWr9LcDuf0xIgonra3pClCZ&s',
-        }}
-      />
+      <CacheImage style={styles.image} resizeMode="cover" source={MockImgSource} />
       <Time
         timeFormat="HH:mm"
         timeTextStyle={timeTextStyle}
@@ -45,7 +51,8 @@ export default memo(MessageImage);
 
 const styles = StyleSheet.create({
   image: {
-    borderRadius: pTd(20),
+    borderTopRightRadius: 0,
+    borderRadius: pTd(18),
     width: pTd(280),
     height: pTd(280),
   },

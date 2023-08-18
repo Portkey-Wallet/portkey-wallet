@@ -25,6 +25,11 @@ export const updateChannelAttribute = createAction<{
   type?: UpdateChannelAttributeTypeEnum;
 }>('im/updateChannelAttribute');
 
+export const addChannel = createAction<{
+  network: NetworkType;
+  channel: ChannelItem;
+}>('im/addChannel');
+
 export const removeChannel = createAction<{
   network: NetworkType;
   channelId: string;
@@ -51,7 +56,14 @@ export const setChannelMessageList = createAction<{
 export const deleteChannelMessage = createAction<{
   network: NetworkType;
   channelId: string;
-  sendUuid: string;
+  id: string;
 }>('im/deleteChannelMessage');
+
+export const updateChannelMessageAttribute = createAction<{
+  network: NetworkType;
+  channelId: string;
+  sendUuid: string;
+  value: Partial<Message>;
+}>('im/updateChannelMessageAttribute');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');

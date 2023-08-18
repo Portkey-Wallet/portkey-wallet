@@ -1,0 +1,44 @@
+@import '../../../../assets/theme/color.less';
+
+.portkey-photo-send-modal {
+  .portkey-modal-header {
+    display: none;
+  }
+
+  .portkey-modal-body {
+    .modal-content {
+      padding: 24px 20px;
+      border-bottom: 1px solid @border-2;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .portkey-modal-footer {
+    border-top: none;
+    padding: 16px;
+
+    .modal-footer {
+      gap: 16px;
+    }
+
+    .portkey-btn {
+      height: 48px;
+      border-radius: 24px;
+      font-size: 16px;
+      line-height: 22px;
+    }
+    .portkey-btn-primary {
+      border: 1px solid @border-3;
+      color: @font-5;
+      background-color: @bg-7;
+    }
+    .portkey-btn-default {
+      color: @font-9;
+      background-color: @bg-11;
+      border: 1px solid @border-3;
+    }
+  }
+}

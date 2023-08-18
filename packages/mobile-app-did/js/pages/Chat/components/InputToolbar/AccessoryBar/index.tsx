@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { pTd } from 'utils/unit';
 
 import GStyles from 'assets/theme/GStyles';
 import Emoticons from '../Emoticons';
@@ -17,7 +16,6 @@ export const AccessoryBar = memo(
     const bottomBarStatus = useBottomBarStatus();
     const dispatch = useChatsDispatch();
     const showTools = useMemo(() => !!bottomBarStatus, [bottomBarStatus]);
-
     const onPress = useCallback(
       (item: EmojiItem) => {
         const text = handleInputText(item.code);
@@ -27,8 +25,6 @@ export const AccessoryBar = memo(
     );
     const onDelete = useCallback(() => {
       const text = handleDeleteText();
-      console.log(text, '=====text');
-
       dispatch(setChatText(text));
     }, [dispatch]);
     return (
@@ -41,7 +37,7 @@ export const AccessoryBar = memo(
           ]}>
           <Emoticons onPress={onPress} onDelete={onDelete} />
         </View>
-        <ToolBar />
+        <ToolBar style={bottomBarStatus === ChatBottomBarStatus.tools ? undefined : styles.hide} />
       </View>
     );
   },
@@ -49,24 +45,6 @@ export const AccessoryBar = memo(
 );
 
 const styles = StyleSheet.create({
-  toolsItem: {
-    width: '25%',
-    margin: pTd(2),
-    backgroundColor: 'skyblue',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  hideInput: {
-    position: 'absolute',
-    top: -1000,
-    opacity: 0,
-    ...GStyles.flex1,
-  },
-  inputContainerStyle: {
-    height: 80,
-    ...GStyles.flex1,
-  },
   hide: {
     width: 0,
     height: 0,

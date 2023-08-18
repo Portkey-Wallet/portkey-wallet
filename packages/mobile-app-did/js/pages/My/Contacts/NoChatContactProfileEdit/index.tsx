@@ -25,7 +25,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import Loading from 'components/Loading';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
-import myEvents from 'utils/deviceEvent';
+// import myEvents from 'utils/deviceEvent';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { defaultColors } from 'assets/theme';
 
@@ -236,30 +236,53 @@ const ContactEdit: React.FC = () => {
     if (isErrorExist) return;
     Loading.show();
     try {
-      if (isEdit) {
-        await editContactApi(editContact);
-        CommonToast.success(t('Saved Successful'), undefined, 'bottom');
-      } else {
-        await addContactApi(editContact);
-        CommonToast.success(t('Contact Added'), undefined, 'bottom');
-      }
+      const result = await (isEdit ? editContactApi(editContact) : addContactApi(editContact));
+      CommonToast.success(t(isEdit ? 'Saved Successful' : 'Contact Added'));
+      Loading.hide();
 
-      if (addressList && addressList?.length > 0) {
-        if (
-          editContact.addresses[0].address === addressList?.[0]?.address &&
-          editContact.addresses[0].chainId === addressList?.[0]?.chainId
-        ) {
-          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
-        }
-        navigationService.goBack();
-      } else {
-        navigationService.navigate('ContactsHome');
-      }
+      // if (result.imInfo) {
+      return ActionSheet.alert({
+        title: 'DID Recognition',
+        message:
+          'This is a contact you can chat with. You can click the "Chat" button on the contact details page to start a conversation.',
+        buttons: [
+          {
+            title: 'OK',
+            type: 'primary',
+            onPress: () => {
+              navigationService.navigate('ChatContactProfile', { contact: result });
+            },
+          },
+        ],
+      });
+      // }
+
+      // if (isEdit) {
+      //   const result = await editContactApi(editContact);
+      //   console.log('editContactApi', result);
+
+      //   CommonToast.success(t('Saved Successful'), undefined, 'bottom');
+      // } else {
+      //   await addContactApi(editContact);
+      //   CommonToast.success(t('Contact Added'), undefined, 'bottom');
+      // }
+
+      // if (addressList && addressList?.length > 0) {
+      //   if (
+      //     editContact.addresses[0].address === addressList?.[0]?.address &&
+      //     editContact.addresses[0].chainId === addressList?.[0]?.chainId
+      //   ) {
+      //     myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+      //   }
+      //   navigationService.goBack();
+      // } else {
+      //   navigationService.navigate('ContactsHome');
+      // }
     } catch (err: any) {
       CommonToast.failError(err);
     }
     Loading.hide();
-  }, [addContactApi, addressList, checkError, editContact, editContactApi, isEdit, t]);
+  }, [addContactApi, checkError, editContact, editContactApi, isEdit, t]);
 
   const onDelete = useCallback(() => {
     ActionSheet.alert({
@@ -328,6 +351,7 @@ const ContactEdit: React.FC = () => {
           <View style={GStyles.paddingArg(0, 4)}>
             {editContact.addresses.map((addressItem, addressIdx) => (
               <ContactAddress
+                isDeleteShow={false}
                 key={addressIdx}
                 editAddressItem={addressItem}
                 editAddressIdx={addressIdx}

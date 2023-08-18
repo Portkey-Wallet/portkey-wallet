@@ -28,7 +28,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     shapeType = 'circular',
     hasBorder,
   } = props;
-  const initialsTitle = title?.[0];
+  const initialsTitle = String(title?.[0] || '').toUpperCase();
 
   const sizeStyle = {
     width: Number(avatarSize),

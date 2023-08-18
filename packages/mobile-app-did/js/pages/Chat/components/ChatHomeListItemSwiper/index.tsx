@@ -93,7 +93,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             <TextS style={FontStyles.font7}>{formatChatListTime(item.lastPostAt)}</TextS>
           </View>
           <View style={styles.blank} />
-          <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
+          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
             <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
               {item.lastMessageType === 'TEXT' ? item.lastMessageContent : '[Image]'}
             </TextS>

@@ -14,10 +14,22 @@ export interface ContactItemType {
   id: string;
   index: string;
   name: string;
+  avatar?: string;
   addresses: AddressItem[];
   modificationTime: number;
   isDeleted: boolean;
   userId: string;
+  caHolderInfo?: {
+    userId: string;
+    caHash: string;
+    walletName: string;
+  };
+  imInfo?: {
+    relationId?: string;
+    portkeyId?: string;
+    name?: string;
+  };
+  isImputation?: boolean;
 }
 
 export type EditContactItemApiType = PartialOption<ContactItemType, 'isDeleted' | 'modificationTime' | 'userId'>;

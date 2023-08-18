@@ -2,9 +2,8 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { isIOS } from '@rneui/base';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { LayoutAnimation, KeyboardEvent } from 'react-native';
+import { KeyboardEvent } from 'react-native';
 import { Keyboard } from 'react-native';
-import { nextAnimation } from 'utils/animation';
 import useEffectOnce from './useEffectOnce';
 import useAsyncStorageState from './useAsyncStorageState';
 
@@ -42,43 +41,23 @@ export default function useKeyboardHeight() {
   return keyboardHeight;
 }
 
-export function useKeyboard(topSpacing = 0, isAnimation = false) {
+export function useKeyboard(topSpacing = 0) {
   const [keyboardHeight, setKeyboardHeight] = useAsyncStorageState<number>('KeyboardHeight', DefaultKeyboardHeight);
   const [isKeyboardOpened, setIsKeyboardOpened] = useState<boolean>();
+  const KeyboardOpenedRef = useLatestRef(isKeyboardOpened);
   const show: KeyboardEventListener = useCallback(
     event => {
-      if (isAnimation)
-        nextAnimation({
-          duration: event.duration,
-          create: {
-            duration: event.duration,
-            type: LayoutAnimation.Types[event.easing],
-            property: LayoutAnimation.Properties.opacity,
-          },
-        });
-
-      setKeyboardHeight(isIOS ? event.endCoordinates.height : windowHeight - event.endCoordinates.screenY);
+      if (!KeyboardOpenedRef.current || isIOS) {
+        setKeyboardHeight(isIOS ? event.endCoordinates.height : windowHeight - event.endCoordinates.screenY);
+      }
       setIsKeyboardOpened(true);
     },
-    [isAnimation, setKeyboardHeight],
+    [KeyboardOpenedRef, setKeyboardHeight],
   );
 
-  const hide: KeyboardEventListener = useCallback(
-    event => {
-      if (isAnimation)
-        nextAnimation({
-          duration: event.duration,
-          create: {
-            duration: event.duration,
-            type: LayoutAnimation.Types[event.easing],
-            property: LayoutAnimation.Properties.opacity,
-          },
-        });
-
-      setIsKeyboardOpened(false);
-    },
-    [isAnimation],
-  );
+  const hide: KeyboardEventListener = useCallback(() => {
+    setIsKeyboardOpened(false);
+  }, []);
   useKeyboardListener({ show, hide });
   return useMemo(
     () => ({ keyboardHeight: (keyboardHeight || DefaultKeyboardHeight) - topSpacing, isKeyboardOpened }),

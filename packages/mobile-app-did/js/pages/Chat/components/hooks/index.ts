@@ -8,19 +8,24 @@ import { useBottomBarStatus, useChatsDispatch } from '../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../context/chatsContext';
 
-const TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight + 10);
+let TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
+if (!isIOS) {
+  TopSpacing = TopSpacing > -30 ? -30 : TopSpacing;
+}
 
 const ToolsHeight = 100;
 
 export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObject<TextInput> }) {
   const keyboardAnim = useRef(new Animated.Value(0)).current;
   const bottomBarStatus = useBottomBarStatus();
+  const animatedRef = useRef<{ [key: number]: Animated.CompositeAnimation }>();
   const dispatch = useChatsDispatch();
   const showTools = useMemo(
     () => bottomBarStatus === ChatBottomBarStatus.tools || bottomBarStatus === ChatBottomBarStatus.emoji,
     [bottomBarStatus],
   );
   const { keyboardHeight, isKeyboardOpened } = useKeyboard(TopSpacing);
+
   const toValue = useMemo(() => {
     if (bottomBarStatus === ChatBottomBarStatus.tools) return ToolsHeight;
     return showTools || isKeyboardOpened ? keyboardHeight : 0;
@@ -31,12 +36,20 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
   // );
   const preToValue = usePrevious(toValue);
   useEffect(() => {
-    if (preToValue !== toValue)
-      Animated.timing(keyboardAnim, {
-        toValue,
-        duration: toValue > 0 ? 250 : 150,
-        useNativeDriver: false,
-      }).start();
+    // no change
+    if (preToValue === toValue) return;
+
+    if (!animatedRef.current?.[toValue]) {
+      animatedRef.current = {
+        ...animatedRef.current,
+        [toValue]: Animated.timing(keyboardAnim, {
+          toValue,
+          duration: toValue > 0 ? 150 : 100,
+          useNativeDriver: false,
+        }),
+      };
+    }
+    animatedRef.current[toValue].start();
   }, [keyboardAnim, preToValue, toValue]);
 
   useEffect(() => {

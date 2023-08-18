@@ -12,6 +12,7 @@ import { useBookmarkList, useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
 import im from '@portkey-wallet/im';
+import { useInitIm } from '@portkey-wallet/hooks/hooks-ca/im';
 
 // const getCurrentCAContract = useGetCurrentCAContract();
 
@@ -34,6 +35,7 @@ export default function useInitData() {
   useCheckAndInitNetworkDiscoverMap();
 
   const { refresh: loadBookmarkList } = useBookmarkList();
+  const initIm = useInitIm();
 
   const initIM = useCallback(async () => {
     if (!pin) return;
@@ -41,11 +43,11 @@ export default function useInitData() {
     if (!account || !wallet.caHash) return;
 
     try {
-      await im.init(account, wallet.caHash);
+      await initIm(account, wallet.caHash);
     } catch (error) {
       console.log('im init error', error);
     }
-  }, [pin, wallet.caHash]);
+  }, [initIm, pin, wallet.caHash]);
 
   const init = useCallback(async () => {
     try {

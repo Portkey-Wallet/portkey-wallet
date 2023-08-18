@@ -19,6 +19,7 @@ export const BackEndNetWorkMap: {
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     imApiUrl: 'http://192.168.66.243:5007',
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
+    imS3Bucket: 'portkey-im-testnet',
   },
   'back-end-test2': {
     name: 'aelf Mainnet',

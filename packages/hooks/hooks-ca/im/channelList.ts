@@ -1,17 +1,12 @@
-import im, { Message, ChannelTypeEnum } from '@portkey-wallet/im';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import im, { ChannelTypeEnum } from '@portkey-wallet/im';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { CHANNEL_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../../index';
-import {
-  nextChannelList,
-  setChannelList,
-  setHasNext,
-  updateChannelAttribute,
-} from '@portkey-wallet/store/store-ca/im/actions';
-import { UpdateChannelAttributeTypeEnum } from '@portkey-wallet/store/store-ca/im/type';
+import { nextChannelList, setChannelList, setHasNext } from '@portkey-wallet/store/store-ca/im/actions';
+
 import { useImState } from '.';
 
 export const useNextChannelList = () => {
@@ -90,38 +85,8 @@ export const useChannelList = () => {
   const { channelListNetMap } = useImState();
   const { networkType } = useCurrentNetworkInfo();
   const { next, hasNext } = useNextChannelList();
-  const dispatch = useAppCommonDispatch();
 
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
-
-  const updateUnreadChannel = useCallback(
-    (message: Message) => {
-      console.log('updateUnreadChannel', message);
-      dispatch(
-        updateChannelAttribute({
-          network: networkType,
-          channelId: message.channelUuid,
-          value: {
-            lastMessageType: message.type,
-            lastMessageContent: message.content,
-            lastPostAt: message.createAt,
-          },
-          type: UpdateChannelAttributeTypeEnum.UPDATE_UNREAD_CHANNEL,
-        }),
-      );
-    },
-    [dispatch, networkType],
-  );
-  const updateUnreadChannelRef = useRef(updateUnreadChannel);
-  updateUnreadChannelRef.current = updateUnreadChannel;
-
-  useEffect(() => {
-    const { remove } = im.registerUnreadMsgObservers(e => {
-      const rawMsg: Message = e['im-message'];
-      updateUnreadChannelRef.current(rawMsg);
-    });
-    return remove;
-  }, []);
 
   const init = useCallback(() => {
     return next(true);

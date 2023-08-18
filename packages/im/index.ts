@@ -9,9 +9,9 @@ import { FetchRequest } from '@portkey/request';
 import { IBaseRequest } from '@portkey/types';
 import { IMService } from './service';
 import { getVerifyData } from './utils';
-import { IM_SUCCESS_CODE, IM_TOKEN_ERROR_ARRAY } from './constant';
+import { IM_TOKEN_ERROR_ARRAY } from './constant';
 
-class IM {
+export class IM {
   private _imInstance?: RelationIM;
 
   private _channelMsgObservers: Map<string, Map<Symbol, (e: any) => void>> = new Map();
@@ -56,13 +56,17 @@ class IM {
     this._account = account;
     this._caHash = caHash;
 
-    this.initRelationIM();
+    return this.initRelationIM();
   }
 
   async initRelationIM() {
     if (!this._account || !this._caHash) {
       throw new Error('no account or caHash');
     }
+    if (this.status === IMStatusEnum.AUTHORIZING) {
+      throw new Error('IM is authorizing');
+    }
+    this.status = IMStatusEnum.AUTHORIZING;
     try {
       const caHash = this._caHash;
       const verifyData = utils.getVerifyData(`${Date.now()}`, this._account, this._caHash);
@@ -75,7 +79,7 @@ class IM {
       const token = autoResult.token;
       if (caHash !== this._caHash) {
         console.log('caHash changed');
-        return;
+        return undefined;
       }
       this.config.setConfig({
         requestDefaults: {
@@ -89,16 +93,20 @@ class IM {
       const API_KEY = '295edaae67724a8ba04f4f39b9221779';
       this._imInstance = RelationIM.init({ token, apiKey: API_KEY, connect: true, refresh: true });
       this.listenRelationIM(this._imInstance);
-      console.log('userInfo', this.userInfo);
-      if (!this.userInfo) {
-        // TODO: remove & add to store
-        this.service.getUserInfo().then(result => {
-          console.log('getUserInfo', result.data);
-          this.userInfo = result.data;
-        });
+
+      this.status = IMStatusEnum.AUTHORIZED;
+
+      this.refreshMessageCount();
+      if (this.userInfo) {
+        return this.userInfo;
       }
+      const { data: userInfo } = await this.service.getUserInfo();
+      this.userInfo = userInfo;
+      return userInfo;
     } catch (error) {
       console.log('init error', error);
+      this.status = IMStatusEnum.INIT;
+      throw error;
     }
   }
 
@@ -109,9 +117,11 @@ class IM {
 
     imInstance.bind(Im.CONNECT_ERR, (e: any) => {
       console.log('CONNECT_ERR msg', e);
+      this.status = IMStatusEnum.ERROR;
     });
     imInstance.bind(Im.CONNECT_CLOSE, async (e: any) => {
       console.log('CONNECT_CLOSE msg', e);
+      this.status = IMStatusEnum.INIT;
       await sleep(1000);
       this.updateErrorObservers(e);
       try {
@@ -267,7 +277,7 @@ class IM {
         } catch (error) {
           throw error;
         }
-      } else if (result.code !== IM_SUCCESS_CODE) {
+      } else if (result.code?.[0] !== '2') {
         throw result;
       }
       return result;
@@ -282,6 +292,13 @@ class IM {
     });
     relationConfig.setSocketURL(wsUrl);
   }
+
+  refreshMessageCount = async () => {
+    const { data: messageCount } = await im.service.getUnreadCount();
+
+    im.updateMessageCount(messageCount);
+    return messageCount;
+  };
 
   destroy() {
     this._imInstance && this._imInstance.destroy();

@@ -27,6 +27,8 @@ import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import im from '@portkey-wallet/im';
+import s3Instance from '@portkey-wallet/utils/s3';
+import Config from 'react-native-config';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {
@@ -36,7 +38,7 @@ export default function Updater() {
     changeLanguage('en');
   });
   useChainListFetch();
-  const { apiUrl, imApiUrl, imWsUrl } = useCurrentNetworkInfo();
+  const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   const pin = usePin();
   const onLocking = useLocking();
   const checkManagerOnLogout = useCheckManagerOnLogout();
@@ -60,6 +62,12 @@ export default function Updater() {
       wsUrl: imWsUrl || '',
     });
   }, [imApiUrl, imWsUrl]);
+  useMemo(() => {
+    s3Instance.setConfig({
+      bucket: imS3Bucket || '',
+      key: Config.IM_S3_KEY || '',
+    });
+  }, [imS3Bucket]);
 
   useMemo(() => {
     request.setLockCallBack(onLocking);

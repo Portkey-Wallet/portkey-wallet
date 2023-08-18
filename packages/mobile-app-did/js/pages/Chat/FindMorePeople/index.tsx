@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View, Image } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
 import CommonInput from 'components/CommonInput';
-import navigationService from 'utils/navigationService';
 import Touchable from 'components/Touchable';
 import NoData from 'components/NoData';
 import useDebounce from 'hooks/useDebounce';
@@ -19,7 +18,7 @@ const mock_data = [{ id: 1, index: 1, name: '测试' }];
 
 const FindMorePeople = () => {
   const [keyword, setKeyword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const debounceWord = useDebounce(keyword, 500);
   const [list, setList] = useState<any[]>(mock_data);
 

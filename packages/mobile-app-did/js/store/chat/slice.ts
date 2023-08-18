@@ -8,6 +8,7 @@ export enum ChatBottomBarStatus {
 }
 
 export interface ChatsState {
+  currentChannelId?: string;
   showTools?: boolean;
   bottomBarStatus?: ChatBottomBarStatus;
   text: string;
@@ -22,6 +23,9 @@ export const chatSlice = createSlice({
   reducers: {
     setChatText: (state, action: PayloadAction<ChatsState['text']>) => {
       state.text = action.payload;
+    },
+    setCurrentChannelId: (state, action: PayloadAction<ChatsState['currentChannelId']>) => {
+      state.currentChannelId = action.payload;
     },
     setChatSelection: (state, action: PayloadAction<ChatsState['selection']>) => {
       state.selection = action.payload;

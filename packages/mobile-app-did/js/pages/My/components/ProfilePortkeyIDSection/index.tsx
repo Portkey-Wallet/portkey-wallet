@@ -12,16 +12,17 @@ import { pTd } from 'utils/unit';
 
 type PortkeyIDItemPropsType = {
   disable?: boolean;
+  noMarginTop?: boolean;
   portkeyID: string;
 };
 
 const PortkeyIDItem: React.FC<PortkeyIDItemPropsType> = props => {
-  const { disable = false, portkeyID = 'portkeyID' } = props;
+  const { disable = false, noMarginTop = false, portkeyID = 'portkeyID' } = props;
 
   const copyId = useCallback(() => copyText(portkeyID), [portkeyID]);
 
   return (
-    <FormItem title="Portkey ID">
+    <FormItem title="Portkey ID" style={[noMarginTop && GStyles.marginTop(0)]}>
       <View
         style={[
           GStyles.flexRow,

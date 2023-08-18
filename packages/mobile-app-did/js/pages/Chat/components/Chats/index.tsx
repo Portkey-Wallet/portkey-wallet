@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { GiftedChat, GiftedChatProps, IMessage, MessageImageProps, MessageTextProps } from 'react-native-gifted-chat';
+import {
+  GiftedChat,
+  GiftedChatProps,
+  IMessage,
+  Message,
+  MessageImageProps,
+  MessageProps,
+  MessageTextProps,
+} from 'react-native-gifted-chat';
 import initialMessages from '../messages';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
-import { renderSystemMessage, renderMessage } from '../MessageContainer';
 import { randomId } from '@portkey-wallet/utils';
 import { Keyboard } from 'react-native';
-import GStyles from 'assets/theme/GStyles';
-import Touchable from 'components/Touchable';
 import { useChatsDispatch } from '../context/hooks';
 import CustomBubble from '../CustomBubble';
 import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../context/chatsContext';
@@ -15,8 +20,10 @@ import MessageText from '../Message/MessageText';
 import { destroyChatInputRecorder, initChatInputRecorder } from 'pages/Chat/utils';
 import MessageImage from '../Message/MessageImage';
 
-import { BGStyles } from 'assets/theme/styles';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
+import { StyleSheet } from 'react-native';
+import { pTd } from 'utils/unit';
+import Touchable from 'components/Touchable';
 
 const user = {
   _id: 1,
@@ -27,7 +34,7 @@ const user = {
 const Empty = () => null;
 
 const ListViewProps = {
-  windowSize: 50,
+  windowSize: 1,
   maxToRenderPerBatch: 5,
   removeClippedSubviews: false,
   legacyImplementation: true,
@@ -72,36 +79,53 @@ const ChatsUI = () => {
   const renderBubble = useCallback((data: any) => {
     return <CustomBubble {...data} />;
   }, []);
-  const listViewProps = useMemo(() => {
-    return { ...ListViewProps, onScrollBeginDrag: onDismiss };
+  const listViewProps: GiftedChatProps['listViewProps'] = useMemo(() => {
+    return {
+      ...ListViewProps,
+      onScrollBeginDrag: onDismiss,
+    };
   }, [onDismiss]);
+
+  const renderMessage = useCallback(
+    (props: MessageProps<IMessage>) => {
+      return (
+        <Touchable activeOpacity={1} onPress={onDismiss}>
+          <Message
+            containerStyle={{
+              left: styles.leftMessageContainer,
+              right: styles.rightMessageContainer,
+            }}
+            {...props}
+          />
+        </Touchable>
+      );
+    },
+    [onDismiss],
+  );
   return (
     <>
-      <Touchable activeOpacity={1} onPress={onDismiss} style={[GStyles.flex1, BGStyles.bg1]}>
-        <GiftedChat
-          alignTop
-          user={user}
-          alwaysShowSend
-          scrollToBottom
-          onSend={onSend}
-          renderTime={Empty}
-          isCustomViewBottom
-          messages={messages}
-          renderAvatar={Empty}
-          showUserAvatar={false}
-          minInputToolbarHeight={0}
-          renderInputToolbar={Empty}
-          renderBubble={renderBubble}
-          messageIdGenerator={randomId}
-          renderMessage={renderMessage}
-          listViewProps={listViewProps}
-          showAvatarForEveryMessage={false}
-          isKeyboardInternallyHandled={false}
-          renderMessageText={renderMessageText}
-          renderMessageImage={renderMessageImage}
-          renderSystemMessage={renderSystemMessage}
-        />
-      </Touchable>
+      <GiftedChat
+        alignTop
+        user={user}
+        alwaysShowSend
+        scrollToBottom
+        onSend={onSend}
+        renderTime={Empty}
+        isCustomViewBottom
+        messages={messages}
+        renderAvatar={Empty}
+        showUserAvatar={false}
+        minInputToolbarHeight={0}
+        renderInputToolbar={Empty}
+        renderBubble={renderBubble}
+        messageIdGenerator={randomId}
+        renderMessage={renderMessage}
+        listViewProps={listViewProps}
+        showAvatarForEveryMessage={false}
+        isKeyboardInternallyHandled={false}
+        renderMessageText={renderMessageText}
+        renderMessageImage={renderMessageImage}
+      />
       <BottomBarContainer>
         <AccessoryBar />
       </BottomBarContainer>
@@ -112,3 +136,14 @@ const ChatsUI = () => {
 export default function Chats() {
   return <ChatsUI />;
 }
+
+const styles = StyleSheet.create({
+  leftMessageContainer: {
+    marginLeft: pTd(16),
+    marginRight: 0,
+  },
+  rightMessageContainer: {
+    marginLeft: 0,
+    marginRight: pTd(16),
+  },
+});

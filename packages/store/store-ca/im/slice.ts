@@ -13,6 +13,7 @@ import {
   addChannelMessage,
   deleteChannelMessage,
   updateChannelMessageAttribute,
+  addChannel,
 } from './actions';
 import { formatChannelList } from './util';
 
@@ -92,6 +93,27 @@ export const imSlice = createSlice({
           channelListNetMap: {
             ...state.channelListNetMap,
             [action.payload.network]: channelList,
+          },
+        };
+      })
+      .addCase(addChannel, (state, action) => {
+        if (
+          state.channelListNetMap[action.payload.network]?.list?.find(
+            item => item.channelUuid === action.payload.channel.channelUuid,
+          )
+        ) {
+          return state;
+        }
+
+        return {
+          ...state,
+          channelListNetMap: {
+            ...state.channelListNetMap,
+            [action.payload.network]: {
+              ...state.channelListNetMap?.[action.payload.network],
+              list: [action.payload.channel, ...(state.channelListNetMap?.[action.payload.network]?.list || [])],
+              cursor: state.channelListNetMap?.[action.payload.network]?.cursor || '',
+            },
           },
         };
       })

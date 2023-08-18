@@ -1,5 +1,15 @@
 export type MessageType = 'SYS' | 'TEXT' | 'CARD' | 'ANNOUNCEMENT' | 'BATCH_TRANSFER' | 'IMAGE';
-export type ParsedContent = string;
+export type ParsedContent = string | ParsedImage;
+export type ParsedImage = {
+  type: string;
+  action: string;
+  imgUrl: string;
+  s3Key: string;
+  thumbImgUrl?: string;
+  thumbS3Key?: string;
+  width?: string;
+  height?: string;
+};
 
 export type Message = {
   channelUuid: string;
@@ -15,6 +25,10 @@ export type Message = {
   quote?: Message;
   parsedContent?: ParsedContent;
   unidentified?: boolean | undefined;
+};
+
+export type SocketMessage = Message & {
+  mute: boolean;
 };
 
 export type ChannelMemberInfo = {

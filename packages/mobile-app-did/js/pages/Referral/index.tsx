@@ -10,7 +10,7 @@ import { useLanguage } from 'i18n/hooks';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Welcome from './components/Welcome';
 import { ImageBackground, StyleSheet, View } from 'react-native';
-import { isIos, screenHeight } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight } from '@portkey-wallet/utils/mobile/device';
 import splashScreen from './img/splashScreen.png';
 import background from '../Login/img/background.png';
 import * as Application from 'expo-application';
@@ -47,7 +47,7 @@ export default function Referral() {
       style={styles.backgroundContainer}
       resizeMode="cover"
       source={isSplashScreen ? splashScreen : background}>
-      <SafeAreaBox pageSafeBottomPadding={!isIos} style={[gStyles.container, BGStyles.transparent]}>
+      <SafeAreaBox pageSafeBottomPadding={!isIOS} style={[gStyles.container, BGStyles.transparent]}>
         {isSplashScreen && (
           <View style={[GStyles.flex1, GStyles.flexEnd, GStyles.itemCenter]}>
             <TextM style={[FontStyles.font3, styles.versionStyle]}>{`V${Application.nativeApplicationVersion}`}</TextM>

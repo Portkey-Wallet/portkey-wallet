@@ -14,7 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
-import { isIos, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 import { Camera } from 'expo-camera';
 import { expandQrData } from '@portkey-wallet/utils/qrCode';
@@ -98,7 +98,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
       {refresh ? null : (
         <Camera
           ratio={'16:9'}
-          style={[PageStyle.barCodeScanner, !isIos && PageStyle.barCodeScannerAndroid]}
+          style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}
           onBarCodeScanned={handleBarCodeScanned}>
           <SafeAreaView style={PageStyle.innerView}>
             <View style={PageStyle.iconWrap}>

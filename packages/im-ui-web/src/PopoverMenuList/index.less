@@ -1,0 +1,40 @@
+
+@import '../assets/theme/color.less';
+@import '../assets/theme/constants.less';
+
+.popover-menu-list {
+  font-size: 14px;
+  line-height: 20px;
+  color: @font-11;
+  .menu-item {
+    align-items: center;
+    height: 40px;
+    padding: 10px 0;
+    gap: 8px;
+    border-bottom: none;
+    cursor: pointer;
+
+    .icon-left {
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .menu-item-container {
+      flex: 1;
+      max-width: 78px;
+      word-break: break-all;
+      .text-overflow(1);
+    }
+
+    &:hover {
+      color: @font-9;
+      svg {
+        path {
+          fill: @border-3;
+        }
+      }
+    }
+  }
+}

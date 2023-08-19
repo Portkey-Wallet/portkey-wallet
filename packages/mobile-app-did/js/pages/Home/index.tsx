@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Button, Text } from '@rneui/base';
 import { ScrollView } from 'react-native-gesture-handler';
 import navigationService from '../../utils/navigationService';
@@ -25,6 +25,19 @@ import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { useGetDeviceInfo } from 'hooks/device';
 import * as Network from 'expo-network';
 
+import im from '@portkey-wallet/im';
+import useEffectOnce from 'hooks/useEffectOnce';
+import {
+  useChannel,
+  useChannelList,
+  useCreateP2pChannel,
+  useHideChannel,
+  useMuteChannel,
+  usePinChannel,
+  useUnreadCount,
+} from '@portkey-wallet/hooks/hooks-ca/im';
+import dayjs from 'dayjs';
+
 export default function HomeScreen() {
   const wallet = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
@@ -37,14 +50,51 @@ export default function HomeScreen() {
   const chainInfo = useCurrentChain(originChainId);
   const getHolderInfo = useGetHolderInfo();
   const { userGuardiansList } = useGuardiansInfo();
-  console.log(userGuardiansList, '=====userGuardiansList');
+  const createChannel = useCreateP2pChannel();
+  const unreadCount = useUnreadCount();
+
+  const { list, sendMessage, sendImage, init, next, hasNext, info } = useChannel('ef4c6a65e4774171b973503c7373b563');
+  // const { list, sendMessage, sendImage, init, next, hasNext, info } = useChannel('cb911c8a381a442ba672feb70d43dd93');
+
+  const {
+    list: channelList,
+    init: initChannelList,
+    next: nextChannelList,
+    hasNext: hasNextChannelList,
+  } = useChannelList();
+
+  const pinChannel = usePinChannel();
+  const muteChannel = useMuteChannel();
+  const hideChannel = useHideChannel();
+
+  useEffect(() => {
+    console.log('channelList', channelList);
+  }, [channelList]);
+  useEffect(() => {
+    console.log('msg list', list);
+  }, [list]);
+  useEffect(() => {
+    console.log('unreadCount', unreadCount);
+  }, [unreadCount]);
+
+  useEffectOnce(() => {
+    (async () => {
+      if (!pin) return;
+      const account = getManagerAccount(pin);
+      if (!account || !wallet.caHash) return;
+
+      try {
+        // await im.init(account, wallet.caHash);
+      } catch (error) {
+        console.log('im init error', error);
+      }
+    })();
+  });
 
   return (
     <SafeAreaBox>
       <ScrollView>
-        <Text>Test Screen</Text>
-        <Text>Test Screen</Text>
-        <Button title="ActionSheet show" onPress={() => ActionSheet.show([{ title: '123' }, { title: '123' }])} />
+        {/* <Button title="ActionSheet show" onPress={() => ActionSheet.show([{ title: '123' }, { title: '123' }])} />
         <Button
           title="loading show"
           onPress={() => {
@@ -145,8 +195,8 @@ export default function HomeScreen() {
               console.log(error, '====error');
             }
           }}
-        />
-        <Button
+        /> */}
+        {/* <Button
           title="add contact"
           onPress={async () => {
             try {
@@ -173,8 +223,8 @@ export default function HomeScreen() {
               console.log(error, '====error-1');
             }
           }}
-        />
-        <Button
+        /> */}
+        {/* <Button
           title="add failedActivity"
           onPress={() => {
             // dispatch(addFailedActivity({ transactionId: String(Math.random()) }));
@@ -200,11 +250,62 @@ export default function HomeScreen() {
             const ipAddress2 = await customFetch('https://api.ipify.org/?format=json');
             console.log(ipAddress, ipAddress2, '======ipAddress');
           }}
-        />
+        /> */}
+
         <Button
-          title="Discover"
+          title="sendMessage"
+          onPress={() => {
+            // sendMessage('test message');
+            im.service.sendMessage({
+              channelUuid: 'ef4c6a65e4774171b973503c7373b563',
+              sendUuid: `${Date.now()}`,
+              type: 'TEXT',
+              content: `im thomas ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`,
+            });
+          }}
+        />
+
+        <Button
+          title="init Message List"
+          onPress={() => {
+            init();
+          }}
+        />
+
+        <Button
+          title="next Message List"
+          onPress={() => {
+            console.log('hasNext', hasNext);
+            next();
+          }}
+        />
+
+        <Button
+          title="createChannel"
           onPress={async () => {
-            navigationService.navigate('Discover');
+            try {
+              // const result = await createChannel('nbkqm-oyaaa-aaaaj-7whqq-cai');
+              // console.log('createChannel', result);
+              const result = await hideChannel('cb911c8a381a442ba672feb70d43dd93');
+              console.log('test', result);
+            } catch (error) {
+              console.log('createChannel: error', error);
+            }
+          }}
+        />
+
+        <Button
+          title="init Channel List"
+          onPress={() => {
+            initChannelList();
+          }}
+        />
+
+        <Button
+          title="next Channel List"
+          onPress={() => {
+            console.log('hasNext', hasNextChannelList);
+            nextChannelList();
           }}
         />
 

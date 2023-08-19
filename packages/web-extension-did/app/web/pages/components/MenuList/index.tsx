@@ -14,6 +14,7 @@ export interface IMenuItemProps {
   className?: string;
   isShowSelectedColor?: boolean;
   selected?: number | string;
+  showEnterIcon?: boolean;
 }
 
 export default function MenuList({
@@ -22,11 +23,13 @@ export default function MenuList({
   className,
   isShowSelectedColor = false,
   selected,
+  showEnterIcon = true,
 }: IMenuItemProps) {
   return (
     <div className={clsx(['menu-list', className])}>
       {list.map((item) => (
         <MenuItem
+          showEnterIcon={showEnterIcon}
           key={item.key}
           className={isShowSelectedColor && selected === item.key ? 'item-selected' : undefined}
           height={height}

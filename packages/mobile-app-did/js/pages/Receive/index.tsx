@@ -1,8 +1,6 @@
 import React from 'react';
 import PageContainer from 'components/PageContainer';
 import { TextL, TextM, TextXL, TextS } from 'components/CommonText';
-import { setStringAsync } from 'expo-clipboard';
-import CommonToast from 'components/CommonToast';
 import AccountCard from 'pages/Receive/components/AccountCard';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -18,6 +16,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { copyText } from 'utils';
 
 export default function Receive() {
   const { t } = useLanguage();
@@ -59,10 +58,9 @@ export default function Receive() {
       <View style={styles.buttonWrap}>
         <TouchableOpacity
           style={styles.buttonTop}
-          onPress={async () => {
+          onPress={() => {
             const tmpStr = `ELF_${currentCaAddress}_${chainId}`;
-            const isCopy = await setStringAsync(tmpStr);
-            isCopy && CommonToast.success(t('Copy Success'));
+            copyText(tmpStr);
           }}>
           <Svg icon="copy" size={pTd(20)} color={defaultColors.font2} />
         </TouchableOpacity>

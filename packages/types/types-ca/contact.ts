@@ -16,15 +16,15 @@ export interface RecentAddressItem extends AddressItem {
 export interface ContactItemType {
   id: string;
   index: string;
-  name: string; // remark
-  avatar: string;
+  name: string;
+  avatar?: string;
   addresses: AddressItem[];
   modificationTime: number;
   isDeleted: boolean;
   userId: string;
-  caHolderInfo: CaHolderInfo;
-  imInfo: IImInfo;
-  isImputation: boolean;
+  caHolderInfo?: CaHolderInfo;
+  imInfo?: IImInfo;
+  isImputation?: boolean;
 }
 
 export interface EditContactItemApiType {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp, CardStyleInterpolators } from '@react-navigation/stack';
 
-import Tab, { TabMenuItem } from './Tab';
+import Tab, { IRenderTabMenuItem } from './Tab';
 import navigationService from 'utils/navigationService';
 import LoginNav from 'pages/Login';
 import PinNav from 'pages/Pin';
@@ -20,10 +20,11 @@ import QrScanner from 'pages/QrScanner';
 import MyNav from 'pages/My/router';
 import BuyNav from 'pages/Buy';
 import DiscoverNav from 'pages/Discover/index';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import Discover from 'Test/Discover';
 
 import TabsDrawer from 'components/TabsDrawer';
+import ChatNav from 'pages/Chat/routes';
 
 const Stack = createStackNavigator();
 export const productionNav = [
@@ -42,25 +43,26 @@ export const productionNav = [
   ...PinNav,
   ...MyNav,
   ...BuyNav,
+  ...ChatNav,
   ...DiscoverNav,
 ] as const;
 
-// dav nav
-export const davNav = [
+// dev nav
+export const devNav = [
   ...productionNav,
   { name: 'Home', component: Home },
   { name: 'Discover', component: Discover },
 ] as const;
 
-const stackNav = __DEV__ ? davNav : productionNav;
+const stackNav = __DEV__ ? devNav : productionNav;
 
 export type RootStackParamList = {
-  [key in typeof davNav[number]['name']]: undefined;
+  [key in typeof devNav[number]['name']]: undefined;
 };
 export type TabParamList = {
-  [key in TabMenuItem['name']]: undefined;
+  [key in IRenderTabMenuItem['name']]: undefined;
 };
-export type RootStackName = typeof davNav[number]['name'];
+export type RootStackName = typeof devNav[number]['name'];
 
 export type RootNavigationProp = StackNavigationProp<RootStackParamList>;
 export default function NavigationRoot() {
@@ -74,7 +76,7 @@ export default function NavigationRoot() {
             gestureVelocityImpact: 1,
             headerBackAllowFontScaling: false,
             headerTitleAllowFontScaling: false,
-            cardStyleInterpolator: !isIos ? CardStyleInterpolators.forHorizontalIOS : undefined,
+            cardStyleInterpolator: !isIOS ? CardStyleInterpolators.forHorizontalIOS : undefined,
           }}>
           {stackNav.map((item, index) => (
             <Stack.Screen options={(item as any).options} key={index} {...(item as any)} />

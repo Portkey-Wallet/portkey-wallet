@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import useInterval from '../useInterval';
 import { contractQueries } from '@portkey-wallet/graphql/index';
 import { ChainId, NetworkType } from '@portkey-wallet/types';
@@ -9,6 +8,7 @@ import { useCurrentWallet, useOriginChainId } from './wallet';
 import useLockCallback from '../useLockCallback';
 import { useGetChainInfo } from './chainList';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { useLatestRef } from '../index';
 export type CAWalletInfo = {
   caInfo: CAInfoType;
   originChainId: ChainId;
@@ -82,10 +82,7 @@ export function useCheckManager(callback: () => void) {
   const { walletInfo, currentNetwork } = useCurrentWallet();
   const { caHash, address } = walletInfo || {};
   const originChainId = useOriginChainId();
-  const savedCallback = useRef<() => void>();
-  useEffect(() => {
-    savedCallback.current = callback;
-  });
+  const savedCallback = useLatestRef<() => void>(callback);
   const checkManager = useLockCallback(async () => {
     try {
       if (!caHash) return;

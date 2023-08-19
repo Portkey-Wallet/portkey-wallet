@@ -1,7 +1,7 @@
 import RelationIM, { Im, config as relationConfig } from '@relationlabs/im';
 import * as utils from './utils';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { IMStatusEnum, Message, MessageCount } from './types';
+import { IMStatusEnum, Message, MessageCount, SocketMessage } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { IIMService } from './types/service';
 import { IMConfig } from './config';
@@ -196,7 +196,7 @@ export class IM {
 
   onReceiveMessage = (e: any) => {
     console.log('RECEIVE_MSG_OK msg', e);
-    const rawMsg: Message = e['im-message'];
+    const rawMsg: SocketMessage = e['im-message'];
     const channelId = rawMsg.channelUuid;
     const channelObservers = this._channelMsgObservers.get(channelId);
     if (channelObservers) {
@@ -206,6 +206,7 @@ export class IM {
     } else {
       // no observer, update message unreadCount
       this.updateUnreadMsgObservers(e);
+      if (rawMsg.mute) return;
       this.updateMessageCount({
         ...this._msgCount,
         unreadCount: this._msgCount.unreadCount + 1,
@@ -306,6 +307,7 @@ export class IM {
 
   refreshMessageCount = async () => {
     const { data: messageCount } = await im.service.getUnreadCount();
+    console.log('refreshMessageCount', messageCount);
 
     im.updateMessageCount(messageCount);
     return messageCount;

@@ -282,12 +282,24 @@ export default function HomeScreen() {
         />
 
         <Button
-          title="createChannel"
+          title="operate true"
           onPress={async () => {
             try {
               // const result = await createChannel('nbkqm-oyaaa-aaaaj-7whqq-cai');
               // console.log('createChannel', result);
-              const result = await hideChannel('cb911c8a381a442ba672feb70d43dd93');
+              const result = await muteChannel('0a88cea1efde493a805a0afdbf471d08', true);
+              console.log('test', result);
+            } catch (error) {
+              console.log('createChannel: error', error);
+            }
+          }}
+        />
+
+        <Button
+          title="operate false"
+          onPress={async () => {
+            try {
+              const result = await muteChannel('0a88cea1efde493a805a0afdbf471d08', false);
               console.log('test', result);
             } catch (error) {
               console.log('createChannel: error', error);

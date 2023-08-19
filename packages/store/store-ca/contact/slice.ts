@@ -21,9 +21,9 @@ export interface ContactState {
   lastModified: number;
   contactIndexList: ContactIndexType[];
   contactMap: ContactMapType;
-  contactPortkeyIdMap: ContactMapType;
-  contactRelationIdMap: ContactMapType;
-  isImputation: boolean;
+  contactPortkeyIdMap?: ContactMapType;
+  contactRelationIdMap?: ContactMapType;
+  isImputation?: boolean;
 }
 
 export const initialState: ContactState = {

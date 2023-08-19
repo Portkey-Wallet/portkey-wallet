@@ -60,6 +60,7 @@ export default function MyMenu() {
       {MenuList.map(ele => {
         return (
           <MenuItem
+            showWarningCycle={ele.name === 'ContactsHome'}
             style={styles.menuItemWrap}
             icon={ele?.icon || 'setting'}
             title={t(ele.label)}

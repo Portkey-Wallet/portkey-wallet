@@ -83,5 +83,16 @@ const styles = StyleSheet.create({
   svgWrap: {
     position: 'relative',
   },
-  warningCycle: {},
+  warningCycle: {
+    position: 'absolute',
+    zIndex: 1000,
+    right: pTd(13),
+    top: -pTd(3),
+    width: pTd(8),
+    height: pTd(8),
+    borderRadius: pTd(4),
+    backgroundColor: defaultColors.bg17,
+    borderWidth: pTd(1),
+    borderColor: defaultColors.bg1,
+  },
 });

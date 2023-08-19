@@ -97,7 +97,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
               {item.lastMessageType === 'TEXT' ? item.lastMessageContent : '[Image]'}
             </TextS>
-            {item.pin ? (
+            {item.pin && item.unreadMessageCount === 0 ? (
               <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
             ) : (
               <TextS

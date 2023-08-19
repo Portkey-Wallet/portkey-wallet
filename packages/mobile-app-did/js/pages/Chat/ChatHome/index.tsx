@@ -83,10 +83,10 @@ export default function DiscoverHome() {
 
   const sendMess = useCallback(async () => {
     im.service.sendMessage({
-      toRelationId: 'e7i7y-giaaa-aaaaj-2ooma-cai',
+      toRelationId: 'eegeb-baaaa-aaaaj-35xda-cai',
       type: 'TEXT',
       sendUuid: v4(),
-      content: ` hello tho---  ${formatChatListTime(Date.now())} `,
+      content: ` hello sa---  ${formatChatListTime(Date.now())} `,
     });
     console.log('sendMess', v4());
   }, []);

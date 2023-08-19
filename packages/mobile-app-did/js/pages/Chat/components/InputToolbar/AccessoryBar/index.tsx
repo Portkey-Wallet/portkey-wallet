@@ -4,11 +4,11 @@ import { StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import Emoticons from '../Emoticons';
 import { BGStyles } from 'assets/theme/styles';
-import { useBottomBarStatus, useChatsDispatch } from '../../context/hooks';
+import { useBottomBarStatus, useChatsDispatch } from '../../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { ToolBar } from '../ToolBar';
 import { handleDeleteText, handleInputText } from 'pages/Chat/utils';
-import { setChatText } from '../../context/chatsContext';
+import { setChatText } from '../../../context/chatsContext';
 import { EmojiItem } from '../Emoticons/config';
 
 export const AccessoryBar = memo(

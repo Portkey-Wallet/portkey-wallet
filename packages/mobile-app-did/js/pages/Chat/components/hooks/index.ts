@@ -4,9 +4,9 @@ import { Animated } from 'react-native';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import usePrevious from 'hooks/usePrevious';
 import { TextInput } from 'react-native';
-import { useBottomBarStatus, useChatsDispatch } from '../context/hooks';
+import { useBottomBarStatus, useChatsDispatch } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
-import { setBottomBarStatus } from '../context/chatsContext';
+import { setBottomBarStatus } from '../../context/chatsContext';
 
 let TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
 if (!isIOS) {

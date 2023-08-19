@@ -12,18 +12,26 @@ import {
   getInitContactIndexList,
   sortContactIndexList,
   transIndexesToContactMap,
+  transIndexesToContactPortkeyIdMap,
+  transIndexesToContactRelationIdMap,
 } from './utils';
 
 export interface ContactState {
   lastModified: number;
   contactIndexList: ContactIndexType[];
   contactMap: ContactMapType;
+  contactPortkeyIdMap: ContactMapType;
+  contactRelationIdMap: ContactMapType;
+  isImputation: boolean;
 }
 
 export const initialState: ContactState = {
   lastModified: 0,
   contactIndexList: getInitContactIndexList(),
   contactMap: {},
+  contactPortkeyIdMap: {},
+  contactRelationIdMap: {},
+  isImputation: false,
 };
 
 export const contactSlice = createSlice({
@@ -34,10 +42,11 @@ export const contactSlice = createSlice({
     builder
       // getContactList
       .addCase(fetchContactListAsync.fulfilled, (state, action) => {
-        const { isInit, lastModified, contactIndexList, eventList } = action.payload;
+        const { isInit, lastModified, contactIndexList, eventList, isImputation } = action.payload;
         if (isInit && contactIndexList !== undefined) {
           state.contactIndexList = sortContactIndexList(contactIndexList);
           state.lastModified = lastModified;
+          state.isImputation = isImputation;
         }
 
         if (!isInit && eventList !== undefined) {
@@ -51,6 +60,8 @@ export const contactSlice = createSlice({
           state.contactIndexList = getInitContactIndexList();
         }
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
+        state.contactPortkeyIdMap = transIndexesToContactPortkeyIdMap(state.contactIndexList);
+        state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
       })
       .addCase(fetchContactListAsync.rejected, (_state, action) => {
         console.log('fetchContactListAsync.rejected: error', action.error.message);
@@ -73,6 +84,8 @@ export const contactSlice = createSlice({
       .addCase(resetContact, state => {
         state.contactIndexList = getInitContactIndexList();
         state.contactMap = {};
+        state.contactPortkeyIdMap = {};
+        state.contactRelationIdMap = {};
         state.lastModified = 0;
       });
   },

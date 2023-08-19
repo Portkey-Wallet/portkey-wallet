@@ -22,6 +22,7 @@ import {
   TriggerMessageEvent,
   UpdateChannelMuteParams,
   UpdateChannelPinParams,
+  VerifySignatureLoopParams,
   VerifySignatureParams,
   VerifySignatureResult,
 } from '../types/service';
@@ -44,8 +45,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       },
     });
   }
-  async verifySignatureLoop(params: VerifySignatureParams, times = 0): IMServiceCommon<VerifySignatureResult> {
+  async verifySignatureLoop(
+    generateVerifyData: VerifySignatureLoopParams,
+    times = 0,
+  ): IMServiceCommon<VerifySignatureResult> {
     try {
+      const params = generateVerifyData();
+      if (params === null) throw new Error('user exit');
       const result = await this.verifySignature(params);
       if (result.code === IM_SUCCESS_CODE) return result;
       if (times === 1) throw result;
@@ -53,7 +59,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       console.log('verifySignatureLoop: error', error);
     }
     if (times <= 0) await sleep(1000);
-    return this.verifySignatureLoop(params, times - 1);
+    return this.verifySignatureLoop(generateVerifyData, times - 1);
   }
 
   getAuthToken(params: GetAuthTokenParams): IMServiceCommon<GetAuthTokenResult> {

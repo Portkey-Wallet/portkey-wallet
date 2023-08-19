@@ -15,9 +15,10 @@ import {
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
 
-import { useImState } from '.';
+import { useChannelItemInfo, useImChannelMessageListNetMapState } from '.';
 import s3Instance, { getThumbSize } from '@portkey-wallet/utils/s3';
 import { request } from '@portkey-wallet/api/api-did';
+import { messageParser } from '@portkey-wallet/im/utils';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -44,15 +45,13 @@ export const useSendChannelMessage = () => {
         sendUuid: `${userInfo.relationId}-${channelId}-${Date.now()}-${uuid}`,
       };
 
-      // TODO: parsedContent need parse
-      const msgObj: Message = {
+      const msgObj: Message = messageParser({
         ...msgParams,
         from: userInfo.relationId,
         fromAvatar: userInfo.avatar,
         fromName: userInfo.name,
         createAt: `${Date.now()}`,
-        parsedContent: msgParams.content,
-      };
+      });
       dispatch(
         addChannelMessage({
           network: networkType,
@@ -136,7 +135,7 @@ export const useDeleteMessage = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
-  const { channelMessageListNetMap } = useImState();
+  const channelMessageListNetMap = useImChannelMessageListNetMapState();
   const list = useMemo(
     () => channelMessageListNetMap?.[networkType]?.[channelId] || [],
     [channelId, channelMessageListNetMap, networkType],
@@ -204,7 +203,7 @@ export const useChannel = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
-  const { channelMessageListNetMap } = useImState();
+  const channelMessageListNetMap = useImChannelMessageListNetMapState();
   const list = useMemo(
     () => channelMessageListNetMap?.[networkType]?.[channelId] || [],
     [channelId, channelMessageListNetMap, networkType],
@@ -218,7 +217,7 @@ export const useChannel = (channelId: string) => {
   const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
   const deleteMessage = useDeleteMessage(channelId);
 
-  const [info, setInfo] = useState<ChannelInfo>();
+  const info = useChannelItemInfo(channelId);
   const [hasNext, setHasNext] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -348,15 +347,6 @@ export const useChannel = (channelId: string) => {
     const { remove: removeErrorObserver } = im.registerErrorObserver(e => {
       errorHandlerRef.current(e);
     });
-
-    im.service
-      .getChannelInfo({
-        channelUuid: channelId,
-      })
-      .then(result => {
-        console.log('channelInfo', result.data);
-        setInfo(result.data);
-      });
 
     if (im.userInfo) {
       im.service.triggerMessageEvent({

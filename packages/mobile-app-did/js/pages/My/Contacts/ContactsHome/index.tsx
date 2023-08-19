@@ -16,6 +16,7 @@ import SearchContactListSection from '../SearchContactListSection';
 import { StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import FindMoreButton from 'pages/Chat/components/FindMoreButton';
+import ContactUpdateWarning from 'pages/My/components/ContactUpdateWarning';
 
 const ContactsHome: React.FC = () => {
   const { t } = useLanguage();
@@ -67,6 +68,7 @@ const ContactsHome: React.FC = () => {
           onChangeText={value => setKeyword(value.trim())}
         />
       </View>
+      <ContactUpdateWarning />
       {debounceKeyword ? <SearchContactListSection list={filerList} /> : <CommonTopTab tabList={tabList} />}
     </PageContainer>
   );

@@ -23,6 +23,9 @@ export default {
     flexDirection: 'column',
     flexWrap: 'wrap',
   },
+  itemStart: {
+    alignItems: 'flex-start',
+  },
   itemCenter: {
     alignItems: 'center',
   },

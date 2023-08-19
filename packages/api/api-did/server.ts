@@ -6,6 +6,7 @@ import { getRequestConfig, spliceUrl } from '../utils';
 import { isValidRefreshTokenConfig, queryAuthorization, RefreshTokenConfig } from './utils/index';
 import { sleep } from '@portkey-wallet/utils';
 import im from '@portkey-wallet/im';
+import { IM_TOKEN_ERROR_ARRAY } from '@portkey-wallet/im/constant';
 export class DidService extends ServiceInit {
   protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;
@@ -103,6 +104,9 @@ export class DidService extends ServiceInit {
         }
         throw fetchResult;
       }
+      return this.send(base, config, ++reCount);
+    } else if (fetchResult && IM_TOKEN_ERROR_ARRAY.includes(fetchResult.code)) {
+      await im.refreshToken();
       return this.send(base, config, ++reCount);
     }
     return fetchResult;

@@ -83,6 +83,7 @@ export enum IMStatusEnum {
   AUTHORIZED = 'authorized',
   CONNECTED = 'connected',
   ERROR = 'error',
+  DESTROY = 'destroy',
 }
 
 export type MessageCount = {

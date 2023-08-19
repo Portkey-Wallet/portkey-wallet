@@ -254,14 +254,15 @@ export default function HomeScreen() {
 
         <Button
           title="sendMessage"
-          onPress={() => {
+          onPress={async () => {
             // sendMessage('test message');
-            im.service.sendMessage({
-              channelUuid: 'ef4c6a65e4774171b973503c7373b563',
+            const result = await im.service.sendMessage({
+              toRelationId: 'eegeb-baaaa-aaaaj-35xda-cai',
               sendUuid: `${Date.now()}`,
               type: 'TEXT',
               content: `im thomas ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`,
             });
+            console.log('result', result);
           }}
         />
 

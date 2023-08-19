@@ -225,6 +225,10 @@ export const imSlice = createSlice({
             ...state.hasNextNetMap,
             [action.payload]: undefined,
           },
+          channelMessageListNetMap: {
+            ...state.channelMessageListNetMap,
+            [action.payload]: undefined,
+          },
         };
       });
   },

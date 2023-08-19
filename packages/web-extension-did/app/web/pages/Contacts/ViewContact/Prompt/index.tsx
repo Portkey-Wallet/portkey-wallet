@@ -1,25 +1,35 @@
-import { Button } from 'antd';
 import './index.less';
-import ContactAddressList from 'pages/Contacts/components/ContactAddressList';
 import SecondPageHeader from 'pages/components/SecondPageHeader';
-import { IViewContactProps } from '..';
+import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
+import { IProfileDetailProps } from 'types/Profile';
 
-export default function ViewContactPrompt({ headerTitle, goBack, data, editText, handleEdit }: IViewContactProps) {
+export default function ViewContactPrompt({
+  headerTitle,
+  goBack,
+  data,
+  editText,
+  chatText,
+  addedText,
+  addContactText,
+  handleEdit,
+  handleChat,
+  handleAdd,
+  handleCopy,
+}: IProfileDetailProps) {
   return (
     <div className="view-contact-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
-
-      <div className="name-section">
-        <div className="flex-center name-index">{data.index}</div>
-        <div className="name">{data.name}</div>
-      </div>
-
-      <div className="contact-body">
-        <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
-          {editText}
-        </Button>
-        <ContactAddressList list={data.addresses} />
-      </div>
+      <ViewContactBody
+        data={data}
+        editText={editText}
+        chatText={chatText}
+        addedText={addedText}
+        addContactText={addContactText}
+        handleEdit={handleEdit}
+        handleChat={handleChat}
+        handleAdd={handleAdd}
+        handleCopy={handleCopy}
+      />
     </div>
   );
 }

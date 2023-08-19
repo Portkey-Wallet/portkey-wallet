@@ -29,6 +29,7 @@ export interface IDeviceItem {
 }
 export interface ICaAddressInfoListItemType {
   chainId: ChainId;
+  chainName: string;
   caAddress: string;
 }
 

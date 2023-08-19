@@ -8,6 +8,7 @@ import ContactsSearchInput from '../components/ContactsSearchInput';
 
 export default function ContactsPrompt({
   headerTitle,
+  searchPlaceholder,
   addText,
   handleAdd,
   isSearch,
@@ -31,9 +32,22 @@ export default function ContactsPrompt({
               )
             }
           />
-          <ContactsSearchInput handleChange={handleSearch} className={'search-input-prompt'} />
+          <ContactsSearchInput
+            placeholder={searchPlaceholder}
+            handleChange={handleSearch}
+            className={'search-input-prompt'}
+          />
         </div>
-        <ContactsBody isSearch={isSearch} list={list} contactCount={contactCount} initData={initData} />
+        <ContactsBody
+          isSearch={isSearch}
+          list={list}
+          contactCount={contactCount}
+          initData={initData}
+          portkeyChatCount={0}
+          portkeyChatInitData={initData}
+          portkeyChatList={[]}
+          isSearchPortkeyChat={false}
+        />
       </div>
       <Outlet />
     </div>

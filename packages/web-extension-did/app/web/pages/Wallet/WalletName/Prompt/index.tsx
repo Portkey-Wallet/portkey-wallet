@@ -1,13 +1,33 @@
 import SecondPageHeader from 'pages/components/SecondPageHeader';
-import { BaseHeaderProps } from 'types/UI';
-import SetWalletNameForm from '../../components/SetWalletNameForm';
+import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
+import { IProfileDetailProps } from 'types/Profile';
 import './index.less';
 
-export default function WalletNamePrompt({ headerTitle, goBack }: BaseHeaderProps) {
+export default function WalletNamePrompt({
+  headerTitle,
+  goBack,
+  data,
+  editText,
+  isShowRemark = false,
+  isShowAddContactBtn = false,
+  isShowAddedBtn = false,
+  isShowChatBtn = false,
+  handleEdit,
+  handleCopy,
+}: IProfileDetailProps) {
   return (
     <div className="wallet-name-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
-      <SetWalletNameForm />
+      <ViewContactBody
+        data={data}
+        editText={editText}
+        isShowRemark={isShowRemark}
+        isShowAddContactBtn={isShowAddContactBtn}
+        isShowAddedBtn={isShowAddedBtn}
+        isShowChatBtn={isShowChatBtn}
+        handleEdit={handleEdit}
+        handleCopy={handleCopy}
+      />
     </div>
   );
 }

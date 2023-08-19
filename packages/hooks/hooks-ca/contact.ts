@@ -120,7 +120,9 @@ export const useReadImputation = () => {
         baseURL: currentNetworkInfo.apiUrl,
         params: { id: contactItem.id },
       });
-      dispatch(readImputationAction({ ...contactItem, isImputation: false } as ContactItemType));
+      dispatch(
+        readImputationAction({ ...contactItem, isImputation: false, modificationTime: Date.now() } as ContactItemType),
+      );
       setTimeout(() => {
         dispatch(fetchContactListAsync());
       }, REFRESH_DELAY_TIME);

@@ -13,22 +13,18 @@ import Svg, { IconName } from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import { ViewStyleType } from 'types/styles';
-import { readFile } from 'utils/fs';
-import { formatRNImage } from '@portkey-wallet/utils/s3';
 import { useSendCurrentChannelMessage } from '../../hooks';
 import OverlayModal from 'components/OverlayModal';
-import { bindUriToLocalImage } from 'utils/fs/img';
+import { sleep } from '@portkey-wallet/utils';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
-  const { sendChannelImage } = useSendCurrentChannelMessage();
+  const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
   const selectPhoto = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       allowsMultipleSelection: false,
     });
-    console.log(result, '=====result');
-
     if (result.cancelled || !result.uri) return;
     SendPicModal.showSendPic({
       uri: result.uri,
@@ -44,13 +40,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
           type: 'primary',
           onPress: async () => {
             try {
-              const file = result;
-              const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
-              const data = formatRNImage(file, fileBase64);
-              const imgResult = await sendChannelImage(data);
-              console.log(imgResult, '=====imgResult');
-
-              await bindUriToLocalImage(file.uri, imgResult.url);
+              await sendChannelImage(result);
             } catch (error) {
               console.log(error, '====error');
             }
@@ -79,13 +69,15 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         icon: 'chat-bookmark',
         onPress: () =>
           BookmarkOverlay.showBookmarkList({
-            onPressCallBack: item => {
-              console.log(item);
+            onPressCallBack: async item => {
+              OverlayModal.hide();
+              await sleep(200);
+              sendChannelMessage(item.url);
             },
           }),
       },
     ];
-  }, [selectPhoto]);
+  }, [selectPhoto, sendChannelMessage]);
 
   return (
     <View style={[GStyles.flex1, GStyles.flexRowWrap, styles.wrap, style]}>

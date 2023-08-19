@@ -7,8 +7,11 @@ import { TextInput } from 'react-native';
 import { useBottomBarStatus, useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../../context/chatsContext';
-import { ImageMessageFileType, useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { MessageType } from '@portkey-wallet/im';
+import { readFile } from 'utils/fs';
+import { formatRNImage } from '@portkey-wallet/utils/s3';
+import { bindUriToLocalImage } from 'utils/fs/img';
 
 let TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
 if (!isIOS) {
@@ -69,7 +72,13 @@ export function useSendCurrentChannelMessage() {
     () => ({
       sendChannelMessage: (content: string, type?: MessageType) =>
         sendChannelMessage(currentChannelId || '', content, type),
-      sendChannelImage: (file: ImageMessageFileType) => sendChannelImage(currentChannelId || '', file),
+      sendChannelImage: async (file: { uri: string; width: number; height: number }) => {
+        const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
+        const data = formatRNImage(file, fileBase64);
+        const imgResult = await sendChannelImage(currentChannelId || '', data);
+        await bindUriToLocalImage(file.uri, imgResult.url);
+        return imgResult;
+      },
     }),
     [currentChannelId, sendChannelImage, sendChannelMessage],
   );

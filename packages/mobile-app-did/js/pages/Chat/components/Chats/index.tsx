@@ -12,24 +12,20 @@ import initialMessages from '../messages';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
 import { randomId } from '@portkey-wallet/utils';
 import { Keyboard } from 'react-native';
-import { useChatsDispatch } from '../context/hooks';
+import { useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import CustomBubble from '../CustomBubble';
-import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../context/chatsContext';
+import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../../context/chatsContext';
 import useEffectOnce from 'hooks/useEffectOnce';
 import MessageText from '../Message/MessageText';
 import { destroyChatInputRecorder, initChatInputRecorder } from 'pages/Chat/utils';
 import MessageImage from '../Message/MessageImage';
+import { Message as IMMessage } from '@portkey-wallet/im/types';
 
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
-
-const user = {
-  _id: 1,
-  name: 'Aaron',
-  avatar: 'https://lmg.jj20.com/up/allimg/1111/05161Q64001/1P516164001-3-1200.jpg',
-};
+import { useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const Empty = () => null;
 
@@ -40,9 +36,27 @@ const ListViewProps = {
   legacyImplementation: true,
 };
 
+const format = (message: IMMessage[]): IMessage[] => {
+  return message.map(ele => ({
+    _id: ele.sendUuid,
+    text: ele.content,
+    createdAt: Number(ele.createAt),
+    user: {
+      _id: ele.from,
+    },
+  }));
+};
+
 const ChatsUI = () => {
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  const currentChannelId = useCurrentChannelId();
+  const { list, init } = useChannel(currentChannelId || '');
+
+  const formattedList = format(list);
+
+  const [, setMessages] = useState<IMessage[]>([]);
+
   const dispatch = useChatsDispatch();
+
   useEffect(() => {
     setMessages(initialMessages as IMessage[]);
   }, []);
@@ -52,6 +66,7 @@ const ChatsUI = () => {
   };
 
   useEffectOnce(() => {
+    init();
     initChatInputRecorder();
     return () => {
       dispatch(setChatText(''));
@@ -106,13 +121,12 @@ const ChatsUI = () => {
     <>
       <GiftedChat
         alignTop
-        user={user}
         alwaysShowSend
         scrollToBottom
         onSend={onSend}
         renderTime={Empty}
         isCustomViewBottom
-        messages={messages}
+        messages={formattedList}
         renderAvatar={Empty}
         showUserAvatar={false}
         minInputToolbarHeight={0}

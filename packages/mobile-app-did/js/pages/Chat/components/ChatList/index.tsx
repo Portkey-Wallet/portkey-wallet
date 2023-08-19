@@ -9,6 +9,8 @@ import NoData from 'components/NoData';
 import { useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { useChatsDispatch } from '../../context/hooks';
+import { setCurrentChannelId } from '../../context/chatsContext';
 
 type ChatListType = {
   chatList: ChannelItem[];
@@ -19,6 +21,7 @@ export default function ChatList(props: ChatListType) {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
+  const chatDispatch = useChatsDispatch();
 
   const onHideChannel = useCallback(
     async (item: ChannelItem) => {
@@ -72,6 +75,14 @@ export default function ChatList(props: ChatListType) {
     [muteChannel, onHideChannel, pinChannel],
   );
 
+  const navToDetail = useCallback(
+    (item: ChannelItem) => {
+      chatDispatch(setCurrentChannelId(item.channelUuid));
+      navigationService.navigate('ChatDetails', { channelInfo: item });
+    },
+    [chatDispatch],
+  );
+
   return (
     <FlatList
       style={BGStyles.bg1}
@@ -81,7 +92,7 @@ export default function ChatList(props: ChatListType) {
         <ChatHomeListItemSwiped
           item={item}
           onDelete={() => onHideChannel(item)}
-          onPress={() => navigationService.navigate('ChatDetails', { channelInfo: item })}
+          onPress={() => navToDetail(item)}
           onLongPress={event => longPress(event, item)}
         />
       )}

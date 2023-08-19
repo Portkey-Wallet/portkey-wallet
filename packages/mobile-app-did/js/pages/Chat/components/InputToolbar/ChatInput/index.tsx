@@ -7,9 +7,9 @@ import {
   TextInputContentSizeChangeEventData,
   TextInputSelectionChangeEventData,
 } from 'react-native';
-import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../context/hooks';
+import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../../context/hooks';
 import GStyles from 'assets/theme/GStyles';
-import { setChatText } from '../../context/chatsContext';
+import { setChatText } from '../../../context/chatsContext';
 import Svg from 'components/Svg';
 import { StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';

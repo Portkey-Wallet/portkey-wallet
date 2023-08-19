@@ -28,3 +28,7 @@ export function useLatestText() {
   const text = useChatText();
   return useLatestRef(text);
 }
+
+export function useCurrentChannelId() {
+  return useAppSelector(state => state.chats.currentChannelId);
+}

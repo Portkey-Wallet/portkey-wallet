@@ -17,8 +17,9 @@ import { FontStyles } from 'assets/theme/styles';
 import AddContactButton from '../components/AddContactButton';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { ChannelItem } from '@portkey-wallet/im/types';
-import { useChannel, useMuteChannel, usePinChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useMuteChannel, usePinChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
+import { useCurrentChannelId } from '../context/hooks';
 
 type RouterParams = {
   channelInfo?: ChannelItem;
@@ -31,7 +32,11 @@ const ChatDetails = () => {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
-  const { sendMessage } = useChannel(channelInfo?.channelUuid || '');
+  const currentChannelId = useCurrentChannelId();
+
+  // useEffectOnce(() => {
+  //   init();
+  // });
 
   const onPressMore = useCallback(
     (event: { nativeEvent: { pageX: any; pageY: any } }) => {
@@ -47,14 +52,14 @@ const ChatDetails = () => {
             title: pin ? ChatOperationsEnum.UNPIN : ChatOperationsEnum.PIN,
             iconName: pin ? 'chat-unpin' : 'chat-pin',
             onPress: () => {
-              pinChannel(channelInfo?.channelUuid || '', !pin);
+              pinChannel(currentChannelId || '', !pin);
             },
           },
           {
             title: mute ? ChatOperationsEnum.UNMUTE : ChatOperationsEnum.MUTE,
             iconName: mute ? 'chat-unmute' : 'chat-mute',
             onPress: () => {
-              muteChannel(channelInfo?.channelUuid || '', !channelInfo?.channelUuid);
+              muteChannel(currentChannelId || '', !channelInfo?.channelUuid);
             },
           },
           {
@@ -72,7 +77,7 @@ const ChatDetails = () => {
                     title: 'Confirm',
                     type: 'primary',
                     onPress: () => {
-                      hideChannel(channelInfo?.channelUuid || '');
+                      hideChannel(currentChannelId || '');
                     },
                   },
                 ],
@@ -85,7 +90,7 @@ const ChatDetails = () => {
         position: 'left',
       });
     },
-    [channelInfo?.channelUuid, hideChannel, mute, muteChannel, pin, pinChannel],
+    [channelInfo?.channelUuid, currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel],
   );
 
   return (

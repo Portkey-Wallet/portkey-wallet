@@ -21,7 +21,7 @@ function MessageImage(props: MessageImageProps<ChatMessage>) {
     const imageSize = formatImageSize({ width, height, maxWidth, maxHeight });
     return (
       <CacheImage
-        style={[styles.image, { width: imageSize.width, height: imageSize.width }]}
+        style={[styles.image, { width: imageSize.width, height: imageSize.height }]}
         resizeMode="cover"
         source={{ uri: decodeURIComponent(thumbUri || '') }}
       />

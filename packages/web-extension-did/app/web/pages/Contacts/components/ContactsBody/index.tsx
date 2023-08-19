@@ -67,7 +67,6 @@ export default function ContactsBody({
             list={list}
             isSearch={isSearch}
             clickItem={(item) => {
-              console.log('🌈 🌈 🌈 🌈 🌈 🌈 ', JSON.stringify(item));
               navigate('/setting/contacts/view', { state: item });
             }}
             clickChat={handleChat}

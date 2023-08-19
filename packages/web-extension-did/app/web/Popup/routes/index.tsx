@@ -82,14 +82,6 @@ export const PageRouter = () =>
       element: <WalletName />,
     },
     {
-      path: '/setting/wallet/:type',
-      element: <ContactDetail />,
-    },
-    {
-      path: '/setting/wallet/:type/:extra',
-      element: <ContactDetail />,
-    },
-    {
       path: '/setting/wallet/auto-lock',
       element: <AutoLock />,
     },

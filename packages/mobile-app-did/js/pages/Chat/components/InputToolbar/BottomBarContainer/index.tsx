@@ -7,10 +7,10 @@ import Touchable from 'components/Touchable';
 import { Animated } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useKeyboardAnim } from '../../hooks';
+import { useKeyboardAnim, useSendCurrentChannelMessage } from '../../hooks';
 import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
-import { setBottomBarStatus } from '../../../context/chatsContext';
+import { setBottomBarStatus, setChatText } from '../../../context/chatsContext';
 import { BGStyles } from 'assets/theme/styles';
 import { SendMessageButton } from '../SendMessageButton';
 import { ChatInput, ChatInputBar } from '../ChatInput';
@@ -34,7 +34,7 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
   const textInputRef = useRef<ChatInput>(null);
   const keyboardAnim = useKeyboardAnim({ textInputRef });
   const timer = useRef<NodeJS.Timeout>();
-
+  const { sendChannelMessage } = useSendCurrentChannelMessage();
   const inputFocus = useCallback(
     (autoHide?: boolean) => {
       textInputRef.current?.focus(autoHide);
@@ -63,13 +63,16 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
       timer.current && clearTimeout(timer.current);
     };
   });
-
+  const onSend = useCallback(() => {
+    dispatch(setChatText(''));
+    sendChannelMessage(text);
+  }, [dispatch, sendChannelMessage, text]);
   return (
     <View style={styles.wrap}>
       <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
         <ChatInputBar ref={textInputRef} onPressActionButton={onPressActionButton} />
-        <SendMessageButton text={text} containerStyle={styles.sendStyle} />
+        <SendMessageButton text={text} containerStyle={styles.sendStyle} onSend={onSend} />
       </Touchable>
       <Animated.View style={{ height: keyboardAnim }}>{children}</Animated.View>
     </View>

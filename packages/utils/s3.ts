@@ -96,8 +96,7 @@ export const formatRNImage = (
   };
 };
 
-export const getThumbSize = (width: number, height: number) => {
-  const max = 100;
+export const getThumbSize = (width: number, height: number, max = 100) => {
   const min = 1;
   const ratio = Math.min(max / width, max / height);
   if (ratio >= 1) return { thumbWidth: width, thumbHeight: height };

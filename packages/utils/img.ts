@@ -16,3 +16,22 @@ export const getAWSUrlWithSize = (
     .concat(urlArr[len - 1])
     .join('/');
 };
+
+export const formatImageSize = ({
+  height = 0,
+  width = 0,
+  maxWidth = 100,
+  maxHeight = 100,
+}: {
+  width?: string | number;
+  height?: string | number;
+  maxWidth?: number;
+  maxHeight?: number;
+}) => {
+  if (typeof height === 'string') height = Number(height);
+  if (typeof width === 'string') width = Number(width);
+  const ratio = Math.min(maxWidth / width, maxHeight / height);
+  const tempWidth = Math.floor(width * ratio);
+  const tempHeight = Math.floor(Math.max(height * ratio));
+  return { width: tempWidth || maxWidth, height: tempHeight || maxHeight };
+};

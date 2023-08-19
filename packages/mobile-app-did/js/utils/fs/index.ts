@@ -66,3 +66,7 @@ export const copyFileToPath = async (originPath: string, newPath: string) => {
   newPath = formatFilePath(newPath);
   return FileSystem.copyAsync({ from: originPath, to: newPath });
 };
+
+export const readFile = async (fileUri: string, options?: FileSystem.ReadingOptions) => {
+  return FileSystem.readAsStringAsync(fileUri, options);
+};

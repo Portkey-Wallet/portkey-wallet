@@ -4,9 +4,11 @@ import { Animated } from 'react-native';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import usePrevious from 'hooks/usePrevious';
 import { TextInput } from 'react-native';
-import { useBottomBarStatus, useChatsDispatch } from '../../context/hooks';
+import { useBottomBarStatus, useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../../context/chatsContext';
+import { ImageMessageFileType, useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { MessageType } from '@portkey-wallet/im';
 
 let TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
 if (!isIOS) {
@@ -58,4 +60,17 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
   }, [dispatch, isKeyboardOpened, textInputRef]);
 
   return keyboardAnim;
+}
+
+export function useSendCurrentChannelMessage() {
+  const currentChannelId = useCurrentChannelId();
+  const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
+  return useMemo(
+    () => ({
+      sendChannelMessage: (content: string, type?: MessageType) =>
+        sendChannelMessage(currentChannelId || '', content, type),
+      sendChannelImage: (file: ImageMessageFileType) => sendChannelImage(currentChannelId || '', file),
+    }),
+    [currentChannelId, sendChannelImage, sendChannelMessage],
+  );
 }

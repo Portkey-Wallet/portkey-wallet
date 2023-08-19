@@ -13,33 +13,53 @@ import Svg, { IconName } from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import { ViewStyleType } from 'types/styles';
+import { readFile } from 'utils/fs';
+import { formatRNImage } from '@portkey-wallet/utils/s3';
+import { useSendCurrentChannelMessage } from '../../hooks';
+import OverlayModal from 'components/OverlayModal';
 import { bindUriToLocalImage } from 'utils/fs/img';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
+  const { sendChannelImage } = useSendCurrentChannelMessage();
   const selectPhoto = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       allowsMultipleSelection: false,
     });
-    if (result.cancelled) return;
-    await bindUriToLocalImage(result.uri, 'https://google.com');
-    if (result.uri) {
-      SendPicModal.showSendPic({
-        uri: result.uri,
-        buttons: [
-          {
-            title: 'Cancel',
-            type: 'outline',
+    console.log(result, '=====result');
+
+    if (result.cancelled || !result.uri) return;
+    SendPicModal.showSendPic({
+      uri: result.uri,
+      autoClose: false,
+      buttons: [
+        {
+          title: 'Cancel',
+          type: 'outline',
+          onPress: OverlayModal.hide,
+        },
+        {
+          title: 'Send',
+          type: 'primary',
+          onPress: async () => {
+            try {
+              const file = result;
+              const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
+              const data = formatRNImage(file, fileBase64);
+              const imgResult = await sendChannelImage(data);
+              console.log(imgResult, '=====imgResult');
+
+              await bindUriToLocalImage(file.uri, imgResult.url);
+            } catch (error) {
+              console.log(error, '====error');
+            }
+            OverlayModal.hide();
           },
-          {
-            title: 'Send',
-            type: 'primary',
-          },
-        ],
-      });
-    }
-  }, []);
+        },
+      ],
+    });
+  }, [sendChannelImage]);
 
   const toolList = useMemo((): { label: string; icon: IconName; onPress: () => void }[] => {
     return [

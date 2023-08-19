@@ -1,42 +1,58 @@
-import React, { memo } from 'react';
-import { IMessage, MessageImageProps, Time } from 'react-native-gifted-chat';
-import { StyleSheet } from 'react-native';
+import React, { memo, useCallback, useMemo } from 'react';
+import { MessageImageProps, Time } from 'react-native-gifted-chat';
+import { GestureResponderEvent, StyleSheet } from 'react-native';
 import CacheImage from 'components/CacheImage';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
+import { ChatMessage } from 'pages/Chat/types';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { formatImageSize } from '@portkey-wallet/utils/img';
 
-const MockImgSource = {
-  uri: 'https://img0.baidu.com/it/u=925843206,3288141497&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=769',
-};
+const maxWidth = screenWidth * 0.6;
+const maxHeight = screenWidth * 0.6;
 
-function MessageImage(props: MessageImageProps<IMessage>) {
+function MessageImage(props: MessageImageProps<ChatMessage>) {
   const { currentMessage } = props;
-
+  const { imageInfo } = currentMessage || {};
+  const { imgUri, thumbUri, width, height } = imageInfo || {};
+  const img = useMemo(() => {
+    const imageSize = formatImageSize({ width, height, maxWidth, maxHeight });
+    return (
+      <CacheImage
+        style={[styles.image, { width: imageSize.width, height: imageSize.width }]}
+        resizeMode="cover"
+        source={{ uri: decodeURIComponent(thumbUri || '') }}
+      />
+    );
+  }, [height, thumbUri, width]);
+  const onPreviewImage = useCallback(
+    (event: GestureResponderEvent) => {
+      const { pageX, pageY } = event.nativeEvent;
+      ChatOverlay.showPreviewImage({
+        source: { uri: decodeURIComponent(imgUri || '') },
+        thumb: { uri: decodeURIComponent(thumbUri || '') },
+        customBounds: { x: pageX, y: pageY, width: 0, height: 0 },
+      });
+    },
+    [imgUri, thumbUri],
+  );
+  const onShowChatPopover = useCallback((event: GestureResponderEvent) => {
+    const { pageX, pageY } = event.nativeEvent;
+    ChatOverlay.showChatPopover({
+      list: [
+        { title: 'Copy', iconName: 'copy' },
+        { title: 'Delete', iconName: 'chat-delete' },
+      ],
+      px: pageX,
+      py: pageY,
+      formatType: 'dynamicWidth',
+    });
+  }, []);
   return (
-    <Touchable
-      onPress={event => {
-        const { pageX, pageY } = event.nativeEvent;
-        ChatOverlay.showPreviewImage({
-          source: MockImgSource,
-          thumb: MockImgSource,
-          customBounds: { x: pageX, y: pageY, width: 0, height: 0 },
-        });
-      }}
-      onLongPress={event => {
-        const { pageX, pageY } = event.nativeEvent;
-        ChatOverlay.showChatPopover({
-          list: [
-            { title: 'Copy', iconName: 'copy' },
-            { title: 'Delete', iconName: 'chat-delete' },
-          ],
-          px: pageX,
-          py: pageY,
-          formatType: 'dynamicWidth',
-        });
-      }}>
-      <CacheImage style={styles.image} resizeMode="cover" source={MockImgSource} />
+    <Touchable onPress={onPreviewImage} onLongPress={onShowChatPopover}>
+      {img}
       <Time
         timeFormat="HH:mm"
         timeTextStyle={timeTextStyle}

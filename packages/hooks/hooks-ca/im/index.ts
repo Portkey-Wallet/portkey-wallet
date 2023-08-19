@@ -26,7 +26,7 @@ export const useUnreadCount = () => {
   return unreadCount;
 };
 
-export const useInitIm = () => {
+export const useInitIM = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 

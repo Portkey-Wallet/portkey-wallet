@@ -10,6 +10,7 @@ import { IBaseRequest } from '@portkey/types';
 import { IMService } from './service';
 import { getVerifyData } from './utils';
 import { IM_TOKEN_ERROR_ARRAY } from './constant';
+import { request } from '@portkey-wallet/api/api-did';
 
 export class IM {
   private _imInstance?: RelationIM;
@@ -81,13 +82,7 @@ export class IM {
         console.log('caHash changed');
         return undefined;
       }
-      this.config.setConfig({
-        requestDefaults: {
-          headers: {
-            'R-Authorization': `Bearer ${token}`,
-          },
-        },
-      });
+      this.setAuthorization(token);
 
       // TODO: remove test API_KEY
       const API_KEY = '295edaae67724a8ba04f4f39b9221779';
@@ -266,13 +261,7 @@ export class IM {
           if (caHash !== this._caHash) {
             throw new Error('account changed');
           }
-          this.config.setConfig({
-            requestDefaults: {
-              headers: {
-                'R-Authorization': `Bearer ${token}`,
-              },
-            },
-          });
+          this.setAuthorization(token);
           return await send.apply(this.fetchRequest, args);
         } catch (error) {
           throw error;
@@ -299,6 +288,21 @@ export class IM {
     im.updateMessageCount(messageCount);
     return messageCount;
   };
+
+  private setAuthorization(token: string) {
+    this.config.setConfig({
+      requestDefaults: {
+        headers: {
+          ...this.config.requestDefaults?.headers,
+          'R-Authorization': `Bearer ${token}`,
+        },
+      },
+    });
+    request.set('headers', {
+      ...request.defaultConfig.headers,
+      'R-Authorization': `Bearer ${token}`,
+    });
+  }
 
   destroy() {
     this._imInstance && this._imInstance.destroy();

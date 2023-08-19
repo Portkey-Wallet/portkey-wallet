@@ -4,6 +4,7 @@ import AddContactButton from '../components/AddContactButton';
 import ContactsBody from '../components/ContactsBody';
 import ContactsSearchInput from '../components/ContactsSearchInput';
 import './index.less';
+import ImputationTip from '../components/ImputationTip';
 
 export default function ContactsPopup({
   headerTitle,
@@ -16,6 +17,8 @@ export default function ContactsPopup({
   list,
   contactCount,
   initData,
+  showImputation = false,
+  closeImputationTip,
 }: IContactsProps) {
   return (
     <div className="flex-column contacts-popup min-width-max-height">
@@ -31,6 +34,7 @@ export default function ContactsPopup({
         />
         <ContactsSearchInput placeholder={searchPlaceholder} handleChange={handleSearch} />
       </div>
+      {showImputation && <ImputationTip closeTip={closeImputationTip} />}
       <ContactsBody
         isSearch={isSearch}
         list={list}

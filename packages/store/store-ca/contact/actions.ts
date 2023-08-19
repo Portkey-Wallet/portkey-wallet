@@ -129,3 +129,5 @@ export const editContactAction = createAction<ContactItemType>('contact/editCont
 export const deleteContactAction = createAction<ContactItemType>('contact/deleteContract');
 
 export const resetContact = createAction<void>('contact/resetContact');
+
+export const readImputationAction = createAction<ContactItemType>('contact/readImputation');

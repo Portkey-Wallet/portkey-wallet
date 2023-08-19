@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
-import { useContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useContact, useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -28,6 +28,8 @@ export interface IContactsProps extends BaseHeaderProps {
   list: ContactIndexType[];
   contactCount: number;
   initData: Partial<ContactItemType>;
+  showImputation?: boolean;
+  closeImputationTip: () => void;
 }
 
 export default function Contacts() {
@@ -38,6 +40,9 @@ export default function Contacts() {
   const [curList, setCurList] = useState<ContactIndexType[]>(contactIndexList);
   const [isSearch, setIsSearch] = useState<boolean>(false);
   const filterContact = useMemo(() => contactIndexList.filter((c) => c.contacts.length > 0), [contactIndexList]);
+  const isImputation = useIsImputation();
+  const [isCloseImputationManually, setIsCloseImputationManually] = useState(false);
+  const showImputation = isImputation && !isCloseImputationManually;
 
   useEffectOnce(() => {
     appDispatch(fetchContactListAsync());
@@ -106,6 +111,10 @@ export default function Contacts() {
 
   const handleAdd = useGoAddNewContact();
 
+  const closeImputationTip = () => {
+    setIsCloseImputationManually(true);
+  };
+
   return isNotLessThan768 ? (
     <ContactsPrompt
       headerTitle={title}
@@ -116,6 +125,8 @@ export default function Contacts() {
       list={curList}
       contactCount={curTotalContactsNum}
       initData={initContactItem}
+      showImputation={showImputation}
+      closeImputationTip={closeImputationTip}
       handleAdd={() => handleAdd('3', initContactItem)}
       handleSearch={searchContacts}
     />
@@ -129,6 +140,8 @@ export default function Contacts() {
       list={curList}
       contactCount={curTotalContactsNum}
       initData={initContactItem}
+      showImputation={showImputation}
+      closeImputationTip={closeImputationTip}
       handleAdd={() => handleAdd('3', initContactItem)}
       handleSearch={searchContacts}
     />

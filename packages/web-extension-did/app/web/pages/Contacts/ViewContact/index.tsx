@@ -2,9 +2,11 @@ import ViewContactPrompt from './Prompt';
 import ViewContactPopup from './Popup';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import { useProfileChat, useProfileCopy, useGoProfileEdit } from 'hooks/useProfile';
+import CustomModal from 'pages/components/CustomModal';
+import { useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -28,6 +30,26 @@ export default function ViewContact() {
   const handleAdd = () => {
     console.log('add');
   };
+
+  const readImputationApi = useReadImputation();
+  useEffect(() => {
+    if (state?.isImputation) {
+      // imputation from unread to read
+      readImputationApi(state);
+
+      CustomModal({
+        content: (
+          <div>
+            <div className="auto-update-title">{`Auto Updates`}</div>
+            <div>
+              {'Portkey has grouped contacts with the same Portkey ID into one and removed duplicate contacts.'}
+            </div>
+          </div>
+        ),
+        okText: 'OK',
+      });
+    }
+  }, [readImputationApi, state]);
 
   // TODO btn show logic
   return isNotLessThan768 ? (

@@ -2,9 +2,11 @@ import clsx from 'clsx';
 import { ReactNode, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import PortKeyHeader from '../PortKeyHeader';
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 export default function PromptFrame({ content, className }: { content: ReactNode; className?: string }) {
   const navigate = useNavigate();
+  const isImputation = useIsImputation();
 
   const onUserClick = useCallback(() => {
     navigate(`/setting`);
@@ -12,7 +14,7 @@ export default function PromptFrame({ content, className }: { content: ReactNode
 
   return (
     <div className={clsx(['portkey-prompt', className])}>
-      <PortKeyHeader onUserClick={onUserClick} />
+      <PortKeyHeader unReadShow={isImputation} onUserClick={onUserClick} />
       {content}
     </div>
   );

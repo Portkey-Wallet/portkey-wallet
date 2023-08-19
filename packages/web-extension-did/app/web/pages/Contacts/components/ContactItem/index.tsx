@@ -16,7 +16,7 @@ export default function ContactItem({ item, hasChatEntry = true, clickChat }: IC
       </div>
       {hasChatEntry && (
         <div className="flex-center contact-item-left" onClick={(e) => clickChat(e, item)}>
-          chat
+          {`Chat`}
         </div>
       )}
     </div>

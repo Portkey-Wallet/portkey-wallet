@@ -15,7 +15,6 @@ import { useGoProfile, useProfileCopy } from 'hooks/useProfile';
 import { IEditContactFormProps } from '../components/EditContactForm';
 import { ContactInfoError, ValidData } from '../AddContact';
 import CustomModal from 'pages/components/CustomModal';
-import { useEffectOnce } from 'react-use';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 
@@ -122,14 +121,11 @@ export default function EditContact() {
   const handleView = useGoProfile();
   const onFinish = useCallback(
     async (values: ContactItemType) => {
-      const {
-        name,
-        caHolderInfo: { walletName },
-      } = values;
+      const { name, caHolderInfo } = values;
 
       try {
         setLoading(true);
-        const checkName = await handleCheckName(walletName.trim());
+        const checkName = await handleCheckName(caHolderInfo?.walletName?.trim() || '');
         const checkRemark = await handleCheckRemark(name.trim());
         if (checkName && checkRemark) {
           // TODO wallet name

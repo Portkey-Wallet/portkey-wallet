@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import IdAndAddress from '../IdAndAddress';
 import './index.less';
 import { ValidData } from 'pages/Contacts/AddContact';
-import { useEffectOnce } from 'react-use';
 
 const { Item: FormItem } = Form;
 

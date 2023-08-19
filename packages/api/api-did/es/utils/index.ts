@@ -27,7 +27,9 @@ export const getContactEventList = (
     size,
     modificationTime,
     fetchTime,
-  }: { page: number; size: number; modificationTime: string; fetchTime: string },
+    keyword,
+    isAbleChat = false,
+  }: IGetContactListParams & { fetchTime: string },
 ): Promise<GetContractListApiType> => {
   return request.es.getContactList({
     baseURL,
@@ -37,6 +39,8 @@ export const getContactEventList = (
       sortType: 0,
       skipCount: (page - 1) * size,
       maxResultCount: size,
+      keyword,
+      isAbleChat,
     },
   });
 };

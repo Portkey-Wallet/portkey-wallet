@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { MessageImageProps, Time } from 'react-native-gifted-chat';
+import { MessageProps, Time } from 'react-native-gifted-chat';
 import { GestureResponderEvent, StyleSheet } from 'react-native';
 import CacheImage from 'components/CacheImage';
 import { defaultColors } from 'assets/theme';
@@ -13,20 +13,26 @@ import { formatImageSize } from '@portkey-wallet/utils/img';
 const maxWidth = screenWidth * 0.6;
 const maxHeight = screenWidth * 0.6;
 
-function MessageImage(props: MessageImageProps<ChatMessage>) {
-  const { currentMessage } = props;
+function MessageImage(props: MessageProps<ChatMessage>) {
+  const { currentMessage, position } = props;
+
   const { imageInfo } = currentMessage || {};
   const { imgUri, thumbUri, width, height } = imageInfo || {};
+  const radiusStyle = useMemo(
+    () => (position === 'left' ? { borderTopLeftRadius: 0 } : { borderTopRightRadius: 0 }),
+    [position],
+  );
   const img = useMemo(() => {
     const imageSize = formatImageSize({ width, height, maxWidth, maxHeight });
     return (
       <CacheImage
-        style={[styles.image, { width: imageSize.width, height: imageSize.height }]}
+        style={[styles.image, { width: imageSize.width, height: imageSize.height }, radiusStyle]}
         resizeMode="cover"
         source={{ uri: decodeURIComponent(thumbUri || '') }}
       />
     );
-  }, [height, thumbUri, width]);
+  }, [height, radiusStyle, thumbUri, width]);
+
   const onPreviewImage = useCallback(
     (event: GestureResponderEvent) => {
       const { pageX, pageY } = event.nativeEvent;
@@ -38,6 +44,7 @@ function MessageImage(props: MessageImageProps<ChatMessage>) {
     },
     [imgUri, thumbUri],
   );
+
   const onShowChatPopover = useCallback((event: GestureResponderEvent) => {
     const { pageX, pageY } = event.nativeEvent;
     ChatOverlay.showChatPopover({
@@ -50,6 +57,7 @@ function MessageImage(props: MessageImageProps<ChatMessage>) {
       formatType: 'dynamicWidth',
     });
   }, []);
+
   return (
     <Touchable onPress={onPreviewImage} onLongPress={onShowChatPopover}>
       {img}
@@ -67,7 +75,6 @@ export default memo(MessageImage);
 
 const styles = StyleSheet.create({
   image: {
-    borderTopRightRadius: 0,
     borderRadius: pTd(18),
     width: pTd(280),
     height: pTd(280),

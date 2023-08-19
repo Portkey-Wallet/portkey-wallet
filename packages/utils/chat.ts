@@ -4,10 +4,9 @@ export const formatMessageCountToStr = (num: number): string | undefined => {
   return num > 99 ? '99+' : String(num);
 };
 
-export const formatChatListTime = (timeStamp?: number | string): string => {
-  if (!timeStamp) return '';
-
-  const chatTime = dayjs(Number(timeStamp));
+export const formatChatListTime = (date?: dayjs.ConfigType): string => {
+  if (!date) return '';
+  const chatTime = dayjs(date);
   const now = dayjs();
   const today = now.startOf('date');
   const yesterday = today.subtract(1, 'day');
@@ -23,3 +22,18 @@ export const formatChatListTime = (timeStamp?: number | string): string => {
     return chatTime.format('YYYY-MM-DD');
   }
 };
+
+export const formatMessageTime = (date?: dayjs.ConfigType): string => {
+  if (!date) return '';
+  const messageTime = dayjs(date);
+  const now = dayjs();
+  if (now.year() === messageTime.year()) {
+    return messageTime.format('MM-DD');
+  } else {
+    return messageTime.format('YYYY-MM-DD');
+  }
+};
+
+export function isSameDay(date1: dayjs.ConfigType, date2: dayjs.ConfigType) {
+  return dayjs(date1).isSame(dayjs(date2));
+}

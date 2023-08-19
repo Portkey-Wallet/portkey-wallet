@@ -5,6 +5,7 @@ import { BaseConfig, RequestConfig } from '../types';
 import { getRequestConfig, spliceUrl } from '../utils';
 import { isValidRefreshTokenConfig, queryAuthorization, RefreshTokenConfig } from './utils/index';
 import { sleep } from '@portkey-wallet/utils';
+import im from '@portkey-wallet/im';
 export class DidService extends ServiceInit {
   protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;
@@ -23,6 +24,15 @@ export class DidService extends ServiceInit {
       if (!this.refreshTokenConfig || !isValidRefreshTokenConfig(this.refreshTokenConfig)) return;
       const authorization = await queryAuthorization(this.refreshTokenConfig);
       this.defaultConfig.headers = { ...this.defaultConfig.headers, Authorization: authorization };
+
+      im.config.setConfig({
+        requestDefaults: {
+          headers: {
+            ...im.config.requestDefaults?.headers,
+            Authorization: authorization,
+          },
+        },
+      });
       this.locked = false;
       return authorization;
     } catch (error) {

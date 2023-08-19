@@ -129,3 +129,7 @@ export const useReadImputation = () => {
     [currentNetworkInfo.apiUrl, dispatch],
   );
 };
+
+export const useContactRelationIdMap = () => {
+  return useAppCommonSelector(state => state.contact.contactRelationIdMap);
+};

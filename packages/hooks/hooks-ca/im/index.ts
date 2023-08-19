@@ -62,6 +62,7 @@ export const useInitIM = () => {
               lastPostAt: rawMsg.createAt,
               mute: rawMsg.mute,
               pin: false,
+              toRelationId: rawMsg.from,
             },
           }),
         );

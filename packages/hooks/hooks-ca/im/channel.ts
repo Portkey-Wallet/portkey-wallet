@@ -15,16 +15,24 @@ import {
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
 
-import { useChannelItemInfo, useImChannelMessageListNetMapState } from '.';
+import { useChannelItemInfo, useChannelList, useImChannelMessageListNetMapState } from '.';
 import s3Instance, { getThumbSize } from '@portkey-wallet/utils/s3';
 import { request } from '@portkey-wallet/api/api-did';
 import { messageParser } from '@portkey-wallet/im/utils';
+import { useContactRelationIdMap } from '../contact';
 
 export type ImageMessageFileType = {
   body: string | File;
   suffix?: string;
   width: number;
   height: number;
+};
+
+export const useIsStranger = (relationId: string) => {
+  const contactRelationIdMap = useContactRelationIdMap();
+  return useMemo(() => {
+    return !contactRelationIdMap?.[relationId];
+  }, [contactRelationIdMap, relationId]);
 };
 
 export const useSendChannelMessage = () => {
@@ -216,8 +224,9 @@ export const useChannel = (channelId: string) => {
   const hideChannel = useHideChannel();
   const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
   const deleteMessage = useDeleteMessage(channelId);
-
   const info = useChannelItemInfo(channelId);
+  const isStranger = useIsStranger(info?.toRelationId || '');
+
   const [hasNext, setHasNext] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -403,6 +412,7 @@ export const useChannel = (channelId: string) => {
     exit,
     deleteMessage,
     sendImage,
+    isStranger,
   };
 };
 
@@ -426,7 +436,7 @@ export const useMuteChannel = () => {
           },
         }),
       );
-      if (isRefreshTotal || !value) {
+      if (isRefreshTotal) {
         im.refreshMessageCount();
       }
     },

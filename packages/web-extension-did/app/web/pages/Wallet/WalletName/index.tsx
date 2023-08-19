@@ -23,7 +23,7 @@ export default function WalletName() {
     name: 'by',
     addresses: [{ chainId: 'AELF', address: 'H8CXvfy8hm', chainName: 'aelf' }],
     portkeyId: '111111',
-    relationOneId: '111',
+    relationId: '111',
     isNameDisable: false,
     isShowRemark: false,
   };

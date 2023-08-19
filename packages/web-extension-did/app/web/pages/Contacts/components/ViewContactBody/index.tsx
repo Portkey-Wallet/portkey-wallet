@@ -66,7 +66,7 @@ export default function ViewContactBody({
 
         <IdAndAddress
           portkeyId={data?.portkeyId}
-          relationOneId={data?.relationOneId}
+          relationId={data?.relationId}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
         />

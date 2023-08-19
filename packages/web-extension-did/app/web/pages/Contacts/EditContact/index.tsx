@@ -15,6 +15,7 @@ import { useGoProfile, useProfileCopy } from 'hooks/useProfile';
 import { IEditContactFormProps } from '../components/EditContactForm';
 import { ContactInfoError, ValidData } from '../AddContact';
 import CustomModal from 'pages/components/CustomModal';
+import { useEffectOnce } from 'react-use';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 

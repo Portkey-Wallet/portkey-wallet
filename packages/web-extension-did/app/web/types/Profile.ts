@@ -7,7 +7,7 @@ export interface IProfileDetailDataProps {
   name: string;
   remark?: string;
   portkeyId: string;
-  relationOneId: string;
+  relationId: string;
   index: string;
   addresses: AddressItem[];
   isNameDisable?: boolean;

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import IdAndAddress from '../IdAndAddress';
 import './index.less';
 import { ValidData } from 'pages/Contacts/AddContact';
+import { useEffectOnce } from 'react-use';
 
 const { Item: FormItem } = Form;
 
@@ -77,7 +78,7 @@ export default function EditContactForm({
               validateStatus={validRemark?.validateStatus}
               help={validRemark?.errorMsg}>
               <Input
-                placeholder={t('Enter remark')}
+                placeholder={t('Not set')}
                 onChange={(e) => handleInputRemarkChange(e.target.value)}
                 maxLength={16}
               />
@@ -85,7 +86,12 @@ export default function EditContactForm({
           )}
         </div>
 
-        <IdAndAddress portkeyId={'22'} relationOneId={''} addresses={[]} handleCopy={handleCopy} />
+        <IdAndAddress
+          portkeyId={state?.imInfo?.portkeyId}
+          relationId={state?.imInfo?.relationId}
+          addresses={state?.addresses || []}
+          handleCopy={handleCopy}
+        />
       </div>
       <div className="form-btn">
         <div className="flex-between form-btn-edit">

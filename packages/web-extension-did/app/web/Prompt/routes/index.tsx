@@ -24,7 +24,7 @@ import TokenDetail from 'pages/Token/Detail';
 import Send from 'pages/Send';
 import Receive from 'pages/Receive';
 import NFT from 'pages/NFT';
-import Contact from 'pages/Contacts/ContactDetail';
+import ContactDetail from 'pages/Contacts/ContactDetail';
 import AccountSetting from 'pages/AccountSetting';
 import PromptMy from 'pages/PromptMy';
 import Guardians from 'pages/Guardians';
@@ -50,6 +50,7 @@ import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
 import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
 import DappAutoTx from 'pages/DappAutoTx';
+import FindMore from 'pages/Contacts/FindMore';
 import ChatList from 'pages/ChatList';
 import ChatBox from 'pages/ChatBox';
 import NewChat from 'pages/NewChat';
@@ -217,6 +218,14 @@ export const PageRouter = () => {
               element: <WalletName />,
             },
             {
+              path: '/setting/wallet/:type',
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/wallet/:type/:extra',
+              element: <ContactDetail />,
+            },
+            {
               path: '/setting/wallet/auto-lock',
               element: <AutoLock />,
             },
@@ -236,7 +245,15 @@ export const PageRouter = () => {
           children: [
             {
               path: '/setting/contacts/:type',
-              element: <Contact />,
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/contacts/:type/:extra',
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/contacts/find-more',
+              element: <FindMore />,
             },
           ],
         },
@@ -351,6 +368,14 @@ export const PageRouter = () => {
       element: <WalletName />,
     },
     {
+      path: '/setting/wallet/:type',
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/wallet/:type/:extra',
+      element: <ContactDetail />,
+    },
+    {
       path: '/setting/wallet/auto-lock',
       element: <AutoLock />,
     },
@@ -368,7 +393,15 @@ export const PageRouter = () => {
     },
     {
       path: '/setting/contacts/:type',
-      element: <Contact />,
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/:type/:extra',
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/find-more',
+      element: <FindMore />,
     },
     {
       path: '/setting/account-setting',

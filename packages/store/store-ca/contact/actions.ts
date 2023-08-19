@@ -26,6 +26,7 @@ export const fetchContactListAsync = createAsyncThunk<FetchContractListAsyncPayl
       return {
         isInit: true,
         contactIndexList: [],
+        isImputation: false,
         lastModified: 0,
       };
 
@@ -34,7 +35,8 @@ export const fetchContactListAsync = createAsyncThunk<FetchContractListAsyncPayl
     if (isInit || contactState.lastModified === 0) {
       let page = 1,
         errorTimes = 0,
-        totalCount = 0;
+        totalCount = 0,
+        isImputation = false;
 
       const modificationTime = Date.now();
       while (page === 1 || contactList.length < totalCount) {
@@ -48,6 +50,7 @@ export const fetchContactListAsync = createAsyncThunk<FetchContractListAsyncPayl
           console.log('getContactList: response', response);
           response.items.forEach(item => (item.modificationTime = new Date(item.modificationTime).getTime()));
           contactList = contactList.concat(response.items);
+          isImputation = contactList.some(item => item.isImputation);
           totalCount = response.totalCount;
           errorTimes = 0;
           page++;
@@ -67,6 +70,7 @@ export const fetchContactListAsync = createAsyncThunk<FetchContractListAsyncPayl
       return {
         isInit: true,
         contactIndexList: transContactsToIndexes(contactList),
+        isImputation,
         lastModified: modificationTime,
       };
     }
@@ -75,7 +79,9 @@ export const fetchContactListAsync = createAsyncThunk<FetchContractListAsyncPayl
     let eventList: ContactItemType[] = [];
     let page = 1,
       errorTimes = 0,
-      totalCount = 0;
+      totalCount = 0,
+      isImputation = false;
+
     const lastModified = contactState.lastModified;
     const fetchTime = Date.now();
 
@@ -91,6 +97,7 @@ export const fetchContactListAsync = createAsyncThunk<FetchContractListAsyncPayl
         console.log('getContactEventList: response', response);
         response.items.forEach(item => (item.modificationTime = new Date(item.modificationTime).getTime()));
         eventList = eventList.concat(response.items);
+        isImputation = eventList.some(item => item.isImputation);
         totalCount = response.totalCount;
         errorTimes = 0;
         page++;
@@ -109,6 +116,7 @@ export const fetchContactListAsync = createAsyncThunk<FetchContractListAsyncPayl
     return {
       isInit: false,
       eventList,
+      isImputation,
       lastModified: fetchTime,
     };
   },

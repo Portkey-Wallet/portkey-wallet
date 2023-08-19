@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
   hide: {
     width: 0,
     height: 0,
+    overflow: 'hidden',
   },
   absolute: {
     top: 0,

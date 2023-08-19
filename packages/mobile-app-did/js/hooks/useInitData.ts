@@ -11,8 +11,7 @@ import useEffectOnce from './useEffectOnce';
 import { useBookmarkList, useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
-import im from '@portkey-wallet/im';
-import { useInitIm } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
 
 // const getCurrentCAContract = useGetCurrentCAContract();
 
@@ -35,19 +34,19 @@ export default function useInitData() {
   useCheckAndInitNetworkDiscoverMap();
 
   const { refresh: loadBookmarkList } = useBookmarkList();
-  const initIm = useInitIm();
+  const initIM = useInitIM();
 
-  const initIM = useCallback(async () => {
+  const loadIM = useCallback(async () => {
     if (!pin) return;
     const account = getManagerAccount(pin);
     if (!account || !wallet.caHash) return;
 
     try {
-      await initIm(account, wallet.caHash);
+      await initIM(account, wallet.caHash);
     } catch (error) {
       console.log('im init error', error);
     }
-  }, [initIm, pin, wallet.caHash]);
+  }, [initIM, pin, wallet.caHash]);
 
   const init = useCallback(async () => {
     try {
@@ -61,7 +60,7 @@ export default function useInitData() {
       dispatch(getSymbolImagesAsync());
 
       loadBookmarkList();
-      initIM();
+      loadIM();
       // getGuardiansInfoWriteStore after getVerifierServers
       await getVerifierServers();
       getGuardiansInfoWriteStore({
@@ -75,9 +74,9 @@ export default function useInitData() {
     getCurrentCAViewContract,
     getGuardiansInfoWriteStore,
     getVerifierServers,
-    initIM,
     isMainNetwork,
     loadBookmarkList,
+    loadIM,
     wallet.caHash,
   ]);
 

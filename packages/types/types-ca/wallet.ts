@@ -72,3 +72,9 @@ export interface CaAccountRecoverResult {
   requestId: string;
   body: RecoverBody;
 }
+
+export interface CaHolderInfo {
+  userId: string;
+  caHash: string;
+  walletName: string;
+}

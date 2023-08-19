@@ -18,6 +18,30 @@ export const transIndexesToContactMap = (contactIndexList: ContactIndexType[]) =
   return contactMap;
 };
 
+export const transIndexesToContactPortkeyIdMap = (contactIndexList: ContactIndexType[]) => {
+  const contactPortkeyIdMap: ContactMapType = {};
+  contactIndexList.forEach(contactIndex => {
+    contactIndex.contacts.forEach(contact => {
+      if (contact.imInfo?.portkeyId) {
+        contactPortkeyIdMap[contact.imInfo?.portkeyId].push(contact);
+      }
+    });
+  });
+  return contactPortkeyIdMap;
+};
+
+export const transIndexesToContactRelationIdMap = (contactIndexList: ContactIndexType[]) => {
+  const contactRelationIdMap: ContactMapType = {};
+  contactIndexList.forEach(contactIndex => {
+    contactIndex.contacts.forEach(contact => {
+      if (contact.imInfo?.relationId) {
+        contactRelationIdMap[contact.imInfo?.relationId].push(contact);
+      }
+    });
+  });
+  return contactRelationIdMap;
+};
+
 const getIndexFromChar = (char: string) => {
   return char === '#' ? OTHER_INDEX : char.charCodeAt(0) - CHAR_CODE_A;
 };

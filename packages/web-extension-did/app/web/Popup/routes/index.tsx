@@ -18,7 +18,7 @@ import GuardiansEdit from 'pages/Guardians/GuardiansEdit';
 import GuardiansView from 'pages/Guardians/GuardiansView';
 import VerifierAccount from 'pages/VerifierAccount';
 import Unlock from 'pages/Unlock';
-import Contact from 'pages/Contacts/ContactDetail';
+import ContactDetail from 'pages/Contacts/ContactDetail';
 import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
 import WalletSecurity from 'pages/WalletSecurity';
 import SetNewPin from 'pages/AccountSetting/SetNewPin';
@@ -33,6 +33,7 @@ import WalletName from 'pages/Wallet/WalletName';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
+import FindMore from 'pages/Contacts/FindMore';
 import ChatList from 'pages/ChatList';
 import ChatBox from 'pages/ChatBox';
 import NewChat from 'pages/NewChat';
@@ -79,6 +80,14 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet/wallet-name',
       element: <WalletName />,
+    },
+    {
+      path: '/setting/wallet/:type',
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/wallet/:type/:extra',
+      element: <ContactDetail />,
     },
     {
       path: '/setting/wallet/auto-lock',
@@ -138,7 +147,15 @@ export const PageRouter = () =>
     },
     {
       path: '/setting/contacts/:type',
-      element: <Contact />,
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/:type/:extra',
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/find-more',
+      element: <FindMore />,
     },
     {
       path: '/setting/account-setting',

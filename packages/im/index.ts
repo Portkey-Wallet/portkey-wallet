@@ -1,7 +1,7 @@
 import RelationIM, { Im, config as relationConfig } from '@relationlabs/im';
 import * as utils from './utils';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { IMStatusEnum, Message, MessageCount, SocketMessage } from './types';
+import { IMStatusEnum, MessageCount, SocketMessage } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { IIMService } from './types/service';
 import { IMConfig } from './config';

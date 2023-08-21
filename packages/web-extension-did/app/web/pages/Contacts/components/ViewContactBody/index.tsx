@@ -24,13 +24,13 @@ export default function ViewContactBody({
       <div className="view-contact-body-main">
         <div className="info-section name-section">
           <div className="flex-center name-index">{data.index}</div>
-          <div className="name">{data.name}</div>
+          <div className="name">{data?.walletName || data?.caHolderInfo?.walletName || ''}</div>
 
           {/* Section - Remark */}
           {isShowRemark && (
             <div className="remark">
               <span>{`Remark: `}</span>
-              <span>{data?.remark || 'No set'}</span>
+              <span>{data?.name || 'No set'}</span>
             </div>
           )}
           {!isShowRemark && !isShowAddContactBtn && !isShowAddedBtn && !isShowChatBtn && (
@@ -65,8 +65,8 @@ export default function ViewContactBody({
         </div>
 
         <IdAndAddress
-          portkeyId={data?.portkeyId}
-          relationId={data?.relationId}
+          portkeyId={data?.userId || ''}
+          relationId={data?.userId || ''}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
         />

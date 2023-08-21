@@ -14,6 +14,7 @@ import {
   deleteChannelMessage,
   updateChannelMessageAttribute,
   addChannel,
+  setRelationId,
 } from './actions';
 import { formatChannelList } from './util';
 
@@ -21,6 +22,7 @@ const initialState: IMStateType = {
   channelListNetMap: {},
   hasNextNetMap: {},
   channelMessageListNetMap: {},
+  relationIdNetMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -28,6 +30,15 @@ export const imSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(setRelationId, (state, action) => {
+        return {
+          ...state,
+          relationIdNetMap: {
+            ...state.relationIdNetMap,
+            [action.payload.network]: action.payload.relationId,
+          },
+        };
+      })
       .addCase(setChannelList, (state, action) => {
         return {
           ...state,
@@ -227,6 +238,10 @@ export const imSlice = createSlice({
           },
           channelMessageListNetMap: {
             ...state.channelMessageListNetMap,
+            [action.payload]: undefined,
+          },
+          relationIdNetMap: {
+            ...state.relationIdNetMap,
             [action.payload]: undefined,
           },
         };

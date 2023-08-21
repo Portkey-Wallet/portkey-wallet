@@ -3,15 +3,18 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from './guardian';
 import useEffectOnce from './useEffectOnce';
-import { useBookmarkList, useCheckAndInitNetworkDiscoverMap } from './discover';
+import { useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
 import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import im from '@portkey-wallet/im';
 
 // const getCurrentCAContract = useGetCurrentCAContract();
 
@@ -43,10 +46,13 @@ export default function useInitData() {
 
     try {
       await initIM(account, wallet.caHash);
+      console.log('init finish');
     } catch (error) {
       console.log('im init error', error);
     }
   }, [initIM, pin, wallet.caHash]);
+  const loadIMRef = useRef(loadIM);
+  loadIMRef.current = loadIM;
 
   const init = useCallback(async () => {
     try {
@@ -60,7 +66,6 @@ export default function useInitData() {
       dispatch(getSymbolImagesAsync());
 
       loadBookmarkList();
-      loadIM();
       // getGuardiansInfoWriteStore after getVerifierServers
       await getVerifierServers();
       getGuardiansInfoWriteStore({
@@ -76,9 +81,20 @@ export default function useInitData() {
     getVerifierServers,
     isMainNetwork,
     loadBookmarkList,
-    loadIM,
     wallet.caHash,
   ]);
+
+  const isChat = useIsChatShow();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isChat) {
+        loadIMRef.current();
+      } else {
+        im.destroy();
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [isChat]);
 
   useEffectOnce(() => {
     // init data after transition animation

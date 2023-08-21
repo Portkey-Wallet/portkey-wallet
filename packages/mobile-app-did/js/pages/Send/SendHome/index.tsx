@@ -11,7 +11,6 @@ import { pTd } from 'utils/unit';
 import ActionSheet from 'components/ActionSheet';
 import useQrScanPermission from 'hooks/useQrScanPermission';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { customFetch } from '@portkey-wallet/utils/fetch';
 import { getAelfAddress, getEntireDIDAelfAddress, isAllowAelfAddress, isCrossChain } from '@portkey-wallet/utils/aelf';
 import useDebounce from 'hooks/useDebounce';
 import { useLanguage } from 'i18n/hooks';
@@ -43,6 +42,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/send';
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
+import { request } from '@portkey-wallet/api/api-did';
 
 const SendHome: React.FC = () => {
   const {
@@ -115,15 +115,11 @@ const SendHome: React.FC = () => {
             },
           };
 
-      const raw = await contract.encodedTx(firstMethodName, secondParams);
+      const req = await contract.calculateTransactionFee(firstMethodName, secondParams);
 
-      const { TransactionFee } = await customFetch(`${chainInfo?.endPoint}/api/blockChain/calculateTransactionFee`, {
-        method: 'POST',
-        params: {
-          RawTransaction: raw.data,
-        },
-      });
+      if (req.error) request.errorReport('calculateTransactionFee', secondParams, req.error);
 
+      const { TransactionFee } = req.data || {};
       if (!TransactionFee) throw { code: 500, message: 'no enough fee' };
 
       return unitConverter(divDecimals(TransactionFee?.[defaultToken.symbol], defaultToken.decimals));
@@ -387,7 +383,6 @@ const SendHome: React.FC = () => {
       if (err?.code === 500) {
         setErrorMessage([TransactionError.FEE_NOT_ENOUGH]);
         Loading.hide();
-
         return { status: false };
       }
     }

@@ -13,6 +13,11 @@ export class ChatInputRecorder {
   public setContentOffset(contentOffset?: TextInputScrollEventData['contentOffset']) {
     this.contentOffset = contentOffset;
   }
+  reset() {
+    this.text = '';
+    this.selection = undefined;
+    this.contentOffset = undefined;
+  }
 }
 let chatInputRecorder: ChatInputRecorder | undefined;
 

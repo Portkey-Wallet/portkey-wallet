@@ -77,9 +77,3 @@ export const useUpdateSessionInfo = () => {
     [caHash, dispatch, networkType],
   );
 };
-
-export const useBookmarkList = () => {
-  const { discoverMap } = useDiscover();
-  const { currentNetwork } = useWallet();
-  return useMemo(() => discoverMap?.[currentNetwork]?.bookmarkList || [], [currentNetwork, discoverMap]);
-};

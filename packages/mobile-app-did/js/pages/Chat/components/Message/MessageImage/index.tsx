@@ -9,13 +9,17 @@ import ChatOverlay from '../../ChatOverlay';
 import { ChatMessage } from 'pages/Chat/types';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatImageSize } from '@portkey-wallet/utils/img';
+import { useCurrentChannelId } from 'pages/Chat/context/hooks';
+import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
+import isEqual from 'lodash/isEqual';
 
 const maxWidth = screenWidth * 0.6;
 const maxHeight = screenWidth * 0.6;
 
 function MessageImage(props: MessageProps<ChatMessage>) {
   const { currentMessage, position } = props;
-
+  const currentChannelId = useCurrentChannelId();
+  const deleteMessage = useDeleteMessage(currentChannelId || '');
   const { imageInfo } = currentMessage || {};
   const { imgUri, thumbUri, width, height } = imageInfo || {};
   const radiusStyle = useMemo(
@@ -46,18 +50,19 @@ function MessageImage(props: MessageProps<ChatMessage>) {
     [imgUri, thumbUri],
   );
 
-  const onShowChatPopover = useCallback((event: GestureResponderEvent) => {
-    const { pageX, pageY } = event.nativeEvent;
-    ChatOverlay.showChatPopover({
-      list: [
-        { title: 'Copy', iconName: 'copy' },
-        { title: 'Delete', iconName: 'chat-delete' },
-      ],
-      px: pageX,
-      py: pageY,
-      formatType: 'dynamicWidth',
-    });
-  }, []);
+  const onShowChatPopover = useCallback(
+    (event: GestureResponderEvent) => {
+      const { pageX, pageY } = event.nativeEvent;
+      if (position === 'right')
+        ChatOverlay.showChatPopover({
+          list: [{ title: 'Delete', iconName: 'chat-delete', onPress: () => deleteMessage(currentMessage?.id) }],
+          px: pageX,
+          py: pageY,
+          formatType: 'dynamicWidth',
+        });
+    },
+    [currentMessage?.id, deleteMessage, position],
+  );
 
   return (
     <Touchable onPress={onPreviewImage} onLongPress={onShowChatPopover}>
@@ -72,7 +77,9 @@ function MessageImage(props: MessageProps<ChatMessage>) {
   );
 }
 
-export default memo(MessageImage);
+export default memo(MessageImage, (prevProps, nextProps) => {
+  return isEqual(prevProps.currentMessage, nextProps.currentMessage);
+});
 
 const styles = StyleSheet.create({
   image: {

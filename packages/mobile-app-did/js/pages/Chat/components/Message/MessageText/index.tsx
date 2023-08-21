@@ -13,6 +13,8 @@ import { useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChatMessage } from 'pages/Chat/types';
 import { ShowChatPopoverParams } from '../../ChatOverlay/chatPopover';
+import isEqual from 'lodash/isEqual';
+
 const UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
@@ -29,12 +31,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
       if (WWW_URL_PATTERN.test(url)) {
         onUrlPress(`https://${url}`);
       } else {
-        jump({
-          item: {
-            url: url,
-            name: url,
-          },
-        });
+        jump({ item: { url: url, name: url } });
       }
     },
     [jump],
@@ -49,9 +46,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
           list.push({
             title: 'Delete',
             iconName: 'chat-delete',
-            onPress: () => {
-              deleteMessage(currentMessage?.id);
-            },
+            onPress: () => deleteMessage(currentMessage?.id),
           });
         ChatOverlay.showChatPopover({
           list,
@@ -74,7 +69,9 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   );
 }
 
-export default memo(MessageText);
+export default memo(MessageText, (prevProps, nextProps) => {
+  return isEqual(prevProps.currentMessage, nextProps.currentMessage);
+});
 
 const styles = StyleSheet.create({
   textStyles: {

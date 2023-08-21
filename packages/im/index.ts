@@ -71,25 +71,28 @@ export class IM {
     try {
       const account = this._account;
       const caHash = this._caHash;
-      const { data: verifyResult } = await this.service.verifySignatureLoop(() => {
-        if (caHash !== this._caHash) return null;
-        return utils.getVerifyData(account, caHash);
-      });
+      const { data: verifyResult } = await this.service.verifySignatureLoop(
+        () => {
+          return utils.getVerifyData(account, caHash);
+        },
+        () => {
+          return caHash === this._caHash;
+        },
+      );
       const addressAuthToken = verifyResult.token;
-      const { data: autoResult } = await this.service.getAuthTokenLoop({
-        addressAuthToken,
-      });
+      const { data: autoResult } = await this.service.getAuthTokenLoop(
+        {
+          addressAuthToken,
+        },
+        () => {
+          return caHash === this._caHash;
+        },
+      );
 
       const token = autoResult.token;
-      if (caHash !== this._caHash) {
-        console.log('caHash changed');
-        return undefined;
-      }
       this.setAuthorization(token);
 
-      // TODO: remove test API_KEY
-      const API_KEY = '295edaae67724a8ba04f4f39b9221779';
-      this._imInstance = RelationIM.init({ token, apiKey: API_KEY, connect: true, refresh: true });
+      this._imInstance = RelationIM.init({ token, apiKey: undefined as any, connect: true, refresh: true });
       this.bindRelation(this._imInstance);
 
       this.status = IMStatusEnum.AUTHORIZED;
@@ -184,10 +187,11 @@ export class IM {
       return;
     }
     this.bindOffRelation();
-    this.status = IMStatusEnum.INIT;
-    await sleep(1000);
     this.updateErrorObservers(e);
+
+    await sleep(1000);
     try {
+      this.status = IMStatusEnum.INIT;
       this.initRelationIM();
     } catch (error) {
       console.log('initRelationIM error', error);
@@ -266,24 +270,34 @@ export class IM {
     const caHash = this._caHash;
     const {
       data: { token: addressAuthToken },
-    } = await this.service.verifySignatureLoop(() => {
-      if (caHash !== this._caHash) return null;
-      return utils.getVerifyData(account, caHash);
-    }, 5);
+    } = await this.service.verifySignatureLoop(
+      () => {
+        return utils.getVerifyData(account, caHash);
+      },
+      () => {
+        return caHash === this._caHash;
+      },
+      5,
+    );
 
     const {
       data: { token },
-    } = await this.service.getAuthTokenLoop({ addressAuthToken }, 5);
-    if (caHash !== this._caHash) {
-      throw new Error('account changed');
-    }
+    } = await this.service.getAuthTokenLoop(
+      { addressAuthToken },
+      () => {
+        return caHash === this._caHash;
+      },
+      5,
+    );
     this.setAuthorization(token);
   }
 
   private rewriteFetch() {
     const send = this.fetchRequest.send;
     this.fetchRequest.send = async (...args) => {
+      const caHash = this._caHash;
       const result = await send.apply(this.fetchRequest, args);
+      if (caHash !== this._caHash) throw new Error('account changed');
 
       if (IM_TOKEN_ERROR_ARRAY.includes(result.code)) {
         await this.refreshToken();
@@ -331,6 +345,7 @@ export class IM {
   destroy() {
     console.log('destroy im', this._caHash);
     this.status = IMStatusEnum.DESTROY;
+    this.setAuthorization('invalid_authorization');
     this.bindOffRelation();
     this._msgCount = {
       unreadCount: 0,

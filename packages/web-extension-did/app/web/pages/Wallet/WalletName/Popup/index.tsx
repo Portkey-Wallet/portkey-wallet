@@ -17,6 +17,7 @@ export default function WalletNamePopup({
   isShowChatBtn = false,
   handleEdit,
   handleCopy,
+  saveCallback,
 }: IProfileDetailProps) {
   return (
     <div className="wallet-name-popup min-width-max-height">
@@ -39,7 +40,9 @@ export default function WalletNamePopup({
           handleCopy={handleCopy}
         />
       )}
-      {type === MyProfilePageType.EDIT && <SetWalletNameForm data={data} handleCopy={handleCopy} />}
+      {type === MyProfilePageType.EDIT && (
+        <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />
+      )}
     </div>
   );
 }

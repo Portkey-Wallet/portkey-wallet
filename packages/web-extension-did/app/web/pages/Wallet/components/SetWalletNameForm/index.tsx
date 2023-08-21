@@ -7,13 +7,15 @@ import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
 // TODO any
-export default function SetWalletNameForm({ data, handleCopy }: any) {
+export default function SetWalletNameForm({ data, handleCopy, saveCallback }: any) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const isMainNet = useIsMainnet();
   const { walletName } = useWalletInfo();
   const setWalletName = useSetWalletName();
   const [disable, setDisable] = useState<boolean>(false);
@@ -41,13 +43,14 @@ export default function SetWalletNameForm({ data, handleCopy }: any) {
     async (walletName: string) => {
       try {
         await setWalletName(walletName);
+        saveCallback();
         message.success(t('Saved Successful'));
       } catch (error) {
         message.error('set wallet name error');
         console.log('setWalletName: error', error);
       }
     },
-    [setWalletName, t],
+    [saveCallback, setWalletName, t],
   );
 
   const handleSave = useCallback(
@@ -102,12 +105,14 @@ export default function SetWalletNameForm({ data, handleCopy }: any) {
         </FormItem>
       </div>
 
-      <IdAndAddress
-        portkeyId={data?.portkeyId}
-        relationId={data?.relationId}
-        addresses={data?.addresses || []}
-        handleCopy={handleCopy}
-      />
+      {isMainNet && (
+        <IdAndAddress
+          portkeyId={data?.userId}
+          relationId={data?.relationId}
+          addresses={data?.addresses || []}
+          handleCopy={handleCopy}
+        />
+      )}
 
       <div className="form-btn">
         <FormItem>

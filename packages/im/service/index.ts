@@ -27,7 +27,6 @@ import {
   VerifySignatureResult,
 } from '../types/service';
 import { ChannelMemberInfo, Message, MessageCount } from '../types';
-import { IM_SUCCESS_CODE } from '../constant';
 import { sleep } from '@portkey-wallet/utils';
 
 export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseService<T> implements IIMService {

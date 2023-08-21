@@ -20,6 +20,9 @@ export interface IMStateType {
   channelMessageListNetMap?: {
     [T in NetworkType]?: ChannelMessageList;
   };
+  relationIdNetMap: {
+    [T in NetworkType]?: string;
+  };
 }
 
 export enum UpdateChannelAttributeTypeEnum {

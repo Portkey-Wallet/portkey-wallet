@@ -15,7 +15,7 @@ import {
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
 
-import { useChannelItemInfo, useChannelList, useImChannelMessageListNetMapState } from '.';
+import { useChannelItemInfo, useIMChannelMessageListNetMapState, useRelationId } from '.';
 import s3Instance, { getThumbSize } from '@portkey-wallet/utils/s3';
 import { request } from '@portkey-wallet/api/api-did';
 import { messageParser } from '@portkey-wallet/im/utils';
@@ -38,11 +38,11 @@ export const useIsStranger = (relationId: string) => {
 export const useSendChannelMessage = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
+  const relationId = useRelationId();
 
   const sendChannelMessage = useCallback(
     async (channelId: string, content: string, type = 'TEXT' as MessageType) => {
-      const userInfo = im.userInfo;
-      if (!userInfo) {
+      if (!relationId) {
         throw new Error('No user info');
       }
       const uuid = randomId();
@@ -50,14 +50,14 @@ export const useSendChannelMessage = () => {
         channelUuid: channelId,
         type,
         content,
-        sendUuid: `${userInfo.relationId}-${channelId}-${Date.now()}-${uuid}`,
+        sendUuid: `${relationId}-${channelId}-${Date.now()}-${uuid}`,
       };
 
       const msgObj: Message = messageParser({
         ...msgParams,
-        from: userInfo.relationId,
-        fromAvatar: userInfo.avatar,
-        fromName: userInfo.name,
+        from: relationId,
+        fromAvatar: '',
+        fromName: '',
         createAt: `${Date.now()}`,
       });
       dispatch(
@@ -96,7 +96,7 @@ export const useSendChannelMessage = () => {
         throw error;
       }
     },
-    [dispatch, networkType],
+    [dispatch, networkType, relationId],
   );
 
   const sendChannelImage = useCallback(
@@ -143,7 +143,7 @@ export const useDeleteMessage = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
-  const channelMessageListNetMap = useImChannelMessageListNetMapState();
+  const channelMessageListNetMap = useIMChannelMessageListNetMapState();
   const list = useMemo(
     () => channelMessageListNetMap?.[networkType]?.[channelId] || [],
     [channelId, channelMessageListNetMap, networkType],
@@ -211,7 +211,8 @@ export const useChannel = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
-  const channelMessageListNetMap = useImChannelMessageListNetMapState();
+  const relationId = useRelationId();
+  const channelMessageListNetMap = useIMChannelMessageListNetMapState();
   const list = useMemo(
     () => channelMessageListNetMap?.[networkType]?.[channelId] || [],
     [channelId, channelMessageListNetMap, networkType],
@@ -357,10 +358,10 @@ export const useChannel = (channelId: string) => {
       errorHandlerRef.current(e);
     });
 
-    if (im.userInfo) {
+    if (relationId) {
       im.service.triggerMessageEvent({
         channelUuid: channelId,
-        fromRelationId: im.userInfo?.relationId,
+        fromRelationId: relationId,
         action: TriggerMessageEventActionEnum.ENTER_CHANNEL,
       });
     }
@@ -369,10 +370,10 @@ export const useChannel = (channelId: string) => {
       removeMsgObserver();
       removeErrorObserver();
 
-      if (im.userInfo) {
+      if (relationId) {
         im.service.triggerMessageEvent({
           channelUuid: channelId,
-          fromRelationId: im.userInfo?.relationId,
+          fromRelationId: relationId,
           action: TriggerMessageEventActionEnum.EXIT_CHANNEL,
         });
       }

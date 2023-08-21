@@ -66,4 +66,9 @@ export const updateChannelMessageAttribute = createAction<{
   value: Partial<Message>;
 }>('im/updateChannelMessageAttribute');
 
+export const setRelationId = createAction<{
+  network: NetworkType;
+  relationId: string;
+}>('im/setRelationId');
+
 export const resetIm = createAction<NetworkType>('im/resetIm');

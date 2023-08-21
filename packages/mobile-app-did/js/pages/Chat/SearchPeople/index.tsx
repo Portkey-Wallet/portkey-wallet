@@ -6,23 +6,29 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
 import InputWithCancel from 'components/InputWithCancel';
-import CommonButton from 'components/CommonButton';
 import { useFocusEffect } from '@react-navigation/native';
 import NoData from 'components/NoData';
-import { Image } from '@rneui/base';
-import { TextM, TextL } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import FindMoreButton from '../components/FindMoreButton';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import CommonAvatar from 'components/CommonAvatar';
-const mock_data = [0, 1, 2];
+import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import useDebounce from 'hooks/useDebounce';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import CommonToast from 'components/CommonToast';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import { ChannelItem } from '@portkey-wallet/im/types';
 
 export default function SearchPeople() {
   const iptRef = useRef<any>();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const searchChannel = useSearchChannel();
+
   const [keyword, setKeyword] = useState('');
-  const [filterList, setFilterList] = useState(mock_data);
+  const debounceKeyword = useDebounce(keyword, 500);
+  const [filterList, setFilterList] = useState<ChannelItem[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -34,9 +40,20 @@ export default function SearchPeople() {
     }, []),
   );
 
+  const fetchList = useLockCallback(async () => {
+    try {
+      const result = await searchChannel(debounceKeyword);
+      console.log('result', result);
+      setFilterList(result?.data?.list);
+    } catch (error) {
+      CommonToast.fail(handleErrorMessage(error));
+    }
+  }, [debounceKeyword]);
+
   useEffect(() => {
-    setFilterList(mock_data);
-  }, [keyword]);
+    if (!debounceKeyword) return setFilterList([]);
+    fetchList();
+  }, [debounceKeyword, fetchList]);
 
   useEffect(
     () => () => {
@@ -45,15 +62,15 @@ export default function SearchPeople() {
     [],
   );
 
-  const renderItem = useCallback((item: any) => {
+  const renderItem = useCallback(({ item }: { item: ChannelItem }) => {
     console.log(item);
     return (
       <Touchable
         style={[GStyles.flexRow, GStyles.itemCenter, styles.itemWrap]}
-        onPress={() => navigationService.navigate('ChatDetails')}>
-        <CommonAvatar title="sally" hasBorder avatarSize={pTd(36)} style={styles.avatarStyle} />
+        onPress={() => navigationService.navigate('ChatDetails', { channelInfo: item })}>
+        <CommonAvatar title={item?.displayName} hasBorder avatarSize={pTd(36)} style={styles.avatarStyle} />
         <View style={styles.rightSection}>
-          <TextL numberOfLines={1}>Sally</TextL>
+          <TextL numberOfLines={1}>{item?.displayName}</TextL>
         </View>
       </Touchable>
     );
@@ -62,23 +79,26 @@ export default function SearchPeople() {
   return (
     <PageContainer
       hideHeader
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}
       containerStyles={styles.containerStyles}
       titleDom="Search">
       <InputWithCancel
         ref={iptRef}
+        clearText={() => setKeyword('')}
         onChangeText={v => setKeyword(v)}
         value={keyword}
-        clearText={() => setKeyword('')}
         onCancel={() => navigationService.goBack()}
       />
       <FindMoreButton />
+
       <FlatList
         data={filterList}
-        ListHeaderComponent={<TextL style={styles.listHeader}>Chats</TextL>}
-        ListEmptyComponent={<NoData noPic message="No search result" />}
+        ListHeaderComponent={
+          debounceKeyword && filterList.length > 0 ? <TextL style={styles.listHeader}>Chats</TextL> : null
+        }
+        ListEmptyComponent={debounceKeyword ? <NoData noPic message="No search result" /> : null}
         renderItem={renderItem}
       />
     </PageContainer>
@@ -87,7 +107,7 @@ export default function SearchPeople() {
 
 const styles = StyleSheet.create({
   containerStyles: {
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg1,
     paddingHorizontal: 0,
     flex: 1,
   },
@@ -107,7 +127,7 @@ const styles = StyleSheet.create({
     height: pTd(72),
     flex: 1,
     borderBottomColor: defaultColors.border1,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     paddingRight: pTd(20),
     justifyContent: 'center',
   },

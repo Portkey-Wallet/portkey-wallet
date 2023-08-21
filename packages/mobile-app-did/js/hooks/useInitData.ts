@@ -8,10 +8,11 @@ import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from './guardian';
 import useEffectOnce from './useEffectOnce';
-import { useBookmarkList, useCheckAndInitNetworkDiscoverMap } from './discover';
+import { useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
 import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 
 // const getCurrentCAContract = useGetCurrentCAContract();
 

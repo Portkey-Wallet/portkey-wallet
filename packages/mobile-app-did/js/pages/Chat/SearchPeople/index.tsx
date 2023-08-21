@@ -19,7 +19,6 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { ChannelItem } from '@portkey-wallet/im/types';
-import { BGStyles } from 'assets/theme/styles';
 
 export default function SearchPeople() {
   const iptRef = useRef<any>();
@@ -80,7 +79,7 @@ export default function SearchPeople() {
   return (
     <PageContainer
       hideHeader
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}
       containerStyles={styles.containerStyles}

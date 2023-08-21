@@ -20,6 +20,8 @@ export type VerifySignatureParams = {
   caHash: string;
 };
 
+export type VerifySignatureLoopParams = () => VerifySignatureParams | null;
+
 export type VerifySignatureResult = {
   token: string;
 };
@@ -140,7 +142,7 @@ export type HideChannelParams = {
 
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
-  verifySignatureLoop(params: VerifySignatureParams, times?: number): IMServiceCommon<VerifySignatureResult>;
+  verifySignatureLoop(params: VerifySignatureLoopParams, times?: number): IMServiceCommon<VerifySignatureResult>;
   getAuthToken(params: GetAuthTokenParams): IMServiceCommon<GetAuthTokenResult>;
   getAuthTokenLoop(params: GetAuthTokenParams, times?: number): IMServiceCommon<GetAuthTokenResult>;
   getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;

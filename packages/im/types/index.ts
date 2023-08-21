@@ -75,6 +75,7 @@ export type ChannelItem = {
   lastPostAt: string;
   mute: boolean;
   pin: boolean;
+  toRelationId: string;
 };
 
 export enum IMStatusEnum {
@@ -83,6 +84,7 @@ export enum IMStatusEnum {
   AUTHORIZED = 'authorized',
   CONNECTED = 'connected',
   ERROR = 'error',
+  DESTROY = 'destroy',
 }
 
 export type MessageCount = {

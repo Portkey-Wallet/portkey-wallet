@@ -3,16 +3,18 @@ import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import CustomSvg from 'components/CustomSvg';
 import svgsList from 'assets/svgs';
 import './index.less';
+import UnReadBadge from 'pages/components/UnReadBadge';
 
 export type WalletAvatar = keyof typeof svgsList;
 
 interface PortKeyHeaderProps {
   onUserClick?: (e?: any) => void;
   customLogoShow?: boolean;
+  unReadShow?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true }: PortKeyHeaderProps) => {
+const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true, unReadShow = false }: PortKeyHeaderProps) => {
   const { isPrompt } = useCommonState();
   const { walletAvatar } = useWalletInfo();
 
@@ -26,7 +28,14 @@ const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true }: PortKe
         </div>
 
         {customLogoShow && (
-          <CustomSvg className="custom-logo" type={(walletAvatar as WalletAvatar) || 'master1'} onClick={onUserClick} />
+          <div className="custom-logo-wrap">
+            <CustomSvg
+              className="custom-logo"
+              type={(walletAvatar as WalletAvatar) || 'master1'}
+              onClick={onUserClick}
+            />
+            {unReadShow && <UnReadBadge />}
+          </div>
         )}
       </div>
     </div>

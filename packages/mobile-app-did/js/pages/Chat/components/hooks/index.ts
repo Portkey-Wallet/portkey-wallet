@@ -4,9 +4,14 @@ import { Animated } from 'react-native';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import usePrevious from 'hooks/usePrevious';
 import { TextInput } from 'react-native';
-import { useBottomBarStatus, useChatsDispatch } from '../../context/hooks';
+import { useBottomBarStatus, useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../../context/chatsContext';
+import { useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { MessageType } from '@portkey-wallet/im';
+import { readFile } from 'utils/fs';
+import { formatRNImage } from '@portkey-wallet/utils/s3';
+import { bindUriToLocalImage } from 'utils/fs/img';
 
 let TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
 if (!isIOS) {
@@ -58,4 +63,23 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
   }, [dispatch, isKeyboardOpened, textInputRef]);
 
   return keyboardAnim;
+}
+
+export function useSendCurrentChannelMessage() {
+  const currentChannelId = useCurrentChannelId();
+  const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
+  return useMemo(
+    () => ({
+      sendChannelMessage: (content: string, type?: MessageType) =>
+        sendChannelMessage(currentChannelId || '', content, type),
+      sendChannelImage: async (file: { uri: string; width: number; height: number }) => {
+        const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
+        const data = formatRNImage(file, fileBase64);
+        const imgResult = await sendChannelImage(currentChannelId || '', data);
+        await bindUriToLocalImage(file.uri, imgResult.url);
+        return imgResult;
+      },
+    }),
+    [currentChannelId, sendChannelImage, sendChannelMessage],
+  );
 }

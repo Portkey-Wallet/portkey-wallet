@@ -1,29 +1,30 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { Camera } from 'expo-camera';
+import { Camera, CameraCapturedPicture } from 'expo-camera';
 import Touchable from 'components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonButton from 'components/CommonButton';
 import { BGStyles } from 'assets/theme/styles';
 import SafeAreaBox from 'components/SafeAreaBox';
+import { useSendCurrentChannelMessage } from '../components/hooks';
+import CommonToast from 'components/CommonToast';
 
-const QrScanner: React.FC = () => {
-  const cameraRef = useRef<any>();
-  const [imgUrl, setImgUrl] = useState<string>('');
+const ChatCamera: React.FC = () => {
+  const cameraRef = useRef<Camera>(null);
+  const [img, setImgUrl] = useState<CameraCapturedPicture>();
   const [status, requestCameraPermission] = Camera.useCameraPermissions();
-
+  const { sendChannelImage } = useSendCurrentChannelMessage();
   const takePicture = useCallback(async () => {
     if (!cameraRef?.current) return;
     try {
       const result = await cameraRef.current?.takePictureAsync();
-      console.log('======result===', result, result.uri);
-      setImgUrl(result.uri);
+      setImgUrl(result);
       cameraRef.current.pausePreview();
     } catch (error) {
       console.log('------', error);
@@ -33,7 +34,7 @@ const QrScanner: React.FC = () => {
   const resetCamera = useCallback(() => {
     if (!cameraRef?.current) return;
     cameraRef.current.resumePreview();
-    setImgUrl('');
+    setImgUrl(undefined);
   }, []);
 
   useEffectOnce(() => {
@@ -65,29 +66,43 @@ const QrScanner: React.FC = () => {
           style={[
             GStyles.flexRow,
             GStyles.center,
-            !!imgUrl && GStyles.spaceBetween,
+            !!img?.uri && GStyles.spaceBetween,
             BGStyles.bg19,
             PageStyle.buttonWrap,
           ]}>
-          {imgUrl && (
+          {img?.uri && (
             <Touchable style={PageStyle.reshutterWrap} onPress={resetCamera}>
               <Svg size={pTd(40)} icon="chat-reshutter" />
             </Touchable>
           )}
-          {!imgUrl && (
+          {!img?.uri && (
             <Touchable onPress={takePicture} style={[GStyles.center, PageStyle.shutter]}>
               <Svg size={pTd(68)} icon="chat-shutter" />
             </Touchable>
           )}
-          {imgUrl && <CommonButton title="Send" type="primary" buttonStyle={PageStyle.sendButton} />}
+          {img?.uri && (
+            <CommonButton
+              onPress={async () => {
+                try {
+                  await sendChannelImage(img);
+                  navigationService.goBack();
+                } catch (error) {
+                  CommonToast.failError(error);
+                }
+              }}
+              title="Send"
+              type="primary"
+              buttonStyle={PageStyle.sendButton}
+            />
+          )}
         </View>
-        <Image style={PageStyle.previewImage} source={{ uri: imgUrl || '' }} />
+        <Image style={PageStyle.previewImage} source={{ uri: img?.uri || '' }} />
       </View>
     </SafeAreaBox>
   );
 };
 
-export default QrScanner;
+export default ChatCamera;
 
 export const PageStyle = StyleSheet.create({
   safeAreaBox: {

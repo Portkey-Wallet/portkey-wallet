@@ -1,14 +1,13 @@
 import RelationIM, { Im, config as relationConfig } from '@relationlabs/im';
 import * as utils from './utils';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { IMStatusEnum, Message, MessageCount } from './types';
+import { IMStatusEnum, Message, MessageCount, SocketMessage } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { IIMService } from './types/service';
 import { IMConfig } from './config';
 import { FetchRequest } from '@portkey/request';
 import { IBaseRequest } from '@portkey/types';
 import { IMService } from './service';
-import { getVerifyData } from './utils';
 import { IM_TOKEN_ERROR_ARRAY } from './constant';
 import { request } from '@portkey-wallet/api/api-did';
 
@@ -54,6 +53,7 @@ export class IM {
   }
 
   async init(account: AElfWallet, caHash: string) {
+    this.status = IMStatusEnum.INIT;
     this._account = account;
     this._caHash = caHash;
 
@@ -69,9 +69,12 @@ export class IM {
     }
     this.status = IMStatusEnum.AUTHORIZING;
     try {
+      const account = this._account;
       const caHash = this._caHash;
-      const verifyData = utils.getVerifyData(`${Date.now()}`, this._account, this._caHash);
-      const { data: verifyResult } = await this.service.verifySignatureLoop(verifyData);
+      const { data: verifyResult } = await this.service.verifySignatureLoop(() => {
+        if (caHash !== this._caHash) return null;
+        return utils.getVerifyData(account, caHash);
+      });
       const addressAuthToken = verifyResult.token;
       const { data: autoResult } = await this.service.getAuthTokenLoop({
         addressAuthToken,
@@ -87,7 +90,7 @@ export class IM {
       // TODO: remove test API_KEY
       const API_KEY = '295edaae67724a8ba04f4f39b9221779';
       this._imInstance = RelationIM.init({ token, apiKey: API_KEY, connect: true, refresh: true });
-      this.listenRelationIM(this._imInstance);
+      this.bindRelation(this._imInstance);
 
       this.status = IMStatusEnum.AUTHORIZED;
 
@@ -105,31 +108,20 @@ export class IM {
     }
   }
 
-  listenRelationIM(imInstance: RelationIM) {
-    imInstance.bind(Im.CONNECT_OK, () => {
-      console.log('CONNECT_OK');
-    });
+  bindRelation(imInstance: RelationIM) {
+    imInstance.bind(Im.CONNECT_OK, this.onConnectOk);
+    imInstance.bind(Im.CONNECT_ERR, this.onConnectErr);
+    imInstance.bind(Im.CONNECT_CLOSE, this.onConnectClose);
+    imInstance.bind(Im.RECEIVE_MSG_OK, this.onReceiveMessage);
+  }
 
-    imInstance.bind(Im.CONNECT_ERR, (e: any) => {
-      console.log('CONNECT_ERR msg', e);
-      this.status = IMStatusEnum.ERROR;
-    });
-    imInstance.bind(Im.CONNECT_CLOSE, async (e: any) => {
-      console.log('CONNECT_CLOSE msg', e);
-      this.status = IMStatusEnum.INIT;
-      await sleep(1000);
-      this.updateErrorObservers(e);
-      try {
-        this.initRelationIM();
-      } catch (error) {
-        console.log('initRelationIM error', error);
-      }
-    });
-
-    imInstance.bind(Im.RECEIVE_MSG_OK, (e: any) => {
-      console.log('RECEIVE_MSG_OK msg', e);
-      this.updateMsgObservers(e);
-    });
+  bindOffRelation() {
+    if (!this._imInstance) return;
+    const imInstance = this._imInstance;
+    imInstance.bindOff(Im.CONNECT_OK, this.onConnectOk);
+    imInstance.bindOff(Im.CONNECT_ERR, this.onConnectErr);
+    imInstance.bindOff(Im.CONNECT_CLOSE, this.onConnectClose);
+    imInstance.bindOff(Im.RECEIVE_MSG_OK, this.onReceiveMessage);
   }
 
   getInstance() {
@@ -177,8 +169,34 @@ export class IM {
     };
   }
 
-  updateMsgObservers(e: any) {
-    const rawMsg: Message = e['im-message'];
+  onConnectOk(_e: any) {
+    console.log('CONNECT_OK');
+  }
+
+  onConnectErr(e: any) {
+    console.log('CONNECT_ERR', e);
+  }
+
+  onConnectClose = async (e: any) => {
+    console.log('CONNECT_CLOSE msg', e);
+    if (this.status === IMStatusEnum.DESTROY) {
+      console.log('CONNECT_CLOSE DESTROY');
+      return;
+    }
+    this.bindOffRelation();
+    this.status = IMStatusEnum.INIT;
+    await sleep(1000);
+    this.updateErrorObservers(e);
+    try {
+      this.initRelationIM();
+    } catch (error) {
+      console.log('initRelationIM error', error);
+    }
+  };
+
+  onReceiveMessage = (e: any) => {
+    console.log('RECEIVE_MSG_OK msg', e);
+    const rawMsg: SocketMessage = e['im-message'];
     const channelId = rawMsg.channelUuid;
     const channelObservers = this._channelMsgObservers.get(channelId);
     if (channelObservers) {
@@ -188,12 +206,13 @@ export class IM {
     } else {
       // no observer, update message unreadCount
       this.updateUnreadMsgObservers(e);
+      if (rawMsg.mute) return;
       this.updateMessageCount({
         ...this._msgCount,
         unreadCount: this._msgCount.unreadCount + 1,
       });
     }
-  }
+  };
 
   registerErrorObserver(cb: (e: any) => void) {
     const symbol = Symbol();
@@ -239,33 +258,37 @@ export class IM {
     });
   }
 
+  async refreshToken() {
+    if (!this._account || !this._caHash) {
+      throw new Error('no account or caHash');
+    }
+    const account = this._account;
+    const caHash = this._caHash;
+    const {
+      data: { token: addressAuthToken },
+    } = await this.service.verifySignatureLoop(() => {
+      if (caHash !== this._caHash) return null;
+      return utils.getVerifyData(account, caHash);
+    }, 5);
+
+    const {
+      data: { token },
+    } = await this.service.getAuthTokenLoop({ addressAuthToken }, 5);
+    if (caHash !== this._caHash) {
+      throw new Error('account changed');
+    }
+    this.setAuthorization(token);
+  }
+
   private rewriteFetch() {
     const send = this.fetchRequest.send;
     this.fetchRequest.send = async (...args) => {
       const result = await send.apply(this.fetchRequest, args);
 
       if (IM_TOKEN_ERROR_ARRAY.includes(result.code)) {
-        if (!this._account || !this._caHash) {
-          throw new Error('no account or caHash');
-        }
-        try {
-          const caHash = this._caHash;
-          const verifyData = getVerifyData(`${Date.now()}`, this._account, this._caHash);
-          const {
-            data: { token: addressAuthToken },
-          } = await this.service.verifySignatureLoop(verifyData, 5);
-          const {
-            data: { token },
-          } = await this.service.getAuthTokenLoop({ addressAuthToken }, 5);
+        await this.refreshToken();
 
-          if (caHash !== this._caHash) {
-            throw new Error('account changed');
-          }
-          this.setAuthorization(token);
-          return await send.apply(this.fetchRequest, args);
-        } catch (error) {
-          throw error;
-        }
+        return await send.apply(this.fetchRequest, args);
       } else if (result.code?.[0] !== '2') {
         throw result;
       }
@@ -284,6 +307,7 @@ export class IM {
 
   refreshMessageCount = async () => {
     const { data: messageCount } = await im.service.getUnreadCount();
+    console.log('refreshMessageCount', messageCount);
 
     im.updateMessageCount(messageCount);
     return messageCount;
@@ -305,20 +329,22 @@ export class IM {
   }
 
   destroy() {
-    this._imInstance && this._imInstance.destroy();
-    this._imInstance = undefined;
+    console.log('destroy im', this._caHash);
+    this.status = IMStatusEnum.DESTROY;
+    this.bindOffRelation();
     this._msgCount = {
       unreadCount: 0,
       mentionsCount: 0,
     };
     this._account = undefined;
     this._caHash = undefined;
-    this.status = IMStatusEnum.INIT;
     this.userInfo = undefined;
     this._unreadMsgObservers.clear();
     this._channelMsgObservers.clear();
     this._errorObservers.clear();
     this._msgCountObservers.clear();
+    this._imInstance && this._imInstance.destroy();
+    this._imInstance = undefined;
   }
 }
 

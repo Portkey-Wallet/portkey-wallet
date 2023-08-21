@@ -13,33 +13,43 @@ import Svg, { IconName } from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import { ViewStyleType } from 'types/styles';
-import { bindUriToLocalImage } from 'utils/fs/img';
+import { useSendCurrentChannelMessage } from '../../hooks';
+import OverlayModal from 'components/OverlayModal';
+import { sleep } from '@portkey-wallet/utils';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
+  const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
   const selectPhoto = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
       allowsMultipleSelection: false,
     });
-    if (result.cancelled) return;
-    await bindUriToLocalImage(result.uri, 'https://google.com');
-    if (result.uri) {
-      SendPicModal.showSendPic({
-        uri: result.uri,
-        buttons: [
-          {
-            title: 'Cancel',
-            type: 'outline',
+    if (result.cancelled || !result.uri) return;
+    SendPicModal.showSendPic({
+      uri: result.uri,
+      autoClose: false,
+      buttons: [
+        {
+          title: 'Cancel',
+          type: 'outline',
+          onPress: OverlayModal.hide,
+        },
+        {
+          title: 'Send',
+          type: 'primary',
+          onPress: async () => {
+            try {
+              await sendChannelImage(result);
+            } catch (error) {
+              console.log(error, '====error');
+            }
+            OverlayModal.hide();
           },
-          {
-            title: 'Send',
-            type: 'primary',
-          },
-        ],
-      });
-    }
-  }, []);
+        },
+      ],
+    });
+  }, [sendChannelImage]);
 
   const toolList = useMemo((): { label: string; icon: IconName; onPress: () => void }[] => {
     return [
@@ -59,13 +69,15 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         icon: 'chat-bookmark',
         onPress: () =>
           BookmarkOverlay.showBookmarkList({
-            onPressCallBack: item => {
-              console.log(item);
+            onPressCallBack: async item => {
+              OverlayModal.hide();
+              await sleep(200);
+              sendChannelMessage(item.url);
             },
           }),
       },
     ];
-  }, [selectPhoto]);
+  }, [selectPhoto, sendChannelMessage]);
 
   return (
     <View style={[GStyles.flex1, GStyles.flexRowWrap, styles.wrap, style]}>

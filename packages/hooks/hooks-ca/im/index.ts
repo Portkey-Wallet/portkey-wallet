@@ -8,6 +8,9 @@ import { addChannel, updateChannelAttribute } from '@portkey-wallet/store/store-
 import { UpdateChannelAttributeTypeEnum } from '@portkey-wallet/store/store-ca/im/type';
 
 export const useImState = () => useAppCASelector(state => state.im);
+export const useImHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
+export const useImChannelListNetMapState = () => useAppCASelector(state => state.im.channelListNetMap);
+export const useImChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -32,7 +35,7 @@ export const useInitIM = () => {
 
   const isInitRef = useRef(false);
 
-  const { channelListNetMap } = useImState();
+  const channelListNetMap = useImChannelListNetMapState();
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
   const listRef = useRef(list);
   listRef.current = list;
@@ -59,6 +62,7 @@ export const useInitIM = () => {
               lastPostAt: rawMsg.createAt,
               mute: rawMsg.mute,
               pin: false,
+              toRelationId: rawMsg.from,
             },
           }),
         );

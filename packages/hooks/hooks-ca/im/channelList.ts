@@ -6,11 +6,12 @@ import { CHANNEL_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../../index';
 import { nextChannelList, setChannelList, setHasNext } from '@portkey-wallet/store/store-ca/im/actions';
-
-import { useImState } from '.';
+import { useImChannelListNetMapState, useImHasNextNetMapState } from '.';
 
 export const useNextChannelList = () => {
-  const { channelListNetMap, hasNextNetMap } = useImState();
+  const channelListNetMap = useImChannelListNetMapState();
+  const hasNextNetMap = useImHasNextNetMapState();
+
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
@@ -82,7 +83,7 @@ export const useNextChannelList = () => {
 };
 
 export const useChannelList = () => {
-  const { channelListNetMap } = useImState();
+  const channelListNetMap = useImChannelListNetMapState();
   const { networkType } = useCurrentNetworkInfo();
   const { next, hasNext } = useNextChannelList();
 
@@ -98,6 +99,14 @@ export const useChannelList = () => {
     next,
     hasNext,
   };
+};
+
+export const useChannelItemInfo = (channelId: string) => {
+  const { list } = useChannelList();
+
+  return useMemo(() => {
+    return list.find(item => item.channelUuid === channelId);
+  }, [channelId, list]);
 };
 
 export const useCreateP2pChannel = () => {

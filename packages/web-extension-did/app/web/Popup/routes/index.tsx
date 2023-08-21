@@ -198,6 +198,10 @@ export const PageRouter = () =>
       element: <ChatListSearch />,
     },
     {
+      path: '/chat-list-search-find-more',
+      element: <FindMore />,
+    },
+    {
       path: '/chat-box/:channelUuid',
       element: <ChatBox />,
     },

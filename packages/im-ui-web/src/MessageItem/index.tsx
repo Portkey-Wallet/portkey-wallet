@@ -1,6 +1,7 @@
 import { Popover } from 'antd';
 import React, { useRef } from 'react';
 import clsx from 'clsx';
+import { useCopyToClipboard } from 'react-use';
 
 import PhotoMessage from '../PhotoMessage';
 import TextMessage from '../TextMessage';
@@ -10,26 +11,24 @@ import CustomSvg from '../components/CustomSvg';
 import { MessageBoxType } from '../type';
 import './index.less';
 
-const MessageItem: React.FC<MessageBoxType> = ({ styles, ...props }) => {
+const MessageItem: React.FC<MessageBoxType> = ({ styles, onDelete, ...props }) => {
   const messageRef = useRef<HTMLDivElement>(null);
-
-  // TODO
-  const onClick = () => {
-    // TODO
-  };
+  const [, setCopied] = useCopyToClipboard();
 
   const popoverList = [
-    {
+    props.type === 'text' && {
       key: 'copy',
       leftIcon: <CustomSvg type="Copy" />,
       children: 'Copy',
-      onClick: onClick,
+      onClick: () => {
+        setCopied(props.text);
+      },
     },
     {
       key: 'delete',
       leftIcon: <CustomSvg type="Delete" />,
       children: 'Delelte',
-      onClick: onClick,
+      onClick: onDelete,
     },
   ];
 
@@ -47,7 +46,7 @@ const MessageItem: React.FC<MessageBoxType> = ({ styles, ...props }) => {
           trigger="contextMenu"
           showArrow={false}
           // getPopupContainer={trigger => trigger.parentNode}
-          content={<PopoverMenuList data={popoverList} />}>
+          content={<PopoverMenuList data={popoverList as any} />}>
           {props.type === 'text' && <TextMessage {...props} />}
           {props.type === 'photo' && <PhotoMessage {...props} />}
         </Popover>

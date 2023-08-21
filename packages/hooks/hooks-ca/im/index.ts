@@ -4,13 +4,14 @@ import { useAppCASelector } from '../.';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../../index';
-import { addChannel, updateChannelAttribute } from '@portkey-wallet/store/store-ca/im/actions';
+import { addChannel, setRelationId, updateChannelAttribute } from '@portkey-wallet/store/store-ca/im/actions';
 import { UpdateChannelAttributeTypeEnum } from '@portkey-wallet/store/store-ca/im/type';
 
-export const useImState = () => useAppCASelector(state => state.im);
-export const useImHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
-export const useImChannelListNetMapState = () => useAppCASelector(state => state.im.channelListNetMap);
-export const useImChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
+export const useIMState = () => useAppCASelector(state => state.im);
+export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
+export const useIMChannelListNetMapState = () => useAppCASelector(state => state.im.channelListNetMap);
+export const useIMChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
+export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -35,7 +36,7 @@ export const useInitIM = () => {
 
   const isInitRef = useRef(false);
 
-  const channelListNetMap = useImChannelListNetMapState();
+  const channelListNetMap = useIMChannelListNetMapState();
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
   const listRef = useRef(list);
   listRef.current = list;
@@ -107,21 +108,38 @@ export const useInitIM = () => {
   const unreadMessageUpdateRef = useRef(unreadMessageUpdate);
   unreadMessageUpdateRef.current = unreadMessageUpdate;
 
-  const initIm = useCallback(async (account: AElfWallet, caHash: string) => {
-    if (isInitRef.current) return;
-    isInitRef.current = true;
-    const result = await im.init(account, caHash);
+  const initIm = useCallback(
+    async (account: AElfWallet, caHash: string) => {
+      if (isInitRef.current) return;
+      isInitRef.current = true;
+      const result = await im.init(account, caHash);
 
-    im.registerUnreadMsgObservers(async (e: any) => {
-      unreadMessageUpdateRef.current(e);
-    });
+      if (result?.relationId) {
+        dispatch(
+          setRelationId({
+            network: networkType,
+            relationId: result.relationId,
+          }),
+        );
+      }
 
-    // TODO: add userInfo to store
+      im.registerUnreadMsgObservers(async (e: any) => {
+        unreadMessageUpdateRef.current(e);
+      });
 
-    isInitRef.current = false;
-    return result;
-  }, []);
+      isInitRef.current = false;
+      return result;
+    },
+    [dispatch, networkType],
+  );
   return initIm;
+};
+
+export const useRelationId = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const relationIdNetMap = useIMRelationIdNetMapNetMapState();
+
+  return useMemo(() => relationIdNetMap?.[networkType], [networkType, relationIdNetMap]);
 };
 
 export * from './channelList';

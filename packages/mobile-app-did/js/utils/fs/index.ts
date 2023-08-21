@@ -70,3 +70,7 @@ export const copyFileToPath = async (originPath: string, newPath: string) => {
 export const readFile = async (fileUri: string, options?: FileSystem.ReadingOptions) => {
   return FileSystem.readAsStringAsync(fileUri, options);
 };
+
+export const isLocalPath = (uri: string) => {
+  return uri.startsWith('file://');
+};

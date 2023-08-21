@@ -140,6 +140,10 @@ export type HideChannelParams = {
   channelUuid: string;
 };
 
+export type AddStrangerParams = {
+  relationId: string;
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(params: VerifySignatureLoopParams, times?: number): IMServiceCommon<VerifySignatureResult>;
@@ -162,4 +166,5 @@ export interface IIMService {
   updateChannelPin(params: UpdateChannelPinParams): IMServiceCommon<null>;
   updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
+  addStranger(params: AddStrangerParams): IMServiceCommon<null>;
 }

@@ -6,6 +6,7 @@ import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
+import ContactList from 'pages/Contacts/components/ContactList';
 import './index.less';
 
 export default function ChatListSearch() {
@@ -19,6 +20,7 @@ export default function ChatListSearch() {
     if (!keyword) {
       setChatList([]);
     } else {
+      // TODO
       setChatList([]);
     }
   }, []);
@@ -59,8 +61,12 @@ export default function ChatListSearch() {
           <div className="empty flex-center">{filterWord ? `No search result` : `No contact found`}</div>
         ) : (
           <div className="search-result-list">
-            <div>Chats</div>
-            {/* TODO */}
+            <ContactList
+              hasChatEntry={true}
+              list={chatList}
+              clickItem={(item) => navigate('/setting/contacts/view', { state: item })}
+              clickChat={(item) => navigate(`/chat-box/${item.id}`)}
+            />
           </div>
         )}
       </div>

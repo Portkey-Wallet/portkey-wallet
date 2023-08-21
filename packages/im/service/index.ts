@@ -1,6 +1,7 @@
 import { IBaseRequest } from '@portkey/types';
 import { BaseService } from '@portkey/services';
 import {
+  AddStrangerParams,
   CreateChannelParams,
   CreateChannelResult,
   DeleteMessageParams,
@@ -177,6 +178,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   hideChannel(params: HideChannelParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/feed/hide',
+      params,
+      method: 'POST',
+    });
+  }
+  addStranger(params: AddStrangerParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/contacts/stranger',
       params,
       method: 'POST',
     });

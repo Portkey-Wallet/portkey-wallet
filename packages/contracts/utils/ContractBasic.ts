@@ -44,6 +44,13 @@ export class ContractBasic {
     // TODO WEB3 Contract
     return { data: '' };
   };
+  public calculateTransactionFee: CallViewMethod = async (functionName, paramsOption) => {
+    if (this.callContract instanceof AElfContractBasic)
+      return this.callContract.calculateTransactionFee(functionName, paramsOption);
+
+    // TODO WEB3 Contract
+    return { data: '' };
+  };
 }
 
 export class WB3ContractBasic {}
@@ -112,6 +119,7 @@ export class AElfContractBasic {
   public encodedTx: AElfCallViewMethod = async (functionName, paramsOption) => {
     if (!this.aelfContract) return { error: { code: 401, message: 'Contract init error' } };
     if (!this.aelfInstance) return { error: { code: 401, message: 'instance init error' } };
+
     try {
       const _functionName = handleFunctionName(functionName);
       const _params = await handleContractParams({
@@ -126,6 +134,15 @@ export class AElfContractBasic {
         functionName: _functionName,
       });
       return { data };
+    } catch (error) {
+      return { error: handleContractError(error) };
+    }
+  };
+  public calculateTransactionFee: AElfCallViewMethod = async (functionName, paramsOption) => {
+    try {
+      const { data } = await this.encodedTx(functionName, paramsOption);
+      const req = await this.aelfInstance?.chain.calculateTransactionFee(data);
+      return { data: req };
     } catch (error) {
       return { error: handleContractError(error) };
     }

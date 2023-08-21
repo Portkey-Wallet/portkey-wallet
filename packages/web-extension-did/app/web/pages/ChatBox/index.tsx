@@ -7,10 +7,15 @@ import { PopoverMenuList, MessageList, InputBar, StyleProvider, MessageType } fr
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
 import PhotoSendModal from './components/PhotoSendModal';
-import { ImageMessageFileType, useAddStranger, useChannel, useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  ImageMessageFileType,
+  useAddStranger,
+  useChannel,
+  useIsStranger,
+  useRelationId,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from './components/BookmarkListDrawer';
-import im from '@portkey-wallet/im';
 import { getPixel } from './utils';
 import { formatMessageTime } from '@portkey-wallet/utils/chat';
 import dayjs from 'dayjs';
@@ -43,6 +48,7 @@ export default function Session() {
   useEffectOnce(() => {
     init();
   });
+  const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => {
     const formatList: MessageType[] = [];
     let transItem: MessageType;
@@ -51,7 +57,7 @@ export default function Session() {
         id: `${item.id}`,
         // sendUuid: item.sendUuid, // TODO
         title: item.fromName,
-        position: item.from === im.userInfo?.relationId ? 'right' : 'left',
+        position: item.from === relationId ? 'right' : 'left',
         text: `${item.parsedContent}`,
         imgData:
           typeof item.parsedContent === 'object'
@@ -95,7 +101,7 @@ export default function Session() {
       }
     });
     return formatList;
-  }, [list]);
+  }, [list, relationId]);
   const handleDel = useCallback(() => {
     return Modal.confirm({
       width: 320,

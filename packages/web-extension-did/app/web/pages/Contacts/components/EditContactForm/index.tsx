@@ -14,10 +14,8 @@ export interface IEditContactFormProps extends FormProps {
   state: any;
   validName: ValidData;
   validRemark?: ValidData;
-  isNameDisable?: boolean;
   isShowRemark?: boolean;
   canSave?: boolean;
-  handleInputValueChange: (v: string) => void;
   handleInputRemarkChange: (v: string) => void;
   handleCopy: (val: string) => void;
 }
@@ -27,10 +25,8 @@ export default function EditContactForm({
   state,
   validName,
   validRemark,
-  isNameDisable = true,
   isShowRemark = true,
   canSave = false,
-  handleInputValueChange,
   handleInputRemarkChange,
   handleCopy,
   onFinish,
@@ -58,16 +54,11 @@ export default function EditContactForm({
       <div className="flex-1">
         <div className="form-content">
           <FormItem
-            name="name"
+            name="walletName"
             label={t('Wallet Name')}
             validateStatus={validName.validateStatus}
             help={validName.errorMsg}>
-            <Input
-              placeholder={t('Enter name')}
-              onChange={(e) => handleInputValueChange(e.target.value)}
-              maxLength={16}
-              disabled={isNameDisable}
-            />
+            <Input placeholder={t('Enter name')} maxLength={16} disabled={true} />
           </FormItem>
 
           {isShowRemark && (

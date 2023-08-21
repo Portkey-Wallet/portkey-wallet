@@ -1,4 +1,4 @@
-import im, { utils, MessageType, ChannelInfo, Message, TriggerMessageEventActionEnum } from '@portkey-wallet/im';
+import im, { utils, MessageType, Message, TriggerMessageEventActionEnum } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { randomId } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
@@ -14,10 +14,8 @@ import {
   addChannelMessage,
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
-
 import { useChannelItemInfo, useIMChannelMessageListNetMapState, useRelationId } from '.';
-import s3Instance, { getThumbSize } from '@portkey-wallet/utils/s3';
-import { request } from '@portkey-wallet/api/api-did';
+import s3Instance from '@portkey-wallet/utils/s3';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';
 
@@ -301,19 +299,19 @@ export const useChannel = (channelId: string) => {
     return next(true);
   }, [next]);
 
-  const errorHandler = useCallback(
+  const connectHandler = useCallback(
     async (e: any) => {
-      console.log('errorHandler', e);
+      console.log('connectHandler', e);
       try {
         await init();
       } catch (error) {
-        console.log('errorHandler:init error', error);
+        console.log('connectHandler:init error', error);
       }
     },
     [init],
   );
-  const errorHandlerRef = useRef(errorHandler);
-  errorHandlerRef.current = errorHandler;
+  const connectHandlerRef = useRef(connectHandler);
+  connectHandlerRef.current = connectHandler;
 
   const read = useCallback(() => {
     im.service.readMessage({ channelUuid: channelId, total: 9999 });
@@ -354,8 +352,8 @@ export const useChannel = (channelId: string) => {
     const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
       updateListRef.current(e);
     });
-    const { remove: removeErrorObserver } = im.registerErrorObserver(e => {
-      errorHandlerRef.current(e);
+    const { remove: removeConnectObserver } = im.registerConnectObserver(e => {
+      connectHandlerRef.current(e);
     });
 
     if (relationId) {
@@ -368,7 +366,7 @@ export const useChannel = (channelId: string) => {
 
     return () => {
       removeMsgObserver();
-      removeErrorObserver();
+      removeConnectObserver();
 
       if (relationId) {
         im.service.triggerMessageEvent({

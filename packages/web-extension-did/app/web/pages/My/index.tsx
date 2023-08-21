@@ -99,7 +99,7 @@ export default function My() {
             <MenuItem
               key={item.label}
               height={56}
-              icon={menuItemIcon(item.icon, isImputation && item.label === 'Contacts')}
+              icon={menuItemIcon(item.icon, !!(isImputation && item.label === 'Contacts'))}
               onClick={() => {
                 navigate(item.router);
               }}>

@@ -1,34 +1,39 @@
-import { useCallback, useState } from 'react';
+import { ChangeEvent, ChangeEventHandler, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import CustomModal from 'pages/components/CustomModal';
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import FindMorePrompt from './Prompt';
 import FindMorePopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
+import im from '@portkey-wallet/im';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
+import { message } from 'antd';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import { useContactRelationIdMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 export interface IFindMoreProps extends BaseHeaderProps {
   myPortkeyId: string;
-  contactList: ContactItemType[];
+  contact: Partial<ContactItemType>;
   isMainnet: boolean;
+  isAdded?: boolean;
   goBack: () => void;
-  handleSearch: () => void;
-  clickItem: (item: ContactItemType) => void;
-  clickChat: (e: any, item: ContactItemType) => void;
+  handleSearch: ChangeEventHandler<HTMLInputElement>;
+  clickItem: () => void;
+  clickChat: (e: any, item: Partial<ContactItemType>) => void;
 }
 
 export default function FindMore() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const isMainnet = useIsMainnet();
+  const { userId } = useWalletInfo();
+  const contactRelationIdMap = useContactRelationIdMap();
+  const [isAdded, setIsAdded] = useState(false);
 
   const headerTitle = 'Find More';
-  // const cantAddYourselfText = 'Unable to add yourself as a contact'; //TODO
-  const [portkeyId, setPortkeyId] = useState('mock portkey id');
-  const [contactList, setContactList] = useState([]);
-  console.log(setPortkeyId);
-  console.log(setContactList);
+  const [contact, setContact] = useState({});
   // mock data
   // {
   //   index: 'B',
@@ -40,12 +45,33 @@ export default function FindMore() {
   //   id: '0be66c93',
   // },
 
+  const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (!value) {
+      setContact({});
+      setIsAdded(false);
+    }
+    try {
+      const res = await im.service.getUserInfo({ address: value });
+
+      if (res?.data?.portkeyId === userId) {
+        message.error('Unable to add yourself as a contact');
+      } else {
+        setContact({ ...res?.data, index: res?.data?.name?.substring(0, 1).toLocaleUpperCase() });
+        setIsAdded(!!contactRelationIdMap?.[res?.data?.relationId]);
+      }
+    } catch (error) {
+      const err = handleErrorMessage(error, 'handle display error');
+      message.error(err);
+    }
+  }, []);
+
   const goBack = () => {
     navigate(-1);
   };
 
   const handleChat = useCallback(
-    (e: any, item: ContactItemType) => {
+    (e: any, item: Partial<ContactItemType>) => {
       e.stopPropagation();
 
       if (isPrompt) {
@@ -64,30 +90,28 @@ export default function FindMore() {
   return isNotLessThan768 ? (
     <FindMorePrompt
       headerTitle={headerTitle}
-      myPortkeyId={portkeyId}
-      contactList={contactList}
+      myPortkeyId={userId || ''}
+      contact={contact}
       isMainnet={isMainnet}
+      isAdded={isAdded}
       goBack={goBack}
-      handleSearch={() => {
-        console.log('search', '');
-      }}
-      clickItem={(item) => {
-        navigate('/setting/contacts/view', { state: item });
+      handleSearch={handleSearch}
+      clickItem={() => {
+        navigate('/setting/contacts/view', { state: contact });
       }}
       clickChat={(e, item) => handleChat(e, item)}
     />
   ) : (
     <FindMorePopup
       headerTitle={headerTitle}
-      myPortkeyId={portkeyId}
-      contactList={contactList}
+      myPortkeyId={userId || ''}
+      contact={contact}
       isMainnet={isMainnet}
+      isAdded={isAdded}
       goBack={goBack}
-      handleSearch={() => {
-        console.log('🌈 🌈 🌈 🌈 🌈 🌈 search', '');
-      }}
-      clickItem={(item) => {
-        navigate('/setting/contacts/view', { state: item });
+      handleSearch={handleSearch}
+      clickItem={() => {
+        navigate('/setting/contacts/view', { state: contact });
       }}
       clickChat={(e, item) => handleChat(e, item)}
     />

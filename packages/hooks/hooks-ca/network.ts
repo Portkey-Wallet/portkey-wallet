@@ -40,3 +40,8 @@ export function useIsMainnet() {
   const currentNetwork = useCurrentNetwork();
   return useMemo(() => currentNetwork === 'MAIN', [currentNetwork]);
 }
+
+export function useIsIMServiceExist() {
+  const { imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
+  return useMemo(() => !!imApiUrl && !!imWsUrl && !!imS3Bucket, [imApiUrl, imWsUrl, imS3Bucket]);
+}

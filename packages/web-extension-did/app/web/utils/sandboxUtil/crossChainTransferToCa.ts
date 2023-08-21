@@ -11,7 +11,7 @@ export const crossChainTransferToCa = async ({
   sendOptions,
 }: BaseSendOption & {
   paramsOption: {
-    issueChainId: string;
+    issueChainId: number;
     toChainId: string;
     symbol: string;
     to: string;

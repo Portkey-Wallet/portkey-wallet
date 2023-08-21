@@ -7,13 +7,15 @@ import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
 // TODO any
-export default function SetWalletNameForm({ data, handleCopy }: any) {
+export default function SetWalletNameForm({ data, handleCopy, saveCallback }: any) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const isMainNet = useIsMainnet();
   const { walletName } = useWalletInfo();
   const setWalletName = useSetWalletName();
   const [disable, setDisable] = useState<boolean>(false);
@@ -38,35 +40,36 @@ export default function SetWalletNameForm({ data, handleCopy }: any) {
   }, []);
 
   const handleUpdateName = useCallback(
-    async (name: string) => {
+    async (walletName: string) => {
       try {
-        await setWalletName(name);
+        await setWalletName(walletName);
+        saveCallback();
         message.success(t('Saved Successful'));
       } catch (error) {
         message.error('set wallet name error');
         console.log('setWalletName: error', error);
       }
     },
-    [setWalletName, t],
+    [saveCallback, setWalletName, t],
   );
 
   const handleSave = useCallback(
-    (name: string) => {
-      if (!name) {
+    (walletName: string) => {
+      if (!walletName) {
         setValidName({
           validateStatus: 'error',
           errorMsg: 'Please Enter Wallet Name',
         });
-        form.setFieldValue('name', '');
+        form.setFieldValue('walletName', '');
         setDisable(true);
-      } else if (!isValidCAWalletName(name)) {
+      } else if (!isValidCAWalletName(walletName)) {
         setValidName({
           validateStatus: 'error',
           errorMsg: '3-16 characters, only a-z, A-Z, 0-9, space and "_" allowed',
         });
         setDisable(true);
       } else {
-        handleUpdateName(name);
+        handleUpdateName(walletName);
       }
     },
     [form, handleUpdateName],
@@ -83,12 +86,12 @@ export default function SetWalletNameForm({ data, handleCopy }: any) {
       className="set-wallet-name-form"
       colon={false}
       layout="vertical"
-      initialValues={{ name: walletName }}
-      onFinish={(v) => handleSave(v.name.trim())}
+      initialValues={{ walletName: walletName }}
+      onFinish={(v) => handleSave(v.walletName.trim())}
       onFinishFailed={onFinishFailed}>
       <div className="form-content">
         <FormItem
-          name="name"
+          name="walletName"
           label="Wallet Name"
           validateStatus={validName.validateStatus}
           help={validName.errorMsg}
@@ -102,12 +105,14 @@ export default function SetWalletNameForm({ data, handleCopy }: any) {
         </FormItem>
       </div>
 
-      <IdAndAddress
-        portkeyId={data?.portkeyId}
-        relationId={data?.relationId}
-        addresses={data?.addresses || []}
-        handleCopy={handleCopy}
-      />
+      {isMainNet && (
+        <IdAndAddress
+          portkeyId={data?.userId}
+          relationId={data?.relationId}
+          addresses={data?.addresses || []}
+          handleCopy={handleCopy}
+        />
+      )}
 
       <div className="form-btn">
         <FormItem>

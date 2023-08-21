@@ -19,6 +19,7 @@ export default function ContactsPopup({
   initData,
   showImputation = false,
   closeImputationTip,
+  changeTab,
 }: IContactsProps) {
   return (
     <div className="flex-column contacts-popup min-width-max-height">
@@ -40,10 +41,7 @@ export default function ContactsPopup({
         list={list}
         contactCount={contactCount}
         initData={initData}
-        portkeyChatCount={0}
-        portkeyChatInitData={initData}
-        portkeyChatList={[]}
-        isSearchPortkeyChat={false}
+        changeTab={changeTab}
       />
     </div>
   );

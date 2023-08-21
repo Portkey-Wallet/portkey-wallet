@@ -97,7 +97,7 @@ export default function PromptMy() {
                 className={clsx(['menu-item-common', item.key === curMenuInfo?.key ? 'menu-item-selected' : undefined])}
                 key={item.key}
                 height={56}
-                icon={menuItemIcon(item.icon, isImputation && item.key === 'contacts')}
+                icon={menuItemIcon(item.icon, !!(isImputation && item.key === 'contacts'))}
                 onClick={() =>
                   navigate(item.pathname, {
                     replace: true,

@@ -15,9 +15,10 @@ export const formatChannelList = (channelList: ChannelList): ChannelList => {
     if (channelItem.pin) pinList.push(channelItem);
     else normalList.push(channelItem);
   });
+  const now = Date.now();
 
-  pinList.sort((a, b) => Number(b.lastPostAt) - Number(a.lastPostAt));
-  normalList.sort((a, b) => Number(b.lastPostAt) - Number(a.lastPostAt));
+  pinList.sort((a, b) => Number(b.lastPostAt || now) - Number(a.lastPostAt || now));
+  normalList.sort((a, b) => Number(b.lastPostAt || now) - Number(a.lastPostAt || now));
 
   return {
     ...channelList,

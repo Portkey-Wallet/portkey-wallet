@@ -1,15 +1,16 @@
 import ContactsSearchInput from 'pages/Contacts/components/ContactsSearchInput';
 import { IFindMoreProps } from '..';
-import ContactList from 'pages/Contacts/components/ContactList';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
+import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
 
 export default function FindMorePopup({
   headerTitle,
   myPortkeyId,
-  contactList,
+  contact,
   isMainnet,
+  isAdded,
   goBack,
   handleSearch,
   clickItem,
@@ -27,10 +28,12 @@ export default function FindMorePopup({
         <div className="find-more-id">My Portkey ID: {myPortkeyId}</div>
       </div>
       <div className="find-more-body">
-        {contactList && contactList.length > 0 && (
-          <ContactList list={contactList} hasChatEntry={isMainnet} clickItem={clickItem} clickChat={clickChat} />
+        {contact && contact.name && contact.index && (
+          <div className="flex-row-center find-more-body-contact" onClick={clickItem}>
+            <FindMoreItem item={contact} isAdded={isAdded} hasChatEntry={isMainnet} clickChat={clickChat} />
+          </div>
         )}
-        {(!contactList || contactList.length === 0) && <div className="no-data">No Search Result</div>}
+        {!contact && <div className="no-data">No Search Result</div>}
       </div>
     </div>
   );

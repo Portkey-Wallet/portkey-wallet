@@ -44,6 +44,7 @@ export type GetUserInfoDefaultResult = {
   avatar: string;
   name: string;
   relationId: string;
+  portkeyId: string;
 };
 
 export type CreateChannelParams = {
@@ -146,9 +147,17 @@ export type AddStrangerParams = {
 
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
-  verifySignatureLoop(params: VerifySignatureLoopParams, times?: number): IMServiceCommon<VerifySignatureResult>;
+  verifySignatureLoop(
+    params: VerifySignatureLoopParams,
+    checkIsContinue: () => boolean,
+    times?: number,
+  ): IMServiceCommon<VerifySignatureResult>;
   getAuthToken(params: GetAuthTokenParams): IMServiceCommon<GetAuthTokenResult>;
-  getAuthTokenLoop(params: GetAuthTokenParams, times?: number): IMServiceCommon<GetAuthTokenResult>;
+  getAuthTokenLoop(
+    params: GetAuthTokenParams,
+    checkIsContinue: () => boolean,
+    times?: number,
+  ): IMServiceCommon<GetAuthTokenResult>;
   getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;

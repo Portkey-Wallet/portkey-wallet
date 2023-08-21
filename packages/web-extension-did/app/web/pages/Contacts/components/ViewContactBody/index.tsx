@@ -3,6 +3,9 @@ import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useState, useEffect } from 'react';
 
 export default function ViewContactBody({
   data,
@@ -19,18 +22,27 @@ export default function ViewContactBody({
   handleAdd,
   handleCopy,
 }: IProfileDetailBodyProps) {
+  const isMyContactFn = useIsMyContact();
+  const isMainnet = useIsMainnet();
+
+  const [isMyContact, setIsMyContact] = useState(false);
+
+  useEffect(() => {
+    setIsMyContact(isMyContactFn({ userId: data?.userId, relationId: data?.relationId }));
+  }, [data?.relationId, data?.userId, isMyContactFn]);
+
   return (
     <div className="flex-column-between view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
           <div className="flex-center name-index">{data.index}</div>
-          <div className="name">{data.name}</div>
+          <div className="name">{data?.walletName || data?.caHolderInfo?.walletName || ''}</div>
 
           {/* Section - Remark */}
           {isShowRemark && (
             <div className="remark">
               <span>{`Remark: `}</span>
-              <span>{data?.remark || 'No set'}</span>
+              <span>{data?.name || 'No set'}</span>
             </div>
           )}
           {!isShowRemark && !isShowAddContactBtn && !isShowAddedBtn && !isShowChatBtn && (
@@ -41,21 +53,20 @@ export default function ViewContactBody({
           )}
 
           {/* Section - Action: Added | Add Contact | Chat */}
-
           <div className="flex-center action">
-            {isShowAddedBtn && (
+            {isShowAddedBtn && isMyContact && (
               <div className="flex-column-center action-item added-contact">
                 <CustomSvg type="ContactAdded" />
                 <span>{addedText}</span>
               </div>
             )}
-            {isShowAddContactBtn && (
+            {isShowAddContactBtn && !isMyContact && (
               <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
                 <CustomSvg type="ContactAdd" />
                 <span>{addContactText}</span>
               </div>
             )}
-            {isShowChatBtn && (
+            {isShowChatBtn && isMainnet && data.userId && (
               <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
                 <CustomSvg type="ContactChat" />
                 <span>{chatText}</span>
@@ -65,8 +76,8 @@ export default function ViewContactBody({
         </div>
 
         <IdAndAddress
-          portkeyId={data?.portkeyId}
-          relationId={data?.relationId}
+          portkeyId={data?.userId || ''}
+          relationId={data?.userId || ''}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
         />

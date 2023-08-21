@@ -510,3 +510,11 @@ export const useSearchChannel = () => {
     });
   }, []);
 };
+
+export const useAddStranger = () => {
+  return useCallback((relationId: string) => {
+    return im.service.addStranger({
+      relationId,
+    });
+  }, []);
+};

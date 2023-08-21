@@ -4,7 +4,7 @@ import './index.less';
 export interface IContactItemProps {
   item: ContactItemType;
   hasChatEntry?: boolean;
-  clickChat: (e: any, item: ContactItemType) => void;
+  clickChat?: (e: any, item: ContactItemType) => void;
 }
 
 export default function ContactItem({ item, hasChatEntry = true, clickChat }: IContactItemProps) {
@@ -15,7 +15,7 @@ export default function ContactItem({ item, hasChatEntry = true, clickChat }: IC
         <span className="contact-item-name">{item.name}</span>
       </div>
       {hasChatEntry && (
-        <div className="flex-center contact-item-left" onClick={(e) => clickChat(e, item)}>
+        <div className="flex-center contact-item-left" onClick={(e) => clickChat?.(e, item)}>
           {`Chat`}
         </div>
       )}

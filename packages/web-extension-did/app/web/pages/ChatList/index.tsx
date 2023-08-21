@@ -2,7 +2,7 @@ import { Popover } from 'antd';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ChatList as ChannelList, PopoverMenuList } from '@portkey-wallet/im-ui-web';
+import { ChatList as ChannelList, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -23,10 +23,6 @@ export default function ChatList() {
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
-
-  const onConfirm = () => {
-    // TODO
-  };
   const popList = useMemo(
     () => [
       {
@@ -39,7 +35,7 @@ export default function ChatList() {
         key: 'add-contact',
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Add Contact',
-        onClick: onConfirm,
+        onClick: () => navigate(`/setting/contacts/add`),
       },
     ],
     [navigate],
@@ -93,16 +89,18 @@ export default function ChatList() {
             <div>No Message</div>
           </div>
         ) : (
-          <ChannelList
-            id="channel-list"
-            dataSource={transChatList}
-            onClickPin={(chatItem) => pinChannel(`${chatItem.id}`, !chatItem.pin)}
-            onClickMute={(chatItem) => muteChannel(`${chatItem.id}`, !chatItem.muted)}
-            onClickDelete={(chatItem) => hideChannel(`${chatItem.id}`)}
-            onClick={(chatItem) => navigate(`/chat-box/${chatItem.id}`, { state: chatItem })}
-            hasMore={hasNextChannelList}
-            loadMore={nextChannelList}
-          />
+          <StyleProvider prefixCls="portkey">
+            <ChannelList
+              id="channel-list"
+              dataSource={transChatList}
+              onClickPin={(chatItem) => pinChannel(`${chatItem.id}`, !chatItem.pin)}
+              onClickMute={(chatItem) => muteChannel(`${chatItem.id}`, !chatItem.muted)}
+              onClickDelete={(chatItem) => hideChannel(`${chatItem.id}`)}
+              onClick={(chatItem) => navigate(`/chat-box/${chatItem.id}`)}
+              hasMore={hasNextChannelList}
+              loadMore={nextChannelList}
+            />
+          </StyleProvider>
         )}
       </div>
     </div>

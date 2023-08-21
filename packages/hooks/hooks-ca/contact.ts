@@ -236,3 +236,26 @@ export const useLocalContactSearch = () => {
     [contactIndexList],
   );
 };
+
+export const useIsMyContact = () => {
+  const { contactPortkeyIdMap, contactRelationIdMap } = useContact(false, false);
+
+  return useCallback(
+    ({ userId, relationId }: { userId?: string; relationId?: string }): boolean => {
+      if (!userId && !relationId) {
+        return false;
+      }
+
+      console.log('🌈 🌈 🌈 🌈 🌈 🌈 contactPortkeyIdMap', contactPortkeyIdMap);
+      console.log('🌈 🌈 🌈 🌈 🌈 🌈 contactRelationIdMap', contactRelationIdMap);
+
+      console.log('🌈 🌈 🌈 🌈 🌈 🌈 ', userId, relationId);
+      return (
+        (contactPortkeyIdMap && userId && contactPortkeyIdMap?.[userId]?.length > 0) ||
+        (contactRelationIdMap && relationId && contactRelationIdMap?.[relationId]?.length > 0) ||
+        false
+      );
+    },
+    [contactPortkeyIdMap, contactRelationIdMap],
+  );
+};

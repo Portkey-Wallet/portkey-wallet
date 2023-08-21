@@ -17,6 +17,7 @@ import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 import CustomModal from 'pages/components/CustomModal';
 import { useGoProfile } from 'hooks/useProfile';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -49,6 +50,7 @@ export default function AddContact() {
   const { state } = useLocation();
   const { extra } = useParams();
   const appDispatch = useAppDispatch();
+  const isMainnet = useIsMainnet();
   const [disable, setDisabled] = useState<boolean>(true);
   const [netOpen, setNetOpen] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(-1);
@@ -186,30 +188,45 @@ export default function AddContact() {
   );
 
   const handleView = useGoProfile();
+  const requestAddContact = useCallback(
+    async (name: string, addresses: AddressItem[]) => {
+      const contactDetail = await addContactApi({ name: name.trim(), addresses });
+      appDispatch(fetchContactListAsync());
+
+      if (contactDetail?.imInfo?.relationId) {
+        // CAN CHAT
+        CustomModal({
+          type: 'confirm',
+          content: 'This contact is identified as a new portkey web3 chat friend.',
+          onOk: () => handleView(contactDetail),
+          okText: 'Ok',
+        });
+      } else {
+        // CANT CHAT
+        handleView(contactDetail);
+        message.success('Add Contact Successful');
+      }
+    },
+    [addContactApi, appDispatch, handleView],
+  );
+
   const onFinish = useCallback(
     async (values: ContactItemType) => {
       const { name, addresses } = values;
 
       try {
         setLoading(true);
-        const checkName = await handleCheckName(name.trim());
-        const checkAddress = handleCheckAddress(addresses);
-        if (checkName && checkAddress) {
-          const contactDetail = await addContactApi({ name: name.trim(), addresses });
-          appDispatch(fetchContactListAsync());
 
-          if (contactDetail?.imInfo?.relationId) {
-            // CAN CHAT
-            CustomModal({
-              type: 'confirm',
-              content: 'This contact is identified as a new portkey web3 chat friend.',
-              onOk: () => handleView(contactDetail),
-              okText: 'Ok',
-            });
-          } else {
-            // CANT CHAT
-            handleView(contactDetail);
-            message.success('Add Contact Successful');
+        if (isMainnet) {
+          const checkAddress = handleCheckAddress(addresses);
+          if (checkAddress) {
+            await requestAddContact(name, addresses);
+          }
+        } else {
+          const checkName = await handleCheckName(name.trim());
+          const checkAddress = handleCheckAddress(addresses);
+          if (checkName && checkAddress) {
+            await requestAddContact(name, addresses);
           }
         }
       } catch (e: any) {
@@ -219,7 +236,7 @@ export default function AddContact() {
         setLoading(false);
       }
     },
-    [addContactApi, appDispatch, handleCheckAddress, handleCheckName, handleView, setLoading, t],
+    [handleCheckAddress, handleCheckName, isMainnet, requestAddContact, setLoading, t],
   );
 
   // go back previous page

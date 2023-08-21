@@ -22,8 +22,9 @@ export const transIndexesToContactPortkeyIdMap = (contactIndexList: ContactIndex
   const contactPortkeyIdMap: ContactMapType = {};
   contactIndexList.forEach(contactIndex => {
     contactIndex.contacts.forEach(contact => {
-      if (contact.imInfo?.portkeyId) {
-        contactPortkeyIdMap[contact.imInfo?.portkeyId].push(contact);
+      if (contact?.userId) {
+        if (contactPortkeyIdMap[contact?.userId]) contactPortkeyIdMap[contact?.userId].push(contact);
+        else contactPortkeyIdMap[contact?.userId] = [contact];
       }
     });
   });
@@ -35,7 +36,9 @@ export const transIndexesToContactRelationIdMap = (contactIndexList: ContactInde
   contactIndexList.forEach(contactIndex => {
     contactIndex.contacts.forEach(contact => {
       if (contact.imInfo?.relationId) {
-        contactRelationIdMap[contact.imInfo?.relationId].push(contact);
+        if (contactRelationIdMap[contact.imInfo?.relationId])
+          contactRelationIdMap[contact.imInfo?.relationId].push(contact);
+        else contactRelationIdMap[contact.imInfo?.relationId] = [contact];
       }
     });
   });

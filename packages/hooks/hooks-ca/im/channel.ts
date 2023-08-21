@@ -428,15 +428,21 @@ export const useMuteChannel = () => {
         mute: value,
       });
 
+      if (isRefreshTotal) {
+        await im.service.readMessage({ channelUuid: channelId, total: 9999 });
+      }
+
       dispatch(
         updateChannelAttribute({
           network: networkType,
           channelId: channelId,
           value: {
             mute: value,
+            unreadMessageCount: 0,
           },
         }),
       );
+
       if (isRefreshTotal) {
         im.refreshMessageCount();
       }

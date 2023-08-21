@@ -7,7 +7,7 @@ export interface IContactListProps {
   list: ContactItemType[];
   hasChatEntry?: boolean;
   clickItem: (item: ContactItemType) => void;
-  clickChat: (e: any, item: ContactItemType) => void;
+  clickChat?: (e: any, item: ContactItemType) => void;
 }
 
 export default function ContactList({ list, hasChatEntry, clickItem, clickChat }: IContactListProps) {

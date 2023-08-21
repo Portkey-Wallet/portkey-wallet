@@ -28,17 +28,18 @@ function MessageImage(props: MessageProps<ChatMessage>) {
       <CacheImage
         style={[styles.image, { width: imageSize.width, height: imageSize.height }, radiusStyle]}
         resizeMode="cover"
-        source={{ uri: decodeURIComponent(thumbUri || '') }}
+        originUri={imgUri}
+        source={{ uri: thumbUri }}
       />
     );
-  }, [height, radiusStyle, thumbUri, width]);
+  }, [height, imgUri, radiusStyle, thumbUri, width]);
 
   const onPreviewImage = useCallback(
     (event: GestureResponderEvent) => {
       const { pageX, pageY } = event.nativeEvent;
       ChatOverlay.showPreviewImage({
-        source: { uri: decodeURIComponent(imgUri || '') },
-        thumb: { uri: decodeURIComponent(thumbUri || '') },
+        source: { uri: imgUri },
+        thumb: { uri: thumbUri },
         customBounds: { x: pageX, y: pageY, width: 0, height: 0 },
       });
     },

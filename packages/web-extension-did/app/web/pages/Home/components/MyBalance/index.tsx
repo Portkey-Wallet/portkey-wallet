@@ -28,18 +28,16 @@ import useGuardianList from 'hooks/useGuardianList';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/ChatEntry';
-import './index.less';
-import im from '@portkey-wallet/im';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
-import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
-import { request } from '@portkey-wallet/api/api-did';
+import { useInitIM, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import './index.less';
 
 export interface TransactionResult {
   total: number;
@@ -94,22 +92,9 @@ export default function MyBalance() {
   const isShowChat = true;
   // const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
+  const initIm = useInitIM();
 
   // IM START
-  const { apiUrl, imApiUrl, imWsUrl } = useCurrentNetworkInfo();
-  useMemo(() => {
-    request.set('baseURL', apiUrl);
-    if (request.defaultConfig.baseURL !== apiUrl) {
-      request.defaultConfig.baseURL = apiUrl;
-    }
-  }, [apiUrl]);
-  useMemo(() => {
-    im.setUrl({
-      apiUrl: imApiUrl || '',
-      wsUrl: imWsUrl || '',
-    });
-  }, [imApiUrl, imWsUrl]);
-
   const initIM = useCallback(async () => {
     const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
     const pin = getSeedResult.data.privateKey;
@@ -120,11 +105,11 @@ export default function MyBalance() {
     if (!account || !walletInfo.caHash) return;
 
     try {
-      await im.init(account, walletInfo.caHash);
+      await initIm(account, walletInfo.caHash);
     } catch (error) {
       console.log('im init error', error);
     }
-  }, [walletInfo.AESEncryptPrivateKey, walletInfo.caHash]);
+  }, [initIm, walletInfo.AESEncryptPrivateKey, walletInfo.caHash]);
   // IM END
 
   useEffect(() => {

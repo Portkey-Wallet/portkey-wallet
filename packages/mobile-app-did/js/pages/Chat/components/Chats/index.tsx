@@ -52,12 +52,12 @@ const format = (message: IMMessage[]): ChatMessage[] => {
       } as any;
       if (ele.type === 'IMAGE' && typeof ele.parsedContent !== 'string') {
         delete msg.text;
-        msg.image = ele.parsedContent?.thumbImgUrl || ele.parsedContent?.imgUrl;
+        msg.image = decodeURIComponent(ele.parsedContent?.thumbImgUrl || ele.parsedContent?.imgUrl || '');
         msg.imageInfo = {
           width: ele.parsedContent?.width,
           height: ele.parsedContent?.height,
-          imgUri: ele.parsedContent?.imgUrl,
-          thumbUri: ele.parsedContent?.thumbImgUrl,
+          imgUri: decodeURIComponent(ele.parsedContent?.imgUrl || ''),
+          thumbUri: decodeURIComponent(ele.parsedContent?.thumbImgUrl || ''),
         };
       }
       return msg;

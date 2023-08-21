@@ -1,3 +1,4 @@
+import { forwardRef, useImperativeHandle } from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import './index.less';
@@ -11,9 +12,13 @@ interface PhotoSendModalProps {
   onCancel: () => void;
 }
 
-export default function PhotoSendModal({ open, url, onConfirm, onCancel }: PhotoSendModalProps) {
+const PhotoSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSendModalProps, ref) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    setLoading,
+  }));
 
   const handleConfirm = () => {
     setLoading(true);
@@ -41,4 +46,6 @@ export default function PhotoSendModal({ open, url, onConfirm, onCancel }: Photo
       </div>
     </CommonModal>
   );
-}
+});
+
+export default PhotoSendModal;

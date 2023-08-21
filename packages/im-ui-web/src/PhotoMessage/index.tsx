@@ -20,7 +20,7 @@ const PhotoMessage: React.FC<IPhotoMessageProps> = props => {
           </div>
         ) : (
           <>
-            <Image src={props?.data?.uri} onError={() => setLoadErr(true)} />
+            <Image src={props?.imgData?.thumbImgUrl} onError={() => setLoadErr(true)} />
             <div className="photo-date">{showDate}</div>
           </>
         )}

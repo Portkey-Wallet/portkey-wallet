@@ -3,11 +3,12 @@ import { FontStyles } from 'assets/theme/styles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, ImageProps, StyleSheet, View } from 'react-native';
-import { getCacheImage, isURISource } from 'utils/fs/img';
+import { checkExistsImage, getCacheImage, isURISource } from 'utils/fs/img';
 import Default_Image from 'assets/image/pngs/default_record.png';
 
 export interface CacheImageProps extends ImageProps {
   thumb?: ImageProps['source'];
+  originUri?: string;
 }
 
 export default function CacheImage(props: CacheImageProps) {
@@ -15,6 +16,10 @@ export default function CacheImage(props: CacheImageProps) {
   const [thumb, setThumb] = useState<CacheImageProps['thumb']>();
 
   const init = useCallback(async () => {
+    if (props.originUri) {
+      const path = await checkExistsImage(props.originUri);
+      if (path) return setSource({ uri: path });
+    }
     // is ImageRequireSource
     if (!isURISource(props.source)) return setSource(props.source);
     const localSource = await getCacheImage(props.source);
@@ -24,7 +29,7 @@ export default function CacheImage(props: CacheImageProps) {
       const localThumb = await getCacheImage(props.thumb);
       localThumb && setThumb(localThumb);
     }
-  }, [props.source, props.thumb]);
+  }, [props.originUri, props.source, props.thumb]);
 
   useEffectOnce(() => {
     init();

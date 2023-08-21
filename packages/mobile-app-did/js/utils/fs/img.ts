@@ -1,11 +1,23 @@
 import { ImageProps, ImageURISource } from 'react-native';
-import { checkAndMakeDirectory, copyFileToPath, downloadFile, formatFilePath, getFilePath, urlToLocalName } from '.';
+import {
+  checkAndMakeDirectory,
+  copyFileToPath,
+  downloadFile,
+  formatFilePath,
+  getFilePath,
+  isLocalPath,
+  urlToLocalName,
+} from '.';
 import RNFS from 'react-native-fs';
 
 import { FileEnum } from './types';
 
 export const getLocalImagePath = (uri: string, id?: string) => {
   return getFilePath({ type: FileEnum.image, name: urlToLocalName(uri), id });
+};
+
+export const isLocalSource = (source: ImageURISource) => {
+  return isLocalPath(source.uri || '');
 };
 
 export const checkExistsImage = async (uri?: string) => {
@@ -22,6 +34,7 @@ export const checkExistsImage = async (uri?: string) => {
 export const getCacheImage = async (source: ImageURISource) => {
   if (!source.uri) return source;
   try {
+    if (isLocalSource(source)) return source;
     const { directory, path } = getLocalImagePath(source.uri);
     const exists = await checkExistsImage(source.uri);
     if (exists) return { uri: path };

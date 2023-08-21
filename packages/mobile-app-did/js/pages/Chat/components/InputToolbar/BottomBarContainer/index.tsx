@@ -15,6 +15,7 @@ import { BGStyles } from 'assets/theme/styles';
 import { SendMessageButton } from '../SendMessageButton';
 import { ChatInput, ChatInputBar } from '../ChatInput';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { chatInputRecorder } from 'pages/Chat/utils';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -63,9 +64,10 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
       timer.current && clearTimeout(timer.current);
     };
   });
-  const onSend = useCallback(() => {
+  const onSend = useCallback(async () => {
     dispatch(setChatText(''));
     sendChannelMessage(text);
+    chatInputRecorder?.reset();
   }, [dispatch, sendChannelMessage, text]);
   return (
     <View style={styles.wrap}>

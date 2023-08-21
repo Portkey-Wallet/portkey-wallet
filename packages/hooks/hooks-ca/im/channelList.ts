@@ -6,11 +6,11 @@ import { CHANNEL_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../../index';
 import { nextChannelList, setChannelList, setHasNext } from '@portkey-wallet/store/store-ca/im/actions';
-import { useImChannelListNetMapState, useImHasNextNetMapState } from '.';
+import { useIMChannelListNetMapState, useIMHasNextNetMapState } from '.';
 
 export const useNextChannelList = () => {
-  const channelListNetMap = useImChannelListNetMapState();
-  const hasNextNetMap = useImHasNextNetMapState();
+  const channelListNetMap = useIMChannelListNetMapState();
+  const hasNextNetMap = useIMHasNextNetMapState();
 
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
@@ -83,7 +83,7 @@ export const useNextChannelList = () => {
 };
 
 export const useChannelList = () => {
-  const channelListNetMap = useImChannelListNetMapState();
+  const channelListNetMap = useIMChannelListNetMapState();
   const { networkType } = useCurrentNetworkInfo();
   const { next, hasNext } = useNextChannelList();
 

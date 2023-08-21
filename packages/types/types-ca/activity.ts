@@ -49,6 +49,7 @@ export type the2ThFailedActivityItemType = {
     amount: number;
     toAddress: string;
     memo?: string;
+    issueChainId: number;
   };
 };
 

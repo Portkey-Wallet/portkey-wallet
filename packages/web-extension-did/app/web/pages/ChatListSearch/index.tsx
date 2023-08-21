@@ -6,6 +6,9 @@ import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
+import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import ContactList from 'pages/Contacts/components/ContactList';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import './index.less';
 
 export default function ChatListSearch() {
@@ -13,15 +16,34 @@ export default function ChatListSearch() {
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const { setLoading } = useLoading();
-  const [chatList, setChatList] = useState<[]>([]);
+  const [chatList, setChatList] = useState<ContactItemType[]>([]);
+  const searchChannel = useSearchChannel();
 
-  const handleSearch = useCallback(async (keyword: string) => {
-    if (!keyword) {
-      setChatList([]);
-    } else {
-      setChatList([]);
-    }
-  }, []);
+  const handleSearch = useCallback(
+    async (keyword: string) => {
+      if (!keyword) {
+        setChatList([]);
+      } else {
+        try {
+          const res = await searchChannel(keyword);
+          const transRes = res.data.list.map((item) => ({
+            id: item.channelUuid,
+            index: item.displayName.slice(0, 1).toUpperCase(),
+            name: item.displayName,
+            addresses: [],
+            modificationTime: 0,
+            isDeleted: false,
+            userId: '',
+            isImputation: false,
+          }));
+          setChatList(transRes);
+        } catch (e) {
+          setChatList([]);
+        }
+      }
+    },
+    [searchChannel],
+  );
 
   const searchDebounce = useDebounceCallback(
     async (params) => {
@@ -54,7 +76,7 @@ export default function ChatListSearch() {
           }}
         />
       </div>
-      <div className="find-more flex">
+      <div className="find-more flex" onClick={() => navigate('/chat-list-search-find-more')}>
         <CustomSvg type="AddContact" />
         Find More
       </div>
@@ -63,8 +85,8 @@ export default function ChatListSearch() {
           <div className="search-empty flex-center">{filterWord ? 'No search result' : ''}</div>
         ) : (
           <div className="search-result-list">
-            <div>Chats</div>
-            {/* TODO contact list */}
+            <div className="chat-title-text">Chats</div>
+            <ContactList hasChatEntry={false} list={chatList} clickItem={(item) => navigate(`/chat-box/${item.id}`)} />
           </div>
         )}
       </div>

@@ -1,7 +1,6 @@
 @import '../../assets/theme/color.less';
 
 .chat-list-search-page {
-  width: 360px;
   height: 100%;
   background-color: @bg-11;
   font-size: 16px;
@@ -40,6 +39,21 @@
       font-size: 16px;
       line-height: 22px;
       color: @font-12;
+    }
+    .search-result-list {
+      padding: 0 12px;
+      .chat-title-text {
+        margin: 16px 12px 0;
+        font-size: 16px;
+        line-height: 22px;
+        font-weight: 500;
+        color: @font-11;
+      }
+      .adm-list-default {
+        .adm-list-body {
+          border-top: none;
+        }
+      }
     }
   }
 }

@@ -1,8 +1,9 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
+import CircleLoading from '../components/CircleLoading';
 import { IMessageListProps, MessageListEvent } from '../type';
 
 import './index.less';
@@ -10,8 +11,11 @@ import './index.less';
 const MessageList: FC<IMessageListProps> = ({
   referance = null,
   lockable = false,
-  toBottomHeight = 300,
-  downButton,
+  toBottomHeight = 30,
+  downButton = true,
+  hasNext,
+  next,
+  loading = false,
   ...props
 }) => {
   const [scrollBottom, setScrollBottom] = useState(0);
@@ -55,6 +59,10 @@ const MessageList: FC<IMessageListProps> = ({
     if (props.onPhotoError instanceof Function) props.onPhotoError(item, index, event);
   };
 
+  const onDelete = (id: string) => {
+    if (props.onDelete instanceof Function) props.onDelete(`${id}`);
+  };
+
   const onScroll = (e: React.UIEvent<HTMLElement>): void => {
     var bottom = getBottom(e.currentTarget);
     setScrollBottom(bottom);
@@ -67,6 +75,11 @@ const MessageList: FC<IMessageListProps> = ({
       if (_downButton !== false) {
         setDownButton(false);
         setScrollBottom(bottom);
+      }
+    }
+    if (referance.current.scrollTop === 0) {
+      if (hasNext) {
+        next();
       }
     }
 
@@ -83,24 +96,57 @@ const MessageList: FC<IMessageListProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (!referance) return;
+    referance.current.scrollTop = referance.current.scrollHeight;
+  }, []);
+
+  useEffect(() => {
+    if (props.dataSource?.[props.dataSource?.length - 1]?.position === 'right') {
+      if (!referance) return;
+      referance.current.scrollTop = referance.current.scrollHeight;
+    }
+  }, [props.dataSource]);
+
+  const renderMessageItem = useMemo(() => {
+    let prev = 'left';
+    let isShowMargin = false;
+    return props.dataSource.map((x, i: number) => {
+      if (i === 0) {
+        prev = x.position;
+      } else {
+        isShowMargin = prev !== x.position;
+        prev = x.position;
+      }
+      return (
+        <MessageItem
+          className={isShowMargin && 'showMargin'}
+          key={x.id}
+          {...(x as any)}
+          onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
+          onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
+          onDelete={() => onDelete(`${x.id}`)}
+          styles={props.messageBoxStyles}
+        />
+      );
+    });
+  }, [props.dataSource]);
+
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>
       <div ref={referance} onScroll={onScroll} className="message-list-body">
-        {props.dataSource.map((x, i: number) => (
-          <MessageItem
-            key={x.id}
-            {...(x as any)}
-            onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
-            onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
-            styles={props.messageBoxStyles}
-          />
-        ))}
+        {loading && (
+          <div className="loading-more flex-center">
+            <CircleLoading />
+          </div>
+        )}
+        {renderMessageItem}
       </div>
-      {/* {downButton === true && _downButton && toBottomHeight !== '100%' && ( */}
-      <div className="message-list-down-button flex-center" onClick={toBottom}>
-        <CustomSvg type="LeftArrow" />
-      </div>
-      {/* )} */}
+      {downButton === true && _downButton && toBottomHeight !== '100%' && (
+        <div className="message-list-down-button flex-center" onClick={toBottom}>
+          <CustomSvg type="LeftArrow" />
+        </div>
+      )}
     </div>
   );
 };

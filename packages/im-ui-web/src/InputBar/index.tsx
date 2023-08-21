@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Popover } from 'antd';
 import { emojiList } from '../assets/index';
@@ -17,6 +17,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
   console.log(props);
   const [showIcon, setShowIcon] = useState(false);
   const [value, setValue] = useState('');
+  const inputRef = useRef(null);
 
   const handleShowIcon = () => {
     if (showIcon) {
@@ -35,6 +36,15 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
     setValue('');
   };
 
+  const handleEnterKeyDown = (e: any) => {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      if (value) {
+        handleSend();
+      }
+    }
+  };
+
   return (
     <div>
       <div className="portkey-input-bar">
@@ -42,7 +52,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
           <div className="input-emoji">
             <div className="show-icon flex">
               {emojiList.map(item => (
-                <div className="icon flex-center" key={item.name} onClick={() => {}}>
+                <div className="icon flex-center" key={item.name} onClick={() => setValue(value + item.code)}>
                   {item.code}
                 </div>
               ))}
@@ -64,7 +74,16 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
           )}
 
           <div className="input-text">
-            <Input value={value} multiline={true} maxHeight={100} onChange={handleChange} />
+            <Input
+              autofocus
+              referance={inputRef}
+              value={value}
+              multiline={true}
+              maxHeight={140}
+              onChange={handleChange}
+              onFocus={() => setShowIcon(false)}
+              onKeyDown={handleEnterKeyDown}
+            />
             {showEmoji && (
               <CustomSvg className={clsx([showIcon && 'has-show-icon'])} type="Emoji" onClick={handleShowIcon} />
             )}

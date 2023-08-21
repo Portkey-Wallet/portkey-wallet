@@ -5,6 +5,7 @@ import SecondPageHeader from 'pages/components/SecondPageHeader';
 import AddContactButton from '../components/AddContactButton';
 import { Outlet } from 'react-router';
 import ContactsSearchInput from '../components/ContactsSearchInput';
+import ImputationTip from '../components/ImputationTip';
 
 export default function ContactsPrompt({
   headerTitle,
@@ -16,6 +17,8 @@ export default function ContactsPrompt({
   list,
   contactCount,
   initData,
+  showImputation = false,
+  closeImputationTip,
 }: IContactsProps) {
   return (
     <div className="flex contacts-prompt">
@@ -38,6 +41,7 @@ export default function ContactsPrompt({
             className={'search-input-prompt'}
           />
         </div>
+        {showImputation && <ImputationTip closeTip={closeImputationTip} />}
         <ContactsBody
           isSearch={isSearch}
           list={list}

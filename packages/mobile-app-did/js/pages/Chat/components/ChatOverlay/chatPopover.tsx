@@ -16,7 +16,7 @@ const verticalSpacing = 300;
 
 export type ListItemType = { onPress?: () => void; title: string; iconName: IconName };
 
-type ShowChatPopoverParams = {
+export type ShowChatPopoverParams = {
   list: ListItemType[];
   px?: number;
   py?: number;

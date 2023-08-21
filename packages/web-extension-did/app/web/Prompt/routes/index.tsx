@@ -218,14 +218,6 @@ export const PageRouter = () => {
               element: <WalletName />,
             },
             {
-              path: '/setting/wallet/:type',
-              element: <ContactDetail />,
-            },
-            {
-              path: '/setting/wallet/:type/:extra',
-              element: <ContactDetail />,
-            },
-            {
               path: '/setting/wallet/auto-lock',
               element: <AutoLock />,
             },
@@ -366,14 +358,6 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet/wallet-name',
       element: <WalletName />,
-    },
-    {
-      path: '/setting/wallet/:type',
-      element: <ContactDetail />,
-    },
-    {
-      path: '/setting/wallet/:type/:extra',
-      element: <ContactDetail />,
     },
     {
       path: '/setting/wallet/auto-lock',

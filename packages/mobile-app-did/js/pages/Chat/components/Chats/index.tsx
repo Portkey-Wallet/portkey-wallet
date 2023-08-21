@@ -2,7 +2,6 @@ import React, { useCallback, useMemo } from 'react';
 import {
   GiftedChat,
   GiftedChatProps,
-  IMessage,
   Message,
   MessageImageProps,
   MessageProps,
@@ -27,6 +26,7 @@ import Touchable from 'components/Touchable';
 import { useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import im from '@portkey-wallet/im';
 import GStyles from 'assets/theme/GStyles';
+import { ChatMessage } from 'pages/Chat/types';
 
 const Empty = () => null;
 
@@ -38,11 +38,12 @@ const ListViewProps = {
   initialNumToRender: 20,
 };
 
-const format = (message: IMMessage[]): IMessage[] => {
+const format = (message: IMMessage[]): ChatMessage[] => {
   return message
     .map(ele => {
       const msg = {
         _id: ele.sendUuid,
+        ...ele,
         text: ele.content,
         createdAt: Number(ele.createAt),
         user: {
@@ -91,12 +92,12 @@ const ChatsUI = () => {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    (props: MessageTextProps<IMessage>) => <MessageText {...props} />,
+    (props: MessageTextProps<ChatMessage>) => <MessageText {...props} />,
     [],
   );
 
   const renderMessageImage: GiftedChatProps['renderMessageImage'] = useCallback(
-    (props: MessageImageProps<IMessage>) => <MessageImage {...props} />,
+    (props: MessageImageProps<ChatMessage>) => <MessageImage {...props} />,
     [],
   );
 
@@ -111,7 +112,7 @@ const ChatsUI = () => {
   }, [onDismiss]);
 
   const renderMessage = useCallback(
-    (props: MessageProps<IMessage>) => {
+    (props: MessageProps<ChatMessage>) => {
       return (
         <Touchable activeOpacity={1} onPress={onDismiss}>
           <Message

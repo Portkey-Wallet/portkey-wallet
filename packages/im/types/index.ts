@@ -75,6 +75,7 @@ export type ChannelItem = {
   lastPostAt: string;
   mute: boolean;
   pin: boolean;
+  toRelationId: string;
 };
 
 export enum IMStatusEnum {

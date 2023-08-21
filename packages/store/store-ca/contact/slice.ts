@@ -6,6 +6,7 @@ import {
   editContactAction,
   deleteContactAction,
   resetContact,
+  readImputationAction,
 } from './actions';
 import {
   executeEventToContactIndexList,
@@ -20,9 +21,9 @@ export interface ContactState {
   lastModified: number;
   contactIndexList: ContactIndexType[];
   contactMap: ContactMapType;
-  contactPortkeyIdMap: ContactMapType;
-  contactRelationIdMap: ContactMapType;
-  isImputation: boolean;
+  contactPortkeyIdMap?: ContactMapType;
+  contactRelationIdMap?: ContactMapType;
+  isImputation?: boolean;
 }
 
 export const initialState: ContactState = {
@@ -87,6 +88,11 @@ export const contactSlice = createSlice({
         state.contactPortkeyIdMap = {};
         state.contactRelationIdMap = {};
         state.lastModified = 0;
+      })
+      .addCase(readImputationAction, (state, action) => {
+        let _contactIndexList = [...state.contactIndexList];
+        _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
+        state.contactIndexList = sortContactIndexList(_contactIndexList);
       });
   },
 });

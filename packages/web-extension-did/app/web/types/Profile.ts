@@ -30,4 +30,9 @@ export interface IProfileDetailBodyProps {
   handleAdd?: () => void;
 }
 
-export type IProfileDetailProps = BaseHeaderProps & IProfileDetailBodyProps;
+export type IProfileDetailProps = BaseHeaderProps & IProfileDetailBodyProps & { type: MyProfilePageType };
+
+export enum MyProfilePageType {
+  EDIT = 'edit',
+  VIEW = 'view',
+}

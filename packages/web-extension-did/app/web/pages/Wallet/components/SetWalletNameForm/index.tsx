@@ -6,10 +6,12 @@ import { useSetWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
+import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
-export default function SetWalletNameForm() {
+// TODO any
+export default function SetWalletNameForm({ data, handleCopy }: any) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const { walletName } = useWalletInfo();
@@ -99,6 +101,14 @@ export default function SetWalletNameForm() {
           />
         </FormItem>
       </div>
+
+      <IdAndAddress
+        portkeyId={data?.portkeyId}
+        relationId={data?.relationId}
+        addresses={data?.addresses || []}
+        handleCopy={handleCopy}
+      />
+
       <div className="form-btn">
         <FormItem>
           <Button type="primary" htmlType="submit" disabled={disable}>

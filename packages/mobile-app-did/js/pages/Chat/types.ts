@@ -1,3 +1,4 @@
+import { Message } from '@portkey-wallet/im';
 import { IMessage } from 'react-native-gifted-chat';
 
 export type ImageInfo = {
@@ -6,6 +7,6 @@ export type ImageInfo = {
   imgUri: string;
   thumbUri: string;
 };
-export interface ChatMessage extends IMessage {
+export interface ChatMessage extends IMessage, Message {
   imageInfo?: ImageInfo;
 }

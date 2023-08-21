@@ -29,7 +29,7 @@ export class DidService extends ServiceInit {
       im.config.setConfig({
         requestDefaults: {
           headers: {
-            ...im.config.requestDefaults?.headers,
+            ...im.config.requestConfig?.headers,
             Authorization: authorization,
           },
         },

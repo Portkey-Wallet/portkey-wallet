@@ -7,7 +7,7 @@ import { PopoverMenuList, MessageList, InputBar, StyleProvider } from '@portkey-
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
 import PhotoSendModal from './components/PhotoSendModal';
-import { ImageMessageFileType, useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ImageMessageFileType, useChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from './components/BookmarkListDrawer';
 import im from '@portkey-wallet/im';
@@ -39,13 +39,14 @@ export default function Session() {
   useEffectOnce(() => {
     init();
   });
+  const relationId = useRelationId();
   const messageList: any = useMemo(() => {
     return list.map((item) => {
       return {
         id: item.id,
         // sendUuid: item.sendUuid, // TODO
         title: item.fromName,
-        position: item.from === im.userInfo?.relationId ? 'right' : 'left', // TODO '5h7d6-liaaa-aaaaj-vgmya-cai'
+        position: item.from === relationId ? 'right' : 'left', // TODO '5h7d6-liaaa-aaaaj-vgmya-cai'
         text: item.parsedContent,
         imgData:
           typeof item.parsedContent === 'object'

@@ -23,12 +23,21 @@ const imageMessageParser = (str: string): ParsedImage => {
 };
 
 export const messageParser = (message: Message): Message => {
-  if (message.type === 'IMAGE') {
-    const { content } = message;
-    return {
-      ...message,
-      parsedContent: imageMessageParser(content),
-    };
+  switch (message.type) {
+    case 'TEXT':
+      return {
+        ...message,
+        parsedContent: message.content,
+      };
+    case 'IMAGE':
+      return {
+        ...message,
+        parsedContent: imageMessageParser(message.content),
+      };
+    default:
+      return {
+        ...message,
+        unidentified: true,
+      };
   }
-  return relationMessageParser(message as RelationMessage) as Message;
 };

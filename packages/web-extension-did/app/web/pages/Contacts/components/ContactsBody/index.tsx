@@ -10,6 +10,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import CustomModal from 'pages/components/CustomModal';
 import CustomSvg from 'components/CustomSvg';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export interface IContactsBodyProps {
   isSearch: boolean;
@@ -22,6 +23,7 @@ export interface IContactsBodyProps {
 export default function ContactsBody({ isSearch, list, contactCount, initData, changeTab }: IContactsBodyProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isMainnet = useIsMainnet();
   const [activeKey, setActiveKey] = useState<string>(ContactsTab.ALL);
 
   const onChange = useCallback(
@@ -98,7 +100,10 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
 
   return (
     <div className={clsx(['contacts-body', isSearch && 'index-bar-hidden'])}>
-      <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="contacts-tab" />
+      {isMainnet && (
+        <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="contacts-tab" />
+      )}
+      {!isMainnet && <div className="testnet-list">{allContactListUI}</div>}
     </div>
   );
 }

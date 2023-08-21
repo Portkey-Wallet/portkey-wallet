@@ -16,7 +16,6 @@ export default function WalletName() {
   const isMainnet = useIsMainnet();
   const { walletName, userId } = useWalletInfo();
   const caAddressInfos = useCaAddressInfoList();
-
   const transAddresses = useMemo(() => {
     return caAddressInfos.map((item) => {
       return { chainName: item.chainName, chainId: item.chainId, address: item.caAddress };
@@ -28,6 +27,17 @@ export default function WalletName() {
   const [type, setType] = useState<MyProfilePageType>(MyProfilePageType.VIEW);
   const title = useMemo(() => (isMainnet ? t('My DID') : walletName), [isMainnet, t, walletName]);
   const [headerTitle, setHeaderTitle] = useState(title);
+
+  const state: IProfileDetailDataProps = useMemo(
+    () => ({
+      index: walletName.substring(0, 1).toLocaleUpperCase(),
+      walletName: walletName,
+      addresses: transAddresses,
+      userId: userId,
+      isShowRemark: false,
+    }),
+    [transAddresses, userId, walletName],
+  );
 
   const showEdit = useCallback(() => {
     setHeaderTitle(editText);
@@ -44,18 +54,11 @@ export default function WalletName() {
     }
   }, [navigate, title, type]);
 
-  // TODO fetch profile
-  const state: IProfileDetailDataProps = {
-    index: walletName.substring(0, 1).toLocaleUpperCase(),
-    walletName: walletName,
-    addresses: transAddresses,
-    userId: userId,
-    relationId: '111', // TODO
-    isShowRemark: false,
-  };
-
   const handleCopy = useProfileCopy();
   const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);
+  const saveCallback = useCallback(() => {
+    setType(MyProfilePageType.VIEW);
+  }, []);
 
   return isNotLessThan768 ? (
     <WalletNamePrompt
@@ -66,6 +69,7 @@ export default function WalletName() {
       goBack={showView}
       handleEdit={showEdit}
       handleCopy={handleCopy}
+      saveCallback={saveCallback}
     />
   ) : (
     <WalletNamePopup
@@ -76,6 +80,7 @@ export default function WalletName() {
       goBack={goBack}
       handleEdit={showView}
       handleCopy={handleCopy}
+      saveCallback={saveCallback}
     />
   );
 }

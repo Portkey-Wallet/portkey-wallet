@@ -245,11 +245,6 @@ export const useIsMyContact = () => {
       if (!userId && !relationId) {
         return false;
       }
-
-      console.log('🌈 🌈 🌈 🌈 🌈 🌈 contactPortkeyIdMap', contactPortkeyIdMap);
-      console.log('🌈 🌈 🌈 🌈 🌈 🌈 contactRelationIdMap', contactRelationIdMap);
-
-      console.log('🌈 🌈 🌈 🌈 🌈 🌈 ', userId, relationId);
       return (
         (contactPortkeyIdMap && userId && contactPortkeyIdMap?.[userId]?.length > 0) ||
         (contactRelationIdMap && relationId && contactRelationIdMap?.[relationId]?.length > 0) ||

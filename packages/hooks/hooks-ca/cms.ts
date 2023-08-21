@@ -184,7 +184,7 @@ export const useIsChatShow = () => {
   const IsChatShow = useMemo(() => {
     const tabMenuList = tabMenuListNetMap[networkType];
     if (!tabMenuList) return false;
-    return tabMenuList.find(item => item.type.value === ChatTabName);
+    return !!tabMenuList.find(item => item.type.value === ChatTabName);
   }, [networkType, tabMenuListNetMap]);
 
   return IsChatShow;

@@ -38,9 +38,9 @@ export default function SetWalletNameForm({ data, handleCopy }: any) {
   }, []);
 
   const handleUpdateName = useCallback(
-    async (name: string) => {
+    async (walletName: string) => {
       try {
-        await setWalletName(name);
+        await setWalletName(walletName);
         message.success(t('Saved Successful'));
       } catch (error) {
         message.error('set wallet name error');
@@ -51,22 +51,22 @@ export default function SetWalletNameForm({ data, handleCopy }: any) {
   );
 
   const handleSave = useCallback(
-    (name: string) => {
-      if (!name) {
+    (walletName: string) => {
+      if (!walletName) {
         setValidName({
           validateStatus: 'error',
           errorMsg: 'Please Enter Wallet Name',
         });
-        form.setFieldValue('name', '');
+        form.setFieldValue('walletName', '');
         setDisable(true);
-      } else if (!isValidCAWalletName(name)) {
+      } else if (!isValidCAWalletName(walletName)) {
         setValidName({
           validateStatus: 'error',
           errorMsg: '3-16 characters, only a-z, A-Z, 0-9, space and "_" allowed',
         });
         setDisable(true);
       } else {
-        handleUpdateName(name);
+        handleUpdateName(walletName);
       }
     },
     [form, handleUpdateName],
@@ -83,12 +83,12 @@ export default function SetWalletNameForm({ data, handleCopy }: any) {
       className="set-wallet-name-form"
       colon={false}
       layout="vertical"
-      initialValues={{ name: walletName }}
-      onFinish={(v) => handleSave(v.name.trim())}
+      initialValues={{ walletName: walletName }}
+      onFinish={(v) => handleSave(v.walletName.trim())}
       onFinishFailed={onFinishFailed}>
       <div className="form-content">
         <FormItem
-          name="name"
+          name="walletName"
           label="Wallet Name"
           validateStatus={validName.validateStatus}
           help={validName.errorMsg}

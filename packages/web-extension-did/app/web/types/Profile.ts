@@ -1,16 +1,17 @@
-import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import { BaseHeaderProps } from './UI';
+import { CaHolderInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 
 export type ExtraType = '1' | '2' | '3'; // '1' can chat, '2' cont chat , '3' no status（add new chat）
 
 export interface IProfileDetailDataProps {
-  name: string;
-  remark?: string;
-  portkeyId: string;
-  relationId: string;
+  caHolderInfo?: CaHolderInfo;
+  walletName?: string;
+  name?: string;
+  userId?: string;
+  relationId?: string;
   index: string;
   addresses: AddressItem[];
-  isNameDisable?: boolean;
   isShowRemark?: boolean;
 }
 
@@ -30,7 +31,7 @@ export interface IProfileDetailBodyProps {
   handleAdd?: () => void;
 }
 
-export type IProfileDetailProps = BaseHeaderProps & IProfileDetailBodyProps & { type: MyProfilePageType };
+export type IProfileDetailProps = BaseHeaderProps & IProfileDetailBodyProps & { type?: MyProfilePageType };
 
 export enum MyProfilePageType {
   EDIT = 'edit',

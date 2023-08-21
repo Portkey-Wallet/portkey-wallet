@@ -4,7 +4,7 @@ import { IImInfo } from './im';
 
 export interface AddressItem {
   chainId: ChainId; // AELF tDVV tDVW
-  chainName: string;
+  chainName?: string;
   address: string;
   imageUrl?: string;
 }
@@ -63,7 +63,7 @@ export interface IClickAddressProps {
   name?: string;
   isDisable?: boolean;
   chainId: ChainId;
-  chainName: string;
+  chainName?: string;
   addressChainId?: string;
   address: string;
 }

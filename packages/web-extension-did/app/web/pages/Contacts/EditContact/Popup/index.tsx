@@ -6,7 +6,6 @@ import EditContactForm from 'pages/Contacts/components/EditContactForm';
 
 export default function EditContactPopup({
   form,
-  isNameDisable,
   isShowRemark,
   canSave,
   state,
@@ -15,7 +14,6 @@ export default function EditContactPopup({
   headerTitle,
   goBack,
   onFinish,
-  handleInputValueChange,
   handleInputRemarkChange,
   handleCopy,
 }: IEditContactProps) {
@@ -30,14 +28,12 @@ export default function EditContactPopup({
       </div>
       <EditContactForm
         form={form}
-        isNameDisable={isNameDisable}
         isShowRemark={isShowRemark}
         canSave={canSave}
         validName={validName}
         validRemark={validRemark}
         state={state}
         onFinish={onFinish}
-        handleInputValueChange={handleInputValueChange}
         handleInputRemarkChange={handleInputRemarkChange}
         handleCopy={handleCopy}
       />

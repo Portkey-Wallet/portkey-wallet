@@ -8,7 +8,7 @@ export interface IContactListIndexBarProps {
   isSearch: boolean;
   hasChatEntry?: boolean;
   clickItem: (item: ContactItemType) => void;
-  clickChat: (e: any, item: ContactItemType) => void;
+  clickChat: (e: any, item: Partial<ContactItemType>) => void;
 }
 
 export default function ContactListIndexBar({

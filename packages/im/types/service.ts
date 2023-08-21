@@ -44,6 +44,7 @@ export type GetUserInfoDefaultResult = {
   avatar: string;
   name: string;
   relationId: string;
+  portkeyId: string;
 };
 
 export type CreateChannelParams = {

@@ -6,8 +6,8 @@ import './index.css';
 const Input: React.FC<IInputProps> = ({
   type = 'text',
   multiline = false,
-  minHeight = 25,
-  maxHeight = 200,
+  minHeight = 40,
+  maxHeight = 140,
   autoHeight = true,
   autofocus = false,
   ...props
@@ -30,9 +30,14 @@ const Input: React.FC<IInputProps> = ({
     if (props.onChange instanceof Function) props.onChange(e);
 
     if (multiline === true) {
+      if (!e.target.value) {
+        e.target.style.height = minHeight + 'px';
+        e.target.style.scrollTop = minHeight + 'px';
+      }
       if (autoHeight === true) {
         if (e.target.style.height !== minHeight + 'px') {
           e.target.style.height = minHeight + 'px';
+          e.target.style.scrollTop = minHeight + 'px';
         }
 
         let height;
@@ -41,10 +46,18 @@ const Input: React.FC<IInputProps> = ({
 
         if (e.target.style.height !== height) {
           e.target.style.height = height;
+          e.target.style.scrollTop = height;
         }
       }
     }
   };
+
+  useEffect(() => {
+    if (!props.value && props.referance) {
+      props.referance.current.style.height = minHeight + 'px';
+      props.referance.current.style.scrollTop = minHeight + 'px';
+    }
+  }, [props.value, props.referance]);
 
   const clear = () => {
     var _event = {

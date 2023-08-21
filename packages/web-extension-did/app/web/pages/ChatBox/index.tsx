@@ -1,17 +1,17 @@
-import { useMemo, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { Popover, Upload, UploadFile } from 'antd';
+import { Popover, Upload, message } from 'antd';
 import { PopoverMenuList, MessageList, InputBar, StyleProvider } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
 import PhotoSendModal from './components/PhotoSendModal';
-import { useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ImageMessageFileType, useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
-import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import BookmarkListDrawer from './components/BookmarkListDrawer';
 import im from '@portkey-wallet/im';
+import { getPixel } from './utils';
 import './index.less';
 
 enum MessageTypeWeb {
@@ -25,22 +25,20 @@ enum MessageTypeWeb {
 
 export default function Session() {
   const { channelUuid } = useParams();
-  const { state } = useLocation();
   const navigate = useNavigate();
-  const [file, setFile] = useState<UploadFile>();
+  const [file, setFile] = useState<ImageMessageFileType>();
   const [previewImage, setPreviewImage] = useState<string>();
   const [showBookmark, setShowBookmark] = useState(false);
+  const sendImgModalRef = useRef<any>(null);
+  const messageRef = useRef<any>(null);
   // TODO
   const isStranger = true;
   const [showStrangerTip, setShowStrangerTip] = useState(true);
-  const { list, init, sendMessage, pin, mute, exit } = useChannel(`${channelUuid}`);
-  console.log(file);
+  const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
+    useChannel(`${channelUuid}`);
   useEffectOnce(() => {
     init();
   });
-
-  // TODO photo
-
   const messageList: any = useMemo(() => {
     return list.map((item) => {
       return {
@@ -49,8 +47,15 @@ export default function Session() {
         title: item.fromName,
         position: item.from === im.userInfo?.relationId ? 'right' : 'left', // TODO '5h7d6-liaaa-aaaaj-vgmya-cai'
         text: item.parsedContent,
+        imgData:
+          typeof item.parsedContent === 'object'
+            ? {
+                ...item.parsedContent,
+                thumbImgUrl: decodeURIComponent(`${item.parsedContent.thumbImgUrl}`),
+                imgUrl: decodeURIComponent(`${item.parsedContent.imgUrl}`),
+              }
+            : {},
         type: MessageTypeWeb[item.type],
-        dateString: formatChatListTime(item.createAt),
       };
     });
   }, [list]);
@@ -61,19 +66,19 @@ export default function Session() {
         leftIcon: <CustomSvg type="Profile" />,
         children: 'Profile',
         // TODO
-        onClick: () => navigate('/profile'),
+        onClick: () => navigate('/setting/contacts/view', { state: {} }),
       },
       {
-        key: state?.pin ? 'un-pin' : 'pin',
-        leftIcon: <CustomSvg type={state?.pin ? 'UnPin' : 'Pin'} />,
-        children: state?.pin ? 'Unpin' : 'Pin',
-        onClick: () => pin(!state.pin),
+        key: info?.pin ? 'un-pin' : 'pin',
+        leftIcon: <CustomSvg type={info?.pin ? 'UnPin' : 'Pin'} />,
+        children: info?.pin ? 'Unpin' : 'Pin',
+        onClick: () => pin(!info?.pin),
       },
       {
-        key: state?.muted ? 'un-mute' : 'mute',
-        leftIcon: <CustomSvg type={state?.muted ? 'UnMute' : 'Mute'} />,
-        children: state?.muted ? 'Unmute' : 'Mute',
-        onClick: () => mute(!state?.muted),
+        key: info?.mute ? 'un-mute' : 'mute',
+        leftIcon: <CustomSvg type={info?.mute ? 'UnMute' : 'Mute'} />,
+        children: info?.mute ? 'Unmute' : 'Mute',
+        onClick: () => mute(!info?.mute),
       },
       {
         key: 'delete',
@@ -89,14 +94,13 @@ export default function Session() {
         onClick: () => navigate('/add-contact'),
       },
     ],
-    [exit, isStranger, mute, navigate, pin, state?.muted, state.pin],
+    [exit, info?.mute, info?.pin, isStranger, mute, navigate, pin],
   );
   const uploadProps = {
     className: 'chat-input-upload',
     showUploadList: false,
     accept: 'image/*',
     beforeUpload: async (paramFile: RcFile) => {
-      setFile(paramFile);
       const src = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(paramFile);
@@ -105,10 +109,11 @@ export default function Session() {
         };
       });
       setPreviewImage(src as string);
+      const { width, height } = await getPixel(src as string);
+      setFile({ body: paramFile, width, height });
       return false;
     },
   };
-
   const inputMorePopList = [
     {
       key: 'album',
@@ -126,21 +131,30 @@ export default function Session() {
       onClick: () => setShowBookmark(true),
     },
   ];
-
-  // TODO
-  const handleUpload = () => {
-    // sendImage(file)
+  const handleUpload = async () => {
+    try {
+      await sendImage(file!);
+      setPreviewImage('');
+      setFile(undefined);
+    } catch (e) {
+      console.log('===send image error', e);
+      message.error('send error');
+      sendImgModalRef?.current?.setLoading(false);
+    }
   };
-
+  const handleAddContact = () => {
+    // TODO
+    // isStranger is true
+  };
   return (
     <div className="chat-box-page flex-column">
       <div className="chat-box-top">
         <SettingHeader
           title={
             <div className="flex title-element">
-              <Avatar letterItem={state?.letterItem} />
-              <div className="name-text">{state?.title}</div>
-              {state?.muted && <CustomSvg type="Mute" />}
+              <Avatar letterItem={info?.name?.slice(0, 1).toUpperCase()} />
+              <div className="name-text">{info?.name}</div>
+              {info?.mute && <CustomSvg type="Mute" />}
             </div>
           }
           leftCallBack={() => navigate('/chat-list')}
@@ -160,7 +174,7 @@ export default function Session() {
       </div>
       {isStranger && showStrangerTip && (
         <div className="add-contact-tip">
-          <div className="content flex-center">
+          <div className="content flex-center" onClick={handleAddContact}>
             <CustomSvg type="AddContact" />
             <span className="text">Add Contact</span>
           </div>
@@ -169,7 +183,15 @@ export default function Session() {
       )}
       <div className="chat-box-content">
         <StyleProvider prefixCls="portkey">
-          <MessageList referance={null} lockable dataSource={messageList} />
+          <MessageList
+            loading={loading}
+            referance={messageRef}
+            hasNext={hasNext}
+            next={next}
+            lockable
+            dataSource={messageList}
+            onDelete={deleteMessage}
+          />
         </StyleProvider>
       </div>
       <div className="chat-box-footer">
@@ -178,6 +200,7 @@ export default function Session() {
         </StyleProvider>
       </div>
       <PhotoSendModal
+        ref={sendImgModalRef}
         open={!!previewImage}
         url={previewImage || ''}
         onConfirm={handleUpload}

@@ -102,7 +102,7 @@ export interface IChatListProps {
  * @param index The Chat List's index.
  * @param event The Chat List's event.
  */
-type ChatListEvent = (item: IChatItemProps, index: number, event: React.MouseEvent<HTMLElement>) => any;
+type ChatListEvent = (item: IChatItemProps, index?: number, event?: React.MouseEvent<HTMLElement>) => any;
 
 /**
  *
@@ -170,9 +170,10 @@ export interface IMessage {
  * @prop alt The Photo Message's alt and optional.
  */
 export interface IPhotoMessage extends IMessage {
-  data?: {
+  imgData?: {
     status?: IMessageDataStatus;
-    uri: string;
+    thumbImgUrl: string;
+    imgUrl: string;
     width?: number;
     height?: number;
     name?: string;
@@ -527,6 +528,7 @@ export interface IMessageBoxProps {
   renderAddCmp?: JSX.Element | (() => JSX.Element);
   onClick?: React.MouseEventHandler;
   onOpen?: React.MouseEventHandler;
+  onDelete?: (id: string) => Promise<any>;
   onPhotoError?: React.MouseEventHandler;
   onContextMenu?: React.MouseEventHandler;
   onForwardClick?: React.MouseEventHandler;
@@ -590,8 +592,12 @@ export interface IMessageListProps {
   downButton?: boolean;
   downButtonBadge?: number;
   sendMessagePreview?: boolean;
+  hasNext: boolean;
+  loading: boolean;
+  next: () => any;
   onScroll?: React.UIEventHandler;
   onContextMenu?: MessageListEvent;
+  onDelete?: (id: string) => Promise<any>;
   onDownButtonClick?: React.RefObject<HTMLButtonElement>;
   onOpen?: MessageListEvent;
   onDownload?: MessageListEvent;

@@ -27,6 +27,8 @@ export default function FindMore() {
   // const cantAddYourselfText = 'Unable to add yourself as a contact'; //TODO
   const [portkeyId, setPortkeyId] = useState('mock portkey id');
   const [contactList, setContactList] = useState([]);
+  console.log(setPortkeyId);
+  console.log(setContactList);
   // mock data
   // {
   //   index: 'B',

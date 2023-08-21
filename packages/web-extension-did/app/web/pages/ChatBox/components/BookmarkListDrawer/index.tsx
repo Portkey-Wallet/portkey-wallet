@@ -5,11 +5,15 @@ import './index.less';
 
 interface CustomSelectProps extends DrawerProps {
   open: boolean;
-  onClose?: () => void;
+  onClose: () => void;
   onClick: (url: string) => void;
 }
 
 export default function BookmarkListDrawer({ open, onClose, onClick, ...props }: CustomSelectProps) {
+  const handleClick = (v: string) => {
+    onClick(v);
+    onClose();
+  };
   return (
     <BaseDrawer
       {...props}
@@ -19,7 +23,7 @@ export default function BookmarkListDrawer({ open, onClose, onClick, ...props }:
       destroyOnClose
       onClose={onClose}
       className="bookmark-list-drawer">
-      <BookmarkList onClick={onClick} />
+      <BookmarkList onClick={handleClick} onClose={onClose} />
     </BaseDrawer>
   );
 }

@@ -1,16 +1,27 @@
 import React, { useMemo, useState } from 'react';
-import { Image } from 'antd';
+import { Image, Popover } from 'antd';
 import clsx from 'clsx';
 
 import { IPhotoMessageProps } from '../type';
 import { formatTime } from '../utils';
 import CustomSvg from '../components/CustomSvg';
+import { formatImageSize } from '@portkey-wallet/utils/img';
+import PopoverMenuList from '../PopoverMenuList';
 import './index.less';
 
 const PhotoMessage: React.FC<IPhotoMessageProps> = props => {
   const showDate = useMemo(() => (props.dateString ? props.dateString : formatTime(props.date as any)), []);
   const [loadErr, setLoadErr] = useState(false);
-
+  const { thumbImgUrl, width, height } = props.imgData || {};
+  const imageSize = formatImageSize({ width, height });
+  const popoverList = [
+    {
+      key: 'delete',
+      leftIcon: <CustomSvg type="Delete" />,
+      children: 'Delelte',
+      onClick: () => props?.onDelete?.(`${props.id}`),
+    },
+  ];
   return (
     <div className={clsx(['portkey-message-photo', 'flex', props.position])}>
       <div className={clsx(['photo-body', props.position])}>
@@ -20,8 +31,20 @@ const PhotoMessage: React.FC<IPhotoMessageProps> = props => {
           </div>
         ) : (
           <>
-            <Image src={props?.imgData?.thumbImgUrl} onError={() => setLoadErr(true)} />
-            <div className="photo-date">{showDate}</div>
+            <Popover
+              overlayClassName={clsx(['message-item-popover', props.position])}
+              placement={props.position === 'left' ? 'right' : 'left'}
+              trigger="contextMenu"
+              showArrow={false}
+              content={<PopoverMenuList data={popoverList} />}>
+              <Image
+                width={imageSize.width}
+                height={imageSize.height}
+                src={thumbImgUrl}
+                onError={() => setLoadErr(true)}
+              />
+              <div className="photo-date">{showDate}</div>
+            </Popover>
           </>
         )}
         {/* {!error && props?.data?.status && !props?.data?.status?.download && (

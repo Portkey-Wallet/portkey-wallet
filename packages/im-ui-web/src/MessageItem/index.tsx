@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import clsx from 'clsx';
 
-import PhotoMessage from '../PhotoMessage';
+import ImageMessage from '../ImageMessage';
 import TextMessage from '../TextMessage';
 import SystemMessage from '../SystemMessage';
 import { MessageBoxType } from '../type';
@@ -22,7 +22,7 @@ const MessageItem: React.FC<MessageBoxType> = ({ styles, ...props }) => {
       ) : (
         <>
           {props.type === 'text' && <TextMessage {...props} />}
-          {props.type === 'photo' && <PhotoMessage {...props} />}
+          {props.type === 'image' && <ImageMessage {...props} />}
         </>
       )}
     </div>

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Popover } from 'antd';
 import { useCopyToClipboard } from 'react-use';
 import './index.less';
@@ -12,6 +12,10 @@ import CustomSvg from '../components/CustomSvg';
 const TextMessage: React.FC<ITextMessageProps> = props => {
   const showDate = useMemo(() => (props.dateString ? props.dateString : formatTime(props.date as any)), []);
   const [, setCopied] = useCopyToClipboard();
+  const [popVisible, setPopVisible] = useState(false);
+  const hidePop = () => {
+    setPopVisible(false);
+  };
 
   const popoverList = [
     {
@@ -29,12 +33,18 @@ const TextMessage: React.FC<ITextMessageProps> = props => {
       onClick: () => props?.onDelete?.(`${props.id}`),
     },
   ];
+  useEffect(() => {
+    document.addEventListener('click', hidePop);
+    return () => document.removeEventListener('click', hidePop);
+  }, []);
   return (
     <div className={clsx(['portkey-message-text', 'flex', props.position])}>
       <Popover
+        open={popVisible}
         overlayClassName={clsx(['message-item-popover', props.position])}
         placement={props.position === 'left' ? 'right' : 'left'}
         trigger="contextMenu"
+        onOpenChange={visible => setPopVisible(visible)}
         showArrow={false}
         content={<PopoverMenuList data={popoverList} />}>
         <div className={clsx(['text-body', 'flex', props.position])}>

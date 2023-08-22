@@ -1,14 +1,26 @@
 import React, { useRef } from 'react';
-import { screenWidth, windowHeight, windowWidth } from '@portkey-wallet/utils/mobile/device';
+import { screenHeight, screenWidth, windowHeight } from '@portkey-wallet/utils/mobile/device';
 import OverlayModal, { CustomBounds } from 'components/OverlayModal';
 import { ImageProps, StyleSheet } from 'react-native';
 import CacheImage from 'components/CacheImage';
 import GStyles from 'assets/theme/GStyles';
 import TransformView from 'rn-teaset/components/TransformView/TransformView';
-type PreviewImageProps = { source: ImageProps['source']; thumb?: ImageProps['source'] };
+import { formatImageSize } from '@portkey-wallet/utils/img';
+type PreviewImageProps = {
+  source: ImageProps['source'];
+  thumb?: ImageProps['source'];
+  width?: number | string;
+  height?: number | string;
+};
 
-function PreviewImage({ source, thumb }: PreviewImageProps) {
+const maxWidth = screenWidth;
+const maxHeight = windowHeight;
+
+function PreviewImage({ source, thumb, width, height }: PreviewImageProps) {
   const scaleRef = useRef<number>(1);
+
+  const imageSize = formatImageSize({ width, height, maxWidth, maxHeight });
+
   // const [init, setInit] = useState(true);
   // useEffectOnce(() => {
   //   const timer = setTimeout(() => {
@@ -32,7 +44,7 @@ function PreviewImage({ source, thumb }: PreviewImageProps) {
       }}
       style={GStyles.flex1}
       containerStyle={styles.containerStyle}>
-      <CacheImage thumb={thumb} resizeMode="contain" style={GStyles.flex1} source={source} />
+      <CacheImage thumb={thumb} resizeMode="contain" style={imageSize} source={source} />
     </TransformView>
   );
 }
@@ -41,16 +53,20 @@ export function showPreviewImage({
   customBounds,
   source,
   thumb,
+  width,
+  height,
 }: {
   customBounds: CustomBounds;
 } & PreviewImageProps) {
-  OverlayModal.show(<PreviewImage thumb={thumb} source={source} />, {
+  OverlayModal.show(<PreviewImage width={width} height={height} thumb={thumb} source={source} />, {
     customBounds: customBounds,
     position: 'center',
-    containerStyle: { ...GStyles.flex1, width: screenWidth },
+    style: styles.overlayStyle,
+    containerStyle: styles.overlayStyle,
   });
 }
 
 const styles = StyleSheet.create({
-  containerStyle: { height: windowHeight * 0.8, width: windowWidth },
+  overlayStyle: { width: screenWidth, height: screenHeight },
+  containerStyle: { height: screenHeight, width: screenWidth, ...GStyles.center },
 });

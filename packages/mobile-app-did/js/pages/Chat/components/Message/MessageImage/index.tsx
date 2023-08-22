@@ -44,10 +44,12 @@ function MessageImage(props: MessageProps<ChatMessage>) {
       ChatOverlay.showPreviewImage({
         source: { uri: imgUri },
         thumb: { uri: thumbUri },
+        width,
+        height,
         customBounds: { x: pageX, y: pageY, width: 0, height: 0 },
       });
     },
-    [imgUri, thumbUri],
+    [height, imgUri, thumbUri, width],
   );
 
   const onShowChatPopover = useCallback(

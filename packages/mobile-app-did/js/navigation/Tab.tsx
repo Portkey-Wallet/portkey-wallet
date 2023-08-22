@@ -8,7 +8,6 @@ import MyMenu from 'pages/My';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
-import { useTabMenuList } from 'hooks/cms';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
 import ChatHome from 'pages/Chat/ChatHome';
 import { formatMessageCountToStr } from '@portkey-wallet/utils/chat';
@@ -17,6 +16,7 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { TextS } from 'components/CommonText';
+import { useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const Tab = createBottomTabNavigator();
 

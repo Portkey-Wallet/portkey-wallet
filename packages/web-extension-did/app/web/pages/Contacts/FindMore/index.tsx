@@ -2,7 +2,6 @@ import { ChangeEvent, ChangeEventHandler, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import CustomModal from 'pages/components/CustomModal';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import FindMorePrompt from './Prompt';
 import FindMorePopup from './Popup';
@@ -12,11 +11,12 @@ import { useDebounceCallback } from '@portkey-wallet/hooks';
 import { message } from 'antd';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useContactRelationIdMap } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export interface IFindMoreProps extends BaseHeaderProps {
   myPortkeyId: string;
   contact: Partial<ContactItemType>;
-  isMainnet: boolean;
+  showChat: boolean;
   isAdded?: boolean;
   goBack: () => void;
   handleSearch: ChangeEventHandler<HTMLInputElement>;
@@ -27,7 +27,7 @@ export interface IFindMoreProps extends BaseHeaderProps {
 export default function FindMore() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const isMainnet = useIsMainnet();
+  const showChat = useIsChatShow();
   const { userId } = useWalletInfo();
   const contactRelationIdMap = useContactRelationIdMap();
   const [isAdded, setIsAdded] = useState(false);
@@ -92,7 +92,7 @@ export default function FindMore() {
       headerTitle={headerTitle}
       myPortkeyId={userId || ''}
       contact={contact}
-      isMainnet={isMainnet}
+      showChat={showChat}
       isAdded={isAdded}
       goBack={goBack}
       handleSearch={handleSearch}
@@ -106,7 +106,7 @@ export default function FindMore() {
       headerTitle={headerTitle}
       myPortkeyId={userId || ''}
       contact={contact}
-      isMainnet={isMainnet}
+      showChat={showChat}
       isAdded={isAdded}
       goBack={goBack}
       handleSearch={handleSearch}

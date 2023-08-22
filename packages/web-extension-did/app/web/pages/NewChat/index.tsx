@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -7,23 +7,36 @@ import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
 import ContactList from 'pages/Contacts/components/ContactList';
+import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import './index.less';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
+  const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const { setLoading } = useLoading();
-  const [chatList, setChatList] = useState<[]>([]);
+  const [chatList, setChatList] = useState<ContactItemType[]>([]);
+  const localSearch = useLocalContactSearch();
 
-  const handleSearch = useCallback(async (keyword: string) => {
-    if (!keyword) {
-      setChatList([]);
-    } else {
-      // TODO
-      setChatList([]);
-    }
-  }, []);
+  const handleSearch = useCallback(
+    async (keyword: string) => {
+      if (!keyword) {
+        setChatList([]);
+      } else {
+        const { contactFilterList = [] } = localSearch(keyword, ContactsTab.ALL);
+        console.log('searchResult', contactFilterList);
+        setChatList(contactFilterList);
+      }
+    },
+    [localSearch],
+  );
+
+  useEffect(() => {
+    setFilterWord(state?.search ?? '');
+  }, [state?.search]);
 
   const searchDebounce = useDebounceCallback(
     async (params) => {
@@ -64,8 +77,10 @@ export default function ChatListSearch() {
             <ContactList
               hasChatEntry={true}
               list={chatList}
-              clickItem={(item) => navigate('/setting/contacts/view', { state: item })}
-              clickChat={(item) => navigate(`/chat-box/${item.id}`)}
+              clickItem={(item: ContactItemType) =>
+                navigate('/setting/contacts/view', { state: { ...item, search: filterWord } })
+              }
+              clickChat={(_e, item) => navigate(`/chat-box/${item?.imInfo?.relationId}`)}
             />
           </div>
         )}

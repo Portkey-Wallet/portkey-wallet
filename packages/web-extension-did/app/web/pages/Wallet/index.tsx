@@ -8,7 +8,7 @@ import { MenuItemInfo } from 'pages/components/MenuList';
 import WalletPrompt from './Prompt';
 import { IExitWalletProps } from './components/ExitWallet';
 import { BaseHeaderProps } from 'types/UI';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export type WalletAvatar = keyof typeof svgsList;
 
@@ -24,7 +24,7 @@ export default function Wallet() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const isMainnet = useIsMainnet();
+  const showChat = useIsChatShow();
   const { walletName, walletAvatar } = useWalletInfo();
   const [exitVisible, setExitVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
@@ -38,10 +38,10 @@ export default function Wallet() {
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
       {
-        element: isMainnet ? 'My DID' : 'Wallet Name',
-        key: isMainnet ? MyDidLabel : WalletNameLabel,
+        element: showChat ? 'My DID' : 'Wallet Name',
+        key: showChat ? MyDidLabel : WalletNameLabel,
         click: () => {
-          if (isMainnet) {
+          if (showChat) {
             setSelectedItem(MyDidLabel);
           } else {
             setSelectedItem(WalletNameLabel);
@@ -75,7 +75,7 @@ export default function Wallet() {
       },
     ],
 
-    [isMainnet, navigate],
+    [showChat, navigate],
   );
 
   useEffect(() => {

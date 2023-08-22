@@ -17,6 +17,7 @@ export interface IProfileDetailDataProps {
 
 export interface IProfileDetailBodyProps {
   data: IProfileDetailDataProps;
+  showChat?: boolean; // cms control
   editText?: string;
   chatText?: string;
   addedText?: string;

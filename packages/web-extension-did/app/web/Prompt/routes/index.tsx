@@ -51,10 +51,6 @@ import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
 import DappAutoTx from 'pages/DappAutoTx';
 import FindMore from 'pages/Contacts/FindMore';
-import ChatList from 'pages/ChatList';
-import ChatBox from 'pages/ChatBox';
-import NewChat from 'pages/NewChat';
-import ChatListSearch from 'pages/ChatListSearch';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -63,27 +59,6 @@ export const PageRouter = () => {
     {
       path: '/',
       element: <Home />,
-    },
-    // TODO delete
-    {
-      path: '/chat-list',
-      element: <ChatList />,
-    },
-    {
-      path: '/chat-list-search',
-      element: <ChatListSearch />,
-    },
-    {
-      path: '/chat-list-search-find-more',
-      element: <FindMore />,
-    },
-    {
-      path: '/chat-box/:channelUuid',
-      element: <ChatBox />,
-    },
-    {
-      path: '/new-chat',
-      element: <NewChat />,
     },
     {
       path: '/register',

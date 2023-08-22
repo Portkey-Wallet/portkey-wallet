@@ -23,19 +23,23 @@ export default function ChatList() {
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
-  const popList = useMemo(
+  const addPopList = useMemo(
     () => [
       {
-        key: 'newChat',
+        key: 'new-chat',
         leftIcon: <CustomSvg type="NewChat" />,
         children: 'New Chat',
-        onClick: () => navigate('/new-chat'),
+        onClick: () => {
+          navigate('/new-chat');
+        },
       },
       {
-        key: 'add-contact',
+        key: 'find-more',
         leftIcon: <CustomSvg type="ChatAddContact" />,
-        children: 'Add Contact',
-        onClick: () => navigate(`/setting/contacts/add`),
+        children: 'Find More',
+        onClick: () => {
+          navigate(`/setting/contacts/find-more`, { state: { search: '' } });
+        },
       },
     ],
     [navigate],
@@ -49,15 +53,14 @@ export default function ChatList() {
           placement="bottom"
           trigger="click"
           showArrow={false}
-          content={<PopoverMenuList data={popList} />}>
+          content={<PopoverMenuList data={addPopList} />}>
           <CustomSvg type="AddCircle" />
         </Popover>
         <CustomSvg type="Close2" onClick={() => navigate('/')} />
       </div>
     ),
-    [navigate, popList],
+    [addPopList, navigate],
   );
-
   const transChatList = useMemo(() => {
     return chatList.map((item) => {
       return {

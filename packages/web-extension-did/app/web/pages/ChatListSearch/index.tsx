@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -13,6 +13,7 @@ import './index.less';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
+  const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const { setLoading } = useLoading();
@@ -45,6 +46,10 @@ export default function ChatListSearch() {
     [searchChannel],
   );
 
+  useEffect(() => {
+    setFilterWord(state?.search || '');
+  }, [state?.search]);
+
   const searchDebounce = useDebounceCallback(
     async (params) => {
       setLoading(true);
@@ -76,7 +81,9 @@ export default function ChatListSearch() {
           }}
         />
       </div>
-      <div className="find-more flex" onClick={() => navigate('/chat-list-search-find-more')}>
+      <div
+        className="find-more flex"
+        onClick={() => navigate(`/setting/contacts/find-more`, { state: { search: filterWord } })}>
         <CustomSvg type="AddContact" />
         Find More
       </div>

@@ -46,7 +46,7 @@ const ChatDetails = () => {
           {
             title: ChatOperationsEnum.PROFILE,
             iconName: 'chat-profile',
-            onPress: () => navigationService.navigate('Profile'),
+            onPress: () => navigationService.navigate('ChatContactProfile'),
           },
           {
             title: pin ? ChatOperationsEnum.UNPIN : ChatOperationsEnum.PIN,

@@ -47,6 +47,16 @@ export type GetUserInfoDefaultResult = {
   portkeyId: string;
 };
 
+export type GetOtherUserInfoDefaultResult = {
+  avatar: string;
+  name: string;
+  relationId: string;
+  portKeyId: string;
+  createdAt: string;
+  followCount: string;
+  addressWithChain: { address: string; chainName: string }[];
+};
+
 export type CreateChannelParams = {
   name: string;
   type: ChannelTypeEnum;

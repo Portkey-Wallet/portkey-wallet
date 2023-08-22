@@ -89,6 +89,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
               value={value}
               multiline={true}
               maxHeight={140}
+              maxlength={300}
               onChange={handleChange}
               onFocus={() => setShowEmojiIcon(false)}
               onKeyDown={handleEnterKeyDown}

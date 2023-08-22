@@ -10,10 +10,13 @@ import PopoverMenuList from '../PopoverMenuList';
 import './index.less';
 
 const ImageMessage: React.FC<IImageMessageProps> = props => {
-  const showDate = useMemo(() => (props.dateString ? props.dateString : formatTime(props.date as any)), []);
+  const showDate = useMemo(
+    () => (props.dateString ? props.dateString : formatTime(props.date)),
+    [props.dateString, props.date],
+  );
   const [loadErr, setLoadErr] = useState(false);
   const { thumbImgUrl, width, height, imgUrl } = props.imgData || {};
-  const imageSize = formatImageSize({ width, height, maxWidth: 280, maxHeight: 280 });
+  const imageSize = useMemo(() => formatImageSize({ width, height, maxWidth: 280, maxHeight: 280 }), [width, height]);
   const [popVisible, setPopVisible] = useState(false);
   const popoverList = [
     {

@@ -20,16 +20,11 @@ import { getPixel } from './utils';
 import { formatMessageTime } from '@portkey-wallet/utils/chat';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import { MessageTypeWeb } from 'types/im';
+import { sleep } from '@portkey-wallet/utils';
+import { useAppDispatch } from 'store/Provider/hooks';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
-
-enum MessageTypeWeb {
-  'SYS' = 'system',
-  'TEXT' = 'text',
-  'CARD' = '',
-  'IMAGE' = 'image',
-  'ANNOUNCEMENT' = '',
-  'BATCH_TRANSFER' = '',
-}
 
 export default function Session() {
   const { channelUuid } = useParams();
@@ -46,39 +41,54 @@ export default function Session() {
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
   const isStranger = useIsStranger(info?.toRelationId || '');
+  const dispatch = useAppDispatch();
   useEffectOnce(() => {
     init();
   });
+  console.log('message-list', list);
+
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => {
     const formatList: MessageType[] = [];
     let transItem: MessageType;
     list.forEach((item, i) => {
-      transItem = {
-        id: `${item.id}`,
-        // sendUuid: item.sendUuid, // TODO
-        title: item.fromName,
-        position: item.from === relationId ? 'right' : 'left',
-        text: `${item.parsedContent}`,
-        imgData:
-          typeof item.parsedContent === 'object'
-            ? {
-                ...item.parsedContent,
-                thumbImgUrl: decodeURIComponent(`${item.parsedContent.thumbImgUrl}`) || '',
-                imgUrl: decodeURIComponent(`${item.parsedContent.imgUrl}`) || '',
-                width: `${item?.parsedContent?.width}`,
-                height: `${item?.parsedContent?.height}`,
-              }
-            : {},
-        type: MessageTypeWeb[item.type] || 'text',
-        date: new Date(item.createAt),
-      };
+      const transType = MessageTypeWeb[item.type] || '';
+      if (transType) {
+        transItem = {
+          id: `${item.id}`,
+          // sendUuid: item.sendUuid, // TODO
+          title: item.fromName,
+          position: item.from === relationId ? 'right' : 'left',
+          text: `${item.parsedContent}`,
+          imgData:
+            typeof item.parsedContent === 'object'
+              ? {
+                  ...item.parsedContent,
+                  thumbImgUrl: decodeURIComponent(`${item.parsedContent.thumbImgUrl}`) || '',
+                  imgUrl: decodeURIComponent(`${item.parsedContent.imgUrl}`) || '',
+                  width: `${item?.parsedContent?.width}`,
+                  height: `${item?.parsedContent?.height}`,
+                }
+              : {},
+          type: MessageTypeWeb[item.type] || 'text',
+          date: item.createAt,
+        };
+      } else {
+        transItem = {
+          id: `${item.createAt}`,
+          position: 'left',
+          date: item.createAt,
+          type: 'text',
+          subType: 'non-text',
+          text: '',
+        };
+      }
       if (i === 0) {
         formatList.push(
           {
             id: `${item.createAt}`,
             position: 'left',
-            date: new Date(item.createAt),
+            date: item.createAt,
             type: 'system',
             text: formatMessageTime(item.createAt),
           },
@@ -92,7 +102,7 @@ export default function Session() {
             {
               id: `${item.createAt}`,
               position: 'left',
-              date: new Date(item.createAt),
+              date: item.createAt,
               type: 'system',
               text: formatMessageTime(item.createAt),
             },
@@ -124,11 +134,14 @@ export default function Session() {
       const res = await addContactApi(info?.toRelationId || '');
       console.log('===add stranger', res);
       message.success('Contact added');
+      // TODO
+      await sleep(100);
+      dispatch(fetchContactListAsync());
     } catch (e) {
       message.error('Add contact error');
       console.log('===add stranger error', e);
     }
-  }, [addContactApi, info?.toRelationId]);
+  }, [addContactApi, dispatch, info?.toRelationId]);
   const chatPopList = useMemo(
     () => [
       {
@@ -208,7 +221,7 @@ export default function Session() {
       setFile(undefined);
     } catch (e) {
       console.log('===send image error', e);
-      message.error('send error');
+      message.error('Failed to send message');
       sendImgModalRef?.current?.setLoading(false);
     }
   };
@@ -220,6 +233,13 @@ export default function Session() {
     } catch (e) {
       // TODO
       console.log('e', e);
+    }
+  };
+  const handleSendMessage = async (v: string) => {
+    try {
+      await sendMessage(v);
+    } catch (e) {
+      message.error('Failed to send message');
     }
   };
   useEffect(() => {
@@ -279,7 +299,7 @@ export default function Session() {
       </div>
       <div className="chat-box-footer">
         <StyleProvider prefixCls="portkey">
-          <InputBar moreData={inputMorePopList} onSendMessage={sendMessage} />
+          <InputBar moreData={inputMorePopList} onSendMessage={handleSendMessage} />
         </StyleProvider>
       </div>
       <PhotoSendModal
@@ -296,7 +316,7 @@ export default function Session() {
         destroyOnClose
         open={showBookmark}
         onClose={() => setShowBookmark(false)}
-        onClick={sendMessage}
+        onClick={handleSendMessage}
       />
     </div>
   );

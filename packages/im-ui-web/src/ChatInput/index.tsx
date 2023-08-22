@@ -99,6 +99,7 @@ const Input: React.FC<IInputProps> = ({
         />
       ) : (
         <textarea
+          maxLength={props?.maxlength}
           value={props.value}
           ref={props.referance}
           className={classNames('rce-input', 'rce-input-textarea')}

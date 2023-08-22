@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Popover } from 'antd';
 import { useCopyToClipboard } from 'react-use';
+import ParsedText from '../components/ParsedText';
 import './index.less';
 
 import clsx from 'clsx';
@@ -49,7 +50,25 @@ const TextMessage: React.FC<ITextMessageProps> = props => {
         content={<PopoverMenuList data={popoverList} />}>
         <div className={clsx(['text-body', 'flex', props.position])}>
           <div className="text-text">
-            <span className={clsx([props.type === 'bookmark' && 'text-link'])}>{props.text}</span>
+            {props.subType === 'non-text' ? (
+              <span className="non-text">[Not supported message]</span>
+            ) : (
+              <ParsedText
+                parse={[
+                  {
+                    type: 'url',
+                    className: 'text-link',
+                    onClick: url => {
+                      const openWinder = window.open(url, '_blank');
+                      if (openWinder) {
+                        openWinder.opener = null;
+                      }
+                    },
+                  },
+                ]}>
+                {props.text}
+              </ParsedText>
+            )}
             <span className="text-date-hidden">{showDate}</span>
           </div>
           <div className="text-date">{showDate}</div>

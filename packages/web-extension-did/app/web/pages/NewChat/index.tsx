@@ -10,6 +10,8 @@ import ContactList from 'pages/Contacts/components/ContactList';
 import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { message } from 'antd';
 import './index.less';
 
 export default function ChatListSearch() {
@@ -20,25 +22,21 @@ export default function ChatListSearch() {
   const { setLoading } = useLoading();
   const [chatList, setChatList] = useState<ContactItemType[]>([]);
   const localSearch = useLocalContactSearch();
+  const createChannel = useCreateP2pChannel();
 
   const handleSearch = useCallback(
     async (keyword: string) => {
-      if (!keyword) {
-        const { contactFilterList = [] } = localSearch(keyword, ContactsTab.ALL);
-        console.log('searchResult', contactFilterList);
-        setChatList(contactFilterList);
-        // setChatList([]);
-      } else {
-        const { contactFilterList = [] } = localSearch(keyword, ContactsTab.Chats);
-        setChatList(contactFilterList);
-      }
+      const { contactFilterList = [] } = localSearch(keyword, ContactsTab.Chats);
+      console.log('searchResult', contactFilterList);
+      setChatList(contactFilterList);
     },
     [localSearch],
   );
 
   useEffect(() => {
     setFilterWord(state?.search ?? '');
-  }, [state?.search]);
+    handleSearch(state?.search ?? '');
+  }, [handleSearch, state?.search]);
 
   const searchDebounce = useDebounceCallback(
     async (params) => {
@@ -48,6 +46,20 @@ export default function ChatListSearch() {
     },
     [filterWord],
     500,
+  );
+  const handleClickChat = useCallback(
+    async (e: any, item: Partial<ContactItemType>) => {
+      e.stopPropagation();
+      try {
+        const res = await createChannel(item?.imInfo?.relationId || '');
+        console.log('res', res);
+        // console.log('createChannel', res.data.channelUuid);
+        // navigate(`/chat-box/${res.data.channelUuid}`);
+      } catch (e) {
+        message.error('cannot chat');
+      }
+    },
+    [createChannel],
   );
 
   return (
@@ -80,9 +92,9 @@ export default function ChatListSearch() {
               hasChatEntry={true}
               list={chatList}
               clickItem={(item: ContactItemType) =>
-                navigate('/setting/contacts/view', { state: { ...item, search: filterWord } })
+                navigate('/setting/contacts/view', { state: { ...item, search: filterWord, from: 'new-chat' } })
               }
-              clickChat={(_e, item) => navigate(`/chat-box/${item?.imInfo?.relationId}`)}
+              clickChat={handleClickChat}
             />
           </div>
         )}

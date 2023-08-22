@@ -15,7 +15,7 @@ import {
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useChannelItemInfo, useIMChannelMessageListNetMapState, useRelationId } from '.';
-import s3Instance from '@portkey-wallet/utils/s3';
+import s3Instance, { UploadFileType } from '@portkey-wallet/utils/s3';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';
 
@@ -107,14 +107,9 @@ export const useSendChannelMessage = () => {
     },
     [dispatch, networkType, relationId],
   );
-
-  const sendChannelImage = useCallback(
-    async (channelId: string, file: ImageMessageFileType) => {
+  const sendChannelImageByS3Result = useCallback(
+    async (channelId: string, s3Result: UploadFileType & ImageMessageFileType) => {
       try {
-        const s3Result = await s3Instance.uploadFile({
-          body: file.body,
-          suffix: file.suffix,
-        });
         // const { thumbWidth, thumbHeight } = getThumbSize(file.width, file.height);
         // const thumbResult = await request.im.getImageThumb({
         //   params: {
@@ -129,11 +124,9 @@ export const useSendChannelMessage = () => {
         const p2Url = encodeURIComponent(s3Result.url);
         const p2Key = s3Result.key;
 
-        const content = `type:image;action:localImage;p1(Text):${p1Url},p2(Text):${p1Key},p3(Text):${p2Url},p4(Text):${p2Key},p5(Text):${file.width},p6(Text):${file.height}`;
+        const content = `type:image;action:localImage;p1(Text):${p1Url},p2(Text):${p1Key},p3(Text):${p2Url},p4(Text):${p2Key},p5(Text):${s3Result.width},p6(Text):${s3Result.height}`;
 
-        await sendChannelMessage(channelId, content, 'IMAGE');
-
-        return s3Result;
+        return sendChannelMessage(channelId, content, 'IMAGE');
       } catch (error) {
         console.log('sendChannelImage: error', error);
         throw error;
@@ -141,10 +134,27 @@ export const useSendChannelMessage = () => {
     },
     [sendChannelMessage],
   );
+  const sendChannelImage = useCallback(
+    async (channelId: string, file: ImageMessageFileType) => {
+      try {
+        const s3Result = await s3Instance.uploadFile({
+          body: file.body,
+          suffix: file.suffix,
+        });
+        await sendChannelImageByS3Result(channelId, { ...s3Result, ...file });
+        return s3Result;
+      } catch (error) {
+        console.log('sendChannelImage: error', error);
+        throw error;
+      }
+    },
+    [sendChannelImageByS3Result],
+  );
 
   return {
     sendChannelMessage,
     sendChannelImage,
+    sendChannelImageByS3Result,
   };
 };
 

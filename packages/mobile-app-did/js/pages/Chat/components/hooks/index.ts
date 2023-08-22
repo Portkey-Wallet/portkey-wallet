@@ -12,6 +12,7 @@ import { MessageType } from '@portkey-wallet/im';
 import { readFile } from 'utils/fs';
 import { formatRNImage } from '@portkey-wallet/utils/s3';
 import { bindUriToLocalImage } from 'utils/fs/img';
+import s3Instance from '@portkey-wallet/utils/s3';
 
 let TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
 if (!isIOS) {
@@ -67,7 +68,7 @@ export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObjec
 
 export function useSendCurrentChannelMessage() {
   const currentChannelId = useCurrentChannelId();
-  const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
+  const { sendChannelMessage, sendChannelImageByS3Result } = useSendChannelMessage();
   return useMemo(
     () => ({
       sendChannelMessage: (content: string, type?: MessageType) =>
@@ -75,11 +76,15 @@ export function useSendCurrentChannelMessage() {
       sendChannelImage: async (file: { uri: string; width: number; height: number }) => {
         const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
         const data = formatRNImage(file, fileBase64);
-        const imgResult = await sendChannelImage(currentChannelId || '', data);
-        await bindUriToLocalImage(file.uri, imgResult.url);
-        return imgResult;
+        const s3Result = await s3Instance.uploadFile({
+          body: data.body,
+          suffix: data.suffix,
+        });
+        await bindUriToLocalImage(file.uri, s3Result.url);
+
+        return sendChannelImageByS3Result(currentChannelId || '', { ...s3Result, ...data });
       },
     }),
-    [currentChannelId, sendChannelImage, sendChannelMessage],
+    [currentChannelId, sendChannelImageByS3Result, sendChannelMessage],
   );
 }

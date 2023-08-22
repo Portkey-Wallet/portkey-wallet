@@ -1,6 +1,6 @@
 import ChatList from './ChatList';
 import TextMessage from './TextMessage';
-import PhotoMessage from './PhotoMessage';
+import ImageMessage from './ImageMessage';
 import Avatar from './Avatar';
 import PopoverMenuList from './PopoverMenuList';
 import SystemMessage from './SystemMessage';
@@ -14,7 +14,7 @@ export * from './type';
 export {
   ChatList,
   TextMessage,
-  PhotoMessage,
+  ImageMessage,
   Avatar,
   PopoverMenuList,
   SystemMessage,

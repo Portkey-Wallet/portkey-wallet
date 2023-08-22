@@ -77,7 +77,7 @@ export default function Contacts() {
       setIsSearch(false);
       return;
     }
-    const searchResult = localSearch(searchStr.current, tabKey.current);
+    const { contactIndexFilterList: searchResult } = localSearch(searchStr.current, tabKey.current);
     setCurList(searchResult);
     setIsSearch(true);
   }, [allContact, localSearch, portkeyChatList]);

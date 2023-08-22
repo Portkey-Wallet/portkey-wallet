@@ -177,7 +177,7 @@ export default function MyBalance() {
   return (
     <div className="balance">
       {/* TODO isPrompt */}
-      {isShowChat && (
+      {isShowChat && !isPrompt && (
         <div className="chat-body">
           <ChatEntry unread={unreadCount} />
         </div>

@@ -259,3 +259,17 @@ export const useIsMyContact = () => {
     [contactPortkeyIdMap, contactRelationIdMap],
   );
 };
+
+export const useGetProfile = () => {
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  return useCallback(
+    async ({ id, relationId }: { id: string; relationId: string }): Promise<ContactItemType> => {
+      const response = await request.contact.profile({
+        baseURL: currentNetworkInfo.apiUrl,
+        params: { id, relationId },
+      });
+      return response;
+    },
+    [currentNetworkInfo.apiUrl],
+  );
+};

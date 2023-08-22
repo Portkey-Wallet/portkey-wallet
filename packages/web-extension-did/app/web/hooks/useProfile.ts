@@ -22,8 +22,8 @@ export const useGoProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (chat: ExtraType, state: any) => {
-      navigate(`/setting/contacts/edit/${chat}`, { state });
+    (extra: ExtraType, state: any) => {
+      navigate(`/setting/contacts/edit/${extra}`, { state });
     },
     [navigate],
   );
@@ -33,8 +33,8 @@ export const useGoMyProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (chat: ExtraType, state: any) => {
-      navigate(`/setting/wallet/edit/${chat}`, { state });
+    (extra: ExtraType, state: any) => {
+      navigate(`/setting/wallet/edit/${extra}`, { state });
     },
     [navigate],
   );
@@ -44,15 +44,11 @@ export const useGoAddNewContact = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (chat: ExtraType, state: any) => {
-      navigate(`/setting/contacts/add/${chat}`, { state });
+    (extra: ExtraType, state: any) => {
+      navigate(`/setting/contacts/add/${extra}`, { state });
     },
     [navigate],
   );
-};
-
-export const useGoAddContact = () => {
-  // TODO api
 };
 
 export const useProfileChat = () => {

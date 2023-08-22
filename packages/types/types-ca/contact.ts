@@ -29,8 +29,9 @@ export interface ContactItemType {
 
 export interface EditContactItemApiType {
   name: string;
-  id: string;
+  id?: string;
   relationId?: string;
+  addresses?: AddressItem[];
 }
 
 export interface AddContactItemApiType {

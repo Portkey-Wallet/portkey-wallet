@@ -12,12 +12,14 @@ import { message } from 'antd';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useContactRelationIdMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { getAddressInfo } from '@portkey-wallet/utils/aelf';
 
 export interface IFindMoreProps extends BaseHeaderProps {
   myPortkeyId: string;
   contact: Partial<ContactItemType>;
   showChat: boolean;
   isAdded?: boolean;
+  isSearch?: boolean;
   goBack: () => void;
   handleSearch: ChangeEventHandler<HTMLInputElement>;
   clickItem: () => void;
@@ -31,6 +33,7 @@ export default function FindMore() {
   const { userId } = useWalletInfo();
   const contactRelationIdMap = useContactRelationIdMap();
   const [isAdded, setIsAdded] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
 
   const headerTitle = 'Find More';
   const [contact, setContact] = useState({});
@@ -46,23 +49,30 @@ export default function FindMore() {
   // },
 
   const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const value = e.target.value.trim();
     if (!value) {
       setContact({});
       setIsAdded(false);
+      setIsSearch(false);
+      return;
     }
     try {
-      const res = await im.service.getUserInfo({ address: value });
+      const addressTrans = getAddressInfo(value.trim());
+      const res = await im.service.getUserInfo({ address: addressTrans.address });
 
       if (res?.data?.portkeyId === userId) {
         message.error('Unable to add yourself as a contact');
       } else {
         setContact({ ...res?.data, index: res?.data?.name?.substring(0, 1).toLocaleUpperCase() });
         setIsAdded(!!contactRelationIdMap?.[res?.data?.relationId]);
+        setIsSearch(true);
       }
     } catch (error) {
       const err = handleErrorMessage(error, 'handle display error');
       message.error(err);
+      setContact({});
+      setIsAdded(false);
+      setIsSearch(false);
     }
   }, []);
 
@@ -94,6 +104,7 @@ export default function FindMore() {
       contact={contact}
       showChat={showChat}
       isAdded={isAdded}
+      isSearch={isSearch}
       goBack={goBack}
       handleSearch={handleSearch}
       clickItem={() => {
@@ -108,6 +119,7 @@ export default function FindMore() {
       contact={contact}
       showChat={showChat}
       isAdded={isAdded}
+      isSearch={isSearch}
       goBack={goBack}
       handleSearch={handleSearch}
       clickItem={() => {

@@ -11,6 +11,7 @@ export default function FindMorePopup({
   contact,
   showChat,
   isAdded,
+  isSearch = false,
   goBack,
   handleSearch,
   clickItem,
@@ -28,6 +29,9 @@ export default function FindMorePopup({
         <div className="find-more-id">My Portkey ID: {myPortkeyId}</div>
       </div>
       <div className="find-more-body">
+        {(!contact || !contact.name) && isSearch && (
+          <div className="flex-center no-search-result">No Search Result</div>
+        )}
         {contact && contact.name && contact.index && (
           <div className="flex-row-center find-more-body-contact" onClick={clickItem}>
             <FindMoreItem item={contact} isAdded={isAdded} hasChatEntry={showChat} clickChat={clickChat} />

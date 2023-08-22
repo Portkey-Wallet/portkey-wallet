@@ -143,7 +143,7 @@ export interface IMessage {
   text: string;
   title?: string;
   focus?: boolean;
-  date: number | Date;
+  date: number | string;
   dateString?: string;
   avatar?: string;
   titleColor?: string;
@@ -363,7 +363,9 @@ export type MessageListEvent = (item: MessageType, index: number, event: React.M
  * ITextMessage Interface extends IMessage
  * @prop type The Text Message's type is "text" and required.
  */
-export interface ITextMessage extends IMessage {}
+export interface ITextMessage extends IMessage {
+  subType?: string;
+}
 
 /**
  * ITextMessageProps Interface
@@ -372,7 +374,7 @@ export interface ITextMessage extends IMessage {}
  * @prop dateString The Text Message's dateString and optional.
  */
 export interface ITextMessageProps extends ITextMessage {
-  dateString?: string;
+  // dateString?: string;
   // copyClipboard: function;
 }
 

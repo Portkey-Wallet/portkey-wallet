@@ -173,7 +173,11 @@ export const useLocalContactSearch = () => {
   return useCallback(
     (value: string, type: ContactsTab) => {
       if (!value) {
-        return { contactFilterList: [], contactIndexFilterList: [] };
+        const temp: ContactItemType[] = [];
+        contactIndexList.forEach(({ contacts }) => {
+          temp.push(...contacts);
+        });
+        return { contactFilterList: temp, contactIndexFilterList: contactIndexList };
       }
 
       // STEP 1

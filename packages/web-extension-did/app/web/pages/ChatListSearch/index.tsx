@@ -83,7 +83,7 @@ export default function ChatListSearch() {
       </div>
       <div
         className="find-more flex"
-        onClick={() => navigate(`/setting/contacts/find-more`, { state: { search: filterWord } })}>
+        onClick={() => navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })}>
         <CustomSvg type="AddContact" />
         Find More
       </div>

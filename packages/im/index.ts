@@ -16,7 +16,7 @@ export class IM {
 
   private _channelMsgObservers: Map<string, Map<Symbol, (e: any) => void>> = new Map();
   private _unreadMsgObservers: Map<Symbol, (e: any) => void> = new Map();
-  private _errorObservers: Map<Symbol, (e: any) => void> = new Map();
+  private _connectObservers: Map<Symbol, (e: any) => void> = new Map();
   private _msgCountObservers: Map<Symbol, (e: MessageCount) => void> = new Map();
   private _msgCount: MessageCount = {
     unreadCount: 0,
@@ -26,11 +26,6 @@ export class IM {
   private _caHash?: string;
 
   public status = IMStatusEnum.INIT;
-  public userInfo?: {
-    avatar: string;
-    name: string;
-    relationId: string;
-  };
 
   public config: IMConfig;
   public service: IIMService;
@@ -98,11 +93,7 @@ export class IM {
       this.status = IMStatusEnum.AUTHORIZED;
 
       this.refreshMessageCount();
-      if (this.userInfo) {
-        return this.userInfo;
-      }
       const { data: userInfo } = await this.service.getUserInfo();
-      this.userInfo = userInfo;
       return userInfo;
     } catch (error) {
       console.log('init error', error);
@@ -172,13 +163,14 @@ export class IM {
     };
   }
 
-  onConnectOk(_e: any) {
+  onConnectOk = (e: any) => {
     console.log('CONNECT_OK');
-  }
+    this.updateConnectObservers(e);
+  };
 
-  onConnectErr(e: any) {
+  onConnectErr = (e: any) => {
     console.log('CONNECT_ERR', e);
-  }
+  };
 
   onConnectClose = async (e: any) => {
     console.log('CONNECT_CLOSE msg', e);
@@ -187,7 +179,6 @@ export class IM {
       return;
     }
     this.bindOffRelation();
-    this.updateErrorObservers(e);
 
     await sleep(1000);
     try {
@@ -218,19 +209,19 @@ export class IM {
     }
   };
 
-  registerErrorObserver(cb: (e: any) => void) {
+  registerConnectObserver(cb: (e: any) => void) {
     const symbol = Symbol();
-    const errorObservers = this._errorObservers;
-    errorObservers.set(symbol, cb);
+    const connectObservers = this._connectObservers;
+    connectObservers.set(symbol, cb);
     return {
       remove: () => {
-        errorObservers.has(symbol) && errorObservers.delete(symbol);
+        connectObservers.has(symbol) && connectObservers.delete(symbol);
       },
     };
   }
 
-  updateErrorObservers(e: any) {
-    this._errorObservers.forEach(cb => {
+  updateConnectObservers(e: any) {
+    this._connectObservers.forEach(cb => {
       cb(e);
     });
   }
@@ -331,7 +322,7 @@ export class IM {
     this.config.setConfig({
       requestDefaults: {
         headers: {
-          ...this.config.requestDefaults?.headers,
+          ...this.config.requestConfig?.headers,
           'R-Authorization': `Bearer ${token}`,
         },
       },
@@ -353,10 +344,9 @@ export class IM {
     };
     this._account = undefined;
     this._caHash = undefined;
-    this.userInfo = undefined;
     this._unreadMsgObservers.clear();
     this._channelMsgObservers.clear();
-    this._errorObservers.clear();
+    this._connectObservers.clear();
     this._msgCountObservers.clear();
     this._imInstance && this._imInstance.destroy();
     this._imInstance = undefined;

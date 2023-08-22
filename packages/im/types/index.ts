@@ -1,4 +1,4 @@
-export type MessageType = 'SYS' | 'TEXT' | 'CARD' | 'ANNOUNCEMENT' | 'BATCH_TRANSFER' | 'IMAGE';
+export type MessageType = 'TEXT' | 'IMAGE';
 export type ParsedContent = string | ParsedImage;
 export type ParsedImage = {
   type: string;
@@ -70,9 +70,9 @@ export type ChannelItem = {
   channelType: ChannelTypeEnum;
   unreadMessageCount: number;
   mentionsCount: number;
-  lastMessageType: MessageType;
-  lastMessageContent: string;
-  lastPostAt: string;
+  lastMessageType: MessageType | null;
+  lastMessageContent: string | null;
+  lastPostAt: string | null;
   mute: boolean;
   pin: boolean;
   toRelationId: string;

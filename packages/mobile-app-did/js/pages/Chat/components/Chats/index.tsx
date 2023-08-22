@@ -21,8 +21,7 @@ import { Message as IMMessage } from '@portkey-wallet/im/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 import Touchable from 'components/Touchable';
-import { useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import im from '@portkey-wallet/im';
+import { useChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
@@ -134,7 +133,8 @@ const ChatsUI = () => {
     [],
   );
 
-  const user = useMemo(() => ({ _id: im.userInfo?.relationId || '' }), []);
+  const relationId = useRelationId();
+  const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   return (
     <>

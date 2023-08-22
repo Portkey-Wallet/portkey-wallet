@@ -1,6 +1,7 @@
 import { IBaseRequest } from '@portkey/types';
 import { BaseService } from '@portkey/services';
 import {
+  AddStrangerParams,
   CreateChannelParams,
   CreateChannelResult,
   DeleteMessageParams,
@@ -27,7 +28,6 @@ import {
   VerifySignatureResult,
 } from '../types/service';
 import { ChannelMemberInfo, Message, MessageCount } from '../types';
-import { IM_SUCCESS_CODE } from '../constant';
 import { sleep } from '@portkey-wallet/utils';
 
 export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseService<T> implements IIMService {
@@ -185,6 +185,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   hideChannel(params: HideChannelParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/feed/hide',
+      params,
+      method: 'POST',
+    });
+  }
+  addStranger(params: AddStrangerParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/contacts/stranger',
       params,
       method: 'POST',
     });

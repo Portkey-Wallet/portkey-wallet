@@ -64,7 +64,7 @@ export default function ChatList() {
         id: item.channelUuid,
         letterItem: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
-        subtitle: item.lastMessageContent,
+        subtitle: `${item.lastMessageContent}`,
         dateString: formatChatListTime(item.lastPostAt),
         muted: item.mute,
         pin: item.pin,

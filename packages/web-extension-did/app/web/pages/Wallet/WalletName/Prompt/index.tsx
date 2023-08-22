@@ -3,6 +3,7 @@ import ViewContactBody from 'pages/Contacts/components/ViewContactBody';
 import { IProfileDetailProps, MyProfilePageType } from 'types/Profile';
 import './index.less';
 import SetWalletNameForm from 'pages/Wallet/components/SetWalletNameForm';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function WalletNamePrompt({
   headerTitle,
@@ -16,11 +17,15 @@ export default function WalletNamePrompt({
   isShowChatBtn = false,
   handleEdit,
   handleCopy,
+  saveCallback,
 }: IProfileDetailProps) {
+  const isMainNet = useIsMainnet();
+
   return (
     <div className="wallet-name-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
-      {type === MyProfilePageType.VIEW && (
+
+      {isMainNet && type === MyProfilePageType.VIEW && (
         <ViewContactBody
           data={data}
           editText={editText}
@@ -32,7 +37,10 @@ export default function WalletNamePrompt({
           handleCopy={handleCopy}
         />
       )}
-      {type === MyProfilePageType.EDIT && <SetWalletNameForm data={data} handleCopy={handleCopy} />}
+      {isMainNet && type === MyProfilePageType.EDIT && (
+        <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />
+      )}
+      {!isMainNet && <SetWalletNameForm data={data} handleCopy={handleCopy} saveCallback={saveCallback} />}
     </div>
   );
 }

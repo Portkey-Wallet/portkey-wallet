@@ -1,4 +1,4 @@
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsIMServiceExist, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
@@ -85,7 +85,9 @@ export default function useInitData() {
   ]);
 
   const isChat = useIsChatShow();
+  const isIMServiceExist = useIsIMServiceExist();
   useEffect(() => {
+    if (!isIMServiceExist) return;
     const timer = setTimeout(() => {
       if (isChat) {
         loadIMRef.current();
@@ -94,7 +96,7 @@ export default function useInitData() {
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [isChat]);
+  }, [isChat, isIMServiceExist]);
 
   useEffectOnce(() => {
     // init data after transition animation

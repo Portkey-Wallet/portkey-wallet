@@ -5,7 +5,6 @@ import useUpdateRedux from './useUpdateRedux';
 import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-// import { useCurrentApiUrl, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
 import { useUserInfo } from './hooks';
 import { request } from '@portkey-wallet/api/api-did';
@@ -23,6 +22,7 @@ import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 import im from '@portkey-wallet/im';
 import s3Instance from '@portkey-wallet/utils/s3';
+import initIm from 'hooks/im';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -52,7 +52,7 @@ export default function Updater() {
       key: process.env.IM_S3_KEY || '',
     });
   }, [imS3Bucket]);
-
+  initIm();
   useVerifierList();
   useUpdateRedux();
   useLocationChange();
@@ -60,17 +60,11 @@ export default function Updater() {
   useRefreshTokenConfig(passwordSeed);
   const checkUpdate = useCheckUpdate();
 
-  // const apiUrl = useCurrentApiUrl();
-
   useCheckManager(checkManagerOnLogout);
   useFetchTxFee();
   useEffect(() => {
     checkUpdate();
   }, [checkUpdate]);
-
-  // useMemo(() => {
-  //   request.set('baseURL', apiUrl);
-  // }, [apiUrl]);
 
   usePortkeyUIConfig();
 

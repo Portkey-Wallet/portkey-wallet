@@ -6,13 +6,21 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import { useProfileChat, useProfileCopy, useGoProfileEdit } from 'hooks/useProfile';
 import CustomModal from 'pages/components/CustomModal';
-import { useGetProfile, useIsMyContact, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import {
+  REFRESH_DELAY_TIME,
+  useGetProfile,
+  useIsMyContact,
+  useReadImputation,
+} from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useAddStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { message } from 'antd';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
+  const dispatch = useAppCommonDispatch();
   const { state } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -79,6 +87,10 @@ export default function ViewContact() {
     try {
       const res = await addStranger(data?.imInfo?.relationId || data?.relationId);
       setData(res.data);
+
+      setTimeout(() => {
+        dispatch(fetchContactListAsync());
+      }, REFRESH_DELAY_TIME);
     } catch (error) {
       const err = handleErrorMessage(error, 'add stranger error');
       message.error(err);

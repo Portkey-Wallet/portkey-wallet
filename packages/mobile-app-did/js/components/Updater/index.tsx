@@ -20,8 +20,8 @@ import {
   useDiscoverGroupList,
   useSocialMediaList,
   useRememberMeBlackList,
+  useTabMenuList,
 } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useTabMenuList } from 'hooks/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';

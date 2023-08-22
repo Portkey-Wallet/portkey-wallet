@@ -7,6 +7,7 @@ import {
   getSocialMediaAsync,
   getBuyButtonAsync,
   getRememberMeBlackListAsync,
+  getTabMenuAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
@@ -14,6 +15,32 @@ import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
+
+export function useTabMenuList(isInit = false) {
+  const dispatch = useAppCommonDispatch();
+  const { tabMenuListNetMap } = useCMS();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const tabMenuList = useMemo(() => tabMenuListNetMap[networkType] || [], [networkType, tabMenuListNetMap]);
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getTabMenuAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getTabMenuAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
+  return tabMenuList;
+}
 
 export function useSocialMediaList(isInit = false) {
   const dispatch = useAppCommonDispatch();

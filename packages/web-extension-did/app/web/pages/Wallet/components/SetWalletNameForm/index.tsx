@@ -7,7 +7,7 @@ import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
@@ -15,7 +15,7 @@ type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 export default function SetWalletNameForm({ data, handleCopy, saveCallback }: any) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const isMainNet = useIsMainnet();
+  const showChat = useIsChatShow();
   const { walletName } = useWalletInfo();
   const setWalletName = useSetWalletName();
   const [disable, setDisable] = useState<boolean>(false);
@@ -89,31 +89,32 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: an
       initialValues={{ walletName: walletName }}
       onFinish={(v) => handleSave(v.walletName.trim())}
       onFinishFailed={onFinishFailed}>
-      <div className="form-content">
-        <FormItem
-          name="walletName"
-          label="Wallet Name"
-          validateStatus={validName.validateStatus}
-          help={validName.errorMsg}
-          validateTrigger="onBlur">
-          <Input
-            autoComplete="off"
-            onChange={(e) => handleInputChange(e.target.value)}
-            placeholder={t('Enter Waller Name')}
-            maxLength={16}
+      <div className="form-content-wrap">
+        <div className="form-content">
+          <FormItem
+            name="walletName"
+            label="Wallet Name"
+            validateStatus={validName.validateStatus}
+            help={validName.errorMsg}
+            validateTrigger="onBlur">
+            <Input
+              autoComplete="off"
+              onChange={(e) => handleInputChange(e.target.value)}
+              placeholder={t('Enter Waller Name')}
+              maxLength={16}
+            />
+          </FormItem>
+        </div>
+
+        {showChat && (
+          <IdAndAddress
+            portkeyId={data?.userId}
+            relationId={data?.relationId}
+            addresses={data?.addresses || []}
+            handleCopy={handleCopy}
           />
-        </FormItem>
+        )}
       </div>
-
-      {isMainNet && (
-        <IdAndAddress
-          portkeyId={data?.userId}
-          relationId={data?.relationId}
-          addresses={data?.addresses || []}
-          handleCopy={handleCopy}
-        />
-      )}
-
       <div className="form-btn">
         <FormItem>
           <Button type="primary" htmlType="submit" disabled={disable}>

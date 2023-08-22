@@ -17,7 +17,7 @@ import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 import CustomModal from 'pages/components/CustomModal';
 import { useGoProfile } from 'hooks/useProfile';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -50,7 +50,7 @@ export default function AddContact() {
   const { state } = useLocation();
   const { extra } = useParams();
   const appDispatch = useAppDispatch();
-  const isMainnet = useIsMainnet();
+  const showChat = useIsChatShow();
   const [disable, setDisabled] = useState<boolean>(true);
   const [netOpen, setNetOpen] = useState<boolean>(false);
   const [index, setIndex] = useState<number>(-1);
@@ -196,8 +196,17 @@ export default function AddContact() {
       if (contactDetail?.imInfo?.relationId) {
         // CAN CHAT
         CustomModal({
-          type: 'confirm',
-          content: 'This contact is identified as a new portkey web3 chat friend.',
+          type: 'info',
+          content: (
+            <div>
+              <div className="modal-title">{`DID Recognition`}</div>
+              <div>
+                {
+                  'This is a contact you can chat with. You can click the "Chat" button on the contact details page to start a conversation.'
+                }
+              </div>
+            </div>
+          ),
           onOk: () => handleView(contactDetail),
           okText: 'Ok',
         });
@@ -217,7 +226,7 @@ export default function AddContact() {
       try {
         setLoading(true);
 
-        if (isMainnet) {
+        if (showChat) {
           const checkAddress = handleCheckAddress(addresses);
           if (checkAddress) {
             await requestAddContact(name, addresses);
@@ -236,7 +245,7 @@ export default function AddContact() {
         setLoading(false);
       }
     },
-    [handleCheckAddress, handleCheckName, isMainnet, requestAddContact, setLoading, t],
+    [handleCheckAddress, handleCheckName, showChat, requestAddContact, setLoading, t],
   );
 
   // go back previous page

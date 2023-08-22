@@ -70,8 +70,17 @@ export default function EditContact() {
         if (contactDetail?.imInfo?.relationId) {
           // CAN CHAT
           CustomModal({
-            type: 'confirm',
-            content: 'This contact is identified as a new portkey web3 chat friend.',
+            type: 'info',
+            content: (
+              <div>
+                <div className="modal-title">{`DID Recognition`}</div>
+                <div>
+                  {
+                    'This is a contact you can chat with. You can click the "Chat" button on the contact details page to start a conversation.'
+                  }
+                </div>
+              </div>
+            ),
             onOk: () => handleView(contactDetail),
             okText: 'Ok',
           });

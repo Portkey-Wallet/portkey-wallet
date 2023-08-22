@@ -34,8 +34,9 @@ const FindMorePeople = () => {
   const caAddressInfoList = useCaAddressInfoList();
 
   const isMyContact = useMemo(() => {
-    return contactList.includes(ele => ele?.imInfo?.relationId === list[0].relationId);
-  }, [contactList, list]);
+    return false;
+    // return contactList.includes(ele => ele?.imInfo?.relationId === list[0].relationId);
+  }, []);
 
   const checkIsMyself = useCallback(() => {
     if (debounceWord === userId) return true;

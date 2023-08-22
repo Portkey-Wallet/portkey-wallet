@@ -34,8 +34,8 @@ const ContactProfile: React.FC = () => {
           onPressAdded={() => console.log('add!!')}
           onPressChat={() => navigationService.navigate('ChatDetails')}
         />
-        <ProfilePortkeyIDSection portkeyID={contact?.userId || contact?.portkeyId || contact?.portKeyId} />
-        <ProfileAddressSection addressList={contact?.addresses || contact?.addressWithChain} />
+        <ProfilePortkeyIDSection portkeyID={contact?.userId || ''} />
+        <ProfileAddressSection addressList={contact?.addresses || []} />
       </ScrollView>
       <CommonButton
         type="primary"

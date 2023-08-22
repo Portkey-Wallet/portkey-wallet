@@ -3,9 +3,9 @@ import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useState, useEffect } from 'react';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function ViewContactBody({
   data,
@@ -23,7 +23,7 @@ export default function ViewContactBody({
   handleCopy,
 }: IProfileDetailBodyProps) {
   const isMyContactFn = useIsMyContact();
-  const isMainnet = useIsMainnet();
+  const showChat = useIsChatShow();
 
   const [isMyContact, setIsMyContact] = useState(false);
 
@@ -66,7 +66,7 @@ export default function ViewContactBody({
                 <span>{addContactText}</span>
               </div>
             )}
-            {isShowChatBtn && isMainnet && data.userId && (
+            {isShowChatBtn && showChat && data.userId && (
               <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
                 <CustomSvg type="ContactChat" />
                 <span>{chatText}</span>

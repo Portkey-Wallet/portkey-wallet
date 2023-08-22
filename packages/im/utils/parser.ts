@@ -1,4 +1,3 @@
-import { messageParser as relationMessageParser, Message as RelationMessage } from '@relationlabs/im';
 import { Message, ParsedImage } from '../types';
 
 const imageMessageParser = (str: string): ParsedImage => {

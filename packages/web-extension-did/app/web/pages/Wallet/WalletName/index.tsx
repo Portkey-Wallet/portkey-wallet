@@ -4,16 +4,16 @@ import WalletNamePopup from './Popup';
 import WalletNamePrompt from './Prompt';
 import { useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
 import { useProfileCopy } from 'hooks/useProfile';
 import { useTranslation } from 'react-i18next';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function WalletName() {
   const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigate();
-  const isMainnet = useIsMainnet();
+  const showChat = useIsChatShow();
   const { walletName, userId } = useWalletInfo();
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
@@ -25,7 +25,7 @@ export default function WalletName() {
   const { t } = useTranslation();
   const editText = t('Edit');
   const [type, setType] = useState<MyProfilePageType>(MyProfilePageType.VIEW);
-  const title = useMemo(() => (isMainnet ? t('My DID') : walletName), [isMainnet, t, walletName]);
+  const title = useMemo(() => (showChat ? t('My DID') : walletName), [showChat, t, walletName]);
   const [headerTitle, setHeaderTitle] = useState(title);
 
   const state: IProfileDetailDataProps = useMemo(
@@ -55,7 +55,7 @@ export default function WalletName() {
   }, [navigate, title, type]);
 
   const handleCopy = useProfileCopy();
-  const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);
+  // const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);
   const saveCallback = useCallback(() => {
     setType(MyProfilePageType.VIEW);
   }, []);
@@ -64,6 +64,7 @@ export default function WalletName() {
     <WalletNamePrompt
       headerTitle={headerTitle}
       data={state}
+      showChat={showChat}
       type={type}
       editText={editText}
       goBack={showView}
@@ -75,10 +76,11 @@ export default function WalletName() {
     <WalletNamePopup
       headerTitle={headerTitle}
       data={state}
+      showChat={showChat}
       type={type}
       editText={editText}
-      goBack={goBack}
-      handleEdit={showView}
+      goBack={showView}
+      handleEdit={showEdit}
       handleCopy={handleCopy}
       saveCallback={saveCallback}
     />

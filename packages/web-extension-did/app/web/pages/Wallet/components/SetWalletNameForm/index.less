@@ -5,6 +5,10 @@
   flex-direction: column;
   justify-content: space-between;
 
+  .form-content-wrap {
+    overflow-y: auto;
+  }
+
   .form-content {
     padding: 24px;
 
@@ -25,9 +29,15 @@
       padding: 13px 16px;
     }
   }
+
+  .id-and-address .info-section .title-did {
+    margin-top: 24px;
+  }
+
   .form-btn {
     width: 100%;
     padding: 16px;
+    border-top: 1px solid @border-2;
 
     .@{app-prefix}-form-item {
       margin-bottom: 0;

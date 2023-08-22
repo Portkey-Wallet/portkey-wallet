@@ -6,7 +6,7 @@ import { Modal, Popover, Upload, message } from 'antd';
 import { PopoverMenuList, MessageList, InputBar, StyleProvider, MessageType } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
-import PhotoSendModal from './components/PhotoSendModal';
+import PhotoSendModal from './components/ImageSendModal';
 import {
   ImageMessageFileType,
   useAddStranger,
@@ -26,7 +26,7 @@ enum MessageTypeWeb {
   'SYS' = 'system',
   'TEXT' = 'text',
   'CARD' = '',
-  'IMAGE' = 'photo',
+  'IMAGE' = 'image',
   'ANNOUNCEMENT' = '',
   'BATCH_TRANSFER' = '',
 }
@@ -49,7 +49,6 @@ export default function Session() {
   useEffectOnce(() => {
     init();
   });
-  console.log('info', info);
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => {
     const formatList: MessageType[] = [];
@@ -114,9 +113,12 @@ export default function Session() {
       centered: true,
       okText: t('Confirm'),
       cancelText: t('Cancel'),
-      onOk: exit,
+      onOk: () => {
+        exit();
+        navigate('/chat-list');
+      },
     });
-  }, [exit, t]);
+  }, [exit, navigate, t]);
   const handleAddContact = useCallback(async () => {
     try {
       const res = await addContactApi(info?.toRelationId || '');
@@ -243,11 +245,6 @@ export default function Session() {
                 overlayClassName="chat-box-popover"
                 trigger="click"
                 showArrow={false}
-                // onOpenChange={(visible) => {
-                //   console.log('visible', visible);
-                //   // setPopVisible(visible);
-                // }}
-                // onClick={() => setPopVisible(true)}
                 content={<PopoverMenuList data={isStranger ? chatPopList : chatPopList.slice(0, -1)} />}>
                 <div className="chat-box-more" onClick={() => setPopVisible(true)}>
                   <CustomSvg type="More" />

@@ -24,10 +24,12 @@ export default function ChatListSearch() {
   const handleSearch = useCallback(
     async (keyword: string) => {
       if (!keyword) {
-        setChatList([]);
-      } else {
         const { contactFilterList = [] } = localSearch(keyword, ContactsTab.ALL);
         console.log('searchResult', contactFilterList);
+        setChatList(contactFilterList);
+        // setChatList([]);
+      } else {
+        const { contactFilterList = [] } = localSearch(keyword, ContactsTab.Chats);
         setChatList(contactFilterList);
       }
     },

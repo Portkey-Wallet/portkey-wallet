@@ -242,6 +242,21 @@ export const useLocalContactSearch = () => {
   );
 };
 
+export const useChatContactFlatList = () => {
+  const { contactIndexList } = useContact(false, false);
+  return useMemo(() => {
+    const contactFlatList: ContactItemType[] = [];
+    contactIndexList.forEach(({ contacts }) => {
+      contacts.map(contact => {
+        if (contact.imInfo?.relationId) {
+          contactFlatList.push(contact);
+        }
+      });
+    });
+    return contactFlatList;
+  }, [contactIndexList]);
+};
+
 export const useIsMyContact = () => {
   const { contactPortkeyIdMap, contactRelationIdMap } = useContact(false, false);
 

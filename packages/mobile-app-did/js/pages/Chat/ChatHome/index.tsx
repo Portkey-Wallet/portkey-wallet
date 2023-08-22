@@ -12,22 +12,15 @@ import ChatOverlay from '../components/ChatOverlay';
 import Touchable from 'components/Touchable';
 import ChatList from '../components/ChatList';
 import CommonButton from 'components/CommonButton';
-import { useChannelList, useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { pTd } from 'utils/unit';
 import im from '@portkey-wallet/im';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { v4 } from 'uuid';
-import useEffectOnce from 'hooks/useEffectOnce';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 
 export default function DiscoverHome() {
   const createChannel = useCreateP2pChannel();
-  const {
-    list: channelList,
-    init: initChannelList,
-    next: nextChannelList,
-    hasNext: hasNextChannelList,
-  } = useChannelList();
 
   const RightDom = useMemo(() => {
     return (
@@ -48,9 +41,9 @@ export default function DiscoverHome() {
                   onPress: () => navigationService.navigate('NewChatHome'),
                 },
                 {
-                  title: 'Add Contact',
+                  title: 'Find More',
                   iconName: 'chat-add-contact',
-                  onPress: () => navigationService.navigate('ContactEdit'),
+                  onPress: () => navigationService.navigate('FindMorePeople'),
                 },
               ],
               formatType: 'dynamicWidth',
@@ -64,10 +57,6 @@ export default function DiscoverHome() {
     );
   }, []);
 
-  useEffect(() => {
-    console.log('channelList', channelList);
-  }, [channelList]);
-
   const createCha = useCallback(async () => {
     try {
       const result = await createChannel('5h7d6-liaaa-aaaaj-vgmya-cai');
@@ -76,10 +65,6 @@ export default function DiscoverHome() {
       console.log('createChannel: error', error);
     }
   }, [createChannel]);
-
-  const initChannel = useCallback(async () => {
-    initChannelList();
-  }, [initChannelList]);
 
   const sendMess = useCallback(async () => {
     im.service.sendMessage({
@@ -91,16 +76,11 @@ export default function DiscoverHome() {
     console.log('sendMess', v4());
   }, []);
 
-  useEffectOnce(() => {
-    initChannelList();
-  });
-
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <CustomHeader noLeftDom themeType="blue" titleDom="Web3 Chat" rightDom={RightDom} />
-      <ChatList chatList={channelList} />
+      <ChatList />
       <CommonButton title="createChannel" onPress={createCha} />
-      <CommonButton title="initChannel" onPress={initChannel} />
       <CommonButton title="sendMessage" onPress={sendMess} />
     </SafeAreaBox>
   );

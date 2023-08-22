@@ -35,18 +35,13 @@ export function useDebounceCallback<T extends (...args: any[]) => any>(
   delay = 500,
 ) {
   const timer = useRef<NodeJS.Timeout | number>();
-  const callbackRef = useRef<T>();
-
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
+  const callbackRef = useLatestRef(callback);
 
   return useCallback((...args: any[]) => {
     if (!callbackRef.current) return;
     timer.current && clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      if (!callbackRef.current) return;
-      callbackRef.current(...args);
+      callbackRef.current?.(...args);
     }, delay);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);

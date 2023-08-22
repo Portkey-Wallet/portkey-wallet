@@ -12,8 +12,11 @@ export default function ContactDetail() {
   return (
     <div className={isNotLessThan768 ? 'contact-detail-prompt' : 'min-width-max-height'}>
       {type === 'view' && <ViewContact />}
+      {/* can chat edit */}
       {type === 'edit' && extra === '1' && <EditContact />}
+      {/* cant chat edit */}
       {type === 'edit' && extra === '2' && <AddContact />}
+      {/* add new contact */}
       {type === 'add' && <AddContact />}
     </div>
   );

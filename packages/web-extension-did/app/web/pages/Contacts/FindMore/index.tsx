@@ -1,5 +1,5 @@
 import { ChangeEvent, ChangeEventHandler, useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import CustomModal from 'pages/components/CustomModal';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
@@ -29,6 +29,7 @@ export interface IFindMoreProps extends BaseHeaderProps {
 export default function FindMore() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
+  const { state } = useLocation();
   const showChat = useIsChatShow();
   const { userId } = useWalletInfo();
   const contactRelationIdMap = useContactRelationIdMap();
@@ -77,7 +78,11 @@ export default function FindMore() {
   }, []);
 
   const goBack = () => {
-    navigate(-1);
+    if (state?.from === 'chat-search') {
+      navigate('/chat-list-search', { state });
+    } else {
+      navigate(-1);
+    }
   };
 
   const handleChat = useCallback(

@@ -8,11 +8,17 @@ import { useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { IProfileDetailDataProps } from 'types/Profile';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
-// TODO any
-export default function SetWalletNameForm({ data, handleCopy, saveCallback }: any) {
+export interface ISetWalletNameFormProps {
+  data: IProfileDetailDataProps;
+  handleCopy: (v: string) => void;
+  saveCallback?: () => void;
+}
+
+export default function SetWalletNameForm({ data, handleCopy, saveCallback }: ISetWalletNameFormProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
@@ -43,7 +49,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: an
     async (walletName: string) => {
       try {
         await setWalletName(walletName);
-        saveCallback();
+        saveCallback?.();
         message.success(t('Saved Successful'));
       } catch (error) {
         message.error('set wallet name error');

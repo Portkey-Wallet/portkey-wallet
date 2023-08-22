@@ -2,7 +2,7 @@ import ViewContactPrompt from './Prompt';
 import ViewContactPopup from './Popup';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import { useProfileChat, useProfileCopy, useGoProfileEdit } from 'hooks/useProfile';
 import CustomModal from 'pages/components/CustomModal';
@@ -26,32 +26,49 @@ export default function ViewContact() {
   const chatText = t('Chat');
   const addedText = t('Added');
   const addContactText = t('Add Contact');
+  const portkeyId = useMemo(
+    () => data?.userId || (data?.portkeyId && data.portkeyId) || (data?.imInfo && data.imInfo?.portkeyId),
+    [data.imInfo, data.portkeyId, data?.userId],
+  );
+
+  const relationId = useMemo(
+    () => (data?.relationId && data.relationId) || (data?.imInfo && data.imInfo?.relationId),
+    [data.imInfo, data.relationId],
+  );
 
   useEffect(() => {
     const isMyContact = isMyContactFn({
-      userId: data?.userId || data?.portkeyId,
-      relationId: data?.relationId || data?.imInfo?.relationId,
+      userId: portkeyId,
+      relationId: relationId,
     });
-    const isMy = (data?.portkeyId && data.portkeyId === userId) || (data?.userId && data.userId === userId);
+    const isMy = portkeyId === userId;
     if (!isMy && !isMyContact) {
       // need fetch profile
-      const res = getProfile({ id: data?.id, relationId: data?.relationId || data?.imInfo?.relationId });
-      console.log('🌈 🌈 🌈 🌈 🌈 🌈 need fetch profile', res);
+      const res = getProfile({ id: data?.id, relationId: relationId });
+      setData(res);
     }
   }, [
     getProfile,
     isMyContactFn,
     data?.id,
-    data?.imInfo?.relationId,
+    data.imInfo.relationId,
     data.portkeyId,
-    data?.relationId,
+    data.relationId,
     data.userId,
     userId,
+    portkeyId,
+    relationId,
   ]);
 
   const goBack = useCallback(() => {
-    navigate('/setting/contacts');
-  }, [navigate]);
+    if (state?.from === 'new-chat') {
+      navigate('/new-chat', { state });
+    } else if (state?.from === 'chat-list') {
+      navigate('/chat-list');
+    } else {
+      navigate('/setting/contacts');
+    }
+  }, [navigate, state]);
 
   const handleEdit = useGoProfileEdit();
   const handleChat = useProfileChat();
@@ -61,7 +78,6 @@ export default function ViewContact() {
   const handleAdd = async () => {
     try {
       const res = await addStranger(data?.imInfo?.relationId || data?.relationId);
-      console.log('🌈 🌈 🌈 🌈 🌈 🌈 res', res);
       setData(res.data);
     } catch (error) {
       const err = handleErrorMessage(error, 'add stranger error');
@@ -89,7 +105,6 @@ export default function ViewContact() {
     }
   }, [readImputationApi, data]);
 
-  // TODO btn show logic
   return isNotLessThan768 ? (
     <ViewContactPrompt
       headerTitle={title}
@@ -99,7 +114,7 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit('1', data)} // TODO add or edit 1 2
+      handleEdit={() => handleEdit(portkeyId ? '1' : '2', data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data)}
       handleCopy={handleCopy}
@@ -113,7 +128,7 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit('1', data)} // TODO add or edit 1 2
+      handleEdit={() => handleEdit(portkeyId ? '1' : '2', data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data)}
       handleCopy={handleCopy}

@@ -16,7 +16,6 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import MessageText from '../Message/MessageText';
 import { destroyChatInputRecorder, initChatInputRecorder } from 'pages/Chat/utils';
 import MessageImage from '../Message/MessageImage';
-import { Message as IMMessage } from '@portkey-wallet/im/types';
 
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
@@ -27,6 +26,7 @@ import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
 import ChatMessageContainer from '../Message';
+import { formatMessageList } from 'pages/Chat/utils/format';
 
 const Empty = () => null;
 
@@ -38,40 +38,13 @@ const ListViewProps = {
   initialNumToRender: 20,
 };
 
-const format = (message: IMMessage[]): ChatMessage[] => {
-  return message
-    .map(ele => {
-      const msg = {
-        _id: ele.sendUuid,
-        ...ele,
-        text: ele.content,
-        createdAt: Number(ele.createAt),
-        user: {
-          _id: ele.from,
-        },
-      } as any;
-      if (ele.type === 'IMAGE' && typeof ele.parsedContent !== 'string') {
-        delete msg.text;
-        msg.image = decodeURIComponent(ele.parsedContent?.thumbImgUrl || ele.parsedContent?.imgUrl || '');
-        msg.imageInfo = {
-          width: ele.parsedContent?.width,
-          height: ele.parsedContent?.height,
-          imgUri: decodeURIComponent(ele.parsedContent?.imgUrl || ''),
-          thumbUri: decodeURIComponent(ele.parsedContent?.thumbImgUrl || ''),
-        };
-      }
-      return msg;
-    })
-    .reverse();
-};
-
 const ChatsUI = () => {
   const currentChannelId = useCurrentChannelId();
   const { list, init } = useChannel(currentChannelId || '');
 
   const [loading, setLoading] = useState(true);
 
-  const formattedList = useMemo(() => format(list), [list]);
+  const formattedList = useMemo(() => formatMessageList(list), [list]);
   console.log(formattedList, '====formattedList');
 
   const dispatch = useChatsDispatch();

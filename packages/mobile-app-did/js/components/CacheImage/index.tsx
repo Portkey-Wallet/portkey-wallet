@@ -3,7 +3,6 @@ import { FontStyles } from 'assets/theme/styles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, ImageProps, ImageSourcePropType, StyleSheet, View } from 'react-native';
-import { isURISource } from 'utils/fs/img';
 import Default_Image from 'assets/image/pngs/default_record.png';
 import { getLocalSource, initStateSource, getLocalUri } from './utils';
 import isEqual from 'lodash/isEqual';

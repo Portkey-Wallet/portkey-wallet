@@ -93,7 +93,10 @@ export const useChannelList = () => {
   const { networkType } = useCurrentNetworkInfo();
   const { next, hasNext } = useNextChannelList();
 
-  const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
+  const list = useMemo(
+    () => channelListNetMap?.[networkType]?.list?.filter(item => !!item.lastPostAt) || [],
+    [channelListNetMap, networkType],
+  );
 
   const init = useCallback(() => {
     return next(true);
@@ -160,7 +163,7 @@ export const useCreateP2pChannel = () => {
             network: networkType,
             channelId: channelUuid,
             value: {
-              displayName: channelInfo.name,
+              displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
               channelIcon: channelInfo.icon,
               mute: channelInfo.mute,
               pin: channelInfo.pin,
@@ -170,6 +173,7 @@ export const useCreateP2pChannel = () => {
       } catch (error) {
         console.log('createChannel error: ', error);
       }
+      return result;
     },
     [dispatch, networkType],
   );

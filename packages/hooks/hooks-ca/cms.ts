@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useAppCASelector } from '.';
 import { useAppCommonDispatch } from '../index';
-import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import {
+  useCurrentNetworkInfo,
+  useIsIMServiceExist,
+  useIsMainnet,
+  useNetworkList,
+} from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   getDiscoverGroupAsync,
   getSocialMediaAsync,
@@ -207,12 +212,13 @@ export const useCheckSiteIsInBlackList = () => {
 export const useIsChatShow = () => {
   const { tabMenuListNetMap } = useCMS();
   const { networkType } = useCurrentNetworkInfo();
+  const isIMServiceExist = useIsIMServiceExist();
 
   const IsChatShow = useMemo(() => {
     const tabMenuList = tabMenuListNetMap[networkType];
     if (!tabMenuList) return false;
-    return !!tabMenuList.find(item => item.type.value === ChatTabName);
-  }, [networkType, tabMenuListNetMap]);
+    return isIMServiceExist && !!tabMenuList.find(item => item.type.value === ChatTabName);
+  }, [isIMServiceExist, networkType, tabMenuListNetMap]);
 
   return IsChatShow;
 };

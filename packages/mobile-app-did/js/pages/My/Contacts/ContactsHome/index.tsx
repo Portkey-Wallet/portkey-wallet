@@ -34,7 +34,7 @@ const ContactsHome: React.FC = () => {
         tabItemDom: (
           <>
             <FindMoreButton />
-            <ContactsList isSearchShow={false} style={pageStyles.contactListStyle} />
+            <ContactsList justChatContact isSearchShow={false} style={pageStyles.contactListStyle} />
           </>
         ),
       },

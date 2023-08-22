@@ -26,7 +26,7 @@ const ContactItem: React.FC<ItemType> = props => {
     <TouchableOpacity onPress={() => onPress?.(contact)}>
       <View style={styles.itemWrap}>
         <View style={[styles.itemAvatar, BGStyles.bg4, BorderStyles.border1, styles.avatarWrap]}>
-          {!isShowWarning && <View style={styles.warningCycle} />}
+          {isShowWarning && <View style={styles.warningCycle} />}
           <TextXXL style={FontStyles.font5}>{contact.name[0].toUpperCase()}</TextXXL>
         </View>
         <View style={styles.itemNameWrap}>

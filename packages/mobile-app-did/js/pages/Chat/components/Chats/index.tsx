@@ -147,19 +147,21 @@ const ChatsUI = () => {
             user={user}
             alwaysShowSend
             scrollToBottom
+            renderUsername={Empty}
             renderTime={Empty}
             isCustomViewBottom
             renderAvatar={Empty}
             showUserAvatar={false}
             messages={formattedList}
             minInputToolbarHeight={0}
+            renderUsernameOnMessage={false}
             renderInputToolbar={Empty}
             renderBubble={renderBubble}
             renderMessage={renderMessage}
             listViewProps={listViewProps}
             messageIdGenerator={randomId}
-            showAvatarForEveryMessage={false}
-            isKeyboardInternallyHandled={false}
+            showAvatarForEveryMessage={true}
+            isKeyboardInternallyHandled={true}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
           />

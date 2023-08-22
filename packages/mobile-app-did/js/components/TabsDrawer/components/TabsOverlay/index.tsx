@@ -19,7 +19,7 @@ import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { request } from '@portkey-wallet/api/api-did';
-import { useBookmarkList } from 'hooks/discover';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 
 enum HANDLE_TYPE {
   REFRESH = 'Refresh',

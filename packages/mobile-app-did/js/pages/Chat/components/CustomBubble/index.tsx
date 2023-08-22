@@ -9,7 +9,18 @@ export default function CustomBubble(props: BubbleProps<IMessage>) {
   return (
     <Bubble
       touchableProps={{ disabled: true }}
-      wrapperStyle={{ left: [styles.wrapperStyle, styles.wrapLeft], right: [styles.wrapperStyle, styles.wrapRight] }}
+      wrapperStyle={{
+        left: [styles.wrapperStyle, styles.wrapLeft],
+        right: [styles.wrapperStyle, styles.wrapRight],
+      }}
+      containerToNextStyle={{
+        left: styles.containerToNextLeftStyle,
+        right: styles.containerToNextRightStyle,
+      }}
+      containerStyle={{
+        left: styles.containerStyle,
+        right: styles.containerStyle,
+      }}
       {...props}
     />
   );
@@ -19,7 +30,6 @@ const styles = StyleSheet.create({
   wrapperStyle: {
     borderRadius: pTd(20),
     color: defaultColors.font5,
-    padding: pTd(4),
   },
   wrapLeft: {
     backgroundColor: defaultColors.bg18,
@@ -29,5 +39,16 @@ const styles = StyleSheet.create({
   wrapRight: {
     backgroundColor: defaultColors.bg9,
     borderTopRightRadius: pTd(2),
+    marginRight: 0,
+  },
+  containerToNextRightStyle: {
+    borderBottomRightRadius: pTd(20),
+  },
+  containerToNextLeftStyle: {
+    borderTopLeftRadius: pTd(2),
+    borderBottomLeftRadius: pTd(20),
+  },
+  containerStyle: {
+    margin: pTd(4),
   },
 });

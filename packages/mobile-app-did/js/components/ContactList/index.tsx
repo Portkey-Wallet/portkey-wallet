@@ -42,7 +42,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
   ListFooterComponent,
 }) => {
   const { t } = useLanguage();
-  const { contactIndexList, contactMap } = useContact();
+  const { contactIndexList, contactMap } = useContact(!justChatContact);
   const [list, setList] = useState<ContactIndexType[]>([]);
 
   const chatContactIndexList = useMemo(() => {

@@ -53,7 +53,7 @@ export const useInitIM = () => {
             channel: {
               status: ChannelStatusEnum.NORMAL,
               channelUuid: rawMsg.channelUuid,
-              displayName: rawMsg.fromName || '',
+              displayName: '',
               channelIcon: rawMsg.fromAvatar || '',
               channelType: ChannelTypeEnum.P2P,
               unreadMessageCount: 1,
@@ -72,13 +72,13 @@ export const useInitIM = () => {
           const { data: channelInfo } = await im.service.getChannelInfo({
             channelUuid: rawMsg.channelUuid,
           });
-          console.log('channelInfo', channelInfo);
 
           dispatch(
             updateChannelAttribute({
               network: networkType,
               channelId: rawMsg.channelUuid,
               value: {
+                displayName: channelInfo.members.find(item => item.relationId === rawMsg.from)?.name || '',
                 pin: channelInfo.pin,
                 channelType: channelInfo.type,
               },

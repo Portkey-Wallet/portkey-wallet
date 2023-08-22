@@ -33,6 +33,7 @@ export interface IRenderTabMenuItem {
   index: number;
   icon: IconName;
   component: React.FC;
+  isDefault?: boolean;
 }
 
 export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
@@ -41,6 +42,7 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
     index: 0,
     label: 'Wallet',
     icon: 'logo-icon',
+    isDefault: true,
     component: DashBoard,
   },
   [TabRouteNameEnum.DISCOVER]: {
@@ -59,6 +61,7 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
   },
   [TabRouteNameEnum.SETTINGS]: {
     name: TabRouteNameEnum.SETTINGS,
+    isDefault: true,
     index: 3,
     label: 'My',
     icon: 'my',
@@ -66,7 +69,7 @@ export const tabMenuTypeMap: Record<TabRouteNameEnum, IRenderTabMenuItem> = {
   },
 };
 
-export const defaultTabMenuList = Object.values(tabMenuTypeMap);
+export const defaultTabMenuList = Object.values(tabMenuTypeMap).filter(item => item.isDefault);
 
 export default function TabRoot() {
   const { t } = useLanguage();
@@ -75,7 +78,6 @@ export default function TabRoot() {
   const unreadCount = useUnreadCount();
 
   const tabMenuList = useMemo(() => {
-    if (__DEV__) return defaultTabMenuList;
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
       if (!acc.find(item => item.type.value === cur.type.value)) {
         acc.push(cur);
@@ -83,7 +85,7 @@ export default function TabRoot() {
       return acc;
     }, []);
 
-    if (_tabMenuListStore.length) return defaultTabMenuList;
+    if (!_tabMenuListStore.length) return defaultTabMenuList;
 
     return _tabMenuListStore
       .map(item => ({

@@ -44,16 +44,17 @@ export const imSlice = createSlice({
           ...state,
           channelListNetMap: {
             ...state.channelListNetMap,
-            [action.payload.network]: action.payload.channelList,
+            [action.payload.network]: formatChannelList(action.payload.channelList),
           },
         };
       })
       .addCase(nextChannelList, (state, action) => {
         const originList = state.channelListNetMap[action.payload.network]?.list || [];
-        const channelList = {
+        let channelList = {
           list: [...originList, ...action.payload.channelList.list],
           cursor: action.payload.channelList.cursor,
         };
+        channelList = formatChannelList(channelList);
         return {
           ...state,
           channelListNetMap: {

@@ -173,7 +173,11 @@ export const useLocalContactSearch = () => {
   return useCallback(
     (value: string, type: ContactsTab) => {
       if (!value) {
-        return { contactFilterList: [], contactIndexFilterList: [] };
+        const temp: ContactItemType[] = [];
+        contactIndexList.forEach(({ contacts }) => {
+          temp.push(...contacts);
+        });
+        return { contactFilterList: temp, contactIndexFilterList: contactIndexList };
       }
 
       // STEP 1
@@ -240,6 +244,21 @@ export const useLocalContactSearch = () => {
     },
     [contactIndexList],
   );
+};
+
+export const useChatContactFlatList = () => {
+  const { contactIndexList } = useContact(false, false);
+  return useMemo(() => {
+    const contactFlatList: ContactItemType[] = [];
+    contactIndexList.forEach(({ contacts }) => {
+      contacts.map(contact => {
+        if (contact.imInfo?.relationId) {
+          contactFlatList.push(contact);
+        }
+      });
+    });
+    return contactFlatList;
+  }, [contactIndexList]);
 };
 
 export const useIsMyContact = () => {

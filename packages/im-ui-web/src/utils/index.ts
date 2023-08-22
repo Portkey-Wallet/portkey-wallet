@@ -21,6 +21,6 @@ export const formatChatListTime = (timeStamp?: number | string): string => {
   }
 };
 
-export const formatTime = (time?: number | string) => dayjs(time).format('HH:mm');
+export const formatTime = (timeStamp?: number | string) => dayjs(Number(timeStamp)).format('HH:mm');
 
 export const ZERO = new BigNumber(0);

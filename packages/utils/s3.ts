@@ -38,13 +38,13 @@ class AWSManager {
   async uploadFile(file: { body: File | string; suffix?: string }): Promise<UploadFileType> {
     const uuid = randomId();
 
-    const isBase64 = typeof file.body === 'string';
+    // const isBase64 = typeof file.body === 'string';
     const upload = new S3.ManagedUpload({
       params: {
         ...this.uploadBaseConfig,
         Key: `${uuid}-${Date.now()}${file.suffix ? '.' + file.suffix : ''}`,
         Body: typeof file.body === 'string' ? Buffer.from(file.body, 'base64') : file.body,
-        ContentEncoding: isBase64 ? 'base64' : undefined,
+        // ContentEncoding: isBase64 ? 'base64' : undefined,
       },
     });
 

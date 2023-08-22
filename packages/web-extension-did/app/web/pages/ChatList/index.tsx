@@ -9,6 +9,7 @@ import SettingHeader from 'pages/components/SettingHeader';
 import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
+import { MessageTypeWeb } from 'types/im';
 import './index.less';
 
 export default function ChatList() {
@@ -67,8 +68,10 @@ export default function ChatList() {
         id: item.channelUuid,
         letterItem: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
-        subtitle: `${item.lastMessageContent}`,
-        dateString: formatChatListTime(item.lastPostAt),
+        subtitle: item.lastMessageType === 'IMAGE' ? '[Image]' : `${item.lastMessageContent}`,
+        dateString: MessageTypeWeb[item.lastMessageType!]
+          ? formatChatListTime(item.lastPostAt)
+          : '[Not supported message]',
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,

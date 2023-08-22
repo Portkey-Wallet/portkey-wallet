@@ -42,11 +42,10 @@ const ContactsList: React.FC<ContactsListProps> = ({
   ListFooterComponent,
 }) => {
   const { t } = useLanguage();
-  const { contactIndexList, contactMap } = useContact();
+  const { contactIndexList, contactMap } = useContact(!justChatContact);
   const [list, setList] = useState<ContactIndexType[]>([]);
 
   const chatContactIndexList = useMemo(() => {
-    return contactIndexList;
     const _chatContactIndexList: ContactIndexType[] = [];
 
     contactIndexList.map(ele => {
@@ -67,27 +66,27 @@ const ContactsList: React.FC<ContactsListProps> = ({
     list.forEach(contactIndex => {
       if (!contactIndex.contacts.length) return;
 
-      // if (justChatContact) {
-      //   // just chatContact
-      //   const indexContactList = contactIndex.contacts.filter(ele => !!ele.imInfo);
-      //   if (indexContactList.length > 0) {
-      //     _flashListData.push({
-      //       contacts: indexContactList,
-      //       index: contactIndex.index,
-      //     });
-      //     _flashListData = _flashListData.concat(indexContactList);
-      //   }
-      // } else {
-      if (!_flashListData) console.log('uuuuuu');
+      if (justChatContact) {
+        // just chatContact
+        const indexContactList = contactIndex.contacts.filter(ele => !!ele.imInfo);
+        if (indexContactList.length > 0) {
+          _flashListData.push({
+            contacts: indexContactList,
+            index: contactIndex.index,
+          });
+          _flashListData = _flashListData.concat(indexContactList);
+        }
+      } else {
+        if (!_flashListData) console.log('uuuuuu');
 
-      _flashListData.push({
-        ...contactIndex,
-      });
-      _flashListData = _flashListData.concat(contactIndex.contacts);
-      // }
+        _flashListData.push({
+          ...contactIndex,
+        });
+        _flashListData = _flashListData.concat(contactIndex.contacts);
+      }
     });
     return _flashListData;
-  }, [list]);
+  }, [justChatContact, list]);
 
   const [keyWord, setKeyWord] = useState<string>('');
 
@@ -150,9 +149,11 @@ const ContactsList: React.FC<ContactsListProps> = ({
       <ContactItem
         key={item.id}
         contact={item}
+        isShowChat={!!item.imInfo?.relationId}
         onPress={() => {
           navigationService.navigate('NoChatContactProfile', { contact: item });
         }}
+        onPressChat={() => navigationService.navigate('ChatDetails')}
       />
     );
   };

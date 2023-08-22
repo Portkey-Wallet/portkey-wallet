@@ -143,7 +143,7 @@ export interface IMessage {
   text: string;
   title?: string;
   focus?: boolean;
-  date: number | Date;
+  date: number | string;
   dateString?: string;
   avatar?: string;
   titleColor?: string;
@@ -162,14 +162,14 @@ export interface IMessage {
 }
 
 /**
- * IPhotoMessage Interface
- * @prop type The Photo Message's type is "photo" and required.
+ * IImageMessage Interface
+ * @prop type The Photo Message's type is "image" and required.
  * @prop width The Photo Message's width and optional.
  * @prop height The Photo Message's height and optional.
  * @prop uri The Photo Message's uri and required.
  * @prop alt The Photo Message's alt and optional.
  */
-export interface IPhotoMessage extends IMessage {
+export interface IImageMessage extends IMessage {
   imgData?: {
     status?: IMessageDataStatus;
     thumbImgUrl?: string;
@@ -185,15 +185,15 @@ export interface IPhotoMessage extends IMessage {
 }
 
 /**
- * IPhotoMessageProps Interface
- * @prop type The Photo Message's type is "photo" and required.
- * @prop message The Photo Message's message is a IPhotoMessage and required.
+ * IImageMessageProps Interface
+ * @prop type The Photo Message's type is "image" and required.
+ * @prop message The Photo Message's message is a IImageMessage and required.
  * @prop onDownload The Photo Message's function onDownload(event: React.MouseEvent<T, MouseEvent>) and optional.
  * @prop onOpen The Photo Message's function onOpen(event: React.MouseEvent<T, MouseEvent>) and optional.
  * @prop onLoad The Photo Message's function onLoad(event: React.MouseEvent<T, MouseEvent>) and optional.
  * @prop onError The Photo Message's function onError(event: React.MouseEvent<T, MouseEvent>) and optional.
  */
-export interface IPhotoMessageProps extends IPhotoMessage {
+export interface IImageMessageProps extends IImageMessage {
   onDownload?: React.MouseEventHandler;
   onOpen?: React.MouseEventHandler;
   onLoad?: React.ReactEventHandler;
@@ -363,7 +363,9 @@ export type MessageListEvent = (item: MessageType, index: number, event: React.M
  * ITextMessage Interface extends IMessage
  * @prop type The Text Message's type is "text" and required.
  */
-export interface ITextMessage extends IMessage {}
+export interface ITextMessage extends IMessage {
+  subType?: string;
+}
 
 /**
  * ITextMessageProps Interface
@@ -372,7 +374,7 @@ export interface ITextMessage extends IMessage {}
  * @prop dateString The Text Message's dateString and optional.
  */
 export interface ITextMessageProps extends ITextMessage {
-  dateString?: string;
+  // dateString?: string;
   // copyClipboard: function;
 }
 
@@ -668,7 +670,7 @@ export interface IUnreadTipProps {
 /**
  * MessageType Type
  * @type ILocationMessageProps
- * @type IPhotoMessageProps
+ * @type IImageMessageProps
  * @type IVideoMessageProps
  * @type ISpotifyMessageProps
  * @type IAudioMessageProps
@@ -679,7 +681,7 @@ export interface IUnreadTipProps {
  * @type IMeetingMessageProps
  */
 export type MessageType =
-  | ({ type: 'photo' } & IPhotoMessageProps)
+  | ({ type: 'image' } & IImageMessageProps)
   | ({ type: 'text' } & ITextMessageProps)
   | ({ type: 'bookmark' } & ITextMessageProps)
   | ({ type: 'system' } & ISystemMessageProps);
@@ -689,17 +691,11 @@ export type MessageBoxType = MessageType & IMessageBoxProps;
 export class ChannelItem extends React.Component<IChatItemProps> {}
 export class ChannelList extends React.Component<IChatListProps> {}
 export class MessageBox extends React.Component<MessageBoxType> {}
-export class PhotoMessage extends React.Component<IPhotoMessageProps> {}
+export class PhotoMessage extends React.Component<IImageMessageProps> {}
 export class TextMessage extends React.Component<ITextMessageProps> {}
 export class SystemMessage extends React.Component<ISystemMessageProps> {}
 export class MessageList extends React.Component<IMessageListProps> {}
-
-// export class Popup extends React.Component<IPopupProps> {}
 export class Avatar extends React.Component<IAvatarProps> {}
-// export class Button extends React.Component<IButtonProps> {}
-// export class Sidebar extends React.Component<ISideBar> {}
-// export class Navbar extends React.Component<INavbarProps> {}
 export class Input extends React.Component<IInputProps> {}
-// export class Dropdown extends React.Component<IDefaultProps> {}
 export class UnreadTip extends React.Component<IUnreadTipProps> {}
 export class PhotoPreview extends React.Component<IPhotoPreviewProps> {}

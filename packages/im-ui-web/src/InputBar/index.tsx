@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Popover } from 'antd';
 import { emojiList } from '../assets/index';
@@ -15,27 +15,29 @@ interface IInputBar {
 
 export default function InputBar({ moreData, showEmoji = true, onSendMessage, ...props }: IInputBar) {
   console.log(props);
-  const [showIcon, setShowIcon] = useState(false);
+  const [showEmojiIcon, setShowEmojiIcon] = useState(false);
   const [value, setValue] = useState('');
   const inputRef = useRef(null);
-
-  const handleShowIcon = () => {
-    if (showIcon) {
-      setShowIcon(false);
-    } else {
-      setShowIcon(true);
+  const [popVisible, setPopVisible] = useState(false);
+  const clearPop = (e: any) => {
+    try {
+      if (e.target.className.indexOf('close-show-emoji-icon') === -1) {
+        setShowEmojiIcon(false);
+      }
+      if (e.target.className.indexOf('close-more-file') === -1) {
+        setPopVisible(false);
+      }
+    } catch (e) {
+      console.log('e', e);
     }
   };
-
   const handleChange = (e: any) => {
     setValue(e.target.value);
   };
-
   const handleSend = () => {
     onSendMessage(value);
     setValue('');
   };
-
   const handleEnterKeyDown = (e: any) => {
     if (e.keyCode === 13) {
       e.preventDefault();
@@ -44,11 +46,15 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
       }
     }
   };
+  useEffect(() => {
+    document.addEventListener('click', clearPop);
+    return () => document.removeEventListener('click', clearPop);
+  }, []);
 
   return (
     <div>
       <div className="portkey-input-bar">
-        {showIcon && (
+        {showEmojiIcon && (
           <div className="input-emoji">
             <div className="show-icon flex">
               {emojiList.map(item => (
@@ -64,13 +70,16 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
             <Popover
               overlayClassName="portkey-input-more-popover"
               placement="top"
+              open={popVisible}
               trigger="click"
               showArrow={false}
               content={<PopoverMenuList data={moreData} />}>
-              <CustomSvg type="File" />
+              <div className="close-more-file" onClick={() => setPopVisible(!popVisible)}>
+                <CustomSvg type="File" />
+              </div>
             </Popover>
           ) : (
-            <CustomSvg type="File" />
+            <></>
           )}
 
           <div className="input-text">
@@ -80,12 +89,19 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
               value={value}
               multiline={true}
               maxHeight={140}
+              maxlength={300}
               onChange={handleChange}
-              onFocus={() => setShowIcon(false)}
+              onFocus={() => setShowEmojiIcon(false)}
               onKeyDown={handleEnterKeyDown}
             />
             {showEmoji && (
-              <CustomSvg className={clsx([showIcon && 'has-show-icon'])} type="Emoji" onClick={handleShowIcon} />
+              <div className="portkey-close-show-emoji-icon">
+                <CustomSvg
+                  className={clsx([showEmojiIcon && 'has-show-emoji-icon'])}
+                  type="Emoji"
+                  onClick={() => setShowEmojiIcon(!showEmojiIcon)}
+                />
+              </div>
             )}
           </div>
           {value && <CustomSvg type="Send" onClick={handleSend} />}

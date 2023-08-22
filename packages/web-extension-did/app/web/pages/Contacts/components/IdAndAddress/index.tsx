@@ -5,8 +5,8 @@ import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import clsx from 'clsx';
 
 interface IIdAndAddressProps {
-  portkeyId: string;
-  relationId: string;
+  portkeyId?: string;
+  relationId?: string;
   addresses: AddressItem[];
   handleCopy: (val: string) => void;
 }

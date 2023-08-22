@@ -76,15 +76,15 @@ export default function ViewContactBody({
         </div>
 
         <IdAndAddress
-          portkeyId={data?.userId || ''}
-          relationId={data?.userId || ''}
+          portkeyId={data?.userId}
+          relationId={data?.userId}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
         />
       </div>
 
       {/* stranger cant edit */}
-      {!isShowAddContactBtn && (
+      {isMyContact && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

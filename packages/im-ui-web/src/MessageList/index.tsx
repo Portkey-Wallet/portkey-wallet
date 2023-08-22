@@ -82,13 +82,12 @@ const MessageList: FC<IMessageListProps> = ({
         next();
       }
     }
-
     if (props.onScroll instanceof Function) {
       props.onScroll(e);
     }
   };
 
-  const toBottom = (e: any) => {
+  const toBottom = (e?: any) => {
     if (!referance) return;
     referance.current.scrollTop = referance.current.scrollHeight;
     if (props.onDownButtonClick instanceof Function) {
@@ -100,13 +99,6 @@ const MessageList: FC<IMessageListProps> = ({
     if (!referance) return;
     referance.current.scrollTop = referance.current.scrollHeight;
   }, []);
-
-  useEffect(() => {
-    if (props.dataSource?.[props.dataSource?.length - 1]?.position === 'right') {
-      if (!referance) return;
-      referance.current.scrollTop = referance.current.scrollHeight;
-    }
-  }, [props.dataSource]);
 
   const renderMessageItem = useMemo(() => {
     let prev = 'left';
@@ -120,13 +112,12 @@ const MessageList: FC<IMessageListProps> = ({
       }
       return (
         <MessageItem
+          {...(x as any)}
           className={isShowMargin && 'showMargin'}
           key={x.id}
-          {...(x as any)}
           onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
           onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
           onDelete={() => onDelete(`${x.id}`)}
-          styles={props.messageBoxStyles}
         />
       );
     });

@@ -20,8 +20,7 @@ import MessageImage from '../Message/MessageImage';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 import Touchable from 'components/Touchable';
-import { useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import im from '@portkey-wallet/im';
+import { useChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
@@ -107,7 +106,8 @@ const ChatsUI = () => {
     [],
   );
 
-  const user = useMemo(() => ({ _id: im.userInfo?.relationId || '' }), []);
+  const relationId = useRelationId();
+  const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   return (
     <>
@@ -120,19 +120,21 @@ const ChatsUI = () => {
             user={user}
             alwaysShowSend
             scrollToBottom
+            renderUsername={Empty}
             renderTime={Empty}
             isCustomViewBottom
             renderAvatar={Empty}
             showUserAvatar={false}
             messages={formattedList}
             minInputToolbarHeight={0}
+            renderUsernameOnMessage={false}
             renderInputToolbar={Empty}
             renderBubble={renderBubble}
             renderMessage={renderMessage}
             listViewProps={listViewProps}
             messageIdGenerator={randomId}
-            showAvatarForEveryMessage={false}
-            isKeyboardInternallyHandled={false}
+            showAvatarForEveryMessage={true}
+            isKeyboardInternallyHandled={true}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
           />

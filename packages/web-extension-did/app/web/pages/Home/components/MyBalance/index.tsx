@@ -32,11 +32,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/ChatEntry';
-import { getWallet } from '@portkey-wallet/utils/aelf';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
-import aes from '@portkey-wallet/utils/aes';
-import { useInitIM, useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import './index.less';
 
 export interface TransactionResult {
@@ -92,25 +88,6 @@ export default function MyBalance() {
   const isShowChat = true;
   // const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
-  const initIm = useInitIM();
-
-  // IM START
-  const initIM = useCallback(async () => {
-    const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-    const pin = getSeedResult.data.privateKey;
-    if (!pin) return;
-
-    const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
-    const account = getWallet(privateKey || '');
-    if (!account || !walletInfo.caHash) return;
-
-    try {
-      await initIm(account, walletInfo.caHash);
-    } catch (error) {
-      console.log('im init error', error);
-    }
-  }, [initIm, walletInfo.AESEncryptPrivateKey, walletInfo.caHash]);
-  // IM END
 
   useEffect(() => {
     if (state?.key) {
@@ -122,10 +99,6 @@ export default function MyBalance() {
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
   }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
-
-  useEffect(() => {
-    isShowChat && initIM();
-  }, [initIM, isShowChat]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });

@@ -10,35 +10,29 @@ import { useCallback, useMemo, useState } from 'react';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import CustomModal from 'pages/components/CustomModal';
 import CustomSvg from 'components/CustomSvg';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export interface IContactsBodyProps {
   isSearch: boolean;
   list: ContactIndexType[];
   contactCount: number;
   initData: Partial<ContactItemType>;
-  portkeyChatCount: number;
-  portkeyChatInitData: Partial<ContactItemType>;
-  portkeyChatList: ContactIndexType[];
-  isSearchPortkeyChat: boolean;
+  changeTab: (key: ContactsTab) => void;
 }
 
-export default function ContactsBody({
-  isSearch,
-  list,
-  contactCount,
-  initData,
-  portkeyChatCount,
-  portkeyChatInitData,
-  portkeyChatList,
-  isSearchPortkeyChat,
-}: IContactsBodyProps) {
+export default function ContactsBody({ isSearch, list, contactCount, initData, changeTab }: IContactsBodyProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isMainnet = useIsMainnet();
   const [activeKey, setActiveKey] = useState<string>(ContactsTab.ALL);
 
-  const onChange = useCallback(async (key: string) => {
-    setActiveKey(key);
-  }, []);
+  const onChange = useCallback(
+    async (key: string) => {
+      setActiveKey(key);
+      changeTab(key as ContactsTab);
+    },
+    [changeTab],
+  );
 
   const findMoreHandler = useCallback(() => {
     navigate('/setting/contacts/find-more');
@@ -83,33 +77,10 @@ export default function ContactsBody({
           <CustomSvg type="AddMorePeople" className="find-more-icon" />
           <span className="find-more-text">Find more</span>
         </div>
-        {portkeyChatCount === 0 ? (
-          isSearchPortkeyChat ? (
-            <div className="flex-center no-search-result">There is no search result.</div>
-          ) : (
-            <NoContacts initData={portkeyChatInitData} />
-          )
-        ) : (
-          <ContactListIndexBar
-            list={portkeyChatList}
-            isSearch={isSearchPortkeyChat}
-            clickItem={(item) => {
-              navigate('/setting/contacts/view', { state: item });
-            }}
-            clickChat={handleChat}
-          />
-        )}
+        {allContactListUI}
       </>
     );
-  }, [
-    findMoreHandler,
-    handleChat,
-    isSearchPortkeyChat,
-    navigate,
-    portkeyChatCount,
-    portkeyChatInitData,
-    portkeyChatList,
-  ]);
+  }, [allContactListUI, findMoreHandler]);
 
   const renderTabsData = useMemo(
     () => [
@@ -129,7 +100,10 @@ export default function ContactsBody({
 
   return (
     <div className={clsx(['contacts-body', isSearch && 'index-bar-hidden'])}>
-      <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="contacts-tab" />
+      {isMainnet && (
+        <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="contacts-tab" />
+      )}
+      {!isMainnet && <div className="testnet-list">{allContactListUI}</div>}
     </div>
   );
 }

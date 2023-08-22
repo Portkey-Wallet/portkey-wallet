@@ -1,6 +1,7 @@
 import { IBaseRequest } from '@portkey/types';
 import { BaseService } from '@portkey/services';
 import {
+  AddStrangerParams,
   CreateChannelParams,
   CreateChannelResult,
   DeleteMessageParams,
@@ -27,7 +28,6 @@ import {
   VerifySignatureResult,
 } from '../types/service';
 import { ChannelMemberInfo, Message, MessageCount } from '../types';
-import { IM_SUCCESS_CODE } from '../constant';
 import { sleep } from '@portkey-wallet/utils';
 
 export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseService<T> implements IIMService {
@@ -47,19 +47,21 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   }
   async verifySignatureLoop(
     generateVerifyData: VerifySignatureLoopParams,
+    checkIsContinue: () => boolean,
     times = 0,
   ): IMServiceCommon<VerifySignatureResult> {
     try {
       const params = generateVerifyData();
-      if (params === null) throw new Error('user exit');
-      const result = await this.verifySignature(params);
-      if (result.code === IM_SUCCESS_CODE) return result;
-      if (times === 1) throw result;
+      if (params === null) throw new Error('VerifyData is null');
+      return await this.verifySignature(params);
     } catch (error) {
+      const isContinue = checkIsContinue();
+      if (!isContinue) throw new Error('account changed');
+      if (times === 1) throw error;
       console.log('verifySignatureLoop: error', error);
     }
     if (times <= 0) await sleep(1000);
-    return this.verifySignatureLoop(generateVerifyData, times - 1);
+    return this.verifySignatureLoop(generateVerifyData, checkIsContinue, times - 1);
   }
 
   getAuthToken(params: GetAuthTokenParams): IMServiceCommon<GetAuthTokenResult> {
@@ -72,16 +74,22 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       },
     });
   }
-  async getAuthTokenLoop(params: GetAuthTokenParams, times = 0): IMServiceCommon<GetAuthTokenResult> {
+
+  async getAuthTokenLoop(
+    params: GetAuthTokenParams,
+    checkIsContinue: () => boolean,
+    times = 0,
+  ): IMServiceCommon<GetAuthTokenResult> {
     try {
-      const result = await this.getAuthToken(params);
-      if (result.code === IM_SUCCESS_CODE) return result;
-      if (times === 1) throw result;
+      return await this.getAuthToken(params);
     } catch (error) {
+      const isContinue = checkIsContinue();
+      if (!isContinue) throw new Error('account changed');
+      if (times === 1) throw error;
       console.log('getAuthToken: error', error);
     }
     if (times <= 0) await sleep(1000);
-    return this.getAuthTokenLoop(params, times - 1);
+    return this.getAuthTokenLoop(params, checkIsContinue, times - 1);
   }
 
   getUserInfo<T = GetUserInfoDefaultResult>(params: GetUserInfoParams): IMServiceCommon<T> {
@@ -177,6 +185,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   hideChannel(params: HideChannelParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/feed/hide',
+      params,
+      method: 'POST',
+    });
+  }
+  addStranger(params: AddStrangerParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/contacts/stranger',
       params,
       method: 'POST',
     });

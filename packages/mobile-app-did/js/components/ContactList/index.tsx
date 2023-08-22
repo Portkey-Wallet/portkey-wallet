@@ -20,6 +20,7 @@ import { transContactsToIndexes } from '@portkey-wallet/store/store-ca/contact/u
 import { useContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 interface ContactsListProps {
+  justChatContact?: boolean;
   isIndexBarShow?: boolean;
   isSearchShow?: boolean;
   isReadOnly?: boolean;
@@ -31,6 +32,7 @@ interface ContactsListProps {
 type FlashItemType = ContactIndexType | ContactItemType;
 
 const ContactsList: React.FC<ContactsListProps> = ({
+  justChatContact = false,
   isIndexBarShow = true,
   isSearchShow = true,
   isReadOnly = false,
@@ -43,14 +45,46 @@ const ContactsList: React.FC<ContactsListProps> = ({
   const { contactIndexList, contactMap } = useContact();
   const [list, setList] = useState<ContactIndexType[]>([]);
 
+  const chatContactIndexList = useMemo(() => {
+    return contactIndexList;
+    const _chatContactIndexList: ContactIndexType[] = [];
+
+    contactIndexList.map(ele => {
+      const chatList = ele.contacts.filter(contact => !!contact.imInfo);
+      if (chatList.length > 0) {
+        _chatContactIndexList.push({
+          contacts: chatList,
+          index: ele.index,
+        });
+      }
+    });
+
+    return _chatContactIndexList;
+  }, [contactIndexList]);
+
   const flashListData = useMemo<FlashItemType[]>(() => {
     let _flashListData: FlashItemType[] = [];
     list.forEach(contactIndex => {
       if (!contactIndex.contacts.length) return;
+
+      // if (justChatContact) {
+      //   // just chatContact
+      //   const indexContactList = contactIndex.contacts.filter(ele => !!ele.imInfo);
+      //   if (indexContactList.length > 0) {
+      //     _flashListData.push({
+      //       contacts: indexContactList,
+      //       index: contactIndex.index,
+      //     });
+      //     _flashListData = _flashListData.concat(indexContactList);
+      //   }
+      // } else {
+      if (!_flashListData) console.log('uuuuuu');
+
       _flashListData.push({
         ...contactIndex,
       });
       _flashListData = _flashListData.concat(contactIndex.contacts);
+      // }
     });
     return _flashListData;
   }, [list]);
@@ -125,7 +159,13 @@ const ContactsList: React.FC<ContactsListProps> = ({
 
   const isExistContact = useMemo<boolean>(() => list.reduce((pv, cv) => pv + cv.contacts.length, 0) > 0, [list]);
 
-  const indexList = useMemo(() => contactIndexList.filter(item => item.contacts.length), [contactIndexList]);
+  const indexList = useMemo(() => {
+    if (justChatContact) {
+      return chatContactIndexList;
+    } else {
+      return contactIndexList.filter(item => item.contacts.length);
+    }
+  }, [chatContactIndexList, contactIndexList, justChatContact]);
 
   return (
     <View style={[contactListStyles.listWrap, style]}>

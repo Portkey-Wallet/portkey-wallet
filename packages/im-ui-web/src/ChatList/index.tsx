@@ -59,23 +59,25 @@ const ChannelList: React.FC<IChatListProps> = ({ dataSource, hasMore = false, lo
     <div className={clsx('portkey-chat-list', props.className)}>
       {dataSource.map((x, i: number) =>
         isShowPopover ? (
-          <Popover
-            key={x.id}
-            overlayClassName="chat-item-popover"
-            placement="bottom"
-            trigger="contextMenu"
-            showArrow={false}
-            content={<PopoverMenuList data={getPopList(x) as any} />}>
-            <ChatItem
-              {...x}
-              key={x.id}
-              onContextMenu={(e: React.MouseEvent<HTMLElement>) => onContextMenu(x, i, e)}
-              onClick={(e: React.MouseEvent<HTMLElement>) => onClick(x, i, e)}
-              onClickPin={(e: React.MouseEvent<HTMLElement>) => onClickPin(x, i, e)}
-              onClickMute={(e: React.MouseEvent<HTMLElement>) => onClickMute(x, i, e)}
-              onClickDelete={(e: React.MouseEvent<HTMLElement>) => onClickDelete(x, i, e)}
-            />
-          </Popover>
+          <div style={{ position: 'relative' }} key={x.id}>
+            <Popover
+              key={`pop-${x.id}`}
+              overlayClassName="chat-item-popover"
+              placement="bottom"
+              trigger="contextMenu"
+              showArrow={false}
+              content={<PopoverMenuList data={getPopList(x) as any} />}>
+              <ChatItem
+                {...x}
+                key={x.id}
+                onContextMenu={(e: React.MouseEvent<HTMLElement>) => onContextMenu(x, i, e)}
+                onClick={(e: React.MouseEvent<HTMLElement>) => onClick(x, i, e)}
+                onClickPin={(e: React.MouseEvent<HTMLElement>) => onClickPin(x, i, e)}
+                onClickMute={(e: React.MouseEvent<HTMLElement>) => onClickMute(x, i, e)}
+                onClickDelete={(e: React.MouseEvent<HTMLElement>) => onClickDelete(x, i, e)}
+              />
+            </Popover>
+          </div>
         ) : (
           <ChatItem
             {...x}

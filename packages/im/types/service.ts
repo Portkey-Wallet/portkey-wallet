@@ -44,6 +44,17 @@ export type GetUserInfoDefaultResult = {
   avatar: string;
   name: string;
   relationId: string;
+  portkeyId: string;
+};
+
+export type GetOtherUserInfoDefaultResult = {
+  avatar: string;
+  name: string;
+  relationId: string;
+  portKeyId: string;
+  createdAt: string;
+  followCount: string;
+  addressWithChain: { address: string; chainName: string }[];
 };
 
 export type CreateChannelParams = {
@@ -140,11 +151,23 @@ export type HideChannelParams = {
   channelUuid: string;
 };
 
+export type AddStrangerParams = {
+  relationId: string;
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
-  verifySignatureLoop(params: VerifySignatureLoopParams, times?: number): IMServiceCommon<VerifySignatureResult>;
+  verifySignatureLoop(
+    params: VerifySignatureLoopParams,
+    checkIsContinue: () => boolean,
+    times?: number,
+  ): IMServiceCommon<VerifySignatureResult>;
   getAuthToken(params: GetAuthTokenParams): IMServiceCommon<GetAuthTokenResult>;
-  getAuthTokenLoop(params: GetAuthTokenParams, times?: number): IMServiceCommon<GetAuthTokenResult>;
+  getAuthTokenLoop(
+    params: GetAuthTokenParams,
+    checkIsContinue: () => boolean,
+    times?: number,
+  ): IMServiceCommon<GetAuthTokenResult>;
   getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
@@ -162,4 +185,5 @@ export interface IIMService {
   updateChannelPin(params: UpdateChannelPinParams): IMServiceCommon<null>;
   updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
+  addStranger(params: AddStrangerParams): IMServiceCommon<null>;
 }

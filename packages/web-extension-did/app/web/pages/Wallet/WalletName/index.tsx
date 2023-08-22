@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useWalletInfo } from 'store/Provider/hooks';
 import WalletNamePopup from './Popup';
 import WalletNamePrompt from './Prompt';
@@ -8,17 +8,36 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
 import { useProfileCopy } from 'hooks/useProfile';
 import { useTranslation } from 'react-i18next';
+import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 export default function WalletName() {
   const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigate();
   const isMainnet = useIsMainnet();
-  const { walletName } = useWalletInfo();
+  const { walletName, userId } = useWalletInfo();
+  const caAddressInfos = useCaAddressInfoList();
+  const transAddresses = useMemo(() => {
+    return caAddressInfos.map((item) => {
+      return { chainName: item.chainName, chainId: item.chainId, address: item.caAddress };
+    });
+  }, [caAddressInfos]);
+
   const { t } = useTranslation();
   const editText = t('Edit');
   const [type, setType] = useState<MyProfilePageType>(MyProfilePageType.VIEW);
   const title = useMemo(() => (isMainnet ? t('My DID') : walletName), [isMainnet, t, walletName]);
   const [headerTitle, setHeaderTitle] = useState(title);
+
+  const state: IProfileDetailDataProps = useMemo(
+    () => ({
+      index: walletName.substring(0, 1).toLocaleUpperCase(),
+      walletName: walletName,
+      addresses: transAddresses,
+      userId: userId,
+      isShowRemark: false,
+    }),
+    [transAddresses, userId, walletName],
+  );
 
   const showEdit = useCallback(() => {
     setHeaderTitle(editText);
@@ -35,19 +54,11 @@ export default function WalletName() {
     }
   }, [navigate, title, type]);
 
-  // TODO fetch profile
-  const state: IProfileDetailDataProps = {
-    index: 'B',
-    name: walletName,
-    addresses: [{ chainId: 'AELF', address: 'H8CXvfy8hm', chainName: 'aelf' }],
-    portkeyId: '111111',
-    relationId: '111',
-    isNameDisable: false,
-    isShowRemark: false,
-  };
-
   const handleCopy = useProfileCopy();
   const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);
+  const saveCallback = useCallback(() => {
+    setType(MyProfilePageType.VIEW);
+  }, []);
 
   return isNotLessThan768 ? (
     <WalletNamePrompt
@@ -58,6 +69,7 @@ export default function WalletName() {
       goBack={showView}
       handleEdit={showEdit}
       handleCopy={handleCopy}
+      saveCallback={saveCallback}
     />
   ) : (
     <WalletNamePopup
@@ -68,6 +80,7 @@ export default function WalletName() {
       goBack={goBack}
       handleEdit={showView}
       handleCopy={handleCopy}
+      saveCallback={saveCallback}
     />
   );
 }

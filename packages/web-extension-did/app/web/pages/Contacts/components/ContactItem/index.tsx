@@ -2,9 +2,9 @@ import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import './index.less';
 
 export interface IContactItemProps {
-  item: ContactItemType;
+  item: Partial<ContactItemType>;
   hasChatEntry?: boolean;
-  clickChat?: (e: any, item: ContactItemType) => void;
+  clickChat?: (e: any, item: Partial<ContactItemType>) => void;
 }
 
 export default function ContactItem({ item, hasChatEntry = true, clickChat }: IContactItemProps) {

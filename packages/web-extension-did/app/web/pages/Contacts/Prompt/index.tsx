@@ -19,6 +19,7 @@ export default function ContactsPrompt({
   initData,
   showImputation = false,
   closeImputationTip,
+  changeTab,
 }: IContactsProps) {
   return (
     <div className="flex contacts-prompt">
@@ -47,10 +48,7 @@ export default function ContactsPrompt({
           list={list}
           contactCount={contactCount}
           initData={initData}
-          portkeyChatCount={0}
-          portkeyChatInitData={initData}
-          portkeyChatList={[]}
-          isSearchPortkeyChat={false}
+          changeTab={changeTab}
         />
       </div>
       <Outlet />

@@ -1,17 +1,25 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { Popover, Upload, message } from 'antd';
-import { PopoverMenuList, MessageList, InputBar, StyleProvider } from '@portkey-wallet/im-ui-web';
+import { Modal, Popover, Upload, message } from 'antd';
+import { PopoverMenuList, MessageList, InputBar, StyleProvider, MessageType } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
 import PhotoSendModal from './components/PhotoSendModal';
-import { ImageMessageFileType, useChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  ImageMessageFileType,
+  useAddStranger,
+  useChannel,
+  useIsStranger,
+  useRelationId,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from './components/BookmarkListDrawer';
-import im from '@portkey-wallet/im';
 import { getPixel } from './utils';
+import { formatMessageTime } from '@portkey-wallet/utils/chat';
+import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import './index.less';
 
 enum MessageTypeWeb {
@@ -25,40 +33,88 @@ enum MessageTypeWeb {
 
 export default function Session() {
   const { channelUuid } = useParams();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [file, setFile] = useState<ImageMessageFileType>();
   const [previewImage, setPreviewImage] = useState<string>();
   const [showBookmark, setShowBookmark] = useState(false);
   const sendImgModalRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
-  // TODO
-  const isStranger = true;
+  const addContactApi = useAddStranger();
   const [showStrangerTip, setShowStrangerTip] = useState(true);
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
+  const isStranger = useIsStranger(info?.toRelationId || '');
   useEffectOnce(() => {
     init();
   });
-  const messageList: any = useMemo(() => {
-    return list.map((item) => {
-      return {
-        id: item.id,
+  const relationId = useRelationId();
+  const messageList: MessageType[] = useMemo(() => {
+    const formatList: MessageType[] = [];
+    let transItem: MessageType;
+    list.forEach((item, i) => {
+      transItem = {
+        id: `${item.id}`,
         // sendUuid: item.sendUuid, // TODO
         title: item.fromName,
-        position: item.from === im.userInfo?.relationId ? 'right' : 'left', // TODO '5h7d6-liaaa-aaaaj-vgmya-cai'
-        text: item.parsedContent,
+        position: item.from === relationId ? 'right' : 'left',
+        text: `${item.parsedContent}`,
         imgData:
           typeof item.parsedContent === 'object'
             ? {
                 ...item.parsedContent,
-                thumbImgUrl: decodeURIComponent(`${item.parsedContent.thumbImgUrl}`),
-                imgUrl: decodeURIComponent(`${item.parsedContent.imgUrl}`),
+                thumbImgUrl: decodeURIComponent(`${item.parsedContent.thumbImgUrl}`) || '',
+                imgUrl: decodeURIComponent(`${item.parsedContent.imgUrl}`) || '',
+                width: `${item?.parsedContent?.width}`,
+                height: `${item?.parsedContent?.height}`,
               }
             : {},
-        type: MessageTypeWeb[item.type],
+        type: MessageTypeWeb[item.type] || 'text',
+        date: new Date(item.createAt),
       };
+      if (i === 0) {
+        formatList.push(
+          {
+            id: `${item.createAt}`,
+            position: 'left',
+            date: new Date(item.createAt),
+            type: 'system',
+            text: formatMessageTime(item.createAt),
+          },
+          transItem,
+        );
+      } else {
+        if (dayjs(list[i - 1].createAt).isSame(item.createAt, 'day')) {
+          formatList.push(transItem);
+        } else {
+          formatList.push(
+            {
+              id: `${item.createAt}`,
+              position: 'left',
+              date: new Date(item.createAt),
+              type: 'system',
+              text: formatMessageTime(item.createAt),
+            },
+            transItem,
+          );
+        }
+      }
     });
-  }, [list]);
+    return formatList;
+  }, [list, relationId]);
+  const handleDel = useCallback(() => {
+    return Modal.confirm({
+      width: 320,
+      content: t('Delete chat?'),
+      className: 'chat-delete-modal',
+      autoFocusButton: null,
+      icon: null,
+      centered: true,
+      okText: t('Confirm'),
+      cancelText: t('Cancel'),
+      onOk: exit,
+    });
+  }, [exit, t]);
   const chatPopList = useMemo(
     () => [
       {
@@ -84,9 +140,9 @@ export default function Session() {
         key: 'delete',
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
-        onClick: exit,
+        onClick: handleDel,
       },
-      isStranger && {
+      {
         key: 'add-contact',
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Add Contact',
@@ -94,7 +150,7 @@ export default function Session() {
         onClick: () => navigate('/add-contact'),
       },
     ],
-    [exit, info?.mute, info?.pin, isStranger, mute, navigate, pin],
+    [handleDel, info?.mute, info?.pin, mute, navigate, pin],
   );
   const uploadProps = {
     className: 'chat-input-upload',
@@ -142,18 +198,25 @@ export default function Session() {
       sendImgModalRef?.current?.setLoading(false);
     }
   };
-  const handleAddContact = () => {
-    // TODO
-    // isStranger is true
+  const handleAddContact = async () => {
+    try {
+      const res = await addContactApi(info?.toRelationId || '');
+      console.log('===add stranger', res);
+      message.success('Contact added');
+    } catch (e) {
+      message.error('Add contact error');
+      console.log('===add stranger error', e);
+    }
   };
+
   return (
     <div className="chat-box-page flex-column">
       <div className="chat-box-top">
         <SettingHeader
           title={
             <div className="flex title-element">
-              <Avatar letterItem={info?.name?.slice(0, 1).toUpperCase()} />
-              <div className="name-text">{info?.name}</div>
+              <Avatar letterItem={info?.displayName?.slice(0, 1).toUpperCase()} />
+              <div className="name-text">{info?.displayName}</div>
               {info?.mute && <CustomSvg type="Mute" />}
             </div>
           }
@@ -164,7 +227,7 @@ export default function Session() {
                 overlayClassName="chat-box-popover"
                 trigger="click"
                 showArrow={false}
-                content={<PopoverMenuList data={chatPopList} />}>
+                content={<PopoverMenuList data={isStranger ? chatPopList : chatPopList.slice(0, -1)} />}>
                 <CustomSvg type="More" />
               </Popover>
               <CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />

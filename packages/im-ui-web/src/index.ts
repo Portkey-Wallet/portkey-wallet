@@ -10,7 +10,7 @@ import InputBar from './InputBar';
 import UnreadTip from './UnreadTip';
 import StyleProvider from './StyleProvider';
 
-// export * from './type.d';
+export * from './type';
 export {
   ChatList,
   TextMessage,

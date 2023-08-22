@@ -100,9 +100,11 @@ const ContactEdit: React.FC = () => {
     if (isEdit || chainList.length === 0) return;
     setEditContact(preEditContact => {
       const _editContact = { ...preEditContact };
+
       if (!addressList) {
         _editContact.addresses = [
           {
+            chainName: 'aelf',
             chainId: chainList[0].chainId,
             address: '',
             error: { ...INIT_HAS_ERROR },
@@ -112,6 +114,7 @@ const ContactEdit: React.FC = () => {
         _editContact.addresses = [];
         addressList.forEach(item => {
           _editContact.addresses.push({
+            chainName: 'aelf',
             chainId: chainMap[item.chainId]?.chainId || chainList[0].chainId,
             address: item.address,
             error: { ...INIT_HAS_ERROR },
@@ -228,6 +231,7 @@ const ContactEdit: React.FC = () => {
       }
     });
     if (isErrorExist) setEditContact(_editContact);
+
     return isErrorExist;
   }, [contactIndexList, editContact, t]);
 

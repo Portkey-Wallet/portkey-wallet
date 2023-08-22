@@ -14,7 +14,6 @@ import {
   addChannelMessage,
   updateChannelMessageAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
-
 import { useChannelItemInfo, useIMChannelMessageListNetMapState, useRelationId } from '.';
 import s3Instance from '@portkey-wallet/utils/s3';
 import { messageParser } from '@portkey-wallet/im/utils';
@@ -300,19 +299,19 @@ export const useChannel = (channelId: string) => {
     return next(true);
   }, [next]);
 
-  const errorHandler = useCallback(
+  const connectHandler = useCallback(
     async (e: any) => {
-      console.log('errorHandler', e);
+      console.log('connectHandler', e);
       try {
         await init();
       } catch (error) {
-        console.log('errorHandler:init error', error);
+        console.log('connectHandler:init error', error);
       }
     },
     [init],
   );
-  const errorHandlerRef = useRef(errorHandler);
-  errorHandlerRef.current = errorHandler;
+  const connectHandlerRef = useRef(connectHandler);
+  connectHandlerRef.current = connectHandler;
 
   const read = useCallback(() => {
     im.service.readMessage({ channelUuid: channelId, total: 9999 });
@@ -353,8 +352,8 @@ export const useChannel = (channelId: string) => {
     const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
       updateListRef.current(e);
     });
-    const { remove: removeErrorObserver } = im.registerErrorObserver(e => {
-      errorHandlerRef.current(e);
+    const { remove: removeConnectObserver } = im.registerConnectObserver(e => {
+      connectHandlerRef.current(e);
     });
 
     if (relationId) {
@@ -367,7 +366,7 @@ export const useChannel = (channelId: string) => {
 
     return () => {
       removeMsgObserver();
-      removeErrorObserver();
+      removeConnectObserver();
 
       if (relationId) {
         im.service.triggerMessageEvent({
@@ -508,6 +507,14 @@ export const useSearchChannel = () => {
       keyword,
       cursor: '',
       maxResultCount: SEARCH_CHANNEL_LIMIT,
+    });
+  }, []);
+};
+
+export const useAddStranger = () => {
+  return useCallback((relationId: string) => {
+    return im.service.addStranger({
+      relationId,
     });
   }, []);
 };

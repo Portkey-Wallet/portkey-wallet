@@ -1,7 +1,7 @@
 import RelationIM, { Im, config as relationConfig } from '@relationlabs/im';
 import * as utils from './utils';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { IMStatusEnum, Message, MessageCount, SocketMessage } from './types';
+import { IMStatusEnum, MessageCount, SocketMessage } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { IIMService } from './types/service';
 import { IMConfig } from './config';
@@ -16,7 +16,7 @@ export class IM {
 
   private _channelMsgObservers: Map<string, Map<Symbol, (e: any) => void>> = new Map();
   private _unreadMsgObservers: Map<Symbol, (e: any) => void> = new Map();
-  private _errorObservers: Map<Symbol, (e: any) => void> = new Map();
+  private _connectObservers: Map<Symbol, (e: any) => void> = new Map();
   private _msgCountObservers: Map<Symbol, (e: MessageCount) => void> = new Map();
   private _msgCount: MessageCount = {
     unreadCount: 0,
@@ -26,11 +26,6 @@ export class IM {
   private _caHash?: string;
 
   public status = IMStatusEnum.INIT;
-  public userInfo?: {
-    avatar: string;
-    name: string;
-    relationId: string;
-  };
 
   public config: IMConfig;
   public service: IIMService;
@@ -71,35 +66,34 @@ export class IM {
     try {
       const account = this._account;
       const caHash = this._caHash;
-      const { data: verifyResult } = await this.service.verifySignatureLoop(() => {
-        if (caHash !== this._caHash) return null;
-        return utils.getVerifyData(account, caHash);
-      });
+      const { data: verifyResult } = await this.service.verifySignatureLoop(
+        () => {
+          return utils.getVerifyData(account, caHash);
+        },
+        () => {
+          return caHash === this._caHash;
+        },
+      );
       const addressAuthToken = verifyResult.token;
-      const { data: autoResult } = await this.service.getAuthTokenLoop({
-        addressAuthToken,
-      });
+      const { data: autoResult } = await this.service.getAuthTokenLoop(
+        {
+          addressAuthToken,
+        },
+        () => {
+          return caHash === this._caHash;
+        },
+      );
 
       const token = autoResult.token;
-      if (caHash !== this._caHash) {
-        console.log('caHash changed');
-        return undefined;
-      }
       this.setAuthorization(token);
 
-      // TODO: remove test API_KEY
-      const API_KEY = '295edaae67724a8ba04f4f39b9221779';
-      this._imInstance = RelationIM.init({ token, apiKey: API_KEY, connect: true, refresh: true });
+      this._imInstance = RelationIM.init({ token, apiKey: undefined as any, connect: true, refresh: true });
       this.bindRelation(this._imInstance);
 
       this.status = IMStatusEnum.AUTHORIZED;
 
       this.refreshMessageCount();
-      if (this.userInfo) {
-        return this.userInfo;
-      }
       const { data: userInfo } = await this.service.getUserInfo();
-      this.userInfo = userInfo;
       return userInfo;
     } catch (error) {
       console.log('init error', error);
@@ -169,13 +163,14 @@ export class IM {
     };
   }
 
-  onConnectOk(_e: any) {
+  onConnectOk = (e: any) => {
     console.log('CONNECT_OK');
-  }
+    this.updateConnectObservers(e);
+  };
 
-  onConnectErr(e: any) {
+  onConnectErr = (e: any) => {
     console.log('CONNECT_ERR', e);
-  }
+  };
 
   onConnectClose = async (e: any) => {
     console.log('CONNECT_CLOSE msg', e);
@@ -184,10 +179,10 @@ export class IM {
       return;
     }
     this.bindOffRelation();
-    this.status = IMStatusEnum.INIT;
+
     await sleep(1000);
-    this.updateErrorObservers(e);
     try {
+      this.status = IMStatusEnum.INIT;
       this.initRelationIM();
     } catch (error) {
       console.log('initRelationIM error', error);
@@ -214,19 +209,19 @@ export class IM {
     }
   };
 
-  registerErrorObserver(cb: (e: any) => void) {
+  registerConnectObserver(cb: (e: any) => void) {
     const symbol = Symbol();
-    const errorObservers = this._errorObservers;
-    errorObservers.set(symbol, cb);
+    const connectObservers = this._connectObservers;
+    connectObservers.set(symbol, cb);
     return {
       remove: () => {
-        errorObservers.has(symbol) && errorObservers.delete(symbol);
+        connectObservers.has(symbol) && connectObservers.delete(symbol);
       },
     };
   }
 
-  updateErrorObservers(e: any) {
-    this._errorObservers.forEach(cb => {
+  updateConnectObservers(e: any) {
+    this._connectObservers.forEach(cb => {
       cb(e);
     });
   }
@@ -266,24 +261,34 @@ export class IM {
     const caHash = this._caHash;
     const {
       data: { token: addressAuthToken },
-    } = await this.service.verifySignatureLoop(() => {
-      if (caHash !== this._caHash) return null;
-      return utils.getVerifyData(account, caHash);
-    }, 5);
+    } = await this.service.verifySignatureLoop(
+      () => {
+        return utils.getVerifyData(account, caHash);
+      },
+      () => {
+        return caHash === this._caHash;
+      },
+      5,
+    );
 
     const {
       data: { token },
-    } = await this.service.getAuthTokenLoop({ addressAuthToken }, 5);
-    if (caHash !== this._caHash) {
-      throw new Error('account changed');
-    }
+    } = await this.service.getAuthTokenLoop(
+      { addressAuthToken },
+      () => {
+        return caHash === this._caHash;
+      },
+      5,
+    );
     this.setAuthorization(token);
   }
 
   private rewriteFetch() {
     const send = this.fetchRequest.send;
     this.fetchRequest.send = async (...args) => {
+      const caHash = this._caHash;
       const result = await send.apply(this.fetchRequest, args);
+      if (caHash !== this._caHash) throw new Error('account changed');
 
       if (IM_TOKEN_ERROR_ARRAY.includes(result.code)) {
         await this.refreshToken();
@@ -317,7 +322,7 @@ export class IM {
     this.config.setConfig({
       requestDefaults: {
         headers: {
-          ...this.config.requestDefaults?.headers,
+          ...this.config.requestConfig?.headers,
           'R-Authorization': `Bearer ${token}`,
         },
       },
@@ -331,6 +336,7 @@ export class IM {
   destroy() {
     console.log('destroy im', this._caHash);
     this.status = IMStatusEnum.DESTROY;
+    this.setAuthorization('invalid_authorization');
     this.bindOffRelation();
     this._msgCount = {
       unreadCount: 0,
@@ -338,10 +344,9 @@ export class IM {
     };
     this._account = undefined;
     this._caHash = undefined;
-    this.userInfo = undefined;
     this._unreadMsgObservers.clear();
     this._channelMsgObservers.clear();
-    this._errorObservers.clear();
+    this._connectObservers.clear();
     this._msgCountObservers.clear();
     this._imInstance && this._imInstance.destroy();
     this._imInstance = undefined;

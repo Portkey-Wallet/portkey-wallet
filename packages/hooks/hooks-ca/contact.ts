@@ -173,7 +173,7 @@ export const useLocalContactSearch = () => {
   return useCallback(
     (value: string, type: ContactsTab) => {
       if (!value) {
-        return [];
+        return { contactFilterList: [], contactIndexFilterList: [] };
       }
 
       // STEP 1
@@ -193,6 +193,7 @@ export const useLocalContactSearch = () => {
 
       // STEP 2
       const contactIndexFilterList: ContactIndexType[] = [];
+      const contactFilterList: ContactItemType[] = [];
       if (value.length <= 16) {
         filterList.forEach(({ index, contacts }) => {
           // Name search and Wallet Name search
@@ -231,7 +232,11 @@ export const useLocalContactSearch = () => {
           });
         });
       }
-      return contactIndexFilterList;
+      // flat contactIndexFilterList
+      contactIndexFilterList.forEach(({ contacts }) => {
+        contactFilterList.push(...contacts);
+      });
+      return { contactFilterList, contactIndexFilterList };
     },
     [contactIndexList],
   );

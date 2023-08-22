@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
@@ -41,6 +41,7 @@ export default function Session() {
   const sendImgModalRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
   const addContactApi = useAddStranger();
+  const [popVisible, setPopVisible] = useState(false);
   const [showStrangerTip, setShowStrangerTip] = useState(true);
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
@@ -48,6 +49,7 @@ export default function Session() {
   useEffectOnce(() => {
     init();
   });
+  console.log('info', info);
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => {
     const formatList: MessageType[] = [];
@@ -115,6 +117,16 @@ export default function Session() {
       onOk: exit,
     });
   }, [exit, t]);
+  const handleAddContact = useCallback(async () => {
+    try {
+      const res = await addContactApi(info?.toRelationId || '');
+      console.log('===add stranger', res);
+      message.success('Contact added');
+    } catch (e) {
+      message.error('Add contact error');
+      console.log('===add stranger error', e);
+    }
+  }, [addContactApi, info?.toRelationId]);
   const chatPopList = useMemo(
     () => [
       {
@@ -122,7 +134,8 @@ export default function Session() {
         leftIcon: <CustomSvg type="Profile" />,
         children: 'Profile',
         // TODO
-        onClick: () => navigate('/setting/contacts/view', { state: {} }),
+        onClick: () =>
+          navigate('/setting/contacts/view', { state: { name: info?.displayName, relationId: info?.toRelationId } }),
       },
       {
         key: info?.pin ? 'un-pin' : 'pin',
@@ -146,11 +159,10 @@ export default function Session() {
         key: 'add-contact',
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Add Contact',
-        // TODO
-        onClick: () => navigate('/add-contact'),
+        onClick: handleAddContact,
       },
     ],
-    [handleDel, info?.mute, info?.pin, mute, navigate, pin],
+    [handleAddContact, handleDel, info, mute, navigate, pin],
   );
   const uploadProps = {
     className: 'chat-input-upload',
@@ -198,17 +210,20 @@ export default function Session() {
       sendImgModalRef?.current?.setLoading(false);
     }
   };
-  const handleAddContact = async () => {
+  const hidePop = (e: any) => {
     try {
-      const res = await addContactApi(info?.toRelationId || '');
-      console.log('===add stranger', res);
-      message.success('Contact added');
+      if (e?.target?.className?.indexOf('chat-box-more') === -1) {
+        setPopVisible(false);
+      }
     } catch (e) {
-      message.error('Add contact error');
-      console.log('===add stranger error', e);
+      // TODO
+      console.log('e', e);
     }
   };
-
+  useEffect(() => {
+    document.addEventListener('click', hidePop);
+    return () => document.removeEventListener('click', hidePop);
+  }, []);
   return (
     <div className="chat-box-page flex-column">
       <div className="chat-box-top">
@@ -224,11 +239,19 @@ export default function Session() {
           rightElement={
             <div className="flex-center right-element">
               <Popover
+                open={popVisible}
                 overlayClassName="chat-box-popover"
                 trigger="click"
                 showArrow={false}
+                // onOpenChange={(visible) => {
+                //   console.log('visible', visible);
+                //   // setPopVisible(visible);
+                // }}
+                // onClick={() => setPopVisible(true)}
                 content={<PopoverMenuList data={isStranger ? chatPopList : chatPopList.slice(0, -1)} />}>
-                <CustomSvg type="More" />
+                <div className="chat-box-more" onClick={() => setPopVisible(true)}>
+                  <CustomSvg type="More" />
+                </div>
               </Popover>
               <CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />
             </div>

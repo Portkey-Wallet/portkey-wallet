@@ -6,18 +6,22 @@ import ChatOverlay from '../ChatOverlay';
 import ChatHomeListItemSwiped from '../ChatHomeListItemSwiper';
 import { ChannelItem } from '@portkey-wallet/im/types';
 import NoData from 'components/NoData';
-import { useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useChatsDispatch } from '../../context/hooks';
 import { setCurrentChannelId } from '../../context/chatsContext';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import useEffectOnce from 'hooks/useEffectOnce';
 
-type ChatListType = {
-  chatList: ChannelItem[];
-};
+export default function ChatList() {
+  const {
+    list: channelList,
+    init: initChannelList,
+    next: nextChannelList,
+    hasNext: hasNextChannelList,
+  } = useChannelList();
 
-export default function ChatList(props: ChatListType) {
-  const { chatList = [] } = props;
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
@@ -83,11 +87,28 @@ export default function ChatList(props: ChatListType) {
     [chatDispatch],
   );
 
+  const onEndReached = useLockCallback(async () => {
+    if (hasNextChannelList) await nextChannelList();
+  }, []);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     initChannelList();
+  //   }, [initChannelList]),
+  // );
+
+  useEffectOnce(() => {
+    initChannelList();
+  });
+
+  console.log('channelList', channelList);
+
   return (
     <FlatList
       style={BGStyles.bg1}
-      data={chatList}
+      data={channelList}
       ListEmptyComponent={<NoData icon="no-message" message="No message" />}
+      onEndReached={onEndReached}
       renderItem={({ item }) => (
         <ChatHomeListItemSwiped
           item={item}

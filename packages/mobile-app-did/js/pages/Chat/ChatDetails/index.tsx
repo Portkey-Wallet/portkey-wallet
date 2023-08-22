@@ -1,11 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { TextL } from 'components/CommonText';
-
 import Chats from '../components/Chats';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
@@ -17,7 +16,13 @@ import { FontStyles } from 'assets/theme/styles';
 import AddContactButton from '../components/AddContactButton';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { ChannelItem } from '@portkey-wallet/im/types';
-import { useMuteChannel, usePinChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useMuteChannel,
+  usePinChannel,
+  useHideChannel,
+  useChannelItemInfo,
+  useIsStranger,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
 
@@ -26,17 +31,23 @@ type RouterParams = {
 };
 
 const ChatDetails = () => {
-  const { channelInfo } = useRouterParams<RouterParams>();
-  const { mute, pin, displayName } = channelInfo || {};
+  const { channelInfo } = useRouterParams<RouterParams>() || {};
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const currentChannelId = useCurrentChannelId();
+  const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
 
-  // useEffectOnce(() => {
-  //   init();
-  // });
+  const displayName = useMemo(
+    () => currentChannelInfo?.displayName || channelInfo?.displayName,
+    [channelInfo?.displayName, currentChannelInfo?.displayName],
+  );
+  const pin = useMemo(() => currentChannelInfo?.pin || channelInfo?.pin, [channelInfo?.pin, currentChannelInfo?.pin]);
+  const mute = useMemo(
+    () => currentChannelInfo?.mute || channelInfo?.mute,
+    [channelInfo?.mute, currentChannelInfo?.mute],
+  );
 
   const onPressMore = useCallback(
     (event: { nativeEvent: { pageX: any; pageY: any } }) => {
@@ -59,7 +70,7 @@ const ChatDetails = () => {
             title: mute ? ChatOperationsEnum.UNMUTE : ChatOperationsEnum.MUTE,
             iconName: mute ? 'chat-unmute' : 'chat-mute',
             onPress: () => {
-              muteChannel(currentChannelId || '', !channelInfo?.channelUuid);
+              muteChannel(currentChannelId || '', !mute);
             },
           },
           {
@@ -90,7 +101,7 @@ const ChatDetails = () => {
         position: 'left',
       });
     },
-    [channelInfo?.channelUuid, currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel],
+    [currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel],
   );
 
   return (
@@ -100,6 +111,7 @@ const ChatDetails = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
+      leftCallback={() => navigationService.navigate('ChatHome')}
       leftDom={
         <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
           <Touchable style={GStyles.marginRight(pTd(20))} onPress={navigationService.goBack}>

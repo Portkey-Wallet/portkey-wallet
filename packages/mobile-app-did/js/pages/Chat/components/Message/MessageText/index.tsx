@@ -14,6 +14,7 @@ import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChatMessage } from 'pages/Chat/types';
 import { ShowChatPopoverParams } from '../../ChatOverlay/chatPopover';
 import isEqual from 'lodash/isEqual';
+import { copyText } from 'utils';
 
 const UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
@@ -41,7 +42,15 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
     <Touchable
       onLongPress={event => {
         const { pageX, pageY } = event.nativeEvent;
-        const list: ShowChatPopoverParams['list'] = [{ title: 'Copy', iconName: 'copy' }];
+        const list: ShowChatPopoverParams['list'] = [
+          {
+            title: 'Copy',
+            iconName: 'copy',
+            onPress: async () => {
+              await copyText(currentMessage?.content || '');
+            },
+          },
+        ];
         if (position === 'right')
           list.push({
             title: 'Delete',

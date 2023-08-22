@@ -3,16 +3,25 @@ import { StyleSheet, FlatList } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import ContactItem from 'components/ContactItem';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import navigationService from 'utils/navigationService';
 
 type SearchContactListSectionType = {
-  list: any[];
+  list: ContactItemType[];
 };
 
 const SearchContactListSection: React.FC<SearchContactListSectionType> = (props: SearchContactListSectionType) => {
   const { list } = props;
 
-  const renderItem = useCallback(({ item }: any) => {
-    return <ContactItem contact={item} />;
+  const renderItem = useCallback(({ item }: { item: ContactItemType }) => {
+    return (
+      <ContactItem
+        isShowChat={!!item?.imInfo?.relationId}
+        contact={item}
+        onPress={() => navigationService.navigate('ChatContactProfile')}
+        onPressChat={() => navigationService.navigate('ChatDetails')}
+      />
+    );
   }, []);
 
   return <FlatList data={list} renderItem={renderItem} />;

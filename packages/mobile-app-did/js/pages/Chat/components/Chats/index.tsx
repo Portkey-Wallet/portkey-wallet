@@ -1,14 +1,16 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import {
+  DayProps,
   GiftedChat,
   GiftedChatProps,
+  IMessage,
   MessageImageProps,
   MessageProps,
   MessageTextProps,
 } from 'react-native-gifted-chat';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
 import { randomId } from '@portkey-wallet/utils';
-import { ActivityIndicator, Keyboard } from 'react-native';
+import { ActivityIndicator, Keyboard, StyleSheet } from 'react-native';
 import { useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import CustomBubble from '../CustomBubble';
 import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../../context/chatsContext';
@@ -26,6 +28,8 @@ import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
 import ChatMessageContainer from '../Message';
 import { formatMessageList } from 'pages/Chat/utils/format';
+import SystemTime from '../SystemTime';
+import { defaultColors } from 'assets/theme';
 
 const Empty = () => null;
 
@@ -49,7 +53,6 @@ const ChatsUI = () => {
   const dispatch = useChatsDispatch();
 
   useEffectOnce(() => {
-    init();
     initChatInputRecorder();
     const timer = setTimeout(() => {
       setLoading(false);
@@ -76,6 +79,11 @@ const ChatsUI = () => {
 
   const renderMessageImage: GiftedChatProps['renderMessageImage'] = useCallback(
     (props: MessageImageProps<ChatMessage>) => <MessageImage {...(props as MessageProps<ChatMessage>)} />,
+    [],
+  );
+
+  const renderDay: GiftedChatProps['renderDay'] = useCallback(
+    (props: DayProps<IMessage>) => <SystemTime {...props} />,
     [],
   );
 
@@ -117,6 +125,7 @@ const ChatsUI = () => {
         ) : (
           <GiftedChat
             alignTop
+            messageIdGenerator={randomId}
             user={user}
             alwaysShowSend
             scrollToBottom
@@ -129,12 +138,13 @@ const ChatsUI = () => {
             minInputToolbarHeight={0}
             renderUsernameOnMessage={false}
             renderInputToolbar={Empty}
+            renderDay={renderDay}
             renderBubble={renderBubble}
             renderMessage={renderMessage}
             listViewProps={listViewProps}
-            messageIdGenerator={randomId}
             showAvatarForEveryMessage={true}
             isKeyboardInternallyHandled={true}
+            messagesContainerStyle={styles.messagesContainerStyle}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
           />
@@ -148,3 +158,8 @@ const ChatsUI = () => {
 export default function Chats() {
   return <ChatsUI />;
 }
+const styles = StyleSheet.create({
+  messagesContainerStyle: {
+    backgroundColor: defaultColors.bg1,
+  },
+});

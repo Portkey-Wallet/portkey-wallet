@@ -7,7 +7,7 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
-import { useAddContact, useCheckContactName } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useAddContact, useCheckContactName, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useIsTestnet } from 'hooks/useNetwork';
 import { IAddContactFormProps } from '../components/AddContactForm';
@@ -57,6 +57,7 @@ export default function AddContact() {
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [addressArr, setAddressArr] = useState<CustomAddressItem[]>(state?.addresses);
   const addContactApi = useAddContact();
+  const editContactApi = useEditContact();
   const checkExistNameApi = useCheckContactName();
   const { setLoading } = useLoading();
 
@@ -190,7 +191,15 @@ export default function AddContact() {
   const handleView = useGoProfile();
   const requestAddContact = useCallback(
     async (name: string, addresses: AddressItem[]) => {
-      const contactDetail = await addContactApi({ name: name.trim(), addresses });
+      let contactDetail = {} as ContactItemType;
+      if (extra === '2') {
+        // edit
+        contactDetail = await editContactApi({ name: name.trim(), addresses });
+      } else {
+        // add extra === '3'
+        contactDetail = await addContactApi({ name: name.trim(), addresses });
+      }
+
       appDispatch(fetchContactListAsync());
 
       if (contactDetail?.imInfo?.relationId) {

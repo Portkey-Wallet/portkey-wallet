@@ -19,7 +19,7 @@ import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '..
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 
-const REFRESH_DELAY_TIME = 1.5 * 1000;
+export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
 export const useAddContact = () => {
   const dispatch = useAppCommonDispatch();
@@ -276,5 +276,19 @@ export const useIsMyContact = () => {
       );
     },
     [contactPortkeyIdMap, contactRelationIdMap],
+  );
+};
+
+export const useGetProfile = () => {
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  return useCallback(
+    async ({ id, relationId }: { id: string; relationId: string }): Promise<ContactItemType> => {
+      const response = await request.contact.profile({
+        baseURL: currentNetworkInfo.apiUrl,
+        params: { id, relationId },
+      });
+      return response;
+    },
+    [currentNetworkInfo.apiUrl],
   );
 };

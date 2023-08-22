@@ -63,6 +63,7 @@ export default function EditContact() {
         const contactDetail = await editContactApi({
           name: remark.trim(),
           id: state.id,
+          relationId: state?.imInfo?.relationId,
         });
 
         appDispatch(fetchContactListAsync());
@@ -96,7 +97,7 @@ export default function EditContact() {
         setLoading(false);
       }
     },
-    [appDispatch, editContactApi, handleView, setLoading, state.id, t],
+    [appDispatch, editContactApi, handleView, setLoading, state, t],
   );
 
   // go back previous page

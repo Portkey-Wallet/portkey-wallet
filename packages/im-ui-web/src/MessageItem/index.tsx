@@ -12,7 +12,7 @@ const MessageItem: React.FC<MessageBoxType> = ({ styles, ...props }) => {
 
   return (
     <div
-      key={props.id}
+      key={props.key}
       style={{ position: 'relative' }}
       ref={messageRef}
       className={clsx('portkey-message-item', 'flex-column', props.className)}

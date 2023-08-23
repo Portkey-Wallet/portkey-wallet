@@ -110,6 +110,8 @@ export const useInitIM = () => {
 
   const initIm = useCallback(
     async (account: AElfWallet, caHash: string) => {
+      if (![IMStatusEnum.INIT, IMStatusEnum.DESTROY].includes(im.status)) return;
+
       if (isInitRef.current) return;
       isInitRef.current = true;
       const result = await im.init(account, caHash);

@@ -160,9 +160,10 @@ export default function Session() {
         key: 'profile',
         leftIcon: <CustomSvg type="Profile" />,
         children: 'Profile',
-        // TODO
         onClick: () =>
-          navigate('/setting/contacts/view', { state: { name: info?.displayName, relationId: info?.toRelationId } }),
+          navigate('/setting/contacts/view', {
+            state: { relationId: info?.toRelationId, from: 'chat-box', isStranger },
+          }),
       },
       {
         key: info?.pin ? 'un-pin' : 'pin',
@@ -189,7 +190,7 @@ export default function Session() {
         onClick: handleAddContact,
       },
     ],
-    [handleAddContact, handleDel, info, mute, navigate, pin],
+    [handleAddContact, handleDel, info?.mute, info?.pin, info?.toRelationId, isStranger, mute, navigate, pin],
   );
   const uploadProps = {
     className: 'chat-input-upload',

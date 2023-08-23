@@ -47,25 +47,31 @@ const TextMessage: React.FC<ITextMessageProps> = props => {
   }, []);
   return (
     <div className={clsx(['portkey-message-text', 'flex', props.position])}>
-      <Popover
-        open={popVisible}
-        overlayClassName={clsx(['message-text-popover', props.position])}
-        placement="bottom"
-        trigger="contextMenu"
-        onOpenChange={visible => setPopVisible(visible)}
-        showArrow={false}
-        content={
-          <PopoverMenuList
-            data={popoverList.filter(
-              pop => props.position === 'right' || (pop.key !== 'delete' && props.position === 'left'),
-            )}
-          />
-        }>
+      {props.subType === 'non-support-msg' ? (
         <div className={clsx(['text-body', 'flex', props.position])}>
           <div className="text-text">
-            {props.subType === 'non-text' ? (
-              <span className="non-text">[Not supported message]</span>
-            ) : (
+            <span className="non-support-msg">[Unsupported format]</span>
+            <span className="text-date-hidden">{showDate}</span>
+          </div>
+          <div className="text-date">{showDate}</div>
+        </div>
+      ) : (
+        <Popover
+          open={popVisible}
+          overlayClassName={clsx(['message-text-popover', props.position])}
+          placement="bottom"
+          trigger="contextMenu"
+          onOpenChange={visible => setPopVisible(visible)}
+          showArrow={false}
+          content={
+            <PopoverMenuList
+              data={popoverList.filter(
+                pop => props.position === 'right' || (props.position === 'left' && pop.key !== 'delete'),
+              )}
+            />
+          }>
+          <div className={clsx(['text-body', 'flex', props.position])}>
+            <div className="text-text">
               <ParsedText
                 parse={[
                   {
@@ -81,12 +87,12 @@ const TextMessage: React.FC<ITextMessageProps> = props => {
                 ]}>
                 {props.text}
               </ParsedText>
-            )}
-            <span className="text-date-hidden">{showDate}</span>
+              <span className="text-date-hidden">{showDate}</span>
+            </div>
+            <div className="text-date">{showDate}</div>
           </div>
-          <div className="text-date">{showDate}</div>
-        </div>
-      </Popover>
+        </Popover>
+      )}
     </div>
   );
 };

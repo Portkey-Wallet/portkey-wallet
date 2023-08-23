@@ -1,7 +1,7 @@
 import React from 'react';
-import './index.less';
 
 import { ISystemMessageProps } from '../type';
+import './index.less';
 
 const SystemMessage: React.FC<ISystemMessageProps> = props => {
   return (

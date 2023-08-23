@@ -670,21 +670,13 @@ export interface IUnreadTipProps {
 
 /**
  * MessageType Type
- * @type ILocationMessageProps
  * @type IImageMessageProps
- * @type IVideoMessageProps
- * @type ISpotifyMessageProps
- * @type IAudioMessageProps
- * @type IMeetingLinkMessageProps
- * @type IFileMessageProps
  * @type ITextMessageProps
  * @type ISystemMessageProps
- * @type IMeetingMessageProps
  */
 export type MessageType =
   | ({ type: 'image' } & IImageMessageProps)
   | ({ type: 'text' } & ITextMessageProps)
-  | ({ type: 'bookmark' } & ITextMessageProps)
   | ({ type: 'system' } & ISystemMessageProps);
 
 export type MessageBoxType = MessageType & IMessageBoxProps;

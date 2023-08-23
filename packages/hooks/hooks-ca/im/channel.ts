@@ -540,3 +540,13 @@ export const useAddStranger = () => {
     });
   }, []);
 };
+
+export const useCheckIsStranger = () => {
+  const contactRelationIdMap = useContactRelationIdMap();
+  return useCallback(
+    (relationId: string) => {
+      return !contactRelationIdMap?.[relationId];
+    },
+    [contactRelationIdMap],
+  );
+};

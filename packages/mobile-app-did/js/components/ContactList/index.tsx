@@ -18,7 +18,7 @@ import { ViewStyleType } from 'types/styles';
 import { getAddressInfo } from '@portkey-wallet/utils/aelf';
 import { transContactsToIndexes } from '@portkey-wallet/store/store-ca/contact/utils';
 import { useContact } from '@portkey-wallet/hooks/hooks-ca/contact';
-
+import { useJumpToChatDetails } from 'hooks/chat';
 interface ContactsListProps {
   justChatContact?: boolean;
   isIndexBarShow?: boolean;
@@ -44,6 +44,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
   const { t } = useLanguage();
   const { contactIndexList, contactMap } = useContact(!justChatContact);
   const [list, setList] = useState<ContactIndexType[]>([]);
+  const navToChatDetails = useJumpToChatDetails();
 
   const chatContactIndexList = useMemo(() => {
     const _chatContactIndexList: ContactIndexType[] = [];
@@ -156,7 +157,10 @@ const ContactsList: React.FC<ContactsListProps> = ({
             relationId: item?.imInfo?.relationId,
           });
         }}
-        onPressChat={() => navigationService.navigate('ChatDetails')}
+        onPressChat={() => {
+          if (!item?.imInfo?.relationId) return;
+          navToChatDetails({ toRelationId: item?.imInfo?.relationId || '' });
+        }}
       />
     );
   };

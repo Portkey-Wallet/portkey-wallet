@@ -14,9 +14,11 @@ import ProfilePortkeyIDSection from 'pages/My/components/ProfilePortkeyIDSection
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import useEffectOnce from 'hooks/useEffectOnce';
 import im from '@portkey-wallet/im';
-import { useAddStranger, useCreateP2pChannel, useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useAddStranger, useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { pTd } from 'utils/unit';
+import { useJumpToChatDetails } from 'hooks/chat';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -38,9 +40,10 @@ const ContactProfile: React.FC = () => {
   const { contact, relationId } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
   const [info, setInfo] = useState(contact);
-  const createChannel = useCreateP2pChannel();
   const addStranger = useAddStranger();
   const isStranger = useIsStranger(relationId || contact?.imInfo?.relationId || '');
+
+  const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
     if (relationId) {
@@ -63,16 +66,14 @@ const ContactProfile: React.FC = () => {
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <ScrollView alwaysBounceVertical={true}>
+      <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
         <ProfileHeaderSection name={info?.name || ''} />
         <ProfileHandleSection
           isAdded={!isStranger}
           onPressAdded={() => addStranger(relationId || '')}
           onPressChat={async () => {
             try {
-              const { data } = await createChannel(relationId || '');
-              console.log('data', data);
-              navigationService.navigate('ChatDetails', { channelId: data?.channelUuid });
+              navToChatDetail({ toRelationId: relationId || '' });
             } catch (error) {
               CommonToast.fail(handleErrorMessage(error));
             }
@@ -102,5 +103,8 @@ export const pageStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: defaultColors.bg4,
     ...GStyles.paddingArg(24, 20, 18),
+  },
+  scrollWrap: {
+    paddingBottom: pTd(200),
   },
 });

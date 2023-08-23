@@ -20,7 +20,6 @@ import {
   useHideChannel,
   useChannelItemInfo,
   useIsStranger,
-  useAddStranger,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
@@ -30,6 +29,7 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import Loading from 'components/Loading';
+import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 const ChatDetails = () => {
   const dispatch = useAppCommonDispatch();
@@ -37,7 +37,7 @@ const ChatDetails = () => {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
-  const addStranger = useAddStranger();
+  const addStranger = useAddStrangerContact();
 
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');

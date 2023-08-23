@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { FlatList, GestureResponderEvent } from 'react-native';
-import navigationService from 'utils/navigationService';
 import { BGStyles } from 'assets/theme/styles';
 import ChatOverlay from '../ChatOverlay';
 import ChatHomeListItemSwiped from '../ChatHomeListItemSwiper';
@@ -9,10 +8,9 @@ import NoData from 'components/NoData';
 import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { useChatsDispatch } from '../../context/hooks';
-import { setCurrentChannelId } from '../../context/chatsContext';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { useJumpToChatDetails } from 'hooks/chat';
 
 export default function ChatList() {
   const {
@@ -25,7 +23,7 @@ export default function ChatList() {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
-  const chatDispatch = useChatsDispatch();
+  const navToChatDetails = useJumpToChatDetails();
 
   const onHideChannel = useCallback(
     async (item: ChannelItem) => {
@@ -79,29 +77,13 @@ export default function ChatList() {
     [muteChannel, onHideChannel, pinChannel],
   );
 
-  const navToDetail = useCallback(
-    (item: ChannelItem) => {
-      chatDispatch(setCurrentChannelId(item.channelUuid));
-      navigationService.navigate('ChatDetails', { channelInfo: item });
-    },
-    [chatDispatch],
-  );
-
   const onEndReached = useLockCallback(async () => {
     if (hasNextChannelList) await nextChannelList();
   }, []);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     initChannelList();
-  //   }, [initChannelList]),
-  // );
-
   useEffectOnce(() => {
     initChannelList();
   });
-
-  console.log('channelList', channelList);
 
   return (
     <FlatList
@@ -113,7 +95,7 @@ export default function ChatList() {
         <ChatHomeListItemSwiped
           item={item}
           onDelete={() => onHideChannel(item)}
-          onPress={() => navToDetail(item)}
+          onPress={() => navToChatDetails({ toRelationId: item?.toRelationId, channelUuid: item?.channelUuid })}
           onLongPress={event => longPress(event, item)}
         />
       )}

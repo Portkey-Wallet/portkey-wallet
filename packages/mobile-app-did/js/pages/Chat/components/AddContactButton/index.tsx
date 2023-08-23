@@ -22,6 +22,7 @@ export default function AddContactButton(props: AddContactButtonPropsType) {
 
   return (
     <Touchable
+      activeOpacity={0.9}
       style={[GStyles.flexRow, GStyles.flexCenter, GStyles.itemCenter, styles.wrap]}
       onPress={() => onPressButton?.()}>
       <Svg size={pTd(20)} icon="chat-find-more" color={defaultColors.font4} />

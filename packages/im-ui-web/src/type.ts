@@ -138,6 +138,7 @@ export interface IDefaultProps {
  * @prop reply The Message's reply and optional.
  */
 export interface IMessage {
+  key: string;
   id: string | number;
   position: string;
   text: string;

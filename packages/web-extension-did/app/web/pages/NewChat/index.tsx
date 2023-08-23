@@ -49,11 +49,9 @@ export default function ChatListSearch() {
         setLoading(false);
       }
     },
-    [filterWord],
+    [],
     500,
   );
-  console.log('===chatList', chatList);
-
   const handleClickChat = useCallback(
     async (e: any, item: Partial<ContactItemType>) => {
       e.stopPropagation();

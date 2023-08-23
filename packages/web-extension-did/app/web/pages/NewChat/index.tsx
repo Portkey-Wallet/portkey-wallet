@@ -90,7 +90,7 @@ export default function ChatListSearch() {
       </div>
       <div className="new-chat-content">
         {chatList.length === 0 ? (
-          <div className="empty flex-center">{filterWord ? `No search result` : `No contact found`}</div>
+          <div className="empty flex-center">{filterWord ? `No contact found` : `No contact`}</div>
         ) : (
           <div className="search-result-list">
             <ContactList

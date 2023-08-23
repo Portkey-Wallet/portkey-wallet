@@ -26,12 +26,6 @@ type RouterParams = {
   contact?: ContactItemType;
 };
 
-const defaultContact = {
-  id: '',
-  name: '',
-  address: [],
-};
-
 const ChatContactProfileEdit: React.FC = () => {
   const { contact } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
@@ -47,8 +41,9 @@ const ChatContactProfileEdit: React.FC = () => {
     if (!isValidName) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
     try {
       Loading.show();
-      await editContact({ ...defaultContact, ...contact, name: remark });
+      await editContact({ name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' });
       CommonToast.success(t('Saved Successful'));
+      // TODO: navigate
       Loading.hide();
     } catch (e) {
       Loading.hide();

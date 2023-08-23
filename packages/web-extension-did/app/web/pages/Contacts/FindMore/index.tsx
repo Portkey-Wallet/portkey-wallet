@@ -39,17 +39,7 @@ export default function FindMore() {
   const createChannel = useCreateP2pChannel();
 
   const headerTitle = 'Find More';
-  const [contact, setContact] = useState({});
-  // mock data
-  // {
-  //   index: 'B',
-  //   name: 'by',
-  //   addresses: [{ chainId: 'AELF' as ChainId, address: 'H8CXvfy' }],
-  //   userId: '3fe8e56b',
-  //   isDeleted: false,
-  //   modificationTime: 1684829521408,
-  //   id: '0be66c93',
-  // },
+  const [contact, setContact] = useState<Partial<ContactItemType>>({});
 
   const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
@@ -66,7 +56,15 @@ export default function FindMore() {
       if (res?.data?.portkeyId === userId) {
         message.error('Unable to add yourself as a contact');
       } else {
-        setContact({ ...res?.data, index: res?.data?.name?.substring(0, 1).toLocaleUpperCase() });
+        setContact({
+          ...res?.data,
+          index: res?.data?.name?.substring(0, 1).toLocaleUpperCase(),
+          name: res?.data?.name,
+          imInfo: {
+            relationId: res?.data.portkeyId,
+            portkeyId: res?.data.relationId,
+          },
+        });
         setIsAdded(!!contactRelationIdMap?.[res?.data?.relationId]);
         setIsSearch(true);
       }
@@ -100,7 +98,7 @@ export default function FindMore() {
       } else {
         try {
           // TODO data structure
-          const res = await createChannel(item?.relationId);
+          const res = await createChannel(item?.imInfo?.relationId || '');
           navigate(`/chat-box/${res.data.channelUuid}`);
         } catch (e) {
           console.log('===createChannel error', e);

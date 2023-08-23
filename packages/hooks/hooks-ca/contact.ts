@@ -52,6 +52,7 @@ export const useAddStrangerContact = () => {
       setTimeout(() => {
         dispatch(fetchContactListAsync());
       }, REFRESH_DELAY_TIME);
+      return response;
     },
     [addStranger, dispatch],
   );
@@ -189,19 +190,20 @@ export const useLocalContactSearch = () => {
 
   return useCallback(
     (value: string, type: ContactsTab) => {
+      const notEmptyList = contactIndexList.filter(item => item?.contacts?.length > 0);
       if (!value) {
         const temp: ContactItemType[] = [];
-        contactIndexList.forEach(({ contacts }) => {
+        notEmptyList.forEach(({ contacts }) => {
           temp.push(...contacts);
         });
-        return { contactFilterList: temp, contactIndexFilterList: contactIndexList };
+        return { contactFilterList: temp, contactIndexFilterList: notEmptyList };
       }
 
       // STEP 1
       let filterList: ContactIndexType[] = [];
       if (type === ContactsTab.Chats) {
         // search can chat
-        contactIndexList.forEach(({ index, contacts }) => {
+        notEmptyList.forEach(({ index, contacts }) => {
           filterList.push({
             index,
             contacts: contacts.filter(contact => contact.imInfo?.portkeyId),
@@ -209,7 +211,7 @@ export const useLocalContactSearch = () => {
         });
       } else {
         // search all
-        filterList = contactIndexList;
+        filterList = notEmptyList;
       }
 
       // STEP 2
@@ -293,19 +295,5 @@ export const useIsMyContact = () => {
       );
     },
     [contactPortkeyIdMap, contactRelationIdMap],
-  );
-};
-
-export const useGetProfile = () => {
-  const currentNetworkInfo = useCurrentNetworkInfo();
-  return useCallback(
-    async ({ id, relationId }: { id: string; relationId: string }): Promise<ContactItemType> => {
-      const response = await request.contact.profile({
-        baseURL: currentNetworkInfo.apiUrl,
-        params: { id, relationId },
-      });
-      return response;
-    },
-    [currentNetworkInfo.apiUrl],
   );
 };

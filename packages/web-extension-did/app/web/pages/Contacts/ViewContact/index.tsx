@@ -2,21 +2,23 @@ import ViewContactPrompt from './Prompt';
 import ViewContactPopup from './Popup';
 import { useLocation, useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
+import { useCallback, useEffect, useState } from 'react';
+import { useCommonState } from 'store/Provider/hooks';
 import { useProfileChat, useProfileCopy, useGoProfileEdit } from 'hooks/useProfile';
 import CustomModal from 'pages/components/CustomModal';
 import {
   REFRESH_DELAY_TIME,
-  useGetProfile,
+  useAddStrangerContact,
+  useContactRelationIdMap,
   useIsMyContact,
   useReadImputation,
 } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { useAddStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { message } from 'antd';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import im from '@portkey-wallet/im';
+import { useEffectOnce } from 'react-use';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -25,48 +27,59 @@ export default function ViewContact() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isMyContactFn = useIsMyContact();
-  const { userId } = useWalletInfo();
-  const getProfile = useGetProfile();
-  const [data, setData] = useState(state);
+  const contactRelationIdMap = useContactRelationIdMap();
+
+  // unified data structure
+  const [data, setData] = useState({
+    ...state,
+    index: state?.index || state.name?.substring(0, 1).toLocaleUpperCase(),
+    name: state.name,
+    imInfo: {
+      relationId: state?.portkeyId || state?.imInfo?.portkeyId,
+      portkeyId: state?.relationId || state?.imInfo?.relationId,
+    },
+  });
 
   const title = t('Details');
   const editText = t('Edit');
   const chatText = t('Chat');
   const addedText = t('Added');
   const addContactText = t('Add Contact');
-  const portkeyId = useMemo(
-    () => data?.userId || (data?.portkeyId && data.portkeyId) || (data?.imInfo && data.imInfo?.portkeyId),
-    [data.imInfo, data.portkeyId, data?.userId],
-  );
 
-  const relationId = useMemo(
-    () => (data?.relationId && data.relationId) || (data?.imInfo && data.imInfo?.relationId),
-    [data.imInfo, data.relationId],
-  );
-
-  useEffect(() => {
-    const isMyContact = isMyContactFn({
-      userId: portkeyId,
-      relationId: relationId,
-    });
-    const isMy = portkeyId === userId;
-    if (!isMy && !isMyContact) {
-      // need fetch profile
-      const res = getProfile({ id: data?.id, relationId: relationId });
-      setData(res);
+  useEffectOnce(() => {
+    // ================== case one ==================
+    // Cant chat (no relationId), display data directly
+    // Because it jumped from contacts page only
+    if (!data?.imInfo?.relationId) {
+      setData(state);
     }
-  }, [
-    getProfile,
-    isMyContactFn,
-    data?.id,
-    data.imInfo.relationId,
-    data.portkeyId,
-    data.relationId,
-    data.userId,
-    userId,
-    portkeyId,
-    relationId,
-  ]);
+
+    // ================== case two ==================
+    // Can chat, and is my contact, need to get full info from local map;
+    // Because it jumped from the chat-box, the data is incomplete
+    const isMyContact = isMyContactFn({
+      userId: data?.imInfo?.portkeyId,
+      relationId: data?.imInfo?.relationId,
+    });
+    if (data?.imInfo?.relationId && isMyContact) {
+      const info = contactRelationIdMap?.[data?.imInfo?.relationId];
+      setData(info);
+    }
+
+    // ================== case three ==================
+    // Can chat, and is stranger, need to get full info from remote db;
+    // Because it jumped from the chat-box or find-more, the data is incomplete
+    if (!isMyContact) {
+      try {
+        im.service.getProfile({ id: data?.id, relationId: data?.imInfo?.relationId }).then((res) => {
+          setData(res);
+        });
+      } catch (error) {
+        const err = handleErrorMessage(error, 'get profile error');
+        message.error(err);
+      }
+    }
+  });
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {
@@ -82,10 +95,10 @@ export default function ViewContact() {
   const handleChat = useProfileChat();
   const handleCopy = useProfileCopy();
 
-  const addStranger = useAddStranger();
+  const addStrangerApi = useAddStrangerContact();
   const handleAdd = async () => {
     try {
-      const res = await addStranger(data?.imInfo?.relationId || data?.relationId);
+      const res = await addStrangerApi(data?.imInfo?.relationId || data?.relationId);
       setData(res.data);
 
       setTimeout(() => {
@@ -126,7 +139,7 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit(portkeyId ? '1' : '2', data)}
+      handleEdit={() => handleEdit(data?.imInfo?.portkeyId ? '1' : '2', data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data)}
       handleCopy={handleCopy}
@@ -140,7 +153,7 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit(portkeyId ? '1' : '2', data)}
+      handleEdit={() => handleEdit(data?.imInfo?.portkeyId ? '1' : '2', data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data)}
       handleCopy={handleCopy}

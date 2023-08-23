@@ -28,14 +28,16 @@ export default function ViewContactBody({
   const [isMyContact, setIsMyContact] = useState(false);
 
   useEffect(() => {
-    setIsMyContact(isMyContactFn({ userId: data?.userId, relationId: data?.relationId }));
-  }, [data?.relationId, data?.userId, isMyContactFn]);
+    setIsMyContact(isMyContactFn({ userId: data?.userId, relationId: data?.relationId || '' }));
+  }, [data, isMyContactFn]);
 
   return (
     <div className="flex-column-between view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
-          <div className="flex-center name-index">{data.index}</div>
+          {/* todo 默认index */}
+          <div className="flex-center name-index">{data?.index}</div>
+          {/* todo 数据结构定义成一样的 */}
           <div className="name">{data?.walletName || data?.caHolderInfo?.walletName || ''}</div>
 
           {/* Section - Remark */}
@@ -66,7 +68,7 @@ export default function ViewContactBody({
                 <span>{addContactText}</span>
               </div>
             )}
-            {isShowChatBtn && showChat && data.userId && (
+            {isShowChatBtn && showChat && data?.userId && (
               <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
                 <CustomSvg type="ContactChat" />
                 <span>{chatText}</span>
@@ -77,9 +79,10 @@ export default function ViewContactBody({
 
         <IdAndAddress
           portkeyId={data?.userId}
-          relationId={data?.userId}
+          relationId={data?.relationId || ''}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
+          addressSectionLabel={isMyContact ? 'DID' : 'Address'}
         />
       </div>
 

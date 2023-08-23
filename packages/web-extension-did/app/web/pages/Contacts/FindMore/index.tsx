@@ -101,7 +101,7 @@ export default function FindMore() {
         try {
           // TODO data structure
           const res = await createChannel(item?.relationId);
-          navigate(`/chat-box/${res.data.channelUuid}`);
+          navigate(`/chat-box/${res.channelUuid}`);
         } catch (e) {
           console.log('===createChannel error', e);
           message.error('cannot chat');

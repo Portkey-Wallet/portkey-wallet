@@ -1,4 +1,4 @@
-import im, { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
+import im, { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 import { useCallback, useMemo, useRef } from 'react';
 
 import { CHANNEL_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
@@ -120,10 +120,14 @@ export const useChannelItemInfo = (channelId: string) => {
 
 export const useCreateP2pChannel = () => {
   const { networkType } = useCurrentNetworkInfo();
+  const { rawList } = useChannelList();
   const dispatch = useAppCommonDispatch();
 
   const createChannel = useCallback(
     async (relationId: string) => {
+      let channel = rawList.find(item => item.toRelationId === relationId);
+      if (channel) return channel;
+
       const result = await im.service.createChannel({
         name: '',
         type: ChannelTypeEnum.P2P,
@@ -131,51 +135,54 @@ export const useCreateP2pChannel = () => {
       });
 
       const channelUuid = result.data.channelUuid;
-      if (channelUuid)
-        dispatch(
-          addChannel({
-            network: networkType,
-            channel: {
-              status: ChannelStatusEnum.NORMAL,
-              channelUuid,
-              displayName: '',
-              channelIcon: '',
-              channelType: ChannelTypeEnum.P2P,
-              unreadMessageCount: 0,
-              mentionsCount: 0,
-              lastMessageType: null,
-              lastMessageContent: null,
-              lastPostAt: null,
-              mute: false,
-              pin: false,
-              toRelationId: relationId,
-            },
-          }),
-        );
+      channel = {
+        status: ChannelStatusEnum.NORMAL,
+        channelUuid,
+        displayName: '',
+        channelIcon: '',
+        channelType: ChannelTypeEnum.P2P,
+        unreadMessageCount: 0,
+        mentionsCount: 0,
+        lastMessageType: null,
+        lastMessageContent: null,
+        lastPostAt: null,
+        mute: false,
+        pin: false,
+        toRelationId: relationId,
+      };
+      dispatch(
+        addChannel({
+          network: networkType,
+          channel,
+        }),
+      );
 
-      try {
-        const { data: channelInfo } = await im.service.getChannelInfo({
-          channelUuid,
-        });
-        console.log('createChannel channelInfo: ', channelInfo);
-        dispatch(
-          updateChannelAttribute({
-            network: networkType,
-            channelId: channelUuid,
-            value: {
-              displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
-              channelIcon: channelInfo.icon,
-              mute: channelInfo.mute,
-              pin: channelInfo.pin,
-            },
-          }),
-        );
-      } catch (error) {
-        console.log('createChannel error: ', error);
-      }
-      return result;
+      (async () => {
+        try {
+          const { data: channelInfo } = await im.service.getChannelInfo({
+            channelUuid,
+          });
+          console.log('createChannel channelInfo: ', channelInfo);
+          dispatch(
+            updateChannelAttribute({
+              network: networkType,
+              channelId: channelUuid,
+              value: {
+                displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
+                channelIcon: channelInfo.icon,
+                mute: channelInfo.mute,
+                pin: channelInfo.pin,
+              },
+            }),
+          );
+        } catch (error) {
+          console.log('createChannel error: ', error);
+        }
+      })();
+
+      return channel;
     },
-    [dispatch, networkType],
+    [dispatch, networkType, rawList],
   );
   return createChannel;
 };

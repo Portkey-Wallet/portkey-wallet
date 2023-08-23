@@ -15,8 +15,8 @@ export function useJumpToChatDetails() {
         if (channelUuid) {
           chatDispatch(setCurrentChannelId(channelUuid || ''));
         } else {
-          const { data } = await createChannel(toRelationId || '');
-          chatDispatch(setCurrentChannelId(data?.channelUuid || ''));
+          const channelInfo = await createChannel(toRelationId || '');
+          chatDispatch(setCurrentChannelId(channelInfo.channelUuid || ''));
         }
         navigationService.navigate('ChatDetails');
       } catch (error) {

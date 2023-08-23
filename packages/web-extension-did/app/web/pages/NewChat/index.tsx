@@ -58,7 +58,7 @@ export default function ChatListSearch() {
       try {
         const res = await createChannel(item?.imInfo?.relationId || '');
         console.log('===create channel res', res, 'item', item);
-        navigate(`/chat-box/${res.data.channelUuid}`);
+        navigate(`/chat-box/${res.channelUuid}`);
       } catch (e) {
         console.log('===create channel error', e);
         message.error('create channel error');

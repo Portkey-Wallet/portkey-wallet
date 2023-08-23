@@ -65,7 +65,8 @@ const ContactProfile: React.FC = () => {
       titleDom="Details"
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: true }}
+      hideTouchable={true}>
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
         <ProfileHeaderSection name={info?.name || ''} />
         <ProfileHandleSection
@@ -85,7 +86,7 @@ const ContactProfile: React.FC = () => {
       {!isStranger && (
         <CommonButton
           type="primary"
-          containerStyle={GStyles.paddingTop(16)}
+          containerStyle={pageStyles.btnWrap}
           onPress={async () => {
             navigationService.navigate('ChatContactProfileEdit', { contact });
           }}>
@@ -102,9 +103,14 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(24, 20, 18),
+    ...GStyles.paddingArg(24, 0, 18),
   },
   scrollWrap: {
     paddingBottom: pTd(200),
+    paddingHorizontal: pTd(20),
+  },
+  btnWrap: {
+    paddingTop: pTd(16),
+    paddingHorizontal: pTd(20),
   },
 });

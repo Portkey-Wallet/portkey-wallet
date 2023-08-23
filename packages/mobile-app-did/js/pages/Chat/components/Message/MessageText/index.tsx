@@ -18,7 +18,7 @@ import { copyText } from 'utils';
 
 const UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
-  : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+  : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
 const WWW_URL_PATTERN = /^www\./i;
 
 function MessageText(props: MessageTextProps<ChatMessage>) {

@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { screenHeight, screenWidth, windowHeight } from '@portkey-wallet/utils/mobile/device';
 import OverlayModal, { CustomBounds } from 'components/OverlayModal';
-import { ImageProps, StyleSheet } from 'react-native';
+import { ImageProps, Keyboard, StyleSheet } from 'react-native';
 import CacheImage from 'components/CacheImage';
 import GStyles from 'assets/theme/GStyles';
 import TransformView from 'rn-teaset/components/TransformView/TransformView';
@@ -58,11 +58,13 @@ export function showPreviewImage({
 }: {
   customBounds: CustomBounds;
 } & PreviewImageProps) {
+  Keyboard.dismiss();
   OverlayModal.show(<PreviewImage width={width} height={height} thumb={thumb} source={source} />, {
     customBounds: customBounds,
     position: 'center',
     style: styles.overlayStyle,
     containerStyle: styles.overlayStyle,
+    overlayOpacity: 0.8,
   });
 }
 

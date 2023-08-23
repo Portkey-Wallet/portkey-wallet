@@ -13,6 +13,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useContactRelationIdMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { getAddressInfo } from '@portkey-wallet/utils/aelf';
+import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export interface IFindMoreProps extends BaseHeaderProps {
   myPortkeyId: string;
@@ -35,6 +36,7 @@ export default function FindMore() {
   const contactRelationIdMap = useContactRelationIdMap();
   const [isAdded, setIsAdded] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
+  const createChannel = useCreateP2pChannel();
 
   const headerTitle = 'Find More';
   const [contact, setContact] = useState({});
@@ -86,7 +88,7 @@ export default function FindMore() {
   };
 
   const handleChat = useCallback(
-    (e: any, item: Partial<ContactItemType>) => {
+    async (e: any, item: Partial<ContactItemType>) => {
       e.stopPropagation();
 
       if (isPrompt) {
@@ -96,10 +98,17 @@ export default function FindMore() {
           ),
         });
       } else {
-        navigate('/setting/contacts/view', { state: item });
+        try {
+          // TODO data structure
+          const res = await createChannel(item?.relationId);
+          navigate(`/chat-box/${res.data.channelUuid}`);
+        } catch (e) {
+          console.log('===createChannel error', e);
+          message.error('cannot chat');
+        }
       }
     },
-    [isPrompt, navigate],
+    [createChannel, isPrompt, navigate],
   );
 
   return isNotLessThan768 ? (

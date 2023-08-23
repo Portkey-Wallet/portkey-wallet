@@ -6,9 +6,10 @@ import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
-import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useCreateP2pChannel, useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import ContactList from 'pages/Contacts/components/ContactList';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { message } from 'antd';
 import './index.less';
 
 export default function ChatListSearch() {
@@ -19,6 +20,7 @@ export default function ChatListSearch() {
   const { setLoading } = useLoading();
   const [chatList, setChatList] = useState<ContactItemType[]>([]);
   const searchChannel = useSearchChannel();
+  const createChannel = useCreateP2pChannel();
 
   const handleSearch = useCallback(
     async (keyword: string) => {
@@ -59,6 +61,18 @@ export default function ChatListSearch() {
     [filterWord],
     500,
   );
+  const handleClick = useCallback(
+    async (item: ContactItemType) => {
+      try {
+        const res = await createChannel(item?.imInfo?.relationId || '');
+        console.log('res', res);
+        navigate(`/chat-box/${res.data.channelUuid}`);
+      } catch (e) {
+        message.error('cannot chat');
+      }
+    },
+    [createChannel, navigate],
+  );
 
   return (
     <div className="chat-list-search-page flex-column">
@@ -93,7 +107,7 @@ export default function ChatListSearch() {
         ) : (
           <div className="search-result-list">
             <div className="chat-title-text">Chats</div>
-            <ContactList hasChatEntry={false} list={chatList} clickItem={(item) => navigate(`/chat-box/${item.id}`)} />
+            <ContactList hasChatEntry={false} list={chatList} clickItem={handleClick} />
           </div>
         )}
       </div>

@@ -8,16 +8,17 @@ import Input from '../ChatInput';
 import './index.less';
 
 interface IInputBar {
+  maxlength?: number;
   moreData?: IPopoverMenuListData[];
   showEmoji?: boolean;
   onSendMessage: (v: string) => void;
 }
 
-export default function InputBar({ moreData, showEmoji = true, onSendMessage, ...props }: IInputBar) {
+export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxlength = 300, ...props }: IInputBar) {
   console.log(props);
   const [showEmojiIcon, setShowEmojiIcon] = useState(false);
   const [value, setValue] = useState('');
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [popVisible, setPopVisible] = useState(false);
   const clearPop = (e: any) => {
     try {
@@ -58,7 +59,13 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
           <div className="input-emoji">
             <div className="show-icon flex">
               {emojiList.map(item => (
-                <div className="icon flex-center" key={item.name} onClick={() => setValue(value + item.code)}>
+                <div
+                  className="icon flex-center"
+                  key={item.name}
+                  onClick={() => {
+                    setValue(value + item.code);
+                    inputRef.current?.focus();
+                  }}>
                   {item.code}
                 </div>
               ))}
@@ -89,7 +96,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ..
               value={value}
               multiline={true}
               maxHeight={140}
-              maxlength={300}
+              maxlength={maxlength}
               onChange={handleChange}
               onFocus={() => setShowEmojiIcon(false)}
               onKeyDown={handleEnterKeyDown}

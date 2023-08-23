@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     fontSize: pTd(16),
     lineHeight: pTd(24),
     marginVertical: pTd(8),
-    marginLeft: pTd(12),
+    marginHorizontal: pTd(12),
   },
   linkStyle: {
     color: defaultColors.font4,

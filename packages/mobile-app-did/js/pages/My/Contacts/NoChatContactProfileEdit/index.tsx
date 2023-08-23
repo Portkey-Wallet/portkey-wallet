@@ -46,7 +46,6 @@ type CustomChainItemType = ChainItemType & {
 
 const initEditContact: EditContactType = {
   id: '',
-  index: '',
   name: '',
   error: { ...INIT_HAS_ERROR },
   addresses: [],

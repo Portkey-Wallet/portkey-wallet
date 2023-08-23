@@ -40,26 +40,33 @@ export default function ChatListSearch() {
 
   const searchDebounce = useDebounceCallback(
     async (params) => {
-      setLoading(true);
-      await handleSearch(params);
-      setLoading(false);
+      try {
+        setLoading(true);
+        await handleSearch(params);
+      } catch (e) {
+        console.log('===handleSearch error', e);
+      } finally {
+        setLoading(false);
+      }
     },
     [filterWord],
     500,
   );
+  console.log('===chatList', chatList);
+
   const handleClickChat = useCallback(
     async (e: any, item: Partial<ContactItemType>) => {
       e.stopPropagation();
       try {
         const res = await createChannel(item?.imInfo?.relationId || '');
-        console.log('res', res);
-        // console.log('createChannel', res.data.channelUuid);
-        // navigate(`/chat-box/${res.data.channelUuid}`);
+        console.log('===create channel res', res, 'item', item);
+        navigate(`/chat-box/${res.data.channelUuid}`);
       } catch (e) {
-        message.error('cannot chat');
+        console.log('===create channel error', e);
+        message.error('create channel error');
       }
     },
-    [createChannel],
+    [createChannel, navigate],
   );
 
   return (

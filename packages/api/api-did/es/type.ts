@@ -22,5 +22,4 @@ export interface IGetContactListParams {
   size: number;
   modificationTime: string;
   keyword?: string;
-  isAbleChat?: boolean;
 }

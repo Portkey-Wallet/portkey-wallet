@@ -151,7 +151,10 @@ const ContactsList: React.FC<ContactsListProps> = ({
         contact={item}
         isShowChat={!!item.imInfo?.relationId}
         onPress={() => {
-          navigationService.navigate('NoChatContactProfile', { contact: item });
+          navigationService.navigate(item.imInfo?.relationId ? 'ChatContactProfile' : 'NoChatContactProfile', {
+            contact: item,
+            relationId: item?.imInfo?.relationId,
+          });
         }}
         onPressChat={() => navigationService.navigate('ChatDetails')}
       />

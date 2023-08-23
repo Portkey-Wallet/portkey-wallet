@@ -4,7 +4,7 @@ import { IGetContactListParams } from '../type';
 
 export const getContactList = (
   baseURL: string,
-  { page, size, modificationTime, keyword, isAbleChat = false }: IGetContactListParams,
+  { page, size, modificationTime, keyword }: IGetContactListParams,
 ): Promise<GetContractListApiType> => {
   return request.es.getContactList({
     baseURL,
@@ -15,21 +15,13 @@ export const getContactList = (
       skipCount: (page - 1) * size,
       maxResultCount: size,
       keyword,
-      isAbleChat,
     },
   });
 };
 
 export const getContactEventList = (
   baseURL: string,
-  {
-    page,
-    size,
-    modificationTime,
-    fetchTime,
-    keyword,
-    isAbleChat = false,
-  }: IGetContactListParams & { fetchTime: string },
+  { page, size, modificationTime, fetchTime, keyword }: IGetContactListParams & { fetchTime: string },
 ): Promise<GetContractListApiType> => {
   return request.es.getContactList({
     baseURL,
@@ -40,7 +32,6 @@ export const getContactEventList = (
       skipCount: (page - 1) * size,
       maxResultCount: size,
       keyword,
-      isAbleChat,
     },
   });
 };

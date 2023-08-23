@@ -8,7 +8,7 @@ import { useState } from 'react';
 interface PhotoSendModalProps {
   open: boolean;
   url: string;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
   onCancel: () => void;
 }
 
@@ -27,6 +27,7 @@ const ImageSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSend
 
   return (
     <CommonModal
+      destroyOnClose
       className="portkey-image-send-modal"
       closable={false}
       width={320}

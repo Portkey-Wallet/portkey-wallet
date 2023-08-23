@@ -2,6 +2,7 @@ import {
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
+  ContactItemType,
   Message,
   MessageCount,
   TriggerMessageEventActionEnum,
@@ -155,6 +156,11 @@ export type AddStrangerParams = {
   relationId: string;
 };
 
+export type GetProfileParams = {
+  relationId: string;
+  id?: string;
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -185,5 +191,6 @@ export interface IIMService {
   updateChannelPin(params: UpdateChannelPinParams): IMServiceCommon<null>;
   updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
-  addStranger(params: AddStrangerParams): IMServiceCommon<null>;
+  addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
+  getProfile(params: GetProfileParams): IMServiceCommon<null>;
 }

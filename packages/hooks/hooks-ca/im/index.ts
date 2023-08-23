@@ -1,4 +1,4 @@
-import im, { ChannelStatusEnum, ChannelTypeEnum, SocketMessage } from '@portkey-wallet/im';
+import im, { ChannelStatusEnum, ChannelTypeEnum, IMStatusEnum, SocketMessage } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppCASelector } from '../.';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
@@ -140,6 +140,10 @@ export const useRelationId = () => {
   const relationIdNetMap = useIMRelationIdNetMapNetMapState();
 
   return useMemo(() => relationIdNetMap?.[networkType], [networkType, relationIdNetMap]);
+};
+
+export const useIsIMReady = () => {
+  return [IMStatusEnum.AUTHORIZED, IMStatusEnum.CONNECTED].includes(im.status);
 };
 
 export * from './channelList';

@@ -40,13 +40,13 @@ const ImageMessage: React.FC<IImageMessageProps> = props => {
           <div className="image-error">
             <CustomSvg type="ImgErr" />
           </div>
-        ) : (
+        ) : props.position === 'right' ? (
           <>
             <Popover
               open={popVisible}
               onOpenChange={v => setPopVisible(v)}
-              overlayClassName={clsx(['message-item-popover', props.position])}
-              placement={props.position === 'left' ? 'right' : 'left'}
+              overlayClassName={clsx(['message-image-popover', props.position])}
+              placement="bottom"
               trigger="contextMenu"
               showArrow={false}
               content={<PopoverMenuList data={popoverList} />}>
@@ -58,6 +58,16 @@ const ImageMessage: React.FC<IImageMessageProps> = props => {
               />
               <div className="image-date">{showDate}</div>
             </Popover>
+          </>
+        ) : (
+          <>
+            <Image
+              width={imageSize.width}
+              height={imageSize.height}
+              src={thumbImgUrl || imgUrl}
+              onError={() => setLoadErr(true)}
+            />
+            <div className="image-date">{showDate}</div>
           </>
         )}
       </div>

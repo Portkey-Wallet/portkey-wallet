@@ -68,7 +68,7 @@ export default function ViewContactBody({
                 <span>{addContactText}</span>
               </div>
             )}
-            {isShowChatBtn && showChat && data?.userId && (
+            {isShowChatBtn && showChat && !isStranger && (
               <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
                 <CustomSvg type="ContactChat" />
                 <span>{chatText}</span>
@@ -78,7 +78,7 @@ export default function ViewContactBody({
         </div>
 
         <IdAndAddress
-          portkeyId={data?.userId}
+          portkeyId={data?.caHolderInfo?.userId}
           relationId={data?.relationId || ''}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}

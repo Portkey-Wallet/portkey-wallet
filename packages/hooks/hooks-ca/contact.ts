@@ -234,7 +234,7 @@ export const useLocalContactSearch = () => {
         filterList.forEach(({ index, contacts }) => {
           contactIndexFilterList.push({
             index,
-            contacts: contacts.filter(contact => contact.userId.trim() === value.trim()),
+            contacts: contacts.filter(contact => contact?.caHolderInfo?.userId.trim() === value.trim()),
           });
         });
         // Address search

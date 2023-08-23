@@ -5,7 +5,7 @@ import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 export type ExtraType = '1' | '2' | '3'; // '1' can chat, '2' cont chat , '3' no status（add new chat）
 
 export interface IProfileDetailDataProps {
-  caHolderInfo?: CaHolderInfo;
+  caHolderInfo?: Partial<CaHolderInfo>;
   walletName?: string;
   name?: string;
   userId?: string;

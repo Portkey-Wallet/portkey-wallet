@@ -32,7 +32,8 @@ export default function WalletName() {
     () => ({
       index: walletName.substring(0, 1).toLocaleUpperCase(),
       walletName: walletName,
-      addresses: transAddresses,
+      addresses: transAddresses, // TODO fetch profile for chain image
+      caHolderInfo: { userId: userId },
       userId: userId,
       isShowRemark: false,
     }),

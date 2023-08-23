@@ -12,6 +12,7 @@ import {
   GetChannelListParams,
   GetChannelListResult,
   GetMessageListParams,
+  GetProfileParams,
   GetUserInfoDefaultResult,
   GetUserInfoParams,
   HideChannelParams,
@@ -192,6 +193,14 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   addStranger(params: AddStrangerParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/contacts/stranger',
+      params,
+      method: 'POST',
+    });
+  }
+
+  getProfile(params: GetProfileParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/contacts/profile',
       params,
       method: 'POST',
     });

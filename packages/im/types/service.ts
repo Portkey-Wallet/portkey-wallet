@@ -155,6 +155,11 @@ export type AddStrangerParams = {
   relationId: string;
 };
 
+export type GetProfileParams = {
+  relationId: string;
+  id?: string;
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -186,4 +191,5 @@ export interface IIMService {
   updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
   addStranger(params: AddStrangerParams): IMServiceCommon<null>;
+  getProfile(params: GetProfileParams): IMServiceCommon<null>;
 }

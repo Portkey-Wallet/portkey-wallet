@@ -22,9 +22,16 @@ import {
   useHideChannel,
   useChannelItemInfo,
   useIsStranger,
+  useAddStranger,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
+import CommonToast from 'components/CommonToast';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import Loading from 'components/Loading';
 
 type RouterParams = {
   channelInfo?: ChannelItem;
@@ -32,13 +39,21 @@ type RouterParams = {
 
 const ChatDetails = () => {
   const { channelInfo } = useRouterParams<RouterParams>() || {};
+  const dispatch = useAppCommonDispatch();
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
+  const addStranger = useAddStranger();
+
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
 
+  const toRelationId = useMemo(
+    () => currentChannelInfo?.toRelationId || channelInfo?.toRelationId,
+    [channelInfo?.toRelationId, currentChannelInfo?.toRelationId],
+  );
+  const isStranger = useIsStranger(currentChannelInfo?.toRelationId || channelInfo?.toRelationId || '');
   const displayName = useMemo(
     () => currentChannelInfo?.displayName || channelInfo?.displayName,
     [channelInfo?.displayName, currentChannelInfo?.displayName],
@@ -57,7 +72,14 @@ const ChatDetails = () => {
           {
             title: ChatOperationsEnum.PROFILE,
             iconName: 'chat-profile',
-            onPress: () => navigationService.navigate('ChatContactProfile'),
+            onPress: () => {
+              navigationService.navigate('ChatContactProfile', {
+                relationId: toRelationId,
+                contact: {
+                  name: currentChannelInfo?.displayName,
+                },
+              });
+            },
           },
           {
             title: pin ? ChatOperationsEnum.UNPIN : ChatOperationsEnum.PIN,
@@ -87,8 +109,16 @@ const ChatDetails = () => {
                   {
                     title: 'Confirm',
                     type: 'primary',
-                    onPress: () => {
-                      hideChannel(currentChannelId || '');
+                    onPress: async () => {
+                      try {
+                        Loading.show();
+                        await hideChannel(currentChannelId || '');
+                        Loading.hide();
+                        navigationService.navigate('Tab');
+                      } catch (error) {
+                        Loading.hide();
+                        console.log(error);
+                      }
                     },
                   },
                 ],
@@ -98,11 +128,21 @@ const ChatDetails = () => {
         ],
         px: pageX,
         py: pageY,
-        position: 'left',
+        formatType: 'dynamicWidth',
       });
     },
-    [currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel],
+    [currentChannelId, currentChannelInfo?.displayName, hideChannel, mute, muteChannel, pin, pinChannel, toRelationId],
   );
+
+  const addContact = useLockCallback(async () => {
+    try {
+      await addStranger(toRelationId || '');
+      CommonToast.success('Add Success');
+      dispatch(fetchContactListAsync());
+    } catch (error) {
+      CommonToast.fail(handleErrorMessage(error));
+    }
+  }, [addStranger, dispatch, toRelationId]);
 
   return (
     <PageContainer
@@ -129,7 +169,7 @@ const ChatDetails = () => {
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
-      <AddContactButton />
+      <AddContactButton isStranger={isStranger} onPressButton={addContact} />
       <Chats />
     </PageContainer>
   );

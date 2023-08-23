@@ -18,6 +18,7 @@ import {
 import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '../index';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { useAddStranger } from './im';
 
 export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
@@ -37,6 +38,22 @@ export const useAddContact = () => {
       return response;
     },
     [currentNetworkInfo.apiUrl, dispatch],
+  );
+};
+
+export const useAddStrangerContact = () => {
+  const dispatch = useAppCommonDispatch();
+  const addStranger = useAddStranger();
+  return useCallback(
+    async (relationId: string) => {
+      const response = await addStranger(relationId);
+
+      dispatch(addContactAction(response.data));
+      setTimeout(() => {
+        dispatch(fetchContactListAsync());
+      }, REFRESH_DELAY_TIME);
+    },
+    [addStranger, dispatch],
   );
 };
 

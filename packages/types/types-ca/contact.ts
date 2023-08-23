@@ -1,6 +1,6 @@
+import { IImInfo } from '@portkey-wallet/im';
 import { ChainId } from '..';
 import { CaHolderInfo } from './wallet';
-import { IImInfo } from './im';
 
 export interface AddressItem {
   chainId: ChainId; // AELF tDVV tDVW

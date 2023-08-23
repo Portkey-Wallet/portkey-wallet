@@ -11,6 +11,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useJumpToChatDetails } from 'hooks/chat';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ChatList() {
   const {
@@ -24,6 +25,12 @@ export default function ChatList() {
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const navToChatDetails = useJumpToChatDetails();
+  useFocusEffect(
+    useCallback(() => {
+      console.log('initChannelList');
+      initChannelList();
+    }, [initChannelList]),
+  );
 
   const onHideChannel = useCallback(
     async (item: ChannelItem) => {

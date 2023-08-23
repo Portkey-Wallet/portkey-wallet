@@ -68,7 +68,7 @@ const ContactProfile: React.FC = () => {
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}>
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
-        <ProfileHeaderSection name={info?.name || ''} />
+        <ProfileHeaderSection name={info?.name || info?.caHolderInfo?.walletName || info?.imInfo?.name || ''} />
         <ProfileHandleSection
           isAdded={!isStranger}
           onPressAdded={() => addStranger(relationId || info?.imInfo?.relationId || '')}

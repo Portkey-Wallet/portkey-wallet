@@ -66,7 +66,7 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
   });
   const onSend = useCallback(async () => {
     dispatch(setChatText(''));
-    sendChannelMessage(text);
+    typeof text === 'string' && sendChannelMessage(text.trim());
     chatInputRecorder?.reset();
   }, [dispatch, sendChannelMessage, text]);
   return (

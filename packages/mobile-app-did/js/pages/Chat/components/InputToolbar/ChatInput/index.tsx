@@ -19,6 +19,7 @@ import { chatInputRecorder } from 'pages/Chat/utils';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { defaultColors } from 'assets/theme';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 export interface ChatInput extends TextInput {
   focus: (autoHide?: boolean) => void;
 }
@@ -57,6 +58,7 @@ const ChatInput = forwardRef(function Input(props: TextInputProps, _ref) {
       value={text}
       ref={_ref as any}
       style={styles.input}
+      maxLength={MAX_INPUT_LENGTH}
       onChangeText={onChangeText}
       onSelectionChange={onSelectionChange}
       {...props}

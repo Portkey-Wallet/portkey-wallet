@@ -44,6 +44,8 @@ const ChatDetails = () => {
 
   const isStranger = useIsStranger(currentChannelInfo?.toRelationId || '');
 
+  console.log('isStranger', isStranger);
+
   const toRelationId = useMemo(() => currentChannelInfo?.toRelationId, [currentChannelInfo?.toRelationId]);
   const displayName = useMemo(() => currentChannelInfo?.displayName, [currentChannelInfo?.displayName]);
   const pin = useMemo(() => currentChannelInfo?.pin, [currentChannelInfo?.pin]);
@@ -136,10 +138,12 @@ const ChatDetails = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
-      leftCallback={() => navigationService.navigate('ChatHome')}
+      leftCallback={() => {
+        navigationService.navigate('Tab');
+      }}
       leftDom={
         <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-          <Touchable style={GStyles.marginRight(pTd(20))} onPress={navigationService.goBack}>
+          <Touchable style={GStyles.marginRight(pTd(20))} onPress={() => navigationService.navigate('Tab')}>
             <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
           </Touchable>
           <CommonAvatar title={displayName} avatarSize={pTd(32)} style={styles.headerAvatar} />

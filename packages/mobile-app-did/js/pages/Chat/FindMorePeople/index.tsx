@@ -17,14 +17,12 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
-import { useContactList } from '@portkey-wallet/hooks/hooks-ca/contact';
 import navigationService from 'utils/navigationService';
+import { useJumpToChatDetails } from 'hooks/chat';
 
 const FindMorePeople = () => {
   const { userId } = useWallet();
-  const contactList = useContactList();
-
-  console.log('contactList', contactList);
+  const navToChatDetails = useJumpToChatDetails();
 
   const [keyword, setKeyword] = useState('');
   // const [, setLoading] = useState(false);
@@ -80,13 +78,15 @@ const FindMorePeople = () => {
           isShowChat
           isShowContactIcon={isMyContact}
           isShowWarning={item.isImputation}
-          onPressChat={() => navigationService.navigate('ChatDetails', { channelInfo: item })}
-          onPress={() => navigationService.navigate('ChatContactProfile', { contact: item })}
+          onPressChat={() => navToChatDetails({ toRelationId: item.toRelationId })}
+          onPress={() =>
+            navigationService.navigate('ChatContactProfile', { contact: item, relationId: item.toRelationId })
+          }
           contact={item}
         />
       );
     },
-    [isMyContact],
+    [isMyContact, navToChatDetails],
   );
 
   return (

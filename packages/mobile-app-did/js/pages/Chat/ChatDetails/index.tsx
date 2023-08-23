@@ -14,8 +14,6 @@ import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat'
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import AddContactButton from '../components/AddContactButton';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { ChannelItem } from '@portkey-wallet/im/types';
 import {
   useMuteChannel,
   usePinChannel,
@@ -33,12 +31,7 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import Loading from 'components/Loading';
 
-type RouterParams = {
-  channelInfo?: ChannelItem;
-};
-
 const ChatDetails = () => {
-  const { channelInfo } = useRouterParams<RouterParams>() || {};
   const dispatch = useAppCommonDispatch();
 
   const pinChannel = usePinChannel();
@@ -49,20 +42,12 @@ const ChatDetails = () => {
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
 
-  const toRelationId = useMemo(
-    () => currentChannelInfo?.toRelationId || channelInfo?.toRelationId,
-    [channelInfo?.toRelationId, currentChannelInfo?.toRelationId],
-  );
-  const isStranger = useIsStranger(currentChannelInfo?.toRelationId || channelInfo?.toRelationId || '');
-  const displayName = useMemo(
-    () => currentChannelInfo?.displayName || channelInfo?.displayName,
-    [channelInfo?.displayName, currentChannelInfo?.displayName],
-  );
-  const pin = useMemo(() => currentChannelInfo?.pin || channelInfo?.pin, [channelInfo?.pin, currentChannelInfo?.pin]);
-  const mute = useMemo(
-    () => currentChannelInfo?.mute || channelInfo?.mute,
-    [channelInfo?.mute, currentChannelInfo?.mute],
-  );
+  const isStranger = useIsStranger(currentChannelInfo?.toRelationId || '');
+
+  const toRelationId = useMemo(() => currentChannelInfo?.toRelationId, [currentChannelInfo?.toRelationId]);
+  const displayName = useMemo(() => currentChannelInfo?.displayName, [currentChannelInfo?.displayName]);
+  const pin = useMemo(() => currentChannelInfo?.pin, [currentChannelInfo?.pin]);
+  const mute = useMemo(() => currentChannelInfo?.mute, [currentChannelInfo?.mute]);
 
   const onPressMore = useCallback(
     (event: { nativeEvent: { pageX: any; pageY: any } }) => {

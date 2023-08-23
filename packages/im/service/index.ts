@@ -202,7 +202,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
     return this._request.send({
       url: '/api/v1/contacts/profile',
       params,
-      method: 'POST',
+      method: 'GET',
     });
   }
 }

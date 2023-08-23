@@ -523,12 +523,13 @@ export const useHideChannel = () => {
 };
 
 export const useSearchChannel = () => {
-  return useCallback((keyword: string) => {
-    return im.service.getChannelList({
+  return useCallback(async (keyword: string) => {
+    const { data } = await im.service.getChannelList({
       keyword,
       cursor: '',
       maxResultCount: SEARCH_CHANNEL_LIMIT,
     });
+    return data?.list?.filter(ele => ele?.lastMessageContent) || [];
   }, []);
 };
 

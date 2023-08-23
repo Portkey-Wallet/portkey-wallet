@@ -23,6 +23,17 @@ type RouterParams = {
   contact?: ContactItemType;
 };
 
+const initEditContact: ContactItemType = {
+  id: '',
+  name: '',
+  addresses: [],
+  index: '',
+  modificationTime: 0,
+  isDeleted: false,
+  userId: '',
+  isImputation: false,
+};
+
 const ContactProfile: React.FC = () => {
   const { contact, relationId } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
@@ -34,8 +45,8 @@ const ContactProfile: React.FC = () => {
   const getProfile = useCallback(async () => {
     if (relationId) {
       try {
-        const result = await im.service.getProfile({ relationId });
-        console.log('getProfile', result);
+        const { data } = await im.service.getProfile({ relationId });
+        setInfo(pre => ({ ...initEditContact, ...pre, ...(data || {}) }));
       } catch (error) {
         console.log(error);
       }

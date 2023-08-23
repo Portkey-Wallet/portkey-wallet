@@ -71,16 +71,25 @@ export const contactSlice = createSlice({
         let _contactIndexList = [...state.contactIndexList];
         _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
         state.contactIndexList = sortContactIndexList(_contactIndexList);
+        state.contactMap = transIndexesToContactMap(state.contactIndexList);
+        state.contactPortkeyIdMap = transIndexesToContactPortkeyIdMap(state.contactIndexList);
+        state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
       })
       .addCase(editContactAction, (state, action) => {
         let _contactIndexList = [...state.contactIndexList];
         _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
         state.contactIndexList = sortContactIndexList(_contactIndexList);
+        state.contactMap = transIndexesToContactMap(state.contactIndexList);
+        state.contactPortkeyIdMap = transIndexesToContactPortkeyIdMap(state.contactIndexList);
+        state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
       })
       .addCase(deleteContactAction, (state, action) => {
         let _contactIndexList = [...state.contactIndexList];
         _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
         state.contactIndexList = sortContactIndexList(_contactIndexList);
+        state.contactMap = transIndexesToContactMap(state.contactIndexList);
+        state.contactPortkeyIdMap = transIndexesToContactPortkeyIdMap(state.contactIndexList);
+        state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
       })
       .addCase(resetContact, state => {
         state.contactIndexList = getInitContactIndexList();

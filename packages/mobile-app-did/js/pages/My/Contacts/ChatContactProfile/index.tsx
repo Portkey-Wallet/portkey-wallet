@@ -75,9 +75,6 @@ const ContactProfile: React.FC = () => {
           type="primary"
           containerStyle={GStyles.paddingTop(16)}
           onPress={async () => {
-            const channelId = await createChannel(relationId || contact?.imInfo?.relationId || '');
-            console.log('channelId', channelId);
-
             navigationService.navigate('ChatContactProfileEdit', { contact });
           }}>
           {t('Edit')}

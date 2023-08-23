@@ -18,12 +18,14 @@ import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from './components/BookmarkListDrawer';
 import { getPixel } from './utils';
 import { formatMessageTime } from '@portkey-wallet/utils/chat';
-import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { MessageTypeWeb } from 'types/im';
 import { sleep } from '@portkey-wallet/utils';
-import { useAppDispatch } from 'store/Provider/hooks';
+import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { REFRESH_DELAY_TIME } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { isSameDay } from '@portkey-wallet/utils/time';
+import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import './index.less';
 
 export default function Session() {
@@ -42,10 +44,11 @@ export default function Session() {
     useChannel(`${channelUuid}`);
   const isStranger = useIsStranger(info?.toRelationId || '');
   const dispatch = useAppDispatch();
+  const { setLoading } = useLoading();
   useEffectOnce(() => {
     init();
   });
-  console.log('message-list', list);
+  console.log('message-list', list, 'info', info);
 
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => {
@@ -95,7 +98,7 @@ export default function Session() {
           transItem,
         );
       } else {
-        if (dayjs(list[i - 1].createAt).isSame(item.createAt, 'day')) {
+        if (isSameDay(list[i - 1].createAt, item.createAt)) {
           formatList.push(transItem);
         } else {
           formatList.push(
@@ -111,6 +114,8 @@ export default function Session() {
         }
       }
     });
+    console.log('formatList', formatList);
+
     return formatList;
   }, [list, relationId]);
   const handleDel = useCallback(() => {
@@ -123,25 +128,32 @@ export default function Session() {
       centered: true,
       okText: t('Confirm'),
       cancelText: t('Cancel'),
-      onOk: () => {
-        exit();
-        navigate('/chat-list');
+      onOk: async () => {
+        try {
+          await exit();
+          navigate('/chat-list');
+        } catch (e) {
+          console.log('===delete chat error', e);
+          message.error('delete error');
+        }
       },
     });
   }, [exit, navigate, t]);
   const handleAddContact = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await addContactApi(info?.toRelationId || '');
-      console.log('===add stranger', res);
+      console.log('===add stranger res', res, 'info', info);
       message.success('Contact added');
-      // TODO
-      await sleep(100);
+      await sleep(REFRESH_DELAY_TIME);
       dispatch(fetchContactListAsync());
     } catch (e) {
       message.error('Add contact error');
       console.log('===add stranger error', e);
+    } finally {
+      setLoading(false);
     }
-  }, [addContactApi, dispatch, info?.toRelationId]);
+  }, [addContactApi, dispatch, info, setLoading]);
   const chatPopList = useMemo(
     () => [
       {
@@ -222,6 +234,7 @@ export default function Session() {
     } catch (e) {
       console.log('===send image error', e);
       message.error('Failed to send message');
+    } finally {
       sendImgModalRef?.current?.setLoading(false);
     }
   };
@@ -265,7 +278,9 @@ export default function Session() {
                 overlayClassName="chat-box-popover"
                 trigger="click"
                 showArrow={false}
-                content={<PopoverMenuList data={isStranger ? chatPopList : chatPopList.slice(0, -1)} />}>
+                content={
+                  <PopoverMenuList data={chatPopList.filter((pop) => pop.key !== 'add-contact' || isStranger)} />
+                }>
                 <div className="chat-box-more" onClick={() => setPopVisible(true)}>
                   <CustomSvg type="More" />
                 </div>
@@ -299,7 +314,7 @@ export default function Session() {
       </div>
       <div className="chat-box-footer">
         <StyleProvider prefixCls="portkey">
-          <InputBar moreData={inputMorePopList} onSendMessage={handleSendMessage} />
+          <InputBar moreData={inputMorePopList} maxlength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
         </StyleProvider>
       </div>
       <PhotoSendModal

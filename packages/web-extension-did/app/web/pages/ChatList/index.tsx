@@ -50,7 +50,7 @@ export default function ChatList() {
       <div className="flex-center right-element">
         <CustomSvg type="Search" onClick={() => navigate('/chat-list-search')} />
         <Popover
-          overlayClassName="chat-box-popover"
+          overlayClassName="chat-list-popover"
           placement="bottom"
           trigger="click"
           showArrow={false}

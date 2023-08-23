@@ -39,7 +39,6 @@ export default function Session() {
   useEffectOnce(() => {
     init();
   });
-  console.log('message-list', list, 'info', info);
 
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => {
@@ -64,7 +63,7 @@ export default function Session() {
                   height: `${item?.parsedContent?.height}`,
                 }
               : {},
-          type: MessageTypeWeb[item.type] || 'text',
+          type: transType,
           date: item.createAt,
         };
       } else {
@@ -74,7 +73,7 @@ export default function Session() {
           position: 'left',
           date: item.createAt,
           type: 'text',
-          subType: 'non-text',
+          subType: 'non-support-msg',
           text: '',
         };
       }
@@ -108,8 +107,6 @@ export default function Session() {
         }
       }
     });
-    console.log('formatList', formatList);
-
     return formatList;
   }, [list, relationId]);
   const handleDel = useCallback(() => {

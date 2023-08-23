@@ -92,7 +92,7 @@ export default function ChatList() {
         {chatList.length === 0 ? (
           <div className="no-message flex-column-center">
             <CustomSvg type="Message" />
-            <div>No Message</div>
+            <div>No message</div>
           </div>
         ) : (
           <StyleProvider prefixCls="portkey">

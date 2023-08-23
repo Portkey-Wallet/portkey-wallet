@@ -49,11 +49,8 @@ export default function Contacts() {
   });
 
   useEffect(() => {
-    const { contactIndexFilterList: searchResult, contactFilterList } = localSearch('', ContactsTab.ALL);
+    const { contactIndexFilterList: searchResult } = localSearch('', ContactsTab.ALL);
     setCurList(searchResult);
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 contactFilterList', contactFilterList);
-    console.log('🌈 🌈  contactIndexFilterList', searchResult);
-
     setIsSearch(false);
   }, [localSearch]);
 

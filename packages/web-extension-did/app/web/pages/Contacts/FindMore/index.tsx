@@ -40,16 +40,6 @@ export default function FindMore() {
 
   const headerTitle = 'Find More';
   const [contact, setContact] = useState<Partial<ContactItemType>>({});
-  // mock data
-  // {
-  //   index: 'B',
-  //   name: 'by',
-  //   addresses: [{ chainId: 'AELF' as ChainId, address: 'H8CXvfy' }],
-  //   userId: '3fe8e56b',
-  //   isDeleted: false,
-  //   modificationTime: 1684829521408,
-  //   id: '0be66c93',
-  // },
 
   const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
@@ -107,9 +97,8 @@ export default function FindMore() {
         });
       } else {
         try {
-          // TODO data structure
           const res = await createChannel(item?.imInfo?.relationId || '');
-          navigate(`/chat-box/${res.data.channelUuid}`);
+          navigate(`/chat-box/${res.channelUuid}`);
         } catch (e) {
           console.log('===createChannel error', e);
           message.error('cannot chat');

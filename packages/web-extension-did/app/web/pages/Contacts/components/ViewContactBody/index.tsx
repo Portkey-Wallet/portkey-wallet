@@ -3,9 +3,9 @@ import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
-import { useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { useState, useEffect } from 'react';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useEffect, useState } from 'react';
 
 export default function ViewContactBody({
   data,
@@ -22,14 +22,14 @@ export default function ViewContactBody({
   handleAdd,
   handleCopy,
 }: IProfileDetailBodyProps) {
-  const isMyContactFn = useIsMyContact();
+  const isStrangerFn = useCheckIsStranger();
   const showChat = useIsChatShow();
 
-  const [isMyContact, setIsMyContact] = useState(false);
+  const [isStranger, setIsStranger] = useState(false);
 
   useEffect(() => {
-    setIsMyContact(isMyContactFn({ userId: data?.userId, relationId: data?.relationId || '' }));
-  }, [data, isMyContactFn]);
+    setIsStranger(isStrangerFn(data?.relationId || ''));
+  }, [data, isStrangerFn]);
 
   return (
     <div className="flex-column-between view-contact-body">
@@ -56,13 +56,13 @@ export default function ViewContactBody({
 
           {/* Section - Action: Added | Add Contact | Chat */}
           <div className="flex-center action">
-            {isShowAddedBtn && isMyContact && (
+            {isShowAddedBtn && !isStranger && (
               <div className="flex-column-center action-item added-contact">
                 <CustomSvg type="ContactAdded" />
                 <span>{addedText}</span>
               </div>
             )}
-            {isShowAddContactBtn && !isMyContact && (
+            {isShowAddContactBtn && isStranger && (
               <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
                 <CustomSvg type="ContactAdd" />
                 <span>{addContactText}</span>
@@ -82,12 +82,12 @@ export default function ViewContactBody({
           relationId={data?.relationId || ''}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
-          addressSectionLabel={isMyContact ? 'DID' : 'Address'}
+          addressSectionLabel={isStranger ? 'Address' : 'DID'}
         />
       </div>
 
       {/* stranger cant edit */}
-      {isMyContact && (
+      {!isStranger && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

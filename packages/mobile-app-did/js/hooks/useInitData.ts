@@ -85,9 +85,7 @@ export default function useInitData() {
   ]);
 
   const isChat = useIsChatShow();
-  const isIMServiceExist = useIsIMServiceExist();
   useEffect(() => {
-    if (!isIMServiceExist) return;
     const timer = setTimeout(() => {
       if (isChat) {
         loadIMRef.current();
@@ -96,7 +94,7 @@ export default function useInitData() {
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [isChat, isIMServiceExist]);
+  }, [isChat]);
 
   useEffectOnce(() => {
     // init data after transition animation

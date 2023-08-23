@@ -28,7 +28,7 @@ import {
   VerifySignatureParams,
   VerifySignatureResult,
 } from '../types/service';
-import { ChannelMemberInfo, Message, MessageCount } from '../types';
+import { ChannelMemberInfo, ContactItemType, Message, MessageCount } from '../types';
 import { sleep } from '@portkey-wallet/utils';
 
 export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseService<T> implements IIMService {
@@ -190,7 +190,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  addStranger(params: AddStrangerParams): IMServiceCommon<null> {
+  addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType> {
     return this._request.send({
       url: '/api/v1/contacts/stranger',
       params,

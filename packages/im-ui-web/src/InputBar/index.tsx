@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Popover } from 'antd';
 import { emojiList } from '../assets/index';
@@ -20,7 +20,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [popVisible, setPopVisible] = useState(false);
-  const clearPop = (e: any) => {
+  const hidePop = useCallback((e: any) => {
     try {
       if (e.target.className.indexOf('close-show-emoji-icon') === -1) {
         setShowEmojiIcon(false);
@@ -31,7 +31,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
     } catch (e) {
       console.log('e', e);
     }
-  };
+  }, []);
   const handleChange = (e: any) => {
     setValue(e.target.value);
   };
@@ -48,9 +48,9 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
     }
   };
   useEffect(() => {
-    document.addEventListener('click', clearPop);
-    return () => document.removeEventListener('click', clearPop);
-  }, []);
+    document.addEventListener('click', hidePop);
+    return () => document.removeEventListener('click', hidePop);
+  }, [hidePop]);
 
   return (
     <div>
@@ -58,7 +58,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
         {showEmojiIcon && (
           <div className="input-emoji">
             <div className="show-icon flex">
-              {emojiList.map(item => (
+              {emojiList.map((item) => (
                 <div
                   className="icon flex-center"
                   key={item.name}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 
@@ -26,35 +26,38 @@ const ChannelItem: React.FC<IChatItemProps> = ({
   };
   const [popVisible, setPopVisible] = useState(false);
 
-  const popList = [
-    {
-      key: 'pin',
-      leftIcon: <CustomSvg type={props.pin ? 'UnPin' : 'Pin'} />,
-      children: props.pin ? 'Unpin' : 'Pin',
-      onClick: (e: any) => {
-        hidePop();
-        onClickPin?.(e);
+  const popList = useMemo(
+    () => [
+      {
+        key: 'pin',
+        leftIcon: <CustomSvg type={props.pin ? 'UnPin' : 'Pin'} />,
+        children: props.pin ? 'Unpin' : 'Pin',
+        onClick: (e: any) => {
+          hidePop();
+          onClickPin?.(e);
+        },
       },
-    },
-    {
-      key: 'mute',
-      leftIcon: <CustomSvg type={props.muted ? 'UnMute' : 'Mute'} />,
-      children: props.muted ? 'Unmute' : 'Mute',
-      onClick: (e: any) => {
-        hidePop();
-        onClickMute?.(e);
+      {
+        key: 'mute',
+        leftIcon: <CustomSvg type={props.muted ? 'UnMute' : 'Mute'} />,
+        children: props.muted ? 'Unmute' : 'Mute',
+        onClick: (e: any) => {
+          hidePop();
+          onClickMute?.(e);
+        },
       },
-    },
-    {
-      key: 'delete',
-      leftIcon: <CustomSvg type="Delete" />,
-      children: 'Delete',
-      onClick: (e: any) => {
-        hidePop();
-        onClickDelete?.(e);
+      {
+        key: 'delete',
+        leftIcon: <CustomSvg type="Delete" />,
+        children: 'Delete',
+        onClick: (e: any) => {
+          hidePop();
+          onClickDelete?.(e);
+        },
       },
-    },
-  ];
+    ],
+    [onClickDelete, onClickMute, onClickPin, props.muted, props.pin],
+  );
   const hidePop = () => {
     setPopVisible(false);
   };
@@ -70,7 +73,7 @@ const ChannelItem: React.FC<IChatItemProps> = ({
       placement="bottom"
       trigger="contextMenu"
       open={popVisible}
-      onOpenChange={visible => setPopVisible(visible)}
+      onOpenChange={(visible) => setPopVisible(visible)}
       showArrow={false}
       content={<PopoverMenuList data={popList} />}>
       <div
@@ -101,7 +104,6 @@ const ChannelItem: React.FC<IChatItemProps> = ({
                   <CustomSvg type="Pin" />
                 ) : null}
               </div>
-              {props.customStatusComponents !== undefined ? props.customStatusComponents.map(Item => <Item />) : null}
             </div>
           </div>
         </div>

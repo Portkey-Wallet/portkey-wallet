@@ -9,7 +9,7 @@ import { formatImageSize } from '@portkey-wallet/utils/img';
 import PopoverMenuList from '../PopoverMenuList';
 import './index.less';
 
-const ImageMessage: React.FC<IImageMessageProps> = props => {
+const ImageMessage: React.FC<IImageMessageProps> = (props) => {
   const showDate = useMemo(
     () => (props.dateString ? props.dateString : formatTime(props.date)),
     [props.dateString, props.date],
@@ -25,7 +25,7 @@ const ImageMessage: React.FC<IImageMessageProps> = props => {
       message.error('delete message error');
       console.log('===delete message error', e);
     }
-  }, []);
+  }, [props]);
   const popoverList = [
     {
       key: 'delete',
@@ -56,7 +56,7 @@ const ImageMessage: React.FC<IImageMessageProps> = props => {
         <div className="image-date">{showDate}</div>
       </>
     ),
-    [],
+    [imageSize.height, imageSize.width, imgUrl, showDate, thumbImgUrl],
   );
   return (
     <div className={clsx(['portkey-message-image', 'flex', props.position])}>
@@ -69,7 +69,7 @@ const ImageMessage: React.FC<IImageMessageProps> = props => {
           <>
             <Popover
               open={popVisible}
-              onOpenChange={v => setPopVisible(v)}
+              onOpenChange={(v) => setPopVisible(v)}
               overlayClassName={clsx(['message-image-popover', props.position])}
               placement="bottom"
               trigger="contextMenu"

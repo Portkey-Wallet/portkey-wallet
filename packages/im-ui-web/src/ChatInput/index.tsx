@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import classNames from 'classnames';
 import { IInputProps } from '../type';
-import './index.css';
+import './index.less';
 
 const Input: React.FC<IInputProps> = ({
   type = 'text',
@@ -12,55 +12,42 @@ const Input: React.FC<IInputProps> = ({
   autofocus = false,
   ...props
 }) => {
-  useEffect(() => {
-    if (autofocus === true) props.referance?.current?.focus();
+  const onChangeEvent = useCallback(
+    (e: any) => {
+      if (props.maxlength && (e.target.value || '').length > props.maxlength) {
+        if (props.onMaxLengthExceed instanceof Function) props.onMaxLengthExceed();
 
-    if (props.clear instanceof Function) {
-      props.clear(clear);
-    }
-  }, []);
-
-  const onChangeEvent = (e: any) => {
-    if (props.maxlength && (e.target.value || '').length > props.maxlength) {
-      if (props.onMaxLengthExceed instanceof Function) props.onMaxLengthExceed();
-
-      if (props.referance?.current?.value == (e.target.value || '').substring(0, props.maxlength)) return;
-    }
-
-    if (props.onChange instanceof Function) props.onChange(e);
-
-    if (multiline === true) {
-      if (!e.target.value) {
-        e.target.style.height = minHeight + 'px';
-        e.target.style.scrollTop = minHeight + 'px';
+        if (props.referance?.current?.value == (e.target.value || '').substring(0, props.maxlength)) return;
       }
-      if (autoHeight === true) {
-        if (e.target.style.height !== minHeight + 'px') {
+
+      if (props.onChange instanceof Function) props.onChange(e);
+
+      if (multiline === true) {
+        if (!e.target.value) {
           e.target.style.height = minHeight + 'px';
           e.target.style.scrollTop = minHeight + 'px';
         }
+        if (autoHeight === true) {
+          if (e.target.style.height !== minHeight + 'px') {
+            e.target.style.height = minHeight + 'px';
+            e.target.style.scrollTop = minHeight + 'px';
+          }
 
-        let height;
-        if (e.target.scrollHeight <= maxHeight) height = e.target.scrollHeight + 'px';
-        else height = maxHeight + 'px';
+          let height;
+          if (e.target.scrollHeight <= maxHeight) height = e.target.scrollHeight + 'px';
+          else height = maxHeight + 'px';
 
-        if (e.target.style.height !== height) {
-          e.target.style.height = height;
-          e.target.style.scrollTop = height;
+          if (e.target.style.height !== height) {
+            e.target.style.height = height;
+            e.target.style.scrollTop = height;
+          }
         }
       }
-    }
-  };
-
-  useEffect(() => {
-    if (!props.value && props.referance) {
-      props.referance.current.style.height = minHeight + 'px';
-      props.referance.current.style.scrollTop = minHeight + 'px';
-    }
-  }, [props.value, props.referance]);
-
-  const clear = () => {
-    var _event = {
+    },
+    [autoHeight, maxHeight, minHeight, multiline, props],
+  );
+  const clear = useCallback(() => {
+    const _event = {
       FAKE_EVENT: true,
       target: props.referance?.current,
     };
@@ -70,16 +57,30 @@ const Input: React.FC<IInputProps> = ({
     }
 
     onChangeEvent(_event);
-  };
+  }, [onChangeEvent, props.referance]);
+
+  useEffect(() => {
+    if (autofocus === true) props.referance?.current?.focus();
+
+    if (props.clear instanceof Function) {
+      props.clear(clear);
+    }
+  }, [autofocus, clear, props]);
+
+  useEffect(() => {
+    if (!props.value && props.referance) {
+      props.referance.current.style.height = minHeight + 'px';
+      props.referance.current.style.scrollTop = minHeight + 'px';
+    }
+  }, [props.value, props.referance, minHeight]);
 
   return (
-    <div className={classNames('rce-container-input', props.className)}>
-      {props.leftButtons && <div className="rce-input-buttons">{props.leftButtons}</div>}
+    <div className={classNames('portkey-container-input', props.className)}>
       {multiline === false ? (
         <input
           ref={props.referance}
           type={type}
-          className={classNames('rce-input')}
+          className={classNames('portkey-im-input')}
           placeholder={props.placeholder}
           defaultValue={props.defaultValue}
           style={props.inputStyle}
@@ -102,7 +103,7 @@ const Input: React.FC<IInputProps> = ({
           maxLength={props?.maxlength}
           value={props.value}
           ref={props.referance}
-          className={classNames('rce-input', 'rce-input-textarea')}
+          className={classNames('portkey-im-input', 'portkey-im-input-textarea')}
           placeholder={props.placeholder}
           defaultValue={props.defaultValue}
           style={props.inputStyle}
@@ -121,7 +122,6 @@ const Input: React.FC<IInputProps> = ({
           {props.defaultValue ? props?.value ?? null : null}
         </textarea>
       )}
-      {props.rightButtons && <div className="rce-input-buttons">{props.rightButtons}</div>}
     </div>
   );
 };

@@ -27,7 +27,7 @@ export default function ChatListSearch() {
       } else {
         try {
           const res = await searchChannel(keyword);
-          const transRes = res.data.list.map((item) => ({
+          const transRes = res.map((item) => ({
             id: item.channelUuid,
             index: item.displayName.slice(0, 1).toUpperCase(),
             name: item.displayName,

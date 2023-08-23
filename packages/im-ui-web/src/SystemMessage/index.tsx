@@ -1,9 +1,9 @@
 import React from 'react';
-import './index.less';
 
 import { ISystemMessageProps } from '../type';
+import './index.less';
 
-const SystemMessage: React.FC<ISystemMessageProps> = props => {
+const SystemMessage: React.FC<ISystemMessageProps> = (props) => {
   return (
     <div className="portkey-container-system flex">
       <div className="portkey-system-text">

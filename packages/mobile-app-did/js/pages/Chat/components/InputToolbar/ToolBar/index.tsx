@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -19,6 +19,7 @@ import { sleep } from '@portkey-wallet/utils';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
+
   const selectPhoto = useCallback(async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -39,12 +40,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
           title: 'Send',
           type: 'primary',
           onPress: async () => {
-            try {
-              await sendChannelImage(result);
-            } catch (error) {
-              console.log(error, '====error');
-            }
-            OverlayModal.hide();
+            await sendChannelImage(result);
           },
         },
       ],

@@ -93,16 +93,16 @@ export const useChannelList = () => {
   const { networkType } = useCurrentNetworkInfo();
   const { next, hasNext } = useNextChannelList();
 
-  const list = useMemo(
-    () => channelListNetMap?.[networkType]?.list?.filter(item => !!item.lastPostAt) || [],
-    [channelListNetMap, networkType],
-  );
+  const rawList = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
+
+  const list = useMemo(() => rawList.filter(item => !!item.lastPostAt), [rawList]);
 
   const init = useCallback(() => {
     return next(true);
   }, [next]);
 
   return {
+    rawList,
     list,
     init,
     next,
@@ -111,19 +111,23 @@ export const useChannelList = () => {
 };
 
 export const useChannelItemInfo = (channelId: string) => {
-  const { list } = useChannelList();
+  const { rawList } = useChannelList();
 
   return useMemo(() => {
-    return list.find(item => item.channelUuid === channelId);
-  }, [channelId, list]);
+    return rawList.find(item => item.channelUuid === channelId);
+  }, [channelId, rawList]);
 };
 
 export const useCreateP2pChannel = () => {
   const { networkType } = useCurrentNetworkInfo();
+  const { rawList } = useChannelList();
   const dispatch = useAppCommonDispatch();
 
   const createChannel = useCallback(
     async (relationId: string) => {
+      let channel = rawList.find(item => item.toRelationId === relationId);
+      if (channel) return channel;
+
       const result = await im.service.createChannel({
         name: '',
         type: ChannelTypeEnum.P2P,
@@ -131,51 +135,54 @@ export const useCreateP2pChannel = () => {
       });
 
       const channelUuid = result.data.channelUuid;
-      if (channelUuid)
-        dispatch(
-          addChannel({
-            network: networkType,
-            channel: {
-              status: ChannelStatusEnum.NORMAL,
-              channelUuid,
-              displayName: '',
-              channelIcon: '',
-              channelType: ChannelTypeEnum.P2P,
-              unreadMessageCount: 0,
-              mentionsCount: 0,
-              lastMessageType: null,
-              lastMessageContent: null,
-              lastPostAt: null,
-              mute: false,
-              pin: false,
-              toRelationId: relationId,
-            },
-          }),
-        );
+      channel = {
+        status: ChannelStatusEnum.NORMAL,
+        channelUuid,
+        displayName: '',
+        channelIcon: '',
+        channelType: ChannelTypeEnum.P2P,
+        unreadMessageCount: 0,
+        mentionsCount: 0,
+        lastMessageType: null,
+        lastMessageContent: null,
+        lastPostAt: null,
+        mute: false,
+        pin: false,
+        toRelationId: relationId,
+      };
+      dispatch(
+        addChannel({
+          network: networkType,
+          channel,
+        }),
+      );
 
-      try {
-        const { data: channelInfo } = await im.service.getChannelInfo({
-          channelUuid,
-        });
-        console.log('createChannel channelInfo: ', channelInfo);
-        dispatch(
-          updateChannelAttribute({
-            network: networkType,
-            channelId: channelUuid,
-            value: {
-              displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
-              channelIcon: channelInfo.icon,
-              mute: channelInfo.mute,
-              pin: channelInfo.pin,
-            },
-          }),
-        );
-      } catch (error) {
-        console.log('createChannel error: ', error);
-      }
-      return result;
+      (async () => {
+        try {
+          const { data: channelInfo } = await im.service.getChannelInfo({
+            channelUuid,
+          });
+          console.log('createChannel channelInfo: ', channelInfo);
+          dispatch(
+            updateChannelAttribute({
+              network: networkType,
+              channelId: channelUuid,
+              value: {
+                displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
+                channelIcon: channelInfo.icon,
+                mute: channelInfo.mute,
+                pin: channelInfo.pin,
+              },
+            }),
+          );
+        } catch (error) {
+          console.log('createChannel error: ', error);
+        }
+      })();
+
+      return channel;
     },
-    [dispatch, networkType],
+    [dispatch, networkType, rawList],
   );
   return createChannel;
 };

@@ -14,28 +14,43 @@ import ProfilePortkeyIDSection from 'pages/My/components/ProfilePortkeyIDSection
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import useEffectOnce from 'hooks/useEffectOnce';
 import im from '@portkey-wallet/im';
-import { useAddStranger, useCreateP2pChannel, useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { pTd } from 'utils/unit';
+import { useJumpToChatDetails } from 'hooks/chat';
+import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
   contact?: ContactItemType;
 };
 
+const initEditContact: ContactItemType = {
+  id: '',
+  name: '',
+  addresses: [],
+  index: '',
+  modificationTime: 0,
+  isDeleted: false,
+  userId: '',
+  isImputation: false,
+};
+
 const ContactProfile: React.FC = () => {
   const { contact, relationId } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
   const [info, setInfo] = useState(contact);
-  const createChannel = useCreateP2pChannel();
-  const addStranger = useAddStranger();
+  const addStranger = useAddStrangerContact();
   const isStranger = useIsStranger(relationId || contact?.imInfo?.relationId || '');
+
+  const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
     if (relationId) {
       try {
-        const result = await im.service.getProfile({ relationId });
-        console.log('getProfile', result);
+        const { data } = await im.service.getProfile({ relationId });
+        setInfo(pre => ({ ...initEditContact, ...pre, ...(data || {}) }));
       } catch (error) {
         console.log(error);
       }
@@ -51,17 +66,16 @@ const ContactProfile: React.FC = () => {
       titleDom="Details"
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      <ScrollView alwaysBounceVertical={true}>
-        <ProfileHeaderSection name={info?.name || ''} />
+      scrollViewProps={{ disabled: true }}
+      hideTouchable={true}>
+      <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
+        <ProfileHeaderSection name={info?.name || info?.caHolderInfo?.walletName || info?.imInfo?.name || ''} />
         <ProfileHandleSection
           isAdded={!isStranger}
-          onPressAdded={() => addStranger(relationId || '')}
+          onPressAdded={() => addStranger(relationId || info?.imInfo?.relationId || '')}
           onPressChat={async () => {
             try {
-              const { data } = await createChannel(relationId || '');
-              console.log('data', data);
-              navigationService.navigate('ChatDetails', { channelId: data?.channelUuid });
+              navToChatDetail({ toRelationId: relationId || info?.imInfo?.relationId || '' });
             } catch (error) {
               CommonToast.fail(handleErrorMessage(error));
             }
@@ -73,11 +87,8 @@ const ContactProfile: React.FC = () => {
       {!isStranger && (
         <CommonButton
           type="primary"
-          containerStyle={GStyles.paddingTop(16)}
+          containerStyle={pageStyles.btnWrap}
           onPress={async () => {
-            const channelId = await createChannel(relationId || contact?.imInfo?.relationId || '');
-            console.log('channelId', channelId);
-
             navigationService.navigate('ChatContactProfileEdit', { contact });
           }}>
           {t('Edit')}
@@ -93,6 +104,14 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(24, 20, 18),
+    ...GStyles.paddingArg(24, 0, 18),
+  },
+  scrollWrap: {
+    paddingBottom: pTd(200),
+    paddingHorizontal: pTd(20),
+  },
+  btnWrap: {
+    paddingTop: pTd(16),
+    paddingHorizontal: pTd(20),
   },
 });

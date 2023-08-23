@@ -18,7 +18,7 @@ import ProfileRemarkSection from 'pages/My/components/ProfileRemarkSection';
 import FormItem from 'components/FormItem';
 import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
-import { useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useDeleteContact, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 
@@ -26,17 +26,12 @@ type RouterParams = {
   contact?: ContactItemType;
 };
 
-const defaultContact = {
-  id: '',
-  name: '',
-  address: [],
-};
-
 const ChatContactProfileEdit: React.FC = () => {
   const { contact } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
 
   const editContact = useEditContact();
+  const deleteContact = useDeleteContact();
 
   const [remark, setRemark] = useState(contact?.name || '');
   const [error, setError] = useState('');
@@ -46,8 +41,9 @@ const ChatContactProfileEdit: React.FC = () => {
     if (!isValidName) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
     try {
       Loading.show();
-      await editContact({ ...defaultContact, ...contact, name: remark });
+      await editContact({ name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' });
       CommonToast.success(t('Saved Successful'));
+      // TODO: navigate
       Loading.hide();
     } catch (e) {
       Loading.hide();
@@ -68,7 +64,8 @@ const ChatContactProfileEdit: React.FC = () => {
           onPress: async () => {
             Loading.show();
             try {
-              // await deleteContactApi();
+              if (!contact) return;
+              await deleteContact(contact);
               CommonToast.success(t('Contact Deleted'), undefined, 'bottom');
               navigationService.navigate('ContactsHome');
             } catch (e: any) {
@@ -80,18 +77,19 @@ const ChatContactProfileEdit: React.FC = () => {
         },
       ],
     });
-  }, [t]);
+  }, [contact, deleteContact, t]);
 
   return (
     <PageContainer
       titleDom={'Edit Contact'}
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      <ScrollView alwaysBounceVertical={true}>
+      scrollViewProps={{ disabled: true }}
+      hideTouchable={true}>
+      <ScrollView alwaysBounceVertical={true} style={pageStyles.contentWrap}>
         <FormItem title={'Wallet Name'}>
           <TextM numberOfLines={1} style={pageStyles.walletName}>
-            xxxxxxxxxxxxxxx
+            {contact?.caHolderInfo?.walletName || ''}
           </TextM>
         </FormItem>
         <ProfileRemarkSection errorMessage={error} value={remark} onChangeText={v => setRemark(v)} />
@@ -117,7 +115,10 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(24, 20, 18),
+    ...GStyles.paddingArg(24, 0, 18),
+  },
+  contentWrap: {
+    paddingHorizontal: pTd(20),
   },
   walletName: {
     width: '100%',
@@ -151,6 +152,7 @@ export const pageStyles = StyleSheet.create({
   },
   btnContainer: {
     paddingTop: pTd(16),
+    paddingHorizontal: pTd(20),
   },
   deleteBtnStyle: {
     marginTop: pTd(8),

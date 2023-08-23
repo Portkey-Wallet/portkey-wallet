@@ -49,18 +49,16 @@ export default function ChatListSearch() {
         setLoading(false);
       }
     },
-    [filterWord],
+    [],
     500,
   );
-  console.log('===chatList', chatList);
-
   const handleClickChat = useCallback(
     async (e: any, item: Partial<ContactItemType>) => {
       e.stopPropagation();
       try {
         const res = await createChannel(item?.imInfo?.relationId || '');
         console.log('===create channel res', res, 'item', item);
-        navigate(`/chat-box/${res.data.channelUuid}`);
+        navigate(`/chat-box/${res.channelUuid}`);
       } catch (e) {
         console.log('===create channel error', e);
         message.error('create channel error');
@@ -92,7 +90,7 @@ export default function ChatListSearch() {
       </div>
       <div className="new-chat-content">
         {chatList.length === 0 ? (
-          <div className="empty flex-center">{filterWord ? `No search result` : `No contact found`}</div>
+          <div className="empty flex-center">{filterWord ? `No contact found` : `No contact`}</div>
         ) : (
           <div className="search-result-list">
             <ContactList

@@ -31,6 +31,7 @@ export default function CommonModal(props: CommonModalProps) {
               {leftElement || <LeftOutlined />}
             </Col>
           ) : null}
+          {/* eslint-disable-next-line no-inline-styles/no-inline-styles */}
           <Col flex={2} style={{ textAlign: 'center' }}>
             {title}
           </Col>

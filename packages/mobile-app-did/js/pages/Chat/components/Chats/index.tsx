@@ -147,7 +147,7 @@ const ChatsUI = () => {
             renderMessage={renderMessage}
             listViewProps={listViewProps}
             showAvatarForEveryMessage={true}
-            isKeyboardInternallyHandled={true}
+            isKeyboardInternallyHandled={false}
             messagesContainerStyle={styles.messagesContainerStyle}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}

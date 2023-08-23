@@ -14,15 +14,12 @@ import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat'
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import AddContactButton from '../components/AddContactButton';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { ChannelItem } from '@portkey-wallet/im/types';
 import {
   useMuteChannel,
   usePinChannel,
   useHideChannel,
   useChannelItemInfo,
   useIsStranger,
-  useAddStranger,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
@@ -32,37 +29,27 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import Loading from 'components/Loading';
-
-type RouterParams = {
-  channelInfo?: ChannelItem;
-};
+import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 const ChatDetails = () => {
-  const { channelInfo } = useRouterParams<RouterParams>() || {};
   const dispatch = useAppCommonDispatch();
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
-  const addStranger = useAddStranger();
+  const addStranger = useAddStrangerContact();
 
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
 
-  const toRelationId = useMemo(
-    () => currentChannelInfo?.toRelationId || channelInfo?.toRelationId,
-    [channelInfo?.toRelationId, currentChannelInfo?.toRelationId],
-  );
-  const isStranger = useIsStranger(currentChannelInfo?.toRelationId || channelInfo?.toRelationId || '');
-  const displayName = useMemo(
-    () => currentChannelInfo?.displayName || channelInfo?.displayName,
-    [channelInfo?.displayName, currentChannelInfo?.displayName],
-  );
-  const pin = useMemo(() => currentChannelInfo?.pin || channelInfo?.pin, [channelInfo?.pin, currentChannelInfo?.pin]);
-  const mute = useMemo(
-    () => currentChannelInfo?.mute || channelInfo?.mute,
-    [channelInfo?.mute, currentChannelInfo?.mute],
-  );
+  const isStranger = useIsStranger(currentChannelInfo?.toRelationId || '');
+
+  console.log('isStranger', isStranger);
+
+  const toRelationId = useMemo(() => currentChannelInfo?.toRelationId, [currentChannelInfo?.toRelationId]);
+  const displayName = useMemo(() => currentChannelInfo?.displayName, [currentChannelInfo?.displayName]);
+  const pin = useMemo(() => currentChannelInfo?.pin, [currentChannelInfo?.pin]);
+  const mute = useMemo(() => currentChannelInfo?.mute, [currentChannelInfo?.mute]);
 
   const onPressMore = useCallback(
     (event: { nativeEvent: { pageX: any; pageY: any } }) => {
@@ -151,10 +138,12 @@ const ChatDetails = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
-      leftCallback={() => navigationService.navigate('ChatHome')}
+      leftCallback={() => {
+        navigationService.navigate('Tab');
+      }}
       leftDom={
         <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-          <Touchable style={GStyles.marginRight(pTd(20))} onPress={navigationService.goBack}>
+          <Touchable style={GStyles.marginRight(pTd(20))} onPress={() => navigationService.navigate('Tab')}>
             <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
           </Touchable>
           <CommonAvatar title={displayName} avatarSize={pTd(32)} style={styles.headerAvatar} />

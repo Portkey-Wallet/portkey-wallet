@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Keyboard, Image } from 'react-native';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
 import { StyleSheet } from 'react-native';
@@ -6,6 +6,7 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import OverlayModal from 'components/OverlayModal';
+import CommonToast from 'components/CommonToast';
 
 type ShowSendPicProps = {
   uri: string;
@@ -13,16 +14,26 @@ type ShowSendPicProps = {
   autoClose?: boolean;
 };
 
-function SendPicBody({ uri, buttons, autoClose = true }: ShowSendPicProps) {
+function SendPicBody({ uri, buttons }: ShowSendPicProps) {
+  const [loading, setLoading] = useState(false);
+
   return (
     <View style={styles.alertBox}>
       <Image resizeMode="contain" source={{ uri }} style={styles.imagePreview} />
       <ButtonRow
         buttons={buttons?.map(i => ({
           ...i,
-          onPress: () => {
-            if (autoClose) OverlayModal.hide();
-            i.onPress?.();
+          loading: i.type === 'primary' && loading,
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await i.onPress?.();
+              OverlayModal.hide();
+            } catch (error) {
+              CommonToast.fail('Send Fail');
+            } finally {
+              setLoading(false);
+            }
           },
         }))}
       />

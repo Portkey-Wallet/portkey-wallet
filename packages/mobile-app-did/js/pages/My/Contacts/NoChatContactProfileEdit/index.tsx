@@ -241,24 +241,29 @@ const ContactEdit: React.FC = () => {
     try {
       const result = await (isEdit ? editContactApi(editContact) : addContactApi(editContact));
       CommonToast.success(t(isEdit ? 'Saved Successful' : 'Contact Added'));
-      Loading.hide();
 
-      // if (result.imInfo) {
-      return ActionSheet.alert({
-        title: 'DID Recognition',
-        message:
-          'This is a contact you can chat with. You can click the "Chat" button on the contact details page to start a conversation.',
-        buttons: [
-          {
-            title: 'OK',
-            type: 'primary',
-            onPress: () => {
-              navigationService.navigate('ChatContactProfile', { contact: result });
+      if (result.imInfo?.relationId) {
+        return ActionSheet.alert({
+          title: 'DID Recognition',
+          message:
+            'This is a contact you can chat with. You can click the "Chat" button on the contact details page to start a conversation.',
+          buttons: [
+            {
+              title: 'OK',
+              type: 'primary',
+              onPress: () => {
+                navigationService.navigate('ChatContactProfile', { contact: result });
+              },
             },
-          },
-        ],
-      });
-      // }
+          ],
+        });
+      }
+
+      if (isEdit) {
+        navigationService.goBack();
+      } else {
+        navigationService.navigate('ContactsHome');
+      }
 
       // if (isEdit) {
       //   const result = await editContactApi(editContact);
@@ -283,8 +288,9 @@ const ContactEdit: React.FC = () => {
       // }
     } catch (err: any) {
       CommonToast.failError(err);
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
   }, [addContactApi, checkError, editContact, editContactApi, isEdit, t]);
 
   const onDelete = useCallback(() => {

@@ -508,6 +508,9 @@ export const useHideChannel = () => {
       await im.service.hideChannel({
         channelUuid: channelId,
       });
+      im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(() => {
+        im.refreshMessageCount();
+      });
 
       dispatch(
         removeChannel({
@@ -523,12 +526,13 @@ export const useHideChannel = () => {
 };
 
 export const useSearchChannel = () => {
-  return useCallback((keyword: string) => {
-    return im.service.getChannelList({
+  return useCallback(async (keyword: string) => {
+    const { data } = await im.service.getChannelList({
       keyword,
       cursor: '',
       maxResultCount: SEARCH_CHANNEL_LIMIT,
     });
+    return data?.list?.filter(ele => ele?.lastMessageContent) || [];
   }, []);
 };
 
@@ -538,4 +542,14 @@ export const useAddStranger = () => {
       relationId,
     });
   }, []);
+};
+
+export const useCheckIsStranger = () => {
+  const contactRelationIdMap = useContactRelationIdMap();
+  return useCallback(
+    (relationId: string) => {
+      return !contactRelationIdMap?.[relationId];
+    },
+    [contactRelationIdMap],
+  );
 };

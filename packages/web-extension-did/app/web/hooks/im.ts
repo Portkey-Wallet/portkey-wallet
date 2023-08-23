@@ -5,12 +5,11 @@ import aes from '@portkey-wallet/utils/aes';
 import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getWallet } from '@portkey-wallet/utils/aelf';
-// import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import im from '@portkey-wallet/im';
 
 export default function useInit() {
-  const isShowChat = true;
-  // TODO
-  // const isShowChat = useIsChatShow();
+  const isShowChat = useIsChatShow();
   const initIm = useInitIM();
   const { walletInfo } = useCurrentWallet();
   const init = useCallback(async () => {
@@ -30,6 +29,7 @@ export default function useInit() {
   }, [initIm, walletInfo.AESEncryptPrivateKey, walletInfo.caHash]);
 
   useEffect(() => {
-    isShowChat && init();
-  }, [init, isShowChat]);
+    isShowChat ? init() : im.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isShowChat]);
 }

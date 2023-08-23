@@ -19,6 +19,7 @@ import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
 import navigationService from 'utils/navigationService';
 import { useJumpToChatDetails } from 'hooks/chat';
+import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const FindMorePeople = () => {
   const { userId } = useWallet();
@@ -27,14 +28,10 @@ const FindMorePeople = () => {
   const [keyword, setKeyword] = useState('');
   // const [, setLoading] = useState(false);
   const debounceWord = useDebounce(keyword, 500);
+  const checkIsStranger = useCheckIsStranger();
 
   const [list, setList] = useState<GetOtherUserInfoDefaultResult[]>([]);
   const caAddressInfoList = useCaAddressInfoList();
-
-  const isMyContact = useMemo(() => {
-    return false;
-    // return contactList.includes(ele => ele?.imInfo?.relationId === list[0].relationId);
-  }, []);
 
   const checkIsMyself = useCallback(() => {
     if (debounceWord === userId) return true;
@@ -72,21 +69,29 @@ const FindMorePeople = () => {
   }, [debounceWord, searchUser]);
 
   const renderItem = useCallback(
-    ({ item }: any) => {
+    ({ item }: { item: GetOtherUserInfoDefaultResult }) => {
       return (
         <ContactItem
           isShowChat
-          isShowContactIcon={isMyContact}
-          isShowWarning={item.isImputation}
-          onPressChat={() => navToChatDetails({ toRelationId: item.toRelationId })}
+          isShowContactIcon={checkIsStranger(item.relationId || '')}
+          onPressChat={() => navToChatDetails({ toRelationId: item.relationId })}
           onPress={() =>
-            navigationService.navigate('ChatContactProfile', { contact: item, relationId: item.toRelationId })
+            navigationService.navigate('ChatContactProfile', { contact: item, relationId: item.relationId })
           }
-          contact={item}
+          contact={{
+            ...item,
+            index: '',
+            modificationTime: 0,
+            isImputation: false,
+            id: '',
+            addresses: [],
+            isDeleted: false,
+            userId: '',
+          }}
         />
       );
     },
-    [isMyContact, navToChatDetails],
+    [checkIsStranger, navToChatDetails],
   );
 
   return (

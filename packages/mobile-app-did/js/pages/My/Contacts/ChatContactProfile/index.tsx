@@ -14,11 +14,12 @@ import ProfilePortkeyIDSection from 'pages/My/components/ProfilePortkeyIDSection
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import useEffectOnce from 'hooks/useEffectOnce';
 import im from '@portkey-wallet/im';
-import { useAddStranger, useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useJumpToChatDetails } from 'hooks/chat';
+import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -40,7 +41,7 @@ const ContactProfile: React.FC = () => {
   const { contact, relationId } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
   const [info, setInfo] = useState(contact);
-  const addStranger = useAddStranger();
+  const addStranger = useAddStrangerContact();
   const isStranger = useIsStranger(relationId || contact?.imInfo?.relationId || '');
 
   const navToChatDetail = useJumpToChatDetails();

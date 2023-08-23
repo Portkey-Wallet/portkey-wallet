@@ -508,6 +508,9 @@ export const useHideChannel = () => {
       await im.service.hideChannel({
         channelUuid: channelId,
       });
+      im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(() => {
+        im.refreshMessageCount();
+      });
 
       dispatch(
         removeChannel({

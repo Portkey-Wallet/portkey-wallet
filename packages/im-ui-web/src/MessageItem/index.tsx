@@ -7,13 +7,12 @@ import SystemMessage from '../SystemMessage';
 import { MessageBoxType } from '../type';
 import './index.less';
 
-const MessageItem: React.FC<MessageBoxType> = ({ styles, ...props }) => {
+const MessageItem: React.FC<MessageBoxType> = ({ ...props }) => {
   const messageRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
       key={props.key}
-      style={{ position: 'relative' }}
       ref={messageRef}
       className={clsx('portkey-message-item', 'flex-column', props.className)}
       onClick={props.onClick}>

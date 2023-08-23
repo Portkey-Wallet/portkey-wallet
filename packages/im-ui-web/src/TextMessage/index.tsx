@@ -10,7 +10,7 @@ import PopoverMenuList from '../PopoverMenuList';
 import CustomSvg from '../components/CustomSvg';
 import './index.less';
 
-const TextMessage: React.FC<ITextMessageProps> = props => {
+const TextMessage: React.FC<ITextMessageProps> = (props) => {
   const showDate = useMemo(() => (props.dateString ? props.dateString : formatTime(props.date as any)), []);
   const [, setCopied] = useCopyToClipboard();
   const [popVisible, setPopVisible] = useState(false);
@@ -21,7 +21,7 @@ const TextMessage: React.FC<ITextMessageProps> = props => {
       message.error('delete message error');
       console.log('===delete message error', e);
     }
-  }, []);
+  }, [props]);
   const hidePop = () => {
     setPopVisible(false);
   };
@@ -61,12 +61,12 @@ const TextMessage: React.FC<ITextMessageProps> = props => {
           overlayClassName={clsx(['message-text-popover', props.position])}
           placement="bottom"
           trigger="contextMenu"
-          onOpenChange={visible => setPopVisible(visible)}
+          onOpenChange={(visible) => setPopVisible(visible)}
           showArrow={false}
           content={
             <PopoverMenuList
               data={popoverList.filter(
-                pop => props.position === 'right' || (props.position === 'left' && pop.key !== 'delete'),
+                (pop) => props.position === 'right' || (props.position === 'left' && pop.key !== 'delete'),
               )}
             />
           }>
@@ -77,7 +77,7 @@ const TextMessage: React.FC<ITextMessageProps> = props => {
                   {
                     type: 'url',
                     className: 'text-link',
-                    onClick: url => {
+                    onClick: (url) => {
                       const openWinder = window.open(url, '_blank');
                       if (openWinder) {
                         openWinder.opener = null;

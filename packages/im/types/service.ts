@@ -2,6 +2,7 @@ import {
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
+  ContactItemType,
   Message,
   MessageCount,
   TriggerMessageEventActionEnum,
@@ -190,6 +191,6 @@ export interface IIMService {
   updateChannelPin(params: UpdateChannelPinParams): IMServiceCommon<null>;
   updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
-  addStranger(params: AddStrangerParams): IMServiceCommon<null>;
+  addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
   getProfile(params: GetProfileParams): IMServiceCommon<null>;
 }

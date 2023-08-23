@@ -6,30 +6,19 @@ import { Modal, Popover, Upload, message } from 'antd';
 import { PopoverMenuList, MessageList, InputBar, StyleProvider, MessageType } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
-import PhotoSendModal from './components/PhotoSendModal';
-import {
-  ImageMessageFileType,
-  useAddStranger,
-  useChannel,
-  useIsStranger,
-  useRelationId,
-} from '@portkey-wallet/hooks/hooks-ca/im';
+import PhotoSendModal from './components/ImageSendModal';
+import { ImageMessageFileType, useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from './components/BookmarkListDrawer';
 import { getPixel } from './utils';
 import { formatMessageTime } from '@portkey-wallet/utils/chat';
-import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import { MessageTypeWeb } from 'types/im';
+import { useLoading } from 'store/Provider/hooks';
+import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { isSameDay } from '@portkey-wallet/utils/time';
+import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import './index.less';
-
-enum MessageTypeWeb {
-  'SYS' = 'system',
-  'TEXT' = 'text',
-  'CARD' = '',
-  'IMAGE' = 'photo',
-  'ANNOUNCEMENT' = '',
-  'BATCH_TRANSFER' = '',
-}
 
 export default function Session() {
   const { channelUuid } = useParams();
@@ -40,60 +29,76 @@ export default function Session() {
   const [showBookmark, setShowBookmark] = useState(false);
   const sendImgModalRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
-  const addContactApi = useAddStranger();
+  const addContactApi = useAddStrangerContact();
   const [popVisible, setPopVisible] = useState(false);
   const [showStrangerTip, setShowStrangerTip] = useState(true);
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
   const isStranger = useIsStranger(info?.toRelationId || '');
+  const { setLoading } = useLoading();
   useEffectOnce(() => {
     init();
   });
-  console.log('info', info);
+
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => {
     const formatList: MessageType[] = [];
     let transItem: MessageType;
     list.forEach((item, i) => {
-      transItem = {
-        id: `${item.id}`,
-        // sendUuid: item.sendUuid, // TODO
-        title: item.fromName,
-        position: item.from === relationId ? 'right' : 'left',
-        text: `${item.parsedContent}`,
-        imgData:
-          typeof item.parsedContent === 'object'
-            ? {
-                ...item.parsedContent,
-                thumbImgUrl: decodeURIComponent(`${item.parsedContent.thumbImgUrl}`) || '',
-                imgUrl: decodeURIComponent(`${item.parsedContent.imgUrl}`) || '',
-                width: `${item?.parsedContent?.width}`,
-                height: `${item?.parsedContent?.height}`,
-              }
-            : {},
-        type: MessageTypeWeb[item.type] || 'text',
-        date: new Date(item.createAt),
-      };
+      const transType = MessageTypeWeb[item.type] || '';
+      if (transType) {
+        transItem = {
+          id: `${item.id}`,
+          key: item.sendUuid,
+          title: item.fromName,
+          position: item.from === relationId ? 'right' : 'left',
+          text: `${item.parsedContent}`,
+          imgData:
+            typeof item.parsedContent === 'object'
+              ? {
+                  ...item.parsedContent,
+                  thumbImgUrl: decodeURIComponent(`${item.parsedContent.thumbImgUrl}`) || '',
+                  imgUrl: decodeURIComponent(`${item.parsedContent.imgUrl}`) || '',
+                  width: `${item?.parsedContent?.width}`,
+                  height: `${item?.parsedContent?.height}`,
+                }
+              : {},
+          type: transType,
+          date: item.createAt,
+        };
+      } else {
+        transItem = {
+          key: `${item.createAt}`,
+          id: `${item.createAt}`,
+          position: 'left',
+          date: item.createAt,
+          type: 'text',
+          subType: 'non-support-msg',
+          text: '',
+        };
+      }
       if (i === 0) {
         formatList.push(
           {
+            key: `${item.createAt}`,
             id: `${item.createAt}`,
             position: 'left',
-            date: new Date(item.createAt),
+            date: item.createAt,
             type: 'system',
             text: formatMessageTime(item.createAt),
           },
           transItem,
         );
       } else {
-        if (dayjs(list[i - 1].createAt).isSame(item.createAt, 'day')) {
+        if (isSameDay(list[i - 1].createAt, item.createAt)) {
           formatList.push(transItem);
         } else {
           formatList.push(
             {
+              key: `${item.createAt}`,
               id: `${item.createAt}`,
               position: 'left',
-              date: new Date(item.createAt),
+              date: item.createAt,
               type: 'system',
               text: formatMessageTime(item.createAt),
             },
@@ -114,28 +119,40 @@ export default function Session() {
       centered: true,
       okText: t('Confirm'),
       cancelText: t('Cancel'),
-      onOk: exit,
+      onOk: async () => {
+        try {
+          await exit();
+          navigate('/chat-list');
+        } catch (e) {
+          console.log('===delete chat error', e);
+          message.error('delete error');
+        }
+      },
     });
-  }, [exit, t]);
+  }, [exit, navigate, t]);
   const handleAddContact = useCallback(async () => {
     try {
+      setLoading(true);
       const res = await addContactApi(info?.toRelationId || '');
-      console.log('===add stranger', res);
+      console.log('===add stranger res', res, 'info', info);
       message.success('Contact added');
     } catch (e) {
       message.error('Add contact error');
       console.log('===add stranger error', e);
+    } finally {
+      setLoading(false);
     }
-  }, [addContactApi, info?.toRelationId]);
+  }, [addContactApi, info, setLoading]);
   const chatPopList = useMemo(
     () => [
       {
         key: 'profile',
         leftIcon: <CustomSvg type="Profile" />,
         children: 'Profile',
-        // TODO
         onClick: () =>
-          navigate('/setting/contacts/view', { state: { name: info?.displayName, relationId: info?.toRelationId } }),
+          navigate('/setting/contacts/view', {
+            state: { relationId: info?.toRelationId, from: 'chat-box', isStranger },
+          }),
       },
       {
         key: info?.pin ? 'un-pin' : 'pin',
@@ -162,7 +179,7 @@ export default function Session() {
         onClick: handleAddContact,
       },
     ],
-    [handleAddContact, handleDel, info, mute, navigate, pin],
+    [handleAddContact, handleDel, info?.mute, info?.pin, info?.toRelationId, isStranger, mute, navigate, pin],
   );
   const uploadProps = {
     className: 'chat-input-upload',
@@ -206,7 +223,8 @@ export default function Session() {
       setFile(undefined);
     } catch (e) {
       console.log('===send image error', e);
-      message.error('send error');
+      message.error('Failed to send message');
+    } finally {
       sendImgModalRef?.current?.setLoading(false);
     }
   };
@@ -218,6 +236,13 @@ export default function Session() {
     } catch (e) {
       // TODO
       console.log('e', e);
+    }
+  };
+  const handleSendMessage = async (v: string) => {
+    try {
+      await sendMessage(v);
+    } catch (e) {
+      message.error('Failed to send message');
     }
   };
   useEffect(() => {
@@ -243,12 +268,9 @@ export default function Session() {
                 overlayClassName="chat-box-popover"
                 trigger="click"
                 showArrow={false}
-                // onOpenChange={(visible) => {
-                //   console.log('visible', visible);
-                //   // setPopVisible(visible);
-                // }}
-                // onClick={() => setPopVisible(true)}
-                content={<PopoverMenuList data={isStranger ? chatPopList : chatPopList.slice(0, -1)} />}>
+                content={
+                  <PopoverMenuList data={chatPopList.filter((pop) => pop.key !== 'add-contact' || isStranger)} />
+                }>
                 <div className="chat-box-more" onClick={() => setPopVisible(true)}>
                   <CustomSvg type="More" />
                 </div>
@@ -282,7 +304,7 @@ export default function Session() {
       </div>
       <div className="chat-box-footer">
         <StyleProvider prefixCls="portkey">
-          <InputBar moreData={inputMorePopList} onSendMessage={sendMessage} />
+          <InputBar moreData={inputMorePopList} maxlength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
         </StyleProvider>
       </div>
       <PhotoSendModal
@@ -299,7 +321,7 @@ export default function Session() {
         destroyOnClose
         open={showBookmark}
         onClose={() => setShowBookmark(false)}
-        onClick={sendMessage}
+        onClick={handleSendMessage}
       />
     </div>
   );

@@ -48,7 +48,8 @@ export default function ChatListSearch() {
 
   useEffect(() => {
     setFilterWord(state?.search || '');
-  }, [state?.search]);
+    handleSearch(state?.search || '');
+  }, [handleSearch, state?.search]);
 
   const searchDebounce = useDebounceCallback(
     async (params) => {
@@ -56,7 +57,7 @@ export default function ChatListSearch() {
       await handleSearch(params);
       setLoading(false);
     },
-    [filterWord],
+    [],
     500,
   );
 
@@ -83,7 +84,7 @@ export default function ChatListSearch() {
       </div>
       <div
         className="find-more flex"
-        onClick={() => navigate(`/setting/contacts/find-more`, { state: { search: filterWord } })}>
+        onClick={() => navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })}>
         <CustomSvg type="AddContact" />
         Find More
       </div>

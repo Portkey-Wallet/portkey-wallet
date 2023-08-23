@@ -8,11 +8,11 @@ import { useState } from 'react';
 interface PhotoSendModalProps {
   open: boolean;
   url: string;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void>;
   onCancel: () => void;
 }
 
-const PhotoSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSendModalProps, ref) => {
+const ImageSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSendModalProps, ref) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +27,8 @@ const PhotoSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSend
 
   return (
     <CommonModal
-      className="portkey-photo-send-modal"
+      destroyOnClose
+      className="portkey-image-send-modal"
       closable={false}
       width={320}
       open={open}
@@ -48,4 +49,4 @@ const PhotoSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSend
   );
 });
 
-export default PhotoSendModal;
+export default ImageSendModal;

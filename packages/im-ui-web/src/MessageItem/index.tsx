@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import clsx from 'clsx';
 
-import PhotoMessage from '../PhotoMessage';
+import ImageMessage from '../ImageMessage';
 import TextMessage from '../TextMessage';
 import SystemMessage from '../SystemMessage';
 import { MessageBoxType } from '../type';
@@ -12,19 +12,16 @@ const MessageItem: React.FC<MessageBoxType> = ({ styles, ...props }) => {
 
   return (
     <div
-      key={props.id}
+      key={props.key}
       style={{ position: 'relative' }}
       ref={messageRef}
       className={clsx('portkey-message-item', 'flex-column', props.className)}
       onClick={props.onClick}>
-      {props.type === 'system' ? (
-        <SystemMessage {...props} />
-      ) : (
-        <>
-          {props.type === 'text' && <TextMessage {...props} />}
-          {props.type === 'photo' && <PhotoMessage {...props} />}
-        </>
-      )}
+      <>
+        {props.type === 'system' && <SystemMessage {...props} />}
+        {props.type === 'text' && <TextMessage {...props} />}
+        {props.type === 'image' && <ImageMessage {...props} />}
+      </>
     </div>
   );
 };

@@ -1,11 +1,10 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { TextL } from 'components/CommonText';
-
 import Chats from '../components/Chats';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
@@ -15,28 +14,40 @@ import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat'
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import AddContactButton from '../components/AddContactButton';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { ChannelItem } from '@portkey-wallet/im/types';
-import { useMuteChannel, usePinChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useMuteChannel,
+  usePinChannel,
+  useHideChannel,
+  useChannelItemInfo,
+  useIsStranger,
+  useAddStranger,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
-
-type RouterParams = {
-  channelInfo?: ChannelItem;
-};
+import CommonToast from 'components/CommonToast';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { useAppCommonDispatch } from '@portkey-wallet/hooks';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import Loading from 'components/Loading';
 
 const ChatDetails = () => {
-  const { channelInfo } = useRouterParams<RouterParams>();
-  const { mute, pin, displayName } = channelInfo || {};
+  const dispatch = useAppCommonDispatch();
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
-  const currentChannelId = useCurrentChannelId();
+  const addStranger = useAddStranger();
 
-  // useEffectOnce(() => {
-  //   init();
-  // });
+  const currentChannelId = useCurrentChannelId();
+  const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
+
+  const isStranger = useIsStranger(currentChannelInfo?.toRelationId || '');
+
+  const toRelationId = useMemo(() => currentChannelInfo?.toRelationId, [currentChannelInfo?.toRelationId]);
+  const displayName = useMemo(() => currentChannelInfo?.displayName, [currentChannelInfo?.displayName]);
+  const pin = useMemo(() => currentChannelInfo?.pin, [currentChannelInfo?.pin]);
+  const mute = useMemo(() => currentChannelInfo?.mute, [currentChannelInfo?.mute]);
 
   const onPressMore = useCallback(
     (event: { nativeEvent: { pageX: any; pageY: any } }) => {
@@ -46,7 +57,14 @@ const ChatDetails = () => {
           {
             title: ChatOperationsEnum.PROFILE,
             iconName: 'chat-profile',
-            onPress: () => navigationService.navigate('ChatContactProfile'),
+            onPress: () => {
+              navigationService.navigate('ChatContactProfile', {
+                relationId: toRelationId,
+                contact: {
+                  name: currentChannelInfo?.displayName,
+                },
+              });
+            },
           },
           {
             title: pin ? ChatOperationsEnum.UNPIN : ChatOperationsEnum.PIN,
@@ -59,7 +77,7 @@ const ChatDetails = () => {
             title: mute ? ChatOperationsEnum.UNMUTE : ChatOperationsEnum.MUTE,
             iconName: mute ? 'chat-unmute' : 'chat-mute',
             onPress: () => {
-              muteChannel(currentChannelId || '', !channelInfo?.channelUuid);
+              muteChannel(currentChannelId || '', !mute);
             },
           },
           {
@@ -76,8 +94,16 @@ const ChatDetails = () => {
                   {
                     title: 'Confirm',
                     type: 'primary',
-                    onPress: () => {
-                      hideChannel(currentChannelId || '');
+                    onPress: async () => {
+                      try {
+                        Loading.show();
+                        await hideChannel(currentChannelId || '');
+                        Loading.hide();
+                        navigationService.navigate('Tab');
+                      } catch (error) {
+                        Loading.hide();
+                        console.log(error);
+                      }
                     },
                   },
                 ],
@@ -87,11 +113,21 @@ const ChatDetails = () => {
         ],
         px: pageX,
         py: pageY,
-        position: 'left',
+        formatType: 'dynamicWidth',
       });
     },
-    [channelInfo?.channelUuid, currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel],
+    [currentChannelId, currentChannelInfo?.displayName, hideChannel, mute, muteChannel, pin, pinChannel, toRelationId],
   );
+
+  const addContact = useLockCallback(async () => {
+    try {
+      await addStranger(toRelationId || '');
+      CommonToast.success('Add Success');
+      dispatch(fetchContactListAsync());
+    } catch (error) {
+      CommonToast.fail(handleErrorMessage(error));
+    }
+  }, [addStranger, dispatch, toRelationId]);
 
   return (
     <PageContainer
@@ -100,6 +136,7 @@ const ChatDetails = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
+      leftCallback={() => navigationService.navigate('ChatHome')}
       leftDom={
         <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
           <Touchable style={GStyles.marginRight(pTd(20))} onPress={navigationService.goBack}>
@@ -117,7 +154,7 @@ const ChatDetails = () => {
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
-      <AddContactButton />
+      <AddContactButton isStranger={isStranger} onPressButton={addContact} />
       <Chats />
     </PageContainer>
   );

@@ -114,7 +114,6 @@ const MessageList: FC<IMessageListProps> = ({
         <MessageItem
           {...(x as any)}
           className={isShowMargin && 'showMargin'}
-          key={x.id}
           onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
           onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
           onDelete={() => onDelete(`${x.id}`)}

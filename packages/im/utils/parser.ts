@@ -14,8 +14,8 @@ const imageMessageParser = (str: string): ParsedImage => {
     action: result['action'] || '',
     imgUrl: result['p1(Text)'] || '',
     s3Key: result['p2(Text)'] || '',
-    thumbImgUrl: result['p1(Text)'],
-    thumbS3Key: result['p2(Text)'],
+    thumbImgUrl: result['p3(Text)'],
+    thumbS3Key: result['p4(Text)'],
     width: result['p5(Text)'],
     height: result['p6(Text)'],
   };

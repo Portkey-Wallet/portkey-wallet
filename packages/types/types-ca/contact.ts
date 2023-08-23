@@ -1,6 +1,6 @@
+import { IImInfo } from '@portkey-wallet/im';
 import { ChainId } from '..';
 import { CaHolderInfo } from './wallet';
-import { IImInfo } from './im';
 
 export interface AddressItem {
   chainId: ChainId; // AELF tDVV tDVW
@@ -29,8 +29,9 @@ export interface ContactItemType {
 
 export interface EditContactItemApiType {
   name: string;
-  id: string;
+  id?: string;
   relationId?: string;
+  addresses?: AddressItem[];
 }
 
 export interface AddContactItemApiType {

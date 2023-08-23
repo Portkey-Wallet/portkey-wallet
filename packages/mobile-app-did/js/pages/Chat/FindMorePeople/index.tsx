@@ -17,26 +17,21 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
-import { useContactList } from '@portkey-wallet/hooks/hooks-ca/contact';
 import navigationService from 'utils/navigationService';
+import { useJumpToChatDetails } from 'hooks/chat';
+import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const FindMorePeople = () => {
   const { userId } = useWallet();
-  const contactList = useContactList();
-
-  console.log('contactList', contactList);
+  const navToChatDetails = useJumpToChatDetails();
 
   const [keyword, setKeyword] = useState('');
   // const [, setLoading] = useState(false);
   const debounceWord = useDebounce(keyword, 500);
+  const checkIsStranger = useCheckIsStranger();
 
   const [list, setList] = useState<GetOtherUserInfoDefaultResult[]>([]);
   const caAddressInfoList = useCaAddressInfoList();
-
-  const isMyContact = useMemo(() => {
-    return false;
-    // return contactList.includes(ele => ele?.imInfo?.relationId === list[0].relationId);
-  }, []);
 
   const checkIsMyself = useCallback(() => {
     if (debounceWord === userId) return true;
@@ -74,19 +69,29 @@ const FindMorePeople = () => {
   }, [debounceWord, searchUser]);
 
   const renderItem = useCallback(
-    ({ item }: any) => {
+    ({ item }: { item: GetOtherUserInfoDefaultResult }) => {
       return (
         <ContactItem
           isShowChat
-          isShowContactIcon={isMyContact}
-          isShowWarning={item.isImputation}
-          onPressChat={() => navigationService.navigate('ChatDetails', { channelInfo: item })}
-          onPress={() => navigationService.navigate('ChatContactProfile', { contact: item })}
-          contact={item}
+          isShowContactIcon={checkIsStranger(item.relationId || '')}
+          onPressChat={() => navToChatDetails({ toRelationId: item.relationId })}
+          onPress={() =>
+            navigationService.navigate('ChatContactProfile', { contact: item, relationId: item.relationId })
+          }
+          contact={{
+            ...item,
+            index: '',
+            modificationTime: 0,
+            isImputation: false,
+            id: '',
+            addresses: [],
+            isDeleted: false,
+            userId: '',
+          }}
         />
       );
     },
-    [isMyContact],
+    [checkIsStranger, navToChatDetails],
   );
 
   return (

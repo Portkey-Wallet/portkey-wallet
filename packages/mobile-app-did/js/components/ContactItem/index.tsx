@@ -27,7 +27,7 @@ const ContactItem: React.FC<ItemType> = props => {
       <View style={styles.itemWrap}>
         <View style={[styles.itemAvatar, BGStyles.bg4, BorderStyles.border1, styles.avatarWrap]}>
           {isShowWarning && <View style={styles.warningCycle} />}
-          <TextXXL style={FontStyles.font5}>{contact.name[0].toUpperCase()}</TextXXL>
+          <TextXXL style={FontStyles.font5}>{contact?.name?.[0]?.toUpperCase()}</TextXXL>
         </View>
         <View style={styles.itemNameWrap}>
           <TextL numberOfLines={1} style={FontStyles.font5}>

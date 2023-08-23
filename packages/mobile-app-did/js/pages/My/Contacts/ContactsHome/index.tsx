@@ -10,17 +10,19 @@ import ContactsList from 'components/ContactList';
 import CommonTopTab from 'components/CommonTopTab';
 import { BGStyles } from 'assets/theme/styles';
 import CommonInput from 'components/CommonInput';
-import { useContactList } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useContactList, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import useDebounce from 'hooks/useDebounce';
 import SearchContactListSection from '../SearchContactListSection';
 import { StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import FindMoreButton from 'pages/Chat/components/FindMoreButton';
 import ContactUpdateWarning from 'pages/My/components/ContactUpdateWarning';
+import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 
 const ContactsHome: React.FC = () => {
   const { t } = useLanguage();
   const contactList = useContactList();
+  const searchContact = useLocalContactSearch();
   const [keyword, setKeyword] = useState('');
   const [filerList, setFilterList] = useState<any[]>([]);
 
@@ -43,8 +45,10 @@ const ContactsHome: React.FC = () => {
   );
 
   useEffect(() => {
-    setFilterList(debounceKeyword ? contactList : []);
-  }, [contactList, debounceKeyword]);
+    const { contactFilterList } = searchContact(debounceKeyword, ContactsTab.ALL);
+    console.log('searchContact', contactFilterList);
+    setFilterList(contactFilterList);
+  }, [contactList, debounceKeyword, searchContact]);
 
   return (
     <PageContainer

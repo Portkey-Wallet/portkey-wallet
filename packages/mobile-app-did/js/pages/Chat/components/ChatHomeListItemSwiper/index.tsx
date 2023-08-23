@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     height: pTd(2),
   },
   message: {
-    maxWidth: pTd(270),
+    maxWidth: pTd(240),
   },
   messageNum: {
     borderRadius: pTd(8),

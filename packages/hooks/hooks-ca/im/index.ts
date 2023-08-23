@@ -1,4 +1,4 @@
-import im, { ChannelStatusEnum, ChannelTypeEnum, SocketMessage } from '@portkey-wallet/im';
+import im, { ChannelStatusEnum, ChannelTypeEnum, IMStatusEnum, SocketMessage } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppCASelector } from '../.';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
@@ -53,7 +53,7 @@ export const useInitIM = () => {
             channel: {
               status: ChannelStatusEnum.NORMAL,
               channelUuid: rawMsg.channelUuid,
-              displayName: rawMsg.fromName || '',
+              displayName: '',
               channelIcon: rawMsg.fromAvatar || '',
               channelType: ChannelTypeEnum.P2P,
               unreadMessageCount: 1,
@@ -72,13 +72,13 @@ export const useInitIM = () => {
           const { data: channelInfo } = await im.service.getChannelInfo({
             channelUuid: rawMsg.channelUuid,
           });
-          console.log('channelInfo', channelInfo);
 
           dispatch(
             updateChannelAttribute({
               network: networkType,
               channelId: rawMsg.channelUuid,
               value: {
+                displayName: channelInfo.members.find(item => item.relationId === rawMsg.from)?.name || '',
                 pin: channelInfo.pin,
                 channelType: channelInfo.type,
               },
@@ -140,6 +140,10 @@ export const useRelationId = () => {
   const relationIdNetMap = useIMRelationIdNetMapNetMapState();
 
   return useMemo(() => relationIdNetMap?.[networkType], [networkType, relationIdNetMap]);
+};
+
+export const useIsIMReady = () => {
+  return [IMStatusEnum.AUTHORIZED, IMStatusEnum.CONNECTED].includes(im.status);
 };
 
 export * from './channelList';

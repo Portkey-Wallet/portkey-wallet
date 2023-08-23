@@ -1,36 +1,42 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import Touchable from 'components/Touchable';
-import { TextL, TextM, TextS } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
 import NoData from 'components/NoData';
-import Svg from 'components/Svg';
 import CommonInput from 'components/CommonInput';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
-import CommonAvatar from 'components/CommonAvatar';
+import { BGStyles } from 'assets/theme/styles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-
-const mock_data = new Array(100).map(() => ({ id: 1 }));
+import { useChatContactFlatList, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
+import useDebounce from 'hooks/useDebounce';
+import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import ContactItem from 'components/ContactItem';
 
 const NewChatHome = () => {
   const [keyword, setKeyword] = useState('');
-  const [filterList, setFilterList] = useState(mock_data);
+  const debounceKeyword = useDebounce(keyword, 500);
+  const allChatList = useChatContactFlatList();
+  const searchContact = useLocalContactSearch();
+  const [filterList, setFilterList] = useState<ContactItemType[]>(allChatList);
 
-  const renderItem = useCallback((item: any) => {
+  useEffect(() => {
+    if (!debounceKeyword) return setFilterList(allChatList);
+
+    const { contactFilterList } = searchContact(debounceKeyword, ContactsTab.Chats);
+    setFilterList(contactFilterList);
+  }, [allChatList, debounceKeyword, searchContact]);
+
+  const renderItem = useCallback(({ item }: { item: ContactItemType }) => {
     return (
-      <Touchable style={[GStyles.flexRow, styles.itemWrap]} onPress={() => navigationService.navigate('ChatDetails')}>
-        <CommonAvatar title="sally" hasBorder avatarSize={pTd(36)} style={styles.avatarStyle} />
-        <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, styles.rightSection]}>
-          <TextL numberOfLines={1}>Sally</TextL>
-          <Touchable style={styles.chatButton} onPress={() => navigationService.navigate('ChatDetails')}>
-            <TextS style={FontStyles.font2}>Chat</TextS>
-          </Touchable>
-        </View>
-      </Touchable>
+      <ContactItem
+        isShowChat
+        contact={item}
+        onPress={() => navigationService.navigate('ChatContactProfile', { contactInfo: item })}
+        onPressChat={() => navigationService.navigate('ChatDetails', { channelInfo: item })}
+      />
     );
   }, []);
 
@@ -52,7 +58,9 @@ const NewChatHome = () => {
       </View>
       <FlatList
         data={filterList}
-        ListEmptyComponent={<NoData noPic message="No search result" />}
+        ListEmptyComponent={
+          <NoData noPic message={debounceKeyword && filterList.length == 0 ? 'No contact found' : 'No contact'} />
+        }
         renderItem={renderItem}
       />
     </PageContainer>
@@ -63,7 +71,7 @@ export default NewChatHome;
 
 const styles = StyleSheet.create({
   containerStyles: {
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg1,
     paddingHorizontal: 0,
     flex: 1,
   },

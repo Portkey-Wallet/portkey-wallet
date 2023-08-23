@@ -19,16 +19,32 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { ChannelItem } from '@portkey-wallet/im/types';
+import { useJumpToChatDetails } from 'hooks/chat';
 
 export default function SearchPeople() {
   const iptRef = useRef<any>();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const searchChannel = useSearchChannel();
+  const navToChatDetails = useJumpToChatDetails();
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 500);
   const [filterList, setFilterList] = useState<ChannelItem[]>([]);
+
+  const fetchList = useLockCallback(async () => {
+    try {
+      const list = await searchChannel(debounceKeyword);
+      setFilterList(list);
+    } catch (error) {
+      CommonToast.fail(handleErrorMessage(error));
+    }
+  }, [debounceKeyword]);
+
+  useEffect(() => {
+    if (!debounceKeyword) return setFilterList([]);
+    fetchList();
+  }, [debounceKeyword, fetchList]);
 
   useFocusEffect(
     useCallback(() => {
@@ -40,41 +56,31 @@ export default function SearchPeople() {
     }, []),
   );
 
-  const fetchList = useLockCallback(async () => {
-    try {
-      const result = await searchChannel(debounceKeyword);
-      console.log('result', result);
-      setFilterList(result?.data?.list);
-    } catch (error) {
-      CommonToast.fail(handleErrorMessage(error));
-    }
-  }, [debounceKeyword]);
-
-  useEffect(() => {
-    if (!debounceKeyword) return setFilterList([]);
-    fetchList();
-  }, [debounceKeyword, fetchList]);
-
   useEffect(
     () => () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef?.current) clearTimeout(timerRef.current);
     },
     [],
   );
 
-  const renderItem = useCallback(({ item }: { item: ChannelItem }) => {
-    console.log(item);
-    return (
-      <Touchable
-        style={[GStyles.flexRow, GStyles.itemCenter, styles.itemWrap]}
-        onPress={() => navigationService.navigate('ChatDetails', { channelInfo: item })}>
-        <CommonAvatar title={item?.displayName} hasBorder avatarSize={pTd(36)} style={styles.avatarStyle} />
-        <View style={styles.rightSection}>
-          <TextL numberOfLines={1}>{item?.displayName}</TextL>
-        </View>
-      </Touchable>
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: ChannelItem }) => {
+      const { toRelationId = '', channelUuid = '', displayName = '' } = item;
+      return (
+        <Touchable
+          style={[GStyles.flexRow, GStyles.itemCenter, styles.itemWrap]}
+          onPress={() => {
+            navToChatDetails({ toRelationId, channelUuid });
+          }}>
+          <CommonAvatar title={displayName} hasBorder avatarSize={pTd(36)} style={styles.avatarStyle} />
+          <View style={styles.rightSection}>
+            <TextL numberOfLines={1}>{displayName}</TextL>
+          </View>
+        </Touchable>
+      );
+    },
+    [navToChatDetails],
+  );
 
   return (
     <PageContainer

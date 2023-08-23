@@ -10,22 +10,24 @@ import { StyleSheet } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 type AddContactButtonPropsType = {
+  isStranger?: boolean;
   onPressButton?: () => void;
 };
 
 export default function AddContactButton(props: AddContactButtonPropsType) {
-  const { onPressButton } = props;
-  const [isShow, setIsShow] = useState(true);
+  const { isStranger, onPressButton } = props;
+  const [clickClose, setClickClose] = useState(false);
 
-  if (!isShow) return null;
+  if (!isStranger || (isStranger && clickClose)) return null;
 
   return (
     <Touchable
+      activeOpacity={0.9}
       style={[GStyles.flexRow, GStyles.flexCenter, GStyles.itemCenter, styles.wrap]}
       onPress={() => onPressButton?.()}>
       <Svg size={pTd(20)} icon="chat-find-more" color={defaultColors.font4} />
       <TextM style={[FontStyles.font4, GStyles.marginLeft(pTd(16))]}>Add Contact</TextM>
-      <Touchable style={[GStyles.flexRow, GStyles.center, styles.closeIconWrap]} onPress={() => setIsShow(false)}>
+      <Touchable style={[GStyles.flexRow, GStyles.center, styles.closeIconWrap]} onPress={() => setClickClose(true)}>
         <Svg size={pTd(10)} icon="close" color={defaultColors.icon1} />
       </Touchable>
     </Touchable>

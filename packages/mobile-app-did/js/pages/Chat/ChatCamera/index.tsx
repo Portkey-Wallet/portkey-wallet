@@ -17,6 +17,7 @@ import CommonToast from 'components/CommonToast';
 
 const ChatCamera: React.FC = () => {
   const cameraRef = useRef<Camera>(null);
+  const [sending, setSending] = useState(false);
   const [img, setImgUrl] = useState<CameraCapturedPicture>();
   const [status, requestCameraPermission] = Camera.useCameraPermissions();
   const { sendChannelImage } = useSendCurrentChannelMessage();
@@ -82,17 +83,21 @@ const ChatCamera: React.FC = () => {
           )}
           {img?.uri && (
             <CommonButton
+              title="Send"
+              type="primary"
+              loading={sending}
+              buttonStyle={PageStyle.sendButton}
               onPress={async () => {
                 try {
+                  setSending(true);
                   await sendChannelImage(img);
                   navigationService.goBack();
                 } catch (error) {
                   CommonToast.failError(error);
+                } finally {
+                  setSending(false);
                 }
               }}
-              title="Send"
-              type="primary"
-              buttonStyle={PageStyle.sendButton}
             />
           )}
         </View>
@@ -154,6 +159,7 @@ export const PageStyle = StyleSheet.create({
   },
   sendButton: {
     height: pTd(40),
+    minWidth: pTd(64),
     paddingHorizontal: pTd(16),
   },
   previewImage: {

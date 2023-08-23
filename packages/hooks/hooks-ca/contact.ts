@@ -18,8 +18,9 @@ import {
 import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '../index';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { useAddStranger } from './im';
 
-const REFRESH_DELAY_TIME = 1.5 * 1000;
+export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
 export const useAddContact = () => {
   const dispatch = useAppCommonDispatch();
@@ -37,6 +38,22 @@ export const useAddContact = () => {
       return response;
     },
     [currentNetworkInfo.apiUrl, dispatch],
+  );
+};
+
+export const useAddStrangerContact = () => {
+  const dispatch = useAppCommonDispatch();
+  const addStranger = useAddStranger();
+  return useCallback(
+    async (relationId: string) => {
+      const response = await addStranger(relationId);
+
+      dispatch(addContactAction(response.data));
+      setTimeout(() => {
+        dispatch(fetchContactListAsync());
+      }, REFRESH_DELAY_TIME);
+    },
+    [addStranger, dispatch],
   );
 };
 
@@ -173,7 +190,11 @@ export const useLocalContactSearch = () => {
   return useCallback(
     (value: string, type: ContactsTab) => {
       if (!value) {
-        return { contactFilterList: [], contactIndexFilterList: [] };
+        const temp: ContactItemType[] = [];
+        contactIndexList.forEach(({ contacts }) => {
+          temp.push(...contacts);
+        });
+        return { contactFilterList: temp, contactIndexFilterList: contactIndexList };
       }
 
       // STEP 1
@@ -242,6 +263,21 @@ export const useLocalContactSearch = () => {
   );
 };
 
+export const useChatContactFlatList = () => {
+  const { contactIndexList } = useContact(false, false);
+  return useMemo(() => {
+    const contactFlatList: ContactItemType[] = [];
+    contactIndexList.forEach(({ contacts }) => {
+      contacts.map(contact => {
+        if (contact.imInfo?.relationId) {
+          contactFlatList.push(contact);
+        }
+      });
+    });
+    return contactFlatList;
+  }, [contactIndexList]);
+};
+
 export const useIsMyContact = () => {
   const { contactPortkeyIdMap, contactRelationIdMap } = useContact(false, false);
 
@@ -257,5 +293,19 @@ export const useIsMyContact = () => {
       );
     },
     [contactPortkeyIdMap, contactRelationIdMap],
+  );
+};
+
+export const useGetProfile = () => {
+  const currentNetworkInfo = useCurrentNetworkInfo();
+  return useCallback(
+    async ({ id, relationId }: { id: string; relationId: string }): Promise<ContactItemType> => {
+      const response = await request.contact.profile({
+        baseURL: currentNetworkInfo.apiUrl,
+        params: { id, relationId },
+      });
+      return response;
+    },
+    [currentNetworkInfo.apiUrl],
   );
 };

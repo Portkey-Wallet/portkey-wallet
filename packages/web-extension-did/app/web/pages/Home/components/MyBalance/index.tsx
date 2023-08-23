@@ -30,7 +30,7 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBuyButtonShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import './index.less';
@@ -84,9 +84,7 @@ export default function MyBalance() {
   useFreshTokenPrice();
   useVerifierList();
   const { isBuyButtonShow } = useBuyButtonShow();
-  // TODO
-  const isShowChat = true;
-  // const isShowChat = useIsChatShow();
+  const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
 
   useEffect(() => {
@@ -176,7 +174,6 @@ export default function MyBalance() {
 
   return (
     <div className="balance">
-      {/* TODO isPrompt */}
       {isShowChat && !isPrompt && (
         <div className="chat-body">
           <ChatEntry unread={unreadCount} />

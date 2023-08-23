@@ -83,12 +83,14 @@ export default function ViewContactBody({
         />
       </div>
 
-      {/* TODO No edit button for strangers */}
-      <div className="footer">
-        <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
-          {editText}
-        </Button>
-      </div>
+      {/* stranger cant edit */}
+      {!isShowAddContactBtn && (
+        <div className="footer">
+          <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
+            {editText}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

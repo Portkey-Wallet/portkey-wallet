@@ -1,9 +1,9 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { FlatList, Keyboard, StyleSheet, View } from 'react-native';
-import { TextM, TextS } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
-import { useBookmarkList } from 'hooks/discover';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import Touchable from 'components/Touchable';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { BGStyles, FontStyles } from 'assets/theme/styles';

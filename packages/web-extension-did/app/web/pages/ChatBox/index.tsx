@@ -7,23 +7,15 @@ import { PopoverMenuList, MessageList, InputBar, StyleProvider, MessageType } fr
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
 import PhotoSendModal from './components/ImageSendModal';
-import {
-  ImageMessageFileType,
-  useAddStranger,
-  useChannel,
-  useIsStranger,
-  useRelationId,
-} from '@portkey-wallet/hooks/hooks-ca/im';
+import { ImageMessageFileType, useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from './components/BookmarkListDrawer';
 import { getPixel } from './utils';
 import { formatMessageTime } from '@portkey-wallet/utils/chat';
 import { useTranslation } from 'react-i18next';
 import { MessageTypeWeb } from 'types/im';
-import { sleep } from '@portkey-wallet/utils';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
-import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
-import { REFRESH_DELAY_TIME } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useLoading } from 'store/Provider/hooks';
+import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isSameDay } from '@portkey-wallet/utils/time';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import './index.less';
@@ -37,13 +29,12 @@ export default function Session() {
   const [showBookmark, setShowBookmark] = useState(false);
   const sendImgModalRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
-  const addContactApi = useAddStranger();
+  const addContactApi = useAddStrangerContact();
   const [popVisible, setPopVisible] = useState(false);
   const [showStrangerTip, setShowStrangerTip] = useState(true);
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
   const isStranger = useIsStranger(info?.toRelationId || '');
-  const dispatch = useAppDispatch();
   const { setLoading } = useLoading();
   useEffectOnce(() => {
     init();
@@ -59,7 +50,7 @@ export default function Session() {
       if (transType) {
         transItem = {
           id: `${item.id}`,
-          // sendUuid: item.sendUuid, // TODO
+          key: item.sendUuid,
           title: item.fromName,
           position: item.from === relationId ? 'right' : 'left',
           text: `${item.parsedContent}`,
@@ -78,6 +69,7 @@ export default function Session() {
         };
       } else {
         transItem = {
+          key: `${item.createAt}`,
           id: `${item.createAt}`,
           position: 'left',
           date: item.createAt,
@@ -89,6 +81,7 @@ export default function Session() {
       if (i === 0) {
         formatList.push(
           {
+            key: `${item.createAt}`,
             id: `${item.createAt}`,
             position: 'left',
             date: item.createAt,
@@ -103,6 +96,7 @@ export default function Session() {
         } else {
           formatList.push(
             {
+              key: `${item.createAt}`,
               id: `${item.createAt}`,
               position: 'left',
               date: item.createAt,
@@ -145,15 +139,13 @@ export default function Session() {
       const res = await addContactApi(info?.toRelationId || '');
       console.log('===add stranger res', res, 'info', info);
       message.success('Contact added');
-      await sleep(REFRESH_DELAY_TIME);
-      dispatch(fetchContactListAsync());
     } catch (e) {
       message.error('Add contact error');
       console.log('===add stranger error', e);
     } finally {
       setLoading(false);
     }
-  }, [addContactApi, dispatch, info, setLoading]);
+  }, [addContactApi, info, setLoading]);
   const chatPopList = useMemo(
     () => [
       {

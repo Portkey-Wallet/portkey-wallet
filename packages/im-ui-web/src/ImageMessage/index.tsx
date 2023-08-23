@@ -54,6 +54,10 @@ const ImageMessage: React.FC<IImageMessageProps> = props => {
                 width={imageSize.width}
                 height={imageSize.height}
                 src={thumbImgUrl || imgUrl}
+                preview={{
+                  src: imgUrl || thumbImgUrl,
+                  width: imageSize.width,
+                }}
                 onError={() => setLoadErr(true)}
               />
               <div className="image-date">{showDate}</div>
@@ -65,6 +69,10 @@ const ImageMessage: React.FC<IImageMessageProps> = props => {
               width={imageSize.width}
               height={imageSize.height}
               src={thumbImgUrl || imgUrl}
+              preview={{
+                src: imgUrl || thumbImgUrl,
+                width: imageSize.width,
+              }}
               onError={() => setLoadErr(true)}
             />
             <div className="image-date">{showDate}</div>

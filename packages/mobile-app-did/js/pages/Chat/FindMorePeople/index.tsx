@@ -55,6 +55,7 @@ const FindMorePeople = () => {
       });
       setList([{ ...data }]);
     } catch (error) {
+      setList([]);
       console.log(error);
     }
   }, [debounceWord]);
@@ -73,7 +74,7 @@ const FindMorePeople = () => {
       return (
         <ContactItem
           isShowChat
-          isShowContactIcon={checkIsStranger(item.relationId || '')}
+          isShowContactIcon={!checkIsStranger(item.relationId || '')}
           onPressChat={() => navToChatDetails({ toRelationId: item.relationId })}
           onPress={() =>
             navigationService.navigate('ChatContactProfile', { contact: item, relationId: item.relationId })

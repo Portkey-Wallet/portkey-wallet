@@ -69,13 +69,13 @@ const ContactProfile: React.FC = () => {
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}>
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
-        <ProfileHeaderSection name={info?.name || ''} />
+        <ProfileHeaderSection name={info?.name || info?.caHolderInfo?.walletName || info?.imInfo?.name || ''} />
         <ProfileHandleSection
           isAdded={!isStranger}
-          onPressAdded={() => addStranger(relationId || '')}
+          onPressAdded={() => addStranger(relationId || info?.imInfo?.relationId || '')}
           onPressChat={async () => {
             try {
-              navToChatDetail({ toRelationId: relationId || '' });
+              navToChatDetail({ toRelationId: relationId || info?.imInfo?.relationId || '' });
             } catch (error) {
               CommonToast.fail(handleErrorMessage(error));
             }

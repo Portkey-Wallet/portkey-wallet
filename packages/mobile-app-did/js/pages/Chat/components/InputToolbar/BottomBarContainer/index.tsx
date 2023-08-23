@@ -16,6 +16,7 @@ import { SendMessageButton } from '../SendMessageButton';
 import { ChatInput, ChatInputBar } from '../ChatInput';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { chatInputRecorder } from 'pages/Chat/utils';
+import CommonToast from 'components/CommonToast';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -66,8 +67,13 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
   });
   const onSend = useCallback(async () => {
     dispatch(setChatText(''));
-    sendChannelMessage(text);
     chatInputRecorder?.reset();
+
+    try {
+      typeof text === 'string' && sendChannelMessage(text.trim());
+    } catch (error) {
+      CommonToast.fail('fail');
+    }
   }, [dispatch, sendChannelMessage, text]);
   return (
     <View style={styles.wrap}>

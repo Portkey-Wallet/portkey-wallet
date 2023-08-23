@@ -12,6 +12,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export default function ChatList() {
   const {
@@ -25,11 +26,13 @@ export default function ChatList() {
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const navToChatDetails = useJumpToChatDetails();
+  const lastInitChannelList = useLatestRef(initChannelList);
+
   useFocusEffect(
     useCallback(() => {
-      console.log('initChannelList');
-      initChannelList();
-    }, [initChannelList]),
+      lastInitChannelList.current();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
   );
 
   const onHideChannel = useCallback(

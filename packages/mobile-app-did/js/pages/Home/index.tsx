@@ -34,6 +34,7 @@ import {
   useHideChannel,
   useMuteChannel,
   usePinChannel,
+  useSendChannelMessage,
   useUnreadCount,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import dayjs from 'dayjs';
@@ -52,6 +53,7 @@ export default function HomeScreen() {
   const { userGuardiansList } = useGuardiansInfo();
   const createChannel = useCreateP2pChannel();
   const unreadCount = useUnreadCount();
+  const { sendChannelMessage } = useSendChannelMessage();
 
   const { list, sendMessage, sendImage, init, next, hasNext, info } = useChannel('ef4c6a65e4774171b973503c7373b563');
   // const { list, sendMessage, sendImage, init, next, hasNext, info } = useChannel('cb911c8a381a442ba672feb70d43dd93');
@@ -285,10 +287,11 @@ export default function HomeScreen() {
           title="operate true"
           onPress={async () => {
             try {
-              // const result = await createChannel('nbkqm-oyaaa-aaaaj-7whqq-cai');
-              // console.log('createChannel', result);
-              const result = await muteChannel('0a88cea1efde493a805a0afdbf471d08', true);
-              console.log('test', result);
+              const { channelUuid } = await createChannel('e7i7y-giaaa-aaaaj-2ooma-cai');
+              const result2 = await sendChannelMessage(channelUuid, 'test message');
+              console.log('result2', result2);
+              // const result = await muteChannel('0a88cea1efde493a805a0afdbf471d08', true);
+              // console.log('test', result);
             } catch (error) {
               console.log('createChannel: error', error);
             }

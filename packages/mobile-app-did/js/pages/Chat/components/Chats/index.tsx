@@ -117,6 +117,10 @@ const ChatsUI = () => {
   const relationId = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
+  useEffectOnce(() => {
+    init();
+  });
+
   return (
     <>
       <Touchable disabled={disabledTouchable} activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>

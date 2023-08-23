@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
-
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import SafeAreaBox from 'components/SafeAreaBox';
@@ -11,17 +10,10 @@ import CustomHeader from 'components/CustomHeader';
 import ChatOverlay from '../components/ChatOverlay';
 import Touchable from 'components/Touchable';
 import ChatList from '../components/ChatList';
-import CommonButton from 'components/CommonButton';
-import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { pTd } from 'utils/unit';
-import im from '@portkey-wallet/im';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
-import { v4 } from 'uuid';
-import { formatChatListTime } from '@portkey-wallet/utils/chat';
 
 export default function DiscoverHome() {
-  const createChannel = useCreateP2pChannel();
-
   const RightDom = useMemo(() => {
     return (
       <View style={GStyles.flexRow}>
@@ -57,31 +49,10 @@ export default function DiscoverHome() {
     );
   }, []);
 
-  const createCha = useCallback(async () => {
-    try {
-      const result = await createChannel('5h7d6-liaaa-aaaaj-vgmya-cai');
-      console.log('result', result);
-    } catch (error) {
-      console.log('createChannel: error', error);
-    }
-  }, [createChannel]);
-
-  const sendMess = useCallback(async () => {
-    im.service.sendMessage({
-      toRelationId: 'e7i7y-giaaa-aaaaj-2ooma-cai',
-      type: 'TEXT',
-      sendUuid: v4(),
-      content: ` hello sa---  ${formatChatListTime(Date.now())} `,
-    });
-    console.log('sendMess', v4());
-  }, []);
-
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <CustomHeader noLeftDom themeType="blue" titleDom="Web3 Chat" rightDom={RightDom} />
       <ChatList />
-      <CommonButton title="createChannel" onPress={createCha} />
-      <CommonButton title="sendMessage" onPress={sendMess} />
     </SafeAreaBox>
   );
 }

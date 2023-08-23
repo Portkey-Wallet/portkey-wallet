@@ -70,10 +70,10 @@ const ContactProfile: React.FC = () => {
         <ProfileHeaderSection name={info?.name || ''} />
         <ProfileHandleSection
           isAdded={!isStranger}
-          onPressAdded={() => addStranger(relationId || '')}
+          onPressAdded={() => addStranger(relationId || info?.imInfo?.relationId || '')}
           onPressChat={async () => {
             try {
-              navToChatDetail({ toRelationId: relationId || '' });
+              navToChatDetail({ toRelationId: relationId || info?.imInfo?.relationId || '' });
             } catch (error) {
               CommonToast.fail(handleErrorMessage(error));
             }

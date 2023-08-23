@@ -1,11 +1,10 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
 import { IMessageListProps, MessageListEvent } from '../type';
-
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
@@ -22,8 +21,8 @@ const MessageList: FC<IMessageListProps> = ({
   const [_downButton, setDownButton] = useState(false);
   const prevProps = useRef(props);
 
-  const checkScroll = () => {
-    var e = referance;
+  const checkScroll = useCallback(() => {
+    const e = referance;
     if (!e || !e.current) return;
 
     if (toBottomHeight === '100%' || (toBottomHeight && scrollBottom < (toBottomHeight as number))) {
@@ -33,7 +32,7 @@ const MessageList: FC<IMessageListProps> = ({
         e.current.scrollTop = e.current.scrollHeight - e.current.offsetHeight - scrollBottom;
       }
     }
-  };
+  }, [lockable, referance, scrollBottom, toBottomHeight]);
 
   useEffect(() => {
     if (!referance) return;
@@ -44,27 +43,36 @@ const MessageList: FC<IMessageListProps> = ({
     }
 
     prevProps.current = props;
-  }, [prevProps, props]);
+  }, [checkScroll, prevProps, props, referance]);
 
   const getBottom = (e: any) => {
     if (e.current) return e.current.scrollHeight - e.current.scrollTop - e.current.offsetHeight;
     return e.scrollHeight - e.scrollTop - e.offsetHeight;
   };
 
-  const onDownload: MessageListEvent = (item, index, event) => {
-    if (props.onDownload instanceof Function) props.onDownload(item, index, event);
-  };
+  const onDownload: MessageListEvent = useCallback(
+    (item, index, event) => {
+      if (props.onDownload instanceof Function) props.onDownload(item, index, event);
+    },
+    [props],
+  );
 
-  const onPhotoError: MessageListEvent = (item, index, event) => {
-    if (props.onPhotoError instanceof Function) props.onPhotoError(item, index, event);
-  };
+  const onPhotoError: MessageListEvent = useCallback(
+    (item, index, event) => {
+      if (props.onPhotoError instanceof Function) props.onPhotoError(item, index, event);
+    },
+    [props],
+  );
 
-  const onDelete = (id: string) => {
-    if (props.onDelete instanceof Function) props.onDelete(`${id}`);
-  };
+  const onDelete = useCallback(
+    (id: string) => {
+      if (props.onDelete instanceof Function) props.onDelete(`${id}`);
+    },
+    [props],
+  );
 
   const onScroll = (e: React.UIEvent<HTMLElement>): void => {
-    var bottom = getBottom(e.currentTarget);
+    const bottom = getBottom(e.currentTarget);
     setScrollBottom(bottom);
     if (toBottomHeight === '100%' || (toBottomHeight && bottom > (toBottomHeight as number))) {
       if (_downButton !== true) {
@@ -98,7 +106,7 @@ const MessageList: FC<IMessageListProps> = ({
   useEffect(() => {
     if (!referance) return;
     referance.current.scrollTop = referance.current.scrollHeight;
-  }, []);
+  }, [referance]);
 
   const renderMessageItem = useMemo(() => {
     let prev = 'left';
@@ -113,6 +121,7 @@ const MessageList: FC<IMessageListProps> = ({
       return (
         <MessageItem
           {...(x as any)}
+          key={x.key}
           className={isShowMargin && 'showMargin'}
           onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
           onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
@@ -120,7 +129,7 @@ const MessageList: FC<IMessageListProps> = ({
         />
       );
     });
-  }, [props.dataSource]);
+  }, [onDelete, onDownload, onPhotoError, props.dataSource, props.onDownload, props.onPhotoError]);
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>

@@ -1,4 +1,3 @@
-// import React from 'react';
 import { DotLoading, InfiniteScroll } from 'antd-mobile';
 import { useTranslation } from 'react-i18next';
 

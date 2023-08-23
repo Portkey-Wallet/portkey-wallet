@@ -197,8 +197,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-
-  getProfile(params: GetProfileParams): IMServiceCommon<null> {
+  getProfile(params: GetProfileParams): IMServiceCommon<ContactItemType> {
     return this._request.send({
       url: '/api/v1/contacts/profile',
       params,

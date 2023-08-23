@@ -13,7 +13,6 @@ import {
   getInitContactIndexList,
   sortContactIndexList,
   transIndexesToContactMap,
-  transIndexesToContactPortkeyIdMap,
   transIndexesToContactRelationIdMap,
 } from './utils';
 
@@ -21,7 +20,6 @@ export interface ContactState {
   lastModified: number;
   contactIndexList: ContactIndexType[];
   contactMap: ContactMapType;
-  contactPortkeyIdMap?: ContactMapType;
   contactRelationIdMap?: ContactMapType;
   isImputation?: boolean;
 }
@@ -30,7 +28,6 @@ export const initialState: ContactState = {
   lastModified: 0,
   contactIndexList: getInitContactIndexList(),
   contactMap: {},
-  contactPortkeyIdMap: {},
   contactRelationIdMap: {},
   isImputation: false,
 };
@@ -61,7 +58,6 @@ export const contactSlice = createSlice({
           state.contactIndexList = getInitContactIndexList();
         }
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
-        state.contactPortkeyIdMap = transIndexesToContactPortkeyIdMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
       })
       .addCase(fetchContactListAsync.rejected, (_state, action) => {
@@ -72,7 +68,6 @@ export const contactSlice = createSlice({
         _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
         state.contactIndexList = sortContactIndexList(_contactIndexList);
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
-        state.contactPortkeyIdMap = transIndexesToContactPortkeyIdMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
       })
       .addCase(editContactAction, (state, action) => {
@@ -80,7 +75,6 @@ export const contactSlice = createSlice({
         _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
         state.contactIndexList = sortContactIndexList(_contactIndexList);
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
-        state.contactPortkeyIdMap = transIndexesToContactPortkeyIdMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
       })
       .addCase(deleteContactAction, (state, action) => {
@@ -88,13 +82,11 @@ export const contactSlice = createSlice({
         _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
         state.contactIndexList = sortContactIndexList(_contactIndexList);
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
-        state.contactPortkeyIdMap = transIndexesToContactPortkeyIdMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
       })
       .addCase(resetContact, state => {
         state.contactIndexList = getInitContactIndexList();
         state.contactMap = {};
-        state.contactPortkeyIdMap = {};
         state.contactRelationIdMap = {};
         state.lastModified = 0;
       })

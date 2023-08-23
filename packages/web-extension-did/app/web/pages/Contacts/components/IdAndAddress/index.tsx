@@ -5,13 +5,20 @@ import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import clsx from 'clsx';
 
 interface IIdAndAddressProps {
-  portkeyId: string;
-  relationId: string;
+  portkeyId?: string;
+  relationId?: string;
   addresses: AddressItem[];
+  addressSectionLabel?: string;
   handleCopy: (val: string) => void;
 }
 
-export default function IdAndAddress({ portkeyId, relationId, addresses, handleCopy }: IIdAndAddressProps) {
+export default function IdAndAddress({
+  portkeyId,
+  relationId,
+  addresses,
+  handleCopy,
+  addressSectionLabel = 'DID',
+}: IIdAndAddressProps) {
   return (
     <div className="id-and-address">
       {/* Section - ID */}
@@ -38,7 +45,9 @@ export default function IdAndAddress({ portkeyId, relationId, addresses, handleC
       {/* Section - Address */}
       {addresses?.length > 0 && (
         <div className="info-section">
-          <div className={clsx(['info-title', !portkeyId && !relationId ? '' : 'title-did'])}>{`DID`}</div>
+          <div className={clsx(['info-title', !portkeyId && !relationId ? '' : 'title-did'])}>
+            {addressSectionLabel}
+          </div>
           <ContactAddressList list={addresses} />
         </div>
       )}

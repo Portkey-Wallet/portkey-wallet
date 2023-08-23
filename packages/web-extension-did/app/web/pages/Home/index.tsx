@@ -12,6 +12,7 @@ import walletMessage from 'messages/walletMessage';
 import { useEffectOnce } from 'react-use';
 import { getStoreState } from 'store/utils/getStore';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import initIm from 'hooks/im';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ export default function Home() {
   useEffectOnce(() => {
     checkAchSell();
   });
+  initIm();
 
   return (
     <div className={clsx(['portkey-home', isPrompt ? 'portkey-prompt' : null])}>

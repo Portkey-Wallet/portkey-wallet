@@ -14,8 +14,7 @@ interface IInputBar {
   onSendMessage: (v: string) => void;
 }
 
-export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxlength = 300, ...props }: IInputBar) {
-  console.log(props);
+export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxlength = 300 }: IInputBar) {
   const [showEmojiIcon, setShowEmojiIcon] = useState(false);
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,7 +41,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
   const handleEnterKeyDown = (e: any) => {
     if (e.keyCode === 13) {
       e.preventDefault();
-      if (value) {
+      if (value?.trim()) {
         handleSend();
       }
     }
@@ -118,7 +117,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
               </div>
             )}
           </div>
-          {value && <CustomSvg type="Send" onClick={handleSend} />}
+          {value?.trim() && <CustomSvg type="Send" onClick={handleSend} />}
         </div>
       </div>
     </div>

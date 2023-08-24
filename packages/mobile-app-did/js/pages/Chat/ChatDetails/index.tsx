@@ -170,7 +170,17 @@ const ChatDetails = () => {
           <Touchable style={GStyles.marginRight(pTd(20))} onPress={() => navigationService.navigate('Tab')}>
             <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
           </Touchable>
-          <CommonAvatar title={displayName} avatarSize={pTd(32)} style={styles.headerAvatar} />
+          <Touchable
+            onPress={() => {
+              navigationService.navigate('ChatContactProfile', {
+                relationId: toRelationId,
+                contact: {
+                  name: currentChannelInfo?.displayName,
+                },
+              });
+            }}>
+            <CommonAvatar title={displayName} avatarSize={pTd(32)} style={styles.headerAvatar} />
+          </Touchable>
           <TextL style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
             {displayName}
           </TextL>

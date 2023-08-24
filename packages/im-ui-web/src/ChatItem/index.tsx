@@ -69,7 +69,7 @@ const ChannelItem: React.FC<IChatItemProps> = ({
   return (
     <Popover
       key={`pop-${props.id}`}
-      overlayClassName="chat-item-popover"
+      overlayClassName="portkey-chat-item-popover"
       placement="bottom"
       trigger="contextMenu"
       open={popVisible}
@@ -92,7 +92,7 @@ const ChannelItem: React.FC<IChatItemProps> = ({
                 <span className="body-top-title-text">{props.title}</span>
                 {showMute && props.muted === true && <CustomSvg type="Mute" />}
               </div>
-              <div className="body--top-time">{props.dateString || formatChatListTime(`${date}`)}</div>
+              <div className="body-top-time">{props.dateString || formatChatListTime(`${date}`)}</div>
             </div>
 
             <div className="body-bottom flex">

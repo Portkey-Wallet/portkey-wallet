@@ -38,7 +38,7 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
     {
       key: 'delete',
       leftIcon: <CustomSvg type="Delete" />,
-      children: 'Delelte',
+      children: 'Delete',
       onClick: handleDelMsg,
     },
   ];

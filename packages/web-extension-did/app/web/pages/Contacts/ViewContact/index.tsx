@@ -86,8 +86,8 @@ export default function ViewContact() {
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {
       navigate('/new-chat', { state });
-    } else if (state?.from === 'chat-list') {
-      navigate('/chat-list');
+    } else if (state?.from === 'chat-box') {
+      navigate(-1);
     } else {
       navigate('/setting/contacts');
     }

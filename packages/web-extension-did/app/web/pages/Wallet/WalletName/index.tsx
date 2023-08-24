@@ -18,7 +18,11 @@ export default function WalletName() {
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
     return caAddressInfos.map((item) => {
-      return { chainName: item.chainName, chainId: item.chainId, address: item.caAddress };
+      return {
+        chainName: 'aelf',
+        chainId: item.chainId,
+        address: item.caAddress,
+      };
     });
   }, [caAddressInfos]);
 
@@ -36,6 +40,7 @@ export default function WalletName() {
       caHolderInfo: { userId: userId },
       userId: userId,
       isShowRemark: false,
+      from: 'my-did',
     }),
     [transAddresses, userId, walletName],
   );

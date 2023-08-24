@@ -23,18 +23,23 @@
   }
 
   .contacts-tab {
-    .portkey-tabs-nav {
+    height: 100%;
+
+    .@{app-prefix}-tabs-content-holder {
+      overflow-y: auto;
+    }
+    .@{app-prefix}-tabs-nav {
       margin-bottom: 0;
     }
-    .portkey-tabs-nav-list {
+    .@{app-prefix}-tabs-nav-list {
       width: 100%;
-      .portkey-tabs-tab {
+      .@{app-prefix}-tabs-tab {
         width: 50%;
         display: flex;
         justify-content: center;
       }
     }
-    .portkey-tabs-nav-operations {
+    .@{app-prefix}-tabs-nav-operations {
       display: none;
     }
   }

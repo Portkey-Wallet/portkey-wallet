@@ -9,7 +9,7 @@ import CustomModal from 'pages/components/CustomModal';
 import {
   REFRESH_DELAY_TIME,
   useAddStrangerContact,
-  useContactRelationIdMap,
+  useContactInfo,
   useReadImputation,
 } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -26,7 +26,6 @@ export default function ViewContact() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const isStrangerFn = useCheckIsStranger();
-  const contactRelationIdMap = useContactRelationIdMap();
 
   const relationId = useMemo(
     () => state?.relationId || state?.imInfo?.relationId,
@@ -36,6 +35,7 @@ export default function ViewContact() {
   // unified data structure
   const [data, setData] = useState({
     ...state,
+    id: state?.id,
     index: state?.index || state.name?.substring(0, 1).toLocaleUpperCase(),
     name: state.name,
     imInfo: {
@@ -43,7 +43,7 @@ export default function ViewContact() {
       relationId: state?.relationId || state?.imInfo?.relationId,
     },
   });
-  // const [data, setData] = useState(state);
+  const contactInfo = useContactInfo({ contactId: state?.id, relationId: relationId });
 
   const title = t('Details');
   const editText = t('Edit');
@@ -52,26 +52,20 @@ export default function ViewContact() {
   const addContactText = t('Add Contact');
 
   useEffect(() => {
-    // ================== case one ==================
-    // Cant chat (no relationId), display data directly
-    // Because it jumped from contacts page only
-    if (!relationId) {
-      setData(state);
-    }
-
-    // ================== case two ==================
-    // Can chat, and is my contact, need to get full info from local map;
-    // Because it jumped from the chat-box, the data is incomplete
     const isStranger = isStrangerFn(relationId);
-    if (relationId && !isStranger) {
-      const info = contactRelationIdMap?.[relationId];
-      setData(info?.[0]);
-    }
-
-    // ================== case three ==================
-    // Can chat, and is stranger, need to get full info from remote db;
-    // Because it jumped from the chat-box or find-more, the data is incomplete
-    if (isStranger) {
+    if (state?.id) {
+      // ================== case one ==================
+      // have contact id, get info from local map
+      setData(contactInfo);
+    } else if (relationId && !isStranger) {
+      // ================== case two ==================
+      // Can chat, and is my contact, need to get full info from local map;
+      // Because it jumped from the chat-box, the data is incomplete
+      setData(contactInfo);
+    } else if (isStranger) {
+      // ================== case three ==================
+      // Can chat, and is stranger, need to get full info from remote db;
+      // Because it jumped from the chat-box or find-more, the data is incomplete
       try {
         im.service.getProfile({ id: state?.id, relationId: relationId }).then((res) => {
           setData(res);
@@ -80,8 +74,13 @@ export default function ViewContact() {
         const err = handleErrorMessage(error, 'get profile error');
         message.error(err);
       }
+    } else {
+      // ================== case four ==================
+      // Cant chat (no relationId), display data directly
+      // Because it jumped from contacts page only
+      setData(state);
     }
-  }, [contactRelationIdMap, isStrangerFn, relationId, state]);
+  }, [contactInfo, isStrangerFn, relationId, state]);
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {
@@ -114,7 +113,7 @@ export default function ViewContact() {
 
   const readImputationApi = useReadImputation();
   useEffect(() => {
-    if (state?.isImputation) {
+    if (state?.isImputation && state?.from === 'contact-list') {
       // imputation from unread to read
       readImputationApi(state);
 

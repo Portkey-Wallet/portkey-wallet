@@ -39,7 +39,10 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
     setValue('');
   };
   const handleEnterKeyDown = (e: any) => {
-    if (e.keyCode === 13) {
+    if (e.keyCode === 13 && e.shiftKey) {
+      e.preventDefault();
+      setValue(e.target.value + '\n');
+    } else if (e.keyCode === 13) {
       e.preventDefault();
       if (value?.trim()) {
         handleSend();

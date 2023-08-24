@@ -72,7 +72,8 @@ const ChatContactProfileEdit: React.FC = () => {
               if (!contact) return;
               await deleteContact(contact);
               CommonToast.success(t('Contact Deleted'), undefined, 'bottom');
-              navigationService.navigate('ContactsHome');
+              navigationService.goBack();
+              navigationService.goBack();
             } catch (e: any) {
               console.log('onDelete:error', e);
               CommonToast.fail(handleErrorMessage(e));

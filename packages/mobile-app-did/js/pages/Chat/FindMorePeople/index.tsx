@@ -45,7 +45,7 @@ const FindMorePeople = () => {
   }, [caAddressInfoList, debounceWord, userId]);
 
   const searchUser = useLockCallback(async () => {
-    if (!debounceWord) return;
+    if (!debounceWord) return setList([]);
     if (checkIsMyself()) return CommonToast.fail('Unable to add yourself as a contact');
 
     try {

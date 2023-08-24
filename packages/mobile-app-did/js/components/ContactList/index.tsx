@@ -161,7 +161,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
           // adjust no chat func
           if (!isShowChat)
             return navigationService.navigate('NoChatContactProfile', {
-              contact: item,
+              contactId: item.id,
               isCheckImputation: true,
             });
 

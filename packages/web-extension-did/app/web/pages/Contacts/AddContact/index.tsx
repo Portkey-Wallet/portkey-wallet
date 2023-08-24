@@ -202,7 +202,7 @@ export default function AddContact() {
 
       appDispatch(fetchContactListAsync());
 
-      if (contactDetail?.imInfo?.relationId) {
+      if (!state?.imInfo?.relationId && contactDetail?.imInfo?.relationId) {
         // CAN CHAT
         CustomModal({
           type: 'info',
@@ -225,7 +225,7 @@ export default function AddContact() {
         message.success('Add Contact Successful');
       }
     },
-    [addContactApi, appDispatch, editContactApi, extra, handleView],
+    [addContactApi, appDispatch, editContactApi, extra, handleView, state?.imInfo?.relationId],
   );
 
   const onFinish = useCallback(

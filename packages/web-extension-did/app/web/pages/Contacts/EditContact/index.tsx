@@ -68,7 +68,7 @@ export default function EditContact() {
 
         appDispatch(fetchContactListAsync());
 
-        if (contactDetail?.imInfo?.relationId) {
+        if (!state?.imInfo?.relationId && contactDetail?.imInfo?.relationId) {
           // CAN CHAT
           CustomModal({
             type: 'info',

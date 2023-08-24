@@ -10,8 +10,6 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
-import useEffectOnce from 'hooks/useEffectOnce';
-import ActionSheet from 'components/ActionSheet';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -20,18 +18,6 @@ type RouterParams = {
 const NoChatContactProfile: React.FC = () => {
   const { contact } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
-
-  useEffectOnce(() => {
-    ActionSheet.alert({
-      message:
-        'Portkey has grouped contacts with the same Portkey ID together and removed duplicate contacts with the same address.',
-      buttons: [
-        {
-          title: 'OK',
-        },
-      ],
-    });
-  });
 
   return (
     <PageContainer

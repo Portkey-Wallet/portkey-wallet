@@ -17,6 +17,7 @@ import { pTd } from 'utils/unit';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { TextS } from 'components/CommonText';
 import { useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 const Tab = createBottomTabNavigator();
 
@@ -76,6 +77,7 @@ export default function TabRoot() {
   const { address } = useCurrentWalletInfo();
   const tabMenuListStore = useTabMenuList();
   const unreadCount = useUnreadCount();
+  const isImputation = useIsImputation();
 
   const tabMenuList = useMemo(() => {
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
@@ -128,7 +130,7 @@ export default function TabRoot() {
           } else if (tabMenu?.name === TabRouteNameEnum.SETTINGS) {
             return (
               <View style={styles.chatWrap}>
-                <TextS style={styles.warningCycle} />
+                {isImputation && <TextS style={styles.warningCycle} />}
                 <Svg
                   icon={tabMenu?.icon || 'my'}
                   size={22}

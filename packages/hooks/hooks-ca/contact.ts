@@ -143,7 +143,7 @@ export const useReadImputation = () => {
     async (contactItem: EditContactItemApiType): Promise<ContactItemType> => {
       const response = await request.contact.readImputation({
         baseURL: currentNetworkInfo.apiUrl,
-        params: { id: contactItem.id },
+        params: { contactId: contactItem.id },
       });
       dispatch(
         readImputationAction({ ...contactItem, isImputation: false, modificationTime: Date.now() } as ContactItemType),

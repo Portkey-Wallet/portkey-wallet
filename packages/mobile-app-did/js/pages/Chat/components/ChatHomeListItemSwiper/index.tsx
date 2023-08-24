@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
     display: 'none',
   },
   muteMessage: {
+    color: defaultColors.bg7,
     backgroundColor: defaultColors.bg7,
   },
 });

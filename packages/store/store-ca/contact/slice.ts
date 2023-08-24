@@ -52,6 +52,7 @@ export const contactSlice = createSlice({
           _contactIndexList = executeEventToContactIndexList(_contactIndexList, eventList);
           state.contactIndexList = sortContactIndexList(_contactIndexList);
           state.lastModified = lastModified;
+          state.isImputation = isImputation;
         }
 
         if (state.contactIndexList.length === 0) {
@@ -89,6 +90,7 @@ export const contactSlice = createSlice({
         state.contactMap = {};
         state.contactRelationIdMap = {};
         state.lastModified = 0;
+        state.isImputation = false;
       })
       .addCase(readImputationAction, (state, action) => {
         let _contactIndexList = [...state.contactIndexList];

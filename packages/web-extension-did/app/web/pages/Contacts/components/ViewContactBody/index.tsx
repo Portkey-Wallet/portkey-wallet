@@ -28,16 +28,14 @@ export default function ViewContactBody({
   const [isStranger, setIsStranger] = useState(false);
 
   useEffect(() => {
-    setIsStranger(isStrangerFn(data?.relationId || ''));
+    setIsStranger(isStrangerFn(data?.imInfo?.relationId || data?.relationId || ''));
   }, [data, isStrangerFn]);
 
   return (
     <div className="flex-column-between view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
-          {/* todo 默认index */}
           <div className="flex-center name-index">{data?.index}</div>
-          {/* todo 数据结构定义成一样的 */}
           <div className="name">{data?.walletName || data?.caHolderInfo?.walletName || ''}</div>
 
           {/* Section - Remark */}

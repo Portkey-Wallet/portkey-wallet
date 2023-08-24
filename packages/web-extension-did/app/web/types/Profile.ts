@@ -1,6 +1,7 @@
 import { BaseHeaderProps } from './UI';
 import { CaHolderInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
+import { IImInfo } from '@portkey-wallet/im';
 
 export type ExtraType = '1' | '2' | '3'; // '1' can chat, '2' cont chat , '3' no status（add new chat）
 
@@ -13,6 +14,7 @@ export interface IProfileDetailDataProps {
   index: string;
   addresses: AddressItem[];
   isShowRemark?: boolean;
+  imInfo?: IImInfo;
 }
 
 export interface IProfileDetailBodyProps {

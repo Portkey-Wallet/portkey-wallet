@@ -218,14 +218,16 @@ export const useLocalContactSearch = () => {
       const contactIndexFilterList: ContactIndexType[] = [];
       const contactFilterList: ContactItemType[] = [];
       if (value.length <= 16) {
+        const _v = value.trim().toLowerCase();
         filterList.forEach(({ index, contacts }) => {
           // Name search and Wallet Name search
           contactIndexFilterList.push({
             index,
             contacts: contacts.filter(
               contact =>
-                contact.name.trim().toLowerCase() === value.trim().toLowerCase() ||
-                contact.caHolderInfo?.walletName.trim().toLowerCase() === value.trim().toLowerCase(),
+                contact.name?.trim().toLowerCase().includes(_v) ||
+                contact.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v) ||
+                contact.imInfo?.name?.trim().toLowerCase().includes(_v),
             ),
           });
         });
@@ -234,7 +236,7 @@ export const useLocalContactSearch = () => {
         filterList.forEach(({ index, contacts }) => {
           contactIndexFilterList.push({
             index,
-            contacts: contacts.filter(contact => contact?.caHolderInfo?.userId.trim() === value.trim()),
+            contacts: contacts.filter(contact => contact?.caHolderInfo?.userId?.trim() === value.trim()),
           });
         });
         // Address search

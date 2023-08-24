@@ -532,7 +532,7 @@ export const useSearchChannel = () => {
       cursor: '',
       maxResultCount: SEARCH_CHANNEL_LIMIT,
     });
-    return data?.list?.filter(ele => ele?.lastMessageContent) || [];
+    return data?.list?.filter(ele => !!ele?.lastPostAt) || [];
   }, []);
 };
 

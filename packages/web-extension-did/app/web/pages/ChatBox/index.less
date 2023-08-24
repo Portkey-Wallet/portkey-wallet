@@ -61,6 +61,14 @@
         cursor: pointer;
         width: 20px;
         height: 20px;
+        /* stylelint-disable-next-line no-descending-specificity */
+        svg {
+          /* stylelint-disable-next-line no-descending-specificity */
+          path {
+            fill: @svg-1;
+          }
+        }
+  
       }
     }
     .close2-icon {

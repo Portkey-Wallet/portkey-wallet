@@ -47,7 +47,7 @@ export default function Session() {
     let transItem: MessageType;
     list.forEach((item, i) => {
       const transType = MessageTypeWeb[item.type] || '';
-      if (transType) {
+      if (['text', 'image'].includes(transType)) {
         transItem = {
           id: `${item.id}`,
           key: item.sendUuid,
@@ -225,6 +225,7 @@ export default function Session() {
   const handleUpload = async () => {
     try {
       await sendImage(file!);
+      messageRef.current.scrollTop = messageRef.current.scrollHeight;
       setPreviewImage('');
       setFile(undefined);
     } catch (e) {
@@ -247,6 +248,7 @@ export default function Session() {
   const handleSendMessage = async (v: string) => {
     try {
       await sendMessage(v.trim() ?? '');
+      messageRef.current.scrollTop = messageRef.current.scrollHeight;
     } catch (e) {
       message.error('Failed to send message');
     }

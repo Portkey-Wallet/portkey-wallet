@@ -1,5 +1,5 @@
 import { Popover } from 'antd';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
@@ -10,6 +10,7 @@ import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
+import { ChannelItem } from '@portkey-wallet/im';
 import './index.less';
 
 export default function ChatList() {
@@ -24,6 +25,16 @@ export default function ChatList() {
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
+  const formatSubTitle = useCallback((item: ChannelItem) => {
+    const _type = MessageTypeWeb[item.lastMessageType!];
+    let subTitle = '[Not supported message]';
+    if (_type === 'image') {
+      subTitle = '[Image]';
+    } else if (_type === 'text') {
+      subTitle = `${item.lastMessageContent}`;
+    }
+    return subTitle;
+  }, []);
   const addPopList = useMemo(
     () => [
       {
@@ -68,16 +79,14 @@ export default function ChatList() {
         id: item.channelUuid,
         letterItem: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
-        subtitle: item.lastMessageType === 'IMAGE' ? '[Image]' : `${item.lastMessageContent}`,
-        dateString: MessageTypeWeb[item.lastMessageType!]
-          ? formatChatListTime(item.lastPostAt)
-          : '[Not supported message]',
+        subtitle: formatSubTitle(item),
+        dateString: formatChatListTime(item.lastPostAt),
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
       };
     });
-  }, [chatList]);
+  }, [chatList, formatSubTitle]);
 
   useEffectOnce(() => {
     initChannelList();

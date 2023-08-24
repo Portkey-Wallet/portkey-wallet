@@ -20,6 +20,7 @@ import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service'
 import navigationService from 'utils/navigationService';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import NoData from 'components/NoData';
 
 const FindMorePeople = () => {
   const { userId } = useWallet();
@@ -120,7 +121,11 @@ const FindMorePeople = () => {
           <TextM style={styles.portkeyId} numberOfLines={1}>{`My Portkey ID : ${userId}`}</TextM>
         </View>
       )}
-      <FlatList data={list} renderItem={renderItem} />
+      <FlatList
+        data={list}
+        renderItem={renderItem}
+        ListEmptyComponent={keyword ? <NoData noPic message="No search result" /> : null}
+      />
     </PageContainer>
   );
 };

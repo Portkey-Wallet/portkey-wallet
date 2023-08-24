@@ -120,7 +120,7 @@ export default function TabRoot() {
                 {unreadCount > 0 && <TextS style={styles.messageCount}>{formatMessageCountToStr(unreadCount)}</TextS>}
                 <Svg
                   icon={tabMenu?.icon || 'my'}
-                  size={22}
+                  size={pTd(22)}
                   color={focused ? defaultColors.font4 : defaultColors.font7}
                 />
               </View>
@@ -131,7 +131,7 @@ export default function TabRoot() {
                 <TextS style={styles.warningCycle} />
                 <Svg
                   icon={tabMenu?.icon || 'my'}
-                  size={22}
+                  size={pTd(22)}
                   color={focused ? defaultColors.font4 : defaultColors.font7}
                 />
               </View>
@@ -139,7 +139,11 @@ export default function TabRoot() {
           }
 
           return (
-            <Svg icon={tabMenu?.icon || 'my'} size={22} color={focused ? defaultColors.font4 : defaultColors.font7} />
+            <Svg
+              icon={tabMenu?.icon || 'my'}
+              size={pTd(22)}
+              color={focused ? defaultColors.font4 : defaultColors.font7}
+            />
           );
         },
       })}>

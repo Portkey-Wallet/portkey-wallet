@@ -114,7 +114,7 @@ export default function ViewContact() {
 
   const readImputationApi = useReadImputation();
   useEffect(() => {
-    if (state?.isImputation) {
+    if (!state?.isImputation && state?.from === 'contact-list') {
       // imputation from unread to read
       readImputationApi(state);
 

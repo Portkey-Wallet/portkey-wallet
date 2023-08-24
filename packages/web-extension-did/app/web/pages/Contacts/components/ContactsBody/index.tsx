@@ -61,7 +61,7 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
             list={list}
             isSearch={isSearch}
             clickItem={(item) => {
-              navigate('/setting/contacts/view', { state: item });
+              navigate('/setting/contacts/view', { state: { ...item, from: 'contact-list' } });
             }}
             clickChat={handleChat}
           />

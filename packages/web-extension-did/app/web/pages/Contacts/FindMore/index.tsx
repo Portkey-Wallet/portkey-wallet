@@ -61,8 +61,8 @@ export default function FindMore() {
           index: res?.data?.name?.substring(0, 1).toLocaleUpperCase(),
           name: res?.data?.name,
           imInfo: {
-            relationId: res?.data.portkeyId,
-            portkeyId: res?.data.relationId,
+            relationId: res?.data.relationId,
+            portkeyId: res?.data.portkeyId,
           },
         });
         setIsAdded(!!contactRelationIdMap?.[res?.data?.relationId]);

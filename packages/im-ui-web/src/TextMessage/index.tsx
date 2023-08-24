@@ -32,6 +32,7 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
       children: 'Copy',
       onClick: () => {
         setCopied(props.text);
+        message.info('Copy Success');
       },
     },
     {

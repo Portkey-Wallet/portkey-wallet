@@ -93,7 +93,7 @@ const WalletName: React.FC = () => {
           <>
             <ProfileHeaderSection name={walletName} />
             <ProfilePortkeyIDSection portkeyID={userId || ''} />
-            <ProfileAddressSection addressList={caInfoList} />
+            <ProfileAddressSection isMySelf addressList={caInfoList} />
           </>
         ) : (
           <FormItem title={'Wallet Name'}>

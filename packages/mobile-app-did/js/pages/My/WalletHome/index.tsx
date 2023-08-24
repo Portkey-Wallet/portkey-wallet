@@ -20,6 +20,7 @@ import { useAppDispatch } from 'store/hooks';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface WalletHomeProps {
   name?: string;
@@ -29,11 +30,13 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   const { t } = useLanguage();
   const appDispatch = useAppDispatch();
   const {
+    walletName,
     walletAvatar,
     walletInfo: { caHash, address: managerAddress },
   } = useCurrentWallet();
   const getCurrentCAContract = useGetCurrentCAContract();
   const logout = useLogOut();
+  const showChat = useIsChatShow();
 
   useEffect(() => {
     appDispatch(getCaHolderInfoAsync());
@@ -76,7 +79,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
           <MenuItem
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('WalletName')}
-            title={t('My DID')}
+            title={showChat ? t('My DID') : walletName}
           />
           <MenuItem
             style={pageStyles.menuItem}

@@ -100,11 +100,10 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             {item.pin && item.unreadMessageCount === 0 ? (
               <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
             ) : (
-              <View style={[GStyles.center, styles.messageNumWrap, !item.unreadMessageCount && styles.hide]}>
-                <TextS style={[styles.messageNum, item.mute && styles.muteMessage]}>
-                  {formatMessageCountToStr(item.unreadMessageCount)}
-                </TextS>
-              </View>
+              <TextS
+                style={[styles.messageNum, item.mute && styles.muteMessage, !item.unreadMessageCount && styles.hide]}>
+                {formatMessageCountToStr(item.unreadMessageCount)}
+              </TextS>
             )}
           </View>
         </View>
@@ -155,18 +154,19 @@ const styles = StyleSheet.create({
   message: {
     maxWidth: pTd(240),
   },
-  messageNumWrap: {
-    borderRadius: pTd(8),
+  messageNum: {
     backgroundColor: defaultColors.bg17,
-    minWidth: pTd(16),
-    height: pTd(16),
+    marginRight: pTd(0),
     paddingHorizontal: pTd(4),
     textAlign: 'center',
-  },
-  messageNum: {
-    lineHeight: pTd(16),
-    marginRight: pTd(0),
     color: defaultColors.font2,
+    zIndex: 1000,
+    height: pTd(17),
+    minWidth: pTd(17),
+    borderColor: defaultColors.bg17,
+    borderWidth: pTd(1),
+    borderRadius: pTd(9),
+    overflow: 'hidden',
   },
   hide: {
     display: 'none',

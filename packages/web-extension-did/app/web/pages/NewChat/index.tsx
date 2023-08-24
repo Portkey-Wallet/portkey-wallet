@@ -71,7 +71,7 @@ export default function ChatListSearch() {
     <div className="new-chat-page flex-column">
       <div className="new-chat-top">
         <SettingHeader
-          title={t('Chats')}
+          title={t('New Chat')}
           leftCallBack={() => navigate('/chat-list')}
           rightElement={<CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />}
         />

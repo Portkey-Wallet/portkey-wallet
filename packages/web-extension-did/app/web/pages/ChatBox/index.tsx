@@ -218,7 +218,7 @@ export default function Session() {
     {
       key: 'bookmark',
       leftIcon: <CustomSvg type="Bookmark" />,
-      children: 'Bookmark',
+      children: 'Bookmarks',
       onClick: () => setShowBookmark(true),
     },
   ];
@@ -289,7 +289,7 @@ export default function Session() {
       {isStranger && showStrangerTip && (
         <div className="add-contact-tip">
           <div className="content flex-center" onClick={handleAddContact}>
-            <CustomSvg type="AddContact" />
+            <CustomSvg type="ChatAddContact" />
             <span className="text">Add Contact</span>
           </div>
           <CustomSvg type="Close2" onClick={() => setShowStrangerTip(false)} />

@@ -18,6 +18,7 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useEffectOnce } from 'react-use';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -51,9 +52,9 @@ export default function ViewContact() {
   const addedText = t('Added');
   const addContactText = t('Add Contact');
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const isStranger = isStrangerFn(relationId);
-    if (state?.id) {
+    if (state?.id && !isStranger) {
       // ================== case one ==================
       // have contact id, get info from local map
       setData(contactInfo);
@@ -67,8 +68,8 @@ export default function ViewContact() {
       // Can chat, and is stranger, need to get full info from remote db;
       // Because it jumped from the chat-box or find-more, the data is incomplete
       try {
-        im.service.getProfile({ id: state?.id, relationId: relationId }).then((res) => {
-          setData(res);
+        im.service.getProfile({ relationId: relationId }).then((res) => {
+          setData(res?.data);
         });
       } catch (error) {
         const err = handleErrorMessage(error, 'get profile error');
@@ -80,7 +81,7 @@ export default function ViewContact() {
       // Because it jumped from contacts page only
       setData(state);
     }
-  }, [contactInfo, isStrangerFn, relationId, state]);
+  });
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {

@@ -47,7 +47,7 @@ export default function Session() {
     let transItem: MessageType;
     list.forEach((item, i) => {
       const transType = MessageTypeWeb[item.type] || '';
-      if (transType) {
+      if (['text', 'image'].includes(transType)) {
         transItem = {
           id: `${item.id}`,
           key: item.sendUuid,

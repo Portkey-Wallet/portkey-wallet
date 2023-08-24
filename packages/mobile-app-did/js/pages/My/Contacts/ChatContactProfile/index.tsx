@@ -107,7 +107,7 @@ const ContactProfile: React.FC = () => {
           type="primary"
           containerStyle={pageStyles.btnWrap}
           onPress={async () => {
-            navigationService.navigate('ChatContactProfileEdit', { contact });
+            navigationService.navigate('ChatContactProfileEdit', { contact: info });
           }}>
           {t('Edit')}
         </CommonButton>

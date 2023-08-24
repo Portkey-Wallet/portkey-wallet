@@ -30,6 +30,7 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import Loading from 'components/Loading';
 import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 const ChatDetails = () => {
   const dispatch = useAppCommonDispatch();
@@ -43,8 +44,6 @@ const ChatDetails = () => {
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
 
   const isStranger = useIsStranger(currentChannelInfo?.toRelationId || '');
-
-  console.log('isStranger', isStranger);
 
   const toRelationId = useMemo(() => currentChannelInfo?.toRelationId, [currentChannelInfo?.toRelationId]);
   const displayName = useMemo(() => currentChannelInfo?.displayName, [currentChannelInfo?.displayName]);
@@ -113,9 +112,9 @@ const ChatDetails = () => {
             },
           },
         ],
-        px: pageX,
-        py: pageY,
         formatType: 'dynamicWidth',
+        customPosition: { right: pTd(20), top: pageY + 20 },
+        customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
       });
     },
     [currentChannelId, currentChannelInfo?.displayName, hideChannel, mute, muteChannel, pin, pinChannel, toRelationId],

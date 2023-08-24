@@ -28,10 +28,11 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 // import myEvents from 'utils/deviceEvent';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { defaultColors } from 'assets/theme';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   contact?: ContactItemType;
-  addressList?: Array<AddressItem>;
+  addressList?: Array<AddressItem>; // if addressList, it is from send page
 };
 
 export type EditAddressType = AddressItem & { error: ErrorType };
@@ -259,39 +260,24 @@ const ContactEdit: React.FC = () => {
         });
       }
 
-      if (isEdit) {
+      if (addressList && addressList?.length > 0) {
+        // from send page
+        if (
+          editContact.addresses[0].address === addressList?.[0]?.address &&
+          editContact.addresses[0].chainId === addressList?.[0]?.chainId
+        ) {
+          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+        }
         navigationService.goBack();
       } else {
         navigationService.navigate('ContactsHome');
       }
-
-      // if (isEdit) {
-      //   const result = await editContactApi(editContact);
-      //   console.log('editContactApi', result);
-
-      //   CommonToast.success(t('Saved Successful'), undefined, 'bottom');
-      // } else {
-      //   await addContactApi(editContact);
-      //   CommonToast.success(t('Contact Added'), undefined, 'bottom');
-      // }
-
-      // if (addressList && addressList?.length > 0) {
-      //   if (
-      //     editContact.addresses[0].address === addressList?.[0]?.address &&
-      //     editContact.addresses[0].chainId === addressList?.[0]?.chainId
-      //   ) {
-      //     myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
-      //   }
-      //   navigationService.goBack();
-      // } else {
-      //   navigationService.navigate('ContactsHome');
-      // }
     } catch (err: any) {
       CommonToast.failError(err);
     } finally {
       Loading.hide();
     }
-  }, [addContactApi, checkError, editContact, editContactApi, isEdit, t]);
+  }, [addContactApi, addressList, checkError, editContact, editContactApi, isEdit, t]);
 
   const onDelete = useCallback(() => {
     ActionSheet.alert({

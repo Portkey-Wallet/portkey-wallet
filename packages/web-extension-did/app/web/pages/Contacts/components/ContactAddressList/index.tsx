@@ -31,7 +31,13 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
             <CustomSvg onClick={() => handleCopy(ads?.address)} type="Copy" className="address-copy-icon" />
           </div>
           <div className="flex-row-center chain">
-            <img src={ads?.image} className="chain-img" />
+            {ads?.image && <img src={ads?.image} className="chain-img" />}
+
+            {!ads?.image && ads?.chainName === 'aelf' && !isTestNet && <CustomSvg type="Aelf" className="chain-elf" />}
+            {!ads?.image && ads?.chainName === 'aelf' && isTestNet && (
+              <CustomSvg type="elf-icon" className="chain-elf" />
+            )}
+
             <span className="chain-text">{transNetworkText(ads.chainId, isTestNet)}</span>
           </div>
         </div>

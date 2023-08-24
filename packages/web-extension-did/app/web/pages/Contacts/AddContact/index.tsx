@@ -87,7 +87,7 @@ export default function AddContact() {
         address: '',
         networkName: v.networkName,
         chainId: v.chainId,
-        chainName: v.chainName,
+        chainName: 'aelf',
         validData: { validateStatus: '', errorMsg: '' },
       });
       form.setFieldValue('addresses', [...prevAddresses]);
@@ -225,7 +225,7 @@ export default function AddContact() {
         message.success('Add Contact Successful');
       }
     },
-    [addContactApi, appDispatch, handleView],
+    [addContactApi, appDispatch, editContactApi, extra, handleView],
   );
 
   const onFinish = useCallback(

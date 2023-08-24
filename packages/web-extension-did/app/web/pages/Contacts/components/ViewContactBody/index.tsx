@@ -85,7 +85,7 @@ export default function ViewContactBody({
       </div>
 
       {/* stranger cant edit */}
-      {!isStranger && (
+      {(!isStranger || data?.from === 'my-did') && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

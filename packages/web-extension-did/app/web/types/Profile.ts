@@ -15,6 +15,7 @@ export interface IProfileDetailDataProps {
   addresses: AddressItem[];
   isShowRemark?: boolean;
   imInfo?: IImInfo;
+  from?: string;
 }
 
 export interface IProfileDetailBodyProps {

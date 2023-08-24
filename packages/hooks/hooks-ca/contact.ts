@@ -161,6 +161,28 @@ export const useContactRelationIdMap = () => {
   return useAppCommonSelector(state => state.contact.contactRelationIdMap);
 };
 
+export const useContactIdMap = () => {
+  return useAppCommonSelector(state => state.contact.contactIdMap);
+};
+
+export const useContactInfo = ({ relationId, contactId }: { relationId?: string; contactId?: string }) => {
+  const contactIdMap = useContactIdMap();
+  const contactRelationIdMap = useContactRelationIdMap();
+
+  return useMemo(() => {
+    let contactInfo: ContactItemType | undefined;
+    // if (!relationId || !contactId) return undefined;
+    if (contactId) {
+      contactInfo = contactIdMap?.[contactId]?.[0];
+    }
+    if (contactInfo) return contactInfo;
+    if (relationId) {
+      contactInfo = contactRelationIdMap?.[relationId]?.[0];
+    }
+    return contactInfo;
+  }, [contactId, contactIdMap, contactRelationIdMap, relationId]);
+};
+
 export const useAllContactList = () => {
   const { contactIndexList } = useContact();
 

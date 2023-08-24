@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Popover, message } from 'antd';
 import { useCopyToClipboard } from 'react-use';
-import ParsedText from '../components/ParsedText';
+import { ParsedText, ParseShape } from 'react-parsed-text';
 
 import clsx from 'clsx';
 import { ITextMessageProps } from '../type';
@@ -38,10 +38,16 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
     {
       key: 'delete',
       leftIcon: <CustomSvg type="Delete" />,
-      children: 'Delelte',
+      children: 'Delete',
       onClick: handleDelMsg,
     },
   ];
+  const handleUrlPress: ParseShape['onClick'] = useCallback((url: string) => {
+    const openWinder = window.open(url, '_blank');
+    if (openWinder) {
+      openWinder.opener = null;
+    }
+  }, []);
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
@@ -78,12 +84,7 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
                   {
                     type: 'url',
                     className: 'text-link',
-                    onClick: (url) => {
-                      const openWinder = window.open(url, '_blank');
-                      if (openWinder) {
-                        openWinder.opener = null;
-                      }
-                    },
+                    onClick: handleUrlPress,
                   },
                 ]}>
                 {props.text}

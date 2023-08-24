@@ -18,6 +18,7 @@ import GStyles from 'assets/theme/GStyles';
 import FindMoreButton from 'pages/Chat/components/FindMoreButton';
 import ContactUpdateWarning from 'pages/My/components/ContactUpdateWarning';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const ContactsHome: React.FC = () => {
   const { t } = useLanguage();
@@ -27,6 +28,7 @@ const ContactsHome: React.FC = () => {
   const [filerList, setFilterList] = useState<any[]>([]);
 
   const debounceKeyword = useDebounce(keyword, 500);
+  const isShowChat = useIsChatShow();
 
   const tabList = useMemo(
     () => [
@@ -66,15 +68,20 @@ const ContactsHome: React.FC = () => {
       }
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
-        <CommonInput
-          value={keyword}
-          placeholder={t('Name or address')}
-          onChangeText={value => setKeyword(value.trim())}
-        />
-      </View>
-      <ContactUpdateWarning />
-      {debounceKeyword ? <SearchContactListSection list={filerList} /> : <CommonTopTab tabList={tabList} />}
+      {isShowChat && (
+        <>
+          <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
+            <CommonInput
+              value={keyword}
+              placeholder={t('Name or address')}
+              onChangeText={value => setKeyword(value.trim())}
+            />
+          </View>
+          <ContactUpdateWarning />
+          {debounceKeyword ? <SearchContactListSection list={filerList} /> : <CommonTopTab tabList={tabList} />}
+        </>
+      )}
+      {!isShowChat && <ContactsList isSearchShow isContactUpdateWarningShow style={pageStyles.contactListStyle} />}
     </PageContainer>
   );
 };

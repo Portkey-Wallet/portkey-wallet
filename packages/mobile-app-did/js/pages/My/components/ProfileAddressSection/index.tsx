@@ -10,14 +10,16 @@ import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 
 import React, { memo, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { copyText } from 'utils';
 import { pTd } from 'utils/unit';
 
 type addressItemType = {
   address: string;
   chainId: ChainId;
+  image?: string;
   chainType?: ChainType;
+  chainName?: string;
 };
 
 type ProfileAddressSectionPropsType = {
@@ -25,10 +27,11 @@ type ProfileAddressSectionPropsType = {
   disable?: boolean;
   noMarginTop?: boolean;
   addressList?: addressItemType[];
+  isMySelf?: boolean;
 };
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
-  const { title = 'DID', disable, noMarginTop, addressList } = props;
+  const { title = 'DID', disable, noMarginTop, addressList, isMySelf } = props;
   const { currentNetwork } = useWallet();
 
   const copyId = useCallback(
@@ -48,7 +51,17 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
             </Touchable>
           </View>
           <View style={GStyles.flexRow}>
-            <Svg icon="elf-icon" size={pTd(16)} />
+            {/* TODO: icon */}
+            {isMySelf ? (
+              <Svg icon="elf-icon" size={pTd(16)} />
+            ) : (
+              <Image
+                source={{
+                  uri: ele.image || '',
+                }}
+                style={styles.img}
+              />
+            )}
             <TextS style={[FontStyles.font3, GStyles.marginLeft(pTd(8))]}>
               {formatChainInfoToShow(ele.chainId, currentNetwork)}
             </TextS>
@@ -73,5 +86,10 @@ const styles = StyleSheet.create({
   address: {
     width: pTd(270),
     color: defaultColors.font5,
+  },
+  img: {
+    width: pTd(16),
+    height: pTd(16),
+    borderRadius: pTd(8),
   },
 });

@@ -19,7 +19,7 @@ import FormItem from 'components/FormItem';
 import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
 import { useDeleteContact, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
+import { isValidRemark } from '@portkey-wallet/utils/reg';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 
 type RouterParams = {
@@ -37,15 +37,15 @@ const ChatContactProfileEdit: React.FC = () => {
   const [error, setError] = useState('');
 
   const onFinish = useCallback(async () => {
-    const isValidName = isValidCAWalletName(remark);
-    if (!isValidName) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
+    if (remark && !isValidRemark(remark)) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
     try {
       Loading.show();
       await editContact({ name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' });
       CommonToast.success(t('Saved Successful'));
-      // TODO: navigate
+      navigationService.goBack();
       Loading.hide();
     } catch (e) {
+      CommonToast.failError(e);
       Loading.hide();
     }
   }, [contact, editContact, remark, t]);

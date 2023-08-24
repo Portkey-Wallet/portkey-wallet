@@ -14,9 +14,6 @@ export default function ViewContactBody({
   addedText = 'Added',
   addContactText = 'Add Contact',
   isShowRemark = true,
-  isShowAddContactBtn = true,
-  isShowAddedBtn = true,
-  isShowChatBtn = true,
   handleEdit,
   handleChat,
   handleAdd,
@@ -45,31 +42,29 @@ export default function ViewContactBody({
               <span>{data?.name || 'No set'}</span>
             </div>
           )}
-          {!isShowRemark && !isShowAddContactBtn && !isShowAddedBtn && !isShowChatBtn && (
-            <div className="empty-placeholder-8"></div>
-          )}
-          {isShowRemark && (isShowAddContactBtn || isShowAddedBtn || isShowChatBtn) && (
-            <div className="empty-placeholder-24"></div>
-          )}
+          {!data.id && !(!data.id && isStranger) && <div className="empty-placeholder-8"></div>}
+          {isShowRemark && (data.id || (!data.id && isStranger)) && <div className="empty-placeholder-24"></div>}
 
           {/* Section - Action: Added | Add Contact | Chat */}
           <div className="flex-center action">
-            {isShowAddedBtn && !isStranger && (
+            {data.id && (
               <div className="flex-column-center action-item added-contact">
                 <CustomSvg type="ContactAdded" />
                 <span>{addedText}</span>
               </div>
             )}
-            {isShowAddContactBtn && isStranger && (
-              <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
-                <CustomSvg type="ContactAdd" />
-                <span>{addContactText}</span>
-              </div>
-            )}
-            {isShowChatBtn && showChat && !isStranger && (
+            {data.id && showChat && (
               <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
                 <CustomSvg type="ContactChat" />
                 <span>{chatText}</span>
+              </div>
+            )}
+
+            {/* cant chat */}
+            {!data.id && isStranger && (
+              <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
+                <CustomSvg type="ContactAdd" />
+                <span>{addContactText}</span>
               </div>
             )}
           </div>

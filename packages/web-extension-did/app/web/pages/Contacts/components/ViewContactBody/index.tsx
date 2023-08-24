@@ -22,7 +22,7 @@ export default function ViewContactBody({
   const isStrangerFn = useCheckIsStranger();
   const showChat = useIsChatShow();
 
-  const [isStranger, setIsStranger] = useState(false);
+  const [isStranger, setIsStranger] = useState(true);
 
   useEffect(() => {
     setIsStranger(isStrangerFn(data?.imInfo?.relationId || data?.relationId || ''));
@@ -42,32 +42,38 @@ export default function ViewContactBody({
               <span>{data?.name || 'No set'}</span>
             </div>
           )}
+
+          {/* empty-placeholder */}
           {!data.id && !(!data.id && isStranger) && <div className="empty-placeholder-8"></div>}
-          {isShowRemark && (data.id || (!data.id && isStranger)) && <div className="empty-placeholder-24"></div>}
+          {((isShowRemark && (data.id || (!data.id && isStranger))) || data?.from === 'my-did') && (
+            <div className="empty-placeholder-24"></div>
+          )}
 
           {/* Section - Action: Added | Add Contact | Chat */}
-          <div className="flex-center action">
-            {data.id && (
-              <div className="flex-column-center action-item added-contact">
-                <CustomSvg type="ContactAdded" />
-                <span>{addedText}</span>
-              </div>
-            )}
-            {data.id && showChat && (
-              <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
-                <CustomSvg type="ContactChat" />
-                <span>{chatText}</span>
-              </div>
-            )}
+          {showChat && data?.from !== 'my-did' && (
+            <div className="flex-center action">
+              {data.id && !isStranger && (
+                <div className="flex-column-center action-item added-contact">
+                  <CustomSvg type="ContactAdded" />
+                  <span>{addedText}</span>
+                </div>
+              )}
+              {data.id && !isStranger && (
+                <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
+                  <CustomSvg type="ContactChat" />
+                  <span>{chatText}</span>
+                </div>
+              )}
 
-            {/* cant chat */}
-            {!data.id && isStranger && (
-              <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
-                <CustomSvg type="ContactAdd" />
-                <span>{addContactText}</span>
-              </div>
-            )}
-          </div>
+              {/* cant chat */}
+              {(!data.id || isStranger) && (
+                <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
+                  <CustomSvg type="ContactAdd" />
+                  <span>{addContactText}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <IdAndAddress
@@ -80,7 +86,7 @@ export default function ViewContactBody({
       </div>
 
       {/* stranger cant edit */}
-      {(data.id || !isStranger || data?.from === 'my-did') && (
+      {(!data.id || !isStranger || data?.from === 'my-did') && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

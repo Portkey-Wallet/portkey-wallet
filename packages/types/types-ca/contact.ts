@@ -6,7 +6,7 @@ export interface AddressItem {
   chainId: ChainId; // AELF tDVV tDVW
   chainName?: string;
   address: string;
-  imageUrl?: string;
+  image?: string;
 }
 
 export interface RecentAddressItem extends AddressItem {

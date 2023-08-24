@@ -19,7 +19,8 @@ import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useJumpToChatDetails } from 'hooks/chat';
-import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useAddStrangerContact, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import ActionSheet from 'components/ActionSheet';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -45,6 +46,23 @@ const ContactProfile: React.FC = () => {
   const isStranger = useIsStranger(relationId || contact?.imInfo?.relationId || '');
 
   const navToChatDetail = useJumpToChatDetails();
+
+  const readImputation = useReadImputation();
+  useEffectOnce(() => {
+    if (contact?.isImputation) {
+      console.log('readImputation', contact);
+      readImputation(contact);
+      ActionSheet.alert({
+        message:
+          'Portkey has grouped contacts with the same Portkey ID together and removed duplicate contacts with the same address.',
+        buttons: [
+          {
+            title: 'OK',
+          },
+        ],
+      });
+    }
+  });
 
   const getProfile = useCallback(async () => {
     if (relationId) {

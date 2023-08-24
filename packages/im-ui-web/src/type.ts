@@ -374,10 +374,7 @@ export interface ITextMessage extends IMessage {
  * @prop message The Text Message's message is a ITextMessage and required.
  * @prop dateString The Text Message's dateString and optional.
  */
-export interface ITextMessageProps extends ITextMessage {
-  // dateString?: string;
-  // copyClipboard: function;
-}
+export type ITextMessageProps = ITextMessage;
 
 /**
  * IInputProps Interface

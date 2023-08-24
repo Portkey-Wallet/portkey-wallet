@@ -17,7 +17,8 @@ import { MessageTypeWeb } from 'types/im';
 import { useLoading } from 'store/Provider/hooks';
 import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isSameDay } from '@portkey-wallet/utils/time';
-import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
+import { MAX_FILE_SIZE, MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
+import { ZERO } from '@portkey-wallet/constants/misc';
 import './index.less';
 
 export default function Session() {
@@ -186,6 +187,11 @@ export default function Session() {
     showUploadList: false,
     accept: 'image/*',
     beforeUpload: async (paramFile: RcFile) => {
+      const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
+      if (!sizeOk) {
+        message.info('file size exceeds the limit');
+        return false;
+      }
       const src = await new Promise((resolve) => {
         const reader = new FileReader();
         reader.readAsDataURL(paramFile);
@@ -240,7 +246,7 @@ export default function Session() {
   };
   const handleSendMessage = async (v: string) => {
     try {
-      await sendMessage(v);
+      await sendMessage(v.trim() ?? '');
     } catch (e) {
       message.error('Failed to send message');
     }

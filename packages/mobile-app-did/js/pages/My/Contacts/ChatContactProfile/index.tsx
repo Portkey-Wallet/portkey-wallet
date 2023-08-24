@@ -25,6 +25,7 @@ import ActionSheet from 'components/ActionSheet';
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
   contact?: ContactItemType;
+  isCheckImputation?: boolean;
 };
 
 const initEditContact: ContactItemType = {
@@ -39,7 +40,7 @@ const initEditContact: ContactItemType = {
 };
 
 const ContactProfile: React.FC = () => {
-  const { contact, relationId } = useRouterParams<RouterParams>();
+  const { contact, relationId, isCheckImputation = false } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
   const [info, setInfo] = useState(contact);
   const addStranger = useAddStrangerContact();
@@ -49,7 +50,7 @@ const ContactProfile: React.FC = () => {
 
   const readImputation = useReadImputation();
   useEffectOnce(() => {
-    if (contact?.isImputation) {
+    if (isCheckImputation && contact?.isImputation) {
       console.log('readImputation', contact);
       readImputation(contact);
       ActionSheet.alert({

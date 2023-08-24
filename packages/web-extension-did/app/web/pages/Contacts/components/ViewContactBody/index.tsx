@@ -5,7 +5,7 @@ import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function ViewContactBody({
   data,
@@ -22,6 +22,12 @@ export default function ViewContactBody({
   const isStrangerFn = useCheckIsStranger();
   const showChat = useIsChatShow();
 
+  const name = useMemo(
+    () => data?.name || data?.caHolderInfo?.walletName || data?.imInfo?.name || '',
+    [data?.caHolderInfo?.walletName, data?.imInfo?.name, data?.name],
+  );
+  const index = useMemo(() => name?.substring(0, 1).toLocaleUpperCase(), [name]);
+
   const [isStranger, setIsStranger] = useState(true);
 
   useEffect(() => {
@@ -32,8 +38,8 @@ export default function ViewContactBody({
     <div className="flex-column-between view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
-          <div className="flex-center name-index">{data?.index}</div>
-          <div className="name">{data?.walletName || data?.caHolderInfo?.walletName || ''}</div>
+          <div className="flex-center name-index">{index}</div>
+          <div className="name">{name}</div>
 
           {/* Section - Remark */}
           {isShowRemark && (

@@ -11,7 +11,7 @@ export interface IContactItemProps {
 
 export default function ContactItem({ item, hasChatEntry = true, clickChat }: IContactItemProps) {
   const name = useMemo(
-    () => item?.name || item?.caHolderInfo?.walletName || item?.imInfo?.name,
+    () => item?.name || item?.caHolderInfo?.walletName || item?.imInfo?.name || '',
     [item?.caHolderInfo?.walletName, item?.imInfo?.name, item?.name],
   );
   const index = useMemo(() => name?.substring(0, 1).toLocaleUpperCase(), [name]);

@@ -33,7 +33,7 @@ const ContactItem: React.FC<ItemType> = props => {
         </View>
         <View style={styles.itemNameWrap}>
           <TextL numberOfLines={1} style={FontStyles.font5}>
-            {contact.name}
+            {contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name}
           </TextL>
           {isShowContactIcon && (
             <View style={[GStyles.marginTop(pTd(2)), GStyles.flexRow, styles.contactIconWrap]}>

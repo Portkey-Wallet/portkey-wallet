@@ -154,7 +154,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
         isShowWarning={item.isImputation}
         onPress={() => {
           navigationService.navigate(item.imInfo?.relationId ? 'ChatContactProfile' : 'NoChatContactProfile', {
-            contact: item,
+            contactId: item.id,
             isCheckImputation: true,
           });
         }}

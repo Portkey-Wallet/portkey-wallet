@@ -6,6 +6,9 @@ import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../../index';
 import { addChannel, setRelationId, updateChannelAttribute } from '@portkey-wallet/store/store-ca/im/actions';
 import { UpdateChannelAttributeTypeEnum } from '@portkey-wallet/store/store-ca/im/type';
+import { useEditContact } from '../contact';
+import { EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
+import { useChannelList } from './channelList';
 
 export const useIMState = () => useAppCASelector(state => state.im);
 export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
@@ -146,6 +149,35 @@ export const useRelationId = () => {
 
 export const useIsIMReady = () => {
   return [IMStatusEnum.AUTHORIZED, IMStatusEnum.CONNECTED].includes(im.status);
+};
+
+export const useEditIMContact = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+  const editContact = useEditContact();
+  const { rawList } = useChannelList();
+  const rawListRef = useRef(rawList);
+  rawListRef.current = rawList;
+
+  return useCallback(
+    async (params: EditContactItemApiType, walletName?: string) => {
+      const result = await editContact(params);
+      const channel = rawListRef.current.find(item => item.toRelationId === params.relationId);
+      if (channel) {
+        dispatch(
+          updateChannelAttribute({
+            network: networkType,
+            channelId: channel.channelUuid,
+            value: {
+              displayName: params.name || walletName || '',
+            },
+          }),
+        );
+      }
+      return result;
+    },
+    [dispatch, editContact, networkType],
+  );
 };
 
 export * from './channelList';

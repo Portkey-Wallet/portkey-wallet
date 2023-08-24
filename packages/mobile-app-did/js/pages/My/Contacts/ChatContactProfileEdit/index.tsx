@@ -18,9 +18,10 @@ import ProfileRemarkSection from 'pages/My/components/ProfileRemarkSection';
 import FormItem from 'components/FormItem';
 import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
-import { useDeleteContact, useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useDeleteContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isValidRemark } from '@portkey-wallet/utils/reg';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -30,7 +31,7 @@ const ChatContactProfileEdit: React.FC = () => {
   const { contact } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
 
-  const editContact = useEditContact();
+  const editContact = useEditIMContact();
   const deleteContact = useDeleteContact();
 
   const [remark, setRemark] = useState(contact?.name || '');
@@ -40,8 +41,12 @@ const ChatContactProfileEdit: React.FC = () => {
     if (remark && !isValidRemark(remark)) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
     try {
       Loading.show();
-      await editContact({ name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' });
+      await editContact(
+        { name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' },
+        contact?.caHolderInfo?.walletName,
+      );
       CommonToast.success(t('Saved Successful'));
+
       navigationService.goBack();
       Loading.hide();
     } catch (e) {

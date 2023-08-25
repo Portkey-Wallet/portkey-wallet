@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, Popover, message } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Image, Popover } from 'antd';
 import clsx from 'clsx';
-
 import { IImageMessageProps } from '../type';
 import { formatTime } from '../utils';
 import CustomSvg from '../components/CustomSvg';
@@ -18,20 +17,13 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
   const { thumbImgUrl, width, height, imgUrl } = props.imgData || {};
   const imageSize = useMemo(() => formatImageSize({ width, height, maxWidth: 272, maxHeight: 272 }), [width, height]);
   const [popVisible, setPopVisible] = useState(false);
-  const handleDelMsg = useCallback(async () => {
-    try {
-      await props?.onDelete?.(`${props.id}`);
-    } catch (e) {
-      message.error('delete message error');
-      console.log('===delete message error', e);
-    }
-  }, [props]);
+
   const popoverList = [
     {
       key: 'delete',
       leftIcon: <CustomSvg type="Delete" />,
       children: 'Delete',
-      onClick: handleDelMsg,
+      onClick: () => props?.onDelete?.(`${props.id}`),
     },
   ];
   const hidePop = () => {

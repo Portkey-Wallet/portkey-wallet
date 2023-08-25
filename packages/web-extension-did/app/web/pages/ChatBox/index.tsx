@@ -21,7 +21,7 @@ import { MAX_FILE_SIZE, MAX_INPUT_LENGTH } from '@portkey-wallet/constants/const
 import { ZERO } from '@portkey-wallet/constants/misc';
 import './index.less';
 
-export default function Session() {
+export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();

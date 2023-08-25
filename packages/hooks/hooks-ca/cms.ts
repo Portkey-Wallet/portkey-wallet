@@ -18,6 +18,7 @@ import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -128,35 +129,70 @@ export const useBuyButton = (isInit = false) => {
   return buyButtonNet;
 };
 
-export const useBuyButtonShow = () => {
+export const useBuyButtonShow = (deviceType: VersionDeviceType) => {
   const buyButton = useBuyButton();
   const { networkType } = useCurrentNetworkInfo();
   const isMainnet = useIsMainnet();
   const dispatch = useAppCommonDispatch();
 
-  const isBuyButtonShow = useMemo(
-    () => isMainnet && (buyButton?.isBuySectionShow || buyButton?.isSellSectionShow || false),
-    [buyButton?.isBuySectionShow, buyButton?.isSellSectionShow, isMainnet],
+  const getIsBuySectionShow = useCallback(
+    (isMainnet: boolean, buyButton: BuyButtonType | undefined, deviceType: VersionDeviceType) => {
+      if (!isMainnet) return false;
+      switch (deviceType) {
+        case VersionDeviceType.iOS:
+          return buyButton?.isIOSBuyShow || false;
+        case VersionDeviceType.Android:
+          return buyButton?.isAndroidBuyShow || false;
+        case VersionDeviceType.Extension:
+          return buyButton?.isExtensionBuyShow || false;
+        default:
+          return false;
+      }
+    },
+    [],
+  );
+
+  const getIsSellSectionShow = useCallback(
+    (isMainnet: boolean, buyButton: BuyButtonType | undefined, deviceType: VersionDeviceType) => {
+      if (!isMainnet) return false;
+      switch (deviceType) {
+        case VersionDeviceType.iOS:
+          return buyButton?.isIOSSellShow || false;
+        case VersionDeviceType.Android:
+          return buyButton?.isAndroidSellShow || false;
+        case VersionDeviceType.Extension:
+          return buyButton?.isExtensionSellShow || false;
+        default:
+          return false;
+      }
+    },
+    [],
   );
 
   const isBuySectionShow = useMemo(
-    () => isMainnet && (buyButton?.isBuySectionShow || false),
-    [buyButton?.isBuySectionShow, isMainnet],
+    () => getIsBuySectionShow(isMainnet, buyButton, deviceType),
+    [buyButton, deviceType, getIsBuySectionShow, isMainnet],
   );
 
   const isSellSectionShow = useMemo(
-    () => isMainnet && (buyButton?.isSellSectionShow || false),
-    [buyButton?.isSellSectionShow, isMainnet],
+    () => getIsSellSectionShow(isMainnet, buyButton, deviceType),
+    [buyButton, deviceType, getIsSellSectionShow, isMainnet],
+  );
+
+  const isBuyButtonShow = useMemo(
+    () => isMainnet && (isBuySectionShow || isSellSectionShow || false),
+    [isBuySectionShow, isMainnet, isSellSectionShow],
   );
 
   const refreshBuyButton = useCallback(async () => {
     const result = await dispatch(getBuyButtonAsync(networkType));
-    const buyButtonResult: BuyButtonType = result?.payload?.buyButtonNetMap?.[networkType] || {
-      isBuySectionShow: false,
-      isSellSectionShow: false,
+    const buyButtonResult: BuyButtonType | undefined = result?.payload?.buyButtonNetMap?.[networkType];
+
+    return {
+      isBuySectionShow: getIsBuySectionShow(isMainnet, buyButtonResult, deviceType),
+      isSellSectionShow: getIsSellSectionShow(isMainnet, buyButtonResult, deviceType),
     };
-    return buyButtonResult;
-  }, [dispatch, networkType]);
+  }, [deviceType, dispatch, getIsBuySectionShow, getIsSellSectionShow, isMainnet, networkType]);
 
   return {
     isBuyButtonShow,

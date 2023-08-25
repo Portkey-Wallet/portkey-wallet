@@ -41,6 +41,8 @@ export type Query = {
   discoverItem: Array<DiscoverItem>;
   discoverItem_aggregated: Array<DiscoverItem_Aggregated>;
   discoverItem_by_id?: Maybe<DiscoverItem>;
+  download?: Maybe<Download>;
+  home?: Maybe<Home>;
   mediaKit: Array<MediaKit>;
   mediaKitPage?: Maybe<MediaKitPage>;
   mediaKitPage_mediaKit: Array<MediaKitPage_MediaKit>;
@@ -638,7 +640,13 @@ export type BuyButton = {
   date_updated?: Maybe<Scalars['Date']>;
   date_updated_func?: Maybe<Datetime_Functions>;
   id: Scalars['ID'];
+  isAndroidBuyShow?: Maybe<Scalars['Boolean']>;
+  isAndroidSellShow?: Maybe<Scalars['Boolean']>;
   isBuySectionShow?: Maybe<Scalars['Boolean']>;
+  isExtensionBuyShow?: Maybe<Scalars['Boolean']>;
+  isExtensionSellShow?: Maybe<Scalars['Boolean']>;
+  isIOSBuyShow?: Maybe<Scalars['Boolean']>;
+  isIOSSellShow?: Maybe<Scalars['Boolean']>;
   isSellSectionShow?: Maybe<Scalars['Boolean']>;
   status?: Maybe<Scalars['String']>;
   user_created?: Maybe<Scalars['String']>;
@@ -1054,6 +1062,85 @@ export type DiscoverItem_Filter = {
   url?: InputMaybe<String_Filter_Operators>;
   user_created?: InputMaybe<String_Filter_Operators>;
   user_updated?: InputMaybe<String_Filter_Operators>;
+};
+
+export type Download = {
+  __typename?: 'download';
+  androidDownloadUrl?: Maybe<Scalars['String']>;
+  androidProductImage?: Maybe<Directus_Files>;
+  androidQRCode?: Maybe<Directus_Files>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  extensionDownloadUrl?: Maybe<Scalars['String']>;
+  extensionProductImage?: Maybe<Directus_Files>;
+  id: Scalars['ID'];
+  iosDownloadUrl?: Maybe<Scalars['String']>;
+  iosProductImage?: Maybe<Directus_Files>;
+  iosQRCode?: Maybe<Directus_Files>;
+  user_updated?: Maybe<Scalars['String']>;
+};
+
+export type DownloadAndroidProductImageArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DownloadAndroidQrCodeArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DownloadExtensionProductImageArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DownloadIosProductImageArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type DownloadIosQrCodeArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Home = {
+  __typename?: 'home';
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  focusImage?: Maybe<Directus_Files>;
+  id: Scalars['ID'];
+  user_updated?: Maybe<Scalars['String']>;
+};
+
+export type HomeFocusImageArgs = {
+  filter?: InputMaybe<Directus_Files_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type MediaKit = {

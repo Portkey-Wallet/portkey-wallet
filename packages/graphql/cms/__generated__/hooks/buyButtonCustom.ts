@@ -10,8 +10,12 @@ export type BuyButtonCustomQuery = {
   buyButton?: {
     __typename?: 'buyButton';
     id: string;
-    isBuySectionShow?: boolean | null;
-    isSellSectionShow?: boolean | null;
+    isAndroidBuyShow?: boolean | null;
+    isAndroidSellShow?: boolean | null;
+    isExtensionBuyShow?: boolean | null;
+    isExtensionSellShow?: boolean | null;
+    isIOSBuyShow?: boolean | null;
+    isIOSSellShow?: boolean | null;
     status?: string | null;
   } | null;
 };
@@ -20,8 +24,12 @@ export const BuyButtonCustomDocument = gql`
   query buyButtonCustom {
     buyButton {
       id
-      isBuySectionShow
-      isSellSectionShow
+      isAndroidBuyShow
+      isAndroidSellShow
+      isExtensionBuyShow
+      isExtensionSellShow
+      isIOSBuyShow
+      isIOSSellShow
       status
     }
   }

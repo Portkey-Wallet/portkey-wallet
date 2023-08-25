@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -28,7 +28,7 @@ const FindMorePeople = () => {
 
   const [keyword, setKeyword] = useState('');
   // const [, setLoading] = useState(false);
-  const debounceWord = useDebounce(keyword, 500);
+  const debounceWord = useDebounce(getAelfAddress(keyword.trim()), 500);
   const checkIsStranger = useCheckIsStranger();
 
   const [list, setList] = useState<GetOtherUserInfoDefaultResult[]>([]);
@@ -60,11 +60,6 @@ const FindMorePeople = () => {
       console.log(error);
     }
   }, [debounceWord]);
-
-  const onChangeText = useCallback((v: string) => {
-    const address = getAelfAddress(v.trim());
-    setKeyword(address);
-  }, []);
 
   useEffect(() => {
     searchUser();
@@ -105,7 +100,7 @@ const FindMorePeople = () => {
       <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
         <CommonInput
           value={keyword}
-          onChangeText={onChangeText}
+          onChangeText={setKeyword}
           rightIcon={
             keyword ? (
               <Touchable onPress={() => setKeyword('')}>

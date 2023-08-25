@@ -117,15 +117,16 @@ export const imSlice = createSlice({
           return state;
         }
 
+        const channelList = formatChannelList({
+          list: [action.payload.channel, ...(state.channelListNetMap?.[action.payload.network]?.list || [])],
+          cursor: state.channelListNetMap?.[action.payload.network]?.cursor || '',
+        });
+
         return {
           ...state,
           channelListNetMap: {
             ...state.channelListNetMap,
-            [action.payload.network]: {
-              ...state.channelListNetMap?.[action.payload.network],
-              list: [action.payload.channel, ...(state.channelListNetMap?.[action.payload.network]?.list || [])],
-              cursor: state.channelListNetMap?.[action.payload.network]?.cursor || '',
-            },
+            [action.payload.network]: channelList,
           },
         };
       })

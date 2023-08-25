@@ -14,6 +14,7 @@ import {
   editContactAction,
   fetchContactListAsync,
   readImputationAction,
+  refreshContactMap,
 } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '../index';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -156,6 +157,22 @@ export const useReadImputation = () => {
     },
     [currentNetworkInfo.apiUrl, dispatch],
   );
+};
+
+export const useCheckContactMap = () => {
+  const contact = useAppCommonSelector(state => state.contact);
+  const dispatch = useAppCommonDispatch();
+
+  useEffect(() => {
+    if (contact.lastModified === 0) return;
+    const contactMapLength = Object.keys(contact.contactMap).length;
+    const contactRelationIdMapLength = Object.keys(contact.contactRelationIdMap || {}).length;
+    const contactIdMapLength = Object.keys(contact.contactIdMap || {}).length;
+    if (contactMapLength === 0 || contactRelationIdMapLength === 0 || contactIdMapLength === 0) {
+      dispatch(refreshContactMap());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };
 
 export const useContactRelationIdMap = () => {

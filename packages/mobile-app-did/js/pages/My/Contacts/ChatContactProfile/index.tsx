@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -21,6 +21,7 @@ import { pTd } from 'utils/unit';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useAddStrangerContact, useContactInfo, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import ActionSheet from 'components/ActionSheet';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -50,30 +51,40 @@ const ContactProfile: React.FC = () => {
   const contactInfo = useContactInfo({
     contactId,
   });
+
+  const readImputation = useReadImputation();
+  const isCheckedImputationRef = useRef(false);
+  const checkImputation = useCallback(
+    (localInfo: ContactItemType) => {
+      if (isCheckedImputationRef.current) return;
+      isCheckedImputationRef.current = true;
+      if (isCheckImputation && localInfo?.isImputation) {
+        console.log('readImputation', localInfo);
+        readImputation(localInfo);
+        ActionSheet.alert({
+          message:
+            'Portkey has grouped contacts with the same Portkey ID together and removed duplicate contacts with the same address.',
+          buttons: [
+            {
+              title: 'OK',
+            },
+          ],
+        });
+      }
+    },
+    [isCheckImputation, readImputation],
+  );
+
+  const checkImputationRef = useLatestRef(checkImputation);
+
   useEffect(() => {
     if (contactInfo) {
       setInfo(contactInfo);
+      checkImputationRef.current(contactInfo);
     }
-  }, [contactInfo]);
+  }, [checkImputationRef, contactInfo, info, isCheckImputation, readImputation]);
 
   const navToChatDetail = useJumpToChatDetails();
-
-  const readImputation = useReadImputation();
-  useEffectOnce(() => {
-    if (isCheckImputation && info?.isImputation) {
-      console.log('readImputation', info);
-      readImputation(info);
-      ActionSheet.alert({
-        message:
-          'Portkey has grouped contacts with the same Portkey ID together and removed duplicate contacts with the same address.',
-        buttons: [
-          {
-            title: 'OK',
-          },
-        ],
-      });
-    }
-  });
 
   const getProfile = useCallback(async () => {
     if (relationId) {

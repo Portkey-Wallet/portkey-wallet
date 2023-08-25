@@ -70,9 +70,9 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
     chatInputRecorder?.reset();
 
     try {
-      typeof text === 'string' && sendChannelMessage(text.trim());
+      typeof text === 'string' && (await sendChannelMessage(text.trim()));
     } catch (error) {
-      CommonToast.fail('fail');
+      CommonToast.fail('Failed to send message');
     }
   }, [dispatch, sendChannelMessage, text]);
   return (

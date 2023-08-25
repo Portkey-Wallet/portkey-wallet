@@ -23,7 +23,7 @@ function SendPicBody({ uri, buttons }: ShowSendPicProps) {
       <ButtonRow
         buttons={buttons?.map(i => ({
           ...i,
-          loading: i.type === 'primary' && loading,
+          loading: loading,
           onPress: async () => {
             try {
               setLoading(true);

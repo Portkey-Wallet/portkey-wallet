@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -20,6 +20,7 @@ import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service'
 import navigationService from 'utils/navigationService';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
+import NoData from 'components/NoData';
 
 const FindMorePeople = () => {
   const { userId } = useWallet();
@@ -27,7 +28,7 @@ const FindMorePeople = () => {
 
   const [keyword, setKeyword] = useState('');
   // const [, setLoading] = useState(false);
-  const debounceWord = useDebounce(keyword, 500);
+  const debounceWord = useDebounce(getAelfAddress(keyword.trim()), 500);
   const checkIsStranger = useCheckIsStranger();
 
   const [list, setList] = useState<GetOtherUserInfoDefaultResult[]>([]);
@@ -59,11 +60,6 @@ const FindMorePeople = () => {
       console.log(error);
     }
   }, [debounceWord]);
-
-  const onChangeText = useCallback((v: string) => {
-    const address = getAelfAddress(v.trim());
-    setKeyword(address);
-  }, []);
 
   useEffect(() => {
     searchUser();
@@ -104,7 +100,7 @@ const FindMorePeople = () => {
       <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
         <CommonInput
           value={keyword}
-          onChangeText={onChangeText}
+          onChangeText={setKeyword}
           rightIcon={
             keyword ? (
               <Touchable onPress={() => setKeyword('')}>
@@ -120,7 +116,11 @@ const FindMorePeople = () => {
           <TextM style={styles.portkeyId} numberOfLines={1}>{`My Portkey ID : ${userId}`}</TextM>
         </View>
       )}
-      <FlatList data={list} renderItem={renderItem} />
+      <FlatList
+        data={list}
+        renderItem={renderItem}
+        ListEmptyComponent={keyword ? <NoData noPic message="No search result" /> : null}
+      />
     </PageContainer>
   );
 };

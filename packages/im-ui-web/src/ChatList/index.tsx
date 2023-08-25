@@ -6,20 +6,20 @@ import { IChatListProps, ChatListEvent } from '../type';
 import LoadingMore from '../components/LoadMore';
 import './index.less';
 
-const ChannelList: React.FC<IChatListProps> = ({ dataSource, hasMore = false, loadMore, ...props }) => {
-  const onClick: ChatListEvent = item => {
+const ChatList: React.FC<IChatListProps> = ({ dataSource, hasMore = false, loadMore, ...props }) => {
+  const onClick: ChatListEvent = (item) => {
     if (props.onClick instanceof Function) props.onClick(item);
   };
 
-  const onClickMute: ChatListEvent = item => {
+  const onClickMute: ChatListEvent = (item) => {
     if (props.onClickMute instanceof Function) props.onClickMute(item);
   };
 
-  const onClickPin: ChatListEvent = item => {
+  const onClickPin: ChatListEvent = (item) => {
     if (props.onClickPin instanceof Function) props.onClickPin(item);
   };
 
-  const onClickDelete: ChatListEvent = item => {
+  const onClickDelete: ChatListEvent = (item) => {
     if (props.onClickDelete instanceof Function) props.onClickDelete(item);
   };
 
@@ -46,4 +46,4 @@ const ChannelList: React.FC<IChatListProps> = ({ dataSource, hasMore = false, lo
   );
 };
 
-export default ChannelList;
+export default ChatList;

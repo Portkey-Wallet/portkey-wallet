@@ -63,30 +63,34 @@ export default function ChatListSearch() {
 
   return (
     <div className="chat-list-search-page flex-column">
-      <div className="chat-list-search">
-        <SettingHeader
-          title={t('Search')}
-          leftCallBack={() => navigate('/chat-list')}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />}
-        />
-        <DropdownSearch
-          overlay={<></>}
-          value={filterWord}
-          inputProps={{
-            onChange: (e) => {
-              const _value = e.target.value.replaceAll(' ', '');
-              setFilterWord(_value);
-              searchDebounce(_value);
-            },
-            placeholder: 'Search chats',
-          }}
-        />
-      </div>
-      <div
-        className="find-more flex"
-        onClick={() => navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })}>
-        <CustomSvg type="AddMorePeople" />
-        Find More
+      <div className="chat-list-header">
+        <div className="chat-list-search">
+          <SettingHeader
+            title={t('Search')}
+            leftCallBack={() => navigate('/chat-list')}
+            rightElement={<CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />}
+          />
+          <DropdownSearch
+            overlay={<></>}
+            value={filterWord}
+            inputProps={{
+              onChange: (e) => {
+                const _value = e.target.value.trim();
+                setFilterWord(_value);
+                searchDebounce(_value);
+              },
+              placeholder: 'Search chats',
+            }}
+          />
+        </div>
+        <div
+          className="find-more flex"
+          onClick={() =>
+            navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })
+          }>
+          <CustomSvg type="AddMorePeople" />
+          Find More
+        </div>
       </div>
       <div className="chat-list-search-content">
         {chatList.length === 0 ? (

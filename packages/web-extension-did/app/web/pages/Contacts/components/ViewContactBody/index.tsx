@@ -4,7 +4,7 @@ import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
@@ -22,16 +22,16 @@ export default function ViewContactBody({
 }: IProfileDetailBodyProps) {
   const isMyContactFn = useIsMyContact();
   const showChat = useIsChatShow();
-
+  const relationId = useMemo(
+    () => data.imInfo?.relationId || data.relationId || '',
+    [data.imInfo?.relationId, data.relationId],
+  );
   const { name, index } = useIndexAndName(data as Partial<ContactItemType>);
-
   const [isMyContact, setIsMyContact] = useState(true);
 
   useEffect(() => {
-    setIsMyContact(
-      isMyContactFn({ relationId: data?.imInfo?.relationId || data?.relationId || '', contactId: data?.id }),
-    );
-  }, [data, isMyContactFn]);
+    setIsMyContact(isMyContactFn({ relationId, contactId: data?.id }));
+  }, [data, isMyContactFn, relationId]);
 
   return (
     <div className="flex-column-between view-contact-body">
@@ -41,7 +41,7 @@ export default function ViewContactBody({
           <div className="name">{name}</div>
 
           {/* Section - Remark */}
-          {isShowRemark && (
+          {relationId && isShowRemark && (
             <div className="remark">
               <span>{`Remark: `}</span>
               <span>{data?.name || 'No set'}</span>
@@ -55,7 +55,7 @@ export default function ViewContactBody({
           )}
 
           {/* Section - Action: Added | Add Contact | Chat */}
-          {showChat && data?.from !== 'my-did' && (
+          {showChat && data?.from !== 'my-did' && relationId && (
             <div className="flex-center action">
               {data.id && isMyContact && (
                 <div className="flex-column-center action-item added-contact">
@@ -83,10 +83,10 @@ export default function ViewContactBody({
 
         <IdAndAddress
           portkeyId={data?.caHolderInfo?.userId}
-          relationId={data?.relationId || ''}
+          relationId={relationId}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
-          addressSectionLabel={!isMyContact ? 'Address' : 'DID'}
+          addressSectionLabel={relationId || data?.from === 'my-did' ? 'DID' : 'Address'}
         />
       </div>
 

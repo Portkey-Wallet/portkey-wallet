@@ -25,7 +25,9 @@ export interface IContactCardProps {
 export default function ContactCard({ user, className, fromRecents = true, chainId, onChange }: IContactCardProps) {
   const isTestnet = useIsTestnet();
   const isDisabled = useCallback(
-    (transactionTime: string | undefined): boolean => fromRecents && !transactionTime,
+    (transactionTime: string | undefined): boolean => {
+      return fromRecents && !transactionTime;
+    },
     [fromRecents],
   );
   const { name: transName, index: transIndex } = useIndexAndName(user);

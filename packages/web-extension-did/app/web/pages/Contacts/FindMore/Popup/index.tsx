@@ -11,7 +11,7 @@ export default function FindMorePopup({
   contact,
   showChat,
   isAdded,
-  isSearch = false,
+  isSearch,
   goBack,
   handleSearch,
   clickItem,
@@ -26,7 +26,7 @@ export default function FindMorePopup({
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
         <ContactsSearchInput placeholder="Portkey ID/Address" handleChange={handleSearch} />
-        <div className="find-more-id">My Portkey ID: {myPortkeyId}</div>
+        {!isSearch && <div className="find-more-id">My Portkey ID: {myPortkeyId}</div>}
       </div>
       <div className="find-more-body">
         {(!contact || !contact.name) && isSearch && (

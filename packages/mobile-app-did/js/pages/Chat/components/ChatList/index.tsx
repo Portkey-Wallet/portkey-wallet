@@ -5,13 +5,7 @@ import ChatOverlay from '../ChatOverlay';
 import ChatHomeListItemSwiped from '../ChatHomeListItemSwiper';
 import { ChannelItem } from '@portkey-wallet/im/types';
 import NoData from 'components/NoData';
-import {
-  useChannelList,
-  useHideChannel,
-  useIsIMReady,
-  useMuteChannel,
-  usePinChannel,
-} from '@portkey-wallet/hooks/hooks-ca/im';
+import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -28,7 +22,6 @@ export default function ChatList() {
     hasNext: hasNextChannelList,
   } = useChannelList();
 
-  const isReady = useIsIMReady();
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
@@ -97,10 +90,6 @@ export default function ChatList() {
   const onEndReached = useLockCallback(async () => {
     if (hasNextChannelList) await nextChannelList();
   }, []);
-
-  useEffectOnce(() => {
-    if (!isReady) return CommonToast.fail('Synchronizing on-chain data…');
-  });
 
   useEffectOnce(() => {
     initChannelList();

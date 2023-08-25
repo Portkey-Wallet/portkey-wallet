@@ -39,7 +39,7 @@ export default function DiscoverHome() {
                 },
               ],
               formatType: 'dynamicWidth',
-              customPosition: { right: pTd(20), top: pageY + 20 },
+              customPosition: { right: pTd(30), top: pageY + 20 },
               customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
             });
           }}>

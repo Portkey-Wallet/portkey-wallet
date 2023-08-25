@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Popover } from 'antd';
-import { emojiList } from '../assets/index';
+import { emojiList } from '../assets/emoji/index';
 import CustomSvg from '../components/CustomSvg';
 import PopoverMenuList, { IPopoverMenuListData } from '../PopoverMenuList';
-import Input from '../ChatInput';
+import Input from '../Input';
 import './index.less';
 
 interface IInputBar {

@@ -4,8 +4,8 @@ import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffect, useMemo, useState } from 'react';
+import { useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 export default function ViewContactBody({
   data,
@@ -19,7 +19,7 @@ export default function ViewContactBody({
   handleAdd,
   handleCopy,
 }: IProfileDetailBodyProps) {
-  const isStrangerFn = useCheckIsStranger();
+  const isMyContactFn = useIsMyContact();
   const showChat = useIsChatShow();
 
   const name = useMemo(
@@ -28,11 +28,13 @@ export default function ViewContactBody({
   );
   const index = useMemo(() => name?.substring(0, 1).toLocaleUpperCase(), [name]);
 
-  const [isStranger, setIsStranger] = useState(true);
+  const [isMyContact, setIsMyContact] = useState(true);
 
   useEffect(() => {
-    setIsStranger(isStrangerFn(data?.imInfo?.relationId || data?.relationId || ''));
-  }, [data, isStrangerFn]);
+    setIsMyContact(
+      isMyContactFn({ relationId: data?.imInfo?.relationId || data?.relationId || '', contactId: data?.id }),
+    );
+  }, [data, isMyContactFn]);
 
   return (
     <div className="flex-column-between view-contact-body">
@@ -50,21 +52,21 @@ export default function ViewContactBody({
           )}
 
           {/* empty-placeholder */}
-          {!data.id && !(!data.id && isStranger) && <div className="empty-placeholder-8"></div>}
-          {((isShowRemark && (data.id || (!data.id && isStranger))) || data?.from === 'my-did') && (
+          {!data.id && !(!data.id && !isMyContact) && <div className="empty-placeholder-8"></div>}
+          {((isShowRemark && (data.id || (!data.id && !isMyContact))) || data?.from === 'my-did') && (
             <div className="empty-placeholder-24"></div>
           )}
 
           {/* Section - Action: Added | Add Contact | Chat */}
           {showChat && data?.from !== 'my-did' && (
             <div className="flex-center action">
-              {data.id && !isStranger && (
+              {data.id && isMyContact && (
                 <div className="flex-column-center action-item added-contact">
                   <CustomSvg type="ContactAdded" />
                   <span>{addedText}</span>
                 </div>
               )}
-              {data.id && !isStranger && (
+              {data.id && isMyContact && (
                 <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
                   <CustomSvg type="ContactChat" />
                   <span>{chatText}</span>
@@ -72,7 +74,7 @@ export default function ViewContactBody({
               )}
 
               {/* cant chat */}
-              {(!data.id || isStranger) && (
+              {(!data.id || !isMyContact) && (
                 <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
                   <CustomSvg type="ContactAdd" />
                   <span>{addContactText}</span>
@@ -87,12 +89,12 @@ export default function ViewContactBody({
           relationId={data?.relationId || ''}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
-          addressSectionLabel={isStranger ? 'Address' : 'DID'}
+          addressSectionLabel={!isMyContact ? 'Address' : 'DID'}
         />
       </div>
 
       {/* stranger cant edit */}
-      {(!data.id || !isStranger || data?.from === 'my-did') && (
+      {(!data.id || isMyContact || data?.from === 'my-did') && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

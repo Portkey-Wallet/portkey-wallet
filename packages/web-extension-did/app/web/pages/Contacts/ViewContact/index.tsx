@@ -10,6 +10,7 @@ import {
   REFRESH_DELAY_TIME,
   useAddStrangerContact,
   useContactInfo,
+  useIsMyContact,
   useReadImputation,
 } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -17,7 +18,6 @@ import { message } from 'antd';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
-import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -25,7 +25,7 @@ export default function ViewContact() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const isStrangerFn = useCheckIsStranger();
+  const isMyContactFn = useIsMyContact();
 
   const relationId = useMemo(
     () => state?.relationId || state?.imInfo?.relationId,
@@ -52,17 +52,18 @@ export default function ViewContact() {
   const addContactText = t('Add Contact');
 
   useEffect(() => {
-    const isStranger = isStrangerFn(relationId);
-    if (state?.id && !isStranger) {
+    const isMyContact = isMyContactFn({ relationId, contactId: state?.id });
+
+    if (state?.id && isMyContact) {
       // ================== case one ==================
       // have contact id, get info from local map
       setData(contactInfo);
-    } else if (relationId && !isStranger) {
+    } else if (relationId && isMyContact) {
       // ================== case two ==================
       // Can chat, and is my contact, need to get full info from local map;
       // Because it jumped from the chat-box, the data is incomplete
       setData(contactInfo);
-    } else if (isStranger) {
+    } else if (!isMyContact) {
       // ================== case three ==================
       // Can chat, and is stranger, need to get full info from remote db;
       // Because it jumped from the chat-box or find-more, the data is incomplete
@@ -80,7 +81,7 @@ export default function ViewContact() {
     // default setData(state);
     // Cant chat (no relationId), display data directly
     // Because it jumped from contacts page only
-  }, [contactInfo, isStrangerFn, relationId, state?.id]);
+  }, [contactInfo, isMyContactFn, relationId, state?.id]);
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {

@@ -19,6 +19,7 @@ import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '..
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useAddStranger } from './im';
+import { useWallet } from './wallet';
 
 export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
@@ -305,4 +306,27 @@ export const useChatContactFlatList = () => {
     });
     return contactFlatList;
   }, [contactIndexList]);
+};
+
+export const useIsMyContact = () => {
+  const contactRelationIdMap = useContactRelationIdMap();
+  const contactIdMap = useContactIdMap();
+  const { userId } = useWallet();
+  console.log('🌈 🌈 🌈 🌈 🌈 🌈 my', userId);
+
+  return useCallback(
+    ({ relationId, contactId }: { relationId?: string; contactId?: string }): boolean => {
+      let checkRelationId = false,
+        checkContactId = false;
+      const checkIsMe = relationId === userId;
+      if (relationId && contactRelationIdMap) {
+        checkRelationId = contactRelationIdMap?.[relationId]?.length > 0;
+      }
+      if (contactId && contactIdMap) {
+        checkContactId = contactIdMap?.[contactId]?.length > 0;
+      }
+      return (checkRelationId || checkContactId) && !checkIsMe;
+    },
+    [contactIdMap, contactRelationIdMap, userId],
+  );
 };

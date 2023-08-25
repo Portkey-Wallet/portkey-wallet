@@ -29,7 +29,14 @@ export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: ()
   );
 });
 
-export function BottomBarContainer({ children }: { children?: ReactNode; showKeyboard?: () => void }) {
+export function BottomBarContainer({
+  children,
+  scrollToBottom,
+}: {
+  children?: ReactNode;
+  scrollToBottom: () => void;
+  showKeyboard?: () => void;
+}) {
   const bottomBarStatus = useBottomBarStatus();
   const dispatch = useChatsDispatch();
   const text = useChatText();
@@ -71,10 +78,11 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
 
     try {
       typeof text === 'string' && (await sendChannelMessage(text.trim()));
+      scrollToBottom?.();
     } catch (error) {
       CommonToast.fail('Failed to send message');
     }
-  }, [dispatch, sendChannelMessage, text]);
+  }, [dispatch, scrollToBottom, sendChannelMessage, text]);
   return (
     <View style={styles.wrap}>
       <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>

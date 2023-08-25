@@ -110,9 +110,9 @@ export default function Session() {
     return formatList;
   }, [list, relationId]);
   const handleDeleteMsg = useCallback(
-    (item: MessageType) => {
+    async (item: MessageType) => {
       try {
-        deleteMessage(`${item.id}`);
+        await deleteMessage(`${item.id}`);
       } catch (e) {
         message.error('Failed to delete message');
         console.log('===handle delete message error', e);
@@ -120,17 +120,21 @@ export default function Session() {
     },
     [deleteMessage],
   );
-  const handlePin = useCallback(() => {
+  const handlePin = useCallback(async () => {
     try {
-      pin(!info?.pin);
-    } catch (e) {
-      message.error('Failed to pin chat');
+      await pin(!info?.pin);
+    } catch (e: any) {
+      if (`${e?.code}` === '13310') {
+        message.error('Pin limit exceeded');
+      } else {
+        message.error('Failed to pin chat');
+      }
       console.log('===handle pin error', e);
     }
   }, [info?.pin, pin]);
-  const handleMute = useCallback(() => {
+  const handleMute = useCallback(async () => {
     try {
-      mute(!info?.mute);
+      await mute(!info?.mute);
     } catch (e) {
       message.error('Failed to mute chat');
       console.log('===handle mute error', e);

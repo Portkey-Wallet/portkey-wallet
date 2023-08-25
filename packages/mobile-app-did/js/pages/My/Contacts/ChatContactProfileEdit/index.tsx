@@ -99,7 +99,7 @@ const ChatContactProfileEdit: React.FC = () => {
           </TextM>
         </FormItem>
         <ProfileRemarkSection errorMessage={error} value={remark} onChangeText={v => setRemark(v)} />
-        <ProfilePortkeyIDSection disable portkeyID={contact?.userId || ''} />
+        <ProfilePortkeyIDSection disable portkeyID={contact?.caHolderInfo?.userId || ''} />
         <ProfileAddressSection disable addressList={contact?.addresses} />
       </ScrollView>
 

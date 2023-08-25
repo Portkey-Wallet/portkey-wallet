@@ -14,6 +14,7 @@ import { BGStyles } from 'assets/theme/styles';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { useSendCurrentChannelMessage } from '../components/hooks';
 import CommonToast from 'components/CommonToast';
+import Loading from 'components/Loading';
 
 const ChatCamera: React.FC = () => {
   const cameraRef = useRef<Camera>(null);
@@ -89,6 +90,7 @@ const ChatCamera: React.FC = () => {
               buttonStyle={PageStyle.sendButton}
               onPress={async () => {
                 try {
+                  Loading.show();
                   setSending(true);
                   await sendChannelImage(img);
                   navigationService.goBack();
@@ -96,6 +98,7 @@ const ChatCamera: React.FC = () => {
                   CommonToast.failError(error);
                 } finally {
                   setSending(false);
+                  Loading.hide();
                 }
               }}
             />

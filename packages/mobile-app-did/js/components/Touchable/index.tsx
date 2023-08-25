@@ -1,12 +1,12 @@
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import React, { memo } from 'react';
-import { TouchableOpacity, TouchableHighlight, TouchableOpacityProps } from 'react-native';
+import { TouchableOpacity, TouchableHighlight, TouchableOpacityProps, TouchableHighlightProps } from 'react-native';
 import { pTd } from 'utils/unit';
 
 type TouchableProps = {
   onPressWithSecond?: number;
   highlight?: boolean;
-};
+} & TouchableHighlightProps;
 
 const Touchable: React.FC<TouchableOpacityProps & TouchableProps> = props => {
   const { onPressIn, onPress, highlight, onPressWithSecond } = props;

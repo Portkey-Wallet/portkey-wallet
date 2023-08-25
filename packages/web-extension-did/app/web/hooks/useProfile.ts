@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import { useCopyToClipboard } from 'react-use';
 import { useCommonState } from 'store/Provider/hooks';
 import { ExtraType } from 'types/Profile';
+import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export const useGoProfile = () => {
   const navigate = useNavigate();
@@ -53,19 +54,25 @@ export const useGoAddNewContact = () => {
 
 export const useProfileChat = () => {
   const navigate = useNavigate();
+  const createChannel = useCreateP2pChannel();
   const { isPrompt } = useCommonState();
 
   return useCallback(
-    (state: any) => {
+    async (relationId: string) => {
       if (isPrompt) {
         CustomModal({
           content: `Please click on the Portkey browser extension in the top right corner to access the chat feature`,
         });
       } else {
-        navigate('/chat-list', { state });
+        try {
+          const res = await createChannel(relationId);
+          navigate(`/chat-box/${res.channelUuid}`);
+        } catch (error) {
+          message.error('cannot chat');
+        }
       }
     },
-    [isPrompt, navigate],
+    [createChannel, isPrompt, navigate],
   );
 };
 

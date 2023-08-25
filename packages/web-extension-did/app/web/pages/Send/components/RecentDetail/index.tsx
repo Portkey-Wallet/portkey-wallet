@@ -19,6 +19,7 @@ import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
 import { ChainId } from '@portkey-wallet/types';
 import { useGoAddNewContact } from 'hooks/useProfile';
+import { ExtraTypeEnum } from 'types/Profile';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -58,7 +59,7 @@ export default function RecentDetail() {
         { chainId: targetChainId || 'AELF', address: targetAddress || '', chainName: chainInfo?.chainName || 'aelf' },
       ],
     };
-    handleAdd('3', initContactItem);
+    handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem);
   }, [targetChainId, targetAddress, chainInfo?.chainName, handleAdd]);
 
   const viewOnExplorer = useCallback(() => {

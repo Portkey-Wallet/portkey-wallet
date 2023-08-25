@@ -331,7 +331,7 @@ export interface IMessageListProps {
   next: () => any;
   onScroll?: React.UIEventHandler;
   onContextMenu?: MessageListEvent;
-  onDelete?: (id: string) => Promise<any>;
+  onDelete?: (item: MessageType) => any;
   onDownButtonClick?: React.RefObject<HTMLButtonElement>;
   onOpen?: MessageListEvent;
   onDownload?: MessageListEvent;

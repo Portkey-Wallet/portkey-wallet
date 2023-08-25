@@ -77,36 +77,41 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
       snapPointsLeft={[DELETE_BUTTON_WIDTH, DELETE_TO_END]}
       renderUnderlayLeft={renderUnderlayLeft}>
       <Touchable
+        activeOpacity={1}
+        // highlight
+        // underlayColor={item.pin ? defaultColors.bg1 : defaultColors.bg4}
         style={[BGStyles.bg1, item.pin && BGStyles.bg4, GStyles.flexRow, GStyles.itemCenter, styles.container]}
         onPress={onPressItem}
         onLongPress={onLongPressItem}>
-        <CommonAvatar hasBorder title={item.displayName} avatarSize={48} style={styles.avatar} />
-        <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
-          <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
-            <View style={[GStyles.flex1, GStyles.flexRow, GStyles.itemCenter, GStyles.paddingRight(30)]}>
-              <TextL style={[FontStyles.font5, GStyles.marginRight(4)]} numberOfLines={1}>
-                {/* TODO: Remark */}
-                {item.displayName}
-              </TextL>
-              {item.mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />}
+        <>
+          <CommonAvatar hasBorder title={item.displayName} avatarSize={48} style={styles.avatar} />
+          <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
+            <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
+              <View style={[GStyles.flex1, GStyles.flexRow, GStyles.itemCenter, GStyles.paddingRight(30)]}>
+                <TextL style={[FontStyles.font5, GStyles.marginRight(4)]} numberOfLines={1}>
+                  {/* TODO: Remark */}
+                  {item.displayName}
+                </TextL>
+                {item.mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />}
+              </View>
+              <TextS style={FontStyles.font7}>{formatChatListTime(item.lastPostAt)}</TextS>
             </View>
-            <TextS style={FontStyles.font7}>{formatChatListTime(item.lastPostAt)}</TextS>
-          </View>
-          <View style={styles.blank} />
-          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
-            <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
-              {item.lastMessageType === 'TEXT' ? item.lastMessageContent : '[Image]'}
-            </TextS>
-            {item.pin && item.unreadMessageCount === 0 ? (
-              <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
-            ) : (
-              <TextS
-                style={[styles.messageNum, item.mute && styles.muteMessage, !item.unreadMessageCount && styles.hide]}>
-                {formatMessageCountToStr(item.unreadMessageCount)}
+            <View style={styles.blank} />
+            <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
+              <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
+                {item.lastMessageType === 'TEXT' ? item.lastMessageContent : '[Image]'}
               </TextS>
-            )}
+              {item.pin && item.unreadMessageCount === 0 ? (
+                <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
+              ) : (
+                <TextS
+                  style={[styles.messageNum, item.mute && styles.muteMessage, !item.unreadMessageCount && styles.hide]}>
+                  {formatMessageCountToStr(item.unreadMessageCount)}
+                </TextS>
+              )}
+            </View>
           </View>
-        </View>
+        </>
       </Touchable>
     </SwipeableItem>
   );
@@ -167,6 +172,7 @@ const styles = StyleSheet.create({
     borderWidth: pTd(1),
     borderRadius: pTd(9),
     overflow: 'hidden',
+    lineHeight: pTd(14),
   },
   hide: {
     display: 'none',

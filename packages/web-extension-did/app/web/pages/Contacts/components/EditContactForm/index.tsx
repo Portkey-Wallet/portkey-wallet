@@ -1,12 +1,9 @@
-import { Button, Form, Input, message, FormProps } from 'antd';
-import { useState, useCallback } from 'react';
-import DeleteContact from 'pages/Contacts/DeleteContact';
-import { useDeleteContact } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { useNavigate } from 'react-router';
+import { Form, Input, FormProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import IdAndAddress from '../IdAndAddress';
 import './index.less';
 import { ValidData } from 'pages/Contacts/AddContact';
+import EditButtonGroup from '../EditButtonGroup';
 
 const { Item: FormItem } = Form;
 
@@ -15,7 +12,7 @@ export interface IEditContactFormProps extends FormProps {
   validName: ValidData;
   validRemark?: ValidData;
   isShowRemark?: boolean;
-  canSave?: boolean;
+  cantSave?: boolean;
   handleInputRemarkChange: (v: string) => void;
   handleCopy: (val: string) => void;
 }
@@ -26,21 +23,12 @@ export default function EditContactForm({
   validName,
   validRemark,
   isShowRemark = true,
-  canSave = false,
+  cantSave = false,
   handleInputRemarkChange,
   handleCopy,
   onFinish,
 }: IEditContactFormProps) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const deleteContactApi = useDeleteContact();
-  const [delOpen, setDelOpen] = useState<boolean>(false);
-
-  const handleDelConfirm = useCallback(async () => {
-    await deleteContactApi(state);
-    navigate('/setting/contacts');
-    message.success('Contact deleted successfully');
-  }, [deleteContactApi, navigate, state]);
 
   return (
     <Form
@@ -64,7 +52,7 @@ export default function EditContactForm({
           {isShowRemark && (
             <FormItem
               name="remark"
-              label={t('Remrk')}
+              label={t('Remark')}
               validateStatus={validRemark?.validateStatus}
               help={validRemark?.errorMsg}>
               <Input
@@ -83,27 +71,8 @@ export default function EditContactForm({
           handleCopy={handleCopy}
         />
       </div>
-      <div className="form-btn">
-        <div className="flex-between form-btn-edit">
-          <Button
-            danger
-            onClick={() => {
-              setDelOpen(true);
-            }}>
-            {t('Delete')}
-          </Button>
-          <Button htmlType="submit" type="primary" disabled={canSave}>
-            {t('Save')}
-          </Button>
-        </div>
-        <DeleteContact
-          open={delOpen}
-          onCancel={() => {
-            setDelOpen(false);
-          }}
-          onConfirm={handleDelConfirm}
-        />
-      </div>
+
+      <EditButtonGroup className="form-btn" data={state} cantSave={cantSave} />
     </Form>
   );
 }

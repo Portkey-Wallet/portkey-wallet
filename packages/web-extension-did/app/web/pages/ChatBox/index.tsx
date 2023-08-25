@@ -40,7 +40,6 @@ export default function Session() {
   useEffectOnce(() => {
     init();
   });
-
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => {
     const formatList: MessageType[] = [];
@@ -110,7 +109,34 @@ export default function Session() {
     });
     return formatList;
   }, [list, relationId]);
-  const handleDel = useCallback(() => {
+  const handleDeleteMsg = useCallback(
+    (item: MessageType) => {
+      try {
+        deleteMessage(`${item.id}`);
+      } catch (e) {
+        message.error('Failed to delete message');
+        console.log('===handle delete message error', e);
+      }
+    },
+    [deleteMessage],
+  );
+  const handlePin = useCallback(() => {
+    try {
+      pin(!info?.pin);
+    } catch (e) {
+      message.error('Failed to pin chat');
+      console.log('===handle pin error', e);
+    }
+  }, [info?.pin, pin]);
+  const handleMute = useCallback(() => {
+    try {
+      mute(!info?.mute);
+    } catch (e) {
+      message.error('Failed to mute chat');
+      console.log('===handle mute error', e);
+    }
+  }, [info?.mute, mute]);
+  const handleDelete = useCallback(() => {
     return Modal.confirm({
       width: 320,
       content: t('Delete chat?'),
@@ -125,8 +151,8 @@ export default function Session() {
           await exit();
           navigate('/chat-list');
         } catch (e) {
-          console.log('===delete chat error', e);
-          message.error('delete error');
+          message.error('Failed to delete chat');
+          console.log('===handle delete chat error', e);
         }
       },
     });
@@ -159,19 +185,19 @@ export default function Session() {
         key: info?.pin ? 'un-pin' : 'pin',
         leftIcon: <CustomSvg type={info?.pin ? 'UnPin' : 'Pin'} />,
         children: info?.pin ? 'Unpin' : 'Pin',
-        onClick: () => pin(!info?.pin),
+        onClick: handlePin,
       },
       {
         key: info?.mute ? 'un-mute' : 'mute',
         leftIcon: <CustomSvg type={info?.mute ? 'UnMute' : 'Mute'} />,
         children: info?.mute ? 'Unmute' : 'Mute',
-        onClick: () => mute(!info?.mute),
+        onClick: handleMute,
       },
       {
         key: 'delete',
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
-        onClick: handleDel,
+        onClick: handleDelete,
       },
       {
         key: 'add-contact',
@@ -180,7 +206,17 @@ export default function Session() {
         onClick: handleAddContact,
       },
     ],
-    [handleAddContact, handleDel, info?.mute, info?.pin, info?.toRelationId, isStranger, mute, navigate, pin],
+    [
+      handleAddContact,
+      handleDelete,
+      handleMute,
+      handlePin,
+      info?.mute,
+      info?.pin,
+      info?.toRelationId,
+      isStranger,
+      navigate,
+    ],
   );
   const uploadProps = {
     className: 'chat-input-upload',
@@ -189,7 +225,7 @@ export default function Session() {
     beforeUpload: async (paramFile: RcFile) => {
       const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
       if (!sizeOk) {
-        message.info('file size exceeds the limit');
+        message.info('File too large');
         return false;
       }
       const src = await new Promise((resolve) => {
@@ -237,12 +273,13 @@ export default function Session() {
   };
   const hidePop = (e: any) => {
     try {
-      if (e?.target?.className?.indexOf('chat-box-more') === -1) {
+      const _t = e?.target?.className;
+      const isFunc = _t.includes instanceof Function;
+      if (isFunc && !_t.includes('chat-box-more')) {
         setPopVisible(false);
       }
     } catch (e) {
-      // TODO
-      console.log('e', e);
+      console.log('===chat box hidePop error', e);
     }
   };
   const handleSendMessage = async (v: string) => {
@@ -279,7 +316,7 @@ export default function Session() {
                 content={
                   <PopoverMenuList data={chatPopList.filter((pop) => pop.key !== 'add-contact' || isStranger)} />
                 }>
-                <div className="chat-box-more" onClick={() => setPopVisible(true)}>
+                <div className="chat-box-more" onClick={() => setPopVisible(!popVisible)}>
                   <CustomSvg type="More" />
                 </div>
               </Popover>
@@ -306,7 +343,7 @@ export default function Session() {
             next={next}
             lockable
             dataSource={messageList}
-            onDelete={deleteMessage}
+            onDelete={handleDeleteMsg}
           />
         </StyleProvider>
       </div>

@@ -87,20 +87,24 @@ export default function ChatList() {
     });
   }, [chatList, formatSubTitle]);
   const handlePin = useCallback(
-    (chatItem: IChatItemProps) => {
+    async (chatItem: IChatItemProps) => {
       try {
-        pinChannel(`${chatItem.id}`, !chatItem.pin);
-      } catch (e) {
-        message.error('Failed to pin chat');
+        await pinChannel(`${chatItem.id}`, !chatItem.pin);
+      } catch (e: any) {
+        if (`${e?.code}` === '13310') {
+          message.error('Pin limit exceeded');
+        } else {
+          message.error('Failed to pin chat');
+        }
         console.log('===handle pin error', e);
       }
     },
     [pinChannel],
   );
   const handleMute = useCallback(
-    (chatItem: IChatItemProps) => {
+    async (chatItem: IChatItemProps) => {
       try {
-        muteChannel(`${chatItem.id}`, !chatItem.muted);
+        await muteChannel(`${chatItem.id}`, !chatItem.muted);
       } catch (e) {
         message.error('Failed to mute chat');
         console.log('===handle mute error', e);
@@ -109,9 +113,9 @@ export default function ChatList() {
     [muteChannel],
   );
   const handleDelete = useCallback(
-    (chatItem: IChatItemProps) => {
+    async (chatItem: IChatItemProps) => {
       try {
-        hideChannel(`${chatItem.id}`);
+        await hideChannel(`${chatItem.id}`);
       } catch (e) {
         message.error('Failed to delete chat');
         console.log('===handle delete error', e);

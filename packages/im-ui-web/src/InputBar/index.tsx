@@ -21,14 +21,16 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
   const [popVisible, setPopVisible] = useState(false);
   const hidePop = useCallback((e: any) => {
     try {
-      if (e.target.className.indexOf('show-emoji-icon-container') === -1) {
+      const _t = e?.target?.className;
+      const isFun = _t.includes instanceof Function;
+      if (isFun && !_t.includes('show-emoji-icon-container')) {
         setShowEmojiIcon(false);
       }
-      if (e.target.className.indexOf('more-file-container') === -1) {
+      if (isFun && !_t.includes('more-file-container')) {
         setPopVisible(false);
       }
     } catch (e) {
-      console.log('e', e);
+      console.log('===input bar hidePop error', e);
     }
   }, []);
   const handleChange = (e: any) => {

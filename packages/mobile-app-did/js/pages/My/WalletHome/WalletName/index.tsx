@@ -15,6 +15,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import { FontStyles } from 'assets/theme/styles';
+import { useIsShowDeletion } from 'hooks/account';
 
 const PageHeight = windowHeight - headerHeight;
 
@@ -22,6 +23,7 @@ const WalletName: React.FC = () => {
   const { t } = useLanguage();
   const { walletName, userId } = useWallet();
   const caInfo = useCurrentCaInfo();
+  const showDeletion = useIsShowDeletion();
 
   const caInfoList = useMemo(() => {
     const result: { address: string; chainId: ChainId }[] = [];
@@ -47,12 +49,14 @@ const WalletName: React.FC = () => {
         </View>
         <CommonButton title="Edit" type="solid" onPress={() => navigationService.navigate('EditWalletName')} />
       </View>
-      <CommonButton
-        title="Delete Account"
-        type="clear"
-        titleStyle={FontStyles.font7}
-        onPress={() => navigationService.navigate('AccountCancelation')}
-      />
+      {showDeletion && (
+        <CommonButton
+          title="Delete Account"
+          type="clear"
+          titleStyle={FontStyles.font7}
+          onPress={() => navigationService.navigate('AccountCancelation')}
+        />
+      )}
     </PageContainer>
   );
 };

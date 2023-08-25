@@ -1,3 +1,4 @@
+import { request } from '@portkey-wallet/api/api-did';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -5,15 +6,19 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import CommonButton from 'components/CommonButton';
 import { TextL, TextM } from 'components/CommonText';
+import CommonToast from 'components/CommonToast';
+import Loading from 'components/Loading';
 import PageContainer from 'components/PageContainer';
 import { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
 import Svg from 'components/Svg';
+import { useAppleAuthentication } from 'hooks/authentication';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import useEffectOnce from 'hooks/useEffectOnce';
+import useLogOut from 'hooks/useLogOut';
 import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { View } from 'react-native';
-import { encodedDeletionManager } from 'utils/guardian';
+import { removeManager } from 'utils/guardian';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['blue', 'gray'];
@@ -36,25 +41,35 @@ const AlertMap = {
 
 const ScrollViewProps = { disabled: true };
 
-const MockCheck = { validatedAssets: false, validatedGuardian: false, validatedDevice: true };
-
 export default function AccountCancelation() {
-  const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const { caHash, address: managerAddress, managerInfo } = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
+  const { appleSign } = useAppleAuthentication();
+  const logout = useLogOut();
 
   const onDeletion = useCallback(async () => {
     if (!caHash || !managerAddress) return;
+    Loading.show();
+    const userInfo = await appleSign();
+    if (userInfo?.user?.id !== managerInfo?.loginAccount) {
+      Loading.hide();
+      return CommonToast.fail('Account does not match');
+    }
     const caContract = await getCurrentCAContract();
-
-    const req = await encodedDeletionManager(caContract, managerAddress, caHash);
-
-    // request.wallet.deletionAccount({
-    //   params: {
-    //     rawTransaction: req.data,
-    //   },
-    // });
-    console.log(req, '=====req');
-  }, [caHash, getCurrentCAContract, managerAddress]);
+    const req = await removeManager(caContract, managerAddress, caHash);
+    if (req && !req.error) {
+      try {
+        await request.wallet.deletionAccount({ params: { appleToken: userInfo.identityToken } });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        logout();
+      }
+    } else {
+      CommonToast.failError(req?.error);
+    }
+    Loading.hide();
+  }, [appleSign, caHash, getCurrentCAContract, logout, managerAddress, managerInfo?.loginAccount]);
 
   const AlertWaring = useCallback(
     (pass?: boolean) => {
@@ -78,27 +93,34 @@ export default function AccountCancelation() {
   });
   const onConfirm = useCallback(async () => {
     if (!caHash || !managerAddress) return;
-    // request.wallet.deletionCheck()
-    // api check
-    const { validatedAssets, validatedDevice, validatedGuardian } = MockCheck || {};
-    const list = [];
-    if (validatedAssets !== undefined && !validatedAssets) list.push(AlertMap.Asset);
-    if (validatedDevice !== undefined && !validatedDevice) list.push(AlertMap.Guardian);
-    if (validatedGuardian !== undefined && !validatedGuardian) list.push(AlertMap['Login Device']);
-    if (list.length > 0) {
-      const messageList = list.map((tip, index) => (
-        <TextM key={index} style={styles.alertMessage}>
-          {list.length > 1 ? `${index + 1}. ` : ''}
-          {tip}
-        </TextM>
-      ));
-      return ActionSheet.alert({
-        title: 'Unable to Delete Account',
-        messageList: messageList,
-        buttons: [{ title: 'OK' }],
-      });
+    Loading.show();
+    try {
+      // deletion check
+      const req = await request.wallet.deletionCheck();
+      const { validatedAssets, validatedDevice, validatedGuardian } = req || {};
+      const list: string[] = [];
+      if (!validatedAssets) list.push(AlertMap.Asset);
+      if (!validatedDevice) list.push(AlertMap.Guardian);
+      if (!validatedGuardian) list.push(AlertMap['Login Device']);
+      if (list.length > 0) {
+        const messageList = list.map((tip, index) => (
+          <TextM key={index} style={styles.alertMessage}>
+            {list.length > 1 ? `${index + 1}. ` : ''}
+            {tip}
+          </TextM>
+        ));
+        return ActionSheet.alert({
+          title: 'Unable to Delete Account',
+          messageList: messageList,
+          buttons: [{ title: 'OK' }],
+        });
+      }
+      AlertWaring(true);
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
     }
-    AlertWaring(true);
   }, [AlertWaring, caHash, managerAddress]);
   return (
     <PageContainer

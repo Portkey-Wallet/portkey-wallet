@@ -4,6 +4,8 @@ import CustomSvg from 'components/CustomSvg';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import './index.less';
 import { CustomAddressItem, ValidData } from 'pages/Contacts/AddContact';
+import EditButtonGroup from '../EditButtonGroup';
+import { ExtraType, ExtraTypeEnum } from 'types/Profile';
 
 const { Item: FormItem } = Form;
 
@@ -12,6 +14,7 @@ export interface IAddContactFormProps extends FormProps {
   validName: ValidData;
   state: any;
   addressArr: CustomAddressItem[];
+  extra: ExtraType;
   handleInputValueChange: (v: string) => void;
   handleSelectNetwork: (i: number) => void;
   handleAddressChange: (i: number, value: string) => void;
@@ -23,6 +26,7 @@ export default function AddContactForm({
   state,
   addressArr,
   validName,
+  extra,
   onFinish,
   handleInputValueChange,
   handleSelectNetwork,
@@ -93,11 +97,18 @@ export default function AddContactForm({
           )}
         </Form.List>
       </div>
-      <FormItem className="form-btn">
-        <Button className="add-btn" type="primary" htmlType="submit" disabled={isDisable}>
-          {t('Add')}
-        </Button>
-      </FormItem>
+
+      {extra === ExtraTypeEnum.ADD_NEW_CHAT && (
+        <FormItem className="form-btn">
+          <Button className="add-btn" type="primary" htmlType="submit" disabled={isDisable}>
+            {t('Add')}
+          </Button>
+        </FormItem>
+      )}
+
+      {extra !== ExtraTypeEnum.ADD_NEW_CHAT && (
+        <EditButtonGroup className="form-btn" data={state} cantSave={isDisable} />
+      )}
     </Form>
   );
 }

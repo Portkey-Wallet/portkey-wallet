@@ -18,6 +18,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import CustomModal from 'pages/components/CustomModal';
 import { useGoProfile } from 'hooks/useProfile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { ExtraType, ExtraTypeEnum } from 'types/Profile';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -48,7 +49,7 @@ export default function AddContact() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { extra } = useParams();
+  const { extra }: { extra?: ExtraType } = useParams();
   const appDispatch = useAppDispatch();
   const showChat = useIsChatShow();
   const [disable, setDisabled] = useState<boolean>(true);
@@ -192,11 +193,11 @@ export default function AddContact() {
   const requestAddContact = useCallback(
     async (name: string, addresses: AddressItem[]) => {
       let contactDetail = {} as ContactItemType;
-      if (extra === '2') {
+      if (extra === ExtraTypeEnum.CANT_CHAT) {
         // edit
         contactDetail = await editContactApi({ name: name.trim(), addresses });
       } else {
-        // add extra === '3'
+        // add extra === ExtraTypeEnum.ADD_NEW_CHAT
         contactDetail = await addContactApi({ name: name.trim(), addresses });
       }
 
@@ -259,7 +260,7 @@ export default function AddContact() {
 
   // go back previous page
   const handleGoBack = useCallback(() => {
-    if (extra === '3') {
+    if (extra === ExtraTypeEnum.ADD_NEW_CHAT) {
       navigate('/setting/contacts');
     } else {
       navigate('/setting/contacts/view', { state: state });
@@ -281,6 +282,7 @@ export default function AddContact() {
       isDisable={disable}
       validName={validName}
       state={state}
+      extra={extra || ExtraTypeEnum.ADD_NEW_CHAT}
       addressArr={addressArr}
       onFinish={onFinish}
       handleSelectNetwork={handleSelectNetwork}
@@ -298,6 +300,7 @@ export default function AddContact() {
       isDisable={disable}
       validName={validName}
       state={state}
+      extra={extra || ExtraTypeEnum.ADD_NEW_CHAT}
       addressArr={addressArr}
       onFinish={onFinish}
       handleSelectNetwork={handleSelectNetwork}

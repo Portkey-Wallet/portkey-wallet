@@ -1,7 +1,7 @@
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import './index.less';
-import { useMemo } from 'react';
+import { useIndexAndName } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 export interface IContactItemProps {
   item: Partial<ContactItemType>;
@@ -10,11 +10,7 @@ export interface IContactItemProps {
 }
 
 export default function ContactItem({ item, hasChatEntry = true, clickChat }: IContactItemProps) {
-  const name = useMemo(
-    () => item?.name || item?.caHolderInfo?.walletName || item?.imInfo?.name || '',
-    [item?.caHolderInfo?.walletName, item?.imInfo?.name, item?.name],
-  );
-  const index = useMemo(() => name?.substring(0, 1).toLocaleUpperCase(), [name]);
+  const { name, index } = useIndexAndName(item);
 
   return (
     <div className="flex-between contact-item">

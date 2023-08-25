@@ -312,7 +312,6 @@ export const useIsMyContact = () => {
   const contactRelationIdMap = useContactRelationIdMap();
   const contactIdMap = useContactIdMap();
   const { userId } = useWallet();
-  console.log('🌈 🌈 🌈 🌈 🌈 🌈 my', userId);
 
   return useCallback(
     ({ relationId, contactId }: { relationId?: string; contactId?: string }): boolean => {
@@ -329,4 +328,13 @@ export const useIsMyContact = () => {
     },
     [contactIdMap, contactRelationIdMap, userId],
   );
+};
+
+export const useIndexAndName = (item: Partial<ContactItemType>) => {
+  return useMemo(() => {
+    const name = item?.name || item?.caHolderInfo?.walletName || item?.imInfo?.name || '';
+
+    const index = name?.substring(0, 1).toLocaleUpperCase();
+    return { index, name };
+  }, [item?.caHolderInfo?.walletName, item?.imInfo?.name, item?.name]);
 };

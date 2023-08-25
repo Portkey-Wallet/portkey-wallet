@@ -10,6 +10,7 @@ import {
   REFRESH_DELAY_TIME,
   useAddStrangerContact,
   useContactInfo,
+  useIndexAndName,
   useIsMyContact,
   useReadImputation,
 } from '@portkey-wallet/hooks/hooks-ca/contact';
@@ -18,6 +19,7 @@ import { message } from 'antd';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
+import { ExtraTypeEnum } from 'types/Profile';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -32,12 +34,14 @@ export default function ViewContact() {
     [state?.imInfo?.relationId, state?.relationId],
   );
 
+  const { name, index } = useIndexAndName(state);
+
   // unified data structure
   const [data, setData] = useState({
     ...state,
     id: state?.id,
-    index: state?.index || state.name?.substring(0, 1).toLocaleUpperCase(),
-    name: state.name,
+    index: index,
+    name: name,
     imInfo: {
       portkeyId: state?.portkeyId || state?.imInfo?.portkeyId,
       relationId: state?.relationId || state?.imInfo?.relationId,
@@ -141,7 +145,7 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit(relationId ? '1' : '2', data)}
+      handleEdit={() => handleEdit(relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data?.imInfo?.relationId || '')}
       handleCopy={handleCopy}
@@ -155,7 +159,7 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit(relationId ? '1' : '2', data)}
+      handleEdit={() => handleEdit(relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data?.imInfo?.relationId || '')}
       handleCopy={handleCopy}

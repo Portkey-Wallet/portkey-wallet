@@ -8,6 +8,7 @@ export default function AddContactPrompt({
   form,
   isDisable,
   state,
+  extra,
   addressArr,
   validName,
   headerTitle,
@@ -28,6 +29,7 @@ export default function AddContactPrompt({
         isDisable={isDisable}
         validName={validName}
         state={state}
+        extra={extra}
         addressArr={addressArr}
         onFinish={onFinish}
         handleSelectNetwork={handleSelectNetwork}

@@ -4,8 +4,9 @@ import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useEffect, useMemo, useState } from 'react';
-import { useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useEffect, useState } from 'react';
+import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
 export default function ViewContactBody({
   data,
@@ -22,11 +23,7 @@ export default function ViewContactBody({
   const isMyContactFn = useIsMyContact();
   const showChat = useIsChatShow();
 
-  const name = useMemo(
-    () => data?.name || data?.caHolderInfo?.walletName || data?.imInfo?.name || '',
-    [data?.caHolderInfo?.walletName, data?.imInfo?.name, data?.name],
-  );
-  const index = useMemo(() => name?.substring(0, 1).toLocaleUpperCase(), [name]);
+  const { name, index } = useIndexAndName(data as Partial<ContactItemType>);
 
   const [isMyContact, setIsMyContact] = useState(true);
 
@@ -94,7 +91,7 @@ export default function ViewContactBody({
       </div>
 
       {/* stranger cant edit */}
-      {(!data.id || isMyContact || data?.from === 'my-did') && (
+      {(data.id || isMyContact || data?.from === 'my-did') && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

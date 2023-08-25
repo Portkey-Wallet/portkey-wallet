@@ -3,7 +3,15 @@ import { CaHolderInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import { IImInfo } from '@portkey-wallet/im';
 
-export type ExtraType = '1' | '2' | '3'; // '1' can chat, '2' cont chat , '3' no status（add new chat）
+// used for route parameters
+export type ExtraType = 'can-chat-edit' | 'cant-chat-edit' | 'add-new-chat';
+
+// related to ExtraType
+export enum ExtraTypeEnum {
+  CAN_CHAT = 'can-chat-edit',
+  CANT_CHAT = 'cant-chat-edit',
+  ADD_NEW_CHAT = 'add-new-chat', // no status（add new chat）
+}
 
 export interface IProfileDetailDataProps {
   id?: string;

@@ -1,3 +1,4 @@
+import { useIndexAndName } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ChainId } from '@portkey-wallet/types';
 import {
   ContactItemType,
@@ -27,20 +28,21 @@ export default function ContactCard({ user, className, fromRecents = true, chain
     (transactionTime: string | undefined): boolean => fromRecents && !transactionTime,
     [fromRecents],
   );
+  const { name: transName, index: transIndex } = useIndexAndName(user);
   const header = useMemo(
     () => (
       <div className="header">
-        <div className="icon">{user.index || ''}</div>
-        <p>{user.name}</p>
+        <div className="icon">{transIndex || ''}</div>
+        <p>{transName}</p>
       </div>
     ),
-    [user.index, user.name],
+    [transIndex, transName],
   );
 
   const navigate = useNavigate();
   const goRecentDetail = (targetAddress: string, targetChainId: ChainId) => {
     navigate('/recent-detail', {
-      state: { chainId: chainId, targetAddress, targetChainId, name: user.name, index: user.index },
+      state: { chainId: chainId, targetAddress, targetChainId, name: transName, index: transIndex },
     });
   };
 
@@ -53,7 +55,7 @@ export default function ContactCard({ user, className, fromRecents = true, chain
               <div
                 className={clsx(['main-info', isDisabled(address?.transactionTime) ? 'disabled' : null])}
                 onClick={() =>
-                  onChange({ ...address, name: user.name, isDisable: isDisabled(address?.transactionTime) })
+                  onChange({ ...address, name: transName, isDisable: isDisabled(address?.transactionTime) })
                 }>
                 <span className={'address'}>
                   {`ELF_${formatStr2EllipsisStr(address.address, [6, 6])}_${address.chainId}`}

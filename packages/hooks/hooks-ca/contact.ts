@@ -20,6 +20,7 @@ import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '..
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useAddStranger } from './im';
+import { useWallet } from './wallet';
 
 export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
@@ -229,20 +230,11 @@ export const useLocalContactSearch = () => {
 
   return useCallback(
     (value: string, type: ContactsTab) => {
-      const notEmptyList = contactIndexList.filter(item => item?.contacts?.length > 0);
-      if (!value) {
-        const temp: ContactItemType[] = [];
-        notEmptyList.forEach(({ contacts }) => {
-          temp.push(...contacts);
-        });
-        return { contactFilterList: temp, contactIndexFilterList: notEmptyList };
-      }
-
-      // STEP 1
+      // STEP 1 > filter - type
       let filterList: ContactIndexType[] = [];
       if (type === ContactsTab.Chats) {
         // search can chat
-        notEmptyList.forEach(({ index, contacts }) => {
+        contactIndexList.forEach(({ index, contacts }) => {
           filterList.push({
             index,
             contacts: contacts.filter(contact => contact.imInfo?.portkeyId),
@@ -250,15 +242,27 @@ export const useLocalContactSearch = () => {
         });
       } else {
         // search all
-        filterList = notEmptyList;
+        filterList = contactIndexList;
       }
 
-      // STEP 2
+      // STEP 2 > filter - no data
+      const notEmptyFilterList = filterList.filter(item => item?.contacts?.length > 0);
+
+      // STEP 3 > filter - no search value, return total
+      if (!value) {
+        const temp: ContactItemType[] = [];
+        notEmptyFilterList.forEach(({ contacts }) => {
+          temp.push(...contacts);
+        });
+        return { contactFilterList: temp, contactIndexFilterList: notEmptyFilterList };
+      }
+
+      // STEP 4 > filter - have search value, return search result
       const contactIndexFilterList: ContactIndexType[] = [];
       const contactFilterList: ContactItemType[] = [];
       if (value.length <= 16) {
         const _v = value.trim().toLowerCase();
-        filterList.forEach(({ index, contacts }) => {
+        notEmptyFilterList.forEach(({ index, contacts }) => {
           // Name search and Wallet Name search
           contactIndexFilterList.push({
             index,
@@ -272,7 +276,7 @@ export const useLocalContactSearch = () => {
         });
       } else {
         // Portkey ID search
-        filterList.forEach(({ index, contacts }) => {
+        notEmptyFilterList.forEach(({ index, contacts }) => {
           contactIndexFilterList.push({
             index,
             contacts: contacts.filter(contact => contact?.caHolderInfo?.userId?.trim() === value.trim()),
@@ -287,7 +291,7 @@ export const useLocalContactSearch = () => {
           }
         }
         value = getAelfAddress(value);
-        filterList.forEach(({ index, contacts }) => {
+        notEmptyFilterList.forEach(({ index, contacts }) => {
           contactIndexFilterList.push({
             index,
             contacts: contacts.filter(contact =>
@@ -319,4 +323,35 @@ export const useChatContactFlatList = () => {
     });
     return contactFlatList;
   }, [contactIndexList]);
+};
+
+export const useIsMyContact = () => {
+  const contactRelationIdMap = useContactRelationIdMap();
+  const contactIdMap = useContactIdMap();
+  const { userId } = useWallet();
+
+  return useCallback(
+    ({ relationId, contactId }: { relationId?: string; contactId?: string }): boolean => {
+      let checkRelationId = false,
+        checkContactId = false;
+      const checkIsMe = relationId === userId;
+      if (relationId && contactRelationIdMap) {
+        checkRelationId = contactRelationIdMap?.[relationId]?.length > 0;
+      }
+      if (contactId && contactIdMap) {
+        checkContactId = contactIdMap?.[contactId]?.length > 0;
+      }
+      return (checkRelationId || checkContactId) && !checkIsMe;
+    },
+    [contactIdMap, contactRelationIdMap, userId],
+  );
+};
+
+export const useIndexAndName = (item: Partial<ContactItemType>) => {
+  return useMemo(() => {
+    const name = item?.name || item?.caHolderInfo?.walletName || item?.imInfo?.name || '';
+
+    const index = name?.substring(0, 1).toLocaleUpperCase();
+    return { index, name };
+  }, [item?.caHolderInfo?.walletName, item?.imInfo?.name, item?.name]);
 };

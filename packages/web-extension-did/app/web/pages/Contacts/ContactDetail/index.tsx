@@ -4,6 +4,7 @@ import EditContact from '../EditContact';
 import ViewContact from '../ViewContact';
 import './index.less';
 import AddContact from '../AddContact';
+import { ExtraTypeEnum } from 'types/Profile';
 
 export default function ContactDetail() {
   const { type, extra } = useParams();
@@ -13,9 +14,9 @@ export default function ContactDetail() {
     <div className={isNotLessThan768 ? 'contact-detail-prompt' : 'min-width-max-height'}>
       {type === 'view' && <ViewContact />}
       {/* can chat edit */}
-      {type === 'edit' && extra === '1' && <EditContact />}
+      {type === 'edit' && extra === ExtraTypeEnum.CAN_CHAT && <EditContact />}
       {/* cant chat edit */}
-      {type === 'edit' && extra === '2' && <AddContact />}
+      {type === 'edit' && extra === ExtraTypeEnum.CANT_CHAT && <AddContact />}
       {/* add new contact */}
       {type === 'add' && <AddContact />}
     </div>

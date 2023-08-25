@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
     borderWidth: pTd(1),
     borderRadius: pTd(9),
     overflow: 'hidden',
+    lineHeight: pTd(14),
   },
   hide: {
     display: 'none',

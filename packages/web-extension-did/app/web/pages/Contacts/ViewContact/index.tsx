@@ -10,6 +10,8 @@ import {
   REFRESH_DELAY_TIME,
   useAddStrangerContact,
   useContactInfo,
+  useIndexAndName,
+  useIsMyContact,
   useReadImputation,
 } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
@@ -17,8 +19,7 @@ import { message } from 'antd';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
-import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useEffectOnce } from 'react-use';
+import { ExtraTypeEnum } from 'types/Profile';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -26,19 +27,21 @@ export default function ViewContact() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const isStrangerFn = useCheckIsStranger();
+  const isMyContactFn = useIsMyContact();
 
   const relationId = useMemo(
     () => state?.relationId || state?.imInfo?.relationId,
     [state?.imInfo?.relationId, state?.relationId],
   );
 
+  const { name, index } = useIndexAndName(state);
+
   // unified data structure
   const [data, setData] = useState({
     ...state,
     id: state?.id,
-    index: state?.index || state.name?.substring(0, 1).toLocaleUpperCase(),
-    name: state.name,
+    index: index,
+    name: name,
     imInfo: {
       portkeyId: state?.portkeyId || state?.imInfo?.portkeyId,
       relationId: state?.relationId || state?.imInfo?.relationId,
@@ -52,18 +55,19 @@ export default function ViewContact() {
   const addedText = t('Added');
   const addContactText = t('Add Contact');
 
-  useEffectOnce(() => {
-    const isStranger = isStrangerFn(relationId);
-    if (state?.id && !isStranger) {
+  useEffect(() => {
+    const isMyContact = isMyContactFn({ relationId, contactId: state?.id });
+
+    if (state?.id && isMyContact) {
       // ================== case one ==================
       // have contact id, get info from local map
       setData(contactInfo);
-    } else if (relationId && !isStranger) {
+    } else if (relationId && isMyContact) {
       // ================== case two ==================
       // Can chat, and is my contact, need to get full info from local map;
       // Because it jumped from the chat-box, the data is incomplete
       setData(contactInfo);
-    } else if (isStranger) {
+    } else if (!isMyContact) {
       // ================== case three ==================
       // Can chat, and is stranger, need to get full info from remote db;
       // Because it jumped from the chat-box or find-more, the data is incomplete
@@ -75,13 +79,13 @@ export default function ViewContact() {
         const err = handleErrorMessage(error, 'get profile error');
         message.error(err);
       }
-    } else {
-      // ================== case four ==================
-      // Cant chat (no relationId), display data directly
-      // Because it jumped from contacts page only
-      setData(state);
     }
-  });
+
+    // ================== case four ==================
+    // default setData(state);
+    // Cant chat (no relationId), display data directly
+    // Because it jumped from contacts page only
+  }, [contactInfo, isMyContactFn, relationId, state?.id]);
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {
@@ -141,9 +145,9 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit(relationId ? '1' : '2', data)}
+      handleEdit={() => handleEdit(relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
       handleAdd={handleAdd}
-      handleChat={() => handleChat(data)}
+      handleChat={() => handleChat(data?.imInfo?.relationId || '')}
       handleCopy={handleCopy}
     />
   ) : (
@@ -155,9 +159,9 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit(relationId ? '1' : '2', data)}
+      handleEdit={() => handleEdit(relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
       handleAdd={handleAdd}
-      handleChat={() => handleChat(data)}
+      handleChat={() => handleChat(data?.imInfo?.relationId || '')}
       handleCopy={handleCopy}
     />
   );

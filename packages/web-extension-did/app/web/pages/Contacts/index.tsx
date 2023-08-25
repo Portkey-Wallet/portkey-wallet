@@ -12,6 +12,7 @@ import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { ExtraTypeEnum } from 'types/Profile';
 
 const initContactItem: Partial<ContactItemType> = {
   id: '-1',
@@ -100,7 +101,7 @@ export default function Contacts() {
       initData={initContactItem}
       showImputation={showImputation}
       closeImputationTip={closeImputationTip}
-      handleAdd={() => handleAdd('3', initContactItem)}
+      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
       handleSearch={searchChange}
       changeTab={changeTab}
     />
@@ -116,7 +117,7 @@ export default function Contacts() {
       initData={initContactItem}
       showImputation={showImputation}
       closeImputationTip={closeImputationTip}
-      handleAdd={() => handleAdd('3', initContactItem)}
+      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
       handleSearch={searchChange}
       changeTab={changeTab}
     />

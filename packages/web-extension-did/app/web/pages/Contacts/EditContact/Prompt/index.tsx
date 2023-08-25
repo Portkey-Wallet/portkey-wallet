@@ -6,7 +6,7 @@ import EditContactForm from 'pages/Contacts/components/EditContactForm';
 export default function EditContactPrompt({
   form,
   isShowRemark,
-  canSave,
+  cantSave,
   state,
   validName,
   validRemark,
@@ -22,7 +22,7 @@ export default function EditContactPrompt({
       <EditContactForm
         form={form}
         isShowRemark={isShowRemark}
-        canSave={canSave}
+        cantSave={cantSave}
         validName={validName}
         validRemark={validRemark}
         state={state}

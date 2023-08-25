@@ -34,6 +34,7 @@ import { useBuyButtonShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/
 import ChatEntry from 'pages/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import './index.less';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export interface TransactionResult {
   total: number;
@@ -83,7 +84,7 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
-  const { isBuyButtonShow } = useBuyButtonShow();
+  const { isBuyButtonShow } = useBuyButtonShow(VersionDeviceType.Extension);
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
 

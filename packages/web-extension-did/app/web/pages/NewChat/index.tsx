@@ -14,7 +14,7 @@ import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { message } from 'antd';
 import './index.less';
 
-export default function ChatListSearch() {
+export default function NewChat() {
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
@@ -25,24 +25,17 @@ export default function ChatListSearch() {
   const createChannel = useCreateP2pChannel();
 
   const handleSearch = useCallback(
-    async (keyword: string) => {
+    (keyword: string) => {
       const { contactFilterList = [] } = localSearch(keyword, ContactsTab.Chats);
-      console.log('searchResult', contactFilterList);
       setChatList(contactFilterList);
     },
     [localSearch],
   );
-
-  useEffect(() => {
-    setFilterWord(state?.search ?? '');
-    handleSearch(state?.search ?? '');
-  }, [handleSearch, state?.search]);
-
   const searchDebounce = useDebounceCallback(
-    async (params) => {
+    (params) => {
       try {
         setLoading(true);
-        await handleSearch(params);
+        handleSearch(params);
       } catch (e) {
         console.log('===handleSearch error', e);
       } finally {
@@ -66,6 +59,10 @@ export default function ChatListSearch() {
     },
     [createChannel, navigate],
   );
+  useEffect(() => {
+    setFilterWord(state?.search ?? '');
+    handleSearch(state?.search ?? '');
+  }, [handleSearch, state?.search]);
 
   return (
     <div className="new-chat-page flex-column">
@@ -80,7 +77,7 @@ export default function ChatListSearch() {
           value={filterWord}
           inputProps={{
             onChange: (e) => {
-              const _value = e.target.value.replaceAll(' ', '');
+              const _value = e.target.value.trim();
               setFilterWord(_value);
               searchDebounce(_value);
             },

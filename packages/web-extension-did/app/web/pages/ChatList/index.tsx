@@ -3,7 +3,6 @@ import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
-
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -26,7 +25,7 @@ export default function ChatList() {
     hasNext: hasNextChannelList,
   } = useChannelList();
   const formatSubTitle = useCallback((item: ChannelItem) => {
-    const _type = MessageTypeWeb[item.lastMessageType!];
+    const _type = MessageTypeWeb[item.lastMessageType ?? ''];
     let subTitle = '[Not supported message]';
     if (_type === 'image') {
       subTitle = '[Image]';
@@ -35,7 +34,7 @@ export default function ChatList() {
     }
     return subTitle;
   }, []);
-  const addPopList = useMemo(
+  const popList = useMemo(
     () => [
       {
         key: 'new-chat',
@@ -50,13 +49,13 @@ export default function ChatList() {
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Find More',
         onClick: () => {
-          navigate(`/setting/contacts/find-more`, { state: { search: '' } });
+          navigate(`/setting/contacts/find-more`);
         },
       },
     ],
     [navigate],
   );
-  const rightElement = useMemo(
+  const headerRightEle = useMemo(
     () => (
       <div className="flex-center right-element">
         <CustomSvg type="Search" onClick={() => navigate('/chat-list-search')} />
@@ -65,15 +64,15 @@ export default function ChatList() {
           placement="bottom"
           trigger="click"
           showArrow={false}
-          content={<PopoverMenuList data={addPopList} />}>
+          content={<PopoverMenuList data={popList} />}>
           <CustomSvg type="AddCircle" />
         </Popover>
         <CustomSvg type="Close2" onClick={() => navigate('/')} />
       </div>
     ),
-    [addPopList, navigate],
+    [popList, navigate],
   );
-  const transChatList = useMemo(() => {
+  const transChatList: IChatItemProps[] = useMemo(() => {
     return chatList.map((item) => {
       return {
         id: item.channelUuid,
@@ -127,7 +126,7 @@ export default function ChatList() {
   return (
     <div className="chat-list-page">
       <div className="chat-list-top">
-        <SettingHeader title={t('Chats')} leftCallBack={() => navigate('/')} rightElement={rightElement} />
+        <SettingHeader title={t('Chats')} leftCallBack={() => navigate('/')} rightElement={headerRightEle} />
       </div>
       <div className="chat-list-content">
         {chatList.length === 0 ? (

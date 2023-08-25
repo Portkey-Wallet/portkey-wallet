@@ -273,12 +273,13 @@ export default function Session() {
   };
   const hidePop = (e: any) => {
     try {
-      if (e?.target?.className?.indexOf('chat-box-more') === -1) {
+      const _t = e?.target?.className;
+      const isFunc = _t.includes instanceof Function;
+      if (isFunc && !_t.includes('chat-box-more')) {
         setPopVisible(false);
       }
     } catch (e) {
-      // TODO
-      console.log('e', e);
+      console.log('===chat box hidePop error', e);
     }
   };
   const handleSendMessage = async (v: string) => {
@@ -315,7 +316,7 @@ export default function Session() {
                 content={
                   <PopoverMenuList data={chatPopList.filter((pop) => pop.key !== 'add-contact' || isStranger)} />
                 }>
-                <div className="chat-box-more" onClick={() => setPopVisible(true)}>
+                <div className="chat-box-more" onClick={() => setPopVisible(!popVisible)}>
                   <CustomSvg type="More" />
                 </div>
               </Popover>

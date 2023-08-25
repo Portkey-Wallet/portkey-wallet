@@ -7,6 +7,7 @@ import {
   deleteContactAction,
   resetContact,
   readImputationAction,
+  refreshContactMap,
 } from './actions';
 import {
   executeEventToContactIndexList,
@@ -104,6 +105,11 @@ export const contactSlice = createSlice({
         let _contactIndexList = [...state.contactIndexList];
         _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
         state.contactIndexList = sortContactIndexList(_contactIndexList);
+        state.contactMap = transIndexesToContactMap(state.contactIndexList);
+        state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
+      })
+      .addCase(refreshContactMap, state => {
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
         state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);

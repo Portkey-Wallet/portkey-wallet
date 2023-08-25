@@ -1,6 +1,7 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useCallback, useState } from 'react';
 import useEffectOnce from './useEffectOnce';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export function useIsShowDeletion() {
   const [showDeletion, setShowDeletion] = useState(false);
@@ -13,7 +14,7 @@ export function useIsShowDeletion() {
     }
   }, []);
   useEffectOnce(() => {
-    init();
+    if (isIOS) init();
   });
   return showDeletion;
 }

@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
-import { useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import EditContactPrompt from './Prompt';
 import EditContactPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
@@ -14,6 +13,7 @@ import { useGoProfile, useProfileCopy } from 'hooks/useProfile';
 import { IEditContactFormProps } from '../components/EditContactForm';
 import { ValidData } from '../AddContact';
 import CustomModal from 'pages/components/CustomModal';
+import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 
@@ -31,7 +31,7 @@ export default function EditContact() {
   const [canSave, setCanSave] = useState<boolean>(false);
   const [validName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [validRemark, setValidRemark] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
-  const editContactApi = useEditContact();
+  const editContactApi = useEditIMContact();
   const { setLoading } = useLoading();
 
   const handleFormValueChange = useCallback(() => {
@@ -60,15 +60,18 @@ export default function EditContact() {
       try {
         setLoading(true);
 
-        const contactDetail = await editContactApi({
-          name: remark.trim(),
-          id: state.id,
-          relationId: state?.imInfo?.relationId,
-        });
+        const contactDetail = await editContactApi(
+          {
+            name: remark.trim(),
+            id: state.id,
+            relationId: state?.imInfo?.relationId,
+          },
+          state?.caHolderInfo?.walletName,
+        );
 
         appDispatch(fetchContactListAsync());
 
-        if (contactDetail?.imInfo?.relationId) {
+        if (!state?.imInfo?.relationId && contactDetail?.imInfo?.relationId) {
           // CAN CHAT
           CustomModal({
             type: 'info',

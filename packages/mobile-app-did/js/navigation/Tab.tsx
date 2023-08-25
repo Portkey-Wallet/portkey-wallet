@@ -18,6 +18,7 @@ import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { TextS } from 'components/CommonText';
 import { useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const Tab = createBottomTabNavigator();
 
@@ -112,6 +113,7 @@ export default function TabRoot() {
     <Tab.Navigator
       initialRouteName="Wallet"
       screenOptions={({ route }) => ({
+        tabBarLabelStyle: styles.tabBarLabelStyle,
         tabBarAllowFontScaling: false,
         header: () => null,
         tabBarIcon: ({ focused }) => {
@@ -194,5 +196,8 @@ const styles = StyleSheet.create({
     height: pTd(8),
     backgroundColor: defaultColors.bg17,
     overflow: 'hidden',
+  },
+  tabBarLabelStyle: {
+    paddingBottom: isIOS ? 0 : 5,
   },
 });

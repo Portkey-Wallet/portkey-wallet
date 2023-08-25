@@ -3,21 +3,24 @@ import { ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
+import { useContactInfo } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 type RouterParams = {
-  contact?: ContactItemType;
+  contactId?: string;
 };
 
 const NoChatContactProfile: React.FC = () => {
-  const { contact } = useRouterParams<RouterParams>();
+  const { contactId } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
+  const contact = useContactInfo({
+    contactId,
+  });
 
   return (
     <PageContainer

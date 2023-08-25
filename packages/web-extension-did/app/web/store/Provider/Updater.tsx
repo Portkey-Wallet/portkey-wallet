@@ -28,6 +28,7 @@ import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 import im from '@portkey-wallet/im';
 import s3Instance from '@portkey-wallet/utils/s3';
 import initIm from 'hooks/im';
+import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -88,5 +89,6 @@ export default function Updater() {
   useBuyButton(true);
   useRememberMeBlackList(true);
   useTabMenuList(true);
+  useCheckContactMap();
   return null;
 }

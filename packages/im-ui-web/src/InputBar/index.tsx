@@ -21,14 +21,16 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
   const [popVisible, setPopVisible] = useState(false);
   const hidePop = useCallback((e: any) => {
     try {
-      if (e.target.className.indexOf('portkey-close-show-emoji-icon') === -1) {
+      const _t = e?.target?.className;
+      const isFun = _t.includes instanceof Function;
+      if (isFun && !_t.includes('show-emoji-icon-container')) {
         setShowEmojiIcon(false);
       }
-      if (e.target.className.indexOf('close-more-file') === -1) {
+      if (isFun && !_t.includes('more-file-container')) {
         setPopVisible(false);
       }
     } catch (e) {
-      console.log('e', e);
+      console.log('===input bar hidePop error', e);
     }
   }, []);
   const handleChange = (e: any) => {
@@ -39,7 +41,10 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
     setValue('');
   };
   const handleEnterKeyDown = (e: any) => {
-    if (e.keyCode === 13) {
+    if (e.keyCode === 13 && e.shiftKey) {
+      e.preventDefault();
+      setValue(e.target.value + '\n');
+    } else if (e.keyCode === 13) {
       e.preventDefault();
       if (value?.trim()) {
         handleSend();
@@ -81,7 +86,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
               showArrow={false}
               content={<PopoverMenuList data={moreData} />}>
               <div
-                className="close-more-file"
+                className="more-file-container flex-center"
                 onClick={() => {
                   setShowEmojiIcon(false);
                   setPopVisible(!popVisible);
@@ -105,7 +110,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
               onKeyDown={handleEnterKeyDown}
             />
             {showEmoji && (
-              <div className="portkey-close-show-emoji-icon">
+              <div className="show-emoji-icon-container">
                 <CustomSvg
                   onClick={() => {
                     setPopVisible(false);
@@ -117,7 +122,11 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
               </div>
             )}
           </div>
-          {value?.trim() && <CustomSvg type="Send" onClick={handleSend} />}
+          {value?.trim() && (
+            <div className="show-send-container flex-center">
+              <CustomSvg type="Send" onClick={handleSend} />
+            </div>
+          )}
         </div>
       </div>
     </div>

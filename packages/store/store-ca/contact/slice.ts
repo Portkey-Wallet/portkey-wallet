@@ -7,11 +7,13 @@ import {
   deleteContactAction,
   resetContact,
   readImputationAction,
+  refreshContactMap,
 } from './actions';
 import {
   executeEventToContactIndexList,
   getInitContactIndexList,
   sortContactIndexList,
+  transIndexesToContactIdMap,
   transIndexesToContactMap,
   transIndexesToContactRelationIdMap,
 } from './utils';
@@ -21,6 +23,7 @@ export interface ContactState {
   contactIndexList: ContactIndexType[];
   contactMap: ContactMapType;
   contactRelationIdMap?: ContactMapType;
+  contactIdMap?: ContactMapType;
   isImputation?: boolean;
 }
 
@@ -29,6 +32,7 @@ export const initialState: ContactState = {
   contactIndexList: getInitContactIndexList(),
   contactMap: {},
   contactRelationIdMap: {},
+  contactIdMap: {},
   isImputation: false,
 };
 
@@ -60,6 +64,7 @@ export const contactSlice = createSlice({
         }
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
       })
       .addCase(fetchContactListAsync.rejected, (_state, action) => {
         console.log('fetchContactListAsync.rejected: error', action.error.message);
@@ -70,6 +75,7 @@ export const contactSlice = createSlice({
         state.contactIndexList = sortContactIndexList(_contactIndexList);
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
       })
       .addCase(editContactAction, (state, action) => {
         let _contactIndexList = [...state.contactIndexList];
@@ -77,6 +83,7 @@ export const contactSlice = createSlice({
         state.contactIndexList = sortContactIndexList(_contactIndexList);
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
       })
       .addCase(deleteContactAction, (state, action) => {
         let _contactIndexList = [...state.contactIndexList];
@@ -84,11 +91,13 @@ export const contactSlice = createSlice({
         state.contactIndexList = sortContactIndexList(_contactIndexList);
         state.contactMap = transIndexesToContactMap(state.contactIndexList);
         state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
       })
       .addCase(resetContact, state => {
         state.contactIndexList = getInitContactIndexList();
         state.contactMap = {};
         state.contactRelationIdMap = {};
+        state.contactIdMap = {};
         state.lastModified = 0;
         state.isImputation = false;
       })
@@ -96,6 +105,14 @@ export const contactSlice = createSlice({
         let _contactIndexList = [...state.contactIndexList];
         _contactIndexList = executeEventToContactIndexList(_contactIndexList, [action.payload]);
         state.contactIndexList = sortContactIndexList(_contactIndexList);
+        state.contactMap = transIndexesToContactMap(state.contactIndexList);
+        state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
+      })
+      .addCase(refreshContactMap, state => {
+        state.contactMap = transIndexesToContactMap(state.contactIndexList);
+        state.contactRelationIdMap = transIndexesToContactRelationIdMap(state.contactIndexList);
+        state.contactIdMap = transIndexesToContactIdMap(state.contactIndexList);
       });
   },
 });

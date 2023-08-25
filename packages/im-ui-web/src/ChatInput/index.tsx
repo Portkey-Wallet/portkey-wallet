@@ -60,6 +60,14 @@ const Input: React.FC<IInputProps> = ({
   }, [onChangeEvent, props.referance]);
 
   useEffect(() => {
+    const _event = {
+      FAKE_EVENT: true,
+      target: props.referance?.current,
+    };
+    onChangeEvent(_event);
+  }, [props.value, props.referance, onChangeEvent]);
+
+  useEffect(() => {
     if (autofocus === true) props.referance?.current?.focus();
 
     if (props.clear instanceof Function) {

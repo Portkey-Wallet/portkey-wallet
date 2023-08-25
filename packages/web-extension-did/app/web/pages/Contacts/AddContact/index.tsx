@@ -87,7 +87,7 @@ export default function AddContact() {
         address: '',
         networkName: v.networkName,
         chainId: v.chainId,
-        chainName: v.chainName,
+        chainName: 'aelf',
         validData: { validateStatus: '', errorMsg: '' },
       });
       form.setFieldValue('addresses', [...prevAddresses]);
@@ -202,7 +202,7 @@ export default function AddContact() {
 
       appDispatch(fetchContactListAsync());
 
-      if (contactDetail?.imInfo?.relationId) {
+      if (!state?.imInfo?.relationId && contactDetail?.imInfo?.relationId) {
         // CAN CHAT
         CustomModal({
           type: 'info',
@@ -225,7 +225,7 @@ export default function AddContact() {
         message.success('Add Contact Successful');
       }
     },
-    [addContactApi, appDispatch, handleView],
+    [addContactApi, appDispatch, editContactApi, extra, handleView, state?.imInfo?.relationId],
   );
 
   const onFinish = useCallback(

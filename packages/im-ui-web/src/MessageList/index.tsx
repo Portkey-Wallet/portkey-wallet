@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
-import { IMessageListProps, MessageListEvent } from '../type';
+import { IMessageListProps, MessageListEvent, MessageType } from '../type';
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
@@ -65,8 +65,8 @@ const MessageList: FC<IMessageListProps> = ({
   );
 
   const onDelete = useCallback(
-    (id: string) => {
-      if (props.onDelete instanceof Function) props.onDelete(`${id}`);
+    (item: MessageType) => {
+      if (props.onDelete instanceof Function) props.onDelete(item);
     },
     [props],
   );
@@ -125,7 +125,7 @@ const MessageList: FC<IMessageListProps> = ({
           className={isShowMargin && 'showMargin'}
           onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
           onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
-          onDelete={() => onDelete(`${x.id}`)}
+          onDelete={() => onDelete(x)}
         />
       );
     });

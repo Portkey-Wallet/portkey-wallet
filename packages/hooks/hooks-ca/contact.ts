@@ -14,6 +14,7 @@ import {
   editContactAction,
   fetchContactListAsync,
   readImputationAction,
+  refreshContactMap,
 } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCASelector, useAppCommonDispatch, useAppCommonSelector } from '../index';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
@@ -157,8 +158,46 @@ export const useReadImputation = () => {
   );
 };
 
+export const useCheckContactMap = () => {
+  const contact = useAppCommonSelector(state => state.contact);
+  const dispatch = useAppCommonDispatch();
+
+  useEffect(() => {
+    if (contact.lastModified === 0) return;
+    const contactMapLength = Object.keys(contact.contactMap).length;
+    const contactRelationIdMapLength = Object.keys(contact.contactRelationIdMap || {}).length;
+    const contactIdMapLength = Object.keys(contact.contactIdMap || {}).length;
+    if (contactMapLength === 0 || contactRelationIdMapLength === 0 || contactIdMapLength === 0) {
+      dispatch(refreshContactMap());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+};
+
 export const useContactRelationIdMap = () => {
   return useAppCommonSelector(state => state.contact.contactRelationIdMap);
+};
+
+export const useContactIdMap = () => {
+  return useAppCommonSelector(state => state.contact.contactIdMap);
+};
+
+export const useContactInfo = ({ relationId, contactId }: { relationId?: string; contactId?: string }) => {
+  const contactIdMap = useContactIdMap();
+  const contactRelationIdMap = useContactRelationIdMap();
+
+  return useMemo(() => {
+    let contactInfo: ContactItemType | undefined;
+    // if (!relationId || !contactId) return undefined;
+    if (contactId) {
+      contactInfo = contactIdMap?.[contactId]?.[0];
+    }
+    if (contactInfo) return contactInfo;
+    if (relationId) {
+      contactInfo = contactRelationIdMap?.[relationId]?.[0];
+    }
+    return contactInfo;
+  }, [contactId, contactIdMap, contactRelationIdMap, relationId]);
 };
 
 export const useAllContactList = () => {

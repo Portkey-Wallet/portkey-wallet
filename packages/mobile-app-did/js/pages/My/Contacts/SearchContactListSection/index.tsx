@@ -5,6 +5,7 @@ import GStyles from 'assets/theme/GStyles';
 import ContactItem from 'components/ContactItem';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import navigationService from 'utils/navigationService';
+import { useJumpToChatDetails } from 'hooks/chat';
 
 type SearchContactListSectionType = {
   list: ContactItemType[];
@@ -13,16 +14,28 @@ type SearchContactListSectionType = {
 const SearchContactListSection: React.FC<SearchContactListSectionType> = (props: SearchContactListSectionType) => {
   const { list } = props;
 
-  const renderItem = useCallback(({ item }: { item: ContactItemType }) => {
-    return (
-      <ContactItem
-        isShowChat={!!item?.imInfo?.relationId}
-        contact={item}
-        onPress={() => navigationService.navigate('ChatContactProfile')}
-        onPressChat={() => navigationService.navigate('ChatDetails')}
-      />
-    );
-  }, []);
+  const jumpToChatDetail = useJumpToChatDetails();
+
+  const renderItem = useCallback(
+    ({ item }: { item: ContactItemType }) => {
+      return (
+        <ContactItem
+          isShowChat={!!item?.imInfo?.relationId}
+          isShowWarning={item?.isImputation}
+          contact={item}
+          onPress={() => {
+            navigationService.navigate('ChatContactProfile', { contactId: item.id, isCheckImputation: true });
+          }}
+          onPressChat={() => {
+            jumpToChatDetail({
+              toRelationId: item.imInfo?.relationId || '',
+            });
+          }}
+        />
+      );
+    },
+    [jumpToChatDetail],
+  );
 
   return <FlatList data={list} renderItem={renderItem} />;
 };

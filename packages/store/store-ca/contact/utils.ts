@@ -32,6 +32,17 @@ export const transIndexesToContactRelationIdMap = (contactIndexList: ContactInde
   return contactRelationIdMap;
 };
 
+export const transIndexesToContactIdMap = (contactIndexList: ContactIndexType[]) => {
+  const contactIdMap: ContactMapType = {};
+  contactIndexList.forEach(contactIndex => {
+    contactIndex.contacts.forEach(contact => {
+      if (contactIdMap[contact.id]) contactIdMap[contact.id].push(contact);
+      else contactIdMap[contact.id] = [contact];
+    });
+  });
+  return contactIdMap;
+};
+
 const getIndexFromChar = (char: string) => {
   return char === '#' ? OTHER_INDEX : char.charCodeAt(0) - CHAR_CODE_A;
 };

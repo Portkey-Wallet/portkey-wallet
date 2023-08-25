@@ -253,7 +253,10 @@ const ContactEdit: React.FC = () => {
               title: 'OK',
               type: 'primary',
               onPress: () => {
-                navigationService.navigate('ChatContactProfile', { contact: result });
+                navigationService.navigate('ChatContactProfile', {
+                  contact: result,
+                  relationId: result.imInfo?.relationId,
+                });
               },
             },
           ],

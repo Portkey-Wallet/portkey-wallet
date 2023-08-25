@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -19,12 +19,13 @@ import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useJumpToChatDetails } from 'hooks/chat';
-import { useAddStrangerContact, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useAddStrangerContact, useContactInfo, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import ActionSheet from 'components/ActionSheet';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
-  contact?: ContactItemType;
+  contactId?: string;
   isCheckImputation?: boolean;
 };
 
@@ -40,30 +41,50 @@ const initEditContact: ContactItemType = {
 };
 
 const ContactProfile: React.FC = () => {
-  const { contact, relationId, isCheckImputation = false } = useRouterParams<RouterParams>();
+  const { contactId, relationId, isCheckImputation = false } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
-  const [info, setInfo] = useState(contact);
+  const [info, setInfo] = useState<ContactItemType>();
   const addStranger = useAddStrangerContact();
-  const isStranger = useIsStranger(relationId || contact?.imInfo?.relationId || '');
 
-  const navToChatDetail = useJumpToChatDetails();
+  const isStranger = useIsStranger(relationId || info?.imInfo?.relationId || '');
+
+  const contactInfo = useContactInfo({
+    contactId,
+  });
 
   const readImputation = useReadImputation();
-  useEffectOnce(() => {
-    if (isCheckImputation && contact?.isImputation) {
-      console.log('readImputation', contact);
-      readImputation(contact);
-      ActionSheet.alert({
-        message:
-          'Portkey has grouped contacts with the same Portkey ID together and removed duplicate contacts with the same address.',
-        buttons: [
-          {
-            title: 'OK',
-          },
-        ],
-      });
+  const isCheckedImputationRef = useRef(false);
+  const checkImputation = useCallback(
+    (localInfo: ContactItemType) => {
+      if (isCheckedImputationRef.current) return;
+      isCheckedImputationRef.current = true;
+      if (isCheckImputation && localInfo?.isImputation) {
+        console.log('readImputation', localInfo);
+        readImputation(localInfo);
+        ActionSheet.alert({
+          message:
+            'Portkey has grouped contacts with the same Portkey ID together and removed duplicate contacts with the same address.',
+          buttons: [
+            {
+              title: 'OK',
+            },
+          ],
+        });
+      }
+    },
+    [isCheckImputation, readImputation],
+  );
+
+  const checkImputationRef = useLatestRef(checkImputation);
+
+  useEffect(() => {
+    if (contactInfo) {
+      setInfo(contactInfo);
+      checkImputationRef.current(contactInfo);
     }
-  });
+  }, [checkImputationRef, contactInfo, info, isCheckImputation, readImputation]);
+
+  const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
     if (relationId) {

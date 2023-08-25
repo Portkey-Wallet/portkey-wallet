@@ -24310,6 +24310,11 @@ react-native@0.69.7:
     whatwg-fetch "^3.0.0"
     ws "^6.1.4"
 
+react-parsed-text@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/react-parsed-text/-/react-parsed-text-0.0.3.tgz#0ae8d83a050c067b3456ede7e81e9447bf6832b9"
+  integrity sha512-2oqzjaRNPaJHKnCDNXySYMbBJEnbYoBOKMV6a+OEdpHEaJNXGBpOylDagKs7j57XcFBX1HcyasOfu9RKmolnNg==
+
 react-qrcode-logo@2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-qrcode-logo/-/react-qrcode-logo-2.9.0.tgz#34270d563b4a15396b5e7e7656ea2d079673adad"

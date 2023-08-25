@@ -11,6 +11,7 @@ import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import CustomModal from 'pages/components/CustomModal';
 import CustomSvg from 'components/CustomSvg';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useCommonState } from 'store/Provider/hooks';
 
 export interface IContactsBodyProps {
   isSearch: boolean;
@@ -23,6 +24,7 @@ export interface IContactsBodyProps {
 export default function ContactsBody({ isSearch, list, contactCount, initData, changeTab }: IContactsBodyProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isPrompt } = useCommonState();
   const showChat = useIsChatShow();
   const [activeKey, setActiveKey] = useState<string>(ContactsTab.ALL);
 
@@ -38,14 +40,19 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
     navigate('/setting/contacts/find-more');
   }, [navigate]);
 
-  const handleChat = useCallback((e: any) => {
-    e.stopPropagation();
-    CustomModal({
-      content: (
-        <>{`Please click on the Portkey browser extension in the top right corner to access the chat feature`}</>
-      ),
-    });
-  }, []);
+  const handleChat = useCallback(
+    (e: any, item: Partial<ContactItemType>) => {
+      e.stopPropagation();
+      if (isPrompt) {
+        CustomModal({
+          content: `Please click on the Portkey browser extension in the top right corner to access the chat feature`,
+        });
+      } else {
+        navigate('/chat-list', { state: item });
+      }
+    },
+    [isPrompt, navigate],
+  );
 
   const allContactListUI = useMemo(() => {
     return (
@@ -61,9 +68,9 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
             list={list}
             isSearch={isSearch}
             clickItem={(item) => {
-              navigate('/setting/contacts/view', { state: item });
+              navigate('/setting/contacts/view', { state: { ...item, from: 'contact-list' } });
             }}
-            clickChat={handleChat}
+            clickChat={(e, item) => handleChat(e, item)}
           />
         )}
       </>

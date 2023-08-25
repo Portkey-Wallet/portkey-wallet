@@ -31,6 +31,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import Loading from 'components/Loading';
 import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 
 const ChatDetails = () => {
   const dispatch = useAppCommonDispatch();
@@ -50,76 +51,6 @@ const ChatDetails = () => {
   const pin = useMemo(() => currentChannelInfo?.pin, [currentChannelInfo?.pin]);
   const mute = useMemo(() => currentChannelInfo?.mute, [currentChannelInfo?.mute]);
 
-  const onPressMore = useCallback(
-    (event: { nativeEvent: { pageX: any; pageY: any } }) => {
-      const { pageX, pageY } = event.nativeEvent;
-      ChatOverlay.showChatPopover({
-        list: [
-          {
-            title: ChatOperationsEnum.PROFILE,
-            iconName: 'chat-profile',
-            onPress: () => {
-              navigationService.navigate('ChatContactProfile', {
-                relationId: toRelationId,
-                contact: {
-                  name: currentChannelInfo?.displayName,
-                },
-              });
-            },
-          },
-          {
-            title: pin ? ChatOperationsEnum.UNPIN : ChatOperationsEnum.PIN,
-            iconName: pin ? 'chat-unpin' : 'chat-pin',
-            onPress: () => {
-              pinChannel(currentChannelId || '', !pin);
-            },
-          },
-          {
-            title: mute ? ChatOperationsEnum.UNMUTE : ChatOperationsEnum.MUTE,
-            iconName: mute ? 'chat-unmute' : 'chat-mute',
-            onPress: () => {
-              muteChannel(currentChannelId || '', !mute);
-            },
-          },
-          {
-            title: ChatOperationsEnum.DELETE_CHAT,
-            iconName: 'chat-delete',
-            onPress: () => {
-              ActionSheet.alert({
-                title: 'Delete chat?',
-                buttons: [
-                  {
-                    title: 'Cancel',
-                    type: 'outline',
-                  },
-                  {
-                    title: 'Confirm',
-                    type: 'primary',
-                    onPress: async () => {
-                      try {
-                        Loading.show();
-                        await hideChannel(currentChannelId || '');
-                        Loading.hide();
-                        navigationService.navigate('Tab');
-                      } catch (error) {
-                        Loading.hide();
-                        console.log(error);
-                      }
-                    },
-                  },
-                ],
-              });
-            },
-          },
-        ],
-        formatType: 'dynamicWidth',
-        customPosition: { right: pTd(20), top: pageY + 20 },
-        customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
-      });
-    },
-    [currentChannelId, currentChannelInfo?.displayName, hideChannel, mute, muteChannel, pin, pinChannel, toRelationId],
-  );
-
   const addContact = useLockCallback(async () => {
     try {
       await addStranger(toRelationId || '');
@@ -129,6 +60,100 @@ const ChatDetails = () => {
       CommonToast.fail(handleErrorMessage(error));
     }
   }, [addStranger, dispatch, toRelationId]);
+
+  const handleList = useMemo((): ListItemType[] => {
+    const list: ListItemType[] = [
+      {
+        title: ChatOperationsEnum.PROFILE,
+        iconName: 'chat-profile',
+        onPress: () => {
+          navigationService.navigate('ChatContactProfile', {
+            relationId: toRelationId,
+            contact: {
+              name: currentChannelInfo?.displayName,
+            },
+          });
+        },
+      },
+      {
+        title: pin ? ChatOperationsEnum.UNPIN : ChatOperationsEnum.PIN,
+        iconName: pin ? 'chat-unpin' : 'chat-pin',
+        onPress: () => {
+          pinChannel(currentChannelId || '', !pin);
+        },
+      },
+      {
+        title: mute ? ChatOperationsEnum.UNMUTE : ChatOperationsEnum.MUTE,
+        iconName: mute ? 'chat-unmute' : 'chat-mute',
+        onPress: () => {
+          muteChannel(currentChannelId || '', !mute);
+        },
+      },
+      {
+        title: ChatOperationsEnum.DELETE_CHAT,
+        iconName: 'chat-delete',
+        onPress: () => {
+          ActionSheet.alert({
+            title: 'Delete chat?',
+            buttons: [
+              {
+                title: 'Cancel',
+                type: 'outline',
+              },
+              {
+                title: 'Confirm',
+                type: 'primary',
+                onPress: async () => {
+                  try {
+                    Loading.show();
+                    await hideChannel(currentChannelId || '');
+                    Loading.hide();
+                    navigationService.navigate('Tab');
+                  } catch (error) {
+                    Loading.hide();
+                    console.log(error);
+                  }
+                },
+              },
+            ],
+          });
+        },
+      },
+    ];
+
+    if (isStranger)
+      list.push({
+        title: ChatOperationsEnum.ADD_CONTACT,
+        iconName: 'chat-delete',
+        onPress: () => addContact(),
+      });
+
+    return list;
+  }, [
+    addContact,
+    currentChannelId,
+    currentChannelInfo?.displayName,
+    hideChannel,
+    isStranger,
+    mute,
+    muteChannel,
+    pin,
+    pinChannel,
+    toRelationId,
+  ]);
+
+  const onPressMore = useCallback(
+    (event: { nativeEvent: { pageX: any; pageY: any } }) => {
+      const { pageY } = event.nativeEvent;
+      ChatOverlay.showChatPopover({
+        list: handleList,
+        formatType: 'dynamicWidth',
+        customPosition: { right: pTd(20), top: pageY + 20 },
+        customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
+      });
+    },
+    [handleList],
+  );
 
   return (
     <PageContainer
@@ -145,7 +170,17 @@ const ChatDetails = () => {
           <Touchable style={GStyles.marginRight(pTd(20))} onPress={() => navigationService.navigate('Tab')}>
             <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
           </Touchable>
-          <CommonAvatar title={displayName} avatarSize={pTd(32)} style={styles.headerAvatar} />
+          <Touchable
+            onPress={() => {
+              navigationService.navigate('ChatContactProfile', {
+                relationId: toRelationId,
+                contact: {
+                  name: currentChannelInfo?.displayName,
+                },
+              });
+            }}>
+            <CommonAvatar title={displayName} avatarSize={pTd(32)} style={styles.headerAvatar} />
+          </Touchable>
           <TextL style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
             {displayName}
           </TextL>

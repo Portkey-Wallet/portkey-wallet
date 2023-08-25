@@ -1,8 +1,8 @@
-import { Popover } from 'antd';
-import { useMemo } from 'react';
+import { Popover, message } from 'antd';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ChatList as ChannelList, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
+import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -10,6 +10,7 @@ import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
+import { ChannelItem } from '@portkey-wallet/im';
 import './index.less';
 
 export default function ChatList() {
@@ -24,6 +25,16 @@ export default function ChatList() {
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
+  const formatSubTitle = useCallback((item: ChannelItem) => {
+    const _type = MessageTypeWeb[item.lastMessageType!];
+    let subTitle = '[Not supported message]';
+    if (_type === 'image') {
+      subTitle = '[Image]';
+    } else if (_type === 'text') {
+      subTitle = `${item.lastMessageContent}`;
+    }
+    return subTitle;
+  }, []);
   const addPopList = useMemo(
     () => [
       {
@@ -68,17 +79,47 @@ export default function ChatList() {
         id: item.channelUuid,
         letterItem: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
-        subtitle: item.lastMessageType === 'IMAGE' ? '[Image]' : `${item.lastMessageContent}`,
-        dateString: MessageTypeWeb[item.lastMessageType!]
-          ? formatChatListTime(item.lastPostAt)
-          : '[Not supported message]',
+        subtitle: formatSubTitle(item),
+        dateString: formatChatListTime(item.lastPostAt),
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
       };
     });
-  }, [chatList]);
-
+  }, [chatList, formatSubTitle]);
+  const handlePin = useCallback(
+    (chatItem: IChatItemProps) => {
+      try {
+        pinChannel(`${chatItem.id}`, !chatItem.pin);
+      } catch (e) {
+        message.error('Failed to pin chat');
+        console.log('===handle pin error', e);
+      }
+    },
+    [pinChannel],
+  );
+  const handleMute = useCallback(
+    (chatItem: IChatItemProps) => {
+      try {
+        muteChannel(`${chatItem.id}`, !chatItem.muted);
+      } catch (e) {
+        message.error('Failed to mute chat');
+        console.log('===handle mute error', e);
+      }
+    },
+    [muteChannel],
+  );
+  const handleDelete = useCallback(
+    (chatItem: IChatItemProps) => {
+      try {
+        hideChannel(`${chatItem.id}`);
+      } catch (e) {
+        message.error('Failed to delete chat');
+        console.log('===handle delete error', e);
+      }
+    },
+    [hideChannel],
+  );
   useEffectOnce(() => {
     initChannelList();
   });
@@ -99,9 +140,9 @@ export default function ChatList() {
             <ChannelList
               id="channel-list"
               dataSource={transChatList}
-              onClickPin={(chatItem) => pinChannel(`${chatItem.id}`, !chatItem.pin)}
-              onClickMute={(chatItem) => muteChannel(`${chatItem.id}`, !chatItem.muted)}
-              onClickDelete={(chatItem) => hideChannel(`${chatItem.id}`)}
+              onClickPin={handlePin}
+              onClickMute={handleMute}
+              onClickDelete={handleDelete}
               onClick={(chatItem) => navigate(`/chat-box/${chatItem.id}`)}
               hasMore={hasNextChannelList}
               loadMore={nextChannelList}

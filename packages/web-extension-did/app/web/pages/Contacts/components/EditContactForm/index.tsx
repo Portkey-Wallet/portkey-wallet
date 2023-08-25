@@ -52,7 +52,7 @@ export default function EditContactForm({
           {isShowRemark && (
             <FormItem
               name="remark"
-              label={t('Remrk')}
+              label={t('Remark')}
               validateStatus={validRemark?.validateStatus}
               help={validRemark?.errorMsg}>
               <Input

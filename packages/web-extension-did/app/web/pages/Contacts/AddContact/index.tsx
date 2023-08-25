@@ -63,18 +63,6 @@ export default function AddContact() {
 
   const isTestNet = useIsTestnet();
 
-  useEffect(() => {
-    const { addresses } = state;
-    const cusAddresses = addresses.map((ads: AddressItem) => ({
-      ...ads,
-      networkName: transNetworkText(ads.chainId, isTestNet),
-      validData: { validateStatus: '', errorMsg: '' },
-    }));
-    form.setFieldValue('addresses', cusAddresses);
-    setAddressArr(cusAddresses);
-    setDisabled(false);
-  }, [form, isTestNet, state]);
-
   const handleSelectNetwork = useCallback((i: number) => {
     setNetOpen(true);
     setIndex(i);
@@ -104,9 +92,9 @@ export default function AddContact() {
   const handleFormValueChange = useCallback(() => {
     const { name, addresses } = form.getFieldsValue();
     const flag = addresses.some((ads: Record<string, string>) => !ads?.address);
-    const err = addressArr.some((ads) => ads.validData.validateStatus === 'error');
+    const err = (addresses as CustomAddressItem[]).some((ads) => ads?.validData?.validateStatus === 'error');
     setDisabled(!name || !addresses.length || flag || err);
-  }, [addressArr, form]);
+  }, [form]);
 
   const handleInputValueChange = useCallback(
     (v: string) => {
@@ -179,7 +167,8 @@ export default function AddContact() {
           newAddress[i].validData = { validateStatus: 'error', errorMsg: ContactInfoError.invalidAddress };
         }
       });
-      if (!flag) {
+
+      if (flag > 0) {
         setAddressArr(newAddress);
         setDisabled(true);
       }
@@ -187,6 +176,17 @@ export default function AddContact() {
     },
     [addressArr],
   );
+
+  useEffect(() => {
+    const { addresses } = state;
+    const cusAddresses = addresses.map((ads: AddressItem) => ({
+      ...ads,
+      networkName: transNetworkText(ads.chainId, isTestNet),
+      validData: { validateStatus: '', errorMsg: '' },
+    }));
+    form.setFieldValue('addresses', cusAddresses);
+    setAddressArr(cusAddresses);
+  }, [form, isTestNet, state]);
 
   const handleView = useGoProfile();
   const requestAddContact = useCallback(

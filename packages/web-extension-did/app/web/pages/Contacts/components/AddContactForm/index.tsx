@@ -59,6 +59,7 @@ export default function AddContactForm({
                     <FormItem {...restField} name={[name, 'networkName']} noStyle>
                       <Input
                         placeholder="Select Network"
+                        disabled
                         prefix={<img className="select-svg" src={symbolImages['ELF']} />}
                         suffix={
                           <CustomSvg

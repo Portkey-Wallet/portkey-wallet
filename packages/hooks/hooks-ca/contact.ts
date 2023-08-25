@@ -212,20 +212,11 @@ export const useLocalContactSearch = () => {
 
   return useCallback(
     (value: string, type: ContactsTab) => {
-      const notEmptyList = contactIndexList.filter(item => item?.contacts?.length > 0);
-      if (!value) {
-        const temp: ContactItemType[] = [];
-        notEmptyList.forEach(({ contacts }) => {
-          temp.push(...contacts);
-        });
-        return { contactFilterList: temp, contactIndexFilterList: notEmptyList };
-      }
-
-      // STEP 1
+      // STEP 1 > filter - type
       let filterList: ContactIndexType[] = [];
       if (type === ContactsTab.Chats) {
         // search can chat
-        notEmptyList.forEach(({ index, contacts }) => {
+        contactIndexList.forEach(({ index, contacts }) => {
           filterList.push({
             index,
             contacts: contacts.filter(contact => contact.imInfo?.portkeyId),
@@ -233,15 +224,27 @@ export const useLocalContactSearch = () => {
         });
       } else {
         // search all
-        filterList = notEmptyList;
+        filterList = contactIndexList;
       }
 
-      // STEP 2
+      // STEP 2 > filter - no data
+      const notEmptyFilterList = filterList.filter(item => item?.contacts?.length > 0);
+
+      // STEP 3 > filter - no search value, return total
+      if (!value) {
+        const temp: ContactItemType[] = [];
+        notEmptyFilterList.forEach(({ contacts }) => {
+          temp.push(...contacts);
+        });
+        return { contactFilterList: temp, contactIndexFilterList: notEmptyFilterList };
+      }
+
+      // STEP 4 > filter - have search value, return search result
       const contactIndexFilterList: ContactIndexType[] = [];
       const contactFilterList: ContactItemType[] = [];
       if (value.length <= 16) {
         const _v = value.trim().toLowerCase();
-        filterList.forEach(({ index, contacts }) => {
+        notEmptyFilterList.forEach(({ index, contacts }) => {
           // Name search and Wallet Name search
           contactIndexFilterList.push({
             index,
@@ -255,7 +258,7 @@ export const useLocalContactSearch = () => {
         });
       } else {
         // Portkey ID search
-        filterList.forEach(({ index, contacts }) => {
+        notEmptyFilterList.forEach(({ index, contacts }) => {
           contactIndexFilterList.push({
             index,
             contacts: contacts.filter(contact => contact?.caHolderInfo?.userId?.trim() === value.trim()),
@@ -270,7 +273,7 @@ export const useLocalContactSearch = () => {
           }
         }
         value = getAelfAddress(value);
-        filterList.forEach(({ index, contacts }) => {
+        notEmptyFilterList.forEach(({ index, contacts }) => {
           contactIndexFilterList.push({
             index,
             contacts: contacts.filter(contact =>

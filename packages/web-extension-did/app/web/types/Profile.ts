@@ -8,9 +8,7 @@ export type ExtraType = '1' | '2' | '3'; // '1' can chat, '2' cont chat , '3' no
 export interface IProfileDetailDataProps {
   id?: string;
   caHolderInfo?: Partial<CaHolderInfo>;
-  walletName?: string;
   name?: string;
-  userId?: string;
   relationId?: string;
   index: string;
   addresses: AddressItem[];

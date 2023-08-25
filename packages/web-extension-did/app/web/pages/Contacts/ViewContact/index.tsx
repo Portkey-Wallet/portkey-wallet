@@ -18,7 +18,6 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
-import { useEffectOnce } from 'react-use';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -52,7 +51,7 @@ export default function ViewContact() {
   const addedText = t('Added');
   const addContactText = t('Add Contact');
 
-  useEffectOnce(() => {
+  useEffect(() => {
     const isStranger = isStrangerFn(relationId);
     if (state?.id && !isStranger) {
       // ================== case one ==================
@@ -75,13 +74,13 @@ export default function ViewContact() {
         const err = handleErrorMessage(error, 'get profile error');
         message.error(err);
       }
-    } else {
-      // ================== case four ==================
-      // Cant chat (no relationId), display data directly
-      // Because it jumped from contacts page only
-      setData(state);
     }
-  });
+
+    // ================== case four ==================
+    // default setData(state);
+    // Cant chat (no relationId), display data directly
+    // Because it jumped from contacts page only
+  }, [contactInfo, isStrangerFn, relationId, state?.id]);
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {
@@ -143,7 +142,7 @@ export default function ViewContact() {
       goBack={goBack}
       handleEdit={() => handleEdit(relationId ? '1' : '2', data)}
       handleAdd={handleAdd}
-      handleChat={() => handleChat(data)}
+      handleChat={() => handleChat(data?.imInfo?.relationId || '')}
       handleCopy={handleCopy}
     />
   ) : (
@@ -157,7 +156,7 @@ export default function ViewContact() {
       goBack={goBack}
       handleEdit={() => handleEdit(relationId ? '1' : '2', data)}
       handleAdd={handleAdd}
-      handleChat={() => handleChat(data)}
+      handleChat={() => handleChat(data?.imInfo?.relationId || '')}
       handleCopy={handleCopy}
     />
   );

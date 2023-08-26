@@ -63,19 +63,19 @@ export default function ViewContact() {
     if (state?.id && isMyContact) {
       // ================== case one ==================
       // have contact id, get info from local map
-      setData(contactInfo);
+      setData({ ...state, ...contactInfo });
     } else if (relationId && isMyContact) {
       // ================== case two ==================
       // Can chat, and is my contact, need to get full info from local map;
       // Because it jumped from the chat-box, the data is incomplete
-      setData(contactInfo);
+      setData({ ...state, ...contactInfo });
     } else if (!isMyContact) {
       // ================== case three ==================
       // Can chat, and is stranger, need to get full info from remote db;
       // Because it jumped from the chat-box or find-more, the data is incomplete
       try {
         im.service.getProfile({ relationId: relationId }).then((res) => {
-          setData(res?.data);
+          setData({ ...state, ...res?.data });
         });
       } catch (error) {
         const err = handleErrorMessage(error, 'get profile error');
@@ -87,13 +87,13 @@ export default function ViewContact() {
     // default setData(state);
     // Cant chat (no relationId), display data directly
     // Because it jumped from contacts page only
-  }, [contactInfo, isMyContactFn, relationId, state?.id]);
+  }, [contactInfo, isMyContactFn, relationId, state, state?.id]);
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {
       navigate('/new-chat', { state });
     } else if (state?.from === 'chat-box') {
-      navigate(-1);
+      navigate(`/chat-box/${state?.channelUuid}`);
     } else {
       navigate('/setting/contacts');
     }
@@ -107,7 +107,7 @@ export default function ViewContact() {
   const handleAdd = async () => {
     try {
       const res = await addStrangerApi(relationId);
-      setData(res.data);
+      setData({ ...state, ...res?.data });
 
       setTimeout(() => {
         dispatch(fetchContactListAsync());

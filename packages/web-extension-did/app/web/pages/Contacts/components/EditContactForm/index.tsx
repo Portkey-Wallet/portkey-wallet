@@ -39,7 +39,7 @@ export default function EditContactForm({
       initialValues={state}
       requiredMark={false}
       onFinish={onFinish}>
-      <div className="flex-1">
+      <div className="edit-contact-form-body flex-1">
         <div className="form-content">
           <FormItem
             name="walletName"

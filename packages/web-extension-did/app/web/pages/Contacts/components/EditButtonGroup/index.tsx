@@ -21,7 +21,13 @@ export default function EditButtonGroup({ className, data, cantSave }: IEditButt
 
   const handleDelConfirm = useCallback(async () => {
     await deleteContactApi(data);
-    navigate('/setting/contacts');
+
+    if (data?.from === '/chat-box') {
+      navigate(`/chat-box/${data?.channelUuid}`);
+    } else {
+      navigate('/setting/contacts');
+    }
+
     message.success('Contact deleted successfully');
   }, [data, deleteContactApi, navigate]);
 

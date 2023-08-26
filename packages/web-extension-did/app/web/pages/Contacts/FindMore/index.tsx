@@ -43,6 +43,7 @@ export default function FindMore() {
 
   const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
+
     if (!value) {
       setContact({});
       setIsAdded(false);
@@ -52,8 +53,14 @@ export default function FindMore() {
 
     setIsSearch(true);
 
+    const addressTrans = getAddressInfo(value.trim());
+    if (!addressTrans?.address) {
+      setContact({});
+      setIsAdded(false);
+      return;
+    }
+
     try {
-      const addressTrans = getAddressInfo(value.trim());
       const res = await im.service.getUserInfo({ address: addressTrans.address });
 
       if (res?.data?.portkeyId === userId) {

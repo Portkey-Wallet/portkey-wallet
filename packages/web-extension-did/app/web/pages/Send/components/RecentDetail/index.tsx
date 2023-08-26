@@ -55,12 +55,10 @@ export default function RecentDetail() {
     const initContactItem: Partial<ContactItemType> = {
       id: '-1',
       name: '',
-      addresses: [
-        { chainId: targetChainId || 'AELF', address: targetAddress || '', chainName: chainInfo?.chainName || 'aelf' },
-      ],
+      addresses: [{ chainId: targetChainId || 'AELF', address: targetAddress || '', chainName: 'aelf' }],
     };
     handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem);
-  }, [targetChainId, targetAddress, chainInfo?.chainName, handleAdd]);
+  }, [targetChainId, targetAddress, handleAdd]);
 
   const viewOnExplorer = useCallback(() => {
     const openWinder = window.open(

@@ -113,7 +113,7 @@ const FindMorePeople = () => {
       </View>
       {!keyword && (
         <View style={[GStyles.center, styles.portkeyIdWrap]}>
-          <TextM style={styles.portkeyId} numberOfLines={1}>{`My Portkey ID : ${userId}`}</TextM>
+          <TextM style={styles.portkeyId}>{`My Portkey ID : ${userId}`}</TextM>
         </View>
       )}
       <FlatList
@@ -138,14 +138,13 @@ const styles = StyleSheet.create({
   },
   buttonGroupWrap: {},
   portkeyIdWrap: {
-    textAlign: 'center',
-    height: pTd(46),
-    lineHeight: pTd(46),
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   portkeyId: {
-    width: pTd(300),
+    paddingHorizontal: pTd(20),
+    paddingVertical: pTd(13),
+    textAlign: 'center',
   },
   rightIconContainerStyle: {
     marginRight: pTd(10),

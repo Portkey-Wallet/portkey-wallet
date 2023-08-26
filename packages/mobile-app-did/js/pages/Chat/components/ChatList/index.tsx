@@ -53,30 +53,41 @@ export default function ChatList() {
         list: [
           {
             title: item.pin ? 'Unpin' : 'Pin',
-            iconName: 'chat-pin',
+            iconName: item.pin ? 'chat-unpin' : 'chat-pin',
             onPress: async () => {
               try {
                 await pinChannel(item.channelUuid, !item.pin);
-              } catch (error) {
-                CommonToast.fail(handleErrorMessage(error));
+              } catch (error: any) {
+                console.log(error);
+                if (error.code === '13310') return CommonToast.fail('Pin limit exceeded');
+
+                CommonToast.fail(`Failed to ${item.pin ? 'unpin' : 'pin'} chat`);
               }
             },
           },
           {
             title: item.mute ? 'Unmute' : 'Mute',
-            iconName: 'chat-mute',
+            iconName: item.mute ? 'chat-unmute' : 'chat-mute',
             onPress: async () => {
               try {
                 await muteChannel(item.channelUuid, !item.mute, true);
               } catch (error) {
-                CommonToast.fail(handleErrorMessage(error));
+                console.log(error);
+                CommonToast.fail(`Failed to ${item.mute ? 'unmute' : 'mute'} chat`);
               }
             },
           },
           {
             title: 'Delete',
             iconName: 'chat-delete',
-            onPress: () => onHideChannel(item),
+            onPress: () => {
+              try {
+                onHideChannel(item);
+              } catch (error: any) {
+                console.log(error);
+                CommonToast.fail(`Failed to delete chat`);
+              }
+            },
           },
         ],
         px: pageX,

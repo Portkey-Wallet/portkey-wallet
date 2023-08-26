@@ -29,7 +29,7 @@ const NoChatContactProfile: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <ScrollView alwaysBounceVertical={true}>
-        <ProfileHeaderSection name={contact?.name || ''} />
+        <ProfileHeaderSection showRemark={false} name={contact?.name || ''} />
         <ProfileAddressSection noMarginTop title="Address" addressList={contact?.addresses} />
       </ScrollView>
       <CommonButton

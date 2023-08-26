@@ -38,10 +38,10 @@ export default function ViewContactBody({
       <div className="view-contact-body-main">
         <div className="info-section name-section">
           <div className="flex-center name-index">{index}</div>
-          <div className="name">{name}</div>
+          <div className="name">{showChat ? data?.caHolderInfo?.walletName : name}</div>
 
           {/* Section - Remark */}
-          {relationId && isShowRemark && (
+          {showChat && relationId && isShowRemark && (
             <div className="remark">
               <span>{`Remark: `}</span>
               <span>{data?.name || 'No set'}</span>
@@ -86,7 +86,7 @@ export default function ViewContactBody({
           relationId={relationId}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
-          addressSectionLabel={relationId || data?.from === 'my-did' ? 'DID' : 'Address'}
+          addressSectionLabel={showChat && (relationId || data?.from === 'my-did') ? 'DID' : 'Address'}
         />
       </div>
 

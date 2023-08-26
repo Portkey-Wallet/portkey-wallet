@@ -10,7 +10,7 @@ export function transNetworkTextWithAllChain(chainId: string, isTestnet: boolean
     return transNetworkText(chainId, isTestnet);
   }
   // other chain
-  return `${chainId} Chain`;
+  return chainName || '';
 }
 
 export function getCurrentActivityMapKey(chainId: string | undefined, symbol: string | undefined) {

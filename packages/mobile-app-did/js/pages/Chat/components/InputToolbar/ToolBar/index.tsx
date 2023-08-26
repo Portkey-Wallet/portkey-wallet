@@ -30,6 +30,8 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
     SendPicModal.showSendPic({
       uri: result.uri,
       autoClose: false,
+      height: result.height,
+      width: result.width,
       buttons: [
         {
           title: 'Cancel',

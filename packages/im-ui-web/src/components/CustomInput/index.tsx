@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import classNames from 'classnames';
-import { IInputProps } from '../type';
+import { IInputProps } from '../../type';
 import './index.less';
 
-const Input: React.FC<IInputProps> = ({
+const CustomInput: React.FC<IInputProps> = ({
   type = 'text',
   multiline = false,
   minHeight = 40,
@@ -14,10 +14,10 @@ const Input: React.FC<IInputProps> = ({
 }) => {
   const onChangeEvent = useCallback(
     (e: any) => {
-      if (props.maxlength && (e.target.value || '').length > props.maxlength) {
+      if (props.maxLength && (e.target.value || '').length > props.maxLength) {
         if (props.onMaxLengthExceed instanceof Function) props.onMaxLengthExceed();
 
-        if (props.referance?.current?.value == (e.target.value || '').substring(0, props.maxlength)) return;
+        if (props.reference?.current?.value == (e.target.value || '').substring(0, props.maxLength)) return;
       }
 
       if (props.onChange instanceof Function) props.onChange(e);
@@ -46,47 +46,39 @@ const Input: React.FC<IInputProps> = ({
     },
     [autoHeight, maxHeight, minHeight, multiline, props],
   );
+
   const clear = useCallback(() => {
     const _event = {
       FAKE_EVENT: true,
-      target: props.referance?.current,
+      target: props.reference?.current,
     };
-
-    if (props.referance?.current?.value) {
-      props.referance.current.value = '';
+    if (props.reference?.current?.value) {
+      props.reference.current.value = '';
     }
-
     onChangeEvent(_event);
-  }, [onChangeEvent, props.referance]);
+  }, [onChangeEvent, props.reference]);
 
   useEffect(() => {
     const _event = {
       FAKE_EVENT: true,
-      target: props.referance?.current,
+      target: props.reference?.current,
     };
     onChangeEvent(_event);
-  }, [props.value, props.referance, onChangeEvent]);
+  }, [props.value, props.reference, onChangeEvent]);
 
   useEffect(() => {
-    if (autofocus === true) props.referance?.current?.focus();
+    if (autofocus === true) props.reference?.current?.focus();
 
     if (props.clear instanceof Function) {
       props.clear(clear);
     }
   }, [autofocus, clear, props]);
 
-  useEffect(() => {
-    if (!props.value && props.referance) {
-      props.referance.current.style.height = minHeight + 'px';
-      props.referance.current.style.scrollTop = minHeight + 'px';
-    }
-  }, [props.value, props.referance, minHeight]);
-
   return (
     <div className={classNames('portkey-container-input', props.className)}>
       {multiline === false ? (
         <input
-          ref={props.referance}
+          ref={props.reference}
           type={type}
           className={classNames('portkey-im-input')}
           placeholder={props.placeholder}
@@ -108,9 +100,9 @@ const Input: React.FC<IInputProps> = ({
         />
       ) : (
         <textarea
-          maxLength={props?.maxlength}
+          maxLength={props?.maxLength}
           value={props.value}
-          ref={props.referance}
+          ref={props.reference}
           className={classNames('portkey-im-input', 'portkey-im-input-textarea')}
           placeholder={props.placeholder}
           defaultValue={props.defaultValue}
@@ -126,12 +118,11 @@ const Input: React.FC<IInputProps> = ({
           onReset={props.onReset}
           onKeyDown={props.onKeyDown}
           onKeyPress={props.onKeyPress}
-          onKeyUp={props.onKeyUp}>
-          {props.defaultValue ? props?.value ?? null : null}
-        </textarea>
+          onKeyUp={props.onKeyUp}
+        />
       )}
     </div>
   );
 };
 
-export default Input;
+export default CustomInput;

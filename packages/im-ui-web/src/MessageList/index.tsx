@@ -8,7 +8,7 @@ import { IMessageListProps, MessageListEvent, MessageType } from '../type';
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
-  referance = null,
+  reference = null,
   lockable = false,
   toBottomHeight = 30,
   downButton = true,
@@ -22,7 +22,7 @@ const MessageList: FC<IMessageListProps> = ({
   const prevProps = useRef(props);
 
   const checkScroll = useCallback(() => {
-    const e = referance;
+    const e = reference;
     if (!e || !e.current) return;
 
     if (toBottomHeight === '100%' || (toBottomHeight && scrollBottom < (toBottomHeight as number))) {
@@ -32,18 +32,18 @@ const MessageList: FC<IMessageListProps> = ({
         e.current.scrollTop = e.current.scrollHeight - e.current.offsetHeight - scrollBottom;
       }
     }
-  }, [lockable, referance, scrollBottom, toBottomHeight]);
+  }, [lockable, reference, scrollBottom, toBottomHeight]);
 
   useEffect(() => {
-    if (!referance) return;
+    if (!reference) return;
 
     if (prevProps.current.dataSource.length !== props.dataSource.length) {
-      setScrollBottom(getBottom(referance));
+      setScrollBottom(getBottom(reference));
       checkScroll();
     }
 
     prevProps.current = props;
-  }, [checkScroll, prevProps, props, referance]);
+  }, [checkScroll, prevProps, props, reference]);
 
   const getBottom = (e: any) => {
     if (e.current) return e.current.scrollHeight - e.current.scrollTop - e.current.offsetHeight;
@@ -85,7 +85,7 @@ const MessageList: FC<IMessageListProps> = ({
         setScrollBottom(bottom);
       }
     }
-    if (referance.current.scrollTop === 0) {
+    if (reference.current.scrollTop === 0) {
       if (hasNext) {
         next();
       }
@@ -96,17 +96,17 @@ const MessageList: FC<IMessageListProps> = ({
   };
 
   const toBottom = (e?: any) => {
-    if (!referance) return;
-    referance.current.scrollTop = referance.current.scrollHeight;
+    if (!reference) return;
+    reference.current.scrollTop = reference.current.scrollHeight;
     if (props.onDownButtonClick instanceof Function) {
       props.onDownButtonClick(e);
     }
   };
 
   useEffect(() => {
-    if (!referance) return;
-    referance.current.scrollTop = referance.current.scrollHeight;
-  }, [referance]);
+    if (!reference) return;
+    reference.current.scrollTop = reference.current.scrollHeight;
+  }, [reference]);
 
   const renderMessageItem = useMemo(() => {
     let prev = 'left';
@@ -133,7 +133,7 @@ const MessageList: FC<IMessageListProps> = ({
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>
-      <div ref={referance} onScroll={onScroll} className="message-list-body">
+      <div ref={reference} onScroll={onScroll} className="message-list-body">
         {loading && (
           <div className="loading-more flex-center">
             <CircleLoading />

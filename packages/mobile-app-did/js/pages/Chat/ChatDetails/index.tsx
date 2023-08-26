@@ -10,7 +10,7 @@ import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../components/ChatOverlay';
 import navigationService from 'utils/navigationService';
-import { ChatOperationsEnum } from '@portkey-wallet/constants/constants-ca/chat';
+import { ChatOperationsEnum, ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import AddContactButton from '../components/AddContactButton';
@@ -32,6 +32,7 @@ import Loading from 'components/Loading';
 import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
+import myEvents from 'utils/deviceEvent';
 
 const ChatDetails = () => {
   const dispatch = useAppCommonDispatch();
@@ -159,10 +160,16 @@ const ChatDetails = () => {
     },
     [handleList],
   );
+
   const leftDom = useMemo(
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-        <Touchable style={GStyles.marginRight(pTd(20))} onPress={() => navigationService.navigate('Tab')}>
+        <Touchable
+          style={GStyles.marginRight(pTd(20))}
+          onPress={() => {
+            navigationService.navigate('Tab');
+            myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+          }}>
           <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
         </Touchable>
         <Touchable
@@ -196,7 +203,7 @@ const ChatDetails = () => {
       containerStyles={styles.container}
       leftCallback={() => {
         navigationService.navigate('Tab');
-        navigationService.navigate('ChatHome');
+        myEvents.navToBottomTab.emit({ tabName: ChatTabName });
       }}
       leftDom={leftDom}
       rightDom={

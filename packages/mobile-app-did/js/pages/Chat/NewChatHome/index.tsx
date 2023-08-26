@@ -38,7 +38,7 @@ const NewChatHome = () => {
           isShowChat
           contact={item}
           onPress={() => {
-            navigationService.navigate('ChatContactProfile', { contactInfo: item });
+            navigationService.navigate('ChatContactProfile', { contactId: item.id });
           }}
           onPressChat={() => {
             jumpToDetail({ toRelationId: item.imInfo?.relationId || '' });

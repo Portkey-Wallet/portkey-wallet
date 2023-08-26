@@ -13,13 +13,14 @@ import { readFile } from 'utils/fs';
 import { formatRNImage } from '@portkey-wallet/utils/s3';
 import { bindUriToLocalImage } from 'utils/fs/img';
 import s3Instance from '@portkey-wallet/utils/s3';
+import { pTd } from 'utils/unit';
 
 let TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
 if (!isIOS) {
   TopSpacing = TopSpacing > -30 ? -30 : TopSpacing;
 }
 
-const ToolsHeight = 100;
+const ToolsHeight = pTd(120);
 
 export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObject<TextInput> }) {
   const keyboardAnim = useRef(new Animated.Value(0)).current;

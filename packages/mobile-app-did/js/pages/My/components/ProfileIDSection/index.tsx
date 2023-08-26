@@ -18,12 +18,12 @@ type ProfileIDSectionType = {
 };
 
 const ProfileIDSection: React.FC<ProfileIDSectionType> = props => {
-  const { disable = false, noMarginTop = false, id = 'portkeyID' } = props;
+  const { disable = false, noMarginTop = false, id = '', title = 'Portkey ID' } = props;
 
   const copyId = useCallback(() => copyText(id), [id]);
 
   return (
-    <FormItem title="Portkey ID" style={[noMarginTop && GStyles.marginTop(0)]}>
+    <FormItem title={title} style={[noMarginTop && GStyles.marginTop(0)]}>
       <View
         style={[
           GStyles.flexRow,

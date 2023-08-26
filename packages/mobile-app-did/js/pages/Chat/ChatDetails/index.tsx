@@ -133,18 +133,7 @@ const ChatDetails = () => {
       });
 
     return list;
-  }, [
-    addContact,
-    currentChannelId,
-    currentChannelInfo?.displayName,
-    hideChannel,
-    isStranger,
-    mute,
-    muteChannel,
-    pin,
-    pinChannel,
-    toRelationId,
-  ]);
+  }, [addContact, currentChannelId, hideChannel, isStranger, mute, muteChannel, pin, pinChannel, toRelationId]);
 
   const onPressMore = useCallback(
     async (event: GestureResponderEvent) => {
@@ -207,6 +196,7 @@ const ChatDetails = () => {
       containerStyles={styles.container}
       leftCallback={() => {
         navigationService.navigate('Tab');
+        navigationService.navigate('ChatHome');
       }}
       leftDom={leftDom}
       rightDom={

@@ -26,7 +26,8 @@ function SendPicBody({ uri, buttons, width, height }: ShowSendPicProps) {
     () =>
       buttons?.map(i => ({
         ...i,
-        loading: loading,
+        loading: i.type === 'primary' && loading,
+        disabled: i.type === 'outline' && loading,
         onPress: async () => {
           try {
             setLoading(true);

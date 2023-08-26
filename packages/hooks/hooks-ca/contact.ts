@@ -287,7 +287,7 @@ export const useLocalContactSearch = () => {
         notEmptyFilterList.forEach(({ index, contacts }) => {
           contactIndexFilterList.push({
             index,
-            contacts: contacts.filter(contact => contact?.caHolderInfo?.userId?.trim() === value.trim()),
+            contacts: contacts.filter(contact => contact?.imInfo?.portkeyId?.trim() === value.trim()),
           });
         });
         // Address search

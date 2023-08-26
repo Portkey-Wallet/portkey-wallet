@@ -74,7 +74,7 @@ export const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
   },
   itemNameWrap: {
     flex: 1,

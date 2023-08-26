@@ -96,7 +96,7 @@ const ChatContactProfileEdit: React.FC = () => {
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}>
       <ScrollView alwaysBounceVertical={true} style={pageStyles.contentWrap}>
-        <FormItem title={'Wallet Name'}>
+        <FormItem title={'Wallet Name'} style={GStyles.marginTop(24)}>
           <TextM numberOfLines={1} style={pageStyles.walletName}>
             {contact?.caHolderInfo?.walletName || ''}
           </TextM>
@@ -128,7 +128,7 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(24, 0, 18),
+    ...GStyles.paddingArg(0, 0, 18),
   },
   contentWrap: {
     paddingHorizontal: pTd(20),

@@ -19,6 +19,13 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [popVisible, setPopVisible] = useState(false);
+  const formatMoreData = moreData?.map((item) => ({
+    ...item,
+    onClick: () => {
+      setPopVisible(false);
+      item?.onClick?.();
+    },
+  }));
   const hidePop = useCallback((e: any) => {
     try {
       const _t = e?.target?.className;
@@ -84,14 +91,14 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
               open={popVisible}
               trigger="click"
               showArrow={false}
-              content={<PopoverMenuList data={moreData} />}>
+              content={<PopoverMenuList data={formatMoreData} />}>
               <div
                 className="more-file-container flex-center"
                 onClick={() => {
                   setShowEmojiIcon(false);
                   setPopVisible(!popVisible);
                 }}>
-                <CustomSvg type="File" />
+                <CustomSvg className={clsx([popVisible && 'has-show-more-icon'])} type="File" />
               </div>
             </Popover>
           ) : (

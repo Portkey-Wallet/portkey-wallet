@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Form, message } from 'antd';
-import { useNavigate, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
@@ -20,8 +20,7 @@ export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 export default function EditContact() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { state, pathname } = useLocation();
+  const { state } = useLocation();
   const transState = useMemo(() => {
     return {
       ...state,
@@ -88,12 +87,12 @@ export default function EditContact() {
                 </div>
               </div>
             ),
-            onOk: () => handleView(contactDetail),
+            onOk: () => handleView({ ...state, ...contactDetail }),
             okText: 'Ok',
           });
         } else {
           // CANT CHAT
-          handleView(contactDetail);
+          handleView({ ...state, ...contactDetail });
           message.success('Edit Contact Successful');
         }
       } catch (e: any) {
@@ -106,15 +105,6 @@ export default function EditContact() {
     [appDispatch, editContactApi, handleView, setLoading, state, t],
   );
 
-  // go back previous page
-  const handleGoBack = useCallback(() => {
-    if (pathname.includes('/setting/wallet')) {
-      navigate('/setting/wallet/wallet-name');
-    } else {
-      navigate('/setting/contacts/view', { state: state });
-    }
-  }, [navigate, pathname, state]);
-
   const handleCopy = useProfileCopy();
 
   const headerTitle = useMemo(() => t('Edit Contact'), [t]);
@@ -122,7 +112,7 @@ export default function EditContact() {
   return isNotLessThan768 ? (
     <EditContactPrompt
       headerTitle={headerTitle}
-      goBack={handleGoBack}
+      goBack={() => handleView(state)}
       form={form}
       validName={validName}
       validRemark={validRemark}
@@ -136,7 +126,7 @@ export default function EditContact() {
   ) : (
     <EditContactPopup
       headerTitle={headerTitle}
-      goBack={handleGoBack}
+      goBack={() => handleView(state)}
       form={form}
       validName={validName}
       validRemark={validRemark}

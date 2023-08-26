@@ -10,6 +10,9 @@
     border-bottom: 1px solid @border-2;
     .title-element {
       align-items: center;
+      .title-content {
+        cursor: pointer;
+      }
       .name-text {
         margin-left: 8px;
         max-width: 150px;
@@ -106,10 +109,8 @@
   }
 }
 
-.upload-text:hover {
-  color: @font-9;
-}
 .chat-delete-modal {
+ /* stylelint-disable-next-line no-descending-specificity */
   border-radius: 8px;
   overflow: hidden;
   .@{app-prefix}-modal-body {
@@ -138,5 +139,23 @@
         font-size: 16px;
       }
     }
+  }
+}
+
+.portkey-input-more-popover {
+  .portkey-upload {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .album-icon {
+      /* stylelint-disable-next-line no-descending-specificity */
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+  .popover-menu-list .menu-item:hover .upload-text {
+    color: @font-9;
   }
 }

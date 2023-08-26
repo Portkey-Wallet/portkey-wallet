@@ -27,7 +27,7 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
       children: 'Copy',
       onClick: () => {
         setCopied(props.text);
-        message.info('Copy Success');
+        message.success('Copy Success');
       },
     },
     {
@@ -38,6 +38,8 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
     },
   ];
   const handleUrlPress: ParseShape['onClick'] = useCallback((url: string) => {
+    const WWW_URL_PATTERN = /^www\./i;
+    if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
     const openWinder = window.open(url, '_blank');
     if (openWinder) {
       openWinder.opener = null;

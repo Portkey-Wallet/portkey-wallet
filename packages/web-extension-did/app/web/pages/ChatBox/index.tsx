@@ -6,7 +6,7 @@ import { Modal, Popover, Upload, message } from 'antd';
 import { PopoverMenuList, MessageList, InputBar, StyleProvider, MessageType } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { RcFile } from 'antd/lib/upload/interface';
-import PhotoSendModal from './components/ImageSendModal';
+import PhotoSendModal, { IPreviewImage } from './components/ImageSendModal';
 import { ImageMessageFileType, useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import BookmarkListDrawer from './components/BookmarkListDrawer';
@@ -19,6 +19,7 @@ import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isSameDay } from '@portkey-wallet/utils/time';
 import { MAX_FILE_SIZE, MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { formatImageSize } from '@portkey-wallet/utils/img';
 import './index.less';
 
 export default function ChatBox() {
@@ -26,10 +27,11 @@ export default function ChatBox() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [file, setFile] = useState<ImageMessageFileType>();
-  const [previewImage, setPreviewImage] = useState<string>();
+  const [previewImage, setPreviewImage] = useState<IPreviewImage>();
   const [showBookmark, setShowBookmark] = useState(false);
   const sendImgModalRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
+  const uploadRef = useRef<any>(null);
   const addContactApi = useAddStrangerContact();
   const [popVisible, setPopVisible] = useState(false);
   const [showStrangerTip, setShowStrangerTip] = useState(true);
@@ -127,7 +129,7 @@ export default function ChatBox() {
       if (`${e?.code}` === '13310') {
         message.error('Pin limit exceeded');
       } else {
-        message.error('Failed to pin chat');
+        message.error(`Failed to ${info?.pin ? 'unpin' : 'pin'} chat`);
       }
       console.log('===handle pin error', e);
     }
@@ -136,7 +138,7 @@ export default function ChatBox() {
     try {
       await mute(!info?.mute);
     } catch (e) {
-      message.error('Failed to mute chat');
+      message.error(`Failed to ${info?.mute ? 'unmute' : 'mute'} chat`);
       console.log('===handle mute error', e);
     }
   }, [info?.mute, mute]);
@@ -174,16 +176,18 @@ export default function ChatBox() {
       setLoading(false);
     }
   }, [addContactApi, info, setLoading]);
+  const handleGoProfile = useCallback(() => {
+    navigate('/setting/contacts/view', {
+      state: { relationId: info?.toRelationId, from: 'chat-box', isStranger },
+    });
+  }, [info?.toRelationId, isStranger, navigate]);
   const chatPopList = useMemo(
     () => [
       {
         key: 'profile',
         leftIcon: <CustomSvg type="Profile" />,
         children: 'Profile',
-        onClick: () =>
-          navigate('/setting/contacts/view', {
-            state: { relationId: info?.toRelationId, from: 'chat-box', isStranger },
-          }),
+        onClick: handleGoProfile,
       },
       {
         key: info?.pin ? 'un-pin' : 'pin',
@@ -210,22 +214,13 @@ export default function ChatBox() {
         onClick: handleAddContact,
       },
     ],
-    [
-      handleAddContact,
-      handleDelete,
-      handleMute,
-      handlePin,
-      info?.mute,
-      info?.pin,
-      info?.toRelationId,
-      isStranger,
-      navigate,
-    ],
+    [handleAddContact, handleDelete, handleGoProfile, handleMute, handlePin, info?.mute, info?.pin],
   );
   const uploadProps = {
     className: 'chat-input-upload',
     showUploadList: false,
     accept: 'image/*',
+    ref: uploadRef,
     beforeUpload: async (paramFile: RcFile) => {
       const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
       if (!sizeOk) {
@@ -239,8 +234,9 @@ export default function ChatBox() {
           resolve(reader.result);
         };
       });
-      setPreviewImage(src as string);
       const { width, height } = await getPixel(src as string);
+      const imageSize = formatImageSize({ width, height, maxWidth: 300, maxHeight: 360 });
+      setPreviewImage({ src: src as string, width: imageSize.width, height: imageSize.height });
       setFile({ body: paramFile, width, height });
       return false;
     },
@@ -254,6 +250,10 @@ export default function ChatBox() {
           <span className="upload-text">Picture</span>
         </Upload>
       ),
+      onClick: () => {
+        const { upload } = uploadRef.current || {};
+        upload.uploader.onClick();
+      },
     },
     {
       key: 'bookmark',
@@ -266,7 +266,7 @@ export default function ChatBox() {
     try {
       await sendImage(file!);
       messageRef.current.scrollTop = messageRef.current.scrollHeight;
-      setPreviewImage('');
+      setPreviewImage(undefined);
       setFile(undefined);
     } catch (e) {
       console.log('===send image error', e);
@@ -302,8 +302,10 @@ export default function ChatBox() {
         <SettingHeader
           title={
             <div className="flex title-element">
-              <Avatar letterItem={info?.displayName?.slice(0, 1).toUpperCase()} />
-              <div className="name-text">{info?.displayName}</div>
+              <div className="title-content flex-center" onClick={handleGoProfile}>
+                <Avatar letterItem={info?.displayName?.slice(0, 1).toUpperCase()} />
+                <div className="name-text">{info?.displayName}</div>
+              </div>
               {info?.mute && <CustomSvg type="Mute" />}
             </div>
           }
@@ -356,11 +358,11 @@ export default function ChatBox() {
       </div>
       <PhotoSendModal
         ref={sendImgModalRef}
-        open={!!previewImage}
-        url={previewImage || ''}
+        open={!!previewImage?.src}
+        file={previewImage}
         onConfirm={handleUpload}
         onCancel={() => {
-          setPreviewImage('');
+          setPreviewImage(undefined);
           setFile(undefined);
         }}
       />

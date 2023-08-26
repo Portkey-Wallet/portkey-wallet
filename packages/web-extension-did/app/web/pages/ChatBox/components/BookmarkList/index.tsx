@@ -84,7 +84,7 @@ export default function BookmarkList({ onClick, onClose }: IBookmarkListProps) {
             {isFirstLoading ? <></> : <p className="empty-text">No Bookmarks</p>}
           </div>
         ) : (
-          <MenuList list={showBookmarkList} showEnterIcon={false} />
+          <MenuList list={showBookmarkList} showEnterIcon={false} height={72} />
         )}
         <LoadingMore hasMore={more} loadMore={getMoreData} className="load-more" noDataText=" " />
       </div>

@@ -47,7 +47,7 @@ const MenuList: Array<MenuItemType> = [
 
 export default function MyMenu() {
   const { t } = useLanguage();
-  const isImputation = true;
+  const isImputation = useIsImputation();
 
   return (
     <PageContainer

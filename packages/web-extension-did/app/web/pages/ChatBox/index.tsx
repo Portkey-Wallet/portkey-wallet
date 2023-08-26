@@ -271,8 +271,6 @@ export default function ChatBox() {
     } catch (e) {
       console.log('===send image error', e);
       message.error('Failed to send message');
-    } finally {
-      sendImgModalRef?.current?.setLoading(false);
     }
   };
   const hidePop = (e: any) => {
@@ -342,7 +340,7 @@ export default function ChatBox() {
         <StyleProvider prefixCls="portkey">
           <MessageList
             loading={loading}
-            referance={messageRef}
+            reference={messageRef}
             hasNext={hasNext}
             next={next}
             lockable
@@ -353,7 +351,7 @@ export default function ChatBox() {
       </div>
       <div className="chat-box-footer">
         <StyleProvider prefixCls="portkey">
-          <InputBar moreData={inputMorePopList} maxlength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
+          <InputBar moreData={inputMorePopList} maxLength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
         </StyleProvider>
       </div>
       <PhotoSendModal

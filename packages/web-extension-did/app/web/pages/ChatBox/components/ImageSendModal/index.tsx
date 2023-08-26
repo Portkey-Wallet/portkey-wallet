@@ -20,9 +20,15 @@ const ImageSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSend
     setLoading,
   }));
 
-  const handleConfirm = () => {
-    setLoading(true);
-    onConfirm();
+  const handleConfirm = async () => {
+    try {
+      setLoading(true);
+      await onConfirm();
+    } catch (e) {
+      console.log('===send image error', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

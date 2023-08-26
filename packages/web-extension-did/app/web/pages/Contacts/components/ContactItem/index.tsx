@@ -13,7 +13,7 @@ export default function ContactItem({ item, hasChatEntry = true, clickChat }: IC
   const { name, index } = useIndexAndName(item);
 
   return (
-    <div className="flex-between contact-item">
+    <div className="flex-between-center contact-item">
       <div className="flex-center contact-item-right">
         <div className="flex-center contact-index-logo-wrap">
           <div className="flex-center contact-index-logo">{index}</div>

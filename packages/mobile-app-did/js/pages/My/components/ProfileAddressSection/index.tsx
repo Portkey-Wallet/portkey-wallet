@@ -18,8 +18,7 @@ type addressItemType = {
   address: string;
   chainId: ChainId;
   image?: string;
-  chainType?: ChainType;
-  chainName?: ChainType;
+  chainName?: ChainType | string;
 };
 
 type ProfileAddressSectionPropsType = {
@@ -35,8 +34,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
   const { currentNetwork } = useWallet();
 
   const copyId = useCallback(
-    (ele: addressItemType) =>
-      copyText(ele.chainType === 'ethereum' ? ele.address : `ELF_${ele.address}_${ele.chainId}`),
+    (ele: addressItemType) => copyText(ele.chainName === 'aelf' ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
     [],
   );
 
@@ -46,7 +44,10 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
         <View key={index} style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap]}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
             <TextM style={styles.address}>
-              {formatStr2EllipsisStr(addressFormat(ele.address, ele.chainId, ele?.chainName || 'aelf'), 20)}
+              {formatStr2EllipsisStr(
+                addressFormat(ele.address, ele.chainId, (ele?.chainName || 'aelf') as ChainType),
+                20,
+              )}
             </TextM>
             <Touchable onPress={() => copyId(ele)}>
               <Svg icon="copy" size={pTd(16)} />

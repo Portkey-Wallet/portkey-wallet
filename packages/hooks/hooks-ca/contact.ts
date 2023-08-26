@@ -3,6 +3,7 @@ import { CheckContactNameResponseType } from '@portkey-wallet/api/api-did/contac
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import {
   AddContactItemApiType,
+  AddressItem,
   ContactIndexType,
   ContactItemType,
   EditContactItemApiType,
@@ -266,12 +267,16 @@ export const useLocalContactSearch = () => {
           // Name search and Wallet Name search
           contactIndexFilterList.push({
             index,
-            contacts: contacts.filter(
-              contact =>
-                contact.name?.trim().toLowerCase().includes(_v) ||
-                contact.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v) ||
-                contact.imInfo?.name?.trim().toLowerCase().includes(_v),
-            ),
+            contacts: contacts.filter(contact => {
+              if (contact?.name || contact?.caHolderInfo?.walletName) {
+                return (
+                  contact?.name?.trim().toLowerCase().includes(_v) ||
+                  contact?.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v)
+                );
+              } else {
+                return contact?.imInfo?.name?.trim().toLowerCase().includes(_v);
+              }
+            }),
           });
         });
       } else {
@@ -354,4 +359,29 @@ export const useIndexAndName = (item: Partial<ContactItemType>) => {
     const index = name?.substring(0, 1).toLocaleUpperCase();
     return { index, name };
   }, [item?.caHolderInfo?.walletName, item?.imInfo?.name, item?.name]);
+};
+
+export const useAelfContactList = () => {
+  const { contactIndexList } = useContact();
+
+  return useMemo(() => {
+    const copyContactIndexList: ContactIndexType[] = JSON.parse(JSON.stringify(contactIndexList));
+    const indexList: ContactIndexType[] = [];
+    copyContactIndexList.forEach(item => {
+      const filterContacts: ContactItemType[] = [];
+      item.contacts.forEach(contact => {
+        const filterAddresses: AddressItem[] = [];
+        contact.addresses.forEach(address => {
+          if (address?.chainName === 'aelf') {
+            filterAddresses.push(address);
+          }
+        });
+        if (filterAddresses?.length > 0) {
+          filterContacts.push({ ...contact, addresses: filterAddresses });
+        }
+      });
+      indexList.push({ index: item.index, contacts: filterContacts });
+    });
+    return indexList;
+  }, [contactIndexList]);
 };

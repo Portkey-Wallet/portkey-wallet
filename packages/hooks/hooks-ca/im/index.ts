@@ -4,7 +4,12 @@ import { useAppCASelector } from '../.';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import { useCurrentNetworkInfo } from '../network';
 import { useAppCommonDispatch } from '../../index';
-import { addChannel, setRelationId, updateChannelAttribute } from '@portkey-wallet/store/store-ca/im/actions';
+import {
+  addChannel,
+  setRelationId,
+  setRelationToken,
+  updateChannelAttribute,
+} from '@portkey-wallet/store/store-ca/im/actions';
 import { UpdateChannelAttributeTypeEnum } from '@portkey-wallet/store/store-ca/im/type';
 import { useEditContact } from '../contact';
 import { EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
@@ -15,6 +20,7 @@ export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.
 export const useIMChannelListNetMapState = () => useAppCASelector(state => state.im.channelListNetMap);
 export const useIMChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
 export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
+export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -43,6 +49,9 @@ export const useInitIM = () => {
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
   const listRef = useRef(list);
   listRef.current = list;
+
+  const relationTokenNetMap = useIMRelationTokenNetMapNetMapState();
+  const relationToken = useMemo(() => relationTokenNetMap?.[networkType], [networkType, relationTokenNetMap]);
 
   const unreadMessageUpdate = useCallback(
     async (e: any) => {
@@ -111,13 +120,36 @@ export const useInitIM = () => {
   const unreadMessageUpdateRef = useRef(unreadMessageUpdate);
   unreadMessageUpdateRef.current = unreadMessageUpdate;
 
+  const setTokenUpdate = useCallback(
+    (token: string) => {
+      console.log('setRelationToken', token);
+      dispatch(
+        setRelationToken({
+          network: networkType,
+          token,
+        }),
+      );
+    },
+    [dispatch, networkType],
+  );
+  const setTokenUpdateRef = useRef(setTokenUpdate);
+  setTokenUpdateRef.current = setTokenUpdate;
+
   const initIm = useCallback(
     async (account: AElfWallet, caHash: string) => {
       if (![IMStatusEnum.INIT, IMStatusEnum.DESTROY].includes(im.status)) return;
 
       if (isInitRef.current) return;
       isInitRef.current = true;
-      const result = await im.init(account, caHash);
+
+      im.registerUnreadMsgObservers(async (e: any) => {
+        unreadMessageUpdateRef.current(e);
+      });
+      im.registerTokenObserver(async (e: string) => {
+        setTokenUpdateRef.current(e);
+      });
+
+      const result = await im.init(account, caHash, relationToken);
 
       if (result?.relationId) {
         dispatch(
@@ -128,14 +160,10 @@ export const useInitIM = () => {
         );
       }
 
-      im.registerUnreadMsgObservers(async (e: any) => {
-        unreadMessageUpdateRef.current(e);
-      });
-
       isInitRef.current = false;
       return result;
     },
-    [dispatch, networkType],
+    [dispatch, networkType, relationToken],
   );
   return initIm;
 };

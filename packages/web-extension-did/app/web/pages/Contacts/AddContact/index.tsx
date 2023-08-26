@@ -195,7 +195,7 @@ export default function AddContact() {
       let contactDetail = {} as ContactItemType;
       if (extra === ExtraTypeEnum.CANT_CHAT) {
         // edit
-        contactDetail = await editContactApi({ name: name.trim(), addresses });
+        contactDetail = await editContactApi({ name: name.trim(), addresses, id: state?.id });
       } else {
         // add extra === ExtraTypeEnum.ADD_NEW_CHAT
         contactDetail = await addContactApi({ name: name.trim(), addresses });
@@ -223,10 +223,14 @@ export default function AddContact() {
       } else {
         // CANT CHAT
         handleView(contactDetail);
-        message.success('Add Contact Successful');
+        if (extra === ExtraTypeEnum.CANT_CHAT) {
+          message.success('Edit Contact Successful');
+        } else {
+          message.success('Add Contact Successful');
+        }
       }
     },
-    [addContactApi, appDispatch, editContactApi, extra, handleView, state?.imInfo?.relationId],
+    [addContactApi, appDispatch, editContactApi, extra, handleView, state?.id, state?.imInfo?.relationId],
   );
 
   const onFinish = useCallback(

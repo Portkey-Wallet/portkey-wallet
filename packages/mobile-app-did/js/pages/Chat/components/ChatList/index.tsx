@@ -13,6 +13,9 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import Touchable from 'components/Touchable';
+import myEvents from 'utils/deviceEvent';
+import GStyles from 'assets/theme/GStyles';
 
 export default function ChatList() {
   const {
@@ -103,19 +106,21 @@ export default function ChatList() {
   });
 
   return (
-    <FlatList
-      style={BGStyles.bg1}
-      data={channelList}
-      ListEmptyComponent={<NoData icon="no-message" message="No message" />}
-      onEndReached={onEndReached}
-      renderItem={({ item }) => (
-        <ChatHomeListItemSwiped
-          item={item}
-          onDelete={() => onHideChannel(item)}
-          onPress={() => navToChatDetails({ toRelationId: item?.toRelationId, channelUuid: item?.channelUuid })}
-          onLongPress={event => longPress(event, item)}
-        />
-      )}
-    />
+    <Touchable style={[GStyles.flex1, BGStyles.bg1]} activeOpacity={1} onPress={myEvents.chatHomeListCloseSwiped.emit}>
+      <FlatList
+        style={BGStyles.bg1}
+        data={channelList}
+        ListEmptyComponent={<NoData icon="no-message" message="No message" />}
+        onEndReached={onEndReached}
+        renderItem={({ item }) => (
+          <ChatHomeListItemSwiped
+            item={item}
+            onDelete={() => onHideChannel(item)}
+            onPress={() => navToChatDetails({ toRelationId: item?.toRelationId, channelUuid: item?.channelUuid })}
+            onLongPress={event => longPress(event, item)}
+          />
+        )}
+      />
+    </Touchable>
   );
 }

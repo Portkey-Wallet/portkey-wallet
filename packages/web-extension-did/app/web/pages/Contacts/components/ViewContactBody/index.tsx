@@ -27,6 +27,14 @@ export default function ViewContactBody({
     [data.imInfo?.relationId, data.relationId],
   );
   const { name, index } = useIndexAndName(data as Partial<ContactItemType>);
+  const transName = useMemo(() => {
+    if (showChat) {
+      return data?.caHolderInfo?.walletName || data?.imInfo?.name || data?.name;
+    } else {
+      return name;
+    }
+  }, [data?.caHolderInfo?.walletName, data?.imInfo?.name, data?.name, name, showChat]);
+
   const [isMyContact, setIsMyContact] = useState(true);
 
   useEffect(() => {
@@ -38,13 +46,13 @@ export default function ViewContactBody({
       <div className="view-contact-body-main">
         <div className="info-section name-section">
           <div className="flex-center name-index">{index}</div>
-          <div className="name">{showChat ? data?.caHolderInfo?.walletName : name}</div>
+          <div className="name">{transName}</div>
 
           {/* Section - Remark */}
-          {showChat && relationId && isShowRemark && (
+          {showChat && relationId && isMyContact && isShowRemark && (
             <div className="remark">
               <span>{`Remark: `}</span>
-              <span>{data?.name || 'No set'}</span>
+              <span>{data?.name || 'Not set'}</span>
             </div>
           )}
 
@@ -63,20 +71,18 @@ export default function ViewContactBody({
                   <span>{addedText}</span>
                 </div>
               )}
-              {data.id && isMyContact && (
-                <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
-                  <CustomSvg type="ContactChat" />
-                  <span>{chatText}</span>
-                </div>
-              )}
 
-              {/* cant chat */}
               {(!data.id || !isMyContact) && (
                 <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
                   <CustomSvg type="ContactAdd" />
                   <span>{addContactText}</span>
                 </div>
               )}
+
+              <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
+                <CustomSvg type="ContactChat" />
+                <span>{chatText}</span>
+              </div>
             </div>
           )}
         </div>

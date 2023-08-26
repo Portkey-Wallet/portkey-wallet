@@ -4,17 +4,17 @@ import { Popover } from 'antd';
 import { emojiList } from '../assets/emoji/index';
 import CustomSvg from '../components/CustomSvg';
 import PopoverMenuList, { IPopoverMenuListData } from '../PopoverMenuList';
-import Input from '../Input';
+import CustomInput from '../components/CustomInput';
 import './index.less';
 
 interface IInputBar {
-  maxlength?: number;
+  maxLength?: number;
   moreData?: IPopoverMenuListData[];
   showEmoji?: boolean;
   onSendMessage: (v: string) => void;
 }
 
-export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxlength = 300 }: IInputBar) {
+export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxLength = 300 }: IInputBar) {
   const [showEmojiIcon, setShowEmojiIcon] = useState(false);
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -97,15 +97,14 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
           ) : (
             <></>
           )}
-
           <div className="input-text">
-            <Input
+            <CustomInput
               autofocus
-              referance={inputRef}
+              reference={inputRef}
               value={value}
               multiline={true}
               maxHeight={140}
-              maxlength={maxlength}
+              maxLength={maxLength}
               onChange={handleChange}
               onKeyDown={handleEnterKeyDown}
             />

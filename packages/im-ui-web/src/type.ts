@@ -101,7 +101,7 @@ export interface IMessageListProps {
   };
   children?: React.ReactNode;
   isShowChild?: boolean;
-  referance: any;
+  reference: any;
   dataSource: MessageType[];
   lockable: boolean;
   toBottomHeight?: String | number;
@@ -144,9 +144,9 @@ export type ITextMessageProps = ITextMessage;
 
 export interface IInputProps {
   autofocus?: boolean;
-  referance?: any;
+  reference?: any;
   clear?: Function;
-  maxlength?: number;
+  maxLength?: number;
   maxHeight: number;
   onMaxLengthExceed?: Function;
   onChange?: Function;

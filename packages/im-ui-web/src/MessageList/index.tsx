@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
-import { IMessageListProps, MessageListEvent, MessageType } from '../type';
+import { IMessageListProps, MessageListEvent } from '../type';
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
@@ -64,9 +64,9 @@ const MessageList: FC<IMessageListProps> = ({
     [props],
   );
 
-  const onDelete = useCallback(
-    (item: MessageType) => {
-      if (props.onDelete instanceof Function) props.onDelete(item);
+  const onDeleteMsg: MessageListEvent = useCallback(
+    (item, index, event) => {
+      if (props.onDeleteMsg instanceof Function) props.onDeleteMsg(item, index, event);
     },
     [props],
   );
@@ -125,11 +125,19 @@ const MessageList: FC<IMessageListProps> = ({
           className={isShowMargin && 'show-margin'}
           onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
           onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
-          onDelete={() => onDelete(x)}
+          onDeleteMsg={props.onDeleteMsg && ((e: React.MouseEvent<HTMLElement>) => onDeleteMsg(x, i, e))}
         />
       );
     });
-  }, [onDelete, onDownload, onPhotoError, props.dataSource, props.onDownload, props.onPhotoError]);
+  }, [
+    onDeleteMsg,
+    onDownload,
+    onPhotoError,
+    props.dataSource,
+    props.onDeleteMsg,
+    props.onDownload,
+    props.onPhotoError,
+  ]);
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>

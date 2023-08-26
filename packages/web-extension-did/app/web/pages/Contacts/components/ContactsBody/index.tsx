@@ -111,6 +111,7 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
       {isSearch && (
         <ContactList
           className="contact-search-list"
+          hasChatEntry={showChat}
           list={flatList}
           clickItem={(item) => handleGoProfile({ ...item, from: 'contact-list' })}
           clickChat={(e, item) => handleChat(e, item?.imInfo?.relationId || '')}

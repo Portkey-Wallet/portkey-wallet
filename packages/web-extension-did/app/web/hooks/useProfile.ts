@@ -2,7 +2,7 @@ import { message } from 'antd';
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useCopyToClipboard } from 'react-use';
 import { useCommonState } from 'store/Provider/hooks';
 import { ExtraType } from 'types/Profile';
@@ -10,12 +10,17 @@ import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export const useGoProfile = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   return useCallback(
     (state: any) => {
-      navigate(`/setting/contacts/view`, { state });
+      if (pathname.includes('/setting/wallet')) {
+        navigate('/setting/wallet/wallet-name');
+      } else {
+        navigate('/setting/contacts/view', { state });
+      }
     },
-    [navigate],
+    [navigate, pathname],
   );
 };
 

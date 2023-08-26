@@ -22,15 +22,20 @@
     }
   }
 
-  .contact-search-list{
-    margin-top: 16px;
-  }
-
   .contacts-tab {
     height: 100%;
 
     .@{app-prefix}-tabs-content-holder {
-      overflow-y: auto;
+      height: 100%;
+      .@{app-prefix}-tabs-content{
+        height: 100%;
+        .portkey-tabs-tabpane{
+          height: 100%;
+          .contact-list{
+            height: 100%;
+          }
+        }
+      }
     }
     .@{app-prefix}-tabs-nav {
       margin-bottom: 0;

@@ -23,7 +23,13 @@ query buyButton{
             second
         }
         id
+        isAndroidBuyShow
+        isAndroidSellShow
         isBuySectionShow
+        isExtensionBuyShow
+        isExtensionSellShow
+        isIOSBuyShow
+        isIOSSellShow
         isSellSectionShow
         status
         user_created

@@ -38,6 +38,7 @@ export const FontStyles = StyleSheet.create({
   font10: { color: defaultColors.font10 },
   font11: { color: defaultColors.font11 },
   font12: { color: defaultColors.font12 },
+  font13: { color: defaultColors.font13 },
   weight500: fonts.mediumFont,
 });
 

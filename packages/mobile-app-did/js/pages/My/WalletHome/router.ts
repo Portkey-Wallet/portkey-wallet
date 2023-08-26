@@ -5,6 +5,7 @@ import EditWalletName from './EditWalletName';
 import AutoLock from './AutoLock';
 import SwitchNetworks from './SwitchNetworks';
 import AboutUs from './AboutUs';
+import AccountCancelation from './AccountCancelation';
 
 const stackNav = [
   {
@@ -30,6 +31,10 @@ const stackNav = [
   {
     name: 'AboutUs',
     component: AboutUs,
+  },
+  {
+    name: 'AccountCancelation',
+    component: AccountCancelation,
   },
 ] as const;
 

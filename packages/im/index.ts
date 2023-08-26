@@ -18,6 +18,8 @@ export class IM {
   private _unreadMsgObservers: Map<Symbol, (e: any) => void> = new Map();
   private _connectObservers: Map<Symbol, (e: any) => void> = new Map();
   private _msgCountObservers: Map<Symbol, (e: MessageCount) => void> = new Map();
+  private _tokenObservers: Map<Symbol, (e: string) => void> = new Map();
+
   private _msgCount: MessageCount = {
     unreadCount: 0,
     mentionsCount: 0,
@@ -47,15 +49,15 @@ export class IM {
     this.rewriteFetch();
   }
 
-  async init(account: AElfWallet, caHash: string) {
+  async init(account: AElfWallet, caHash: string, token?: string) {
     this.status = IMStatusEnum.INIT;
     this._account = account;
     this._caHash = caHash;
 
-    return this.initRelationIM();
+    return this.initRelationIM(token);
   }
 
-  async initRelationIM() {
+  async initRelationIM(token?: string) {
     if (!this._account || !this._caHash) {
       throw new Error('no account or caHash');
     }
@@ -66,25 +68,31 @@ export class IM {
     try {
       const account = this._account;
       const caHash = this._caHash;
-      const { data: verifyResult } = await this.service.verifySignatureLoop(
-        () => {
-          return utils.getVerifyData(account, caHash);
-        },
-        () => {
-          return caHash === this._caHash;
-        },
-      );
-      const addressAuthToken = verifyResult.token;
-      const { data: autoResult } = await this.service.getAuthTokenLoop(
-        {
-          addressAuthToken,
-        },
-        () => {
-          return caHash === this._caHash;
-        },
-      );
 
-      const token = autoResult.token;
+      if (!token) {
+        const { data: verifyResult } = await this.service.verifySignatureLoop(
+          () => {
+            return utils.getVerifyData(account, caHash);
+          },
+          () => {
+            return caHash === this._caHash;
+          },
+        );
+        const addressAuthToken = verifyResult.token;
+        const { data: autoResult } = await this.service.getAuthTokenLoop(
+          {
+            addressAuthToken,
+          },
+          () => {
+            return caHash === this._caHash;
+          },
+        );
+        token = autoResult.token;
+        this.updateToken(token);
+      } else {
+        console.log('use local token', token);
+      }
+
       this.setAuthorization(token);
 
       this._imInstance = RelationIM.init({ token, apiKey: undefined as any, connect: true, refresh: true });
@@ -253,6 +261,23 @@ export class IM {
     });
   }
 
+  registerTokenObserver(cb: (e: string) => void) {
+    const symbol = Symbol();
+    const tokenObservers = this._tokenObservers;
+    tokenObservers.set(symbol, cb);
+    return {
+      remove: () => {
+        tokenObservers.has(symbol) && tokenObservers.delete(symbol);
+      },
+    };
+  }
+
+  updateToken(e: string) {
+    this._tokenObservers.forEach(cb => {
+      cb(e);
+    });
+  }
+
   async refreshToken() {
     if (!this._account || !this._caHash) {
       throw new Error('no account or caHash');
@@ -281,6 +306,7 @@ export class IM {
       5,
     );
     this.setAuthorization(token);
+    this.updateToken(token);
   }
 
   private rewriteFetch() {
@@ -348,6 +374,7 @@ export class IM {
     this._channelMsgObservers.clear();
     this._connectObservers.clear();
     this._msgCountObservers.clear();
+    this._tokenObservers.clear();
     this._imInstance && this._imInstance.destroy();
     this._imInstance = undefined;
   }

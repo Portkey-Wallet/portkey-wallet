@@ -1,6 +1,7 @@
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId, ChainType } from '@portkey-wallet/types';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -18,8 +19,7 @@ type addressItemType = {
   address: string;
   chainId: ChainId;
   image?: string;
-  chainType?: ChainType;
-  chainName?: ChainType;
+  chainName?: ChainType | string;
 };
 
 type ProfileAddressSectionPropsType = {
@@ -32,13 +32,14 @@ type ProfileAddressSectionPropsType = {
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
   const { title = 'DID', disable, noMarginTop, addressList, isMySelf } = props;
-  const { currentNetwork } = useWallet();
+  const isTestnet = useIsTestnet();
 
   const copyId = useCallback(
-    (ele: addressItemType) =>
-      copyText(ele.chainType === 'ethereum' ? ele.address : `ELF_${ele.address}_${ele.chainId}`),
+    (ele: addressItemType) => copyText(ele.chainName === 'aelf' ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
     [],
   );
+
+  console.log('list!!!!', addressList);
 
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
@@ -46,7 +47,10 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
         <View key={index} style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap]}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
             <TextM style={styles.address}>
-              {formatStr2EllipsisStr(addressFormat(ele.address, ele.chainId, ele?.chainName || 'aelf'), 20)}
+              {formatStr2EllipsisStr(
+                addressFormat(ele.address, ele.chainId, (ele?.chainName || 'aelf') as ChainType),
+                20,
+              )}
             </TextM>
             <Touchable onPress={() => copyId(ele)}>
               <Svg icon="copy" size={pTd(16)} />
@@ -65,7 +69,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
               />
             )}
             <TextS style={[FontStyles.font3, GStyles.marginLeft(pTd(8))]}>
-              {formatChainInfoToShow(ele.chainId, currentNetwork, ele.chainName)}
+              {transNetworkTextWithAllChain(ele.chainId, isTestnet, ele.chainName)}
             </TextS>
           </View>
         </View>

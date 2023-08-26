@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -37,6 +37,8 @@ const ChatContactProfileEdit: React.FC = () => {
 
   const [remark, setRemark] = useState(contact?.name || '');
   const [error, setError] = useState('');
+
+  const isShowPortkeyId = useMemo(() => !!contact?.caHolderInfo?.userId, [contact?.caHolderInfo?.userId]);
 
   const onFinish = useCallback(async () => {
     if (remark && !isValidRemark(remark)) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
@@ -100,7 +102,11 @@ const ChatContactProfileEdit: React.FC = () => {
           </TextM>
         </FormItem>
         <ProfileRemarkSection errorMessage={error} value={remark} onChangeText={v => setRemark(v)} />
-        <ProfilePortkeyIDSection disable id={contact?.caHolderInfo?.userId || ''} />
+        <ProfilePortkeyIDSection
+          disable
+          title={isShowPortkeyId ? 'PortkeyId' : 'ID'}
+          id={isShowPortkeyId ? contact?.caHolderInfo?.userId : contact?.imInfo?.relationId}
+        />
         <ProfileAddressSection disable addressList={contact?.addresses} />
       </ScrollView>
 
@@ -135,6 +141,7 @@ export const pageStyles = StyleSheet.create({
     paddingHorizontal: pTd(16),
     lineHeight: pTd(56),
     borderRadius: pTd(6),
+    overflow: 'hidden',
   },
   addAddressBtn: {
     alignSelf: 'center',

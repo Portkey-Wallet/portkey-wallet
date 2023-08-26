@@ -12,6 +12,8 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
 import { ChannelItem } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
+import { useDeviceEvent } from 'hooks/useDeviceEvent';
+import myEvents from 'utils/deviceEvent';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -27,7 +29,13 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   const { item, onPress, onLongPress, onDelete } = props;
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
-
+  const listenerCallBack = useCallback(
+    (id: string) => {
+      if (id !== item.channelUuid) swipeableRef.current?.close();
+    },
+    [item.channelUuid],
+  );
+  const eventEmit = useDeviceEvent(myEvents.chatHomeListCloseSwiped.name, listenerCallBack);
   const lastMessage = useMemo(() => {
     if (item.lastMessageType === 'TEXT') {
       return item.lastMessageContent;
@@ -68,7 +76,6 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   const onDrag = useCallback(
     (params: { openDirection: OpenDirection; snapPoint: number }) => {
       setIsEdit(params.snapPoint !== 0);
-
       if (params.snapPoint === DELETE_TO_END) {
         swipeableRef.current?.close();
         onDelete(item);
@@ -76,7 +83,6 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     },
     [item, onDelete],
   );
-
   return (
     <SwipeableItem
       swipeEnabled
@@ -87,12 +93,12 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
       snapPointsLeft={[DELETE_BUTTON_WIDTH, DELETE_TO_END]}
       renderUnderlayLeft={renderUnderlayLeft}>
       <Touchable
-        activeOpacity={1}
-        // highlight
-        // underlayColor={item.pin ? defaultColors.bg1 : defaultColors.bg4}
+        highlight
+        underlayColor={item.pin ? defaultColors.bg18 : defaultColors.bg4}
         style={[BGStyles.bg1, item.pin && BGStyles.bg4, GStyles.flexRow, GStyles.itemCenter, styles.container]}
         onPress={onPressItem}
-        onLongPress={onLongPressItem}>
+        onLongPress={onLongPressItem}
+        onPressIn={eventEmit}>
         <>
           <CommonAvatar hasBorder title={item.displayName} avatarSize={48} style={styles.avatar} />
           <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
@@ -182,7 +188,7 @@ const styles = StyleSheet.create({
     borderWidth: pTd(1),
     borderRadius: pTd(9),
     overflow: 'hidden',
-    lineHeight: pTd(14),
+    lineHeight: pTd(16),
   },
   hide: {
     display: 'none',

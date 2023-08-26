@@ -1,13 +1,14 @@
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import useEffectOnce from 'hooks/useEffectOnce';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, ImageProps, ImageSourcePropType, StyleSheet, View } from 'react-native';
 import Default_Image from 'assets/image/pngs/default_record.png';
 import { getLocalSource, initStateSource, getLocalUri } from './utils';
 import isEqual from 'lodash/isEqual';
 import { DeviceEventEmitter } from 'react-native';
 import { isURISource } from 'utils/fs/img';
+import { useDeviceEventListener } from 'hooks/useDeviceEvent';
 
 const EVENT_NAME = 'reloadCacheImage';
 export interface CacheImageProps extends ImageProps {
@@ -53,13 +54,7 @@ export default function CacheImage(props: CacheImageProps) {
     },
     [init, props.originUri, source],
   );
-
-  useEffect(() => {
-    const listener = DeviceEventEmitter.addListener(EVENT_NAME, listenerCallBack);
-    return () => {
-      listener.remove();
-    };
-  }, [listenerCallBack]);
+  useDeviceEventListener(EVENT_NAME, listenerCallBack);
 
   useEffectOnce(() => {
     init();

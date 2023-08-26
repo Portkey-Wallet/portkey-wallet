@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   rightSection: {
     height: pTd(72),
     flex: 1,
-    borderBottomColor: defaultColors.border1,
+    borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
     paddingRight: pTd(20),
     justifyContent: 'center',

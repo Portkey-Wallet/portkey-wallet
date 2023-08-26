@@ -41,14 +41,12 @@ function SendPicBody({ uri, buttons, width, height }: ShowSendPicProps) {
       })),
     [buttons, loading],
   );
-
+  const imgSize = useMemo(() => formatImageSize({ width, height, maxWidth, maxHeight: maxWidth }), [height, width]);
   return (
     <View style={styles.alertBox}>
-      <Image
-        resizeMode="cover"
-        source={{ uri }}
-        style={useMemo(() => formatImageSize({ width, height, maxWidth, maxHeight: maxWidth }), [height, width])}
-      />
+      <View style={styles.imgBox}>
+        <Image resizeMode="cover" source={{ uri }} style={imgSize} />
+      </View>
       <ButtonRow buttons={pageButtons} />
     </View>
   );
@@ -105,5 +103,10 @@ export const styles = StyleSheet.create({
     width: screenWidth - 48,
     backgroundColor: 'white',
     padding: pTd(24),
+  },
+  imgBox: {
+    minHeight: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

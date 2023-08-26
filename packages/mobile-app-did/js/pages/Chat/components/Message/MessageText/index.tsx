@@ -34,11 +34,8 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   const isNotSupported = useMemo(() => messageType === 'NOT_SUPPORTED', [messageType]);
   const onUrlPress = useThrottleCallback(
     (url: string) => {
-      if (WWW_URL_PATTERN.test(url)) {
-        onUrlPress(`https://${url}`);
-      } else {
-        jump({ item: { url: url, name: url } });
-      }
+      if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
+      jump({ item: { url: url, name: url } });
     },
     [jump],
   );

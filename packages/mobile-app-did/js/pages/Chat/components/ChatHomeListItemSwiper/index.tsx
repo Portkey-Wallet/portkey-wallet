@@ -191,7 +191,8 @@ const styles = StyleSheet.create({
     lineHeight: pTd(16),
   },
   hide: {
-    display: 'none',
+    width: 0,
+    height: 0,
   },
   muteMessage: {
     borderColor: defaultColors.bg7,

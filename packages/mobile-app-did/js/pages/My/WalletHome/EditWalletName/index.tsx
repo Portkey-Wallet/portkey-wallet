@@ -99,7 +99,7 @@ const EditWalletName: React.FC = () => {
           />
         </FormItem>
         <ProfilePortkeyIDSection noMarginTop disable portkeyID={userId || ''} />
-        <ProfileAddressSection disable addressList={caInfoList} />
+        <ProfileAddressSection isMySelf disable addressList={caInfoList} />
       </ScrollView>
 
       <CommonButton disabled={nameValue === ''} type="solid" onPress={onSave}>

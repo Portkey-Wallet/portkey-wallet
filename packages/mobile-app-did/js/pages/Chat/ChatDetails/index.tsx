@@ -53,7 +53,7 @@ const ChatDetails = () => {
   const addContact = useLockCallback(async () => {
     try {
       await addStranger(toRelationId || '');
-      CommonToast.success('Add Success');
+      CommonToast.success('Contact Added');
       dispatch(fetchContactListAsync());
     } catch (error) {
       CommonToast.fail(handleErrorMessage(error));

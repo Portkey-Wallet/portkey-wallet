@@ -23,7 +23,11 @@ export default function EditContact() {
   const navigate = useNavigate();
   const { state, pathname } = useLocation();
   const transState = useMemo(() => {
-    return { ...state, remark: state?.name, walletName: state?.caHolderInfo?.walletName };
+    return {
+      ...state,
+      remark: state?.name,
+      walletName: state?.caHolderInfo?.walletName || state?.imInfo?.name,
+    };
   }, [state]);
 
   const { isNotLessThan768 } = useCommonState();

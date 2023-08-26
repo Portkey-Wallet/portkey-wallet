@@ -11,13 +11,14 @@ type ProfileHeaderPropsType = {
   showRemark?: boolean;
   remark?: string;
   avatarUrl?: string;
+  noMarginTop?: boolean;
 };
 
 const ProfileHeader: React.FC<ProfileHeaderPropsType> = props => {
-  const { name, showRemark, remark, avatarUrl } = props;
+  const { name, showRemark, remark, avatarUrl, noMarginTop = true } = props;
 
   return (
-    <View style={[GStyles.center, styles.wrap]}>
+    <View style={[GStyles.center, styles.wrap, noMarginTop && GStyles.marginTop(0)]}>
       <CommonAvatar hasBorder avatarSize={pTd(80)} title={name} imageUrl={avatarUrl} style={styles.avatarStyle} />
       <TextXXXL style={[FontStyles.font5, GStyles.marginTop(pTd(8))]}>{name}</TextXXXL>
       {showRemark && (
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
   wrap: {
     width: '100%',
     marginBottom: pTd(24),
+    marginTop: pTd(24),
   },
   avatarStyle: {
     fontSize: pTd(40),

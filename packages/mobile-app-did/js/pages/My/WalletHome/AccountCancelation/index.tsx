@@ -100,8 +100,8 @@ export default function AccountCancelation() {
       const { validatedAssets, validatedDevice, validatedGuardian } = req || {};
       const list: string[] = [];
       if (!validatedAssets) list.push(AlertMap.Asset);
-      if (!validatedDevice) list.push(AlertMap.Guardian);
-      if (!validatedGuardian) list.push(AlertMap['Login Device']);
+      if (!validatedDevice) list.push(AlertMap['Login Device']);
+      if (!validatedGuardian) list.push(AlertMap.Guardian);
       if (list.length > 0) {
         const messageList = list.map((tip, index) => (
           <TextM key={index} style={styles.alertMessage}>

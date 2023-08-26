@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { GestureResponderEvent, LayoutChangeEvent, NativeModules, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -40,7 +40,6 @@ const ChatDetails = () => {
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const addStranger = useAddStrangerContact();
-
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
 
@@ -148,13 +147,25 @@ const ChatDetails = () => {
   ]);
 
   const onPressMore = useCallback(
-    (event: { nativeEvent: { pageX: any; pageY: any } }) => {
+    async (event: GestureResponderEvent) => {
       const { pageY } = event.nativeEvent;
+
+      const top: number =
+        (await new Promise(_resolve => {
+          event.target.measure((x, y, width, height, pageX, topY) => {
+            _resolve(topY);
+          });
+        })) || 0;
       ChatOverlay.showChatPopover({
         list: handleList,
         formatType: 'dynamicWidth',
-        customPosition: { right: pTd(20), top: pageY + 20 },
-        customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
+        customPosition: { right: pTd(8), top: (top || pageY) + 30 },
+        customBounds: {
+          x: screenWidth - pTd(20),
+          y: pageY,
+          width: 0,
+          height: 0,
+        },
       });
     },
     [handleList],
@@ -199,7 +210,7 @@ const ChatDetails = () => {
       }}
       leftDom={leftDom}
       rightDom={
-        <Touchable style={GStyles.marginRight(pTd(16))} onPress={onPressMore}>
+        <Touchable style={[GStyles.marginRight(pTd(16))]} onPress={onPressMore}>
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>

@@ -18,10 +18,8 @@ import OverlayModal from 'components/OverlayModal';
 import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { getInfo } from 'utils/fs';
-import { MAX_FILE_SIZE } from '@portkey-wallet/constants/constants-ca/im';
+import { MAX_FILE_SIZE_BYTE } from '@portkey-wallet/constants/constants-ca/im';
 import { changeCanLock } from 'utils/LockManager';
-
-const MAX_IMAGE_SIZE = MAX_FILE_SIZE * 1024 * 1024;
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
@@ -42,7 +40,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         result.fileSize = info.size;
       }
 
-      if (!result?.fileSize || result.fileSize > MAX_IMAGE_SIZE) return CommonToast.fail('File too large');
+      if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return CommonToast.fail('File too large');
 
       SendPicModal.showSendPic({
         uri: result.uri,

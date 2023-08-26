@@ -10,7 +10,7 @@ export default function FindMorePrompt({
   contact,
   showChat,
   isAdded,
-  isSearch = false,
+  isSearch,
   goBack,
   handleSearch,
   clickItem,
@@ -25,7 +25,7 @@ export default function FindMorePrompt({
           placeholder="Portkey ID/Address"
           handleChange={handleSearch}
         />
-        <div className="find-more-id">My Portkey ID: {myPortkeyId}</div>
+        {!isSearch && <div className="find-more-id">My Portkey ID1234: {myPortkeyId}</div>}
       </div>
       <div className="find-more-body">
         {(!contact || !contact.name) && isSearch && (

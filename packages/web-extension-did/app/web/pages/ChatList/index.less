@@ -26,16 +26,15 @@
     overflow-y: auto;
     height: calc(100% - 96px);
     .no-message {
-      .message-icon {
-        width: 64px;
-        height: 64px;
-      }
-
       margin-top: 100px;
       gap: 24px;
       font-size: 14px;
       line-height: 20px;
       color: @font-13;
+      .message-icon {
+        width: 64px;
+        height: 64px;
+      }
     }
   }
 }
@@ -44,7 +43,7 @@
   top: 60px !important;
   left: 220px !important;
   .portkey-popover-inner {
-    width: 120px;
+    min-width: 120px;
     border-radius: 6px;
     .portkey-popover-inner-content {
       padding: 0 12px;

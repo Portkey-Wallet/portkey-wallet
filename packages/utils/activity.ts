@@ -4,6 +4,15 @@ export function transNetworkText(chainId: string, isTestnet: boolean): string {
   return `${chainId === MAIN_CHAIN_ID ? MAIN_CHAIN : SIDE_CHAIN} ${chainId}${isTestnet ? ' ' + TEST_NET : ''}`;
 }
 
+export function transNetworkTextWithAllChain(chainId: string, isTestnet: boolean, chainName?: string): string {
+  if (chainName?.toLocaleLowerCase() === 'aelf') {
+    // aelf chain
+    return transNetworkText(chainId, isTestnet);
+  }
+  // other chain
+  return `${chainId} Chain`;
+}
+
 export function getCurrentActivityMapKey(chainId: string | undefined, symbol: string | undefined) {
   if (!chainId && !symbol) {
     return 'TOTAL';

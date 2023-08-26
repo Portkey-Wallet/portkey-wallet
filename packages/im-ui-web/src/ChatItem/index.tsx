@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Popover } from 'antd';
 import clsx from 'clsx';
-
 import Avatar from '../Avatar';
 import UnreadTip from '../UnreadTip';
 import CustomSvg from '../components/CustomSvg';
@@ -10,7 +9,7 @@ import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import './index.less';
 
-const ChannelItem: React.FC<IChatItemProps> = ({
+const ChatItem: React.FC<IChatItemProps> = ({
   date = new Date().getTime(),
   unread = 0,
   alt = 'portkey',
@@ -25,7 +24,6 @@ const ChannelItem: React.FC<IChatItemProps> = ({
     props.onClick?.(e);
   };
   const [popVisible, setPopVisible] = useState(false);
-
   const popList = useMemo(
     () => [
       {
@@ -76,12 +74,7 @@ const ChannelItem: React.FC<IChatItemProps> = ({
       onOpenChange={(visible) => setPopVisible(visible)}
       showArrow={false}
       content={<PopoverMenuList data={popList} />}>
-      <div
-        key={props.id}
-        className={clsx('portkey-chat-item flex-column', props.className)}
-        onClick={handleClick}
-        // onContextMenu={props.onContextMenu}
-      >
+      <div key={props.id} className={clsx('portkey-chat-item flex-column', props.className)} onClick={handleClick}>
         <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
           <div key={'avatar'} className="chat-item-avatar flex-center">
             <Avatar src={props.avatar} alt={alt} letterItem={props.letterItem} />
@@ -112,4 +105,4 @@ const ChannelItem: React.FC<IChatItemProps> = ({
   );
 };
 
-export default ChannelItem;
+export default ChatItem;

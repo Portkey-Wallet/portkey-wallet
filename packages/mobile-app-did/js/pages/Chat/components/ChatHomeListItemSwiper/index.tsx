@@ -1,7 +1,7 @@
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, GestureResponderEvent } from 'react-native';
 import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -27,6 +27,16 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   const { item, onPress, onLongPress, onDelete } = props;
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
+
+  const lastMessage = useMemo(() => {
+    if (item.lastMessageType === 'TEXT') {
+      return item.lastMessageContent;
+    } else if (item.lastMessageType === 'IMAGE') {
+      return '[Image]';
+    } else {
+      return 'Not supported message';
+    }
+  }, [item.lastMessageContent, item.lastMessageType]);
 
   const deleteItem = useCallback(() => {
     swipeableRef.current?.close();
@@ -99,7 +109,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             <View style={styles.blank} />
             <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
               <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
-                {item.lastMessageType === 'TEXT' ? item.lastMessageContent : '[Image]'}
+                {lastMessage}
               </TextS>
               {item.pin && item.unreadMessageCount === 0 ? (
                 <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
@@ -178,7 +188,7 @@ const styles = StyleSheet.create({
     display: 'none',
   },
   muteMessage: {
-    color: defaultColors.bg7,
+    borderColor: defaultColors.bg7,
     backgroundColor: defaultColors.bg7,
   },
 });

@@ -34,7 +34,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     } else if (item.lastMessageType === 'IMAGE') {
       return '[Image]';
     } else {
-      return 'Not supported message';
+      return '[Unsupported format]';
     }
   }, [item.lastMessageContent, item.lastMessageType]);
 

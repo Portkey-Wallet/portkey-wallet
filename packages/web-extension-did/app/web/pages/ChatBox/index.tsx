@@ -345,7 +345,7 @@ export default function ChatBox() {
             next={next}
             lockable
             dataSource={messageList}
-            onDelete={handleDeleteMsg}
+            onDeleteMsg={handleDeleteMsg}
           />
         </StyleProvider>
       </div>

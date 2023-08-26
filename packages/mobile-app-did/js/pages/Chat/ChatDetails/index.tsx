@@ -78,15 +78,23 @@ const ChatDetails = () => {
       {
         title: pin ? ChatOperationsEnum.UNPIN : ChatOperationsEnum.PIN,
         iconName: pin ? 'chat-unpin' : 'chat-pin',
-        onPress: () => {
-          pinChannel(currentChannelId || '', !pin);
+        onPress: async () => {
+          try {
+            await pinChannel(currentChannelId || '', !pin);
+          } catch (error) {
+            CommonToast.fail(`Failed to ${pin ? 'unpin' : 'pin'} chat`);
+          }
         },
       },
       {
         title: mute ? ChatOperationsEnum.UNMUTE : ChatOperationsEnum.MUTE,
         iconName: mute ? 'chat-unmute' : 'chat-mute',
-        onPress: () => {
-          muteChannel(currentChannelId || '', !mute);
+        onPress: async () => {
+          try {
+            await muteChannel(currentChannelId || '', !mute);
+          } catch (error) {
+            CommonToast.fail(`Failed to ${mute ? 'unmute' : 'mute'} chat`);
+          }
         },
       },
       {
@@ -107,11 +115,11 @@ const ChatDetails = () => {
                   try {
                     Loading.show();
                     await hideChannel(currentChannelId || '');
-                    Loading.hide();
                     navigationService.navigate('Tab');
                   } catch (error) {
+                    CommonToast.fail(`Failed to delete chat`);
+                  } finally {
                     Loading.hide();
-                    console.log(error);
                   }
                 },
               },
@@ -124,7 +132,7 @@ const ChatDetails = () => {
     if (isStranger)
       list.push({
         title: ChatOperationsEnum.ADD_CONTACT,
-        iconName: 'chat-delete',
+        iconName: 'chat-add-contact',
         onPress: () => addContact(),
       });
 

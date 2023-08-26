@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { MessageTextProps, Time } from 'react-native-gifted-chat';
 import ParsedText from 'react-native-parsed-text';
@@ -15,9 +15,12 @@ import { ChatMessage } from 'pages/Chat/types';
 import { ShowChatPopoverParams } from '../../ChatOverlay/chatPopover';
 import isEqual from 'lodash/isEqual';
 import { copyText } from 'utils';
+import { TextM } from 'components/CommonText';
+import { FontStyles } from 'assets/theme/styles';
+import { GestureResponderEvent } from 'react-native';
 
 const UNICODE_SPACE = isIOS
-  ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
+  ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
 const WWW_URL_PATTERN = /^www\./i;
 
@@ -26,7 +29,8 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   const jump = useDiscoverJumpWithNetWork();
   const currentChannelId = useCurrentChannelId();
   const deleteMessage = useDeleteMessage(currentChannelId || '');
-
+  const { messageType } = currentMessage || {};
+  const isNotSupported = useMemo(() => messageType === 'NOT_SUPPORTED', [messageType]);
   const onUrlPress = useThrottleCallback(
     (url: string) => {
       if (WWW_URL_PATTERN.test(url)) {
@@ -37,40 +41,49 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
     },
     [jump],
   );
-
-  return (
-    <Touchable
-      onLongPress={event => {
-        const { pageX, pageY } = event.nativeEvent;
-        const list: ShowChatPopoverParams['list'] = [
-          {
-            title: 'Copy',
-            iconName: 'copy',
-            onPress: async () => {
-              await copyText(currentMessage?.content || '');
+  const onLongPress = useCallback(
+    (event: GestureResponderEvent) => {
+      const { pageX, pageY } = event.nativeEvent;
+      const list: ShowChatPopoverParams['list'] = isNotSupported
+        ? []
+        : [
+            {
+              title: 'Copy',
+              iconName: 'copy',
+              onPress: async () => {
+                await copyText(currentMessage?.content || '');
+              },
             },
-          },
-        ];
-        if (position === 'right')
-          list.push({
-            title: 'Delete',
-            iconName: 'chat-delete',
-            onPress: () => deleteMessage(currentMessage?.id),
-          });
-        ChatOverlay.showChatPopover({
-          list,
-          px: pageX,
-          py: pageY,
-          formatType: 'dynamicWidth',
+          ];
+      if (position === 'right')
+        list.push({
+          title: 'Delete',
+          iconName: 'chat-delete',
+          onPress: () => deleteMessage(currentMessage?.id),
         });
-      }}>
+      ChatOverlay.showChatPopover({
+        list,
+        px: pageX,
+        py: pageY,
+        formatType: 'dynamicWidth',
+      });
+    },
+    [currentMessage?.content, currentMessage?.id, deleteMessage, isNotSupported, position],
+  );
+  return (
+    <Touchable onLongPress={onLongPress}>
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
-        <ParsedText
-          style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}
-          parse={[{ type: 'url', style: styles.linkStyle as TextStyle, onPress: onUrlPress }]}
-          childrenProps={{ ...textProps }}>
-          {currentMessage?.text}
-        </ParsedText>
+        {isNotSupported ? (
+          <TextM style={FontStyles.font7}>{currentMessage?.text}</TextM>
+        ) : (
+          <ParsedText
+            style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}
+            parse={[{ type: 'url', style: styles.linkStyle as TextStyle, onPress: onUrlPress }]}
+            childrenProps={{ ...textProps }}>
+            {currentMessage?.text}
+          </ParsedText>
+        )}
+
         {UNICODE_SPACE}
       </Text>
       <Time timeFormat="HH:mm" timeTextStyle={timeTextStyle} containerStyle={timeContainerStyle} {...props} />
@@ -78,7 +91,12 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   );
 }
 
-export default memo(MessageText, (prevProps, nextProps) => {
+function Message(props: MessageTextProps<ChatMessage>) {
+  // const { messageType, text } = props?.currentMessage || {};
+  return <MessageText {...props} />;
+}
+
+export default memo(Message, (prevProps, nextProps) => {
   return isEqual(prevProps.currentMessage, nextProps.currentMessage);
 });
 

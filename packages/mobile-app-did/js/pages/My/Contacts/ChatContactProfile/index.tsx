@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -27,6 +27,7 @@ type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
   contactId?: string;
   isCheckImputation?: boolean;
+  isFromNoChatProfileEditPage?: boolean;
 };
 
 const initEditContact: ContactItemType = {
@@ -41,26 +42,38 @@ const initEditContact: ContactItemType = {
 };
 
 const ContactProfile: React.FC = () => {
-  const { contactId, relationId, isCheckImputation = false } = useRouterParams<RouterParams>();
+  const {
+    contactId: paramContactId,
+    relationId,
+    isCheckImputation = false,
+    isFromNoChatProfileEditPage,
+  } = useRouterParams<RouterParams>();
+
   const { t } = useLanguage();
-  const [info, setInfo] = useState<ContactItemType>();
   const addStranger = useAddStrangerContact();
 
-  const isStranger = useIsStranger(relationId || info?.imInfo?.relationId || '');
+  const [profileInfo, setProfileInfo] = useState<ContactItemType>();
 
-  const contactInfo = useContactInfo({
+  const [contactId, setContactId] = useState(paramContactId);
+  const storeContactInfo = useContactInfo({
     contactId,
+    relationId,
   });
+
+  const contactInfo = useMemo(() => storeContactInfo || profileInfo, [storeContactInfo, profileInfo]);
+
+  const isStranger = useIsStranger(relationId || contactInfo?.imInfo?.relationId || '');
 
   const readImputation = useReadImputation();
   const isCheckedImputationRef = useRef(false);
   const checkImputation = useCallback(
-    (localInfo: ContactItemType) => {
-      if (isCheckedImputationRef.current) return;
-      isCheckedImputationRef.current = true;
-      if (isCheckImputation && localInfo?.isImputation) {
-        console.log('readImputation', localInfo);
-        readImputation(localInfo);
+    (beCheckedInfo: ContactItemType) => {
+      if (isCheckImputation && beCheckedInfo?.isImputation) {
+        if (isCheckedImputationRef.current) return;
+        isCheckedImputationRef.current = true;
+
+        console.log('readImputation', beCheckedInfo);
+        readImputation(beCheckedInfo);
         ActionSheet.alert({
           message:
             'Portkey has grouped contacts with the same Portkey ID together and removed duplicate contacts with the same address.',
@@ -74,15 +87,13 @@ const ContactProfile: React.FC = () => {
     },
     [isCheckImputation, readImputation],
   );
-
   const checkImputationRef = useLatestRef(checkImputation);
 
   useEffect(() => {
     if (contactInfo) {
-      setInfo(contactInfo);
       checkImputationRef.current(contactInfo);
     }
-  }, [checkImputationRef, contactInfo, info, isCheckImputation, readImputation]);
+  }, [checkImputationRef, contactInfo]);
 
   const navToChatDetail = useJumpToChatDetails();
 
@@ -90,8 +101,9 @@ const ContactProfile: React.FC = () => {
     if (relationId) {
       try {
         const { data } = await im.service.getProfile({ relationId });
-        setInfo(pre => ({ ...initEditContact, ...pre, ...(data || {}) }));
+        setProfileInfo({ ...initEditContact, ...(data || {}) });
       } catch (error) {
+        // TODO: getProfile error handle
         console.log(error);
       }
     }
@@ -101,35 +113,50 @@ const ContactProfile: React.FC = () => {
     getProfile();
   });
 
+  const addContact = useCallback(async () => {
+    try {
+      const id = relationId || contactInfo?.imInfo?.relationId || '';
+      if (!id) return;
+      const result = await addStranger(id);
+      result.data.id && setContactId(result.data.id);
+    } catch (error) {
+      // TODO: addStranger error handle
+      console.log('addContact', error);
+    }
+  }, [addStranger, contactInfo?.imInfo?.relationId, relationId]);
+
   return (
     <PageContainer
       titleDom="Details"
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
+      leftCallback={isFromNoChatProfileEditPage ? () => navigationService.pop(2) : navigationService.goBack}
       hideTouchable={true}>
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
-        <ProfileHeaderSection name={info?.name || info?.caHolderInfo?.walletName || info?.imInfo?.name || ''} />
+        <ProfileHeaderSection
+          name={contactInfo?.name || contactInfo?.caHolderInfo?.walletName || contactInfo?.imInfo?.name || ''}
+        />
         <ProfileHandleSection
           isAdded={!isStranger}
-          onPressAdded={() => addStranger(relationId || info?.imInfo?.relationId || '')}
+          onPressAdded={addContact}
           onPressChat={async () => {
             try {
-              navToChatDetail({ toRelationId: relationId || info?.imInfo?.relationId || '' });
+              navToChatDetail({ toRelationId: relationId || contactInfo?.imInfo?.relationId || '' });
             } catch (error) {
               CommonToast.fail(handleErrorMessage(error));
             }
           }}
         />
-        <ProfilePortkeyIDSection portkeyID={info?.userId || ''} />
-        <ProfileAddressSection addressList={info?.addresses || []} />
+        <ProfilePortkeyIDSection portkeyID={contactInfo?.caHolderInfo?.userId || ''} />
+        <ProfileAddressSection addressList={contactInfo?.addresses || []} />
       </ScrollView>
       {!isStranger && (
         <CommonButton
           type="primary"
           containerStyle={pageStyles.btnWrap}
           onPress={async () => {
-            navigationService.navigate('ChatContactProfileEdit', { contact: info });
+            navigationService.navigate('ChatContactProfileEdit', { contact: contactInfo });
           }}>
           {t('Edit')}
         </CommonButton>

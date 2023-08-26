@@ -49,6 +49,9 @@ export default function FindMore() {
       setIsSearch(false);
       return;
     }
+
+    setIsSearch(true);
+
     try {
       const addressTrans = getAddressInfo(value.trim());
       const res = await im.service.getUserInfo({ address: addressTrans.address });
@@ -66,14 +69,12 @@ export default function FindMore() {
           },
         });
         setIsAdded(!!contactRelationIdMap?.[res?.data?.relationId]);
-        setIsSearch(true);
       }
     } catch (error) {
       const err = handleErrorMessage(error, 'handle display error');
       message.error(err);
       setContact({});
       setIsAdded(false);
-      setIsSearch(false);
     }
   }, []);
 

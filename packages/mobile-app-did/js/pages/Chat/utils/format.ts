@@ -9,19 +9,36 @@ export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
         ...ele,
         text: ele.content,
         createdAt: Number(ele.createAt),
+        messageType: ele.type,
         user: {
           _id: ele.from,
         },
       } as ChatMessage;
-      if (ele.type === 'IMAGE' && typeof ele.parsedContent !== 'string') {
-        delete (msg as any).text;
-        msg.image = decodeURIComponent(ele.parsedContent?.thumbImgUrl || ele.parsedContent?.imgUrl || '');
-        msg.imageInfo = {
-          width: ele.parsedContent?.width,
-          height: ele.parsedContent?.height,
-          imgUri: decodeURIComponent(ele.parsedContent?.imgUrl || ''),
-          thumbUri: decodeURIComponent(ele.parsedContent?.thumbImgUrl || ''),
-        };
+      switch (ele.type) {
+        case 'IMAGE': {
+          if (typeof ele.parsedContent !== 'string') {
+            delete (msg as any).text;
+            msg.image = decodeURIComponent(ele.parsedContent?.thumbImgUrl || ele.parsedContent?.imgUrl || '');
+            msg.imageInfo = {
+              width: ele.parsedContent?.width,
+              height: ele.parsedContent?.height,
+              imgUri: decodeURIComponent(ele.parsedContent?.imgUrl || ''),
+              thumbUri: decodeURIComponent(ele.parsedContent?.thumbImgUrl || ''),
+            };
+          }
+          break;
+        }
+        case 'TEXT':
+          break;
+        default: {
+          msg.messageType = 'NOT_SUPPORTED';
+          msg.text = '[Not supported message]';
+          break;
+        }
+      }
+      if (typeof ele.content !== 'string') {
+        msg.messageType = 'NOT_SUPPORTED';
+        msg.text = '[Not supported message]';
       }
       return msg;
     })

@@ -28,7 +28,7 @@ export default function EditContact() {
 
   const { isNotLessThan768 } = useCommonState();
   const appDispatch = useAppDispatch();
-  const [canSave, setCanSave] = useState<boolean>(false);
+  const [cantSave, setCantSave] = useState<boolean>(false);
   const [validName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [validRemark, setValidRemark] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const editContactApi = useEditIMContact();
@@ -36,15 +36,14 @@ export default function EditContact() {
 
   const handleFormValueChange = useCallback(() => {
     const { name } = form.getFieldsValue();
-    // TODO
-    setCanSave(name);
+    setCantSave(name);
   }, [form]);
 
   const handleInputRemarkChange = useCallback(
     (v: string) => {
       setValidRemark({ validateStatus: '', errorMsg: '' });
       if (!v) {
-        setCanSave(false);
+        setCantSave(false);
       } else {
         handleFormValueChange();
       }
@@ -125,7 +124,7 @@ export default function EditContact() {
       validRemark={validRemark}
       state={transState}
       isShowRemark={state.isShowRemark}
-      canSave={canSave}
+      cantSave={cantSave}
       onFinish={onFinish}
       handleInputRemarkChange={handleInputRemarkChange}
       handleCopy={handleCopy}
@@ -139,7 +138,7 @@ export default function EditContact() {
       validRemark={validRemark}
       state={transState}
       isShowRemark={state.isShowRemark}
-      canSave={canSave}
+      cantSave={cantSave}
       onFinish={onFinish}
       handleInputRemarkChange={handleInputRemarkChange}
       handleCopy={handleCopy}

@@ -4,8 +4,9 @@ import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffect, useMemo, useState } from 'react';
+import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
 export default function ViewContactBody({
   data,
@@ -19,20 +20,18 @@ export default function ViewContactBody({
   handleAdd,
   handleCopy,
 }: IProfileDetailBodyProps) {
-  const isStrangerFn = useCheckIsStranger();
+  const isMyContactFn = useIsMyContact();
   const showChat = useIsChatShow();
-
-  const name = useMemo(
-    () => data?.name || data?.caHolderInfo?.walletName || data?.imInfo?.name || '',
-    [data?.caHolderInfo?.walletName, data?.imInfo?.name, data?.name],
+  const relationId = useMemo(
+    () => data.imInfo?.relationId || data.relationId || '',
+    [data.imInfo?.relationId, data.relationId],
   );
-  const index = useMemo(() => name?.substring(0, 1).toLocaleUpperCase(), [name]);
-
-  const [isStranger, setIsStranger] = useState(true);
+  const { name, index } = useIndexAndName(data as Partial<ContactItemType>);
+  const [isMyContact, setIsMyContact] = useState(true);
 
   useEffect(() => {
-    setIsStranger(isStrangerFn(data?.imInfo?.relationId || data?.relationId || ''));
-  }, [data, isStrangerFn]);
+    setIsMyContact(isMyContactFn({ relationId, contactId: data?.id }));
+  }, [data, isMyContactFn, relationId]);
 
   return (
     <div className="flex-column-between view-contact-body">
@@ -42,7 +41,7 @@ export default function ViewContactBody({
           <div className="name">{name}</div>
 
           {/* Section - Remark */}
-          {isShowRemark && (
+          {relationId && isShowRemark && (
             <div className="remark">
               <span>{`Remark: `}</span>
               <span>{data?.name || 'No set'}</span>
@@ -50,21 +49,21 @@ export default function ViewContactBody({
           )}
 
           {/* empty-placeholder */}
-          {!data.id && !(!data.id && isStranger) && <div className="empty-placeholder-8"></div>}
-          {((isShowRemark && (data.id || (!data.id && isStranger))) || data?.from === 'my-did') && (
+          {!data.id && !(!data.id && !isMyContact) && <div className="empty-placeholder-8"></div>}
+          {((isShowRemark && (data.id || (!data.id && !isMyContact))) || data?.from === 'my-did') && (
             <div className="empty-placeholder-24"></div>
           )}
 
           {/* Section - Action: Added | Add Contact | Chat */}
-          {showChat && data?.from !== 'my-did' && (
+          {showChat && data?.from !== 'my-did' && relationId && (
             <div className="flex-center action">
-              {data.id && !isStranger && (
+              {data.id && isMyContact && (
                 <div className="flex-column-center action-item added-contact">
                   <CustomSvg type="ContactAdded" />
                   <span>{addedText}</span>
                 </div>
               )}
-              {data.id && !isStranger && (
+              {data.id && isMyContact && (
                 <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
                   <CustomSvg type="ContactChat" />
                   <span>{chatText}</span>
@@ -72,7 +71,7 @@ export default function ViewContactBody({
               )}
 
               {/* cant chat */}
-              {(!data.id || isStranger) && (
+              {(!data.id || !isMyContact) && (
                 <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
                   <CustomSvg type="ContactAdd" />
                   <span>{addContactText}</span>
@@ -84,15 +83,15 @@ export default function ViewContactBody({
 
         <IdAndAddress
           portkeyId={data?.caHolderInfo?.userId}
-          relationId={data?.relationId || ''}
+          relationId={relationId}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
-          addressSectionLabel={isStranger ? 'Address' : 'DID'}
+          addressSectionLabel={relationId || data?.from === 'my-did' ? 'DID' : 'Address'}
         />
       </div>
 
       {/* stranger cant edit */}
-      {(!data.id || !isStranger || data?.from === 'my-did') && (
+      {(data.id || isMyContact || data?.from === 'my-did') && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

@@ -34,7 +34,7 @@ export default function IdAndAddress({
 
       {!portkeyId && relationId && (
         <div className="info-section section-border-bottom">
-          <div className="info-title">{`ID (relation one)`}</div>
+          <div className="info-title">{`ID`}</div>
           <div className="flex-row-between info-content">
             <div className="info-desc">{relationId}</div>
             <CustomSvg onClick={() => handleCopy(relationId)} type="Copy" className="id-copy-icon" />

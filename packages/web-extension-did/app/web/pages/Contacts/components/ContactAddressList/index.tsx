@@ -6,7 +6,7 @@ import { useCopyToClipboard } from 'react-use';
 import './index.less';
 import { useCallback } from 'react';
 import { useIsTestnet } from 'hooks/useNetwork';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
+import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';
 
 export default function ContactAddressList({ list }: { list: AddressItem[] }) {
   const isTestNet = useIsTestnet();
@@ -38,7 +38,7 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
               <CustomSvg type="elf-icon" className="chain-elf" />
             )}
 
-            <span className="chain-text">{transNetworkText(ads.chainId, isTestNet)}</span>
+            <span className="chain-text">{transNetworkTextWithAllChain(ads.chainId, isTestNet, ads.chainName)}</span>
           </div>
         </div>
       ))}

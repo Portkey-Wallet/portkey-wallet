@@ -19,6 +19,7 @@ import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { getInfo } from 'utils/fs';
 import { MAX_FILE_SIZE } from '@portkey-wallet/constants/constants-ca/im';
+import { changeCanLock } from 'utils/LockManager';
 
 const MAX_IMAGE_SIZE = MAX_FILE_SIZE * 1024 * 1024;
 
@@ -26,11 +27,13 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
   const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
 
   const selectPhoto = useCallback(async () => {
+    changeCanLock(false);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: false,
         allowsMultipleSelection: false,
+        quality: 1,
       });
       if (result.cancelled || !result.uri) return;
 
@@ -63,6 +66,8 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
       });
     } catch (error) {
       // error
+    } finally {
+      changeCanLock(true);
     }
   }, [sendChannelImage]);
 

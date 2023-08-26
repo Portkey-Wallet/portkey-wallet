@@ -23,7 +23,7 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
       key: 'delete',
       leftIcon: <CustomSvg type="Delete" />,
       children: 'Delete',
-      onClick: () => props?.onDelete?.(`${props.id}`),
+      onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
     },
   ];
   const hidePop = () => {

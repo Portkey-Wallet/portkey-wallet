@@ -14,10 +14,6 @@
     background-color: @bg-13;
     border-bottom: 1px solid @border-2;
     z-index: 100;
-    .close2-icon {
-      width: 18px;
-      height: 18px;
-    }
     .setting-header-wrapper {
       border: none;
       background-color: @bg-13;
@@ -29,7 +25,7 @@
   }
   .new-chat-content {
     position: relative;
-    top: 138px;
+    margin-top: 138px;
     overflow-y: auto;
     .empty {
       margin-top: 60px;
@@ -43,6 +39,9 @@
         border-bottom: 1px solid @border-2;
         .adm-list-item {
           padding-left: 24px;
+          .contact-item .contact-item-right .contact-index-logo-wrap .unread-badge {
+            display: none;
+          }
         }
       }
     }

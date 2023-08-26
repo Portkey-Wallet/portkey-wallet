@@ -10,6 +10,9 @@
     border-bottom: 1px solid @border-2;
     .title-element {
       align-items: center;
+      .title-content {
+        cursor: pointer;
+      }
       .name-text {
         margin-left: 8px;
         max-width: 150px;
@@ -106,9 +109,12 @@
   }
 }
 
-.upload-text:hover {
-  color: @font-9;
+.portkey-input-more-popover {
+  .popover-menu-list .menu-item:hover .upload-text {
+    color: @font-9;
+  }
 }
+
 .chat-delete-modal {
   border-radius: 8px;
   overflow: hidden;

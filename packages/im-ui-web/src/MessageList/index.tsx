@@ -109,15 +109,15 @@ const MessageList: FC<IMessageListProps> = ({
   }, [reference]);
 
   const renderMessageItem = useMemo(() => {
-    let prev = 'left';
-    let isShowMargin = false;
+    let prev: any = {};
     return props.dataSource.map((x, i: number) => {
-      if (i === 0) {
-        prev = x.position;
+      let isShowMargin = false;
+      if (x.type === 'system' || prev?.type === 'system') {
+        isShowMargin = true;
       } else {
-        isShowMargin = prev !== x.position;
-        prev = x.position;
+        isShowMargin = prev.position !== x.position;
       }
+      prev = x;
       return (
         <MessageItem
           {...(x as any)}
@@ -151,7 +151,7 @@ const MessageList: FC<IMessageListProps> = ({
       </div>
       {downButton === true && _downButton && toBottomHeight !== '100%' && (
         <div className="message-list-down-button flex-center" onClick={toBottom}>
-          <CustomSvg type="LeftArrow" />
+          <CustomSvg type="DoubleDown" />
         </div>
       )}
     </div>

@@ -16,10 +16,6 @@
       flex-shrink: 0;
       border-bottom: 1px solid @border-2;
       background-color: @bg-13;
-      .close2-icon {
-        width: 18px;
-        height: 18px;
-      }
       .setting-header-wrapper {
         height: 62px;
         border: none;
@@ -35,6 +31,7 @@
       color: @font-9;
       border-bottom: 1px solid @border-2;
       background-color: @bg-11;
+      cursor: pointer;
       .addmorepeople-icon {
         width: 20px;
         height: 20px;
@@ -43,7 +40,7 @@
   }
   .chat-list-search-content {
     position: relative;
-    top: 189px;
+    margin-top: 189px;
     padding-top: 16px;
     overflow-y: auto;
     .search-empty {
@@ -66,6 +63,9 @@
           border-bottom: 1px solid @border-2;
           .adm-list-item {
             padding-left: 24px;
+            .contact-item .contact-item-right .contact-index-logo-wrap .unread-badge {
+              display: none;
+            }
           }
         }
       }

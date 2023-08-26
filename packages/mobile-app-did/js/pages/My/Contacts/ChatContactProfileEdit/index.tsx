@@ -25,6 +25,7 @@ import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
 
 type RouterParams = {
   contact?: ContactItemType;
+  isFromChatProfileEditPage?: boolean;
 };
 
 const ChatContactProfileEdit: React.FC = () => {

@@ -27,6 +27,7 @@ type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
   contactId?: string;
   isCheckImputation?: boolean;
+  isFromNoChatProfileEditPage?: boolean;
 };
 
 const initEditContact: ContactItemType = {
@@ -41,7 +42,13 @@ const initEditContact: ContactItemType = {
 };
 
 const ContactProfile: React.FC = () => {
-  const { contactId: paramContactId, relationId, isCheckImputation = false } = useRouterParams<RouterParams>();
+  const {
+    contactId: paramContactId,
+    relationId,
+    isCheckImputation = false,
+    isFromNoChatProfileEditPage,
+  } = useRouterParams<RouterParams>();
+
   const { t } = useLanguage();
   const addStranger = useAddStrangerContact();
 
@@ -124,6 +131,7 @@ const ContactProfile: React.FC = () => {
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}
+      leftCallback={isFromNoChatProfileEditPage ? () => navigationService.pop(2) : navigationService.goBack}
       hideTouchable={true}>
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
         <ProfileHeaderSection

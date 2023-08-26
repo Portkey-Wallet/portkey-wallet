@@ -243,6 +243,8 @@ const ContactEdit: React.FC = () => {
       const result = await (isEdit ? editContactApi(editContact) : addContactApi(editContact));
       CommonToast.success(t(isEdit ? 'Saved Successful' : 'Contact Added'));
 
+      console.log('contactcontact', contact, isEdit, result);
+
       if (result.imInfo?.relationId) {
         return ActionSheet.alert({
           title: 'DID Recognition',
@@ -256,6 +258,7 @@ const ContactEdit: React.FC = () => {
                 navigationService.navigate('ChatContactProfile', {
                   contact: result,
                   relationId: result.imInfo?.relationId,
+                  isFromNoChatProfileEditPage: true,
                 });
               },
             },
@@ -280,7 +283,7 @@ const ContactEdit: React.FC = () => {
     } finally {
       Loading.hide();
     }
-  }, [addContactApi, addressList, checkError, editContact, editContactApi, isEdit, t]);
+  }, [addContactApi, addressList, checkError, contact, editContact, editContactApi, isEdit, t]);
 
   const onDelete = useCallback(() => {
     ActionSheet.alert({

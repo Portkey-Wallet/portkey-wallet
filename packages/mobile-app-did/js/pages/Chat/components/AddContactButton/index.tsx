@@ -36,8 +36,6 @@ export default function AddContactButton(props: AddContactButtonPropsType) {
 
 const styles = StyleSheet.create({
   wrap: {
-    position: 'absolute',
-    top: 0,
     zIndex: 100,
     width: screenWidth,
     backgroundColor: defaultColors.bg1,

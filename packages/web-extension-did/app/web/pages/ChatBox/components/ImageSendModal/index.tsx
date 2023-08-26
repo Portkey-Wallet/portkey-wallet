@@ -1,18 +1,23 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import './index.less';
 import CommonModal from 'components/CommonModal';
 import { useState } from 'react';
+import './index.less';
 
+export interface IPreviewImage {
+  src: string;
+  width: number;
+  height: number;
+}
 interface PhotoSendModalProps {
   open: boolean;
-  url: string;
+  file?: IPreviewImage;
   onConfirm: () => Promise<void>;
   onCancel: () => void;
 }
 
-const ImageSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSendModalProps, ref) => {
+const ImageSendModal = forwardRef(({ open, file, onConfirm, onCancel }: PhotoSendModalProps, ref) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
@@ -48,8 +53,8 @@ const ImageSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSend
           </Button>
         </div>
       }>
-      <div className="text-center modal-content">
-        <img src={url} alt="image-send" />
+      <div className="modal-content flex-center">
+        <img src={file?.src} alt="image-send" style={{ width: file?.width, height: file?.height }} />
       </div>
     </CommonModal>
   );

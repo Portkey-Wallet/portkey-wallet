@@ -91,7 +91,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
                   setShowEmojiIcon(false);
                   setPopVisible(!popVisible);
                 }}>
-                <CustomSvg type="File" />
+                <CustomSvg className={clsx([popVisible && 'has-show-more-icon'])} type="File" />
               </div>
             </Popover>
           ) : (

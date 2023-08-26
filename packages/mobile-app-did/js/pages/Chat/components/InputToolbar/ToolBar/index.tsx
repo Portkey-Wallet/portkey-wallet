@@ -17,42 +17,53 @@ import { useSendCurrentChannelMessage } from '../../hooks';
 import OverlayModal from 'components/OverlayModal';
 import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
+import { getInfo } from 'utils/fs';
+import { MAX_FILE_SIZE } from '@portkey-wallet/constants/constants-ca/im';
+
+const MAX_IMAGE_SIZE = MAX_FILE_SIZE * 1024 * 1024;
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
 
   const selectPhoto = useCallback(async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      allowsMultipleSelection: false,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        allowsMultipleSelection: false,
+      });
+      if (result.cancelled || !result.uri) return;
 
-    if (result.cancelled || !result.uri) return;
-    if (result?.fileSize && result?.fileSize > 10 * 1024 * 1024) return CommonToast.fail('File too large');
+      if (!result?.fileSize) {
+        const info = await getInfo(result.uri);
+        result.fileSize = info.size;
+      }
 
-    console.log('result', result);
+      if (!result?.fileSize || result.fileSize > MAX_IMAGE_SIZE) return CommonToast.fail('File too large');
 
-    SendPicModal.showSendPic({
-      uri: result.uri,
-      autoClose: false,
-      height: result.height,
-      width: result.width,
-      buttons: [
-        {
-          title: 'Cancel',
-          type: 'outline',
-          onPress: OverlayModal.hide,
-        },
-        {
-          title: 'Send',
-          type: 'primary',
-          onPress: async () => {
-            await sendChannelImage(result);
+      SendPicModal.showSendPic({
+        uri: result.uri,
+        autoClose: false,
+        height: result.height,
+        width: result.width,
+        buttons: [
+          {
+            title: 'Cancel',
+            type: 'outline',
+            onPress: OverlayModal.hide,
           },
-        },
-      ],
-    });
+          {
+            title: 'Send',
+            type: 'primary',
+            onPress: async () => {
+              await sendChannelImage(result);
+            },
+          },
+        ],
+      });
+    } catch (error) {
+      // error
+    }
   }, [sendChannelImage]);
 
   const toolList = useMemo((): { label: string; icon: IconName; onPress: () => void }[] => {

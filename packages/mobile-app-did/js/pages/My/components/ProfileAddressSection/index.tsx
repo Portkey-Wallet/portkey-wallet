@@ -69,7 +69,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
               />
             )}
             <TextS style={[FontStyles.font3, GStyles.marginLeft(pTd(8))]}>
-              {transNetworkTextWithAllChain(ele.chainId, isTestnet, ele.chainName)}
+              {transNetworkTextWithAllChain(ele.chainId, isTestnet, ele.chainName || 'aelf')}
             </TextS>
           </View>
         </View>

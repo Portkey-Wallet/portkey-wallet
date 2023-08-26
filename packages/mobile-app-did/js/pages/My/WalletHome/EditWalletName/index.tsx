@@ -98,7 +98,7 @@ const EditWalletName: React.FC = () => {
             errorMessage={nameError.errorMsg}
           />
         </FormItem>
-        <ProfilePortkeyIDSection noMarginTop disable portkeyID={userId || ''} />
+        <ProfilePortkeyIDSection noMarginTop disable id={userId || ''} />
         <ProfileAddressSection isMySelf disable addressList={caInfoList} />
       </ScrollView>
 

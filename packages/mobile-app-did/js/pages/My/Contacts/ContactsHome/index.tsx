@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -46,6 +46,8 @@ const ContactsHome: React.FC = () => {
     [],
   );
 
+  const clearText = useCallback(() => setKeyword(''), []);
+
   useEffect(() => {
     const { contactFilterList } = searchContact(debounceKeyword, ContactsTab.ALL);
     console.log('searchContact', contactFilterList);
@@ -75,6 +77,14 @@ const ContactsHome: React.FC = () => {
               value={keyword}
               placeholder={t('Name or address')}
               onChangeText={value => setKeyword(value.trim())}
+              rightIcon={
+                keyword ? (
+                  <TouchableOpacity onPress={clearText}>
+                    <Svg icon="clear3" size={pTd(16)} />
+                  </TouchableOpacity>
+                ) : undefined
+              }
+              rightIconContainerStyle={pageStyles.rightIconContainerStyle}
             />
           </View>
           <ContactUpdateWarning />
@@ -96,5 +106,8 @@ export const pageStyles = StyleSheet.create({
   },
   contactListStyle: {
     backgroundColor: defaultColors.bg1,
+  },
+  rightIconContainerStyle: {
+    marginRight: pTd(10),
   },
 });

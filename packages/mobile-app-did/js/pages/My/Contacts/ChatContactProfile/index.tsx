@@ -143,7 +143,8 @@ const ContactProfile: React.FC = () => {
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
         <ProfileHeaderSection
           noMarginTop={false}
-          name={contactInfo?.name || contactInfo?.caHolderInfo?.walletName || contactInfo?.imInfo?.name || ''}
+          showRemark={!isStranger}
+          name={contactInfo?.caHolderInfo?.walletName || contactInfo?.imInfo?.name || ''}
           remark={contactInfo?.name}
         />
         <ProfileHandleSection
@@ -158,7 +159,7 @@ const ContactProfile: React.FC = () => {
           }}
         />
         <ProfileIDSection
-          title={isShowPortkeyId ? 'PortkeyId' : 'ID'}
+          title={isShowPortkeyId ? 'Portkey ID' : 'ID'}
           id={isShowPortkeyId ? contactInfo?.caHolderInfo?.userId : contactInfo?.imInfo?.relationId}
         />
         <ProfileAddressSection addressList={contactInfo?.addresses || []} />

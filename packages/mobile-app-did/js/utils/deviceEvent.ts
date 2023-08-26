@@ -14,6 +14,7 @@ const EventList = [
   'nestScrollViewLayout',
   'setAuthenticationInfo',
   'refreshMyContactDetailInfo',
+  'chatHomeListCloseSwiped',
 ] as const;
 
 const BookmarkEventList = ['closeSwipeable'] as const;
@@ -24,9 +25,11 @@ const eventsServer = new Function();
 eventsServer.prototype.parseEvent = function (name: string, eventMap: string[]) {
   const obj: any = (this[name] = {});
   eventMap.forEach(item => {
+    const eventName = item.toLocaleUpperCase();
     obj[item] = {
-      emit: this.emit.bind(this, item.toLocaleUpperCase()),
-      addListener: this.addListener.bind(this, item.toLocaleUpperCase()),
+      emit: this.emit.bind(this, eventName),
+      addListener: this.addListener.bind(this, eventName),
+      name: eventName,
     };
   });
 };
@@ -53,6 +56,7 @@ export type MyEventsTypes = {
   [x in typeof EventList[number]]: {
     emit: (...params: any[]) => void;
     addListener: (listener: (data: any) => void) => EmitterSubscription;
+    name: string;
   };
 } & {
   bookmark: BookmarkEventsTypes;

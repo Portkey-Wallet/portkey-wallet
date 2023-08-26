@@ -68,7 +68,7 @@ const NewChatHome = () => {
       <FlatList
         data={filterList}
         ListEmptyComponent={
-          <NoData noPic message={debounceKeyword && filterList.length == 0 ? 'No contact found' : 'No contact'} />
+          <NoData noPic message={debounceKeyword && filterList.length === 0 ? 'No contact found' : 'No contact'} />
         }
         renderItem={renderItem}
       />

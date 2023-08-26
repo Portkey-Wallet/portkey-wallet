@@ -44,7 +44,7 @@ const ListViewProps = {
 const ChatsUI = () => {
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
-  const messageContainerRef = useRef<any>();
+  const messageContainerRef = useRef<FlatList>();
 
   const { list, init } = useChannel(currentChannelId || '');
 
@@ -68,7 +68,8 @@ const ChatsUI = () => {
   });
 
   const scrollToBottom = useCallback(() => {
-    if (messageContainerRef?.current?.scrollToOffset) messageContainerRef.current?.scrollToOffset({ offset: 0 });
+    if (messageContainerRef?.current?.scrollToOffset)
+      messageContainerRef.current?.scrollToOffset({ offset: 0, animated: false });
   }, []);
 
   const onDismiss = useThrottleCallback(() => {
@@ -134,7 +135,7 @@ const ChatsUI = () => {
           <GiftedChat
             alignTop
             user={user}
-            messageContainerRef={messageContainerRef}
+            messageContainerRef={messageContainerRef as any}
             messageIdGenerator={randomId}
             alwaysShowSend
             scrollToBottom

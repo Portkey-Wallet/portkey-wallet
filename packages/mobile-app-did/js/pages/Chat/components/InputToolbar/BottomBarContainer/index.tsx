@@ -77,8 +77,8 @@ export function BottomBarContainer({
     chatInputRecorder?.reset();
 
     try {
-      typeof text === 'string' && (await sendChannelMessage(text.trim()));
       scrollToBottom?.();
+      typeof text === 'string' && (await sendChannelMessage(text.trim()));
     } catch (error) {
       CommonToast.fail('Failed to send message');
     }

@@ -104,7 +104,7 @@ const ContactActivity: React.FC = () => {
   }, []);
 
   const navToAddContact = useCallback(() => {
-    navigationService.navigate('ContactEdit', {
+    navigationService.navigate('NoChatContactProfileEdit', {
       addressList: [{ address, chainId }],
     });
   }, [address, chainId]);

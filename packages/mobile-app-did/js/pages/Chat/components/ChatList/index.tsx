@@ -40,7 +40,7 @@ export default function ChatList() {
       try {
         await hideChannel(item.channelUuid);
       } catch (error) {
-        CommonToast.fail(handleErrorMessage(error));
+        CommonToast.fail(`Failed to delete chat`);
       }
     },
     [hideChannel],
@@ -79,14 +79,7 @@ export default function ChatList() {
           {
             title: 'Delete',
             iconName: 'chat-delete',
-            onPress: async () => {
-              try {
-                await onHideChannel(item);
-              } catch (error: any) {
-                console.log(error);
-                CommonToast.fail(`Failed to delete chat`);
-              }
-            },
+            onPress: () => onHideChannel(item),
           },
         ],
         px: pageX,
@@ -99,7 +92,6 @@ export default function ChatList() {
 
   const onEndReached = useLockCallback(async () => {
     try {
-      console.log('hasNextChannelList', hasNextChannelList, channelList);
       if (hasNextChannelList) await nextChannelList();
     } catch (error) {
       console.log('error nextChannelList', error);

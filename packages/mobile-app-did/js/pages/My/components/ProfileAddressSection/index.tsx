@@ -1,6 +1,7 @@
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId, ChainType } from '@portkey-wallet/types';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -31,12 +32,14 @@ type ProfileAddressSectionPropsType = {
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
   const { title = 'DID', disable, noMarginTop, addressList, isMySelf } = props;
-  const { currentNetwork } = useWallet();
+  const isTestnet = useIsTestnet();
 
   const copyId = useCallback(
     (ele: addressItemType) => copyText(ele.chainName === 'aelf' ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
     [],
   );
+
+  console.log('list!!!!', addressList);
 
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
@@ -66,7 +69,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
               />
             )}
             <TextS style={[FontStyles.font3, GStyles.marginLeft(pTd(8))]}>
-              {formatChainInfoToShow(ele.chainId, currentNetwork, ele.chainName)}
+              {transNetworkTextWithAllChain(ele.chainId, isTestnet, ele.chainName)}
             </TextS>
           </View>
         </View>

@@ -142,6 +142,7 @@ const ContactProfile: React.FC = () => {
       hideTouchable={true}>
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
         <ProfileHeaderSection
+          noMarginTop={false}
           name={contactInfo?.name || contactInfo?.caHolderInfo?.walletName || contactInfo?.imInfo?.name || ''}
           remark={contactInfo?.name}
         />
@@ -157,7 +158,7 @@ const ContactProfile: React.FC = () => {
           }}
         />
         <ProfileIDSection
-          title={isShowPortkeyId ? 'PortkeyId' : 'Id'}
+          title={isShowPortkeyId ? 'PortkeyId' : 'ID'}
           id={isShowPortkeyId ? contactInfo?.caHolderInfo?.userId : contactInfo?.imInfo?.relationId}
         />
         <ProfileAddressSection addressList={contactInfo?.addresses || []} />
@@ -182,10 +183,10 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(24, 0, 18),
+    ...GStyles.paddingArg(0, 0, 18),
   },
   scrollWrap: {
-    paddingBottom: pTd(200),
+    paddingBottom: pTd(16),
     paddingHorizontal: pTd(20),
   },
   btnWrap: {

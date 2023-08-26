@@ -20,7 +20,7 @@ export interface ItemType {
 }
 
 const ContactItem: React.FC<ItemType> = props => {
-  const { isShowChat = false, isShowWarning = false, isShowContactIcon = false, contact, onPress, onPressChat } = props;
+  const { isShowChat = false, isShowWarning, isShowContactIcon = false, contact, onPress, onPressChat } = props;
 
   return (
     <TouchableOpacity onPress={() => onPress?.(contact)}>
@@ -44,7 +44,7 @@ const ContactItem: React.FC<ItemType> = props => {
         </View>
         {isShowChat && (
           <Touchable style={styles.chatButton} onPress={() => onPressChat?.(contact)}>
-            <TextS style={FontStyles.font2}>Chat</TextS>
+            <TextS style={[FontStyles.font2, styles.chatText]}>Chat</TextS>
           </Touchable>
         )}
       </View>
@@ -84,7 +84,10 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(6),
     overflow: 'hidden',
     paddingHorizontal: pTd(12),
-    paddingVertical: pTd(4),
+    height: pTd(24),
+  },
+  chatText: {
+    lineHeight: pTd(24),
   },
   avatarWrap: {
     position: 'relative',
@@ -96,7 +99,7 @@ export const styles = StyleSheet.create({
     top: 0,
     width: pTd(8),
     height: pTd(8),
-    borderRadius: pTd(4),
+    borderRadius: pTd(5),
     backgroundColor: defaultColors.bg17,
     borderWidth: pTd(1),
     borderColor: defaultColors.bg1,

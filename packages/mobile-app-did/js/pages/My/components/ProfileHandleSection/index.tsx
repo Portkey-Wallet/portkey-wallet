@@ -19,6 +19,7 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
   const { isAdded, onPressAdded, onPressChat } = props;
 
   const handleList = useMemo((): {
+    disabled?: boolean;
     label: string;
     color: string;
     colorStyle: { color: string };
@@ -27,16 +28,18 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
   }[] => {
     return [
       {
+        disabled: isAdded,
         label: isAdded ? 'Added' : 'Add Contact',
         color: isAdded ? defaultColors.font7 : defaultColors.font4,
         colorStyle: isAdded ? FontStyles.font7 : FontStyles.font4,
-        icon: isAdded ? 'chat-add-contact' : 'chat-added',
+        icon: isAdded ? 'chat-added' : 'chat-add-contact',
         onPress: () => {
           if (isAdded) return;
           onPressAdded();
         },
       },
       {
+        disabled: false,
         label: 'Chat',
         color: defaultColors.font4,
         colorStyle: FontStyles.font4,
@@ -49,7 +52,7 @@ const ProfileHandleSection: React.FC<ProfileHandleSectionPropsType> = props => {
   return (
     <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.wrap]}>
       {handleList.map((ele, index) => (
-        <Touchable key={index} style={[GStyles.center, styles.itemWrap]} onPress={ele.onPress}>
+        <Touchable disabled={ele.disabled} key={index} style={[GStyles.center, styles.itemWrap]} onPress={ele.onPress}>
           <Svg icon={ele.icon} size={pTd(24)} color={ele.color} />
           <TextM style={[GStyles.marginTop(4), ele.colorStyle]}>{ele.label}</TextM>
         </Touchable>

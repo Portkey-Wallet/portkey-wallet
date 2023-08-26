@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -27,6 +27,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
       allowsEditing: false,
       allowsMultipleSelection: false,
     });
+
     if (result.cancelled || !result.uri) return;
     if (result?.fileSize && result?.fileSize > 10 * 1024 * 1024) return CommonToast.fail('File too large');
 

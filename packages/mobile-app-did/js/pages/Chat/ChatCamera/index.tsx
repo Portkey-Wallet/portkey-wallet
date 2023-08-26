@@ -53,9 +53,9 @@ const ChatCamera: React.FC = () => {
           ratio={'16:9'}
           ref={cameraRef}
           style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
-          {!sending && (
-            <View style={PageStyle.iconWrap}>
-              <Text style={PageStyle.leftBlock} />
+          <View style={PageStyle.iconWrap}>
+            <Text style={PageStyle.leftBlock} />
+            {!sending && (
               <TouchableOpacity
                 style={PageStyle.svgWrap}
                 onPress={() => {
@@ -63,8 +63,8 @@ const ChatCamera: React.FC = () => {
                 }}>
                 <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
               </TouchableOpacity>
-            </View>
-          )}
+            )}
+          </View>
         </Camera>
         <View
           style={[

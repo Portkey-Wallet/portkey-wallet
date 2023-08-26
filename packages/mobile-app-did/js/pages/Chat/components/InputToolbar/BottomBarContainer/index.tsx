@@ -16,6 +16,7 @@ import { ChatInput, ChatInputBar } from '../ChatInput';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { chatInputRecorder } from 'pages/Chat/utils';
 import CommonToast from 'components/CommonToast';
+import { defaultColors } from 'assets/theme';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -96,6 +97,8 @@ export function BottomBarContainer({
 
 const styles = StyleSheet.create({
   wrap: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
     overflow: 'hidden',
   },
   barWrap: {

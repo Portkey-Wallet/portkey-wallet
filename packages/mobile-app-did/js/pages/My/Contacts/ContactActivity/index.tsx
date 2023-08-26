@@ -164,7 +164,7 @@ const ContactActivity: React.FC = () => {
               <TouchableOpacity
                 style={styles.handleIconItem}
                 onPress={() => copyAddress(addressFormat(address, chainId, 'aelf'))}>
-                <Svg icon="copy3" size={pTd(20)} />
+                <Svg color={defaultColors.font4} icon="copy3" size={pTd(20)} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.handleIconItem} onPress={() => navToExplore(address, chainId)}>
                 <Svg icon="share2" size={pTd(20)} />

@@ -14,7 +14,7 @@ const BoxWidth = 100;
 const horizontalSpacing = 120;
 const verticalSpacing = 300;
 
-export type ListItemType = { onPress?: () => void; title: string; iconName: IconName };
+export type ListItemType = { onPress?: () => void; title: string; iconName: IconName; iconColor?: string };
 
 export type ShowChatPopoverParams = {
   list: ListItemType[];
@@ -76,7 +76,7 @@ function ChatPopover({
                 OverlayModal.hide();
               }}
               style={formatType === 'fixedWidth' ? styles.itemStyles : styles.dynamicWidthItemStyles}>
-              <Svg size={pTd(20)} icon={item.iconName} color={defaultColors.icon1} />
+              <Svg size={pTd(20)} icon={item.iconName} color={item.iconColor || defaultColors.icon1} />
               <Text style={styles.textStyles}>{item.title}</Text>
             </Touchable>
           );

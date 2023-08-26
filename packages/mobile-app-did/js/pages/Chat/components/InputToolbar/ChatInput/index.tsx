@@ -20,14 +20,20 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { defaultColors } from 'assets/theme';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
+import { FontStyles } from 'assets/theme/styles';
 export interface ChatInput extends TextInput {
   focus: (autoHide?: boolean) => void;
 }
 
 export const EmojiIcon = memo(function EmojiIcon({ onPress }: { onPress?: () => void }) {
+  const bottomBarStatus = useBottomBarStatus();
   return (
     <Touchable onPressWithSecond={500} style={styles.emojiSvg} onPress={onPress}>
-      <Svg color="#222B45" size={pTd(24)} icon="chat-emoji" />
+      <Svg
+        color={FontStyles.font3.color}
+        size={pTd(24)}
+        icon={bottomBarStatus !== ChatBottomBarStatus.emoji ? 'chat-emoji' : 'chat-keyboard'}
+      />
     </Touchable>
   );
 });

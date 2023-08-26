@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { defaultColors } from '.';
 import fonts from './fonts';
+import { pTd } from 'utils/unit';
 
 export const BGStyles = StyleSheet.create({
   bg1: { backgroundColor: defaultColors.bg1 },
@@ -40,6 +41,9 @@ export const FontStyles = StyleSheet.create({
   font12: { color: defaultColors.font12 },
   font13: { color: defaultColors.font13 },
   weight500: fonts.mediumFont,
+  size16: { fontSize: pTd(16) },
+  size14: { fontSize: pTd(14) },
+  size18: { fontSize: pTd(18) },
 });
 
 export const BorderStyles = StyleSheet.create({

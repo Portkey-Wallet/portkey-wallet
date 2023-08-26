@@ -69,9 +69,6 @@ const ChatDetails = () => {
         onPress: () => {
           navigationService.navigate('ChatContactProfile', {
             relationId: toRelationId,
-            contact: {
-              name: currentChannelInfo?.displayName,
-            },
           });
         },
       },
@@ -162,7 +159,34 @@ const ChatDetails = () => {
     },
     [handleList],
   );
+  const leftDom = useMemo(
+    () => (
+      <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
+        <Touchable style={GStyles.marginRight(pTd(20))} onPress={() => navigationService.navigate('Tab')}>
+          <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
+        </Touchable>
+        <Touchable
+          style={[GStyles.flexRow, GStyles.itemCenter]}
+          onPress={() => {
+            navigationService.navigate('ChatContactProfile', {
+              relationId: toRelationId,
+              contact: {
+                name: currentChannelInfo?.displayName,
+              },
+            });
+          }}>
+          <CommonAvatar title={displayName} avatarSize={pTd(32)} style={FontStyles.size16} />
+          <TextL
+            style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8)), FontStyles.weight500]}>
+            {displayName}
+          </TextL>
+        </Touchable>
 
+        {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
+      </View>
+    ),
+    [currentChannelInfo?.displayName, displayName, mute, toRelationId],
+  );
   return (
     <PageContainer
       noCenterDom
@@ -173,28 +197,7 @@ const ChatDetails = () => {
       leftCallback={() => {
         navigationService.navigate('Tab');
       }}
-      leftDom={
-        <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-          <Touchable style={GStyles.marginRight(pTd(20))} onPress={() => navigationService.navigate('Tab')}>
-            <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
-          </Touchable>
-          <Touchable
-            onPress={() => {
-              navigationService.navigate('ChatContactProfile', {
-                relationId: toRelationId,
-                contact: {
-                  name: currentChannelInfo?.displayName,
-                },
-              });
-            }}>
-            <CommonAvatar title={displayName} avatarSize={pTd(32)} style={styles.headerAvatar} />
-          </Touchable>
-          <TextL style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
-            {displayName}
-          </TextL>
-          {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
-        </View>
-      }
+      leftDom={leftDom}
       rightDom={
         <Touchable style={GStyles.marginRight(pTd(16))} onPress={onPressMore}>
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
@@ -214,8 +217,5 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg4,
     flex: 1,
     ...GStyles.paddingArg(0),
-  },
-  headerAvatar: {
-    fontSize: pTd(14),
   },
 });

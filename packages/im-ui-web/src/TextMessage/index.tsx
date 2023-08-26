@@ -11,17 +11,12 @@ import CustomSvg from '../components/CustomSvg';
 import './index.less';
 
 const TextMessage: React.FC<ITextMessageProps> = (props) => {
-  const showDate = useMemo(() => (props.dateString ? props.dateString : formatTime(props.date as any)), []);
+  const showDate = useMemo(
+    () => (props.dateString ? props.dateString : formatTime(props.date as any)),
+    [props.date, props.dateString],
+  );
   const [, setCopied] = useCopyToClipboard();
   const [popVisible, setPopVisible] = useState(false);
-  const handleDelMsg = useCallback(async () => {
-    try {
-      await props?.onDelete?.(`${props.id}`);
-    } catch (e) {
-      message.error('delete message error');
-      console.log('===delete message error', e);
-    }
-  }, [props]);
   const hidePop = () => {
     setPopVisible(false);
   };
@@ -39,7 +34,7 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
       key: 'delete',
       leftIcon: <CustomSvg type="Delete" />,
       children: 'Delete',
-      onClick: handleDelMsg,
+      onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
     },
   ];
   const handleUrlPress: ParseShape['onClick'] = useCallback((url: string) => {

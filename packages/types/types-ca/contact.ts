@@ -32,6 +32,8 @@ export interface EditContactItemApiType {
   id?: string;
   relationId?: string;
   addresses?: AddressItem[];
+  from?: string;
+  channelUuid?: string;
 }
 
 export interface AddContactItemApiType {

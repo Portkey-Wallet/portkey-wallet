@@ -268,13 +268,16 @@ export const useLocalContactSearch = () => {
           contactIndexFilterList.push({
             index,
             contacts: contacts.filter(contact => {
-              if (contact?.name || contact?.caHolderInfo?.walletName) {
+              if (contact?.caHolderInfo?.walletName) {
                 return (
                   contact?.name?.trim().toLowerCase().includes(_v) ||
                   contact?.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v)
                 );
               } else {
-                return contact?.imInfo?.name?.trim().toLowerCase().includes(_v);
+                return (
+                  contact?.name?.trim().toLowerCase().includes(_v) ||
+                  contact?.imInfo?.name?.trim().toLowerCase().includes(_v)
+                );
               }
             }),
           });
@@ -284,7 +287,7 @@ export const useLocalContactSearch = () => {
         notEmptyFilterList.forEach(({ index, contacts }) => {
           contactIndexFilterList.push({
             index,
-            contacts: contacts.filter(contact => contact?.caHolderInfo?.userId?.trim() === value.trim()),
+            contacts: contacts.filter(contact => contact?.imInfo?.portkeyId?.trim() === value.trim()),
           });
         });
         // Address search

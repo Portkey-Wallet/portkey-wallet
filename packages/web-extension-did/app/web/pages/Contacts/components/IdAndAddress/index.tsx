@@ -3,6 +3,7 @@ import ContactAddressList from 'pages/Contacts/components/ContactAddressList';
 import CustomSvg from 'components/CustomSvg';
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
 import clsx from 'clsx';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface IIdAndAddressProps {
   portkeyId?: string;
@@ -19,10 +20,12 @@ export default function IdAndAddress({
   handleCopy,
   addressSectionLabel = 'DID',
 }: IIdAndAddressProps) {
+  const showChat = useIsChatShow();
+
   return (
     <div className="id-and-address">
       {/* Section - ID */}
-      {portkeyId && (
+      {showChat && portkeyId && (
         <div className="info-section section-border-bottom">
           <div className="info-title">Portkey ID</div>
           <div className="flex-row-between info-content">
@@ -32,7 +35,7 @@ export default function IdAndAddress({
         </div>
       )}
 
-      {!portkeyId && relationId && (
+      {showChat && !portkeyId && relationId && (
         <div className="info-section section-border-bottom">
           <div className="info-title">{`ID`}</div>
           <div className="flex-row-between info-content">

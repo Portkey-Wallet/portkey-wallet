@@ -30,6 +30,8 @@ import ChatMessageContainer from '../Message';
 import { formatMessageList } from 'pages/Chat/utils/format';
 import SystemTime from '../SystemTime';
 import { defaultColors } from 'assets/theme';
+import Svg from 'components/Svg';
+import { pTd } from 'utils/unit';
 
 const Empty = () => null;
 
@@ -102,6 +104,10 @@ const ChatsUI = () => {
     };
   }, [onDismiss]);
 
+  const renderScrollToBottomComponent = useCallback(() => {
+    return <Svg icon="chat-scroll-to-bottom" size={pTd(24)} />;
+  }, []);
+
   const renderMessage = useCallback(
     (props: MessageProps<ChatMessage>) => {
       return <ChatMessageContainer onDismiss={onDismiss} {...props} />;
@@ -154,6 +160,7 @@ const ChatsUI = () => {
             listViewProps={listViewProps}
             showAvatarForEveryMessage={true}
             isKeyboardInternallyHandled={false}
+            scrollToBottomComponent={renderScrollToBottomComponent}
             messagesContainerStyle={styles.messagesContainerStyle}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
@@ -171,5 +178,6 @@ export default function Chats() {
 const styles = StyleSheet.create({
   messagesContainerStyle: {
     backgroundColor: defaultColors.bg1,
+    flex: 1,
   },
 });

@@ -51,7 +51,7 @@ export default function DiscoverHome() {
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
-      <CustomHeader noLeftDom themeType="blue" titleDom="Web3 Chat" rightDom={RightDom} />
+      <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
       <ChatList />
     </SafeAreaBox>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Keyboard, Image } from 'react-native';
 import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
 import { StyleSheet } from 'react-native';
@@ -7,36 +7,47 @@ import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import OverlayModal from 'components/OverlayModal';
 import CommonToast from 'components/CommonToast';
+import { formatImageSize } from '@portkey-wallet/utils/img';
 
 type ShowSendPicProps = {
   uri: string;
   buttons?: ButtonRowProps['buttons'];
   autoClose?: boolean;
+  width: number;
+  height: number;
 };
 
-function SendPicBody({ uri, buttons }: ShowSendPicProps) {
+const maxWidth = pTd(280);
+
+function SendPicBody({ uri, buttons, width, height }: ShowSendPicProps) {
   const [loading, setLoading] = useState(false);
 
+  const pageButtons = useMemo(
+    () =>
+      buttons?.map(i => ({
+        ...i,
+        loading: loading,
+        onPress: async () => {
+          try {
+            setLoading(true);
+            await i.onPress?.();
+            OverlayModal.hide();
+          } catch (error) {
+            CommonToast.fail('Send Fail');
+          } finally {
+            setLoading(false);
+          }
+        },
+      })),
+    [buttons, loading],
+  );
+  const imgSize = useMemo(() => formatImageSize({ width, height, maxWidth, maxHeight: maxWidth }), [height, width]);
   return (
     <View style={styles.alertBox}>
-      <Image resizeMode="contain" source={{ uri }} style={styles.imagePreview} />
-      <ButtonRow
-        buttons={buttons?.map(i => ({
-          ...i,
-          loading: loading,
-          onPress: async () => {
-            try {
-              setLoading(true);
-              await i.onPress?.();
-              OverlayModal.hide();
-            } catch (error) {
-              CommonToast.fail('Send Fail');
-            } finally {
-              setLoading(false);
-            }
-          },
-        }))}
-      />
+      <View style={styles.imgBox}>
+        <Image resizeMode="cover" source={{ uri }} style={imgSize} />
+      </View>
+      <ButtonRow buttons={pageButtons} />
     </View>
   );
 }
@@ -93,8 +104,9 @@ export const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: pTd(24),
   },
-  imagePreview: {
-    width: pTd(280),
-    height: pTd(280),
+  imgBox: {
+    minHeight: 150,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

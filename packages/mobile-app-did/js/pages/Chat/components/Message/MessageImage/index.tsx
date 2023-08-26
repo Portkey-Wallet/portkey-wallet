@@ -12,6 +12,7 @@ import { formatImageSize } from '@portkey-wallet/utils/img';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import isEqual from 'lodash/isEqual';
+import CommonToast from 'components/CommonToast';
 
 const maxWidth = screenWidth * 0.6;
 const maxHeight = screenWidth * 0.6;
@@ -57,7 +58,19 @@ function MessageImage(props: MessageProps<ChatMessage>) {
       const { pageX, pageY } = event.nativeEvent;
       if (position === 'right')
         ChatOverlay.showChatPopover({
-          list: [{ title: 'Delete', iconName: 'chat-delete', onPress: () => deleteMessage(currentMessage?.id) }],
+          list: [
+            {
+              title: 'Delete',
+              iconName: 'chat-delete',
+              onPress: async () => {
+                try {
+                  await deleteMessage(currentMessage?.id);
+                } catch (error) {
+                  CommonToast.fail('Failed to delete message');
+                }
+              },
+            },
+          ],
           px: pageX,
           py: pageY,
           formatType: 'dynamicWidth',

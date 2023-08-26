@@ -68,6 +68,7 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
           )
         ) : (
           <ContactListIndexBar
+            hasChatEntry={showChat}
             list={list}
             clickItem={(item) => handleGoProfile({ ...item, from: 'contact-list' })}
             clickChat={(e, item) => handleChat(e, item?.imInfo?.relationId || '')}
@@ -75,7 +76,7 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
         )}
       </>
     );
-  }, [contactCount, handleChat, handleGoProfile, initData, isSearch, list]);
+  }, [contactCount, handleChat, handleGoProfile, initData, isSearch, list, showChat]);
 
   const portkeyChatListUI = useMemo(() => {
     return (

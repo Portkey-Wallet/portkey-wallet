@@ -5,7 +5,7 @@ import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { View, StyleSheet } from 'react-native';
 import { useCurrentCaInfo, useSetWalletName, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import ProfilePortkeyIDSection from 'pages/My/components/ProfilePortkeyIDSection';
+import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 
@@ -94,7 +94,7 @@ const WalletName: React.FC = () => {
           {showChat ? (
             <>
               <ProfileHeaderSection name={walletName} />
-              <ProfilePortkeyIDSection portkeyID={userId || ''} />
+              <ProfilePortkeyIDSection id={userId || ''} />
               <ProfileAddressSection isMySelf addressList={caInfoList} />
             </>
           ) : (

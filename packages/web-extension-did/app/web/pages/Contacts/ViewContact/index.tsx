@@ -20,6 +20,7 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
 import { ExtraTypeEnum } from 'types/Profile';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -27,6 +28,7 @@ export default function ViewContact() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const showChat = useIsChatShow();
   const isMyContactFn = useIsMyContact();
 
   const relationId = useMemo(
@@ -145,7 +147,7 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit(relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
+      handleEdit={() => handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data?.imInfo?.relationId || '')}
       handleCopy={handleCopy}
@@ -159,7 +161,7 @@ export default function ViewContact() {
       addContactText={addContactText}
       data={data}
       goBack={goBack}
-      handleEdit={() => handleEdit(relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
+      handleEdit={() => handleEdit(showChat && relationId ? ExtraTypeEnum.CAN_CHAT : ExtraTypeEnum.CANT_CHAT, data)}
       handleAdd={handleAdd}
       handleChat={() => handleChat(data?.imInfo?.relationId || '')}
       handleCopy={handleCopy}

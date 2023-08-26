@@ -29,7 +29,7 @@ export default function WalletName() {
   const { t } = useTranslation();
   const editText = t('Edit');
   const [type, setType] = useState<MyProfilePageType>(MyProfilePageType.VIEW);
-  const title = useMemo(() => (showChat ? t('My DID') : walletName), [showChat, t, walletName]);
+  const title = useMemo(() => (showChat ? t('My DID') : 'Wallet Name'), [showChat, t]);
   const [headerTitle, setHeaderTitle] = useState(title);
 
   const state: IProfileDetailDataProps = useMemo(

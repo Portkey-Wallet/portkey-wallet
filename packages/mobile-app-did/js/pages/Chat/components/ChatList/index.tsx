@@ -99,11 +99,12 @@ export default function ChatList() {
 
   const onEndReached = useLockCallback(async () => {
     try {
+      console.log('hasNextChannelList', hasNextChannelList, channelList);
       if (hasNextChannelList) await nextChannelList();
     } catch (error) {
       console.log('error nextChannelList', error);
     }
-  }, []);
+  }, [channelList, hasNextChannelList, nextChannelList]);
 
   useEffectOnce(() => {
     initChannelList();

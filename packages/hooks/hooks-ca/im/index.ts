@@ -14,6 +14,7 @@ import { UpdateChannelAttributeTypeEnum } from '@portkey-wallet/store/store-ca/i
 import { useEditContact } from '../contact';
 import { EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
 import { useChannelList } from './channelList';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 
 export const useIMState = () => useAppCASelector(state => state.im);
 export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
@@ -150,6 +151,7 @@ export const useInitIM = () => {
       });
 
       const result = await im.init(account, caHash, relationToken);
+      dispatch(fetchContactListAsync());
 
       if (result?.relationId) {
         dispatch(

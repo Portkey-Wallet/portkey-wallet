@@ -69,9 +69,6 @@ const ChatDetails = () => {
         onPress: () => {
           navigationService.navigate('ChatContactProfile', {
             relationId: toRelationId,
-            contact: {
-              name: currentChannelInfo?.displayName,
-            },
           });
         },
       },

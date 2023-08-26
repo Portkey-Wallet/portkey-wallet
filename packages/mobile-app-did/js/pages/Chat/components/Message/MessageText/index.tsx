@@ -49,7 +49,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
         : [
             {
               title: 'Copy',
-              iconName: 'copy',
+              iconName: 'copy3',
               onPress: async () => {
                 await copyText(currentMessage?.content || '');
               },

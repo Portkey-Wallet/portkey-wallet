@@ -33,7 +33,7 @@ function SendPicBody({ uri, buttons, width, height }: ShowSendPicProps) {
             await i.onPress?.();
             OverlayModal.hide();
           } catch (error) {
-            CommonToast.fail('Send Fail');
+            CommonToast.fail('Failed to send message');
           } finally {
             setLoading(false);
           }

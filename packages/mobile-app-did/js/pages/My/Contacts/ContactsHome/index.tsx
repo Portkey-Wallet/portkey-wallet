@@ -34,7 +34,7 @@ const ContactsHome: React.FC = () => {
     () => [
       { name: 'All', tabItemDom: <ContactsList isSearchShow={false} style={pageStyles.contactListStyle} /> },
       {
-        name: 'Portkey Chat',
+        name: 'Chats',
         tabItemDom: (
           <>
             <FindMoreButton />

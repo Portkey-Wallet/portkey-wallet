@@ -10,7 +10,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileHandleSection from 'pages/My/components/ProfileHandleSection';
-import ProfilePortkeyIDSection from 'pages/My/components/ProfilePortkeyIDSection';
+import ProfileIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import useEffectOnce from 'hooks/useEffectOnce';
 import im from '@portkey-wallet/im';
@@ -22,6 +22,7 @@ import { useJumpToChatDetails } from 'hooks/chat';
 import { useAddStrangerContact, useContactInfo, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import ActionSheet from 'components/ActionSheet';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import Loading from 'components/Loading';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -95,16 +96,22 @@ const ContactProfile: React.FC = () => {
     }
   }, [checkImputationRef, contactInfo]);
 
+  const isShowPortkeyId = useMemo(() => !!contactInfo?.caHolderInfo?.userId, [contactInfo?.caHolderInfo?.userId]);
+
   const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
     if (relationId) {
       try {
+        Loading.show();
         const { data } = await im.service.getProfile({ relationId });
         setProfileInfo({ ...initEditContact, ...(data || {}) });
       } catch (error) {
         // TODO: getProfile error handle
         console.log(error);
+        CommonToast.failError(error);
+      } finally {
+        Loading.hide();
       }
     }
   }, [relationId]);
@@ -136,6 +143,7 @@ const ContactProfile: React.FC = () => {
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
         <ProfileHeaderSection
           name={contactInfo?.name || contactInfo?.caHolderInfo?.walletName || contactInfo?.imInfo?.name || ''}
+          remark={contactInfo?.name}
         />
         <ProfileHandleSection
           isAdded={!isStranger}
@@ -148,7 +156,10 @@ const ContactProfile: React.FC = () => {
             }
           }}
         />
-        <ProfilePortkeyIDSection portkeyID={contactInfo?.caHolderInfo?.userId || ''} />
+        <ProfileIDSection
+          title={isShowPortkeyId ? 'PortkeyId' : 'Id'}
+          id={isShowPortkeyId ? contactInfo?.caHolderInfo?.userId : contactInfo?.imInfo?.relationId}
+        />
         <ProfileAddressSection addressList={contactInfo?.addresses || []} />
       </ScrollView>
       {!isStranger && (

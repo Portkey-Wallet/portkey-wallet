@@ -16,6 +16,7 @@ import { ViewStyleType } from 'types/styles';
 import { useSendCurrentChannelMessage } from '../../hooks';
 import OverlayModal from 'components/OverlayModal';
 import { sleep } from '@portkey-wallet/utils';
+import CommonToast from 'components/CommonToast';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
@@ -27,6 +28,10 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
       allowsMultipleSelection: false,
     });
     if (result.cancelled || !result.uri) return;
+    if (result?.fileSize && result?.fileSize > 10 * 1024 * 1024) return CommonToast.fail('File too large');
+
+    console.log('result', result);
+
     SendPicModal.showSendPic({
       uri: result.uri,
       autoClose: false,

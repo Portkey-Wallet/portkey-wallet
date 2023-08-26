@@ -3,7 +3,6 @@ import React, { ReactNode, memo, useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
-import Touchable from 'components/Touchable';
 import { Animated } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -17,6 +16,7 @@ import { ChatInput, ChatInputBar } from '../ChatInput';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { chatInputRecorder } from 'pages/Chat/utils';
 import CommonToast from 'components/CommonToast';
+import { defaultColors } from 'assets/theme';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -85,11 +85,11 @@ export function BottomBarContainer({
   }, [dispatch, scrollToBottom, sendChannelMessage, text]);
   return (
     <View style={styles.wrap}>
-      <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
+      <View style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
         <ChatInputBar ref={textInputRef} onPressActionButton={onPressActionButton} />
         <SendMessageButton text={text} containerStyle={styles.sendStyle} onSend={onSend} />
-      </Touchable>
+      </View>
       <Animated.View style={{ height: keyboardAnim }}>{children}</Animated.View>
     </View>
   );
@@ -97,6 +97,8 @@ export function BottomBarContainer({
 
 const styles = StyleSheet.create({
   wrap: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
     overflow: 'hidden',
   },
   barWrap: {

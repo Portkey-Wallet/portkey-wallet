@@ -47,7 +47,7 @@ export interface IMessage {
   className?: string;
   letterItem?: string;
   type: string;
-  onDelete?: (id: string) => any;
+  onDeleteMsg?: React.MouseEventHandler;
 }
 
 export interface IImageMessage extends IMessage {
@@ -74,26 +74,6 @@ export type ISystemMessage = IMessage;
 
 export type ISystemMessageProps = ISystemMessage;
 
-export interface IMessageBoxProps {
-  onClick?: React.MouseEventHandler;
-  onOpen?: React.MouseEventHandler;
-  onDelete?: (id: string) => any;
-  onPhotoError?: React.MouseEventHandler;
-  onContextMenu?: React.MouseEventHandler;
-  onForwardClick?: React.MouseEventHandler;
-  onReplyClick?: React.MouseEventHandler;
-  onRemoveMessageClick?: React.MouseEventHandler;
-  onTitleClick?: React.MouseEventHandler;
-  onReplyMessageClick?: React.MouseEventHandler;
-  onMeetingMessageClick?: React.MouseEventHandler;
-  onDownload?: React.MouseEventHandler;
-  onMeetingMoreSelect?: React.MouseEventHandler;
-  onMeetingLinkClick?: React.MouseEventHandler;
-  onMeetingTitleClick?: React.MouseEventHandler;
-  onMeetingVideoLinkClick?: React.MouseEventHandler;
-  styles?: React.CSSProperties;
-}
-
 export interface IMessageListProps {
   className?: string;
   customProps?: {
@@ -113,25 +93,13 @@ export interface IMessageListProps {
   next: () => any;
   onScroll?: React.UIEventHandler;
   onContextMenu?: MessageListEvent;
-  onDelete?: (item: MessageType) => any;
+  onDeleteMsg?: MessageListEvent;
   onDownButtonClick?: React.RefObject<HTMLButtonElement>;
   onOpen?: MessageListEvent;
   onDownload?: MessageListEvent;
   onPhotoError?: MessageListEvent;
-  onMeetingMoreSelect?: MessageListEvent;
-  onMessageFocused?: MessageListEvent;
   onClick?: MessageListEvent;
-  onForwardClick?: MessageListEvent;
-  onReplyClick?: MessageListEvent;
-  onReplyMessageClick?: MessageListEvent;
   onTitleClick?: MessageListEvent;
-  onRemoveMessageClick?: MessageListEvent;
-  onMeetingMessageClick?: MessageListEvent;
-  onMeetingTitleClick?: React.MouseEventHandler;
-  onMeetingVideoLinkClick?: React.MouseEventHandler;
-  onMeetingLinkClick?: MessageListEvent;
-  messageBoxStyles?: React.CSSProperties;
-  notchStyle?: React.CSSProperties;
 }
 
 export type MessageListEvent = (item: MessageType, index: number, event: React.MouseEvent<HTMLElement>) => any;
@@ -192,15 +160,14 @@ export type MessageType =
   | ({ type: 'text' } & ITextMessageProps)
   | ({ type: 'system' } & ISystemMessageProps);
 
-export type MessageBoxType = MessageType & IMessageBoxProps;
+export type MessageListType = MessageType & IMessageListProps;
 
 export class ChatItem extends React.Component<IChatItemProps> {}
 export class ChatList extends React.Component<IChatListProps> {}
-export class MessageBox extends React.Component<MessageBoxType> {}
 export class ImageMessage extends React.Component<IImageMessageProps> {}
 export class TextMessage extends React.Component<ITextMessageProps> {}
 export class SystemMessage extends React.Component<ISystemMessageProps> {}
-export class MessageList extends React.Component<IMessageListProps> {}
+export class MessageList extends React.Component<MessageListType> {}
 export class Avatar extends React.Component<IAvatarProps> {}
 export class Input extends React.Component<IInputProps> {}
 export class UnreadTip extends React.Component<IUnreadTipProps> {}

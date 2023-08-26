@@ -19,7 +19,7 @@ type addressItemType = {
   chainId: ChainId;
   image?: string;
   chainType?: ChainType;
-  chainName?: string;
+  chainName?: ChainType;
 };
 
 type ProfileAddressSectionPropsType = {
@@ -45,7 +45,9 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
       {addressList?.map((ele, index) => (
         <View key={index} style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap]}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
-            <TextM style={styles.address}>{formatStr2EllipsisStr(addressFormat(ele.address, ele.chainId), 20)}</TextM>
+            <TextM style={styles.address}>
+              {formatStr2EllipsisStr(addressFormat(ele.address, ele.chainId, ele?.chainName || 'aelf'), 20)}
+            </TextM>
             <Touchable onPress={() => copyId(ele)}>
               <Svg icon="copy" size={pTd(16)} />
             </Touchable>
@@ -63,7 +65,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
               />
             )}
             <TextS style={[FontStyles.font3, GStyles.marginLeft(pTd(8))]}>
-              {formatChainInfoToShow(ele.chainId, currentNetwork)}
+              {formatChainInfoToShow(ele.chainId, currentNetwork, ele.chainName)}
             </TextS>
           </View>
         </View>

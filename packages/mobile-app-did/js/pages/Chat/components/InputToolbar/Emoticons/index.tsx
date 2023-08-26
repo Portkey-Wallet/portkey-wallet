@@ -32,9 +32,11 @@ function Emoticons({ onPress, onDelete }: { onPress?: (item: EmojiItem) => void;
         initialNumToRender={emojiList.length}
         onEndReachedThreshold={0.2}
       />
-      <TouchableOpacity style={[GStyles.center, styles.delete]} onPress={onDelete}>
-        <Svg icon="chat-delete-emoji" />
-      </TouchableOpacity>
+      <View style={styles.deleteBox}>
+        <TouchableOpacity style={[GStyles.flex1, GStyles.center]} onPress={onDelete}>
+          <Svg icon="chat-delete-emoji" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -48,7 +50,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: pTd(40),
   },
-  delete: {
+  deleteBox: {
     width: pTd(56),
     height: pTd(40),
     backgroundColor: defaultColors.bg1,

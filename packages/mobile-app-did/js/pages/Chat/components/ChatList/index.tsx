@@ -13,6 +13,9 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import Touchable from 'components/Touchable';
+import myEvents from 'utils/deviceEvent';
+import GStyles from 'assets/theme/GStyles';
 
 export default function ChatList() {
   const {
@@ -53,30 +56,40 @@ export default function ChatList() {
         list: [
           {
             title: item.pin ? 'Unpin' : 'Pin',
-            iconName: 'chat-pin',
+            iconName: item.pin ? 'chat-unpin' : 'chat-pin',
             onPress: async () => {
               try {
                 await pinChannel(item.channelUuid, !item.pin);
-              } catch (error) {
-                CommonToast.fail(handleErrorMessage(error));
+              } catch (error: any) {
+                console.log(error);
+                if (error.code === '13310') return CommonToast.fail('Pin limit exceeded');
+                CommonToast.fail(`Failed to ${item.pin ? 'unpin' : 'pin'} chat`);
               }
             },
           },
           {
             title: item.mute ? 'Unmute' : 'Mute',
-            iconName: 'chat-mute',
+            iconName: item.mute ? 'chat-unmute' : 'chat-mute',
             onPress: async () => {
               try {
                 await muteChannel(item.channelUuid, !item.mute, true);
               } catch (error) {
-                CommonToast.fail(handleErrorMessage(error));
+                console.log(error);
+                CommonToast.fail(`Failed to ${item.mute ? 'unmute' : 'mute'} chat`);
               }
             },
           },
           {
             title: 'Delete',
             iconName: 'chat-delete',
-            onPress: () => onHideChannel(item),
+            onPress: async () => {
+              try {
+                await onHideChannel(item);
+              } catch (error: any) {
+                console.log(error);
+                CommonToast.fail(`Failed to delete chat`);
+              }
+            },
           },
         ],
         px: pageX,
@@ -88,7 +101,11 @@ export default function ChatList() {
   );
 
   const onEndReached = useLockCallback(async () => {
-    if (hasNextChannelList) await nextChannelList();
+    try {
+      if (hasNextChannelList) await nextChannelList();
+    } catch (error) {
+      console.log('error nextChannelList', error);
+    }
   }, []);
 
   useEffectOnce(() => {
@@ -96,19 +113,21 @@ export default function ChatList() {
   });
 
   return (
-    <FlatList
-      style={BGStyles.bg1}
-      data={channelList}
-      ListEmptyComponent={<NoData icon="no-message" message="No message" />}
-      onEndReached={onEndReached}
-      renderItem={({ item }) => (
-        <ChatHomeListItemSwiped
-          item={item}
-          onDelete={() => onHideChannel(item)}
-          onPress={() => navToChatDetails({ toRelationId: item?.toRelationId, channelUuid: item?.channelUuid })}
-          onLongPress={event => longPress(event, item)}
-        />
-      )}
-    />
+    <Touchable style={[GStyles.flex1, BGStyles.bg1]} activeOpacity={1} onPress={myEvents.chatHomeListCloseSwiped.emit}>
+      <FlatList
+        style={BGStyles.bg1}
+        data={channelList}
+        ListEmptyComponent={<NoData icon="no-message" message="No message" />}
+        onEndReached={onEndReached}
+        renderItem={({ item }) => (
+          <ChatHomeListItemSwiped
+            item={item}
+            onDelete={() => onHideChannel(item)}
+            onPress={() => navToChatDetails({ toRelationId: item?.toRelationId, channelUuid: item?.channelUuid })}
+            onLongPress={event => longPress(event, item)}
+          />
+        )}
+      />
+    </Touchable>
   );
 }

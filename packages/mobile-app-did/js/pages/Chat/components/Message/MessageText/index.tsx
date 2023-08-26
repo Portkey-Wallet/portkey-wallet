@@ -18,6 +18,7 @@ import { copyText } from 'utils';
 import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { GestureResponderEvent } from 'react-native';
+import CommonToast from 'components/CommonToast';
 
 const UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
@@ -49,7 +50,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
         : [
             {
               title: 'Copy',
-              iconName: 'copy',
+              iconName: 'copy3',
               onPress: async () => {
                 await copyText(currentMessage?.content || '');
               },
@@ -59,7 +60,13 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
         list.push({
           title: 'Delete',
           iconName: 'chat-delete',
-          onPress: () => deleteMessage(currentMessage?.id),
+          onPress: async () => {
+            try {
+              await deleteMessage(currentMessage?.id);
+            } catch (error) {
+              CommonToast.fail('Failed to delete message');
+            }
+          },
         });
       ChatOverlay.showChatPopover({
         list,

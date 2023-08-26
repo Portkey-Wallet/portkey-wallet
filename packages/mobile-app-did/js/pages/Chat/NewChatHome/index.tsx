@@ -38,7 +38,7 @@ const NewChatHome = () => {
           isShowChat
           contact={item}
           onPress={() => {
-            navigationService.navigate('ChatContactProfile', { contactInfo: item });
+            navigationService.navigate('ChatContactProfile', { contactId: item.id });
           }}
           onPressChat={() => {
             jumpToDetail({ toRelationId: item.imInfo?.relationId || '' });
@@ -68,7 +68,7 @@ const NewChatHome = () => {
       <FlatList
         data={filterList}
         ListEmptyComponent={
-          <NoData noPic message={debounceKeyword && filterList.length == 0 ? 'No contact found' : 'No contact'} />
+          <NoData noPic message={debounceKeyword && filterList.length === 0 ? 'No contact found' : 'No contact'} />
         }
         renderItem={renderItem}
       />

@@ -14,13 +14,12 @@ import { BGStyles } from 'assets/theme/styles';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { useSendCurrentChannelMessage } from '../components/hooks';
 import CommonToast from 'components/CommonToast';
-import Loading from 'components/Loading';
 
 const ChatCamera: React.FC = () => {
   const cameraRef = useRef<Camera>(null);
   const [sending, setSending] = useState(false);
   const [img, setImgUrl] = useState<CameraCapturedPicture>();
-  const [status, requestCameraPermission] = Camera.useCameraPermissions();
+  const [, requestCameraPermission] = Camera.useCameraPermissions();
   const { sendChannelImage } = useSendCurrentChannelMessage();
   const takePicture = useCallback(async () => {
     if (!cameraRef?.current) return;
@@ -30,6 +29,7 @@ const ChatCamera: React.FC = () => {
       cameraRef.current.pausePreview();
     } catch (error) {
       console.log('------', error);
+      CommonToast.fail('Failed to send message');
     }
   }, []);
 
@@ -53,16 +53,18 @@ const ChatCamera: React.FC = () => {
           ratio={'16:9'}
           ref={cameraRef}
           style={[PageStyle.barCodeScanner, !isIOS && PageStyle.barCodeScannerAndroid]}>
-          <View style={PageStyle.iconWrap}>
-            <Text style={PageStyle.leftBlock} />
-            <TouchableOpacity
-              style={PageStyle.svgWrap}
-              onPress={() => {
-                navigationService.goBack();
-              }}>
-              <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
-            </TouchableOpacity>
-          </View>
+          {!sending && (
+            <View style={PageStyle.iconWrap}>
+              <Text style={PageStyle.leftBlock} />
+              <TouchableOpacity
+                style={PageStyle.svgWrap}
+                onPress={() => {
+                  navigationService.goBack();
+                }}>
+                <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
+              </TouchableOpacity>
+            </View>
+          )}
         </Camera>
         <View
           style={[
@@ -72,11 +74,14 @@ const ChatCamera: React.FC = () => {
             BGStyles.bg19,
             PageStyle.buttonWrap,
           ]}>
-          {img?.uri && (
-            <Touchable style={PageStyle.reshutterWrap} onPress={resetCamera}>
-              <Svg size={pTd(40)} icon="chat-reshutter" />
-            </Touchable>
-          )}
+          {img?.uri &&
+            (sending ? (
+              <View />
+            ) : (
+              <Touchable style={PageStyle.reshutterWrap} onPress={resetCamera}>
+                <Svg size={pTd(40)} icon="chat-reshutter" />
+              </Touchable>
+            ))}
           {!img?.uri && (
             <Touchable onPress={takePicture} style={[GStyles.center, PageStyle.shutter]}>
               <Svg size={pTd(68)} icon="chat-shutter" />
@@ -90,7 +95,6 @@ const ChatCamera: React.FC = () => {
               buttonStyle={PageStyle.sendButton}
               onPress={async () => {
                 try {
-                  Loading.show();
                   setSending(true);
                   await sendChannelImage(img);
                   navigationService.goBack();
@@ -98,7 +102,6 @@ const ChatCamera: React.FC = () => {
                   CommonToast.failError(error);
                 } finally {
                   setSending(false);
-                  Loading.hide();
                 }
               }}
             />

@@ -12,7 +12,7 @@ import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
-import ProfilePortkeyIDSection from 'pages/My/components/ProfilePortkeyIDSection';
+import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import ProfileRemarkSection from 'pages/My/components/ProfileRemarkSection';
 import FormItem from 'components/FormItem';
@@ -100,7 +100,7 @@ const ChatContactProfileEdit: React.FC = () => {
           </TextM>
         </FormItem>
         <ProfileRemarkSection errorMessage={error} value={remark} onChangeText={v => setRemark(v)} />
-        <ProfilePortkeyIDSection disable portkeyID={contact?.caHolderInfo?.userId || ''} />
+        <ProfilePortkeyIDSection disable id={contact?.caHolderInfo?.userId || ''} />
         <ProfileAddressSection disable addressList={contact?.addresses} />
       </ScrollView>
 

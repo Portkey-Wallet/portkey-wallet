@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { BubbleProps, IMessage } from 'react-native-gifted-chat';
+import { BubbleProps } from 'react-native-gifted-chat';
 import { Bubble } from 'react-native-gifted-chat';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';

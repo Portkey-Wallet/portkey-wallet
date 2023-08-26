@@ -32,13 +32,13 @@ export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
           break;
         default: {
           msg.messageType = 'NOT_SUPPORTED';
-          msg.text = '[Not supported message]';
+          msg.text = '[Unsupported format]';
           break;
         }
       }
       if (typeof ele.content !== 'string') {
         msg.messageType = 'NOT_SUPPORTED';
-        msg.text = '[Not supported message]';
+        msg.text = '[Unsupported format]';
       }
       return msg;
     })

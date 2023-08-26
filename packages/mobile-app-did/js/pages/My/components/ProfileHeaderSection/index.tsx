@@ -20,7 +20,9 @@ const ProfileHeader: React.FC<ProfileHeaderPropsType> = props => {
     <View style={[GStyles.center, styles.wrap]}>
       <CommonAvatar hasBorder avatarSize={pTd(80)} title={name} imageUrl={avatarUrl} style={styles.avatarStyle} />
       <TextXXXL style={[FontStyles.font5, GStyles.marginTop(pTd(8))]}>{name}</TextXXXL>
-      {showRemark && <TextM style={[FontStyles.font7, GStyles.marginTop(pTd(4))]}>{remark}</TextM>}
+      {showRemark && (
+        <TextM style={[FontStyles.font7, GStyles.marginTop(pTd(4))]}>{`Remark: ${remark || 'Not set'}`}</TextM>
+      )}
     </View>
   );
 };

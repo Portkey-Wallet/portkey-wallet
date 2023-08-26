@@ -18,7 +18,7 @@ const ContactUpdateWarning: React.FC = () => {
     <View style={[GStyles.flexRow, GStyles.itemStart, styles.wrap]}>
       <Svg icon="warning" size={pTd(20)} color={defaultColors.bg17} />
       <TextM style={[GStyles.flex1, styles.tips]}>
-        Portkeys will automatic group contacts with matching Portkey IDs and seamlessly update in real-time.{' '}
+        {`Portkey automatically updates your contact list and group contacts with the same Portkey ID into one. You can click the red mark on the contact for details.`}
       </TextM>
       <Touchable onPress={() => setShow(false)}>
         <Svg icon="close2" size={pTd(16)} color={defaultColors.font7} />

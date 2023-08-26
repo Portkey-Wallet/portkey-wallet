@@ -63,7 +63,6 @@ export default function ChatList() {
               } catch (error: any) {
                 console.log(error);
                 if (error.code === '13310') return CommonToast.fail('Pin limit exceeded');
-
                 CommonToast.fail(`Failed to ${item.pin ? 'unpin' : 'pin'} chat`);
               }
             },
@@ -83,9 +82,9 @@ export default function ChatList() {
           {
             title: 'Delete',
             iconName: 'chat-delete',
-            onPress: () => {
+            onPress: async () => {
               try {
-                onHideChannel(item);
+                await onHideChannel(item);
               } catch (error: any) {
                 console.log(error);
                 CommonToast.fail(`Failed to delete chat`);
@@ -102,7 +101,11 @@ export default function ChatList() {
   );
 
   const onEndReached = useLockCallback(async () => {
-    if (hasNextChannelList) await nextChannelList();
+    try {
+      if (hasNextChannelList) await nextChannelList();
+    } catch (error) {
+      console.log('error nextChannelList', error);
+    }
   }, []);
 
   useEffectOnce(() => {

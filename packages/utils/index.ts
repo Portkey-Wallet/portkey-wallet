@@ -164,9 +164,9 @@ export const handleErrorCode = (error: any) => {
 export const formatChainInfoToShow = (
   chainId: ChainId = 'AELF',
   networkType?: NetworkType,
-  chainType?: ChainType,
+  chainType: ChainType = 'aelf',
 ): string => {
-  if (chainType === 'ethereum') return 'ethereum';
+  if (chainType !== 'aelf') return chainType;
   if (typeof networkType === 'string')
     return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAIN' ? '' : 'Testnet'}`;
 

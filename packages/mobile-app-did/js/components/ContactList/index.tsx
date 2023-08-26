@@ -116,7 +116,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
         // Name Search
         filterList = contactIndexList.map(({ index, contacts }) => ({
           index,
-          contacts: contacts.filter(contact => contact.name.toLocaleUpperCase() === _value.toLocaleUpperCase()),
+          contacts: contacts.filter(contact => contact.name.toLocaleUpperCase().includes(_value.toLocaleUpperCase())),
         }));
       } else {
         // Address Search

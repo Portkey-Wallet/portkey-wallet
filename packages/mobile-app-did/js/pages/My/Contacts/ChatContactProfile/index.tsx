@@ -22,6 +22,7 @@ import { useJumpToChatDetails } from 'hooks/chat';
 import { useAddStrangerContact, useContactInfo, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import ActionSheet from 'components/ActionSheet';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import Loading from 'components/Loading';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -102,11 +103,15 @@ const ContactProfile: React.FC = () => {
   const getProfile = useCallback(async () => {
     if (relationId) {
       try {
+        Loading.show();
         const { data } = await im.service.getProfile({ relationId });
         setProfileInfo({ ...initEditContact, ...(data || {}) });
       } catch (error) {
         // TODO: getProfile error handle
         console.log(error);
+        CommonToast.failError(error);
+      } finally {
+        Loading.hide();
       }
     }
   }, [relationId]);

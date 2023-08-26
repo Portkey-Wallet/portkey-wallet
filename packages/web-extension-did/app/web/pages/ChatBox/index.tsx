@@ -31,7 +31,6 @@ export default function ChatBox() {
   const [showBookmark, setShowBookmark] = useState(false);
   const sendImgModalRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
-  const uploadRef = useRef<any>(null);
   const addContactApi = useAddStrangerContact();
   const [popVisible, setPopVisible] = useState(false);
   const [showStrangerTip, setShowStrangerTip] = useState(true);
@@ -178,9 +177,9 @@ export default function ChatBox() {
   }, [addContactApi, info, setLoading]);
   const handleGoProfile = useCallback(() => {
     navigate('/setting/contacts/view', {
-      state: { relationId: info?.toRelationId, from: 'chat-box', isStranger },
+      state: { relationId: info?.toRelationId, from: 'chat-box', isStranger, channelUuid },
     });
-  }, [info?.toRelationId, isStranger, navigate]);
+  }, [info?.toRelationId, isStranger, navigate, channelUuid]);
   const chatPopList = useMemo(
     () => [
       {
@@ -220,7 +219,6 @@ export default function ChatBox() {
     className: 'chat-input-upload',
     showUploadList: false,
     accept: 'image/*',
-    ref: uploadRef,
     beforeUpload: async (paramFile: RcFile) => {
       const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
       if (!sizeOk) {
@@ -244,16 +242,13 @@ export default function ChatBox() {
   const inputMorePopList = [
     {
       key: 'album',
-      leftIcon: <CustomSvg type="Album" />,
+      // leftIcon: <CustomSvg type="Album" />,
       children: (
         <Upload {...uploadProps}>
+          <CustomSvg type="Album" />
           <span className="upload-text">Picture</span>
         </Upload>
       ),
-      onClick: () => {
-        const { upload } = uploadRef.current || {};
-        upload.uploader.onClick();
-      },
     },
     {
       key: 'bookmark',

@@ -45,10 +45,10 @@ const ImageSendModal = forwardRef(({ open, file, onConfirm, onCancel }: PhotoSen
       open={open}
       footer={
         <div className="flex modal-footer">
-          <Button type="default" onClick={onCancel}>
+          <Button type="default" onClick={onCancel} disabled={loading}>
             {t('Cancel')}
           </Button>
-          <Button type="primary" onClick={handleConfirm} loading={loading}>
+          <Button type="primary" className="send-image-btn" onClick={handleConfirm} loading={loading}>
             {!loading && t('Send')}
           </Button>
         </div>

@@ -188,9 +188,10 @@ const styles = StyleSheet.create({
     borderWidth: pTd(1),
     borderRadius: pTd(9),
     overflow: 'hidden',
-    lineHeight: pTd(16),
+    lineHeight: pTd(15),
   },
   hide: {
+    display: 'none',
     width: 0,
     height: 0,
   },

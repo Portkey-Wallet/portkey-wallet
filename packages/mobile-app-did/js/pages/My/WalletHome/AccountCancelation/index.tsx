@@ -49,17 +49,24 @@ export default function AccountCancelation() {
 
   const onDeletion = useCallback(async () => {
     if (!caHash || !managerAddress) return;
+    let appleToken;
     Loading.show();
-    const userInfo = await appleSign();
-    if (userInfo?.user?.id !== managerInfo?.loginAccount) {
-      Loading.hide();
-      return CommonToast.fail('Account does not match');
+    try {
+      const userInfo = await appleSign();
+      if (userInfo?.user?.id !== managerInfo?.loginAccount) {
+        Loading.hide();
+        return CommonToast.fail('Account does not match');
+      }
+      appleToken = userInfo.identityToken;
+    } catch (error) {
+      // error
     }
+    if (!appleToken) return Loading.hide();
     const caContract = await getCurrentCAContract();
     const req = await removeManager(caContract, managerAddress, caHash);
     if (req && !req.error) {
       try {
-        await request.wallet.deletionAccount({ params: { appleToken: userInfo.identityToken } });
+        await request.wallet.deletionAccount({ params: { appleToken } });
       } catch (error) {
         console.log(error);
       } finally {

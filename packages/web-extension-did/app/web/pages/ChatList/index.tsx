@@ -94,7 +94,7 @@ export default function ChatList() {
         if (`${e?.code}` === '13310') {
           message.error('Pin limit exceeded');
         } else {
-          message.error('Failed to pin chat');
+          message.error(`Failed to ${chatItem?.pin ? 'unpin' : 'pin'} chat`);
         }
         console.log('===handle pin error', e);
       }
@@ -106,7 +106,7 @@ export default function ChatList() {
       try {
         await muteChannel(`${chatItem.id}`, !chatItem.muted);
       } catch (e) {
-        message.error('Failed to mute chat');
+        message.error(`Failed to ${chatItem.muted ? 'unmute' : 'mute'} chat`);
         console.log('===handle mute error', e);
       }
     },

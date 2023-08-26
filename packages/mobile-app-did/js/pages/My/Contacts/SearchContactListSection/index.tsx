@@ -21,10 +21,11 @@ const SearchContactListSection: React.FC<SearchContactListSectionType> = (props:
       return (
         <ContactItem
           isShowChat={!!item?.imInfo?.relationId}
-          isShowWarning={item?.isImputation}
           contact={item}
           onPress={() => {
-            navigationService.navigate('ChatContactProfile', { contactId: item.id, isCheckImputation: true });
+            navigationService.navigate(item.imInfo?.relationId ? 'ChatContactProfile' : 'NoChatContactProfile', {
+              contactId: item.id,
+            });
           }}
           onPressChat={() => {
             jumpToChatDetail({

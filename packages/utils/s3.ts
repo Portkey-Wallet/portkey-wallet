@@ -48,8 +48,14 @@ class AWSManager {
       },
     });
 
+    const timer = setTimeout(() => {
+      console.log('=====uploadFile abort');
+      upload.abort();
+    }, 12000);
+
     try {
       const res = await upload.promise();
+      clearTimeout(timer);
 
       return {
         url: res?.Location || '',
@@ -57,6 +63,7 @@ class AWSManager {
         hash: res?.ETag ? res.ETag.replace(/"/g, '') : '',
       };
     } catch (error) {
+      clearTimeout(timer);
       console.error('=====uploadFile error:', error);
       return Promise.reject(null);
     }

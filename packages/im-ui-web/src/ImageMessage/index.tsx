@@ -15,7 +15,10 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
   );
   const [loadErr, setLoadErr] = useState(false);
   const { thumbImgUrl, width, height, imgUrl } = props.imgData || {};
-  const imageSize = useMemo(() => formatImageSize({ width, height, maxWidth: 272, maxHeight: 272 }), [width, height]);
+  const imageSize = useMemo(
+    () => formatImageSize({ width, height, maxWidth: 272, maxHeight: 272, minHeight: 92, minWidth: 92 }),
+    [width, height],
+  );
   const [popVisible, setPopVisible] = useState(false);
 
   const popoverList = [
@@ -37,8 +40,7 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
     () => (
       <>
         <Image
-          width={imageSize.width}
-          height={imageSize.height}
+          style={imageSize}
           src={thumbImgUrl || imgUrl}
           preview={{
             src: imgUrl || thumbImgUrl,
@@ -48,7 +50,7 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
         <div className="image-date">{showDate}</div>
       </>
     ),
-    [imageSize.height, imageSize.width, imgUrl, showDate, thumbImgUrl],
+    [imageSize, imgUrl, showDate, thumbImgUrl],
   );
   return (
     <div className={clsx(['portkey-message-image', 'flex', props.position])}>

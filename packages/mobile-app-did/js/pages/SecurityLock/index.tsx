@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, AppStateStatus, StyleSheet } from 'react-native';
+import { AppState, AppStateStatus } from 'react-native';
 import { useAppDispatch } from 'store/hooks';
 import { setCredentials } from 'store/user/actions';
 import { useUser } from 'hooks/store';
@@ -24,25 +24,24 @@ import { getSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import ActionSheet from 'components/ActionSheet';
 import { isUserBiometricsError } from 'utils/biometrics';
-let appState: AppStateStatus, verifyTime: number;
+import GStyles from 'assets/theme/GStyles';
 export default function SecurityLock() {
   const { biometrics } = useUser();
   const biometricsReady = useBiometricsReady();
   const [caInfo, setStateCAInfo] = useState<CAInfo>();
+  const appStateRef = useRef<AppStateStatus>();
+  const verifyTimeRef = useRef<number>();
   usePreventHardwareBack();
   const timer = useRef<TimerResult>();
   const onResultFail = useOnResultFail();
-
   const digitInput = useRef<DigitInputInterface>();
   const [errorMessage, setErrorMessage] = useState<string>();
-
   const { managerInfo, address, caHash } = useCurrentWalletInfo();
   const dispatch = useAppDispatch();
   const isSyncCAInfo = useMemo(() => address && managerInfo && !caHash, [address, caHash, managerInfo]);
   const navigation = useNavigation();
   const onIntervalGetResult = useIntervalGetResult();
   const originChainId = useOriginChainId();
-
   useEffect(() => {
     if (isSyncCAInfo) {
       setTimeout(() => {
@@ -75,7 +74,6 @@ export default function SecurityLock() {
     },
     [biometrics, biometricsReady, managerInfo, navigation],
   );
-
   const handlePassword = useCallback(
     (pwd: string) => {
       dispatch(setCredentials({ pin: pwd }));
@@ -126,10 +124,9 @@ export default function SecurityLock() {
       originChainId,
     ],
   );
-
   const verifyBiometrics = useThrottleCallback(
     async () => {
-      if (!biometrics || (verifyTime && verifyTime + 1000 > Date.now())) return;
+      if (!biometrics || (verifyTimeRef.current && verifyTimeRef.current + 1000 > Date.now())) return;
       try {
         const securePassword = await getSecureStoreItem('Pin');
         if (!securePassword) throw new Error('No password');
@@ -143,16 +140,16 @@ export default function SecurityLock() {
           });
         }
       }
-      verifyTime = Date.now();
+      verifyTimeRef.current = Date.now();
     },
     [biometrics, handlePassword],
     1000,
   );
   const handleAppStateChange = useCallback(
     (nextAppState: AppStateStatus) => {
-      if (nextAppState === 'active' && appState !== 'active') {
+      if (nextAppState === 'active' && appStateRef.current !== 'active') {
         verifyBiometrics();
-        appState = nextAppState;
+        appStateRef.current = nextAppState;
       }
     },
     [verifyBiometrics],
@@ -165,7 +162,6 @@ export default function SecurityLock() {
     return () => {
       timer.current?.remove();
       listener.remove();
-      appState = 'background';
     };
   }, [handleAppStateChange]);
   const onChangeText = useCallback(
@@ -184,7 +180,7 @@ export default function SecurityLock() {
     [errorMessage, handlePassword],
   );
   return (
-    <PageContainer hideHeader containerStyles={styles.container} scrollViewProps={{ disabled: true }}>
+    <PageContainer hideHeader containerStyles={GStyles.flex1} scrollViewProps={{ disabled: true }}>
       <PinContainer
         ref={digitInput}
         title="Enter Pin"
@@ -196,9 +192,3 @@ export default function SecurityLock() {
     </PageContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

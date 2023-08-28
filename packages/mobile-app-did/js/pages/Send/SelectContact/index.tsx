@@ -6,7 +6,9 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { FlashList } from '@shopify/flash-list';
-import RecentContactItem from 'pages/Send/components/RecentContactItem';
+import SendRecentItem from 'pages/Send/components/SendRecentItem';
+import SendContactItem from 'pages/Send/components/SendContactItem';
+
 import { ContactItemType, RecentContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
 // import RecentList from '../components/RecentList';
@@ -42,9 +44,9 @@ export default function SelectContact(props: SelectContactProps) {
 
   const { recentContactList, totalRecordCount } = useRecent(caAddress || '');
 
-  const renderItem = useCallback(
+  const renderRecentItem = useCallback(
     ({ item }: { item: RecentContactItemType }) => {
-      return <RecentContactItem fromChainId={chainId} contact={item} onPress={onPress} />;
+      return <SendRecentItem fromChainId={chainId} contact={item} onPress={onPress} />;
     },
     [chainId, onPress],
   );
@@ -96,7 +98,7 @@ export default function SelectContact(props: SelectContactProps) {
           <View style={styles.recentListWrap}>
             <FlashList
               data={recentContactList || []}
-              renderItem={renderItem}
+              renderItem={renderRecentItem}
               ListFooterComponent={
                 <TextS style={styles.footer}>{recentContactList?.length === 0 ? '' : t('No More Data')}</TextS>
               }
@@ -122,7 +124,7 @@ export default function SelectContact(props: SelectContactProps) {
             isIndexBarShow={false}
             isSearchShow={false}
             renderContactItem={(item: ContactItemType) => (
-              <RecentContactItem
+              <SendContactItem
                 fromChainId={chainId}
                 isContacts={true}
                 contact={item as RecentContactItemType}
@@ -156,7 +158,7 @@ export default function SelectContact(props: SelectContactProps) {
     myOtherAddressList,
     onPress,
     recentContactList,
-    renderItem,
+    renderRecentItem,
     t,
     totalRecordCount,
   ]);

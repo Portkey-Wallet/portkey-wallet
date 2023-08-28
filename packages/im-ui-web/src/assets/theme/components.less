@@ -1,0 +1,142 @@
+/* button */
+.@{app-prefix}-btn-dangerous.@{app-prefix}-btn-link span {
+  text-decoration: underline;
+}
+
+.@{app-prefix}-btn {
+  border-radius: 4px;
+  width: 100%;
+  height: auto;
+  padding: 0;
+  box-shadow: none;
+}
+
+.@{app-prefix}-btn-default {
+  color: @font-9;
+  border-color: @border-3;
+}
+
+.@{app-prefix}-btn-primary {
+  border-width: 0;
+  &:hover,
+  &:focus {
+    color: white;
+    background-color: @hover1;
+    border-color: @border-4;
+  }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:focus,
+  &:disabled:active {
+    color: white;
+    background-color: @bg-7;
+    border-color: @border-3;
+    box-shadow: none !important;
+    opacity: 0.3;
+  }
+}
+
+/* input */
+
+.@{app-prefix}-input,
+.@{app-prefix}-input-password {
+  padding: 12px 16px;
+  border-radius: 6px;
+  color: @font-2;
+  line-height: 22px;
+  border-color: @border-1;
+  &:hover {
+    border-color: @hover2;
+  }
+}
+
+.@{app-prefix}-input {
+  font-size: 16px;
+
+  &::placeholder {
+    font-size: 14px;
+    line-height: 20px;
+    color: @font-12;
+  }
+}
+
+.@{app-prefix}-input-password-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.clear-input-border {
+  border: none !important;
+  box-shadow: none !important;
+  &:focus {
+    box-shadow: none !important;
+  }
+}
+
+/* form */
+.@{app-prefix}-form {
+  .@{app-prefix}-form-item-explain {
+    line-height: 16px;
+    height: 16px;
+    margin-top: 4px;
+  }
+  .@{app-prefix}-form-item-has-error {
+    padding-bottom: 24px;
+    .@{app-prefix}-form-item-control {
+      & > div:nth-of-type(2) {
+        line-height: 20px;
+        height: 20px !important;
+        & > div:nth-of-type(2) {
+          height: 16px !important;
+        }
+      }
+    }
+  }
+  .@{app-prefix}-input-affix-wrapper-status-error {
+    border-color: @border-7;
+  }
+
+  .@{app-prefix}-form-item-explain-error {
+    color: @font-14;
+    font-size: 12px;
+  }
+
+  .@{app-prefix}-form-item {
+    margin-bottom: 24px;
+  }
+  .@{app-prefix}-form-item-label {
+    line-height: 22px;
+    font-size: 16px;
+    padding-bottom: 16px;
+    color: @font-2;
+  }
+  .@{app-prefix}-form-item-label > label {
+    color: @font-2;
+    line-height: 22px;
+    font-size: 16px;
+  }
+  .@{app-prefix}-btn-primary {
+    line-height: 48px;
+    font-size: 16px;
+  }
+}
+
+// to change  border color of the errored input
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:hover,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:hover {
+  border-color: @border-3 !important;
+}
+
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper:focus {
+  border-color: #c5cbd5;
+}
+
+.@{app-prefix}-input-status-error:not(.@{app-prefix}-input-disabled):not(.@{app-prefix}-input-borderless).@{app-prefix}-input:focus,
+.@{app-prefix}-input-affix-wrapper-status-error:not(.@{app-prefix}-input-affix-wrapper-disabled):not(.@{app-prefix}-input-affix-wrapper-borderless).@{app-prefix}-input-affix-wrapper-focused {
+  border-color: @border-3 !important;
+  box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
+}

@@ -20,7 +20,6 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { usePin } from 'hooks/store';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount } from 'utils/redux';
-import { customFetch } from '@portkey-wallet/utils/fetch';
 import DappInfoSection from '../DappInfoSection';
 import TransactionDataSection from '../TransactionDataSection';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
@@ -353,24 +352,19 @@ const ConnectModal = (props: TransactionModalPropsType) => {
     });
 
     try {
-      const raw = await contract.encodedTx(
-        'ManagerForwardCall',
-        isCAContract
-          ? transactionInfo?.params?.paramsOption
-          : {
-              caHash: wallet.caHash,
-              contractAddress: transactionInfo.contractAddress,
-              methodName: transactionInfo.method,
-              args: transactionInfo.params?.paramsOption,
-            },
-      );
+      const paramsOption = isCAContract
+        ? transactionInfo?.params?.paramsOption
+        : {
+            caHash: wallet.caHash,
+            contractAddress: transactionInfo.contractAddress,
+            methodName: transactionInfo.method,
+            args: transactionInfo.params?.paramsOption,
+          };
 
-      const { TransactionFee } = await customFetch(`${chainInfo?.endPoint}/api/blockChain/calculateTransactionFee`, {
-        method: 'POST',
-        params: {
-          RawTransaction: raw.data,
-        },
-      });
+      const req = await contract.calculateTransactionFee('ManagerForwardCall', paramsOption);
+      const { TransactionFee } = req.data || {};
+
+      if (req.error) request.errorReport('calculateTransactionFee', paramsOption, req.error);
 
       if (!TransactionFee && !TransactionFee?.[defaultToken.symbol]) setErrorText(ErrorText.ESTIMATE_ERROR);
 

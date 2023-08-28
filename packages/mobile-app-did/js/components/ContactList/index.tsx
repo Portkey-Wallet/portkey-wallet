@@ -18,10 +18,14 @@ import { ViewStyleType } from 'types/styles';
 import { getAddressInfo } from '@portkey-wallet/utils/aelf';
 import { transContactsToIndexes } from '@portkey-wallet/store/store-ca/contact/utils';
 import { useContact } from '@portkey-wallet/hooks/hooks-ca/contact';
-
+import { useJumpToChatDetails } from 'hooks/chat';
+import ContactUpdateWarning from 'pages/My/components/ContactUpdateWarning';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 interface ContactsListProps {
+  justChatContact?: boolean;
   isIndexBarShow?: boolean;
   isSearchShow?: boolean;
+  isContactUpdateWarningShow?: boolean;
   isReadOnly?: boolean;
   renderContactItem?: (item: ContactItemType) => JSX.Element;
   itemHeight?: number;
@@ -31,8 +35,10 @@ interface ContactsListProps {
 type FlashItemType = ContactIndexType | ContactItemType;
 
 const ContactsList: React.FC<ContactsListProps> = ({
+  justChatContact = false,
   isIndexBarShow = true,
   isSearchShow = true,
+  isContactUpdateWarningShow = false,
   isReadOnly = false,
   renderContactItem,
   itemHeight,
@@ -40,20 +46,53 @@ const ContactsList: React.FC<ContactsListProps> = ({
   ListFooterComponent,
 }) => {
   const { t } = useLanguage();
-  const { contactIndexList, contactMap } = useContact();
+  const { contactIndexList, contactMap } = useContact(!justChatContact);
   const [list, setList] = useState<ContactIndexType[]>([]);
+  const navToChatDetails = useJumpToChatDetails();
+  const isShowChat = useIsChatShow();
+
+  const chatContactIndexList = useMemo(() => {
+    const _chatContactIndexList: ContactIndexType[] = [];
+
+    contactIndexList.map(ele => {
+      const chatList = ele.contacts.filter(contact => !!contact.imInfo);
+      if (chatList.length > 0) {
+        _chatContactIndexList.push({
+          contacts: chatList,
+          index: ele.index,
+        });
+      }
+    });
+
+    return _chatContactIndexList;
+  }, [contactIndexList]);
 
   const flashListData = useMemo<FlashItemType[]>(() => {
     let _flashListData: FlashItemType[] = [];
     list.forEach(contactIndex => {
       if (!contactIndex.contacts.length) return;
-      _flashListData.push({
-        ...contactIndex,
-      });
-      _flashListData = _flashListData.concat(contactIndex.contacts);
+
+      if (justChatContact) {
+        // just chatContact
+        const indexContactList = contactIndex.contacts.filter(ele => !!ele.imInfo);
+        if (indexContactList.length > 0) {
+          _flashListData.push({
+            contacts: indexContactList,
+            index: contactIndex.index,
+          });
+          _flashListData = _flashListData.concat(indexContactList);
+        }
+      } else {
+        if (!_flashListData) console.log('uuuuuu');
+
+        _flashListData.push({
+          ...contactIndex,
+        });
+        _flashListData = _flashListData.concat(contactIndex.contacts);
+      }
     });
     return _flashListData;
-  }, [list]);
+  }, [justChatContact, list]);
 
   const [keyWord, setKeyWord] = useState<string>('');
 
@@ -77,7 +116,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
         // Name Search
         filterList = contactIndexList.map(({ index, contacts }) => ({
           index,
-          contacts: contacts.filter(contact => contact.name.toLocaleUpperCase() === _value.toLocaleUpperCase()),
+          contacts: contacts.filter(contact => contact.name.toLocaleUpperCase().includes(_value.toLocaleUpperCase())),
         }));
       } else {
         // Address Search
@@ -116,8 +155,24 @@ const ContactsList: React.FC<ContactsListProps> = ({
       <ContactItem
         key={item.id}
         contact={item}
+        isShowChat={isShowChat && !!item.imInfo?.relationId}
+        isShowWarning={item.isImputation}
         onPress={() => {
-          navigationService.navigate('ContactDetail', { contact: item });
+          // adjust no chat func
+          if (!isShowChat)
+            return navigationService.navigate('NoChatContactProfile', {
+              contactId: item.id,
+              isCheckImputation: true,
+            });
+
+          navigationService.navigate(item.imInfo?.relationId ? 'ChatContactProfile' : 'NoChatContactProfile', {
+            contactId: item.id,
+            isCheckImputation: true,
+          });
+        }}
+        onPressChat={() => {
+          if (!item?.imInfo?.relationId) return;
+          navToChatDetails({ toRelationId: item?.imInfo?.relationId || '' });
         }}
       />
     );
@@ -125,7 +180,13 @@ const ContactsList: React.FC<ContactsListProps> = ({
 
   const isExistContact = useMemo<boolean>(() => list.reduce((pv, cv) => pv + cv.contacts.length, 0) > 0, [list]);
 
-  const indexList = useMemo(() => contactIndexList.filter(item => item.contacts.length), [contactIndexList]);
+  const indexList = useMemo(() => {
+    if (justChatContact) {
+      return chatContactIndexList;
+    } else {
+      return contactIndexList.filter(item => item.contacts.length);
+    }
+  }, [chatContactIndexList, contactIndexList, justChatContact]);
 
   return (
     <View style={[contactListStyles.listWrap, style]}>
@@ -140,7 +201,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
           />
         </View>
       )}
-
+      {isContactUpdateWarningShow && <ContactUpdateWarning />}
       {isExistContact && (
         <ContactFlashList
           dataArray={flashListData}
@@ -163,7 +224,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
           type="solid"
           containerStyle={contactListStyles.addButtonWrap}
           buttonStyle={[contactListStyles.addButton]}
-          onPress={() => navigationService.navigate('ContactEdit')}>
+          onPress={() => navigationService.navigate('NoChatContactProfileEdit')}>
           <Svg icon="add1" size={pTd(16)} color={defaultColors.icon2} />
           <Text style={contactListStyles.addText}>{t('Add New Contacts')}</Text>
         </CommonButton>

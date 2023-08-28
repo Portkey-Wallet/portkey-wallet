@@ -87,16 +87,7 @@ export default memo(
           snapPointsLeft={[80]}
           renderUnderlayLeft={renderUnderlayLeft}>
           <Touchable onPress={onClickJump}>
-            <View
-              // disabled={!isEdit || isActive}
-              style={[
-                GStyles.flexRow,
-                GStyles.itemCenter,
-                styles.itemRow,
-                BGStyles.bg1,
-                // add margin to scale item
-                styles.marginContainer,
-              ]}>
+            <View style={[GStyles.flexRow, GStyles.itemCenter, styles.itemRow, BGStyles.bg1]}>
               {EditDom}
               <DiscoverWebsiteImage imageUrl={getFaviconUrl(item.url)} size={pTd(40)} style={styles.websiteIconStyle} />
               <View style={styles.infoWrap}>
@@ -105,9 +96,6 @@ export default memo(
                   {item?.url}
                 </TextS>
               </View>
-              {/* <Touchable onPressIn={drag} disabled={!isEdit || isActive}>
-              <TextM>drag</TextM>
-            </Touchable> */}
             </View>
           </Touchable>
         </SwipeableItem>
@@ -120,7 +108,6 @@ export default memo(
 );
 
 const styles = StyleSheet.create({
-  marginContainer: {},
   underlayLeftBox: {
     flex: 1,
     flexDirection: 'row',

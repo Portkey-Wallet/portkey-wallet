@@ -2,6 +2,7 @@ import React from 'react';
 import Recaptcha from 'components/Recaptcha';
 import OverlayModal from '../OverlayModal';
 import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
+
 import Config from 'react-native-config';
 import { clearBackgroundTimeout, setBackgroundTimeout } from 'utils/backgroundTimer';
 
@@ -49,7 +50,7 @@ async function verifyHumanMachine(language: any) {
         position: 'center',
         containerStyle: {
           width: screenWidth,
-          height: screenHeight,
+          height: screenHeight * 0.9,
         },
       },
     );

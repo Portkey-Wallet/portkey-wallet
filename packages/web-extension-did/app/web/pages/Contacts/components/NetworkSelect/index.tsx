@@ -27,6 +27,7 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
       chainList?.map((chain) => ({
         networkType: currentNetwork,
         chainId: chain.chainId,
+        chainName: chain.chainName,
         networkName: transNetworkText(chain.chainId, isTestNet),
       })),
     [chainList, currentNetwork, isTestNet],

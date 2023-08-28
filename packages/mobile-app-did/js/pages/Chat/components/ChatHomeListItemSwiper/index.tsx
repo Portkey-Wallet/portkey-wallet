@@ -1,7 +1,7 @@
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, GestureResponderEvent } from 'react-native';
 import SwipeableItem, { OpenDirection, SwipeableItemImperativeRef } from 'react-native-swipeable-item';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -12,6 +12,8 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
 import { ChannelItem } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
+import { useDeviceEvent } from 'hooks/useDeviceEvent';
+import myEvents from 'utils/deviceEvent';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -27,6 +29,22 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   const { item, onPress, onLongPress, onDelete } = props;
   const [isEdit, setIsEdit] = useState(false);
   const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
+  const listenerCallBack = useCallback(
+    (id: string) => {
+      if (id !== item.channelUuid) swipeableRef.current?.close();
+    },
+    [item.channelUuid],
+  );
+  const eventEmit = useDeviceEvent(myEvents.chatHomeListCloseSwiped.name, listenerCallBack);
+  const lastMessage = useMemo(() => {
+    if (item.lastMessageType === 'TEXT') {
+      return item.lastMessageContent;
+    } else if (item.lastMessageType === 'IMAGE') {
+      return '[Image]';
+    } else {
+      return '[Unsupported format]';
+    }
+  }, [item.lastMessageContent, item.lastMessageType]);
 
   const deleteItem = useCallback(() => {
     swipeableRef.current?.close();
@@ -58,7 +76,6 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   const onDrag = useCallback(
     (params: { openDirection: OpenDirection; snapPoint: number }) => {
       setIsEdit(params.snapPoint !== 0);
-
       if (params.snapPoint === DELETE_TO_END) {
         swipeableRef.current?.close();
         onDelete(item);
@@ -66,7 +83,6 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     },
     [item, onDelete],
   );
-
   return (
     <SwipeableItem
       swipeEnabled
@@ -77,36 +93,41 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
       snapPointsLeft={[DELETE_BUTTON_WIDTH, DELETE_TO_END]}
       renderUnderlayLeft={renderUnderlayLeft}>
       <Touchable
+        highlight
+        underlayColor={item.pin ? defaultColors.bg18 : defaultColors.bg4}
         style={[BGStyles.bg1, item.pin && BGStyles.bg4, GStyles.flexRow, GStyles.itemCenter, styles.container]}
         onPress={onPressItem}
-        onLongPress={onLongPressItem}>
-        <CommonAvatar hasBorder title={item.displayName} avatarSize={48} style={styles.avatar} />
-        <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
-          <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
-            <View style={[GStyles.flex1, GStyles.flexRow, GStyles.itemCenter, GStyles.paddingRight(30)]}>
-              <TextL style={[FontStyles.font5, GStyles.marginRight(4)]} numberOfLines={1}>
-                {/* TODO: Remark */}
-                {item.displayName}
-              </TextL>
-              {item.mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />}
+        onLongPress={onLongPressItem}
+        onPressIn={eventEmit}>
+        <>
+          <CommonAvatar hasBorder title={item.displayName} avatarSize={48} style={styles.avatar} />
+          <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
+            <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
+              <View style={[GStyles.flex1, GStyles.flexRow, GStyles.itemCenter, GStyles.paddingRight(30)]}>
+                <TextL style={[FontStyles.font5, GStyles.marginRight(4)]} numberOfLines={1}>
+                  {/* TODO: Remark */}
+                  {item.displayName}
+                </TextL>
+                {item.mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />}
+              </View>
+              <TextS style={FontStyles.font7}>{formatChatListTime(item.lastPostAt)}</TextS>
             </View>
-            <TextS style={FontStyles.font7}>{formatChatListTime(item.lastPostAt)}</TextS>
-          </View>
-          <View style={styles.blank} />
-          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
-            <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
-              {item.lastMessageType === 'TEXT' ? item.lastMessageContent : '[Image]'}
-            </TextS>
-            {item.pin && item.unreadMessageCount === 0 ? (
-              <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
-            ) : (
-              <TextS
-                style={[styles.messageNum, item.mute && styles.muteMessage, !item.unreadMessageCount && styles.hide]}>
-                {formatMessageCountToStr(item.unreadMessageCount)}
+            <View style={styles.blank} />
+            <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
+              <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
+                {lastMessage}
               </TextS>
-            )}
+              {item.pin && item.unreadMessageCount === 0 ? (
+                <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
+              ) : (
+                <TextS
+                  style={[styles.messageNum, item.mute && styles.muteMessage, !item.unreadMessageCount && styles.hide]}>
+                  {formatMessageCountToStr(item.unreadMessageCount)}
+                </TextS>
+              )}
+            </View>
           </View>
-        </View>
+        </>
       </Touchable>
     </SwipeableItem>
   );
@@ -155,19 +176,27 @@ const styles = StyleSheet.create({
     maxWidth: pTd(240),
   },
   messageNum: {
-    borderRadius: pTd(8),
-    backgroundColor: 'red',
-    minWidth: pTd(16),
+    backgroundColor: defaultColors.bg17,
     marginRight: pTd(0),
     paddingHorizontal: pTd(4),
     textAlign: 'center',
-    overflow: 'hidden',
     color: defaultColors.font2,
+    zIndex: 1000,
+    height: pTd(17),
+    minWidth: pTd(17),
+    borderColor: defaultColors.bg17,
+    borderWidth: pTd(1),
+    borderRadius: pTd(9),
+    overflow: 'hidden',
+    lineHeight: pTd(15),
   },
   hide: {
     display: 'none',
+    width: 0,
+    height: 0,
   },
   muteMessage: {
+    borderColor: defaultColors.bg7,
     backgroundColor: defaultColors.bg7,
   },
 });

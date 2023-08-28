@@ -9,6 +9,7 @@ export default function AddContactPopup({
   form,
   isDisable,
   state,
+  extra,
   addressArr,
   validName,
   headerTitle,
@@ -35,6 +36,7 @@ export default function AddContactPopup({
         isDisable={isDisable}
         validName={validName}
         state={state}
+        extra={extra}
         addressArr={addressArr}
         onFinish={onFinish}
         handleSelectNetwork={handleSelectNetwork}

@@ -15,6 +15,7 @@ import {
   updateChannelMessageAttribute,
   addChannel,
   setRelationId,
+  setRelationToken,
 } from './actions';
 import { formatChannelList } from './util';
 
@@ -23,6 +24,7 @@ const initialState: IMStateType = {
   hasNextNetMap: {},
   channelMessageListNetMap: {},
   relationIdNetMap: {},
+  relationTokenNetMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -117,15 +119,16 @@ export const imSlice = createSlice({
           return state;
         }
 
+        const channelList = formatChannelList({
+          list: [action.payload.channel, ...(state.channelListNetMap?.[action.payload.network]?.list || [])],
+          cursor: state.channelListNetMap?.[action.payload.network]?.cursor || '',
+        });
+
         return {
           ...state,
           channelListNetMap: {
             ...state.channelListNetMap,
-            [action.payload.network]: {
-              ...state.channelListNetMap?.[action.payload.network],
-              list: [action.payload.channel, ...(state.channelListNetMap?.[action.payload.network]?.list || [])],
-              cursor: state.channelListNetMap?.[action.payload.network]?.cursor || '',
-            },
+            [action.payload.network]: channelList,
           },
         };
       })
@@ -226,6 +229,15 @@ export const imSlice = createSlice({
           },
         };
       })
+      .addCase(setRelationToken, (state, action) => {
+        return {
+          ...state,
+          relationTokenNetMap: {
+            ...state.relationTokenNetMap,
+            [action.payload.network]: action.payload.token,
+          },
+        };
+      })
       .addCase(resetIm, (state, action) => {
         return {
           ...state,
@@ -243,6 +255,10 @@ export const imSlice = createSlice({
           },
           relationIdNetMap: {
             ...state.relationIdNetMap,
+            [action.payload]: undefined,
+          },
+          relationTokenNetMap: {
+            ...state.relationTokenNetMap,
             [action.payload]: undefined,
           },
         };

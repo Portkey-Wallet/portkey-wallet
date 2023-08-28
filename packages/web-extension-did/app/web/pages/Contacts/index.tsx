@@ -1,12 +1,7 @@
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  useAllContactList,
-  useIsImputation,
-  useLocalContactSearch,
-  usePortkeyContactList,
-} from '@portkey-wallet/hooks/hooks-ca/contact';
+import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
+import { useIsImputation, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
@@ -17,6 +12,8 @@ import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
 import { useGoAddNewContact } from 'hooks/useProfile';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { ExtraTypeEnum } from 'types/Profile';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const initContactItem: Partial<ContactItemType> = {
   id: '-1',
@@ -42,12 +39,10 @@ export default function Contacts() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const appDispatch = useAppDispatch();
-  const allContact = useAllContactList();
-  const portkeyChatList = usePortkeyContactList();
-  const [curList, setCurList] = useState<ContactIndexType[]>(allContact);
+  const localSearch = useLocalContactSearch();
+  const showChat = useIsChatShow();
+  const [curList, setCurList] = useState<ContactIndexType[]>([]);
   const [isSearch, setIsSearch] = useState<boolean>(false);
-  const searchStr = useRef('');
-  const tabKey = useRef(ContactsTab.ALL);
   const isImputation = useIsImputation();
   const [isCloseImputationManually, setIsCloseImputationManually] = useState(false);
   const showImputation = isImputation && !isCloseImputationManually;
@@ -57,37 +52,19 @@ export default function Contacts() {
   });
 
   useEffect(() => {
-    if (tabKey.current === ContactsTab.ALL) {
-      setCurList(allContact);
-    } else {
-      setCurList(portkeyChatList);
-    }
-    setIsSearch(false);
-  }, [allContact, portkeyChatList]);
-
-  const localSearch = useLocalContactSearch();
-
-  const searchContacts = useCallback(() => {
-    if (!searchStr.current) {
-      if (tabKey.current === ContactsTab.ALL) {
-        setCurList(allContact);
-      } else {
-        setCurList(portkeyChatList);
-      }
-      setIsSearch(false);
-      return;
-    }
-    const { contactIndexFilterList: searchResult } = localSearch(searchStr.current, tabKey.current);
+    const { contactIndexFilterList: searchResult } = localSearch('', ContactsTab.ALL);
     setCurList(searchResult);
-    setIsSearch(true);
-  }, [allContact, localSearch, portkeyChatList]);
+    setIsSearch(false);
+  }, [localSearch]);
 
   const searchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      searchStr.current = e.target.value;
-      searchContacts();
+      setIsSearch(!!e.target.value);
+
+      const { contactIndexFilterList: searchResult } = localSearch(e.target.value, ContactsTab.ALL);
+      setCurList(searchResult);
     },
-    [searchContacts],
+    [localSearch],
   );
 
   const curTotalContactsNum = useMemo(() => {
@@ -95,7 +72,7 @@ export default function Contacts() {
   }, [curList]);
 
   const { isNotLessThan768 } = useCommonState();
-  const searchPlaceholder = 'Wallet Name/Remark/Portkey ID/Address';
+  const searchPlaceholder = showChat ? 'Wallet Name/Remark/Portkey ID/Address' : 'Name or Address';
   const title = t('Contacts');
   const addText = t('Add contact');
 
@@ -110,16 +87,8 @@ export default function Contacts() {
   };
 
   const changeTab = (key: ContactsTab) => {
-    tabKey.current = key;
-    if (isSearch) {
-      searchContacts();
-    } else {
-      if (key === ContactsTab.ALL) {
-        setCurList(allContact);
-      } else {
-        setCurList(portkeyChatList);
-      }
-    }
+    const { contactIndexFilterList: searchResult } = localSearch('', key);
+    setCurList(searchResult);
   };
 
   return isNotLessThan768 ? (
@@ -134,7 +103,7 @@ export default function Contacts() {
       initData={initContactItem}
       showImputation={showImputation}
       closeImputationTip={closeImputationTip}
-      handleAdd={() => handleAdd('3', initContactItem)}
+      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
       handleSearch={searchChange}
       changeTab={changeTab}
     />
@@ -150,7 +119,7 @@ export default function Contacts() {
       initData={initContactItem}
       showImputation={showImputation}
       closeImputationTip={closeImputationTip}
-      handleAdd={() => handleAdd('3', initContactItem)}
+      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
       handleSearch={searchChange}
       changeTab={changeTab}
     />

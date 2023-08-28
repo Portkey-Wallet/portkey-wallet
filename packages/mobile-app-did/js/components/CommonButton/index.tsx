@@ -11,6 +11,7 @@ const stylesMap: any = {
   outline: {
     buttonStyle: styles.outlineButtonStyle,
     titleStyle: styles.outlineTitleStyle,
+    disabledTitleStyle: styles.outlineDisabledTitleStyle,
   },
   solid: {
     buttonStyle: styles.solidButtonStyle,

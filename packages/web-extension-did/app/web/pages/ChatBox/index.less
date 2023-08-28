@@ -10,6 +10,9 @@
     border-bottom: 1px solid @border-2;
     .title-element {
       align-items: center;
+      .title-content {
+        cursor: pointer;
+      }
       .name-text {
         margin-left: 8px;
         max-width: 150px;
@@ -57,10 +60,18 @@
       .text {
         cursor: pointer;
       }
-      .addcontact-icon {
+      .chataddcontact-icon {
         cursor: pointer;
         width: 20px;
         height: 20px;
+        /* stylelint-disable-next-line no-descending-specificity */
+        svg {
+          /* stylelint-disable-next-line no-descending-specificity */
+          path {
+            fill: @svg-1;
+          }
+        }
+  
       }
     }
     .close2-icon {
@@ -89,18 +100,17 @@
   top: 60px !important;
   left: 220px !important;
   .portkey-popover-inner {
-    width: 120px;
+    min-width: 120px;
     border-radius: 6px;
+    box-shadow: 0 2px 12px 0 @shadow-1;
     .portkey-popover-inner-content {
       padding: 0 12px;
     }
   }
 }
 
-.upload-text:hover {
-  color: @font-9;
-}
 .chat-delete-modal {
+ /* stylelint-disable-next-line no-descending-specificity */
   border-radius: 8px;
   overflow: hidden;
   .@{app-prefix}-modal-body {
@@ -129,5 +139,23 @@
         font-size: 16px;
       }
     }
+  }
+}
+
+.portkey-input-more-popover {
+  .portkey-upload {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .album-icon {
+      /* stylelint-disable-next-line no-descending-specificity */
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+  .popover-menu-list .menu-item:hover .upload-text {
+    color: @font-9;
   }
 }

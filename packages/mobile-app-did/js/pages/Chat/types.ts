@@ -9,4 +9,5 @@ export type ImageInfo = {
 };
 export interface ChatMessage extends IMessage, Message {
   imageInfo?: ImageInfo;
+  messageType?: Message['type'] | 'NOT_SUPPORTED';
 }

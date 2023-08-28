@@ -20,18 +20,20 @@ export interface ItemType {
 }
 
 const ContactItem: React.FC<ItemType> = props => {
-  const { isShowChat = false, isShowWarning = false, isShowContactIcon = false, contact, onPress, onPressChat } = props;
+  const { isShowChat = false, isShowWarning, isShowContactIcon = false, contact, onPress, onPressChat } = props;
 
   return (
     <TouchableOpacity onPress={() => onPress?.(contact)}>
       <View style={styles.itemWrap}>
         <View style={[styles.itemAvatar, BGStyles.bg4, BorderStyles.border1, styles.avatarWrap]}>
           {isShowWarning && <View style={styles.warningCycle} />}
-          <TextXXL style={FontStyles.font5}>{contact.name[0].toUpperCase()}</TextXXL>
+          <TextXXL style={FontStyles.font5}>
+            {(contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name)?.[0]?.toUpperCase()}
+          </TextXXL>
         </View>
         <View style={styles.itemNameWrap}>
           <TextL numberOfLines={1} style={FontStyles.font5}>
-            {contact.name}
+            {contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name}
           </TextL>
           {isShowContactIcon && (
             <View style={[GStyles.marginTop(pTd(2)), GStyles.flexRow, styles.contactIconWrap]}>
@@ -42,7 +44,7 @@ const ContactItem: React.FC<ItemType> = props => {
         </View>
         {isShowChat && (
           <Touchable style={styles.chatButton} onPress={() => onPressChat?.(contact)}>
-            <TextS style={FontStyles.font2}>Chat</TextS>
+            <TextS style={[FontStyles.font2, styles.chatText]}>Chat</TextS>
           </Touchable>
         )}
       </View>
@@ -72,7 +74,7 @@ export const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: pTd(1),
   },
   itemNameWrap: {
     flex: 1,
@@ -82,7 +84,10 @@ export const styles = StyleSheet.create({
     borderRadius: pTd(6),
     overflow: 'hidden',
     paddingHorizontal: pTd(12),
-    paddingVertical: pTd(4),
+    height: pTd(24),
+  },
+  chatText: {
+    lineHeight: pTd(24),
   },
   avatarWrap: {
     position: 'relative',
@@ -94,7 +99,7 @@ export const styles = StyleSheet.create({
     top: 0,
     width: pTd(8),
     height: pTd(8),
-    borderRadius: pTd(4),
+    borderRadius: pTd(5),
     backgroundColor: defaultColors.bg17,
     borderWidth: pTd(1),
     borderColor: defaultColors.bg1,

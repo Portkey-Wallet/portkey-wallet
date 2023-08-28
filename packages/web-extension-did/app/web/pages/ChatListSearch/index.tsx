@@ -6,10 +6,9 @@ import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
-import { useCreateP2pChannel, useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import ContactList from 'pages/Contacts/components/ContactList';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import { message } from 'antd';
 import './index.less';
 
 export default function ChatListSearch() {
@@ -20,7 +19,6 @@ export default function ChatListSearch() {
   const { setLoading } = useLoading();
   const [chatList, setChatList] = useState<ContactItemType[]>([]);
   const searchChannel = useSearchChannel();
-  const createChannel = useCreateP2pChannel();
 
   const handleSearch = useCallback(
     async (keyword: string) => {
@@ -29,7 +27,7 @@ export default function ChatListSearch() {
       } else {
         try {
           const res = await searchChannel(keyword);
-          const transRes = res.data.list.map((item) => ({
+          const transRes = res.map((item) => ({
             id: item.channelUuid,
             index: item.displayName.slice(0, 1).toUpperCase(),
             name: item.displayName,
@@ -50,7 +48,8 @@ export default function ChatListSearch() {
 
   useEffect(() => {
     setFilterWord(state?.search || '');
-  }, [state?.search]);
+    handleSearch(state?.search || '');
+  }, [handleSearch, state?.search]);
 
   const searchDebounce = useDebounceCallback(
     async (params) => {
@@ -58,48 +57,40 @@ export default function ChatListSearch() {
       await handleSearch(params);
       setLoading(false);
     },
-    [filterWord],
+    [],
     500,
-  );
-  const handleClick = useCallback(
-    async (item: ContactItemType) => {
-      try {
-        const res = await createChannel(item?.imInfo?.relationId || '');
-        console.log('res', res);
-        navigate(`/chat-box/${res.data.channelUuid}`);
-      } catch (e) {
-        message.error('cannot chat');
-      }
-    },
-    [createChannel, navigate],
   );
 
   return (
     <div className="chat-list-search-page flex-column">
-      <div className="chat-list-search">
-        <SettingHeader
-          title={t('Search')}
-          leftCallBack={() => navigate('/chat-list')}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />}
-        />
-        <DropdownSearch
-          overlay={<></>}
-          value={filterWord}
-          inputProps={{
-            onChange: (e) => {
-              const _value = e.target.value.replaceAll(' ', '');
-              setFilterWord(_value);
-              searchDebounce(_value);
-            },
-            placeholder: 'Search chats',
-          }}
-        />
-      </div>
-      <div
-        className="find-more flex"
-        onClick={() => navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })}>
-        <CustomSvg type="AddContact" />
-        Find More
+      <div className="chat-list-header">
+        <div className="chat-list-search">
+          <SettingHeader
+            title={t('Search')}
+            leftCallBack={() => navigate('/chat-list')}
+            rightElement={<CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />}
+          />
+          <DropdownSearch
+            overlay={<></>}
+            value={filterWord}
+            inputProps={{
+              onChange: (e) => {
+                const _value = e.target.value.trim();
+                setFilterWord(_value);
+                searchDebounce(_value);
+              },
+              placeholder: 'Search chats',
+            }}
+          />
+        </div>
+        <div
+          className="find-more flex"
+          onClick={() =>
+            navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })
+          }>
+          <CustomSvg type="AddMorePeople" />
+          Find More
+        </div>
       </div>
       <div className="chat-list-search-content">
         {chatList.length === 0 ? (
@@ -107,7 +98,7 @@ export default function ChatListSearch() {
         ) : (
           <div className="search-result-list">
             <div className="chat-title-text">Chats</div>
-            <ContactList hasChatEntry={false} list={chatList} clickItem={handleClick} />
+            <ContactList hasChatEntry={false} list={chatList} clickItem={(item) => navigate(`/chat-box/${item.id}`)} />
           </div>
         )}
       </div>

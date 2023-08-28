@@ -1,0 +1,47 @@
+@import '../../assets/theme/color.less';
+
+.portkey-container-input {
+  display: flex;
+  min-width: 100%;
+  box-sizing: border-box;
+  flex-direction: row;
+  background: @bg-11;
+  align-items: center;
+
+  .portkey-im-input {
+    flex: 1;
+    height: 40px;
+    padding: 0 5px;
+    border: none;
+    border-radius: 20px;
+    color: @font-1;
+    font-size: 14px;
+    line-height: 20px;
+    box-sizing: border-box;
+    outline: none;
+  }
+
+  .portkey-im-input-textarea {
+    padding: 10px 5px;
+    resize: none;
+  }
+
+  .portkey-im-input:focus {
+    box-shadow: none;
+  }
+
+  ::-webkit-scrollbar {
+    width:3px;
+    height: 40px;
+  }
+  ::-webkit-scrollbar-track {
+    margin: 20px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius:2px;
+    background-color:@bg-15;
+  }
+
+}
+
+

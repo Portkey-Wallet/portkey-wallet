@@ -20,7 +20,7 @@ export interface ItemType {
   onPress?: (item: any) => void;
 }
 
-const RecentContactItem: React.FC<ItemType> = props => {
+const SendRecentItem: React.FC<ItemType> = props => {
   const { isContacts, contact, fromChainId, onPress } = props;
 
   const { currentNetwork } = useWallet();
@@ -122,7 +122,7 @@ const RecentContactItem: React.FC<ItemType> = props => {
   );
 };
 
-export default memo(RecentContactItem);
+export default memo(SendRecentItem);
 
 export const styles = StyleSheet.create({
   itemWrap: {

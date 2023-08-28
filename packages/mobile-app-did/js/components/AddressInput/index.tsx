@@ -3,6 +3,7 @@ import { Input, InputProps } from '@rneui/themed';
 import { Text, View } from 'react-native';
 import { generalStyles } from './style';
 import { TextM } from 'components/CommonText';
+import { defaultColors } from 'assets/theme';
 
 type AelfInputWithAffixProps = InputProps & {
   affix?: [string, string]; // prefix and suffix
@@ -24,6 +25,7 @@ const AelfInputWithAffix: React.FC<AelfInputWithAffixProps> = props => {
           rightIconContainerStyle={generalStyles.rightIconContainerStyle}
           placeholder={placeholder}
           disabledInputStyle={generalStyles.disabledInputStyle}
+          placeholderTextColor={defaultColors.font7}
           {...props}
         />
         <View style={[generalStyles.commonFix, generalStyles.suffix]}>

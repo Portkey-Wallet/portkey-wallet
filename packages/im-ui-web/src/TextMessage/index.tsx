@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Popover, message } from 'antd';
 import { useCopyToClipboard } from 'react-use';
-import ParsedText from '../components/ParsedText';
+import { ParsedText, ParseShape } from 'react-parsed-text';
 
 import clsx from 'clsx';
 import { ITextMessageProps } from '../type';
@@ -10,18 +10,13 @@ import PopoverMenuList from '../PopoverMenuList';
 import CustomSvg from '../components/CustomSvg';
 import './index.less';
 
-const TextMessage: React.FC<ITextMessageProps> = props => {
-  const showDate = useMemo(() => (props.dateString ? props.dateString : formatTime(props.date as any)), []);
+const TextMessage: React.FC<ITextMessageProps> = (props) => {
+  const showDate = useMemo(
+    () => (props.dateString ? props.dateString : formatTime(props.date as any)),
+    [props.date, props.dateString],
+  );
   const [, setCopied] = useCopyToClipboard();
   const [popVisible, setPopVisible] = useState(false);
-  const handleDelMsg = useCallback(async () => {
-    try {
-      await props?.onDelete?.(`${props.id}`);
-    } catch (e) {
-      message.error('delete message error');
-      console.log('===delete message error', e);
-    }
-  }, []);
   const hidePop = () => {
     setPopVisible(false);
   };
@@ -32,61 +27,71 @@ const TextMessage: React.FC<ITextMessageProps> = props => {
       children: 'Copy',
       onClick: () => {
         setCopied(props.text);
+        message.success('Copy Success');
       },
     },
     {
       key: 'delete',
       leftIcon: <CustomSvg type="Delete" />,
-      children: 'Delelte',
-      onClick: handleDelMsg,
+      children: 'Delete',
+      onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
     },
   ];
+  const handleUrlPress: ParseShape['onClick'] = useCallback((url: string) => {
+    const WWW_URL_PATTERN = /^www\./i;
+    if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
+    const openWinder = window.open(url, '_blank');
+    if (openWinder) {
+      openWinder.opener = null;
+    }
+  }, []);
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
   }, []);
   return (
     <div className={clsx(['portkey-message-text', 'flex', props.position])}>
-      <Popover
-        open={popVisible}
-        overlayClassName={clsx(['message-text-popover', props.position])}
-        placement="bottom"
-        trigger="contextMenu"
-        onOpenChange={visible => setPopVisible(visible)}
-        showArrow={false}
-        content={
-          <PopoverMenuList
-            data={popoverList.filter(
-              pop => props.position === 'right' || (pop.key !== 'delete' && props.position === 'left'),
-            )}
-          />
-        }>
+      {props.subType === 'non-support-msg' ? (
         <div className={clsx(['text-body', 'flex', props.position])}>
           <div className="text-text">
-            {props.subType === 'non-text' ? (
-              <span className="non-text">[Not supported message]</span>
-            ) : (
+            <span className="non-support-msg">[Unsupported format]</span>
+            <span className="text-date-hidden">{showDate}</span>
+          </div>
+          <div className="text-date">{showDate}</div>
+        </div>
+      ) : (
+        <Popover
+          open={popVisible}
+          overlayClassName={clsx(['message-text-popover', props.position])}
+          placement="bottom"
+          trigger="contextMenu"
+          onOpenChange={(visible) => setPopVisible(visible)}
+          showArrow={false}
+          content={
+            <PopoverMenuList
+              data={popoverList.filter(
+                (pop) => props.position === 'right' || (props.position === 'left' && pop.key !== 'delete'),
+              )}
+            />
+          }>
+          <div className={clsx(['text-body', 'flex', props.position])}>
+            <div className="text-text">
               <ParsedText
                 parse={[
                   {
                     type: 'url',
                     className: 'text-link',
-                    onClick: url => {
-                      const openWinder = window.open(url, '_blank');
-                      if (openWinder) {
-                        openWinder.opener = null;
-                      }
-                    },
+                    onClick: handleUrlPress,
                   },
                 ]}>
                 {props.text}
               </ParsedText>
-            )}
-            <span className="text-date-hidden">{showDate}</span>
+              <span className="text-date-hidden">{showDate}</span>
+            </div>
+            <div className="text-date">{showDate}</div>
           </div>
-          <div className="text-date">{showDate}</div>
-        </div>
-      </Popover>
+        </Popover>
+      )}
     </div>
   );
 };

@@ -4,27 +4,24 @@ import clsx from 'clsx';
 import ImageMessage from '../ImageMessage';
 import TextMessage from '../TextMessage';
 import SystemMessage from '../SystemMessage';
-import { MessageBoxType } from '../type';
+import { MessageType } from '../type';
 import './index.less';
 
-const MessageItem: React.FC<MessageBoxType> = ({ styles, ...props }) => {
+const MessageItem: React.FC<MessageType> = ({ ...props }) => {
   const messageRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
-      key={props.id}
-      style={{ position: 'relative' }}
+      key={props.key}
       ref={messageRef}
       className={clsx('portkey-message-item', 'flex-column', props.className)}
-      onClick={props.onClick}>
-      {props.type === 'system' ? (
-        <SystemMessage {...props} />
-      ) : (
-        <>
-          {props.type === 'text' && <TextMessage {...props} />}
-          {props.type === 'image' && <ImageMessage {...props} />}
-        </>
-      )}
+      // onClick={props?.onClick}
+    >
+      <>
+        {props.type === 'system' && <SystemMessage {...props} />}
+        {props.type === 'text' && <TextMessage {...props} />}
+        {props.type === 'image' && <ImageMessage {...props} />}
+      </>
     </div>
   );
 };

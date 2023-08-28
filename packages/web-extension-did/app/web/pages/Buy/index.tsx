@@ -44,6 +44,7 @@ import {
   SERVICE_UNAVAILABLE_TEXT,
   SYNCHRONIZING_CHAIN_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -63,7 +64,7 @@ export default function Buy() {
   const { setLoading } = useLoading();
   const [curFiat, setCurFiat] = useState<PartialFiatType>(initFiat);
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
-  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow();
+  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow(VersionDeviceType.Extension);
   const checkManagerSyncState = useCheckManagerSyncState();
   useFetchTxFee();
   const { ach: achFee } = useGetTxFee('AELF');

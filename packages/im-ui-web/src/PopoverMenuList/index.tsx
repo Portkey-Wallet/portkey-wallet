@@ -21,7 +21,7 @@ export default function PopoverMenuList(props: IPopoverMenuListProps) {
   const { className, data = [] } = props;
   return (
     <div className={clsx(['popover-menu-list flex-column', className])}>
-      {data.map(item => (
+      {data.map((item) => (
         <div
           key={item.key}
           className={clsx('menu-item flex', className)}

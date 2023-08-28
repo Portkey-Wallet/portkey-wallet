@@ -1,4 +1,4 @@
-import { useIsIMServiceExist, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
@@ -8,6 +8,8 @@ import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from './guardian';
 import useEffectOnce from './useEffectOnce';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { reportUserCurrentNetwork } from 'utils/analysisiReport';
 import { useCheckAndInitNetworkDiscoverMap } from './discover';
 import { usePin } from './store';
 import { getManagerAccount } from 'utils/redux';
@@ -31,6 +33,7 @@ export default function useInitData() {
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const wallet = useCurrentWalletInfo();
   const getVerifierServers = useGetVerifierServers();
+  const { netWorkType } = useCurrentNetwork();
 
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   const isMainNetwork = useIsMainnet();
@@ -101,4 +104,9 @@ export default function useInitData() {
     const timer = setTimeout(init, 500);
     return () => clearTimeout(timer);
   });
+
+  useEffect(() => {
+    // report user`s current environment of network
+    reportUserCurrentNetwork(netWorkType);
+  }, [netWorkType]);
 }

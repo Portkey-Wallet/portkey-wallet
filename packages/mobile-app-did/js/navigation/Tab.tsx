@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     textAlign: 'center',
     paddingHorizontal: pTd(4),
-    lineHeight: pTd(15),
+    lineHeight: pTd(isIOS ? 15 : 17),
   },
   warningCycle: {
     position: 'absolute',

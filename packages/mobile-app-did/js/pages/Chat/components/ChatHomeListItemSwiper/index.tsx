@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     lineHeight: pTd(15),
   },
   hide: {
-    display: 'none',
+    borderWidth: 0,
     width: 0,
     height: 0,
   },

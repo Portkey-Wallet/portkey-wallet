@@ -99,7 +99,8 @@ const ChatCamera: React.FC = () => {
                   await sendChannelImage(img);
                   navigationService.goBack();
                 } catch (error) {
-                  CommonToast.failError(error);
+                  console.log(error);
+                  CommonToast.fail('Failed to send message');
                 } finally {
                   setSending(false);
                 }

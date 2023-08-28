@@ -40,24 +40,27 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
       console.log('===input bar hidePop error', e);
     }
   }, []);
-  const handleChange = (e: any) => {
+  const handleChange = useCallback((e: any) => {
     setValue(e.target.value);
-  };
-  const handleSend = () => {
+  }, []);
+  const handleSend = useCallback(() => {
     onSendMessage(value);
     setValue('');
-  };
-  const handleEnterKeyDown = (e: any) => {
-    if (e.keyCode === 13 && e.shiftKey) {
-      e.preventDefault();
-      setValue(e.target.value + '\n');
-    } else if (e.keyCode === 13) {
-      e.preventDefault();
-      if (value?.trim()) {
-        handleSend();
+  }, [onSendMessage, value]);
+  const handleEnterKeyDown = useCallback(
+    (e: any) => {
+      if (e.keyCode === 13 && e.shiftKey) {
+        e.preventDefault();
+        setValue(e.target.value + '\n');
+      } else if (e.keyCode === 13) {
+        e.preventDefault();
+        if (value?.trim()) {
+          handleSend();
+        }
       }
-    }
-  };
+    },
+    [handleSend, value],
+  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);

@@ -22,17 +22,21 @@ const MessageList: FC<IMessageListProps> = ({
   const prevProps = useRef(props);
 
   const checkScroll = useCallback(() => {
-    const e = reference;
-    if (!e || !e.current) return;
+    if (!reference || !reference.current) return;
 
     if (toBottomHeight === '100%' || (toBottomHeight && scrollBottom < (toBottomHeight as number))) {
-      e.current.scrollTop = e.current.scrollHeight; // scroll to bottom
+      reference.current.scrollTop = reference.current.scrollHeight; // scroll to bottom
     } else {
       if (lockable === true) {
-        e.current.scrollTop = e.current.scrollHeight - e.current.offsetHeight - scrollBottom;
+        reference.current.scrollTop = reference.current.scrollHeight - reference.current.offsetHeight - scrollBottom;
       }
     }
   }, [lockable, reference, scrollBottom, toBottomHeight]);
+
+  const getBottom = useCallback((e: any) => {
+    if (e.current) return e.current.scrollHeight - e.current.scrollTop - e.current.offsetHeight;
+    return e.scrollHeight - e.scrollTop - e.offsetHeight;
+  }, []);
 
   useEffect(() => {
     if (!reference) return;
@@ -43,12 +47,7 @@ const MessageList: FC<IMessageListProps> = ({
     }
 
     prevProps.current = props;
-  }, [checkScroll, prevProps, props, reference]);
-
-  const getBottom = (e: any) => {
-    if (e.current) return e.current.scrollHeight - e.current.scrollTop - e.current.offsetHeight;
-    return e.scrollHeight - e.scrollTop - e.offsetHeight;
-  };
+  }, [checkScroll, getBottom, prevProps, props, reference]);
 
   const onDownload: MessageListEvent = useCallback(
     (item, index, event) => {
@@ -71,37 +70,43 @@ const MessageList: FC<IMessageListProps> = ({
     [props],
   );
 
-  const onScroll = (e: React.UIEvent<HTMLElement>): void => {
-    const bottom = getBottom(e.currentTarget);
-    setScrollBottom(bottom);
-    if (toBottomHeight === '100%' || (toBottomHeight && bottom > (toBottomHeight as number))) {
-      if (_downButton !== true) {
-        setDownButton(true);
-        setScrollBottom(bottom);
+  const onScroll = useCallback(
+    (e: React.UIEvent<HTMLElement>): void => {
+      const bottom = getBottom(e.currentTarget);
+      setScrollBottom(bottom);
+      if (toBottomHeight === '100%' || (toBottomHeight && bottom > (toBottomHeight as number))) {
+        if (_downButton !== true) {
+          setDownButton(true);
+          setScrollBottom(bottom);
+        }
+      } else {
+        if (_downButton !== false) {
+          setDownButton(false);
+          setScrollBottom(bottom);
+        }
       }
-    } else {
-      if (_downButton !== false) {
-        setDownButton(false);
-        setScrollBottom(bottom);
+      if (reference.current.scrollTop === 0) {
+        if (hasNext) {
+          next();
+        }
       }
-    }
-    if (reference.current.scrollTop === 0) {
-      if (hasNext) {
-        next();
+      if (props.onScroll instanceof Function) {
+        props.onScroll(e);
       }
-    }
-    if (props.onScroll instanceof Function) {
-      props.onScroll(e);
-    }
-  };
+    },
+    [_downButton, getBottom, hasNext, next, props, reference, toBottomHeight],
+  );
 
-  const toBottom = (e?: any) => {
-    if (!reference) return;
-    reference.current.scrollTop = reference.current.scrollHeight;
-    if (props.onDownButtonClick instanceof Function) {
-      props.onDownButtonClick(e);
-    }
-  };
+  const toBottom = useCallback(
+    (e?: any) => {
+      if (!reference) return;
+      reference.current.scrollTop = reference.current.scrollHeight;
+      if (props.onDownButtonClick instanceof Function) {
+        props.onDownButtonClick(e);
+      }
+    },
+    [props, reference],
+  );
 
   useEffect(() => {
     if (!reference) return;

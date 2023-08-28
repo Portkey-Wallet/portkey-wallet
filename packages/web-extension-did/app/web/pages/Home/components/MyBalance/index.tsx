@@ -33,7 +33,9 @@ import AccountConnect from 'pages/components/AccountConnect';
 import { useBuyButtonShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export interface TransactionResult {
   total: number;
@@ -83,7 +85,7 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
-  const { isBuyButtonShow } = useBuyButtonShow();
+  const { isBuyButtonShow } = useBuyButtonShow(VersionDeviceType.Extension);
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
 
@@ -104,6 +106,11 @@ export default function MyBalance() {
     isMainNet && appDispatch(fetchSellFiatListAsync());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMainNet]);
+
+  useEffect(() => {
+    appDispatch(fetchContactListAsync());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSelectedToken = useCallback(
     (v: AccountAssetItem, type: 'token' | 'nft') => {

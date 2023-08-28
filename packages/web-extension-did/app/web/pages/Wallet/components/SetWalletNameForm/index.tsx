@@ -114,7 +114,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
 
         {showChat && (
           <IdAndAddress
-            portkeyId={data?.userId}
+            portkeyId={data?.caHolderInfo?.userId}
             relationId={data?.relationId}
             addresses={data?.addresses || []}
             handleCopy={handleCopy}

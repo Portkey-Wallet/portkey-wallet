@@ -22,16 +22,31 @@ export const formatImageSize = ({
   width = 0,
   maxWidth = 100,
   maxHeight = 100,
+  minWidth,
+  minHeight,
 }: {
   width?: string | number;
   height?: string | number;
   maxWidth?: number;
   maxHeight?: number;
+  minWidth?: number;
+  minHeight?: number;
 }) => {
   if (typeof height === 'string') height = Number(height);
   if (typeof width === 'string') width = Number(width);
   const ratio = Math.min(maxWidth / width, maxHeight / height);
   const tempWidth = Math.floor(width * ratio);
   const tempHeight = Math.floor(Math.max(height * ratio));
-  return { width: tempWidth || maxWidth, height: tempHeight || maxHeight };
+
+  const imageSize: any = { width: tempWidth || maxWidth, height: tempHeight || maxHeight };
+  if (minWidth && imageSize.width < minWidth) {
+    imageSize.minWidth = minWidth;
+    delete imageSize.width;
+  }
+
+  if (minHeight && imageSize.height < minHeight) {
+    imageSize.minHeight = minHeight;
+    delete imageSize.height;
+  }
+  return imageSize;
 };

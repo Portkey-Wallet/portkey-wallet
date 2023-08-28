@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
@@ -18,6 +18,7 @@ import GStyles from 'assets/theme/GStyles';
 import FindMoreButton from 'pages/Chat/components/FindMoreButton';
 import ContactUpdateWarning from 'pages/My/components/ContactUpdateWarning';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const ContactsHome: React.FC = () => {
   const { t } = useLanguage();
@@ -27,12 +28,13 @@ const ContactsHome: React.FC = () => {
   const [filerList, setFilterList] = useState<any[]>([]);
 
   const debounceKeyword = useDebounce(keyword, 500);
+  const isShowChat = useIsChatShow();
 
   const tabList = useMemo(
     () => [
       { name: 'All', tabItemDom: <ContactsList isSearchShow={false} style={pageStyles.contactListStyle} /> },
       {
-        name: 'Portkey Chat',
+        name: 'Chats',
         tabItemDom: (
           <>
             <FindMoreButton />
@@ -44,6 +46,8 @@ const ContactsHome: React.FC = () => {
     [],
   );
 
+  const clearText = useCallback(() => setKeyword(''), []);
+
   useEffect(() => {
     const { contactFilterList } = searchContact(debounceKeyword, ContactsTab.ALL);
     console.log('searchContact', contactFilterList);
@@ -52,6 +56,7 @@ const ContactsHome: React.FC = () => {
 
   return (
     <PageContainer
+      leftCallback={() => navigationService.navigate('Tab')}
       titleDom={t('Contacts')}
       safeAreaColor={['blue', 'white']}
       rightDom={
@@ -65,15 +70,28 @@ const ContactsHome: React.FC = () => {
       }
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
-      <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
-        <CommonInput
-          value={keyword}
-          placeholder={t('Name or address')}
-          onChangeText={value => setKeyword(value.trim())}
-        />
-      </View>
-      <ContactUpdateWarning />
-      {debounceKeyword ? <SearchContactListSection list={filerList} /> : <CommonTopTab tabList={tabList} />}
+      {isShowChat && (
+        <>
+          <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
+            <CommonInput
+              value={keyword}
+              placeholder={t('Name or address')}
+              onChangeText={value => setKeyword(value.trim())}
+              rightIcon={
+                keyword ? (
+                  <TouchableOpacity onPress={clearText}>
+                    <Svg icon="clear3" size={pTd(16)} />
+                  </TouchableOpacity>
+                ) : undefined
+              }
+              rightIconContainerStyle={pageStyles.rightIconContainerStyle}
+            />
+          </View>
+          <ContactUpdateWarning />
+          {debounceKeyword ? <SearchContactListSection list={filerList} /> : <CommonTopTab tabList={tabList} />}
+        </>
+      )}
+      {!isShowChat && <ContactsList isSearchShow isContactUpdateWarningShow style={pageStyles.contactListStyle} />}
     </PageContainer>
   );
 };
@@ -88,5 +106,8 @@ export const pageStyles = StyleSheet.create({
   },
   contactListStyle: {
     backgroundColor: defaultColors.bg1,
+  },
+  rightIconContainerStyle: {
+    marginRight: pTd(10),
   },
 });

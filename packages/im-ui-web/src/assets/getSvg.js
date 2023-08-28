@@ -21,11 +21,11 @@ function readSvgs() {
   return new Promise((resolve, reject) => {
     fs.readdir(svgDir, function (err, files) {
       if (err) reject(err);
-      Promise.all(files.map(filename => readfile(filename)))
-        .then(data => {
+      Promise.all(files.map((filename) => readfile(filename)))
+        .then((data) => {
           resolve(data);
         })
-        .catch(error => reject(error));
+        .catch((error) => reject(error));
     });
   });
 }

@@ -18,6 +18,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import CustomModal from 'pages/components/CustomModal';
 import { useGoProfile } from 'hooks/useProfile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { ExtraType, ExtraTypeEnum } from 'types/Profile';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -48,7 +49,7 @@ export default function AddContact() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { extra } = useParams();
+  const { extra }: { extra?: ExtraType } = useParams();
   const appDispatch = useAppDispatch();
   const showChat = useIsChatShow();
   const [disable, setDisabled] = useState<boolean>(true);
@@ -63,18 +64,6 @@ export default function AddContact() {
 
   const isTestNet = useIsTestnet();
 
-  useEffect(() => {
-    const { addresses } = state;
-    const cusAddresses = addresses.map((ads: AddressItem) => ({
-      ...ads,
-      networkName: transNetworkText(ads.chainId, isTestNet),
-      validData: { validateStatus: '', errorMsg: '' },
-    }));
-    form.setFieldValue('addresses', cusAddresses);
-    setAddressArr(cusAddresses);
-    setDisabled(false);
-  }, [form, isTestNet, state]);
-
   const handleSelectNetwork = useCallback((i: number) => {
     setNetOpen(true);
     setIndex(i);
@@ -87,7 +76,7 @@ export default function AddContact() {
         address: '',
         networkName: v.networkName,
         chainId: v.chainId,
-        chainName: v.chainName,
+        chainName: 'aelf',
         validData: { validateStatus: '', errorMsg: '' },
       });
       form.setFieldValue('addresses', [...prevAddresses]);
@@ -104,9 +93,9 @@ export default function AddContact() {
   const handleFormValueChange = useCallback(() => {
     const { name, addresses } = form.getFieldsValue();
     const flag = addresses.some((ads: Record<string, string>) => !ads?.address);
-    const err = addressArr.some((ads) => ads.validData.validateStatus === 'error');
+    const err = (addresses as CustomAddressItem[]).some((ads) => ads?.validData?.validateStatus === 'error');
     setDisabled(!name || !addresses.length || flag || err);
-  }, [addressArr, form]);
+  }, [form]);
 
   const handleInputValueChange = useCallback(
     (v: string) => {
@@ -179,7 +168,8 @@ export default function AddContact() {
           newAddress[i].validData = { validateStatus: 'error', errorMsg: ContactInfoError.invalidAddress };
         }
       });
-      if (!flag) {
+
+      if (flag > 0) {
         setAddressArr(newAddress);
         setDisabled(true);
       }
@@ -188,21 +178,32 @@ export default function AddContact() {
     [addressArr],
   );
 
+  useEffect(() => {
+    const { addresses } = state;
+    const cusAddresses = addresses.map((ads: AddressItem) => ({
+      ...ads,
+      networkName: transNetworkText(ads.chainId, isTestNet),
+      validData: { validateStatus: '', errorMsg: '' },
+    }));
+    form.setFieldValue('addresses', cusAddresses);
+    setAddressArr(cusAddresses);
+  }, [form, isTestNet, state]);
+
   const handleView = useGoProfile();
   const requestAddContact = useCallback(
     async (name: string, addresses: AddressItem[]) => {
       let contactDetail = {} as ContactItemType;
-      if (extra === '2') {
+      if (extra === ExtraTypeEnum.CANT_CHAT) {
         // edit
-        contactDetail = await editContactApi({ name: name.trim(), addresses });
+        contactDetail = await editContactApi({ name: name.trim(), addresses, id: state?.id });
       } else {
-        // add extra === '3'
+        // add extra === ExtraTypeEnum.ADD_NEW_CHAT
         contactDetail = await addContactApi({ name: name.trim(), addresses });
       }
 
       appDispatch(fetchContactListAsync());
 
-      if (contactDetail?.imInfo?.relationId) {
+      if (!state?.imInfo?.relationId && contactDetail?.imInfo?.relationId) {
         // CAN CHAT
         CustomModal({
           type: 'info',
@@ -222,10 +223,14 @@ export default function AddContact() {
       } else {
         // CANT CHAT
         handleView(contactDetail);
-        message.success('Add Contact Successful');
+        if (extra === ExtraTypeEnum.CANT_CHAT) {
+          message.success('Edit Contact Successful');
+        } else {
+          message.success('Add Contact Successful');
+        }
       }
     },
-    [addContactApi, appDispatch, handleView],
+    [addContactApi, appDispatch, editContactApi, extra, handleView, state?.id, state?.imInfo?.relationId],
   );
 
   const onFinish = useCallback(
@@ -259,7 +264,7 @@ export default function AddContact() {
 
   // go back previous page
   const handleGoBack = useCallback(() => {
-    if (extra === '3') {
+    if (extra === ExtraTypeEnum.ADD_NEW_CHAT) {
       navigate('/setting/contacts');
     } else {
       navigate('/setting/contacts/view', { state: state });
@@ -281,6 +286,7 @@ export default function AddContact() {
       isDisable={disable}
       validName={validName}
       state={state}
+      extra={extra || ExtraTypeEnum.ADD_NEW_CHAT}
       addressArr={addressArr}
       onFinish={onFinish}
       handleSelectNetwork={handleSelectNetwork}
@@ -298,6 +304,7 @@ export default function AddContact() {
       isDisable={disable}
       validName={validName}
       state={state}
+      extra={extra || ExtraTypeEnum.ADD_NEW_CHAT}
       addressArr={addressArr}
       onFinish={onFinish}
       handleSelectNetwork={handleSelectNetwork}

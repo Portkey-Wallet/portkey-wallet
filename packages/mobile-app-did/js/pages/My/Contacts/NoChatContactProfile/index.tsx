@@ -3,34 +3,23 @@ import { ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
-import useEffectOnce from 'hooks/useEffectOnce';
-import ActionSheet from 'components/ActionSheet';
+import { useContactInfo } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 type RouterParams = {
-  contact?: ContactItemType;
+  contactId?: string;
 };
 
 const NoChatContactProfile: React.FC = () => {
-  const { contact } = useRouterParams<RouterParams>();
+  const { contactId } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
-
-  useEffectOnce(() => {
-    ActionSheet.alert({
-      message:
-        'Portkey has grouped contacts with the same Portkey ID together and removed duplicate contacts with the same address.',
-      buttons: [
-        {
-          title: 'OK',
-        },
-      ],
-    });
+  const contact = useContactInfo({
+    contactId,
   });
 
   return (
@@ -40,7 +29,7 @@ const NoChatContactProfile: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <ScrollView alwaysBounceVertical={true}>
-        <ProfileHeaderSection name={contact?.name || ''} />
+        <ProfileHeaderSection showRemark={false} name={contact?.name || ''} />
         <ProfileAddressSection noMarginTop title="Address" addressList={contact?.addresses} />
       </ScrollView>
       <CommonButton

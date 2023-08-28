@@ -7,14 +7,16 @@ import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
 import { ChatMessage } from 'pages/Chat/types';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatImageSize } from '@portkey-wallet/utils/img';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import isEqual from 'lodash/isEqual';
+import CommonToast from 'components/CommonToast';
 
-const maxWidth = screenWidth * 0.6;
-const maxHeight = screenWidth * 0.6;
+const maxWidth = pTd(280);
+const maxHeight = pTd(280);
+
+const min = pTd(100);
 
 function MessageImage(props: MessageProps<ChatMessage>) {
   const { currentMessage, position } = props;
@@ -27,11 +29,11 @@ function MessageImage(props: MessageProps<ChatMessage>) {
     [position],
   );
   const img = useMemo(() => {
-    const imageSize = formatImageSize({ width, height, maxWidth, maxHeight });
+    const imageSize = formatImageSize({ width, height, maxWidth, maxHeight, minWidth: min, minHeight: min });
     return (
       <CacheImage
-        style={[styles.image, { width: imageSize.width, height: imageSize.height }, radiusStyle]}
-        resizeMode="cover"
+        style={[styles.image, imageSize, radiusStyle]}
+        resizeMode="contain"
         originUri={imgUri}
         source={{ uri: thumbUri }}
       />
@@ -57,7 +59,19 @@ function MessageImage(props: MessageProps<ChatMessage>) {
       const { pageX, pageY } = event.nativeEvent;
       if (position === 'right')
         ChatOverlay.showChatPopover({
-          list: [{ title: 'Delete', iconName: 'chat-delete', onPress: () => deleteMessage(currentMessage?.id) }],
+          list: [
+            {
+              title: 'Delete',
+              iconName: 'chat-delete',
+              onPress: async () => {
+                try {
+                  await deleteMessage(currentMessage?.id);
+                } catch (error) {
+                  CommonToast.fail('Failed to delete message');
+                }
+              },
+            },
+          ],
           px: pageX,
           py: pageY,
           formatType: 'dynamicWidth',
@@ -86,8 +100,6 @@ export default memo(MessageImage, (prevProps, nextProps) => {
 const styles = StyleSheet.create({
   image: {
     borderRadius: pTd(18),
-    width: pTd(280),
-    height: pTd(280),
   },
   textStyles: {
     fontSize: pTd(16),

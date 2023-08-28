@@ -10,19 +10,20 @@ import { StyleSheet, View } from 'react-native';
 import { copyText } from 'utils';
 import { pTd } from 'utils/unit';
 
-type PortkeyIDItemPropsType = {
+type ProfileIDSectionType = {
+  title?: string;
   disable?: boolean;
   noMarginTop?: boolean;
-  portkeyID: string;
+  id?: string;
 };
 
-const PortkeyIDItem: React.FC<PortkeyIDItemPropsType> = props => {
-  const { disable = false, noMarginTop = false, portkeyID = 'portkeyID' } = props;
+const ProfileIDSection: React.FC<ProfileIDSectionType> = props => {
+  const { disable = false, noMarginTop = false, id = '', title = 'Portkey ID' } = props;
 
-  const copyId = useCallback(() => copyText(portkeyID), [portkeyID]);
+  const copyId = useCallback(() => copyText(id), [id]);
 
   return (
-    <FormItem title="Portkey ID" style={[noMarginTop && GStyles.marginTop(0)]}>
+    <FormItem title={title} style={[noMarginTop && GStyles.marginTop(0)]}>
       <View
         style={[
           GStyles.flexRow,
@@ -32,7 +33,7 @@ const PortkeyIDItem: React.FC<PortkeyIDItemPropsType> = props => {
           styles.content,
         ]}>
         <TextM style={styles.text} numberOfLines={1}>
-          {portkeyID}
+          {id}
         </TextM>
         <Touchable onPress={copyId}>
           <Svg icon="copy" size={pTd(16)} />
@@ -42,7 +43,7 @@ const PortkeyIDItem: React.FC<PortkeyIDItemPropsType> = props => {
   );
 };
 
-export default memo(PortkeyIDItem);
+export default memo(ProfileIDSection);
 
 const styles = StyleSheet.create({
   content: {

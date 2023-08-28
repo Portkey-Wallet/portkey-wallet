@@ -19,7 +19,7 @@ const chineseReg = new RegExp('[\\u4E00-\\u9FFF]+', 'g');
 
 // handle svgs
 readSvgs()
-  .then(async data => {
+  .then(async (data) => {
     const obj = Object.assign.apply(this, data);
     delete obj[''];
     const svgList = Object.entries(obj);
@@ -38,6 +38,6 @@ readSvgs()
       await fs.writeFileSync(newPath, newData);
     }
   })
-  .catch(err => {
+  .catch((err) => {
     throw new Error(err);
   });

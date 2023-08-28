@@ -19,14 +19,22 @@ import { chatInputRecorder } from 'pages/Chat/utils';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { defaultColors } from 'assets/theme';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
+import { FontStyles } from 'assets/theme/styles';
+import { ViewStyleType } from 'types/styles';
 export interface ChatInput extends TextInput {
   focus: (autoHide?: boolean) => void;
 }
 
-export const EmojiIcon = memo(function EmojiIcon({ onPress }: { onPress?: () => void }) {
+export const EmojiIcon = memo(function EmojiIcon({ onPress, style }: { onPress?: () => void; style?: ViewStyleType }) {
+  const bottomBarStatus = useBottomBarStatus();
   return (
-    <Touchable onPressWithSecond={500} style={styles.emojiSvg} onPress={onPress}>
-      <Svg color="#222B45" size={pTd(24)} icon="chat-emoji" />
+    <Touchable onPressWithSecond={500} style={[styles.emojiSvg, style]} onPress={onPress}>
+      <Svg
+        color={FontStyles.font3.color}
+        size={pTd(24)}
+        icon={bottomBarStatus !== ChatBottomBarStatus.emoji ? 'chat-emoji' : 'chat-keyboard'}
+      />
     </Touchable>
   );
 });
@@ -56,10 +64,11 @@ const ChatInput = forwardRef(function Input(props: TextInputProps, _ref) {
       multiline
       value={text}
       ref={_ref as any}
-      style={styles.input}
+      maxLength={MAX_INPUT_LENGTH}
       onChangeText={onChangeText}
       onSelectionChange={onSelectionChange}
       {...props}
+      style={[styles.input, props.style]}
     />
   );
 });
@@ -138,13 +147,14 @@ export const AndroidChatInputBar = forwardRef(function InputBar(
         <View style={hide ? styles.hideInput : GStyles.flex1} pointerEvents={!inputDisabled ? 'box-only' : 'auto'}>
           <ChatInput
             ref={textInputRef}
+            style={styles.inputStyle}
             onBlur={() => setInputBlur(true)}
             onFocus={() => setInputBlur(false)}
             onContentSizeChange={handleContentSizeChange}
           />
         </View>
       </Touchable>
-      <EmojiIcon onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
+      <EmojiIcon style={styles.emojiStyle} onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
     </View>
   );
 });
@@ -159,15 +169,17 @@ export const IOSChatInputBar = forwardRef(function InputBar(
 ) {
   return (
     <View style={styles.inputWrapStyle}>
-      <ChatInput ref={_ref} />
-      <EmojiIcon onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
+      <ChatInput style={styles.inputStyle} ref={_ref} />
+      <EmojiIcon style={styles.emojiStyle} onPress={() => onPressActionButton(ChatBottomBarStatus.emoji)} />
     </View>
   );
 });
-// Android interacts differently than iOS
+// Android interacts diffe than iOS
 export const ChatInputBar = isIOS ? IOSChatInputBar : AndroidChatInputBar;
 
 const styles = StyleSheet.create({
+  inputStyle: { paddingRight: pTd(40) },
+  emojiStyle: { position: 'absolute', bottom: 8 },
   emojiSvg: {
     marginLeft: 0,
     marginBottom: 0,
@@ -181,7 +193,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: defaultColors.bg1,
     borderRadius: pTd(20),
-    paddingRight: pTd(40),
+    paddingRight: 0,
     paddingVertical: pTd(6),
     minHeight: pTd(40),
     maxHeight: pTd(200),

@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { BubbleProps, IMessage } from 'react-native-gifted-chat';
+import { BubbleProps } from 'react-native-gifted-chat';
 import { Bubble } from 'react-native-gifted-chat';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
+import { ChatMessage } from 'pages/Chat/types';
 
-export default function CustomBubble(props: BubbleProps<IMessage>) {
+export default function CustomBubble(props: BubbleProps<ChatMessage>) {
+  const { messageType } = props?.currentMessage || {};
   return (
     <Bubble
       touchableProps={{ disabled: true }}
-      wrapperStyle={{
-        left: [styles.wrapperStyle, styles.wrapLeft],
-        right: [styles.wrapperStyle, styles.wrapRight],
-      }}
+      wrapperStyle={useMemo(
+        () => ({
+          left: [styles.wrapperStyle, styles.wrapLeft, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+          right: [styles.wrapperStyle, styles.wrapRight, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+        }),
+        [messageType],
+      )}
       containerToNextStyle={{
         left: styles.containerToNextLeftStyle,
         right: styles.containerToNextRightStyle,
@@ -50,5 +55,8 @@ const styles = StyleSheet.create({
   },
   containerStyle: {
     margin: pTd(4),
+  },
+  notSupportStyle: {
+    backgroundColor: defaultColors.bg18,
   },
 });

@@ -10,6 +10,7 @@ import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { sleep } from '@portkey-wallet/utils';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import OpenNewTabController from 'controllers/openNewTabController';
+import im from '@portkey-wallet/im';
 
 export function useChangeNetwork() {
   const dispatch = useAppDispatch();
@@ -26,6 +27,7 @@ export function useChangeNetwork() {
       const tmpChainId = tmpCaInfo?.originChainId || originChainId || DefaultChainId;
 
       resetStore();
+      im.destroy();
       dispatch(setWalletNameAction('Wallet 01'));
       dispatch(changeNetworkType(network.networkType));
       if (tmpCaInfo?.managerInfo && tmpCaInfo?.[tmpChainId]?.caAddress) {

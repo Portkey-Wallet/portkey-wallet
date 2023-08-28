@@ -3,9 +3,10 @@ import './index.less';
 import CustomSvg from 'components/CustomSvg';
 import { IProfileDetailBodyProps } from 'types/Profile';
 import IdAndAddress from '../IdAndAddress';
-import { useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { useState, useEffect } from 'react';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useEffect, useMemo, useState } from 'react';
+import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 
 export default function ViewContactBody({
   data,
@@ -14,9 +15,6 @@ export default function ViewContactBody({
   addedText = 'Added',
   addContactText = 'Add Contact',
   isShowRemark = true,
-  isShowAddContactBtn = true,
-  isShowAddedBtn = true,
-  isShowChatBtn = true,
   handleEdit,
   handleChat,
   handleAdd,
@@ -24,67 +22,82 @@ export default function ViewContactBody({
 }: IProfileDetailBodyProps) {
   const isMyContactFn = useIsMyContact();
   const showChat = useIsChatShow();
+  const relationId = useMemo(
+    () => data.imInfo?.relationId || data.relationId || '',
+    [data.imInfo?.relationId, data.relationId],
+  );
+  const { name, index } = useIndexAndName(data as Partial<ContactItemType>);
+  const transName = useMemo(() => {
+    if (showChat) {
+      return data?.caHolderInfo?.walletName || data?.imInfo?.name || data?.name;
+    } else {
+      return name;
+    }
+  }, [data?.caHolderInfo?.walletName, data?.imInfo?.name, data?.name, name, showChat]);
 
-  const [isMyContact, setIsMyContact] = useState(false);
+  const [isMyContact, setIsMyContact] = useState(true);
 
   useEffect(() => {
-    setIsMyContact(isMyContactFn({ userId: data?.userId, relationId: data?.relationId }));
-  }, [data?.relationId, data?.userId, isMyContactFn]);
+    setIsMyContact(isMyContactFn({ relationId, contactId: data?.id }));
+  }, [data, isMyContactFn, relationId]);
 
   return (
     <div className="flex-column-between view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
-          <div className="flex-center name-index">{data.index}</div>
-          <div className="name">{data?.walletName || data?.caHolderInfo?.walletName || ''}</div>
+          <div className="flex-center name-index">{index}</div>
+          <div className="name">{transName}</div>
 
           {/* Section - Remark */}
-          {isShowRemark && (
+          {showChat && relationId && isMyContact && isShowRemark && (
             <div className="remark">
               <span>{`Remark: `}</span>
-              <span>{data?.name || 'No set'}</span>
+              <span>{data?.name || 'Not set'}</span>
             </div>
           )}
-          {!isShowRemark && !isShowAddContactBtn && !isShowAddedBtn && !isShowChatBtn && (
-            <div className="empty-placeholder-8"></div>
-          )}
-          {isShowRemark && (isShowAddContactBtn || isShowAddedBtn || isShowChatBtn) && (
+
+          {/* empty-placeholder */}
+          {!data.id && !(!data.id && !isMyContact) && <div className="empty-placeholder-8"></div>}
+          {((isShowRemark && (data.id || (!data.id && !isMyContact))) || data?.from === 'my-did') && (
             <div className="empty-placeholder-24"></div>
           )}
 
           {/* Section - Action: Added | Add Contact | Chat */}
-          <div className="flex-center action">
-            {isShowAddedBtn && isMyContact && (
-              <div className="flex-column-center action-item added-contact">
-                <CustomSvg type="ContactAdded" />
-                <span>{addedText}</span>
-              </div>
-            )}
-            {isShowAddContactBtn && !isMyContact && (
-              <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
-                <CustomSvg type="ContactAdd" />
-                <span>{addContactText}</span>
-              </div>
-            )}
-            {isShowChatBtn && showChat && data.userId && (
+          {showChat && data?.from !== 'my-did' && relationId && (
+            <div className="flex-center action">
+              {data.id && isMyContact && (
+                <div className="flex-column-center action-item added-contact">
+                  <CustomSvg type="ContactAdded" />
+                  <span>{addedText}</span>
+                </div>
+              )}
+
+              {(!data.id || !isMyContact) && (
+                <div className="flex-column-center action-item add-contact" onClick={handleAdd}>
+                  <CustomSvg type="ContactAdd" />
+                  <span>{addContactText}</span>
+                </div>
+              )}
+
               <div className="flex-column-center action-item chat-contact" onClick={handleChat}>
                 <CustomSvg type="ContactChat" />
                 <span>{chatText}</span>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <IdAndAddress
-          portkeyId={data?.userId}
-          relationId={data?.userId}
+          portkeyId={data?.caHolderInfo?.userId}
+          relationId={relationId}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
+          addressSectionLabel={showChat && (relationId || data?.from === 'my-did') ? 'DID' : 'Address'}
         />
       </div>
 
       {/* stranger cant edit */}
-      {isMyContact && (
+      {(data.id || isMyContact || data?.from === 'my-did') && (
         <div className="footer">
           <Button type="primary" htmlType="submit" className="edit-btn" onClick={handleEdit}>
             {editText}

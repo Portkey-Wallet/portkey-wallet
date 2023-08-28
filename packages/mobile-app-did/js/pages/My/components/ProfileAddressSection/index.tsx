@@ -1,6 +1,7 @@
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId, ChainType } from '@portkey-wallet/types';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -10,14 +11,15 @@ import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 
 import React, { memo, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { copyText } from 'utils';
 import { pTd } from 'utils/unit';
 
 type addressItemType = {
   address: string;
   chainId: ChainId;
-  chainType?: ChainType;
+  image?: string;
+  chainName?: ChainType | string;
 };
 
 type ProfileAddressSectionPropsType = {
@@ -25,32 +27,49 @@ type ProfileAddressSectionPropsType = {
   disable?: boolean;
   noMarginTop?: boolean;
   addressList?: addressItemType[];
+  isMySelf?: boolean;
 };
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
-  const { title = 'DID', disable, noMarginTop, addressList } = props;
-  const { currentNetwork } = useWallet();
+  const { title = 'DID', disable, noMarginTop, addressList, isMySelf } = props;
+  const isTestnet = useIsTestnet();
 
   const copyId = useCallback(
-    (ele: addressItemType) =>
-      copyText(ele.chainType === 'ethereum' ? ele.address : `ELF_${ele.address}_${ele.chainId}`),
+    (ele: addressItemType) => copyText(ele.chainName === 'aelf' ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
     [],
   );
+
+  console.log('list!!!!', addressList);
 
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
       {addressList?.map((ele, index) => (
         <View key={index} style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap]}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
-            <TextM style={styles.address}>{formatStr2EllipsisStr(addressFormat(ele.address, ele.chainId), 20)}</TextM>
+            <TextM style={styles.address}>
+              {formatStr2EllipsisStr(
+                addressFormat(ele.address, ele.chainId, (ele?.chainName || 'aelf') as ChainType),
+                20,
+              )}
+            </TextM>
             <Touchable onPress={() => copyId(ele)}>
               <Svg icon="copy" size={pTd(16)} />
             </Touchable>
           </View>
           <View style={GStyles.flexRow}>
-            <Svg icon="elf-icon" size={pTd(16)} />
+            {/* TODO: icon */}
+            {isMySelf ? (
+              <Svg icon="elf-icon" size={pTd(16)} />
+            ) : (
+              <Image
+                source={{
+                  uri: ele.image || '',
+                }}
+                style={styles.img}
+              />
+            )}
             <TextS style={[FontStyles.font3, GStyles.marginLeft(pTd(8))]}>
-              {formatChainInfoToShow(ele.chainId, currentNetwork)}
+              {transNetworkTextWithAllChain(ele.chainId, isTestnet, ele.chainName || 'aelf')}
             </TextS>
           </View>
         </View>
@@ -73,5 +92,10 @@ const styles = StyleSheet.create({
   address: {
     width: pTd(270),
     color: defaultColors.font5,
+  },
+  img: {
+    width: pTd(16),
+    height: pTd(16),
+    borderRadius: pTd(8),
   },
 });

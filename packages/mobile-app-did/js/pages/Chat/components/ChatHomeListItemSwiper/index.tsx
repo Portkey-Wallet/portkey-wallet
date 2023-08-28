@@ -8,7 +8,7 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
-import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
 import { ChannelItem } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
@@ -158,6 +158,7 @@ const styles = StyleSheet.create({
     height: pTd(72) - StyleSheet.hairlineWidth,
     borderBottomColor: defaultColors.border1,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: StyleSheet.hairlineWidth,
   },
   deleteIconWrap: {
     marginRight: pTd(16),
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
     borderWidth: pTd(1),
     borderRadius: pTd(9),
     overflow: 'hidden',
-    lineHeight: pTd(15),
+    lineHeight: pTd(isIOS ? 15 : 17),
   },
   hide: {
     borderWidth: 0,

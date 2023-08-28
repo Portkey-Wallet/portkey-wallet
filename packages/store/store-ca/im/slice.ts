@@ -33,68 +33,51 @@ export const imSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(setRelationId, (state, action) => {
-        return {
-          ...state,
-          relationIdNetMap: {
-            ...state.relationIdNetMap,
-            [action.payload.network]: action.payload.relationId,
-          },
-        };
+        state.relationIdNetMap[action.payload.network] = action.payload.relationId;
       })
       .addCase(setChannelList, (state, action) => {
-        return {
-          ...state,
-          channelListNetMap: {
-            ...state.channelListNetMap,
-            [action.payload.network]: formatChannelList(action.payload.channelList),
-          },
-        };
+        state.channelListNetMap[action.payload.network] = formatChannelList(action.payload.channelList);
       })
       .addCase(nextChannelList, (state, action) => {
-        const originList = state.channelListNetMap[action.payload.network]?.list || [];
-        let channelList = {
-          list: [...originList, ...action.payload.channelList.list],
-          cursor: action.payload.channelList.cursor,
+        const { network, channelList } = action.payload;
+
+        const preList = state.channelListNetMap[network]?.list || [];
+        let newChannelList = {
+          list: [...preList, ...channelList.list],
+          cursor: channelList.cursor,
         };
-        channelList = formatChannelList(channelList);
-        return {
-          ...state,
-          channelListNetMap: {
-            ...state.channelListNetMap,
-            [action.payload.network]: channelList,
-          },
-        };
+        newChannelList = formatChannelList(newChannelList);
+
+        state.channelListNetMap[network] = newChannelList;
       })
       .addCase(setHasNext, (state, action) => {
-        return {
-          ...state,
-          hasNextNetMap: {
-            ...state.hasNextNetMap,
-            [action.payload.network]: action.payload.hasNext,
-          },
-        };
+        state.hasNextNetMap[action.payload.network] = action.payload.hasNext;
       })
       .addCase(updateChannelAttribute, (state, action) => {
-        const preChannelList = state.channelListNetMap[action.payload.network];
+        const { network, channelId, value, type } = action.payload;
+
+        const preChannelList = state.channelListNetMap[network];
         if (!preChannelList) return state;
 
         let channelList = {
           ...preChannelList,
           list: preChannelList.list.map(item => {
-            if (item.channelUuid === action.payload.channelId) {
+            if (item.channelUuid === channelId) {
+              let plusAttribute: typeof value | undefined;
+              switch (type) {
+                case UpdateChannelAttributeTypeEnum.UPDATE_UNREAD_CHANNEL:
+                  plusAttribute = {
+                    unreadMessageCount: item.unreadMessageCount + 1,
+                  };
+                  break;
+                default:
+                  break;
+              }
+
               return {
                 ...item,
-                ...action.payload.value,
-                ...((): typeof action.payload.value => {
-                  switch (action.payload.type) {
-                    case UpdateChannelAttributeTypeEnum.UPDATE_UNREAD_CHANNEL:
-                      return {
-                        unreadMessageCount: item.unreadMessageCount + 1,
-                      };
-                    default:
-                      return {};
-                  }
-                })(),
+                ...value,
+                ...plusAttribute,
               };
             }
             return item;
@@ -102,124 +85,105 @@ export const imSlice = createSlice({
         };
         channelList = formatChannelList(channelList);
 
-        return {
-          ...state,
-          channelListNetMap: {
-            ...state.channelListNetMap,
-            [action.payload.network]: channelList,
-          },
-        };
+        state.channelListNetMap[network] = channelList;
       })
       .addCase(addChannel, (state, action) => {
-        if (
-          state.channelListNetMap[action.payload.network]?.list?.find(
-            item => item.channelUuid === action.payload.channel.channelUuid,
-          )
-        ) {
+        const { network, channel } = action.payload;
+
+        const preChannelList = state.channelListNetMap[network];
+        const preList = preChannelList?.list || [];
+        if (preList.find(item => item.channelUuid === channel.channelUuid)) {
           return state;
         }
 
         const channelList = formatChannelList({
-          list: [action.payload.channel, ...(state.channelListNetMap?.[action.payload.network]?.list || [])],
-          cursor: state.channelListNetMap?.[action.payload.network]?.cursor || '',
+          list: [channel, ...preList],
+          cursor: preChannelList?.cursor || '',
         });
 
-        return {
-          ...state,
-          channelListNetMap: {
-            ...state.channelListNetMap,
-            [action.payload.network]: channelList,
-          },
-        };
+        state.channelListNetMap[network] = channelList;
       })
       .addCase(removeChannel, (state, action) => {
-        const preChannelList = state.channelListNetMap[action.payload.network];
+        const { network, channelId } = action.payload;
+
+        const preChannelList = state.channelListNetMap[network];
         if (!preChannelList) return state;
         let channelList = {
           ...preChannelList,
-          list: preChannelList.list.filter(item => item.channelUuid !== action.payload.channelId),
+          list: preChannelList.list.filter(item => item.channelUuid !== channelId),
         };
         channelList = formatChannelList(channelList);
 
-        return {
-          ...state,
-          channelListNetMap: {
-            ...state.channelListNetMap,
-            [action.payload.network]: channelList,
-          },
-        };
+        state.channelListNetMap[network] = channelList;
       })
       .addCase(setChannelMessageList, (state, action) => {
+        const { network, channelId, list } = action.payload;
         return {
           ...state,
           channelMessageListNetMap: {
             ...state.channelMessageListNetMap,
-            [action.payload.network]: {
-              ...state.channelMessageListNetMap?.[action.payload.network],
-              [action.payload.channelId]: action.payload.list,
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: list,
             },
           },
         };
       })
       .addCase(nextChannelMessageList, (state, action) => {
+        const { network, channelId, list } = action.payload;
         return {
           ...state,
           channelMessageListNetMap: {
             ...state.channelMessageListNetMap,
-            [action.payload.network]: {
-              ...state.channelMessageListNetMap?.[action.payload.network],
-              [action.payload.channelId]: [
-                ...action.payload.list,
-                ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId] || []),
-              ],
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: [...list, ...(state.channelMessageListNetMap?.[network]?.[channelId] || [])],
             },
           },
         };
       })
       .addCase(addChannelMessage, (state, action) => {
+        const { network, channelId, message } = action.payload;
         return {
           ...state,
           channelMessageListNetMap: {
             ...state.channelMessageListNetMap,
-            [action.payload.network]: {
-              ...state.channelMessageListNetMap?.[action.payload.network],
-              [action.payload.channelId]: [
-                ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId] || []),
-                action.payload.message,
-              ],
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: [...(state.channelMessageListNetMap?.[network]?.[channelId] || []), message],
             },
           },
         };
       })
       .addCase(deleteChannelMessage, (state, action) => {
+        const { network, channelId, id } = action.payload;
         return {
           ...state,
           channelMessageListNetMap: {
             ...state.channelMessageListNetMap,
-            [action.payload.network]: {
-              ...state.channelMessageListNetMap?.[action.payload.network],
-              [action.payload.channelId]: [
-                ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId]?.filter(
-                  item => item.id !== action.payload.id,
-                ) || []),
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: [
+                ...(state.channelMessageListNetMap?.[network]?.[channelId]?.filter(item => item.id !== id) || []),
               ],
             },
           },
         };
       })
       .addCase(updateChannelMessageAttribute, (state, action) => {
+        const { network, channelId, sendUuid, value } = action.payload;
         return {
           ...state,
           channelMessageListNetMap: {
             ...state.channelMessageListNetMap,
-            [action.payload.network]: {
-              ...state.channelMessageListNetMap?.[action.payload.network],
-              [action.payload.channelId]: [
-                ...(state.channelMessageListNetMap?.[action.payload.network]?.[action.payload.channelId]?.map(item => {
-                  if (item.sendUuid === action.payload.sendUuid) {
+            [network]: {
+              ...state.channelMessageListNetMap?.[network],
+              [channelId]: [
+                ...(state.channelMessageListNetMap?.[network]?.[channelId]?.map(item => {
+                  if (item.sendUuid === sendUuid) {
                     return {
                       ...item,
-                      ...action.payload.value,
+                      ...value,
                     };
                   }
                   return item;
@@ -230,13 +194,7 @@ export const imSlice = createSlice({
         };
       })
       .addCase(setRelationToken, (state, action) => {
-        return {
-          ...state,
-          relationTokenNetMap: {
-            ...state.relationTokenNetMap,
-            [action.payload.network]: action.payload.token,
-          },
-        };
+        state.relationTokenNetMap[action.payload.network] = action.payload.token;
       })
       .addCase(resetIm, (state, action) => {
         return {

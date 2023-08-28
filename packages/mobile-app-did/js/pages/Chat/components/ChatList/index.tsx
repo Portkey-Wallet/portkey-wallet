@@ -7,7 +7,6 @@ import { ChannelItem } from '@portkey-wallet/im/types';
 import NoData from 'components/NoData';
 import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useJumpToChatDetails } from 'hooks/chat';

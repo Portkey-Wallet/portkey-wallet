@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { MessageProps, Time } from 'react-native-gifted-chat';
-import { GestureResponderEvent, StyleSheet, Image, View } from 'react-native';
+import { GestureResponderEvent, StyleSheet, Image } from 'react-native';
 import CacheImage from 'components/CacheImage';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';

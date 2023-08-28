@@ -59,6 +59,7 @@ export default function MyMenu({ navigation }: any) {
     [navigation],
   );
 
+  // nav to chat tab
   useEffect(() => {
     const listener = myEvents.navToBottomTab.addListener(({ tabName }) => navToChat(tabName));
     return () => listener.remove();

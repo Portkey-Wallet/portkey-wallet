@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { GestureResponderEvent, LayoutChangeEvent, NativeModules, StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -201,10 +201,6 @@ const ChatDetails = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}
-      leftCallback={() => {
-        navigationService.navigate('Tab');
-        myEvents.navToBottomTab.emit({ tabName: ChatTabName });
-      }}
       leftDom={leftDom}
       rightDom={
         <Touchable style={[GStyles.marginRight(pTd(16))]} onPress={onPressMore}>

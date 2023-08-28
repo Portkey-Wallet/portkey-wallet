@@ -22,11 +22,10 @@ const ChatCamera: React.FC = () => {
   const [, requestCameraPermission] = Camera.useCameraPermissions();
   const { sendChannelImage } = useSendCurrentChannelMessage();
   const takePicture = useCallback(async () => {
-    if (!cameraRef?.current) return;
     try {
       const result = await cameraRef.current?.takePictureAsync();
       setImgUrl(result);
-      cameraRef.current.pausePreview();
+      cameraRef.current?.pausePreview();
     } catch (error) {
       console.log('------', error);
       CommonToast.fail('Failed to send message');

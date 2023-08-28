@@ -8,6 +8,8 @@ type TouchableProps = {
   highlight?: boolean;
 } & TouchableHighlightProps;
 
+const hitSlopStyle = { left: pTd(10), right: pTd(10), top: pTd(10), bottom: pTd(10) };
+
 const Touchable: React.FC<TouchableOpacityProps & TouchableProps> = props => {
   const { onPressIn, onPress, highlight, onPressWithSecond } = props;
 
@@ -16,7 +18,7 @@ const Touchable: React.FC<TouchableOpacityProps & TouchableProps> = props => {
   if (highlight)
     return (
       <TouchableHighlight
-        hitSlop={{ left: pTd(10), right: pTd(10), top: pTd(10), bottom: pTd(10) }}
+        hitSlop={hitSlopStyle}
         {...props}
         onPressIn={onPressIn ? handleOnPressIn : undefined}
         onPress={onPress ? handleOnPress : undefined}

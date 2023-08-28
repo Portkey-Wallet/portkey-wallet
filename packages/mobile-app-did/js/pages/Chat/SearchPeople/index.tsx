@@ -20,9 +20,10 @@ import CommonToast from 'components/CommonToast';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { ChannelItem } from '@portkey-wallet/im/types';
 import { useJumpToChatDetails } from 'hooks/chat';
+import { Input } from '@rneui/base';
 
 export default function SearchPeople() {
-  const iptRef = useRef<any>();
+  const iptRef = useRef<Input>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const searchChannel = useSearchChannel();
@@ -50,7 +51,7 @@ export default function SearchPeople() {
     useCallback(() => {
       if (iptRef?.current) {
         timerRef.current = setTimeout(() => {
-          iptRef.current.focus();
+          iptRef.current?.focus();
         }, 300);
       }
     }, []),
@@ -91,10 +92,10 @@ export default function SearchPeople() {
       containerStyles={styles.containerStyles}
       titleDom="Search">
       <InputWithCancel
-        ref={iptRef}
+        ref={iptRef as any}
+        value={keyword}
         clearText={() => setKeyword('')}
         onChangeText={v => setKeyword(v)}
-        value={keyword}
         onCancel={() => navigationService.goBack()}
       />
       <FindMoreButton />

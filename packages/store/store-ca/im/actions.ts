@@ -72,3 +72,8 @@ export const setRelationId = createAction<{
 }>('im/setRelationId');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');
+
+export const setRelationToken = createAction<{
+  network: NetworkType;
+  token: string;
+}>('im/setRelationToken');

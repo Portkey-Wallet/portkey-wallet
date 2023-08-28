@@ -1,15 +1,14 @@
-import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
 import { IMessageListProps, MessageListEvent } from '../type';
-
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
-  referance = null,
+  reference = null,
   lockable = false,
   toBottomHeight = 30,
   downButton = true,
@@ -22,8 +21,8 @@ const MessageList: FC<IMessageListProps> = ({
   const [_downButton, setDownButton] = useState(false);
   const prevProps = useRef(props);
 
-  const checkScroll = () => {
-    var e = referance;
+  const checkScroll = useCallback(() => {
+    const e = reference;
     if (!e || !e.current) return;
 
     if (toBottomHeight === '100%' || (toBottomHeight && scrollBottom < (toBottomHeight as number))) {
@@ -33,38 +32,47 @@ const MessageList: FC<IMessageListProps> = ({
         e.current.scrollTop = e.current.scrollHeight - e.current.offsetHeight - scrollBottom;
       }
     }
-  };
+  }, [lockable, reference, scrollBottom, toBottomHeight]);
 
   useEffect(() => {
-    if (!referance) return;
+    if (!reference) return;
 
     if (prevProps.current.dataSource.length !== props.dataSource.length) {
-      setScrollBottom(getBottom(referance));
+      setScrollBottom(getBottom(reference));
       checkScroll();
     }
 
     prevProps.current = props;
-  }, [prevProps, props]);
+  }, [checkScroll, prevProps, props, reference]);
 
   const getBottom = (e: any) => {
     if (e.current) return e.current.scrollHeight - e.current.scrollTop - e.current.offsetHeight;
     return e.scrollHeight - e.scrollTop - e.offsetHeight;
   };
 
-  const onDownload: MessageListEvent = (item, index, event) => {
-    if (props.onDownload instanceof Function) props.onDownload(item, index, event);
-  };
+  const onDownload: MessageListEvent = useCallback(
+    (item, index, event) => {
+      if (props.onDownload instanceof Function) props.onDownload(item, index, event);
+    },
+    [props],
+  );
 
-  const onPhotoError: MessageListEvent = (item, index, event) => {
-    if (props.onPhotoError instanceof Function) props.onPhotoError(item, index, event);
-  };
+  const onPhotoError: MessageListEvent = useCallback(
+    (item, index, event) => {
+      if (props.onPhotoError instanceof Function) props.onPhotoError(item, index, event);
+    },
+    [props],
+  );
 
-  const onDelete = (id: string) => {
-    if (props.onDelete instanceof Function) props.onDelete(`${id}`);
-  };
+  const onDeleteMsg: MessageListEvent = useCallback(
+    (item, index, event) => {
+      if (props.onDeleteMsg instanceof Function) props.onDeleteMsg(item, index, event);
+    },
+    [props],
+  );
 
   const onScroll = (e: React.UIEvent<HTMLElement>): void => {
-    var bottom = getBottom(e.currentTarget);
+    const bottom = getBottom(e.currentTarget);
     setScrollBottom(bottom);
     if (toBottomHeight === '100%' || (toBottomHeight && bottom > (toBottomHeight as number))) {
       if (_downButton !== true) {
@@ -77,7 +85,7 @@ const MessageList: FC<IMessageListProps> = ({
         setScrollBottom(bottom);
       }
     }
-    if (referance.current.scrollTop === 0) {
+    if (reference.current.scrollTop === 0) {
       if (hasNext) {
         next();
       }
@@ -88,44 +96,52 @@ const MessageList: FC<IMessageListProps> = ({
   };
 
   const toBottom = (e?: any) => {
-    if (!referance) return;
-    referance.current.scrollTop = referance.current.scrollHeight;
+    if (!reference) return;
+    reference.current.scrollTop = reference.current.scrollHeight;
     if (props.onDownButtonClick instanceof Function) {
       props.onDownButtonClick(e);
     }
   };
 
   useEffect(() => {
-    if (!referance) return;
-    referance.current.scrollTop = referance.current.scrollHeight;
-  }, []);
+    if (!reference) return;
+    reference.current.scrollTop = reference.current.scrollHeight;
+  }, [reference]);
 
   const renderMessageItem = useMemo(() => {
-    let prev = 'left';
-    let isShowMargin = false;
+    let prev: any = {};
     return props.dataSource.map((x, i: number) => {
-      if (i === 0) {
-        prev = x.position;
+      let isShowMargin = false;
+      if (x.type === 'system' || prev?.type === 'system') {
+        isShowMargin = true;
       } else {
-        isShowMargin = prev !== x.position;
-        prev = x.position;
+        isShowMargin = prev.position !== x.position;
       }
+      prev = x;
       return (
         <MessageItem
           {...(x as any)}
-          className={isShowMargin && 'showMargin'}
-          key={x.id}
+          key={x.key}
+          className={isShowMargin && 'show-margin'}
           onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
           onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
-          onDelete={() => onDelete(`${x.id}`)}
+          onDeleteMsg={props.onDeleteMsg && ((e: React.MouseEvent<HTMLElement>) => onDeleteMsg(x, i, e))}
         />
       );
     });
-  }, [props.dataSource]);
+  }, [
+    onDeleteMsg,
+    onDownload,
+    onPhotoError,
+    props.dataSource,
+    props.onDeleteMsg,
+    props.onDownload,
+    props.onPhotoError,
+  ]);
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>
-      <div ref={referance} onScroll={onScroll} className="message-list-body">
+      <div ref={reference} onScroll={onScroll} className="message-list-body">
         {loading && (
           <div className="loading-more flex-center">
             <CircleLoading />
@@ -135,7 +151,7 @@ const MessageList: FC<IMessageListProps> = ({
       </div>
       {downButton === true && _downButton && toBottomHeight !== '100%' && (
         <div className="message-list-down-button flex-center" onClick={toBottom}>
-          <CustomSvg type="LeftArrow" />
+          <CustomSvg type="DoubleDown" />
         </div>
       )}
     </div>

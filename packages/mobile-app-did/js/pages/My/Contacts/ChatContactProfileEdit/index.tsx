@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -12,44 +12,48 @@ import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { defaultColors } from 'assets/theme';
-import ProfilePortkeyIDSection from 'pages/My/components/ProfilePortkeyIDSection';
+import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import ProfileRemarkSection from 'pages/My/components/ProfileRemarkSection';
 import FormItem from 'components/FormItem';
 import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
-import { useEditContact } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
+import { useDeleteContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { isValidRemark } from '@portkey-wallet/utils/reg';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
 
 type RouterParams = {
   contact?: ContactItemType;
-};
-
-const defaultContact = {
-  id: '',
-  name: '',
-  address: [],
+  isFromChatProfileEditPage?: boolean;
 };
 
 const ChatContactProfileEdit: React.FC = () => {
   const { contact } = useRouterParams<RouterParams>();
   const { t } = useLanguage();
 
-  const editContact = useEditContact();
+  const editContact = useEditIMContact();
+  const deleteContact = useDeleteContact();
 
   const [remark, setRemark] = useState(contact?.name || '');
   const [error, setError] = useState('');
 
+  const isShowPortkeyId = useMemo(() => !!contact?.caHolderInfo?.userId, [contact?.caHolderInfo?.userId]);
+
   const onFinish = useCallback(async () => {
-    const isValidName = isValidCAWalletName(remark);
-    if (!isValidName) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
+    if (remark && !isValidRemark(remark)) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
     try {
       Loading.show();
-      await editContact({ ...defaultContact, ...contact, name: remark });
+      await editContact(
+        { name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' },
+        contact?.caHolderInfo?.walletName,
+      );
       CommonToast.success(t('Saved Successful'));
+
+      navigationService.goBack();
       Loading.hide();
     } catch (e) {
+      CommonToast.failError(e);
       Loading.hide();
     }
   }, [contact, editContact, remark, t]);
@@ -68,9 +72,11 @@ const ChatContactProfileEdit: React.FC = () => {
           onPress: async () => {
             Loading.show();
             try {
-              // await deleteContactApi();
+              if (!contact) return;
+              await deleteContact(contact);
               CommonToast.success(t('Contact Deleted'), undefined, 'bottom');
-              navigationService.navigate('ContactsHome');
+              navigationService.goBack();
+              navigationService.goBack();
             } catch (e: any) {
               console.log('onDelete:error', e);
               CommonToast.fail(handleErrorMessage(e));
@@ -80,22 +86,27 @@ const ChatContactProfileEdit: React.FC = () => {
         },
       ],
     });
-  }, [t]);
+  }, [contact, deleteContact, t]);
 
   return (
     <PageContainer
       titleDom={'Edit Contact'}
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
-      scrollViewProps={{ disabled: true }}>
-      <ScrollView alwaysBounceVertical={true}>
-        <FormItem title={'Wallet Name'}>
+      scrollViewProps={{ disabled: true }}
+      hideTouchable={true}>
+      <ScrollView alwaysBounceVertical={true} style={pageStyles.contentWrap}>
+        <FormItem title={'Wallet Name'} style={GStyles.marginTop(24)}>
           <TextM numberOfLines={1} style={pageStyles.walletName}>
-            xxxxxxxxxxxxxxx
+            {contact?.caHolderInfo?.walletName || ''}
           </TextM>
         </FormItem>
         <ProfileRemarkSection errorMessage={error} value={remark} onChangeText={v => setRemark(v)} />
-        <ProfilePortkeyIDSection disable portkeyID={contact?.userId || ''} />
+        <ProfilePortkeyIDSection
+          disable
+          title={isShowPortkeyId ? 'PortkeyId' : 'ID'}
+          id={isShowPortkeyId ? contact?.caHolderInfo?.userId : contact?.imInfo?.relationId}
+        />
         <ProfileAddressSection disable addressList={contact?.addresses} />
       </ScrollView>
 
@@ -117,7 +128,10 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(24, 20, 18),
+    ...GStyles.paddingArg(0, 0, 18),
+  },
+  contentWrap: {
+    paddingHorizontal: pTd(20),
   },
   walletName: {
     width: '100%',
@@ -127,6 +141,7 @@ export const pageStyles = StyleSheet.create({
     paddingHorizontal: pTd(16),
     lineHeight: pTd(56),
     borderRadius: pTd(6),
+    overflow: 'hidden',
   },
   addAddressBtn: {
     alignSelf: 'center',
@@ -151,6 +166,7 @@ export const pageStyles = StyleSheet.create({
   },
   btnContainer: {
     paddingTop: pTd(16),
+    paddingHorizontal: pTd(20),
   },
   deleteBtnStyle: {
     marginTop: pTd(8),

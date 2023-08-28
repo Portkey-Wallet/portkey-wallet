@@ -28,10 +28,11 @@ import { formatChainInfoToShow } from '@portkey-wallet/utils';
 // import myEvents from 'utils/deviceEvent';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { defaultColors } from 'assets/theme';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   contact?: ContactItemType;
-  addressList?: Array<AddressItem>;
+  addressList?: Array<AddressItem>; // if addressList, it is from send page
 };
 
 export type EditAddressType = AddressItem & { error: ErrorType };
@@ -241,51 +242,48 @@ const ContactEdit: React.FC = () => {
     try {
       const result = await (isEdit ? editContactApi(editContact) : addContactApi(editContact));
       CommonToast.success(t(isEdit ? 'Saved Successful' : 'Contact Added'));
-      Loading.hide();
 
-      // if (result.imInfo) {
-      return ActionSheet.alert({
-        title: 'DID Recognition',
-        message:
-          'This is a contact you can chat with. You can click the "Chat" button on the contact details page to start a conversation.',
-        buttons: [
-          {
-            title: 'OK',
-            type: 'primary',
-            onPress: () => {
-              navigationService.navigate('ChatContactProfile', { contact: result });
+      console.log('contactcontact', contact, isEdit, result);
+
+      if (result.imInfo?.relationId) {
+        return ActionSheet.alert({
+          title: 'DID Recognition',
+          message:
+            'This is a contact you can chat with. You can click the "Chat" button on the contact details page to start a conversation.',
+          buttons: [
+            {
+              title: 'OK',
+              type: 'primary',
+              onPress: () => {
+                navigationService.navigate('ChatContactProfile', {
+                  contact: result,
+                  relationId: result.imInfo?.relationId,
+                  isFromNoChatProfileEditPage: true,
+                });
+              },
             },
-          },
-        ],
-      });
-      // }
+          ],
+        });
+      }
 
-      // if (isEdit) {
-      //   const result = await editContactApi(editContact);
-      //   console.log('editContactApi', result);
-
-      //   CommonToast.success(t('Saved Successful'), undefined, 'bottom');
-      // } else {
-      //   await addContactApi(editContact);
-      //   CommonToast.success(t('Contact Added'), undefined, 'bottom');
-      // }
-
-      // if (addressList && addressList?.length > 0) {
-      //   if (
-      //     editContact.addresses[0].address === addressList?.[0]?.address &&
-      //     editContact.addresses[0].chainId === addressList?.[0]?.chainId
-      //   ) {
-      //     myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
-      //   }
-      //   navigationService.goBack();
-      // } else {
-      //   navigationService.navigate('ContactsHome');
-      // }
+      if (addressList && addressList?.length > 0) {
+        // from send page
+        if (
+          editContact.addresses[0].address === addressList?.[0]?.address &&
+          editContact.addresses[0].chainId === addressList?.[0]?.chainId
+        ) {
+          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+        }
+        navigationService.goBack();
+      } else {
+        navigationService.navigate('ContactsHome');
+      }
     } catch (err: any) {
       CommonToast.failError(err);
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
-  }, [addContactApi, checkError, editContact, editContactApi, isEdit, t]);
+  }, [addContactApi, addressList, checkError, contact, editContact, editContactApi, isEdit, t]);
 
   const onDelete = useCallback(() => {
     ActionSheet.alert({

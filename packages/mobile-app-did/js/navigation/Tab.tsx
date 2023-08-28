@@ -17,6 +17,8 @@ import { pTd } from 'utils/unit';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { TextS } from 'components/CommonText';
 import { useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const Tab = createBottomTabNavigator();
 
@@ -76,6 +78,7 @@ export default function TabRoot() {
   const { address } = useCurrentWalletInfo();
   const tabMenuListStore = useTabMenuList();
   const unreadCount = useUnreadCount();
+  const isImputation = useIsImputation();
 
   const tabMenuList = useMemo(() => {
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
@@ -110,6 +113,7 @@ export default function TabRoot() {
     <Tab.Navigator
       initialRouteName="Wallet"
       screenOptions={({ route }) => ({
+        tabBarLabelStyle: styles.tabBarLabelStyle,
         tabBarAllowFontScaling: false,
         header: () => null,
         tabBarIcon: ({ focused }) => {
@@ -120,7 +124,7 @@ export default function TabRoot() {
                 {unreadCount > 0 && <TextS style={styles.messageCount}>{formatMessageCountToStr(unreadCount)}</TextS>}
                 <Svg
                   icon={tabMenu?.icon || 'my'}
-                  size={22}
+                  size={pTd(22)}
                   color={focused ? defaultColors.font4 : defaultColors.font7}
                 />
               </View>
@@ -128,10 +132,10 @@ export default function TabRoot() {
           } else if (tabMenu?.name === TabRouteNameEnum.SETTINGS) {
             return (
               <View style={styles.chatWrap}>
-                <TextS style={styles.warningCycle} />
+                {isImputation && <TextS style={styles.warningCycle} />}
                 <Svg
                   icon={tabMenu?.icon || 'my'}
-                  size={22}
+                  size={pTd(22)}
                   color={focused ? defaultColors.font4 : defaultColors.font7}
                 />
               </View>
@@ -139,7 +143,11 @@ export default function TabRoot() {
           }
 
           return (
-            <Svg icon={tabMenu?.icon || 'my'} size={22} color={focused ? defaultColors.font4 : defaultColors.font7} />
+            <Svg
+              icon={tabMenu?.icon || 'my'}
+              size={pTd(22)}
+              color={focused ? defaultColors.font4 : defaultColors.font7}
+            />
           );
         },
       })}>
@@ -177,6 +185,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     textAlign: 'center',
     paddingHorizontal: pTd(4),
+    lineHeight: pTd(isIOS ? 15 : 17),
   },
   warningCycle: {
     position: 'absolute',
@@ -188,5 +197,8 @@ const styles = StyleSheet.create({
     height: pTd(8),
     backgroundColor: defaultColors.bg17,
     overflow: 'hidden',
+  },
+  tabBarLabelStyle: {
+    paddingBottom: isIOS ? 0 : 5,
   },
 });

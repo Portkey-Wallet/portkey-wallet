@@ -12,7 +12,13 @@ export type BuyButtonQuery = {
     date_created?: any | null;
     date_updated?: any | null;
     id: string;
+    isAndroidBuyShow?: boolean | null;
+    isAndroidSellShow?: boolean | null;
     isBuySectionShow?: boolean | null;
+    isExtensionBuyShow?: boolean | null;
+    isExtensionSellShow?: boolean | null;
+    isIOSBuyShow?: boolean | null;
+    isIOSSellShow?: boolean | null;
     isSellSectionShow?: boolean | null;
     status?: string | null;
     user_created?: string | null;
@@ -68,7 +74,13 @@ export const BuyButtonDocument = gql`
         second
       }
       id
+      isAndroidBuyShow
+      isAndroidSellShow
       isBuySectionShow
+      isExtensionBuyShow
+      isExtensionSellShow
+      isIOSBuyShow
+      isIOSSellShow
       isSellSectionShow
       status
       user_created

@@ -147,6 +147,16 @@ export function removeManager(contract: ContractBasic, address: string, caHash: 
   });
 }
 
+export function encodedDeletionManager(contract: ContractBasic, address: string, caHash: string) {
+  return contract?.encodedTx('RemoveManagerInfo', {
+    caHash,
+    managerInfo: {
+      address,
+      extraData: Date.now(),
+    },
+  });
+}
+
 export function removeOtherManager(
   contract: ContractBasic,
   address: string,

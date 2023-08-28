@@ -14,7 +14,7 @@ import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { message } from 'antd';
 import './index.less';
 
-export default function ChatListSearch() {
+export default function NewChat() {
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
@@ -25,42 +25,33 @@ export default function ChatListSearch() {
   const createChannel = useCreateP2pChannel();
 
   const handleSearch = useCallback(
-    async (keyword: string) => {
+    (keyword: string) => {
       const { contactFilterList = [] } = localSearch(keyword, ContactsTab.Chats);
-      console.log('searchResult', contactFilterList);
       setChatList(contactFilterList);
     },
     [localSearch],
   );
-
-  useEffect(() => {
-    setFilterWord(state?.search ?? '');
-    handleSearch(state?.search ?? '');
-  }, [handleSearch, state?.search]);
-
   const searchDebounce = useDebounceCallback(
-    async (params) => {
+    (params) => {
       try {
         setLoading(true);
-        await handleSearch(params);
+        handleSearch(params);
       } catch (e) {
         console.log('===handleSearch error', e);
       } finally {
         setLoading(false);
       }
     },
-    [filterWord],
+    [],
     500,
   );
-  console.log('===chatList', chatList);
-
   const handleClickChat = useCallback(
     async (e: any, item: Partial<ContactItemType>) => {
       e.stopPropagation();
       try {
         const res = await createChannel(item?.imInfo?.relationId || '');
         console.log('===create channel res', res, 'item', item);
-        navigate(`/chat-box/${res.data.channelUuid}`);
+        navigate(`/chat-box/${res.channelUuid}`);
       } catch (e) {
         console.log('===create channel error', e);
         message.error('create channel error');
@@ -68,12 +59,16 @@ export default function ChatListSearch() {
     },
     [createChannel, navigate],
   );
+  useEffect(() => {
+    setFilterWord(state?.search ?? '');
+    handleSearch(state?.search ?? '');
+  }, [handleSearch, state?.search]);
 
   return (
     <div className="new-chat-page flex-column">
       <div className="new-chat-top">
         <SettingHeader
-          title={t('Chats')}
+          title={t('New Chat')}
           leftCallBack={() => navigate('/chat-list')}
           rightElement={<CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />}
         />
@@ -82,7 +77,7 @@ export default function ChatListSearch() {
           value={filterWord}
           inputProps={{
             onChange: (e) => {
-              const _value = e.target.value.replaceAll(' ', '');
+              const _value = e.target.value.trim();
               setFilterWord(_value);
               searchDebounce(_value);
             },
@@ -92,7 +87,7 @@ export default function ChatListSearch() {
       </div>
       <div className="new-chat-content">
         {chatList.length === 0 ? (
-          <div className="empty flex-center">{filterWord ? `No search result` : `No contact found`}</div>
+          <div className="empty flex-center">{filterWord ? `No contact found` : `No contact`}</div>
         ) : (
           <div className="search-result-list">
             <ContactList

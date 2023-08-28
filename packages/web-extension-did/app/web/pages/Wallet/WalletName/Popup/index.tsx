@@ -13,9 +13,6 @@ export default function WalletNamePopup({
   showChat = false,
   editText,
   isShowRemark = false,
-  isShowAddContactBtn = false,
-  isShowAddedBtn = false,
-  isShowChatBtn = false,
   handleEdit,
   handleCopy,
   saveCallback,
@@ -34,9 +31,6 @@ export default function WalletNamePopup({
           data={data}
           editText={editText}
           isShowRemark={isShowRemark}
-          isShowAddContactBtn={isShowAddContactBtn}
-          isShowAddedBtn={isShowAddedBtn}
-          isShowChatBtn={isShowChatBtn}
           handleEdit={handleEdit}
           handleCopy={handleCopy}
         />

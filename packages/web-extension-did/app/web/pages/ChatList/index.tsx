@@ -1,15 +1,15 @@
-import { Popover } from 'antd';
-import { useMemo } from 'react';
+import { Popover, message } from 'antd';
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { ChatList as ChannelList, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
-
+import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
+import { ChannelItem } from '@portkey-wallet/im';
 import './index.less';
 
 export default function ChatList() {
@@ -24,7 +24,17 @@ export default function ChatList() {
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
-  const addPopList = useMemo(
+  const formatSubTitle = useCallback((item: ChannelItem) => {
+    const _type = MessageTypeWeb[item.lastMessageType ?? ''];
+    let subTitle = '[Not supported message]';
+    if (_type === 'image') {
+      subTitle = '[Image]';
+    } else if (_type === 'text') {
+      subTitle = `${item.lastMessageContent}`;
+    }
+    return subTitle;
+  }, []);
+  const popList = useMemo(
     () => [
       {
         key: 'new-chat',
@@ -39,13 +49,13 @@ export default function ChatList() {
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Find More',
         onClick: () => {
-          navigate(`/setting/contacts/find-more`, { state: { search: '' } });
+          navigate(`/setting/contacts/find-more`);
         },
       },
     ],
     [navigate],
   );
-  const rightElement = useMemo(
+  const headerRightEle = useMemo(
     () => (
       <div className="flex-center right-element">
         <CustomSvg type="Search" onClick={() => navigate('/chat-list-search')} />
@@ -54,31 +64,65 @@ export default function ChatList() {
           placement="bottom"
           trigger="click"
           showArrow={false}
-          content={<PopoverMenuList data={addPopList} />}>
+          content={<PopoverMenuList data={popList} />}>
           <CustomSvg type="AddCircle" />
         </Popover>
         <CustomSvg type="Close2" onClick={() => navigate('/')} />
       </div>
     ),
-    [addPopList, navigate],
+    [popList, navigate],
   );
-  const transChatList = useMemo(() => {
+  const transChatList: IChatItemProps[] = useMemo(() => {
     return chatList.map((item) => {
       return {
         id: item.channelUuid,
         letterItem: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
-        subtitle: item.lastMessageType === 'IMAGE' ? '[Image]' : `${item.lastMessageContent}`,
-        dateString: MessageTypeWeb[item.lastMessageType!]
-          ? formatChatListTime(item.lastPostAt)
-          : '[Not supported message]',
+        subtitle: formatSubTitle(item),
+        dateString: formatChatListTime(item.lastPostAt),
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
       };
     });
-  }, [chatList]);
-
+  }, [chatList, formatSubTitle]);
+  const handlePin = useCallback(
+    async (chatItem: IChatItemProps) => {
+      try {
+        await pinChannel(`${chatItem.id}`, !chatItem.pin);
+      } catch (e: any) {
+        if (`${e?.code}` === '13310') {
+          message.error('Pin limit exceeded');
+        } else {
+          message.error(`Failed to ${chatItem?.pin ? 'unpin' : 'pin'} chat`);
+        }
+        console.log('===handle pin error', e);
+      }
+    },
+    [pinChannel],
+  );
+  const handleMute = useCallback(
+    async (chatItem: IChatItemProps) => {
+      try {
+        await muteChannel(`${chatItem.id}`, !chatItem.muted);
+      } catch (e) {
+        message.error(`Failed to ${chatItem.muted ? 'unmute' : 'mute'} chat`);
+        console.log('===handle mute error', e);
+      }
+    },
+    [muteChannel],
+  );
+  const handleDelete = useCallback(
+    async (chatItem: IChatItemProps) => {
+      try {
+        await hideChannel(`${chatItem.id}`);
+      } catch (e) {
+        message.error('Failed to delete chat');
+        console.log('===handle delete error', e);
+      }
+    },
+    [hideChannel],
+  );
   useEffectOnce(() => {
     initChannelList();
   });
@@ -86,22 +130,22 @@ export default function ChatList() {
   return (
     <div className="chat-list-page">
       <div className="chat-list-top">
-        <SettingHeader title={t('Chats')} leftCallBack={() => navigate('/')} rightElement={rightElement} />
+        <SettingHeader title={t('Chats')} leftCallBack={() => navigate('/')} rightElement={headerRightEle} />
       </div>
       <div className="chat-list-content">
         {chatList.length === 0 ? (
           <div className="no-message flex-column-center">
             <CustomSvg type="Message" />
-            <div>No Message</div>
+            <div>No message</div>
           </div>
         ) : (
           <StyleProvider prefixCls="portkey">
             <ChannelList
               id="channel-list"
               dataSource={transChatList}
-              onClickPin={(chatItem) => pinChannel(`${chatItem.id}`, !chatItem.pin)}
-              onClickMute={(chatItem) => muteChannel(`${chatItem.id}`, !chatItem.muted)}
-              onClickDelete={(chatItem) => hideChannel(`${chatItem.id}`)}
+              onClickPin={handlePin}
+              onClickMute={handleMute}
+              onClickDelete={handleDelete}
               onClick={(chatItem) => navigate(`/chat-box/${chatItem.id}`)}
               hasMore={hasNextChannelList}
               loadMore={nextChannelList}

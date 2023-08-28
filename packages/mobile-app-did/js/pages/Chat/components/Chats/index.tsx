@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   DayProps,
   GiftedChat,
@@ -10,7 +10,7 @@ import {
 } from 'react-native-gifted-chat';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
 import { randomId } from '@portkey-wallet/utils';
-import { ActivityIndicator, Keyboard, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Keyboard, StyleSheet } from 'react-native';
 import { useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import CustomBubble from '../CustomBubble';
 import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../../context/chatsContext';
@@ -30,6 +30,8 @@ import ChatMessageContainer from '../Message';
 import { formatMessageList } from 'pages/Chat/utils/format';
 import SystemTime from '../SystemTime';
 import { defaultColors } from 'assets/theme';
+import Svg from 'components/Svg';
+import { pTd } from 'utils/unit';
 
 const Empty = () => null;
 
@@ -43,14 +45,14 @@ const ListViewProps = {
 
 const ChatsUI = () => {
   const currentChannelId = useCurrentChannelId();
+  const dispatch = useChatsDispatch();
+  const messageContainerRef = useRef<FlatList>();
+
   const { list, init } = useChannel(currentChannelId || '');
 
   const [loading, setLoading] = useState(true);
 
   const formattedList = useMemo(() => formatMessageList(list), [list]);
-  console.log(formattedList, '====formattedList');
-
-  const dispatch = useChatsDispatch();
 
   useEffectOnce(() => {
     initChatInputRecorder();
@@ -66,6 +68,11 @@ const ChatsUI = () => {
       destroyChatInputRecorder();
     };
   });
+
+  const scrollToBottom = useCallback(() => {
+    if (messageContainerRef?.current?.scrollToOffset)
+      messageContainerRef.current?.scrollToOffset({ offset: 0, animated: false });
+  }, []);
 
   const onDismiss = useThrottleCallback(() => {
     Keyboard.dismiss();
@@ -97,6 +104,10 @@ const ChatsUI = () => {
     };
   }, [onDismiss]);
 
+  const renderScrollToBottomComponent = useCallback(() => {
+    return <Svg icon="chat-scroll-to-bottom" size={pTd(24)} />;
+  }, []);
+
   const renderMessage = useCallback(
     (props: MessageProps<ChatMessage>) => {
       return <ChatMessageContainer onDismiss={onDismiss} {...props} />;
@@ -107,11 +118,11 @@ const ChatsUI = () => {
 
   const bottomBar = useMemo(
     () => (
-      <BottomBarContainer>
+      <BottomBarContainer scrollToBottom={scrollToBottom}>
         <AccessoryBar />
       </BottomBarContainer>
     ),
-    [],
+    [scrollToBottom],
   );
 
   const relationId = useRelationId();
@@ -129,8 +140,9 @@ const ChatsUI = () => {
         ) : (
           <GiftedChat
             alignTop
-            messageIdGenerator={randomId}
             user={user}
+            messageContainerRef={messageContainerRef as any}
+            messageIdGenerator={randomId}
             alwaysShowSend
             scrollToBottom
             renderUsername={Empty}
@@ -147,7 +159,8 @@ const ChatsUI = () => {
             renderMessage={renderMessage}
             listViewProps={listViewProps}
             showAvatarForEveryMessage={true}
-            isKeyboardInternallyHandled={true}
+            isKeyboardInternallyHandled={false}
+            scrollToBottomComponent={renderScrollToBottomComponent}
             messagesContainerStyle={styles.messagesContainerStyle}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
@@ -165,5 +178,6 @@ export default function Chats() {
 const styles = StyleSheet.create({
   messagesContainerStyle: {
     backgroundColor: defaultColors.bg1,
+    flex: 1,
   },
 });

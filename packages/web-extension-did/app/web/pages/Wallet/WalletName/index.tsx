@@ -18,23 +18,27 @@ export default function WalletName() {
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
     return caAddressInfos.map((item) => {
-      return { chainName: item.chainName, chainId: item.chainId, address: item.caAddress };
+      return {
+        chainName: 'aelf',
+        chainId: item.chainId,
+        address: item.caAddress,
+      };
     });
   }, [caAddressInfos]);
 
   const { t } = useTranslation();
   const editText = t('Edit');
   const [type, setType] = useState<MyProfilePageType>(MyProfilePageType.VIEW);
-  const title = useMemo(() => (showChat ? t('My DID') : walletName), [showChat, t, walletName]);
+  const title = useMemo(() => (showChat ? t('My DID') : 'Wallet Name'), [showChat, t]);
   const [headerTitle, setHeaderTitle] = useState(title);
 
   const state: IProfileDetailDataProps = useMemo(
     () => ({
       index: walletName.substring(0, 1).toLocaleUpperCase(),
-      walletName: walletName,
-      addresses: transAddresses,
-      userId: userId,
+      addresses: transAddresses, // TODO fetch profile for chain image
+      caHolderInfo: { userId: userId, walletName: walletName },
       isShowRemark: false,
+      from: 'my-did',
     }),
     [transAddresses, userId, walletName],
   );

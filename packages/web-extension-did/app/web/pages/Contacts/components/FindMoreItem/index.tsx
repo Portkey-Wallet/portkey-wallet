@@ -11,7 +11,7 @@ export interface IContactItemProps {
 
 export default function FindMoreItem({ item, isAdded = false, hasChatEntry = true, clickChat }: IContactItemProps) {
   return (
-    <div className="flex-between find-more-item">
+    <div className="flex-between-center find-more-item">
       <div className="flex-center find-more-item-right">
         <div className="flex-center find-more-index-logo">{item.index}</div>
         <div>

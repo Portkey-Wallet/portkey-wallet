@@ -10,7 +10,7 @@ export default function FindMorePrompt({
   contact,
   showChat,
   isAdded,
-  isSearch = false,
+  isSearch,
   goBack,
   handleSearch,
   clickItem,
@@ -19,13 +19,13 @@ export default function FindMorePrompt({
   return (
     <div className="find-more-prompt">
       <div className="flex-column find-more-top">
-        <SecondPageHeader className="find-more-header" paddingLeft={12} title={headerTitle} leftCallBack={goBack} />
+        <SecondPageHeader className="find-more-header" paddingLeft={24} title={headerTitle} leftCallBack={goBack} />
         <ContactsSearchInput
           className="find-more-search"
           placeholder="Portkey ID/Address"
           handleChange={handleSearch}
         />
-        <div className="find-more-id">My Portkey ID: {myPortkeyId}</div>
+        {!isSearch && <div className="find-more-id">My Portkey ID1234: {myPortkeyId}</div>}
       </div>
       <div className="find-more-body">
         {(!contact || !contact.name) && isSearch && (

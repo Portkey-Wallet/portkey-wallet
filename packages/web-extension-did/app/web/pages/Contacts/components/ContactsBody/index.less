@@ -23,18 +23,32 @@
   }
 
   .contacts-tab {
-    .portkey-tabs-nav {
+    height: 100%;
+
+    .@{app-prefix}-tabs-content-holder {
+      height: 100%;
+      .@{app-prefix}-tabs-content{
+        height: 100%;
+        .portkey-tabs-tabpane{
+          height: 100%;
+          .contact-list{
+            height: 100%;
+          }
+        }
+      }
+    }
+    .@{app-prefix}-tabs-nav {
       margin-bottom: 0;
     }
-    .portkey-tabs-nav-list {
+    .@{app-prefix}-tabs-nav-list {
       width: 100%;
-      .portkey-tabs-tab {
+      .@{app-prefix}-tabs-tab {
         width: 50%;
         display: flex;
         justify-content: center;
       }
     }
-    .portkey-tabs-nav-operations {
+    .@{app-prefix}-tabs-nav-operations {
       display: none;
     }
   }

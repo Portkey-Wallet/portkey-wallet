@@ -192,5 +192,5 @@ export interface IIMService {
   updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
-  getProfile(params: GetProfileParams): IMServiceCommon<null>;
+  getProfile(params: GetProfileParams): IMServiceCommon<ContactItemType>;
 }

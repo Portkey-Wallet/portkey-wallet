@@ -1,37 +1,45 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Popover } from 'antd';
-import { emojiList } from '../assets/index';
+import { emojiList } from '../assets/emoji/index';
 import CustomSvg from '../components/CustomSvg';
 import PopoverMenuList, { IPopoverMenuListData } from '../PopoverMenuList';
-import Input from '../ChatInput';
+import CustomInput from '../components/CustomInput';
 import './index.less';
 
 interface IInputBar {
-  maxlength?: number;
+  maxLength?: number;
   moreData?: IPopoverMenuListData[];
   showEmoji?: boolean;
   onSendMessage: (v: string) => void;
 }
 
-export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxlength = 300, ...props }: IInputBar) {
-  console.log(props);
+export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxLength = 300 }: IInputBar) {
   const [showEmojiIcon, setShowEmojiIcon] = useState(false);
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [popVisible, setPopVisible] = useState(false);
-  const clearPop = (e: any) => {
+  const formatMoreData = moreData?.map((item) => ({
+    ...item,
+    onClick: () => {
+      setPopVisible(false);
+      item?.onClick?.();
+    },
+  }));
+  const hidePop = useCallback((e: any) => {
     try {
-      if (e.target.className.indexOf('close-show-emoji-icon') === -1) {
+      const _t = e?.target?.className;
+      const isFun = _t.includes instanceof Function;
+      if (isFun && !_t.includes('show-emoji-icon-container')) {
         setShowEmojiIcon(false);
       }
-      if (e.target.className.indexOf('close-more-file') === -1) {
+      if (isFun && !_t.includes('more-file-container')) {
         setPopVisible(false);
       }
     } catch (e) {
-      console.log('e', e);
+      console.log('===input bar hidePop error', e);
     }
-  };
+  }, []);
   const handleChange = (e: any) => {
     setValue(e.target.value);
   };
@@ -40,17 +48,20 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
     setValue('');
   };
   const handleEnterKeyDown = (e: any) => {
-    if (e.keyCode === 13) {
+    if (e.keyCode === 13 && e.shiftKey) {
       e.preventDefault();
-      if (value) {
+      setValue(e.target.value + '\n');
+    } else if (e.keyCode === 13) {
+      e.preventDefault();
+      if (value?.trim()) {
         handleSend();
       }
     }
   };
   useEffect(() => {
-    document.addEventListener('click', clearPop);
-    return () => document.removeEventListener('click', clearPop);
-  }, []);
+    document.addEventListener('click', hidePop);
+    return () => document.removeEventListener('click', hidePop);
+  }, [hidePop]);
 
   return (
     <div>
@@ -58,7 +69,7 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
         {showEmojiIcon && (
           <div className="input-emoji">
             <div className="show-icon flex">
-              {emojiList.map(item => (
+              {emojiList.map((item) => (
                 <div
                   className="icon flex-center"
                   key={item.name}
@@ -80,38 +91,48 @@ export default function InputBar({ moreData, showEmoji = true, onSendMessage, ma
               open={popVisible}
               trigger="click"
               showArrow={false}
-              content={<PopoverMenuList data={moreData} />}>
-              <div className="close-more-file" onClick={() => setPopVisible(!popVisible)}>
-                <CustomSvg type="File" />
+              content={<PopoverMenuList data={formatMoreData} />}>
+              <div
+                className="more-file-container flex-center"
+                onClick={() => {
+                  setShowEmojiIcon(false);
+                  setPopVisible(!popVisible);
+                }}>
+                <CustomSvg className={clsx([popVisible && 'has-show-more-icon'])} type="File" />
               </div>
             </Popover>
           ) : (
             <></>
           )}
-
           <div className="input-text">
-            <Input
+            <CustomInput
               autofocus
-              referance={inputRef}
+              reference={inputRef}
               value={value}
               multiline={true}
               maxHeight={140}
-              maxlength={maxlength}
+              maxLength={maxLength}
               onChange={handleChange}
-              onFocus={() => setShowEmojiIcon(false)}
               onKeyDown={handleEnterKeyDown}
             />
             {showEmoji && (
-              <div className="portkey-close-show-emoji-icon">
+              <div className="show-emoji-icon-container">
                 <CustomSvg
+                  onClick={() => {
+                    setPopVisible(false);
+                    setShowEmojiIcon(!showEmojiIcon);
+                  }}
                   className={clsx([showEmojiIcon && 'has-show-emoji-icon'])}
                   type="Emoji"
-                  onClick={() => setShowEmojiIcon(!showEmojiIcon)}
                 />
               </div>
             )}
           </div>
-          {value && <CustomSvg type="Send" onClick={handleSend} />}
+          {value?.trim() && (
+            <div className="show-send-container flex-center">
+              <CustomSvg type="Send" onClick={handleSend} />
+            </div>
+          )}
         </div>
       </div>
     </div>

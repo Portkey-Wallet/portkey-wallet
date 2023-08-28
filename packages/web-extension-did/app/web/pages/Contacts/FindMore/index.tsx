@@ -39,43 +39,49 @@ export default function FindMore() {
   const createChannel = useCreateP2pChannel();
 
   const headerTitle = 'Find More';
-  const [contact, setContact] = useState({});
-  // mock data
-  // {
-  //   index: 'B',
-  //   name: 'by',
-  //   addresses: [{ chainId: 'AELF' as ChainId, address: 'H8CXvfy' }],
-  //   userId: '3fe8e56b',
-  //   isDeleted: false,
-  //   modificationTime: 1684829521408,
-  //   id: '0be66c93',
-  // },
+  const [contact, setContact] = useState<Partial<ContactItemType>>({});
 
   const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
+
     if (!value) {
       setContact({});
       setIsAdded(false);
       setIsSearch(false);
       return;
     }
+
+    setIsSearch(true);
+
+    const addressTrans = getAddressInfo(value.trim());
+    if (!addressTrans?.address) {
+      setContact({});
+      setIsAdded(false);
+      return;
+    }
+
     try {
-      const addressTrans = getAddressInfo(value.trim());
       const res = await im.service.getUserInfo({ address: addressTrans.address });
 
       if (res?.data?.portkeyId === userId) {
         message.error('Unable to add yourself as a contact');
       } else {
-        setContact({ ...res?.data, index: res?.data?.name?.substring(0, 1).toLocaleUpperCase() });
+        setContact({
+          ...res?.data,
+          index: res?.data?.name?.substring(0, 1).toLocaleUpperCase(),
+          name: res?.data?.name,
+          imInfo: {
+            relationId: res?.data.relationId,
+            portkeyId: res?.data.portkeyId,
+          },
+        });
         setIsAdded(!!contactRelationIdMap?.[res?.data?.relationId]);
-        setIsSearch(true);
       }
     } catch (error) {
       const err = handleErrorMessage(error, 'handle display error');
       message.error(err);
       setContact({});
       setIsAdded(false);
-      setIsSearch(false);
     }
   }, []);
 
@@ -99,9 +105,8 @@ export default function FindMore() {
         });
       } else {
         try {
-          // TODO data structure
-          const res = await createChannel(item?.relationId);
-          navigate(`/chat-box/${res.data.channelUuid}`);
+          const res = await createChannel(item?.imInfo?.relationId || '');
+          navigate(`/chat-box/${res.channelUuid}`);
         } catch (e) {
           console.log('===createChannel error', e);
           message.error('cannot chat');

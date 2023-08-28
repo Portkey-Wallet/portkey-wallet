@@ -14,6 +14,7 @@ import useDebounce from 'hooks/useDebounce';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import ContactItem from 'components/ContactItem';
+import { useJumpToChatDetails } from 'hooks/chat';
 
 const NewChatHome = () => {
   const [keyword, setKeyword] = useState('');
@@ -21,6 +22,7 @@ const NewChatHome = () => {
   const allChatList = useChatContactFlatList();
   const searchContact = useLocalContactSearch();
   const [filterList, setFilterList] = useState<ContactItemType[]>(allChatList);
+  const jumpToDetail = useJumpToChatDetails();
 
   useEffect(() => {
     if (!debounceKeyword) return setFilterList(allChatList);
@@ -29,16 +31,23 @@ const NewChatHome = () => {
     setFilterList(contactFilterList);
   }, [allChatList, debounceKeyword, searchContact]);
 
-  const renderItem = useCallback(({ item }: { item: ContactItemType }) => {
-    return (
-      <ContactItem
-        isShowChat
-        contact={item}
-        onPress={() => navigationService.navigate('ChatContactProfile', { contactInfo: item })}
-        onPressChat={() => navigationService.navigate('ChatDetails', { channelInfo: item })}
-      />
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: ContactItemType }) => {
+      return (
+        <ContactItem
+          isShowChat
+          contact={item}
+          onPress={() => {
+            navigationService.navigate('ChatContactProfile', { contactId: item.id });
+          }}
+          onPressChat={() => {
+            jumpToDetail({ toRelationId: item.imInfo?.relationId || '' });
+          }}
+        />
+      );
+    },
+    [jumpToDetail],
+  );
 
   return (
     <PageContainer
@@ -58,8 +67,9 @@ const NewChatHome = () => {
       </View>
       <FlatList
         data={filterList}
+        keyExtractor={item => item.id}
         ListEmptyComponent={
-          <NoData noPic message={debounceKeyword && filterList.length == 0 ? 'No contact found' : 'No contact'} />
+          <NoData noPic message={debounceKeyword && filterList.length === 0 ? 'No contact found' : 'No contact'} />
         }
         renderItem={renderItem}
       />

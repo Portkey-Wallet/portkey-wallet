@@ -3,7 +3,6 @@ import React, { ReactNode, memo, useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Actions } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
-import Touchable from 'components/Touchable';
 import { Animated } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -16,6 +15,8 @@ import { SendMessageButton } from '../SendMessageButton';
 import { ChatInput, ChatInputBar } from '../ChatInput';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { chatInputRecorder } from 'pages/Chat/utils';
+import CommonToast from 'components/CommonToast';
+import { defaultColors } from 'assets/theme';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -28,7 +29,14 @@ export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: ()
   );
 });
 
-export function BottomBarContainer({ children }: { children?: ReactNode; showKeyboard?: () => void }) {
+export function BottomBarContainer({
+  children,
+  scrollToBottom,
+}: {
+  children?: ReactNode;
+  scrollToBottom: () => void;
+  showKeyboard?: () => void;
+}) {
   const bottomBarStatus = useBottomBarStatus();
   const dispatch = useChatsDispatch();
   const text = useChatText();
@@ -66,16 +74,22 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
   });
   const onSend = useCallback(async () => {
     dispatch(setChatText(''));
-    sendChannelMessage(text);
     chatInputRecorder?.reset();
-  }, [dispatch, sendChannelMessage, text]);
+
+    try {
+      scrollToBottom?.();
+      typeof text === 'string' && (await sendChannelMessage(text.trim()));
+    } catch (error) {
+      CommonToast.fail('Failed to send message');
+    }
+  }, [dispatch, scrollToBottom, sendChannelMessage, text]);
   return (
     <View style={styles.wrap}>
-      <Touchable style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
+      <View style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>
         <ActionsIcon onPress={() => onPressActionButton(ChatBottomBarStatus.tools)} />
         <ChatInputBar ref={textInputRef} onPressActionButton={onPressActionButton} />
         <SendMessageButton text={text} containerStyle={styles.sendStyle} onSend={onSend} />
-      </Touchable>
+      </View>
       <Animated.View style={{ height: keyboardAnim }}>{children}</Animated.View>
     </View>
   );
@@ -83,6 +97,8 @@ export function BottomBarContainer({ children }: { children?: ReactNode; showKey
 
 const styles = StyleSheet.create({
   wrap: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderColor: defaultColors.border6,
     overflow: 'hidden',
   },
   barWrap: {

@@ -1,3 +1,4 @@
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
@@ -8,16 +9,16 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 
 const ContactUpdateWarning: React.FC = () => {
+  const isImputation = useIsImputation();
   const [show, setShow] = useState(true);
 
-  //   TODO: should fetch api
-  if (!show) return null;
+  if (!isImputation || !show) return null;
 
   return (
     <View style={[GStyles.flexRow, GStyles.itemStart, styles.wrap]}>
       <Svg icon="warning" size={pTd(20)} color={defaultColors.bg17} />
       <TextM style={[GStyles.flex1, styles.tips]}>
-        Portkeys will automatic group contacts with matching Portkey IDs and seamlessly update in real-time.{' '}
+        {`Portkey automatically updates your contact list and group contacts with the same Portkey ID into one. You can click the red mark on the contact for details.`}
       </TextM>
       <Touchable onPress={() => setShow(false)}>
         <Svg icon="close2" size={pTd(16)} color={defaultColors.font7} />

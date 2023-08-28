@@ -1,18 +1,23 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import './index.less';
 import CommonModal from 'components/CommonModal';
 import { useState } from 'react';
+import './index.less';
 
+export interface IPreviewImage {
+  src: string;
+  width: number;
+  height: number;
+}
 interface PhotoSendModalProps {
   open: boolean;
-  url: string;
+  file?: IPreviewImage;
   onConfirm: () => Promise<void>;
   onCancel: () => void;
 }
 
-const ImageSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSendModalProps, ref) => {
+const ImageSendModal = forwardRef(({ open, file, onConfirm, onCancel }: PhotoSendModalProps, ref) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
@@ -20,9 +25,15 @@ const ImageSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSend
     setLoading,
   }));
 
-  const handleConfirm = () => {
-    setLoading(true);
-    onConfirm();
+  const handleConfirm = async () => {
+    try {
+      setLoading(true);
+      await onConfirm();
+    } catch (e) {
+      console.log('===send image error', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,16 +45,16 @@ const ImageSendModal = forwardRef(({ open, url, onConfirm, onCancel }: PhotoSend
       open={open}
       footer={
         <div className="flex modal-footer">
-          <Button type="default" onClick={onCancel}>
+          <Button type="default" onClick={onCancel} disabled={loading}>
             {t('Cancel')}
           </Button>
-          <Button type="primary" onClick={handleConfirm} loading={loading}>
+          <Button type="primary" className="send-image-btn" onClick={handleConfirm} loading={loading}>
             {!loading && t('Send')}
           </Button>
         </div>
       }>
-      <div className="text-center modal-content">
-        <img src={url} alt="image-send" />
+      <div className="modal-content flex-center">
+        <img src={file?.src} alt="image-send" style={{ width: file?.width, height: file?.height }} />
       </div>
     </CommonModal>
   );

@@ -29,6 +29,7 @@ import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import im from '@portkey-wallet/im';
 import s3Instance from '@portkey-wallet/utils/s3';
 import Config from 'react-native-config';
+import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {
@@ -87,5 +88,6 @@ export default function Updater() {
   useDiscoverGroupList(true);
   useBuyButton(true);
   useRememberMeBlackList(true);
+  useCheckContactMap();
   return null;
 }

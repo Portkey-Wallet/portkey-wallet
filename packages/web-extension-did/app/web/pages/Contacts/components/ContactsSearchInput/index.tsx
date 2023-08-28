@@ -17,6 +17,7 @@ export default function ContactsSearchInput({
     <Input
       className={clsx(['contacts-search-input', className])}
       prefix={<CustomSvg type="SearchBlur" className="search-svg" />}
+      allowClear
       placeholder={placeholder}
       onChange={handleChange}
     />

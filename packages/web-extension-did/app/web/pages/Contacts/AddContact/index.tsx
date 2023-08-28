@@ -19,6 +19,7 @@ import CustomModal from 'pages/components/CustomModal';
 import { useGoProfile } from 'hooks/useProfile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { ExtraType, ExtraTypeEnum } from 'types/Profile';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export enum ContactInfoError {
   invalidAddress = 'Invalid address',
@@ -254,12 +255,12 @@ export default function AddContact() {
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
-        message.error(t((e.error || {}).message || e.message || 'handle contact error'));
+        handleErrorMessage(e, 'handle contact error');
       } finally {
         setLoading(false);
       }
     },
-    [handleCheckAddress, handleCheckName, showChat, requestAddContact, setLoading, t],
+    [handleCheckAddress, handleCheckName, showChat, requestAddContact, setLoading],
   );
 
   // go back previous page

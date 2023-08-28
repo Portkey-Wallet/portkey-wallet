@@ -110,6 +110,7 @@ export default function ChatList() {
         style={BGStyles.bg1}
         data={channelList}
         ListEmptyComponent={<NoData icon="no-message" message="No message" />}
+        keyExtractor={item => item.channelUuid}
         onEndReached={onEndReached}
         renderItem={({ item }) => (
           <ChatHomeListItemSwiped

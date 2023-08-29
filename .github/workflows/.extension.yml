@@ -14,5 +14,5 @@ jobs:
       - name: Build
         run: |
           yarn
-          yarn extension:did pro
+          yarn extension:did pro --max-old-space-size=2048
           zip -r public.zip ./packages/web-extension-did/app/public

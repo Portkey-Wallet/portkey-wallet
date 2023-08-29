@@ -13,8 +13,13 @@ import ChatList from '../components/ChatList';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import myEvents from 'utils/deviceEvent';
+import { useFocusEffect } from '@react-navigation/native';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export default function DiscoverHome() {
+  const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
+  const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
+
   const onRightPress = useCallback(async (event: GestureResponderEvent) => {
     const { pageY } = event.nativeEvent;
     const top: number =
@@ -60,9 +65,15 @@ export default function DiscoverHome() {
     );
   }, [onRightPress]);
 
+  useFocusEffect(
+    useCallback(() => {
+      lastEmitCloseSwiped.current();
+    }, [lastEmitCloseSwiped]),
+  );
+
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
-      <Touchable activeOpacity={1} onPressIn={() => myEvents.chatHomeListCloseSwiped.emit('')}>
+      <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
         <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
       </Touchable>
       <ChatList />

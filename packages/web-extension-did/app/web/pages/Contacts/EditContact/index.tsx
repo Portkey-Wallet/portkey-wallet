@@ -98,7 +98,8 @@ export default function EditContact() {
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
-        handleErrorMessage(e, 'handle contact error');
+        const msg = handleErrorMessage(e, 'handle contact error');
+        message.error(msg);
       } finally {
         setLoading(false);
       }

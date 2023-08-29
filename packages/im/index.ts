@@ -94,15 +94,13 @@ export class IM {
       }
 
       this.setAuthorization(token);
-
+      this.bindOffRelation();
       this._imInstance = RelationIM.init({ token, apiKey: undefined as any, connect: true, refresh: true });
       this.bindRelation(this._imInstance);
 
       this.status = IMStatusEnum.AUTHORIZED;
 
       this.refreshMessageCount();
-      const { data: userInfo } = await this.service.getUserInfo();
-      return userInfo;
     } catch (error) {
       console.log('init error', error);
       this.status = IMStatusEnum.INIT;

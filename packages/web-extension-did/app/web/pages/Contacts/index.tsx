@@ -1,24 +1,28 @@
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChangeEvent, ChangeEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
-import { useContact } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useIsImputation, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
-import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactIndexType, ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { useEffectOnce } from 'react-use';
 import ContactsPopup from './Popup';
 import ContactsPrompt from './Prompt';
 import { BaseHeaderProps } from 'types/UI';
 import { useCommonState } from 'store/Provider/hooks';
+import { useGoAddNewContact } from 'hooks/useProfile';
+import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { ExtraTypeEnum } from 'types/Profile';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const initContactItem: Partial<ContactItemType> = {
   id: '-1',
   name: '',
-  addresses: [{ chainId: 'AELF', address: '' }],
+  addresses: [{ chainId: 'AELF', address: '', chainName: 'aelf' }],
 };
 
 export interface IContactsProps extends BaseHeaderProps {
+  searchPlaceholder?: string;
   addText: string;
   handleAdd: () => void;
   isSearch: boolean;
@@ -26,67 +30,41 @@ export interface IContactsProps extends BaseHeaderProps {
   list: ContactIndexType[];
   contactCount: number;
   initData: Partial<ContactItemType>;
+  showImputation?: boolean;
+  closeImputationTip: () => void;
+  changeTab: (key: ContactsTab) => void;
 }
 
 export default function Contacts() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const appDispatch = useAppDispatch();
-  const { contactIndexList } = useContact();
-  const [curList, setCurList] = useState<ContactIndexType[]>(contactIndexList);
+  const localSearch = useLocalContactSearch();
+  const showChat = useIsChatShow();
+  const [curList, setCurList] = useState<ContactIndexType[]>([]);
   const [isSearch, setIsSearch] = useState<boolean>(false);
-  const filterContact = useMemo(() => contactIndexList.filter((c) => c.contacts.length > 0), [contactIndexList]);
+  const isImputation = useIsImputation();
+  const [isCloseImputationManually, setIsCloseImputationManually] = useState(false);
+  const showImputation = isImputation && !isCloseImputationManually;
 
   useEffectOnce(() => {
     appDispatch(fetchContactListAsync());
   });
 
   useEffect(() => {
-    setCurList(filterContact);
+    const { contactIndexFilterList: searchResult } = localSearch('', ContactsTab.ALL);
+    setCurList(searchResult);
     setIsSearch(false);
-  }, [filterContact]);
+  }, [localSearch]);
 
-  const searchContacts = useCallback(
+  const searchChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      let value = e.target.value;
-      if (!value) {
-        setCurList(filterContact);
-        setIsSearch(false);
-        return;
-      }
-      const contactIndexFilterList: ContactIndexType[] = [];
+      setIsSearch(!!e.target.value);
 
-      if (value.length <= 16) {
-        // Name search
-        filterContact.forEach(({ index, contacts }) => {
-          contactIndexFilterList.push({
-            index,
-            contacts: contacts.filter((contact) => contact.name.trim().toLowerCase() === value.trim().toLowerCase()),
-          });
-        });
-      } else {
-        // Address search
-        let suffix = '';
-        if (value.includes('_')) {
-          const arr = value.split('_');
-          if (!isAelfAddress(arr[arr.length - 1])) {
-            suffix = arr[arr.length - 1];
-          }
-        }
-        value = getAelfAddress(value);
-        filterContact.forEach(({ index, contacts }) => {
-          contactIndexFilterList.push({
-            index,
-            contacts: contacts.filter((contact) =>
-              contact.addresses.some((ads) => ads.address === value && (!suffix || suffix === ads.chainId)),
-            ),
-          });
-        });
-      }
-      setCurList(contactIndexFilterList);
-      setIsSearch(true);
+      const { contactIndexFilterList: searchResult } = localSearch(e.target.value, ContactsTab.ALL);
+      setCurList(searchResult);
     },
-    [filterContact],
+    [localSearch],
   );
 
   const curTotalContactsNum = useMemo(() => {
@@ -94,6 +72,7 @@ export default function Contacts() {
   }, [curList]);
 
   const { isNotLessThan768 } = useCommonState();
+  const searchPlaceholder = showChat ? 'Wallet Name/Remark/Portkey ID/Address' : 'Name or Address';
   const title = t('Contacts');
   const addText = t('Add contact');
 
@@ -101,33 +80,48 @@ export default function Contacts() {
     navigate('/setting');
   }, [navigate]);
 
-  const handleAdd = useCallback(() => {
-    navigate('/setting/contacts/add', { state: initContactItem });
-  }, [navigate]);
+  const handleAdd = useGoAddNewContact();
+
+  const closeImputationTip = () => {
+    setIsCloseImputationManually(true);
+  };
+
+  const changeTab = (key: ContactsTab) => {
+    const { contactIndexFilterList: searchResult } = localSearch('', key);
+    setCurList(searchResult);
+  };
 
   return isNotLessThan768 ? (
     <ContactsPrompt
       headerTitle={title}
       goBack={goBack}
+      searchPlaceholder={searchPlaceholder}
       addText={addText}
       isSearch={isSearch}
       list={curList}
       contactCount={curTotalContactsNum}
       initData={initContactItem}
-      handleAdd={handleAdd}
-      handleSearch={searchContacts}
+      showImputation={showImputation}
+      closeImputationTip={closeImputationTip}
+      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
+      handleSearch={searchChange}
+      changeTab={changeTab}
     />
   ) : (
     <ContactsPopup
       headerTitle={title}
       goBack={goBack}
+      searchPlaceholder={searchPlaceholder}
       addText={addText}
       isSearch={isSearch}
       list={curList}
       contactCount={curTotalContactsNum}
       initData={initContactItem}
-      handleAdd={handleAdd}
-      handleSearch={searchContacts}
+      showImputation={showImputation}
+      closeImputationTip={closeImputationTip}
+      handleAdd={() => handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem)}
+      handleSearch={searchChange}
+      changeTab={changeTab}
     />
   );
 }

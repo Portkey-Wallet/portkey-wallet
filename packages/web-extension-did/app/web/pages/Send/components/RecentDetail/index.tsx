@@ -18,6 +18,8 @@ import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/act
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
 import { ChainId } from '@portkey-wallet/types';
+import { useGoAddNewContact } from 'hooks/useProfile';
+import { ExtraTypeEnum } from 'types/Profile';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -48,14 +50,15 @@ export default function RecentDetail() {
     nav(-1);
   }, [nav]);
 
+  const handleAdd = useGoAddNewContact();
   const goAddContact = useCallback(() => {
     const initContactItem: Partial<ContactItemType> = {
       id: '-1',
       name: '',
-      addresses: [{ chainId: targetChainId || 'AELF', address: targetAddress || '' }],
+      addresses: [{ chainId: targetChainId || 'AELF', address: targetAddress || '', chainName: 'aelf' }],
     };
-    nav('/setting/contacts/add', { state: initContactItem });
-  }, [targetChainId, targetAddress, nav]);
+    handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem);
+  }, [targetChainId, targetAddress, handleAdd]);
 
   const viewOnExplorer = useCallback(() => {
     const openWinder = window.open(
@@ -75,16 +78,18 @@ export default function RecentDetail() {
         {
           caAddress: myAddress,
           chainId: myChainId,
+          chainName: chainInfo?.chainName || 'aelf',
         },
       ],
       targetAddressInfos: [
         {
           caAddress: targetAddress,
           chainId: targetChainId,
+          chainName: chainInfo?.chainName || 'aelf',
         },
       ],
     };
-  }, [myAddress, myChainId, targetAddress, targetChainId]);
+  }, [chainInfo?.chainName, myAddress, myChainId, targetAddress, targetChainId]);
 
   useEffectOnce(() => {
     if (passwordSeed) {

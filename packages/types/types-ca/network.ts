@@ -18,4 +18,7 @@ export type NetworkItem = {
       baseUrl?: string;
     };
   };
+  imApiUrl?: string;
+  imWsUrl?: string;
+  imS3Bucket?: string;
 };

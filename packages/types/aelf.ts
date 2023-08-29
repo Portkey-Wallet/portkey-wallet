@@ -70,6 +70,12 @@ export declare type TransactionResult = {
   TransactionSize: number;
 };
 export declare type ChainMethodResult<T> = T & AElfSDKError;
+
+export interface CalculateTransactionFeeOutput {
+  Success: boolean;
+  TransactionFee: any;
+  ResourceFee: any;
+}
 export declare interface AElfChainMethods {
   /**
    * Get contract instance
@@ -121,6 +127,10 @@ export declare interface AElfChainMethods {
    * Broadcast a transactions
    */
   sendTransactions(...args: unknown[]): Promise<ChainMethodResult<any>>;
+  /**
+   *
+   */
+  calculateTransactionFee(RawTransaction: string): Promise<ChainMethodResult<CalculateTransactionFeeOutput>>;
 }
 
 export declare type CurrentProvider = {

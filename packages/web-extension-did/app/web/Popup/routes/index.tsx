@@ -18,7 +18,7 @@ import GuardiansEdit from 'pages/Guardians/GuardiansEdit';
 import GuardiansView from 'pages/Guardians/GuardiansView';
 import VerifierAccount from 'pages/VerifierAccount';
 import Unlock from 'pages/Unlock';
-import Contact from 'pages/Contacts/ContactDetail';
+import ContactDetail from 'pages/Contacts/ContactDetail';
 import ConfirmPin from 'pages/AccountSetting/ConfirmPin';
 import WalletSecurity from 'pages/WalletSecurity';
 import SetNewPin from 'pages/AccountSetting/SetNewPin';
@@ -33,6 +33,11 @@ import WalletName from 'pages/Wallet/WalletName';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
+import FindMore from 'pages/Contacts/FindMore';
+import ChatList from 'pages/ChatList';
+import ChatBox from 'pages/ChatBox';
+import NewChat from 'pages/NewChat';
+import ChatListSearch from 'pages/ChatListSearch';
 
 export const PageRouter = () =>
   useRoutes([
@@ -134,7 +139,15 @@ export const PageRouter = () =>
     },
     {
       path: '/setting/contacts/:type',
-      element: <Contact />,
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/:type/:extra',
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/find-more',
+      element: <FindMore />,
     },
     {
       path: '/setting/account-setting',
@@ -175,6 +188,22 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/connected-sites/:origin',
       element: <SiteDetail />,
+    },
+    {
+      path: '/chat-list',
+      element: <ChatList />,
+    },
+    {
+      path: '/chat-list-search',
+      element: <ChatListSearch />,
+    },
+    {
+      path: '/chat-box/:channelUuid',
+      element: <ChatBox />,
+    },
+    {
+      path: '/new-chat',
+      element: <NewChat />,
     },
     {
       path: '/unlock',

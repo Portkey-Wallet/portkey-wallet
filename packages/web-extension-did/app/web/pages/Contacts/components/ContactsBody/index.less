@@ -3,8 +3,55 @@
 .contacts-body {
   flex: 1;
   color: @font-11;
-  border-top: 1px solid @border-2;
   overflow-y: auto;
+
+  .find-more {
+    padding: 14px 24px;
+    align-items: center;
+    border-bottom: 1px solid @border-2;
+    cursor: pointer;
+    .find-more-icon {
+      width: 20px;
+      height: 20px;
+    }
+    .find-more-text {
+      font-size: 16px;
+      font-weight: normal;
+      color: @font-9;
+      margin-left: 20px;
+    }
+  }
+
+  .contacts-tab {
+    height: 100%;
+
+    .@{app-prefix}-tabs-content-holder {
+      height: 100%;
+      .@{app-prefix}-tabs-content{
+        height: 100%;
+        .portkey-tabs-tabpane{
+          height: 100%;
+          .contact-list{
+            height: 100%;
+          }
+        }
+      }
+    }
+    .@{app-prefix}-tabs-nav {
+      margin-bottom: 0;
+    }
+    .@{app-prefix}-tabs-nav-list {
+      width: 100%;
+      .@{app-prefix}-tabs-tab {
+        width: 50%;
+        display: flex;
+        justify-content: center;
+      }
+    }
+    .@{app-prefix}-tabs-nav-operations {
+      display: none;
+    }
+  }
 
   .no-search-result {
     margin-top: 32px;
@@ -16,6 +63,17 @@
   &.index-bar-hidden {
     .adm-index-bar-sidebar {
       display: none;
+    }
+  }
+
+  .adm-index-bar-anchor {
+    .adm-index-bar-anchor-title {
+      padding-left: 24px;
+    }
+    .adm-list {
+      .adm-list-item {
+        padding-left: 24px;
+      }
     }
   }
 }

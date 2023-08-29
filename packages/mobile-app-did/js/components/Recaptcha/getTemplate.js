@@ -168,6 +168,14 @@ export default function getTemplate(params, enterprise, recaptchaDomain, gstatic
                 align-items: center;
             }
 
+            body > div:last-child > div:first-child {
+              background-color: transparent !important;
+            }
+
+            body > div:last-child > div:last-child {
+              top:auto !important;
+            }
+            
             ${hideBadge ? '.grecaptcha-badge { visibility: hidden; }' : ''}
         </style>
     </head>

@@ -35,8 +35,14 @@ export interface DiscoverGroup {
 }
 
 export interface BuyButtonType {
-  isBuySectionShow: boolean;
-  isSellSectionShow: boolean;
+  isBuySectionShow?: boolean;
+  isSellSectionShow?: boolean;
+  isAndroidBuyShow?: boolean;
+  isAndroidSellShow?: boolean;
+  isExtensionBuyShow?: boolean;
+  isExtensionSellShow?: boolean;
+  isIOSBuyShow?: boolean;
+  isIOSSellShow?: boolean;
 }
 
 export interface RememberMeBlackListSiteItem {

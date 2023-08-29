@@ -57,8 +57,7 @@ const ContactAddress: React.FC<ContactAddressProps> = ({
   return (
     <View style={GStyles.marginBottom(6)}>
       <View style={styles.addressHeader}>
-        <TextM style={[FontStyles.font3, styles.addressTitle]}>{`${t('Address')} ${editAddressIdx + 1}`}</TextM>
-
+        <TextM style={[FontStyles.font3, styles.addressTitle]}>Address</TextM>
         {isDeleteShow && (
           <Touchable onPress={_onDelete}>
             <Svg icon="delete" size={pTd(16)} />

@@ -1,0 +1,51 @@
+@import '../../../../assets/theme/color.less';
+
+.find-more-prompt {
+  border-left: 1px solid @border-2;
+  flex: 1;
+  .find-more-top {
+    // margin-bottom: 24px;
+
+    .find-more-header {
+      position: relative;
+      .title-right-col {
+        position: absolute;
+        right: 0;
+      }
+    }
+    .find-more-search {
+      width: auto;
+      margin-bottom: 12px;
+      margin-left: 24px;
+    }
+    .find-more-id {
+      color: @font-13;
+      font-weight: normal;
+      text-align: center;
+      margin-left: 12px;
+      margin-right: 24px;
+    }
+  }
+  .find-more-body {
+    .no-search-result {
+      margin-top: 60px;
+      line-height: 22px;
+      color: @font-12;
+      font-size: 16px;
+    }
+
+    .find-more-body-contact {
+      height: 62px;
+      padding: 0 24px;
+      border-bottom: 1px solid @border-2;
+    }
+
+    .no-data {
+      color: @font-12;
+      font-size: 16px;
+      font-weight: normal;
+      margin-top: 60px;
+      text-align: center;
+    }
+  }
+}

@@ -2,8 +2,8 @@ import React from 'react';
 import { pTd } from 'utils/unit';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import { Image } from 'react-native';
 import Default_Image from 'assets/image/pngs/default_record.png';
+import FastImage from 'components/FastImage';
 
 interface DiscoverWebsiteImageProps {
   imageUrl?: string;
@@ -21,7 +21,7 @@ export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
   };
 
   return (
-    <Image
+    <FastImage
       resizeMode={'contain'}
       style={[styles.avatarWrap, sizeStyle, style]}
       source={{ uri: imageUrl }}

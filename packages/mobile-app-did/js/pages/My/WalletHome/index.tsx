@@ -17,9 +17,10 @@ import useLogOut from 'hooks/useLogOut';
 import { removeManager } from 'utils/guardian';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { useAppDispatch } from 'store/hooks';
-import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface WalletHomeProps {
   name?: string;
@@ -29,15 +30,16 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   const { t } = useLanguage();
   const appDispatch = useAppDispatch();
   const {
-    walletAvatar,
     walletName,
+    walletAvatar,
     walletInfo: { caHash, address: managerAddress },
   } = useCurrentWallet();
   const getCurrentCAContract = useGetCurrentCAContract();
   const logout = useLogOut();
+  const showChat = useIsChatShow();
 
   useEffect(() => {
-    appDispatch(getWalletNameAsync());
+    appDispatch(getCaHolderInfoAsync());
   }, [appDispatch]);
 
   const onExitClick = useCallback(
@@ -77,7 +79,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
           <MenuItem
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('WalletName')}
-            title={walletName}
+            title={showChat ? t('My DID') : walletName}
           />
           <MenuItem
             style={pageStyles.menuItem}

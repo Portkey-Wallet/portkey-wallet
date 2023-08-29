@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { defaultColors } from '.';
 import fonts from './fonts';
+import { pTd } from 'utils/unit';
 
 export const BGStyles = StyleSheet.create({
   bg1: { backgroundColor: defaultColors.bg1 },
@@ -15,6 +16,13 @@ export const BGStyles = StyleSheet.create({
   bg10: { backgroundColor: defaultColors.bg10 },
   bg11: { backgroundColor: defaultColors.bg11 },
   bg12: { backgroundColor: defaultColors.bg12 },
+  bg13: { backgroundColor: defaultColors.bg13 },
+  bg14: { backgroundColor: defaultColors.bg14 },
+  bg15: { backgroundColor: defaultColors.bg15 },
+  bg16: { backgroundColor: defaultColors.bg16 },
+  bg17: { backgroundColor: defaultColors.bg17 },
+  bg18: { backgroundColor: defaultColors.bg18 },
+  bg19: { backgroundColor: defaultColors.bg19 },
   transparent: { backgroundColor: 'transparent' },
 });
 
@@ -31,7 +39,11 @@ export const FontStyles = StyleSheet.create({
   font10: { color: defaultColors.font10 },
   font11: { color: defaultColors.font11 },
   font12: { color: defaultColors.font12 },
+  font13: { color: defaultColors.font13 },
   weight500: fonts.mediumFont,
+  size16: { fontSize: pTd(16) },
+  size14: { fontSize: pTd(14) },
+  size18: { fontSize: pTd(18) },
 });
 
 export const BorderStyles = StyleSheet.create({

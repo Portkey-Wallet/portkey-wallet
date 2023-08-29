@@ -69,5 +69,8 @@ export const BackEndNetWorkMap: {
         baseUrl: 'https://ramp.alchemypay.org',
       },
     },
+    imApiUrl: 'https://im.portkey.finance',
+    imWsUrl: 'wss://diok8uqxgvc3.cloudfront.net/ws/',
+    imS3Bucket: 'portkey-im',
   },
 };

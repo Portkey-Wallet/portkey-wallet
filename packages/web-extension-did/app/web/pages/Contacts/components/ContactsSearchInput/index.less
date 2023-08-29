@@ -2,17 +2,45 @@
 
 .contacts-search-input {
   margin: 0 24px 10px;
-  width: 312px;
+  width: calc(100% - 48px);
   height: 48px;
   border-radius: 6px;
   background-color: @bg-11;
   border: 1px solid @border-1;
 
   .@{app-prefix}-input-prefix {
-    margin-right: 13px;
+    margin-right: 12px;
   }
+
+  .@{app-prefix}-input-suffix {
+    .anticon-close-circle {
+      width: 14px;
+      height: 14px;
+      background: url('../../../../assets/svgIcon/Close2.svg') no-repeat center;
+      background-size: inherit;
+
+      & > svg {
+        display: none;
+      }
+    }
+  }
+
   .search-svg {
-    width: 17px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.@{app-prefix}-input-affix-wrapper-focused {
+  box-shadow: none;
+  border-color: @border-3 !important;
+  .@{app-prefix}-input-prefix {
+    .custom-svg {
+      background: url('../../../../assets/svgIcon/Search.svg') center no-repeat;
+      background-size: 20px 20px;
+      & > svg {
+        display: none;
+      }
+    }
   }
 }

@@ -257,7 +257,6 @@ export const assetsSlice = createSlice({
       })
       .addCase(fetchNFTCollectionsAsync.pending, state => {
         state.accountToken.isFetching = true;
-        // state.status = 'loading';
       })
       .addCase(fetchNFTCollectionsAsync.fulfilled, (state, action) => {
         const { list, totalRecordCount, maxNFTCount } = action.payload;
@@ -277,7 +276,6 @@ export const assetsSlice = createSlice({
       })
       .addCase(fetchNFTAsync.pending, state => {
         state.accountToken.isFetching = true;
-        // state.status = 'loading';
       })
       .addCase(fetchNFTAsync.fulfilled, (state, action) => {
         if (!action.payload) return;

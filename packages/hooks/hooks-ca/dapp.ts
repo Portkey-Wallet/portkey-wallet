@@ -9,6 +9,7 @@ import { SessionExpiredPlan, SessionInfo } from '@portkey-wallet/types/session';
 import { formatExpiredTime, signSession } from '@portkey-wallet/utils/session';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 export const useDapp = () => useAppCASelector(state => state.dapp);
+export const useDiscover = () => useAppCASelector(state => state.discover);
 
 export const useCurrentDappList = () => {
   const { dappMap } = useDapp();

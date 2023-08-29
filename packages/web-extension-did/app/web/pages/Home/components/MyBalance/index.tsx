@@ -17,7 +17,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
-import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
 import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
@@ -30,8 +30,12 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
+import { useBuyButtonShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import ChatEntry from 'pages/ChatEntry';
+import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export interface TransactionResult {
   total: number;
@@ -81,7 +85,9 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
-  const { isBuyButtonShow } = useBuyButtonShow();
+  const { isBuyButtonShow } = useBuyButtonShow(VersionDeviceType.Extension);
+  const isShowChat = useIsChatShow();
+  const unreadCount = useUnreadCount();
 
   useEffect(() => {
     if (state?.key) {
@@ -90,7 +96,7 @@ export default function MyBalance() {
     if (!passwordSeed) return;
     appDispatch(fetchTokenListAsync({ caAddresses, caAddressInfos }));
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
-    appDispatch(getWalletNameAsync());
+    appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
   }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
 
@@ -100,6 +106,11 @@ export default function MyBalance() {
     isMainNet && appDispatch(fetchSellFiatListAsync());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMainNet]);
+
+  useEffect(() => {
+    appDispatch(fetchContactListAsync());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSelectedToken = useCallback(
     (v: AccountAssetItem, type: 'token' | 'nft') => {
@@ -170,6 +181,11 @@ export default function MyBalance() {
 
   return (
     <div className="balance">
+      {isShowChat && !isPrompt && (
+        <div className="chat-body">
+          <ChatEntry unread={unreadCount} />
+        </div>
+      )}
       <div className="wallet-name">
         {!isPrompt && <AccountConnect />}
         {walletName}

@@ -11,10 +11,13 @@ import { useStorage } from 'hooks/useStorage';
 import walletMessage from 'messages/walletMessage';
 import { useEffectOnce } from 'react-use';
 import { getStoreState } from 'store/utils/getStore';
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import initIm from 'hooks/im';
 
 export default function Home() {
   const navigate = useNavigate();
   const { isPrompt, isNotLessThan768 } = useCommonState();
+  const isImputation = useIsImputation();
   const store = getStoreState();
   console.log('custom', store);
   const onUserClick = useCallback(() => {
@@ -41,10 +44,11 @@ export default function Home() {
   useEffectOnce(() => {
     checkAchSell();
   });
+  initIm();
 
   return (
     <div className={clsx(['portkey-home', isPrompt ? 'portkey-prompt' : null])}>
-      <PortKeyHeader onUserClick={onUserClick} />
+      <PortKeyHeader unReadShow={isImputation} onUserClick={onUserClick} />
       <div className="portkey-body">
         <MyBalance />
       </div>

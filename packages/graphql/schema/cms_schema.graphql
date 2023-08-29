@@ -18,6 +18,8 @@ type Query {
   discoverItem(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem!]!
   discoverItem_by_id(id: ID!): discoverItem
   discoverItem_aggregated(groupBy: [String], filter: discoverItem_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverItem_aggregated!]!
+  download: download
+  home: home
   mediaKit(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKit!]!
   mediaKit_by_id(id: ID!): mediaKit
   mediaKit_aggregated(groupBy: [String], filter: mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKit_aggregated!]!
@@ -200,7 +202,13 @@ type buyButton {
   date_updated: Date
   date_updated_func: datetime_functions
   id: ID!
+  isAndroidBuyShow: Boolean
+  isAndroidSellShow: Boolean
   isBuySectionShow: Boolean
+  isExtensionBuyShow: Boolean
+  isExtensionSellShow: Boolean
+  isIOSBuyShow: Boolean
+  isIOSSellShow: Boolean
   isSellSectionShow: Boolean
   status: String
   user_created: String
@@ -441,6 +449,29 @@ type discoverItem_aggregated_fields {
   id: Float
   index: Float
   sort: Float
+}
+
+type download {
+  androidDownloadUrl: String
+  androidProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  androidQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  date_updated: Date
+  date_updated_func: datetime_functions
+  extensionDownloadUrl: String
+  extensionProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
+  iosDownloadUrl: String
+  iosProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  iosQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_updated: String
+}
+
+type home {
+  date_updated: Date
+  date_updated_func: datetime_functions
+  focusImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
+  user_updated: String
 }
 
 type mediaKit {

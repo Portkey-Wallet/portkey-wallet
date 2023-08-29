@@ -26,6 +26,8 @@ import { ChainId } from '@portkey-wallet/types';
 import { getWalletInfo, isCurrentCaHash } from 'utils/redux';
 import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { changeDrawerOpenStatus, resetDiscover } from '@portkey-wallet/store/store-ca/discover/slice';
+import im from '@portkey-wallet/im';
+import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -39,6 +41,8 @@ export default function useLogOut() {
       dispatch(resetDappList(currentNetwork));
       dispatch(resetDiscover(currentNetwork));
       dispatch(changeDrawerOpenStatus(false));
+      im.destroy();
+      dispatch(resetIm(currentNetwork));
 
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));

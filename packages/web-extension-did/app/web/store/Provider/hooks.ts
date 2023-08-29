@@ -22,6 +22,7 @@ export const useMiscState = () => useAppSelector((state) => state.misc);
 export const useCommonState = () => useAppSelector((state) => state.common);
 export const usePayment = () => useAppSelector((state) => state.payment);
 export const useDapp = () => useAppSelector((state) => state.dapp);
+export const useDiscover = () => useAppSelector((state) => state.discover);
 export const useLoading = () => {
   const _setLoading = useCallback(
     (isLoading: boolean | OpacityType, loadingInfo?: LoadingInfoType) => setLoading(isLoading, loadingInfo),

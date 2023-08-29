@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -9,6 +9,8 @@ import MenuItem from './components/MenuItem';
 import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import myEvents from 'utils/deviceEvent';
 
 interface MenuItemType {
   name: RootStackName;
@@ -44,8 +46,26 @@ const MenuList: Array<MenuItemType> = [
   },
 ];
 
-export default function MyMenu() {
+export default function MyMenu({ navigation }: any) {
   const { t } = useLanguage();
+  const isImputation = useIsImputation();
+
+  const navToChat = useCallback(
+    (tabName: RootStackName) => {
+      if (navigation && navigation.jumpTo) {
+        navigation.jumpTo(tabName);
+      }
+    },
+    [navigation],
+  );
+
+  // nav to chat tab
+  useEffect(() => {
+    const listener = myEvents.navToBottomTab.addListener(({ tabName }) => navToChat(tabName));
+    return () => listener.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <PageContainer
       leftDom={<TextM />}
@@ -55,6 +75,7 @@ export default function MyMenu() {
       {MenuList.map(ele => {
         return (
           <MenuItem
+            showWarningCycle={ele.name === 'ContactsHome' && isImputation}
             style={styles.menuItemWrap}
             icon={ele?.icon || 'setting'}
             title={t(ele.label)}

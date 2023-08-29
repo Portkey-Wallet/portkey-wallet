@@ -46,7 +46,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
         const info = value as CAInfo;
         return info?.caAddress
           ? {
-              chaiId: key,
+              chainId: key,
               caAddress: info.caAddress,
               ...accountTokenList.find(token => token.chainId === key && token.symbol === defaultToken.symbol),
             }
@@ -73,11 +73,11 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
         <View style={styles.group}>
           <TextL style={(FontStyles.font5, fonts.mediumFont)}>{walletName}</TextL>
           {caInfoList?.map((item, index) => (
-            <View key={item?.chaiId} style={[styles.itemWrap, !!index && styles.itemBorderTop]}>
+            <View key={item?.chainId} style={[styles.itemWrap, !!index && styles.itemBorderTop]}>
               <View>
-                <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chaiId as ChainId), 10)}</TextM>
+                <TextM>{formatStr2EllipsisStr(addressFormat(item?.caAddress, item?.chainId as ChainId), 10)}</TextM>
                 <TextS style={[styles.itemChainInfo, FontStyles.font3]}>
-                  {formatChainInfoToShow(item?.chaiId as ChainId, currentNetwork)}
+                  {formatChainInfoToShow(item?.chainId as ChainId, currentNetwork)}
                 </TextS>
               </View>
               <View>

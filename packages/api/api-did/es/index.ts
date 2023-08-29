@@ -1,7 +1,7 @@
 import { ESBaseConfig } from './type';
 
 const Method = 'GET';
-const BaseESUrl = `/api/app/search/`;
+const BaseESUrl = `/api/app/`;
 
 const KeyList = [
   'getUserTokenList',
@@ -14,27 +14,27 @@ const KeyList = [
 
 const ApiObject: Record<typeof KeyList[number], ESBaseConfig> = {
   getUserTokenList: {
-    target: `${BaseESUrl}usertokenindex`,
+    target: `${BaseESUrl}search/usertokenindex`,
     config: { method: Method },
   },
   getChainsInfo: {
-    target: `${BaseESUrl}chainsinfoindex`,
+    target: `${BaseESUrl}search/chainsinfoindex`,
     config: { method: Method, params: { sort: 'chainId' } },
   },
   getRegisterResult: {
-    target: `${BaseESUrl}accountregisterindex`,
+    target: `${BaseESUrl}search/accountregisterindex`,
     config: { method: Method },
   },
   getRecoverResult: {
-    target: `${BaseESUrl}accountrecoverindex`,
+    target: `${BaseESUrl}search/accountrecoverindex`,
     config: { method: Method },
   },
   getContactList: {
-    target: `${BaseESUrl}contactindex`,
+    target: `${BaseESUrl}contacts/list`,
     config: { method: Method },
   },
   getCaHolder: {
-    target: `${BaseESUrl}caholderindex`,
+    target: `${BaseESUrl}search/caholderindex`,
     config: { method: Method },
   },
 };

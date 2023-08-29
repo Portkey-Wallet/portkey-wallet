@@ -6,4 +6,5 @@ export interface FetchContractListAsyncPayloadType {
   contactIndexList?: ContactIndexType[];
   eventList?: ContactItemType[];
   lastModified: ContactState['lastModified'];
+  isImputation: boolean;
 }

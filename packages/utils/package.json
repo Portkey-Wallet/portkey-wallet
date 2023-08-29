@@ -13,6 +13,8 @@
   "dependencies": {
     "@portkey-wallet/constants": "^1.3.0",
     "@portkey-wallet/types": "^1.3.0",
+    "aws-sdk": "^2.1438.0",
+    "dayjs": "^1.11.9",
     "is-url": "^1.2.4",
     "query-string": "^7.1.1"
   },

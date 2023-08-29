@@ -1,5 +1,4 @@
 import RegisterStart from 'pages/RegisterStart';
-import SelectVerifier from 'pages/SelectVerifier';
 import { useRoutes } from 'react-router-dom';
 import ScreenOpeningPage from 'pages/ScreenOpening';
 import VerifierAccount from 'pages/VerifierAccount';
@@ -25,7 +24,7 @@ import TokenDetail from 'pages/Token/Detail';
 import Send from 'pages/Send';
 import Receive from 'pages/Receive';
 import NFT from 'pages/NFT';
-import Contact from 'pages/Contacts/ContactDetail';
+import ContactDetail from 'pages/Contacts/ContactDetail';
 import AccountSetting from 'pages/AccountSetting';
 import PromptMy from 'pages/PromptMy';
 import Guardians from 'pages/Guardians';
@@ -47,8 +46,11 @@ import RecentDetail from 'pages/Send/components/RecentDetail';
 import Permission from 'pages/Permission';
 import ConnectWallet from 'pages/ConnectWallet';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
+import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
 import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
+import DappAutoTx from 'pages/DappAutoTx';
+import FindMore from 'pages/Contacts/FindMore';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -69,10 +71,6 @@ export const PageRouter = () => {
     {
       path: '/register/start/:type',
       element: <RegisterStart />,
-    },
-    {
-      path: '/register/select-verifier',
-      element: <SelectVerifier />,
     },
     {
       path: '/register/verifier-account',
@@ -176,7 +174,10 @@ export const PageRouter = () => {
       path: '/get-signature',
       element: <GetSignature />,
     },
-
+    {
+      path: '/auto-execute-tx',
+      element: <DappAutoTx />,
+    },
     {
       path: '*',
       element: <NotFound />,
@@ -215,7 +216,15 @@ export const PageRouter = () => {
           children: [
             {
               path: '/setting/contacts/:type',
-              element: <Contact />,
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/contacts/:type/:extra',
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/contacts/find-more',
+              element: <FindMore />,
             },
           ],
         },
@@ -283,6 +292,10 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/connected-sites',
               element: <ConnectedSites />,
             },
+            {
+              path: '/setting/wallet-security/connected-sites/:origin',
+              element: <SiteDetail />,
+            },
           ],
         },
       ],
@@ -343,7 +356,15 @@ export const PageRouter = () => {
     },
     {
       path: '/setting/contacts/:type',
-      element: <Contact />,
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/:type/:extra',
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/find-more',
+      element: <FindMore />,
     },
     {
       path: '/setting/account-setting',
@@ -380,6 +401,10 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/connected-sites',
       element: <ConnectedSites />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites/:origin',
+      element: <SiteDetail />,
     },
   ];
 

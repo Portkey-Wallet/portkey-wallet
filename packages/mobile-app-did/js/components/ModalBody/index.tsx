@@ -15,9 +15,12 @@ import { CommonButtonProps } from 'components/CommonButton';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
+  isShowLeftBackIcon?: boolean;
+  isShowRightCloseIcon?: boolean;
   modalBodyType?: 'center' | 'bottom';
   style?: ViewStyle;
   onClose?: () => void;
+  onBack?: () => void;
   bottomButtonGroup?: {
     onPress?: () => void;
     type?: CommonButtonProps['type'];
@@ -28,7 +31,16 @@ export interface ModalBodyProps extends ViewProps {
 }
 
 export const ModalBody: React.FC<ModalBodyProps> = props => {
-  const { modalBodyType, title = '', children, style = {}, onClose, bottomButtonGroup } = props;
+  const {
+    modalBodyType,
+    isShowRightCloseIcon = true,
+    isShowLeftBackIcon = false,
+    title = '',
+    children,
+    style = {},
+    onClose,
+    bottomButtonGroup,
+  } = props;
 
   const gStyles = useGStyles();
 
@@ -36,19 +48,33 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     return (
       <View style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
         <View style={styles.topWrap}>
+          {isShowLeftBackIcon && (
+            <View
+              style={styles.leftIcon}
+              pointerEvents="box-only"
+              onTouchStart={() => {
+                onClose?.();
+                Keyboard.dismiss();
+                OverlayModal.hide();
+              }}>
+              <Svg icon="left-arrow" size={pTd(20)} />
+            </View>
+          )}
           <TextXL suppressHighlighting={true} style={[styles.titleStyle, fonts.mediumFont]} onPress={Keyboard.dismiss}>
             {title}
           </TextXL>
-          <View
-            style={styles.closeIcon}
-            pointerEvents="box-only"
-            onTouchStart={() => {
-              onClose?.();
-              Keyboard.dismiss();
-              OverlayModal.hide();
-            }}>
-            <Svg icon="close" size={pTd(12)} />
-          </View>
+          {isShowRightCloseIcon && (
+            <View
+              style={styles.closeIcon}
+              pointerEvents="box-only"
+              onTouchStart={() => {
+                onClose?.();
+                Keyboard.dismiss();
+                OverlayModal.hide();
+              }}>
+              <Svg icon="close" size={pTd(12)} />
+            </View>
+          )}
         </View>
         {children}
         {!!bottomButtonGroup && (
@@ -83,6 +109,12 @@ export const styles = StyleSheet.create({
     paddingTop: pTd(16),
     paddingBottom: pTd(16),
   },
+  leftIcon: {
+    ...GStyles.paddingArg(17, 20),
+    position: 'absolute',
+    left: 0,
+    zIndex: 10000,
+  },
   titleStyle: {
     lineHeight: pTd(22),
     width: '100%',
@@ -92,6 +124,7 @@ export const styles = StyleSheet.create({
     ...GStyles.paddingArg(21, 20),
     position: 'absolute',
     right: 0,
+    zIndex: 10000,
   },
   headerRow: {
     paddingTop: pTd(14),

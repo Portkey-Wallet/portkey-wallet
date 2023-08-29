@@ -25,7 +25,11 @@ export const fetchRecentListAsync = createAsyncThunk(
       caAddress,
       caAddressInfos,
       isFirstTime = true,
-    }: { caAddress: string; isFirstTime: boolean; caAddressInfos: { chainId: ChainId; caAddress: string }[] },
+    }: {
+      caAddress: string;
+      isFirstTime: boolean;
+      caAddressInfos: { chainId: ChainId; chainName: string; caAddress: string }[];
+    },
     { getState },
   ) => {
     const { recent } = getState() as { recent: RecentStateType };

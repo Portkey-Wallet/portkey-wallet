@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
@@ -16,10 +16,10 @@ import { defaultColors } from 'assets/theme';
 import Divider from 'components/Divider';
 import CommonToast from 'components/CommonToast';
 import { useAppleAuthentication, useGoogleAuthentication } from 'hooks/authentication';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
 import { useOnLogin } from 'hooks/login';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Loading from 'components/Loading';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 const TitleMap = {
   [PageType.login]: {
     apple: 'Login with Apple',
@@ -44,9 +44,10 @@ export default function Referral({
   const { googleSign } = useGoogleAuthentication();
 
   const onLogin = useOnLogin(type === PageType.login);
-  const onAppleSign = useCallback(async () => {
+
+  const onAppleSign = useLockCallback(async () => {
+    const loadingKey = Loading.show();
     try {
-      Loading.show();
       const userInfo = await appleSign();
       await onLogin({
         loginAccount: userInfo.user.id,
@@ -56,11 +57,11 @@ export default function Referral({
     } catch (error) {
       CommonToast.failError(error);
     }
-    Loading.hide();
+    Loading.hide(loadingKey);
   }, [appleSign, onLogin]);
-  const onGoogleSign = useCallback(async () => {
+  const onGoogleSign = useLockCallback(async () => {
+    const loadingKey = Loading.show();
     try {
-      Loading.show();
       const userInfo = await googleSign();
       await onLogin({
         loginAccount: userInfo.user.id,
@@ -70,7 +71,7 @@ export default function Referral({
     } catch (error) {
       CommonToast.failError(error);
     }
-    Loading.hide();
+    Loading.hide(loadingKey);
   }, [googleSign, onLogin]);
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>

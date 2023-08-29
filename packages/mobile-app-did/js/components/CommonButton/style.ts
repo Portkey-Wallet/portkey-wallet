@@ -45,4 +45,7 @@ export const styles = StyleSheet.create({
   clearButtonStyle: {
     borderWidth: 0,
   },
+  outlineDisabledTitleStyle: {
+    color: defaultColors.font3,
+  },
 });

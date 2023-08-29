@@ -23,6 +23,8 @@ module.exports.discoverGroup_aggregated = fs.readFileSync(path.join(__dirname, '
 module.exports.discoverItem = fs.readFileSync(path.join(__dirname, 'discoverItem.gql'), 'utf8');
 module.exports.discoverItem_by_id = fs.readFileSync(path.join(__dirname, 'discoverItem_by_id.gql'), 'utf8');
 module.exports.discoverItem_aggregated = fs.readFileSync(path.join(__dirname, 'discoverItem_aggregated.gql'), 'utf8');
+module.exports.download = fs.readFileSync(path.join(__dirname, 'download.gql'), 'utf8');
+module.exports.home = fs.readFileSync(path.join(__dirname, 'home.gql'), 'utf8');
 module.exports.mediaKit = fs.readFileSync(path.join(__dirname, 'mediaKit.gql'), 'utf8');
 module.exports.mediaKit_by_id = fs.readFileSync(path.join(__dirname, 'mediaKit_by_id.gql'), 'utf8');
 module.exports.mediaKit_aggregated = fs.readFileSync(path.join(__dirname, 'mediaKit_aggregated.gql'), 'utf8');
@@ -49,6 +51,15 @@ module.exports.officialSocialMedia_by_id = fs.readFileSync(
 );
 module.exports.officialSocialMedia_aggregated = fs.readFileSync(
   path.join(__dirname, 'officialSocialMedia_aggregated.gql'),
+  'utf8',
+);
+module.exports.rememberMeBlackListSites = fs.readFileSync(path.join(__dirname, 'rememberMeBlackListSites.gql'), 'utf8');
+module.exports.rememberMeBlackListSites_by_id = fs.readFileSync(
+  path.join(__dirname, 'rememberMeBlackListSites_by_id.gql'),
+  'utf8',
+);
+module.exports.rememberMeBlackListSites_aggregated = fs.readFileSync(
+  path.join(__dirname, 'rememberMeBlackListSites_aggregated.gql'),
   'utf8',
 );
 module.exports.socialMedia = fs.readFileSync(path.join(__dirname, 'socialMedia.gql'), 'utf8');

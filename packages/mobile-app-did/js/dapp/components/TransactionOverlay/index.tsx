@@ -6,7 +6,7 @@ import { useLanguage } from 'i18n/hooks';
 import { ModalBody } from 'components/ModalBody';
 import { TextM, TextS } from 'components/CommonText';
 import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr, sleep } from '@portkey-wallet/utils';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
@@ -20,7 +20,6 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { usePin } from 'hooks/store';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getManagerAccount } from 'utils/redux';
-import { customFetch } from '@portkey-wallet/utils/fetch';
 import DappInfoSection from '../DappInfoSection';
 import TransactionDataSection from '../TransactionDataSection';
 import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
@@ -28,6 +27,10 @@ import { styles, transferGroupStyle } from './styles/index';
 import Lottie from 'lottie-react-native';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
+import { SessionExpiredPlan } from '@portkey-wallet/types/session';
+import { RememberInfoType, RememberMe } from 'components/RemeberMe';
+import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
+import { OverlayBottomSection } from '../OverlayBottomSection';
 
 enum ErrorText {
   ESTIMATE_ERROR = 'Failed to estimate transaction fee',
@@ -46,12 +49,16 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   const isMainnet = useIsMainnet();
   const defaultToken = useDefaultToken();
   const pin = usePin();
-
   const { walletName } = useWallet();
   const wallet = useCurrentWalletInfo();
   const checkManagerSyncState = useCheckManagerSyncState();
-
   const amountInUsdShow = useAmountInUsdShow();
+  const updateSessionInfo = useUpdateSessionInfo();
+
+  const [rememberInfo, setRememberMeInfo] = useState<RememberInfoType>({
+    isRemember: false,
+    value: SessionExpiredPlan.hour1,
+  });
 
   const chainInfo = useCurrentChain(transactionInfo.chainId);
   const [, getTokenPrice, getTokensPrice] = useGetCurrentAccountTokenPrice();
@@ -70,8 +77,8 @@ const ConnectModal = (props: TransactionModalPropsType) => {
 
   const isTransfer = useMemo(() => transactionInfo.method.toLowerCase() === 'transfer', [transactionInfo.method]);
 
-  const buttonList = useMemo(() => {
-    return [
+  const ButtonList = useMemo(
+    () => [
       {
         title: t('Reject'),
         type: 'outline' as CommonButtonProps['type'],
@@ -83,13 +90,24 @@ const ConnectModal = (props: TransactionModalPropsType) => {
       {
         title: t('Approve'),
         type: 'primary' as CommonButtonProps['type'],
-        onPress: () => {
+        onPress: async () => {
           onSign?.();
           OverlayModal.hide();
+
+          await sleep(500);
+          if (!pin) return;
+          if (rememberInfo.isRemember) {
+            updateSessionInfo({
+              manager: getManagerAccount(pin),
+              origin: dappInfo.origin,
+              expiredPlan: rememberInfo?.value || SessionExpiredPlan.hour1,
+            });
+          }
         },
       },
-    ];
-  }, [onReject, onSign, t]);
+    ],
+    [dappInfo.origin, onReject, onSign, pin, rememberInfo.isRemember, rememberInfo?.value, t, updateSessionInfo],
+  );
 
   const formatAmountInUsdShow = useCallback(
     (amount: string | number, decimals: string | number, symbol: string) => {
@@ -334,24 +352,19 @@ const ConnectModal = (props: TransactionModalPropsType) => {
     });
 
     try {
-      const raw = await contract.encodedTx(
-        'ManagerForwardCall',
-        isCAContract
-          ? transactionInfo?.params?.paramsOption
-          : {
-              caHash: wallet.caHash,
-              contractAddress: transactionInfo.contractAddress,
-              methodName: transactionInfo.method,
-              args: transactionInfo.params?.paramsOption,
-            },
-      );
+      const paramsOption = isCAContract
+        ? transactionInfo?.params?.paramsOption
+        : {
+            caHash: wallet.caHash,
+            contractAddress: transactionInfo.contractAddress,
+            methodName: transactionInfo.method,
+            args: transactionInfo.params?.paramsOption,
+          };
 
-      const { TransactionFee } = await customFetch(`${chainInfo?.endPoint}/api/blockChain/calculateTransactionFee`, {
-        method: 'POST',
-        params: {
-          RawTransaction: raw.data,
-        },
-      });
+      const req = await contract.calculateTransactionFee('ManagerForwardCall', paramsOption);
+      const { TransactionFee } = req.data || {};
+
+      if (req.error) request.errorReport('calculateTransactionFee', paramsOption, req.error);
 
       if (!TransactionFee && !TransactionFee?.[defaultToken.symbol]) setErrorText(ErrorText.ESTIMATE_ERROR);
 
@@ -414,7 +427,7 @@ const ConnectModal = (props: TransactionModalPropsType) => {
   }, [defaultToken.symbol, getTokenPrice, getTokensPrice, transactionInfo?.params?.paramsOption?.symbol]);
 
   return (
-    <ModalBody modalBodyType="bottom" title="" bottomButtonGroup={buttonList} onClose={onReject}>
+    <ModalBody modalBodyType="bottom" title="" onClose={onReject}>
       <View style={GStyles.center}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextS style={styles.method}>{transactionInfo?.method}</TextS>
@@ -429,6 +442,9 @@ const ConnectModal = (props: TransactionModalPropsType) => {
           <View style={styles.blank} />
         </ScrollView>
       </View>
+      <OverlayBottomSection bottomButtonGroup={ButtonList}>
+        <RememberMe dappInfo={dappInfo} rememberInfo={rememberInfo} setRememberMeInfo={setRememberMeInfo} />
+      </OverlayBottomSection>
     </ModalBody>
   );
 };

@@ -21,6 +21,8 @@ import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
+import imSlice from '@portkey-wallet/store/store-ca/im/slice';
+import { chatSlice } from './chat/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -34,8 +36,15 @@ const discoverPersistConfig = {
   blacklist: ['isDrawerOpen', 'initializedList', 'activeTabId', 'autoApproveMap'],
 };
 
+const imPersistConfig = {
+  key: imSlice.name,
+  storage: AsyncStorage,
+  blacklist: ['channelMessageListNetMap'],
+};
+
 export const userReducer = persistReducer(userPersistConfig, userSlice.reducer);
 export const discoverReducer = persistReducer(discoverPersistConfig, discoverSlice.reducer);
+export const imReducer = persistReducer(imPersistConfig, imSlice.reducer);
 
 const rootReducer = combineReducers({
   [walletSlice.name]: walletSlice.reducer,
@@ -55,6 +64,8 @@ const rootReducer = combineReducers({
   [userSlice.name]: userReducer,
   [discoverSlice.name]: discoverReducer,
   [txFeeSlice.name]: txFeeSlice.reducer,
+  [imSlice.name]: imReducer,
+  [chatSlice.name]: chatSlice.reducer,
 });
 
 export default rootReducer;

@@ -92,7 +92,7 @@ export default function CustomTokenList({
             <p className="convert">
               {isTestNet
                 ? ''
-                : amountInUsdShow(token.tokenInfo?.balance || '', token.tokenInfo?.decimals || 8, token.symbol)}
+                : amountInUsdShow(token.tokenInfo?.balance || '', token.tokenInfo?.decimals || 0, token.symbol)}
             </p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export default function CustomTokenList({
         tokenInfo: {
           id: token.id || '',
           balance: token.balance,
-          decimals: token.decimals + '' || '8',
+          decimals: `${token.decimals}`,
           balanceInUsd: token.balanceInUsd,
           tokenContractAddress: token.address,
         },

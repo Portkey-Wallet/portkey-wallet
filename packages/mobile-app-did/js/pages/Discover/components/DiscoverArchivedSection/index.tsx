@@ -2,11 +2,10 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextS } from 'components/CommonText';
-import { useBookmarkList, useDiscoverJumpWithNetWork, useRecordsList } from 'hooks/discover';
+import { useDiscoverJumpWithNetWork, useRecordsList } from 'hooks/discover';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
-import { TabView } from '@rneui/base';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import navigationService from 'utils/navigationService';
@@ -14,6 +13,7 @@ import { ArchivedTabEnum } from 'pages/Discover/types';
 import NoDiscoverData from '../NoDiscoverData';
 import { useFocusEffect } from '@react-navigation/native';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
+import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 
 export function DiscoverArchivedSection() {
   const discoverJump = useDiscoverJumpWithNetWork();
@@ -85,7 +85,7 @@ export function DiscoverArchivedSection() {
         {index === ArchivedTabEnum.Bookmarks && (
           <>
             {bookmarkList?.length === 0 ? (
-              <NoDiscoverData type="noBookmarks" iconStyle={styles.noData} />
+              <NoDiscoverData type="noBookmarks" style={styles.noData} />
             ) : (
               <View style={styles.tabListWrap}>
                 {bookmarkList.map((item, idx) => (

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   toastRow: {
-    maxWidth: '85%',
+    maxWidth: '86%',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,

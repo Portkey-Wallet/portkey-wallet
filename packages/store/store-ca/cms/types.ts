@@ -35,8 +35,19 @@ export interface DiscoverGroup {
 }
 
 export interface BuyButtonType {
-  isBuySectionShow: boolean;
-  isSellSectionShow: boolean;
+  isBuySectionShow?: boolean;
+  isSellSectionShow?: boolean;
+  isAndroidBuyShow?: boolean;
+  isAndroidSellShow?: boolean;
+  isExtensionBuyShow?: boolean;
+  isExtensionSellShow?: boolean;
+  isIOSBuyShow?: boolean;
+  isIOSSellShow?: boolean;
+}
+
+export interface RememberMeBlackListSiteItem {
+  name: string;
+  url: string;
 }
 
 export interface CMSState {
@@ -51,5 +62,8 @@ export interface CMSState {
   };
   buyButtonNetMap?: {
     [T in NetworkType]?: BuyButtonType;
+  };
+  rememberMeBlackListMap?: {
+    [T in NetworkType]?: RememberMeBlackListSiteItem[];
   };
 }

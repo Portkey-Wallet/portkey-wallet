@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -19,6 +19,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 const Card: React.FC = () => {
   const { t } = useLanguage();
@@ -26,7 +27,9 @@ const Card: React.FC = () => {
   const { walletName } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
   const [, requestQrPermission] = useQrScanPermission();
-  const { isBuyButtonShow } = useBuyButtonShow();
+  const { isBuyButtonShow } = useBuyButtonShow(
+    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
+  );
 
   const showDialog = useCallback(
     () =>

@@ -1,8 +1,13 @@
 query buyButtonCustom {
   buyButton {
     id
-    isBuySectionShow
-    isSellSectionShow
+    isAndroidBuyShow
+    isAndroidSellShow
+    isExtensionBuyShow
+    isExtensionSellShow
+    isIOSBuyShow
+    isIOSSellShow
     status
   }
 }
+

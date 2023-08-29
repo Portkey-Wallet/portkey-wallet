@@ -18,6 +18,8 @@ type Query {
   discoverItem(filter: discoverItem_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [discoverItem!]!
   discoverItem_by_id(id: ID!): discoverItem
   discoverItem_aggregated(groupBy: [String], filter: discoverItem_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverItem_aggregated!]!
+  download: download
+  home: home
   mediaKit(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKit!]!
   mediaKit_by_id(id: ID!): mediaKit
   mediaKit_aggregated(groupBy: [String], filter: mediaKit_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [mediaKit_aggregated!]!
@@ -31,6 +33,9 @@ type Query {
   officialSocialMedia(filter: officialSocialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [officialSocialMedia!]!
   officialSocialMedia_by_id(id: ID!): officialSocialMedia
   officialSocialMedia_aggregated(groupBy: [String], filter: officialSocialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [officialSocialMedia_aggregated!]!
+  rememberMeBlackListSites(filter: rememberMeBlackListSites_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [rememberMeBlackListSites!]!
+  rememberMeBlackListSites_by_id(id: ID!): rememberMeBlackListSites
+  rememberMeBlackListSites_aggregated(groupBy: [String], filter: rememberMeBlackListSites_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [rememberMeBlackListSites_aggregated!]!
   socialMedia(filter: socialMedia_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [socialMedia!]!
   socialMedia_by_id(id: ID!): socialMedia
   socialMedia_aggregated(groupBy: [String], filter: socialMedia_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [socialMedia_aggregated!]!
@@ -197,7 +202,13 @@ type buyButton {
   date_updated: Date
   date_updated_func: datetime_functions
   id: ID!
+  isAndroidBuyShow: Boolean
+  isAndroidSellShow: Boolean
   isBuySectionShow: Boolean
+  isExtensionBuyShow: Boolean
+  isExtensionSellShow: Boolean
+  isIOSBuyShow: Boolean
+  isIOSSellShow: Boolean
   isSellSectionShow: Boolean
   status: String
   user_created: String
@@ -440,6 +451,29 @@ type discoverItem_aggregated_fields {
   sort: Float
 }
 
+type download {
+  androidDownloadUrl: String
+  androidProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  androidQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  date_updated: Date
+  date_updated_func: datetime_functions
+  extensionDownloadUrl: String
+  extensionProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
+  iosDownloadUrl: String
+  iosProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  iosQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_updated: String
+}
+
+type home {
+  date_updated: Date
+  date_updated_func: datetime_functions
+  focusImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  id: ID!
+  user_updated: String
+}
+
 type mediaKit {
   backgroundColor: String
   date_created: Date
@@ -631,6 +665,50 @@ type officialSocialMedia_aggregated_count {
 type officialSocialMedia_aggregated_fields {
   id: Float
   index: Float
+  sort: Float
+}
+
+type rememberMeBlackListSites {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  name: String
+  sort: Int
+  status: String
+  url: String
+  user_created: String
+  user_updated: String
+}
+
+type rememberMeBlackListSites_aggregated {
+  group: JSON
+  countAll: Int
+  count: rememberMeBlackListSites_aggregated_count
+  countDistinct: rememberMeBlackListSites_aggregated_count
+  avg: rememberMeBlackListSites_aggregated_fields
+  sum: rememberMeBlackListSites_aggregated_fields
+  avgDistinct: rememberMeBlackListSites_aggregated_fields
+  sumDistinct: rememberMeBlackListSites_aggregated_fields
+  min: rememberMeBlackListSites_aggregated_fields
+  max: rememberMeBlackListSites_aggregated_fields
+}
+
+type rememberMeBlackListSites_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  id: Int
+  name: Int
+  sort: Int
+  status: Int
+  url: Int
+  user_created: Int
+  user_updated: Int
+}
+
+type rememberMeBlackListSites_aggregated_fields {
+  id: Float
   sort: Float
 }
 
@@ -1145,6 +1223,22 @@ input officialSocialMedia_filter {
   user_updated: string_filter_operators
   _and: [officialSocialMedia_filter]
   _or: [officialSocialMedia_filter]
+}
+
+input rememberMeBlackListSites_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  id: number_filter_operators
+  name: string_filter_operators
+  sort: number_filter_operators
+  status: string_filter_operators
+  url: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  _and: [rememberMeBlackListSites_filter]
+  _or: [rememberMeBlackListSites_filter]
 }
 
 input socialMedia_filter {

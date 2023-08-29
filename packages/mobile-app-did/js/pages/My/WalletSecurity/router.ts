@@ -1,16 +1,13 @@
 import WalletSecurity from '.';
 import DeviceNav from './Device/router';
-import Dapp from './Dapp/index';
+import DappNav from './Dapp/router';
 
 const stackNav = [
   {
     name: 'WalletSecurity',
     component: WalletSecurity,
   },
-  {
-    name: 'ConnectedSites',
-    component: Dapp,
-  },
+  ...DappNav,
   ...DeviceNav,
 ] as const;
 

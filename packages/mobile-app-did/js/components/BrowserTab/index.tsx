@@ -7,6 +7,9 @@ import Progressbar, { IProgressbar } from 'components/Progressbar';
 import HttpModal from './components/HttpModal';
 import { getProtocolAndHost, isDangerousLink } from '@portkey-wallet/utils/dapp/browser';
 import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/lib/WebViewTypes';
+import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import useEffectOnce from 'hooks/useEffectOnce';
+import OverlayModal from 'components/OverlayModal';
 
 type BrowserTabProps = {
   isHidden: boolean;
@@ -35,6 +38,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
     [],
   );
   useImperativeHandle(forward, () => options, [options]);
+  const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
 
   useEffect(() => {
     if (isHidden) return;
@@ -46,12 +50,18 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
     ({ nativeEvent }: WebViewNavigationEvent | WebViewErrorEvent) => {
       if (!isDangerousLink(getProtocolAndHost(uri)) && !isApproved.current && autoApprove) {
         isApproved.current = true;
-        webViewRef.current?.autoApprove();
+        if (!isHidden) webViewRef.current?.autoApprove();
       }
       onLoadEnd?.(nativeEvent);
     },
-    [autoApprove, uri, onLoadEnd],
+    [uri, autoApprove, isHidden, onLoadEnd],
   );
+
+  useEffectOnce(() => {
+    OverlayModal.hide();
+    fetchCurrentRememberMeBlackList();
+  });
+
   return (
     <View
       ref={viewRef}
@@ -61,6 +71,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
       <ProviderWebview
         ref={webViewRef}
         source={{ uri }}
+        isHidden={isHidden}
         onLoadEnd={onPageLoadEnd}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
       />

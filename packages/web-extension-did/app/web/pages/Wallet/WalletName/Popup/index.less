@@ -4,16 +4,29 @@
   .nav-header {
     padding-top: 16px;
     background-color: @bg-13;
+    border-bottom: 1px solid @border-2;
   }
+
+  .view-contact-body {
+    height: calc(100% - 97px);
+
+    .footer {
+      padding: 16px;
+    }
+  }
+
   .set-wallet-name-form {
-    border-top: 1px solid @border-2;
+    height: calc(100% - 97px);
     display: flex;
     flex-direction: column;
-    height: calc(100% - 96px);
     justify-content: space-between;
 
-    .form-btn {
-      border-top: 1px solid @border-2;
+    .form-content {
+      padding: 24px 24px 0;
+    }
+
+    .form-btn{
+      padding: 16px;
     }
   }
 }

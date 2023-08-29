@@ -6,7 +6,9 @@ import { useCopyToClipboard } from 'react-use';
 import './index.less';
 import { useCallback } from 'react';
 import { useIsTestnet } from 'hooks/useNetwork';
-import { transNetworkText } from '@portkey-wallet/utils/activity';
+import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';
+import { addressFormat } from '@portkey-wallet/utils';
+import { ChainType } from '@portkey/provider-types';
 
 export default function ContactAddressList({ list }: { list: AddressItem[] }) {
   const isTestNet = useIsTestnet();
@@ -26,11 +28,20 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
         <div className="address-item" key={index}>
           <div className="flex-between-center">
             <div className="address-wrapper">
-              <div className="address">{`ELF_${ads?.address}_${ads?.chainId}`}</div>
+              <div className="address">{addressFormat(ads?.address, ads?.chainId, ads?.chainName as ChainType)}</div>
             </div>
             <CustomSvg onClick={() => handleCopy(ads?.address)} type="Copy" className="address-copy-icon" />
           </div>
-          <div className="chain">{transNetworkText(ads.chainId, isTestNet)}</div>
+          <div className="flex-row-center chain">
+            {ads?.image && <img src={ads?.image} className="chain-img" />}
+
+            {!ads?.image && ads?.chainName === 'aelf' && !isTestNet && <CustomSvg type="Aelf" className="chain-elf" />}
+            {!ads?.image && ads?.chainName === 'aelf' && isTestNet && (
+              <CustomSvg type="elf-icon" className="chain-elf" />
+            )}
+
+            <span className="chain-text">{transNetworkTextWithAllChain(ads.chainId, isTestNet, ads.chainName)}</span>
+          </div>
         </div>
       ))}
     </div>

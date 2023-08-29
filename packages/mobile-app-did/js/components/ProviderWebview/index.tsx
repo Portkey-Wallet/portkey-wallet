@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useCallback, useImperativeHandle, useRef, useState } from 'react';
+import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import WebView, { WebViewProps } from 'react-native-webview';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -11,8 +11,7 @@ import { store } from 'store';
 import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
-
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 export interface IWebView {
   goBack: WebView['goBack'];
   reload: WebView['reload'];
@@ -22,17 +21,23 @@ export interface IWebView {
   autoApprove: () => void;
 }
 
-const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function ProviderWebview(props, forward) {
+const ProviderWebview = forwardRef<
+  IWebView | undefined,
+  WebViewProps & {
+    isHidden?: boolean;
+  }
+>(function ProviderWebview(props, forward) {
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
   // Android will trigger onLoadEnd before onLoadStart, Mark start status.
   const loadStartRef = useRef<boolean>(false);
+
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
   useEffectOnce(() => {
     const getEntryScriptWeb3 = async () => {
       const script = await EntryScriptWeb3.get();
       setEntryScriptWeb3(script);
-      if (!isIos) webViewRef.current?.injectJavaScript(script);
+      if (!isIOS) webViewRef.current?.injectJavaScript(script);
     };
 
     getEntryScriptWeb3();
@@ -41,10 +46,14 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
     };
   });
 
+  useEffect(() => {
+    operatorRef.current?.setIsLockDapp(!!props.isHidden);
+  }, [props.isHidden]);
+
   const initOperator = useCallback(
     (origin: string) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      if (!isIos) webViewRef.current?.injectJavaScript(entryScriptWeb3!);
+      if (!isIOS) webViewRef.current?.injectJavaScript(entryScriptWeb3!);
 
       operatorRef.current = new DappMobileOperator({
         origin,
@@ -121,7 +130,7 @@ const ProviderWebview = forwardRef<IWebView | undefined, WebViewProps>(function 
       ref={webViewRef}
       style={styles.webView}
       decelerationRate="normal"
-      injectedJavaScriptBeforeContentLoaded={isIos ? entryScriptWeb3 : undefined}
+      injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
       applicationNameForUserAgent={'WebView Portkey did Mobile'}
       {...props}
       onLoadStart={event => {

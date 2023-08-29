@@ -33,7 +33,7 @@ export default function MyAddress({
             className="my-address-item"
             key={idx + item.caAddress}
             onClick={() => {
-              onClick({ chainId: item.chainId, address: item.caAddress });
+              onClick({ chainId: item.chainId, address: item.caAddress, chainName: item.chainName });
             }}>
             <p className="address">{`ELF_${formatStr2EllipsisStr(item.caAddress, [6, 6])}_${item.chainId}`}</p>
             <p className="network">{transNetworkText(item.chainId, isTestNet)}</p>

@@ -9,6 +9,7 @@ import { handleAccounts, handleChainIds, handleCurrentCAInfo, handleOriginInfo }
 import { isEqDapp } from './browser';
 import { NetworkType } from '@portkey-wallet/types';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { SessionInfo } from '@portkey-wallet/types/session';
 
 export abstract class BaseDappManager<T extends IDappManagerStore> {
   protected store: T;
@@ -112,5 +113,13 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   }
   async getRpcUrl(chainId: ChainId): Promise<string | undefined> {
     return (await this.getChainInfo(chainId))?.endPoint;
+  }
+  async getSessionInfo(origin: string): Promise<SessionInfo | undefined> {
+    const originInfo = await this.getOriginInfo(origin);
+    return originInfo?.sessionInfo;
+  }
+  async getRememberMeBlackList(): Promise<string[] | undefined> {
+    const [currentNetwork, state] = await Promise.all([this.networkType(), this.getState()]);
+    return state.cms.rememberMeBlackListMap?.[currentNetwork]?.map(({ url }) => url);
   }
 }

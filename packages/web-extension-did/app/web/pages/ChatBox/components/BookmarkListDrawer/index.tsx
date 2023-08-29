@@ -1,6 +1,7 @@
 import { DrawerProps } from 'antd';
 import BaseDrawer from 'components/BaseDrawer';
 import BookmarkList from '../BookmarkList';
+import { useCallback } from 'react';
 import './index.less';
 
 interface CustomSelectProps extends DrawerProps {
@@ -10,10 +11,13 @@ interface CustomSelectProps extends DrawerProps {
 }
 
 export default function BookmarkListDrawer({ open, onClose, onClick, ...props }: CustomSelectProps) {
-  const handleClick = (v: string) => {
-    onClick(v);
-    onClose();
-  };
+  const handleClick = useCallback(
+    (v: string) => {
+      onClick(v);
+      onClose();
+    },
+    [onClick, onClose],
+  );
   return (
     <BaseDrawer
       {...props}

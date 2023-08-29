@@ -17,26 +17,29 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
   );
   const [, setCopied] = useCopyToClipboard();
   const [popVisible, setPopVisible] = useState(false);
-  const hidePop = () => {
+  const hidePop = useCallback(() => {
     setPopVisible(false);
-  };
-  const popoverList = [
-    {
-      key: 'copy',
-      leftIcon: <CustomSvg type="Copy" />,
-      children: 'Copy',
-      onClick: () => {
-        setCopied(props.text);
-        message.success('Copy Success');
+  }, []);
+  const popoverList = useMemo(
+    () => [
+      {
+        key: 'copy',
+        leftIcon: <CustomSvg type="Copy" />,
+        children: 'Copy',
+        onClick: () => {
+          setCopied(props.text);
+          message.success('Copy Success');
+        },
       },
-    },
-    {
-      key: 'delete',
-      leftIcon: <CustomSvg type="Delete" />,
-      children: 'Delete',
-      onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
-    },
-  ];
+      {
+        key: 'delete',
+        leftIcon: <CustomSvg type="Delete" />,
+        children: 'Delete',
+        onClick: (e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(e),
+      },
+    ],
+    [props, setCopied],
+  );
   const handleUrlPress: ParseShape['onClick'] = useCallback((url: string) => {
     const WWW_URL_PATTERN = /^www\./i;
     if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
@@ -48,7 +51,7 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
-  }, []);
+  }, [hidePop]);
   return (
     <div className={clsx(['portkey-message-text', 'flex', props.position])}>
       {props.subType === 'non-support-msg' ? (

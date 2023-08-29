@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Popover } from 'antd';
 import clsx from 'clsx';
 import Avatar from '../Avatar';
@@ -19,10 +19,16 @@ const ChatItem: React.FC<IChatItemProps> = ({
   onClickPin,
   ...props
 }) => {
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    props.onClick?.(e);
-  };
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      props.onClick?.(e);
+    },
+    [props],
+  );
+  const hidePop = useCallback(() => {
+    setPopVisible(false);
+  }, []);
   const [popVisible, setPopVisible] = useState(false);
   const popList = useMemo(
     () => [
@@ -54,15 +60,12 @@ const ChatItem: React.FC<IChatItemProps> = ({
         },
       },
     ],
-    [onClickDelete, onClickMute, onClickPin, props.muted, props.pin],
+    [hidePop, onClickDelete, onClickMute, onClickPin, props.muted, props.pin],
   );
-  const hidePop = () => {
-    setPopVisible(false);
-  };
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
-  }, []);
+  }, [hidePop]);
 
   return (
     <Popover
@@ -71,7 +74,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
       placement="bottom"
       trigger="contextMenu"
       open={popVisible}
-      onOpenChange={(visible) => setPopVisible(visible)}
+      onOpenChange={(visible: boolean) => setPopVisible(visible)}
       showArrow={false}
       content={<PopoverMenuList data={popList} />}>
       <div key={props.id} className={clsx('portkey-chat-item flex-column', props.className)} onClick={handleClick}>

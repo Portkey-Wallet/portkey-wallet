@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useCallback, useImperativeHandle } from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CommonModal from 'components/CommonModal';
@@ -25,7 +25,7 @@ const ImageSendModal = forwardRef(({ open, file, onConfirm, onCancel }: PhotoSen
     setLoading,
   }));
 
-  const handleConfirm = async () => {
+  const handleConfirm = useCallback(async () => {
     try {
       setLoading(true);
       await onConfirm();
@@ -34,7 +34,7 @@ const ImageSendModal = forwardRef(({ open, file, onConfirm, onCancel }: PhotoSen
     } finally {
       setLoading(false);
     }
-  };
+  }, [onConfirm]);
 
   return (
     <CommonModal

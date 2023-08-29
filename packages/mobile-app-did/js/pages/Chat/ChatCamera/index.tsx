@@ -14,6 +14,8 @@ import { BGStyles } from 'assets/theme/styles';
 import SafeAreaBox from 'components/SafeAreaBox';
 import { useSendCurrentChannelMessage } from '../components/hooks';
 import CommonToast from 'components/CommonToast';
+import ActionSheet from 'components/ActionSheet';
+import { useLanguage } from 'i18n/hooks';
 
 const ChatCamera: React.FC = () => {
   const cameraRef = useRef<Camera>(null);
@@ -21,12 +23,28 @@ const ChatCamera: React.FC = () => {
   const [img, setImgUrl] = useState<CameraCapturedPicture>();
   const [, requestCameraPermission] = Camera.useCameraPermissions();
   const { sendChannelImage } = useSendCurrentChannelMessage();
+  const { t } = useLanguage();
+
+  const showDialog = useCallback(
+    () =>
+      ActionSheet.alert({
+        title: t('Enable Camera Access'),
+        message: t('Cannot connect to the camera. Please make sure it is turned on'),
+        buttons: [
+          {
+            title: t('Close'),
+            type: 'solid',
+          },
+        ],
+      }),
+    [t],
+  );
+
   const takePicture = useCallback(async () => {
-    if (!cameraRef?.current) return;
     try {
       const result = await cameraRef.current?.takePictureAsync();
       setImgUrl(result);
-      cameraRef.current.pausePreview();
+      cameraRef.current?.pausePreview();
     } catch (error) {
       console.log('------', error);
       CommonToast.fail('Failed to send message');
@@ -43,6 +61,7 @@ const ChatCamera: React.FC = () => {
     (async () => {
       const result = await requestCameraPermission();
       console.log('=====requestCameraPermission====result', result);
+      if (!result) return showDialog();
     })();
   });
 

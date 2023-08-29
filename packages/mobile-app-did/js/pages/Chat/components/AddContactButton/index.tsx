@@ -24,7 +24,7 @@ export default function AddContactButton(props: AddContactButtonPropsType) {
     <Touchable
       activeOpacity={0.9}
       style={[GStyles.flexRow, GStyles.flexCenter, GStyles.itemCenter, styles.wrap]}
-      onPress={() => onPressButton?.()}>
+      onPress={onPressButton}>
       <Svg size={pTd(20)} icon="chat-add-contact" color={defaultColors.font4} />
       <TextM style={[FontStyles.font4, GStyles.marginLeft(pTd(14))]}>Add Contact</TextM>
       <Touchable style={[GStyles.center, styles.closeIconWrap]} onPress={() => setClickClose(true)}>

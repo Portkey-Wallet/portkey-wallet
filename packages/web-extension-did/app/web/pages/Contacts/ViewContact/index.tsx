@@ -19,7 +19,7 @@ import { message } from 'antd';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
-import { ExtraTypeEnum } from 'types/Profile';
+import { ExtraTypeEnum, IProfileDetailDataProps } from 'types/Profile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function ViewContact() {
@@ -39,7 +39,7 @@ export default function ViewContact() {
   const { name, index } = useIndexAndName(state);
 
   // unified data structure
-  const [data, setData] = useState({
+  const [data, setData] = useState<IProfileDetailDataProps>({
     ...state,
     id: state?.id,
     index: index,

@@ -215,49 +215,63 @@ export default function ChatBox() {
     ],
     [handleAddContact, handleDelete, handleGoProfile, handleMute, handlePin, info?.mute, info?.pin],
   );
-  const uploadProps = {
-    className: 'chat-input-upload',
-    showUploadList: false,
-    accept: 'image/*',
-    beforeUpload: async (paramFile: RcFile) => {
-      const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
-      if (!sizeOk) {
-        message.info('File too large');
+  const uploadProps = useMemo(
+    () => ({
+      className: 'chat-input-upload',
+      showUploadList: false,
+      accept: 'image/*',
+      beforeUpload: async (paramFile: RcFile) => {
+        const sizeOk = ZERO.plus(paramFile.size / 1024 / 1024).isLessThanOrEqualTo(MAX_FILE_SIZE);
+        if (!sizeOk) {
+          message.info('File too large');
+          return false;
+        }
+        try {
+          const src = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(paramFile);
+            reader.onload = () => {
+              resolve(reader.result);
+            };
+            reader.onerror = (e) => {
+              reject(e);
+            };
+          });
+          const { width, height } = await getPixel(src as string);
+          const imageSize = formatImageSize({ width, height, maxWidth: 300, maxHeight: 360 });
+          setPreviewImage({ src: src as string, width: imageSize.width, height: imageSize.height });
+          setFile({ body: paramFile, width, height });
+        } catch (e) {
+          console.log('===image beforeUpload error', e);
+          message.error('Failed to send message');
+        }
         return false;
-      }
-      const src = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(paramFile);
-        reader.onload = () => {
-          resolve(reader.result);
-        };
-      });
-      const { width, height } = await getPixel(src as string);
-      const imageSize = formatImageSize({ width, height, maxWidth: 300, maxHeight: 360 });
-      setPreviewImage({ src: src as string, width: imageSize.width, height: imageSize.height });
-      setFile({ body: paramFile, width, height });
-      return false;
-    },
-  };
-  const inputMorePopList = [
-    {
-      key: 'album',
-      // leftIcon: <CustomSvg type="Album" />,
-      children: (
-        <Upload {...uploadProps}>
-          <CustomSvg type="Album" />
-          <span className="upload-text">Picture</span>
-        </Upload>
-      ),
-    },
-    {
-      key: 'bookmark',
-      leftIcon: <CustomSvg type="Bookmark" />,
-      children: 'Bookmarks',
-      onClick: () => setShowBookmark(true),
-    },
-  ];
-  const handleUpload = async () => {
+      },
+    }),
+    [],
+  );
+  const inputMorePopList = useMemo(
+    () => [
+      {
+        key: 'album',
+        // leftIcon: <CustomSvg type="Album" />,
+        children: (
+          <Upload {...uploadProps}>
+            <CustomSvg type="Album" />
+            <span className="upload-text">Picture</span>
+          </Upload>
+        ),
+      },
+      {
+        key: 'bookmark',
+        leftIcon: <CustomSvg type="Bookmark" />,
+        children: 'Bookmarks',
+        onClick: () => setShowBookmark(true),
+      },
+    ],
+    [uploadProps],
+  );
+  const handleUpload = useCallback(async () => {
     try {
       await sendImage(file!);
       messageRef.current.scrollTop = messageRef.current.scrollHeight;
@@ -267,8 +281,8 @@ export default function ChatBox() {
       console.log('===send image error', e);
       message.error('Failed to send message');
     }
-  };
-  const hidePop = (e: any) => {
+  }, [file, sendImage]);
+  const hidePop = useCallback((e: any) => {
     try {
       const _t = e?.target?.className;
       const isFunc = _t.includes instanceof Function;
@@ -278,19 +292,22 @@ export default function ChatBox() {
     } catch (e) {
       console.log('===chat box hidePop error', e);
     }
-  };
-  const handleSendMessage = async (v: string) => {
-    try {
-      await sendMessage(v.trim() ?? '');
-      messageRef.current.scrollTop = messageRef.current.scrollHeight;
-    } catch (e) {
-      message.error('Failed to send message');
-    }
-  };
+  }, []);
+  const handleSendMessage = useCallback(
+    async (v: string) => {
+      try {
+        await sendMessage(v.trim() ?? '');
+        messageRef.current.scrollTop = messageRef.current.scrollHeight;
+      } catch (e) {
+        message.error('Failed to send message');
+      }
+    },
+    [sendMessage],
+  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
-  }, []);
+  }, [hidePop]);
   return (
     <div className="chat-box-page flex-column">
       <div className="chat-box-top">

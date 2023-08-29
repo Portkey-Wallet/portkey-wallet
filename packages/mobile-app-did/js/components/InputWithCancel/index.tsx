@@ -13,7 +13,7 @@ type InputWithCancelPropsType = CommonInputProps & {
   onCancel: () => void;
 };
 
-export default function InputWithCancel(props: InputWithCancelPropsType) {
+const InputWithCancel = (props: InputWithCancelPropsType) => {
   const { value, clearText, onCancel } = props;
   const { t } = useLanguage();
 
@@ -39,7 +39,9 @@ export default function InputWithCancel(props: InputWithCancelPropsType) {
       </TouchableOpacity>
     </View>
   );
-}
+};
+
+export default InputWithCancel;
 
 const styles = StyleSheet.create({
   inputContainer: {

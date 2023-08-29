@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import clsx from 'clsx';
 import ChatItem from '../ChatItem';
 import { IChatListProps, ChatListEvent } from '../type';
@@ -6,21 +6,33 @@ import LoadingMore from '../components/LoadMore';
 import './index.less';
 
 const ChatList: React.FC<IChatListProps> = ({ dataSource, hasMore = false, loadMore, ...props }) => {
-  const onClick: ChatListEvent = (item) => {
-    if (props.onClick instanceof Function) props.onClick(item);
-  };
+  const onClick: ChatListEvent = useCallback(
+    (item) => {
+      if (props.onClick instanceof Function) props.onClick(item);
+    },
+    [props],
+  );
 
-  const onClickMute: ChatListEvent = (item) => {
-    if (props.onClickMute instanceof Function) props.onClickMute(item);
-  };
+  const onClickMute: ChatListEvent = useCallback(
+    (item) => {
+      if (props.onClickMute instanceof Function) props.onClickMute(item);
+    },
+    [props],
+  );
 
-  const onClickPin: ChatListEvent = (item) => {
-    if (props.onClickPin instanceof Function) props.onClickPin(item);
-  };
+  const onClickPin: ChatListEvent = useCallback(
+    (item) => {
+      if (props.onClickPin instanceof Function) props.onClickPin(item);
+    },
+    [props],
+  );
 
-  const onClickDelete: ChatListEvent = (item) => {
-    if (props.onClickDelete instanceof Function) props.onClickDelete(item);
-  };
+  const onClickDelete: ChatListEvent = useCallback(
+    (item) => {
+      if (props.onClickDelete instanceof Function) props.onClickDelete(item);
+    },
+    [props],
+  );
 
   return (
     <div className={clsx('portkey-chat-list', props.className)}>

@@ -14,6 +14,7 @@ import { IEditContactFormProps } from '../components/EditContactForm';
 import { ValidData } from '../AddContact';
 import CustomModal from 'pages/components/CustomModal';
 import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export type IEditContactProps = IEditContactFormProps & BaseHeaderProps;
 
@@ -97,12 +98,12 @@ export default function EditContact() {
         }
       } catch (e: any) {
         console.log('onFinish==contact error', e);
-        message.error(t((e.error || {}).message || e.message || 'handle contact error'));
+        handleErrorMessage(e, 'handle contact error');
       } finally {
         setLoading(false);
       }
     },
-    [appDispatch, editContactApi, handleView, setLoading, state, t],
+    [appDispatch, editContactApi, handleView, setLoading, state],
   );
 
   const handleCopy = useProfileCopy();

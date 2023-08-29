@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { useCopyToClipboard } from 'react-use';
 import { useCommonState } from 'store/Provider/hooks';
-import { ExtraType } from 'types/Profile';
+import { ExtraType, IProfileDetailDataProps } from 'types/Profile';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 
 export const useGoProfile = () => {
@@ -13,7 +13,7 @@ export const useGoProfile = () => {
   const { pathname } = useLocation();
 
   return useCallback(
-    (state: any) => {
+    (state: IProfileDetailDataProps) => {
       if (pathname.includes('/setting/wallet')) {
         navigate('/setting/wallet/wallet-name');
       } else {
@@ -28,19 +28,8 @@ export const useGoProfileEdit = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (extra: ExtraType, state: any) => {
+    (extra: ExtraType, state: IProfileDetailDataProps) => {
       navigate(`/setting/contacts/edit/${extra}`, { state });
-    },
-    [navigate],
-  );
-};
-
-export const useGoMyProfileEdit = () => {
-  const navigate = useNavigate();
-
-  return useCallback(
-    (extra: ExtraType, state: any) => {
-      navigate(`/setting/wallet/edit/${extra}`, { state });
     },
     [navigate],
   );
@@ -50,7 +39,7 @@ export const useGoAddNewContact = () => {
   const navigate = useNavigate();
 
   return useCallback(
-    (extra: ExtraType, state: any) => {
+    (extra: ExtraType, state: IProfileDetailDataProps) => {
       navigate(`/setting/contacts/add/${extra}`, { state });
     },
     [navigate],

@@ -126,9 +126,10 @@ const ContactProfile: React.FC = () => {
       if (!id) return;
       const result = await addStranger(id);
       result.data.id && setContactId(result.data.id);
+      CommonToast.success('Contact Added');
     } catch (error) {
-      // TODO: addStranger error handle
       console.log('addContact', error);
+      CommonToast.failError(error);
     }
   }, [addStranger, contactInfo?.imInfo?.relationId, relationId]);
 

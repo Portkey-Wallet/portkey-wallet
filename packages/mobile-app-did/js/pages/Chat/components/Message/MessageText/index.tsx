@@ -65,12 +65,13 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
             }
           },
         });
-      ChatOverlay.showChatPopover({
-        list,
-        px: pageX,
-        py: pageY,
-        formatType: 'dynamicWidth',
-      });
+      list.length &&
+        ChatOverlay.showChatPopover({
+          list,
+          px: pageX,
+          py: pageY,
+          formatType: 'dynamicWidth',
+        });
     },
     [currentMessage?.content, currentMessage?.id, deleteMessage, isNotSupported, position],
   );

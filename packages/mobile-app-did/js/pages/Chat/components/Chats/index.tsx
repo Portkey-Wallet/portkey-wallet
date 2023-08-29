@@ -33,15 +33,15 @@ import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 
-const Empty = () => null;
-
 const ListViewProps = {
   // windowSize: 50,
   // maxToRenderPerBatch: 5,
   // removeClippedSubviews: false,
   // legacyImplementation: true,
   initialNumToRender: 20,
+  alwaysBounceVertical: false,
 };
+const Empty = () => null;
 
 const ChatsUI = () => {
   const currentChannelId = useCurrentChannelId();

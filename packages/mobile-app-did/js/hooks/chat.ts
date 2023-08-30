@@ -18,7 +18,7 @@ export function useJumpToChatDetails() {
           const channelInfo = await createChannel(toRelationId || '');
           chatDispatch(setCurrentChannelId(channelInfo.channelUuid || ''));
         }
-        navigationService.navigate('ChatDetails');
+        navigationService.navigate('ChatDetailsPage');
       } catch (error) {
         console.log(error);
         CommonToast.failError(error);
@@ -41,7 +41,7 @@ export function useJumpToChatGroupDetails() {
           const channelInfo = await createChannel(toRelationId || '');
           chatDispatch(setCurrentChannelId(channelInfo.channelUuid || ''));
         }
-        navigationService.navigate('ChatGroupDetails');
+        navigationService.navigate('ChatGroupDetailsPage');
       } catch (error) {
         console.log(error);
         CommonToast.failError(error);

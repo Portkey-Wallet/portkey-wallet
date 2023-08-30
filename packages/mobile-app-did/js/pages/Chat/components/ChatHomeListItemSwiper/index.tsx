@@ -100,12 +100,12 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         onLongPress={onLongPressItem}
         onPressIn={eventEmit}>
         <>
+          {/* TODO: group avatar */}
           <CommonAvatar hasBorder title={item.displayName} avatarSize={48} style={styles.avatar} />
           <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
             <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
               <View style={[GStyles.flex1, GStyles.flexRow, GStyles.itemCenter, GStyles.paddingRight(30)]}>
                 <TextL style={[FontStyles.font5, GStyles.marginRight(4)]} numberOfLines={1}>
-                  {/* TODO: Remark */}
                   {item.displayName}
                 </TextL>
                 {item.mute && <Svg size={pTd(12)} icon="chat-mute" color={defaultColors.font7} />}

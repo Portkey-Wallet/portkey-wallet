@@ -33,12 +33,18 @@ export default function DiscoverHome() {
         {
           title: 'New Chat',
           iconName: 'chat-new-chat',
-          onPress: () => navigationService.navigate('NewChatHome'),
+          onPress: () => navigationService.navigate('NewChatHomePage'),
         },
         {
           title: 'Find More',
           iconName: 'chat-add-contact',
-          onPress: () => navigationService.navigate('FindMorePeople'),
+          onPress: () => navigationService.navigate('FindMorePeoplePage'),
+        },
+        {
+          title: 'Create Group',
+          // TODO: change icon and title
+          iconName: 'chat-add-contact',
+          onPress: () => navigationService.navigate('CreateGroupPage'),
         },
       ],
       formatType: 'dynamicWidth',
@@ -54,7 +60,7 @@ export default function DiscoverHome() {
           style={styles.searchIcon}
           onPress={() => {
             myEvents.chatHomeListCloseSwiped.emit(Math.random());
-            navigationService.navigate('SearchPeople');
+            navigationService.navigate('SearchPeoplePage');
           }}>
           <Svg icon="search" color={defaultColors.bg1} size={pTd(20)} />
         </Touchable>

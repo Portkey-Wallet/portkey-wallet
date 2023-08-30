@@ -1,17 +1,21 @@
-import ChatHome from './ChatHome';
-import ChatDetails from './ChatDetails';
-import ChatCamera from './ChatCamera';
-import SearchPeople from './SearchPeople';
-import NewChatHome from './NewChatHome';
-import FindMorePeople from './FindMorePeople';
+import ChatHomePage from './ChatHomePage';
+import ChatDetailsPage from './ChatDetailsPage';
+import ChatGroupDetailsPage from './ChatGroupDetailsPage';
+import CreateGroupPage from './CreateGroupPage';
+import ChatCameraPage from './ChatCameraPage';
+import SearchPeoplePage from './SearchPeoplePage';
+import NewChatHomePage from './NewChatHomePage';
+import FindMorePeoplePage from './FindMorePeoplePage';
 
 const stackNav = [
-  { name: 'ChatHome', component: ChatHome },
-  { name: 'ChatDetails', component: ChatDetails },
-  { name: 'ChatCamera', component: ChatCamera },
-  { name: 'SearchPeople', component: SearchPeople },
-  { name: 'NewChatHome', component: NewChatHome },
-  { name: 'FindMorePeople', component: FindMorePeople },
+  { name: 'ChatHomePage', component: ChatHomePage },
+  { name: 'ChatDetailsPage', component: ChatDetailsPage },
+  { name: 'ChatGroupDetailsPage', component: ChatGroupDetailsPage },
+  { name: 'ChatCameraPage', component: ChatCameraPage },
+  { name: 'CreateGroupPage', component: CreateGroupPage },
+  { name: 'SearchPeoplePage', component: SearchPeoplePage },
+  { name: 'NewChatHomePage', component: NewChatHomePage },
+  { name: 'FindMorePeoplePage', component: FindMorePeoplePage },
 ] as const;
 
 export default stackNav;

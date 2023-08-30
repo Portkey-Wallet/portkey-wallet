@@ -27,3 +27,26 @@ export function useJumpToChatDetails() {
     [chatDispatch, createChannel],
   );
 }
+
+export function useJumpToChatGroupDetails() {
+  const chatDispatch = useChatsDispatch();
+  const createChannel = useCreateP2pChannel();
+
+  return useCallback(
+    async ({ toRelationId, channelUuid }: { toRelationId: string; channelUuid?: string }) => {
+      try {
+        if (channelUuid) {
+          chatDispatch(setCurrentChannelId(channelUuid || ''));
+        } else {
+          const channelInfo = await createChannel(toRelationId || '');
+          chatDispatch(setCurrentChannelId(channelInfo.channelUuid || ''));
+        }
+        navigationService.navigate('ChatGroupDetails');
+      } catch (error) {
+        console.log(error);
+        CommonToast.failError(error);
+      }
+    },
+    [chatDispatch, createChannel],
+  );
+}

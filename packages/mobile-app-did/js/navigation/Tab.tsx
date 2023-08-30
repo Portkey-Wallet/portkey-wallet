@@ -9,7 +9,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
-import ChatHome from 'pages/Chat/ChatHome';
+import ChatHome from 'pages/Chat/ChatHomePage';
 import { formatMessageCountToStr } from '@portkey-wallet/utils/chat';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { StyleSheet, View } from 'react-native';

@@ -17,7 +17,7 @@ import CommonToast from 'components/CommonToast';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 
-const ChatCamera: React.FC = () => {
+const ChatCameraPage: React.FC = () => {
   const cameraRef = useRef<Camera>(null);
   const [sending, setSending] = useState(false);
   const [img, setImgUrl] = useState<CameraCapturedPicture>();
@@ -133,7 +133,7 @@ const ChatCamera: React.FC = () => {
   );
 };
 
-export default ChatCamera;
+export default ChatCameraPage;
 
 export const PageStyle = StyleSheet.create({
   safeAreaBox: {

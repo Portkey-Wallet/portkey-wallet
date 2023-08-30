@@ -9,7 +9,7 @@ import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@
 import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useJumpToChatDetails } from 'hooks/chat';
+import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import Touchable from 'components/Touchable';
@@ -27,7 +27,7 @@ export default function ChatList() {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
-  const navToChatDetails = useJumpToChatDetails();
+  const navToChatDetails = useJumpToChatGroupDetails();
   const lastInitChannelList = useLatestRef(initChannelList);
 
   useFocusEffect(

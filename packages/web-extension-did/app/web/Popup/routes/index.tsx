@@ -38,6 +38,7 @@ import ChatList from 'pages/ChatList';
 import ChatBox from 'pages/ChatBox';
 import NewChat from 'pages/NewChat';
 import ChatListSearch from 'pages/ChatListSearch';
+import CreateChatGroup from 'pages/CreateChatGroup';
 
 export const PageRouter = () =>
   useRoutes([
@@ -204,6 +205,10 @@ export const PageRouter = () =>
     {
       path: '/new-chat',
       element: <NewChat />,
+    },
+    {
+      path: '/create-chat-group',
+      element: <CreateChatGroup />,
     },
     {
       path: '/unlock',

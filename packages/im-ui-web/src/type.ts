@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChannelTypeEnum } from '@portkey-wallet/im';
 
 export interface IChatItemProps {
   id: string | number;
@@ -11,6 +12,7 @@ export interface IChatItemProps {
   subtitle?: string;
   date?: Date;
   dateString?: string;
+  channelType: ChannelTypeEnum;
   muted?: boolean;
   showMute?: boolean;
   pin?: boolean;
@@ -147,6 +149,7 @@ export interface IAvatarProps {
   letterItem?: string;
   className?: string;
   alt?: string;
+  channelType?: ChannelTypeEnum;
 }
 
 export interface IUnreadTipProps {

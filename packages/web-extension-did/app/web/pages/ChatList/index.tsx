@@ -45,6 +45,14 @@ export default function ChatList() {
         },
       },
       {
+        key: 'create-group',
+        leftIcon: <CustomSvg type="AddContact" />,
+        children: 'Create Group',
+        onClick: () => {
+          navigate('/create-chat-group');
+        },
+      },
+      {
         key: 'find-more',
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Find More',
@@ -83,6 +91,7 @@ export default function ChatList() {
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
+        channelType: item.channelType,
       };
     });
   }, [chatList, formatSubTitle]);

@@ -13,6 +13,7 @@ import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum, ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
+import FloatingActionButton from '../components/FloatingActionButton';
 import {
   useMuteChannel,
   usePinChannel,
@@ -32,12 +33,9 @@ import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
-import FloatingActionButton from '../components/FloatingActionButton';
 
-const ChatGroupDetailsPage = () => {
+const TransferOwnershipPage = () => {
   const dispatch = useAppCommonDispatch();
-
-  console.log('ChatGroupDetailsPageChatGroupDetailsPageChatGroupDetailsPage');
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
@@ -66,10 +64,12 @@ const ChatGroupDetailsPage = () => {
   const handleList = useMemo((): ListItemType[] => {
     const list: ListItemType[] = [
       {
-        title: ChatOperationsEnum.GROUP_INFO,
-        iconName: 'chat-profile', //TODO: change icon
+        title: ChatOperationsEnum.PROFILE,
+        iconName: 'chat-profile',
         onPress: () => {
-          navigationService.navigate('GroupInfoPage');
+          navigationService.navigate('ChatContactProfile', {
+            relationId: toRelationId,
+          });
         },
       },
       {
@@ -126,17 +126,15 @@ const ChatGroupDetailsPage = () => {
       },
     ];
 
-    const isGroupHolder = false;
-
-    if (!isGroupHolder)
+    if (isStranger)
       list.push({
-        title: ChatOperationsEnum.LEAVE_GROUP,
-        iconName: 'chat-add-contact', // TODO: change
+        title: ChatOperationsEnum.ADD_CONTACT,
+        iconName: 'chat-add-contact',
         onPress: () => addContact(),
       });
 
     return list;
-  }, [addContact, currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel]);
+  }, [addContact, currentChannelId, hideChannel, isStranger, mute, muteChannel, pin, pinChannel, toRelationId]);
 
   const onPressMore = useCallback(
     async (event: GestureResponderEvent) => {
@@ -215,7 +213,7 @@ const ChatGroupDetailsPage = () => {
   );
 };
 
-export default ChatGroupDetailsPage;
+export default TransferOwnershipPage;
 
 const styles = StyleSheet.create({
   container: {

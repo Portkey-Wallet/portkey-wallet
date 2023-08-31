@@ -34,7 +34,7 @@ import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import FloatingActionButton from '../components/FloatingActionButton';
 
-const ChatGroupDetailsPage = () => {
+const RemoveMembersPage = () => {
   const dispatch = useAppCommonDispatch();
 
   console.log('ChatGroupDetailsPageChatGroupDetailsPageChatGroupDetailsPage');
@@ -69,7 +69,9 @@ const ChatGroupDetailsPage = () => {
         title: ChatOperationsEnum.GROUP_INFO,
         iconName: 'chat-profile', //TODO: change icon
         onPress: () => {
-          navigationService.navigate('GroupInfoPage');
+          navigationService.navigate('ChatContactProfile', {
+            relationId: toRelationId,
+          });
         },
       },
       {
@@ -136,7 +138,7 @@ const ChatGroupDetailsPage = () => {
       });
 
     return list;
-  }, [addContact, currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel]);
+  }, [addContact, currentChannelId, hideChannel, isStranger, mute, muteChannel, pin, pinChannel, toRelationId]);
 
   const onPressMore = useCallback(
     async (event: GestureResponderEvent) => {
@@ -215,7 +217,7 @@ const ChatGroupDetailsPage = () => {
   );
 };
 
-export default ChatGroupDetailsPage;
+export default RemoveMembersPage;
 
 const styles = StyleSheet.create({
   container: {

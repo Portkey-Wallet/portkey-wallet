@@ -1,13 +1,9 @@
 import React, { useCallback, useState, memo, useEffect, useMemo } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-
 import CommonInput from 'components/CommonInput';
-import Touchable from 'components/Touchable';
-import Svg from 'components/Svg';
-import CommonAvatar from 'components/CommonAvatar';
 import CommonButton from 'components/CommonButton';
 import { useChatContactFlatList, useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
@@ -15,32 +11,13 @@ import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { TextM } from 'components/CommonText';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-
-type ItemProps = {
-  item: ContactItemType;
-  selectedContactMap: { [key: string]: string };
-  onPress: (id: string) => void;
-};
-
-const Item = memo(
-  function ContactItem(props: ItemProps) {
-    const { item, selectedContactMap: selectedMap, onPress } = props;
-    const isSelected = useMemo(() => !!selectedMap?.[item.id], [item.id, selectedMap]);
-
-    return (
-      <Touchable style={GStyles.flexRow} onPress={() => onPress?.(item.id)}>
-        <Svg icon={isSelected ? 'selected' : 'unselected'} />
-        <CommonAvatar hasBorder title={item.name || item.caHolderInfo?.walletName || item.imInfo?.name} />
-        <TextM>{item.name || item.caHolderInfo?.walletName || item.imInfo?.name}</TextM>
-      </Touchable>
-    );
-  },
-  function isEqual(pre, next) {
-    return !!pre.selectedContactMap?.[pre.item.id] === !!next.selectedContactMap?.[next.item?.id];
-  },
-);
-
+import FormItem from 'components/FormItem';
+import { pTd } from 'utils/unit';
+import { BGStyles } from 'assets/theme/styles';
+import GroupMemberItem from '../components/GroupMemberItem';
+import NoData from 'components/NoData';
 const ChatGroupDetails = () => {
+  const [groupName, setGroupName] = useState('');
   const [keyword, setKeyword] = useState('');
   const allChatList = useChatContactFlatList();
   const searchContact = useLocalContactSearch();
@@ -50,6 +27,7 @@ const ChatGroupDetails = () => {
 
   const selectedCount = useMemo((): number => Object.keys(selectedContactMap).length, [selectedContactMap]);
   const totalCount = useMemo((): number => allChatList.length, [allChatList]);
+  const isButtonDisable = useMemo(() => !groupName || selectedCount === 0, [groupName, selectedCount]);
 
   const onPressConfirm = useCallback(() => {
     try {
@@ -89,22 +67,41 @@ const ChatGroupDetails = () => {
     <PageContainer
       titleDom="Create Group"
       hideTouchable
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      <CommonInput type="general" />
-      <CommonInput type="search" value={keyword} onChangeText={setKeyword} />
+      <FormItem title={'Group Name'} style={styles.groupNameWrap}>
+        <CommonInput
+          type="general"
+          theme="white-bg"
+          placeholder="Enter Name"
+          maxLength={40}
+          value={groupName}
+          onChangeText={setGroupName}
+        />
+      </FormItem>
+      <View style={[BGStyles.bg1, GStyles.flex1]}>
+        <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.selectHeaderWrap]}>
+          <TextM>Select Contact</TextM>
+          <TextM>{`${selectedCount}/${totalCount}`}</TextM>
+        </View>
+        <View style={styles.inputWrap}>
+          <CommonInput type="search" value={keyword} onChangeText={setKeyword} placeholder="Search" />
+        </View>
+        <FlatList
+          extraData={(item: ContactItemType) => item.id}
+          data={filterChatContactList}
+          ListEmptyComponent={<NoData noPic message="No search found" />}
+          renderItem={({ item }: { item: ContactItemType }) => (
+            <GroupMemberItem selected={!!selectedContactMap[item.id]} item={item} onPress={onPressItem} />
+          )}
+        />
+      </View>
 
-      <TextM>{`${selectedCount}/${totalCount}`}</TextM>
       {/* TODO: change true data  */}
-      <FlatList
-        extraData={(item: ContactItemType) => item.id}
-        data={filterChatContactList}
-        renderItem={({ item }: { item: ContactItemType }) => (
-          <Item item={item} selectedContactMap={selectedContactMap} onPress={onPressItem} />
-        )}
-      />
-      <CommonButton title="confirm" onPress={onPressConfirm} />
+      <View style={styles.buttonWrap}>
+        <CommonButton disabled={isButtonDisable} type="primary" title="Done" onPress={onPressConfirm} />
+      </View>
     </PageContainer>
   );
 };
@@ -117,5 +114,21 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg4,
     flex: 1,
     ...GStyles.paddingArg(0),
+  },
+  groupNameWrap: {
+    marginTop: pTd(24),
+    paddingHorizontal: pTd(20),
+  },
+  selectHeaderWrap: {
+    marginTop: pTd(16),
+    marginHorizontal: pTd(20),
+  },
+  inputWrap: {
+    paddingTop: pTd(12),
+    paddingHorizontal: pTd(20),
+  },
+  buttonWrap: {
+    ...GStyles.paddingArg(10, 20, 16),
+    backgroundColor: defaultColors.bg1,
   },
 });

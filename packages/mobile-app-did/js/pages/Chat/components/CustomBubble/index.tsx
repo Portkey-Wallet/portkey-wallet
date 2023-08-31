@@ -8,6 +8,32 @@ import { ChatMessage } from 'pages/Chat/types';
 
 export default function CustomBubble(props: BubbleProps<ChatMessage>) {
   const { messageType } = props?.currentMessage || {};
+
+  // return (
+  //   <View>
+  //     <TextM>名字</TextM>
+  //     <Bubble
+  //       touchableProps={{ disabled: true }}
+  //       wrapperStyle={useMemo(
+  //         () => ({
+  //           left: [styles.wrapperStyle, styles.wrapLeft, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+  //           right: [styles.wrapperStyle, styles.wrapRight, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+  //         }),
+  //         [messageType],
+  //       )}
+  //       containerToNextStyle={{
+  //         left: styles.containerToNextLeftStyle,
+  //         right: styles.containerToNextRightStyle,
+  //       }}
+  //       containerStyle={{
+  //         left: styles.containerStyle,
+  //         right: styles.containerStyle,
+  //       }}
+  //       {...props}
+  //     />
+  //   </View>
+  // );
+
   return (
     <Bubble
       touchableProps={{ disabled: true }}

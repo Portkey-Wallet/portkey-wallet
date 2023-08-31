@@ -10,7 +10,7 @@ import {
 } from 'react-native-gifted-chat';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
 import { randomId } from '@portkey-wallet/utils';
-import { ActivityIndicator, FlatList, Keyboard, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Keyboard, StyleSheet, View } from 'react-native';
 import { useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import CustomBubble from '../CustomBubble';
 import { setBottomBarStatus, setChatText, setShowSoftInputOnFocus } from '../../context/chatsContext';
@@ -32,6 +32,7 @@ import SystemTime from '../SystemTime';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
+import CustomChatAvatar from '../CustomChatAvatar';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -43,16 +44,17 @@ const ListViewProps = {
 };
 const Empty = () => null;
 
-const ChatsUI = () => {
+const ChatsDetailContent = () => {
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
 
   const { list, init } = useChannel(currentChannelId || '');
-
   const [loading, setLoading] = useState(true);
-
   const formattedList = useMemo(() => formatMessageList(list), [list]);
+  const relationId = useRelationId();
+  const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
+  const isGroupChat = true;
 
   useEffectOnce(() => {
     initChatInputRecorder();
@@ -114,7 +116,10 @@ const ChatsUI = () => {
     },
     [onDismiss],
   );
-  const disabledTouchable = useMemo(() => formattedList.length > 10, [formattedList.length]);
+
+  const renderAvatar: GiftedChatProps['renderAvatar'] = useCallback(props => {
+    return <CustomChatAvatar {...props} />;
+  }, []);
 
   const bottomBar = useMemo(
     () => (
@@ -125,8 +130,7 @@ const ChatsUI = () => {
     [scrollToBottom],
   );
 
-  const relationId = useRelationId();
-  const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
+  const disabledTouchable = useMemo(() => formattedList.length > 10, [formattedList.length]);
 
   useEffectOnce(() => {
     init();
@@ -148,11 +152,12 @@ const ChatsUI = () => {
             renderUsername={Empty}
             renderTime={Empty}
             isCustomViewBottom
-            renderAvatar={Empty}
-            showUserAvatar={false}
+            renderAvatarOnTop
+            renderAvatar={renderAvatar}
+            showUserAvatar={true}
             messages={formattedList}
             minInputToolbarHeight={0}
-            renderUsernameOnMessage={false}
+            renderUsernameOnMessage={true}
             renderInputToolbar={Empty}
             renderDay={renderDay}
             renderBubble={renderBubble}
@@ -173,7 +178,7 @@ const ChatsUI = () => {
 };
 
 export default function Chats() {
-  return <ChatsUI />;
+  return <ChatsDetailContent />;
 }
 const styles = StyleSheet.create({
   messagesContainerStyle: {

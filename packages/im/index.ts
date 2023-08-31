@@ -78,6 +78,7 @@ export class IM {
             return caHash === this._caHash;
           },
         );
+        if (account !== this._account || caHash !== this._caHash) throw new Error('account changed');
         const addressAuthToken = verifyResult.token;
         const { data: autoResult } = await this.service.getAuthTokenLoop(
           {
@@ -88,6 +89,7 @@ export class IM {
           },
         );
         token = autoResult.token;
+        if (account !== this._account || caHash !== this._caHash) throw new Error('account changed');
         this.updateToken(token);
       } else {
         console.log('use local token', token);
@@ -303,6 +305,7 @@ export class IM {
       },
       5,
     );
+    if (account !== this._account || caHash !== this._caHash) throw new Error('account changed');
     this.setAuthorization(token);
     this.updateToken(token);
   }
@@ -361,6 +364,14 @@ export class IM {
     console.log('destroy im', this._caHash);
     this.status = IMStatusEnum.DESTROY;
     this.setAuthorization('invalid_authorization');
+    this.config.setConfig({
+      requestDefaults: {
+        headers: {
+          ...im.config.requestConfig?.headers,
+          Authorization: '',
+        },
+      },
+    });
     this.bindOffRelation();
     this._msgCount = {
       unreadCount: 0,

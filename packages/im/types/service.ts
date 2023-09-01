@@ -1,4 +1,5 @@
 import {
+  ChannelInfo,
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
@@ -74,19 +75,6 @@ export type GetChannelInfoParams = {
 
 export type GetChannelMembersParams = GetChannelInfoParams;
 
-export type GetChannelInfoResult = {
-  uuid: string;
-  name: string;
-  icon: string;
-  announcement: string;
-  pinAnnouncement: boolean;
-  openAccess: boolean;
-  type: ChannelTypeEnum;
-  mute: boolean;
-  pin: boolean;
-  members: ChannelMemberInfo[];
-};
-
 export type SendMessageParams = {
   channelUuid?: string;
   toRelationId?: string;
@@ -161,6 +149,29 @@ export type GetProfileParams = {
   id?: string;
 };
 
+export type DisbandChannelParams = {
+  channelUuid: string;
+};
+
+export type TransferChannelOwnerParams = {
+  channelUuid: string;
+  relationId: string;
+};
+
+export type RemoveChannelMembersParams = {
+  channelUuid: string;
+  members: string[];
+};
+
+export type LeaveChannelParams = {
+  channelUuid: string;
+};
+
+export type UpdateChannelNameParams = {
+  channelUuid: string;
+  channelName: string;
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -177,7 +188,7 @@ export interface IIMService {
   getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<GetChannelInfoResult>;
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;
   getChannelMembers(params: GetChannelMembersParams): IMServiceCommon<ChannelMemberInfo[]>;
 
   sendMessage(params: SendMessageParams): IMServiceCommon<SendMessageResult>;
@@ -191,6 +202,12 @@ export interface IIMService {
   updateChannelPin(params: UpdateChannelPinParams): IMServiceCommon<null>;
   updateChannelMute(params: UpdateChannelMuteParams): IMServiceCommon<null>;
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
+  disbandChannel(params: DisbandChannelParams): IMServiceCommon<null>;
+  transferChannelOwner(params: TransferChannelOwnerParams): IMServiceCommon<null>;
+  removeChannelMembers(params: RemoveChannelMembersParams): IMServiceCommon<null>;
+  leaveChannel(params: LeaveChannelParams): IMServiceCommon<null>;
+  updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null>;
+
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
   getProfile(params: GetProfileParams): IMServiceCommon<ContactItemType>;
 }

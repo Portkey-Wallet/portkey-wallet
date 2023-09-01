@@ -5,6 +5,7 @@ import {
   getTabMenuAsync,
   getBuyButtonAsync,
   getRememberMeBlackListAsync,
+  getEntranceControlAsync,
 } from './actions';
 import { CMSState } from './types';
 
@@ -43,6 +44,12 @@ export const cmsSlice = createSlice({
         state.buyButtonNetMap = {
           ...state.buyButtonNetMap,
           ...action.payload.buyButtonNetMap,
+        };
+      })
+      .addCase(getEntranceControlAsync.fulfilled, (state, action) => {
+        state.entranceControlNetMap = {
+          ...state.entranceControlNetMap,
+          ...action.payload.entranceControlNetMap,
         };
       })
       .addCase(getRememberMeBlackListAsync.fulfilled, (state, action) => {

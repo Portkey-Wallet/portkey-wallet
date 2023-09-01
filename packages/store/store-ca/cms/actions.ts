@@ -7,6 +7,7 @@ import {
   getTabMenu,
   getBuyButton,
   getRememberMeBlackListSites,
+  getEntranceControl,
 } from '@portkey-wallet/graphql/cms/queries';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
@@ -130,3 +131,20 @@ export const getRememberMeBlackListAsync = createAsyncThunk<
     throw new Error('rememberMeBlackListMap error');
   }
 });
+
+export const getEntranceControlAsync = createAsyncThunk<Required<Pick<CMSState, 'entranceControlNetMap'>>, NetworkType>(
+  'cms/getEntranceControlAsync',
+  async (network: NetworkType) => {
+    const result = await getEntranceControl(network, {});
+
+    if (result.data.entranceControl) {
+      return {
+        entranceControlNetMap: {
+          [network]: result.data.entranceControl,
+        },
+      };
+    } else {
+      throw new Error('getEntranceControlAsync error');
+    }
+  },
+);

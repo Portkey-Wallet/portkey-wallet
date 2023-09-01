@@ -3,8 +3,23 @@
 .portkey-message-item {
   position: relative;
   width: 100%;
+  padding-top: 8px;
   overflow-x: hidden;
+  gap: 8px;
+  &.center {
+    justify-content: center;
+  }
+  &.right {
+    flex-direction: row-reverse;
+  }
+  &:last-child {
+    margin-bottom: 16px;
+  }
+  .portkey-avatar-container {
+    flex-shrink: 0;
+  }
 }
+
 .show-margin {
   margin-top: 8px;
 }

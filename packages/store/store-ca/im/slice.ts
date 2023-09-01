@@ -86,6 +86,7 @@ export const imSlice = createSlice({
         channelList = formatChannelList(channelList);
 
         state.channelListNetMap[network] = channelList;
+        return state;
       })
       .addCase(addChannel, (state, action): any => {
         const { network, channel } = action.payload;
@@ -102,6 +103,7 @@ export const imSlice = createSlice({
         });
 
         state.channelListNetMap[network] = channelList;
+        return state;
       })
       .addCase(removeChannel, (state, action): any => {
         const { network, channelId } = action.payload;
@@ -115,6 +117,7 @@ export const imSlice = createSlice({
         channelList = formatChannelList(channelList);
 
         state.channelListNetMap[network] = channelList;
+        return state;
       })
       .addCase(setChannelMessageList, (state, action) => {
         const { network, channelId, list } = action.payload;

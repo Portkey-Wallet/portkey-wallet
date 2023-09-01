@@ -94,8 +94,10 @@ export default function PermissionCheck({
     const res = await getWalletStatus();
     const detail = (res as any)?.data;
     if (typeof res === 'string') return chrome.runtime.reload();
+    detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
     if (detail.privateKey) return false;
     return true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getWalletStatus, otherNetworkLogged]);
 
   const checkCurrentNetworkRegisterHandler = useCallback(async () => {

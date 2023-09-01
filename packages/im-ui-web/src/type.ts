@@ -4,7 +4,7 @@ import { ChannelTypeEnum } from '@portkey-wallet/im';
 export interface IChatItemProps {
   id: string | number;
   avatar?: string;
-  letterItem?: string;
+  letter?: string;
   unread?: number;
   className?: string;
   alt?: string;
@@ -47,8 +47,9 @@ export interface IMessage {
   dateString?: string;
   avatar?: string;
   className?: string;
-  letterItem?: string;
+  letter?: string;
   type: string;
+  showAvatar?: boolean;
   onDeleteMsg?: React.MouseEventHandler;
 }
 
@@ -89,19 +90,12 @@ export interface IMessageListProps {
   toBottomHeight?: String | number;
   downButton?: boolean;
   downButtonBadge?: number;
-  sendMessagePreview?: boolean;
   hasNext: boolean;
   loading: boolean;
   next: () => any;
   onScroll?: React.UIEventHandler;
-  onContextMenu?: MessageListEvent;
   onDeleteMsg?: MessageListEvent;
   onDownButtonClick?: React.RefObject<HTMLButtonElement>;
-  onOpen?: MessageListEvent;
-  onDownload?: MessageListEvent;
-  onPhotoError?: MessageListEvent;
-  onClick?: MessageListEvent;
-  onTitleClick?: MessageListEvent;
 }
 
 export type MessageListEvent = (item: MessageType, index: number, event: React.MouseEvent<HTMLElement>) => any;
@@ -144,12 +138,42 @@ export interface IInputProps {
   onKeyUp?: React.KeyboardEventHandler;
 }
 
+export interface PopDataProps {
+  key: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+
+export interface IInputBarProps {
+  maxLength?: number;
+  moreData?: PopDataProps[];
+  showEmoji?: boolean;
+  onSendMessage: (v: string) => void;
+}
+
+export interface IPopoverMenuListData {
+  key: number | string;
+  leftIcon?: React.ReactNode;
+  children?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  onClick?: (v?: any) => void;
+  height?: number;
+  className?: string;
+}
+
+export interface IPopoverMenuListProps {
+  className?: string;
+  data?: IPopoverMenuListData[];
+}
+
 export interface IAvatarProps {
   src?: string;
-  letterItem?: string;
+  letter?: string;
   className?: string;
   alt?: string;
   channelType?: ChannelTypeEnum;
+  width?: number;
+  height?: number;
 }
 
 export interface IUnreadTipProps {
@@ -173,4 +197,6 @@ export class SystemMessage extends React.Component<ISystemMessageProps> {}
 export class MessageList extends React.Component<MessageListType> {}
 export class Avatar extends React.Component<IAvatarProps> {}
 export class Input extends React.Component<IInputProps> {}
+export class InputBar extends React.Component<IInputBarProps> {}
+export class PopoverMenuList extends React.Component<IPopoverMenuListProps> {}
 export class UnreadTip extends React.Component<IUnreadTipProps> {}

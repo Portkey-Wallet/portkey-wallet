@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Popover, message } from 'antd';
 import { useCopyToClipboard } from 'react-use';
 import { ParsedText, ParseShape } from 'react-parsed-text';
-
 import clsx from 'clsx';
 import { ITextMessageProps } from '../type';
 import { formatTime } from '../utils';
@@ -53,7 +52,7 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
   return (
-    <div className={clsx(['portkey-message-text', 'flex', props.position])}>
+    <div className="portkey-message-text">
       {props.subType === 'non-support-msg' ? (
         <div className={clsx(['text-body', 'flex', props.position])}>
           <div className="text-text">

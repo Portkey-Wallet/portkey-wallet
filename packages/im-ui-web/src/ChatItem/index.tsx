@@ -81,8 +81,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
       <div key={props.id} className={clsx('portkey-chat-item flex-column', props.className)} onClick={handleClick}>
         <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
           <div key={'avatar'} className="chat-item-avatar flex-center">
-            {/* TODO channelType */}
-            <Avatar src={props.avatar} alt={alt} letterItem={props.letterItem} channelType={ChannelTypeEnum.GROUP} />
+            <Avatar src={props.avatar} alt={alt} letter={props.letter} channelType={ChannelTypeEnum.GROUP} />
           </div>
           <div key={'chat-item-body'} className="chat-item-body flex-column">
             <div className="body-top flex">

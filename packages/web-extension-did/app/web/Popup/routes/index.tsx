@@ -38,7 +38,7 @@ import ChatList from 'pages/IMChat/ChatList';
 import ChatBox from 'pages/IMChat/ChatBox';
 import NewChat from 'pages/IMChat/NewChat';
 import ChatListSearch from 'pages/IMChat/ChatListSearch';
-import CreateChatGroup from 'pages/CreateChatGroup';
+import CreateChatGroup from 'pages/IMChat/CreateChatGroup';
 import GroupInfo from 'pages/IMChat/GroupInfo';
 import EditGroupInfo from 'pages/IMChat/EditGroupInfo';
 import TransferOwnership from 'pages/IMChat/TransferOwnership';

@@ -7,9 +7,8 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import ContactsSearchInput from 'pages/Contacts/components/ContactsSearchInput';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import ContactList from 'pages/Contacts/components/ContactList';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 
 const { Item: FormItem } = Form;
 
@@ -20,46 +19,73 @@ export default function CreateChatGroup() {
   const localSearch = useLocalContactSearch();
   const [isSearch, setIsSearch] = useState(false);
   const [canChatCount, setCanChatCount] = useState(0);
-  const [chatList, setChatList] = useState<ContactItemType[]>([]);
+  const [chatList, setChatList] = useState<IContactItemSelectProps[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const [disable, setDisabled] = useState<boolean>(true);
 
   const handleFormValueChange = useCallback(() => {
     const { name } = form.getFieldsValue();
+
     setDisabled(!name || selectedContacts?.length === 0);
   }, [form, selectedContacts?.length]);
 
-  const handleNameChange = useCallback(
-    (v: string) => {
-      console.log('🌈 🌈 🌈 🌈 🌈 🌈 v', v);
-      handleFormValueChange();
-    },
-    [handleFormValueChange],
-  );
+  const handleNameChange = useCallback(() => {
+    handleFormValueChange();
+  }, [handleFormValueChange]);
 
   const handleSearch = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       setIsSearch(!!e.target.value);
 
       const { contactFilterList: searchResult } = localSearch(e.target.value, ContactsTab.Chats);
-      setChatList(searchResult);
+      const list: IContactItemSelectProps[] = [];
+
+      searchResult.forEach((ele) => {
+        if (selectedContacts.includes(ele.id)) {
+          list.push({ ...ele, selected: true });
+        } else {
+          list.push({ ...ele, selected: false });
+        }
+      });
+      setChatList(list);
     },
-    [localSearch],
+    [localSearch, selectedContacts],
   );
 
   const handleSelect = useCallback(
-    (item: ContactItemType) => {
-      console.log('🌈 🌈 🌈 🌈 🌈 🌈 ', item);
-      // setSelectedContacts[]
+    (item: IContactItemSelectProps) => {
+      const contactId = item.id;
+
+      // trans chatList selected
+      const list: IContactItemSelectProps[] = JSON.parse(JSON.stringify(chatList));
+      list.forEach((ele) => {
+        if (ele.id === contactId) {
+          ele.selected = !item.selected;
+        }
+      });
+      setChatList(list);
+
+      // handle selected list
+      const selectedList: string[] = JSON.parse(JSON.stringify(selectedContacts));
+      if (selectedList.includes(contactId)) {
+        const deleteIndex = selectedList.findIndex((ele) => ele === contactId);
+
+        if (deleteIndex >= 0) {
+          selectedList.splice(deleteIndex, 1);
+        }
+      } else {
+        selectedList.push(contactId);
+      }
+      setSelectedContacts(selectedList);
 
       handleFormValueChange();
     },
-    [handleFormValueChange],
+    [chatList, handleFormValueChange, selectedContacts],
   );
 
   const onFinish = useCallback(() => {
     try {
-      // api createChannel
+      // TODO create group api
       const res: any = '';
       message.success('Group Created!');
 
@@ -95,7 +121,7 @@ export default function CreateChatGroup() {
           <div className="form-content">
             {/* input */}
             <FormItem name="name" label={t('Group Name')} className="group-name-input">
-              <Input placeholder={t('Enter name')} onChange={(e) => handleNameChange(e.target.value)} maxLength={40} />
+              <Input placeholder={t('Enter name')} onChange={handleNameChange} maxLength={40} />
             </FormItem>
 
             <div className="create-chat-search">
@@ -115,7 +141,7 @@ export default function CreateChatGroup() {
             <div className="create-chat-contact">
               {/* searching, no result */}
               {isSearch && chatList?.length === 0 && (
-                <div className="flex-center no-search-result">There is no search result.</div>
+                <div className="flex-center no-search-result">No search result</div>
               )}
 
               {/* no search, no result */}
@@ -125,7 +151,7 @@ export default function CreateChatGroup() {
 
               {/* contacts available to chat */}
               {/* TODO checkbox */}
-              {chatList?.length > 0 && <ContactList list={chatList} clickItem={handleSelect} hasChatEntry={false} />}
+              {chatList?.length > 0 && <ContactListSelect list={chatList} clickItem={handleSelect} />}
             </div>
           </div>
 

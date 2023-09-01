@@ -8,7 +8,6 @@ import { IChatItemProps } from '../type';
 import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import './index.less';
-import { ChannelTypeEnum } from '@portkey-wallet/im/types';
 
 const ChatItem: React.FC<IChatItemProps> = ({
   date = new Date().getTime(),
@@ -81,7 +80,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
       <div key={props.id} className={clsx('portkey-chat-item flex-column', props.className)} onClick={handleClick}>
         <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
           <div key={'avatar'} className="chat-item-avatar flex-center">
-            <Avatar src={props.avatar} alt={alt} letter={props.letter} channelType={ChannelTypeEnum.GROUP} />
+            <Avatar src={props.avatar} alt={alt} letter={props.letter} channelType={props.channelType} />
           </div>
           <div key={'chat-item-body'} className="chat-item-body flex-column">
             <div className="body-top flex">

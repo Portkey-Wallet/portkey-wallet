@@ -46,7 +46,7 @@ export default function ChatList() {
       },
       {
         key: 'create-group',
-        leftIcon: <CustomSvg type="AddContact" />,
+        leftIcon: <CustomSvg type="CreateGroup" />,
         children: 'Create Group',
         onClick: () => {
           navigate('/create-chat-group');

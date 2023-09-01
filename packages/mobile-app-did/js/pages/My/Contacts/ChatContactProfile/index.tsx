@@ -105,6 +105,9 @@ const ContactProfile: React.FC = () => {
       try {
         Loading.show();
         const { data } = await im.service.getProfile({ relationId });
+
+        console.log('datadatadata', contactInfo, data);
+
         setProfileInfo({ ...initEditContact, ...(data || {}) });
       } catch (error) {
         // TODO: getProfile error handle
@@ -114,7 +117,7 @@ const ContactProfile: React.FC = () => {
         Loading.hide();
       }
     }
-  }, [relationId]);
+  }, [contactInfo, relationId]);
 
   useEffectOnce(() => {
     getProfile();

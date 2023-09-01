@@ -13,7 +13,7 @@ import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum, ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
-import AddContactButton from '../components/AddContactButton';
+import FloatingActionButton from '../components/FloatingActionButton';
 import {
   useMuteChannel,
   usePinChannel,
@@ -34,7 +34,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 
-const ChatDetails = () => {
+const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
 
   const pinChannel = usePinChannel();
@@ -207,13 +207,13 @@ const ChatDetails = () => {
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
-      <AddContactButton isStranger={isStranger} onPressButton={addContact} />
+      <FloatingActionButton shouldShowFirstTime={isStranger} onPressButton={addContact} />
       <Chats />
     </PageContainer>
   );
 };
 
-export default ChatDetails;
+export default ChatDetailsPage;
 
 const styles = StyleSheet.create({
   container: {

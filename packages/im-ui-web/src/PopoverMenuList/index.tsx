@@ -1,27 +1,12 @@
 import clsx from 'clsx';
-import { ReactNode } from 'react';
+import { IPopoverMenuListData, IPopoverMenuListProps } from '../type';
 import './index.less';
-
-export interface IPopoverMenuListData {
-  key: number | string;
-  leftIcon?: ReactNode;
-  children?: ReactNode;
-  rightIcon?: ReactNode;
-  onClick?: (v?: any) => void;
-  height?: number;
-  className?: string;
-}
-
-export interface IPopoverMenuListProps {
-  className?: string;
-  data?: IPopoverMenuListData[];
-}
 
 export default function PopoverMenuList(props: IPopoverMenuListProps) {
   const { className, data = [] } = props;
   return (
     <div className={clsx(['popover-menu-list flex-column', className])}>
-      {data.map((item) => (
+      {data.map((item: IPopoverMenuListData) => (
         <div
           key={item.key}
           className={clsx('menu-item flex', className)}

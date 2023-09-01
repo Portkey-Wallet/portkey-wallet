@@ -1,0 +1,73 @@
+@import '../../../assets/theme/color.less';
+
+.member-list-page {
+  height: 100%;
+  background-color: @bg-11;
+  font-size: 16px;
+  line-height: 22px;
+  .member-list-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-top: 16px;
+    background-color: @bg-13;
+    border-bottom: 1px solid @border-2;
+    z-index: 100;
+    .setting-header-wrapper {
+      border: none;
+      background-color: @bg-13;
+      height: 62px;
+    }
+    .dropdown-search-wrapper {
+      padding: 0 24px 10px;
+    }
+  }
+  .operation-container {
+    height: 40px;
+  }
+  .member-list-container {
+    position: relative;
+    margin-top: 138px;
+    overflow-y: auto;
+    .empty {
+      margin-top: 60px;
+      font-size: 16px;
+      line-height: 22px;
+      color: @font-12;
+    }
+  }
+}
+
+.transfer-ownership-modal {
+  /* stylelint-disable-next-line no-descending-specificity */
+   border-radius: 8px;
+   overflow: hidden;
+   .@{app-prefix}-modal-body {
+     padding: 0;
+     .@{app-prefix}-modal-confirm-content {
+       padding: 24px;
+       margin: 0;
+       border-bottom: 1px solid @border-2;
+       text-align: center;
+       font-size: 18px;
+       line-height: 22px;
+       font-weight: 500;
+       color: @font-10;
+     }
+     .@{app-prefix}-modal-confirm-btns {
+       padding: 15px 16px 17px;
+       margin: 0;
+       display: flex;
+       gap: 16px;
+       button {
+         width: 136px;
+         height: 48px;
+         border-radius: 24px;
+         margin: 0 !important;
+         line-height: 22px;
+         font-size: 16px;
+       }
+     }
+   }
+ }

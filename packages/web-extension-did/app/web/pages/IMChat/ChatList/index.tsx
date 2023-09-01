@@ -76,7 +76,7 @@ export default function ChatList() {
     return chatList.map((item) => {
       return {
         id: item.channelUuid,
-        letterItem: item.displayName.substring(0, 1).toUpperCase(),
+        letter: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
         subtitle: formatSubTitle(item),
         dateString: formatChatListTime(item.lastPostAt),

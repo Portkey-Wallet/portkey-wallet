@@ -1,10 +1,9 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
-
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
-import { IMessageListProps, MessageListEvent } from '../type';
+import { IMessageListProps, MessageListEvent, MessageType } from '../type';
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
@@ -49,20 +48,6 @@ const MessageList: FC<IMessageListProps> = ({
     prevProps.current = props;
   }, [checkScroll, getBottom, prevProps, props, reference]);
 
-  const onDownload: MessageListEvent = useCallback(
-    (item, index, event) => {
-      if (props.onDownload instanceof Function) props.onDownload(item, index, event);
-    },
-    [props],
-  );
-
-  const onPhotoError: MessageListEvent = useCallback(
-    (item, index, event) => {
-      if (props.onPhotoError instanceof Function) props.onPhotoError(item, index, event);
-    },
-    [props],
-  );
-
   const onDeleteMsg: MessageListEvent = useCallback(
     (item, index, event) => {
       if (props.onDeleteMsg instanceof Function) props.onDeleteMsg(item, index, event);
@@ -98,7 +83,7 @@ const MessageList: FC<IMessageListProps> = ({
   );
 
   const toBottom = useCallback(
-    (e?: any) => {
+    (e?: React.MouseEvent<HTMLElement>) => {
       if (!reference) return;
       reference.current.scrollTop = reference.current.scrollHeight;
       if (props.onDownButtonClick instanceof Function) {
@@ -114,39 +99,29 @@ const MessageList: FC<IMessageListProps> = ({
   }, [reference]);
 
   const renderMessageItem = useMemo(() => {
-    let prev: any = {};
+    let prev: MessageType | undefined = undefined;
     return props.dataSource.map((x, i: number) => {
       let isShowMargin = false;
       if (x.type === 'system' || prev?.type === 'system') {
         isShowMargin = true;
       } else {
-        isShowMargin = prev.position !== x.position;
+        isShowMargin = prev?.position !== x.position;
       }
       prev = x;
       return (
         <MessageItem
-          {...(x as any)}
+          {...(x as MessageType)}
           key={x.key}
-          className={isShowMargin && 'show-margin'}
-          onPhotoError={props.onPhotoError && ((e: React.MouseEvent<HTMLElement>) => onPhotoError(x, i, e))}
-          onDownload={props.onDownload && ((e: React.MouseEvent<HTMLElement>) => onDownload(x, i, e))}
-          onDeleteMsg={props.onDeleteMsg && ((e: React.MouseEvent<HTMLElement>) => onDeleteMsg(x, i, e))}
+          className={clsx([isShowMargin && 'show-margin'])}
+          onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => onDeleteMsg(x, i, e)}
         />
       );
     });
-  }, [
-    onDeleteMsg,
-    onDownload,
-    onPhotoError,
-    props.dataSource,
-    props.onDeleteMsg,
-    props.onDownload,
-    props.onPhotoError,
-  ]);
+  }, [onDeleteMsg, props.dataSource]);
 
   return (
-    <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>
-      <div ref={reference} onScroll={onScroll} className="message-list-body">
+    <div className={clsx(['portkey-message-list', props.className])} {...props.customProps}>
+      <div ref={reference} onScroll={onScroll} className="message-list-body flex-column">
         {loading && (
           <div className="loading-more flex-center">
             <CircleLoading />

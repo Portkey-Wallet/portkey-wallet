@@ -49,6 +49,17 @@ export default function WalletSecurity() {
           navigate('/setting/wallet-security/connected-sites');
         },
       },
+      {
+        key: t('Payment Security'),
+        element: (
+          <div className="flex connected-sites">
+            <span>{t('Payment Security')}</span>
+          </div>
+        ),
+        click: () => {
+          navigate('/setting/wallet-security/payment-security');
+        },
+      },
     ],
     [currentDapp?.length, deviceAmount, navigate, t],
   );

@@ -38,6 +38,8 @@ import ChatList from 'pages/ChatList';
 import ChatBox from 'pages/ChatBox';
 import NewChat from 'pages/NewChat';
 import ChatListSearch from 'pages/ChatListSearch';
+import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
+import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
 
 export const PageRouter = () =>
   useRoutes([
@@ -188,6 +190,14 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/connected-sites/:origin',
       element: <SiteDetail />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security',
+      element: <PaymentSecurity />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/transfer-settings',
+      element: <TransferSettings />,
     },
     {
       path: '/chat-list',

@@ -1,12 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
 import CommonInput from 'components/CommonInput';
-import Touchable from 'components/Touchable';
 import useDebounce from 'hooks/useDebounce';
 import { BGStyles } from 'assets/theme/styles';
 import Svg from 'components/Svg';
@@ -21,13 +20,13 @@ import navigationService from 'utils/navigationService';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import NoData from 'components/NoData';
+import Lottie from 'lottie-react-native';
 
 const FindMorePeople = () => {
   const { userId } = useWallet();
   const navToChatDetails = useJumpToChatDetails();
-
   const [keyword, setKeyword] = useState('');
-  // const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const debounceWord = useDebounce(getAelfAddress(keyword.trim()), 500);
   const checkIsStranger = useCheckIsStranger();
 
@@ -47,9 +46,11 @@ const FindMorePeople = () => {
 
   const searchUser = useLockCallback(async () => {
     if (!debounceWord) return setList([]);
+
     if (checkIsMyself()) return CommonToast.fail('Unable to add yourself as a contact');
 
     try {
+      setLoading(true);
       const { data } = await im.service.getUserInfo<GetOtherUserInfoDefaultResult>({
         address: debounceWord,
         fields: ['ADDRESS_WITH_CHAIN'],
@@ -58,8 +59,21 @@ const FindMorePeople = () => {
     } catch (error) {
       setList([]);
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }, [debounceWord]);
+
+  const IptRightIcon = useMemo(() => {
+    if (loading)
+      return <Lottie style={styles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />;
+
+    return keyword ? (
+      <TouchableOpacity onPress={() => setKeyword('')}>
+        <Svg icon="clear3" size={pTd(16)} />
+      </TouchableOpacity>
+    ) : undefined;
+  }, [loading, keyword]);
 
   useEffect(() => {
     searchUser();
@@ -101,13 +115,7 @@ const FindMorePeople = () => {
         <CommonInput
           value={keyword}
           onChangeText={setKeyword}
-          rightIcon={
-            keyword ? (
-              <Touchable onPress={() => setKeyword('')}>
-                <Svg icon="clear3" size={pTd(16)} />
-              </Touchable>
-            ) : undefined
-          }
+          rightIcon={IptRightIcon}
           rightIconContainerStyle={styles.rightIconContainerStyle}
         />
       </View>
@@ -119,7 +127,7 @@ const FindMorePeople = () => {
       <FlatList
         data={list}
         renderItem={renderItem}
-        ListEmptyComponent={keyword ? <NoData noPic message="No search result" /> : null}
+        ListEmptyComponent={debounceWord && !loading ? <NoData noPic message="No search result" /> : null}
       />
     </PageContainer>
   );
@@ -148,5 +156,8 @@ const styles = StyleSheet.create({
   },
   rightIconContainerStyle: {
     marginRight: pTd(10),
+  },
+  loadingIcon: {
+    width: pTd(20),
   },
 });

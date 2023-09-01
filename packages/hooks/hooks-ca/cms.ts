@@ -21,6 +21,7 @@ import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
+export const useEntranceControlNetMap = () => useAppCASelector(state => state.cms.entranceControlNetMap);
 
 export function useTabMenuList(isInit = false) {
   const dispatch = useAppCommonDispatch();
@@ -200,6 +201,56 @@ export const useBuyButtonShow = (deviceType: VersionDeviceType) => {
     isSellSectionShow,
     refreshBuyButton,
   };
+};
+
+export const useEntranceControl = (isInit = false) => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const entranceControlNetMap = useEntranceControlNetMap();
+
+  const entranceControl = useMemo(() => entranceControlNetMap?.[networkType], [entranceControlNetMap, networkType]);
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getRememberMeBlackListAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const refresh = useCallback(async () => {
+    return dispatch(getRememberMeBlackListAsync(networkType));
+  }, [dispatch, networkType]);
+
+  return {
+    entranceControl,
+    refresh,
+  };
+};
+
+export const useIsBridgeShow = (deviceType: VersionDeviceType) => {
+  const { entranceControl } = useEntranceControl();
+
+  return useMemo(() => {
+    switch (deviceType) {
+      case VersionDeviceType.iOS:
+        return entranceControl?.isIOSBridgeShow || false;
+      case VersionDeviceType.Android:
+        return entranceControl?.isAndroidBridgeShow || false;
+      case VersionDeviceType.Extension:
+        return entranceControl?.isExtensionBridgeShow || false;
+      default:
+        return false;
+    }
+  }, [
+    deviceType,
+    entranceControl?.isAndroidBridgeShow,
+    entranceControl?.isExtensionBridgeShow,
+    entranceControl?.isIOSBridgeShow,
+  ]);
 };
 
 export const useRememberMeBlackList = (isInit = false) => {

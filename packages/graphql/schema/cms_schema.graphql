@@ -19,6 +19,7 @@ type Query {
   discoverItem_by_id(id: ID!): discoverItem
   discoverItem_aggregated(groupBy: [String], filter: discoverItem_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverItem_aggregated!]!
   download: download
+  entranceControl: entranceControl
   home: home
   mediaKit(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKit!]!
   mediaKit_by_id(id: ID!): mediaKit
@@ -463,6 +464,19 @@ type download {
   iosDownloadUrl: String
   iosProductImage(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   iosQRCode(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  user_updated: String
+}
+
+type entranceControl {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  id: ID!
+  isAndroidBridgeShow: Boolean
+  isExtensionBridgeShow: Boolean
+  isIOSBridgeShow: Boolean
+  user_created: String
   user_updated: String
 }
 

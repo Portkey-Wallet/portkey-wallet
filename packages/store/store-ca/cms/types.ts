@@ -50,6 +50,12 @@ export interface RememberMeBlackListSiteItem {
   url: string;
 }
 
+export interface EntranceControlType {
+  isAndroidBridgeShow?: boolean;
+  isExtensionBridgeShow?: boolean;
+  isIOSBridgeShow?: boolean;
+}
+
 export interface CMSState {
   socialMediaListNetMap: {
     [T in NetworkType]?: SocialMediaItem[];
@@ -65,5 +71,8 @@ export interface CMSState {
   };
   rememberMeBlackListMap?: {
     [T in NetworkType]?: RememberMeBlackListSiteItem[];
+  };
+  entranceControlNetMap?: {
+    [T in NetworkType]?: EntranceControlType;
   };
 }

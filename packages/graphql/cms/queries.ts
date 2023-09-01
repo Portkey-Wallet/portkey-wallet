@@ -29,6 +29,12 @@ import {
   RememberMeBlackListSitesCustomQueryVariables,
 } from './__generated__/hooks/rememberMeBlackListSitesCustom';
 
+import {
+  EntranceControlCustomDocument,
+  EntranceControlCustomQuery,
+  EntranceControlCustomQueryVariables,
+} from './__generated__/hooks/entranceControlCustom';
+
 // SocialMedia
 const getSocialMedia = async (network: NetworkType, params: SocialMediaCustomQueryVariables) => {
   const apolloClient = getApolloClient(network);
@@ -82,4 +88,14 @@ const getRememberMeBlackListSites = async (
   return result;
 };
 
-export { getSocialMedia, getTabMenu, getDiscoverGroup, getBuyButton, getRememberMeBlackListSites };
+// entrance control
+const getEntranceControl = async (network: NetworkType, params: EntranceControlCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<EntranceControlCustomQuery>({
+    query: EntranceControlCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
+export { getSocialMedia, getTabMenu, getDiscoverGroup, getBuyButton, getRememberMeBlackListSites, getEntranceControl };

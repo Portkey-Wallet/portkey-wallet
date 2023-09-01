@@ -24,6 +24,7 @@ module.exports.discoverItem = fs.readFileSync(path.join(__dirname, 'discoverItem
 module.exports.discoverItem_by_id = fs.readFileSync(path.join(__dirname, 'discoverItem_by_id.gql'), 'utf8');
 module.exports.discoverItem_aggregated = fs.readFileSync(path.join(__dirname, 'discoverItem_aggregated.gql'), 'utf8');
 module.exports.download = fs.readFileSync(path.join(__dirname, 'download.gql'), 'utf8');
+module.exports.entranceControl = fs.readFileSync(path.join(__dirname, 'entranceControl.gql'), 'utf8');
 module.exports.home = fs.readFileSync(path.join(__dirname, 'home.gql'), 'utf8');
 module.exports.mediaKit = fs.readFileSync(path.join(__dirname, 'mediaKit.gql'), 'utf8');
 module.exports.mediaKit_by_id = fs.readFileSync(path.join(__dirname, 'mediaKit_by_id.gql'), 'utf8');

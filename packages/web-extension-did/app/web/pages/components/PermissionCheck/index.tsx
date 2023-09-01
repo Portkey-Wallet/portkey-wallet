@@ -11,6 +11,7 @@ import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
 import { useEffectOnce } from 'react-use';
 import OpenNewTabController from 'controllers/openNewTabController';
+import { useOtherNetworkLogged } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 const timeout = async () => {
   // TODO This is a bug
@@ -30,6 +31,7 @@ export default function PermissionCheck({
   const { walletInfo, currentNetwork } = useWalletInfo();
   // const networkList = useNetworkList();
   const location = useLocation();
+  const otherNetworkLogged = useOtherNetworkLogged();
 
   const appDispatch = useAppDispatch();
 
@@ -113,7 +115,7 @@ export default function PermissionCheck({
 
   useEffect(() => {
     if (location.pathname.includes('/test')) return;
-    if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
+    if (locked && ((!noCheckRegister && !isRegisterPage) || otherNetworkLogged)) return navigate('/unlock');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRegisterPage, locked, navigate, noCheckRegister]);
 

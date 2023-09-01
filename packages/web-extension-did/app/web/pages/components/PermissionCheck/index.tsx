@@ -84,19 +84,32 @@ export default function PermissionCheck({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getWalletStatus = useCallback(
+    () => Promise.race([InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send(), timeout()]),
+    [],
+  );
+
+  const checkNeedUnlock = useCallback(async () => {
+    if (!otherNetworkLogged) return false;
+    const res = await getWalletStatus();
+    const detail = (res as any)?.data;
+    if (typeof res === 'string') return chrome.runtime.reload();
+    if (detail.privateKey) return false;
+    return true;
+  }, [getWalletStatus, otherNetworkLogged]);
+
   const checkCurrentNetworkRegisterHandler = useCallback(async () => {
     const caInfo = walletInfo?.caInfo?.[currentNetwork];
     const caHash = caInfo?.[caInfo?.originChainId || 'AELF']?.caHash;
 
     console.log(caInfo, 'caInfo===');
-    const res = await Promise.race([
-      InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send(),
-      timeout(),
-    ]);
-    if (typeof res === 'string') return chrome.runtime.reload();
-
+    // CurrentNetwork Register
     if (caHash) return getPassword();
+    // CurrentNetwork not Register
 
+    // Check other network is Resister
+    const needPin = await checkNeedUnlock();
+    if (needPin) return navigate('/unlock');
     if (pageType == 'Popup') {
       await OpenNewTabController.closeOpenTabs();
       return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();
@@ -115,7 +128,7 @@ export default function PermissionCheck({
 
   useEffect(() => {
     if (location.pathname.includes('/test')) return;
-    if (locked && ((!noCheckRegister && !isRegisterPage) || otherNetworkLogged)) return navigate('/unlock');
+    if (locked && !noCheckRegister && !isRegisterPage) return navigate('/unlock');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRegisterPage, locked, navigate, noCheckRegister]);
 

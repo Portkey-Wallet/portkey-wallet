@@ -24,6 +24,7 @@ export const useIMChannelListNetMapState = () => useAppCASelector(state => state
 export const useIMChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
 export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
+export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -68,7 +69,7 @@ export const useInitIM = () => {
               channelUuid: rawMsg.channelUuid,
               displayName: '',
               channelIcon: rawMsg.fromAvatar || '',
-              channelType: ChannelTypeEnum.P2P,
+              channelType: undefined,
               unreadMessageCount: 1,
               mentionsCount: 0,
               lastMessageType: rawMsg.type,
@@ -91,7 +92,7 @@ export const useInitIM = () => {
               network: networkType,
               channelId: rawMsg.channelUuid,
               value: {
-                displayName: channelInfo.members.find(item => item.relationId === rawMsg.from)?.name || '',
+                displayName: channelInfo.name,
                 pin: channelInfo.pin,
                 channelType: channelInfo.type,
               },
@@ -212,3 +213,4 @@ export const useEditIMContact = () => {
 
 export * from './channelList';
 export * from './channel';
+export * from './group';

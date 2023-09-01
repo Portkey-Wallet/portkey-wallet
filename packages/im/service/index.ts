@@ -5,10 +5,10 @@ import {
   CreateChannelParams,
   CreateChannelResult,
   DeleteMessageParams,
+  DisbandChannelParams,
   GetAuthTokenParams,
   GetAuthTokenResult,
   GetChannelInfoParams,
-  GetChannelInfoResult,
   GetChannelListParams,
   GetChannelListResult,
   GetMessageListParams,
@@ -18,17 +18,21 @@ import {
   HideChannelParams,
   IIMService,
   IMServiceCommon,
+  LeaveChannelParams,
   ReadMessageParams,
+  RemoveChannelMembersParams,
   SendMessageParams,
   SendMessageResult,
+  TransferChannelOwnerParams,
   TriggerMessageEvent,
   UpdateChannelMuteParams,
+  UpdateChannelNameParams,
   UpdateChannelPinParams,
   VerifySignatureLoopParams,
   VerifySignatureParams,
   VerifySignatureResult,
 } from '../types/service';
-import { ChannelMemberInfo, ContactItemType, Message, MessageCount } from '../types';
+import { ChannelInfo, ChannelMemberInfo, ContactItemType, Message, MessageCount } from '../types';
 import { sleep } from '@portkey-wallet/utils';
 
 export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseService<T> implements IIMService {
@@ -107,7 +111,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<GetChannelInfoResult> {
+  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo> {
     return this._request.send({
       url: '/api/v1/channelContacts/channelDetailInfo',
       params,
@@ -190,6 +194,42 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
+  disbandChannel(params: DisbandChannelParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/disband',
+      params,
+      method: 'POST',
+    });
+  }
+  transferChannelOwner(params: TransferChannelOwnerParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/ownerTransfer',
+      params,
+      method: 'POST',
+    });
+  }
+  removeChannelMembers(params: RemoveChannelMembersParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/members/remove',
+      params,
+      method: 'POST',
+    });
+  }
+  leaveChannel(params: LeaveChannelParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/members/leave',
+      params,
+      method: 'POST',
+    });
+  }
+  updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/update',
+      params,
+      method: 'POST',
+    });
+  }
+
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType> {
     return this._request.send({
       url: '/api/v1/contacts/stranger',

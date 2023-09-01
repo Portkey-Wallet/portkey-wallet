@@ -114,7 +114,7 @@ export const cmsPersistConfig = {
 export const imPersistConfig = {
   key: imSlice.name,
   storage: localStorage,
-  blacklist: ['channelMessageListNetMap'],
+  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap'],
 };
 
 const reduxPersistConfig = {

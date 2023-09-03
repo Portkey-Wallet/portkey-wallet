@@ -10,13 +10,15 @@ import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { Button, Modal, message } from 'antd';
 import { mockSearchRes } from '../mock';
 import './index.less';
+import { Avatar } from '@portkey-wallet/im-ui-web';
 
-export default function MemberList() {
+export default function TransferOwnership() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
+  const [disabled, setDisabled] = useState(true);
   const { setLoading } = useLoading();
   // TODO
   // const allMemberList = api();
@@ -55,8 +57,8 @@ export default function MemberList() {
       autoFocusButton: null,
       icon: null,
       centered: true,
-      okText: t('Confirm'),
-      cancelText: t('Cancel'),
+      okText: t('Yes'),
+      cancelText: t('No'),
       onOk: async () => {
         try {
           //TODO await transfer();
@@ -69,11 +71,17 @@ export default function MemberList() {
       },
     });
   }, [channelUuid, navigate, t]);
+  const handleSelect = useCallback(() => {
+    setDisabled(false);
+  }, []);
   const renderMemberList = useMemo(
     () => (
-      <div>
+      <div className="member-list">
         {showMemberList?.map((m) => (
-          <div key={m.id}>{m.name}</div>
+          <div className="member-item flex" key={m.id} onClick={handleSelect}>
+            <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
+            {m.name}
+          </div>
         ))}
       </div>
     ),
@@ -85,8 +93,8 @@ export default function MemberList() {
   }, [handleSearch, state?.search]);
 
   return (
-    <div className="member-list-page flex-column">
-      <div className="member-list-top">
+    <div className="transfer-ownership-page flex-column">
+      <div className="transfer-ownership-top">
         <SettingHeader
           title={t('Transfer Ownership')}
           leftCallBack={() => navigate(-1)}
@@ -108,8 +116,10 @@ export default function MemberList() {
       <div className="member-list-container">
         {showMemberList.length !== 0 ? renderMemberList : filterWord ? 'no search result' : 'no members available'}
       </div>
-      <div className="btn" onClick={handleTransfer}>
-        <Button>Confirm</Button>
+      <div className="transfer-ownership-btn flex-center" onClick={handleTransfer}>
+        <Button disabled={disabled} type="primary">
+          Confirm
+        </Button>
       </div>
     </div>
   );

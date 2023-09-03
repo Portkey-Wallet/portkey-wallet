@@ -9,20 +9,21 @@ import DropdownSearch from 'components/DropdownSearch';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { Button, Modal, message } from 'antd';
 import { mockSearchRes } from '../mock';
+import { Avatar } from '@portkey-wallet/im-ui-web';
 import './index.less';
 
 export default function HandleMember() {
   const { channelUuid, operate } = useParams();
-  const isAdd = useMemo(() => operate === 'add', [operate]);
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
+  const [disabled, setDisabled] = useState(true);
   const { setLoading } = useLoading();
   // TODO
   // const allMemberList = api();
   const [showMemberList, setShowMemberList] = useState<ContactItemType[]>([]);
-
+  const isAdd = useMemo(() => operate === 'add', [operate]);
   const handleSearch = useCallback(async (keyword: string) => {
     try {
       // TODO api
@@ -48,49 +49,55 @@ export default function HandleMember() {
     [],
     500,
   );
-  const handleConfirm = useCallback(() => {
+  const handleOperate = useCallback(() => {
     if (isAdd) {
       try {
-        // TODO addMember()
-        message.success('add member success');
-        navigate(`/group-info/${channelUuid}`);
+        // TODO api add member
+        message.success('add success');
+        navigate(`/chat-box-group/${channelUuid}`);
       } catch (e) {
-        console.log('===add member error', e);
-        message.error('add member failed');
+        message.error('Failed to add members');
+        console.log('===Failed to add members', e);
       }
       return false;
     } else {
       return Modal.confirm({
         width: 320,
-        content: t('Remove these members?'),
-        className: 'remove-member-modal',
+        content: t('Remove the group?'),
+        className: 'remove-group-modal',
         autoFocusButton: null,
         icon: null,
         centered: true,
-        okText: t('Confirm'),
-        cancelText: t('Cancel'),
+        okText: t('Yes'),
+        cancelText: t('No'),
         onOk: async () => {
           try {
-            // TODO removeMember()
-            message.success('remove member success');
-            navigate(`/group-info/${channelUuid}`);
+            //TODO await remove member();
+            navigate(`/chat-box-group/${channelUuid}`);
+            message.success('remove success');
           } catch (e) {
-            console.log('===remove member error', e);
-            message.error('remove member failed');
+            message.error('Failed to remove members');
+            console.log('===Failed to remove members', e);
           }
         },
       });
     }
   }, [channelUuid, isAdd, navigate, t]);
+  const handleSelect = useCallback(() => {
+    setDisabled(false);
+  }, []);
   const renderMemberList = useMemo(
     () => (
-      <div>
+      <div className="member-list">
         {showMemberList?.map((m) => (
-          <div key={m.id}>{m.name}</div>
+          <div className="member-item flex" key={m.id} onClick={handleSelect}>
+            <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
+            {m.name}
+          </div>
         ))}
       </div>
     ),
-    [showMemberList],
+    [handleSelect, showMemberList],
   );
   useEffect(() => {
     setFilterWord(state?.search ?? '');
@@ -101,7 +108,7 @@ export default function HandleMember() {
     <div className="handle-member-page flex-column">
       <div className="handle-member-top">
         <SettingHeader
-          title={t(isAdd ? 'Add Members' : 'Remove Members')}
+          title={t(`${isAdd ? 'Add' : 'Remove'} Members`)}
           leftCallBack={() => navigate(-1)}
           rightElement={<CustomSvg type="Close2" onClick={() => navigate(-1)} />}
         />
@@ -118,11 +125,13 @@ export default function HandleMember() {
           }}
         />
       </div>
-      <div className="handle-member-container">
-        {showMemberList.length !== 0 ? renderMemberList : filterWord ? 'no search result' : 'no members available'}
+      <div className="member-list-container">
+        {showMemberList.length !== 0 ? renderMemberList : filterWord ? 'No search found' : 'No contact result'}
       </div>
-      <div className="handle-member-btn" onClick={handleConfirm}>
-        <Button>{isAdd ? 'Add' : 'Remove'}</Button>
+      <div className="handle-member-btn flex-center" onClick={handleOperate}>
+        <Button disabled={disabled} type="primary">
+          {isAdd ? 'Add' : 'Remove'}
+        </Button>
       </div>
     </div>
   );

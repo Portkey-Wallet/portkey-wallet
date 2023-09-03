@@ -11,10 +11,16 @@
     .title-element {
       align-items: center;
       .title-content {
+        gap: 8px;
         cursor: pointer;
       }
-      .name-text {
-        margin-left: 8px;
+      .title-group-content {
+        gap: 8px;
+      }
+      .title-icon {
+        cursor: pointer;
+      }
+      .title-name {
         max-width: 150px;
         font-size: 24px;
         line-height: 28px;
@@ -22,6 +28,17 @@
         white-space: nowrap;
         text-overflow: ellipsis;
         color: @font-11;
+        cursor: pointer;
+      }
+      .title-member {
+        gap: 4px;
+        font-size: 12px;
+        line-height: 16px;
+        color: @font-12;
+        .circle-loading {
+          width: 12px;
+          height: 12px;
+        }
       }
       .custom-svg.mute-icon {
         margin-left: 4px;

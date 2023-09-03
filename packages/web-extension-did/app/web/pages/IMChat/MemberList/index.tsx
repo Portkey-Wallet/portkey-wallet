@@ -7,15 +7,19 @@ import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import './index.less';
 import { mockSearchRes } from '../mock';
+import { Avatar } from '@portkey-wallet/im-ui-web';
+import './index.less';
 
-export default function TransferOwnership() {
+export default function MemberList() {
   const { channelUuid } = useParams();
+  console.log('channelUuid', channelUuid);
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
+  // TODO
+  const isAdmin = true;
   const { setLoading } = useLoading();
   // TODO
   // const allMemberList = api();
@@ -48,13 +52,19 @@ export default function TransferOwnership() {
   );
   const renderMemberList = useMemo(
     () => (
-      <div>
+      <div className="member-list">
         {showMemberList?.map((m) => (
-          <div key={m.id}>{m.name}</div>
+          <div className="member-item flex-between" key={m.id}>
+            <div className="flex member-basic">
+              <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
+              <div className="member-name">{m.name}</div>
+            </div>
+            {isAdmin && <div className="admin-icon flex-center">Owner</div>}
+          </div>
         ))}
       </div>
     ),
-    [showMemberList],
+    [isAdmin, showMemberList],
   );
   useEffect(() => {
     setFilterWord(state?.search ?? '');
@@ -66,8 +76,8 @@ export default function TransferOwnership() {
       <div className="member-list-top">
         <SettingHeader
           title={t('Members')}
-          leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
+          leftCallBack={() => navigate(-1)}
+          rightElement={<CustomSvg type="Close2" onClick={() => navigate(-1)} />}
         />
         <DropdownSearch
           overlay={<></>}
@@ -81,14 +91,6 @@ export default function TransferOwnership() {
             placeholder: 'Search',
           }}
         />
-      </div>
-      <div className="operation-container">
-        <div className="add-member" onClick={() => navigate(`/chat-group-info/${channelUuid}/member-list/add`)}>
-          Add Member
-        </div>
-        <div className="remove-member" onClick={() => navigate(`/chat-group-info/${channelUuid}/member-list/remove`)}>
-          remove
-        </div>
       </div>
       <div className="member-list-container">
         {showMemberList.length !== 0 ? renderMemberList : filterWord ? 'no search result' : 'no members available'}

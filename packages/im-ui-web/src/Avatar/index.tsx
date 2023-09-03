@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { IAvatarProps } from '../type';
 import './index.less';
 
-const Avatar: React.FC<IAvatarProps> = ({ src, letter, alt = 'img', className, height = 40, width = 40 }) => {
+const Avatar: React.FC<IAvatarProps> = ({ src, letter, alt = 'img', className, height = 40, width = 40, onClick }) => {
   const [isError, setIsError] = useState(false);
   return (
-    <div className={clsx('portkey-avatar-container', className)} style={{ width, height }}>
+    <div className={clsx('portkey-avatar-container', className)} style={{ width, height }} onClick={onClick}>
       {letter ? (
         <div className="avatar-letter flex-center">{letter}</div>
       ) : src && !isError ? (

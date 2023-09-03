@@ -5,38 +5,28 @@
   background-color: @bg-11;
   font-size: 16px;
   line-height: 22px;
-  .member-list-top {
-    position: fixed;
-    top: 0;
-    left: 0;
+  .form-btn-edit {
     width: 100%;
-    padding-top: 16px;
-    background-color: @bg-13;
-    border-bottom: 1px solid @border-2;
-    z-index: 100;
-    .setting-header-wrapper {
-      border: none;
-      background-color: @bg-13;
-      height: 62px;
+    height: 80px;
+    padding: 16px;
+    gap: 16px;
+    border-top: 1px solid @border-2;
+    .portkey-btn {
+      height: 48px;
+      border-radius: 22px;
     }
-    .dropdown-search-wrapper {
-      padding: 0 24px 10px;
+    .portkey-btn-dangerous {
+      color: @font-14;
+      border: 1px solid @border-7;
     }
-  }
-  .member-list-container {
-    position: relative;
-    margin-top: 138px;
-    overflow-y: auto;
-    .empty {
-      margin-top: 60px;
-      font-size: 16px;
-      line-height: 22px;
-      color: @font-12;
+    .portkey-btn-primary {
+      color: @font-5;
+      background-color: @bg-7;
     }
   }
 }
 
-.transfer-ownership-modal {
+.disband-group-modal {
   /* stylelint-disable-next-line no-descending-specificity */
    border-radius: 8px;
    overflow: hidden;

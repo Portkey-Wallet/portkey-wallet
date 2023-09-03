@@ -6,11 +6,20 @@
   padding-top: 8px;
   overflow-x: hidden;
   gap: 8px;
+  .portkey-message-text,
+  .portkey-message-image {
+    margin-right: 16px;
+  }
   &.center {
     justify-content: center;
   }
   &.right {
     flex-direction: row-reverse;
+    .portkey-message-text,
+    .portkey-message-image {
+      margin-right: 0;
+      margin-left: 16px;
+    }
   }
   &:last-child {
     margin-bottom: 16px;

@@ -13,7 +13,7 @@ export default function PaymentSecurityList({
   return (
     <List className="payment-security-list">
       {list?.map((item, index) => (
-        <List.Item key={`paymentSecurity_${item.chainId}_${index}`}>
+        <List.Item key={`paymentSecurity_${item.chainId}_${index}`} className="payment-security-item-wrap">
           <PaymentSecurityItem item={item} onClick={clickItem} />
         </List.Item>
       ))}

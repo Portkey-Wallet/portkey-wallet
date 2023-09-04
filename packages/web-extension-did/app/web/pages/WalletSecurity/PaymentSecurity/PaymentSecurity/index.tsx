@@ -27,6 +27,8 @@ const mockList: IPaymentSecurityItem[] = [
 export interface IPaymentSecurityProps extends BaseHeaderProps {
   list: IPaymentSecurityItem[];
   clickItem: (item: IPaymentSecurityItem) => void;
+  hasMore: boolean;
+  loadMore: () => Promise<void>;
 }
 
 export default function PaymentSecurity() {
@@ -47,9 +49,29 @@ export default function PaymentSecurity() {
     navigate('/setting/wallet-security');
   }, [navigate]);
 
+  const loadMoreSecurity = useCallback(() => {
+    // TODO
+    console.log('load more');
+    return Promise.resolve();
+  }, []);
+
   return isNotLessThan768 ? (
-    <PaymentSecurityPrompt headerTitle={headerTitle} list={mockList} clickItem={handleClick} goBack={handleBack} />
+    <PaymentSecurityPrompt
+      headerTitle={headerTitle}
+      list={mockList}
+      clickItem={handleClick}
+      goBack={handleBack}
+      hasMore={false} // TODO
+      loadMore={loadMoreSecurity}
+    />
   ) : (
-    <PaymentSecurityPopup headerTitle={headerTitle} list={mockList} clickItem={handleClick} goBack={handleBack} />
+    <PaymentSecurityPopup
+      headerTitle={headerTitle}
+      list={mockList}
+      clickItem={handleClick}
+      goBack={handleBack}
+      hasMore={false} // TODO
+      loadMore={loadMoreSecurity}
+    />
   );
 }

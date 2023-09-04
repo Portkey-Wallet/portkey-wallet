@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
+  AvatarProps,
+  BubbleProps,
   DayProps,
   GiftedChat,
   GiftedChatProps,
@@ -7,6 +9,7 @@ import {
   MessageImageProps,
   MessageProps,
   MessageTextProps,
+  SystemMessageProps,
 } from 'react-native-gifted-chat';
 import { AccessoryBar, BottomBarContainer } from '../InputToolbar';
 import { randomId } from '@portkey-wallet/utils';
@@ -32,6 +35,8 @@ import SystemTime from '../SystemTime';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
+import CustomChatAvatar from '../CustomChatAvatar';
+import SystemInfo from '../SystemInfo';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -43,16 +48,22 @@ const ListViewProps = {
 };
 const Empty = () => null;
 
-const ChatsUI = () => {
+type ChatsDetailContentPropsType = {
+  isGroupChat?: boolean;
+};
+
+export default function ChatsDetailContent(prop: ChatsDetailContentPropsType) {
+  const { isGroupChat } = prop;
+
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
 
   const { list, init } = useChannel(currentChannelId || '');
-
   const [loading, setLoading] = useState(true);
-
   const formattedList = useMemo(() => formatMessageList(list), [list]);
+  const relationId = useRelationId();
+  const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   useEffectOnce(() => {
     initChatInputRecorder();
@@ -94,9 +105,13 @@ const ChatsUI = () => {
     [],
   );
 
-  const renderBubble = useCallback((data: any) => {
-    return <CustomBubble {...data} />;
-  }, []);
+  const renderBubble: GiftedChatProps['renderBubble'] = useCallback(
+    (data: BubbleProps<ChatMessage>) => {
+      return <CustomBubble isGroupChat={isGroupChat} {...data} />;
+    },
+    [isGroupChat],
+  );
+
   const listViewProps: GiftedChatProps['listViewProps'] = useMemo(() => {
     return {
       ...ListViewProps,
@@ -114,7 +129,21 @@ const ChatsUI = () => {
     },
     [onDismiss],
   );
-  const disabledTouchable = useMemo(() => formattedList.length > 10, [formattedList.length]);
+
+  const renderSystemMessage: GiftedChatProps['renderSystemMessage'] = useCallback(
+    (props: SystemMessageProps<ChatMessage>) => {
+      return <SystemInfo {...props} />;
+    },
+    [],
+  );
+
+  const renderAvatar: GiftedChatProps['renderAvatar'] = useCallback(
+    (props: AvatarProps<IMessage>) => {
+      if (!isGroupChat) return null;
+      return <CustomChatAvatar {...props} />;
+    },
+    [isGroupChat],
+  );
 
   const bottomBar = useMemo(
     () => (
@@ -125,8 +154,7 @@ const ChatsUI = () => {
     [scrollToBottom],
   );
 
-  const relationId = useRelationId();
-  const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
+  const disabledTouchable = useMemo(() => formattedList.length > 10, [formattedList.length]);
 
   useEffectOnce(() => {
     init();
@@ -148,13 +176,15 @@ const ChatsUI = () => {
             renderUsername={Empty}
             renderTime={Empty}
             isCustomViewBottom
-            renderAvatar={Empty}
+            renderAvatarOnTop
+            renderAvatar={renderAvatar}
             showUserAvatar={false}
             messages={formattedList}
             minInputToolbarHeight={0}
-            renderUsernameOnMessage={false}
+            renderUsernameOnMessage={true}
             renderInputToolbar={Empty}
             renderDay={renderDay}
+            renderSystemMessage={renderSystemMessage}
             renderBubble={renderBubble}
             renderMessage={renderMessage}
             listViewProps={listViewProps}
@@ -170,11 +200,8 @@ const ChatsUI = () => {
       {bottomBar}
     </>
   );
-};
-
-export default function Chats() {
-  return <ChatsUI />;
 }
+
 const styles = StyleSheet.create({
   messagesContainerStyle: {
     backgroundColor: defaultColors.bg1,

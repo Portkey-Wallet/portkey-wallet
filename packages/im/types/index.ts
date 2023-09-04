@@ -131,3 +131,10 @@ export type ContactItemType = {
   imInfo?: IImInfo;
   isImputation: boolean;
 };
+
+export type GroupMemberItemType = {
+  relationId: string;
+  name: string;
+  avatar: string;
+  isAdmin: boolean;
+};

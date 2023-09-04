@@ -113,6 +113,8 @@ const FindMorePeople = () => {
       containerStyles={styles.container}>
       <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
         <CommonInput
+          loading={loading}
+          allowClear
           value={keyword}
           onChangeText={setKeyword}
           rightIcon={IptRightIcon}

@@ -30,7 +30,6 @@ const AboutUs = () => {
       </View>
       <TextXXXL>Portkey</TextXXXL>
       <TextM style={styles.version}>{`V${Application.nativeApplicationVersion}`}</TextM>
-
       <View style={styles.btnContainer}>
         {socialMediaList.map((item, index) => (
           <View key={index}>
@@ -45,7 +44,6 @@ const AboutUs = () => {
           </View>
         ))}
       </View>
-
       <MenuItem
         icon="terms"
         title="Terms of Service"

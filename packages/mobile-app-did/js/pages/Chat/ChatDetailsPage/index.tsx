@@ -5,7 +5,7 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { TextL } from 'components/CommonText';
-import Chats from '../components/Chats';
+import ChatsDetailContent from '../components/ChatsDetailContent';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../components/ChatOverlay';
@@ -208,7 +208,7 @@ const ChatDetailsPage = () => {
         </Touchable>
       }>
       <FloatingActionButton shouldShowFirstTime={isStranger} onPressButton={addContact} />
-      <Chats />
+      <ChatsDetailContent isGroupChat={false} />
     </PageContainer>
   );
 };

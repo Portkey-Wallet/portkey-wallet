@@ -39,8 +39,6 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
     [],
   );
 
-  console.log('list!!!!', addressList);
-
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
       {addressList?.map((ele, index) => (

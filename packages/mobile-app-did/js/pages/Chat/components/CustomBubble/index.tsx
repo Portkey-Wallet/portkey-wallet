@@ -1,59 +1,49 @@
 import React, { useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { BubbleProps } from 'react-native-gifted-chat';
 import { Bubble } from 'react-native-gifted-chat';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
+import { TextS } from 'components/CommonText';
 
-export default function CustomBubble(props: BubbleProps<ChatMessage>) {
-  const { messageType } = props?.currentMessage || {};
+export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroupChat?: boolean }) {
+  const { isGroupChat, currentMessage, previousMessage, user } = props || {};
+  const { messageType } = currentMessage || {};
 
-  // return (
-  //   <View>
-  //     <TextM>名字</TextM>
-  //     <Bubble
-  //       touchableProps={{ disabled: true }}
-  //       wrapperStyle={useMemo(
-  //         () => ({
-  //           left: [styles.wrapperStyle, styles.wrapLeft, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
-  //           right: [styles.wrapperStyle, styles.wrapRight, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
-  //         }),
-  //         [messageType],
-  //       )}
-  //       containerToNextStyle={{
-  //         left: styles.containerToNextLeftStyle,
-  //         right: styles.containerToNextRightStyle,
-  //       }}
-  //       containerStyle={{
-  //         left: styles.containerStyle,
-  //         right: styles.containerStyle,
-  //       }}
-  //       {...props}
-  //     />
-  //   </View>
-  // );
+  const isHideName = useMemo(
+    () => currentMessage?.user?._id === previousMessage?.user?._id || user?._id === currentMessage?.user?._id,
+    [currentMessage?.user?._id, previousMessage?.user?._id, user?._id],
+  );
 
+  // TODO: the true name
   return (
-    <Bubble
-      touchableProps={{ disabled: true }}
-      wrapperStyle={useMemo(
-        () => ({
-          left: [styles.wrapperStyle, styles.wrapLeft, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
-          right: [styles.wrapperStyle, styles.wrapRight, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
-        }),
-        [messageType],
+    <View>
+      {isGroupChat && !isHideName && (
+        <TextS numberOfLines={1} style={styles.memberName}>
+          {Math.random()}
+        </TextS>
       )}
-      containerToNextStyle={{
-        left: styles.containerToNextLeftStyle,
-        right: styles.containerToNextRightStyle,
-      }}
-      containerStyle={{
-        left: styles.containerStyle,
-        right: styles.containerStyle,
-      }}
-      {...props}
-    />
+      <Bubble
+        touchableProps={{ disabled: true }}
+        wrapperStyle={useMemo(
+          () => ({
+            left: [styles.wrapperStyle, styles.wrapLeft, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+            right: [styles.wrapperStyle, styles.wrapRight, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+          }),
+          [messageType],
+        )}
+        containerToNextStyle={{
+          left: styles.containerToNextLeftStyle,
+          right: styles.containerToNextRightStyle,
+        }}
+        containerStyle={{
+          left: styles.containerStyle,
+          right: styles.containerStyle,
+        }}
+        {...props}
+      />
+    </View>
   );
 }
 
@@ -84,5 +74,10 @@ const styles = StyleSheet.create({
   },
   notSupportStyle: {
     backgroundColor: defaultColors.bg18,
+  },
+  memberName: {
+    color: defaultColors.font7,
+    marginBottom: pTd(4),
+    marginLeft: -pTd(4),
   },
 });

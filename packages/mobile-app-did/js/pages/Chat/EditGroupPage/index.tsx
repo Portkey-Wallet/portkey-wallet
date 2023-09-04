@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -33,19 +33,21 @@ const EditGroupPage = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      <FormItem title={'Group Name'} style={styles.groupNameWrap}>
-        <CommonInput
-          type="general"
-          theme="white-bg"
-          placeholder="Enter Name"
-          maxLength={40}
-          value={groupName}
-          onChangeText={setGroupName}
-        />
-      </FormItem>
+      <ScrollView style={GStyles.flex1}>
+        <FormItem title={'Group Name'} style={styles.groupNameWrap}>
+          <CommonInput
+            type="general"
+            theme="white-bg"
+            placeholder="Enter Name"
+            maxLength={40}
+            value={groupName}
+            onChangeText={setGroupName}
+          />
+        </FormItem>
+      </ScrollView>
 
-      <View>
-        <CommonButton title="Save" />
+      <View style={styles.buttonWrap}>
+        <CommonButton disabled={!groupName} title="Save" type="primary" />
         <CommonButton
           title={'Disband'}
           style={styles.deleteBtnStyle}
@@ -62,7 +64,6 @@ export default EditGroupPage;
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
     backgroundColor: defaultColors.bg4,
     flex: 1,
     ...GStyles.paddingArg(0),
@@ -73,5 +74,8 @@ const styles = StyleSheet.create({
   },
   deleteBtnStyle: {
     marginTop: pTd(8),
+  },
+  buttonWrap: {
+    ...GStyles.paddingArg(10, 20, 16),
   },
 });

@@ -1,4 +1,4 @@
-import React, { useCallback, useState, memo, useEffect, useMemo } from 'react';
+import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -32,7 +32,6 @@ const ChatGroupDetails = () => {
   const onPressConfirm = useCallback(() => {
     try {
       Loading.show();
-      console.log('selectedContactMap confirm ', selectedContactMap);
       // TODO api
       CommonToast.success('Group created');
     } catch (error) {
@@ -40,7 +39,7 @@ const ChatGroupDetails = () => {
     } finally {
       Loading.hide();
     }
-  }, [selectedContactMap]);
+  }, []);
 
   const onPressItem = useCallback((id: string) => {
     setSelectedContactMap(prevMap => {
@@ -86,7 +85,7 @@ const ChatGroupDetails = () => {
           <TextM>{`${selectedCount}/${totalCount}`}</TextM>
         </View>
         <View style={styles.inputWrap}>
-          <CommonInput type="search" value={keyword} onChangeText={setKeyword} placeholder="Search" />
+          <CommonInput allowClear type="search" value={keyword} onChangeText={setKeyword} placeholder="Search" />
         </View>
         <FlatList
           extraData={(item: ContactItemType) => item.id}

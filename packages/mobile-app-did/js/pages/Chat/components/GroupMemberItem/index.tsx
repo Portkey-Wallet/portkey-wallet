@@ -1,26 +1,43 @@
 import { TextL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { ContactItemType, GroupMemberItemType } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
 
 type GroupMemberItemPropsType<T> = {
+  multiple?: boolean;
   selected?: boolean;
-  // TODO
-  item: any;
+  item: any; // TODO
+  disabled?: boolean;
   onPress?: (id: string, selected: boolean) => void;
 };
 
 export default memo(
   function GroupMemberItem(props: GroupMemberItemPropsType<GroupMemberItemType & ContactItemType>) {
-    const { selected = false, item, onPress } = props;
+    const { multiple = true, disabled = false, selected = false, item, onPress } = props;
+
+    const iconDom = useMemo(() => {
+      let iconName: IconName | undefined;
+      if (multiple) {
+        iconName = disabled || selected ? 'selected' : 'unselected';
+      } else {
+        iconName = disabled || selected ? 'selected' : undefined;
+      }
+
+      return iconName ? <Svg iconStyle={styles.itemIcon} icon={iconName} /> : null;
+    }, [disabled, multiple, selected]);
 
     return (
-      <Touchable style={styles.itemRow} onPress={() => onPress?.(item.id, !selected)}>
+      <Touchable
+        disabled={disabled}
+        style={[styles.itemRow, disabled && styles.disable]}
+        onPress={() => {
+          onPress?.(item.id, !selected);
+        }}>
         <CommonAvatar
           hasBorder
           title={item.name || item.caHolderInfo?.walletName || item.imInfo?.name}
@@ -28,7 +45,7 @@ export default memo(
         />
         <View style={styles.itemContent}>
           <TextL>{item.name || item.caHolderInfo?.walletName || item.imInfo?.name}</TextL>
-          <Svg iconStyle={styles.itemIcon} icon={selected ? 'selected' : 'unselected'} />
+          {iconDom}
         </View>
       </Touchable>
     );
@@ -56,5 +73,8 @@ const styles = StyleSheet.create({
   itemIcon: {
     position: 'absolute',
     right: 0,
+  },
+  disable: {
+    opacity: 0.5,
   },
 });

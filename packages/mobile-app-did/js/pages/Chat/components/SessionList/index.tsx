@@ -9,8 +9,7 @@ import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@
 import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
-// TODO
-import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
+import { useJumpToChatDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import Touchable from 'components/Touchable';
@@ -28,7 +27,7 @@ export default function SessionList() {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
-  const navToChatDetails = useJumpToChatGroupDetails();
+  const navToChatDetails = useJumpToChatDetails();
   const lastInitChannelList = useLatestRef(initChannelList);
 
   useFocusEffect(
@@ -117,7 +116,7 @@ export default function SessionList() {
           <ChatHomeListItemSwiped
             item={item}
             onDelete={() => onHideChannel(item)}
-            onPress={() => navToChatDetails({ toRelationId: item?.toRelationId, channelUuid: item?.channelUuid })}
+            onPress={() => navToChatDetails({ toRelationId: item?.toRelationId || '', channelUuid: item?.channelUuid })}
             onLongPress={event => longPress(event, item)}
           />
         )}

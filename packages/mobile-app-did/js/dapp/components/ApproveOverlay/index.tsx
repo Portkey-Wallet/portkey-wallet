@@ -47,7 +47,7 @@ const ApproveModal = (props: SignModalPropsType) => {
         onPress: async () => {
           navigationService.navigate('GuardianApproval', {
             approveParams,
-            approvalType: ApprovalType.guardianApprove,
+            approvalType: ApprovalType.managerApprove,
           });
           await sleep(200);
           dispatch(changeDrawerOpenStatus(false));

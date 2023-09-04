@@ -23,10 +23,9 @@ type SignModalPropsType = {
   dappInfo: DappStoreItem;
   approveParams: ApproveParams;
   onReject: () => void;
-  onSign: () => void;
 };
 const ApproveModal = (props: SignModalPropsType) => {
-  const { dappInfo, approveParams, onReject, onSign } = props;
+  const { dappInfo, approveParams, onReject } = props;
   console.log(approveParams, '====approveInfo');
   const dispatch = useAppDispatch();
   const { t } = useLanguage();

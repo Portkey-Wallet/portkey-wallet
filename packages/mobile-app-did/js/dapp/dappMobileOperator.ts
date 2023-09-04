@@ -312,14 +312,6 @@ export default class DappMobileOperator extends Operator {
       }
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
-        payload = request.payload;
-
-        const isApprove = await this.isApprove(request);
-        if (isApprove) return this.handleApprove(request);
-
-        callBack = this.handleSendTransaction;
-
-        console.log(payload, '=====payload');
 
         if (
           !payload ||
@@ -330,6 +322,15 @@ export default class DappMobileOperator extends Operator {
           !payload.rpcUrl
         )
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+
+        // is approve
+        const isApprove = await this.isApprove(request);
+        if (isApprove) return this.handleApprove(request);
+
+        payload = request.payload;
+
+        callBack = this.handleSendTransaction;
+        console.log(payload, '=====payload');
         break;
       }
       case MethodsWallet.GET_WALLET_SIGNATURE: {

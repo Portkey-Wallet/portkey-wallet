@@ -66,8 +66,10 @@ export class DappOverlay implements IDappOverlay {
       ApproveOverlay.showApproveModal({
         dappInfo,
         approveParams,
-        onSign: () => resolve(true),
-        onReject: () => resolve(false),
+        onReject: () => {
+          listener.remove();
+          resolve(false);
+        },
       });
     });
   }

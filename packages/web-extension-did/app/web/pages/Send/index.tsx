@@ -254,6 +254,38 @@ export default function Send() {
       const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
+
+      const singleTransactionOverage = true;
+      const dailyTransactionOverage = true;
+      if (singleTransactionOverage) {
+        return Modal.confirm({
+          width: 320,
+          content: t(
+            'Exceeded the maximum of per transaction limit，if you wish to proceed，please modify the transfer amount.',
+          ),
+          className: 'cross-modal',
+          autoFocusButton: null,
+          icon: null,
+          centered: true,
+          okText: t('Modify'),
+          cancelText: t('Cancel'),
+          onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings'), // TODO state
+        });
+      }
+      if (dailyTransactionOverage) {
+        return Modal.confirm({
+          width: 320,
+          content: t('Exceeded today‘s maximum limit，if you wish to proceed，please modify the transfer amount.'),
+          className: 'cross-modal',
+          autoFocusButton: null,
+          icon: null,
+          centered: true,
+          okText: t('Modify'),
+          cancelText: t('Cancel'),
+          onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings'), // TODO state
+        });
+      }
+
       setLoading(true);
 
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {

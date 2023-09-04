@@ -32,17 +32,12 @@ import { useVerifyToken } from 'hooks/authentication';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import myEvents from 'utils/deviceEvent';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
+import {
+  APPROVAL_TO_OPERATION_MAP,
+  APPROVAL_TO_VERIFICATION_MAP,
+} from '@portkey-wallet/constants/constants-ca/verifier';
 
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
-
-const APPROVAL_TO_VERIFICATION_MAP = {
-  [ApprovalType.addGuardian]: VerificationType.addGuardianByApprove,
-  [ApprovalType.editGuardian]: VerificationType.editGuardian,
-  [ApprovalType.deleteGuardian]: VerificationType.deleteGuardian,
-  [ApprovalType.removeOtherManager]: VerificationType.removeOtherManager,
-  [ApprovalType.communityRecovery]: VerificationType.communityRecovery,
-};
 
 interface GuardianAccountItemProps {
   guardianItem: UserGuardianItem;

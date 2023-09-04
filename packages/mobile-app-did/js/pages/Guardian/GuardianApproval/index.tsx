@@ -69,7 +69,7 @@ export default function GuardianApproval() {
 
   const onEmitDapp = useCallback(
     (guardiansApproved?: GuardiansApproved) => {
-      if (approvalType !== ApprovalType.guardianApprove || !approveParams) return;
+      if (approvalType !== ApprovalType.managerApprove || !approveParams) return;
       dispatch(changeDrawerOpenStatus(true));
       DeviceEventEmitter.emit(
         approveParams.eventName,
@@ -317,7 +317,7 @@ export default function GuardianApproval() {
       case ApprovalType.removeOtherManager:
         onRemoveOtherManager();
         break;
-      case ApprovalType.guardianApprove:
+      case ApprovalType.managerApprove:
         dappApprove();
         break;
       default:

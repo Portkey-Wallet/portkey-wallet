@@ -143,19 +143,6 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
     [],
   );
 
-  // const IptRightIcon = useMemo(() => {
-  //   if (isSearching)
-  //     return (
-  //       <Lottie style={pageStyles.loadingIcon} source={require('assets/lottieFiles/loading.json')} autoPlay loop />
-  //     );
-
-  //   return keyword ? (
-  //     <TouchableOpacity onPress={() => setKeyword('')}>
-  //       <Svg icon="clear3" size={pTd(16)} />
-  //     </TouchableOpacity>
-  //   ) : undefined;
-  // }, [isSearching, keyword]);
-
   return (
     <PageContainer
       titleDom={t('Add Tokens')}

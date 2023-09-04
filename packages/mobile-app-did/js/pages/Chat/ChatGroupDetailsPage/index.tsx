@@ -171,12 +171,8 @@ const ChatGroupDetailsPage = () => {
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter]}
           onPress={() => {
-            navigationService.navigate('ChatContactProfile', {
-              relationId: toRelationId,
-              contact: {
-                name: currentChannelInfo?.displayName,
-              },
-            });
+            // TODO: link to group info
+            navigationService.navigate('GroupInfoPage');
           }}>
           <Svg size={pTd(32)} icon="chat-group-avatar-header" />
           <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
@@ -197,7 +193,7 @@ const ChatGroupDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [currentChannelInfo?.displayName, displayName, isFetching, mute, toRelationId],
+    [displayName, isFetching, mute],
   );
   return (
     <PageContainer

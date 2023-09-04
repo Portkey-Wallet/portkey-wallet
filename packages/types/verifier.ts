@@ -29,6 +29,7 @@ export enum ApprovalType {
   deleteGuardian,
   editGuardian,
   removeOtherManager,
+  guardianApprove,
 }
 
 // Indicates the type of operation to generate a signature file

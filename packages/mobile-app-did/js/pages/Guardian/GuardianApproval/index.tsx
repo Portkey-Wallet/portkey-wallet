@@ -4,7 +4,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { DeviceEventEmitter, ScrollView, StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
 import { BorderStyles, FontStyles } from 'assets/theme/styles';
@@ -37,6 +37,8 @@ import { useGetCurrentCAContract } from 'hooks/contract';
 import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../types';
 import { handleGuardiansApproved } from 'utils/login';
 import { useOnRequestOrSetPin } from 'hooks/login';
+import { ApproveParams } from 'dapp/dappOverlay';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -48,6 +50,7 @@ export type RouterParams = {
   removeManagerAddress?: string;
   loginType?: LoginType;
   authenticationInfo?: AuthenticationInfo;
+  approveParams?: ApproveParams;
 };
 export default function GuardianApproval() {
   const {
@@ -60,8 +63,19 @@ export default function GuardianApproval() {
     removeManagerAddress,
     loginType,
     authenticationInfo: _authenticationInfo,
+    approveParams,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
+
+  const onEmitDapp = useCallback(() => {
+    if (approvalType !== ApprovalType.guardianApprove || !approveParams) return;
+    dispatch(changeDrawerOpenStatus(true));
+    DeviceEventEmitter.emit(approveParams.eventName);
+  }, [approvalType, approveParams, dispatch]);
+
+  useEffectOnce(() => {
+    return onEmitDapp;
+  });
 
   const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
 
@@ -130,12 +144,13 @@ export default function GuardianApproval() {
   });
 
   const onBack = useCallback(() => {
+    onEmitDapp();
     if (approvalType === ApprovalType.addGuardian) {
       navigationService.navigate('GuardianEdit');
     } else {
       navigationService.goBack();
     }
-  }, [approvalType]);
+  }, [approvalType, onEmitDapp]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
   const registerAccount = useCallback(() => {
     onRequestOrSetPin({

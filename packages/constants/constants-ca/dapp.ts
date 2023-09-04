@@ -22,3 +22,8 @@ export const REMEMBER_ME_ACTION_WHITELIST: string[] = [MethodsBase.SEND_TRANSACT
 export const DefaultDapp = {
   origin: 'default',
 };
+
+export enum ApproveMethod {
+  token = 'Approve',
+  ca = 'ManagerApprove',
+}

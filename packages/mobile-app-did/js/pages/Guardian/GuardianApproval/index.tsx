@@ -67,14 +67,22 @@ export default function GuardianApproval() {
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
 
-  const onEmitDapp = useCallback(() => {
-    if (approvalType !== ApprovalType.guardianApprove || !approveParams) return;
-    dispatch(changeDrawerOpenStatus(true));
-    DeviceEventEmitter.emit(approveParams.eventName);
-  }, [approvalType, approveParams, dispatch]);
+  const onEmitDapp = useCallback(
+    (guardiansApproved?: GuardiansApproved) => {
+      if (approvalType !== ApprovalType.guardianApprove || !approveParams) return;
+      dispatch(changeDrawerOpenStatus(true));
+      DeviceEventEmitter.emit(
+        approveParams.eventName,
+        guardiansApproved ? { success: true, guardiansApproved } : undefined,
+      );
+    },
+    [approvalType, approveParams, dispatch],
+  );
 
   useEffectOnce(() => {
-    return onEmitDapp;
+    return () => {
+      onEmitDapp();
+    };
   });
 
   const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
@@ -152,6 +160,16 @@ export default function GuardianApproval() {
     }
   }, [approvalType, onEmitDapp]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
+
+  const dappApprove = useCallback(() => {
+    onEmitDapp(
+      handleGuardiansApproved(
+        guardiansStatus as GuardiansStatus,
+        userGuardiansList as UserGuardianItem[],
+      ) as GuardiansApproved,
+    );
+    navigationService.goBack();
+  }, [guardiansStatus, onEmitDapp, userGuardiansList]);
   const registerAccount = useCallback(() => {
     onRequestOrSetPin({
       managerInfo: {
@@ -299,10 +317,21 @@ export default function GuardianApproval() {
       case ApprovalType.removeOtherManager:
         onRemoveOtherManager();
         break;
+      case ApprovalType.guardianApprove:
+        dappApprove();
+        break;
       default:
         break;
     }
-  }, [approvalType, registerAccount, onAddGuardian, onDeleteGuardian, onEditGuardian, onRemoveOtherManager]);
+  }, [
+    approvalType,
+    registerAccount,
+    onAddGuardian,
+    onDeleteGuardian,
+    onEditGuardian,
+    onRemoveOtherManager,
+    dappApprove,
+  ]);
 
   return (
     <PageContainer

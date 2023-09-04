@@ -51,6 +51,8 @@ import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
 import DappAutoTx from 'pages/DappAutoTx';
 import FindMore from 'pages/Contacts/FindMore';
+import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
+import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -296,6 +298,14 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/connected-sites/:origin',
               element: <SiteDetail />,
             },
+            {
+              path: '/setting/wallet-security/payment-security',
+              element: <PaymentSecurity />,
+            },
+            {
+              path: '/setting/wallet-security/payment-security/transfer-settings',
+              element: <TransferSettings />,
+            },
           ],
         },
       ],
@@ -405,6 +415,14 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/connected-sites/:origin',
       element: <SiteDetail />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security',
+      element: <PaymentSecurity />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/transfer-settings',
+      element: <TransferSettings />,
     },
   ];
 

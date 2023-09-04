@@ -53,7 +53,7 @@ export const imSlice = createSlice({
       .addCase(setHasNext, (state, action) => {
         state.hasNextNetMap[action.payload.network] = action.payload.hasNext;
       })
-      .addCase(updateChannelAttribute, (state, action) => {
+      .addCase(updateChannelAttribute, (state, action): any => {
         const { network, channelId, value, type } = action.payload;
 
         const preChannelList = state.channelListNetMap[network];
@@ -87,7 +87,7 @@ export const imSlice = createSlice({
 
         state.channelListNetMap[network] = channelList;
       })
-      .addCase(addChannel, (state, action) => {
+      .addCase(addChannel, (state, action): any => {
         const { network, channel } = action.payload;
 
         const preChannelList = state.channelListNetMap[network];
@@ -103,7 +103,7 @@ export const imSlice = createSlice({
 
         state.channelListNetMap[network] = channelList;
       })
-      .addCase(removeChannel, (state, action) => {
+      .addCase(removeChannel, (state, action): any => {
         const { network, channelId } = action.payload;
 
         const preChannelList = state.channelListNetMap[network];

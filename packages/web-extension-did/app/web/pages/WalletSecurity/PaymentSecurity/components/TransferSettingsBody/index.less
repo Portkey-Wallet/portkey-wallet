@@ -1,0 +1,38 @@
+@import '../../../../../assets/theme/color.less';
+
+.transfer-settings-form {
+  justify-content: space-between;
+
+  .form-content {
+    padding: 12px 24px 8px;
+
+    .@{app-prefix}-form-item .@{app-prefix}-form-item-label {
+      padding-bottom: 8px;
+    }
+    .@{app-prefix}-form-item-label > label {
+      color: @font-11;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .@{app-prefix}-input:placeholder-shown {
+      color: @font-12;
+      line-height: 20px;
+    }
+  }
+
+  .form-btn {
+    width: 100%;
+    padding: 16px;
+    border-top: 1px solid @border-2;
+    margin-bottom: 0 !important;
+
+    .send-btn {
+      color: @font-5;
+      font-size: 16px;
+      line-height: 22px;
+      height: 48px;
+      border-radius: 22px;
+      background-color: @bg-7;
+    }
+  }
+}

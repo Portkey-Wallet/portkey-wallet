@@ -15,6 +15,8 @@ import { useEditContact } from '../contact';
 import { EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
 import { useChannelList } from './channelList';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { request } from '@portkey-wallet/api/api-did';
+import useLockCallback from '../../useLockCallback';
 
 export const useIMState = () => useAppCASelector(state => state.im);
 export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
@@ -22,6 +24,7 @@ export const useIMChannelListNetMapState = () => useAppCASelector(state => state
 export const useIMChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
 export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
+export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -43,8 +46,6 @@ export const useUnreadCount = () => {
 export const useInitIM = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
-
-  const isInitRef = useRef(false);
 
   const channelListNetMap = useIMChannelListNetMapState();
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
@@ -68,7 +69,7 @@ export const useInitIM = () => {
               channelUuid: rawMsg.channelUuid,
               displayName: '',
               channelIcon: rawMsg.fromAvatar || '',
-              channelType: ChannelTypeEnum.P2P,
+              channelType: undefined,
               unreadMessageCount: 1,
               mentionsCount: 0,
               lastMessageType: rawMsg.type,
@@ -91,7 +92,7 @@ export const useInitIM = () => {
               network: networkType,
               channelId: rawMsg.channelUuid,
               value: {
-                displayName: channelInfo.members.find(item => item.relationId === rawMsg.from)?.name || '',
+                displayName: channelInfo.name,
                 pin: channelInfo.pin,
                 channelType: channelInfo.type,
               },
@@ -136,12 +137,9 @@ export const useInitIM = () => {
   const setTokenUpdateRef = useRef(setTokenUpdate);
   setTokenUpdateRef.current = setTokenUpdate;
 
-  const initIm = useCallback(
+  const initIm = useLockCallback(
     async (account: AElfWallet, caHash: string) => {
       if (![IMStatusEnum.INIT, IMStatusEnum.DESTROY].includes(im.status)) return;
-
-      if (isInitRef.current) return;
-      isInitRef.current = true;
 
       im.registerUnreadMsgObservers(async (e: any) => {
         unreadMessageUpdateRef.current(e);
@@ -150,20 +148,23 @@ export const useInitIM = () => {
         setTokenUpdateRef.current(e);
       });
 
-      const result = await im.init(account, caHash, relationToken);
+      await im.init(account, caHash, relationToken);
       dispatch(fetchContactListAsync());
 
-      if (result?.relationId) {
+      await request.es.getCaHolder({
+        params: {
+          filter: `caHash: ${caHash}`,
+        },
+      });
+      const { data: userInfo } = await im.service.getUserInfo();
+      if (userInfo?.relationId) {
         dispatch(
           setRelationId({
             network: networkType,
-            relationId: result.relationId,
+            relationId: userInfo.relationId,
           }),
         );
       }
-
-      isInitRef.current = false;
-      return result;
     },
     [dispatch, networkType, relationToken],
   );
@@ -212,3 +213,4 @@ export const useEditIMContact = () => {
 
 export * from './channelList';
 export * from './channel';
+export * from './group';

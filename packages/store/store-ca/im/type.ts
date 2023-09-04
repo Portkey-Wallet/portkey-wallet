@@ -1,4 +1,4 @@
-import { ChannelItem, Message } from '@portkey-wallet/im/types';
+import { ChannelInfo, ChannelItem, Message } from '@portkey-wallet/im/types';
 import { NetworkType } from '@portkey-wallet/types';
 
 export type ChannelList = {
@@ -25,6 +25,11 @@ export interface IMStateType {
   };
   relationTokenNetMap: {
     [T in NetworkType]?: string;
+  };
+  groupInfoMapNetMap?: {
+    [T in NetworkType]?: {
+      [channelId: string]: ChannelInfo;
+    };
   };
 }
 

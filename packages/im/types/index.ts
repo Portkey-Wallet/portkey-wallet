@@ -1,4 +1,4 @@
-export type MessageType = 'TEXT' | 'IMAGE';
+export type MessageType = 'TEXT' | 'IMAGE' | 'SYS';
 export type ParsedContent = string | ParsedImage;
 export type ParsedImage = {
   type: string;
@@ -58,7 +58,7 @@ export type ChannelInfo = {
 
 export enum ChannelStatusEnum {
   NORMAL = 0,
-  EXITED = 1,
+  LEFT = 1,
   BE_REMOVED = 2,
   DISBAND = 3,
 }
@@ -67,7 +67,7 @@ export type ChannelItem = {
   channelUuid: string;
   displayName: string;
   channelIcon: string;
-  channelType: ChannelTypeEnum;
+  channelType?: ChannelTypeEnum;
   unreadMessageCount: number;
   mentionsCount: number;
   lastMessageType: MessageType | null;
@@ -75,7 +75,7 @@ export type ChannelItem = {
   lastPostAt: string | null;
   mute: boolean;
   pin: boolean;
-  toRelationId: string;
+  toRelationId?: string;
 };
 
 export enum IMStatusEnum {

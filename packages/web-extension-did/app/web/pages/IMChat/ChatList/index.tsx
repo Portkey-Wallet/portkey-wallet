@@ -45,6 +45,14 @@ export default function ChatList() {
         },
       },
       {
+        key: 'create-group',
+        leftIcon: <CustomSvg type="CreateGroup" />,
+        children: 'Create Group',
+        onClick: () => {
+          navigate('/create-chat-group');
+        },
+      },
+      {
         key: 'find-more',
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Find More',
@@ -76,13 +84,14 @@ export default function ChatList() {
     return chatList.map((item) => {
       return {
         id: item.channelUuid,
-        letterItem: item.displayName.substring(0, 1).toUpperCase(),
+        letter: item.displayName.substring(0, 1).toUpperCase(),
         title: item.displayName,
         subtitle: formatSubTitle(item),
         dateString: formatChatListTime(item.lastPostAt),
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
+        channelType: item.channelType,
       };
     });
   }, [chatList, formatSubTitle]);

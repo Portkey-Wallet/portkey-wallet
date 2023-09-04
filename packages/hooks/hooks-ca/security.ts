@@ -12,7 +12,7 @@ export type CheckTransferLimitParams = {
   amount: string;
 };
 
-export type TransferLimitResult = {
+export type CheckTransferLimitResult = {
   isDailyLimited: boolean;
   isSingleLimited: boolean;
   // balances with decimals processed
@@ -26,17 +26,30 @@ export type TransferLimitResult = {
 export function useCheckTransferLimit() {
   const caHash = useCurrentCaHash();
   return useCallback(
-    async (params: CheckTransferLimitParams): Promise<TransferLimitResult | undefined> => {
+    async (params: CheckTransferLimitParams): Promise<CheckTransferLimitResult | undefined> => {
       const { caContract, symbol, decimals, amount } = params;
-      const limit = await caContract.callViewMethod('GetTransferLimit', {
-        caHash: caHash,
-        symbol: symbol,
-      });
-      if (limit.error) return;
-      const { singleLimit, dailyLimit, dailyTransferredAmount } = limit.data;
-      const dailyBalance = ZERO.plus(dailyLimit).minus(dailyTransferredAmount);
-      const singleBalance = ZERO.plus(singleLimit);
+      const [limitReq, defaultLimitReq] = await Promise.all([
+        caContract.callViewMethod('GetTransferLimit', {
+          caHash: caHash,
+          symbol: symbol,
+        }),
+        caContract.callViewMethod('GetDefaultTokenTransferLimit', {
+          caHash: caHash,
+          symbol: symbol,
+        }),
+      ]);
       const bigAmount = timesDecimals(amount, decimals);
+      let dailyBalance, singleBalance;
+      if (!limitReq?.error) {
+        const { singleLimit, dailyLimit, dailyTransferredAmount } = limitReq.data || {};
+        dailyBalance = ZERO.plus(dailyLimit).minus(dailyTransferredAmount);
+        singleBalance = ZERO.plus(singleLimit);
+      } else if (!defaultLimitReq?.error) {
+        const { defaultLimit } = defaultLimitReq.data || {};
+        dailyBalance = ZERO.plus(defaultLimit);
+        singleBalance = ZERO.plus(defaultLimit);
+      }
+      if (!dailyBalance || !singleBalance) return;
       return {
         isDailyLimited: bigAmount.gt(dailyBalance),
         isSingleLimited: bigAmount.gt(singleBalance),

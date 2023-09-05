@@ -276,7 +276,7 @@ export default class DappMobileOperator extends Operator {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
     const info = await this.dappOverlay.approve(this.dapp, { approveInfo: params?.paramsOption, eventName });
     if (!info) return this.userDenied(eventName);
-    const { guardiansApproved } = info;
+    const { guardiansApproved, approveInfo } = info;
     const caHash = getCurrentCaHash();
     const chainInfo = await this.dappManager.getChainInfo(chainId);
     return this.handleSendTransaction(eventName, {
@@ -286,9 +286,9 @@ export default class DappMobileOperator extends Operator {
       params: {
         paramsOption: {
           caHash,
-          spender,
-          symbol,
-          amount,
+          spender: approveInfo.spender,
+          symbol: approveInfo.symbol,
+          amount: approveInfo.amount,
           guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
         },
       },

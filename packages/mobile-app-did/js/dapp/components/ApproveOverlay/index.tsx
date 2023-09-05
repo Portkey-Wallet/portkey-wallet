@@ -45,7 +45,10 @@ const ApproveModal = (props: SignModalPropsType) => {
         type: 'primary' as CommonButtonProps['type'],
         onPress: async () => {
           navigationService.navigate('GuardianApproval', {
-            approveParams,
+            approveParams: {
+              eventName: approveParams.eventName,
+              approveInfo: { ...approveParams.approveInfo, amount: '100' },
+            } as ApproveParams,
             approvalType: ApprovalType.managerApprove,
           });
           await sleep(200);

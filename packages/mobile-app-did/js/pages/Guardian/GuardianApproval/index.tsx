@@ -73,7 +73,7 @@ export default function GuardianApproval() {
       dispatch(changeDrawerOpenStatus(true));
       DeviceEventEmitter.emit(
         approveParams.eventName,
-        guardiansApproved ? { success: true, guardiansApproved } : undefined,
+        guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
       );
     },
     [approvalType, approveParams, dispatch],

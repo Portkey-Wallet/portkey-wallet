@@ -25,7 +25,7 @@ export interface IDappOverlay {
   approve(
     dapp: DappStoreItem,
     params: ApproveParams,
-  ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved } | false>;
+  ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved; approveInfo: ApproveInfo } | false>;
 }
 
 export class DappOverlay implements IDappOverlay {
@@ -62,7 +62,7 @@ export class DappOverlay implements IDappOverlay {
   async approve(
     dappInfo: DappStoreItem,
     approveParams: ApproveParams,
-  ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved } | false> {
+  ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved; approveInfo: ApproveInfo } | false> {
     return new Promise(resolve => {
       const listener = DeviceEventEmitter.addListener(approveParams.eventName, data => {
         const { success } = data || {};

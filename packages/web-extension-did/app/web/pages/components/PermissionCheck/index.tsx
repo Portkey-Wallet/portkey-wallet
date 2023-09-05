@@ -11,6 +11,7 @@ import { sleep } from '@portkey-wallet/utils';
 import { useIsNotLessThan768 } from 'hooks/useScreen';
 import { useEffectOnce } from 'react-use';
 import OpenNewTabController from 'controllers/openNewTabController';
+import { useOtherNetworkLogged } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 const timeout = async () => {
   // TODO This is a bug
@@ -30,6 +31,7 @@ export default function PermissionCheck({
   const { walletInfo, currentNetwork } = useWalletInfo();
   // const networkList = useNetworkList();
   const location = useLocation();
+  const otherNetworkLogged = useOtherNetworkLogged();
 
   const appDispatch = useAppDispatch();
 
@@ -82,19 +84,34 @@ export default function PermissionCheck({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const getWalletStatus = useCallback(
+    () => Promise.race([InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send(), timeout()]),
+    [],
+  );
+
+  const checkNeedUnlock = useCallback(async () => {
+    if (!otherNetworkLogged) return false;
+    const res = await getWalletStatus();
+    const detail = (res as any)?.data;
+    if (typeof res === 'string') return chrome.runtime.reload();
+    detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
+    if (detail.privateKey) return false;
+    return true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getWalletStatus, otherNetworkLogged]);
+
   const checkCurrentNetworkRegisterHandler = useCallback(async () => {
     const caInfo = walletInfo?.caInfo?.[currentNetwork];
     const caHash = caInfo?.[caInfo?.originChainId || 'AELF']?.caHash;
 
     console.log(caInfo, 'caInfo===');
-    const res = await Promise.race([
-      InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send(),
-      timeout(),
-    ]);
-    if (typeof res === 'string') return chrome.runtime.reload();
-
+    // CurrentNetwork Register
     if (caHash) return getPassword();
+    // CurrentNetwork not Register
 
+    // Check other network is Resister
+    const needPin = await checkNeedUnlock();
+    if (needPin) return navigate('/unlock');
     if (pageType == 'Popup') {
       await OpenNewTabController.closeOpenTabs();
       return InternalMessage.payload(PortkeyMessageTypes.REGISTER_WALLET, {}).send();

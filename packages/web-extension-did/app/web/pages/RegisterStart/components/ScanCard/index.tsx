@@ -19,6 +19,8 @@ import './index.less';
 // import didSignalr from '@portkey-wallet/socket/socket-did';
 // import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { randomId } from '@portkey-wallet/utils';
+import InternalMessage from 'messages/InternalMessage';
+import InternalMessageTypes from 'messages/InternalMessageTypes';
 
 export default function ScanCard() {
   const navigate = useNavigate();
@@ -85,25 +87,31 @@ export default function ScanCard() {
 
   useEffect(() => {
     const { caInfo, originChainId } = caWallet || {};
-    if (caInfo && newWallet && originChainId) {
-      if (pin) {
-        try {
-          dispatch(setCAInfoType({ caInfo, pin }));
-          navigate('/success-page/login');
-        } catch (error: any) {
-          message.error(error);
+    InternalMessage.payload(InternalMessageTypes.GET_SEED)
+      .send()
+      .then((getSeedResult) => {
+        const pin = getSeedResult.data.privateKey;
+
+        if (caInfo && newWallet && originChainId) {
+          if (pin) {
+            try {
+              dispatch(setCAInfoType({ caInfo, pin }));
+              navigate('/success-page/login');
+            } catch (error: any) {
+              message.error(error);
+            }
+          } else {
+            dispatch(setOriginChainId(originChainId));
+            dispatch(
+              setWalletInfoAction({
+                walletInfo: newWallet,
+                caWalletInfo: caInfo,
+              }),
+            );
+            navigate('/login/set-pin/scan');
+          }
         }
-      } else {
-        dispatch(setOriginChainId(originChainId));
-        dispatch(
-          setWalletInfoAction({
-            walletInfo: newWallet,
-            caWalletInfo: caInfo,
-          }),
-        );
-        navigate('/login/set-pin/scan');
-      }
-    }
+      });
   }, [caWallet, dispatch, navigate, newWallet, pin]);
 
   return (

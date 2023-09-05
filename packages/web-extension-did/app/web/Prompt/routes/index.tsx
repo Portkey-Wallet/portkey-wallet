@@ -53,6 +53,7 @@ import DappAutoTx from 'pages/DappAutoTx';
 import FindMore from 'pages/Contacts/FindMore';
 import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
 import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
+import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferSettingsEdit';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -306,6 +307,10 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/payment-security/transfer-settings',
               element: <TransferSettings />,
             },
+            {
+              path: '/setting/wallet-security/payment-security/transfer-settings-edit',
+              element: <TransferSettingsEdit />,
+            },
           ],
         },
       ],
@@ -423,6 +428,10 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/payment-security/transfer-settings',
       element: <TransferSettings />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/transfer-settings-edit',
+      element: <TransferSettingsEdit />,
     },
   ];
 

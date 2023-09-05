@@ -14,7 +14,7 @@ export default function PaymentSecurityPrompt({
   loadMore,
 }: IPaymentSecurityProps) {
   return (
-    <div className="payment-security-prompt">
+    <div className="three-level-prompt-container payment-security-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
       <div className="payment-security-prompt-body">
         <PaymentSecurityList list={list} clickItem={clickItem} />

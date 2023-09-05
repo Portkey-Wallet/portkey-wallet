@@ -40,6 +40,7 @@ import NewChat from 'pages/NewChat';
 import ChatListSearch from 'pages/ChatListSearch';
 import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
 import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
+import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferSettingsEdit';
 
 export const PageRouter = () =>
   useRoutes([
@@ -198,6 +199,10 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/payment-security/transfer-settings',
       element: <TransferSettings />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/transfer-settings-edit',
+      element: <TransferSettingsEdit />,
     },
     {
       path: '/chat-list',

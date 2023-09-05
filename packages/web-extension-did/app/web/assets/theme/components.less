@@ -141,6 +141,82 @@
   box-shadow: 0 0 0 2px rgb(91 142 244 / 20%);
 }
 
+// to change input disable
+.@{app-prefix}-input[disabled] {
+  background-color: @bg-13;
+  border: 1px solid @border-1;
+  color: @font-11;
+}
+
+.customer-form{
+  .@{app-prefix}-form-item .@{app-prefix}-form-item-label {
+    padding-bottom: 8px;
+  }
+  .@{app-prefix}-form-item-label > label {
+    color: @font-11;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .@{app-prefix}-input:placeholder-shown {
+    color: @font-12;
+    line-height: 20px;
+  }
+}
+
+.@{app-prefix}-switch{
+  width: 43px;
+  height: 24px;
+  background-color: @bg-13;
+  border: 2px solid @border-1;
+  position: relative;
+
+  .@{app-prefix}-switch-handle{
+    top: 1px;
+  }
+
+  .@{app-prefix}-switch-inner{
+    font-size: 16px;
+    line-height: 22px;
+    color: @font-13;
+    margin-left: 16px;
+    position: absolute;
+    top: 0;
+    right: -46px;
+  }
+
+  .@{app-prefix}-switch-handle::before{
+    background-color: @bg-23;
+  }
+}
+
+.@{app-prefix}-switch-checked{
+  border: 2px solid @border-3;
+
+  .@{app-prefix}-switch-handle::before{
+    background-color: @bg-7;
+  }
+
+  .@{app-prefix}-switch-inner{
+    right: -62px;
+  }
+}
+
+.footer-btn-wrap {
+  width: 100%;
+  padding: 16px;
+  border-top: 1px solid @border-2;
+  margin-bottom: 0 !important;
+
+  .footer-btn {
+    color: @font-5;
+    font-size: 16px;
+    line-height: 22px;
+    height: 48px;
+    border-radius: 22px;
+    background-color: @bg-7;
+  }
+}
+
 .cross-modal {
   border-radius: 8px;
   overflow: hidden;

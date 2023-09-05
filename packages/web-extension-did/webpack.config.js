@@ -10,9 +10,9 @@ const ROOT = path.resolve(__dirname, './');
 const { version } = require(path.resolve(ROOT, 'package.json'));
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
-
+const productionConfig = require(path.resolve(ROOT, 'env.config/production.json'))
+const devConfig = require(path.resolve(ROOT, 'env.config/dev.json'))
 const outputDir = 'public';
-
 // TODO: Hot update, browser synchronization component
 // module.exports =
 let config = {
@@ -190,17 +190,28 @@ let config = {
 };
 
 module.exports = (env, argv) => {
+  const envConfig = {};
+  if (argv.mode === 'development') {
+    envConfig.SENTRY_DSN = devConfig.SENTRY_DSN;
+    envConfig.IM_S3_KEY = devConfig.IM_S3_KEY
+  } else {
+    envConfig.SENTRY_DSN = productionConfig.SENTRY_DSN;
+    envConfig.IM_S3_KEY = productionConfig.IM_S3_KEY
+  }
+
+  // console.log(JSON.stringify(envConfig.SENTRY_DSN), 'SENTRY_DSN===')
+
+  const definePlugin = new webpack.DefinePlugin({
+    'process.env.SDK_VERSION': JSON.stringify('v' + version),
+    'process.env.NODE_ENV': JSON.stringify(argv.mode),
+    'process.env.NODE_DEBUG': JSON.stringify(argv.mode),
+    'process.env.DEVICE': JSON.stringify('extension'),
+    'process.env.SENTRY_DSN': JSON.stringify(envConfig.SENTRY_DSN),
+    'process.env.IM_S3_KEY': JSON.stringify(envConfig.IM_S3_KEY),
+  });
+
   config.plugins.push(
-    new webpack.DefinePlugin({
-      'process.env.SDK_VERSION': JSON.stringify('v' + version),
-      'process.env.NODE_ENV': JSON.stringify(argv.mode),
-      'process.env.NODE_DEBUG': JSON.stringify(argv.mode),
-      'process.env.DEVICE': JSON.stringify('extension'),
-      'process.env.SENTRY_DSN': JSON.stringify(
-        'https://f439a3f5052f4a578f87a09ac11a246d@o4504399844999168.ingest.sentry.io/4504647744421888',
-      ),
-      'process.env.IM_S3_KEY': JSON.stringify('ap-northeast-1:1015d305-802b-49ee-b0e5-92bd436782d7'),
-    }),
+    definePlugin
   );
 
   if (argv.mode === 'production') {

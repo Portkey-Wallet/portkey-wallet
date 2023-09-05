@@ -15,6 +15,8 @@ import { useEditContact } from '../contact';
 import { EditContactItemApiType } from '@portkey-wallet/types/types-ca/contact';
 import { useChannelList } from './channelList';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { request } from '@portkey-wallet/api/api-did';
+import useLockCallback from '../../useLockCallback';
 
 export const useIMState = () => useAppCASelector(state => state.im);
 export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
@@ -43,8 +45,6 @@ export const useUnreadCount = () => {
 export const useInitIM = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
-
-  const isInitRef = useRef(false);
 
   const channelListNetMap = useIMChannelListNetMapState();
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
@@ -136,12 +136,9 @@ export const useInitIM = () => {
   const setTokenUpdateRef = useRef(setTokenUpdate);
   setTokenUpdateRef.current = setTokenUpdate;
 
-  const initIm = useCallback(
+  const initIm = useLockCallback(
     async (account: AElfWallet, caHash: string) => {
       if (![IMStatusEnum.INIT, IMStatusEnum.DESTROY].includes(im.status)) return;
-
-      if (isInitRef.current) return;
-      isInitRef.current = true;
 
       im.registerUnreadMsgObservers(async (e: any) => {
         unreadMessageUpdateRef.current(e);
@@ -150,20 +147,23 @@ export const useInitIM = () => {
         setTokenUpdateRef.current(e);
       });
 
-      const result = await im.init(account, caHash, relationToken);
+      await im.init(account, caHash, relationToken);
       dispatch(fetchContactListAsync());
 
-      if (result?.relationId) {
+      await request.es.getCaHolder({
+        params: {
+          filter: `caHash: ${caHash}`,
+        },
+      });
+      const { data: userInfo } = await im.service.getUserInfo();
+      if (userInfo?.relationId) {
         dispatch(
           setRelationId({
             network: networkType,
-            relationId: result.relationId,
+            relationId: userInfo.relationId,
           }),
         );
       }
-
-      isInitRef.current = false;
-      return result;
     },
     [dispatch, networkType, relationToken],
   );

@@ -23,6 +23,7 @@ import { useAddStrangerContact, useContactInfo, useReadImputation } from '@portk
 import ActionSheet from 'components/ActionSheet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -120,15 +121,16 @@ const ContactProfile: React.FC = () => {
     getProfile();
   });
 
-  const addContact = useCallback(async () => {
+  const addContact = useLockCallback(async () => {
     try {
       const id = relationId || contactInfo?.imInfo?.relationId || '';
       if (!id) return;
       const result = await addStranger(id);
       result.data.id && setContactId(result.data.id);
+      CommonToast.success('Contact Added');
     } catch (error) {
-      // TODO: addStranger error handle
       console.log('addContact', error);
+      CommonToast.failError(error);
     }
   }, [addStranger, contactInfo?.imInfo?.relationId, relationId]);
 

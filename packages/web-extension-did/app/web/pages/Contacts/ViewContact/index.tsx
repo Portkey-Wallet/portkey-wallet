@@ -21,6 +21,7 @@ import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import im from '@portkey-wallet/im';
 import { ExtraTypeEnum, IProfileDetailDataProps } from 'types/Profile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -104,7 +105,8 @@ export default function ViewContact() {
   const handleCopy = useProfileCopy();
 
   const addStrangerApi = useAddStrangerContact();
-  const handleAdd = async () => {
+
+  const handleAdd = useLockCallback(async () => {
     try {
       const res = await addStrangerApi(relationId);
       setData({ ...state, ...res?.data });
@@ -116,7 +118,7 @@ export default function ViewContact() {
       const err = handleErrorMessage(error, 'add stranger error');
       message.error(err);
     }
-  };
+  }, [addStrangerApi, dispatch, relationId, state]);
 
   const readImputationApi = useReadImputation();
   useEffect(() => {

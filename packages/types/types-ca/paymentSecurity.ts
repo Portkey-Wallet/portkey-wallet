@@ -7,3 +7,10 @@ export interface IPaymentSecurityItem {
   dailyLimit: number;
   restricted: boolean;
 }
+
+export interface ISecurityListResponse {
+  data: IPaymentSecurityItem[];
+  totalRecordCount: number;
+  code?: number;
+  message?: string;
+}

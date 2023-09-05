@@ -23,8 +23,13 @@ export default function PaymentSecurityPopup({
         />
       </div>
       <div>
-        <PaymentSecurityList list={list} clickItem={clickItem} />
-        <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
+        {list.length > 0 && (
+          <>
+            <PaymentSecurityList list={list} clickItem={clickItem} />
+            <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
+          </>
+        )}
+        {!list || (list?.length === 0 && <div className="no-data-text">{`No Assets`}</div>)}
       </div>
     </div>
   );

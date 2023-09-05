@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import './index.less';
 import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useMemo } from 'react';
+import { AmountSign, formatWithCommas } from '@portkey-wallet/utils/converter';
 
 const { Item: FormItem } = Form;
 
@@ -22,8 +23,14 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
 
   const initValue: ITransferSettingsFormInit = useMemo(() => {
     return {
-      singleLimit: state.singleLimit + ' ' + state.symbol, // TODO format
-      dailyLimit: state.dailyLimit + ' ' + state.symbol, // TODO format
+      singleLimit:
+        formatWithCommas({ amount: state.singleLimit, decimals: 0, digits: 0, sign: AmountSign.EMPTY }) +
+        ' ' +
+        state.symbol, // TODO format
+      dailyLimit:
+        formatWithCommas({ amount: state.dailyLimit, decimals: 0, digits: 0, sign: AmountSign.EMPTY }) +
+        ' ' +
+        state.symbol, // TODO format
       restricted: state.restricted,
     };
   }, [state.dailyLimit, state.restricted, state.singleLimit, state.symbol]);

@@ -43,12 +43,12 @@ export default function TransferSettingsEditBody({
       <div className="customer-form form-content">
         <FormItem name="restricted" label={t('Transfer settings')}>
           <div className="flex-start-center">
-            <Switch onChange={onRestrictedChange} />
+            <Switch onChange={onRestrictedChange} checked={restrictedValue} />
             <div className="switch-text">{restrictedValue ? 'On' : 'Off'}</div>
           </div>
         </FormItem>
 
-        {state?.restricted && (
+        {restrictedValue && (
           <>
             <FormItem
               name="singleLimit"
@@ -59,7 +59,7 @@ export default function TransferSettingsEditBody({
                 placeholder={t('Enter limit')}
                 onChange={(e) => onSingleLimitChange(e.target.value)}
                 maxLength={16}
-                addonAfter={state?.symbol || ''} // ui
+                suffix={state?.symbol || ''}
               />
             </FormItem>
             <FormItem
@@ -71,7 +71,7 @@ export default function TransferSettingsEditBody({
                 placeholder={t('Enter limit')}
                 onChange={(e) => onDailyLimitChange(e.target.value)}
                 maxLength={16}
-                addonAfter={state?.symbol || ''} // ui
+                suffix={state?.symbol || ''}
               />
             </FormItem>
 
@@ -81,7 +81,7 @@ export default function TransferSettingsEditBody({
           </>
         )}
 
-        {!state?.restricted && <div className="limit-tip">{`No limit for transfer`}</div>}
+        {!restrictedValue && <div className="limit-tip">{`No limit for transfer`}</div>}
       </div>
 
       <FormItem className="footer-btn-wrap">

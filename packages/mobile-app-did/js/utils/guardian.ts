@@ -1,6 +1,6 @@
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { VerifierInfo } from '@portkey-wallet/types/verifier';
-import { GuardiansStatus } from 'pages/Guardian/types';
+import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 
@@ -21,6 +21,21 @@ const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansSt
       };
     })
     .filter(item => item !== null);
+};
+
+export const getGuardiansApprovedByApprove = (guardiansApprove: GuardiansApproved) => {
+  return guardiansApprove.map(item => {
+    const { guardianIdentifier } = handleVerificationDoc(item.verificationDoc);
+    return {
+      identifierHash: guardianIdentifier,
+      type: item.guardianType,
+      verificationInfo: {
+        id: item.verifierId,
+        signature: Object.values(Buffer.from(item.signature, 'hex')),
+        verificationDoc: item.verificationDoc,
+      },
+    };
+  });
 };
 
 export function deleteGuardian(

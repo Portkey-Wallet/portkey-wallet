@@ -5,6 +5,7 @@ import SignOverlay from './components/SignOverlay';
 import TransactionOverlay from './components/TransactionOverlay';
 import ApproveOverlay from './components/ApproveOverlay';
 import { DeviceEventEmitter } from 'react-native';
+import { GuardiansApproved } from 'pages/Guardian/types';
 
 export type ApproveInfo = {
   symbol: string;
@@ -21,7 +22,10 @@ export interface IDappOverlay {
   requestAccounts(dapp: DappStoreItem): Promise<boolean>;
   sendTransaction(dapp: DappStoreItem, params: SendTransactionParams): Promise<boolean>;
   wallet_getSignature(dapp: DappStoreItem, params: GetSignatureParams): Promise<boolean>;
-  approve(dapp: DappStoreItem, params: ApproveParams): Promise<boolean>;
+  approve(
+    dapp: DappStoreItem,
+    params: ApproveParams,
+  ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved } | false>;
 }
 
 export class DappOverlay implements IDappOverlay {
@@ -55,7 +59,10 @@ export class DappOverlay implements IDappOverlay {
     });
   }
 
-  async approve(dappInfo: DappStoreItem, approveParams: ApproveParams): Promise<boolean> {
+  async approve(
+    dappInfo: DappStoreItem,
+    approveParams: ApproveParams,
+  ): Promise<{ success: boolean; guardiansApproved: GuardiansApproved } | false> {
     return new Promise(resolve => {
       const listener = DeviceEventEmitter.addListener(approveParams.eventName, data => {
         const { success } = data || {};

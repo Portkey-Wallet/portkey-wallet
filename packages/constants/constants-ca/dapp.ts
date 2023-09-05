@@ -15,8 +15,6 @@ export const SessionKeyArray = Object.entries(SessionKeyMap).map(([k, v]) => ({
   children: v,
 }));
 
-export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer'];
-
 export const REMEMBER_ME_ACTION_WHITELIST: string[] = [MethodsBase.SEND_TRANSACTION];
 
 export const DefaultDapp = {
@@ -27,3 +25,5 @@ export enum ApproveMethod {
   token = 'Approve',
   ca = 'ManagerApprove',
 }
+
+export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer', ApproveMethod.ca];

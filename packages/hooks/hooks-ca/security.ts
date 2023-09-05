@@ -49,7 +49,7 @@ export function useCheckTransferLimit() {
         dailyBalance = ZERO.plus(defaultLimit);
         singleBalance = ZERO.plus(defaultLimit);
       }
-      if (!dailyBalance || !singleBalance) return;
+      if (!dailyBalance || !singleBalance || dailyBalance.isNaN() || singleBalance.isNaN()) return;
       return {
         isDailyLimited: bigAmount.gt(dailyBalance),
         isSingleLimited: bigAmount.gt(singleBalance),

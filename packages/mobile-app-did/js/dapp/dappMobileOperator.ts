@@ -28,6 +28,7 @@ import {
 } from '@portkey-wallet/constants/constants-ca/dapp';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { getGuardiansApprovedByApprove } from 'utils/guardian';
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
@@ -205,7 +206,6 @@ export default class DappMobileOperator extends Operator {
           code: ResponseCode.CONTRACT_ERROR,
           msg: 'method is not in the whitelist',
         });
-
       const data = await contract!.callSendMethod(functionName, '', paramsOption, { onMethod: 'transactionHash' });
       if (!data?.error) {
         return generateNormalResponse({
@@ -269,14 +269,30 @@ export default class DappMobileOperator extends Operator {
 
   protected handleApprove = async (request: IRequestParams) => {
     const { payload, eventName } = request || {};
-    const { params } = payload || {};
+    const { params, chainId } = payload || {};
     const { symbol, amount, spender } = params?.paramsOption || {};
     // check approve input && check valid amount
     if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN())
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
     const info = await this.dappOverlay.approve(this.dapp, { approveInfo: params?.paramsOption, eventName });
     if (!info) return this.userDenied(eventName);
-    console.log(info, '======info');
+    const { guardiansApproved } = info;
+    const caHash = getCurrentCaHash();
+    const chainInfo = await this.dappManager.getChainInfo(chainId);
+    return this.handleSendTransaction(eventName, {
+      ...payload,
+      method: ApproveMethod.ca,
+      contractAddress: chainInfo?.caContractAddress,
+      params: {
+        paramsOption: {
+          caHash,
+          spender,
+          symbol,
+          amount,
+          guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
+        },
+      },
+    } as SendTransactionParams);
   };
 
   protected isApprove = async (request: IRequestParams) => {
@@ -312,7 +328,7 @@ export default class DappMobileOperator extends Operator {
       }
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
-
+        payload = request.payload;
         if (
           !payload ||
           typeof payload.params !== 'object' ||
@@ -322,15 +338,11 @@ export default class DappMobileOperator extends Operator {
           !payload.rpcUrl
         )
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
-
         // is approve
         const isApprove = await this.isApprove(request);
         if (isApprove) return this.handleApprove(request);
 
-        payload = request.payload;
-
         callBack = this.handleSendTransaction;
-        console.log(payload, '=====payload');
         break;
       }
       case MethodsWallet.GET_WALLET_SIGNATURE: {

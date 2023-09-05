@@ -50,7 +50,7 @@ export default function To({ setErrorMessage, selectedToContact, setSelectedToCo
         </View>
       ) : (
         <View style={styles.middle}>
-          <TextM style={styles.middleTitle}>{selectedToContact?.name || 'xxxx'}</TextM>
+          <TextM style={styles.middleTitle}>{selectedToContact?.name || ''}</TextM>
           <TextM style={styles.middleAddress}>{formatStr2EllipsisStr(selectedToContact?.address, 15)}</TextM>
           <TouchableOpacity style={styles.iconWrap} onPress={() => clearInput()}>
             <Svg icon="clear2" size={pTd(16)} />

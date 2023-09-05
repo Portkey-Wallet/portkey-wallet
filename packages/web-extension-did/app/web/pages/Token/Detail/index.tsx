@@ -14,6 +14,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useCheckSecurity } from 'hooks/useSecurity';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -32,6 +33,7 @@ function TokenDetail() {
   );
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
+  const checkSecurity = useCheckSecurity();
 
   const handleBuy = useCallback(() => {
     if (isMainNet) {
@@ -74,10 +76,13 @@ function TokenDetail() {
               amount={currentToken?.balanceInUsd}
               isShowBuy={isShowBuy}
               onBuy={handleBuy}
-              onSend={() => {
-                navigate(`/send/token/${currentToken?.symbol}`, {
-                  state: { ...currentToken, address: currentToken?.tokenContractAddress },
-                });
+              onSend={async () => {
+                const res = await checkSecurity();
+                if (typeof res === 'boolean') {
+                  navigate(`/send/token/${currentToken?.symbol}`, {
+                    state: { ...currentToken, address: currentToken?.tokenContractAddress },
+                  });
+                }
               }}
               onReceive={() =>
                 navigate(`/receive/token/${currentToken?.symbol}`, {
@@ -92,7 +97,7 @@ function TokenDetail() {
         </div>
       </div>
     );
-  }, [isPrompt, currentToken, isMainNet, amountInUsdShow, isShowBuy, handleBuy, navigate]);
+  }, [isPrompt, currentToken, isMainNet, amountInUsdShow, isShowBuy, handleBuy, navigate, checkSecurity]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

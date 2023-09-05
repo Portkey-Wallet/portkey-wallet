@@ -1,31 +1,32 @@
-import { Button, Form, FormProps, Input } from 'antd';
-import { ValidData } from 'pages/Contacts/AddContact';
+import { Button, Form, FormProps, Input, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import './index.less';
+import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { useMemo } from 'react';
 
 const { Item: FormItem } = Form;
 
 export interface ITransferSettingsBodyProps extends FormProps {
-  state: any;
-  disable: boolean;
-  validSingleLimit: ValidData;
-  validDailyLimit: ValidData;
-  onSingleLimitChange: (v: string) => void;
-  onDailyLimitChange: (v: string) => void;
-  onFinish: () => void;
+  state: IPaymentSecurityItem;
+  onEdit: () => void;
 }
 
-export default function TransferSettingsBody({
-  form,
-  state,
-  disable,
-  validSingleLimit,
-  validDailyLimit,
-  onSingleLimitChange,
-  onDailyLimitChange,
-  onFinish,
-}: ITransferSettingsBodyProps) {
+interface ITransferSettingsFormInit {
+  singleLimit: string;
+  dailyLimit: string;
+  restricted: boolean;
+}
+
+export default function TransferSettingsBody({ form, state, onEdit }: ITransferSettingsBodyProps) {
   const { t } = useTranslation();
+
+  const initValue: ITransferSettingsFormInit = useMemo(() => {
+    return {
+      singleLimit: state.singleLimit + ' ' + state.symbol, // TODO format
+      dailyLimit: state.dailyLimit + ' ' + state.symbol, // TODO format
+      restricted: state.restricted,
+    };
+  }, [state.dailyLimit, state.restricted, state.singleLimit, state.symbol]);
 
   return (
     <Form
@@ -33,34 +34,44 @@ export default function TransferSettingsBody({
       autoComplete="off"
       layout="vertical"
       className="flex-column transfer-settings-form"
-      initialValues={state}
-      requiredMark={false}
-      onFinish={onFinish}>
-      <div className="form-content">
-        <FormItem name="transferSettings" label={t('Transfer settings')}>
-          {/* transferSettings */}
-        </FormItem>
-        <FormItem
-          name="singleLimit"
-          label={t('Limit per transaction')}
-          validateStatus={validSingleLimit.validateStatus}
-          help={validSingleLimit.errorMsg}>
-          <Input placeholder={t('Enter limit')} onChange={(e) => onSingleLimitChange(e.target.value)} maxLength={16} />
-        </FormItem>
-        <FormItem
-          name="dailyLimit"
-          label={t('Daily limit')}
-          validateStatus={validDailyLimit.validateStatus}
-          help={validDailyLimit.errorMsg}>
-          <Input placeholder={t('Enter limit')} onChange={(e) => onDailyLimitChange(e.target.value)} maxLength={16} />
-        </FormItem>
+      initialValues={initValue}
+      requiredMark={false}>
+      <div className="customer-form form-content">
+        {!state.restricted && (
+          <>
+            <FormItem name="restricted" label={t('Transfer settings')}>
+              <div className="flex-start-center">
+                <Switch checked={false} disabled={true} />
+                <div className="switch-text">{'Off'}</div>
+              </div>
+            </FormItem>
+            <div className="limit-tip">{`No limit for transfer`}</div>
+          </>
+        )}
 
-        <div>transfers tip</div>
+        {state.restricted && (
+          <>
+            <FormItem name="singleLimit" label={t('Limit per transaction')}>
+              <Input
+                placeholder={t('Enter limit')}
+                disabled={true}
+                value={state.singleLimit + ' ' + state.symbol}
+                defaultValue={state.singleLimit + ' ' + state.symbol}
+              />
+            </FormItem>
+            <FormItem name="dailyLimit" label={t('Daily limit')}>
+              <Input placeholder={t('Enter limit')} disabled={true} />
+            </FormItem>
+            <div className="limit-tip">
+              {`Transfers within the limits do not require guardian approval, but if exceed, you need to modify the settings.`}
+            </div>
+          </>
+        )}
       </div>
 
-      <FormItem className="form-btn">
-        <Button className="send-btn" type="primary" htmlType="submit" disabled={disable}>
-          {t('Send Request')}
+      <FormItem className="footer-btn-wrap">
+        <Button className="footer-btn" type="primary" onClick={onEdit}>
+          {t('Edit')}
         </Button>
       </FormItem>
     </Form>

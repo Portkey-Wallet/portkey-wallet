@@ -15,7 +15,7 @@ export default function PaymentSecurityPopup({
 }: IPaymentSecurityProps) {
   return (
     <div className="payment-security-popup min-width-max-height">
-      <div className="payment-security-header">
+      <div className="popup-header-wrap">
         <BackHeader
           title={headerTitle}
           leftCallBack={goBack}

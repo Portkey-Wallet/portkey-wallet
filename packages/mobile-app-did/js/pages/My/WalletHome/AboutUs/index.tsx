@@ -37,7 +37,7 @@ const AboutUs = () => {
         onPress: () => {
           navigationService.navigate('ViewOnWebView', {
             title: 'Privacy Policy',
-            url: `${OfficialWebsite}/portkey-privacy-policy`,
+            url: `${OfficialWebsite}/privacy-policy`,
           });
         },
       },

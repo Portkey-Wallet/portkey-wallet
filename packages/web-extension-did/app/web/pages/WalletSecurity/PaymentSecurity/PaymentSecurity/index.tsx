@@ -4,8 +4,10 @@ import PaymentSecurityPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
 import { BaseHeaderProps } from 'types/UI';
 import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { request } from '@portkey-wallet/api/api-did';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 const mockList: IPaymentSecurityItem[] = [
   {
@@ -36,6 +38,18 @@ export default function PaymentSecurity() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const headerTitle = t('Payment Security');
+  const wallet = useCurrentWalletInfo();
+
+  const getSecurityList = useCallback(async () => {
+    const list = await request.security.securityList({
+      params: {
+        caHash: wallet?.caHash || '',
+        skipCount: 0,
+        maxResultCount: 10,
+      },
+    });
+    console.log('🌈 🌈 🌈 🌈 🌈 🌈 list', list);
+  }, [wallet?.caHash]);
 
   const handleClick = useCallback(
     (item: IPaymentSecurityItem) => {
@@ -54,6 +68,10 @@ export default function PaymentSecurity() {
     console.log('load more');
     return Promise.resolve();
   }, []);
+
+  useEffect(() => {
+    getSecurityList();
+  }, [getSecurityList]);
 
   return isNotLessThan768 ? (
     <PaymentSecurityPrompt

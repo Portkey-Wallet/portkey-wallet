@@ -8,31 +8,18 @@ export default function TransferSettingsPopup({
   headerTitle,
   goBack,
   state,
-  disable,
-  validSingleLimit,
-  validDailyLimit,
-  onSingleLimitChange,
-  onDailyLimitChange,
-  onFinish,
+  onEdit,
 }: BaseHeaderProps & ITransferSettingsBodyProps) {
   return (
     <div className="transfer-settings-popup min-width-max-height">
-      <div className="transfer-settings-header">
+      <div className="popup-header-wrap">
         <BackHeader
           title={headerTitle}
           leftCallBack={goBack}
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
       </div>
-      <TransferSettingsBody
-        state={state}
-        disable={disable}
-        validSingleLimit={validSingleLimit}
-        validDailyLimit={validDailyLimit}
-        onSingleLimitChange={onSingleLimitChange}
-        onDailyLimitChange={onDailyLimitChange}
-        onFinish={onFinish}
-      />
+      <TransferSettingsBody state={state} onEdit={onEdit} />
     </div>
   );
 }

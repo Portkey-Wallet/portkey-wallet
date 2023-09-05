@@ -3,8 +3,7 @@ import TransferSettingsPopup from './Popup';
 import TransferSettingsPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
-import { useCallback, useState } from 'react';
-import { ValidData } from 'pages/Contacts/AddContact';
+import { useCallback } from 'react';
 
 export default function TransferSettings() {
   const { isNotLessThan768 } = useCommonState();
@@ -12,49 +11,20 @@ export default function TransferSettings() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const headerTitle = t('Transfer Settings');
-  const [disable, setDisable] = useState(true);
-  const [validSingleLimit, setValidSingleLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
-  const [validDailyLimit, setValidDailyLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
 
+  // TODO from
   const handleBack = useCallback(() => {
     navigate('/setting/wallet-security/payment-security');
   }, [navigate]);
 
-  const handleSingleLimitChange = useCallback((v: string) => {
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 v', v);
-  }, []);
-
-  const handleDailyLimitChange = useCallback((v: string) => {
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 v', v);
-  }, []);
-
-  const onFinish = useCallback(() => {
-    console.log('🌈 🌈 🌈 🌈 🌈 🌈 finish');
-  }, []);
+  // TODO from
+  const onEdit = useCallback(() => {
+    navigate('/setting/wallet-security/payment-security/transfer-settings-edit', { state: state });
+  }, [navigate, state]);
 
   return isNotLessThan768 ? (
-    <TransferSettingsPrompt
-      headerTitle={headerTitle}
-      goBack={handleBack}
-      state={state}
-      disable={disable}
-      validSingleLimit={validSingleLimit}
-      validDailyLimit={validDailyLimit}
-      onSingleLimitChange={handleSingleLimitChange}
-      onDailyLimitChange={handleDailyLimitChange}
-      onFinish={onFinish}
-    />
+    <TransferSettingsPrompt headerTitle={headerTitle} goBack={handleBack} state={state} onEdit={onEdit} />
   ) : (
-    <TransferSettingsPopup
-      headerTitle={headerTitle}
-      goBack={handleBack}
-      state={state}
-      disable={disable}
-      validSingleLimit={validSingleLimit}
-      validDailyLimit={validDailyLimit}
-      onSingleLimitChange={handleSingleLimitChange}
-      onDailyLimitChange={handleDailyLimitChange}
-      onFinish={onFinish}
-    />
+    <TransferSettingsPopup headerTitle={headerTitle} goBack={handleBack} state={state} onEdit={onEdit} />
   );
 }

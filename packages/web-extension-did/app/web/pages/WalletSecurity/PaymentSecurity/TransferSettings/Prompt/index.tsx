@@ -8,26 +8,13 @@ export default function TransferSettingsPrompt({
   headerTitle,
   goBack,
   state,
-  disable,
-  validSingleLimit,
-  validDailyLimit,
-  onSingleLimitChange,
-  onDailyLimitChange,
-  onFinish,
+  onEdit,
 }: BaseHeaderProps & ITransferSettingsBodyProps) {
   return (
-    <div className="transfer-settings-prompt">
-      <div className="transfer-settings-prompt-body">
+    <div className="three-level-prompt-container transfer-settings-prompt">
+      <div className="three-level-prompt-body transfer-settings-prompt-body">
         <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
-        <TransferSettingsBody
-          state={state}
-          disable={disable}
-          validSingleLimit={validSingleLimit}
-          validDailyLimit={validDailyLimit}
-          onSingleLimitChange={onSingleLimitChange}
-          onDailyLimitChange={onDailyLimitChange}
-          onFinish={onFinish}
-        />
+        <TransferSettingsBody state={state} onEdit={onEdit} />
       </div>
       <Outlet />
     </div>

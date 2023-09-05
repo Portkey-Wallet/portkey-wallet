@@ -91,8 +91,8 @@ const Card: React.FC = () => {
       <TextM style={styles.accountName}>{walletName}</TextM>
 
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
-        {isShowBridgeButton && <BridgeButton wrapStyle={buttonWrapStyle} />}
         {isBuyButtonShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        {isShowBridgeButton && <BridgeButton wrapStyle={buttonWrapStyle} />}
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}

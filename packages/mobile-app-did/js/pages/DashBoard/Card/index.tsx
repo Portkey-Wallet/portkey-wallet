@@ -68,6 +68,12 @@ const Card: React.FC = () => {
             <View style={styles.spacerStyle} />
           </>
         )}
+        {isBuyButtonShow && (
+          <>
+            <BuyButton themeType="dashBoard" />
+            <View style={styles.spacerStyle} />
+          </>
+        )}
         <SendButton themeType="dashBoard" />
         <View style={styles.spacerStyle} />
         <ReceiveButton themeType="dashBoard" />

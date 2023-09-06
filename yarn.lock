@@ -8444,35 +8444,12 @@ aelf-bridge@^0.0.10:
     socket.io-client "^2.3.0"
     uuid "^3.3.3"
 
-aelf-sdk@3.2.45-beta.0:
-  version "3.2.45-beta.0"
-  resolved "https://registry.npmjs.org/aelf-sdk/-/aelf-sdk-3.2.45-beta.0.tgz#da9ce1230777d40eb2f79c88cf82103b44fbaa9f"
-  integrity sha512-T0u9SZBvO9iLjDiaxDzA2x5iDzc6x0i9k0sVmifkw0DPcLWjnQHlBp4eEI6lrFJmoHOm7SwfNx8it6z87r59bg==
+aelf-sdk-cross-chain@^1.0.14:
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/aelf-sdk-cross-chain/-/aelf-sdk-cross-chain-1.0.14.tgz#f3a7df752a2583e6d13ea38610175f3750a81942"
+  integrity sha512-scYGFqSDX4vgXtPP5HtWfvgeH2nTkhyT2TY0+2EeYj065PSKYSE+QzQPLIGfFiz/fXdhVtoyX3dRGDU8WleWVQ==
   dependencies:
-    "@aelfqueen/protobufjs" "^6.8.9"
-    "@aws-crypto/sha256-js" "^5.0.0"
-    "@babel/runtime" "^7.4.5"
-    "@typescript-eslint/parser" "^5.47.1"
-    assert "^2.0.0"
-    babel-plugin-rewire "^1.2.0"
-    bignumber.js "^9.0.0"
-    bip39 "^3.0.2"
-    browserify-cipher "^1.0.1"
-    bs58 "^4.0.1"
-    buffer "^5.2.1"
-    crypto-js "^3.1.9-1"
-    elliptic "^6.4.1"
-    gbk-string "^0.1.0"
-    hdkey "^1.1.1"
-    isomorphic-fetch "^3.0.0"
-    js-sha256 "^0.9.0"
-    keccak "^3.0.3"
-    query-string "5.1.1"
-    randombytes "^2.1.0"
-    readable-stream "^3.6.0"
-    scryptsy "^2.1.0"
-    typescript "^4.9.5"
-    xmlhttprequest "^1.8.0"
+    chalk "^2.4.2"
 
 aelf-sdk@3.2.45-beta.0:
   version "3.2.45-beta.0"

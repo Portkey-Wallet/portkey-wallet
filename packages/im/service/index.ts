@@ -1,6 +1,7 @@
 import { IBaseRequest } from '@portkey/types';
 import { BaseService } from '@portkey/services';
 import {
+  AddChannelMembersParams,
   AddStrangerParams,
   CreateChannelParams,
   CreateChannelResult,
@@ -204,6 +205,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   transferChannelOwner(params: TransferChannelOwnerParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/channelContacts/ownerTransfer',
+      params,
+      method: 'POST',
+    });
+  }
+  addChannelMembers(params: AddChannelMembersParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/members/add',
       params,
       method: 'POST',
     });

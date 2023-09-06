@@ -20,6 +20,7 @@ import {
   updateGroupInfo,
   removeChannelMembers,
   transferChannelOwner,
+  addChannelMembers,
 } from './actions';
 import { formatChannelList } from './util';
 
@@ -231,6 +232,28 @@ export const imSlice = createSlice({
               [channelId]: {
                 ...preChannelInfo,
                 ...value,
+              },
+            },
+          },
+        };
+      })
+      .addCase(addChannelMembers, (state, action) => {
+        const { network, channelId, memberInfos } = action.payload;
+        const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
+        if (!preChannelInfo) return state;
+
+        const [adminMember, ...otherMembers] = preChannelInfo.members;
+        const newMembers = [adminMember, ...memberInfos, ...otherMembers];
+
+        return {
+          ...state,
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
+            [network]: {
+              ...state.groupInfoMapNetMap?.[network],
+              [channelId]: {
+                ...preChannelInfo,
+                members: newMembers,
               },
             },
           },

@@ -11,28 +11,12 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { message } from 'antd';
 
-const mockList: IPaymentSecurityItem[] = [
-  {
-    chainId: 'AELF',
-    symbol: 'ELF',
-    singleLimit: 100,
-    dailyLimit: 1000,
-    restricted: true,
-  },
-  {
-    chainId: 'tDVV',
-    symbol: 'ELF',
-    singleLimit: -1,
-    dailyLimit: -1,
-    restricted: false,
-  },
-];
-
 export interface IPaymentSecurityProps extends BaseHeaderProps {
   list: IPaymentSecurityItem[];
   clickItem: (item: IPaymentSecurityItem) => void;
   hasMore: boolean;
   loadMore: () => Promise<void>;
+  noDataText: string;
 }
 
 const MAX_RESULT_COUNT = 20;
@@ -43,6 +27,7 @@ export default function PaymentSecurity() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const headerTitle = t('Payment Security');
+  const noDataText = t('No asset');
   const wallet = useCurrentWalletInfo();
   const [securityList, setSecurityList] = useState<IPaymentSecurityItem[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -77,7 +62,6 @@ export default function PaymentSecurity() {
 
   const handleClick = useCallback(
     (item: IPaymentSecurityItem) => {
-      console.log('🌈 🌈 🌈 🌈 🌈 🌈 item', item);
       navigate('/setting/wallet-security/payment-security/transfer-settings', { state: item });
     },
     [navigate],
@@ -113,26 +97,28 @@ export default function PaymentSecurity() {
   }, [loadingFlag, securityList, totalCount, wallet?.caHash]);
 
   useEffect(() => {
-    // getSecurityList();
+    getSecurityList();
   }, [getSecurityList]);
 
   return isNotLessThan768 ? (
     <PaymentSecurityPrompt
       headerTitle={headerTitle}
-      list={mockList}
+      list={securityList}
       clickItem={handleClick}
       goBack={handleBack}
-      hasMore={false}
+      hasMore={securityList?.length < totalCount}
       loadMore={loadMoreSecurity}
+      noDataText={noDataText}
     />
   ) : (
     <PaymentSecurityPopup
       headerTitle={headerTitle}
-      list={mockList}
+      list={securityList}
       clickItem={handleClick}
       goBack={handleBack}
-      hasMore={false}
+      hasMore={securityList?.length < totalCount}
       loadMore={loadMoreSecurity}
+      noDataText={noDataText}
     />
   );
 }

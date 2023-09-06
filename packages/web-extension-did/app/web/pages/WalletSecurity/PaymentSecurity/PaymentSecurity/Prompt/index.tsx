@@ -12,6 +12,7 @@ export default function PaymentSecurityPrompt({
   clickItem,
   hasMore,
   loadMore,
+  noDataText,
 }: IPaymentSecurityProps) {
   return (
     <div className="three-level-prompt-container payment-security-prompt">
@@ -23,7 +24,7 @@ export default function PaymentSecurityPrompt({
             <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
           </>
         )}
-        {!list || (list?.length === 0 && <div className="no-data-text">{`No Assets`}</div>)}
+        {!list || (list?.length === 0 && <div className="no-data-text">{noDataText}</div>)}
       </div>
     </div>
   );

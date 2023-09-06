@@ -205,6 +205,14 @@ export const PageRouter = () =>
       element: <TransferSettingsEdit />,
     },
     {
+      path: '/setting/wallet-security/payment-security/verifier-account',
+      element: <VerifierAccount />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/guardian-approval',
+      element: <GuardianApproval />,
+    },
+    {
       path: '/chat-list',
       element: <ChatList />,
     },

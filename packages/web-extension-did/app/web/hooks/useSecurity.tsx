@@ -2,6 +2,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { Image, message } from 'antd';
+import { SecurityVulnerabilityTip, SecurityVulnerabilityTitle } from 'constants/security';
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,10 +32,8 @@ export const useCheckSecurity = () => {
               className="modal-logo"
               preview={false}
             />
-            <div className="modal-title">{t('Low wallet security level')}</div>
-            <div>
-              {t('Please promptly increase the security level of your wallet and add the number of guardians.')}
-            </div>
+            <div className="modal-title">{SecurityVulnerabilityTitle}</div>
+            <div>{SecurityVulnerabilityTip}</div>
           </div>
         ),
         cancelText: t('Not Now'),

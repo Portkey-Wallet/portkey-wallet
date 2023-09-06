@@ -45,14 +45,7 @@ import {
   SYNCHRONIZING_CHAIN_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
-import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
-import {
-  useDailyTransferLimitModal,
-  useSingleTransferLimitModal,
-} from 'pages/WalletSecurity/PaymentSecurity/hooks/useLimitModal';
-import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import { useCheckSecurity } from 'hooks/useSecurity';
+import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -78,6 +71,7 @@ export default function Buy() {
   const { ach: achFee } = useGetTxFee('AELF');
   const defaultToken = useDefaultToken('AELF');
   const checkSecurity = useCheckSecurity();
+  const checkLimit = useCheckLimit();
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(
@@ -387,40 +381,6 @@ export default function Buy() {
     valueSaveRef.current.receive = '';
   }, [stopInterval]);
 
-  const checkTransferLimit = useCheckTransferLimit();
-  const dailyTransferLimitModal = useDailyTransferLimitModal();
-  const singleTransferLimitModal = useSingleTransferLimitModal();
-  const handleCheckLimit = useCallback(async (): Promise<void | object> => {
-    const limitRes = await checkTransferLimit({
-      caContract: {} as ContractBasic, // TODO
-      symbol: defaultToken.symbol,
-      decimals: defaultToken.decimals,
-      amount,
-    });
-
-    const settingParams: IPaymentSecurityItem = {
-      chainId: 'AELF',
-      symbol: defaultToken.symbol,
-      singleLimit: limitRes?.singleBalance.toString() || '',
-      dailyLimit: limitRes?.dailyLimit.toString() || '',
-      restricted: !limitRes?.dailyLimit.eq(-1),
-      decimals: defaultToken?.decimals,
-    };
-    if (limitRes?.isSingleLimited) {
-      return singleTransferLimitModal(settingParams);
-    }
-    if (limitRes?.isDailyLimited) {
-      return dailyTransferLimitModal(settingParams);
-    }
-  }, [
-    amount,
-    checkTransferLimit,
-    dailyTransferLimitModal,
-    defaultToken.decimals,
-    defaultToken.symbol,
-    singleTransferLimitModal,
-  ]);
-
   const handleNext = useCallback(async () => {
     const { side } = valueSaveRef.current;
     setLoading(true);
@@ -448,7 +408,13 @@ export default function Buy() {
       }
 
       // transfer limit check
-      await handleCheckLimit();
+      const res = await checkLimit({
+        chainId: 'AELF',
+        symbol: defaultToken.symbol,
+        amount: valueSaveRef.current?.amount,
+        decimals: defaultToken.decimals,
+      });
+      if (typeof res !== 'boolean') return;
 
       // search balance from contract
       const result = await getBalance({
@@ -489,12 +455,12 @@ export default function Buy() {
   }, [
     accountTokenList,
     achFee,
+    checkLimit,
     checkManagerSyncState,
     currentChain,
     currentNetwork.walletType,
     defaultToken.decimals,
     defaultToken.symbol,
-    handleCheckLimit,
     navigate,
     refreshBuyButton,
     setInsufficientFundsMsg,

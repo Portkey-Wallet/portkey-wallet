@@ -1,7 +1,6 @@
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
@@ -36,12 +35,8 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
-import {
-  useDailyTransferLimitModal,
-  useSingleTransferLimitModal,
-} from 'pages/WalletSecurity/PaymentSecurity/hooks/useLimitModal';
-import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { useCheckLimit } from 'hooks/useSecurity';
+import { ExceedLimit } from 'constants/security';
 
 export type Account = { address: string; name?: string };
 
@@ -95,9 +90,6 @@ export default function Send() {
     [state],
   );
   const defaultToken = useDefaultToken(state.chainId as ChainId);
-  const checkTransferLimit = useCheckTransferLimit();
-  const dailyTransferLimitModal = useDailyTransferLimitModal();
-  const singleTransferLimitModal = useSingleTransferLimitModal();
 
   const validateToAddress = useCallback(
     (value: { name?: string; address: string } | undefined) => {
@@ -203,37 +195,7 @@ export default function Send() {
     ],
   );
 
-  const handleCheckLimit = useCallback(async (): Promise<void | object> => {
-    const limitRes = await checkTransferLimit({
-      caContract: {} as ContractBasic, // TODO
-      symbol: tokenInfo.symbol,
-      decimals: tokenInfo.decimals,
-      amount,
-    });
-
-    const settingParams: IPaymentSecurityItem = {
-      chainId: tokenInfo.chainId,
-      symbol: tokenInfo.symbol,
-      singleLimit: limitRes?.singleBalance.toString() || '',
-      dailyLimit: limitRes?.dailyLimit.toString() || '',
-      restricted: !limitRes?.dailyLimit.eq(-1),
-      decimals: tokenInfo.decimals,
-    };
-    if (limitRes?.isSingleLimited) {
-      return singleTransferLimitModal(settingParams);
-    }
-    if (limitRes?.isDailyLimited) {
-      return dailyTransferLimitModal(settingParams);
-    }
-  }, [
-    amount,
-    checkTransferLimit,
-    dailyTransferLimitModal,
-    singleTransferLimitModal,
-    tokenInfo.chainId,
-    tokenInfo.decimals,
-    tokenInfo.symbol,
-  ]);
+  const checkLimit = useCheckLimit();
 
   const handleCheckPreview = useCallback(async () => {
     try {
@@ -245,7 +207,13 @@ export default function Send() {
       }
       if (type === 'token') {
         // transfer limit check
-        await handleCheckLimit();
+        const res = await checkLimit({
+          chainId: tokenInfo.chainId,
+          symbol: tokenInfo.symbol,
+          amount: amount,
+          decimals: tokenInfo.decimals,
+        });
+        if (typeof res !== 'boolean') return ExceedLimit;
 
         // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
@@ -284,7 +252,9 @@ export default function Send() {
     state.chainId,
     type,
     getTranslationInfo,
-    handleCheckLimit,
+    checkLimit,
+    tokenInfo.chainId,
+    tokenInfo.symbol,
     tokenInfo.decimals,
     balance,
     toAccount.address,
@@ -302,7 +272,13 @@ export default function Send() {
       if (!tokenInfo) throw 'No Symbol info';
 
       // transfer limit check
-      await handleCheckLimit();
+      const res = await checkLimit({
+        chainId: tokenInfo.chainId,
+        symbol: tokenInfo.symbol,
+        amount: amount,
+        decimals: tokenInfo.decimals,
+      });
+      if (typeof res !== 'boolean') return ExceedLimit;
 
       setLoading(true);
 
@@ -352,10 +328,10 @@ export default function Send() {
   }, [
     amount,
     chainInfo,
+    checkLimit,
     currentNetwork.walletType,
     defaultToken.decimals,
     dispatch,
-    handleCheckLimit,
     navigate,
     passwordSeed,
     setLoading,
@@ -416,6 +392,7 @@ export default function Send() {
         handler: async () => {
           const res = await handleCheckPreview();
           console.log('handleCheckPreview res', res);
+          if (res === ExceedLimit) return;
           if (!res) {
             setTipMsg('');
             setStage(Stage.Preview);

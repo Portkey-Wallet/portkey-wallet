@@ -31,7 +31,10 @@ const Card: React.FC = () => {
   const accountBalanceUSD = useAccountBalanceUSD();
   const [, requestQrPermission] = useQrScanPermission();
   const { isBuyButtonShow } = useBuyButtonShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
-  const isShowBridgeButton = useIsBridgeShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
+
+  //  TODO:
+  const isShowBridgeButton = true;
+  // const isShowBridgeButton = useIsBridgeShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
 
   const showDialog = useCallback(
     () =>

@@ -1,8 +1,9 @@
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { VerifierInfo } from '@portkey-wallet/types/verifier';
-import { GuardiansStatus } from 'pages/Guardian/types';
+import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
+import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansStatus: GuardiansStatus) => {
   return userGuardiansList
@@ -21,6 +22,21 @@ const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansSt
       };
     })
     .filter(item => item !== null);
+};
+
+export const getGuardiansApprovedByApprove = (guardiansApprove: GuardiansApproved) => {
+  return guardiansApprove.map(item => {
+    const { guardianIdentifier } = handleVerificationDoc(item.verificationDoc);
+    return {
+      identifierHash: guardianIdentifier,
+      type: item.guardianType,
+      verificationInfo: {
+        id: item.verifierId,
+        signature: Object.values(Buffer.from(item.signature, 'hex')),
+        verificationDoc: item.verificationDoc,
+      },
+    };
+  });
 };
 
 export function deleteGuardian(
@@ -173,5 +189,23 @@ export function removeOtherManager(
     caHash,
     managerInfo,
     guardiansApproved: guardiansApproved,
+  });
+}
+
+export function modifyTransferLimit(
+  contract: ContractBasic,
+  address: string,
+  caHash: string,
+  userGuardiansList: UserGuardianItem[],
+  guardiansStatus: GuardiansStatus,
+  paymentSecurityDetail: IPaymentSecurityItem,
+) {
+  const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
+  return contract?.callSendMethod('SetTransferLimit', address, {
+    caHash,
+    symbol: paymentSecurityDetail.symbol,
+    guardiansApproved: guardiansApproved,
+    singleLimit: paymentSecurityDetail.singleLimit,
+    dailyLimit: paymentSecurityDetail.dailyLimit,
   });
 }

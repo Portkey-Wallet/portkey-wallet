@@ -40,6 +40,11 @@ import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useGetCurrentCAContract } from 'hooks/contract';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
+import ActionSheet from 'components/ActionSheet';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
@@ -47,6 +52,8 @@ export default function SellForm() {
     Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
   );
   const checkManagerSyncState = useCheckManagerSyncState();
+  const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
+  const checkTransferLimit = useCheckTransferLimit();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -152,7 +159,7 @@ export default function SellForm() {
     setAmount(text);
   }, []);
 
-  const onNext = useCallback(async () => {
+  const onNext = useLockCallback(async () => {
     if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
     const { min, max } = limitAmountRef.current;
@@ -204,6 +211,50 @@ export default function SellForm() {
       }
       const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
 
+      const caContract = await getCurrentCAContract();
+      const checkTransferLimitResult = await checkTransferLimit({
+        caContract,
+        symbol,
+        decimals,
+        amount,
+      });
+
+      if (!checkTransferLimitResult) {
+        // TODO: add error handler
+        return;
+      }
+      const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
+      if (isDailyLimited || isSingleLimited) {
+        ActionSheet.alert({
+          title2: isDailyLimited
+            ? 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.'
+            : 'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first. ',
+          buttons: [
+            {
+              title: 'Cancel',
+              type: 'outline',
+            },
+            {
+              title: 'Modify',
+              onPress: async () => {
+                navigationService.navigate('PaymentSecurityEdit', {
+                  paymentSecurityDetail: {
+                    chainId,
+                    symbol,
+                    dailyLimit: dailyLimit.toString(),
+                    singleLimit: singleBalance.toString(),
+                    restricted: !dailyLimit.eq(-1),
+                    decimals,
+                  },
+                });
+              },
+            },
+          ],
+        });
+
+        return;
+      }
+
       const account = getManagerAccount(pin);
       if (!account) return;
 
@@ -253,6 +304,8 @@ export default function SellForm() {
     refreshBuyButton,
     checkManagerSyncState,
     achFee,
+    getCurrentCAContract,
+    checkTransferLimit,
     wallet,
   ]);
 

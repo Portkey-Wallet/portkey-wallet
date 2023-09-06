@@ -135,18 +135,18 @@ export default function VerifierDetails() {
         };
 
         switch (verificationType) {
-          case VerificationType.communityRecovery:
-          case VerificationType.addGuardianByApprove:
-          case VerificationType.editGuardian:
-          case VerificationType.deleteGuardian:
-          case VerificationType.removeOtherManager:
-            setGuardianStatus({
-              requestCodeResult: requestCodeResult,
-              status: VerifyStatus.Verified,
+          case VerificationType.register:
+            onRequestOrSetPin({
+              showLoading: false,
+              managerInfo: {
+                verificationType: VerificationType.register,
+                loginAccount: guardianItem.guardianAccount,
+                type: guardianItem.guardianType,
+              },
               verifierInfo,
             });
-            navigationService.goBack();
             break;
+
           case VerificationType.addGuardian:
             if (verifierInfo.signature && verifierInfo.verificationDoc) {
               navigationService.navigate('GuardianApproval', {
@@ -160,16 +160,14 @@ export default function VerifierDetails() {
           case VerificationType.setLoginAccount:
             await onSetLoginAccount();
             break;
+
           default:
-            onRequestOrSetPin({
-              showLoading: false,
-              managerInfo: {
-                verificationType: VerificationType.register,
-                loginAccount: guardianItem.guardianAccount,
-                type: guardianItem.guardianType,
-              },
+            setGuardianStatus({
+              requestCodeResult: requestCodeResult,
+              status: VerifyStatus.Verified,
               verifierInfo,
             });
+            navigationService.goBack();
             break;
         }
       } catch (error) {

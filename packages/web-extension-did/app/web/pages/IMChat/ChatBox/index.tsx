@@ -25,6 +25,7 @@ import ChatBoxTip from '../components/ChatBoxTip';
 import CustomUpload from '../components/CustomUpload';
 import { mockMessageList } from '../mock';
 import './index.less';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -105,7 +106,7 @@ export default function ChatBox() {
       },
     });
   }, [exit, navigate, t]);
-  const handleAddContact = useCallback(async () => {
+  const handleAddContact = useLockCallback(async () => {
     try {
       setLoading(true);
       const res = await addContactApi(info?.toRelationId || '');

@@ -1,6 +1,7 @@
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
@@ -35,6 +36,12 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
+import {
+  useDailyTransferLimitModal,
+  useSingleTransferLimitModal,
+} from 'pages/WalletSecurity/PaymentSecurity/hooks/useLimitModal';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export type Account = { address: string; name?: string };
 
@@ -88,6 +95,9 @@ export default function Send() {
     [state],
   );
   const defaultToken = useDefaultToken(state.chainId as ChainId);
+  const checkTransferLimit = useCheckTransferLimit();
+  const dailyTransferLimitModal = useDailyTransferLimitModal();
+  const singleTransferLimitModal = useSingleTransferLimitModal();
 
   const validateToAddress = useCallback(
     (value: { name?: string; address: string } | undefined) => {
@@ -116,7 +126,6 @@ export default function Send() {
   const retryCrossChain = useCallback(
     async ({ transactionId, params }: the2ThFailedActivityItemType) => {
       try {
-        //
         if (!chainInfo) return;
         const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
         if (!privateKey) return;
@@ -194,6 +203,38 @@ export default function Send() {
     ],
   );
 
+  const handleCheckLimit = useCallback(async (): Promise<void | object> => {
+    const limitRes = await checkTransferLimit({
+      caContract: {} as ContractBasic, // TODO
+      symbol: tokenInfo.symbol,
+      decimals: tokenInfo.decimals,
+      amount,
+    });
+
+    const settingParams: IPaymentSecurityItem = {
+      chainId: tokenInfo.chainId,
+      symbol: tokenInfo.symbol,
+      singleLimit: limitRes?.singleBalance.toString() || '',
+      dailyLimit: limitRes?.dailyLimit.toString() || '',
+      restricted: !limitRes?.dailyLimit.eq(-1),
+      decimals: tokenInfo.decimals,
+    };
+    if (limitRes?.isSingleLimited) {
+      return singleTransferLimitModal(settingParams);
+    }
+    if (limitRes?.isDailyLimited) {
+      return dailyTransferLimitModal(settingParams);
+    }
+  }, [
+    amount,
+    checkTransferLimit,
+    dailyTransferLimitModal,
+    singleTransferLimitModal,
+    tokenInfo.chainId,
+    tokenInfo.decimals,
+    tokenInfo.symbol,
+  ]);
+
   const handleCheckPreview = useCallback(async () => {
     try {
       setLoading(true);
@@ -203,6 +244,10 @@ export default function Send() {
         return 'Synchronizing on-chain account information...';
       }
       if (type === 'token') {
+        // transfer limit check
+        await handleCheckLimit();
+
+        // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           return TransactionError.TOKEN_NOT_ENOUGH;
         }
@@ -235,10 +280,11 @@ export default function Send() {
   }, [
     setLoading,
     amount,
-    type,
     checkManagerSyncState,
     state.chainId,
+    type,
     getTranslationInfo,
+    handleCheckLimit,
     tokenInfo.decimals,
     balance,
     toAccount.address,
@@ -255,36 +301,8 @@ export default function Send() {
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
 
-      const singleTransactionOverage = true;
-      const dailyTransactionOverage = true;
-      if (singleTransactionOverage) {
-        return Modal.confirm({
-          width: 320,
-          content: t(
-            'Exceeded the maximum of per transaction limit，if you wish to proceed，please modify the transfer amount.',
-          ),
-          className: 'cross-modal',
-          autoFocusButton: null,
-          icon: null,
-          centered: true,
-          okText: t('Modify'),
-          cancelText: t('Cancel'),
-          onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings'), // TODO state
-        });
-      }
-      if (dailyTransactionOverage) {
-        return Modal.confirm({
-          width: 320,
-          content: t('Exceeded today‘s maximum limit，if you wish to proceed，please modify the transfer amount.'),
-          className: 'cross-modal',
-          autoFocusButton: null,
-          icon: null,
-          centered: true,
-          okText: t('Modify'),
-          cancelText: t('Cancel'),
-          onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings'), // TODO state
-        });
-      }
+      // transfer limit check
+      await handleCheckLimit();
 
       setLoading(true);
 
@@ -337,6 +355,7 @@ export default function Send() {
     currentNetwork.walletType,
     defaultToken.decimals,
     dispatch,
+    handleCheckLimit,
     navigate,
     passwordSeed,
     setLoading,
@@ -344,7 +363,9 @@ export default function Send() {
     toAccount.address,
     tokenInfo,
     txFee,
-    wallet,
+    wallet.AESEncryptPrivateKey,
+    wallet.address,
+    wallet?.caHash,
   ]);
 
   const StageObj: TypeStageObj = useMemo(

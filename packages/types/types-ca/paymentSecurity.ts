@@ -8,3 +8,10 @@ export interface IPaymentSecurityItem {
   restricted: boolean;
   decimals: number | string;
 }
+
+export interface ISecurityListResponse {
+  data: IPaymentSecurityItem[];
+  totalRecordCount: number;
+  code?: number;
+  message?: string;
+}

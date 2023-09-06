@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import './index.less';
 import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useMemo } from 'react';
+import { AmountSign, formatWithCommas } from '@portkey-wallet/utils/converter';
+import { NoLimit, SetLimitExplain } from 'constants/security';
 
 const { Item: FormItem } = Form;
 
@@ -11,7 +13,7 @@ export interface ITransferSettingsBodyProps extends FormProps {
   onEdit: () => void;
 }
 
-interface ITransferSettingsFormInit {
+export interface ITransferSettingsFormInit {
   singleLimit: string;
   dailyLimit: string;
   restricted: boolean;
@@ -22,11 +24,17 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
 
   const initValue: ITransferSettingsFormInit = useMemo(() => {
     return {
-      singleLimit: state.singleLimit + ' ' + state.symbol, // TODO format
-      dailyLimit: state.dailyLimit + ' ' + state.symbol, // TODO format
+      singleLimit:
+        formatWithCommas({ amount: state.singleLimit, decimals: state?.decimals, digits: 0, sign: AmountSign.EMPTY }) +
+        ' ' +
+        state.symbol, // TODO format
+      dailyLimit:
+        formatWithCommas({ amount: state.dailyLimit, decimals: state?.decimals, digits: 0, sign: AmountSign.EMPTY }) +
+        ' ' +
+        state.symbol, // TODO format
       restricted: state.restricted,
     };
-  }, [state.dailyLimit, state.restricted, state.singleLimit, state.symbol]);
+  }, [state.dailyLimit, state?.decimals, state.restricted, state.singleLimit, state.symbol]);
 
   return (
     <Form
@@ -45,13 +53,13 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
                 <div className="switch-text">{'Off'}</div>
               </div>
             </FormItem>
-            <div className="limit-tip">{`No limit for transfer`}</div>
+            <div className="limit-tip">{NoLimit}</div>
           </>
         )}
 
         {state.restricted && (
           <>
-            <FormItem name="singleLimit" label={t('Limit per transaction')}>
+            <FormItem name="singleLimit" label={t('Limit per Transaction')}>
               <Input
                 placeholder={t('Enter limit')}
                 disabled={true}
@@ -59,12 +67,10 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
                 defaultValue={state.singleLimit + ' ' + state.symbol}
               />
             </FormItem>
-            <FormItem name="dailyLimit" label={t('Daily limit')}>
+            <FormItem name="dailyLimit" label={t('Daily Limit')}>
               <Input placeholder={t('Enter limit')} disabled={true} />
             </FormItem>
-            <div className="limit-tip">
-              {`Transfers within the limits do not require guardian approval, but if exceed, you need to modify the settings.`}
-            </div>
+            <div className="limit-tip">{SetLimitExplain}</div>
           </>
         )}
       </div>

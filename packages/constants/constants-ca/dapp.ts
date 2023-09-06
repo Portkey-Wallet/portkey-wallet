@@ -22,3 +22,10 @@ export const REMEMBER_ME_ACTION_WHITELIST: string[] = [MethodsBase.SEND_TRANSACT
 export const DefaultDapp = {
   origin: 'default',
 };
+
+export enum DappMap {
+  test = 'http://localhost:3000',
+}
+
+export const DAPP_WHITELIST: string[] = [DappMap.test];
+export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [MethodsBase.REQUEST_ACCOUNTS];

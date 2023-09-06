@@ -21,7 +21,12 @@ import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
-import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import {
+  CA_METHOD_WHITELIST,
+  DAPP_WHITELIST,
+  DAPP_WHITELIST_ACTION_WHITELIST,
+  REMEMBER_ME_ACTION_WHITELIST,
+} from '@portkey-wallet/constants/constants-ca/dapp';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
@@ -243,6 +248,10 @@ export default class DappMobileOperator extends Operator {
     method: keyof IDappOverlay;
     callBack: SendRequest;
   }) {
+    // is whitelist && is whitelist actions
+    if (DAPP_WHITELIST.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
+      return callBack(eventName, params);
+
     const validSession = await this.verifySessionInfo();
 
     // valid session && is remember me actions

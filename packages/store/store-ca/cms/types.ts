@@ -56,6 +56,13 @@ export interface EntranceControlType {
   isIOSBridgeShow?: boolean;
 }
 
+export interface CmsWebsiteMapItem {
+  title?: string;
+  imgUrl?: {
+    filename_disk?: string;
+  };
+}
+
 export interface CMSState {
   socialMediaListNetMap: {
     [T in NetworkType]?: SocialMediaItem[];
@@ -74,5 +81,8 @@ export interface CMSState {
   };
   entranceControlNetMap?: {
     [T in NetworkType]?: EntranceControlType;
+  };
+  cmsWebsiteMap?: {
+    [url: string]: CmsWebsiteMapItem;
   };
 }

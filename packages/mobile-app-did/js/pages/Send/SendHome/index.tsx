@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
@@ -43,6 +43,8 @@ import {
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
+import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 
 const SendHome: React.FC = () => {
   const {
@@ -75,6 +77,8 @@ const SendHome: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<any[]>([]);
 
   const checkManagerSyncState = useCheckManagerSyncState();
+  const checkTransferLimit = useCheckTransferLimit();
+  const contractRef = useRef<ContractBasic>();
 
   useEffect(() => {
     setSelectedToContact(toInfo);
@@ -87,11 +91,14 @@ const SendHome: React.FC = () => {
       const account = getManagerAccount(pin);
       if (!account) return;
 
-      const contract = await getContractBasic({
-        contractAddress: chainInfo.caContractAddress,
-        rpcUrl: chainInfo?.endPoint,
-        account: account,
-      });
+      if (!contractRef.current) {
+        contractRef.current = await getContractBasic({
+          contractAddress: chainInfo.caContractAddress,
+          rpcUrl: chainInfo.endPoint,
+          account,
+        });
+      }
+      const contract = contractRef.current;
 
       const firstMethodName = isCross ? 'ManagerTransfer' : 'ManagerForwardCall';
       const secondParams = isCross
@@ -333,6 +340,64 @@ const SendHome: React.FC = () => {
     let fee;
     setErrorMessage([]);
 
+    if (!chainInfo || !pin) {
+      return { status: false };
+    }
+    const account = getManagerAccount(pin);
+    if (!account) {
+      return { status: false };
+    }
+    // checkTransferLimitResult
+    if (!contractRef.current) {
+      contractRef.current = await getContractBasic({
+        contractAddress: chainInfo.caContractAddress,
+        rpcUrl: chainInfo.endPoint,
+        account,
+      });
+    }
+    const contract = contractRef.current;
+    const checkTransferLimitResult = await checkTransferLimit({
+      caContract: contract,
+      symbol: assetInfo.symbol,
+      decimals: assetInfo.decimals,
+      amount: sendNumber,
+    });
+    if (!checkTransferLimitResult) {
+      // TODO: add error handler
+      return { status: false };
+    }
+    const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
+    if (isDailyLimited || isSingleLimited) {
+      ActionSheet.alert({
+        title2: isDailyLimited
+          ? 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.'
+          : 'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first. ',
+        buttons: [
+          {
+            title: 'Cancel',
+            type: 'outline',
+          },
+          {
+            title: 'Modify',
+            onPress: async () => {
+              navigationService.navigate('PaymentSecurityEdit', {
+                paymentSecurityDetail: {
+                  chainId: chainInfo.chainId,
+                  symbol: assetInfo.symbol,
+                  dailyLimit: dailyLimit.toString(),
+                  singleLimit: singleBalance.toString(),
+                  restricted: !dailyLimit.eq(-1),
+                  decimals: assetInfo.decimals,
+                },
+              });
+            },
+          },
+        ],
+      });
+
+      return { status: false };
+    }
+
     // check is SYNCHRONIZING
     const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
     if (!_isManagerSynced) {
@@ -391,13 +456,16 @@ const SendHome: React.FC = () => {
     return { status: true, fee };
   }, [
     assetInfo.chainId,
+    assetInfo.decimals,
     assetInfo.symbol,
-    chainInfo?.chainId,
+    chainInfo,
     checkManagerSyncState,
+    checkTransferLimit,
     crossFee,
     defaultToken.decimals,
     defaultToken.symbol,
     getTransactionFee,
+    pin,
     selectedAssets.balance,
     selectedAssets.decimals,
     selectedToContact.address,

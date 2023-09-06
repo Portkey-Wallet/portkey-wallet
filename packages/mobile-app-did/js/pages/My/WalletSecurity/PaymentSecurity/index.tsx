@@ -1,10 +1,10 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet, FlatList, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
-import { IDeviceItem, useCurrentWalletInfo, useDeviceList } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 import navigationService from 'utils/navigationService';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -157,7 +157,7 @@ const PaymentSecurityList: React.FC = () => {
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
         onRefresh={() => getList(true)}
         onEndReached={() => getList()}
-        ListEmptyComponent={() => <NoData style={BGStyles.bg4} topDistance={pTd(95)} message="No assets" />}
+        ListEmptyComponent={() => <NoData style={BGStyles.bg4} topDistance={pTd(95)} message="No asset" />}
       />
     </PageContainer>
   );

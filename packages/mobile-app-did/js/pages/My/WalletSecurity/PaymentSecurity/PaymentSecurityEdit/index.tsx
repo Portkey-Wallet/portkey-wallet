@@ -1,19 +1,16 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import { TextM } from 'components/CommonText';
-import { BGStyles, FontStyles } from 'assets/theme/styles';
+import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonInput from 'components/CommonInput';
 import CommonSwitch from 'components/CommonSwitch';
@@ -21,7 +18,6 @@ import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { ZERO } from '@portkey-wallet/constants/misc';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 
 interface RouterParams {
@@ -91,14 +87,14 @@ const PaymentSecurityEdit: React.FC = () => {
     if (!isValidInteger(editInfo.singleLimit)) {
       setSingleLimitError({
         ...INIT_HAS_ERROR,
-        errorMsg: 'Please enter a valid number',
+        errorMsg: 'Please enter a positive whole number',
       });
       isError = true;
     }
     if (!isValidInteger(editInfo.dailyLimit)) {
       setDailyLimitError({
         ...INIT_HAS_ERROR,
-        errorMsg: 'Please enter a valid number',
+        errorMsg: 'Please enter a positive whole number',
       });
       isError = true;
     }

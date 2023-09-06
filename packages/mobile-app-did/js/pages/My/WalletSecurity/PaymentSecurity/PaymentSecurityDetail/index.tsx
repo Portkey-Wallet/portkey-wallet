@@ -11,7 +11,7 @@ import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
 
 interface RouterParams {
   paymentSecurityDetail?: IPaymentSecurityItem;
@@ -25,8 +25,8 @@ const PaymentSecurityDetail: React.FC = () => {
     if (!paymentSecurityDetail) return undefined;
     return {
       ...paymentSecurityDetail,
-      singleLimit: divDecimals(paymentSecurityDetail.singleLimit, paymentSecurityDetail.decimals).toString(),
-      dailyLimit: divDecimals(paymentSecurityDetail.dailyLimit, paymentSecurityDetail.decimals).toString(),
+      singleLimit: divDecimalsStr(paymentSecurityDetail.singleLimit, paymentSecurityDetail.decimals),
+      dailyLimit: divDecimalsStr(paymentSecurityDetail.dailyLimit, paymentSecurityDetail.decimals),
     };
   }, [params.paymentSecurityDetail]);
 
@@ -40,20 +40,16 @@ const PaymentSecurityDetail: React.FC = () => {
         {detail?.restricted ? (
           <>
             <View style={pageStyles.labelWrap}>
-              <TextM>Limit Per Transaction</TextM>
-              <TextM style={FontStyles.font3}>{`${formatAmountShow(detail?.singleLimit || 0)} ${
-                detail?.symbol || ''
-              }`}</TextM>
+              <TextM>Limit per Transaction</TextM>
+              <TextM style={FontStyles.font3}>{`${detail?.singleLimit || ''} ${detail?.symbol || ''}`}</TextM>
             </View>
             <View style={pageStyles.labelWrap}>
               <TextM>Daily Limit</TextM>
-              <TextM style={FontStyles.font3}>{`${formatAmountShow(detail?.dailyLimit || 0)} ${
-                detail?.symbol || ''
-              }`}</TextM>
+              <TextM style={FontStyles.font3}>{`${detail?.dailyLimit || ''} ${detail?.symbol || ''}`}</TextM>
             </View>
             <TextM style={FontStyles.font3}>
               {
-                'Transfers within the limits do not require guardian approval, but if exceed, you need to modify the settings.'
+                'Transfers exceeding the limits cannot be conducted unless you modify the limit settings first, which needs guardian approval.'
               }
             </TextM>
           </>
@@ -63,7 +59,7 @@ const PaymentSecurityDetail: React.FC = () => {
               <TextM>Transfer Settings</TextM>
               <TextM style={FontStyles.font3}>Off</TextM>
             </View>
-            <TextM style={FontStyles.font3}>No limit for transfer.</TextM>
+            <TextM style={FontStyles.font3}>{'No limit for transfer.'}</TextM>
           </>
         )}
       </View>

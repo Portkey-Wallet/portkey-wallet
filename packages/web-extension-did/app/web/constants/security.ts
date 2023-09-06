@@ -16,3 +16,5 @@ export const SecurityVulnerabilityTitle = 'Upgrade Wallet Security Level';
 
 export const SecurityVulnerabilityTip =
   'You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding.';
+
+export const ExceedLimit = 'ExceedLimit';

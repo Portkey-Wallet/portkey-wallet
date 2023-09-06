@@ -27,6 +27,11 @@ export default function AboutUsBody() {
         label: 'Terms of service',
         link: `${OfficialWebsite}/terms-of-service`,
       },
+      {
+        icon: 'PortkeyPrivacyPolicy',
+        label: 'Privacy Policy',
+        link: `${OfficialWebsite}/privacy-policy`,
+      },
     ],
     [],
   );

@@ -1,7 +1,7 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
@@ -19,12 +19,38 @@ const AboutUs = () => {
   const socialMediaList = useSocialMediaList();
   const { s3Url } = useCurrentNetworkInfo();
 
+  const officialList = useMemo(
+    (): { iconName: IconName; title: string; onPress: () => void }[] => [
+      {
+        iconName: 'terms',
+        title: 'Terms of Service',
+        onPress: () => {
+          navigationService.navigate('ViewOnWebView', {
+            title: 'Terms of Service',
+            url: `${OfficialWebsite}/terms-of-service`,
+          });
+        },
+      },
+      {
+        iconName: 'privacy-policy',
+        title: 'Privacy Policy',
+        onPress: () => {
+          navigationService.navigate('ViewOnWebView', {
+            title: 'Privacy Policy',
+            url: `${OfficialWebsite}/privacy-policy`,
+          });
+        },
+      },
+    ],
+    [],
+  );
+
   return (
     <PageContainer
       titleDom={t('About Us')}
       safeAreaColor={['blue', 'gray']}
       containerStyles={styles.pageContainer}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: false }}>
       <View style={styles.logoWrap}>
         <Svg icon="app-blue-logo" oblongSize={[pTd(48.89), pTd(48.89)]} />
       </View>
@@ -45,17 +71,14 @@ const AboutUs = () => {
           </View>
         ))}
       </View>
-
-      <MenuItem
-        icon="terms"
-        title="Terms of Service"
-        onPress={() => {
-          navigationService.navigate('ViewOnWebView', {
-            title: 'Terms of Service',
-            url: `${OfficialWebsite}/terms-of-service`,
-          });
-        }}
-      />
+      <View style={styles.btnContainer}>
+        {officialList.map((item, index) => (
+          <View key={index}>
+            <MenuItem icon={item.iconName} title={item.title} onPress={() => item.onPress()} />
+            {index !== officialList.length - 1 && <Divider style={styles.dividerStyle} />}
+          </View>
+        ))}
+      </View>
     </PageContainer>
   );
 };

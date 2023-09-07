@@ -12,6 +12,7 @@ import switchApi from './switch';
 import discoverApi from './discover';
 import txFeeApi from './txFee';
 import imApi from './im';
+import privacyApi from './privacy';
 
 import esApi from './es';
 import myServer, { DidService } from './server';
@@ -56,6 +57,7 @@ export const EXPAND_APIS = {
   txFee: txFeeApi,
   im: imApi,
   security: securityApi,
+  privacy: privacyApi,
 };
 
 export type BASE_REQ_TYPES = {

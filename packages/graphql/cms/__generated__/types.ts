@@ -42,6 +42,7 @@ export type Query = {
   discoverItem_aggregated: Array<DiscoverItem_Aggregated>;
   discoverItem_by_id?: Maybe<DiscoverItem>;
   download?: Maybe<Download>;
+  entranceControl?: Maybe<EntranceControl>;
   home?: Maybe<Home>;
   mediaKit: Array<MediaKit>;
   mediaKitPage?: Maybe<MediaKitPage>;
@@ -1123,6 +1124,20 @@ export type DownloadIosQrCodeArgs = {
   page?: InputMaybe<Scalars['Int']>;
   search?: InputMaybe<Scalars['String']>;
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type EntranceControl = {
+  __typename?: 'entranceControl';
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  id: Scalars['ID'];
+  isAndroidBridgeShow?: Maybe<Scalars['Boolean']>;
+  isExtensionBridgeShow?: Maybe<Scalars['Boolean']>;
+  isIOSBridgeShow?: Maybe<Scalars['Boolean']>;
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
 };
 
 export type Home = {

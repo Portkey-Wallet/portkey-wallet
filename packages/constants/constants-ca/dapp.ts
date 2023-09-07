@@ -27,3 +27,9 @@ export enum ApproveMethod {
 }
 
 export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer', ApproveMethod.ca];
+export enum DappMap {
+  test = 'http://localhost:3000',
+}
+
+export const DAPP_WHITELIST: string[] = [DappMap.test];
+export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [MethodsBase.REQUEST_ACCOUNTS];

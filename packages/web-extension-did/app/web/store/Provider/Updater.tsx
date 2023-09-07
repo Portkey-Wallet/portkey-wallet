@@ -19,6 +19,7 @@ import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
 import {
   useBuyButton,
+  useEntranceControl,
   useRememberMeBlackList,
   useSocialMediaList,
   useTabMenuList,
@@ -87,6 +88,7 @@ export default function Updater() {
   usePhoneCountryCode(true);
   useSocialMediaList(true);
   useBuyButton(true);
+  useEntranceControl(true);
   useRememberMeBlackList(true);
   useTabMenuList(true);
   useCheckContactMap();

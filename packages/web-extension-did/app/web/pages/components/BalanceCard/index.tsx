@@ -12,9 +12,18 @@ export interface BalanceCardProps {
   onReceive?: () => void;
   onBuy?: () => void;
   isShowBuy?: boolean;
+  isShowBridge?: boolean;
+  onClickBridge?: () => void;
 }
 
-export default function BalanceCard({ onSend, onReceive, onBuy, isShowBuy }: BalanceCardProps) {
+export default function BalanceCard({
+  onSend,
+  onReceive,
+  onBuy,
+  isShowBuy,
+  isShowBridge,
+  onClickBridge,
+}: BalanceCardProps) {
   const { t } = useTranslation();
   const isMainNet = useIsMainnet();
 
@@ -40,10 +49,22 @@ export default function BalanceCard({ onSend, onReceive, onBuy, isShowBuy }: Bal
     [isMainNet, onBuy, t],
   );
 
+  const renderBridge = useMemo(
+    () =>
+      isShowBridge && (
+        <span className="send btn" onClick={onClickBridge}>
+          <CustomSvg type="Bridge" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Bridge')}</span>
+        </span>
+      ),
+    [isShowBridge, onClickBridge, t],
+  );
+
   return (
     <div className="balance-card">
       <div className="balance-btn">
         {renderBuy}
+        {renderBridge}
         <span className="send btn" onClick={onSend}>
           <CustomSvg type="RightTop" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Send')}</span>

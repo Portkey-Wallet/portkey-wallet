@@ -30,13 +30,16 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
-import { useBuyButtonShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBuyButtonShow, useIsBridgeShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
-import './index.less';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCheckSecurity } from 'hooks/useSecurity';
+import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+import BridgeModal from '../BridgeModal';
+import { EBRIDGE_ORIGIN } from '@portkey-wallet/constants/constants-ca/ebridge';
+import './index.less';
 
 export interface TransactionResult {
   total: number;
@@ -87,9 +90,12 @@ export default function MyBalance() {
   useFreshTokenPrice();
   useVerifierList();
   const { isBuyButtonShow } = useBuyButtonShow(VersionDeviceType.Extension);
+  const isShowBridge = useIsBridgeShow(VersionDeviceType.Extension);
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
   const checkSecurity = useCheckSecurity();
+  const { checkDappIsConfirmed } = useDisclaimer();
+  const [bridgeShow, setBridgeShow] = useState<boolean>(false);
 
   useEffect(() => {
     if (state?.key) {
@@ -181,6 +187,21 @@ export default function MyBalance() {
     }
   }, [isMainNet, navigate]);
 
+  const handleBridge = useCallback(async () => {
+    // STEP1
+    // TODO
+    // STEP2
+    if (checkDappIsConfirmed(EBRIDGE_ORIGIN)) {
+      const openWinder = window.open(EBRIDGE_ORIGIN, '_blank');
+      isPrompt && setBridgeShow(false);
+      if (openWinder) {
+        openWinder.opener = null;
+      }
+    } else {
+      setBridgeShow(true);
+    }
+  }, [checkDappIsConfirmed, isPrompt]);
+
   return (
     <div className="balance">
       {isShowChat && !isPrompt && (
@@ -202,6 +223,8 @@ export default function MyBalance() {
       <BalanceCard
         amount={accountBalance}
         isShowBuy={isBuyButtonShow}
+        isShowBridge={isShowBridge}
+        onClickBridge={handleBridge}
         onBuy={handleBuy}
         onSend={async () => {
           const res = await checkSecurity();
@@ -218,6 +241,7 @@ export default function MyBalance() {
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
       {isPrompt ? <PromptEmptyElement className="empty-element" /> : null}
+      <BridgeModal open={bridgeShow} onClose={() => setBridgeShow(false)} />
     </div>
   );
 }

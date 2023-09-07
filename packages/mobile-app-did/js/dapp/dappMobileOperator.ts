@@ -24,6 +24,8 @@ import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
 import {
   ApproveMethod,
   CA_METHOD_WHITELIST,
+  DAPP_WHITELIST,
+  DAPP_WHITELIST_ACTION_WHITELIST,
   REMEMBER_ME_ACTION_WHITELIST,
 } from '@portkey-wallet/constants/constants-ca/dapp';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
@@ -270,6 +272,10 @@ export default class DappMobileOperator extends Operator {
     method: keyof IDappOverlay;
     callBack: SendRequest;
   }) {
+    // is whitelist && is whitelist actions
+    if (DAPP_WHITELIST.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
+      return callBack(eventName, params);
+
     const validSession = await this.verifySessionInfo();
 
     // valid session && is remember me actions

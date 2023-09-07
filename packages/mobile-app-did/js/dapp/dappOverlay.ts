@@ -11,6 +11,7 @@ export type ApproveInfo = {
   symbol: string;
   amount: string;
   spender: string;
+  decimals: number;
 };
 
 export type ApproveParams = {

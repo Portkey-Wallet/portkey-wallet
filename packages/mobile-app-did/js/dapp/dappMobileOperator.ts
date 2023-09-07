@@ -29,6 +29,7 @@ import {
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
+import { ChainId } from '@portkey-wallet/types';
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
@@ -179,6 +180,19 @@ export default class DappMobileOperator extends Operator {
     };
   }
 
+  protected async getTokenContract(chainId: ChainId) {
+    const [chainInfo, caInfo] = await Promise.all([
+      this.dappManager.getChainInfo(chainId),
+      this.dappManager.getCaInfo(chainId),
+    ]);
+    if (!chainInfo?.endPoint || !caInfo?.caHash) return 'invalid chain id';
+
+    return {
+      chainInfo,
+      caInfo,
+      tokenContract: await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.defaultToken.address }),
+    };
+  }
   protected handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
     try {
       const info: any = await this.getCAContract(params, eventName);
@@ -269,16 +283,31 @@ export default class DappMobileOperator extends Operator {
 
   protected handleApprove = async (request: IRequestParams) => {
     const { payload, eventName } = request || {};
-    const { params, chainId } = payload || {};
+    const { params } = payload || {};
     const { symbol, amount, spender } = params?.paramsOption || {};
     // check approve input && check valid amount
     if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN())
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
-    const info = await this.dappOverlay.approve(this.dapp, { approveInfo: params?.paramsOption, eventName });
+
+    const contractInfo = await this.getTokenContract(payload.chainId);
+
+    if (typeof contractInfo === 'string')
+      return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: contractInfo });
+
+    const { tokenContract: contract, chainInfo } = contractInfo || {};
+
+    const tokenInfo = await contract?.callViewMethod('GetTokenInfo', { symbol });
+
+    if (tokenInfo?.error || !tokenInfo?.data.decimals)
+      return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: `${symbol} error` });
+
+    const info = await this.dappOverlay.approve(this.dapp, {
+      approveInfo: { ...params?.paramsOption, decimals: tokenInfo?.data.decimals },
+      eventName,
+    });
     if (!info) return this.userDenied(eventName);
     const { guardiansApproved, approveInfo } = info;
     const caHash = getCurrentCaHash();
-    const chainInfo = await this.dappManager.getChainInfo(chainId);
     return this.handleSendTransaction(eventName, {
       ...payload,
       method: ApproveMethod.ca,

@@ -1,9 +1,16 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useCallback, useMemo } from 'react';
-import { useCurrentWalletInfo } from './wallet';
+import { useCurrentWalletInfo, useWallet } from './wallet';
+import { useAppDispatch } from 'store/hooks';
+import { useAppCASelector } from '..';
+import { addDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
 
 export const useDisclaimer = () => {
   const { caHash, address } = useCurrentWalletInfo();
+  const { currentNetwork } = useWallet();
+  const dispatch = useAppDispatch();
+
+  const { disclaimerConfirmedMap: confirmedMap } = useAppCASelector(state => state.discover);
 
   const defaultParams = useMemo(
     () => ({
@@ -11,7 +18,7 @@ export const useDisclaimer = () => {
       caHash,
       // TODO: change url
       origin: 'https://www.ebridge.exchange',
-      scene: 1001,
+      scene: 1001, // location
       managerAddress: address,
       policyId: '',
     }),
@@ -19,25 +26,43 @@ export const useDisclaimer = () => {
   );
 
   const signPrivacyPolicy = useCallback(
-    (params?: {
-      policyVersion?: String;
-      caHash?: String;
-      origin?: String;
+    async (params: {
+      policyVersion?: string;
+      caHash?: string;
+      origin: string;
       scene?: number;
       managerAddress?: string;
       policyId: string;
     }) => {
       if (!caHash) return;
-
-      return request.privacy.privacyPolicy({
-        params: {
-          ...defaultParams,
-          ...params,
-        },
-      });
+      try {
+        await request.privacy.privacyPolicy({
+          params: {
+            ...defaultParams,
+            ...params,
+          },
+        });
+        dispatch(
+          addDisclaimerConfirmedDapp({
+            networkType: currentNetwork,
+            dappDomain: params?.origin || '',
+          }),
+        );
+      } catch (error) {
+        console.log(error);
+      }
     },
-    [caHash, defaultParams],
+    [caHash, currentNetwork, defaultParams, dispatch],
   );
 
-  return signPrivacyPolicy;
+  const checkDappIsConfirmed = useCallback(
+    (dappDomain: string): boolean => {
+      if (!confirmedMap?.[currentNetwork]) return false;
+      if (confirmedMap[currentNetwork]?.has(dappDomain)) return true;
+      return false;
+    },
+    [currentNetwork, confirmedMap],
+  );
+
+  return { signPrivacyPolicy, checkDappIsConfirmed };
 };

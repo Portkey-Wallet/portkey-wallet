@@ -7,25 +7,27 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
-import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import navigationService from 'utils/navigationService';
 import { ArchivedTabEnum } from 'pages/Discover/types';
 import NoDiscoverData from '../NoDiscoverData';
 import { useFocusEffect } from '@react-navigation/native';
 import { IBookmarkItem, ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
 
 export function DiscoverArchivedSection() {
   const discoverJump = useDiscoverJumpWithNetWork();
   const { bookmarkList: bookmarkListStore, refresh } = useBookmarkList();
   const recordsListStore = useRecordsList(true);
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const [index, setIndex] = React.useState(
     bookmarkListStore.length ? ArchivedTabEnum.Bookmarks : ArchivedTabEnum.History,
   );
 
-  const bookmarkList = useMemo(() => bookmarkListStore.slice(0, 4), [bookmarkListStore]);
-  const recordsList = useMemo(() => recordsListStore.slice(0, 4), [recordsListStore]);
+  const bookmarkList = useMemo((): IBookmarkItem[] => bookmarkListStore.slice(0, 4), [bookmarkListStore]);
+  const recordsList = useMemo((): IRecordsItemType[] => recordsListStore.slice(0, 4), [recordsListStore]);
   const isShowArchivedSections = useMemo(
     () => bookmarkList?.length > 0 || recordsList?.length > 0,
     [bookmarkList?.length, recordsList?.length],
@@ -36,11 +38,11 @@ export function DiscoverArchivedSection() {
   }, [index]);
 
   const onClickJump = useCallback(
-    (i: ITabItem | IBookmarkItem) => {
+    (i: ITabItem | IBookmarkItem | IRecordsItemType) => {
       discoverJump({
         item: {
           name: i?.name || '',
-          url: i?.url,
+          url: i?.url || '',
         },
       });
     },
@@ -91,9 +93,9 @@ export function DiscoverArchivedSection() {
                 {bookmarkList.map((item, idx) => (
                   <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
-                      <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
+                      <DiscoverWebsiteImage size={pTd(40)} imageUrl={getCmsWebsiteInfoImageUrl(item.url)} />
                       <TextS style={[styles.websiteName]} numberOfLines={2}>
-                        {item?.name || item?.url}
+                        {getCmsWebsiteInfoName(item?.name) || item?.name || item?.url}
                       </TextS>
                     </View>
                   </TouchableOpacity>
@@ -111,9 +113,9 @@ export function DiscoverArchivedSection() {
                 {recordsList.map((item, idx) => (
                   <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
-                      <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
+                      <DiscoverWebsiteImage size={pTd(40)} imageUrl={getCmsWebsiteInfoImageUrl(item.url || '')} />
                       <TextS style={[styles.websiteName]} numberOfLines={2}>
-                        {item?.name || item?.url}
+                        {getCmsWebsiteInfoName(item?.url || '') || item.name || item.url}
                       </TextS>
                     </View>
                   </TouchableOpacity>

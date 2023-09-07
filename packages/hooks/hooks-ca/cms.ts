@@ -15,7 +15,7 @@ import {
   getTabMenuAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
-import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { getFaviconUrl, getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
@@ -308,4 +308,37 @@ export const useIsChatShow = () => {
   }, [isIMServiceExist, networkType, tabMenuListNetMap]);
 
   return IsChatShow;
+};
+
+export const useGetCmsWebsiteInfo = () => {
+  const { cmsWebsiteMap } = useCMS();
+  const { s3Url } = useCurrentNetworkInfo();
+
+  const getCmsWebsiteInfoImageUrl = useCallback(
+    (domain: string): string => {
+      const target = cmsWebsiteMap?.[domain];
+      // if in cms
+      if (target) {
+        return `${s3Url}/${target?.imgUrl?.filename_disk}`;
+      } else {
+        return getFaviconUrl(domain);
+      }
+    },
+    [cmsWebsiteMap, s3Url],
+  );
+
+  const getCmsWebsiteInfoName = useCallback(
+    (domain: string) => {
+      const target = cmsWebsiteMap?.[domain];
+      if (target) {
+        return target?.title || '';
+      }
+    },
+    [cmsWebsiteMap],
+  );
+
+  return {
+    getCmsWebsiteInfoImageUrl,
+    getCmsWebsiteInfoName,
+  };
 };

@@ -2,27 +2,29 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useCallback, useMemo } from 'react';
 import { useCurrentWalletInfo, useWallet } from './wallet';
 import { useAppDispatch } from 'store/hooks';
-import { useAppCASelector } from '..';
+import { useAppCASelector } from './index';
 import { addDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useCurrentNetworkInfo } from './network';
+
+export const useDiscover = () => useAppCASelector(state => state.discover);
 
 export const useDisclaimer = () => {
   const { caHash, address } = useCurrentWalletInfo();
   const { currentNetwork } = useWallet();
   const dispatch = useAppDispatch();
-
-  const { disclaimerConfirmedMap: confirmedMap } = useAppCASelector(state => state.discover);
+  const { eBridgeUrl } = useCurrentNetworkInfo();
+  const { disclaimerConfirmedMap: confirmedMap } = useDiscover();
 
   const defaultParams = useMemo(
     () => ({
       policyVersion: '1',
       caHash,
-      // TODO: change url
-      origin: 'https://www.ebridge.exchange',
+      origin: eBridgeUrl,
       scene: 1001, // location
       managerAddress: address,
       policyId: '',
     }),
-    [address, caHash],
+    [address, caHash, eBridgeUrl],
   );
 
   const signPrivacyPolicy = useCallback(

@@ -17,13 +17,13 @@ import { EBRIDGE_DISCLAIMER_ARRAY, EBRIDGE_DISCLAIMER_TEXT } from '@portkey-wall
 import myEvents from 'utils/deviceEvent';
 import AElf from 'aelf-sdk';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import Loading from 'components/Loading';
-import CommonToast from 'components/CommonToast';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const ConnectModal = () => {
   const { t } = useLanguage();
+  const { eBridgeUrl } = useCurrentNetworkInfo();
 
-  const signDisclaimer = useDisclaimer();
+  const { signPrivacyPolicy } = useDisclaimer();
   const [selected, setSelected] = useState(false);
 
   return (
@@ -67,17 +67,12 @@ const ConnectModal = () => {
           title={'Confirm'}
           onPress={async () => {
             try {
-              Loading.show();
               const policyId = AElf.utils.sha256(EBRIDGE_DISCLAIMER_TEXT);
-              await signDisclaimer({ policyId });
+              await signPrivacyPolicy({ policyId, origin: eBridgeUrl || '' });
               OverlayModal.hide();
               navigationService.navigate('EBridge');
             } catch (error) {
               console.log('error', error);
-
-              CommonToast.failError('fail');
-            } finally {
-              Loading.hide();
             }
           }}
         />

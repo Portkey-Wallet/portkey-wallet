@@ -29,4 +29,7 @@ export interface IDiscoverStateType {
   initializedList?: Set<number>;
   activeTabId?: number;
   autoApproveMap?: { [id: number]: true };
+  disclaimerConfirmedMap?: {
+    [key in NetworkType]?: Set<string>;
+  };
 }

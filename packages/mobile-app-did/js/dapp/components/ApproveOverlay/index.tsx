@@ -60,12 +60,13 @@ const ApproveModal = (props: SignModalPropsType) => {
         type: 'primary' as CommonButtonProps['type'],
         disabled: !symbolNum.trim(),
         onPress: async () => {
+          const amount = timesDecimals(symbolNum, approveParams.approveInfo.decimals);
           navigationService.navigate('GuardianApproval', {
             approveParams: {
               eventName: approveParams.eventName,
               approveInfo: {
                 ...approveParams.approveInfo,
-                amount: timesDecimals(symbolNum, approveParams.approveInfo.decimals).valueOf(),
+                amount: (LANG_MAX.lt(amount) ? LANG_MAX : amount).valueOf(),
               },
             } as ApproveParams,
             approvalType: ApprovalType.managerApprove,

@@ -56,8 +56,8 @@ export function useCheckTransferLimit() {
       }
       if (!dailyLimit || !dailyBalance || !singleBalance || dailyBalance.isNaN() || singleBalance.isNaN()) return;
       return {
-        isDailyLimited: bigAmount.gt(dailyBalance),
-        isSingleLimited: bigAmount.gt(singleBalance),
+        isDailyLimited: !dailyLimit.eq(-1) && bigAmount.gt(dailyBalance),
+        isSingleLimited: !singleBalance.eq(-1) && bigAmount.gt(singleBalance),
         dailyLimit,
         showDailyLimit: divDecimals(dailyLimit, decimals),
         dailyBalance,

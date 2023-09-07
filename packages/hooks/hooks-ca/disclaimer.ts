@@ -1,14 +1,13 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useCallback, useMemo } from 'react';
 import { useCurrentWalletInfo, useWallet } from './wallet';
-import { useAppDispatch } from 'store/hooks';
-import { useAppCASelector } from '..';
+import { useAppCASelector, useAppCommonDispatch } from '..';
 import { addDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
 
 export const useDisclaimer = () => {
   const { caHash, address } = useCurrentWalletInfo();
   const { currentNetwork } = useWallet();
-  const dispatch = useAppDispatch();
+  const dispatch = useAppCommonDispatch();
 
   const { disclaimerConfirmedMap: confirmedMap } = useAppCASelector(state => state.discover);
 

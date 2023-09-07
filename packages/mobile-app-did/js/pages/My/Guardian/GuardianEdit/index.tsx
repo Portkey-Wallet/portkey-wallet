@@ -503,7 +503,7 @@ const GuardianEdit: React.FC = () => {
     if (isEdit) {
       return (
         <View style={pageStyles.accountWrap}>
-          <TextM style={pageStyles.accountLabel}>Guardian Apple</TextM>
+          <TextM style={pageStyles.accountLabel}>Guardian {LoginType[editGuardian?.guardianType || 0]}</TextM>
           <GuardianAccountItem guardian={editGuardian} />
         </View>
       );

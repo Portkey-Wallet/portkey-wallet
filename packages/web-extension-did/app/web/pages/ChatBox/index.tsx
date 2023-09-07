@@ -21,6 +21,7 @@ import { MAX_FILE_SIZE, MAX_INPUT_LENGTH } from '@portkey-wallet/constants/const
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { formatImageSize } from '@portkey-wallet/utils/img';
 import './index.less';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -162,7 +163,7 @@ export default function ChatBox() {
       },
     });
   }, [exit, navigate, t]);
-  const handleAddContact = useCallback(async () => {
+  const handleAddContact = useLockCallback(async () => {
     try {
       setLoading(true);
       const res = await addContactApi(info?.toRelationId || '');

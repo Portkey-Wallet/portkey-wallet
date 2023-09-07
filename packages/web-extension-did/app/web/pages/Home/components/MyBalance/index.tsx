@@ -36,6 +36,7 @@ import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useCheckSecurity } from 'hooks/useSecurity';
 
 export interface TransactionResult {
   total: number;
@@ -88,6 +89,7 @@ export default function MyBalance() {
   const { isBuyButtonShow } = useBuyButtonShow(VersionDeviceType.Extension);
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
+  const checkSecurity = useCheckSecurity();
 
   useEffect(() => {
     if (state?.key) {
@@ -201,9 +203,12 @@ export default function MyBalance() {
         amount={accountBalance}
         isShowBuy={isBuyButtonShow}
         onBuy={handleBuy}
-        onSend={() => {
-          setNavTarget('send');
-          return setTokenOpen(true);
+        onSend={async () => {
+          const res = await checkSecurity();
+          if (typeof res === 'boolean') {
+            setNavTarget('send');
+            return setTokenOpen(true);
+          }
         }}
         onReceive={() => {
           setNavTarget('receive');

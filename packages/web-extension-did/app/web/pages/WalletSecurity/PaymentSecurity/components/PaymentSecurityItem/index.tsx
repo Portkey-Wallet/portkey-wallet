@@ -22,9 +22,9 @@ export default function PaymentSecurityItem({
         ) : (
           <div className="token-logo custom-word-logo">{item.symbol?.slice(0, 1)}</div>
         )}
-        <div>
-          <div>{item.symbol}</div>
-          <div>{transNetworkText(item.chainId, !isMainnet)}</div>
+        <div className="token-info">
+          <div className="token-symbol">{item.symbol}</div>
+          <div className="token-network">{transNetworkText(item.chainId, !isMainnet)}</div>
         </div>
       </div>
       <CustomSvg type="LeftArrow" className="left-arrow" />

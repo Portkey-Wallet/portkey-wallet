@@ -37,6 +37,7 @@ export default function VerifierAccount() {
     | 'guardians/del'
     | 'guardians/setLoginAccount'
     | 'removeManage'
+    | 'setTransferLimit'
   >();
   const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
@@ -47,7 +48,10 @@ export default function VerifierAccount() {
   const { passwordSeed } = useUserInfo();
   const getGuardianList = useGuardianList();
   const isBigScreenPrompt = useMemo(
-    () => (isNotLessThan768 ? state.includes('guardian') || state.includes('removeManage') : false),
+    () =>
+      isNotLessThan768
+        ? state.includes('guardian') || state.includes('removeManage') || state.includes('setTransferLimit')
+        : false,
     [isNotLessThan768, state],
   );
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult('register');
@@ -127,6 +131,24 @@ export default function VerifierAccount() {
           identifierHash: guardianIdentifier,
         }),
       );
+      navigate('/setting/wallet-security/payment-security/guardian-approval', { state: state });
+    },
+    [currentGuardian, dispatch, navigate, state],
+  );
+
+  const onSuccessInSetTransferLimit = useCallback(
+    (res: VerifierInfo) => {
+      if (!currentGuardian) return;
+      const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      dispatch(
+        setUserGuardianItemStatus({
+          key: currentGuardian.key,
+          status: VerifyStatus.Verified,
+          signature: res.signature,
+          verificationDoc: res.verificationDoc,
+          identifierHash: guardianIdentifier,
+        }),
+      );
       navigate('/setting/wallet-security/manage-devices/guardian-approval', { state: state });
     },
     [currentGuardian, dispatch, navigate, state],
@@ -158,6 +180,8 @@ export default function VerifierAccount() {
         message.success('Verified Successful');
       } else if (state?.indexOf('removeManage') !== -1) {
         onSuccessInRemoveOtherManage(res);
+      } else if (state?.indexOf('setTransferLimit') !== -1) {
+        onSuccessInSetTransferLimit(res);
       } else {
         message.error('Router state error');
       }
@@ -171,6 +195,7 @@ export default function VerifierAccount() {
       currentGuardian,
       onSuccessInGuardian,
       onSuccessInRemoveOtherManage,
+      onSuccessInSetTransferLimit,
     ],
   );
 
@@ -185,6 +210,10 @@ export default function VerifierAccount() {
       navigate('/setting/guardians/view');
     } else if (state.indexOf('guardians') !== -1) {
       navigate('/setting/guardians/guardian-approval', { state: state });
+    } else if (state.indexOf('setTransferLimit') !== -1) {
+      // TODO
+      const transState = state.split('_')[1];
+      navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, { state: JSON.parse(transState) });
     } else {
       navigate(-1);
     }
@@ -212,6 +241,8 @@ export default function VerifierAccount() {
       default:
         if (state && state?.indexOf('removeManage') !== -1) {
           return OperationTypeEnum.removeOtherManager;
+        } else if (state && state?.indexOf('setTransferLimit') !== -1) {
+          return OperationTypeEnum.modifyTransferLimit;
         } else {
           return OperationTypeEnum.unknown;
         }

@@ -4,7 +4,7 @@ import { pTd } from 'utils/unit';
 import { Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import { Image } from 'react-native';
+import CacheImage from 'components/CacheImage';
 
 interface CommonAvatarProps {
   title?: string;
@@ -54,7 +54,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
 
   if (imageUrl)
     return (
-      <Image
+      <CacheImage
         resizeMode={'contain'}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
         source={{

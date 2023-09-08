@@ -18,6 +18,11 @@ export const fetchAllTokenListAsync = createAsyncThunk(
 );
 
 export const getSymbolImagesAsync = createAsyncThunk('tokenManagement/getSymbolImagesAsync', async () => {
-  const response = await request.assets.getSymbolImages({});
-  return response.symbolImages;
+  try {
+    const { symbolImagesMap } = await request.assets.getSymbolImages({});
+    return symbolImagesMap;
+  } catch (error) {
+    console.log(error);
+    return {};
+  }
 });

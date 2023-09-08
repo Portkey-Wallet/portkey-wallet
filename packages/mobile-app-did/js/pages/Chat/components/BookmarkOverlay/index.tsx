@@ -8,7 +8,6 @@ import Touchable from 'components/Touchable';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
-import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { pTd } from 'utils/unit';
 import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
@@ -16,6 +15,7 @@ import Lottie from 'lottie-react-native';
 import useEffectOnce from 'hooks/useEffectOnce';
 import NoData from 'components/NoData';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 type SelectListProps = {
   onPressCallBack: (item: IBookmarkItem) => void;
@@ -24,6 +24,7 @@ type SelectListProps = {
 const BookmarksOverlay = (props: SelectListProps) => {
   const { onPressCallBack } = props;
   const { bookmarkList, refresh } = useBookmarkList();
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const [initializing, setInitializing] = useState(true);
   const [totalAccount, setTotalAccount] = useState(0);
@@ -34,9 +35,17 @@ const BookmarksOverlay = (props: SelectListProps) => {
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter, BGStyles.bg1, styles.itemWrap]}
           onPress={() => onPressCallBack(item)}>
-          <DiscoverWebsiteImage imageUrl={getFaviconUrl(item.url)} size={pTd(40)} style={styles.websiteIconStyle} />
+          <DiscoverWebsiteImage
+            imageUrl={getCmsWebsiteInfoImageUrl(item.url)}
+            size={pTd(40)}
+            style={styles.websiteIconStyle}
+          />
           <View style={styles.infoWrap}>
-            <TextWithProtocolIcon title={item?.name} url={item.url} textFontSize={pTd(16)} />
+            <TextWithProtocolIcon
+              title={getCmsWebsiteInfoName(item.url) || item?.name}
+              url={item.url}
+              textFontSize={pTd(16)}
+            />
             <TextS style={[FontStyles.font7]} numberOfLines={1} ellipsizeMode="tail">
               {item?.url}
             </TextS>
@@ -44,7 +53,7 @@ const BookmarksOverlay = (props: SelectListProps) => {
         </Touchable>
       );
     },
-    [onPressCallBack],
+    [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, onPressCallBack],
   );
 
   const fetchBookmarkList = useLockCallback(async () => {

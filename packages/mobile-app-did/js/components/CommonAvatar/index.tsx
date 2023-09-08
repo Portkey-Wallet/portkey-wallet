@@ -5,6 +5,8 @@ import { Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import CacheImage from 'components/CacheImage';
+import { checkIsSvgUrl } from 'utils';
+import { SvgCssUri } from 'react-native-svg';
 
 interface CommonAvatarProps {
   title?: string;
@@ -52,8 +54,13 @@ export default function CommonAvatar(props: CommonAvatarProps) {
       />
     );
 
-  if (imageUrl)
-    return (
+  if (imageUrl) {
+    return checkIsSvgUrl(imageUrl) ? (
+      <SvgCssUri
+        uri={imageUrl}
+        style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
+      />
+    ) : (
       <CacheImage
         resizeMode={'contain'}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
@@ -62,6 +69,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
         }}
       />
     );
+  }
 
   return (
     <Text

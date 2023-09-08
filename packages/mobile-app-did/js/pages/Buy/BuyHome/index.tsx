@@ -1,5 +1,5 @@
 import { defaultColors } from 'assets/theme';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
@@ -14,6 +14,13 @@ import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import ActionSheet from 'components/ActionSheet';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { checkSecurity } from '@portkey-wallet/utils/securityTest';
+import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import Loading from 'components/Loading';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import useEffectOnce from 'hooks/useEffectOnce';
+import CommonToast from 'components/CommonToast';
 
 type TabItemType = {
   name: string;
@@ -39,12 +46,28 @@ export default function BuyHome() {
   const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow(
     Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
   );
+  const { caHash } = useCurrentWalletInfo();
+
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
     isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
   );
 
-  const onTabPress = useCallback(
-    (type: PaymentTypeEnum) => {
+  useEffectOnce(() => {
+    (async () => {
+      if (!isBuySectionShow) {
+        try {
+          const isSafe = await checkSecurity(caHash || '');
+          if (!isSafe) return WalletSecurityOverlay.alert();
+        } catch (error) {
+          console.log('error', error);
+          return;
+        }
+      }
+    })();
+  });
+
+  const onTabPress = useLockCallback(
+    async (type: PaymentTypeEnum) => {
       if (type === PaymentTypeEnum.BUY && !isBuySectionShow) {
         ActionSheet.alert({
           title2: (
@@ -69,9 +92,22 @@ export default function BuyHome() {
         refreshBuyButton();
         return;
       }
+
+      if (type === PaymentTypeEnum.SELL) {
+        Loading.show();
+        try {
+          const isSafe = await checkSecurity(caHash || '');
+          if (!isSafe) return WalletSecurityOverlay.alert();
+        } catch (error) {
+          CommonToast.failError(error);
+          return;
+        } finally {
+          Loading.hide();
+        }
+      }
       setSelectTab(type);
     },
-    [isBuySectionShow, isSellSectionShow, refreshBuyButton],
+    [caHash, isBuySectionShow, isSellSectionShow, refreshBuyButton],
   );
 
   return (

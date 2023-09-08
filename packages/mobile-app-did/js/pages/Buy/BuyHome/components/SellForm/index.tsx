@@ -45,6 +45,8 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import ActionSheet from 'components/ActionSheet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { checkSecurity } from '@portkey-wallet/utils/securityTest';
+import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
@@ -194,7 +196,19 @@ export default function SellForm() {
     }
 
     try {
-      Loading.show();
+      const isSafe = await checkSecurity(wallet?.caHash || '');
+      if (!isSafe) {
+        Loading.hide();
+        return WalletSecurityOverlay.alert();
+      }
+    } catch (error) {
+      CommonToast.failError(error);
+      Loading.hide();
+      return;
+    } finally {
+    }
+
+    try {
       const _isManagerSynced = await checkManagerSyncState(chainId);
       if (!_isManagerSynced) {
         setAmountLocalError({

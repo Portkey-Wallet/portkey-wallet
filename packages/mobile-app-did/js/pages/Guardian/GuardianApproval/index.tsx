@@ -104,7 +104,9 @@ export default function GuardianApproval() {
   const { t } = useLanguage();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
 
-  const getCurrentCAContract = useGetCurrentCAContract();
+  const getCurrentCAContract = useGetCurrentCAContract(
+    approvalType === ApprovalType.modifyTransferLimit ? paymentSecurityDetail?.chainId : undefined,
+  );
   const [authenticationInfo, setAuthenticationInfo] = useState<AuthenticationInfo>(_authenticationInfo || {});
   useEffectOnce(() => {
     const listener = myEvents.setAuthenticationInfo.addListener((item: AuthenticationInfo) => {
@@ -337,9 +339,11 @@ export default function GuardianApproval() {
           navigationService.pop(2);
         }
       } else {
+        console.log('onModifyTransferLimit: req?.error?.message', req?.error?.message);
         CommonToast.fail(req?.error?.message || '');
       }
     } catch (error) {
+      console.log('onModifyTransferLimit: error', error);
       CommonToast.failError(error);
     }
     Loading.hide();

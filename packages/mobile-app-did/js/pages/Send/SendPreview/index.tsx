@@ -128,15 +128,6 @@ const SendHome: React.FC = () => {
         return;
       }
       const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
-      console.log(
-        sendNumber,
-        isDailyLimited,
-        isSingleLimited,
-        'dailyLimit',
-        dailyLimit.toString(),
-        'singleBalance',
-        singleBalance.toString(),
-      );
       if (isDailyLimited || isSingleLimited) {
         ActionSheet.alert({
           title2: isDailyLimited

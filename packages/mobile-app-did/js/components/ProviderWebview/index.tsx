@@ -12,6 +12,8 @@ import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import * as Application from 'expo-application';
+
 export interface IWebView {
   goBack: WebView['goBack'];
   reload: WebView['reload'];
@@ -131,7 +133,7 @@ const ProviderWebview = forwardRef<
       style={styles.webView}
       decelerationRate="normal"
       injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
-      applicationNameForUserAgent={'WebView Portkey did Mobile'}
+      applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
       {...props}
       onLoadStart={event => {
         onLoadStart(event);

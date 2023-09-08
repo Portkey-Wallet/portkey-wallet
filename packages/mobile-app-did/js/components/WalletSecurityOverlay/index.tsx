@@ -10,8 +10,15 @@ import { TextM, TextXL } from 'components/CommonText';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useAppDispatch } from 'store/hooks';
+import { sleep } from '@portkey-wallet/utils';
+import { useAppCASelector } from '@portkey-wallet/hooks';
 
 function AlertBody() {
+  const dispatch = useAppDispatch();
+  const isDrawerOpen = useAppCASelector(state => state.discover.isDrawerOpen);
+
   const buttons = useMemo((): {
     title: string;
     type: CommonButtonProps['type'];
@@ -28,13 +35,17 @@ function AlertBody() {
       {
         title: 'Add Guardians',
         type: 'primary',
-        onPress: () => {
-          OverlayModal.hide();
+        onPress: async () => {
           navigationService.navigate('GuardianHome');
+          OverlayModal.hide();
+          if (isDrawerOpen) {
+            await sleep(250);
+            dispatch(changeDrawerOpenStatus(false));
+          }
         },
       },
     ];
-  }, []);
+  }, [dispatch, isDrawerOpen]);
 
   return (
     <View style={styles.alertBox}>

@@ -51,7 +51,7 @@ const ApproveModal = (props: SignModalPropsType) => {
             } as ApproveParams,
             approvalType: ApprovalType.managerApprove,
           });
-          await sleep(200);
+          await sleep(250);
           dispatch(changeDrawerOpenStatus(false));
           OverlayModal.hide();
         },

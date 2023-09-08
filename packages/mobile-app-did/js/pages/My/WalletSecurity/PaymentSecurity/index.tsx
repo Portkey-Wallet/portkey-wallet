@@ -135,7 +135,8 @@ const PaymentSecurityList: React.FC = () => {
 
   useEffect(() => {
     const listener = myEvents.refreshPaymentSecurityList.addListener(() => {
-      getList();
+      console.log('refreshPaymentSecurityList');
+      getList(true);
     });
     return () => {
       listener.remove();

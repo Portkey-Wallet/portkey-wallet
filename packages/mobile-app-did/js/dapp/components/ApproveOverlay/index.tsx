@@ -22,8 +22,8 @@ import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
-import { LANG_MAX } from '@portkey-wallet/constants/misc';
-import { parseInputIntegerChange } from '@portkey-wallet/utils/input';
+import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
+import { parseInputChange } from '@portkey-wallet/utils/input';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -92,7 +92,7 @@ const ApproveModal = (props: SignModalPropsType) => {
   const onChangeText = useCallback(
     (v: string) => {
       if (MAX_NUM.isLessThan(v)) return;
-      setSymbolNum(parseInputIntegerChange(v));
+      setSymbolNum(parseInputChange(v.trim(), ZERO));
     },
     [MAX_NUM],
   );

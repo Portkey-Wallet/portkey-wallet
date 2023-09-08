@@ -21,7 +21,7 @@ import { ApprovalType } from '@portkey-wallet/types/verifier';
 import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
-import { divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import { parseInputIntegerChange } from '@portkey-wallet/utils/input';
 
@@ -38,6 +38,11 @@ const ApproveModal = (props: SignModalPropsType) => {
 
   const [errorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
+
+  const MAX_NUM = useMemo(
+    () => divDecimals(LANG_MAX, approveParams.approveInfo.decimals),
+    [approveParams.approveInfo.decimals],
+  );
 
   const ButtonList = useMemo(
     (): {
@@ -66,7 +71,7 @@ const ApproveModal = (props: SignModalPropsType) => {
               eventName: approveParams.eventName,
               approveInfo: {
                 ...approveParams.approveInfo,
-                amount: (LANG_MAX.lt(amount) ? LANG_MAX : amount).valueOf(),
+                amount: (LANG_MAX.lt(amount) ? LANG_MAX : amount).toFixed(0),
               },
             } as ApproveParams,
             approvalType: ApprovalType.managerApprove,
@@ -81,14 +86,16 @@ const ApproveModal = (props: SignModalPropsType) => {
   );
 
   const onPressMax = useCallback(() => {
-    setSymbolNum(LANG_MAX.valueOf());
-  }, []);
+    setSymbolNum(MAX_NUM.toFixed(0));
+  }, [MAX_NUM]);
 
-  const onChangeText = useCallback((v: string) => {
-    if (LANG_MAX.isLessThan(v)) return;
-
-    setSymbolNum(parseInputIntegerChange(v));
-  }, []);
+  const onChangeText = useCallback(
+    (v: string) => {
+      if (MAX_NUM.isLessThan(v)) return;
+      setSymbolNum(parseInputIntegerChange(v));
+    },
+    [MAX_NUM],
+  );
 
   const onUseRecommendedValue = useCallback(() => {
     setSymbolNum(divDecimalsStr(approveParams.approveInfo.amount, approveParams.approveInfo.decimals));

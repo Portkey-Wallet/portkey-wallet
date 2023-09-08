@@ -1,8 +1,7 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useCallback, useMemo } from 'react';
 import { useCurrentWalletInfo, useWallet } from './wallet';
-import { useAppDispatch } from 'store/hooks';
-import { useAppCASelector } from './index';
+import { useAppCASelector, useAppCommonDispatch } from '..';
 import { addDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useCurrentNetworkInfo } from './network';
 
@@ -11,9 +10,9 @@ export const useDiscover = () => useAppCASelector(state => state.discover);
 export const useDisclaimer = () => {
   const { caHash, address } = useCurrentWalletInfo();
   const { currentNetwork } = useWallet();
-  const dispatch = useAppDispatch();
   const { eBridgeUrl } = useCurrentNetworkInfo();
-  const { disclaimerConfirmedMap: confirmedMap } = useDiscover();
+  const { disclaimerConfirmedMap } = useDiscover();
+  const dispatch = useAppCommonDispatch();
 
   const defaultParams = useMemo(
     () => ({
@@ -59,11 +58,11 @@ export const useDisclaimer = () => {
 
   const checkDappIsConfirmed = useCallback(
     (dappDomain: string): boolean => {
-      if (!confirmedMap?.[currentNetwork]) return false;
-      if (confirmedMap[currentNetwork]?.has(dappDomain)) return true;
+      if (!disclaimerConfirmedMap?.[currentNetwork]) return false;
+      if (disclaimerConfirmedMap[currentNetwork]?.has(dappDomain)) return true;
       return false;
     },
-    [currentNetwork, confirmedMap],
+    [currentNetwork, disclaimerConfirmedMap],
   );
 
   return { signPrivacyPolicy, checkDappIsConfirmed };

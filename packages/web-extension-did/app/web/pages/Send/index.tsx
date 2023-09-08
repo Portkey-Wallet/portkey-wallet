@@ -35,6 +35,8 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
+import { useCheckLimit } from 'hooks/useSecurity';
+import { ExceedLimit } from 'constants/security';
 
 export type Account = { address: string; name?: string };
 
@@ -116,7 +118,6 @@ export default function Send() {
   const retryCrossChain = useCallback(
     async ({ transactionId, params }: the2ThFailedActivityItemType) => {
       try {
-        //
         if (!chainInfo) return;
         const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
         if (!privateKey) return;
@@ -194,6 +195,8 @@ export default function Send() {
     ],
   );
 
+  const checkLimit = useCheckLimit();
+
   const handleCheckPreview = useCallback(async () => {
     try {
       setLoading(true);
@@ -203,6 +206,16 @@ export default function Send() {
         return 'Synchronizing on-chain account information...';
       }
       if (type === 'token') {
+        // transfer limit check
+        const res = await checkLimit({
+          chainId: tokenInfo.chainId,
+          symbol: tokenInfo.symbol,
+          amount: amount,
+          decimals: tokenInfo.decimals,
+        });
+        if (typeof res !== 'boolean') return ExceedLimit;
+
+        // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           return TransactionError.TOKEN_NOT_ENOUGH;
         }
@@ -235,10 +248,13 @@ export default function Send() {
   }, [
     setLoading,
     amount,
-    type,
     checkManagerSyncState,
     state.chainId,
+    type,
     getTranslationInfo,
+    checkLimit,
+    tokenInfo.chainId,
+    tokenInfo.symbol,
     tokenInfo.decimals,
     balance,
     toAccount.address,
@@ -255,36 +271,14 @@ export default function Send() {
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
 
-      const singleTransactionOverage = true;
-      const dailyTransactionOverage = true;
-      if (singleTransactionOverage) {
-        return Modal.confirm({
-          width: 320,
-          content: t(
-            'Exceeded the maximum of per transaction limit，if you wish to proceed，please modify the transfer amount.',
-          ),
-          className: 'cross-modal',
-          autoFocusButton: null,
-          icon: null,
-          centered: true,
-          okText: t('Modify'),
-          cancelText: t('Cancel'),
-          onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings'), // TODO state
-        });
-      }
-      if (dailyTransactionOverage) {
-        return Modal.confirm({
-          width: 320,
-          content: t('Exceeded today‘s maximum limit，if you wish to proceed，please modify the transfer amount.'),
-          className: 'cross-modal',
-          autoFocusButton: null,
-          icon: null,
-          centered: true,
-          okText: t('Modify'),
-          cancelText: t('Cancel'),
-          onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings'), // TODO state
-        });
-      }
+      // transfer limit check
+      const res = await checkLimit({
+        chainId: tokenInfo.chainId,
+        symbol: tokenInfo.symbol,
+        amount: amount,
+        decimals: tokenInfo.decimals,
+      });
+      if (typeof res !== 'boolean') return ExceedLimit;
 
       setLoading(true);
 
@@ -334,6 +328,7 @@ export default function Send() {
   }, [
     amount,
     chainInfo,
+    checkLimit,
     currentNetwork.walletType,
     defaultToken.decimals,
     dispatch,
@@ -344,7 +339,9 @@ export default function Send() {
     toAccount.address,
     tokenInfo,
     txFee,
-    wallet,
+    wallet.AESEncryptPrivateKey,
+    wallet.address,
+    wallet?.caHash,
   ]);
 
   const StageObj: TypeStageObj = useMemo(
@@ -395,6 +392,7 @@ export default function Send() {
         handler: async () => {
           const res = await handleCheckPreview();
           console.log('handleCheckPreview res', res);
+          if (res === ExceedLimit) return;
           if (!res) {
             setTipMsg('');
             setStage(Stage.Preview);

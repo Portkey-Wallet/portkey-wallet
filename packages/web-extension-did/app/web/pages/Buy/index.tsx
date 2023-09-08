@@ -45,6 +45,7 @@ import {
   SYNCHRONIZING_CHAIN_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -69,6 +70,8 @@ export default function Buy() {
   useFetchTxFee();
   const { ach: achFee } = useGetTxFee('AELF');
   const defaultToken = useDefaultToken('AELF');
+  const checkSecurity = useCheckSecurity();
+  const checkLimit = useCheckLimit();
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(
@@ -298,6 +301,12 @@ export default function Buy() {
         return;
       }
 
+      // check security
+      if (side === PaymentTypeEnum.SELL) {
+        const res = await checkSecurity();
+        if (typeof res !== 'boolean') return;
+      }
+
       stopInterval();
       setPage(side);
       // BUY
@@ -326,7 +335,7 @@ export default function Buy() {
         setLoading(false);
       }
     },
-    [isBuySectionShow, isSellSectionShow, refreshBuyButton, setLoading, stopInterval, t, updateCrypto],
+    [checkSecurity, isBuySectionShow, isSellSectionShow, refreshBuyButton, setLoading, stopInterval, t, updateCrypto],
   );
 
   const handleSelect = useCallback(
@@ -398,6 +407,15 @@ export default function Buy() {
         setWarningMsg('');
       }
 
+      // transfer limit check
+      const res = await checkLimit({
+        chainId: 'AELF',
+        symbol: defaultToken.symbol,
+        amount: valueSaveRef.current?.amount,
+        decimals: defaultToken.decimals,
+      });
+      if (typeof res !== 'boolean') return;
+
       // search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
@@ -437,6 +455,7 @@ export default function Buy() {
   }, [
     accountTokenList,
     achFee,
+    checkLimit,
     checkManagerSyncState,
     currentChain,
     currentNetwork.walletType,

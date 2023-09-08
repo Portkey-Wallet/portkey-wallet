@@ -311,6 +311,14 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/payment-security/transfer-settings-edit',
               element: <TransferSettingsEdit />,
             },
+            {
+              path: '/setting/wallet-security/payment-security/verifier-account',
+              element: <VerifierAccount />,
+            },
+            {
+              path: '/setting/wallet-security/payment-security/guardian-approval',
+              element: <GuardianApproval />,
+            },
           ],
         },
       ],
@@ -432,6 +440,14 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/payment-security/transfer-settings-edit',
       element: <TransferSettingsEdit />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/verifier-account',
+      element: <VerifierAccount />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/guardian-approval',
+      element: <GuardianApproval />,
     },
   ];
 

@@ -12,6 +12,7 @@ export default function PaymentSecurityPopup({
   clickItem,
   hasMore,
   loadMore,
+  noDataText,
 }: IPaymentSecurityProps) {
   return (
     <div className="payment-security-popup min-width-max-height">
@@ -23,8 +24,13 @@ export default function PaymentSecurityPopup({
         />
       </div>
       <div>
-        <PaymentSecurityList list={list} clickItem={clickItem} />
-        <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
+        {list.length > 0 && (
+          <>
+            <PaymentSecurityList list={list} clickItem={clickItem} />
+            <LoadingMore hasMore={hasMore} loadMore={loadMore} className="load-more" />
+          </>
+        )}
+        {!list || (list?.length === 0 && <div className="no-data-text">{noDataText}</div>)}
       </div>
     </div>
   );

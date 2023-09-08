@@ -4,9 +4,9 @@ import { pTd } from 'utils/unit';
 import { Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import CacheImage from 'components/CacheImage';
 import { checkIsSvgUrl } from 'utils';
 import { SvgCssUri } from 'react-native-svg';
+import FastImage from 'components/FastImage';
 
 interface CommonAvatarProps {
   title?: string;
@@ -61,7 +61,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
       />
     ) : (
-      <CacheImage
+      <FastImage
         resizeMode={'contain'}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
         source={{

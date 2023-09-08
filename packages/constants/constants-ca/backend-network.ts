@@ -20,6 +20,8 @@ export const BackEndNetWorkMap: {
     imApiUrl: 'http://192.168.66.243:5007',
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-testnet',
+    // TODO: change to test1
+    eBridgeUrl: 'https://ebridge.exchange',
   },
   'back-end-test2': {
     name: 'aelf Mainnet',
@@ -51,6 +53,7 @@ export const BackEndNetWorkMap: {
     cmsUrl: 'https://cms-test.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
     portkeyFinanceUrl: 'https://test.portkey.finance',
+    eBridgeUrl: 'https://test.ebridge.exchange',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -72,5 +75,6 @@ export const BackEndNetWorkMap: {
     imApiUrl: 'https://im.portkey.finance',
     imWsUrl: 'wss://diok8uqxgvc3.cloudfront.net/ws/',
     imS3Bucket: 'portkey-im',
+    eBridgeUrl: 'https://ebridge.exchange',
   },
 };

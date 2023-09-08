@@ -1,27 +1,29 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useCallback, useMemo } from 'react';
 import { useCurrentWalletInfo, useWallet } from './wallet';
-import { useAppCASelector, useAppCommonDispatch } from '..';
+import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { addDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
+import { useCurrentNetworkInfo } from './network';
+
+export const useDiscover = () => useAppCASelector(state => state.discover);
 
 export const useDisclaimer = () => {
   const { caHash, address } = useCurrentWalletInfo();
   const { currentNetwork } = useWallet();
+  const { eBridgeUrl } = useCurrentNetworkInfo();
+  const { disclaimerConfirmedMap } = useDiscover();
   const dispatch = useAppCommonDispatch();
-
-  const { disclaimerConfirmedMap: confirmedMap } = useAppCASelector(state => state.discover);
 
   const defaultParams = useMemo(
     () => ({
       policyVersion: '1',
       caHash,
-      // TODO: change url
-      origin: 'https://www.ebridge.exchange',
+      origin: eBridgeUrl,
       scene: 1001, // location
       managerAddress: address,
       policyId: '',
     }),
-    [address, caHash],
+    [address, caHash, eBridgeUrl],
   );
 
   const signPrivacyPolicy = useCallback(
@@ -48,19 +50,15 @@ export const useDisclaimer = () => {
           }),
         );
       } catch (error) {
-        console.log(error);
+        console.log('signPrivacyPolicy error', error);
       }
     },
     [caHash, currentNetwork, defaultParams, dispatch],
   );
 
   const checkDappIsConfirmed = useCallback(
-    (dappDomain: string): boolean => {
-      if (!confirmedMap?.[currentNetwork]) return false;
-      if (confirmedMap[currentNetwork]?.has(dappDomain)) return true;
-      return false;
-    },
-    [currentNetwork, confirmedMap],
+    (dappDomain: string): boolean => !!disclaimerConfirmedMap?.[currentNetwork]?.has?.(dappDomain),
+    [currentNetwork, disclaimerConfirmedMap],
   );
 
   return { signPrivacyPolicy, checkDappIsConfirmed };

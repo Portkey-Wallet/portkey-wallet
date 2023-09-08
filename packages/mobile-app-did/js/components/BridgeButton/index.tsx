@@ -12,6 +12,9 @@ import { checkSecurity } from '@portkey-wallet/utils/securityTest';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import DisclaimerModal from 'components/DisclaimerModal';
+import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import navigationService from 'utils/navigationService';
 
 type BridgeButtonPropsType = {
   wrapStyle?: StyleProp<ViewProps>;
@@ -21,6 +24,8 @@ const BridgeButton = (props: BridgeButtonPropsType) => {
   const { wrapStyle = {} } = props;
   const { t } = useLanguage();
   const { caHash } = useCurrentWalletInfo();
+  const { eBridgeUrl } = useCurrentNetworkInfo();
+  const { checkDappIsConfirmed } = useDisclaimer();
 
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
@@ -32,18 +37,16 @@ const BridgeButton = (props: BridgeButtonPropsType) => {
           try {
             Loading.show();
             const isSafe = await checkSecurity(caHash);
-            // TODO: back
-            if (isSafe) return WalletSecurityOverlay.alert();
+            if (!isSafe) return WalletSecurityOverlay.alert();
+            if (!checkDappIsConfirmed(eBridgeUrl || '')) return DisclaimerModal.showConnectModal();
 
-            // first time
-            DisclaimerModal.showConnectModal();
+            navigationService.navigate('EBridge');
           } catch (error) {
             CommonToast.failError(error);
           } finally {
             Loading.hide();
           }
         }}>
-        {/* TODO:change icon */}
         <Svg icon="eBridge" size={pTd(46)} />
       </TouchableOpacity>
       <TextM style={[commonButtonStyle.commonTitleStyle, commonButtonStyle.dashBoardTitleColorStyle]}>

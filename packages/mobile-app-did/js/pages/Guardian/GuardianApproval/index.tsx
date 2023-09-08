@@ -327,6 +327,7 @@ export default function GuardianApproval() {
 
         if (isPaymentSecurityDetailExist) {
           await sleep(1000);
+          console.log('refreshPaymentSecurityList, emit');
           myEvents.refreshPaymentSecurityList.emit();
         }
         CommonToast.success('Saved Successful');

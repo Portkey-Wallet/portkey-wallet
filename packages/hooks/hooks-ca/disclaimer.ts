@@ -1,7 +1,7 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useCallback, useMemo } from 'react';
 import { useCurrentWalletInfo, useWallet } from './wallet';
-import { useAppCASelector, useAppCommonDispatch } from '..';
+import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { addDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
 import { useCurrentNetworkInfo } from './network';
 
@@ -50,18 +50,14 @@ export const useDisclaimer = () => {
           }),
         );
       } catch (error) {
-        console.log(error);
+        console.log('signPrivacyPolicy error', error);
       }
     },
     [caHash, currentNetwork, defaultParams, dispatch],
   );
 
   const checkDappIsConfirmed = useCallback(
-    (dappDomain: string): boolean => {
-      if (!disclaimerConfirmedMap?.[currentNetwork]) return false;
-      if (disclaimerConfirmedMap[currentNetwork]?.has(dappDomain)) return true;
-      return false;
-    },
+    (dappDomain: string): boolean => !!disclaimerConfirmedMap?.[currentNetwork]?.has?.(dappDomain),
     [currentNetwork, disclaimerConfirmedMap],
   );
 

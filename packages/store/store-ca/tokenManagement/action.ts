@@ -22,7 +22,7 @@ export const getSymbolImagesAsync = createAsyncThunk('tokenManagement/getSymbolI
     const { symbolImagesMap } = await request.assets.getSymbolImages({});
     return symbolImagesMap;
   } catch (error) {
-    console.log(error);
+    console.log('getSymbolImages error', error);
     return {};
   }
 });

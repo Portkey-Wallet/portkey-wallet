@@ -333,6 +333,7 @@ export const useGetCmsWebsiteInfo = () => {
       if (target) {
         return target?.title || '';
       }
+      return '';
     },
     [cmsWebsiteMap],
   );

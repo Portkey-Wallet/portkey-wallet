@@ -28,7 +28,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import { useBuyButtonShow, useIsBridgeShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/ChatEntry';
@@ -38,7 +38,6 @@ import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
-import { EBRIDGE_ORIGIN } from '@portkey-wallet/constants/constants-ca/ebridge';
 import './index.less';
 
 export interface TransactionResult {
@@ -65,6 +64,7 @@ export default function MyBalance() {
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
+  const { eBridgeUrl = '' } = useCurrentNetworkInfo();
   const renderTabsData = useMemo(
     () => [
       {
@@ -188,19 +188,17 @@ export default function MyBalance() {
   }, [isMainNet, navigate]);
 
   const handleBridge = useCallback(async () => {
-    // STEP1
-    // TODO
-    // STEP2
-    if (checkDappIsConfirmed(EBRIDGE_ORIGIN)) {
-      const openWinder = window.open(EBRIDGE_ORIGIN, '_blank');
-      isPrompt && setBridgeShow(false);
+    const res = await checkSecurity();
+    if (typeof res !== 'boolean') return;
+    if (checkDappIsConfirmed(eBridgeUrl)) {
+      const openWinder = window.open(eBridgeUrl, '_blank');
       if (openWinder) {
         openWinder.opener = null;
       }
     } else {
       setBridgeShow(true);
     }
-  }, [checkDappIsConfirmed, isPrompt]);
+  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl]);
 
   return (
     <div className="balance">

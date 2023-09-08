@@ -24,6 +24,7 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import CommonAvatar from 'components/CommonAvatar';
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
   const { symbol, onPress, item } = props;
@@ -45,7 +46,7 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
         {item.nftInfo.imageUrl ? (
-          <Image resizeMode={'contain'} style={[itemStyle.left]} source={{ uri: item?.nftInfo?.imageUrl }} />
+          <CommonAvatar style={[itemStyle.left]} imageUrl={item?.nftInfo?.imageUrl} />
         ) : (
           <Text style={[itemStyle.left, itemStyle.noPic]}>{item.symbol[0]}</Text>
         )}

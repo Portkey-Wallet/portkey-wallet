@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { useChannel, useIMGroupInfoMapNetMapState, useRelationId } from '.';
+import { useChannel, useHideChannel, useIMGroupInfoMapNetMapState, useRelationId } from '.';
 import im, { ChannelInfo, ChannelMemberInfo, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 import { useAppCommonDispatch } from '../../index';
 import {
@@ -11,14 +11,15 @@ import {
   updateGroupInfo,
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
+import { sleep } from '@portkey-wallet/utils';
 
 export const useDisbandChannel = (channelId: string) => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
+  const hideChannel = useHideChannel();
 
   const disbandChannel = useCallback(async () => {
     await im.service.disbandChannel({ channelUuid: channelId });
-
     dispatch(
       updateChannelAttribute({
         network: networkType,
@@ -28,11 +29,10 @@ export const useDisbandChannel = (channelId: string) => {
         },
       }),
     );
+    await sleep(100);
 
-    im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(() => {
-      im.refreshMessageCount();
-    });
-  }, [channelId, dispatch, networkType]);
+    await hideChannel(channelId);
+  }, [channelId, dispatch, hideChannel, networkType]);
 
   return disbandChannel;
 };
@@ -109,6 +109,7 @@ export const useRemoveChannelMembers = (channelId: string) => {
 export const useLeaveChannel = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
+  const hideChannel = useHideChannel();
 
   const leaveChannel = useCallback(
     async (channelId: string) => {
@@ -126,11 +127,10 @@ export const useLeaveChannel = () => {
         }),
       );
 
-      im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(() => {
-        im.refreshMessageCount();
-      });
+      await sleep(100);
+      await hideChannel(channelId);
     },
-    [dispatch, networkType],
+    [dispatch, hideChannel, networkType],
   );
 
   return leaveChannel;

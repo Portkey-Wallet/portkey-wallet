@@ -243,7 +243,7 @@ export const imSlice = createSlice({
         if (!preChannelInfo) return state;
 
         const [adminMember, ...otherMembers] = preChannelInfo.members;
-        const newMembers = [adminMember, ...memberInfos, ...otherMembers];
+        const newMembers = [adminMember, ...otherMembers, ...memberInfos];
 
         return {
           ...state,

@@ -148,6 +148,7 @@ export const useCreateP2pChannel = () => {
         lastPostAt: null,
         mute: false,
         pin: false,
+        pinAt: '0',
         toRelationId: relationId,
       };
       dispatch(
@@ -213,6 +214,7 @@ export const useCreateGroupChannel = () => {
         lastPostAt: null,
         mute: false,
         pin: false,
+        pinAt: '0',
       };
 
       dispatch(

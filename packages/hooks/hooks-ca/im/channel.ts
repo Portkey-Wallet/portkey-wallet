@@ -108,7 +108,7 @@ export const useSendChannelMessage = () => {
         throw error;
       }
     },
-    [dispatch, networkType, relationId],
+    [dispatch, networkType, relationId, walletName],
   );
   const sendChannelImageByS3Result = useCallback(
     async (channelId: string, s3Result: UploadFileType & ImageMessageFileType) => {
@@ -491,6 +491,7 @@ export const usePinChannel = () => {
           channelId: channelId,
           value: {
             pin: value,
+            pinAt: String(Date.now()),
           },
         }),
       );

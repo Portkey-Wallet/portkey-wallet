@@ -75,6 +75,7 @@ export type ChannelItem = {
   lastPostAt: string | null;
   mute: boolean;
   pin: boolean;
+  pinAt: string;
   toRelationId?: string;
 };
 

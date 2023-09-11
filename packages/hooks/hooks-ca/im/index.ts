@@ -1,4 +1,4 @@
-import im, { ChannelStatusEnum, ChannelTypeEnum, IMStatusEnum, SocketMessage } from '@portkey-wallet/im';
+import im, { ChannelStatusEnum, IMStatusEnum, SocketMessage } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppCASelector } from '../.';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
@@ -77,6 +77,7 @@ export const useInitIM = () => {
               lastPostAt: rawMsg.createAt,
               mute: rawMsg.mute,
               pin: false,
+              pinAt: '',
               toRelationId: rawMsg.from,
             },
           }),
@@ -191,7 +192,7 @@ export const useEditIMContact = () => {
   rawListRef.current = rawList;
 
   return useCallback(
-    async (params: EditContactItemApiType, walletName?: string) => {
+    async (params: EditContactItemApiType) => {
       const result = await editContact(params);
       const channel = rawListRef.current.find(item => item.toRelationId === params.relationId);
       if (channel) {
@@ -200,7 +201,7 @@ export const useEditIMContact = () => {
             network: networkType,
             channelId: channel.channelUuid,
             value: {
-              displayName: params.name || walletName || '',
+              displayName: result.name || result.caHolderInfo?.walletName || '',
             },
           }),
         );

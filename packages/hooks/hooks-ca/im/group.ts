@@ -173,7 +173,7 @@ export const useUpdateChannelName = () => {
   return updateChannelName;
 };
 
-export const useGroupChannelInfo = (channelId: string, isInit = true) => {
+export const useGroupChannelInfo = (channelId: string, isInit = false) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
@@ -218,13 +218,8 @@ export const useGroupChannelInfo = (channelId: string, isInit = true) => {
 
 export const useGroupChannel = (channelId: string) => {
   const channel = useChannel(channelId);
-  const { groupInfo, isAdmin, refresh: refreshGroupInfo } = useGroupChannelInfo(channelId, false);
+  const { groupInfo, isAdmin, refresh: refreshGroupInfo } = useGroupChannelInfo(channelId, true);
   const disband = useDisbandChannel(channelId);
-
-  useEffect(() => {
-    refreshGroupInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return {
     ...channel,

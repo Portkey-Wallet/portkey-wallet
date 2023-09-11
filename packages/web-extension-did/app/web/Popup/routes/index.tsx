@@ -38,6 +38,7 @@ import ChatList from 'pages/IMChat/ChatList';
 import ChatBox from 'pages/IMChat/ChatBox';
 import NewChat from 'pages/IMChat/NewChat';
 import ChatListSearch from 'pages/IMChat/ChatListSearch';
+import CreateChatGroup from 'pages/IMChat/CreateChatGroup';
 import GroupInfo from 'pages/IMChat/GroupInfo';
 import EditGroupInfo from 'pages/IMChat/EditGroupInfo';
 import TransferOwnership from 'pages/IMChat/TransferOwnership';
@@ -237,6 +238,10 @@ export const PageRouter = () =>
     {
       path: '/new-chat',
       element: <NewChat />,
+    },
+    {
+      path: '/create-chat-group',
+      element: <CreateChatGroup />,
     },
     {
       path: '/unlock',

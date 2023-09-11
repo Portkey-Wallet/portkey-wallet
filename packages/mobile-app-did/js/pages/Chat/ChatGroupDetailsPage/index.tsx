@@ -1,25 +1,18 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import { TextL } from 'components/CommonText';
-import Chats from '../components/Chats';
+import { TextL, TextS } from 'components/CommonText';
+import ChatsDetailContent from '../components/ChatsDetailContent';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../components/ChatOverlay';
 import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum, ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
-import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
-import {
-  useMuteChannel,
-  usePinChannel,
-  useHideChannel,
-  useChannelItemInfo,
-  useIsStranger,
-} from '@portkey-wallet/hooks/hooks-ca/im';
+import { useMuteChannel, usePinChannel, useHideChannel, useChannelItemInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
 import CommonToast from 'components/CommonToast';
@@ -33,9 +26,12 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import FloatingActionButton from '../components/FloatingActionButton';
+import LottieLoading from 'components/LottieLoading';
 
 const ChatGroupDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
+
+  const [isFetching] = useState(true);
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
@@ -43,8 +39,6 @@ const ChatGroupDetailsPage = () => {
   const addStranger = useAddStrangerContact();
   const currentChannelId = useCurrentChannelId();
   const currentChannelInfo = useChannelItemInfo(currentChannelId || '');
-
-  const isStranger = useIsStranger(currentChannelInfo?.toRelationId || '');
 
   const toRelationId = useMemo(() => currentChannelInfo?.toRelationId, [currentChannelInfo?.toRelationId]);
   const displayName = useMemo(() => currentChannelInfo?.displayName, [currentChannelInfo?.displayName]);
@@ -64,12 +58,10 @@ const ChatGroupDetailsPage = () => {
   const handleList = useMemo((): ListItemType[] => {
     const list: ListItemType[] = [
       {
-        title: ChatOperationsEnum.PROFILE,
-        iconName: 'chat-profile',
+        title: ChatOperationsEnum.GROUP_INFO,
+        iconName: 'chat-group-info', //TODO: change icon
         onPress: () => {
-          navigationService.navigate('ChatContactProfile', {
-            relationId: toRelationId,
-          });
+          navigationService.navigate('GroupInfoPage');
         },
       },
       {
@@ -126,15 +118,19 @@ const ChatGroupDetailsPage = () => {
       },
     ];
 
-    if (isStranger)
+    const isGroupHolder = false;
+
+    if (!isGroupHolder)
       list.push({
-        title: ChatOperationsEnum.ADD_CONTACT,
-        iconName: 'chat-add-contact',
-        onPress: () => addContact(),
+        title: ChatOperationsEnum.LEAVE_GROUP,
+        iconName: 'chat-leave-group',
+        onPress: () => {
+          // TODO: change leave group
+        },
       });
 
     return list;
-  }, [addContact, currentChannelId, hideChannel, isStranger, mute, muteChannel, pin, pinChannel, toRelationId]);
+  }, [currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel]);
 
   const onPressMore = useCallback(
     async (event: GestureResponderEvent) => {
@@ -175,24 +171,29 @@ const ChatGroupDetailsPage = () => {
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter]}
           onPress={() => {
-            navigationService.navigate('ChatContactProfile', {
-              relationId: toRelationId,
-              contact: {
-                name: currentChannelInfo?.displayName,
-              },
-            });
+            // TODO: link to group info
+            navigationService.navigate('GroupInfoPage');
           }}>
-          <CommonAvatar title={displayName} avatarSize={pTd(32)} style={FontStyles.size16} />
-          <TextL
-            style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8)), FontStyles.weight500]}>
-            {displayName}
-          </TextL>
+          <Svg size={pTd(32)} icon="chat-group-avatar-header" />
+          <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
+            <TextL style={[FontStyles.font2, FontStyles.weight500]}>{displayName}</TextL>
+            <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberInfo]}>
+              {isFetching ? (
+                <>
+                  <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoadingStyle} />
+                </>
+              ) : (
+                <TextS style={FontStyles.font2}>12</TextS>
+              )}
+              <TextS style={FontStyles.font2}> members</TextS>
+            </View>
+          </View>
         </Touchable>
 
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [currentChannelInfo?.displayName, displayName, mute, toRelationId],
+    [displayName, isFetching, mute],
   );
   return (
     <PageContainer
@@ -207,8 +208,8 @@ const ChatGroupDetailsPage = () => {
           <Svg size={pTd(20)} icon="more" color={defaultColors.bg1} />
         </Touchable>
       }>
-      <FloatingActionButton shouldShowFirstTime={isStranger} onPressButton={addContact} />
-      <Chats />
+      <FloatingActionButton title="Add Members" shouldShowFirstTime={true} onPressButton={addContact} />
+      <ChatsDetailContent isGroupChat />
     </PageContainer>
   );
 };
@@ -221,5 +222,11 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg4,
     flex: 1,
     ...GStyles.paddingArg(0),
+  },
+  memberInfo: {
+    opacity: 0.6,
+  },
+  lottieLoadingStyle: {
+    width: pTd(10),
   },
 });

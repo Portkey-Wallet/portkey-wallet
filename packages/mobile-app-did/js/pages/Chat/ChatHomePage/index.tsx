@@ -9,7 +9,7 @@ import { BGStyles } from 'assets/theme/styles';
 import CustomHeader from 'components/CustomHeader';
 import ChatOverlay from '../components/ChatOverlay';
 import Touchable from 'components/Touchable';
-import ChatList from '../components/ChatList';
+import SessionList from '../components/SessionList';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import myEvents from 'utils/deviceEvent';
@@ -82,7 +82,7 @@ export default function DiscoverHome() {
       <Touchable activeOpacity={1} onPressIn={emitCloseSwiped}>
         <CustomHeader noLeftDom themeType="blue" titleDom="Chats" rightDom={RightDom} />
       </Touchable>
-      <ChatList />
+      <SessionList />
     </SafeAreaBox>
   );
 }

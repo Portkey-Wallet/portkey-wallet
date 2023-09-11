@@ -1,4 +1,4 @@
-import im, { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
+import im, { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 import { useCallback, useMemo, useRef } from 'react';
 
 import { CHANNEL_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
@@ -148,6 +148,7 @@ export const useCreateP2pChannel = () => {
         lastPostAt: null,
         mute: false,
         pin: false,
+        pinAt: '0',
         toRelationId: relationId,
       };
       dispatch(
@@ -184,5 +185,49 @@ export const useCreateP2pChannel = () => {
     },
     [dispatch, networkType, rawList],
   );
+  return createChannel;
+};
+
+export const useCreateGroupChannel = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+
+  const createChannel = useCallback(
+    async (name: string, relationIds: string[]) => {
+      const result = await im.service.createChannel({
+        name,
+        type: ChannelTypeEnum.GROUP,
+        members: relationIds,
+      });
+
+      const channelUuid = result.data.channelUuid;
+      const channel: ChannelItem = {
+        status: ChannelStatusEnum.NORMAL,
+        channelUuid,
+        displayName: name,
+        channelIcon: '',
+        channelType: ChannelTypeEnum.GROUP,
+        unreadMessageCount: 0,
+        mentionsCount: 0,
+        lastMessageType: null,
+        lastMessageContent: null,
+        lastPostAt: null,
+        mute: false,
+        pin: false,
+        pinAt: '0',
+      };
+
+      dispatch(
+        addChannel({
+          network: networkType,
+          channel,
+        }),
+      );
+
+      return channel;
+    },
+    [dispatch, networkType],
+  );
+
   return createChannel;
 };

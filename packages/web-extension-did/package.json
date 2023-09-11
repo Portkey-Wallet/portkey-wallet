@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {
@@ -28,6 +28,7 @@
     "@sentry/react": "^7.37.1",
     "@sentry/tracing": "^7.37.1",
     "aelf-sdk": "3.2.45-beta.0",
+    "aelf-sdk-cross-chain": "^1.0.14",
     "query-string": "^7.1.1",
     "antd": "^4.23.2",
     "antd-mobile": "^5.26.0",

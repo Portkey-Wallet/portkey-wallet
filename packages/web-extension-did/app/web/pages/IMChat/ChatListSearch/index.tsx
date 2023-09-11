@@ -27,6 +27,7 @@ export default function ChatListSearch() {
       } else {
         try {
           const res = await searchChannel(keyword);
+          // TODO group
           const transRes = res.map((item) => ({
             id: item.channelUuid,
             index: item.displayName.slice(0, 1).toUpperCase(),
@@ -96,6 +97,7 @@ export default function ChatListSearch() {
         {chatList.length === 0 ? (
           <div className="search-empty flex-center">{filterWord ? 'No search result' : ''}</div>
         ) : (
+          // TODO group
           <div className="search-result-list">
             <div className="chat-title-text">Chats</div>
             <ContactList hasChatEntry={false} list={chatList} clickItem={(item) => navigate(`/chat-box/${item.id}`)} />

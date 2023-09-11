@@ -11,6 +11,7 @@ import { useLanguage } from 'i18n/hooks';
 import ActionSheet from 'components/ActionSheet';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-testnet';
 import im from '@portkey-wallet/im';
+import { request } from '@portkey-wallet/api/api-did';
 
 export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const dispatch = useAppDispatch();
@@ -23,6 +24,7 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
       let routeName: keyof RootStackParamList = 'LoginPortkey';
       if (logged) routeName = 'Tab';
       resetStore();
+      request.initService();
       im.destroy();
       dispatch(changeNetworkType(network.networkType));
       if (routeName !== route.name && !(routeName === 'LoginPortkey' && route.name === 'SignupPortkey'))

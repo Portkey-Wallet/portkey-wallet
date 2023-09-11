@@ -5,7 +5,6 @@ import { TextM, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import { Image } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
-import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 
 export type NoDataPropsType = {
   style?: ViewStyle | ViewStyle[];

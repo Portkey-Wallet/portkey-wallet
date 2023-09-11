@@ -112,7 +112,7 @@ if [ "$AGENT_JOBSTATUS" == "Succeeded" ]; then
                                 {
                                     "tag": "a",
                                     "text": "click here",
-                                    "href": "https://play.google.com/apps/testing/com.portkey.did"
+                                    "href": "https://play.google.com/apps/internaltest/4700133845286187191"
                                 },
                                 {
                                     "tag": "text",

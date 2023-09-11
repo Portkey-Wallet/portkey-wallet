@@ -16,6 +16,11 @@ import {
   addChannel,
   setRelationId,
   setRelationToken,
+  setGroupInfo,
+  updateGroupInfo,
+  removeChannelMembers,
+  transferChannelOwner,
+  addChannelMembers,
 } from './actions';
 import { formatChannelList } from './util';
 
@@ -25,6 +30,7 @@ const initialState: IMStateType = {
   channelMessageListNetMap: {},
   relationIdNetMap: {},
   relationTokenNetMap: {},
+  groupInfoMapNetMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -59,7 +65,7 @@ export const imSlice = createSlice({
         const preChannelList = state.channelListNetMap[network];
         if (!preChannelList) return state;
 
-        let channelList = {
+        const channelList = {
           ...preChannelList,
           list: preChannelList.list.map(item => {
             if (item.channelUuid === channelId) {
@@ -83,9 +89,8 @@ export const imSlice = createSlice({
             return item;
           }),
         };
-        channelList = formatChannelList(channelList);
 
-        state.channelListNetMap[network] = channelList;
+        state.channelListNetMap[network] = formatChannelList(channelList);
         return state;
       })
       .addCase(addChannel, (state, action): any => {
@@ -199,6 +204,123 @@ export const imSlice = createSlice({
       .addCase(setRelationToken, (state, action) => {
         state.relationTokenNetMap[action.payload.network] = action.payload.token;
       })
+      .addCase(setGroupInfo, (state, action) => {
+        const { network, groupInfo } = action.payload;
+        return {
+          ...state,
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
+            [network]: {
+              ...state.groupInfoMapNetMap?.[network],
+              [groupInfo.uuid]: groupInfo,
+            },
+          },
+        };
+      })
+      .addCase(updateGroupInfo, (state, action) => {
+        const { network, channelId, value } = action.payload;
+
+        const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
+        if (!preChannelInfo) return state;
+
+        return {
+          ...state,
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
+            [network]: {
+              ...state.groupInfoMapNetMap?.[network],
+              [channelId]: {
+                ...preChannelInfo,
+                ...value,
+              },
+            },
+          },
+        };
+      })
+      .addCase(addChannelMembers, (state, action) => {
+        const { network, channelId, memberInfos } = action.payload;
+        const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
+        if (!preChannelInfo) return state;
+
+        const [adminMember, ...otherMembers] = preChannelInfo.members;
+        const newMembers = [adminMember, ...memberInfos, ...otherMembers];
+
+        return {
+          ...state,
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
+            [network]: {
+              ...state.groupInfoMapNetMap?.[network],
+              [channelId]: {
+                ...preChannelInfo,
+                members: newMembers,
+              },
+            },
+          },
+        };
+      })
+      .addCase(removeChannelMembers, (state, action) => {
+        const { network, channelId, members } = action.payload;
+
+        const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
+        if (!preChannelInfo) return state;
+
+        const removeMemberMap: Record<string, boolean> = {};
+        members.forEach(relationId => {
+          removeMemberMap[relationId] = true;
+        });
+        const newMembers = preChannelInfo.members.filter(member => !removeMemberMap[member.relationId]);
+
+        return {
+          ...state,
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
+            [network]: {
+              ...state.groupInfoMapNetMap?.[network],
+              [channelId]: {
+                ...preChannelInfo,
+                members: newMembers,
+              },
+            },
+          },
+        };
+      })
+      .addCase(transferChannelOwner, (state, action) => {
+        const { network, channelId, relationId } = action.payload;
+
+        const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
+        if (!preChannelInfo) return state;
+
+        const [preOwner, ...otherMembers] = preChannelInfo.members;
+        const newOwner = otherMembers.find(member => member.relationId === relationId);
+        if (!preOwner || !newOwner) return state;
+        const newMembers = preChannelInfo.members.filter(member => member.relationId !== relationId);
+        newMembers.reverse();
+        newMembers.push({
+          ...preOwner,
+          isAdmin: false,
+        });
+        newMembers.push({
+          ...newOwner,
+          isAdmin: true,
+        });
+        newMembers.reverse();
+
+        return {
+          ...state,
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
+            [network]: {
+              ...state.groupInfoMapNetMap?.[network],
+              [channelId]: {
+                ...preChannelInfo,
+                members: newMembers,
+              },
+            },
+          },
+        };
+      })
+
       .addCase(resetIm, (state, action) => {
         return {
           ...state,
@@ -220,6 +342,10 @@ export const imSlice = createSlice({
           },
           relationTokenNetMap: {
             ...state.relationTokenNetMap,
+            [action.payload]: undefined,
+          },
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
             [action.payload]: undefined,
           },
         };

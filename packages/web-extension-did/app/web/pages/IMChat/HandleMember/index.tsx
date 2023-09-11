@@ -1,15 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { Button, Modal, message } from 'antd';
-import { mockSearchRes } from '../mock';
-import { Avatar } from '@portkey-wallet/im-ui-web';
+import { useAddChannelMembers, useGroupChannelInfo, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useChatContactFlatList } from '@portkey-wallet/hooks/hooks-ca/contact';
+import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
+import { ChannelMemberInfo } from '@portkey-wallet/im';
+import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import './index.less';
 
 export default function HandleMember() {
@@ -19,42 +20,78 @@ export default function HandleMember() {
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
-  const { setLoading } = useLoading();
-  // TODO
-  // const allMemberList = api();
-  const [showMemberList, setShowMemberList] = useState<ContactItemType[]>([]);
+  const allChatContact = useChatContactFlatList();
+  const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
+  const addMemberApi = useAddChannelMembers(`${channelUuid}`);
+  const removeMemberApi = useRemoveChannelMembers(`${channelUuid}`);
+  const selectedContactRef = useRef<ChannelMemberInfo[]>([]);
+  const formatChatContact: IContactItemSelectProps[] = useMemo(
+    () =>
+      allChatContact.map((m) => ({
+        ...m,
+        selected: groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId),
+        disable: groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId),
+      })),
+    [allChatContact, groupInfo?.members],
+  );
+  const allContactRef = useRef<IContactItemSelectProps[]>(formatChatContact);
+  const [showMemberList, setShowMemberList] = useState<IContactItemSelectProps[]>(formatChatContact);
   const isAdd = useMemo(() => operate === 'add', [operate]);
-  const handleSearch = useCallback(async (keyword: string) => {
-    try {
-      // TODO api
-      console.log(keyword);
-      // const res = await search();
-      setShowMemberList(mockSearchRes);
-    } catch (e) {
-      console.log('===search error', e);
-      setShowMemberList([]);
+  const handleSearch = useCallback((keyword: string) => {
+    const res: IContactItemSelectProps[] = [];
+    if (keyword.length <= 16) {
+      const _v = keyword.trim().toLowerCase();
+      allContactRef.current.forEach((m) => {
+        if (m?.caHolderInfo?.walletName) {
+          if (
+            m?.name?.trim().toLowerCase().includes(_v) ||
+            m?.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v)
+          ) {
+            res.push(m);
+          }
+        } else {
+          if (m?.name?.trim().toLowerCase().includes(_v) || m?.imInfo?.name?.trim().toLowerCase().includes(_v)) {
+            res.push(m);
+          }
+        }
+      });
+    } else {
+      // Portkey ID search
+      allContactRef.current.forEach((m) => {
+        if (m?.imInfo?.portkeyId?.trim() === keyword.trim()) {
+          res.push(m);
+        }
+      });
+      // Address search
+      let suffix = '';
+      if (keyword.includes('_')) {
+        const arr = keyword.split('_');
+        if (!isAelfAddress(arr[arr.length - 1])) {
+          suffix = arr[arr.length - 1];
+        }
+      }
+      keyword = getAelfAddress(keyword);
+      allContactRef.current.forEach((m) => {
+        if (m.addresses.some((ads) => ads.address === keyword && (!suffix || suffix === ads.chainId))) {
+          res.push(m);
+        }
+      });
     }
+    setShowMemberList(res);
   }, []);
   const searchDebounce = useDebounceCallback(
     (params) => {
-      try {
-        setLoading(true);
-        handleSearch(params);
-      } catch (e) {
-        console.log('===handleSearch error', e);
-      } finally {
-        setLoading(false);
-      }
+      const _v = params.trim();
+      _v ? handleSearch(_v) : setShowMemberList(allContactRef.current || []);
     },
     [],
     500,
   );
-  const handleOperate = useCallback(() => {
+  const handleOperate = useCallback(async () => {
     if (isAdd) {
       try {
-        // TODO api add member
-        message.success('add success');
-        navigate(`/chat-box-group/${channelUuid}`);
+        await addMemberApi(selectedContactRef.current!);
+        navigate(-1);
       } catch (e) {
         message.error('Failed to add members');
         console.log('===Failed to add members', e);
@@ -72,9 +109,8 @@ export default function HandleMember() {
         cancelText: t('No'),
         onOk: async () => {
           try {
-            //TODO await remove member();
-            navigate(`/chat-box-group/${channelUuid}`);
-            message.success('remove success');
+            await removeMemberApi(selectedContactRef.current?.map((item) => item.relationId) || []);
+            navigate(-1);
           } catch (e) {
             message.error('Failed to remove members');
             console.log('===Failed to remove members', e);
@@ -82,22 +118,40 @@ export default function HandleMember() {
         },
       });
     }
-  }, [channelUuid, isAdd, navigate, t]);
-  const handleSelect = useCallback(() => {
-    setDisabled(false);
-  }, []);
-  const renderMemberList = useMemo(
-    () => (
-      <div className="member-list">
-        {showMemberList?.map((m) => (
-          <div className="member-item flex" key={m.id} onClick={handleSelect}>
-            <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
-            {m.name}
-          </div>
-        ))}
-      </div>
-    ),
-    [handleSelect, showMemberList],
+  }, [addMemberApi, isAdd, navigate, removeMemberApi, t]);
+  const clickItem = useCallback(
+    (item: IContactItemSelectProps) => {
+      const target = selectedContactRef?.current || [];
+      if (target?.some((m) => m.relationId === item.imInfo?.relationId)) {
+        selectedContactRef.current = target.filter((m) => m.relationId !== item.imInfo?.relationId);
+      } else {
+        target.push({
+          isAdmin: false,
+          name: item.name,
+          relationId: item.imInfo?.relationId || '',
+          avatar: '',
+        });
+        selectedContactRef.current = target;
+      }
+      const _v = showMemberList.map((m) => {
+        if (m.imInfo?.relationId === item.imInfo?.relationId) {
+          return {
+            ...m,
+            selected: !m.selected,
+          };
+        } else {
+          return m;
+        }
+      });
+      setShowMemberList(_v);
+      allContactRef.current.forEach((m) => {
+        if (m.imInfo?.relationId === item.imInfo?.relationId) {
+          m.selected = !m.selected;
+        }
+      });
+      setDisabled(!selectedContactRef?.current?.length);
+    },
+    [showMemberList],
   );
   useEffect(() => {
     setFilterWord(state?.search ?? '');
@@ -126,7 +180,11 @@ export default function HandleMember() {
         />
       </div>
       <div className="member-list-container">
-        {showMemberList.length !== 0 ? renderMemberList : filterWord ? 'No search found' : 'No contact result'}
+        {showMemberList.length !== 0 ? (
+          <ContactListSelect list={showMemberList} clickItem={clickItem} />
+        ) : (
+          <div className="empty">{filterWord ? 'No search found' : 'No contact result'}</div>
+        )}
       </div>
       <div className="handle-member-btn flex-center" onClick={handleOperate}>
         <Button disabled={disabled} type="primary">

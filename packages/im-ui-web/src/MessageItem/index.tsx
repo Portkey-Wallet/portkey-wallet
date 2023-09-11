@@ -14,7 +14,7 @@ const MessageItem: React.FC<MessageType> = ({ className, ...props }) => {
   );
   return (
     <div key={props.key} className={clsx('portkey-message-item', 'flex', customClass, className)}>
-      {props.showAvatar && <Avatar {...props} />}
+      {props.type !== 'system' && props.showAvatar && <Avatar {...props} />}
       {props.type === 'system' && <SystemMessage {...props} />}
       {props.type === 'text' && <TextMessage {...props} />}
       {props.type === 'image' && <ImageMessage {...props} />}

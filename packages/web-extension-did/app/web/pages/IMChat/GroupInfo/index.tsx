@@ -1,11 +1,10 @@
-import { useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button, Modal, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
-import { mockMembers } from '../mock';
 import { Avatar } from '@portkey-wallet/im-ui-web';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import './index.less';
 
@@ -14,12 +13,15 @@ export interface IGroupInfoProps {
 }
 const GroupInfo = () => {
   const { channelUuid } = useParams();
-  console.log('id', channelUuid);
+  const { groupInfo, isAdmin } = useGroupChannelInfo(`${channelUuid}`);
+  const memberLen = useMemo(
+    () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
+    [groupInfo?.members.length],
+  );
+  console.log('groupInfo', groupInfo);
   const relationId = useRelationId();
   console.log('relationId', relationId);
   const navigate = useNavigate();
-  // TODO
-  const isAdmin = true;
   const { t } = useTranslation();
   const handleLeaveGroup = useCallback(() => {
     return Modal.confirm({
@@ -55,10 +57,13 @@ const GroupInfo = () => {
         <div className="info-basic flex-center">
           <div className="flex-column-center">
             <div className="group-icon flex-center">
-              <CustomSvg type="AddMem" />
+              <CustomSvg type="GroupAvatar" />
             </div>
-            <div className="group-name">Portkey Official Group</div>
-            <div className="group-members">120 members</div>
+            <div className="group-name">{groupInfo?.name}</div>
+            <div className="group-members">
+              {memberLen}
+              {memberLen > 1 ? ' members' : ' member'}
+            </div>
           </div>
         </div>
         <div className="info-operation">
@@ -78,23 +83,30 @@ const GroupInfo = () => {
           )}
         </div>
         <div className="info-members">
-          {mockMembers.slice(0, 6).map(
-            (item) => (
-              <div key={item.id} className="member-item flex">
-                <Avatar letter={item.name?.slice(0, 1)} width={28} height={28} />
-                {item.name}
+          {(groupInfo?.members || []).slice(0, 6).map(
+            (m) => (
+              <div className="member-item flex-between" key={m.relationId}>
+                <div className="flex member-basic">
+                  <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
+                  <div className="member-name">{m.name}</div>
+                </div>
+                {m.isAdmin && <div className="admin-icon flex-center">Owner</div>}
               </div>
+              // <div key={item.relationId} className="member-item flex">
+              //   <Avatar letter={item.name?.slice(0, 1)} width={28} height={28} />
+              //   {item.name}
+              // </div>
             ),
             [],
           )}
-          {mockMembers.length > 6 && (
-            <div
-              className="view-more-members flex-center"
-              onClick={() => navigate(`/chat-group-info/${channelUuid}/member-list`)}>
-              View more Members
-              <CustomSvg type="LeftArrow" className="flex-center" />
-            </div>
-          )}
+          {/* {mockMembers.length > 6 && ( */}
+          <div
+            className="view-more-members flex-center"
+            onClick={() => navigate(`/chat-group-info/${channelUuid}/member-list`)}>
+            View more Members
+            <CustomSvg type="LeftArrow" className="flex-center" />
+          </div>
+          {/* )} */}
         </div>
         {isAdmin && (
           <div

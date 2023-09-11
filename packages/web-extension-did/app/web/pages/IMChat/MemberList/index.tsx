@@ -4,48 +4,35 @@ import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
-import { mockSearchRes } from '../mock';
 import { Avatar } from '@portkey-wallet/im-ui-web';
+import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ChannelMemberInfo } from '@portkey-wallet/im';
 import './index.less';
 
 export default function MemberList() {
   const { channelUuid } = useParams();
-  console.log('channelUuid', channelUuid);
+  const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
-  // TODO
-  const isAdmin = true;
-  const { setLoading } = useLoading();
-  // TODO
-  // const allMemberList = api();
-  const [showMemberList, setShowMemberList] = useState<ContactItemType[]>([]);
+  const [showMemberList, setShowMemberList] = useState<ChannelMemberInfo[]>(groupInfo?.members || []);
 
-  const handleSearch = useCallback(async (keyword: string) => {
-    try {
-      // TODO api
-      console.log(keyword);
-      // const res = await search();
-      setShowMemberList(mockSearchRes);
-    } catch (e) {
-      console.log('===search error', e);
-      setShowMemberList([]);
-    }
-  }, []);
+  const handleSearch = useCallback(
+    (keyword: string) => {
+      const _res = (groupInfo?.members || []).filter(
+        (item) => item.relationId === keyword || item.name.toLowerCase().includes(keyword.toLowerCase()),
+      );
+      setShowMemberList(_res);
+    },
+    [groupInfo?.members],
+  );
   const searchDebounce = useDebounceCallback(
     (params) => {
-      try {
-        setLoading(true);
-        handleSearch(params);
-      } catch (e) {
-        console.log('===handleSearch error', e);
-      } finally {
-        setLoading(false);
-      }
+      const _v = params.trim();
+      setFilterWord(_v);
+      _v ? handleSearch(_v) : setShowMemberList(groupInfo?.members || []);
     },
     [],
     500,
@@ -54,17 +41,17 @@ export default function MemberList() {
     () => (
       <div className="member-list">
         {showMemberList?.map((m) => (
-          <div className="member-item flex-between" key={m.id}>
+          <div className="member-item flex-between" key={m.relationId}>
             <div className="flex member-basic">
               <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
               <div className="member-name">{m.name}</div>
             </div>
-            {isAdmin && <div className="admin-icon flex-center">Owner</div>}
+            {m.isAdmin && <div className="admin-icon flex-center">Owner</div>}
           </div>
         ))}
       </div>
     ),
-    [isAdmin, showMemberList],
+    [showMemberList],
   );
   useEffect(() => {
     setFilterWord(state?.search ?? '');
@@ -84,16 +71,20 @@ export default function MemberList() {
           value={filterWord}
           inputProps={{
             onChange: (e) => {
-              const _value = e.target.value.trim();
-              setFilterWord(_value);
-              searchDebounce(_value);
+              const _v = e.target.value;
+              setFilterWord(_v);
+              searchDebounce(_v);
             },
             placeholder: 'Search',
           }}
         />
       </div>
       <div className="member-list-container">
-        {showMemberList.length !== 0 ? renderMemberList : filterWord ? 'no search result' : 'no members available'}
+        {showMemberList.length !== 0 ? (
+          renderMemberList
+        ) : (
+          <div className="empty flex-center">{filterWord ? 'no search result' : 'no members available'}</div>
+        )}
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export interface ContactItemType {
   userId: string;
   caHolderInfo?: Partial<CaHolderInfo>;
   imInfo?: Partial<IImInfo>;
-  isImputation: boolean;
+  isImputation?: boolean;
 }
 
 export interface EditContactItemApiType {

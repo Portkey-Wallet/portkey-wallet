@@ -120,8 +120,8 @@ const MessageList: FC<IMessageListProps> = ({
   }, [onDeleteMsg, props.dataSource]);
 
   return (
-    <div className={clsx(['portkey-message-list', props.className])} {...props.customProps}>
-      <div ref={reference} onScroll={onScroll} className="message-list-body flex-column">
+    <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>
+      <div ref={reference} onScroll={onScroll} className="message-list-body">
         {loading && (
           <div className="loading-more flex-center">
             <CircleLoading />

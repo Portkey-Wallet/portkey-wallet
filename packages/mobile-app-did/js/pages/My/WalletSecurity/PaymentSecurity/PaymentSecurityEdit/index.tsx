@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -29,6 +29,7 @@ type EditInfoType = {
   dailyLimit: string;
   restricted: boolean;
 };
+const MAX_LENGTH = 18;
 
 const PaymentSecurityEdit: React.FC = () => {
   const { paymentSecurityDetail: detail } = useRouterParams<RouterParams>();
@@ -45,6 +46,8 @@ const PaymentSecurityEdit: React.FC = () => {
       });
     }
   });
+
+  const maxLength = useMemo(() => MAX_LENGTH - (Number(detail?.decimals) || 0), [detail?.decimals]);
 
   const onRestrictedChange = useCallback((value: boolean) => {
     setEditInfo(pre => {
@@ -144,7 +147,7 @@ const PaymentSecurityEdit: React.FC = () => {
               value={editInfo?.singleLimit || ''}
               rightIcon={<TextM>{detail?.symbol || ''}</TextM>}
               onChangeText={onSingleLimitInput}
-              maxLength={18}
+              maxLength={maxLength}
               errorMessage={singleLimitError.isError ? singleLimitError.errorMsg : ''}
             />
             <CommonInput
@@ -155,7 +158,7 @@ const PaymentSecurityEdit: React.FC = () => {
               value={editInfo?.dailyLimit || ''}
               rightIcon={<TextM>{detail?.symbol || ''}</TextM>}
               onChangeText={onDailyLimitInput}
-              maxLength={18}
+              maxLength={maxLength}
               errorMessage={dailyLimitError.isError ? dailyLimitError.errorMsg : ''}
             />
             <TextM style={FontStyles.font3}>

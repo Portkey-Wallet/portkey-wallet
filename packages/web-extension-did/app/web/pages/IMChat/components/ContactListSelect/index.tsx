@@ -12,6 +12,7 @@ interface IContactListSelectProps {
 
 export interface IContactItemSelectProps extends ContactItemType {
   selected?: boolean;
+  disable?: boolean;
 }
 
 export default function ContactListSelect({ className, list, clickItem }: IContactListSelectProps) {
@@ -19,7 +20,7 @@ export default function ContactListSelect({ className, list, clickItem }: IConta
     <List className={clsx(['contact-list-select', className])}>
       {list.map((item) => (
         <List.Item key={`${item.id}_${item.name}`} onClick={() => clickItem(item)}>
-          <ContactItemSelect item={item} selected={!!item?.selected} />
+          <ContactItemSelect item={item} selected={!!item?.selected} disable={item.disable} />
         </List.Item>
       ))}
     </List>

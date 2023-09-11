@@ -236,10 +236,6 @@ export const PageRouter = () =>
       element: <NewChat />,
     },
     {
-      path: '/new-chat',
-      element: <NewChat />,
-    },
-    {
       path: '/create-chat-group',
       element: <CreateChatGroup />,
     },

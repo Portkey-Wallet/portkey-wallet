@@ -1,4 +1,4 @@
-@import '../../../assets/theme/color.less';
+@import '../../../assets/theme/constants.less';
 
 .group-info-page {
   .group-info-header {
@@ -16,25 +16,28 @@
       padding: 24px 0 16px;
       background-color: @bg-13;
       .group-icon {
-        margin-bottom: 8px;
-        width: 60px;
+        width: 60px;;
         height: 60px;
+        margin-bottom: 8px;
         border-radius: 50%;
-        border: 1px solid @border-2;
-        .addmem-icon {
-          width: 20px;
-          height: 20px;
+        border: 1px solid @border-3;
+        background-color: @bg-25;
+        .groupavatar-icon {
+          width: 24px;
+          height: 24px;
           svg {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
           }
         }
       }
       .group-name {
         margin-bottom: 4px;
+        max-width: 360px;
         font-size: 20px;
         line-height: 24px;
         color: @font-11;
+        .text-overflow(1);
       }
       .group-members {
         font-size: 12px;
@@ -69,14 +72,38 @@
     }
     .info-members {
       .member-item {
-        align-items: center;
-        gap: 8px;
-        padding: 16px 0 16px 24px;
+        padding: 16px 24px;
         font-size: 14px;
         line-height: 20px;
         color: @font-11;
         border-bottom: 1px solid @border-2;
         cursor: pointer;
+        .member-basic {
+          align-items: center;
+          gap: 12px;
+          .member-name {
+            max-width: 250px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+        .portkey-avatar-container {
+          .avatar-letter {
+            font-size: 14px;
+          }
+        }
+        .admin-icon {
+          padding: 2px 4px;
+          font-size: 12px;
+          line-height: 16px;
+          color: @font-9;
+          border-radius: 4px;
+          background-color: @bg-24;
+        }
+        &:last-child{
+          border-bottom: none;
+        }
       }
       .view-more-members {
         padding: 16px 0;

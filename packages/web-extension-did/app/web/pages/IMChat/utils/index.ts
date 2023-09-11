@@ -4,6 +4,8 @@ import { formatMessageTime } from '@portkey-wallet/utils/chat';
 import { isSameDay } from '@portkey-wallet/utils/time';
 import { MessageTypeWeb } from 'types/im';
 
+export const supportedMsgType = ['text', 'image', 'system'];
+
 export const getPixel = async (url: string): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -17,12 +19,12 @@ export const getPixel = async (url: string): Promise<{ width: number; height: nu
   });
 };
 
-export const formatMessageList = (list: Message[], ownerRelationId: string) => {
+export const formatMessageList = (list: Message[], ownerRelationId: string, isGroup = false) => {
   const formatList: MessageType[] = [];
   let transItem: MessageType;
   list?.forEach((item, i) => {
     const transType = MessageTypeWeb[item.type] || '';
-    if (['text', 'image'].includes(transType)) {
+    if (supportedMsgType.includes(transType)) {
       transItem = {
         id: `${item.id}`,
         key: item.sendUuid,
@@ -41,6 +43,7 @@ export const formatMessageList = (list: Message[], ownerRelationId: string) => {
             : {},
         type: transType,
         date: item.createAt,
+        showAvatar: item.from !== ownerRelationId && isGroup,
       };
     } else {
       transItem = {
@@ -62,6 +65,7 @@ export const formatMessageList = (list: Message[], ownerRelationId: string) => {
           date: item.createAt,
           type: 'system',
           text: formatMessageTime(item.createAt),
+          subType: 'show-time',
         },
         transItem,
       );
@@ -77,6 +81,7 @@ export const formatMessageList = (list: Message[], ownerRelationId: string) => {
             date: item.createAt,
             type: 'system',
             text: formatMessageTime(item.createAt),
+            subType: 'show-time',
           },
           transItem,
         );

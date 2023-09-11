@@ -19,6 +19,7 @@ export interface IGroupInfoProps {
 export default function EditGroupInfo() {
   const [form] = Form.useForm();
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
+  const [name, setName] = useState('');
   const { t } = useTranslation();
   const { channelUuid } = useParams();
   console.log(channelUuid);
@@ -30,6 +31,9 @@ export default function EditGroupInfo() {
     setValidName({ validateStatus: '', errorMsg: '' });
     if (!v) {
       setDisabled(true);
+    } else {
+      setName(v);
+      setDisabled(false);
     }
   }, []);
   const onFinish = useCallback(() => {
@@ -38,13 +42,13 @@ export default function EditGroupInfo() {
   const handleDisband = useCallback(() => {
     return Modal.confirm({
       width: 320,
-      content: t('Transfer ownership?'),
-      className: 'transfer-ownership-modal',
+      content: t('Disband the group?'),
+      className: 'disband-group-modal',
       autoFocusButton: null,
       icon: null,
       centered: true,
-      okText: t('Confirm'),
-      cancelText: t('Cancel'),
+      okText: t('Yes'),
+      cancelText: t('No'),
       onOk: async () => {
         try {
           //TODO await disband();
@@ -74,10 +78,15 @@ export default function EditGroupInfo() {
         onFinish={onFinish}>
         <div className="form-content">
           <FormItem name="name" label="Group Name" validateStatus={validName.validateStatus} help={validName.errorMsg}>
-            <Input placeholder="Enter name" onChange={(e) => handleInputValueChange(e.target.value)} maxLength={16} />
+            <Input
+              value={name}
+              placeholder="Enter name"
+              onChange={(e) => handleInputValueChange(e.target.value)}
+              maxLength={16}
+            />
           </FormItem>
         </div>
-        <div className="flex-between form-btn-edit">
+        <div className="flex form-btn-edit">
           <Button danger onClick={handleDisband}>
             Disband
           </Button>

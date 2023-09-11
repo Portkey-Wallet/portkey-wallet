@@ -23,6 +23,7 @@ import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import ChatBoxTip from '../components/ChatBoxTip';
 import CustomUpload from '../components/CustomUpload';
+import CircleLoading from 'components/CircleLoading';
 import { mockMessageList } from '../mock';
 import './index.less';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -31,7 +32,7 @@ export default function ChatBox() {
   const { channelUuid } = useParams();
   const location = useLocation();
   const isGroup = useMemo(() => location.pathname.includes('chat-box-group'), [location.pathname]);
-  const isAdmin = false;
+  const isAdmin = true;
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [file, setFile] = useState<ImageMessageFileType>();
@@ -214,7 +215,7 @@ export default function ChatBox() {
       },
       {
         key: 'leave-group',
-        leftIcon: <CustomSvg type="ChatAddContact" />,
+        leftIcon: <CustomSvg type="ChatLeave" />,
         children: 'Leave Group',
         onClick: handleLeaveGroup,
       },
@@ -302,14 +303,21 @@ export default function ChatBox() {
   const renderTitle = useMemo(
     () =>
       isGroup ? (
-        <div className="title-content flex-center" onClick={handleGoGroupInfo}>
-          <Avatar letter={info?.displayName?.slice(0, 1).toUpperCase()} />
-          <div className="name-text">{info?.displayName}</div>
+        <div className="title-group-content flex-center">
+          <Avatar className="title-icon" letter="A" onClick={handleGoGroupInfo} />
+          <div>
+            <div className="title-name" onClick={handleGoGroupInfo}>
+              A
+            </div>
+            <div className="title-member flex-center">
+              <CircleLoading /> members
+            </div>
+          </div>
         </div>
       ) : (
         <div className="title-content flex-center" onClick={handleGoProfile}>
           <Avatar letter={info?.displayName?.slice(0, 1).toUpperCase()} />
-          <div className="name-text">{info?.displayName}</div>
+          <div className="title-name">{info?.displayName}</div>
         </div>
       ),
     [handleGoGroupInfo, handleGoProfile, info?.displayName, isGroup],

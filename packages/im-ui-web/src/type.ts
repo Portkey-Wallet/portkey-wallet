@@ -73,7 +73,9 @@ export interface IImageMessageProps extends IImageMessage {
   onPhotoError?: React.ReactEventHandler;
 }
 
-export type ISystemMessage = IMessage;
+export interface ISystemMessage extends IMessage {
+  subType?: string;
+}
 
 export type ISystemMessageProps = ISystemMessage;
 
@@ -174,6 +176,7 @@ export interface IAvatarProps {
   channelType?: ChannelTypeEnum;
   width?: number;
   height?: number;
+  onClick?: () => void;
 }
 
 export interface IUnreadTipProps {

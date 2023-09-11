@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useChannel, useIMGroupInfoMapNetMapState, useRelationId } from '.';
-import im, { ChannelInfo, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
+import im, { ChannelInfo, ChannelMemberInfo, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 import { useAppCommonDispatch } from '../../index';
 import {
+  addChannelMembers,
   removeChannelMembers,
   setGroupInfo,
   transferChannelOwner,
@@ -52,6 +53,29 @@ export const useTransferChannelOwner = (channelId: string) => {
           network: networkType,
           channelId,
           relationId,
+        }),
+      );
+    },
+    [channelId, dispatch, networkType],
+  );
+};
+
+export const useAddChannelMembers = (channelId: string) => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+
+  return useCallback(
+    async (memberInfos: ChannelMemberInfo[]) => {
+      await im.service.addChannelMembers({
+        channelUuid: channelId,
+        members: memberInfos.map(item => item.relationId),
+      });
+
+      dispatch(
+        addChannelMembers({
+          network: networkType,
+          channelId,
+          memberInfos,
         }),
       );
     },

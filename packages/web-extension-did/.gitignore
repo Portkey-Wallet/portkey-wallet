@@ -13,3 +13,5 @@ app/public.crx
 app/public.zip
 
 *.zip
+
+env.config

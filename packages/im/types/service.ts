@@ -158,6 +158,11 @@ export type TransferChannelOwnerParams = {
   relationId: string;
 };
 
+export type AddChannelMembersParams = {
+  channelUuid: string;
+  members: string[];
+};
+
 export type RemoveChannelMembersParams = {
   channelUuid: string;
   members: string[];
@@ -204,6 +209,7 @@ export interface IIMService {
   hideChannel(params: HideChannelParams): IMServiceCommon<null>;
   disbandChannel(params: DisbandChannelParams): IMServiceCommon<null>;
   transferChannelOwner(params: TransferChannelOwnerParams): IMServiceCommon<null>;
+  addChannelMembers(params: AddChannelMembersParams): IMServiceCommon<null>;
   removeChannelMembers(params: RemoveChannelMembersParams): IMServiceCommon<null>;
   leaveChannel(params: LeaveChannelParams): IMServiceCommon<null>;
   updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null>;

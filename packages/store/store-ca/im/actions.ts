@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ChannelList, UpdateChannelAttributeTypeEnum } from './type';
-import { ChannelInfo, ChannelItem, Message } from '@portkey-wallet/im';
+import { ChannelInfo, ChannelItem, ChannelMemberInfo, Message } from '@portkey-wallet/im';
 import { NetworkType } from '@portkey-wallet/types';
 
 export const setChannelList = createAction<{
@@ -80,6 +80,12 @@ export const setGroupInfo = createAction<{
   network: NetworkType;
   groupInfo: ChannelInfo;
 }>('im/setGroupInfo');
+
+export const addChannelMembers = createAction<{
+  network: NetworkType;
+  channelId: string;
+  memberInfos: ChannelMemberInfo[];
+}>('im/addChannelMembers');
 
 export const removeChannelMembers = createAction<{
   network: NetworkType;

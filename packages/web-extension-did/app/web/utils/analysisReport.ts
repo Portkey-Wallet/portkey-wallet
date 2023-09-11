@@ -18,8 +18,9 @@
 //   });
 // };
 
-export const reportUserCurrentNetwork = (networkType?: string) => {
-  console.log(networkType);
-};
-
 // export const reportLogin = reportEventCurrying(CUSTOM_EVENT_ENUM.LOGIN);
+
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+export const reportUserCurrentNetwork = (networkType?: string) => {
+  return console.log('networkType', networkType);
+};

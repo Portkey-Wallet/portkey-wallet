@@ -19,6 +19,7 @@ import s3Instance, { getThumbSize, UploadFileType } from '@portkey-wallet/utils/
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';
 import { request } from '@portkey-wallet/api/api-did';
+import { useWallet } from '../wallet';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -49,6 +50,7 @@ export const useSendChannelMessage = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
   const relationId = useRelationId();
+  const { walletName } = useWallet();
 
   const sendChannelMessage = useCallback(
     async (channelId: string, content: string, type = 'TEXT' as MessageType) => {
@@ -67,7 +69,7 @@ export const useSendChannelMessage = () => {
         ...msgParams,
         from: relationId,
         fromAvatar: '',
-        fromName: '',
+        fromName: walletName,
         createAt: `${Date.now()}`,
       });
       dispatch(
@@ -106,7 +108,7 @@ export const useSendChannelMessage = () => {
         throw error;
       }
     },
-    [dispatch, networkType, relationId],
+    [dispatch, networkType, relationId, walletName],
   );
   const sendChannelImageByS3Result = useCallback(
     async (channelId: string, s3Result: UploadFileType & ImageMessageFileType) => {
@@ -489,6 +491,7 @@ export const usePinChannel = () => {
           channelId: channelId,
           value: {
             pin: value,
+            pinAt: String(Date.now()),
           },
         }),
       );

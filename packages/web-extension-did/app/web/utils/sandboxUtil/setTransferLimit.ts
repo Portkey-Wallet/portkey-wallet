@@ -2,6 +2,7 @@ import { SendOptions } from '@portkey-wallet/contracts/types';
 import { ChainType } from '@portkey-wallet/types';
 import SandboxEventTypes from 'messages/SandboxEventTypes';
 import SandboxEventService, { SandboxErrorCode } from 'service/SandboxEventService';
+import { GuardianItem } from 'types/guardians';
 
 export const setTransferLimit = async ({
   rpcUrl,
@@ -16,7 +17,13 @@ export const setTransferLimit = async ({
   chainType: ChainType;
   privateKey: string;
   sendOptions?: SendOptions;
-  paramsOption: { caHash: string; guardiansApproved: {}; symbol: string; singleLimit: number; dailyLimit: number };
+  paramsOption: {
+    caHash: string;
+    guardiansApproved: GuardianItem[];
+    symbol: string;
+    singleLimit: number;
+    dailyLimit: number;
+  };
 }) => {
   const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.callSendMethod, {
     rpcUrl: rpcUrl,

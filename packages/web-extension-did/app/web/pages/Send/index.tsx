@@ -4,7 +4,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
 import { IClickAddressProps } from '@portkey-wallet/types/types-ca/contact';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
-import { getAddressChainId, isDIDAddress } from '@portkey-wallet/utils';
+import { getAddressChainId, handleErrorMessage, isDIDAddress } from '@portkey-wallet/utils';
 import { getAelfAddress, getEntireDIDAelfAddress, isCrossChain, isEqAddress } from '@portkey-wallet/utils/aelf';
 import aes from '@portkey-wallet/utils/aes';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
@@ -206,7 +206,7 @@ export default function Send() {
         return 'Synchronizing on-chain account information...';
       }
       if (type === 'token') {
-        // transfer limit check
+        // transfer limit check TODO loading
         const res = await checkLimit({
           chainId: tokenInfo.chainId,
           symbol: tokenInfo.symbol,
@@ -270,17 +270,25 @@ export default function Send() {
       const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
       if (!privateKey) return;
       if (!tokenInfo) throw 'No Symbol info';
-
-      // transfer limit check
-      const res = await checkLimit({
-        chainId: tokenInfo.chainId,
-        symbol: tokenInfo.symbol,
-        amount: amount,
-        decimals: tokenInfo.decimals,
-      });
-      if (typeof res !== 'boolean') return ExceedLimit;
-
       setLoading(true);
+      try {
+        // transfer limit check
+        const res = await checkLimit({
+          chainId: tokenInfo.chainId,
+          symbol: tokenInfo.symbol,
+          amount: amount,
+          decimals: tokenInfo.decimals,
+        });
+        if (typeof res !== 'boolean') {
+          setLoading(false);
+          return ExceedLimit;
+        }
+      } catch (error) {
+        setLoading(false);
+
+        const msg = handleErrorMessage(error);
+        message.error(msg);
+      }
 
       if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
         await crossChainTransfer({

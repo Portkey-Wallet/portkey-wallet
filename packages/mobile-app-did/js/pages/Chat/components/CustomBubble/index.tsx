@@ -16,12 +16,11 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
     [currentMessage?.user?._id, previousMessage?.user?._id, user?._id],
   );
 
-  // TODO: the true name
   return (
     <View>
       {isGroupChat && !isHideName && (
         <TextS numberOfLines={1} style={styles.memberName}>
-          {Math.random()}
+          {currentMessage?.fromName}
         </TextS>
       )}
       <Bubble

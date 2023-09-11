@@ -35,6 +35,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     },
     [item.channelUuid],
   );
+
   const eventEmit = useDeviceEvent(myEvents.chatHomeListCloseSwiped.name, listenerCallBack);
   const lastMessage = useMemo(() => {
     if (item.lastMessageType === 'TEXT') {
@@ -101,7 +102,13 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         onPressIn={eventEmit}>
         <>
           {/* TODO: group avatar */}
-          <CommonAvatar hasBorder title={item.displayName} avatarSize={48} style={styles.avatar} />
+          <CommonAvatar
+            hasBorder
+            title={item.displayName}
+            svgName={item.channelType === 'G' ? 'chat-group-avatar' : undefined}
+            avatarSize={48}
+            style={styles.avatar}
+          />
           <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
             <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
               <View style={[GStyles.flex1, GStyles.flexRow, GStyles.itemCenter, GStyles.paddingRight(30)]}>

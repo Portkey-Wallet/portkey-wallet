@@ -1,10 +1,13 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AvatarProps, IMessage } from 'react-native-gifted-chat';
+import { AvatarProps } from 'react-native-gifted-chat';
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
+import { ChatMessage } from 'pages/Chat/types';
+import Touchable from 'components/Touchable';
+import navigationService from 'utils/navigationService';
 
-export default function CustomChatAvatar(props: AvatarProps<IMessage>) {
+export default function CustomChatAvatar(props: AvatarProps<ChatMessage>) {
   console.log('CustomChatAvatar', props.currentMessage, props.previousMessage);
   const { currentMessage, previousMessage } = props;
 
@@ -13,12 +16,14 @@ export default function CustomChatAvatar(props: AvatarProps<IMessage>) {
   }
 
   return (
-    <CommonAvatar
-      hasBorder
-      title={currentMessage?.user?.name || 'name'}
-      avatarSize={pTd(40)}
-      style={styles.avatarStyle}
-    />
+    <Touchable
+      onPress={() =>
+        navigationService.navigate('ChatContactProfile', {
+          relationId: currentMessage?.from,
+        })
+      }>
+      <CommonAvatar hasBorder title={currentMessage?.fromName} avatarSize={pTd(40)} style={styles.avatarStyle} />
+    </Touchable>
   );
 }
 

@@ -10,7 +10,7 @@ export function useJumpToChatDetails() {
   const createChannel = useCreateP2pChannel();
 
   return useCallback(
-    async ({ toRelationId, channelUuid }: { toRelationId: string; channelUuid?: string }) => {
+    async ({ toRelationId, channelUuid }: { toRelationId?: string; channelUuid?: string }) => {
       try {
         if (channelUuid) {
           chatDispatch(setCurrentChannelId(channelUuid || ''));
@@ -33,7 +33,7 @@ export function useJumpToChatGroupDetails() {
   const createChannel = useCreateP2pChannel();
 
   return useCallback(
-    async ({ toRelationId, channelUuid }: { toRelationId: string; channelUuid?: string }) => {
+    async ({ toRelationId, channelUuid }: { toRelationId?: string; channelUuid?: string }) => {
       try {
         if (channelUuid) {
           chatDispatch(setCurrentChannelId(channelUuid || ''));

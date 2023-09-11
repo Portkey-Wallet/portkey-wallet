@@ -10,9 +10,17 @@ import CommonToast from 'components/CommonToast';
 import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import { pTd } from 'utils/unit';
+import { useCurrentChannelId } from '../context/hooks';
+import { useDisbandChannel, useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const EditGroupPage = () => {
-  const [groupName, setGroupName] = useState('');
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { name } = groupInfo || {};
+
+  const disbandGroup = useDisbandChannel();
+
+  const [groupName, setGroupName] = useState(name);
 
   const onDisband = useCallback(() => {
     try {

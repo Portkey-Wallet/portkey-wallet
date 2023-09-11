@@ -4,21 +4,27 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { ContactItemType, GroupMemberItemType } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
 
-type GroupMemberItemPropsType<T> = {
+type GroupMemberItemType = {
+  title: string;
+  relationId: string;
+};
+
+type GroupMemberItemPropsType = {
   multiple?: boolean;
   selected?: boolean;
-  item: any; // TODO
+  item: GroupMemberItemType;
   disabled?: boolean;
-  onPress?: (id: string, selected: boolean) => void;
+  onPress?: (id: string, selected?: boolean) => void;
 };
 
 export default memo(
-  function GroupMemberItem(props: GroupMemberItemPropsType<GroupMemberItemType & ContactItemType>) {
+  function GroupMemberItem(props: GroupMemberItemPropsType) {
     const { multiple = true, disabled = false, selected = false, item, onPress } = props;
+
+    console.log('item', item);
 
     const iconDom = useMemo(() => {
       let iconName: IconName | undefined;
@@ -36,15 +42,11 @@ export default memo(
         disabled={disabled}
         style={[styles.itemRow, disabled && styles.disable]}
         onPress={() => {
-          onPress?.(item.id, !selected);
+          onPress?.(item.relationId);
         }}>
-        <CommonAvatar
-          hasBorder
-          title={item.name || item.caHolderInfo?.walletName || item.imInfo?.name}
-          avatarSize={pTd(36)}
-        />
+        <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
         <View style={styles.itemContent}>
-          <TextL>{item.name || item.caHolderInfo?.walletName || item.imInfo?.name}</TextL>
+          <TextL>{item.title}</TextL>
           {iconDom}
         </View>
       </Touchable>

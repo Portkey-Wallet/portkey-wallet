@@ -128,8 +128,8 @@ export type ContactItemType = {
   modificationTime: number;
   isDeleted: boolean;
   userId: string;
-  caHolderInfo?: CaHolderInfo;
-  imInfo?: IImInfo;
+  caHolderInfo?: Partial<CaHolderInfo>;
+  imInfo?: Partial<IImInfo>;
   isImputation: boolean;
 };
 

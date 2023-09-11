@@ -11,7 +11,7 @@ function SystemInfo(props: SystemMessageProps<ChatMessage>) {
 
   return (
     <TextS numberOfLines={1} style={styles.textStyles}>
-      {currentMessage?.text}
+      {currentMessage?.content}
     </TextS>
   );
 }

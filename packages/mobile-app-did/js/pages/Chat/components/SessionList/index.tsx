@@ -9,7 +9,7 @@ import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@
 import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useJumpToChatDetails } from 'hooks/chat';
+import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import Touchable from 'components/Touchable';
@@ -28,6 +28,8 @@ export default function SessionList() {
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const navToChatDetails = useJumpToChatDetails();
+  const navToChatGroupDetails = useJumpToChatGroupDetails();
+
   const lastInitChannelList = useLatestRef(initChannelList);
 
   useFocusEffect(
@@ -100,6 +102,17 @@ export default function SessionList() {
     }
   }, [channelList, hasNextChannelList, nextChannelList]);
 
+  const onPressItem = useCallback(
+    (item: ChannelItem) => {
+      if (item.channelType === 'G') {
+        navToChatGroupDetails({ channelUuid: item.channelUuid });
+      } else {
+        navToChatDetails({ toRelationId: item?.toRelationId || '', channelUuid: item?.channelUuid });
+      }
+    },
+    [navToChatDetails, navToChatGroupDetails],
+  );
+
   useEffectOnce(() => {
     initChannelList();
   });
@@ -116,7 +129,7 @@ export default function SessionList() {
           <ChatHomeListItemSwiped
             item={item}
             onDelete={() => onHideChannel(item)}
-            onPress={() => navToChatDetails({ toRelationId: item?.toRelationId || '', channelUuid: item?.channelUuid })}
+            onPress={() => onPressItem(item)}
             onLongPress={event => longPress(event, item)}
           />
         )}

@@ -9,7 +9,8 @@ import { FontStyles } from 'assets/theme/styles';
 
 export type GroupInfoMemberItemPropsType = {
   item: {
-    id: string;
+    relationId: string;
+    userId?: string;
     title: string;
   };
   isOwner?: boolean;
@@ -23,7 +24,7 @@ export default function GroupInfoMemberItem(props: GroupInfoMemberItemPropsType)
     <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberItem, style]}>
       <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
       <TextL numberOfLines={1} style={[FontStyles.font5, GStyles.flex1, styles.memberItemText]}>
-        {'AAAAAA'}
+        {item.title}
       </TextL>
       {isOwner && <TextM style={styles.ownerMark}>Owner</TextM>}
     </View>

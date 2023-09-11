@@ -9,27 +9,29 @@ import CommonToast from 'components/CommonToast';
 import GroupInfoMemberItem from '../components/GroupInfoMemberItem';
 import { pTd } from 'utils/unit';
 import NoData from 'components/NoData';
-
-const list = [{ title: '11', id: '1111' }];
+import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useCurrentChannelId } from '../context/hooks';
+import { BGStyles } from 'assets/theme/styles';
 
 const GroupMembersPage = () => {
-  const [keyword, setKeyword] = useState('');
-  const [, setIsSearching] = useState(false);
-  const debounceKeyword = useDebounce(keyword, 800);
-  const [filterMemberList] = useState(list);
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { members = [] } = groupInfo || {};
 
-  // search
+  const [keyword, setKeyword] = useState('');
+  const debounceKeyword = useDebounce(keyword, 200);
+  const [filterMemberList, setFilterMemberList] = useState(members);
+
   useEffect(() => {
     try {
-      setIsSearching(true);
-      // TODO: fetch
-      // setFilterMemberList
+      const result = members.filter(ele =>
+        ele.name.toLocaleUpperCase().includes(debounceKeyword.trim().toLocaleUpperCase()),
+      );
+      setFilterMemberList(result);
     } catch (error) {
       CommonToast.failError(error);
-    } finally {
-      setIsSearching(true);
     }
-  }, [debounceKeyword]);
+  }, [debounceKeyword, members]);
 
   return (
     <PageContainer
@@ -50,10 +52,18 @@ const GroupMembersPage = () => {
 
       <FlatList
         data={filterMemberList}
-        // TODO: any Type
-        ListEmptyComponent={<NoData noPic message="No search result" />}
+        ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg4} />}
         extraData={(item: any) => item.id}
-        renderItem={({ item }) => <GroupInfoMemberItem item={item} isOwner={true} style={styles.itemStyle} />}
+        renderItem={({ item }) => (
+          <GroupInfoMemberItem
+            item={{
+              relationId: item.relationId,
+              title: item.name,
+            }}
+            isOwner={item.isAdmin}
+            style={styles.itemStyle}
+          />
+        )}
       />
     </PageContainer>
   );

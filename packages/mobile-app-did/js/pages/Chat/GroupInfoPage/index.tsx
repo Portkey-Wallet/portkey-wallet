@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -17,11 +17,19 @@ import Loading from 'components/Loading';
 import OverlayModal from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
 import GroupInfoMemberItem from '../components/GroupInfoMemberItem';
-
-const list = [{ id: '111', title: 'aaaa' }];
+import { useCurrentChannelId } from '../context/hooks';
+import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const GroupInfoPage = () => {
-  const isGroupHolder = true;
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', false);
+  const { members } = groupInfo || {};
+
+  console.log('members', members);
+
+  const membersShowList = useMemo(() => {
+    return members?.length && members?.length >= 6 ? members?.slice(0, 5) : members;
+  }, [members]);
 
   const onLeave = useCallback(() => {
     return ActionSheet.alert({
@@ -50,6 +58,10 @@ const GroupInfoPage = () => {
     });
   }, []);
 
+  const disableRemoveButton = useMemo(() => {
+    return !!(members?.length && members?.length === 1);
+  }, [members?.length]);
+
   return (
     <PageContainer
       hideTouchable
@@ -57,15 +69,15 @@ const GroupInfoPage = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      {/* TODO: real data */}
-
       <ScrollView>
         <View style={[GStyles.center, styles.headerWrap]}>
           <CommonAvatar avatarSize={pTd(80)} svgName="chat-group-avatar" />
-          <TextXXXL numberOfLines={1} style={GStyles.marginTop(pTd(8))}>
-            name
+          <TextXXXL numberOfLines={1} style={[GStyles.marginTop(pTd(8)), GStyles.paddingArg(0, pTd(20))]}>
+            {groupInfo?.name}
           </TextXXXL>
-          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{100 + 'members'}</TextM>
+          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${groupInfo?.members.length} member${
+            groupInfo?.members.length && groupInfo?.members.length > 1 && 's'
+          }`}</TextM>
         </View>
 
         <View style={styles.centerSection}>
@@ -76,15 +88,21 @@ const GroupInfoPage = () => {
             <TextL style={[FontStyles.font4, styles.actionText]}>Add Members</TextL>
           </Touchable>
           <Touchable
+            disabled={disableRemoveButton}
             style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
             onPress={() => navigationService.navigate('RemoveMembersPage')}>
             <Svg icon="chat-remove-member" size={pTd(20)} />
             <TextL style={[FontStyles.font13, styles.actionText]}>Remove Members</TextL>
           </Touchable>
-          {/* TODO */}
-          {list.map((item, index) => (
-            <GroupInfoMemberItem key={index} isOwner={true} item={item} />
-          ))}
+
+          {membersShowList &&
+            membersShowList.map((item, index) => (
+              <GroupInfoMemberItem
+                key={index}
+                isOwner={item.isAdmin}
+                item={{ relationId: item.relationId, title: item.name }}
+              />
+            ))}
           <Touchable
             style={[GStyles.flexRow, GStyles.center, styles.viewMore]}
             onPress={() => navigationService.navigate('GroupMembersPage')}>
@@ -101,7 +119,7 @@ const GroupInfoPage = () => {
       </ScrollView>
 
       <View style={styles.buttonWrap}>
-        {isGroupHolder ? (
+        {isAdmin ? (
           <CommonButton type="primary" title={'Edit'} onPress={() => navigationService.navigate('EditGroupPage')} />
         ) : (
           <CommonButton

@@ -36,15 +36,15 @@ export default function DiscoverHome() {
           onPress: () => navigationService.navigate('NewChatHomePage'),
         },
         {
+          title: 'Create Group',
+          // TODO: change icon and title
+          iconName: 'chat-create-group',
+          onPress: () => navigationService.navigate('CreateGroupPage'),
+        },
+        {
           title: 'Find More',
           iconName: 'chat-add-contact',
           onPress: () => navigationService.navigate('FindMorePeoplePage'),
-        },
-        {
-          title: 'Create Group',
-          // TODO: change icon and title
-          iconName: 'chat-add-contact',
-          onPress: () => navigationService.navigate('CreateGroupPage'),
         },
       ],
       formatType: 'dynamicWidth',

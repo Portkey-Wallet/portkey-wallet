@@ -12,15 +12,20 @@ import {
   PopDataProps,
 } from '@portkey-wallet/im-ui-web';
 import PhotoSendModal, { IPreviewImage } from '../../components/ImageSendModal';
-import { ImageMessageFileType, useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  ImageMessageFileType,
+  useGroupChannel,
+  useLeaveChannel,
+  useRelationId,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
 import { formatMessageList } from '../../utils';
 import { useTranslation } from 'react-i18next';
-import { useLoading } from 'store/Provider/hooks';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import ChatBoxTip from '../../components/ChatBoxTip';
 import CustomUpload from '../../components/CustomUpload';
 import CircleLoading from 'components/CircleLoading';
+import { useEffectOnce } from 'react-use';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -34,6 +39,7 @@ export default function ChatBox() {
   const [popVisible, setPopVisible] = useState(false);
   const [showAddMemTip, setShowAddMemTip] = useState(true);
   const {
+    init,
     list,
     isAdmin,
     deleteMessage,
@@ -45,20 +51,15 @@ export default function ChatBox() {
     pin,
     sendImage,
     sendMessage,
-    refreshGroupInfo,
     groupInfo,
+    info,
   } = useGroupChannel(`${channelUuid}`);
-  const { setLoading } = useLoading();
-  console.log(setLoading);
-  // useEffectOnce(() => {
-  //   init();
-  // });
-  console.log('list group', list);
+  useEffectOnce(() => {
+    init();
+  });
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!, true), [list, relationId]);
-  console.log(messageList);
-  console.log(refreshGroupInfo);
-  // TODO delete
+  const leaveGroup = useLeaveChannel();
   const handleDeleteMsg = useCallback(
     async (item: MessageType) => {
       try {
@@ -72,24 +73,24 @@ export default function ChatBox() {
   );
   const handlePin = useCallback(async () => {
     try {
-      await pin(!groupInfo?.pin);
+      await pin(!info?.pin);
     } catch (e: any) {
       if (`${e?.code}` === '13310') {
         message.error('Pin limit exceeded');
       } else {
-        message.error(`Failed to ${groupInfo?.pin ? 'unpin' : 'pin'} chat`);
+        message.error(`Failed to ${info?.pin ? 'unpin' : 'pin'} chat`);
       }
       console.log('===handle pin error', e);
     }
-  }, [groupInfo?.pin, pin]);
+  }, [info?.pin, pin]);
   const handleMute = useCallback(async () => {
     try {
-      await mute(!groupInfo?.mute);
+      await mute(!info?.mute);
     } catch (e) {
-      message.error(`Failed to ${groupInfo?.mute ? 'unmute' : 'mute'} chat`);
+      message.error(`Failed to ${info?.mute ? 'unmute' : 'mute'} chat`);
       console.log('===handle mute error', e);
     }
-  }, [groupInfo?.mute, mute]);
+  }, [info?.mute, mute]);
   const handleDeleteBox = useCallback(() => {
     return Modal.confirm({
       width: 320,
@@ -126,7 +127,7 @@ export default function ChatBox() {
       cancelText: t('Cancel'),
       onOk: async () => {
         try {
-          // TODO await leave();
+          await leaveGroup(`${channelUuid}`);
           navigate('/chat-list');
         } catch (e) {
           message.error('Failed to leave the group');
@@ -134,9 +135,9 @@ export default function ChatBox() {
         }
       },
     });
-  }, [navigate, t]);
+  }, [channelUuid, leaveGroup, navigate, t]);
   const handleAddMember = useCallback(() => {
-    navigate(`/chat-box-group/${channelUuid}/add-member`);
+    navigate(`/chat-group-info/${channelUuid}/member-list/add`, { state: { from: 'chat-box-group' } });
   }, [channelUuid, navigate]);
   const groupPopList = useMemo(
     () => [
@@ -148,14 +149,14 @@ export default function ChatBox() {
       },
       {
         key: 'pin',
-        leftIcon: <CustomSvg type={groupInfo?.pin ? 'UnPin' : 'Pin'} />,
-        children: groupInfo?.pin ? 'Unpin' : 'Pin',
+        leftIcon: <CustomSvg type={info?.pin ? 'UnPin' : 'Pin'} />,
+        children: info?.pin ? 'Unpin' : 'Pin',
         onClick: handlePin,
       },
       {
         key: 'mute',
-        leftIcon: <CustomSvg type={groupInfo?.mute ? 'UnMute' : 'Mute'} />,
-        children: groupInfo?.mute ? 'Unmute' : 'Mute',
+        leftIcon: <CustomSvg type={info?.mute ? 'UnMute' : 'Mute'} />,
+        children: info?.mute ? 'Unmute' : 'Mute',
         onClick: handleMute,
       },
       {
@@ -171,7 +172,7 @@ export default function ChatBox() {
         onClick: handleLeaveGroup,
       },
     ],
-    [handleDeleteBox, handleGoGroupInfo, handleLeaveGroup, handleMute, handlePin, groupInfo?.mute, groupInfo?.pin],
+    [handleDeleteBox, handleGoGroupInfo, handleLeaveGroup, handleMute, handlePin, info?.mute, info?.pin],
   );
   const inputMorePopList: PopDataProps[] = useMemo(
     () => [
@@ -245,7 +246,7 @@ export default function ChatBox() {
             <div className="title-name" onClick={handleGoGroupInfo}>
               {groupInfo?.name}
             </div>
-            <div>{groupInfo?.mute && <CustomSvg type="Mute" />}</div>
+            <div>{info?.mute && <CustomSvg type="Mute" />}</div>
           </div>
           <div className="title-member flex">
             {groupInfo?.members ? <span>{groupInfo?.members.length}</span> : <CircleLoading />}
@@ -254,7 +255,7 @@ export default function ChatBox() {
         </div>
       </div>
     ),
-    [groupInfo?.members, groupInfo?.mute, groupInfo?.name, handleGoGroupInfo],
+    [groupInfo?.members, info?.mute, groupInfo?.name, handleGoGroupInfo],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);

@@ -16,11 +16,14 @@ import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import { BGStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const TransferOwnershipPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
   const { members = [] } = groupInfo || {};
+  const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
+
   const transferOwner = useTransferChannelOwner(currentChannelId || '');
 
   const [keyword, setKeyword] = useState('');
@@ -32,15 +35,15 @@ const TransferOwnershipPage = () => {
     try {
       let result = [];
       if (debounceKeyword) {
-        result = members.filter(ele => ele.name.toLocaleUpperCase().includes(debounceKeyword) && !ele.isAdmin);
+        result = rawMemberList.filter(ele => ele.name.toLocaleUpperCase().includes(debounceKeyword) && !ele.isAdmin);
       } else {
-        result = members.filter(ele => !ele.isAdmin);
+        result = rawMemberList.filter(ele => !ele.isAdmin);
       }
       setFilterMembers(result);
     } catch (error) {
       CommonToast.failError(error);
     }
-  }, [debounceKeyword, members]);
+  }, [debounceKeyword, rawMemberList]);
 
   const onPressItem = useCallback(
     (id: string) => {
@@ -80,6 +83,10 @@ const TransferOwnershipPage = () => {
       ],
     });
   }, [selectedMemberId, transferOwner]);
+
+  useEffectOnce(() => {
+    setRawMemberList([...members]);
+  });
 
   return (
     <PageContainer

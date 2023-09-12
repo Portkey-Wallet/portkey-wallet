@@ -37,7 +37,6 @@ export default function DiscoverHome() {
         },
         {
           title: 'Create Group',
-          // TODO: change icon and title
           iconName: 'chat-create-group',
           onPress: () => navigationService.navigate('CreateGroupPage'),
         },

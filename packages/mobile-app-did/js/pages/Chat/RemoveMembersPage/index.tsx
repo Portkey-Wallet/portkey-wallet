@@ -16,6 +16,7 @@ import NoData from 'components/NoData';
 import { BGStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const RemoveMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -25,6 +26,7 @@ const RemoveMembersPage = () => {
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);
+  const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
   const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, string>>(new Map());
@@ -75,15 +77,19 @@ const RemoveMembersPage = () => {
     try {
       let result = [];
       if (debounceKeyword) {
-        result = members.filter(ele => ele.name.toLocaleUpperCase().includes(debounceKeyword) && !ele.isAdmin);
+        result = rawMemberList.filter(ele => ele.name.toLocaleUpperCase().includes(debounceKeyword) && !ele.isAdmin);
       } else {
-        result = members.filter(ele => !ele.isAdmin);
+        result = rawMemberList.filter(ele => !ele.isAdmin);
       }
       setFilterMembers(result);
     } catch (error) {
       CommonToast.failError(error);
     }
-  }, [debounceKeyword, members]);
+  }, [debounceKeyword, rawMemberList]);
+
+  useEffectOnce(() => {
+    setRawMemberList([...members]);
+  });
 
   return (
     <PageContainer

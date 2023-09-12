@@ -103,7 +103,6 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         onLongPress={onLongPressItem}
         onPressIn={eventEmit}>
         <>
-          {/* TODO: group avatar */}
           <CommonAvatar
             hasBorder
             title={item.displayName}

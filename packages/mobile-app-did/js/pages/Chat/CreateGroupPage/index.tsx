@@ -113,8 +113,6 @@ const ChatGroupDetails = () => {
           )}
         />
       </View>
-
-      {/* TODO: change true data  */}
       <View style={styles.buttonWrap}>
         <CommonButton disabled={isButtonDisable} type="primary" title="Done" onPress={onPressConfirm} />
       </View>

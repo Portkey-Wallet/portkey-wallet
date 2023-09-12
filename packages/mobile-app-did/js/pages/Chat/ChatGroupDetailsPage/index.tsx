@@ -1,11 +1,11 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { GestureResponderEvent, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import { TextL, TextS } from 'components/CommonText';
-import ChatsDetailContent from '../components/ChatsDetailContent';
+import ChatsGroupDetailContent from '../components/ChatsGroupDetailContent';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../components/ChatOverlay';
@@ -18,11 +18,11 @@ import {
   useHideChannel,
   useGroupChannelInfo,
   useLeaveChannel,
+  useChannelItemInfo,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
 import CommonToast from 'components/CommonToast';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
@@ -31,18 +31,15 @@ import FloatingActionButton from '../components/FloatingActionButton';
 import LottieLoading from 'components/LottieLoading';
 
 const ChatGroupDetailsPage = () => {
-  const dispatch = useAppCommonDispatch();
-
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
-  const leaveGroup = useLeaveChannel();
+  const { pin, mute, displayName } = useChannelItemInfo(currentChannelId || '') || {};
 
-  const displayName = useMemo(() => groupInfo?.name, [groupInfo?.name]);
-  const pin = useMemo(() => groupInfo?.pin, [groupInfo?.pin]);
-  const mute = useMemo(() => groupInfo?.mute, [groupInfo?.mute]);
+  const leaveGroup = useLeaveChannel();
+  const groupMemberCount = useMemo(() => groupInfo?.membersAmount, [groupInfo?.membersAmount]);
 
   const addMembers = useCallback(async () => {
     navigationService.navigate('AddMembersPage');
@@ -170,7 +167,6 @@ const ChatGroupDetailsPage = () => {
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter]}
           onPress={() => {
-            // TODO: link to group info
             navigationService.navigate('GroupInfoPage');
           }}>
           <Svg size={pTd(32)} icon="chat-group-avatar-header" />
@@ -179,16 +175,14 @@ const ChatGroupDetailsPage = () => {
               {displayName}
             </TextL>
             <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberInfo]}>
-              {groupInfo?.members.length ? (
-                <TextS style={FontStyles.font2}>{groupInfo.members.length}</TextS>
+              {groupMemberCount ? (
+                <TextS style={FontStyles.font2}>{groupMemberCount}</TextS>
               ) : (
                 <>
                   <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoadingStyle} />
                 </>
               )}
-              <TextS style={FontStyles.font2}>{` member${
-                groupInfo?.members?.length && groupInfo?.members?.length > 0 && 's'
-              }`}</TextS>
+              <TextS style={FontStyles.font2}>{` member${groupMemberCount && groupMemberCount > 0 && 's'}`}</TextS>
             </View>
           </View>
         </Touchable>
@@ -196,7 +190,7 @@ const ChatGroupDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [displayName, groupInfo?.members.length, mute],
+    [displayName, groupMemberCount, mute],
   );
   return (
     <PageContainer
@@ -212,7 +206,7 @@ const ChatGroupDetailsPage = () => {
         </Touchable>
       }>
       <FloatingActionButton title="Add Members" shouldShowFirstTime={isAdmin} onPressButton={addMembers} />
-      <ChatsDetailContent isGroupChat />
+      <ChatsGroupDetailContent />
     </PageContainer>
   );
 };

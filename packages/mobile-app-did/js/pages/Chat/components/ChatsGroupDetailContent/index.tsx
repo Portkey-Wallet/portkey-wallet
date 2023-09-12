@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
+  AvatarProps,
   BubbleProps,
   DayProps,
   GiftedChat,
@@ -24,7 +25,7 @@ import MessageImage from '../Message/MessageImage';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 import Touchable from 'components/Touchable';
-import { useChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import GStyles from 'assets/theme/GStyles';
 import { ChatMessage } from 'pages/Chat/types';
 import { FontStyles } from 'assets/theme/styles';
@@ -34,6 +35,7 @@ import SystemTime from '../SystemTime';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
+import CustomChatAvatar from '../CustomChatAvatar';
 import SystemInfo from '../SystemInfo';
 
 const ListViewProps = {
@@ -46,16 +48,18 @@ const ListViewProps = {
 };
 const Empty = () => null;
 
-export default function ChatsDetailContent() {
+export default function ChatsGroupDetailContent() {
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
 
-  const { list, init } = useChannel(currentChannelId || '');
+  const { list, init } = useGroupChannel(currentChannelId || '');
   const [loading, setLoading] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
   const relationId = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
+
+  console.log('list', list);
 
   useEffectOnce(() => {
     initChatInputRecorder();
@@ -98,7 +102,7 @@ export default function ChatsDetailContent() {
   );
 
   const renderBubble: GiftedChatProps['renderBubble'] = useCallback((data: BubbleProps<ChatMessage>) => {
-    return <CustomBubble {...data} />;
+    return <CustomBubble isGroupChat {...data} />;
   }, []);
 
   const listViewProps: GiftedChatProps['listViewProps'] = useMemo(() => {
@@ -125,6 +129,10 @@ export default function ChatsDetailContent() {
     },
     [],
   );
+
+  const renderAvatar = useCallback((props: AvatarProps<ChatMessage>) => {
+    return <CustomChatAvatar {...props} />;
+  }, []);
 
   const bottomBar = useMemo(
     () => (
@@ -158,7 +166,7 @@ export default function ChatsDetailContent() {
             renderTime={Empty}
             isCustomViewBottom
             renderAvatarOnTop
-            renderAvatar={Empty}
+            renderAvatar={renderAvatar as GiftedChatProps['renderAvatar']}
             showUserAvatar={false}
             messages={formattedList}
             minInputToolbarHeight={0}

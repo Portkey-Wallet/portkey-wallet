@@ -37,11 +37,19 @@ export default function MemberList() {
     [],
     500,
   );
+  const handleGoProfile = useCallback(
+    (item: ChannelMemberInfo) => {
+      navigate('/setting/contacts/view', {
+        state: { relationId: item.relationId, from: 'chat-member-list', channelUuid },
+      });
+    },
+    [navigate, channelUuid],
+  );
   const renderMemberList = useMemo(
     () => (
       <div className="member-list">
         {showMemberList?.map((m) => (
-          <div className="member-item flex-between" key={m.relationId}>
+          <div className="member-item flex-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
             <div className="flex member-basic">
               <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
               <div className="member-name">{m.name}</div>
@@ -51,7 +59,7 @@ export default function MemberList() {
         ))}
       </div>
     ),
-    [showMemberList],
+    [handleGoProfile, showMemberList],
   );
   useEffect(() => {
     setFilterWord(state?.search ?? '');
@@ -63,8 +71,8 @@ export default function MemberList() {
       <div className="member-list-top">
         <SettingHeader
           title={t('Members')}
-          leftCallBack={() => navigate(-1)}
-          rightElement={<CustomSvg type="Close2" onClick={() => navigate(-1)} />}
+          leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
+          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
         />
         <DropdownSearch
           overlay={<></>}

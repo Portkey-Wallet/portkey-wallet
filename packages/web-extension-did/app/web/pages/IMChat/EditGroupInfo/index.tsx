@@ -30,7 +30,7 @@ export default function EditGroupInfo() {
   const handleInputValueChange = useCallback(
     (v: string) => {
       setValidName({ validateStatus: '', errorMsg: '' });
-      if (!v) {
+      if (!v.trim()) {
         setDisabled(true);
       } else {
         setName(v);
@@ -41,7 +41,7 @@ export default function EditGroupInfo() {
   );
   const onFinish = useCallback(async () => {
     try {
-      await updateChannelName(`${channelUuid}`, `${name}`);
+      await updateChannelName(`${channelUuid}`, `${name?.trim()}`);
       message.success('update channel name');
       navigate(-1);
     } catch (error) {
@@ -92,7 +92,7 @@ export default function EditGroupInfo() {
               value={name}
               placeholder="Enter name"
               onChange={(e) => handleInputValueChange(e.target.value)}
-              maxLength={16}
+              maxLength={40}
             />
           </FormItem>
         </div>

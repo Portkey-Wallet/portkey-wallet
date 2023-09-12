@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -15,7 +15,6 @@ import './index.less';
 export default function HandleMember() {
   const { channelUuid, operate } = useParams();
   const { t } = useTranslation();
-  const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
@@ -83,7 +82,7 @@ export default function HandleMember() {
     if (isAdd) {
       try {
         await addMemberApi(selectedContactRef.current!);
-        navigate(`/chat-group-info/${channelUuid}`);
+        navigate(-1);
       } catch (e) {
         message.error('Failed to add members');
         console.log('===Failed to add members', e);
@@ -102,7 +101,7 @@ export default function HandleMember() {
         onOk: async () => {
           try {
             await removeMemberApi(selectedContactRef.current?.map((item) => item.relationId) || []);
-            navigate(`/chat-group-info/${channelUuid}`);
+            navigate(-1);
           } catch (e) {
             message.error('Failed to remove members');
             console.log('===Failed to remove members', e);
@@ -110,7 +109,7 @@ export default function HandleMember() {
         },
       });
     }
-  }, [addMemberApi, channelUuid, isAdd, navigate, removeMemberApi, t]);
+  }, [addMemberApi, isAdd, navigate, removeMemberApi, t]);
   const clickAddItem = useCallback(
     (item: IContactItemSelectProps) => {
       const target = selectedContactRef?.current || [];
@@ -179,11 +178,6 @@ export default function HandleMember() {
     },
     [showMemberList],
   );
-  useEffect(() => {
-    setFilterWord(state?.search ?? '');
-    handleSearch(state?.search ?? '');
-  }, [handleSearch, state?.search]);
-
   return (
     <div className="handle-member-page flex-column">
       <div className="handle-member-top">

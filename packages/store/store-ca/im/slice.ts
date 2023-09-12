@@ -294,7 +294,7 @@ export const imSlice = createSlice({
         const [preOwner, ...otherMembers] = preChannelInfo.members;
         const newOwner = otherMembers.find(member => member.relationId === relationId);
         if (!preOwner || !newOwner) return state;
-        const newMembers = preChannelInfo.members.filter(member => member.relationId !== relationId);
+        const newMembers = otherMembers.filter(member => member.relationId !== relationId);
         newMembers.reverse();
         newMembers.push({
           ...preOwner,

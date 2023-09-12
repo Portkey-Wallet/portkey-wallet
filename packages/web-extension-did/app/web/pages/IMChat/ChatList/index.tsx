@@ -9,7 +9,7 @@ import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
-import { ChannelItem } from '@portkey-wallet/im';
+import { ChannelItem, ChannelTypeEnum } from '@portkey-wallet/im';
 import './index.less';
 
 export default function ChatList() {
@@ -91,10 +91,27 @@ export default function ChatList() {
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
-        channelType: item.channelType,
+        channelType: item?.channelType || ChannelTypeEnum.P2P,
       };
     });
   }, [chatList, formatSubTitle]);
+
+  const handleClickChatItem = useCallback(
+    (item: IChatItemProps) => {
+      switch (item.channelType) {
+        case ChannelTypeEnum.P2P:
+          navigate(`/chat-box/${item.id}`);
+          break;
+        case ChannelTypeEnum.GROUP:
+          navigate(`/chat-box-group/${item.id}`);
+          break;
+        default:
+          message.error('Invalid chat');
+      }
+    },
+    [navigate],
+  );
+
   const handlePin = useCallback(
     async (chatItem: IChatItemProps) => {
       try {
@@ -155,7 +172,7 @@ export default function ChatList() {
               onClickPin={handlePin}
               onClickMute={handleMute}
               onClickDelete={handleDelete}
-              onClick={(chatItem) => navigate(`/chat-box/${chatItem.id}`)}
+              onClick={handleClickChatItem}
               hasMore={hasNextChannelList}
               loadMore={nextChannelList}
             />

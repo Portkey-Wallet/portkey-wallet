@@ -1,4 +1,4 @@
-type GenerateType<T> = {
+export type GenerateType<T> = {
   [K in keyof T]: T[K];
 };
 

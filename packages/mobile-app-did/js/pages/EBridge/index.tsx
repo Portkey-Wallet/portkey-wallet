@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import ProviderWebview, { IWebView } from 'components/ProviderWebview';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
 import PageContainer from 'components/PageContainer';
+import { DappMap } from '@portkey-wallet/constants/constants-ca/network';
 
 const EBridge = () => {
   const webViewRef = useRef<IWebView | null>(null);
@@ -17,9 +18,8 @@ const EBridge = () => {
       <Progressbar ref={progressbarRef} />
       <ProviderWebview
         ref={webViewRef}
-        // TODO: uri
         style={styles.providerWebview}
-        source={{ uri: 'https://test.ebridge.exchange/' }}
+        source={{ uri: DappMap.bridge }}
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
       />
     </PageContainer>

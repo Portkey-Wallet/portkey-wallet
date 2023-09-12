@@ -9,3 +9,9 @@ export const OfficialWebsite = 'https://portkey.finance';
 export const BingoGame = 'http://192.168.66.240:3000';
 
 export const ThirdParty = `https://openlogin-test.portkey.finance`;
+
+export enum DappMap {
+  bridge = 'http://192.168.67.235:3000',
+}
+
+export const DAPP_WHITELIST: string[] = [DappMap.bridge];

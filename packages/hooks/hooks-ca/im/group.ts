@@ -1,6 +1,12 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useChannel, useHideChannel, useIMGroupInfoMapNetMapState, useRelationId } from '.';
-import im, { ChannelInfo, ChannelMemberInfo, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
+import im, {
+  ChannelInfo,
+  ChannelMemberInfo,
+  ChannelStatusEnum,
+  ChannelTypeEnum,
+  SocketMessage,
+} from '@portkey-wallet/im';
 import { useAppCommonDispatch } from '../../index';
 import {
   addChannelMembers,
@@ -9,9 +15,11 @@ import {
   transferChannelOwner,
   updateChannelAttribute,
   updateGroupInfo,
+  updateGroupMemberAmount,
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
 import { sleep } from '@portkey-wallet/utils';
+import { UpdateGroupMemberAmountTypeEnum } from '@portkey-wallet/store/store-ca/im/type';
 
 export const useDisbandChannel = (channelId: string) => {
   const dispatch = useAppCommonDispatch();
@@ -220,6 +228,48 @@ export const useGroupChannel = (channelId: string) => {
   const channel = useChannel(channelId);
   const { groupInfo, isAdmin, refresh: refreshGroupInfo } = useGroupChannelInfo(channelId, true);
   const disband = useDisbandChannel(channelId);
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+
+  const updateList = useCallback(
+    (e: any) => {
+      const rawMsg: SocketMessage = e['im-message'];
+      if (rawMsg.type !== 'SYS') return;
+      console.log('receive SYS msg');
+      const content = rawMsg.content;
+      if (content.endsWith('joined in')) {
+        dispatch(
+          updateGroupMemberAmount({
+            network: networkType,
+            channelId,
+            type: UpdateGroupMemberAmountTypeEnum.ADD,
+          }),
+        );
+        return;
+      }
+      if (content.endsWith('been removed') || content.endsWith('left the group')) {
+        dispatch(
+          updateGroupMemberAmount({
+            network: networkType,
+            channelId,
+            type: UpdateGroupMemberAmountTypeEnum.REMOVE,
+          }),
+        );
+        return;
+      }
+    },
+    [channelId, dispatch, networkType],
+  );
+  const updateListRef = useRef(updateList);
+  updateListRef.current = updateList;
+
+  useEffect(() => {
+    const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
+      updateListRef.current(e);
+    });
+    return removeMsgObserver;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     ...channel,

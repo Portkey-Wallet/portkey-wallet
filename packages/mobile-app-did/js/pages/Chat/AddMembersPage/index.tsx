@@ -10,29 +10,20 @@ import CommonToast from 'components/CommonToast';
 import CommonButton from 'components/CommonButton';
 import NoData from 'components/NoData';
 import Loading from 'components/Loading';
-const memberList = [
-  { name: '11', id: '1111' },
-  { name: '222', id: '2222' },
-];
+import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useCurrentChannelId } from '../context/hooks';
+import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 
 const AddMembersPage = () => {
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { members = [] } = groupInfo || {};
+
   const [keyword, setKeyword] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
   const debounceKeyword = useDebounce(keyword, 800);
 
-  const [filterMemberList, setFilterMemberList] = useState(memberList);
+  const [filterMemberList, setFilterMemberList] = useState<ChannelMemberInfo[]>([]);
   const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, string>>(new Map());
-
-  useEffect(() => {
-    try {
-      setIsSearching(true);
-      // TODO: fetch
-    } catch (error) {
-      CommonToast.failError(error);
-    } finally {
-      setIsSearching(true);
-    }
-  }, [debounceKeyword]);
 
   const onPressItem = useCallback((id: string) => {
     console.log('id', id);
@@ -63,6 +54,20 @@ const AddMembersPage = () => {
     }
   }, [selectedMemberMap]);
 
+  useEffect(() => {
+    try {
+      let result = [];
+      if (debounceKeyword) {
+        result = members.filter(ele => ele.name.toLocaleUpperCase().includes(debounceKeyword) && !ele.isAdmin);
+      } else {
+        result = members.filter(ele => !ele.isAdmin);
+      }
+      setFilterMemberList(result);
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+  }, [debounceKeyword, members]);
+
   return (
     <PageContainer
       titleDom="Add Members"
@@ -81,16 +86,18 @@ const AddMembersPage = () => {
       </View>
       <FlatList
         data={filterMemberList}
-        // TODO: any Type
-        extraData={(item: any) => item.id}
+        extraData={(item: ChannelMemberInfo) => item.relationId}
         ListEmptyComponent={
           debounceKeyword ? <NoData noPic message="No search found" /> : <NoData noPic message="No Member" />
         }
         renderItem={({ item }) => (
           <GroupMemberItem
-            key={item.id}
-            selected={!!selectedMemberMap.has(item.id)}
-            item={item}
+            key={item.relationId}
+            selected={!!selectedMemberMap.has(item.relationId)}
+            item={{
+              title: item.name,
+              relationId: item.relationId,
+            }}
             onPress={onPressItem}
           />
         )}

@@ -56,6 +56,7 @@ const FindMorePeople = () => {
         fields: ['ADDRESS_WITH_CHAIN'],
       });
       setList([{ ...data }]);
+      console.log('more people', data);
     } catch (error) {
       setList([]);
       console.log(error);

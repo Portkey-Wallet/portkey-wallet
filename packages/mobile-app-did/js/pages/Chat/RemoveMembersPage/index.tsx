@@ -9,26 +9,25 @@ import useDebounce from 'hooks/useDebounce';
 import CommonToast from 'components/CommonToast';
 import CommonButton from 'components/CommonButton';
 import Loading from 'components/Loading';
-
-const list = [{ name: '11', id: '1111' }];
+import { useCurrentChannelId } from '../context/hooks';
+import { useGroupChannelInfo, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
+import NoData from 'components/NoData';
+import { BGStyles } from 'assets/theme/styles';
+import ActionSheet from 'components/ActionSheet';
+import navigationService from 'utils/navigationService';
 
 const RemoveMembersPage = () => {
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { members = [] } = groupInfo || {};
+  const removeMembers = useRemoveChannelMembers(currentChannelId || '');
+
   const [keyword, setKeyword] = useState('');
-  const [, setIsSearching] = useState(false);
-  const debounceKeyword = useDebounce(keyword, 800);
+  const debounceKeyword = useDebounce(keyword, 200);
+  const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
+
   const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, string>>(new Map());
-
-  useEffect(() => {
-    // TODO: fetch
-
-    try {
-      setIsSearching(true);
-    } catch (error) {
-      CommonToast.failError(error);
-    } finally {
-      setIsSearching(true);
-    }
-  }, [debounceKeyword]);
 
   const onPressItem = useCallback((id: string) => {
     setSelectedMemberMap(pre => {
@@ -45,17 +44,46 @@ const RemoveMembersPage = () => {
   }, []);
 
   const onRemove = useCallback(() => {
-    //TODO: save
+    ActionSheet.alert({
+      title: 'Remove these members ?',
+      buttons: [
+        {
+          title: 'No',
+          type: 'outline',
+        },
+        {
+          title: 'Yes',
+          onPress: async () => {
+            try {
+              Loading.show();
+              const result = Array.from(selectedMemberMap.keys());
+              await removeMembers(result || []);
+              // TODO: test it
+              navigationService.goBack();
+            } catch (error) {
+              CommonToast.failError(error);
+            } finally {
+              Loading.hide();
+            }
+          },
+        },
+      ],
+    });
+  }, [removeMembers, selectedMemberMap]);
+
+  useEffect(() => {
     try {
-      Loading.show();
-      const result = Array.from(selectedMemberMap.keys());
-      console.log('list', result);
+      let result = [];
+      if (debounceKeyword) {
+        result = members.filter(ele => ele.name.toLocaleUpperCase().includes(debounceKeyword) && !ele.isAdmin);
+      } else {
+        result = members.filter(ele => !ele.isAdmin);
+      }
+      setFilterMembers(result);
     } catch (error) {
       CommonToast.failError(error);
-    } finally {
-      Loading.hide();
     }
-  }, [selectedMemberMap]);
+  }, [debounceKeyword, members]);
 
   return (
     <PageContainer
@@ -66,7 +94,6 @@ const RemoveMembersPage = () => {
       <View style={styles.inputWrap}>
         <CommonInput
           allowClear
-          // loading={isSearching}
           value={keyword}
           placeholder={'Search members'}
           onChangeText={v => {
@@ -76,14 +103,17 @@ const RemoveMembersPage = () => {
       </View>
 
       <FlatList
-        data={list}
-        // TODO: any Type
-        extraData={(item: any) => item.id}
+        data={filterMembers || []}
+        extraData={(item: ChannelMemberInfo) => item.relationId}
+        ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg4} />}
         renderItem={({ item }) => (
-          <GroupMemberItem selected={selectedMemberMap.has(item.id)} item={item} onPress={onPressItem} />
+          <GroupMemberItem
+            selected={selectedMemberMap.has(item.relationId)}
+            item={{ title: item.name, relationId: item.relationId }}
+            onPress={onPressItem}
+          />
         )}
       />
-
       <View style={styles.buttonWrap}>
         <CommonButton disabled={selectedMemberMap.size === 0} title="Remove" type="primary" onPress={onRemove} />
       </View>

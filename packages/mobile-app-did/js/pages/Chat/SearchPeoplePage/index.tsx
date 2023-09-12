@@ -73,7 +73,13 @@ export default function SearchPeople() {
           onPress={() => {
             navToChatDetails({ toRelationId, channelUuid });
           }}>
-          <CommonAvatar title={displayName} hasBorder avatarSize={pTd(36)} style={styles.avatarStyle} />
+          <CommonAvatar
+            title={displayName}
+            hasBorder
+            svgName={item.channelType === 'G' ? 'chat-group-avatar' : undefined}
+            avatarSize={pTd(36)}
+            style={styles.avatarStyle}
+          />
           <View style={styles.rightSection}>
             <TextL numberOfLines={1}>{displayName}</TextL>
           </View>

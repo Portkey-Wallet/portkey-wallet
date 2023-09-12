@@ -16,7 +16,14 @@ import { pTd } from 'utils/unit';
 import { BGStyles } from 'assets/theme/styles';
 import GroupMemberItem from '../components/GroupMemberItem';
 import NoData from 'components/NoData';
+import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im/channelList';
+import { sleep } from '@portkey-wallet/utils';
+import { useJumpToChatGroupDetails } from 'hooks/chat';
 const ChatGroupDetails = () => {
+  const createChannel = useCreateGroupChannel();
+
+  const jumpToChatGroupDetails = useJumpToChatGroupDetails();
+
   const [groupName, setGroupName] = useState('');
   const [keyword, setKeyword] = useState('');
   const allChatList = useChatContactFlatList();
@@ -29,17 +36,20 @@ const ChatGroupDetails = () => {
   const totalCount = useMemo((): number => allChatList.length, [allChatList]);
   const isButtonDisable = useMemo(() => !groupName || selectedCount === 0, [groupName, selectedCount]);
 
-  const onPressConfirm = useCallback(() => {
+  const onPressConfirm = useCallback(async () => {
     try {
       Loading.show();
-      // TODO api
+      const selectedContactList = Object.keys(selectedContactMap);
+      const result = await createChannel(groupName.trim(), selectedContactList);
       CommonToast.success('Group created');
+      await sleep(100);
+      jumpToChatGroupDetails({ channelUuid: result.channelUuid });
     } catch (error) {
       CommonToast.failError(error);
     } finally {
       Loading.hide();
     }
-  }, []);
+  }, [createChannel, groupName, jumpToChatGroupDetails, selectedContactMap]);
 
   const onPressItem = useCallback((id: string) => {
     setSelectedContactMap(prevMap => {
@@ -92,7 +102,14 @@ const ChatGroupDetails = () => {
           data={filterChatContactList}
           ListEmptyComponent={<NoData noPic message="No search found" />}
           renderItem={({ item }: { item: ContactItemType }) => (
-            <GroupMemberItem selected={!!selectedContactMap[item.id]} item={item} onPress={onPressItem} />
+            <GroupMemberItem
+              selected={!!selectedContactMap[item.imInfo?.relationId || '']}
+              item={{
+                title: item.name || item.caHolderInfo?.walletName || item.imInfo?.name || '',
+                relationId: item.imInfo?.relationId || '',
+              }}
+              onPress={onPressItem}
+            />
           )}
         />
       </View>

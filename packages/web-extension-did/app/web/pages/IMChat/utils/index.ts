@@ -29,6 +29,7 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
         id: `${item.id}`,
         key: item.sendUuid,
         title: item.fromName,
+        from: item.from,
         position: item.from === ownerRelationId ? 'right' : 'left',
         text: `${item.parsedContent}`,
         imgData:

@@ -68,6 +68,17 @@
       }
       .remove-member {
         color: @font-18;
+        &.remove-disable {
+          color: @font-19;
+          pointer-events: none;
+          .removemem-icon {
+            svg {
+              path {
+                fill: @svg-2;
+              }
+            }
+          }
+        }
       }
     }
     .info-members {
@@ -114,6 +125,7 @@
         cursor: pointer;
         .custom-svg {
           rotate: 180deg;
+          /* stylelint-disable-next-line no-descending-specificity */
           svg {
             width: 12px;
             height: 16px;

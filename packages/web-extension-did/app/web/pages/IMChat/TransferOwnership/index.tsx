@@ -66,7 +66,7 @@ export default function TransferOwnership() {
         try {
           await transferOwnershipApi(selected);
           navigate(-1);
-          message.success('Owned changed');
+          message.success('transferred successfully');
         } catch (e) {
           message.error('Failed to delete chat');
           console.log('===transfer ownership error', e);

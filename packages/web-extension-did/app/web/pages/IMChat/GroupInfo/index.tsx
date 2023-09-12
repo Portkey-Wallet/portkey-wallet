@@ -6,7 +6,8 @@ import { useNavigate, useParams } from 'react-router';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLoading } from 'store/Provider/hooks';
+import clsx from 'clsx';
+import { ChannelMemberInfo } from '@portkey-wallet/im';
 import './index.less';
 
 export interface IGroupInfoProps {
@@ -16,7 +17,6 @@ const GroupInfo = () => {
   const { channelUuid } = useParams();
   const leaveGroup = useLeaveChannel();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
-  const { setLoading } = useLoading();
   const memberLen = useMemo(
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
     [groupInfo?.members.length],
@@ -44,18 +44,16 @@ const GroupInfo = () => {
       },
     });
   }, [channelUuid, leaveGroup, navigate, t]);
-  const handleRefresh = useCallback(async () => {
-    try {
-      setLoading(true);
-      await refresh();
-    } catch (error) {
-      console.log('===refresh error', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [refresh, setLoading]);
+  const handleGoProfile = useCallback(
+    (item: ChannelMemberInfo) => {
+      navigate('/setting/contacts/view', {
+        state: { relationId: item.relationId, from: 'chat-group-info', channelUuid },
+      });
+    },
+    [navigate, channelUuid],
+  );
   useEffect(() => {
-    handleRefresh();
+    refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
@@ -89,7 +87,12 @@ const GroupInfo = () => {
           </div>
           {isAdmin && (
             <div
-              className="remove-member op-member flex"
+              className={clsx([
+                'remove-member',
+                'op-member',
+                'flex',
+                (groupInfo?.members || []).length === 1 && 'remove-disable',
+              ])}
               onClick={() => navigate(`/chat-group-info/${channelUuid}/member-list/remove`)}>
               <CustomSvg type="RemoveMem" className="flex-center" />
               remove
@@ -97,9 +100,9 @@ const GroupInfo = () => {
           )}
         </div>
         <div className="info-members">
-          {(groupInfo?.members || []).slice(0, 6).map(
+          {(groupInfo?.members || []).slice(0, 4).map(
             (m) => (
-              <div className="member-item flex-between" key={m.relationId}>
+              <div className="member-item flex-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
                 <div className="flex member-basic">
                   <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
                   <div className="member-name">{m.name}</div>

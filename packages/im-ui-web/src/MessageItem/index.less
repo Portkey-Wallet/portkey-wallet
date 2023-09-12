@@ -27,8 +27,26 @@
   .portkey-avatar-container {
     flex-shrink: 0;
   }
+  .message-item-form-name {
+    margin-bottom: 4px;
+    max-width: 210px;
+    font-size: 12px;
+    line-height: 16px;
+    color: @font-6;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }
 
 .show-margin {
   margin-top: 8px;
+}
+.hidden-avatar {
+  .portkey-avatar-container {
+    visibility: hidden;
+  }
+  .message-item-form-name {
+    display: none;
+  }
 }

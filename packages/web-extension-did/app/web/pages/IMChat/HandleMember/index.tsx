@@ -10,7 +10,6 @@ import { useAddChannelMembers, useGroupChannelInfo, useRemoveChannelMembers } fr
 import { useChatContactFlatList } from '@portkey-wallet/hooks/hooks-ca/contact';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
-import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import './index.less';
 
 export default function HandleMember() {
@@ -22,61 +21,54 @@ export default function HandleMember() {
   const [disabled, setDisabled] = useState(true);
   const allChatContact = useChatContactFlatList();
   const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
+  const isAdd = useMemo(() => operate === 'add', [operate]);
   const addMemberApi = useAddChannelMembers(`${channelUuid}`);
   const removeMemberApi = useRemoveChannelMembers(`${channelUuid}`);
   const selectedContactRef = useRef<ChannelMemberInfo[]>([]);
-  const formatChatContact: IContactItemSelectProps[] = useMemo(
-    () =>
-      allChatContact.map((m) => ({
-        ...m,
-        selected: groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId),
-        disable: groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId),
-      })),
-    [allChatContact, groupInfo?.members],
-  );
+  const formatChatContact: IContactItemSelectProps[] = useMemo(() => {
+    if (isAdd) {
+      return (
+        allChatContact.map((m) => ({
+          ...m,
+          id: m.imInfo?.relationId,
+          index: m.name?.slice(0, 1),
+          selected: groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId),
+          disable: groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId),
+        })) || []
+      );
+    } else {
+      return (
+        groupInfo?.members
+          .filter((m) => !m.isAdmin)
+          .map((m) => ({
+            name: m.name,
+            id: m.relationId,
+            index: m.name.slice(0, 1),
+            avatar: '',
+          })) || []
+      );
+    }
+  }, [allChatContact, groupInfo?.members, isAdd]);
   const allContactRef = useRef<IContactItemSelectProps[]>(formatChatContact);
   const [showMemberList, setShowMemberList] = useState<IContactItemSelectProps[]>(formatChatContact);
-  const isAdd = useMemo(() => operate === 'add', [operate]);
+
   const handleSearch = useCallback((keyword: string) => {
     const res: IContactItemSelectProps[] = [];
-    if (keyword.length <= 16) {
-      const _v = keyword.trim().toLowerCase();
-      allContactRef.current.forEach((m) => {
-        if (m?.caHolderInfo?.walletName) {
-          if (
-            m?.name?.trim().toLowerCase().includes(_v) ||
-            m?.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v)
-          ) {
-            res.push(m);
-          }
-        } else {
-          if (m?.name?.trim().toLowerCase().includes(_v) || m?.imInfo?.name?.trim().toLowerCase().includes(_v)) {
-            res.push(m);
-          }
-        }
-      });
-    } else {
-      // Portkey ID search
-      allContactRef.current.forEach((m) => {
-        if (m?.imInfo?.portkeyId?.trim() === keyword.trim()) {
+    const _v = keyword.trim().toLowerCase();
+    allContactRef.current.forEach((m) => {
+      if (m?.caHolderInfo?.walletName) {
+        if (
+          m?.name?.trim().toLowerCase().includes(_v) ||
+          m?.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v)
+        ) {
           res.push(m);
         }
-      });
-      // Address search
-      let suffix = '';
-      if (keyword.includes('_')) {
-        const arr = keyword.split('_');
-        if (!isAelfAddress(arr[arr.length - 1])) {
-          suffix = arr[arr.length - 1];
+      } else {
+        if (m?.name?.trim().toLowerCase().includes(_v) || m?.imInfo?.name?.trim().toLowerCase().includes(_v)) {
+          res.push(m);
         }
       }
-      keyword = getAelfAddress(keyword);
-      allContactRef.current.forEach((m) => {
-        if (m.addresses.some((ads) => ads.address === keyword && (!suffix || suffix === ads.chainId))) {
-          res.push(m);
-        }
-      });
-    }
+    });
     setShowMemberList(res);
   }, []);
   const searchDebounce = useDebounceCallback(
@@ -91,7 +83,7 @@ export default function HandleMember() {
     if (isAdd) {
       try {
         await addMemberApi(selectedContactRef.current!);
-        navigate(-1);
+        navigate(`/chat-group-info/${channelUuid}`);
       } catch (e) {
         message.error('Failed to add members');
         console.log('===Failed to add members', e);
@@ -110,7 +102,7 @@ export default function HandleMember() {
         onOk: async () => {
           try {
             await removeMemberApi(selectedContactRef.current?.map((item) => item.relationId) || []);
-            navigate(-1);
+            navigate(`/chat-group-info/${channelUuid}`);
           } catch (e) {
             message.error('Failed to remove members');
             console.log('===Failed to remove members', e);
@@ -118,8 +110,8 @@ export default function HandleMember() {
         },
       });
     }
-  }, [addMemberApi, isAdd, navigate, removeMemberApi, t]);
-  const clickItem = useCallback(
+  }, [addMemberApi, channelUuid, isAdd, navigate, removeMemberApi, t]);
+  const clickAddItem = useCallback(
     (item: IContactItemSelectProps) => {
       const target = selectedContactRef?.current || [];
       if (target?.some((m) => m.relationId === item.imInfo?.relationId)) {
@@ -127,7 +119,7 @@ export default function HandleMember() {
       } else {
         target.push({
           isAdmin: false,
-          name: item.name,
+          name: item.name || '',
           relationId: item.imInfo?.relationId || '',
           avatar: '',
         });
@@ -146,6 +138,40 @@ export default function HandleMember() {
       setShowMemberList(_v);
       allContactRef.current.forEach((m) => {
         if (m.imInfo?.relationId === item.imInfo?.relationId) {
+          m.selected = !m.selected;
+        }
+      });
+      setDisabled(!selectedContactRef?.current?.length);
+    },
+    [showMemberList],
+  );
+  const clickRemoveItem = useCallback(
+    (item: IContactItemSelectProps) => {
+      const target = selectedContactRef?.current || [];
+      if (target?.some((m) => m.relationId === item.id)) {
+        selectedContactRef.current = target.filter((m) => m.relationId !== item.id);
+      } else {
+        target.push({
+          isAdmin: false,
+          name: item.name || '',
+          relationId: item.id || '',
+          avatar: '',
+        });
+        selectedContactRef.current = target;
+      }
+      const _v = showMemberList.map((m) => {
+        if (m.id === item.id) {
+          return {
+            ...m,
+            selected: !m.selected,
+          };
+        } else {
+          return m;
+        }
+      });
+      setShowMemberList(_v);
+      allContactRef.current.forEach((m) => {
+        if (m.id === item.id) {
           m.selected = !m.selected;
         }
       });
@@ -181,9 +207,9 @@ export default function HandleMember() {
       </div>
       <div className="member-list-container">
         {showMemberList.length !== 0 ? (
-          <ContactListSelect list={showMemberList} clickItem={clickItem} />
+          <ContactListSelect list={showMemberList} clickItem={isAdd ? clickAddItem : clickRemoveItem} />
         ) : (
-          <div className="empty">{filterWord ? 'No search found' : 'No contact result'}</div>
+          <div className="flex-center member-list-empty">{filterWord ? 'No search found' : 'No contact result'}</div>
         )}
       </div>
       <div className="handle-member-btn flex-center" onClick={handleOperate}>

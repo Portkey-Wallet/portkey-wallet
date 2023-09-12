@@ -1,50 +1,53 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { Button, Modal, message } from 'antd';
-import { mockSearchRes } from '../mock';
+import { useGroupChannelInfo, useTransferChannelOwner } from '@portkey-wallet/hooks/hooks-ca/im';
+import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
+import { ISelectItemType } from '../components/ContactItemSelect';
 import './index.less';
-import { Avatar } from '@portkey-wallet/im-ui-web';
 
 export default function TransferOwnership() {
   const { channelUuid } = useParams();
+  const transferOwnershipApi = useTransferChannelOwner(`${channelUuid}`);
+  const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
-  const [disabled, setDisabled] = useState(true);
-  const { setLoading } = useLoading();
-  // TODO
-  // const allMemberList = api();
-  const [showMemberList, setShowMemberList] = useState<ContactItemType[]>([]);
+  const formatAllMember: IContactItemSelectProps[] = useMemo(
+    () =>
+      groupInfo?.members
+        ?.filter((m) => !m.isAdmin)
+        .map((m) => ({
+          id: m.relationId,
+          index: m.name?.slice(0, 1),
+          name: m.name,
+        })) || [],
+    [groupInfo?.members],
+  );
+  const allMemberRef = useRef<IContactItemSelectProps[]>(formatAllMember);
+  const [selected, setSelected] = useState<string>('');
+  const [showMemberList, setShowMemberList] = useState<IContactItemSelectProps[]>(allMemberRef.current);
 
   const handleSearch = useCallback(async (keyword: string) => {
-    try {
-      // TODO api
-      console.log(keyword);
-      // const res = await search();
-      setShowMemberList(mockSearchRes);
-    } catch (e) {
-      console.log('===search error', e);
-      setShowMemberList([]);
+    const _all = allMemberRef.current;
+    if (keyword) {
+      const _t = _all.filter((m) => m.id === keyword || m.name?.toLowerCase().includes(keyword.toLowerCase()));
+      setShowMemberList(_t);
+    } else {
+      setShowMemberList(_all);
     }
   }, []);
   const searchDebounce = useDebounceCallback(
     (params) => {
-      try {
-        setLoading(true);
-        handleSearch(params);
-      } catch (e) {
-        console.log('===handleSearch error', e);
-      } finally {
-        setLoading(false);
-      }
+      const _v = params.trim();
+      handleSearch(_v);
+      setFilterWord(_v);
     },
     [],
     500,
@@ -61,8 +64,8 @@ export default function TransferOwnership() {
       cancelText: t('No'),
       onOk: async () => {
         try {
-          //TODO await transfer();
-          navigate(`/chat-box-group/${channelUuid}`);
+          await transferOwnershipApi(selected);
+          navigate(-1);
           message.success('Owned changed');
         } catch (e) {
           message.error('Failed to delete chat');
@@ -70,21 +73,37 @@ export default function TransferOwnership() {
         }
       },
     });
-  }, [channelUuid, navigate, t]);
-  const handleSelect = useCallback(() => {
-    setDisabled(false);
-  }, []);
-  const renderMemberList = useMemo(
-    () => (
-      <div className="member-list">
-        {showMemberList?.map((m) => (
-          <div className="member-item flex" key={m.id} onClick={handleSelect}>
-            <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
-            {m.name}
-          </div>
-        ))}
-      </div>
-    ),
+  }, [navigate, selected, t, transferOwnershipApi]);
+  const clickItem = useCallback(
+    (item: IContactItemSelectProps) => {
+      if (item.selected) {
+        setSelected('');
+        const target = allMemberRef.current;
+        const _t = target.map((m) => ({
+          ...m,
+          selected: false,
+        }));
+        allMemberRef.current = _t;
+        const _v = showMemberList.map((m) => ({
+          ...m,
+          selected: false,
+        }));
+        setShowMemberList(_v);
+      } else {
+        setSelected(`${item.id}`);
+        const target = allMemberRef.current;
+        const _t = target.map((m) => ({
+          ...m,
+          selected: m.id === item.id,
+        }));
+        allMemberRef.current = _t;
+        const _v = showMemberList.map((m) => ({
+          ...m,
+          selected: m.id === item.id,
+        }));
+        setShowMemberList(_v);
+      }
+    },
     [showMemberList],
   );
   useEffect(() => {
@@ -105,7 +124,7 @@ export default function TransferOwnership() {
           value={filterWord}
           inputProps={{
             onChange: (e) => {
-              const _value = e.target.value.trim();
+              const _value = e.target.value;
               setFilterWord(_value);
               searchDebounce(_value);
             },
@@ -114,10 +133,14 @@ export default function TransferOwnership() {
         />
       </div>
       <div className="member-list-container">
-        {showMemberList.length !== 0 ? renderMemberList : filterWord ? 'no search result' : 'no members available'}
+        {showMemberList.length !== 0 ? (
+          <ContactListSelect type={ISelectItemType.RADIO} list={showMemberList} clickItem={clickItem} />
+        ) : (
+          <div className="member-list-empty">{filterWord ? 'no search result' : 'no members available'}</div>
+        )}
       </div>
       <div className="transfer-ownership-btn flex-center" onClick={handleTransfer}>
-        <Button disabled={disabled} type="primary">
+        <Button disabled={!selected} type="primary">
           Confirm
         </Button>
       </div>

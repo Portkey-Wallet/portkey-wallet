@@ -100,8 +100,10 @@ const MessageList: FC<IMessageListProps> = ({
 
   const renderMessageItem = useMemo(() => {
     let prev: MessageType | undefined = undefined;
+    let isShowMargin = false;
+    let hiddenAvatar = false;
     return props.dataSource.map((x, i: number) => {
-      let isShowMargin = false;
+      hiddenAvatar = x?.title === prev?.title;
       if (x.type === 'system' || prev?.type === 'system') {
         isShowMargin = true;
       } else {
@@ -112,7 +114,7 @@ const MessageList: FC<IMessageListProps> = ({
         <MessageItem
           {...(x as MessageType)}
           key={x.key}
-          className={clsx([isShowMargin && 'show-margin'])}
+          className={clsx([isShowMargin && 'show-margin', hiddenAvatar && 'hidden-avatar'])}
           onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => onDeleteMsg(x, i, e)}
         />
       );

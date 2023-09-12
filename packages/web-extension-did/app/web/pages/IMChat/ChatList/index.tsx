@@ -28,9 +28,11 @@ export default function ChatList() {
   const formatSubTitle = useCallback((item: ChannelItem) => {
     const _type = MessageTypeWeb[item.lastMessageType ?? ''];
     let subTitle = '[Not supported message]';
-    if (_type === 'image') {
+    if (_type === MessageTypeWeb.IMAGE) {
       subTitle = '[Image]';
-    } else if (_type === 'text') {
+    } else if (_type === MessageTypeWeb.TEXT) {
+      subTitle = `${item.lastMessageContent}`;
+    } else if (_type === MessageTypeWeb.SYS) {
       subTitle = `${item.lastMessageContent}`;
     }
     return subTitle;

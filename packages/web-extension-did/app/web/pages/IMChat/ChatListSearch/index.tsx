@@ -7,9 +7,9 @@ import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
 import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import ContactList from 'pages/Contacts/components/ContactList';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import './index.less';
+import SearchList from '../components/SearchList';
+import { ISearchItem } from '../components/SearchItem';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ export default function ChatListSearch() {
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const { setLoading } = useLoading();
-  const [chatList, setChatList] = useState<ContactItemType[]>([]);
+  const [chatList, setChatList] = useState<ISearchItem[]>([]);
   const searchChannel = useSearchChannel();
 
   const handleSearch = useCallback(
@@ -27,7 +27,6 @@ export default function ChatListSearch() {
       } else {
         try {
           const res = await searchChannel(keyword);
-          // TODO group
           const transRes = res.map((item) => ({
             id: item.channelUuid,
             index: item.displayName.slice(0, 1).toUpperCase(),
@@ -37,6 +36,7 @@ export default function ChatListSearch() {
             isDeleted: false,
             userId: '',
             isImputation: false,
+            channelType: item.channelType,
           }));
           setChatList(transRes);
         } catch (e) {
@@ -97,10 +97,9 @@ export default function ChatListSearch() {
         {chatList.length === 0 ? (
           <div className="search-empty flex-center">{filterWord ? 'No search result' : ''}</div>
         ) : (
-          // TODO group
           <div className="search-result-list">
             <div className="chat-title-text">Chats</div>
-            <ContactList hasChatEntry={false} list={chatList} clickItem={(item) => navigate(`/chat-box/${item.id}`)} />
+            <SearchList list={chatList} clickItem={(item) => navigate(`/chat-box/${item.id}`)} />
           </div>
         )}
       </div>

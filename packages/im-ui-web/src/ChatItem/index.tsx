@@ -83,7 +83,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
             <Avatar src={props.avatar} alt={alt} letter={props.letter} channelType={props.channelType} />
           </div>
           <div key={'chat-item-body'} className="chat-item-body flex-column">
-            <div className="body-top flex">
+            <div className="body-top flex-row-center">
               <div className="body-top-title flex">
                 <span className="body-top-title-text">{props.title}</span>
                 {showMute && props.muted === true && <CustomSvg type="Mute" />}

@@ -4,13 +4,24 @@ import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import CustomSvg from 'components/CustomSvg';
 import clsx from 'clsx';
 
-interface IContactItemSelectProps {
-  item: ContactItemType;
-  selected: boolean;
-  disable?: boolean;
+export enum ISelectItemType {
+  RADIO = 'RADIO',
+  CHECKBOX = 'CHECKBOX',
 }
 
-export default function ContactItemSelect({ item, selected, disable = true }: IContactItemSelectProps) {
+interface IContactItemSelectProps {
+  item: Partial<ContactItemType>;
+  selected: boolean;
+  disable?: boolean;
+  type?: ISelectItemType;
+}
+
+export default function ContactItemSelect({
+  item,
+  selected,
+  disable = false,
+  type = ISelectItemType.CHECKBOX,
+}: IContactItemSelectProps) {
   const { name, index } = useIndexAndName(item);
 
   return (
@@ -20,11 +31,13 @@ export default function ContactItemSelect({ item, selected, disable = true }: IC
         <span className="contact-item-name">{name}</span>
       </div>
       <div className="flex-center contact-item-right">
-        {selected ? (
-          <CustomSvg type="Selected2" className="selected-icon" />
-        ) : (
-          <CustomSvg type="NotSelected" className="not-selected-icon" />
-        )}
+        {type === ISelectItemType.CHECKBOX &&
+          (selected ? (
+            <CustomSvg type="Selected2" className="selected-icon" />
+          ) : (
+            <CustomSvg type="NotSelected" className="not-selected-icon" />
+          ))}
+        {type === ISelectItemType.RADIO && (selected ? <CustomSvg type="Selected2" className="selected-icon" /> : null)}
       </div>
     </div>
   );

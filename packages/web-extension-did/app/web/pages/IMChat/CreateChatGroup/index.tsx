@@ -3,12 +3,13 @@ import './index.less';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { Button, Form, Input, message } from 'antd';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import ContactsSearchInput from 'pages/Contacts/components/ContactsSearchInput';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
+import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const { Item: FormItem } = Form;
 
@@ -21,13 +22,15 @@ export default function CreateChatGroup() {
   const [canChatCount, setCanChatCount] = useState(0);
   const [chatList, setChatList] = useState<IContactItemSelectProps[]>([]);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
+  const selectedContactCount = useRef(0);
   const [disable, setDisabled] = useState<boolean>(true);
+  const createGroupChannel = useCreateGroupChannel();
 
   const handleFormValueChange = useCallback(() => {
     const { name } = form.getFieldsValue();
 
-    setDisabled(!name || selectedContacts?.length === 0);
-  }, [form, selectedContacts?.length]);
+    setDisabled(!name || selectedContactCount.current === 0);
+  }, [form]);
 
   const handleNameChange = useCallback(() => {
     handleFormValueChange();
@@ -41,7 +44,9 @@ export default function CreateChatGroup() {
       const list: IContactItemSelectProps[] = [];
 
       searchResult.forEach((ele) => {
-        if (selectedContacts.includes(ele.id)) {
+        if (!ele.imInfo?.relationId) return;
+
+        if (selectedContacts.includes(ele.imInfo?.relationId)) {
           list.push({ ...ele, selected: true });
         } else {
           list.push({ ...ele, selected: false });
@@ -54,12 +59,13 @@ export default function CreateChatGroup() {
 
   const handleSelect = useCallback(
     (item: IContactItemSelectProps) => {
-      const contactId = item.id;
+      const relationId = item.imInfo?.relationId;
+      if (!relationId) return;
 
       // trans chatList selected
       const list: IContactItemSelectProps[] = JSON.parse(JSON.stringify(chatList));
       list.forEach((ele) => {
-        if (ele.id === contactId) {
+        if (ele.imInfo?.relationId === relationId) {
           ele.selected = !item.selected;
         }
       });
@@ -67,34 +73,36 @@ export default function CreateChatGroup() {
 
       // handle selected list
       const selectedList: string[] = JSON.parse(JSON.stringify(selectedContacts));
-      if (selectedList.includes(contactId)) {
-        const deleteIndex = selectedList.findIndex((ele) => ele === contactId);
+      if (selectedList.includes(relationId)) {
+        const deleteIndex = selectedList.findIndex((ele) => ele === relationId);
 
         if (deleteIndex >= 0) {
           selectedList.splice(deleteIndex, 1);
         }
       } else {
-        selectedList.push(contactId);
+        selectedList.push(relationId);
       }
       setSelectedContacts(selectedList);
+      selectedContactCount.current = selectedList?.length || 0;
 
       handleFormValueChange();
     },
     [chatList, handleFormValueChange, selectedContacts],
   );
 
-  const onFinish = useCallback(() => {
+  const onFinish = useCallback(async () => {
     try {
-      // TODO create group api
-      const res: any = '';
+      const { name } = form.getFieldsValue();
+      const res = await createGroupChannel(name.trim(), selectedContacts);
+
       message.success('Group Created!');
 
-      navigate(`/chat-box/${res.channelUuid}`);
+      navigate(`/chat-box-group/${res?.channelUuid}`);
     } catch (error) {
       const msg = handleErrorMessage(error, 'Error Creating Group');
       message.error(msg);
     }
-  }, [navigate]);
+  }, [createGroupChannel, form, navigate, selectedContacts]);
 
   useEffect(() => {
     setIsSearch(false);

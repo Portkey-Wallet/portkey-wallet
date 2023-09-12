@@ -1,11 +1,12 @@
-import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useLeaveChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button, Modal, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
 import { Avatar } from '@portkey-wallet/im-ui-web';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLoading } from 'store/Provider/hooks';
 import './index.less';
 
 export interface IGroupInfoProps {
@@ -13,14 +14,13 @@ export interface IGroupInfoProps {
 }
 const GroupInfo = () => {
   const { channelUuid } = useParams();
-  const { groupInfo, isAdmin } = useGroupChannelInfo(`${channelUuid}`);
+  const leaveGroup = useLeaveChannel();
+  const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
+  const { setLoading } = useLoading();
   const memberLen = useMemo(
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
     [groupInfo?.members.length],
   );
-  console.log('groupInfo', groupInfo);
-  const relationId = useRelationId();
-  console.log('relationId', relationId);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const handleLeaveGroup = useCallback(() => {
@@ -35,7 +35,7 @@ const GroupInfo = () => {
       cancelText: t('Cancel'),
       onOk: async () => {
         try {
-          // TODO await leave();
+          await leaveGroup(`${channelUuid}`);
           navigate('/chat-list');
         } catch (e) {
           message.error('Failed to leave the group');
@@ -43,7 +43,21 @@ const GroupInfo = () => {
         }
       },
     });
-  }, [navigate, t]);
+  }, [channelUuid, leaveGroup, navigate, t]);
+  const handleRefresh = useCallback(async () => {
+    try {
+      setLoading(true);
+      await refresh();
+    } catch (error) {
+      console.log('===refresh error', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [refresh, setLoading]);
+  useEffect(() => {
+    handleRefresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <div className="group-info-page flex-column">
       <div className="group-info-header">
@@ -92,21 +106,17 @@ const GroupInfo = () => {
                 </div>
                 {m.isAdmin && <div className="admin-icon flex-center">Owner</div>}
               </div>
-              // <div key={item.relationId} className="member-item flex">
-              //   <Avatar letter={item.name?.slice(0, 1)} width={28} height={28} />
-              //   {item.name}
-              // </div>
             ),
             [],
           )}
-          {/* {mockMembers.length > 6 && ( */}
-          <div
-            className="view-more-members flex-center"
-            onClick={() => navigate(`/chat-group-info/${channelUuid}/member-list`)}>
-            View more Members
-            <CustomSvg type="LeftArrow" className="flex-center" />
-          </div>
-          {/* )} */}
+          {(groupInfo?.members || []).length > 4 && (
+            <div
+              className="view-more-members flex-center"
+              onClick={() => navigate(`/chat-group-info/${channelUuid}/member-list`)}>
+              View more Members
+              <CustomSvg type="LeftArrow" className="flex-center" />
+            </div>
+          )}
         </div>
         {isAdmin && (
           <div

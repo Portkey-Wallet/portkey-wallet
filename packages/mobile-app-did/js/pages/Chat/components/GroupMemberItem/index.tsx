@@ -7,7 +7,7 @@ import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
 
-type GroupMemberItemType = {
+export type GroupMemberItemType = {
   title: string;
   relationId: string;
 };
@@ -17,37 +17,40 @@ type GroupMemberItemPropsType = {
   selected?: boolean;
   item: GroupMemberItemType;
   disabled?: boolean;
-  onPress?: (id: string, selected?: boolean) => void;
+  onPress?: (id: string, item?: GroupMemberItemType, selected?: boolean) => void;
 };
 
 export default memo(
   function GroupMemberItem(props: GroupMemberItemPropsType) {
     const { multiple = true, disabled = false, selected = false, item, onPress } = props;
 
-    console.log('item', item);
-
     const iconDom = useMemo(() => {
       let iconName: IconName | undefined;
       if (multiple) {
-        iconName = disabled || selected ? 'selected' : 'unselected';
+        iconName = selected ? 'selected' : 'unselected';
       } else {
-        iconName = disabled || selected ? 'selected' : undefined;
+        iconName = selected ? 'selected' : undefined;
       }
+      if (disabled) iconName = 'selected';
 
-      return iconName ? <Svg iconStyle={styles.itemIcon} icon={iconName} /> : null;
+      return iconName ? (
+        <Svg iconStyle={styles.itemIcon} color={disabled ? defaultColors.bg16 : undefined} icon={iconName} />
+      ) : null;
     }, [disabled, multiple, selected]);
 
     return (
       <Touchable
         disabled={disabled}
-        style={[styles.itemRow, disabled && styles.disable]}
+        style={styles.itemWrap}
         onPress={() => {
-          onPress?.(item.relationId);
+          onPress?.(item.relationId, item);
         }}>
-        <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
-        <View style={styles.itemContent}>
-          <TextL>{item.title}</TextL>
-          {iconDom}
+        <View style={[styles.itemRow, disabled && styles.disable]}>
+          <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
+          <View style={styles.itemContent}>
+            <TextL>{item.title}</TextL>
+            {iconDom}
+          </View>
         </View>
       </Touchable>
     );
@@ -56,14 +59,16 @@ export default memo(
 );
 
 const styles = StyleSheet.create({
+  itemWrap: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: defaultColors.border6,
+    marginBottom: StyleSheet.hairlineWidth,
+  },
   itemRow: {
     height: pTd(72),
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: pTd(20),
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: defaultColors.border6,
-    marginBottom: StyleSheet.hairlineWidth,
   },
   itemContent: {
     flex: 1,
@@ -77,6 +82,6 @@ const styles = StyleSheet.create({
     right: 0,
   },
   disable: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
 });

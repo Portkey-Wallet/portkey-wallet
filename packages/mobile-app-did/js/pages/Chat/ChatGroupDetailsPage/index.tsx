@@ -12,7 +12,13 @@ import ChatOverlay from '../components/ChatOverlay';
 import navigationService from 'utils/navigationService';
 import { ChatOperationsEnum, ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { FontStyles } from 'assets/theme/styles';
-import { useMuteChannel, usePinChannel, useHideChannel, useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useMuteChannel,
+  usePinChannel,
+  useHideChannel,
+  useGroupChannelInfo,
+  useLeaveChannel,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
 import CommonToast from 'components/CommonToast';
@@ -31,9 +37,8 @@ const ChatGroupDetailsPage = () => {
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '');
-
-  console.log('groupInfo', groupInfo);
+  const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
+  const leaveGroup = useLeaveChannel();
 
   const displayName = useMemo(() => groupInfo?.name, [groupInfo?.name]);
   const pin = useMemo(() => groupInfo?.pin, [groupInfo?.pin]);
@@ -106,19 +111,25 @@ const ChatGroupDetailsPage = () => {
       },
     ];
 
-    const isGroupHolder = false;
-
-    if (!isGroupHolder)
+    if (!isAdmin)
       list.push({
         title: ChatOperationsEnum.LEAVE_GROUP,
         iconName: 'chat-leave-group',
-        onPress: () => {
-          // TODO: change leave group
+        onPress: async () => {
+          try {
+            Loading.show();
+            await leaveGroup(currentChannelId || '');
+            navigationService.goBack();
+          } catch (error) {
+            CommonToast.failError(error);
+          } finally {
+            Loading.hide();
+          }
         },
       });
 
     return list;
-  }, [currentChannelId, hideChannel, mute, muteChannel, pin, pinChannel]);
+  }, [currentChannelId, hideChannel, isAdmin, leaveGroup, mute, muteChannel, pin, pinChannel]);
 
   const onPressMore = useCallback(
     async (event: GestureResponderEvent) => {

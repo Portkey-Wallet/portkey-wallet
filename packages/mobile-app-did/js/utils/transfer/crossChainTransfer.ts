@@ -19,20 +19,20 @@ export interface CrossChainTransferParamsType {
   memo?: string;
   toAddress: string;
 }
-export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'> & {
+export type CrossChainTransferIntervalParams = CrossChainTransferParamsType & {
   issueChainId: number;
 };
 
 export const intervalCrossChainTransfer = async (
   tokenContract: ContractBasic,
-  params: CrossChainTransferParamsType,
+  params: CrossChainTransferIntervalParams,
 ) => {
-  const { managerAddress, chainType, amount, tokenInfo, memo = '', toAddress } = params;
-  const issueChainId = getChainIdByAddress(managerAddress, chainType);
+  const { chainType, amount, tokenInfo, memo = '', toAddress, issueChainId } = params;
+  // const issueChainId = getChainIdByAddress(managerAddress, chainType);
   const toChainId = getChainIdByAddress(toAddress, chainType);
 
   const paramsOption: any = {
-    issueChainId: getChainNumber(issueChainId),
+    issueChainId,
     toChainId: getChainNumber(toChainId),
     symbol: tokenInfo.symbol,
     to: toAddress,

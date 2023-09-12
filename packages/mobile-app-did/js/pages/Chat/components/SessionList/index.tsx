@@ -3,7 +3,7 @@ import { FlatList, GestureResponderEvent } from 'react-native';
 import { BGStyles } from 'assets/theme/styles';
 import ChatOverlay from '../ChatOverlay';
 import ChatHomeListItemSwiped from '../ChatHomeListItemSwiper';
-import { ChannelItem } from '@portkey-wallet/im/types';
+import { ChannelItem, ChannelStatusEnum } from '@portkey-wallet/im/types';
 import NoData from 'components/NoData';
 import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
@@ -15,6 +15,7 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import Touchable from 'components/Touchable';
 import myEvents from 'utils/deviceEvent';
 import GStyles from 'assets/theme/GStyles';
+import ActionSheet from 'components/ActionSheet';
 
 export default function SessionList() {
   const {
@@ -104,13 +105,46 @@ export default function SessionList() {
 
   const onPressItem = useCallback(
     (item: ChannelItem) => {
-      if (item.channelType === 'G') {
-        navToChatGroupDetails({ channelUuid: item.channelUuid });
-      } else {
-        navToChatDetails({ toRelationId: item?.toRelationId || '', channelUuid: item?.channelUuid });
+      switch (item.status) {
+        case ChannelStatusEnum.NORMAL:
+          if (item.channelType === 'G') {
+            navToChatGroupDetails({ channelUuid: item.channelUuid });
+          } else {
+            navToChatDetails({ toRelationId: item?.toRelationId || '', channelUuid: item?.channelUuid });
+          }
+          break;
+        case ChannelStatusEnum.LEFT:
+          hideChannel(item.channelUuid);
+          break;
+        case ChannelStatusEnum.BE_REMOVED:
+          hideChannel(item.channelUuid);
+          ActionSheet.alert({
+            title: 'This group has been disbanded by the owner',
+            buttons: [
+              {
+                title: 'OK',
+                type: 'primary',
+              },
+            ],
+          });
+          break;
+        case ChannelStatusEnum.DISBAND:
+          hideChannel(item.channelUuid);
+          ActionSheet.alert({
+            title: 'You have been removed by the group owner',
+            buttons: [
+              {
+                title: 'OK',
+                type: 'primary',
+              },
+            ],
+          });
+          break;
+        default:
+          break;
       }
     },
-    [navToChatDetails, navToChatGroupDetails],
+    [hideChannel, navToChatDetails, navToChatGroupDetails],
   );
 
   useEffectOnce(() => {

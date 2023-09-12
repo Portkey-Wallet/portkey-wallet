@@ -158,7 +158,6 @@ export default function CreateChatGroup() {
               )}
 
               {/* contacts available to chat */}
-              {/* TODO checkbox */}
               {chatList?.length > 0 && <ContactListSelect list={chatList} clickItem={handleSelect} />}
             </div>
           </div>

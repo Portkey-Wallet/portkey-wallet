@@ -27,6 +27,7 @@ export function checkUpdateModal(versionInfo: UpdateNotify) {
       okText: 'Update',
       onOk: () => {
         window.open(versionInfo.downloadUrl);
+        chrome.runtime.reload();
         return Promise.reject();
       },
     };

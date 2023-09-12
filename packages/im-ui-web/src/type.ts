@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChannelTypeEnum } from '@portkey-wallet/im';
+import { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 
 export interface IChatItemProps {
   id: string | number;
@@ -16,6 +16,7 @@ export interface IChatItemProps {
   muted?: boolean;
   showMute?: boolean;
   pin?: boolean;
+  status: ChannelStatusEnum;
   onClick?: React.MouseEventHandler;
   onClickMute?: React.MouseEventHandler;
   onClickPin?: React.MouseEventHandler;

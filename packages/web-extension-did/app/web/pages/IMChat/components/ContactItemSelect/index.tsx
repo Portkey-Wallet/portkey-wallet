@@ -31,12 +31,13 @@ export default function ContactItemSelect({
         <span className="contact-item-name">{name}</span>
       </div>
       <div className="flex-center contact-item-right">
-        {type === ISelectItemType.CHECKBOX && selected ? (
-          <CustomSvg type="Selected2" className="selected-icon" />
-        ) : (
-          <CustomSvg type="NotSelected" className="not-selected-icon" />
-        )}
-        {type === ISelectItemType.RADIO && selected ? <CustomSvg type="Selected2" className="selected-icon" /> : null}
+        {type === ISelectItemType.CHECKBOX &&
+          (selected ? (
+            <CustomSvg type="Selected2" className="selected-icon" />
+          ) : (
+            <CustomSvg type="NotSelected" className="not-selected-icon" />
+          ))}
+        {type === ISelectItemType.RADIO && (selected ? <CustomSvg type="Selected2" className="selected-icon" /> : null)}
       </div>
     </div>
   );

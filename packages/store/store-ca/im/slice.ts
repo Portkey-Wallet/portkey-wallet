@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { IMStateType, UpdateChannelAttributeTypeEnum } from './type';
+import { IMStateType, UpdateChannelAttributeTypeEnum, UpdateGroupMemberAmountTypeEnum } from './type';
 import {
   removeChannel,
   nextChannelList,
@@ -21,6 +21,7 @@ import {
   removeChannelMembers,
   transferChannelOwner,
   addChannelMembers,
+  updateGroupMemberAmount,
 } from './actions';
 import { formatChannelList } from './util';
 
@@ -243,7 +244,12 @@ export const imSlice = createSlice({
         if (!preChannelInfo) return state;
 
         const [adminMember, ...otherMembers] = preChannelInfo.members;
-        const newMembers = [adminMember, ...otherMembers, ...memberInfos];
+        const otherMembersMap: Record<string, boolean> = {};
+        otherMembers.forEach(member => {
+          otherMembersMap[member.relationId] = true;
+        });
+        const newMemberInfos = memberInfos.filter(member => !otherMembersMap[member.relationId]);
+        const newMembers = [adminMember, ...otherMembers, ...newMemberInfos];
 
         return {
           ...state,
@@ -254,6 +260,7 @@ export const imSlice = createSlice({
               [channelId]: {
                 ...preChannelInfo,
                 members: newMembers,
+                membersAmount: newMembers.length,
               },
             },
           },
@@ -280,6 +287,7 @@ export const imSlice = createSlice({
               [channelId]: {
                 ...preChannelInfo,
                 members: newMembers,
+                membersAmount: newMembers.length,
               },
             },
           },
@@ -294,7 +302,7 @@ export const imSlice = createSlice({
         const [preOwner, ...otherMembers] = preChannelInfo.members;
         const newOwner = otherMembers.find(member => member.relationId === relationId);
         if (!preOwner || !newOwner) return state;
-        const newMembers = preChannelInfo.members.filter(member => member.relationId !== relationId);
+        const newMembers = otherMembers.filter(member => member.relationId !== relationId);
         newMembers.reverse();
         newMembers.push({
           ...preOwner,
@@ -315,6 +323,37 @@ export const imSlice = createSlice({
               [channelId]: {
                 ...preChannelInfo,
                 members: newMembers,
+                membersAmount: newMembers.length,
+              },
+            },
+          },
+        };
+      })
+      .addCase(updateGroupMemberAmount, (state, action) => {
+        const { network, channelId, type } = action.payload;
+        const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
+        if (!preChannelInfo) return state;
+        let newMembersAmount = preChannelInfo.membersAmount;
+        switch (type) {
+          case UpdateGroupMemberAmountTypeEnum.ADD:
+            newMembersAmount++;
+            break;
+          case UpdateGroupMemberAmountTypeEnum.REMOVE:
+            newMembersAmount--;
+            break;
+          default:
+            break;
+        }
+        if (newMembersAmount < 0) newMembersAmount = 0;
+        return {
+          ...state,
+          groupInfoMapNetMap: {
+            ...state.groupInfoMapNetMap,
+            [network]: {
+              ...state.groupInfoMapNetMap?.[network],
+              [channelId]: {
+                ...preChannelInfo,
+                membersAmount: newMembersAmount,
               },
             },
           },

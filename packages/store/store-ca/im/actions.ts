@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ChannelList, UpdateChannelAttributeTypeEnum } from './type';
+import { ChannelList, UpdateChannelAttributeTypeEnum, UpdateGroupMemberAmountTypeEnum } from './type';
 import { ChannelInfo, ChannelItem, ChannelMemberInfo, Message } from '@portkey-wallet/im';
 import { NetworkType } from '@portkey-wallet/types';
 
@@ -104,5 +104,11 @@ export const updateGroupInfo = createAction<{
   channelId: string;
   value: Partial<ChannelInfo>;
 }>('im/updateGroupInfo');
+
+export const updateGroupMemberAmount = createAction<{
+  network: NetworkType;
+  channelId: string;
+  type: UpdateGroupMemberAmountTypeEnum;
+}>('im/updateGroupMemberAmount');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');

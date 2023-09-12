@@ -112,12 +112,19 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo> {
-    return this._request.send({
+  async getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo> {
+    const result = await this._request.send({
       url: '/api/v1/channelContacts/channelDetailInfo',
       params,
       method: 'GET',
     });
+    return {
+      ...result,
+      data: {
+        ...result.data,
+        membersAmount: result.data?.members?.length || 0,
+      },
+    };
   }
   getChannelMembers(params: GetChannelInfoParams): IMServiceCommon<ChannelMemberInfo[]> {
     return this._request.send({

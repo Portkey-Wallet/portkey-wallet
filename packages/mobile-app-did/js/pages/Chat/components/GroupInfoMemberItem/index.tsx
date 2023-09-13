@@ -1,33 +1,40 @@
 import { TextL, TextM } from 'components/CommonText';
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
+import Touchable from 'components/Touchable';
+
+export type GroupInfoMemberItemType = {
+  relationId: string;
+  userId?: string;
+  title: string;
+};
 
 export type GroupInfoMemberItemPropsType = {
-  item: {
-    relationId: string;
-    userId?: string;
-    title: string;
-  };
+  item: GroupInfoMemberItemType;
   isOwner?: boolean;
+  onPress?: (item: GroupInfoMemberItemType) => void;
   style?: ViewStyle;
 };
 
 export default function GroupInfoMemberItem(props: GroupInfoMemberItemPropsType) {
-  const { item, isOwner, style } = props;
+  const { item, isOwner, onPress, style } = props;
 
   return (
-    <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberItem, style]}>
+    <Touchable
+      disabled={!onPress}
+      style={[GStyles.flexRow, GStyles.itemCenter, styles.memberItem, style]}
+      onPress={() => onPress?.(item)}>
       <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
       <TextL numberOfLines={1} style={[FontStyles.font5, GStyles.flex1, styles.memberItemText]}>
         {item.title}
       </TextL>
       {isOwner && <TextM style={styles.ownerMark}>Owner</TextM>}
-    </View>
+    </Touchable>
   );
 }
 

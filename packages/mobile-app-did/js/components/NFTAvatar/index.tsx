@@ -3,8 +3,8 @@ import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import { TextM, TextS } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
-import { Image } from '@rneui/themed';
 import GStyles from 'assets/theme/GStyles';
+import CommonAvatar from 'components/CommonAvatar';
 
 export type NoDataPropsType = {
   style?: ViewStyle | ViewStyle[];
@@ -31,15 +31,7 @@ const NFTAvatar: React.FC<NoDataPropsType> = props => {
 
   return (
     <TouchableOpacity style={[styles.wrap, ...outStyles]} onPress={onPress}>
-      {imageUrl && (
-        <Image
-          resizeMode={'contain'}
-          source={{
-            uri: imageUrl,
-          }}
-          containerStyle={styles.img}
-        />
-      )}
+      {imageUrl && <CommonAvatar shapeType="square" imageUrl={imageUrl} style={styles.img} />}
       <TextM
         numberOfLines={imageUrl ? 1 : 2}
         ellipsizeMode="tail"

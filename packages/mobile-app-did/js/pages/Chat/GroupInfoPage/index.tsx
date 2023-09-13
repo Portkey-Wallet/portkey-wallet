@@ -14,18 +14,17 @@ import { FontStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
-import OverlayModal from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
 import GroupInfoMemberItem from '../components/GroupInfoMemberItem';
 import { useCurrentChannelId } from '../context/hooks';
-import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useLeaveChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 
 const GroupInfoPage = () => {
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', false);
+  const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
   const { members } = groupInfo || {};
 
-  console.log('members', members);
+  const leaveGroup = useLeaveChannel();
 
   const membersShowList = useMemo(() => {
     return members?.length && members?.length >= 6 ? members?.slice(0, 5) : members;
@@ -41,22 +40,21 @@ const GroupInfoPage = () => {
         },
         {
           title: 'Yes',
-          onPress: () => {
-            // TODO: api
+          onPress: async () => {
             try {
               Loading.show();
-              // TODO: api
+              await leaveGroup(currentChannelId || '');
+              navigationService.goBack();
             } catch (error) {
               CommonToast.failError(error);
             } finally {
-              OverlayModal.hide();
               Loading.hide();
             }
           },
         },
       ],
     });
-  }, []);
+  }, [currentChannelId, leaveGroup]);
 
   const disableRemoveButton = useMemo(() => {
     return !!(members?.length && members?.length === 1);
@@ -87,13 +85,15 @@ const GroupInfoPage = () => {
             <Svg icon="chat-add-member" size={pTd(20)} />
             <TextL style={[FontStyles.font4, styles.actionText]}>Add Members</TextL>
           </Touchable>
-          <Touchable
-            disabled={disableRemoveButton}
-            style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
-            onPress={() => navigationService.navigate('RemoveMembersPage')}>
-            <Svg icon="chat-remove-member" size={pTd(20)} />
-            <TextL style={[FontStyles.font13, styles.actionText]}>Remove Members</TextL>
-          </Touchable>
+          {isAdmin && (
+            <Touchable
+              disabled={disableRemoveButton}
+              style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
+              onPress={() => navigationService.navigate('RemoveMembersPage')}>
+              <Svg icon="chat-remove-member" size={pTd(20)} />
+              <TextL style={[FontStyles.font13, styles.actionText]}>Remove Members</TextL>
+            </Touchable>
+          )}
 
           {membersShowList &&
             membersShowList.map((item, index) => (
@@ -110,12 +110,14 @@ const GroupInfoPage = () => {
             <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
           </Touchable>
         </View>
-        <Touchable
-          style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.transferOwnerShip]}
-          onPress={() => navigationService.navigate('TransferOwnershipPage')}>
-          <TextL>Transfer Ownership</TextL>
-          <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
-        </Touchable>
+        {isAdmin && (
+          <Touchable
+            style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.transferOwnerShip]}
+            onPress={() => navigationService.navigate('TransferOwnershipPage')}>
+            <TextL>Transfer Ownership</TextL>
+            <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
+          </Touchable>
+        )}
       </ScrollView>
 
       <View style={styles.buttonWrap}>

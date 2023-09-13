@@ -40,6 +40,8 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   const lastMessage = useMemo(() => {
     if (item.lastMessageType === 'TEXT') {
       return item.lastMessageContent;
+    } else if (item.lastMessageType === 'SYS') {
+      return item.lastMessageContent;
     } else if (item.lastMessageType === 'IMAGE') {
       return '[Image]';
     } else {
@@ -101,7 +103,6 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         onLongPress={onLongPressItem}
         onPressIn={eventEmit}>
         <>
-          {/* TODO: group avatar */}
           <CommonAvatar
             hasBorder
             title={item.displayName}

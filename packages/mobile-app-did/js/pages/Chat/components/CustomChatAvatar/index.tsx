@@ -8,7 +8,6 @@ import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 
 export default function CustomChatAvatar(props: AvatarProps<ChatMessage>) {
-  console.log('CustomChatAvatar', props.currentMessage, props.previousMessage);
   const { currentMessage, previousMessage } = props;
 
   if (currentMessage?.user?._id === previousMessage?.user?._id) {

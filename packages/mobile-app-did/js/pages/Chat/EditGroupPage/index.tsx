@@ -11,28 +11,60 @@ import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import { pTd } from 'utils/unit';
 import { useCurrentChannelId } from '../context/hooks';
-import { useDisbandChannel, useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelName } from '@portkey-wallet/hooks/hooks-ca/im';
+import ActionSheet from 'components/ActionSheet';
+import navigationService from 'utils/navigationService';
 
 const EditGroupPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
   const { name } = groupInfo || {};
 
-  const disbandGroup = useDisbandChannel();
+  const disbandGroup = useDisbandChannel(currentChannelId || '');
+  const upDateChannelName = useUpdateChannelName();
 
-  const [groupName, setGroupName] = useState(name);
+  const [groupName, setGroupName] = useState(name || '');
 
   const onDisband = useCallback(() => {
+    ActionSheet.alert({
+      title: 'Disband the group ?',
+      buttons: [
+        {
+          title: 'No',
+          type: 'outline',
+        },
+        {
+          title: 'Yes',
+          onPress: async () => {
+            try {
+              Loading.show();
+              await disbandGroup();
+              CommonToast.success('Group disbanded');
+              // TODO back to where
+              navigationService.navigate('Tab');
+            } catch (error) {
+              CommonToast.failError(error);
+            } finally {
+              Loading.hide();
+            }
+          },
+        },
+      ],
+    });
+  }, [disbandGroup]);
+
+  const onSave = useCallback(async () => {
     try {
       Loading.show();
-      // TODO: api
+      await upDateChannelName(currentChannelId || '', groupName?.trim());
+      CommonToast.success('Save successfully');
+      navigationService.goBack();
     } catch (error) {
-      // TODO: fail toast
       CommonToast.failError(error);
     } finally {
       Loading.hide();
     }
-  }, []);
+  }, [currentChannelId, groupName, upDateChannelName]);
 
   return (
     <PageContainer
@@ -55,7 +87,7 @@ const EditGroupPage = () => {
       </ScrollView>
 
       <View style={styles.buttonWrap}>
-        <CommonButton disabled={!groupName} title="Save" type="primary" />
+        <CommonButton disabled={!groupName} title="Save" type="primary" onPress={onSave} />
         <CommonButton
           title={'Disband'}
           style={styles.deleteBtnStyle}

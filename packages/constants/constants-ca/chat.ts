@@ -53,3 +53,5 @@ export const ChatDetailsOperationList = [
 ] as const;
 
 export const ChatTabName = 'Chat';
+
+export const GROUP_INFO_MEMBER_SHOW_LIMITED = 4;

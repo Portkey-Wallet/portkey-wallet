@@ -43,7 +43,7 @@ const ImageMessage: React.FC<IImageMessageProps> = (props) => {
     () => (
       <>
         <Image
-          style={{ width: imageSize.width }}
+          style={{ width: imageSize.width, height: imageSize.height }}
           src={thumbImgUrl || imgUrl}
           preview={{
             src: imgUrl || thumbImgUrl,

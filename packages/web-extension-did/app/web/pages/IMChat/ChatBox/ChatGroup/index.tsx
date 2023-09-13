@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import ChatBoxTip from '../../components/ChatBoxTip';
 import CustomUpload from '../../components/CustomUpload';
-import CircleLoading from 'components/CircleLoading';
 import { useEffectOnce } from 'react-use';
 import { useHandle } from '../useHandle';
 import ChatBoxHeader from '../components/ChatBoxHeader';
@@ -181,25 +180,17 @@ export default function ChatBox() {
   );
   const renderTitle = useMemo(
     () => (
-      <div className="title-group-content flex-center">
-        <div className="group-icon flex-center" onClick={handleGoGroupInfo}>
-          <CustomSvg type="GroupAvatar" />
-        </div>
-        <div>
-          <div className="flex title-top">
-            <div className="title-name" onClick={handleGoGroupInfo}>
-              {groupInfo?.name || ' '}
-            </div>
-            <div>{info?.mute && <CustomSvg type="Mute" />}</div>
+      <div className="flex title-element">
+        <div className="title-content flex-center" onClick={handleGoGroupInfo}>
+          <div className="group-icon flex-center">
+            <CustomSvg type="GroupAvatar" />
           </div>
-          <div className="title-member flex">
-            {groupInfo?.membersAmount ? <span>{groupInfo?.membersAmount}</span> : <CircleLoading />}
-            {typeof groupInfo?.membersAmount === 'number' && groupInfo?.membersAmount > 1 ? 'members' : 'member'}
-          </div>
+          <div className="title-name">{groupInfo?.name || ' '}</div>
         </div>
+        <div>{info?.mute && <CustomSvg type="Mute" />}</div>
       </div>
     ),
-    [handleGoGroupInfo, groupInfo?.name, groupInfo?.membersAmount, info?.mute],
+    [handleGoGroupInfo, groupInfo?.name, info?.mute],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);

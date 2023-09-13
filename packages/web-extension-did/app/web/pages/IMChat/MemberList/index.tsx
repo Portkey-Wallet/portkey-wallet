@@ -6,12 +6,13 @@ import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { Avatar } from '@portkey-wallet/im-ui-web';
-import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
 import './index.less';
 
 export default function MemberList() {
   const { channelUuid } = useParams();
+  const myRelationId = useRelationId();
   const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const { state } = useLocation();
@@ -40,11 +41,17 @@ export default function MemberList() {
   );
   const handleGoProfile = useCallback(
     (item: ChannelMemberInfo) => {
-      navigate('/setting/contacts/view', {
-        state: { relationId: item.relationId, from: 'chat-member-list', channelUuid, search: filterWord },
-      });
+      if (item.relationId === myRelationId) {
+        navigate('/setting/wallet/wallet-name', {
+          state: { from: 'chat-member-list', channelUuid, search: filterWord },
+        });
+      } else {
+        navigate('/setting/contacts/view', {
+          state: { relationId: item.relationId, from: 'chat-member-list', channelUuid, search: filterWord },
+        });
+      }
     },
-    [navigate, channelUuid, filterWord],
+    [myRelationId, navigate, channelUuid, filterWord],
   );
   const renderMemberList = useMemo(
     () => (

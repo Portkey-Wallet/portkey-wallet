@@ -12,7 +12,7 @@ import './index.less';
 
 export default function MemberList() {
   const { channelUuid } = useParams();
-  const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
+  const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
@@ -21,9 +21,10 @@ export default function MemberList() {
 
   const handleSearch = useCallback(
     (keyword: string) => {
-      const _res = (groupInfo?.members || []).filter(
-        (item) => item.relationId === keyword || item.name.toLowerCase().includes(keyword.toLowerCase()),
-      );
+      let _res = groupInfo?.members || [];
+      if (keyword) {
+        _res = (groupInfo?.members || []).filter((item) => item.name.toLowerCase().includes(keyword.toLowerCase()));
+      }
       setShowMemberList(_res);
     },
     [groupInfo?.members],
@@ -32,7 +33,7 @@ export default function MemberList() {
     (params) => {
       const _v = params.trim();
       setFilterWord(_v);
-      _v ? handleSearch(_v) : setShowMemberList(groupInfo?.members || []);
+      handleSearch(_v);
     },
     [],
     500,
@@ -40,10 +41,10 @@ export default function MemberList() {
   const handleGoProfile = useCallback(
     (item: ChannelMemberInfo) => {
       navigate('/setting/contacts/view', {
-        state: { relationId: item.relationId, from: 'chat-member-list', channelUuid },
+        state: { relationId: item.relationId, from: 'chat-member-list', channelUuid, search: filterWord },
       });
     },
-    [navigate, channelUuid],
+    [navigate, channelUuid, filterWord],
   );
   const renderMemberList = useMemo(
     () => (
@@ -51,7 +52,7 @@ export default function MemberList() {
         {showMemberList?.map((m) => (
           <div className="member-item flex-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
             <div className="flex member-basic">
-              <Avatar width={28} height={28} letter={m.name.slice(0, 1)} />
+              <Avatar width={28} height={28} letter={m.name.slice(0, 1).toUpperCase()} />
               <div className="member-name">{m.name}</div>
             </div>
             {m.isAdmin && <div className="admin-icon flex-center">Owner</div>}
@@ -65,9 +66,13 @@ export default function MemberList() {
     setFilterWord(state?.search ?? '');
     handleSearch(state?.search ?? '');
   }, [handleSearch, state?.search]);
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="member-list-page flex-column">
+    <div className="member-list-page flex-column-between">
       <div className="member-list-top">
         <SettingHeader
           title={t('Members')}
@@ -91,7 +96,7 @@ export default function MemberList() {
         {showMemberList.length !== 0 ? (
           renderMemberList
         ) : (
-          <div className="empty flex-center">{filterWord ? 'no search result' : 'no members available'}</div>
+          <div className="empty flex-center">{filterWord ? 'No search result' : 'No members'}</div>
         )}
       </div>
     </div>

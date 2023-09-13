@@ -100,7 +100,7 @@ export default function ViewContact() {
     } else if (state?.from === 'chat-group-info') {
       navigate(`/chat-group-info/${state?.channelUuid}`);
     } else if (data?.from === 'chat-member-list') {
-      navigate(`/chat-group-info/${state?.channelUuid}/member-list`);
+      navigate(`/chat-group-info/${state?.channelUuid}/member-list`, { state });
     } else {
       navigate('/setting/contacts');
     }

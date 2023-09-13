@@ -91,7 +91,7 @@ const ChatGroupDetails = () => {
       </FormItem>
       <View style={[BGStyles.bg1, GStyles.flex1]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.selectHeaderWrap]}>
-          <TextM>Select Contact</TextM>
+          <TextM>Select Contacts</TextM>
           <TextM>{`${selectedCount}/${totalCount}`}</TextM>
         </View>
         <View style={styles.inputWrap}>
@@ -100,7 +100,7 @@ const ChatGroupDetails = () => {
         <FlatList
           extraData={(item: ContactItemType) => item.id}
           data={filterChatContactList}
-          ListEmptyComponent={<NoData noPic message="No search found" />}
+          ListEmptyComponent={<NoData noPic message={keyword ? 'No search found' : 'No contact'} />}
           renderItem={({ item }: { item: ContactItemType }) => (
             <GroupMemberItem
               selected={!!selectedContactMap[item.imInfo?.relationId || '']}

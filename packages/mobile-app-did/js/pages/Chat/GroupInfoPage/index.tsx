@@ -18,6 +18,7 @@ import Touchable from 'components/Touchable';
 import GroupInfoMemberItem from '../components/GroupInfoMemberItem';
 import { useCurrentChannelId } from '../context/hooks';
 import { useGroupChannelInfo, useLeaveChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
 
 const GroupInfoPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -27,12 +28,14 @@ const GroupInfoPage = () => {
   const leaveGroup = useLeaveChannel();
 
   const membersShowList = useMemo(() => {
-    return members?.length && members?.length >= 6 ? members?.slice(0, 5) : members;
+    return members?.length && members?.length >= GROUP_INFO_MEMBER_SHOW_LIMITED
+      ? members?.slice(0, GROUP_INFO_MEMBER_SHOW_LIMITED)
+      : members;
   }, [members]);
 
   const onLeave = useCallback(() => {
     return ActionSheet.alert({
-      title: 'Leave the group?',
+      title: 'Are you sure to leave this group?',
       buttons: [
         {
           title: 'No',
@@ -74,7 +77,7 @@ const GroupInfoPage = () => {
             {groupInfo?.name}
           </TextXXXL>
           <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${groupInfo?.members.length} member${
-            groupInfo?.members.length && groupInfo?.members.length > 1 && 's'
+            groupInfo?.members.length && groupInfo?.members.length > 1 ? 's' : ''
           }`}</TextM>
         </View>
 
@@ -90,8 +93,10 @@ const GroupInfoPage = () => {
               disabled={disableRemoveButton}
               style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
               onPress={() => navigationService.navigate('RemoveMembersPage')}>
-              <Svg icon="chat-remove-member" size={pTd(20)} />
-              <TextL style={[FontStyles.font13, styles.actionText]}>Remove Members</TextL>
+              <Svg icon="chat-remove-member" size={pTd(20)} color={disableRemoveButton ? defaultColors.bg16 : ''} />
+              <TextL style={[FontStyles.font13, styles.actionText, disableRemoveButton && styles.disabled]}>
+                Remove Members
+              </TextL>
             </Touchable>
           )}
 
@@ -114,7 +119,7 @@ const GroupInfoPage = () => {
           <Touchable
             style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.transferOwnerShip]}
             onPress={() => navigationService.navigate('TransferOwnershipPage')}>
-            <TextL>Transfer Ownership</TextL>
+            <TextL>Transfer Group Ownership</TextL>
             <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
           </Touchable>
         )}
@@ -189,5 +194,8 @@ const styles = StyleSheet.create({
   },
   leaveTitleStyle: {
     color: defaultColors.font12,
+  },
+  disabled: {
+    color: defaultColors.bg16,
   },
 });

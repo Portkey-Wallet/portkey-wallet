@@ -27,7 +27,7 @@ const EditGroupPage = () => {
 
   const onDisband = useCallback(() => {
     ActionSheet.alert({
-      title: 'Disband the group ?',
+      title: 'Are you sure disband the group ?',
       buttons: [
         {
           title: 'No',

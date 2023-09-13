@@ -58,7 +58,7 @@ const TransferOwnershipPage = () => {
 
   const onConfirm = useCallback(() => {
     ActionSheet.alert({
-      title: 'Transfer ownership ?',
+      title: 'Are you sure to transfer group ownership to others?',
       buttons: [
         {
           title: 'No',
@@ -70,7 +70,7 @@ const TransferOwnershipPage = () => {
             try {
               Loading.show();
               await transferOwner(selectedMemberId || '');
-              CommonToast.success('transferred successfully');
+              CommonToast.success('Owner changed');
               // TODO: test it
               navigationService.goBack();
             } catch (error) {
@@ -90,7 +90,7 @@ const TransferOwnershipPage = () => {
 
   return (
     <PageContainer
-      titleDom="Transfer Ownership"
+      titleDom="Transfer Group Ownership"
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
@@ -109,7 +109,9 @@ const TransferOwnershipPage = () => {
       <FlatList
         data={filterMembers}
         extraData={(item: ChannelMemberInfo) => item.relationId}
-        ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg4} />}
+        ListEmptyComponent={
+          <NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} style={BGStyles.bg4} />
+        }
         renderItem={({ item }) => (
           <GroupMemberItem
             multiple={false}

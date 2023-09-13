@@ -47,7 +47,7 @@ const RemoveMembersPage = () => {
 
   const onRemove = useCallback(() => {
     ActionSheet.alert({
-      title: 'Remove these members ?',
+      title: 'Remove these members from the group?',
       buttons: [
         {
           title: 'No',

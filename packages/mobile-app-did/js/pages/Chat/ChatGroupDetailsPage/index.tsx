@@ -182,7 +182,7 @@ const ChatGroupDetailsPage = () => {
                   <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoadingStyle} />
                 </>
               )}
-              <TextS style={FontStyles.font2}>{` member${groupMemberCount && groupMemberCount > 0 && 's'}`}</TextS>
+              <TextS style={FontStyles.font2}>{` member${groupMemberCount && groupMemberCount > 0 ? 's' : ''}`}</TextS>
             </View>
           </View>
         </Touchable>

@@ -9,11 +9,7 @@ import { ChatMessage } from 'pages/Chat/types';
 function SystemInfo(props: SystemMessageProps<ChatMessage>) {
   const { currentMessage } = props;
 
-  return (
-    <TextS numberOfLines={1} style={styles.textStyles}>
-      {currentMessage?.content}
-    </TextS>
-  );
+  return <TextS style={styles.textStyles}>{currentMessage?.content}</TextS>;
 }
 
 export default SystemInfo;
@@ -23,6 +19,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: defaultColors.font7,
     marginVertical: pTd(4),
+    paddingHorizontal: pTd(20),
     lineHeight: pTd(16),
     overflow: 'hidden',
   },

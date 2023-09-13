@@ -88,7 +88,7 @@ const WalletName: React.FC = () => {
     Loading.hide();
   }, [nameValue, setWalletName, t]);
   return (
-    <PageContainer titleDom={t('My DID')} safeAreaColor={['blue', 'gray']} containerStyles={pageStyles.pageWrap}>
+    <PageContainer titleDom={t('My Wallet')} safeAreaColor={['blue', 'gray']} containerStyles={pageStyles.pageWrap}>
       <View style={pageStyles.pageContainer}>
         <View>
           {showChat ? (

@@ -31,15 +31,13 @@ type ProfileAddressSectionPropsType = {
 };
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
-  const { title = 'DID', disable, noMarginTop, addressList, isMySelf } = props;
+  const { title = 'Address', disable, noMarginTop, addressList, isMySelf } = props;
   const isTestnet = useIsTestnet();
 
   const copyId = useCallback(
     (ele: addressItemType) => copyText(ele.chainName === 'aelf' ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
     [],
   );
-
-  console.log('list!!!!', addressList);
 
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>

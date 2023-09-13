@@ -44,6 +44,7 @@ export interface IMessage {
   position: string;
   text: string;
   title?: string;
+  from?: string;
   date?: number | string;
   dateString?: string;
   avatar?: string;
@@ -52,6 +53,7 @@ export interface IMessage {
   type: string;
   showAvatar?: boolean;
   onDeleteMsg?: React.MouseEventHandler;
+  onClickAvatar?: React.MouseEventHandler;
 }
 
 export interface IImageMessage extends IMessage {
@@ -98,6 +100,7 @@ export interface IMessageListProps {
   next: () => any;
   onScroll?: React.UIEventHandler;
   onDeleteMsg?: MessageListEvent;
+  onClickAvatar?: MessageListEvent;
   onDownButtonClick?: React.RefObject<HTMLButtonElement>;
 }
 
@@ -177,7 +180,7 @@ export interface IAvatarProps {
   channelType?: ChannelTypeEnum;
   width?: number;
   height?: number;
-  onClick?: () => void;
+  onClick?: React.MouseEventHandler;
 }
 
 export interface IUnreadTipProps {

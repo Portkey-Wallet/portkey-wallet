@@ -30,7 +30,7 @@ export default function EditGroupInfo() {
   const handleInputValueChange = useCallback(
     (v: string) => {
       setValidName({ validateStatus: '', errorMsg: '' });
-      if (!v) {
+      if (!v.trim()) {
         setDisabled(true);
       } else {
         setName(v);
@@ -41,7 +41,7 @@ export default function EditGroupInfo() {
   );
   const onFinish = useCallback(async () => {
     try {
-      await updateChannelName(`${channelUuid}`, `${name}`);
+      await updateChannelName(`${channelUuid}`, `${name?.trim()}`);
       message.success('update channel name');
       navigate(-1);
     } catch (error) {
@@ -73,16 +73,18 @@ export default function EditGroupInfo() {
   }, [disbandGroup, navigate, t]);
   return (
     <div className="group-info-edit-page flex-column">
-      <SettingHeader
-        title="Edit Group"
-        leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
-        rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
-      />
+      <div className="group-info-edit-header">
+        <SettingHeader
+          title="Edit Group"
+          leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
+          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
+        />
+      </div>
       <Form
         form={form}
         autoComplete="off"
         layout="vertical"
-        className="flex-column add-contact-form"
+        className="flex-column-between edit-group-info-form"
         requiredMark={false}
         initialValues={{ name: groupInfo?.name }}
         onFinish={onFinish}>
@@ -92,11 +94,11 @@ export default function EditGroupInfo() {
               value={name}
               placeholder="Enter name"
               onChange={(e) => handleInputValueChange(e.target.value)}
-              maxLength={16}
+              maxLength={40}
             />
           </FormItem>
         </div>
-        <div className="flex form-btn-edit">
+        <div className="flex form-footer">
           <Button danger onClick={handleDisband}>
             Disband
           </Button>

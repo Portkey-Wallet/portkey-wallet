@@ -6,9 +6,6 @@
   font-size: 16px;
   line-height: 22px;
   .member-list-top {
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
     padding-top: 16px;
     background-color: @bg-13;
@@ -24,9 +21,7 @@
     }
   }
   .member-list-container {
-    position: relative;
-    margin-top: 138px;
-    min-height: 383px;
+    height: calc(100% - 138px);
     overflow-y: auto;
     .member-list {
       .member-item {
@@ -58,9 +53,6 @@
           color: @font-9;
           border-radius: 4px;
           background-color: @bg-24;
-        }
-        &:last-child{
-          border-bottom: none;
         }
       }
     }

@@ -95,10 +95,16 @@ export default function ViewContact() {
       navigate('/new-chat', { state });
     } else if (state?.from === 'chat-box') {
       navigate(`/chat-box/${state?.channelUuid}`);
+    } else if (state?.from === 'chat-box-group') {
+      navigate(`/chat-box-group/${state?.channelUuid}`);
+    } else if (state?.from === 'chat-group-info') {
+      navigate(`/chat-group-info/${state?.channelUuid}`);
+    } else if (data?.from === 'chat-member-list') {
+      navigate(`/chat-group-info/${state?.channelUuid}/member-list`, { state });
     } else {
       navigate('/setting/contacts');
     }
-  }, [navigate, state]);
+  }, [data?.from, navigate, state]);
 
   const handleEdit = useGoProfileEdit();
   const handleChat = useProfileChat();

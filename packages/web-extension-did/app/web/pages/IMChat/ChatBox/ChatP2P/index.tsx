@@ -1,38 +1,28 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { Modal, Popover, message } from 'antd';
-import {
-  PopoverMenuList,
-  MessageList,
-  InputBar,
-  StyleProvider,
-  MessageType,
-  PopDataProps,
-} from '@portkey-wallet/im-ui-web';
+import { Modal, message } from 'antd';
+import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
-import PhotoSendModal, { IPreviewImage } from '../../components/ImageSendModal';
-import { ImageMessageFileType, useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
-import BookmarkListDrawer from '../../components/BookmarkListDrawer';
-import { formatMessageList } from '../../utils';
+import BookmarkListDrawer from 'pages/IMChat/components/BookmarkListDrawer';
+import { formatMessageList } from 'pages/IMChat/utils';
 import { useTranslation } from 'react-i18next';
 import { useLoading } from 'store/Provider/hooks';
 import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
-import ChatBoxTip from '../../components/ChatBoxTip';
-import CustomUpload from '../../components/CustomUpload';
+import CustomUpload from 'pages/IMChat/components/CustomUpload';
+import ChatBoxTip from 'pages/IMChat/components/ChatBoxTip';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useHandle } from '../useHandle';
+import ChatBoxHeader from '../components/ChatBoxHeader';
 
-export default function ChatP2P() {
+export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [file, setFile] = useState<ImageMessageFileType>();
-  const [previewImage, setPreviewImage] = useState<IPreviewImage>();
   const [showBookmark, setShowBookmark] = useState(false);
-  const sendImgModalRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
   const addContactApi = useAddStrangerContact();
   const [popVisible, setPopVisible] = useState(false);
@@ -40,46 +30,14 @@ export default function ChatP2P() {
   const { list, init, sendMessage, pin, mute, exit, info, sendImage, deleteMessage, hasNext, next, loading } =
     useChannel(`${channelUuid}`);
   const isStranger = useIsStranger(info?.toRelationId || '');
+  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });
   const { setLoading } = useLoading();
   useEffectOnce(() => {
     init();
   });
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!), [list, relationId]);
-  console.log(messageList);
-  // TODO delete
-  const handleDeleteMsg = useCallback(
-    async (item: MessageType) => {
-      try {
-        await deleteMessage(`${item.id}`);
-      } catch (e) {
-        message.error('Failed to delete message');
-        console.log('===handle delete message error', e);
-      }
-    },
-    [deleteMessage],
-  );
-  const handlePin = useCallback(async () => {
-    try {
-      await pin(!info?.pin);
-    } catch (e: any) {
-      if (`${e?.code}` === '13310') {
-        message.error('Pin limit exceeded');
-      } else {
-        message.error(`Failed to ${info?.pin ? 'unpin' : 'pin'} chat`);
-      }
-      console.log('===handle pin error', e);
-    }
-  }, [info?.pin, pin]);
-  const handleMute = useCallback(async () => {
-    try {
-      await mute(!info?.mute);
-    } catch (e) {
-      message.error(`Failed to ${info?.mute ? 'unmute' : 'mute'} chat`);
-      console.log('===handle mute error', e);
-    }
-  }, [info?.mute, mute]);
-  const handleDeleteBox = useCallback(() => {
+  const handleDelete = useCallback(() => {
     return Modal.confirm({
       width: 320,
       content: t('Delete chat?'),
@@ -142,7 +100,7 @@ export default function ChatP2P() {
         key: 'delete',
         leftIcon: <CustomSvg type="Delete" />,
         children: 'Delete',
-        onClick: handleDeleteBox,
+        onClick: handleDelete,
       },
       {
         key: 'add-contact',
@@ -151,13 +109,18 @@ export default function ChatP2P() {
         onClick: handleAddContact,
       },
     ],
-    [handleAddContact, handleDeleteBox, handleGoProfile, handleMute, handlePin, info?.mute, info?.pin],
+    [handleAddContact, handleDelete, handleGoProfile, handleMute, handlePin, info?.mute, info?.pin],
   );
   const inputMorePopList: PopDataProps[] = useMemo(
     () => [
       {
         key: 'album',
-        children: <CustomUpload setFile={setFile} setPreviewImage={setPreviewImage} />,
+        children: (
+          <CustomUpload
+            sendImage={sendImage}
+            onSuccess={() => (messageRef.current.scrollTop = messageRef.current.scrollHeight)}
+          />
+        ),
       },
       {
         key: 'bookmark',
@@ -166,19 +129,8 @@ export default function ChatP2P() {
         onClick: () => setShowBookmark(true),
       },
     ],
-    [],
+    [sendImage],
   );
-  const handleUpload = useCallback(async () => {
-    try {
-      await sendImage(file!);
-      messageRef.current.scrollTop = messageRef.current.scrollHeight;
-      setPreviewImage(undefined);
-      setFile(undefined);
-    } catch (e) {
-      console.log('===send image error', e);
-      message.error('Failed to send message');
-    }
-  }, [file, sendImage]);
   const hidePop = useCallback((e: any) => {
     try {
       const _t = e?.target?.className;
@@ -201,27 +153,17 @@ export default function ChatP2P() {
     },
     [sendMessage],
   );
-  const renderChatBoxTip = useMemo(
-    () =>
-      isStranger &&
-      showStrangerTip && (
-        <ChatBoxTip onConfirm={handleAddContact} onClose={() => setShowStrangerTip(false)}>
-          <div className="content flex-center">
-            <CustomSvg type="ChatAddContact" />
-            <span className="text">Add Contact</span>
-          </div>
-        </ChatBoxTip>
-      ),
-    [handleAddContact, isStranger, showStrangerTip],
-  );
   const renderTitle = useMemo(
     () => (
-      <div className="title-content flex-center" onClick={handleGoProfile}>
-        <Avatar letter={info?.displayName?.slice(0, 1).toUpperCase()} />
-        <div className="title-name">{info?.displayName}</div>
+      <div className="flex title-element">
+        <div className="title-content flex-center" onClick={handleGoProfile}>
+          <Avatar letter={info?.displayName?.slice(0, 1).toUpperCase()} />
+          <div className="title-name">{info?.displayName}</div>
+        </div>
+        {info?.mute && <CustomSvg type="Mute" />}
       </div>
     ),
-    [handleGoProfile, info?.displayName],
+    [handleGoProfile, info?.displayName, info?.mute],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);
@@ -229,33 +171,21 @@ export default function ChatP2P() {
   }, [hidePop]);
   return (
     <div className="chat-box-page flex-column">
-      <div className="chat-box-top">
-        <SettingHeader
-          title={
-            <div className="flex title-element">
-              {renderTitle}
-              {info?.mute && <CustomSvg type="Mute" />}
-            </div>
-          }
-          leftCallBack={() => navigate('/chat-list')}
-          rightElement={
-            <div className="flex-center right-element">
-              <Popover
-                open={popVisible}
-                overlayClassName="chat-box-popover"
-                trigger="click"
-                showArrow={false}
-                content={<PopoverMenuList data={p2pPopList.filter((i) => isStranger || i.key !== 'add-contact')} />}>
-                <div className="chat-box-more" onClick={() => setPopVisible(!popVisible)}>
-                  <CustomSvg type="More" />
-                </div>
-              </Popover>
-              <CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />
-            </div>
-          }
-        />
-      </div>
-      {renderChatBoxTip}
+      <ChatBoxHeader
+        popMenuData={p2pPopList.filter((i) => isStranger || i.key !== 'add-contact')}
+        renderTitle={renderTitle}
+        goBack={() => navigate('/chat-list')}
+        popVisible={popVisible}
+        setPopVisible={setPopVisible}
+      />
+      {isStranger && showStrangerTip && (
+        <ChatBoxTip onConfirm={handleAddContact} onClose={() => setShowStrangerTip(false)}>
+          <div className="content flex-center">
+            <CustomSvg type="ChatAddContact" />
+            <span className="text">Add Contact</span>
+          </div>
+        </ChatBoxTip>
+      )}
       <div className="chat-box-content">
         <StyleProvider prefixCls="portkey">
           <MessageList
@@ -274,16 +204,6 @@ export default function ChatP2P() {
           <InputBar moreData={inputMorePopList} maxLength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
         </StyleProvider>
       </div>
-      <PhotoSendModal
-        ref={sendImgModalRef}
-        open={!!previewImage?.src}
-        file={previewImage}
-        onConfirm={handleUpload}
-        onCancel={() => {
-          setPreviewImage(undefined);
-          setFile(undefined);
-        }}
-      />
       <BookmarkListDrawer
         destroyOnClose
         open={showBookmark}

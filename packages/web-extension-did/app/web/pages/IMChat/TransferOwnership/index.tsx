@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -16,7 +16,6 @@ export default function TransferOwnership() {
   const transferOwnershipApi = useTransferChannelOwner(`${channelUuid}`);
   const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
-  const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const formatAllMember: IContactItemSelectProps[] = useMemo(
@@ -55,7 +54,7 @@ export default function TransferOwnership() {
   const handleTransfer = useCallback(() => {
     return Modal.confirm({
       width: 320,
-      content: t('Transfer ownership?'),
+      content: t('Are you sure to transfer group ownership to others?'),
       className: 'transfer-ownership-modal',
       autoFocusButton: null,
       icon: null,
@@ -66,9 +65,9 @@ export default function TransferOwnership() {
         try {
           await transferOwnershipApi(selected);
           navigate(-1);
-          message.success('Owned changed');
+          message.success('Owner changed');
         } catch (e) {
-          message.error('Failed to delete chat');
+          message.error('Failed to transfer ownership');
           console.log('===transfer ownership error', e);
         }
       },
@@ -106,16 +105,11 @@ export default function TransferOwnership() {
     },
     [showMemberList],
   );
-  useEffect(() => {
-    setFilterWord(state?.search ?? '');
-    handleSearch(state?.search ?? '');
-  }, [handleSearch, state?.search]);
-
   return (
-    <div className="transfer-ownership-page flex-column">
+    <div className="transfer-ownership-page flex-column-between">
       <div className="transfer-ownership-top">
         <SettingHeader
-          title={t('Transfer Ownership')}
+          title={t('Transfer Group Ownership')}
           leftCallBack={() => navigate(-1)}
           rightElement={<CustomSvg type="Close2" onClick={() => navigate(-1)} />}
         />
@@ -132,17 +126,19 @@ export default function TransferOwnership() {
           }}
         />
       </div>
-      <div className="member-list-container">
-        {showMemberList.length !== 0 ? (
-          <ContactListSelect type={ISelectItemType.RADIO} list={showMemberList} clickItem={clickItem} />
-        ) : (
-          <div className="member-list-empty">{filterWord ? 'no search result' : 'no members available'}</div>
-        )}
-      </div>
-      <div className="transfer-ownership-btn flex-center" onClick={handleTransfer}>
-        <Button disabled={!selected} type="primary">
-          Confirm
-        </Button>
+      <div className="transfer-ownership-body flex-column-between">
+        <div className="member-list-container">
+          {showMemberList.length !== 0 ? (
+            <ContactListSelect type={ISelectItemType.RADIO} list={showMemberList} clickItem={clickItem} />
+          ) : (
+            <div className="member-list-empty flex-center">{filterWord ? 'No search result' : 'No member'}</div>
+          )}
+        </div>
+        <div className="transfer-ownership-btn flex-center" onClick={handleTransfer}>
+          <Button disabled={!selected} type="primary">
+            Confirm
+          </Button>
+        </div>
       </div>
     </div>
   );

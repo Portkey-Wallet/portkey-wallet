@@ -1,7 +1,7 @@
 {
   "root": true,
   "extends": [
-    "@react-native-community",
+    "@react-native",
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
@@ -16,7 +16,7 @@
     }
   },
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "@react-native-community"],
+  "plugins": ["@typescript-eslint", "@react-native"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx"],

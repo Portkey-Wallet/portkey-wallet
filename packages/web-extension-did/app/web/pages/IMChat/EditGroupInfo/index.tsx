@@ -73,16 +73,18 @@ export default function EditGroupInfo() {
   }, [disbandGroup, navigate, t]);
   return (
     <div className="group-info-edit-page flex-column">
-      <SettingHeader
-        title="Edit Group"
-        leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
-        rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
-      />
+      <div className="group-info-edit-header">
+        <SettingHeader
+          title="Edit Group"
+          leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
+          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
+        />
+      </div>
       <Form
         form={form}
         autoComplete="off"
         layout="vertical"
-        className="flex-column add-contact-form"
+        className="flex-column-between edit-group-info-form"
         requiredMark={false}
         initialValues={{ name: groupInfo?.name }}
         onFinish={onFinish}>
@@ -96,7 +98,7 @@ export default function EditGroupInfo() {
             />
           </FormItem>
         </div>
-        <div className="flex form-btn-edit">
+        <div className="flex form-footer">
           <Button danger onClick={handleDisband}>
             Disband
           </Button>

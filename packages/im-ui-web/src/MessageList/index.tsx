@@ -111,10 +111,9 @@ const MessageList: FC<IMessageListProps> = ({
     let hiddenAvatar = false;
     return props.dataSource.map((x, i: number) => {
       hiddenAvatar = x?.title === prev?.title;
-      if (x.type === 'system' || prev?.type === 'system') {
-        isShowMargin = true;
-      } else {
-        isShowMargin = prev?.position !== x.position;
+      isShowMargin = prev?.position !== x.position;
+      if (x.type === 'system' && prev?.type === 'system') {
+        isShowMargin = x.subType !== prev?.subType;
       }
       prev = x;
       return (

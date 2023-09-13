@@ -29,8 +29,9 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
         id: `${item.id}`,
         key: item.sendUuid,
         title: item.fromName,
+        letter: item.fromName?.slice(0, 1)?.toUpperCase(),
         from: item.from,
-        position: item.from === ownerRelationId ? 'right' : 'left',
+        position: transType === 'system' ? 'center' : item.from === ownerRelationId ? 'right' : 'left',
         text: `${item.parsedContent}`,
         imgData:
           typeof item.parsedContent === 'object'
@@ -62,7 +63,7 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
         {
           key: `${item.createAt}`,
           id: `${item.createAt}`,
-          position: 'left',
+          position: 'center',
           date: item.createAt,
           type: 'system',
           text: formatMessageTime(item.createAt),
@@ -78,7 +79,7 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
           {
             key: `${item.createAt}`,
             id: `${item.createAt}`,
-            position: 'left',
+            position: 'center',
             date: item.createAt,
             type: 'system',
             text: formatMessageTime(item.createAt),

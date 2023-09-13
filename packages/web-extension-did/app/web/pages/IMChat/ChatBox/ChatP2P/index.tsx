@@ -1,16 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { Modal, Popover, message } from 'antd';
-import {
-  PopoverMenuList,
-  MessageList,
-  InputBar,
-  StyleProvider,
-  MessageType,
-  PopDataProps,
-} from '@portkey-wallet/im-ui-web';
+import { Modal, message } from 'antd';
+import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
@@ -24,6 +16,7 @@ import CustomUpload from 'pages/IMChat/components/CustomUpload';
 import ChatBoxTip from 'pages/IMChat/components/ChatBoxTip';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useHandle } from '../useHandle';
+import ChatBoxHeader from '../components/ChatBoxHeader';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -160,41 +153,31 @@ export default function ChatBox() {
     },
     [sendMessage],
   );
+  const renderTitle = useMemo(
+    () => (
+      <div className="flex title-element">
+        <div className="title-content flex-center" onClick={handleGoProfile}>
+          <Avatar letter={info?.displayName?.slice(0, 1).toUpperCase()} />
+          <div className="title-name">{info?.displayName}</div>
+        </div>
+        {info?.mute && <CustomSvg type="Mute" />}
+      </div>
+    ),
+    [handleGoProfile, info?.displayName, info?.mute],
+  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
   return (
     <div className="chat-box-page flex-column">
-      <div className="chat-box-top">
-        <SettingHeader
-          title={
-            <div className="flex title-element">
-              <div className="title-content flex-center" onClick={handleGoProfile}>
-                <Avatar letter={info?.displayName?.slice(0, 1).toUpperCase()} />
-                <div className="title-name">{info?.displayName}</div>
-              </div>
-              {info?.mute && <CustomSvg type="Mute" />}
-            </div>
-          }
-          leftCallBack={() => navigate('/chat-list')}
-          rightElement={
-            <div className="flex-center right-element">
-              <Popover
-                open={popVisible}
-                overlayClassName="chat-box-popover"
-                trigger="click"
-                showArrow={false}
-                content={<PopoverMenuList data={p2pPopList.filter((i) => isStranger || i.key !== 'add-contact')} />}>
-                <div className="chat-box-more" onClick={() => setPopVisible(!popVisible)}>
-                  <CustomSvg type="More" />
-                </div>
-              </Popover>
-              <CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />
-            </div>
-          }
-        />
-      </div>
+      <ChatBoxHeader
+        popMenuData={p2pPopList.filter((i) => isStranger || i.key !== 'add-contact')}
+        renderTitle={renderTitle}
+        goBack={() => navigate('/chat-list')}
+        popVisible={popVisible}
+        setPopVisible={setPopVisible}
+      />
       {isStranger && showStrangerTip && (
         <ChatBoxTip onConfirm={handleAddContact} onClose={() => setShowStrangerTip(false)}>
           <div className="content flex-center">

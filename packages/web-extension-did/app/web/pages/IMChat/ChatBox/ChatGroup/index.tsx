@@ -1,16 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { Modal, Popover, message } from 'antd';
-import {
-  PopoverMenuList,
-  MessageList,
-  InputBar,
-  StyleProvider,
-  MessageType,
-  PopDataProps,
-} from '@portkey-wallet/im-ui-web';
+import { Modal, message } from 'antd';
+import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { useGroupChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
 import { formatMessageList } from '../../utils';
@@ -21,6 +13,7 @@ import CustomUpload from '../../components/CustomUpload';
 import CircleLoading from 'components/CircleLoading';
 import { useEffectOnce } from 'react-use';
 import { useHandle } from '../useHandle';
+import ChatBoxHeader from '../components/ChatBoxHeader';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -214,32 +207,18 @@ export default function ChatBox() {
   }, [hidePop]);
   return (
     <div className="chat-box-page flex-column">
-      <div className="chat-box-top">
-        <SettingHeader
-          title={<div className="flex title-element">{renderTitle}</div>}
-          leftCallBack={() => navigate('/chat-list')}
-          rightElement={
-            <div className="flex-center right-element">
-              <Popover
-                open={popVisible}
-                overlayClassName="chat-box-popover"
-                trigger="click"
-                showArrow={false}
-                content={<PopoverMenuList data={groupPopList.filter((i) => !isAdmin || i.key !== 'leave-group')} />}>
-                <div className="chat-box-more" onClick={() => setPopVisible(!popVisible)}>
-                  <CustomSvg type="More" />
-                </div>
-              </Popover>
-              <CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />
-            </div>
-          }
-        />
-      </div>
+      <ChatBoxHeader
+        popMenuData={groupPopList.filter((i) => !isAdmin || i.key !== 'leave-group')}
+        renderTitle={<div className="flex title-element">{renderTitle}</div>}
+        goBack={() => navigate('/chat-list')}
+        popVisible={popVisible}
+        setPopVisible={setPopVisible}
+      />
       {isAdmin && showAddMemTip && (
         <ChatBoxTip onConfirm={handleAddMember} onClose={() => setShowAddMemTip(false)}>
           <div className="content flex-center">
             <CustomSvg type="ChatAddContact" />
-            <span className="text">Add Member</span>
+            <span className="text">Add Members</span>
           </div>
         </ChatBoxTip>
       )}

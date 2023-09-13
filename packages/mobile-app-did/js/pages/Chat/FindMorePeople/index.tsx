@@ -107,13 +107,14 @@ const FindMorePeople = () => {
 
   return (
     <PageContainer
-      titleDom={'Find More'}
+      titleDom={'Find People'}
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
         <CommonInput
           value={keyword}
+          placeholder="Address/Portkey ID"
           onChangeText={setKeyword}
           rightIcon={IptRightIcon}
           rightIconContainerStyle={styles.rightIconContainerStyle}
@@ -144,7 +145,6 @@ const styles = StyleSheet.create({
   svgWrap: {
     padding: pTd(16),
   },
-  buttonGroupWrap: {},
   portkeyIdWrap: {
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,

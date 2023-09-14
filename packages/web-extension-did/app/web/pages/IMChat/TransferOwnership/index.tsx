@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
@@ -33,7 +33,7 @@ export default function TransferOwnership() {
   const [selected, setSelected] = useState<string>('');
   const [showMemberList, setShowMemberList] = useState<IContactItemSelectProps[]>(allMemberRef.current);
 
-  const handleSearch = useCallback(async (keyword: string) => {
+  const handleSearch = useCallback((keyword: string) => {
     const _all = allMemberRef.current;
     if (keyword) {
       const _t = _all.filter((m) => m.id === keyword || m.name?.toLowerCase().includes(keyword.toLowerCase()));
@@ -46,7 +46,6 @@ export default function TransferOwnership() {
     (params) => {
       const _v = params.trim();
       handleSearch(_v);
-      setFilterWord(_v);
     },
     [],
     500,
@@ -105,6 +104,19 @@ export default function TransferOwnership() {
     },
     [showMemberList],
   );
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const _value = e.target.value;
+      if (_value) {
+        setFilterWord(_value);
+        searchDebounce(_value);
+      } else {
+        handleSearch(_value);
+        setFilterWord(_value);
+      }
+    },
+    [handleSearch, searchDebounce],
+  );
   return (
     <div className="transfer-ownership-page flex-column-between">
       <div className="transfer-ownership-top">
@@ -117,11 +129,7 @@ export default function TransferOwnership() {
           overlay={<></>}
           value={filterWord}
           inputProps={{
-            onChange: (e) => {
-              const _value = e.target.value;
-              setFilterWord(_value);
-              searchDebounce(_value);
-            },
+            onChange: handleInputChange,
             placeholder: 'Search',
           }}
         />

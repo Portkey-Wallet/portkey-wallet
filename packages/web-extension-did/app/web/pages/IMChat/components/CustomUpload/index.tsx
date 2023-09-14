@@ -13,9 +13,10 @@ import PhotoSendModal, { IPreviewImage } from 'pages/IMChat/components/ImageSend
 export interface ICustomUploadProps {
   sendImage: (file: ImageMessageFileType) => Promise<UploadFileType>;
   onSuccess: () => void;
+  handleSendMsgError: (e: any) => any;
 }
 
-export default function CustomUpload({ sendImage, onSuccess }: ICustomUploadProps) {
+export default function CustomUpload({ sendImage, onSuccess, handleSendMsgError }: ICustomUploadProps) {
   const [file, setFile] = useState<ImageMessageFileType>();
   const [previewImage, setPreviewImage] = useState<IPreviewImage>();
   const sendImgModalRef = useRef<any>(null);
@@ -25,11 +26,10 @@ export default function CustomUpload({ sendImage, onSuccess }: ICustomUploadProp
       onSuccess();
       setPreviewImage(undefined);
       setFile(undefined);
-    } catch (e) {
-      console.log('===send image error', e);
-      message.error('Failed to send message');
+    } catch (e: any) {
+      handleSendMsgError(e);
     }
-  }, [file, onSuccess, sendImage]);
+  }, [file, handleSendMsgError, onSuccess, sendImage]);
   const uploadProps = useMemo(
     () => ({
       className: 'chat-input-upload',

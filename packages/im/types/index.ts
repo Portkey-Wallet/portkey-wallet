@@ -52,7 +52,6 @@ export type ChannelInfo = {
   openAccess: boolean;
   type: ChannelTypeEnum;
   members: ChannelMemberInfo[];
-  membersAmount: number;
   mute: boolean;
   pin: boolean;
 };

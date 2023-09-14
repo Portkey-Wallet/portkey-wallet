@@ -58,8 +58,6 @@ const NFTDetail: React.FC<TokenDetailProps> = props => {
     collectionInfo: { imageUrl, collectionName },
   } = nftItem;
 
-  console.log('nftItem', nftItem);
-
   const copyStr = useCallback(
     async (str: string) => {
       const isCopy = await Clipboard.setStringAsync(str);
@@ -82,7 +80,12 @@ const NFTDetail: React.FC<TokenDetailProps> = props => {
         </View>
         <TextXXL style={styles.tokenId}>{`#${tokenId}`}</TextXXL>
 
-        <CommonAvatar title={alias} style={[imageLargeUrl ? styles.image1 : styles.image]} imageUrl={imageLargeUrl} />
+        <CommonAvatar
+          title={alias}
+          style={[imageLargeUrl ? styles.image1 : styles.image]}
+          imageUrl={imageLargeUrl}
+          avatarSize={pTd(335)}
+        />
 
         <View style={styles.infoWrap}>
           <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>

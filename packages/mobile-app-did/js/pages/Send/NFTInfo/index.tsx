@@ -27,8 +27,10 @@ export default function NFTInfo({ nftItem = { alias: '', balance: 0 } }: AmountN
         style={styles.avatar}
       />
       <View>
-        <TextL>{`${nftItem?.alias || 'alias'}  #${nftItem?.tokenId}`}</TextL>
-        <TextS style={[styles.balance, FontStyles.font3]}>{`${t('Balance')}: ${nftItem?.balance}`}</TextS>
+        <TextL numberOfLines={1} style={styles.nftTitle}>{`${nftItem?.alias || ''}  #${nftItem?.tokenId}`}</TextL>
+        <TextS numberOfLines={1} style={[styles.balance, FontStyles.font3]}>{`${t('Balance')}: ${
+          nftItem?.balance
+        }`}</TextS>
       </View>
     </View>
   );
@@ -45,6 +47,9 @@ export const styles = StyleSheet.create({
     borderWidth: 0,
     backgroundColor: defaultColors.bg7,
     marginRight: pTd(16),
+  },
+  nftTitle: {
+    maxWidth: pTd(230),
   },
   balance: {
     marginTop: pTd(4),
@@ -96,7 +101,6 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   inputContainerStyle: {
-    // backgroundColor: 're123456
     borderColor: 'white', // how to delete bottom border?a
   },
   inputStyle: {

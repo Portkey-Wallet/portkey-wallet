@@ -15,11 +15,9 @@ import {
   transferChannelOwner,
   updateChannelAttribute,
   updateGroupInfo,
-  updateGroupMemberAmount,
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
 import { sleep } from '@portkey-wallet/utils';
-import { UpdateGroupMemberAmountTypeEnum } from '@portkey-wallet/store/store-ca/im/type';
 
 export const useDisbandChannel = (channelId: string) => {
   const dispatch = useAppCommonDispatch();
@@ -237,22 +235,26 @@ export const useGroupChannel = (channelId: string) => {
       if (rawMsg.type !== 'SYS') return;
       console.log('receive SYS msg');
       const content = rawMsg.content;
-      if (content.endsWith('joined in')) {
+
+      if (content.indexOf('changed the group name to') > 0) {
+        const name = content.split('changed the group name to')[1].trim();
         dispatch(
-          updateGroupMemberAmount({
+          updateGroupInfo({
             network: networkType,
             channelId,
-            type: UpdateGroupMemberAmountTypeEnum.ADD,
+            value: {
+              name,
+            },
           }),
         );
-        return;
-      }
-      if (content.endsWith('been removed') || content.endsWith('left the group')) {
+
         dispatch(
-          updateGroupMemberAmount({
+          updateChannelAttribute({
             network: networkType,
             channelId,
-            type: UpdateGroupMemberAmountTypeEnum.REMOVE,
+            value: {
+              displayName: name,
+            },
           }),
         );
         return;

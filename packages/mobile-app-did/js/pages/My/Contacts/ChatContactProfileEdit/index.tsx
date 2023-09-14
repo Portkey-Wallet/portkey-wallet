@@ -101,7 +101,7 @@ const ChatContactProfileEdit: React.FC = () => {
         <ProfileRemarkSection errorMessage={error} value={remark} onChangeText={v => setRemark(v)} />
         <ProfilePortkeyIDSection
           disable
-          title={isShowPortkeyId ? 'PortkeyId' : 'ID'}
+          title={isShowPortkeyId ? 'Portkey ID' : 'ID'}
           id={isShowPortkeyId ? contact?.caHolderInfo?.userId : contact?.imInfo?.relationId}
         />
         <ProfileAddressSection disable addressList={contact?.addresses} />

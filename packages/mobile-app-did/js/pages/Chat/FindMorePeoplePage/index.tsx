@@ -108,7 +108,7 @@ const FindMorePeople = () => {
 
   return (
     <PageContainer
-      titleDom={'Find More'}
+      titleDom={'Find People'}
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
@@ -117,6 +117,7 @@ const FindMorePeople = () => {
           loading={loading}
           allowClear
           value={keyword}
+          placeholder="Address/Portkey ID"
           onChangeText={setKeyword}
           rightIcon={IptRightIcon}
           rightIconContainerStyle={styles.rightIconContainerStyle}
@@ -147,7 +148,6 @@ const styles = StyleSheet.create({
   svgWrap: {
     padding: pTd(16),
   },
-  buttonGroupWrap: {},
   portkeyIdWrap: {
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,

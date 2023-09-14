@@ -89,7 +89,7 @@ const EditGroupPage = () => {
       <View style={styles.buttonWrap}>
         <CommonButton disabled={!groupName} title="Save" type="primary" onPress={onSave} />
         <CommonButton
-          title={'Disband'}
+          title={'Delete'}
           style={styles.deleteBtnStyle}
           onPress={onDisband}
           titleStyle={FontStyles.font12}

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
@@ -53,6 +53,7 @@ export default function HandleMember() {
 
   const handleSearch = useCallback(
     (keyword: string) => {
+      keyword = keyword.trim();
       let res: IContactItemSelectProps[] = [];
       if (isAdd) {
         if (keyword.length <= 16) {
@@ -202,6 +203,19 @@ export default function HandleMember() {
     },
     [showMemberList],
   );
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const _value = e.target.value;
+      if (_value) {
+        setFilterWord(_value);
+        searchDebounce(_value);
+      } else {
+        handleSearch(_value);
+        setFilterWord(_value);
+      }
+    },
+    [handleSearch, searchDebounce],
+  );
   return (
     <div className="handle-member-page flex-column-between">
       <div className="handle-member-top">
@@ -214,11 +228,7 @@ export default function HandleMember() {
           overlay={<></>}
           value={filterWord}
           inputProps={{
-            onChange: (e) => {
-              const _value = e.target.value.trim();
-              setFilterWord(_value);
-              searchDebounce(_value);
-            },
+            onChange: handleInputChange,
             placeholder: 'Search',
           }}
         />
@@ -228,7 +238,7 @@ export default function HandleMember() {
           {showMemberList.length !== 0 ? (
             <ContactListSelect list={showMemberList} clickItem={isAdd ? clickAddItem : clickRemoveItem} />
           ) : (
-            <div className="flex-center member-list-empty">{filterWord ? 'No search found' : 'No contact result'}</div>
+            <div className="flex-center member-list-empty">{filterWord ? 'No contact result' : 'No contact'}</div>
           )}
         </div>
         <div className="handle-member-btn flex-center" onClick={handleOperate}>

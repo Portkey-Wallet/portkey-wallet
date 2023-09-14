@@ -111,6 +111,10 @@ export default function ChatBox() {
     ],
     [handleAddContact, handleDelete, handleGoProfile, handleMute, handlePin, info?.mute, info?.pin],
   );
+  const handleSendMsgError = useCallback((e: any) => {
+    message.error('Failed to send message');
+    console.log('===Failed to send message', e);
+  }, []);
   const inputMorePopList: PopDataProps[] = useMemo(
     () => [
       {
@@ -119,6 +123,7 @@ export default function ChatBox() {
           <CustomUpload
             sendImage={sendImage}
             onSuccess={() => (messageRef.current.scrollTop = messageRef.current.scrollHeight)}
+            handleSendMsgError={handleSendMsgError}
           />
         ),
       },
@@ -129,7 +134,7 @@ export default function ChatBox() {
         onClick: () => setShowBookmark(true),
       },
     ],
-    [sendImage],
+    [handleSendMsgError, sendImage],
   );
   const hidePop = useCallback((e: any) => {
     try {
@@ -148,10 +153,10 @@ export default function ChatBox() {
         await sendMessage(v.trim() ?? '');
         messageRef.current.scrollTop = messageRef.current.scrollHeight;
       } catch (e) {
-        message.error('Failed to send message');
+        handleSendMsgError(e);
       }
     },
-    [sendMessage],
+    [handleSendMsgError, sendMessage],
   );
   const renderTitle = useMemo(
     () => (

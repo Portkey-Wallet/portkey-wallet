@@ -42,17 +42,17 @@ export default function EditGroupInfo() {
   const onFinish = useCallback(async () => {
     try {
       await updateChannelName(`${channelUuid}`, `${name?.trim()}`);
-      message.success('update channel name');
+      message.success('Group name update');
       navigate(-1);
     } catch (error) {
-      message.error('Failed update channel name');
-      console.log('===Failed update channel name', error);
+      message.error('Failed to update group name');
+      console.log('===Failed to update group name', error);
     }
   }, [channelUuid, name, navigate, updateChannelName]);
   const handleDisband = useCallback(() => {
     return Modal.confirm({
       width: 320,
-      content: t('Disband the group?'),
+      content: t('Are you sure to delete this group?'),
       className: 'disband-group-modal',
       autoFocusButton: null,
       icon: null,
@@ -63,7 +63,7 @@ export default function EditGroupInfo() {
         try {
           await disbandGroup();
           navigate(`/chat-list`);
-          message.success('group disbanded');
+          message.success('Group deleted');
         } catch (e) {
           message.error('Failed to disband group');
           console.log('===Failed to disband group', e);
@@ -100,7 +100,7 @@ export default function EditGroupInfo() {
         </div>
         <div className="flex form-footer">
           <Button danger onClick={handleDisband}>
-            Disband
+            Delete
           </Button>
           <Button htmlType="submit" type="primary" disabled={disabled}>
             Save

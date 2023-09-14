@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { Modal, message } from 'antd';
 import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
-import { useGroupChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannel, useHideChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
 import { formatMessageList } from '../../utils';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ import CustomUpload from '../../components/CustomUpload';
 import { useEffectOnce } from 'react-use';
 import { useHandle } from '../useHandle';
 import ChatBoxHeader from '../components/ChatBoxHeader';
-// import CustomModal from 'pages/components/CustomModal';
+import CustomModal from 'pages/components/CustomModal';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -42,7 +42,7 @@ export default function ChatBox() {
   useEffectOnce(() => {
     init();
   });
-  // const hideChannel = useHideChannel();
+  const hideChannel = useHideChannel();
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!, true), [list, relationId]);
   const leaveGroup = useLeaveChannel();
@@ -130,20 +130,23 @@ export default function ChatBox() {
     ],
     [handleDeleteBox, handleGoGroupInfo, handleLeaveGroup, handleMute, handlePin, info?.mute, info?.pin],
   );
-  const handleSendMsgError = useCallback((e: any) => {
-    // if (`${e.code}` === '13108') {
-    //   CustomModal({
-    //     content: 'This group has been disbanded by the owner',
-    //     onOk: async () => {
-    //       await hideChannel(`${channelUuid}`);
-    //       navigate('/chat-list');
-    //     },
-    //   });
-    // } else {
-    message.error('Failed to send message');
-    console.log('===Failed to send message', e);
-    // }
-  }, []);
+  const handleSendMsgError = useCallback(
+    (e: any) => {
+      if (`${e.code}` === '13108') {
+        CustomModal({
+          content: `You can't send messages to this group because you are no longer in it.`,
+          onOk: async () => {
+            navigate('/chat-list');
+            hideChannel(`${channelUuid}`);
+          },
+        });
+      } else {
+        message.error('Failed to send message');
+        console.log('===Failed to send message', e);
+      }
+    },
+    [channelUuid, hideChannel, navigate],
+  );
   const inputMorePopList: PopDataProps[] = useMemo(
     () => [
       {

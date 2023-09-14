@@ -13,7 +13,7 @@ import PhotoSendModal, { IPreviewImage } from 'pages/IMChat/components/ImageSend
 export interface ICustomUploadProps {
   sendImage: (file: ImageMessageFileType) => Promise<UploadFileType>;
   onSuccess: () => void;
-  handleSendMsgError: (e: any) => any;
+  handleSendMsgError: (e: any) => void;
 }
 
 export default function CustomUpload({ sendImage, onSuccess, handleSendMsgError }: ICustomUploadProps) {

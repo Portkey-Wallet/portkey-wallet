@@ -1,4 +1,4 @@
-import im, { utils, MessageType, Message, TriggerMessageEventActionEnum } from '@portkey-wallet/im';
+import im, { utils, MessageType, Message, TriggerMessageEventActionEnum, ChannelStatusEnum } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { randomId } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
@@ -548,7 +548,7 @@ export const useSearchChannel = () => {
       cursor: '',
       maxResultCount: SEARCH_CHANNEL_LIMIT,
     });
-    return data?.list?.filter(ele => !!ele?.lastPostAt) || [];
+    return data?.list?.filter(ele => !!ele?.lastPostAt && ele?.status === ChannelStatusEnum.NORMAL) || [];
   }, []);
 };
 

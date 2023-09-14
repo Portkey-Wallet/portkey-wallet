@@ -42,6 +42,7 @@ import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/
 import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useNavigation } from '@react-navigation/native';
 import { sleep } from '@portkey-wallet/utils';
+import { ChainId } from '@portkey-wallet/types';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -55,6 +56,7 @@ export type RouterParams = {
   authenticationInfo?: AuthenticationInfo;
   approveParams?: ApproveParams;
   paymentSecurityDetail?: IPaymentSecurityItem;
+  targetChainId?: ChainId;
 };
 export default function GuardianApproval() {
   const {
@@ -69,6 +71,7 @@ export default function GuardianApproval() {
     authenticationInfo: _authenticationInfo,
     approveParams,
     paymentSecurityDetail,
+    targetChainId,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
@@ -104,9 +107,7 @@ export default function GuardianApproval() {
   const { t } = useLanguage();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
 
-  const getCurrentCAContract = useGetCurrentCAContract(
-    approvalType === ApprovalType.modifyTransferLimit ? paymentSecurityDetail?.chainId : undefined,
-  );
+  const getCurrentCAContract = useGetCurrentCAContract(targetChainId);
   const [authenticationInfo, setAuthenticationInfo] = useState<AuthenticationInfo>(_authenticationInfo || {});
   useEffectOnce(() => {
     const listener = myEvents.setAuthenticationInfo.addListener((item: AuthenticationInfo) => {
@@ -441,6 +442,7 @@ export default function GuardianApproval() {
                     isSuccess={isSuccess}
                     approvalType={approvalType}
                     authenticationInfo={authenticationInfo}
+                    targetChainId={targetChainId}
                   />
                 );
               })}

@@ -295,7 +295,7 @@ export default class DappMobileOperator extends Operator {
     const { params } = payload || {};
     const { symbol, amount, spender } = params?.paramsOption || {};
     // check approve input && check valid amount
-    if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN())
+    if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN() || ZERO.plus(amount).lte(0))
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
 
     const contractInfo = await this.getTokenContract(payload.chainId);
@@ -367,9 +367,13 @@ export default class DappMobileOperator extends Operator {
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
 
-        const { isSafe } = await this.securityCheck();
-        if (!isSafe) {
-          WalletSecurityOverlay.alert();
+        try {
+          const { isSafe } = await this.securityCheck();
+          if (!isSafe) {
+            WalletSecurityOverlay.alert();
+            return this.userDenied(eventName);
+          }
+        } catch (error) {
           return this.userDenied(eventName);
         }
 

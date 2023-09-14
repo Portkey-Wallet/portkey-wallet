@@ -25,3 +25,10 @@ export const DefaultChainId = 'AELF';
 export const OfficialWebsite = 'https://portkey.finance';
 
 export const ThirdParty = `https://openlogin-test.portkey.finance`;
+
+// TODO: test2 bridge
+export enum DappMap {
+  bridge = 'http://192.168.67.235:3000',
+}
+
+export const DAPP_WHITELIST: string[] = [DappMap.bridge];

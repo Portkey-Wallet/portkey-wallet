@@ -111,7 +111,7 @@ const ApproveModal = (props: SignModalPropsType) => {
   const onUseRecommendedValue = useCallback(() => {
     setErrorMessage('');
     if (LANG_MAX.lt(amount)) return onPressMax();
-    setSymbolNum(divDecimals(amount, decimals).valueOf());
+    setSymbolNum(divDecimals(amount, decimals).toFixed(decimals));
   }, [amount, decimals, onPressMax]);
 
   useEffectOnce(() => {

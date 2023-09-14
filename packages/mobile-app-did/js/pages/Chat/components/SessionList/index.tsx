@@ -119,7 +119,8 @@ export default function SessionList() {
         case ChannelStatusEnum.BE_REMOVED:
           hideChannel(item.channelUuid);
           ActionSheet.alert({
-            title: 'This group has been disbanded by the owner',
+            title: 'You have been removed by the group owner',
+
             buttons: [
               {
                 title: 'OK',
@@ -131,7 +132,7 @@ export default function SessionList() {
         case ChannelStatusEnum.DISBAND:
           hideChannel(item.channelUuid);
           ActionSheet.alert({
-            title: 'You have been removed by the group owner',
+            title: 'This group has been deleted by the owner',
             buttons: [
               {
                 title: 'OK',

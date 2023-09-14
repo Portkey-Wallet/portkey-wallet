@@ -36,7 +36,7 @@ const GroupInfoPage = () => {
   }, [members]);
 
   const isShowViewMoreButton = useMemo(() => {
-    return members?.length && members?.length > GROUP_INFO_MEMBER_SHOW_LIMITED;
+    return !!(members?.length && members?.length > GROUP_INFO_MEMBER_SHOW_LIMITED);
   }, [members?.length]);
 
   const disableRemoveButton = useMemo(() => {
@@ -118,7 +118,6 @@ const GroupInfoPage = () => {
               </TextL>
             </Touchable>
           )}
-
           {membersShowList &&
             membersShowList.map((item, index) => (
               <GroupInfoMemberItem

@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import { TextL, TextS } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
 import ChatsGroupDetailContent from '../components/ChatsGroupDetailContent';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
@@ -28,18 +28,16 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import FloatingActionButton from '../components/FloatingActionButton';
-import LottieLoading from 'components/LottieLoading';
 
 const ChatGroupDetailsPage = () => {
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
+  const { isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
   const { pin, mute, displayName } = useChannelItemInfo(currentChannelId || '') || {};
 
   const leaveGroup = useLeaveChannel();
-  const groupMemberCount = useMemo(() => groupInfo?.membersAmount, [groupInfo?.membersAmount]);
 
   const addMembers = useCallback(async () => {
     navigationService.navigate('AddMembersPage');
@@ -174,7 +172,7 @@ const ChatGroupDetailsPage = () => {
             <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500]}>
               {displayName}
             </TextL>
-            <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberInfo]}>
+            {/* <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberInfo]}>
               {groupMemberCount ? (
                 <TextS style={FontStyles.font2}>{groupMemberCount}</TextS>
               ) : (
@@ -183,14 +181,14 @@ const ChatGroupDetailsPage = () => {
                 </>
               )}
               <TextS style={FontStyles.font2}>{` member${groupMemberCount && groupMemberCount > 0 ? 's' : ''}`}</TextS>
-            </View>
+            </View> */}
           </View>
         </Touchable>
 
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [displayName, groupMemberCount, mute],
+    [displayName, mute],
   );
   return (
     <PageContainer

@@ -27,7 +27,7 @@ const EditGroupPage = () => {
 
   const onDisband = useCallback(() => {
     ActionSheet.alert({
-      title: 'Are you sure disband the group ?',
+      title: 'Are you sure delete the group ?',
       buttons: [
         {
           title: 'No',
@@ -39,7 +39,7 @@ const EditGroupPage = () => {
             try {
               Loading.show();
               await disbandGroup();
-              CommonToast.success('Group disbanded');
+              CommonToast.success('Group deleted');
               // TODO back to where
               navigationService.navigate('Tab');
             } catch (error) {

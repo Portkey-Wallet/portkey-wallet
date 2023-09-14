@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { IMStateType, UpdateChannelAttributeTypeEnum, UpdateGroupMemberAmountTypeEnum } from './type';
+import { IMStateType, UpdateChannelAttributeTypeEnum } from './type';
 import {
   removeChannel,
   nextChannelList,
@@ -21,7 +21,6 @@ import {
   removeChannelMembers,
   transferChannelOwner,
   addChannelMembers,
-  updateGroupMemberAmount,
 } from './actions';
 import { formatChannelList } from './util';
 
@@ -260,7 +259,6 @@ export const imSlice = createSlice({
               [channelId]: {
                 ...preChannelInfo,
                 members: newMembers,
-                membersAmount: newMembers.length,
               },
             },
           },
@@ -287,7 +285,6 @@ export const imSlice = createSlice({
               [channelId]: {
                 ...preChannelInfo,
                 members: newMembers,
-                membersAmount: newMembers.length,
               },
             },
           },
@@ -323,43 +320,11 @@ export const imSlice = createSlice({
               [channelId]: {
                 ...preChannelInfo,
                 members: newMembers,
-                membersAmount: newMembers.length,
               },
             },
           },
         };
       })
-      .addCase(updateGroupMemberAmount, (state, action) => {
-        const { network, channelId, type } = action.payload;
-        const preChannelInfo = state.groupInfoMapNetMap?.[network]?.[channelId];
-        if (!preChannelInfo) return state;
-        let newMembersAmount = preChannelInfo.membersAmount;
-        switch (type) {
-          case UpdateGroupMemberAmountTypeEnum.ADD:
-            newMembersAmount++;
-            break;
-          case UpdateGroupMemberAmountTypeEnum.REMOVE:
-            newMembersAmount--;
-            break;
-          default:
-            break;
-        }
-        if (newMembersAmount < 0) newMembersAmount = 0;
-        return {
-          ...state,
-          groupInfoMapNetMap: {
-            ...state.groupInfoMapNetMap,
-            [network]: {
-              ...state.groupInfoMapNetMap?.[network],
-              [channelId]: {
-                ...preChannelInfo,
-                membersAmount: newMembersAmount,
-              },
-            },
-          },
-        };
-      })
-
       .addCase(resetIm, (state, action) => {
         return {
           ...state,

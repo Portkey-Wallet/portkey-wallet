@@ -36,8 +36,3 @@ export interface IMStateType {
 export enum UpdateChannelAttributeTypeEnum {
   UPDATE_UNREAD_CHANNEL = 'updateUnreadChannel',
 }
-
-export enum UpdateGroupMemberAmountTypeEnum {
-  ADD = 'add',
-  REMOVE = 'remove',
-}

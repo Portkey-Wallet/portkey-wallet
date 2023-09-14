@@ -10,10 +10,10 @@ import { useTranslation } from 'react-i18next';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import ChatBoxTip from '../../components/ChatBoxTip';
 import CustomUpload from '../../components/CustomUpload';
-import CircleLoading from 'components/CircleLoading';
 import { useEffectOnce } from 'react-use';
 import { useHandle } from '../useHandle';
 import ChatBoxHeader from '../components/ChatBoxHeader';
+// import CustomModal from 'pages/components/CustomModal';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -42,6 +42,7 @@ export default function ChatBox() {
   useEffectOnce(() => {
     init();
   });
+  // const hideChannel = useHideChannel();
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!, true), [list, relationId]);
   const leaveGroup = useLeaveChannel();
@@ -73,13 +74,13 @@ export default function ChatBox() {
   const handleLeaveGroup = useCallback(() => {
     return Modal.confirm({
       width: 320,
-      content: t('Leave the group?'),
+      content: t('Are you sure to leave this group?'),
       className: 'leave-group-modal',
       autoFocusButton: null,
       icon: null,
       centered: true,
-      okText: t('Confirm'),
-      cancelText: t('Cancel'),
+      okText: t('Yes'),
+      cancelText: t('No'),
       onOk: async () => {
         try {
           await leaveGroup(`${channelUuid}`);
@@ -129,6 +130,20 @@ export default function ChatBox() {
     ],
     [handleDeleteBox, handleGoGroupInfo, handleLeaveGroup, handleMute, handlePin, info?.mute, info?.pin],
   );
+  const handleSendMsgError = useCallback((e: any) => {
+    // if (`${e.code}` === '13108') {
+    //   CustomModal({
+    //     content: 'This group has been disbanded by the owner',
+    //     onOk: async () => {
+    //       await hideChannel(`${channelUuid}`);
+    //       navigate('/chat-list');
+    //     },
+    //   });
+    // } else {
+    message.error('Failed to send message');
+    console.log('===Failed to send message', e);
+    // }
+  }, []);
   const inputMorePopList: PopDataProps[] = useMemo(
     () => [
       {
@@ -137,6 +152,7 @@ export default function ChatBox() {
           <CustomUpload
             sendImage={sendImage}
             onSuccess={() => (messageRef.current.scrollTop = messageRef.current.scrollHeight)}
+            handleSendMsgError={handleSendMsgError}
           />
         ),
       },
@@ -147,7 +163,7 @@ export default function ChatBox() {
         onClick: () => setShowBookmark(true),
       },
     ],
-    [sendImage],
+    [handleSendMsgError, sendImage],
   );
   const hidePop = useCallback((e: any) => {
     try {
@@ -165,11 +181,11 @@ export default function ChatBox() {
       try {
         await sendMessage(v.trim() ?? '');
         messageRef.current.scrollTop = messageRef.current.scrollHeight;
-      } catch (e) {
-        message.error('Failed to send message');
+      } catch (e: any) {
+        handleSendMsgError(e);
       }
     },
-    [sendMessage],
+    [handleSendMsgError, sendMessage],
   );
   const handleGoProfile = useCallback(
     (item: MessageType) => {
@@ -181,25 +197,17 @@ export default function ChatBox() {
   );
   const renderTitle = useMemo(
     () => (
-      <div className="title-group-content flex-center">
-        <div className="group-icon flex-center" onClick={handleGoGroupInfo}>
-          <CustomSvg type="GroupAvatar" />
-        </div>
-        <div>
-          <div className="flex title-top">
-            <div className="title-name" onClick={handleGoGroupInfo}>
-              {groupInfo?.name || ' '}
-            </div>
-            <div>{info?.mute && <CustomSvg type="Mute" />}</div>
+      <div className="flex title-element">
+        <div className="title-content flex-center" onClick={handleGoGroupInfo}>
+          <div className="group-icon flex-center">
+            <CustomSvg type="GroupAvatar" />
           </div>
-          <div className="title-member flex">
-            {groupInfo?.membersAmount ? <span>{groupInfo?.membersAmount}</span> : <CircleLoading />}
-            {typeof groupInfo?.membersAmount === 'number' && groupInfo?.membersAmount > 1 ? 'members' : 'member'}
-          </div>
+          <div className="title-name">{groupInfo?.name || ' '}</div>
         </div>
+        <div>{info?.mute && <CustomSvg type="Mute" />}</div>
       </div>
     ),
-    [handleGoGroupInfo, groupInfo?.name, groupInfo?.membersAmount, info?.mute],
+    [handleGoGroupInfo, groupInfo?.name, info?.mute],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);

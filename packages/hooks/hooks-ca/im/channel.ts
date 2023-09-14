@@ -1,4 +1,4 @@
-import im, { utils, MessageType, Message, TriggerMessageEventActionEnum } from '@portkey-wallet/im';
+import im, { utils, MessageType, Message, TriggerMessageEventActionEnum, ChannelStatusEnum } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { randomId } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
@@ -233,31 +233,19 @@ export const useDeleteMessage = (channelId: string) => {
   );
 };
 
-export const useChannel = (channelId: string) => {
+export const useChannelMessageList = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
-  const dispatch = useAppCommonDispatch();
-
-  const relationId = useRelationId();
   const list = useCurrentChannelMessageList(channelId);
   const listRef = useLatestRef(list);
-
-  const muteChannel = useMuteChannel();
-  const pinChannel = usePinChannel();
-  const hideChannel = useHideChannel();
-  const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
-  const deleteMessage = useDeleteMessage(channelId);
-  const info = useChannelItemInfo(channelId);
-  const isStranger = useIsStranger(info?.toRelationId || '');
-
-  const [hasNext, setHasNext] = useState(false);
-
+  const isNextLoadingRef = useRef(false);
   const [loading, setLoading] = useState(false);
-  const isNextLoading = useRef(false);
+  const [hasNext, setHasNext] = useState(true);
+  const dispatch = useAppCommonDispatch();
 
   const next = useCallback(
     async (isInit = false) => {
-      if (isNextLoading.current) return;
-      isNextLoading.current = true;
+      if (isNextLoadingRef.current) return;
+      isNextLoadingRef.current = true;
 
       let maxCreateAt = Date.now();
       if (!isInit) {
@@ -312,7 +300,7 @@ export const useChannel = (channelId: string) => {
         throw error;
       } finally {
         setLoading(false);
-        isNextLoading.current = false;
+        isNextLoadingRef.current = false;
       }
     },
     [channelId, dispatch, listRef, networkType],
@@ -321,6 +309,30 @@ export const useChannel = (channelId: string) => {
   const init = useCallback(() => {
     return next(true);
   }, [next]);
+
+  return {
+    list,
+    next,
+    hasNext,
+    init,
+    loading,
+  };
+};
+
+export const useChannel = (channelId: string) => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+
+  const relationId = useRelationId();
+
+  const muteChannel = useMuteChannel();
+  const pinChannel = usePinChannel();
+  const hideChannel = useHideChannel();
+  const { sendChannelMessage, sendChannelImage } = useSendChannelMessage();
+  const deleteMessage = useDeleteMessage(channelId);
+  const info = useChannelItemInfo(channelId);
+  const isStranger = useIsStranger(info?.toRelationId || '');
+  const { list, next, hasNext, init, loading } = useChannelMessageList(channelId);
 
   const connectHandler = useCallback(
     async (e: any) => {
@@ -388,6 +400,7 @@ export const useChannel = (channelId: string) => {
     }
 
     return () => {
+      console.log('exit channel');
       removeMsgObserver();
       removeConnectObserver();
 
@@ -535,7 +548,7 @@ export const useSearchChannel = () => {
       cursor: '',
       maxResultCount: SEARCH_CHANNEL_LIMIT,
     });
-    return data?.list?.filter(ele => !!ele?.lastPostAt) || [];
+    return data?.list?.filter(ele => !!ele?.lastPostAt && ele?.status === ChannelStatusEnum.NORMAL) || [];
   }, []);
 };
 

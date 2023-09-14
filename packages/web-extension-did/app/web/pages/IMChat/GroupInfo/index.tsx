@@ -1,4 +1,4 @@
-import { useGroupChannelInfo, useLeaveChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button, Modal, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -13,6 +13,7 @@ import './index.less';
 const GroupInfo = () => {
   const { channelUuid } = useParams();
   const leaveGroup = useLeaveChannel();
+  const myRelationId = useRelationId();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const memberLen = useMemo(
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
@@ -43,11 +44,15 @@ const GroupInfo = () => {
   }, [channelUuid, leaveGroup, navigate, t]);
   const handleGoProfile = useCallback(
     (item: ChannelMemberInfo) => {
-      navigate('/setting/contacts/view', {
-        state: { relationId: item.relationId, from: 'chat-group-info', channelUuid },
-      });
+      if (item.relationId === myRelationId) {
+        navigate('/setting/wallet/wallet-name', { state: { from: 'chat-group-info', channelUuid } });
+      } else {
+        navigate('/setting/contacts/view', {
+          state: { relationId: item.relationId, from: 'chat-group-info', channelUuid },
+        });
+      }
     },
-    [navigate, channelUuid],
+    [myRelationId, navigate, channelUuid],
   );
   useEffect(() => {
     refresh();

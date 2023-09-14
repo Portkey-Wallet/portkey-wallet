@@ -202,12 +202,12 @@ export default function ChatBox() {
           <div className="group-icon flex-center">
             <CustomSvg type="GroupAvatar" />
           </div>
-          <div className="title-name">{groupInfo?.name || ' '}</div>
+          <div className="title-name">{groupInfo?.name || info?.displayName || ''}</div>
         </div>
         <div>{info?.mute && <CustomSvg type="Mute" />}</div>
       </div>
     ),
-    [handleGoGroupInfo, groupInfo?.name, info?.mute],
+    [handleGoGroupInfo, groupInfo?.name, info?.displayName, info?.mute],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);

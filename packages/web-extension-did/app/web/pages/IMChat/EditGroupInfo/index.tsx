@@ -52,7 +52,7 @@ export default function EditGroupInfo() {
   const handleDisband = useCallback(() => {
     return Modal.confirm({
       width: 320,
-      content: t('Are you sure to delete this group?'),
+      content: t('Are you sure to leave and delete this group?'),
       className: 'disband-group-modal',
       autoFocusButton: null,
       icon: null,
@@ -100,7 +100,7 @@ export default function EditGroupInfo() {
         </div>
         <div className="flex form-footer">
           <Button danger onClick={handleDisband}>
-            Delete
+            Leave and Delete
           </Button>
           <Button htmlType="submit" type="primary" disabled={disabled}>
             Save

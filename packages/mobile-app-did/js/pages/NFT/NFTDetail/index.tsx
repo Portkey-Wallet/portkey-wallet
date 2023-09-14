@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, StatusBar, View, Image, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, StatusBar, View, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
@@ -41,7 +41,7 @@ interface NftItemType {
   };
 }
 
-const NFTDetail: React.FC<TokenDetailProps> = props => {
+const NFTDetail: React.FC<TokenDetailProps> = () => {
   const { t } = useLanguage();
 
   const nftItem = useRouterParams<NftItemType>();

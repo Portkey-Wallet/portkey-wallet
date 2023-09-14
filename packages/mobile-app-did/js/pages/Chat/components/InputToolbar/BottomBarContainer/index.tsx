@@ -85,7 +85,7 @@ export function BottomBarContainer({
     } catch (error: any) {
       if (error?.code === '13108') {
         hideChannel();
-        ActionSheet.alert({
+        return ActionSheet.alert({
           title: `You can't send messages to this group because you are no longer in it.`,
           buttons: [
             {

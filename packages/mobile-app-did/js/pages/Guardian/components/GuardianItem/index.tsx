@@ -36,6 +36,7 @@ import {
   APPROVAL_TO_OPERATION_MAP,
   APPROVAL_TO_VERIFICATION_MAP,
 } from '@portkey-wallet/constants/constants-ca/verifier';
+import { ChainId } from '@portkey-wallet/types';
 
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
 
@@ -50,6 +51,7 @@ interface GuardianAccountItemProps {
   isSuccess?: boolean;
   approvalType?: ApprovalType;
   authenticationInfo?: AuthenticationInfo;
+  targetChainId?: ChainId;
 }
 
 function GuardianItemButton({
@@ -60,6 +62,7 @@ function GuardianItemButton({
   approvalType,
   disabled,
   authenticationInfo,
+  targetChainId,
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
@@ -98,6 +101,7 @@ function GuardianItemButton({
           verifierId: guardianInfo.guardianItem.verifier?.id,
           chainId: originChainId,
           operationType,
+          targetChainId,
         },
       });
       if (req.verifierSessionId) {
@@ -110,6 +114,7 @@ function GuardianItemButton({
         navigationService.push('VerifierDetails', {
           ...guardianInfo,
           requestCodeResult: req,
+          targetChainId,
         });
       } else {
         throw new Error('send fail');
@@ -170,6 +175,7 @@ function GuardianItemButton({
         navigationService.push('VerifierDetails', {
           ...guardianInfo,
           requestCodeResult,
+          targetChainId,
           startResend: true,
         });
         break;

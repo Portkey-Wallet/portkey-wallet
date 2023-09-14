@@ -16,7 +16,6 @@ const MessageList: FC<IMessageListProps> = ({
   loading = false,
   ...props
 }) => {
-  // const [scrollBottom, setScrollBottom] = useState(0);
   const scrollBottomRef = useRef<number>(0);
   const [_downButton, setDownButton] = useState(false);
   const prevProps = useRef(props);

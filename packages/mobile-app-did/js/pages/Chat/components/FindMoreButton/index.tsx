@@ -15,7 +15,7 @@ export default function FindMoreButton() {
       style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]}
       onPress={() => navigationService.navigate('FindMorePeoplePage')}>
       <Svg size={pTd(20)} icon="chat-find-more" color={defaultColors.font4} />
-      <TextL style={[FontStyles.font4, GStyles.marginLeft(pTd(16))]}>Find More</TextL>
+      <TextL style={[FontStyles.font4, GStyles.marginLeft(pTd(16))]}>Find People</TextL>
     </Touchable>
   );
 }

@@ -194,7 +194,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
         <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
           <CommonInput
             value={keyWord}
-            placeholder={t('Name or address')}
+            placeholder={t('Name/address')}
             onChangeText={value => {
               onChangeKeywords(value);
             }}

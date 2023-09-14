@@ -82,7 +82,7 @@ export function BottomBarContainer({
     try {
       scrollToBottom?.();
       typeof text === 'string' && (await sendChannelMessage(text.trim()));
-    } catch (error: { code: string }) {
+    } catch (error: any) {
       if (error?.code === '13108') {
         hideChannel();
         ActionSheet.alert({

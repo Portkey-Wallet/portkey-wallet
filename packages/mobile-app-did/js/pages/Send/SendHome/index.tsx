@@ -59,7 +59,6 @@ const SendHome: React.FC = () => {
   const pin = usePin();
 
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
-
   const [, requestQrPermission] = useQrScanPermission();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

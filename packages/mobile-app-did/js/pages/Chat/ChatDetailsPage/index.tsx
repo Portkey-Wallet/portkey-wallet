@@ -208,7 +208,7 @@ const ChatDetailsPage = () => {
         </Touchable>
       }>
       <FloatingActionButton shouldShowFirstTime={isStranger} onPressButton={addContact} />
-      <ChatsDetailContent isGroupChat={false} />
+      <ChatsDetailContent />
     </PageContainer>
   );
 };

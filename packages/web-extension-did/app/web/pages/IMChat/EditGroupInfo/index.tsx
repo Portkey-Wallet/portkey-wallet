@@ -1,4 +1,4 @@
-import { useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelName } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button, Form, Input, Modal, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -18,31 +18,41 @@ export interface IGroupInfoProps {
 }
 export default function EditGroupInfo() {
   const [form] = Form.useForm();
-  const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
-  const [name, setName] = useState('');
-  const { t } = useTranslation();
   const { channelUuid } = useParams();
-  console.log(channelUuid);
-  const relationId = useRelationId();
-  console.log('relationId', relationId);
+  const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
+  const disbandGroup = useDisbandChannel(`${channelUuid}`);
+  const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
+  const [name, setName] = useState<string>();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
-  const handleInputValueChange = useCallback((v: string) => {
-    setValidName({ validateStatus: '', errorMsg: '' });
-    if (!v) {
-      setDisabled(true);
-    } else {
-      setName(v);
-      setDisabled(false);
+  const updateChannelName = useUpdateChannelName();
+  const handleInputValueChange = useCallback(
+    (v: string) => {
+      setValidName({ validateStatus: '', errorMsg: '' });
+      if (!v.trim()) {
+        setDisabled(true);
+      } else {
+        setName(v);
+        setDisabled(v === groupInfo?.name);
+      }
+    },
+    [groupInfo?.name],
+  );
+  const onFinish = useCallback(async () => {
+    try {
+      await updateChannelName(`${channelUuid}`, `${name?.trim()}`);
+      message.success('Group name update');
+      navigate(-1);
+    } catch (error) {
+      message.error('Failed to update group name');
+      console.log('===Failed to update group name', error);
     }
-  }, []);
-  const onFinish = useCallback(() => {
-    // TODO
-  }, []);
+  }, [channelUuid, name, navigate, updateChannelName]);
   const handleDisband = useCallback(() => {
     return Modal.confirm({
       width: 320,
-      content: t('Disband the group?'),
+      content: t('Are you sure to delete this group?'),
       className: 'disband-group-modal',
       autoFocusButton: null,
       icon: null,
@@ -51,30 +61,32 @@ export default function EditGroupInfo() {
       cancelText: t('No'),
       onOk: async () => {
         try {
-          //TODO await disband();
+          await disbandGroup();
           navigate(`/chat-list`);
-          message.success('group disbanded');
+          message.success('Group deleted');
         } catch (e) {
           message.error('Failed to disband group');
           console.log('===Failed to disband group', e);
         }
       },
     });
-  }, [navigate, t]);
+  }, [disbandGroup, navigate, t]);
   return (
     <div className="group-info-edit-page flex-column">
-      <SettingHeader
-        title="Edit Group"
-        leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
-        rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
-      />
+      <div className="group-info-edit-header">
+        <SettingHeader
+          title="Edit Group"
+          leftCallBack={() => navigate(`/chat-group-info/${channelUuid}`)}
+          rightElement={<CustomSvg type="Close2" onClick={() => navigate(`/chat-group-info/${channelUuid}`)} />}
+        />
+      </div>
       <Form
         form={form}
         autoComplete="off"
         layout="vertical"
-        className="flex-column add-contact-form"
-        // initialValues={}
+        className="flex-column-between edit-group-info-form"
         requiredMark={false}
+        initialValues={{ name: groupInfo?.name }}
         onFinish={onFinish}>
         <div className="form-content">
           <FormItem name="name" label="Group Name" validateStatus={validName.validateStatus} help={validName.errorMsg}>
@@ -82,13 +94,13 @@ export default function EditGroupInfo() {
               value={name}
               placeholder="Enter name"
               onChange={(e) => handleInputValueChange(e.target.value)}
-              maxLength={16}
+              maxLength={40}
             />
           </FormItem>
         </div>
-        <div className="flex form-btn-edit">
+        <div className="flex form-footer">
           <Button danger onClick={handleDisband}>
-            Disband
+            Delete
           </Button>
           <Button htmlType="submit" type="primary" disabled={disabled}>
             Save

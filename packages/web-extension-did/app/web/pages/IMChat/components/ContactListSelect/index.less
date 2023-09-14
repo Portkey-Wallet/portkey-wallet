@@ -4,7 +4,7 @@
   .adm-list-body {
     border-top: 0;
   }
-  .adm-list {
+  &.adm-list {
     --border-top: solid 1px @border-2;
     --border-bottom: solid 1px @border-2;
   }
@@ -12,7 +12,6 @@
     padding-left: 24px;
     border-top: 1px solid @border-2;
     &:has(.im-disable) {
-      opacity: 0.3;
       pointer-events: none;
     }
   }

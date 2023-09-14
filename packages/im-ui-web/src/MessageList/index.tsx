@@ -55,6 +55,13 @@ const MessageList: FC<IMessageListProps> = ({
     [props],
   );
 
+  const onClickAvatar: MessageListEvent = useCallback(
+    (item, index, event) => {
+      if (props.onClickAvatar instanceof Function) props.onClickAvatar(item, index, event);
+    },
+    [props],
+  );
+
   const onScroll = useCallback(
     (e: React.UIEvent<HTMLElement>): void => {
       const bottom = getBottom(e.currentTarget);
@@ -100,24 +107,26 @@ const MessageList: FC<IMessageListProps> = ({
 
   const renderMessageItem = useMemo(() => {
     let prev: MessageType | undefined = undefined;
+    let isShowMargin = false;
+    let hiddenAvatar = false;
     return props.dataSource.map((x, i: number) => {
-      let isShowMargin = false;
-      if (x.type === 'system' || prev?.type === 'system') {
-        isShowMargin = true;
-      } else {
-        isShowMargin = prev?.position !== x.position;
+      hiddenAvatar = x?.title === prev?.title;
+      isShowMargin = prev?.position !== x.position;
+      if (x.type === 'system' && prev?.type === 'system') {
+        isShowMargin = x.subType !== prev?.subType;
       }
       prev = x;
       return (
         <MessageItem
           {...(x as MessageType)}
           key={x.key}
-          className={clsx([isShowMargin && 'show-margin'])}
+          className={clsx([isShowMargin && 'show-margin', hiddenAvatar && 'hidden-avatar'])}
           onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => onDeleteMsg(x, i, e)}
+          onClickAvatar={(e: React.MouseEvent<HTMLElement>) => onClickAvatar(x, i, e)}
         />
       );
     });
-  }, [onDeleteMsg, props.dataSource]);
+  }, [onClickAvatar, onDeleteMsg, props.dataSource]);
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>

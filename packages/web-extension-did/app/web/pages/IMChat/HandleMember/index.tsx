@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { ChangeEvent, useCallback, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -16,69 +16,85 @@ import './index.less';
 export default function HandleMember() {
   const { channelUuid, operate } = useParams();
   const { t } = useTranslation();
-  const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
   const allChatContact = useChatContactFlatList();
   const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
+  const isAdd = useMemo(() => operate === 'add', [operate]);
   const addMemberApi = useAddChannelMembers(`${channelUuid}`);
   const removeMemberApi = useRemoveChannelMembers(`${channelUuid}`);
   const selectedContactRef = useRef<ChannelMemberInfo[]>([]);
-  const formatChatContact: IContactItemSelectProps[] = useMemo(
-    () =>
-      allChatContact.map((m) => ({
-        ...m,
-        selected: groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId),
-        disable: groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId),
-      })),
-    [allChatContact, groupInfo?.members],
-  );
-  const allContactRef = useRef<IContactItemSelectProps[]>(formatChatContact);
-  const [showMemberList, setShowMemberList] = useState<IContactItemSelectProps[]>(formatChatContact);
-  const isAdd = useMemo(() => operate === 'add', [operate]);
-  const handleSearch = useCallback((keyword: string) => {
-    const res: IContactItemSelectProps[] = [];
-    if (keyword.length <= 16) {
-      const _v = keyword.trim().toLowerCase();
-      allContactRef.current.forEach((m) => {
-        if (m?.caHolderInfo?.walletName) {
-          if (
-            m?.name?.trim().toLowerCase().includes(_v) ||
-            m?.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v)
-          ) {
-            res.push(m);
-          }
-        } else {
-          if (m?.name?.trim().toLowerCase().includes(_v) || m?.imInfo?.name?.trim().toLowerCase().includes(_v)) {
-            res.push(m);
-          }
-        }
+  const formatAllChatContact: IContactItemSelectProps[] = useMemo(() => {
+    if (isAdd) {
+      return allChatContact.map((m) => {
+        const isMember = groupInfo?.members.some((item) => item.relationId === m.imInfo?.relationId);
+        return {
+          ...m,
+          selected: isMember,
+          disable: isMember,
+        };
       });
     } else {
-      // Portkey ID search
-      allContactRef.current.forEach((m) => {
-        if (m?.imInfo?.portkeyId?.trim() === keyword.trim()) {
-          res.push(m);
-        }
-      });
-      // Address search
-      let suffix = '';
-      if (keyword.includes('_')) {
-        const arr = keyword.split('_');
-        if (!isAelfAddress(arr[arr.length - 1])) {
-          suffix = arr[arr.length - 1];
-        }
-      }
-      keyword = getAelfAddress(keyword);
-      allContactRef.current.forEach((m) => {
-        if (m.addresses.some((ads) => ads.address === keyword && (!suffix || suffix === ads.chainId))) {
-          res.push(m);
-        }
-      });
+      return (
+        groupInfo?.members
+          .filter((m) => !m.isAdmin)
+          .map((m) => ({
+            name: m.name,
+            id: m.relationId,
+            index: m.name.slice(0, 1),
+            avatar: '',
+          })) || []
+      );
     }
-    setShowMemberList(res);
-  }, []);
+  }, [allChatContact, groupInfo?.members, isAdd]);
+  const allContactRef = useRef<IContactItemSelectProps[]>(formatAllChatContact);
+  const [showMemberList, setShowMemberList] = useState<IContactItemSelectProps[]>(formatAllChatContact);
+
+  const handleSearch = useCallback(
+    (keyword: string) => {
+      keyword = keyword.trim();
+      let res: IContactItemSelectProps[] = [];
+      if (isAdd) {
+        if (keyword.length <= 16) {
+          // name search
+          const _v = keyword.toLowerCase();
+          res = allContactRef.current.filter((m) => {
+            if (m?.caHolderInfo?.walletName) {
+              return (
+                m?.name?.trim().toLowerCase().includes(_v) ||
+                m?.caHolderInfo?.walletName?.trim().toLowerCase().includes(_v)
+              );
+            } else {
+              return m?.name?.trim().toLowerCase().includes(_v) || m?.imInfo?.name?.trim().toLowerCase().includes(_v);
+            }
+          });
+        } else {
+          // Portkey ID search
+          res.push(...allContactRef.current.filter((m) => m?.imInfo?.portkeyId?.trim() === keyword.trim()));
+          // Address search
+          let suffix = '';
+          if (keyword.includes('_')) {
+            const arr = keyword.split('_');
+            if (!isAelfAddress(arr[arr.length - 1])) {
+              suffix = arr[arr.length - 1];
+            }
+          }
+          const _v = getAelfAddress(keyword);
+          res.push(
+            ...allContactRef.current.filter((m) =>
+              m?.addresses?.some((ads) => ads.address === _v && (!suffix || suffix === ads.chainId)),
+            ),
+          );
+        }
+      } else {
+        const _v = keyword.toLowerCase();
+        res = allContactRef.current.filter((m) => m.name?.toLowerCase().includes(_v));
+      }
+      setShowMemberList(res);
+    },
+    [isAdd],
+  );
   const searchDebounce = useDebounceCallback(
     (params) => {
       const _v = params.trim();
@@ -100,7 +116,7 @@ export default function HandleMember() {
     } else {
       return Modal.confirm({
         width: 320,
-        content: t('Remove the group?'),
+        content: t('Remove these members from the group?'),
         className: 'remove-group-modal',
         autoFocusButton: null,
         icon: null,
@@ -119,7 +135,7 @@ export default function HandleMember() {
       });
     }
   }, [addMemberApi, isAdd, navigate, removeMemberApi, t]);
-  const clickItem = useCallback(
+  const clickAddItem = useCallback(
     (item: IContactItemSelectProps) => {
       const target = selectedContactRef?.current || [];
       if (target?.some((m) => m.relationId === item.imInfo?.relationId)) {
@@ -127,7 +143,7 @@ export default function HandleMember() {
       } else {
         target.push({
           isAdmin: false,
-          name: item.name,
+          name: item.name || '',
           relationId: item.imInfo?.relationId || '',
           avatar: '',
         });
@@ -153,13 +169,55 @@ export default function HandleMember() {
     },
     [showMemberList],
   );
-  useEffect(() => {
-    setFilterWord(state?.search ?? '');
-    handleSearch(state?.search ?? '');
-  }, [handleSearch, state?.search]);
-
+  const clickRemoveItem = useCallback(
+    (item: IContactItemSelectProps) => {
+      const target = selectedContactRef?.current || [];
+      if (target?.some((m) => m.relationId === item.id)) {
+        selectedContactRef.current = target.filter((m) => m.relationId !== item.id);
+      } else {
+        target.push({
+          isAdmin: false,
+          name: item.name || '',
+          relationId: item.id || '',
+          avatar: '',
+        });
+        selectedContactRef.current = target;
+      }
+      const _v = showMemberList.map((m) => {
+        if (m.id === item.id) {
+          return {
+            ...m,
+            selected: !m.selected,
+          };
+        } else {
+          return m;
+        }
+      });
+      setShowMemberList(_v);
+      allContactRef.current.forEach((m) => {
+        if (m.id === item.id) {
+          m.selected = !m.selected;
+        }
+      });
+      setDisabled(!selectedContactRef?.current?.length);
+    },
+    [showMemberList],
+  );
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const _value = e.target.value;
+      if (_value) {
+        setFilterWord(_value);
+        searchDebounce(_value);
+      } else {
+        handleSearch(_value);
+        setFilterWord(_value);
+      }
+    },
+    [handleSearch, searchDebounce],
+  );
   return (
-    <div className="handle-member-page flex-column">
+    <div className="handle-member-page flex-column-between">
       <div className="handle-member-top">
         <SettingHeader
           title={t(`${isAdd ? 'Add' : 'Remove'} Members`)}
@@ -170,26 +228,24 @@ export default function HandleMember() {
           overlay={<></>}
           value={filterWord}
           inputProps={{
-            onChange: (e) => {
-              const _value = e.target.value.trim();
-              setFilterWord(_value);
-              searchDebounce(_value);
-            },
+            onChange: handleInputChange,
             placeholder: 'Search',
           }}
         />
       </div>
-      <div className="member-list-container">
-        {showMemberList.length !== 0 ? (
-          <ContactListSelect list={showMemberList} clickItem={clickItem} />
-        ) : (
-          <div className="empty">{filterWord ? 'No search found' : 'No contact result'}</div>
-        )}
-      </div>
-      <div className="handle-member-btn flex-center" onClick={handleOperate}>
-        <Button disabled={disabled} type="primary">
-          {isAdd ? 'Add' : 'Remove'}
-        </Button>
+      <div className="handle-member-body flex-column-between">
+        <div className="member-list-container">
+          {showMemberList.length !== 0 ? (
+            <ContactListSelect list={showMemberList} clickItem={isAdd ? clickAddItem : clickRemoveItem} />
+          ) : (
+            <div className="flex-center member-list-empty">{filterWord ? 'No contact result' : 'No contact'}</div>
+          )}
+        </div>
+        <div className="handle-member-btn flex-center" onClick={handleOperate}>
+          <Button disabled={disabled} type="primary">
+            {isAdd ? 'Add' : 'Remove'}
+          </Button>
+        </div>
       </div>
     </div>
   );

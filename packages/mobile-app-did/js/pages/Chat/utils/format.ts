@@ -32,8 +32,6 @@ export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
           break;
         case 'SYS':
           msg.system = true;
-          // TODO: system message
-          msg.text = 'system test ';
           break;
         default: {
           msg.messageType = 'NOT_SUPPORTED';

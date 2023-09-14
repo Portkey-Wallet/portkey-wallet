@@ -3,40 +3,38 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import GroupMemberItem from '../components/GroupMemberItem';
+import GroupMemberItem, { GroupMemberItemType } from '../components/GroupMemberItem';
 import CommonInput from 'components/CommonInput';
 import useDebounce from 'hooks/useDebounce';
 import CommonToast from 'components/CommonToast';
 import CommonButton from 'components/CommonButton';
 import NoData from 'components/NoData';
 import Loading from 'components/Loading';
-const memberList = [
-  { name: '11', id: '1111' },
-  { name: '222', id: '2222' },
-];
+import { useAddChannelMembers, useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useCurrentChannelId } from '../context/hooks';
+import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
+import { BGStyles } from 'assets/theme/styles';
+import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import navigationService from 'utils/navigationService';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const AddMembersPage = () => {
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo } = useGroupChannelInfo(currentChannelId || '');
+  const { members = [] } = groupInfo || {};
+  const addMembers = useAddChannelMembers(currentChannelId || '');
+
   const [keyword, setKeyword] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
   const debounceKeyword = useDebounce(keyword, 800);
 
-  const [filterMemberList, setFilterMemberList] = useState(memberList);
-  const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, string>>(new Map());
+  const searchContactList = useLocalContactSearch();
+  const [filterMemberList, setFilterMemberList] = useState<ContactItemType[]>([]);
+  const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, GroupMemberItemType>>(new Map());
+  const [memberRelationIdMap, setMemberRelationIdMap] = useState<{ [id: string]: string }>({});
 
-  useEffect(() => {
-    try {
-      setIsSearching(true);
-      // TODO: fetch
-    } catch (error) {
-      CommonToast.failError(error);
-    } finally {
-      setIsSearching(true);
-    }
-  }, [debounceKeyword]);
-
-  const onPressItem = useCallback((id: string) => {
-    console.log('id', id);
-
+  const onPressItem = useCallback((id: string, item?: GroupMemberItemType) => {
+    if (!item) return;
     setSelectedMemberMap(pre => {
       if (pre.has(id)) {
         const newMap = new Map(pre);
@@ -44,24 +42,50 @@ const AddMembersPage = () => {
         return newMap;
       } else {
         const newMap = new Map(pre);
-        newMap.set(id, id);
+        newMap.set(id, item);
         return newMap;
       }
     });
   }, []);
 
-  const onAdd = useCallback(() => {
-    //TODO: save
+  const onAdd = useCallback(async () => {
     try {
       Loading.show();
-      const list = Array.from(selectedMemberMap.keys());
-      console.log('list', list);
+      const list = Array.from(selectedMemberMap.values()).map(ele => ({
+        ...ele,
+        name: ele.title,
+        isAdmin: false,
+        avatar: '',
+      }));
+      await addMembers(list);
+      navigationService.goBack();
     } catch (error) {
       CommonToast.failError(error);
     } finally {
       Loading.hide();
     }
-  }, [selectedMemberMap]);
+  }, [addMembers, selectedMemberMap]);
+
+  useEffect(() => {
+    try {
+      const { contactFilterList } = searchContactList(debounceKeyword, ContactsTab.Chats);
+      setFilterMemberList(contactFilterList);
+      console.log('contactFilterList', contactFilterList);
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+  }, [debounceKeyword, members, searchContactList]);
+
+  useEffectOnce(() => {
+    setMemberRelationIdMap(preMap => {
+      const idMap: { [id: string]: string } = {};
+      members.forEach(ele => {
+        idMap[ele.relationId] = ele.relationId;
+      });
+
+      return { ...preMap, ...idMap };
+    });
+  });
 
   return (
     <PageContainer
@@ -81,16 +105,23 @@ const AddMembersPage = () => {
       </View>
       <FlatList
         data={filterMemberList}
-        // TODO: any Type
-        extraData={(item: any) => item.id}
+        extraData={(item: ContactItemType) => item.imInfo?.relationId}
         ListEmptyComponent={
-          debounceKeyword ? <NoData noPic message="No search found" /> : <NoData noPic message="No Member" />
+          debounceKeyword ? (
+            <NoData noPic message="No search found" style={BGStyles.bg4} />
+          ) : (
+            <NoData noPic message="No Member" style={BGStyles.bg4} />
+          )
         }
         renderItem={({ item }) => (
           <GroupMemberItem
+            disabled={!!memberRelationIdMap[item.imInfo?.relationId || '']}
             key={item.id}
-            selected={!!selectedMemberMap.has(item.id)}
-            item={item}
+            selected={!!selectedMemberMap.has(item.imInfo?.relationId || '')}
+            item={{
+              title: item.name || item.caHolderInfo?.walletName || item.imInfo?.name || '',
+              relationId: item.imInfo?.relationId || '',
+            }}
             onPress={onPressItem}
           />
         )}

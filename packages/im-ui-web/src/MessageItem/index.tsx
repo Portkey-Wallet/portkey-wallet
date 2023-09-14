@@ -14,10 +14,22 @@ const MessageItem: React.FC<MessageType> = ({ className, ...props }) => {
   );
   return (
     <div key={props.key} className={clsx('portkey-message-item', 'flex', customClass, className)}>
-      {props.type !== 'system' && props.showAvatar && <Avatar {...props} />}
+      {props.type !== 'system' && props.showAvatar && (
+        <Avatar {...props} onClick={(e: React.MouseEvent<HTMLElement>) => props?.onClickAvatar?.(e)} />
+      )}
       {props.type === 'system' && <SystemMessage {...props} />}
-      {props.type === 'text' && <TextMessage {...props} />}
-      {props.type === 'image' && <ImageMessage {...props} />}
+      {props.type === 'text' && (
+        <div className="flex-column">
+          {props.showAvatar && <div className="message-item-form-name">{props.title}</div>}
+          <TextMessage {...props} />
+        </div>
+      )}
+      {props.type === 'image' && (
+        <div>
+          {props.showAvatar && <div className="message-item-form-name">{props.title}</div>}
+          <ImageMessage {...props} />
+        </div>
+      )}
     </div>
   );
 };

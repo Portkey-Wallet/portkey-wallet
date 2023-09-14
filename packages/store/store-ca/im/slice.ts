@@ -243,7 +243,12 @@ export const imSlice = createSlice({
         if (!preChannelInfo) return state;
 
         const [adminMember, ...otherMembers] = preChannelInfo.members;
-        const newMembers = [adminMember, ...otherMembers, ...memberInfos];
+        const otherMembersMap: Record<string, boolean> = {};
+        otherMembers.forEach(member => {
+          otherMembersMap[member.relationId] = true;
+        });
+        const newMemberInfos = memberInfos.filter(member => !otherMembersMap[member.relationId]);
+        const newMembers = [adminMember, ...otherMembers, ...newMemberInfos];
 
         return {
           ...state,
@@ -294,7 +299,7 @@ export const imSlice = createSlice({
         const [preOwner, ...otherMembers] = preChannelInfo.members;
         const newOwner = otherMembers.find(member => member.relationId === relationId);
         if (!preOwner || !newOwner) return state;
-        const newMembers = preChannelInfo.members.filter(member => member.relationId !== relationId);
+        const newMembers = otherMembers.filter(member => member.relationId !== relationId);
         newMembers.reverse();
         newMembers.push({
           ...preOwner,
@@ -320,7 +325,6 @@ export const imSlice = createSlice({
           },
         };
       })
-
       .addCase(resetIm, (state, action) => {
         return {
           ...state,

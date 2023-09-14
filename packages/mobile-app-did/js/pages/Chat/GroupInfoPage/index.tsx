@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -14,18 +14,38 @@ import { FontStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
-import OverlayModal from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
-import GroupInfoMemberItem from '../components/GroupInfoMemberItem';
-
-const list = [{ id: '111', title: 'aaaa' }];
+import GroupInfoMemberItem, { GroupInfoMemberItemType } from '../components/GroupInfoMemberItem';
+import { useCurrentChannelId } from '../context/hooks';
+import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
 
 const GroupInfoPage = () => {
-  const isGroupHolder = true;
+  const myRelationId = useRelationId();
+
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
+  const { members } = groupInfo || {};
+
+  const leaveGroup = useLeaveChannel();
+
+  const membersShowList = useMemo(() => {
+    return members?.length && members?.length >= GROUP_INFO_MEMBER_SHOW_LIMITED
+      ? members?.slice(0, GROUP_INFO_MEMBER_SHOW_LIMITED)
+      : members;
+  }, [members]);
+
+  const isShowViewMoreButton = useMemo(() => {
+    return !!(members?.length && members?.length > GROUP_INFO_MEMBER_SHOW_LIMITED);
+  }, [members?.length]);
+
+  const disableRemoveButton = useMemo(() => {
+    return !!(members?.length && members?.length === 1);
+  }, [members?.length]);
 
   const onLeave = useCallback(() => {
     return ActionSheet.alert({
-      title: 'Leave the group?',
+      title: 'Are you sure to leave this group?',
       buttons: [
         {
           title: 'No',
@@ -33,22 +53,34 @@ const GroupInfoPage = () => {
         },
         {
           title: 'Yes',
-          onPress: () => {
-            // TODO: api
+          onPress: async () => {
             try {
               Loading.show();
-              // TODO: api
+              await leaveGroup(currentChannelId || '');
+              navigationService.goBack();
             } catch (error) {
               CommonToast.failError(error);
             } finally {
-              OverlayModal.hide();
               Loading.hide();
             }
           },
         },
       ],
     });
-  }, []);
+  }, [currentChannelId, leaveGroup]);
+
+  const onPressItem = useCallback(
+    (item: GroupInfoMemberItemType) => {
+      if (myRelationId === item.relationId) {
+        navigationService.navigate('WalletName');
+      } else {
+        navigationService.navigate('ChatContactProfile', {
+          relationId: item.relationId,
+        });
+      }
+    },
+    [myRelationId],
+  );
 
   return (
     <PageContainer
@@ -57,15 +89,15 @@ const GroupInfoPage = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      {/* TODO: real data */}
-
       <ScrollView>
         <View style={[GStyles.center, styles.headerWrap]}>
           <CommonAvatar avatarSize={pTd(80)} svgName="chat-group-avatar" />
-          <TextXXXL numberOfLines={1} style={GStyles.marginTop(pTd(8))}>
-            name
+          <TextXXXL numberOfLines={1} style={[GStyles.marginTop(pTd(8)), GStyles.paddingArg(0, pTd(20))]}>
+            {groupInfo?.name}
           </TextXXXL>
-          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{100 + 'members'}</TextM>
+          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${groupInfo?.members.length} member${
+            groupInfo?.members.length && groupInfo?.members.length > 1 ? 's' : ''
+          }`}</TextM>
         </View>
 
         <View style={styles.centerSection}>
@@ -75,33 +107,48 @@ const GroupInfoPage = () => {
             <Svg icon="chat-add-member" size={pTd(20)} />
             <TextL style={[FontStyles.font4, styles.actionText]}>Add Members</TextL>
           </Touchable>
+          {isAdmin && (
+            <Touchable
+              disabled={disableRemoveButton}
+              style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
+              onPress={() => navigationService.navigate('RemoveMembersPage')}>
+              <Svg icon="chat-remove-member" size={pTd(20)} color={disableRemoveButton ? defaultColors.bg16 : ''} />
+              <TextL style={[FontStyles.font13, styles.actionText, disableRemoveButton && styles.disabled]}>
+                Remove Members
+              </TextL>
+            </Touchable>
+          )}
+          {membersShowList &&
+            membersShowList.map((item, index) => (
+              <GroupInfoMemberItem
+                key={index}
+                isOwner={item.isAdmin}
+                item={{ relationId: item.relationId, title: item.name }}
+                onPress={onPressItem}
+                style={index === membersShowList.length - 1 && !isShowViewMoreButton ? styles.noBorderBottom : {}}
+              />
+            ))}
+          {isShowViewMoreButton && (
+            <Touchable
+              style={[GStyles.flexRow, GStyles.center, styles.viewMore]}
+              onPress={() => navigationService.navigate('GroupMembersPage')}>
+              <TextS style={[FontStyles.font3, GStyles.marginRight(pTd(8))]}>View more members</TextS>
+              <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
+            </Touchable>
+          )}
+        </View>
+        {isAdmin && (
           <Touchable
-            style={[GStyles.flexRow, GStyles.itemCenter, styles.membersActionWrap]}
-            onPress={() => navigationService.navigate('RemoveMembersPage')}>
-            <Svg icon="chat-remove-member" size={pTd(20)} />
-            <TextL style={[FontStyles.font13, styles.actionText]}>Remove Members</TextL>
-          </Touchable>
-          {/* TODO */}
-          {list.map((item, index) => (
-            <GroupInfoMemberItem key={index} isOwner={true} item={item} />
-          ))}
-          <Touchable
-            style={[GStyles.flexRow, GStyles.center, styles.viewMore]}
-            onPress={() => navigationService.navigate('GroupMembersPage')}>
-            <TextS style={[FontStyles.font3, GStyles.marginRight(pTd(8))]}>View more members</TextS>
+            style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.transferOwnerShip]}
+            onPress={() => navigationService.navigate('TransferOwnershipPage')}>
+            <TextL>Transfer Group Ownership</TextL>
             <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
           </Touchable>
-        </View>
-        <Touchable
-          style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.transferOwnerShip]}
-          onPress={() => navigationService.navigate('TransferOwnershipPage')}>
-          <TextL>Transfer Ownership</TextL>
-          <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
-        </Touchable>
+        )}
       </ScrollView>
 
       <View style={styles.buttonWrap}>
-        {isGroupHolder ? (
+        {isAdmin ? (
           <CommonButton type="primary" title={'Edit'} onPress={() => navigationService.navigate('EditGroupPage')} />
         ) : (
           <CommonButton
@@ -169,5 +216,11 @@ const styles = StyleSheet.create({
   },
   leaveTitleStyle: {
     color: defaultColors.font12,
+  },
+  disabled: {
+    color: defaultColors.bg16,
+  },
+  noBorderBottom: {
+    borderBottomWidth: 0,
   },
 });

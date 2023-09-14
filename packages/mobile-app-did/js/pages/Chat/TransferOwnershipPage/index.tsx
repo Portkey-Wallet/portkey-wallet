@@ -7,51 +7,90 @@ import GroupMemberItem from '../components/GroupMemberItem';
 import CommonInput from 'components/CommonInput';
 import useDebounce from 'hooks/useDebounce';
 import CommonToast from 'components/CommonToast';
-import LottieLoading from 'components/LottieLoading';
 import NoData from 'components/NoData';
 import CommonButton from 'components/CommonButton';
 import Loading from 'components/Loading';
-const list = [{ name: '11', id: '1111' }];
+import { useCurrentChannelId } from '../context/hooks';
+import { useGroupChannelInfo, useTransferChannelOwner } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
+import { BGStyles } from 'assets/theme/styles';
+import ActionSheet from 'components/ActionSheet';
+import navigationService from 'utils/navigationService';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const TransferOwnershipPage = () => {
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
+  const { members = [] } = groupInfo || {};
+  const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
+
+  const transferOwner = useTransferChannelOwner(currentChannelId || '');
+
   const [keyword, setKeyword] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
-  const debounceKeyword = useDebounce(keyword, 800);
-  const [memberList] = useState(list);
-  const [selectedMemberId, setSelectedMemberId] = useState('');
+  const debounceKeyword = useDebounce(keyword, 200);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
+  const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
   useEffect(() => {
     try {
-      setIsSearching(true);
-      // TODO: fetch
+      let result = [];
+      if (debounceKeyword) {
+        result = rawMemberList.filter(ele => ele.name.toLocaleUpperCase().includes(debounceKeyword) && !ele.isAdmin);
+      } else {
+        result = rawMemberList.filter(ele => !ele.isAdmin);
+      }
+      setFilterMembers(result);
     } catch (error) {
       CommonToast.failError(error);
-    } finally {
-      setIsSearching(true);
     }
-  }, [debounceKeyword]);
+  }, [debounceKeyword, rawMemberList]);
 
   const onPressItem = useCallback(
     (id: string) => {
-      if (selectedMemberId === id) return;
-      setSelectedMemberId(id);
+      if (selectedMemberId === id) {
+        setSelectedMemberId(undefined);
+      } else {
+        setSelectedMemberId(id);
+      }
     },
     [selectedMemberId],
   );
 
   const onConfirm = useCallback(() => {
-    try {
-      Loading.show();
-    } catch (error) {
-      CommonToast.failError(error);
-    } finally {
-      Loading.hide();
-    }
-  }, []);
+    ActionSheet.alert({
+      title: 'Are you sure to transfer group ownership to others?',
+      buttons: [
+        {
+          title: 'No',
+          type: 'outline',
+        },
+        {
+          title: 'Yes',
+          onPress: async () => {
+            try {
+              Loading.show();
+              await transferOwner(selectedMemberId || '');
+              CommonToast.success('Owner changed');
+              // TODO: test it
+              navigationService.goBack();
+            } catch (error) {
+              CommonToast.failError(error);
+            } finally {
+              Loading.hide();
+            }
+          },
+        },
+      ],
+    });
+  }, [selectedMemberId, transferOwner]);
+
+  useEffectOnce(() => {
+    setRawMemberList([...members]);
+  });
 
   return (
     <PageContainer
-      titleDom="Transfer Ownership"
+      titleDom="Transfer Group Ownership"
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
@@ -68,17 +107,26 @@ const TransferOwnershipPage = () => {
       </View>
 
       <FlatList
-        data={memberList}
-        // TODO: any Type
-        extraData={(item: any) => item.id}
-        ListEmptyComponent={isSearching ? <LottieLoading /> : <NoData noPic message="No search result" />}
+        data={filterMembers}
+        extraData={(item: ChannelMemberInfo) => item.relationId}
+        ListEmptyComponent={
+          <NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} style={BGStyles.bg4} />
+        }
         renderItem={({ item }) => (
-          <GroupMemberItem multiple={false} item={item} selected={item.id === selectedMemberId} onPress={onPressItem} />
+          <GroupMemberItem
+            multiple={false}
+            item={{
+              title: item.name,
+              relationId: item.relationId,
+            }}
+            selected={item.relationId === selectedMemberId}
+            onPress={onPressItem}
+          />
         )}
       />
 
       <View style={styles.buttonWrap}>
-        <CommonButton title="Confirm" type="primary" onPress={onConfirm} />
+        <CommonButton title="Confirm" type="primary" disabled={!selectedMemberId} onPress={onConfirm} />
       </View>
     </PageContainer>
   );

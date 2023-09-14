@@ -1,39 +1,30 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
-import { Modal, Popover, message } from 'antd';
-import {
-  PopoverMenuList,
-  MessageList,
-  InputBar,
-  StyleProvider,
-  MessageType,
-  PopDataProps,
-} from '@portkey-wallet/im-ui-web';
-import PhotoSendModal, { IPreviewImage } from '../../components/ImageSendModal';
-import { ImageMessageFileType, useGroupChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import { Modal, message } from 'antd';
+import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
+import { useGroupChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
 import { formatMessageList } from '../../utils';
 import { useTranslation } from 'react-i18next';
-import { useLoading } from 'store/Provider/hooks';
 import { MAX_INPUT_LENGTH } from '@portkey-wallet/constants/constants-ca/im';
 import ChatBoxTip from '../../components/ChatBoxTip';
 import CustomUpload from '../../components/CustomUpload';
-import CircleLoading from 'components/CircleLoading';
+import { useEffectOnce } from 'react-use';
+import { useHandle } from '../useHandle';
+import ChatBoxHeader from '../components/ChatBoxHeader';
+// import CustomModal from 'pages/components/CustomModal';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [file, setFile] = useState<ImageMessageFileType>();
-  const [previewImage, setPreviewImage] = useState<IPreviewImage>();
   const [showBookmark, setShowBookmark] = useState(false);
-  const sendImgModalRef = useRef<any>(null);
   const messageRef = useRef<any>(null);
   const [popVisible, setPopVisible] = useState(false);
   const [showAddMemTip, setShowAddMemTip] = useState(true);
   const {
+    init,
     list,
     isAdmin,
     deleteMessage,
@@ -45,51 +36,17 @@ export default function ChatBox() {
     pin,
     sendImage,
     sendMessage,
-    refreshGroupInfo,
     groupInfo,
+    info,
   } = useGroupChannel(`${channelUuid}`);
-  const { setLoading } = useLoading();
-  console.log(setLoading);
-  // useEffectOnce(() => {
-  //   init();
-  // });
-  console.log('list group', list);
+  useEffectOnce(() => {
+    init();
+  });
+  // const hideChannel = useHideChannel();
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!, true), [list, relationId]);
-  console.log(messageList);
-  console.log(refreshGroupInfo);
-  // TODO delete
-  const handleDeleteMsg = useCallback(
-    async (item: MessageType) => {
-      try {
-        await deleteMessage(`${item.id}`);
-      } catch (e) {
-        message.error('Failed to delete message');
-        console.log('===handle delete message error', e);
-      }
-    },
-    [deleteMessage],
-  );
-  const handlePin = useCallback(async () => {
-    try {
-      await pin(!groupInfo?.pin);
-    } catch (e: any) {
-      if (`${e?.code}` === '13310') {
-        message.error('Pin limit exceeded');
-      } else {
-        message.error(`Failed to ${groupInfo?.pin ? 'unpin' : 'pin'} chat`);
-      }
-      console.log('===handle pin error', e);
-    }
-  }, [groupInfo?.pin, pin]);
-  const handleMute = useCallback(async () => {
-    try {
-      await mute(!groupInfo?.mute);
-    } catch (e) {
-      message.error(`Failed to ${groupInfo?.mute ? 'unmute' : 'mute'} chat`);
-      console.log('===handle mute error', e);
-    }
-  }, [groupInfo?.mute, mute]);
+  const leaveGroup = useLeaveChannel();
+  const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });
   const handleDeleteBox = useCallback(() => {
     return Modal.confirm({
       width: 320,
@@ -117,16 +74,16 @@ export default function ChatBox() {
   const handleLeaveGroup = useCallback(() => {
     return Modal.confirm({
       width: 320,
-      content: t('Leave the group?'),
+      content: t('Are you sure to leave this group?'),
       className: 'leave-group-modal',
       autoFocusButton: null,
       icon: null,
       centered: true,
-      okText: t('Confirm'),
-      cancelText: t('Cancel'),
+      okText: t('Yes'),
+      cancelText: t('No'),
       onOk: async () => {
         try {
-          // TODO await leave();
+          await leaveGroup(`${channelUuid}`);
           navigate('/chat-list');
         } catch (e) {
           message.error('Failed to leave the group');
@@ -134,9 +91,9 @@ export default function ChatBox() {
         }
       },
     });
-  }, [navigate, t]);
+  }, [channelUuid, leaveGroup, navigate, t]);
   const handleAddMember = useCallback(() => {
-    navigate(`/chat-box-group/${channelUuid}/add-member`);
+    navigate(`/chat-group-info/${channelUuid}/member-list/add`);
   }, [channelUuid, navigate]);
   const groupPopList = useMemo(
     () => [
@@ -148,14 +105,14 @@ export default function ChatBox() {
       },
       {
         key: 'pin',
-        leftIcon: <CustomSvg type={groupInfo?.pin ? 'UnPin' : 'Pin'} />,
-        children: groupInfo?.pin ? 'Unpin' : 'Pin',
+        leftIcon: <CustomSvg type={info?.pin ? 'UnPin' : 'Pin'} />,
+        children: info?.pin ? 'Unpin' : 'Pin',
         onClick: handlePin,
       },
       {
         key: 'mute',
-        leftIcon: <CustomSvg type={groupInfo?.mute ? 'UnMute' : 'Mute'} />,
-        children: groupInfo?.mute ? 'Unmute' : 'Mute',
+        leftIcon: <CustomSvg type={info?.mute ? 'UnMute' : 'Mute'} />,
+        children: info?.mute ? 'Unmute' : 'Mute',
         onClick: handleMute,
       },
       {
@@ -171,13 +128,33 @@ export default function ChatBox() {
         onClick: handleLeaveGroup,
       },
     ],
-    [handleDeleteBox, handleGoGroupInfo, handleLeaveGroup, handleMute, handlePin, groupInfo?.mute, groupInfo?.pin],
+    [handleDeleteBox, handleGoGroupInfo, handleLeaveGroup, handleMute, handlePin, info?.mute, info?.pin],
   );
+  const handleSendMsgError = useCallback((e: any) => {
+    // if (`${e.code}` === '13108') {
+    //   CustomModal({
+    //     content: 'This group has been disbanded by the owner',
+    //     onOk: async () => {
+    //       await hideChannel(`${channelUuid}`);
+    //       navigate('/chat-list');
+    //     },
+    //   });
+    // } else {
+    message.error('Failed to send message');
+    console.log('===Failed to send message', e);
+    // }
+  }, []);
   const inputMorePopList: PopDataProps[] = useMemo(
     () => [
       {
         key: 'album',
-        children: <CustomUpload setFile={setFile} setPreviewImage={setPreviewImage} />,
+        children: (
+          <CustomUpload
+            sendImage={sendImage}
+            onSuccess={() => (messageRef.current.scrollTop = messageRef.current.scrollHeight)}
+            handleSendMsgError={handleSendMsgError}
+          />
+        ),
       },
       {
         key: 'bookmark',
@@ -186,19 +163,8 @@ export default function ChatBox() {
         onClick: () => setShowBookmark(true),
       },
     ],
-    [],
+    [handleSendMsgError, sendImage],
   );
-  const handleUpload = useCallback(async () => {
-    try {
-      await sendImage(file!);
-      messageRef.current.scrollTop = messageRef.current.scrollHeight;
-      setPreviewImage(undefined);
-      setFile(undefined);
-    } catch (e) {
-      console.log('===send image error', e);
-      message.error('Failed to send message');
-    }
-  }, [file, sendImage]);
   const hidePop = useCallback((e: any) => {
     try {
       const _t = e?.target?.className;
@@ -215,46 +181,33 @@ export default function ChatBox() {
       try {
         await sendMessage(v.trim() ?? '');
         messageRef.current.scrollTop = messageRef.current.scrollHeight;
-      } catch (e) {
-        message.error('Failed to send message');
+      } catch (e: any) {
+        handleSendMsgError(e);
       }
     },
-    [sendMessage],
+    [handleSendMsgError, sendMessage],
   );
-  const renderChatBoxTip = useMemo(
-    () =>
-      isAdmin &&
-      showAddMemTip && (
-        <ChatBoxTip onConfirm={handleAddMember} onClose={() => setShowAddMemTip(false)}>
-          <div className="content flex-center">
-            <CustomSvg type="ChatAddContact" />
-            <span className="text">Add Member</span>
-          </div>
-        </ChatBoxTip>
-      ),
-    [handleAddMember, isAdmin, showAddMemTip],
+  const handleGoProfile = useCallback(
+    (item: MessageType) => {
+      navigate('/setting/contacts/view', {
+        state: { relationId: item?.from, from: 'chat-box-group', channelUuid },
+      });
+    },
+    [navigate, channelUuid],
   );
   const renderTitle = useMemo(
     () => (
-      <div className="title-group-content flex-center">
-        <div className="group-icon flex-center" onClick={handleGoGroupInfo}>
-          <CustomSvg type="GroupAvatar" />
-        </div>
-        <div>
-          <div className="flex title-top">
-            <div className="title-name" onClick={handleGoGroupInfo}>
-              {groupInfo?.name}
-            </div>
-            <div>{groupInfo?.mute && <CustomSvg type="Mute" />}</div>
+      <div className="flex title-element">
+        <div className="title-content flex-center" onClick={handleGoGroupInfo}>
+          <div className="group-icon flex-center">
+            <CustomSvg type="GroupAvatar" />
           </div>
-          <div className="title-member flex">
-            {groupInfo?.members ? <span>{groupInfo?.members.length}</span> : <CircleLoading />}
-            {typeof groupInfo?.members?.length === 'number' && groupInfo?.members?.length > 1 ? 'members' : 'member'}
-          </div>
+          <div className="title-name">{groupInfo?.name || ' '}</div>
         </div>
+        <div>{info?.mute && <CustomSvg type="Mute" />}</div>
       </div>
     ),
-    [groupInfo?.members, groupInfo?.mute, groupInfo?.name, handleGoGroupInfo],
+    [handleGoGroupInfo, groupInfo?.name, info?.mute],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);
@@ -262,28 +215,21 @@ export default function ChatBox() {
   }, [hidePop]);
   return (
     <div className="chat-box-page flex-column">
-      <div className="chat-box-top">
-        <SettingHeader
-          title={<div className="flex title-element">{renderTitle}</div>}
-          leftCallBack={() => navigate('/chat-list')}
-          rightElement={
-            <div className="flex-center right-element">
-              <Popover
-                open={popVisible}
-                overlayClassName="chat-box-popover"
-                trigger="click"
-                showArrow={false}
-                content={<PopoverMenuList data={groupPopList.filter((i) => !isAdmin || i.key !== 'leave-group')} />}>
-                <div className="chat-box-more" onClick={() => setPopVisible(!popVisible)}>
-                  <CustomSvg type="More" />
-                </div>
-              </Popover>
-              <CustomSvg type="Close2" onClick={() => navigate('/chat-list')} />
-            </div>
-          }
-        />
-      </div>
-      {renderChatBoxTip}
+      <ChatBoxHeader
+        popMenuData={groupPopList.filter((i) => !isAdmin || i.key !== 'leave-group')}
+        renderTitle={<div className="flex title-element">{renderTitle}</div>}
+        goBack={() => navigate('/chat-list')}
+        popVisible={popVisible}
+        setPopVisible={setPopVisible}
+      />
+      {isAdmin && showAddMemTip && (
+        <ChatBoxTip onConfirm={handleAddMember} onClose={() => setShowAddMemTip(false)}>
+          <div className="content flex-center">
+            <CustomSvg type="ChatAddContact" />
+            <span className="text">Add Members</span>
+          </div>
+        </ChatBoxTip>
+      )}
       <div className="chat-box-content">
         <StyleProvider prefixCls="portkey">
           <MessageList
@@ -293,6 +239,7 @@ export default function ChatBox() {
             next={next}
             lockable
             dataSource={messageList}
+            onClickAvatar={handleGoProfile}
             onDeleteMsg={handleDeleteMsg}
           />
         </StyleProvider>
@@ -302,16 +249,6 @@ export default function ChatBox() {
           <InputBar moreData={inputMorePopList} maxLength={MAX_INPUT_LENGTH} onSendMessage={handleSendMessage} />
         </StyleProvider>
       </div>
-      <PhotoSendModal
-        ref={sendImgModalRef}
-        open={!!previewImage?.src}
-        file={previewImage}
-        onConfirm={handleUpload}
-        onCancel={() => {
-          setPreviewImage(undefined);
-          setFile(undefined);
-        }}
-      />
       <BookmarkListDrawer
         destroyOnClose
         open={showBookmark}

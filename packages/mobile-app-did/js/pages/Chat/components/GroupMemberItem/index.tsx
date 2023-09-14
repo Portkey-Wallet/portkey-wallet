@@ -4,48 +4,53 @@ import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
-import { ContactItemType, GroupMemberItemType } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { defaultColors } from 'assets/theme';
 
-type GroupMemberItemPropsType<T> = {
+export type GroupMemberItemType = {
+  title: string;
+  relationId: string;
+};
+
+type GroupMemberItemPropsType = {
   multiple?: boolean;
   selected?: boolean;
-  item: any; // TODO
+  item: GroupMemberItemType;
   disabled?: boolean;
-  onPress?: (id: string, selected: boolean) => void;
+  onPress?: (id: string, item?: GroupMemberItemType, selected?: boolean) => void;
 };
 
 export default memo(
-  function GroupMemberItem(props: GroupMemberItemPropsType<GroupMemberItemType & ContactItemType>) {
+  function GroupMemberItem(props: GroupMemberItemPropsType) {
     const { multiple = true, disabled = false, selected = false, item, onPress } = props;
 
     const iconDom = useMemo(() => {
       let iconName: IconName | undefined;
       if (multiple) {
-        iconName = disabled || selected ? 'selected' : 'unselected';
+        iconName = selected ? 'selected' : 'unselected';
       } else {
-        iconName = disabled || selected ? 'selected' : undefined;
+        iconName = selected ? 'selected' : undefined;
       }
+      if (disabled) iconName = 'selected';
 
-      return iconName ? <Svg iconStyle={styles.itemIcon} icon={iconName} /> : null;
+      return iconName ? (
+        <Svg iconStyle={styles.itemIcon} color={disabled ? defaultColors.bg16 : undefined} icon={iconName} />
+      ) : null;
     }, [disabled, multiple, selected]);
 
     return (
       <Touchable
         disabled={disabled}
-        style={[styles.itemRow, disabled && styles.disable]}
+        style={styles.itemWrap}
         onPress={() => {
-          onPress?.(item.id, !selected);
+          onPress?.(item.relationId, item);
         }}>
-        <CommonAvatar
-          hasBorder
-          title={item.name || item.caHolderInfo?.walletName || item.imInfo?.name}
-          avatarSize={pTd(36)}
-        />
-        <View style={styles.itemContent}>
-          <TextL>{item.name || item.caHolderInfo?.walletName || item.imInfo?.name}</TextL>
-          {iconDom}
+        <View style={[styles.itemRow, disabled && styles.disable]}>
+          <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
+          <View style={styles.itemContent}>
+            <TextL>{item.title}</TextL>
+            {iconDom}
+          </View>
         </View>
       </Touchable>
     );
@@ -54,14 +59,16 @@ export default memo(
 );
 
 const styles = StyleSheet.create({
+  itemWrap: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: defaultColors.border6,
+    marginBottom: StyleSheet.hairlineWidth,
+  },
   itemRow: {
     height: pTd(72),
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: pTd(20),
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: defaultColors.border6,
-    marginBottom: StyleSheet.hairlineWidth,
   },
   itemContent: {
     flex: 1,
@@ -75,6 +82,6 @@ const styles = StyleSheet.create({
     right: 0,
   },
   disable: {
-    opacity: 0.5,
+    opacity: 0.4,
   },
 });

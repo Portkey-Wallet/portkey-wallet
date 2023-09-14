@@ -17,17 +17,19 @@ import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import useDebounce from 'hooks/useDebounce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import CommonToast from 'components/CommonToast';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { ChannelItem } from '@portkey-wallet/im/types';
-import { useJumpToChatDetails } from 'hooks/chat';
+import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { Input } from '@rneui/base';
+import LottieLoading from 'components/LottieLoading';
 
 export default function SearchPeople() {
   const iptRef = useRef<Input>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [loading, setLoading] = useState(false);
   const searchChannel = useSearchChannel();
   const navToChatDetails = useJumpToChatDetails();
+  const navToGroupChatDetails = useJumpToChatGroupDetails();
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 500);
@@ -35,10 +37,13 @@ export default function SearchPeople() {
 
   const fetchList = useLockCallback(async () => {
     try {
+      setLoading(true);
       const list = await searchChannel(debounceKeyword);
       setFilterList(list);
     } catch (error) {
-      CommonToast.fail(handleErrorMessage(error));
+      CommonToast.failError(error);
+    } finally {
+      setLoading(false);
     }
   }, [debounceKeyword]);
 
@@ -71,16 +76,24 @@ export default function SearchPeople() {
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter, styles.itemWrap]}
           onPress={() => {
-            navToChatDetails({ toRelationId, channelUuid });
+            item.channelType === 'G'
+              ? navToGroupChatDetails({ toRelationId, channelUuid })
+              : navToChatDetails({ toRelationId, channelUuid });
           }}>
-          <CommonAvatar title={displayName} hasBorder avatarSize={pTd(36)} style={styles.avatarStyle} />
+          <CommonAvatar
+            title={displayName}
+            hasBorder
+            svgName={item.channelType === 'G' ? 'chat-group-avatar' : undefined}
+            avatarSize={pTd(36)}
+            style={styles.avatarStyle}
+          />
           <View style={styles.rightSection}>
             <TextL numberOfLines={1}>{displayName}</TextL>
           </View>
         </Touchable>
       );
     },
-    [navToChatDetails],
+    [navToChatDetails, navToGroupChatDetails],
   );
 
   return (
@@ -99,15 +112,18 @@ export default function SearchPeople() {
         onCancel={() => navigationService.goBack()}
       />
       <FindMoreButton />
-
-      <FlatList
-        data={filterList}
-        ListHeaderComponent={
-          debounceKeyword && filterList.length > 0 ? <TextL style={styles.listHeader}>Chats</TextL> : null
-        }
-        ListEmptyComponent={debounceKeyword ? <NoData noPic message="No search result" /> : null}
-        renderItem={renderItem}
-      />
+      {loading ? (
+        <LottieLoading />
+      ) : (
+        <FlatList
+          data={filterList}
+          ListHeaderComponent={
+            debounceKeyword && filterList.length > 0 ? <TextL style={styles.listHeader}>Chats</TextL> : null
+          }
+          ListEmptyComponent={debounceKeyword ? <NoData noPic message="No search result" /> : null}
+          renderItem={renderItem}
+        />
+      )}
     </PageContainer>
   );
 }

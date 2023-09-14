@@ -1,6 +1,12 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useChannel, useHideChannel, useIMGroupInfoMapNetMapState, useRelationId } from '.';
-import im, { ChannelInfo, ChannelMemberInfo, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
+import im, {
+  ChannelInfo,
+  ChannelMemberInfo,
+  ChannelStatusEnum,
+  ChannelTypeEnum,
+  SocketMessage,
+} from '@portkey-wallet/im';
 import { useAppCommonDispatch } from '../../index';
 import {
   addChannelMembers,
@@ -220,6 +226,52 @@ export const useGroupChannel = (channelId: string) => {
   const channel = useChannel(channelId);
   const { groupInfo, isAdmin, refresh: refreshGroupInfo } = useGroupChannelInfo(channelId, true);
   const disband = useDisbandChannel(channelId);
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+
+  const updateList = useCallback(
+    (e: any) => {
+      const rawMsg: SocketMessage = e['im-message'];
+      if (rawMsg.type !== 'SYS') return;
+      console.log('receive SYS msg');
+      const content = rawMsg.content;
+
+      if (content.indexOf('changed the group name to') > 0) {
+        const name = content.split('changed the group name to')[1].trim();
+        dispatch(
+          updateGroupInfo({
+            network: networkType,
+            channelId,
+            value: {
+              name,
+            },
+          }),
+        );
+
+        dispatch(
+          updateChannelAttribute({
+            network: networkType,
+            channelId,
+            value: {
+              displayName: name,
+            },
+          }),
+        );
+        return;
+      }
+    },
+    [channelId, dispatch, networkType],
+  );
+  const updateListRef = useRef(updateList);
+  updateListRef.current = updateList;
+
+  useEffect(() => {
+    const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
+      updateListRef.current(e);
+    });
+    return removeMsgObserver;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     ...channel,

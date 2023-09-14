@@ -1,20 +1,35 @@
 import { Upload, message } from 'antd';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { RcFile } from 'antd/lib/upload/interface';
 import CustomSvg from 'components/CustomSvg';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { MAX_FILE_SIZE } from '@portkey-wallet/constants/constants-ca/im';
 import { getPixel } from 'pages/IMChat/utils';
 import { formatImageSize } from '@portkey-wallet/utils/img';
-import { IPreviewImage } from '../ImageSendModal';
 import { ImageMessageFileType } from '@portkey-wallet/hooks/hooks-ca/im';
+import { UploadFileType } from '@portkey-wallet/utils/s3';
+import PhotoSendModal, { IPreviewImage } from 'pages/IMChat/components/ImageSendModal';
 
 export interface ICustomUploadProps {
-  setPreviewImage: (p: IPreviewImage) => void;
-  setFile: (p: ImageMessageFileType) => void;
+  sendImage: (file: ImageMessageFileType) => Promise<UploadFileType>;
+  onSuccess: () => void;
+  handleSendMsgError: (e: any) => any;
 }
 
-export default function CustomUpload({ setPreviewImage, setFile }: ICustomUploadProps) {
+export default function CustomUpload({ sendImage, onSuccess, handleSendMsgError }: ICustomUploadProps) {
+  const [file, setFile] = useState<ImageMessageFileType>();
+  const [previewImage, setPreviewImage] = useState<IPreviewImage>();
+  const sendImgModalRef = useRef<any>(null);
+  const handleUpload = useCallback(async () => {
+    try {
+      await sendImage(file!);
+      onSuccess();
+      setPreviewImage(undefined);
+      setFile(undefined);
+    } catch (e: any) {
+      handleSendMsgError(e);
+    }
+  }, [file, handleSendMsgError, onSuccess, sendImage]);
   const uploadProps = useMemo(
     () => ({
       className: 'chat-input-upload',
@@ -51,9 +66,21 @@ export default function CustomUpload({ setPreviewImage, setFile }: ICustomUpload
     [setFile, setPreviewImage],
   );
   return (
-    <Upload {...uploadProps}>
-      <CustomSvg type="Album" />
-      <span className="upload-text">Picture</span>
-    </Upload>
+    <>
+      <Upload {...uploadProps}>
+        <CustomSvg type="Album" />
+        <span className="upload-text">Picture</span>
+      </Upload>
+      <PhotoSendModal
+        ref={sendImgModalRef}
+        open={!!previewImage?.src}
+        file={previewImage}
+        onConfirm={handleUpload}
+        onCancel={() => {
+          setPreviewImage(undefined);
+          setFile(undefined);
+        }}
+      />
+    </>
   );
 }

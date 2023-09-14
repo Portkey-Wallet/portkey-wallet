@@ -34,7 +34,7 @@ const ChatGroupDetailsPage = () => {
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
   const currentChannelId = useCurrentChannelId();
-  const { isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
+  const { isAdmin, groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
   const { pin, mute, displayName } = useChannelItemInfo(currentChannelId || '') || {};
 
   const leaveGroup = useLeaveChannel();
@@ -170,7 +170,7 @@ const ChatGroupDetailsPage = () => {
           <Svg size={pTd(32)} icon="chat-group-avatar-header" />
           <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
             <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500]}>
-              {displayName}
+              {groupInfo?.name || displayName}
             </TextL>
             {/* <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberInfo]}>
               {groupMemberCount ? (
@@ -188,7 +188,7 @@ const ChatGroupDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [displayName, mute],
+    [displayName, groupInfo?.name, mute],
   );
   return (
     <PageContainer

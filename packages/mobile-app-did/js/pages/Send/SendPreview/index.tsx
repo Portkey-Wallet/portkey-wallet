@@ -12,7 +12,6 @@ import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import { Image } from '@rneui/base';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
@@ -46,6 +45,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import CommonAvatar from 'components/CommonAvatar';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
@@ -268,7 +268,7 @@ const SendHome: React.FC = () => {
           {!assetInfo?.imageUrl ? (
             <Text style={styles.noImg}>{assetInfo?.alias[0]}</Text>
           ) : (
-            <Image resizeMode={'contain'} style={styles.img} source={{ uri: assetInfo?.imageUrl }} />
+            <CommonAvatar avatarSize={pTd(64)} style={styles.img} imageUrl={assetInfo?.imageUrl || ''} />
           )}
           <View style={styles.topLeft}>
             <TextL style={[styles.nftTitle, fonts.mediumFont]}>{`${assetInfo.alias} #${assetInfo?.tokenId}`} </TextL>

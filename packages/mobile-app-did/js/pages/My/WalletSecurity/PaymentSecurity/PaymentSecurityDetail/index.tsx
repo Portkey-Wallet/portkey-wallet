@@ -11,7 +11,7 @@ import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimalsStr } from '@portkey-wallet/utils/converter';
 
 interface RouterParams {
   paymentSecurityDetail?: IPaymentSecurityItem;

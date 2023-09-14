@@ -74,16 +74,12 @@ export default function AmountToken({
       </View>
       <View style={styles.middle}>
         <View style={styles.middleLeft}>
-          {selectedToken.symbol === defaultToken.symbol ? (
-            <CommonAvatar
-              shapeType="circular"
-              svgName={selectedToken.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
-              imageUrl={symbolImages[selectedToken.symbol] || ''}
-              avatarSize={28}
-            />
-          ) : (
-            <Text style={styles.imgStyle}>{selectedToken?.symbol?.[0]}</Text>
-          )}
+          <CommonAvatar
+            shapeType="circular"
+            svgName={selectedToken.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
+            imageUrl={symbolImages[selectedToken.symbol] || ''}
+            avatarSize={28}
+          />
           <Text style={styles.symbolName}>
             {selectedToken?.symbol?.length > 5 ? formatTokenNameToSuffix(selectedToken?.symbol) : selectedToken?.symbol}
           </Text>

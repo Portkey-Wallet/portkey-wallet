@@ -61,7 +61,6 @@ const SendHome: React.FC = () => {
   const pin = usePin();
 
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
-
   const [, requestQrPermission] = useQrScanPermission();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -347,55 +346,59 @@ const SendHome: React.FC = () => {
     if (!account) {
       return { status: false };
     }
-    // checkTransferLimitResult
-    if (!contractRef.current) {
-      contractRef.current = await getContractBasic({
-        contractAddress: chainInfo.caContractAddress,
-        rpcUrl: chainInfo.endPoint,
-        account,
-      });
-    }
-    const contract = contractRef.current;
-    const checkTransferLimitResult = await checkTransferLimit({
-      caContract: contract,
-      symbol: assetInfo.symbol,
-      decimals: assetInfo.decimals,
-      amount: sendNumber,
-    });
-    if (!checkTransferLimitResult) {
-      // TODO: add error handler
-      return { status: false };
-    }
-    const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
-    if (isDailyLimited || isSingleLimited) {
-      ActionSheet.alert({
-        title2: isDailyLimited
-          ? 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.'
-          : 'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first. ',
-        buttons: [
-          {
-            title: 'Cancel',
-            type: 'outline',
-          },
-          {
-            title: 'Modify',
-            onPress: async () => {
-              navigationService.navigate('PaymentSecurityEdit', {
-                paymentSecurityDetail: {
-                  chainId: chainInfo.chainId,
-                  symbol: assetInfo.symbol,
-                  dailyLimit: dailyLimit.toString(),
-                  singleLimit: singleBalance.toString(),
-                  restricted: !dailyLimit.eq(-1),
-                  decimals: assetInfo.decimals,
-                },
-              });
-            },
-          },
-        ],
-      });
 
-      return { status: false };
+    // checkTransferLimitResult
+    if (sendType === 'token') {
+      if (!contractRef.current) {
+        contractRef.current = await getContractBasic({
+          contractAddress: chainInfo.caContractAddress,
+          rpcUrl: chainInfo.endPoint,
+          account,
+        });
+      }
+      const contract = contractRef.current;
+      const checkTransferLimitResult = await checkTransferLimit({
+        caContract: contract,
+        symbol: assetInfo.symbol,
+        decimals: assetInfo.decimals,
+        amount: sendNumber,
+      });
+      if (!checkTransferLimitResult) {
+        // TODO: add error handler
+        return { status: false };
+      }
+
+      const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
+      if (isDailyLimited || isSingleLimited) {
+        ActionSheet.alert({
+          title2: isDailyLimited
+            ? 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.'
+            : 'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first. ',
+          buttons: [
+            {
+              title: 'Cancel',
+              type: 'outline',
+            },
+            {
+              title: 'Modify',
+              onPress: async () => {
+                navigationService.navigate('PaymentSecurityEdit', {
+                  paymentSecurityDetail: {
+                    chainId: chainInfo.chainId,
+                    symbol: assetInfo.symbol,
+                    dailyLimit: dailyLimit.toString(),
+                    singleLimit: singleBalance.toString(),
+                    restricted: !dailyLimit.eq(-1),
+                    decimals: assetInfo.decimals,
+                  },
+                });
+              },
+            },
+          ],
+        });
+
+        return { status: false };
+      }
     }
 
     // check is SYNCHRONIZING

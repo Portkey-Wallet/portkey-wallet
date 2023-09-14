@@ -1,5 +1,6 @@
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { MethodsBase } from '@portkey/provider-types';
+import { DAPP_WHITELIST, DappMap } from './network';
 
 export const SessionKeyMap = {
   [SessionExpiredPlan.hour1]: '1 hour',
@@ -27,9 +28,7 @@ export enum ApproveMethod {
 }
 
 export const CA_METHOD_WHITELIST = ['ManagerForwardCall', 'ManagerTransfer', ApproveMethod.ca];
-export enum DappMap {
-  test = 'http://localhost:3000',
-}
 
-export const DAPP_WHITELIST: string[] = [DappMap.test];
-export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [MethodsBase.REQUEST_ACCOUNTS];
+export const DAPP_WHITELIST_ACTION_WHITELIST: string[] = [MethodsBase.REQUEST_ACCOUNTS, MethodsBase.SEND_TRANSACTION];
+
+export { DAPP_WHITELIST, DappMap };

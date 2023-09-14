@@ -6,7 +6,7 @@ import { pTd } from 'utils/unit';
 import { Animated } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { useKeyboardAnim, useSendCurrentChannelMessage } from '../../hooks';
+import { useKeyboardAnim, useSendCurrentChannelMessage, useHideCurrentChannel } from '../../hooks';
 import { useBottomBarStatus, useChatText, useChatsDispatch } from '../../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus, setChatText } from '../../../context/chatsContext';
@@ -17,6 +17,8 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { chatInputRecorder } from 'pages/Chat/utils';
 import CommonToast from 'components/CommonToast';
 import { defaultColors } from 'assets/theme';
+import ActionSheet from 'components/ActionSheet';
+import navigationService from 'utils/navigationService';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -44,6 +46,7 @@ export function BottomBarContainer({
   const keyboardAnim = useKeyboardAnim({ textInputRef });
   const timer = useRef<NodeJS.Timeout>();
   const { sendChannelMessage } = useSendCurrentChannelMessage();
+  const hideChannel = useHideCurrentChannel();
   const inputFocus = useCallback(
     (autoHide?: boolean) => {
       textInputRef.current?.focus(autoHide);
@@ -79,10 +82,24 @@ export function BottomBarContainer({
     try {
       scrollToBottom?.();
       typeof text === 'string' && (await sendChannelMessage(text.trim()));
-    } catch (error) {
+    } catch (error: { code: string }) {
+      if (error?.code === '13108') {
+        hideChannel();
+        ActionSheet.alert({
+          title: `You can't send messages to this group because you are no longer in it.`,
+          buttons: [
+            {
+              title: 'OK',
+              type: 'primary',
+              onPress: () => navigationService.navigate('Tab'),
+            },
+          ],
+        });
+      }
+
       CommonToast.fail('Failed to send message');
     }
-  }, [dispatch, scrollToBottom, sendChannelMessage, text]);
+  }, [dispatch, hideChannel, scrollToBottom, sendChannelMessage, text]);
   return (
     <View style={styles.wrap}>
       <View style={[BGStyles.bg6, GStyles.flexRow, GStyles.itemEnd, styles.barWrap]}>

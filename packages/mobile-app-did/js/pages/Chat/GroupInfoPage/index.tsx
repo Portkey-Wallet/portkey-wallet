@@ -15,12 +15,14 @@ import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
 import Loading from 'components/Loading';
 import Touchable from 'components/Touchable';
-import GroupInfoMemberItem from '../components/GroupInfoMemberItem';
+import GroupInfoMemberItem, { GroupInfoMemberItemType } from '../components/GroupInfoMemberItem';
 import { useCurrentChannelId } from '../context/hooks';
-import { useGroupChannelInfo, useLeaveChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
 
 const GroupInfoPage = () => {
+  const myRelationId = useRelationId();
+
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
   const { members } = groupInfo || {};
@@ -32,6 +34,14 @@ const GroupInfoPage = () => {
       ? members?.slice(0, GROUP_INFO_MEMBER_SHOW_LIMITED)
       : members;
   }, [members]);
+
+  const isShowViewMoreButton = useMemo(() => {
+    return !!(members?.length && members?.length > GROUP_INFO_MEMBER_SHOW_LIMITED);
+  }, [members?.length]);
+
+  const disableRemoveButton = useMemo(() => {
+    return !!(members?.length && members?.length === 1);
+  }, [members?.length]);
 
   const onLeave = useCallback(() => {
     return ActionSheet.alert({
@@ -59,9 +69,18 @@ const GroupInfoPage = () => {
     });
   }, [currentChannelId, leaveGroup]);
 
-  const disableRemoveButton = useMemo(() => {
-    return !!(members?.length && members?.length === 1);
-  }, [members?.length]);
+  const onPressItem = useCallback(
+    (item: GroupInfoMemberItemType) => {
+      if (myRelationId === item.relationId) {
+        navigationService.navigate('WalletName');
+      } else {
+        navigationService.navigate('ChatContactProfile', {
+          relationId: item.relationId,
+        });
+      }
+    },
+    [myRelationId],
+  );
 
   return (
     <PageContainer
@@ -99,21 +118,24 @@ const GroupInfoPage = () => {
               </TextL>
             </Touchable>
           )}
-
           {membersShowList &&
             membersShowList.map((item, index) => (
               <GroupInfoMemberItem
                 key={index}
                 isOwner={item.isAdmin}
                 item={{ relationId: item.relationId, title: item.name }}
+                onPress={onPressItem}
+                style={index === membersShowList.length - 1 && !isShowViewMoreButton ? styles.noBorderBottom : {}}
               />
             ))}
-          <Touchable
-            style={[GStyles.flexRow, GStyles.center, styles.viewMore]}
-            onPress={() => navigationService.navigate('GroupMembersPage')}>
-            <TextS style={[FontStyles.font3, GStyles.marginRight(pTd(8))]}>View more members</TextS>
-            <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
-          </Touchable>
+          {isShowViewMoreButton && (
+            <Touchable
+              style={[GStyles.flexRow, GStyles.center, styles.viewMore]}
+              onPress={() => navigationService.navigate('GroupMembersPage')}>
+              <TextS style={[FontStyles.font3, GStyles.marginRight(pTd(8))]}>View more members</TextS>
+              <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
+            </Touchable>
+          )}
         </View>
         {isAdmin && (
           <Touchable
@@ -197,5 +219,8 @@ const styles = StyleSheet.create({
   },
   disabled: {
     color: defaultColors.bg16,
+  },
+  noBorderBottom: {
+    borderBottomWidth: 0,
   },
 });

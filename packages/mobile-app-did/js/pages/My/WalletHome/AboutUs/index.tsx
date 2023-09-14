@@ -37,7 +37,7 @@ const AboutUs = () => {
         onPress: () => {
           navigationService.navigate('ViewOnWebView', {
             title: 'Privacy Policy',
-            url: `${OfficialWebsite}/portkey-privacy-policy`,
+            url: `${OfficialWebsite}/privacy-policy`,
           });
         },
       },
@@ -56,7 +56,6 @@ const AboutUs = () => {
       </View>
       <TextXXXL>Portkey</TextXXXL>
       <TextM style={styles.version}>{`V${Application.nativeApplicationVersion}`}</TextM>
-
       <View style={styles.btnContainer}>
         {socialMediaList.map((item, index) => (
           <View key={index}>

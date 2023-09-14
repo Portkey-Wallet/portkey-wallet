@@ -31,7 +31,7 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import { useBuyButtonShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import ChatEntry from 'pages/ChatEntry';
+import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';

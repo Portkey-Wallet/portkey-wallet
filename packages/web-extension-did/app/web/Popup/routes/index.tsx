@@ -34,10 +34,16 @@ import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
 import FindMore from 'pages/Contacts/FindMore';
-import ChatList from 'pages/ChatList';
-import ChatBox from 'pages/ChatBox';
-import NewChat from 'pages/NewChat';
-import ChatListSearch from 'pages/ChatListSearch';
+import ChatList from 'pages/IMChat/ChatList';
+import ChatBox from 'pages/IMChat/ChatBox';
+import NewChat from 'pages/IMChat/NewChat';
+import ChatListSearch from 'pages/IMChat/ChatListSearch';
+import CreateChatGroup from 'pages/IMChat/CreateChatGroup';
+import GroupInfo from 'pages/IMChat/GroupInfo';
+import EditGroupInfo from 'pages/IMChat/EditGroupInfo';
+import TransferOwnership from 'pages/IMChat/TransferOwnership';
+import MemberList from 'pages/IMChat/MemberList';
+import HandleMember from 'pages/IMChat/HandleMember';
 
 export const PageRouter = () =>
   useRoutes([
@@ -202,8 +208,36 @@ export const PageRouter = () =>
       element: <ChatBox />,
     },
     {
+      path: '/chat-box-group/:channelUuid',
+      element: <ChatBox />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid',
+      element: <GroupInfo />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/edit',
+      element: <EditGroupInfo />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/transfer-ownership',
+      element: <TransferOwnership />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/member-list',
+      element: <MemberList />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/member-list/:operate',
+      element: <HandleMember />,
+    },
+    {
       path: '/new-chat',
       element: <NewChat />,
+    },
+    {
+      path: '/create-chat-group',
+      element: <CreateChatGroup />,
     },
     {
       path: '/unlock',

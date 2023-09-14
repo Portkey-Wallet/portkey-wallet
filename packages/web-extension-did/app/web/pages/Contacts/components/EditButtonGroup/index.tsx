@@ -24,6 +24,12 @@ export default function EditButtonGroup({ className, data, cantSave }: IEditButt
 
     if (data?.from === 'chat-box') {
       navigate(`/chat-box/${data?.channelUuid}`);
+    } else if (data?.from === 'chat-box-group') {
+      navigate(`/chat-box-group/${data?.channelUuid}`);
+    } else if (data?.from === 'chat-group-info') {
+      navigate(`/chat-group-info/${data?.channelUuid}`);
+    } else if (data?.from === 'chat-member-list') {
+      navigate(`/chat-group-info/${data?.channelUuid}/member-list`);
     } else {
       navigate('/setting/contacts');
     }

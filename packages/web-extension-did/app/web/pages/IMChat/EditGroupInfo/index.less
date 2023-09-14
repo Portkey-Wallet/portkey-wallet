@@ -1,0 +1,78 @@
+@import '../../../assets/theme/color.less';
+
+.group-info-edit-page {
+  height: 100%;
+  background-color: @bg-11;
+  font-size: 16px;
+  line-height: 22px;
+  .group-info-edit-header {
+    padding-top: 16px;
+    background-color: @bg-13;
+  }
+  .edit-group-info-form {
+    height: calc(100% - 96px);
+    .form-content {
+      padding: 24px;
+      .portkey-form-item-label {
+        padding-bottom: 8px;
+        & > label {
+          font-size: 14px;
+          line-height: 20px;
+          color: @font-1;
+        }
+      }
+    }
+    .form-footer {
+      width: 100%;
+      height: 80px;
+      padding: 16px;
+      gap: 16px;
+      border-top: 1px solid @border-2;
+      .portkey-btn {
+        height: 48px;
+        border-radius: 22px;
+      }
+      .portkey-btn-dangerous {
+        color: @font-14;
+        border: 1px solid @border-7;
+      }
+      .portkey-btn-primary {
+        color: @font-5;
+        background-color: @bg-7;
+      }
+    }
+  }
+}
+
+.disband-group-modal {
+  /* stylelint-disable-next-line no-descending-specificity */
+   border-radius: 8px;
+   overflow: hidden;
+   .@{app-prefix}-modal-body {
+     padding: 0;
+     .@{app-prefix}-modal-confirm-content {
+       padding: 24px;
+       margin: 0;
+       border-bottom: 1px solid @border-2;
+       text-align: center;
+       font-size: 18px;
+       line-height: 22px;
+       font-weight: 500;
+       color: @font-10;
+     }
+     .@{app-prefix}-modal-confirm-btns {
+       padding: 15px 16px 17px;
+       margin: 0;
+       display: flex;
+       gap: 16px;
+       button {
+         width: 136px;
+         height: 48px;
+         border-radius: 24px;
+         margin: 0 !important;
+         line-height: 22px;
+         font-size: 16px;
+       }
+     }
+   }
+ }

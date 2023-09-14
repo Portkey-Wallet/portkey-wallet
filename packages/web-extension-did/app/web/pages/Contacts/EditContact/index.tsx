@@ -63,14 +63,11 @@ export default function EditContact() {
       try {
         setLoading(true);
 
-        const contactDetail = await editContactApi(
-          {
-            name: remark.trim(),
-            id: state.id,
-            relationId: state?.imInfo?.relationId,
-          },
-          state?.caHolderInfo?.walletName,
-        );
+        const contactDetail = await editContactApi({
+          name: remark.trim(),
+          id: state.id,
+          relationId: state?.imInfo?.relationId,
+        });
 
         appDispatch(fetchContactListAsync());
 

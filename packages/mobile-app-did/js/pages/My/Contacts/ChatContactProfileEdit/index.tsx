@@ -44,10 +44,7 @@ const ChatContactProfileEdit: React.FC = () => {
     if (remark && !isValidRemark(remark)) return setError('Only a-z, A-Z, 0-9 and "_"  allowed');
     try {
       Loading.show();
-      await editContact(
-        { name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' },
-        contact?.caHolderInfo?.walletName,
-      );
+      await editContact({ name: remark, id: contact?.id || '', relationId: contact?.imInfo?.relationId || '' });
       CommonToast.success(t('Saved Successful'));
 
       navigationService.goBack();

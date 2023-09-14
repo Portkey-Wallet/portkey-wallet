@@ -96,7 +96,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         icon: 'chat-camera',
         onPress: async () => {
           if (!(await requestQrPermission())) return showDialog();
-          navigationService.navigate('ChatCamera');
+          navigationService.navigate('ChatCameraPage');
         },
       },
       {

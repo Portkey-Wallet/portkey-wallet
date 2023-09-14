@@ -46,3 +46,11 @@ export const copyText = async (text: string) => {
     CommonToast.success(i18n.t('Copy Fail'));
   }
 };
+/**
+ *
+ * @param imgUrl
+ * @returns
+ */
+export const checkIsSvgUrl = (imgUrl: string) => {
+  return /.svg$/.test(imgUrl);
+};

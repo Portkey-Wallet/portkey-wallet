@@ -1,4 +1,4 @@
-import im, { ChannelStatusEnum, ChannelTypeEnum, IMStatusEnum, SocketMessage } from '@portkey-wallet/im';
+import im, { ChannelStatusEnum, IMStatusEnum, SocketMessage } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppCASelector } from '../.';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
@@ -24,6 +24,7 @@ export const useIMChannelListNetMapState = () => useAppCASelector(state => state
 export const useIMChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
 export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
+export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -68,7 +69,7 @@ export const useInitIM = () => {
               channelUuid: rawMsg.channelUuid,
               displayName: '',
               channelIcon: rawMsg.fromAvatar || '',
-              channelType: ChannelTypeEnum.P2P,
+              channelType: undefined,
               unreadMessageCount: 1,
               mentionsCount: 0,
               lastMessageType: rawMsg.type,
@@ -76,6 +77,7 @@ export const useInitIM = () => {
               lastPostAt: rawMsg.createAt,
               mute: rawMsg.mute,
               pin: false,
+              pinAt: '',
               toRelationId: rawMsg.from,
             },
           }),
@@ -91,7 +93,7 @@ export const useInitIM = () => {
               network: networkType,
               channelId: rawMsg.channelUuid,
               value: {
-                displayName: channelInfo.members.find(item => item.relationId === rawMsg.from)?.name || '',
+                displayName: channelInfo.name,
                 pin: channelInfo.pin,
                 channelType: channelInfo.type,
               },
@@ -190,7 +192,7 @@ export const useEditIMContact = () => {
   rawListRef.current = rawList;
 
   return useCallback(
-    async (params: EditContactItemApiType, walletName?: string) => {
+    async (params: EditContactItemApiType) => {
       const result = await editContact(params);
       const channel = rawListRef.current.find(item => item.toRelationId === params.relationId);
       if (channel) {
@@ -199,7 +201,7 @@ export const useEditIMContact = () => {
             network: networkType,
             channelId: channel.channelUuid,
             value: {
-              displayName: params.name || walletName || '',
+              displayName: result.name || result.caHolderInfo?.walletName || '',
             },
           }),
         );
@@ -212,3 +214,4 @@ export const useEditIMContact = () => {
 
 export * from './channelList';
 export * from './channel';
+export * from './group';

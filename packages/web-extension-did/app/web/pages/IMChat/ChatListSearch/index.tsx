@@ -6,10 +6,14 @@ import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLoading } from 'store/Provider/hooks';
 import DropdownSearch from 'components/DropdownSearch';
-import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useHideChannel, useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import './index.less';
 import SearchList from '../components/SearchList';
 import { ISearchItem } from '../components/SearchItem';
+import { IChatItemProps } from '@portkey-wallet/im-ui-web';
+import { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
+import { message } from 'antd';
+import CustomModal from 'pages/components/CustomModal';
 
 export default function ChatListSearch() {
   const { t } = useTranslation();
@@ -19,6 +23,7 @@ export default function ChatListSearch() {
   const { setLoading } = useLoading();
   const [chatList, setChatList] = useState<ISearchItem[]>([]);
   const searchChannel = useSearchChannel();
+  const hideChannel = useHideChannel();
 
   const handleSearch = useCallback(
     async (keyword: string) => {
@@ -37,6 +42,8 @@ export default function ChatListSearch() {
             userId: '',
             isImputation: false,
             channelType: item.channelType,
+            title: item.displayName,
+            status: item.status,
           }));
           setChatList(transRes);
         } catch (e) {
@@ -60,6 +67,36 @@ export default function ChatListSearch() {
     },
     [],
     500,
+  );
+
+  const handleClickChatItem = useCallback(
+    (item: IChatItemProps) => {
+      switch (item.channelType) {
+        case ChannelTypeEnum.P2P:
+          navigate(`/chat-box/${item.id}`);
+          break;
+        case ChannelTypeEnum.GROUP:
+          if (item.status === ChannelStatusEnum.NORMAL) {
+            navigate(`/chat-box-group/${item.id}`);
+          } else if (item.status === ChannelStatusEnum.DISBAND) {
+            CustomModal({
+              content: 'This group has been deleted by the owner',
+              onOk: () => hideChannel(String(item.id)),
+            });
+          } else if (item.status === ChannelStatusEnum.BE_REMOVED) {
+            CustomModal({
+              content: 'You have been removed by the group owner',
+              onOk: () => hideChannel(String(item.id)),
+            });
+          } else {
+            hideChannel(String(item.id));
+          }
+          break;
+        default:
+          message.error('Invalid chat');
+      }
+    },
+    [hideChannel, navigate],
   );
 
   return (
@@ -99,7 +136,7 @@ export default function ChatListSearch() {
         ) : (
           <div className="search-result-list">
             <div className="chat-title-text">Chats</div>
-            <SearchList list={chatList} clickItem={(item) => navigate(`/chat-box/${item.id}`)} />
+            <SearchList list={chatList} clickItem={(item) => handleClickChatItem(item)} />
           </div>
         )}
       </div>

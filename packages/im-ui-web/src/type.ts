@@ -12,7 +12,7 @@ export interface IChatItemProps {
   subtitle?: string;
   date?: Date;
   dateString?: string;
-  channelType: ChannelTypeEnum;
+  channelType?: ChannelTypeEnum;
   muted?: boolean;
   showMute?: boolean;
   pin?: boolean;

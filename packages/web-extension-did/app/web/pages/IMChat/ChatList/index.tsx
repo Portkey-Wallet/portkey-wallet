@@ -111,7 +111,7 @@ export default function ChatList() {
             navigate(`/chat-box-group/${item.id}`);
           } else if (item.status === ChannelStatusEnum.DISBAND) {
             CustomModal({
-              content: 'This group has been disbanded by the owner',
+              content: 'This group has been deleted by the owner',
               onOk: () => hideChannel(String(item.id)),
             });
           } else if (item.status === ChannelStatusEnum.BE_REMOVED) {

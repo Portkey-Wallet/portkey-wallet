@@ -95,7 +95,7 @@ export default function CreateChatGroup() {
       const { name } = form.getFieldsValue();
       const res = await createGroupChannel(name.trim(), selectedContacts);
 
-      message.success('Group Created!');
+      message.success('Group Created');
 
       navigate(`/chat-box-group/${res?.channelUuid}`);
     } catch (error) {
@@ -134,7 +134,7 @@ export default function CreateChatGroup() {
 
             <div className="create-chat-search">
               <div className="search-title flex-row-between">
-                <div>{t('Select Contact')}</div>
+                <div>{t('Select Contacts')}</div>
                 <div>
                   {selectedContacts?.length || 0}/{canChatCount}
                 </div>
@@ -153,12 +153,9 @@ export default function CreateChatGroup() {
               )}
 
               {/* no search, no result */}
-              {!isSearch && chatList?.length === 0 && (
-                <div className="flex-center no-search-result">No contact available</div>
-              )}
+              {!isSearch && chatList?.length === 0 && <div className="flex-center no-search-result">No contact</div>}
 
               {/* contacts available to chat */}
-              {/* TODO checkbox */}
               {chatList?.length > 0 && <ContactListSelect list={chatList} clickItem={handleSelect} />}
             </div>
           </div>

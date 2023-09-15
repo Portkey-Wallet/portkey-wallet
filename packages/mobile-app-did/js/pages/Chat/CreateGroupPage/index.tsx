@@ -98,7 +98,7 @@ const ChatGroupDetails = () => {
           <CommonInput allowClear type="search" value={keyword} onChangeText={setKeyword} placeholder="Search" />
         </View>
         <FlatList
-          extraData={(item: ContactItemType) => item.id}
+          keyExtractor={(item: ContactItemType) => item.id}
           data={filterChatContactList}
           ListEmptyComponent={<NoData noPic message={keyword ? 'No search found' : 'No contact'} />}
           renderItem={({ item }: { item: ContactItemType }) => (

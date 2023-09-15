@@ -118,6 +118,7 @@ export default function SearchPeople() {
       ) : (
         <FlatList
           data={filterList}
+          keyExtractor={item => item.channelUuid}
           ListHeaderComponent={
             debounceKeyword && filterList.length > 0 ? <TextL style={styles.listHeader}>Chats</TextL> : null
           }

@@ -43,8 +43,7 @@ const GroupMembersPage = () => {
 
   useEffect(() => {
     try {
-      const result = members.filter(ele => strIncludes(ele.name, debounceKeyword));
-      setFilterMemberList(result);
+      setFilterMemberList(() => members.filter(ele => strIncludes(ele.name, debounceKeyword)));
     } catch (error) {
       CommonToast.failError(error);
     }

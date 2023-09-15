@@ -75,13 +75,15 @@ const RemoveMembersPage = () => {
 
   useEffect(() => {
     try {
-      let result = [];
-      if (debounceKeyword) {
-        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
-      } else {
-        result = rawMemberList.filter(ele => !ele.isAdmin);
-      }
-      setFilterMembers(result);
+      setFilterMembers(() => {
+        let result = [];
+        if (debounceKeyword) {
+          result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
+        } else {
+          result = rawMemberList.filter(ele => !ele.isAdmin);
+        }
+        return [...result];
+      });
     } catch (error) {
       CommonToast.failError(error);
     }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import AElf from 'aelf-sdk';
 import clsx from 'clsx';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
@@ -9,7 +9,6 @@ import ImageDisplay from 'pages/components/ImageDisplay';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { sleep } from '@portkey-wallet/utils';
 import './index.less';
 
 export interface IBridgeModalProps extends ModalProps {
@@ -19,7 +18,6 @@ export interface IBridgeModalProps extends ModalProps {
 
 const BridgeModal = ({ onClose, open, ...props }: IBridgeModalProps) => {
   const { signPrivacyPolicy } = useDisclaimer();
-  const [read, setRead] = useState<boolean>(false);
   const [confirm, setConfirm] = useState<boolean>(false);
   const { isPrompt } = useCommonState();
   const { eBridgeUrl = '' } = useCurrentNetworkInfo();
@@ -43,38 +41,11 @@ const BridgeModal = ({ onClose, open, ...props }: IBridgeModalProps) => {
     }
   }, [eBridgeUrl, isPrompt, onClose, setLoading, signPrivacyPolicy]);
 
-  const handleDisclaimerScroll = useCallback(() => {
-    if (!read) {
-      const ele = document.querySelector('#disclaimer-content');
-      if (ele) {
-        const _isBottom = ele?.scrollHeight - ele?.scrollTop === ele?.clientHeight;
-        if (_isBottom) {
-          setRead(true);
-          ele.removeEventListener('scroll', handleDisclaimerScroll);
-        }
-      }
-    }
-  }, [read]);
+  const handleClose = useCallback(() => {
+    setConfirm(false);
+    onClose();
+  }, [onClose]);
 
-  const test = useCallback(async () => {
-    if (open) {
-      await sleep(200);
-      const modalTarget = document.querySelector('#disclaimer-content');
-      if (modalTarget) {
-        modalTarget.addEventListener('scroll', handleDisclaimerScroll);
-      }
-    }
-  }, [handleDisclaimerScroll, open]);
-
-  useEffect(() => {
-    test();
-    return () => {
-      const modalTarget = document.querySelector('#disclaimer-content');
-      if (modalTarget) {
-        modalTarget.removeEventListener('scroll', handleDisclaimerScroll);
-      }
-    };
-  }, [handleDisclaimerScroll, read, open, test]);
   return (
     <Modal
       {...props}
@@ -84,11 +55,11 @@ const BridgeModal = ({ onClose, open, ...props }: IBridgeModalProps) => {
       maskClosable={true}
       closable={false}
       centered={true}
-      onCancel={onClose}
+      onCancel={handleClose}
       footer={null}>
       <div className="bridge-modal flex-column">
         <div className="container flex-column">
-          <CustomSvg type="Close2" onClick={onClose} />
+          <CustomSvg type="Close2" onClick={handleClose} />
           <div className="bridge-modal-header flex-center">Disclaimer</div>
           <div className={clsx(['bridge-modal-content', 'flex-column', isPrompt && 'isPrompt'])}>
             <div className="bridge-detail flex-center">
@@ -115,15 +86,9 @@ const BridgeModal = ({ onClose, open, ...props }: IBridgeModalProps) => {
         <div className="footer">
           <div className="bridge-modal-footer flex-column">
             <div className="flex radio-container">
-              {read ? (
-                <div className="enabled-container" onClick={() => setConfirm(!confirm)}>
-                  {confirm ? <CustomSvg type="RadioSelect" /> : <CustomSvg type="RadioUnSelect" />}
-                </div>
-              ) : (
-                <div className="disable-pointer">
-                  <CustomSvg type="RadioUnSelect" />
-                </div>
-              )}
+              <div className="click-container" onClick={() => setConfirm(!confirm)}>
+                {confirm ? <CustomSvg type="RadioSelect" /> : <CustomSvg type="RadioUnSelect" />}
+              </div>
               <div className="agree-text">I have read and agree to these terms.</div>
             </div>
             <Button type="primary" className="disclaimer-btn" disabled={!confirm} onClick={onConfirm}>

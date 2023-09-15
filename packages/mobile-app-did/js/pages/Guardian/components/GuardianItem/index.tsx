@@ -137,6 +137,7 @@ function GuardianItemButton({
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,
         operationType,
+        targetChainId,
       });
 
       if (rst.accessToken) {
@@ -163,6 +164,7 @@ function GuardianItemButton({
     onSetGuardianStatus,
     operationType,
     originChainId,
+    targetChainId,
     verifyToken,
   ]);
   const onVerifier = useThrottleCallback(async () => {
@@ -240,6 +242,7 @@ export default function GuardianItem({
   isSuccess,
   approvalType = ApprovalType.communityRecovery,
   authenticationInfo,
+  targetChainId,
 }: GuardianAccountItemProps) {
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
   const disabled = isSuccess && itemStatus?.status !== VerifyStatus.Verified;
@@ -300,6 +303,7 @@ export default function GuardianItem({
           setGuardianStatus={setGuardianStatus}
           approvalType={approvalType}
           authenticationInfo={authenticationInfo}
+          targetChainId={targetChainId}
         />
       )}
       {renderBtn && renderBtn(guardianItem)}

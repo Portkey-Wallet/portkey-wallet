@@ -13,6 +13,7 @@ import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-
 import { useCurrentChannelId } from '../context/hooks';
 import { BGStyles } from 'assets/theme/styles';
 import navigationService from 'utils/navigationService';
+import { strIncludes } from '@portkey-wallet/utils';
 
 const GroupMembersPage = () => {
   const myRelationId = useRelationId();
@@ -42,9 +43,7 @@ const GroupMembersPage = () => {
 
   useEffect(() => {
     try {
-      const result = members.filter(ele =>
-        ele.name.toLocaleUpperCase().includes(debounceKeyword.trim().toLocaleUpperCase()),
-      );
+      const result = members.filter(ele => strIncludes(ele.name, debounceKeyword));
       setFilterMemberList(result);
     } catch (error) {
       CommonToast.failError(error);

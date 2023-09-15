@@ -54,8 +54,16 @@ const GroupInfo = () => {
     },
     [myRelationId, navigate, channelUuid],
   );
+  const handleRefresh = useCallback(async () => {
+    try {
+      await refresh();
+    } catch (error) {
+      console.log('===Failed to refresh error', error);
+      message.error('Failed to fetch data');
+    }
+  }, [refresh]);
   useEffect(() => {
-    refresh();
+    handleRefresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

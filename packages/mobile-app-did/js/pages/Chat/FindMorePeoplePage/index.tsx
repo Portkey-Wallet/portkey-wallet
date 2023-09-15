@@ -130,6 +130,7 @@ const FindMorePeople = () => {
       )}
       <FlatList
         data={list}
+        keyExtractor={item => item.relationId}
         renderItem={renderItem}
         ListEmptyComponent={debounceWord && !loading ? <NoData noPic message="No search result" /> : null}
       />

@@ -77,6 +77,7 @@ const BookmarksOverlay = (props: SelectListProps) => {
         </View>
       ) : (
         <FlatList
+          keyExtractor={item => item.id}
           data={bookmarkList}
           onEndReached={fetchBookmarkList}
           ListEmptyComponent={<NoData noPic message="No bookmarks" />}

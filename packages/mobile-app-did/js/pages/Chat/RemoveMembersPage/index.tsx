@@ -82,7 +82,7 @@ const RemoveMembersPage = () => {
         } else {
           result = rawMemberList.filter(ele => !ele.isAdmin);
         }
-        return [...result];
+        return result;
       });
     } catch (error) {
       CommonToast.failError(error);
@@ -112,7 +112,7 @@ const RemoveMembersPage = () => {
 
       <FlatList
         data={filterMembers || []}
-        extraData={(item: ChannelMemberInfo) => item.relationId}
+        keyExtractor={(item: ChannelMemberInfo) => item.relationId}
         ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg4} />}
         renderItem={({ item }) => (
           <GroupMemberItem

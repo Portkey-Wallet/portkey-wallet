@@ -66,7 +66,7 @@ export const BackEndNetWorkMap: {
     walletType: 'aelf',
     networkType: 'MAIN',
     isActive: true,
-    apiUrl: 'https://192.168.67.51:5577',
+    apiUrl: 'http://192.168.67.51:5577',
     graphqlUrl: 'http://192.168.67.51:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
     connectUrl: 'http://192.168.67.51:8080',
     cmsUrl: 'http://192.168.66.62:8055/graphql',

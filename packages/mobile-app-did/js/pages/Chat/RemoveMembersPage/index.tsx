@@ -61,7 +61,6 @@ const RemoveMembersPage = () => {
               Loading.show();
               const result = Array.from(selectedMemberMap.keys());
               await removeMembers(result || []);
-              // TODO: test it
               navigationService.goBack();
             } catch (error) {
               CommonToast.failError(error);

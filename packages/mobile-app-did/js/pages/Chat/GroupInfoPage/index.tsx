@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -19,12 +19,13 @@ import GroupInfoMemberItem, { GroupInfoMemberItemType } from '../components/Grou
 import { useCurrentChannelId } from '../context/hooks';
 import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const GroupInfoPage = () => {
   const myRelationId = useRelationId();
 
   const currentChannelId = useCurrentChannelId();
-  const { groupInfo, isAdmin } = useGroupChannelInfo(currentChannelId || '', true);
+  const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(currentChannelId || '', false);
   const { members } = groupInfo || {};
 
   const leaveGroup = useLeaveChannel();
@@ -57,7 +58,7 @@ const GroupInfoPage = () => {
             try {
               Loading.show();
               await leaveGroup(currentChannelId || '');
-              navigationService.goBack();
+              navigationService.navigate('Tab');
             } catch (error) {
               CommonToast.failError(error);
             } finally {
@@ -81,6 +82,17 @@ const GroupInfoPage = () => {
     },
     [myRelationId],
   );
+
+  useEffectOnce(() => {
+    (async () => {
+      try {
+        await refresh();
+      } catch (error) {
+        console.log(error);
+        CommonToast.fail('Failed to fetch data');
+      }
+    })();
+  });
 
   return (
     <PageContainer

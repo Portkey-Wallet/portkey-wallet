@@ -133,11 +133,11 @@ export default function ChatBox() {
   const handleSendMsgError = useCallback(
     (e: any) => {
       if (`${e.code}` === '13108') {
+        hideChannel(`${channelUuid}`, true);
         CustomModal({
           content: `You can't send messages to this group because you are no longer in it.`,
-          onOk: async () => {
+          onOk: () => {
             navigate('/chat-list');
-            hideChannel(`${channelUuid}`);
           },
         });
       } else {

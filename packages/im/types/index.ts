@@ -29,6 +29,7 @@ export type Message = {
 
 export type SocketMessage = Message & {
   mute: boolean;
+  channelType: ChannelTypeEnum;
 };
 
 export type ChannelMemberInfo = {

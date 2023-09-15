@@ -20,6 +20,7 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import qs from 'query-string';
 import './index.less';
 import { useSetTransferLimit } from './hooks/useSetTransferLimit';
+import { ChainId } from '@portkey-wallet/types';
 
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
@@ -46,6 +47,14 @@ export default function GuardianApproval() {
     );
     return isNotLessThan768 ? isNotFromLoginAndRegister : false;
   }, [isNotLessThan768, query]);
+  const targetChainId: ChainId | undefined = useMemo(() => {
+    if (query && query.indexOf('setTransferLimit') !== -1) {
+      const state = query.split('_')[1];
+      const _params = JSON.parse(state || '{}');
+      return _params.targetChainId;
+    }
+    return undefined;
+  }, [query]);
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(query);
 
   const userVerifiedList = useMemo(() => {
@@ -155,6 +164,7 @@ export default function GuardianApproval() {
                 isExpired={isExpired}
                 item={item}
                 loginAccount={loginAccount}
+                targetChainId={targetChainId}
               />
             ))}
           </ul>
@@ -182,6 +192,7 @@ export default function GuardianApproval() {
       recoveryWallet,
       t,
       userVerifiedList,
+      targetChainId,
     ],
   );
 

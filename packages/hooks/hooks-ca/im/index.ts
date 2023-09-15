@@ -1,4 +1,4 @@
-import im, { ChannelStatusEnum, IMStatusEnum, SocketMessage } from '@portkey-wallet/im';
+import im, { ChannelStatusEnum, ChannelTypeEnum, IMStatusEnum, SocketMessage } from '@portkey-wallet/im';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppCASelector } from '../.';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
@@ -61,27 +61,31 @@ export const useInitIM = () => {
 
       if (!listRef.current.find(item => item.channelUuid === rawMsg.channelUuid)) {
         console.log('addChannel', rawMsg.channelUuid);
-        dispatch(
-          addChannel({
-            network: networkType,
-            channel: {
-              status: ChannelStatusEnum.NORMAL,
-              channelUuid: rawMsg.channelUuid,
-              displayName: '',
-              channelIcon: rawMsg.fromAvatar || '',
-              channelType: undefined,
-              unreadMessageCount: 1,
-              mentionsCount: 0,
-              lastMessageType: rawMsg.type,
-              lastMessageContent: rawMsg.content,
-              lastPostAt: rawMsg.createAt,
-              mute: rawMsg.mute,
-              pin: false,
-              pinAt: '',
-              toRelationId: rawMsg.from,
-            },
-          }),
-        );
+
+        if (rawMsg.channelType === ChannelTypeEnum.P2P) {
+          dispatch(
+            addChannel({
+              network: networkType,
+              channel: {
+                status: ChannelStatusEnum.NORMAL,
+                channelUuid: rawMsg.channelUuid,
+                displayName: rawMsg.fromName || '',
+                channelIcon: rawMsg.fromAvatar || '',
+                channelType: rawMsg.channelType,
+                unreadMessageCount: 1,
+                mentionsCount: 0,
+                lastMessageType: rawMsg.type,
+                lastMessageContent: rawMsg.content,
+                lastPostAt: rawMsg.createAt,
+                mute: rawMsg.mute,
+                pin: false,
+                pinAt: '',
+                toRelationId: rawMsg.from,
+              },
+            }),
+          );
+          return;
+        }
 
         try {
           const { data: channelInfo } = await im.service.getChannelInfo({
@@ -89,13 +93,23 @@ export const useInitIM = () => {
           });
 
           dispatch(
-            updateChannelAttribute({
+            addChannel({
               network: networkType,
-              channelId: rawMsg.channelUuid,
-              value: {
+              channel: {
+                status: ChannelStatusEnum.NORMAL,
+                channelUuid: rawMsg.channelUuid,
                 displayName: channelInfo.name,
+                channelIcon: rawMsg.fromAvatar || '',
+                channelType: rawMsg.channelType,
+                unreadMessageCount: 1,
+                mentionsCount: 0,
+                lastMessageType: rawMsg.type,
+                lastMessageContent: rawMsg.content,
+                lastPostAt: rawMsg.createAt,
+                mute: rawMsg.mute,
                 pin: channelInfo.pin,
-                channelType: channelInfo.type,
+                pinAt: '',
+                toRelationId: rawMsg.from,
               },
             }),
           );

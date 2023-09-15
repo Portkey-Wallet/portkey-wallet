@@ -37,6 +37,7 @@ import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
 import { useCheckLimit } from 'hooks/useSecurity';
 import { ExceedLimit } from 'constants/security';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export type Account = { address: string; name?: string };
 
@@ -212,6 +213,7 @@ export default function Send() {
           symbol: tokenInfo.symbol,
           amount: amount,
           decimals: tokenInfo.decimals,
+          from: ICheckLimitBusiness.SEND,
         });
         if (typeof res !== 'boolean') return ExceedLimit;
 
@@ -278,6 +280,7 @@ export default function Send() {
           symbol: tokenInfo.symbol,
           amount: amount,
           decimals: tokenInfo.decimals,
+          from: ICheckLimitBusiness.SEND,
         });
         if (typeof res !== 'boolean') {
           setLoading(false);

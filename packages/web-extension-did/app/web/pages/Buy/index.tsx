@@ -47,6 +47,7 @@ import {
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -437,6 +438,7 @@ export default function Buy() {
           symbol: defaultToken.symbol,
           amount: valueSaveRef.current?.amount,
           decimals: defaultToken.decimals,
+          from: ICheckLimitBusiness.RAMP_SELL,
         });
         if (typeof limitRes !== 'boolean') return setLoading(false);
       } catch (error) {

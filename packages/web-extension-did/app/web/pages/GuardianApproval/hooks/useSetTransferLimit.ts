@@ -9,11 +9,11 @@ import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-
 import { useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { setTransferLimit } from 'utils/sandboxUtil/setTransferLimit';
 import ModalTip from 'pages/components/ModalTip';
 import { sleep } from '@portkey-wallet/utils';
+import { ICheckLimitBusiness, IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export const useSetTransferLimit = () => {
   const { setLoading } = useLoading();
@@ -37,6 +37,26 @@ export const useSetTransferLimit = () => {
     }
   }, [query, search, state]);
 
+  const checkBackPath = useCallback(
+    (state: IPaymentSecurityRouteState) => {
+      switch (state.from) {
+        case ICheckLimitBusiness.RAMP_SELL:
+          navigate('/buy');
+          break;
+
+        case ICheckLimitBusiness.SEND:
+          navigate(`/send/token/${state.symbol}`, { state });
+          break;
+
+        default:
+          navigate('/setting/wallet-security/payment-security/transfer-settings', { state });
+          break;
+      }
+      return;
+    },
+    [navigate],
+  );
+
   return useCallback(async () => {
     try {
       setLoading(true);
@@ -44,7 +64,7 @@ export const useSetTransferLimit = () => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
-      const transQuery: IPaymentSecurityItem = JSON.parse(query.split('_')[1]);
+      const transQuery: IPaymentSecurityRouteState = JSON.parse(query.split('_')[1]);
       const symbol = transQuery?.symbol;
       const dailyLimit = transQuery?.restricted
         ? timesDecimals(transQuery.dailyLimit, transQuery.decimals).toNumber()
@@ -72,9 +92,7 @@ export const useSetTransferLimit = () => {
         content: 'Requested successfully',
         onClose: async () => {
           await sleep(1000);
-          navigate('/setting/wallet-security/payment-security/transfer-settings', {
-            state: { ...transQuery, dailyLimit, singleLimit },
-          });
+          checkBackPath({ ...transQuery, dailyLimit: String(dailyLimit), singleLimit: String(singleLimit) });
         },
       });
     } catch (error: any) {
@@ -84,10 +102,10 @@ export const useSetTransferLimit = () => {
       message.error(_error);
     }
   }, [
+    checkBackPath,
     currentChain?.caContractAddress,
     currentChain?.endPoint,
     currentNetwork.walletType,
-    navigate,
     passwordSeed,
     query,
     setLoading,

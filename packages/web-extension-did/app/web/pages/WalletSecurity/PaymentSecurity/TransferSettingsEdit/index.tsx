@@ -32,23 +32,35 @@ export default function TransferSettingsEdit() {
   const [validDailyLimit, setValidDailyLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
 
   const handleFormChange = useCallback(() => {
-    const { restricted, singleLimit, dailyLimit } = form.getFieldsValue();
+    const { singleLimit, dailyLimit } = form.getFieldsValue();
 
-    if (restricted) {
+    if (restrictedText) {
+      // Transfers restricted
       if (Number(singleLimit) > Number(dailyLimit)) {
         setDisable(true);
         return setValidSingleLimit({ validateStatus: 'error', errorMsg: SingleExceedDaily });
       } else {
         setValidSingleLimit({ validateStatus: '', errorMsg: '' });
       }
-    }
 
-    setDisable(!((restricted && singleLimit && dailyLimit) || !restricted));
-  }, [form]);
+      setDisable(
+        !(
+          restrictedText &&
+          singleLimit &&
+          dailyLimit &&
+          validSingleLimit.validateStatus !== 'error' &&
+          validDailyLimit.validateStatus !== 'error'
+        ),
+      );
+    } else {
+      // Unlimited transfers
+      setDisable(false);
+    }
+  }, [form, restrictedText, validDailyLimit.validateStatus, validSingleLimit.validateStatus]);
 
   const handleBack = useCallback(() => {
-    navigate('/setting/wallet-security/payment-security');
-  }, [navigate]);
+    navigate('/setting/wallet-security/payment-security/transfer-settings', { state: state });
+  }, [navigate, state]);
 
   const handleRestrictedChange = useCallback(
     (checked: boolean) => {
@@ -101,6 +113,7 @@ export default function TransferSettingsEdit() {
       symbol: state.symbol,
       decimals: state.decimals,
       restricted,
+      from: state.from,
     };
 
     isPrompt
@@ -120,6 +133,7 @@ export default function TransferSettingsEdit() {
     form,
     state.symbol,
     state.decimals,
+    state.from,
     isPrompt,
     navigate,
   ]);

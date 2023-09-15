@@ -21,6 +21,8 @@ import { useJumpToChatDetails } from 'hooks/chat';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import NoData from 'components/NoData';
 import Lottie from 'lottie-react-native';
+import Touchable from 'components/Touchable';
+import { copyText } from 'utils';
 
 const FindMorePeople = () => {
   const { userId } = useWallet();
@@ -123,6 +125,14 @@ const FindMorePeople = () => {
       {!keyword && (
         <View style={[GStyles.center, styles.portkeyIdWrap]}>
           <TextM style={styles.portkeyId}>{`My Portkey ID : ${userId}`}</TextM>
+          <Touchable onPress={() => copyText(userId || '')}>
+            {/* TODO */}
+            <Svg icon="copy1" />
+          </Touchable>
+          <Touchable onPress={() => navigationService.navigate('ChatQrCode')}>
+            {/* TODO */}
+            <Svg icon="album" />
+          </Touchable>
         </View>
       )}
       <FlatList

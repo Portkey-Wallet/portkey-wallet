@@ -116,13 +116,12 @@ export default function SessionList() {
           }
           break;
         case ChannelStatusEnum.LEFT:
-          hideChannel(item.channelUuid);
+          hideChannel(item.channelUuid, true);
           break;
         case ChannelStatusEnum.BE_REMOVED:
-          hideChannel(item.channelUuid);
+          hideChannel(item.channelUuid, true);
           ActionSheet.alert({
             title: 'You have been removed by the group owner',
-
             buttons: [
               {
                 title: 'OK',
@@ -132,7 +131,7 @@ export default function SessionList() {
           });
           break;
         case ChannelStatusEnum.DISBAND:
-          hideChannel(item.channelUuid);
+          hideChannel(item.channelUuid, true);
           ActionSheet.alert({
             title: 'This group has been deleted by the owner',
             buttons: [

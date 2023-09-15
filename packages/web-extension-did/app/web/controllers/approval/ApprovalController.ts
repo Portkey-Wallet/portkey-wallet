@@ -143,4 +143,24 @@ export default class ApprovalController {
       },
     );
   }
+
+  /**
+   * Obtain authorization to  auto execute
+   *
+   */
+  async authorizedToAllowanceApprove(params: any): Promise<SendResponseParams> {
+    return this.notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.ALLOWANCE_APPROVE,
+        search: JSON.stringify(params),
+      },
+      'tabs',
+    );
+  }
+
+  async authorizedToCheckWalletSecurity(): Promise<SendResponseParams> {
+    return this.notificationService.openPrompt({
+      method: PromptRouteTypes.WALLET_SECURITY_APPROVE,
+    });
+  }
 }

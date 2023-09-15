@@ -16,6 +16,8 @@ import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage
 import SWEventController from 'controllers/SWEventController';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 import getManager from 'utils/lib/getManager';
+import { customFetch } from '@portkey-wallet/utils/fetch';
+import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -306,6 +308,24 @@ export default class AELFMethodController {
     }
   };
 
+  checkWalletSecurity = async () => {
+    try {
+      const networkType = await this.dappManager.networkType();
+      const caHash = await getCurrentCaHash();
+
+      const currentNetwork = NetworkList.filter((item) => item.networkType === networkType)[0];
+      const result = await customFetch(`${currentNetwork.apiUrl}/api/app/user/security/balanceCheck`, {
+        method: 'GET',
+        params: {
+          caHash,
+        },
+      });
+      return result.isSafe;
+    } catch (error) {
+      throw 'checkWalletSecurity error';
+    }
+  };
+
   sendTransaction: RequestCommonHandler = async (sendResponse, message) => {
     try {
       if (!message?.payload?.params)
@@ -319,8 +339,10 @@ export default class AELFMethodController {
           },
         });
       const { payload, origin } = message;
+      console.log(message, 'message====sendTransaction');
       const chainInfo = await this.dappManager.getChainInfo(payload.chainId);
       const caInfo = await this.dappManager.getCaInfo(payload.chainId);
+
       if (!chainInfo || !chainInfo.endPoint || !caInfo)
         return sendResponse({
           ...errorHandler(200005),
@@ -330,34 +352,79 @@ export default class AELFMethodController {
           },
         });
 
-      const isForward = chainInfo?.caContractAddress !== payload?.contractAddress;
-      const method = isForward ? 'ManagerForwardCall' : payload?.method;
-
-      if (!CA_METHOD_WHITELIST.includes(method))
+      if (!payload?.contractAddress)
         return sendResponse({
-          ...errorHandler(400001),
+          ...errorHandler(200005),
           data: {
-            code: ResponseCode.CONTRACT_ERROR,
-            msg: 'The current method is not supported',
+            code: 40001,
+            msg: 'Invalid contractAddress',
           },
         });
 
-      const key = randomId();
-      setLocalStorage({ txPayload: { [key]: JSON.stringify(payload.params) } });
-      delete message.payload?.params;
+      // TODO check wallet security
+      const isSafe = await this.checkWalletSecurity();
+      if (!isSafe) {
+        // Open Prompt to approve add guardian
+        this.approvalController.authorizedToCheckWalletSecurity();
+        return sendResponse({
+          ...errorHandler(400001),
+          data: {
+            code: 40001,
+            msg: 'There are security risks in the current wallet status',
+          },
+        });
+      }
 
-      const result = await this.handleRequest({
-        params: {
+      const key = randomId();
+      // is approve
+      const isApprove = await this.dappManager.isApprove({
+        contractAddress: payload.contractAddress,
+        method: payload?.method,
+        chainId: payload.chainId,
+      });
+      let result;
+
+      if (isApprove) {
+        setLocalStorage({ txPayload: { [key]: JSON.stringify(payload) } });
+        delete message.payload?.params;
+
+        result = await this.approvalController.authorizedToAllowanceApprove({
           origin,
           transactionInfoId: key,
-          payload: message.payload,
-        },
-        method: MethodsBase.SEND_TRANSACTION,
-        callBack: (params: any) => this.approvalController.authorizedToSendTransactions(params),
-      });
+          icon: message.icon,
+          method: payload?.method,
+          chainId: payload.chainId,
+        });
 
-      // TODO Only support open a window
-      removeLocalStorage('txPayload');
+        removeLocalStorage('txPayload');
+      } else {
+        const isForward = chainInfo?.caContractAddress !== payload.contractAddress;
+        const method = isForward ? 'ManagerForwardCall' : payload?.method;
+
+        if (!CA_METHOD_WHITELIST.includes(method))
+          return sendResponse({
+            ...errorHandler(400001),
+            data: {
+              code: ResponseCode.CONTRACT_ERROR,
+              msg: 'The current method is not supported',
+            },
+          });
+        setLocalStorage({ txPayload: { [key]: JSON.stringify(payload.params) } });
+        delete message.payload?.params;
+
+        result = await this.handleRequest({
+          params: {
+            origin,
+            transactionInfoId: key,
+            payload: message.payload,
+          },
+          method: MethodsBase.SEND_TRANSACTION,
+          callBack: (params: any) => this.approvalController.authorizedToSendTransactions(params),
+        });
+        // TODO Only support open a window
+        removeLocalStorage('txPayload');
+      }
+
       if (result.error === 200003)
         return sendResponse({
           ...errorHandler(200003),

@@ -105,7 +105,7 @@ const AddMembersPage = () => {
       </View>
       <FlatList
         data={filterMemberList}
-        extraData={(item: ContactItemType) => item.imInfo?.relationId}
+        keyExtractor={(item: ContactItemType) => item.imInfo?.relationId || ''}
         ListEmptyComponent={
           debounceKeyword ? (
             <NoData noPic message="No search found" style={BGStyles.bg4} />

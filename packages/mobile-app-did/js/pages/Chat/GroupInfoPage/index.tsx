@@ -58,7 +58,7 @@ const GroupInfoPage = () => {
             try {
               Loading.show();
               await leaveGroup(currentChannelId || '');
-              navigationService.goBack();
+              navigationService.navigate('Tab');
             } catch (error) {
               CommonToast.failError(error);
             } finally {

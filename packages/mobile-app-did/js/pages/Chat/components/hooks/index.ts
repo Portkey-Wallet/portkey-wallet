@@ -93,5 +93,5 @@ export function useSendCurrentChannelMessage() {
 export function useHideCurrentChannel() {
   const currentChannelId = useCurrentChannelId();
   const hideChannel = useHideChannel();
-  return useCallback(() => hideChannel(currentChannelId || ''), [currentChannelId, hideChannel]);
+  return useCallback(() => hideChannel(currentChannelId || '', true), [currentChannelId, hideChannel]);
 }

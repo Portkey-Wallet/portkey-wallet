@@ -4,8 +4,9 @@ import { ChannelTypeEnum } from '@portkey-wallet/im/types';
 import { GenerateType } from '@portkey-wallet/types/common';
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
+import { IChatItemProps } from '@portkey-wallet/im-ui-web';
 
-export type ISearchItem = GenerateType<ContactItemType & { channelType?: ChannelTypeEnum }>;
+export type ISearchItem = GenerateType<ContactItemType & IChatItemProps>;
 
 export default function SearchItem({ item }: { item: ISearchItem }) {
   const { name, index } = useIndexAndName(item);

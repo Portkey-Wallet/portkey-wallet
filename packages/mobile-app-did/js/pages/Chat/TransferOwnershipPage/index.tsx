@@ -17,6 +17,7 @@ import { BGStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { strIncludes } from '@portkey-wallet/utils';
 
 const TransferOwnershipPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -35,7 +36,7 @@ const TransferOwnershipPage = () => {
     try {
       let result = [];
       if (debounceKeyword) {
-        result = rawMemberList.filter(ele => ele.name.toLocaleUpperCase().includes(debounceKeyword) && !ele.isAdmin);
+        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
       } else {
         result = rawMemberList.filter(ele => !ele.isAdmin);
       }

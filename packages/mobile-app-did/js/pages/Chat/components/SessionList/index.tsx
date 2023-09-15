@@ -105,6 +105,8 @@ export default function SessionList() {
 
   const onPressItem = useCallback(
     (item: ChannelItem) => {
+      if (item.channelType !== 'G' && item.channelType !== 'P') return;
+
       switch (item.status) {
         case ChannelStatusEnum.NORMAL:
           if (item.channelType === 'G') {

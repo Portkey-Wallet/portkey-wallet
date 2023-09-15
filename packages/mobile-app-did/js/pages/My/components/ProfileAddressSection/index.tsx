@@ -31,7 +31,7 @@ type ProfileAddressSectionPropsType = {
 };
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
-  const { title = 'DID', disable, noMarginTop, addressList, isMySelf } = props;
+  const { title = 'Address', disable, noMarginTop, addressList, isMySelf } = props;
   const isTestnet = useIsTestnet();
 
   const copyId = useCallback(

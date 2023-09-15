@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
@@ -22,6 +22,7 @@ export default function MemberList() {
 
   const handleSearch = useCallback(
     (keyword: string) => {
+      keyword = keyword.trim();
       let _res = groupInfo?.members || [];
       if (keyword) {
         _res = (groupInfo?.members || []).filter((item) => item.name.toLowerCase().includes(keyword.toLowerCase()));
@@ -33,7 +34,6 @@ export default function MemberList() {
   const searchDebounce = useDebounceCallback(
     (params) => {
       const _v = params.trim();
-      setFilterWord(_v);
       handleSearch(_v);
     },
     [],
@@ -69,6 +69,19 @@ export default function MemberList() {
     ),
     [handleGoProfile, showMemberList],
   );
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const _value = e.target.value;
+      if (_value) {
+        setFilterWord(_value);
+        searchDebounce(_value);
+      } else {
+        handleSearch(_value);
+        setFilterWord(_value);
+      }
+    },
+    [handleSearch, searchDebounce],
+  );
   useEffect(() => {
     setFilterWord(state?.search ?? '');
     handleSearch(state?.search ?? '');
@@ -90,11 +103,7 @@ export default function MemberList() {
           overlay={<></>}
           value={filterWord}
           inputProps={{
-            onChange: (e) => {
-              const _v = e.target.value;
-              setFilterWord(_v);
-              searchDebounce(_v);
-            },
+            onChange: handleInputChange,
             placeholder: 'Search',
           }}
         />

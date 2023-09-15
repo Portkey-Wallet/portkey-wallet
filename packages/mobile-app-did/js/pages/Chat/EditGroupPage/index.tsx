@@ -27,7 +27,7 @@ const EditGroupPage = () => {
 
   const onDisband = useCallback(() => {
     ActionSheet.alert({
-      title: 'Are you sure delete the group ?',
+      title: 'Are you sure leave and delete the group ?',
       buttons: [
         {
           title: 'No',
@@ -40,7 +40,6 @@ const EditGroupPage = () => {
               Loading.show();
               await disbandGroup();
               CommonToast.success('Group deleted');
-              // TODO back to where
               navigationService.navigate('Tab');
             } catch (error) {
               CommonToast.failError(error);
@@ -89,7 +88,7 @@ const EditGroupPage = () => {
       <View style={styles.buttonWrap}>
         <CommonButton disabled={!groupName} title="Save" type="primary" onPress={onSave} />
         <CommonButton
-          title={'Delete'}
+          title={'Leave and Delete'}
           style={styles.deleteBtnStyle}
           onPress={onDisband}
           titleStyle={FontStyles.font12}

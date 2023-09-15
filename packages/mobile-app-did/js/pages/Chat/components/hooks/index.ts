@@ -1,5 +1,5 @@
 import { bottomBarHeight, isIOS } from '@portkey-wallet/utils/mobile/device';
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Animated } from 'react-native';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
 import usePrevious from 'hooks/usePrevious';
@@ -7,7 +7,7 @@ import { TextInput } from 'react-native';
 import { useBottomBarStatus, useChatsDispatch, useCurrentChannelId } from '../../context/hooks';
 import { ChatBottomBarStatus } from 'store/chat/slice';
 import { setBottomBarStatus } from '../../context/chatsContext';
-import { useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useHideChannel, useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { MessageType } from '@portkey-wallet/im';
 import { readFile } from 'utils/fs';
 import { formatRNImage } from '@portkey-wallet/utils/s3';
@@ -88,4 +88,10 @@ export function useSendCurrentChannelMessage() {
     }),
     [currentChannelId, sendChannelImageByS3Result, sendChannelMessage],
   );
+}
+
+export function useHideCurrentChannel() {
+  const currentChannelId = useCurrentChannelId();
+  const hideChannel = useHideChannel();
+  return useCallback(() => hideChannel(currentChannelId || ''), [currentChannelId, hideChannel]);
 }

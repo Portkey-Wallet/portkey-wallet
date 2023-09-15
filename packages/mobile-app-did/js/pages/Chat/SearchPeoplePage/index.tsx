@@ -106,6 +106,7 @@ export default function SearchPeople() {
       titleDom="Search">
       <InputWithCancel
         ref={iptRef as any}
+        placeholder="Name in Chats"
         value={keyword}
         clearText={() => setKeyword('')}
         onChangeText={v => setKeyword(v)}

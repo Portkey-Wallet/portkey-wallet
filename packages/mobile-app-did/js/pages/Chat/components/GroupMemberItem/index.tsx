@@ -40,9 +40,9 @@ export default memo(
 
     return (
       <Touchable
-        disabled={disabled}
         style={styles.itemWrap}
         onPress={() => {
+          if (disabled) return;
           onPress?.(item.relationId, item);
         }}>
         <View style={[styles.itemRow, disabled && styles.disable]}>

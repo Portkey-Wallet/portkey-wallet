@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, StatusBar, View, Image, ScrollView } from 'react-native';
+import { StyleSheet, TouchableOpacity, StatusBar, View, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
@@ -41,7 +41,7 @@ interface NftItemType {
   };
 }
 
-const NFTDetail: React.FC<TokenDetailProps> = props => {
+const NFTDetail: React.FC<TokenDetailProps> = () => {
   const { t } = useLanguage();
 
   const nftItem = useRouterParams<NftItemType>();
@@ -57,8 +57,6 @@ const NFTDetail: React.FC<TokenDetailProps> = props => {
     tokenId,
     collectionInfo: { imageUrl, collectionName },
   } = nftItem;
-
-  console.log('nftItem', nftItem);
 
   const copyStr = useCallback(
     async (str: string) => {
@@ -82,7 +80,12 @@ const NFTDetail: React.FC<TokenDetailProps> = props => {
         </View>
         <TextXXL style={styles.tokenId}>{`#${tokenId}`}</TextXXL>
 
-        <CommonAvatar title={alias} style={[imageLargeUrl ? styles.image1 : styles.image]} imageUrl={imageLargeUrl} />
+        <CommonAvatar
+          title={alias}
+          style={[imageLargeUrl ? styles.image1 : styles.image]}
+          imageUrl={imageLargeUrl}
+          avatarSize={pTd(335)}
+        />
 
         <View style={styles.infoWrap}>
           <TextL style={[styles.basicInfoTitle, fonts.mediumFont]}>{t('Basic info')}</TextL>

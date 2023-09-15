@@ -88,8 +88,14 @@ export function formatRpcUrl(rpc: string) {
   return rpc;
 }
 
-export function strIncludes(str1: string, str2: string) {
-  return str1.toLowerCase().includes(str2.toLowerCase().trim());
+/**
+ *
+ * @param str
+ * @param keyword
+ * @returns
+ */
+export function strIncludes(str: string, keyword: string) {
+  return str.toLocaleUpperCase().includes(keyword.toLocaleUpperCase().trim());
 }
 
 export const sleep = (time: number) => {

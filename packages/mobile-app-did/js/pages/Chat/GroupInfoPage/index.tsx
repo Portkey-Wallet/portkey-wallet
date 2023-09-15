@@ -95,7 +95,7 @@ const GroupInfoPage = () => {
           <TextXXXL numberOfLines={1} style={[GStyles.marginTop(pTd(8)), GStyles.paddingArg(0, pTd(20))]}>
             {groupInfo?.name}
           </TextXXXL>
-          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${groupInfo?.members.length} member${
+          <TextM style={[GStyles.marginTop(pTd(4)), FontStyles.font7]}>{`${groupInfo?.members?.length || 0} member${
             groupInfo?.members.length && groupInfo?.members.length > 1 ? 's' : ''
           }`}</TextM>
         </View>

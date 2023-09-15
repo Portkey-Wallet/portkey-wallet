@@ -37,6 +37,7 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import CustomChatAvatar from '../CustomChatAvatar';
 import SystemInfo from '../SystemInfo';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -53,18 +54,21 @@ export default function ChatsGroupDetailContent() {
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
 
-  const { list, init } = useGroupChannel(currentChannelId || '');
-  const [loading, setLoading] = useState(true);
+  const { list, init, hasNext, next } = useGroupChannel(currentChannelId || '');
+  const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
   const relationId = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
-  console.log('list', list);
+  const onLoadEarlier = useLockCallback(async () => {
+    if (initializing) return;
+    if (hasNext) await next();
+  }, [hasNext, next]);
 
   useEffectOnce(() => {
     initChatInputRecorder();
     const timer = setTimeout(() => {
-      setLoading(false);
+      setInitializing(false);
     }, 200);
     return () => {
       clearTimeout(timer);
@@ -108,9 +112,10 @@ export default function ChatsGroupDetailContent() {
   const listViewProps: GiftedChatProps['listViewProps'] = useMemo(() => {
     return {
       ...ListViewProps,
+      onEndReached: () => onLoadEarlier(),
       onScrollBeginDrag: onDismiss,
     };
-  }, [onDismiss]);
+  }, [onDismiss, onLoadEarlier]);
 
   const renderScrollToBottomComponent = useCallback(() => {
     return <Svg icon="chat-scroll-to-bottom" size={pTd(24)} />;
@@ -152,7 +157,7 @@ export default function ChatsGroupDetailContent() {
   return (
     <>
       <Touchable disabled={disabledTouchable} activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
-        {loading ? (
+        {initializing ? (
           <ActivityIndicator size={'small'} color={FontStyles.font4.color} />
         ) : (
           <GiftedChat
@@ -183,6 +188,7 @@ export default function ChatsGroupDetailContent() {
             messagesContainerStyle={styles.messagesContainerStyle}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
+            onLoadEarlier={onLoadEarlier}
           />
         )}
       </Touchable>

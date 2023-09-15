@@ -35,6 +35,7 @@ import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import SystemInfo from '../SystemInfo';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -51,16 +52,21 @@ export default function ChatsDetailContent() {
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
 
-  const { list, init } = useChannel(currentChannelId || '');
-  const [loading, setLoading] = useState(true);
+  const { list, init, next, hasNext } = useChannel(currentChannelId || '');
+  const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
   const relationId = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
+  const onLoadEarlier = useLockCallback(async () => {
+    if (initializing) return;
+    if (hasNext) await next();
+  }, [hasNext, initializing, next]);
+
   useEffectOnce(() => {
     initChatInputRecorder();
     const timer = setTimeout(() => {
-      setLoading(false);
+      setInitializing(false);
     }, 200);
     return () => {
       clearTimeout(timer);
@@ -104,9 +110,10 @@ export default function ChatsDetailContent() {
   const listViewProps: GiftedChatProps['listViewProps'] = useMemo(() => {
     return {
       ...ListViewProps,
+      onEndReached: () => onLoadEarlier(),
       onScrollBeginDrag: onDismiss,
     };
-  }, [onDismiss]);
+  }, [onDismiss, onLoadEarlier]);
 
   const renderScrollToBottomComponent = useCallback(() => {
     return <Svg icon="chat-scroll-to-bottom" size={pTd(24)} />;
@@ -144,7 +151,7 @@ export default function ChatsDetailContent() {
   return (
     <>
       <Touchable disabled={disabledTouchable} activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
-        {loading ? (
+        {initializing ? (
           <ActivityIndicator size={'small'} color={FontStyles.font4.color} />
         ) : (
           <GiftedChat

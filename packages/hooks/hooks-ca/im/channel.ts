@@ -520,20 +520,29 @@ export const useHideChannel = () => {
   const dispatch = useAppCommonDispatch();
 
   const hide = useCallback(
-    async (channelId: string) => {
+    async (channelId: string, isLocalImmediateDelete = false) => {
+      if (isLocalImmediateDelete) {
+        dispatch(
+          removeChannel({
+            network: networkType,
+            channelId,
+          }),
+        );
+      }
       await im.service.hideChannel({
         channelUuid: channelId,
       });
       im.service.readMessage({ channelUuid: channelId, total: 9999 }).then(() => {
         im.refreshMessageCount();
       });
-
-      dispatch(
-        removeChannel({
-          network: networkType,
-          channelId,
-        }),
-      );
+      if (!isLocalImmediateDelete) {
+        dispatch(
+          removeChannel({
+            network: networkType,
+            channelId,
+          }),
+        );
+      }
     },
     [dispatch, networkType],
   );

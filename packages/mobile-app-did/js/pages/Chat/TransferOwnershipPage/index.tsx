@@ -32,15 +32,19 @@ const TransferOwnershipPage = () => {
   const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
+  console.log('rawMemberList', rawMemberList);
+
   useEffect(() => {
     try {
-      let result = [];
-      if (debounceKeyword) {
-        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
-      } else {
-        result = rawMemberList.filter(ele => !ele.isAdmin);
-      }
-      setFilterMembers(result);
+      setFilterMembers(() => {
+        let result = [];
+        if (debounceKeyword) {
+          result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
+        } else {
+          result = rawMemberList.filter(ele => !ele.isAdmin);
+        }
+        return [...result];
+      });
     } catch (error) {
       CommonToast.failError(error);
     }
@@ -115,6 +119,7 @@ const TransferOwnershipPage = () => {
         }
         renderItem={({ item }) => (
           <GroupMemberItem
+            key={item.relationId}
             multiple={false}
             item={{
               title: item.name,

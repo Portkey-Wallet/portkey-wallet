@@ -6,16 +6,22 @@ import GStyles from 'assets/theme/GStyles';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import PageContainer from 'components/PageContainer';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import CommonAvatar from 'components/CommonAvatar';
+import { TextXXL } from 'components/CommonText';
 
 const ChatCamera: React.FC = () => {
+  const { userId, walletName } = useWallet();
+
   return (
     <PageContainer
-      hideHeader
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}
-      titleDom="Search">
-      <CommonQRCodeStyled qrData="hahaah" />
+      titleDom="Relation">
+      <CommonAvatar title={walletName} avatarSize={pTd(40)} />
+      <TextXXL>{walletName}</TextXXL>
+      <CommonQRCodeStyled qrData={userId || ''} />
     </PageContainer>
   );
 };

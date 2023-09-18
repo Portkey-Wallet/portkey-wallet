@@ -15,6 +15,8 @@ import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import CustomSvg from 'components/CustomSvg';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCheckManagerSyncState } from 'hooks/wallet';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export default function TokenInput({
   fromAccount,
@@ -47,7 +49,7 @@ export default function TokenInput({
   const [isManagerSynced, setIsManagerSynced] = useState(true);
   const { max: maxFee } = useGetTxFee(token.chainId);
   const defaultToken = useDefaultToken(token.chainId);
-
+  const symbolImages = useSymbolImages();
   const amountInUsd = useMemo(
     () => amountInUsdShow(value || amount, 0, token.symbol),
     [amount, amountInUsdShow, token.symbol, value],
@@ -152,7 +154,7 @@ export default function TokenInput({
               {token.symbol === ELF_SYMBOL ? (
                 <CustomSvg className="token-logo" type="elf-icon" />
               ) : (
-                <div className="custom">{token?.symbol[0]}</div>
+                <TokenImageDisplay symbol={token.symbol} src={symbolImages[token.symbol]} width={36} />
               )}
             </div>
             <div className="center">

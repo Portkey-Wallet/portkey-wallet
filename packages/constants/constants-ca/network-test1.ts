@@ -11,3 +11,7 @@ export const OfficialWebsitePortkeyIdPath = 'https://portkey.finance/sc/ac';
 export const BingoGame = 'http://192.168.66.240:3000';
 
 export const ThirdParty = `https://openlogin-test.portkey.finance`;
+
+export const LinkWebsite = 'https://portkey-website-dev.vercel.app';
+
+export const AddContactLinkPath = LinkWebsite + '/sc/ac/';

@@ -13,3 +13,7 @@ export const OfficialWebsitePortkeyIdPath = 'https://portkey.finance/sc/ac';
 
 export const BingoGame = 'https://portkey-bingo-game.vercel.app';
 export const ThirdParty = `https://thirdparty.portkey.finance`;
+
+export const LinkWebsite = OfficialWebsite;
+
+export const AddContactLinkPath = LinkWebsite + '/sc/ac/';

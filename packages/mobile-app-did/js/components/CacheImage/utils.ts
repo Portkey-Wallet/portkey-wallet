@@ -1,7 +1,8 @@
-import { ImageProps } from 'react-native';
+import { ImageProps, ImageURISource } from 'react-native';
 import { CacheImageProps } from '.';
-import { checkExistsImage, getCacheImage, isLocalSource, isURISource } from 'utils/fs/img';
+import { checkExistsImage, getCacheImage, getCacheImageInfo, isLocalSource, isURISource } from 'utils/fs/img';
 import { isLocalPath } from 'utils/fs';
+import { CreateDownloadResumableParams } from 'utils/fs/types';
 
 const CacheTempMap: { [key: string]: CacheImageProps['source'] } = {};
 
@@ -17,6 +18,42 @@ export async function getLocalSource(source: ImageProps['source']) {
   return CacheTempMap[source.uri || ''];
 }
 
+export const getCacheImageByOnDownload = async ({
+  source,
+  onDownload,
+}: {
+  onDownload: (params: CreateDownloadResumableParams) => Promise<void>;
+  source: ImageURISource;
+}) => {
+  if (!source.uri) return source;
+  try {
+    const { source: imageSource, path } = await getCacheImageInfo(source);
+    if (imageSource) return imageSource;
+    if (!path) return source;
+    await onDownload({ uri: source.uri, fileUri: path });
+    return { uri: path };
+  } catch (error) {
+    return source;
+  }
+};
+
+export async function getLocalSourceByResumable({
+  source,
+  onDownload,
+}: {
+  onDownload: (params: CreateDownloadResumableParams) => Promise<void>;
+  source: ImageProps['source'];
+}) {
+  if (!isURISource(source)) return source;
+
+  if (isLocalSource(source)) return source;
+  if (!CacheTempMap[source.uri || '']) {
+    const localSource = await getCacheImageByOnDownload({ source, onDownload });
+    if (localSource) CacheTempMap[source.uri || ''] = localSource;
+  }
+  return CacheTempMap[source.uri || ''];
+}
+
 export async function getLocalUri(uri: string) {
   if (isLocalPath(uri)) return { uri };
   if (!CacheTempMap[uri]) {
@@ -26,10 +63,11 @@ export async function getLocalUri(uri: string) {
   return CacheTempMap[uri || ''];
 }
 
-export function initStateSource(source?: ImageProps['source']) {
+export function initStateSource(source?: ImageProps['source'], originUri?: string) {
   if (!source) return;
   if (!isURISource(source)) return source;
   if (isLocalSource(source)) return source;
-  if (CacheTempMap[source.uri || '']) return CacheTempMap[source.uri || ''];
+  if (originUri && CacheTempMap[originUri]) return CacheTempMap[originUri];
+  if (source.uri && CacheTempMap[source.uri]) return CacheTempMap[source.uri];
   return undefined;
 }

@@ -28,16 +28,15 @@ export function useHandleParsedUrl() {
             const { url } = query;
             if (typeof url !== 'string' || !checkIsUrl(url)) return;
             const fixUrl = prefixUrlWithProtocol(url);
-            jumpToWebview({
-              item: {
-                name: fixUrl,
-                url: fixUrl,
-              },
-              autoApprove: true,
-            });
+            jumpToWebview({ item: { name: fixUrl, url: fixUrl }, autoApprove: true });
             break;
           }
-
+          case SCHEME_ACTION.addContact: {
+            const id = Object.values(query).join('');
+            // TODO: Check whether the current network can chat and whether it is your own ID.
+            console.log(id, '======id');
+            break;
+          }
           default:
             console.log('this action is not supported');
         }

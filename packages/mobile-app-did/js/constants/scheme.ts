@@ -3,6 +3,7 @@ export const DID_SCHEME = 'portkey.did';
 export enum SCHEME_ACTION {
   login = 'login',
   linkDapp = 'linkDapp',
+  addContact = 'addContact',
 }
 
 export enum AUTH_LOGIN_TYPE {

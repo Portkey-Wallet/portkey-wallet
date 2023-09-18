@@ -27,3 +27,5 @@ export const OfficialWebsite = 'https://portkey.finance';
 export const ThirdParty = `https://openlogin-test.portkey.finance`;
 
 export const LinkWebsite = 'https://portkey-website-dev.vercel.app';
+
+export const AddContactPath = LinkWebsite + '/sc/ac/';

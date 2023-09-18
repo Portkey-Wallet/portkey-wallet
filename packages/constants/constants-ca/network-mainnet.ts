@@ -15,4 +15,4 @@ export const ThirdParty = `https://thirdparty.portkey.finance`;
 
 export const LinkWebsite = OfficialWebsite;
 
-export const AddContactPath = LinkWebsite + '/sc/ac/';
+export const AddContactLinkPath = LinkWebsite + '/sc/ac/';

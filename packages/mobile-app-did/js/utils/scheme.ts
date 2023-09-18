@@ -2,7 +2,7 @@ import { DID_SCHEME, SCHEME_ACTION } from 'constants/scheme';
 import { parseUrl } from 'query-string';
 import { SchemeParsedUrl } from 'types/common';
 import { isAddress } from '@portkey-wallet/utils';
-import { AddContactPath } from '@portkey-wallet/constants/constants-ca/network';
+import { AddContactLinkPath } from '@portkey-wallet/constants/constants-ca/network';
 
 export function handleScheme(str: string): SchemeParsedUrl | undefined {
   if (!str.includes(DID_SCHEME)) return;
@@ -28,10 +28,10 @@ export function checkAuthLoginData(extraData: any, data: any) {
 }
 
 export function checkAddContactUrl(url: string) {
-  return typeof url === 'string' && url.startsWith(AddContactPath);
+  return typeof url === 'string' && url.startsWith(AddContactLinkPath);
 }
 
 export function getIDByAddContactUrl(url: string) {
   if (!checkAddContactUrl(url)) return;
-  return url.replace(AddContactPath, '').replace('/', '');
+  return url.replace(AddContactLinkPath, '').replace('/', '');
 }

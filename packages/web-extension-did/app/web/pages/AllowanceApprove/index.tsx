@@ -12,11 +12,10 @@ import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ResponseCode } from '@portkey/provider-types';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
-import ManagerApproveInner from './ManagerApproveInner';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { ChainId } from '@portkey-wallet/types';
-import { IGuardiansApproved } from '@portkey/did-ui-react';
+import { IGuardiansApproved, ManagerApproveInner } from '@portkey/did-ui-react';
 import './index.less';
 
 export default function AllowanceApprove() {

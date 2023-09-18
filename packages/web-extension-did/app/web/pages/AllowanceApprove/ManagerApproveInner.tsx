@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { getVerifierList } from '../../utils/sandboxUtil/getVerifierList';
 import { VerifierItem } from '@portkey/did';
 import { AccountTypeEnum, OperationTypeEnum } from '@portkey/services';
-import { ManagerApproveInnerProps } from '@portkey/did-ui-react/dist/_types/src/components/ManagerApprove/index.component';
-import { BaseGuardianItem, GuardianApproval, SetAllowance, did, handleErrorMessage } from '@portkey/did-ui-react';
+import { GuardianApproval } from '@portkey/did-ui-react';
+import { BaseGuardianItem, SetAllowance, did, handleErrorMessage } from '@portkey/did-ui-react';
 import { useCurrentChain, useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { IAllowance } from '@portkey/did-ui-react/dist/_types/src/components/SetAllowance/index.component';
 import { useLoading } from 'store/Provider/hooks';
@@ -18,6 +18,7 @@ import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
 import { request } from '@portkey-wallet/api/api-did';
+import { ManagerApproveInnerProps } from '@portkey/did-ui-react/dist/_types/src/components/ManagerApprove/index.component';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',

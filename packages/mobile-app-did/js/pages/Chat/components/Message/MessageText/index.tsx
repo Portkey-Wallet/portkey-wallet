@@ -19,6 +19,7 @@ import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { GestureResponderEvent } from 'react-native';
 import CommonToast from 'components/CommonToast';
+import { getIDByAddContactUrl } from 'utils/scheme';
 
 const UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
@@ -35,7 +36,12 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   const onUrlPress = useThrottleCallback(
     (url: string) => {
       if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
-      jump({ item: { url: url, name: url } });
+      const id = getIDByAddContactUrl(url);
+      if (id) {
+        // TODO: Check whether the current network can chat and whether it is your own ID.
+      } else {
+        jump({ item: { url: url, name: url } });
+      }
     },
     [jump],
   );

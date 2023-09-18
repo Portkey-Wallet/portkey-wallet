@@ -129,7 +129,7 @@ export default function CreateChatGroup() {
           <div className="form-content">
             {/* input */}
             <FormItem name="name" label={t('Group Name')} className="group-name-input">
-              <Input placeholder={t('Enter name')} onChange={handleNameChange} maxLength={40} />
+              <Input placeholder={t('Group Name')} onChange={handleNameChange} maxLength={40} />
             </FormItem>
 
             <div className="create-chat-search">

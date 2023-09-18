@@ -37,7 +37,7 @@ export default function DiscoverHome() {
         },
         {
           title: 'Scan',
-          iconName: 'chat-add-contact',
+          iconName: 'scan',
           onPress: () => navigationService.navigate('QrScanner'),
         },
       ],

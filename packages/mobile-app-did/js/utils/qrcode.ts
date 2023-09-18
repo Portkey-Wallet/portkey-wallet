@@ -23,7 +23,7 @@ export function invalidQRCode(text: InvalidQRCodeText, isBack?: boolean) {
   isBack && navigationService.goBack();
 }
 
-export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType, setRefresh: (v: boolean) => void) {
+export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType) {
   const { type, address, chainType } = data;
   if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
 
@@ -48,5 +48,4 @@ export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType,
       navigationService.navigate('SendHome', newData);
     }
   }
-  setRefresh(true);
 }

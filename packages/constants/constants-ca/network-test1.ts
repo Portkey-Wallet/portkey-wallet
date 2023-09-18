@@ -6,7 +6,6 @@ export const NetworkList: NetworkItem[] = [BackEndNetWorkMap['back-end-test2'], 
 export const DefaultChainId = 'AELF';
 
 export const OfficialWebsite = 'https://portkey.finance';
-export const OfficialWebsitePortkeyIdPath = 'https://portkey.finance/sc/ac';
 
 export const BingoGame = 'http://192.168.66.240:3000';
 

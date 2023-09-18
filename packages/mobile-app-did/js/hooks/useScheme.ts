@@ -9,9 +9,11 @@ import { SchemeParsedUrl } from 'types/common';
 import { SCHEME_ACTION } from 'constants/scheme';
 import { showAuthLogin } from 'components/AuthLoginOverlay';
 import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { useHandlePortkeyUrl } from './useQrScan';
 
 export function useHandleParsedUrl() {
   const jumpToWebview = useDiscoverJumpWithNetWork();
+  const handlePortkeyUrl = useHandlePortkeyUrl();
   return useCallback(
     (parsedUrl: SchemeParsedUrl) => {
       const { domain, action, query } = parsedUrl;
@@ -33,7 +35,7 @@ export function useHandleParsedUrl() {
           }
           case SCHEME_ACTION.addContact: {
             const id = Object.values(query).join('');
-            // TODO: Check whether the current network can chat and whether it is your own ID.
+            handlePortkeyUrl(id);
             console.log(id, '======id');
             break;
           }
@@ -44,7 +46,7 @@ export function useHandleParsedUrl() {
         console.log(error);
       }
     },
-    [jumpToWebview],
+    [handlePortkeyUrl, jumpToWebview],
   );
 }
 

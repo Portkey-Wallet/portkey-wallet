@@ -8,6 +8,7 @@ import Touchable from 'components/Touchable';
 import React, { memo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { copyText } from 'utils';
+import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 
 type ProfileIDSectionType = {
@@ -15,10 +16,11 @@ type ProfileIDSectionType = {
   disable?: boolean;
   noMarginTop?: boolean;
   id?: string;
+  showQrCodeButton?: boolean;
 };
 
 const ProfileIDSection: React.FC<ProfileIDSectionType> = props => {
-  const { disable = false, noMarginTop = false, id = '', title = 'Portkey ID' } = props;
+  const { disable = false, noMarginTop = false, id = '', title = 'Portkey ID', showQrCodeButton = false } = props;
 
   const copyId = useCallback(() => copyText(id), [id]);
 
@@ -38,6 +40,11 @@ const ProfileIDSection: React.FC<ProfileIDSectionType> = props => {
         <Touchable onPress={copyId}>
           <Svg icon="copy" size={pTd(16)} />
         </Touchable>
+        {showQrCodeButton && (
+          <Touchable onPress={() => navigationService.navigate('ChatQrCode')}>
+            <Svg icon="chat-scan" size={pTd(16)} />
+          </Touchable>
+        )}
       </View>
     </FormItem>
   );

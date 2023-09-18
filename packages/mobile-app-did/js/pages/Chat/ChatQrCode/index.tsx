@@ -1,27 +1,47 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { Share, StyleSheet } from 'react-native';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import PageContainer from 'components/PageContainer';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextXXL } from 'components/CommonText';
+import CommonButton from 'components/CommonButton';
+import { OfficialWebsitePortkeyIdPath } from '@portkey-wallet/constants/constants-ca/network';
 
 const ChatCamera: React.FC = () => {
   const { userId, walletName } = useWallet();
+
+  const qrCodeData = useMemo(() => `${OfficialWebsitePortkeyIdPath}/${userId}`, [userId]);
+
+  console.log('OfficialWebsitePortkeyIdPath', OfficialWebsitePortkeyIdPath);
 
   return (
     <PageContainer
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       hideTouchable={true}
-      titleDom="Relation">
+      titleDom="Relation"
+      containerStyles={{}}>
       <CommonAvatar title={walletName} avatarSize={pTd(40)} />
       <TextXXL>{walletName}</TextXXL>
       <CommonQRCodeStyled qrData={userId || ''} />
+      <TextXXL>scan my qr code</TextXXL>
+      <CommonButton
+        title="share my qr code"
+        onPress={async () => {
+          await Share.share({
+            message: qrCodeData,
+            url: qrCodeData,
+            title: qrCodeData,
+          }).catch(shareError => {
+            console.log(shareError);
+          });
+        }}
+      />
     </PageContainer>
   );
 };
@@ -29,8 +49,8 @@ const ChatCamera: React.FC = () => {
 export default ChatCamera;
 
 export const PageStyle = StyleSheet.create({
-  safeAreaBox: {
-    backgroundColor: defaultColors.bg19,
+  containerStyles: {
+    textAlign: 'center',
   },
   wrapper: {
     width: '100%',

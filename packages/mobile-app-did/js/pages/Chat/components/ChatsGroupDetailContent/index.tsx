@@ -62,8 +62,12 @@ export default function ChatsGroupDetailContent() {
 
   const onLoadEarlier = useLockCallback(async () => {
     if (initializing) return;
-    if (hasNext) await next();
-  }, [hasNext, next]);
+    try {
+      if (hasNext) await next();
+    } catch (error) {
+      console.log('error', error);
+    }
+  }, [hasNext, initializing, next]);
 
   useEffectOnce(() => {
     initChatInputRecorder();

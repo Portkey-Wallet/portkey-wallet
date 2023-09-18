@@ -2,9 +2,9 @@ import { DID_SCHEME, SCHEME_ACTION } from 'constants/scheme';
 import { parseUrl } from 'query-string';
 import { SchemeParsedUrl } from 'types/common';
 import { isAddress } from '@portkey-wallet/utils';
-import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
+import { LinkWebsite } from '@portkey-wallet/constants/constants-ca/network';
 
-const AddContactUrl = OfficialWebsite + '/sc/ac/';
+const AddContactUrl = LinkWebsite + '/sc/ac/';
 
 export function handleScheme(str: string): SchemeParsedUrl | undefined {
   if (!str.includes(DID_SCHEME)) return;

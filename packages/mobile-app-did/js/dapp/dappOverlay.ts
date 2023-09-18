@@ -6,12 +6,14 @@ import TransactionOverlay from './components/TransactionOverlay';
 import ApproveOverlay from './components/ApproveOverlay';
 import { DeviceEventEmitter } from 'react-native';
 import { GuardiansApproved } from 'pages/Guardian/types';
+import { ChainId } from '@portkey-wallet/types';
 
 export type ApproveInfo = {
   symbol: string;
   amount: string;
   spender: string;
   decimals: number;
+  targetChainId: ChainId;
 };
 
 export type ApproveParams = {

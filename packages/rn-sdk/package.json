@@ -1,0 +1,21 @@
+{
+  "name": "react-native-sdk-demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/carbon-portkey/react-native-sdk-demo.git",
+  "author": "Carbon.lv <130360750+carbon-portkey@users.noreply.github.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@react-native-community/cli-platform-android": "^11.3.8",
+    "@react-native/metro-config": "^0.72.11",
+    "react": "^18.2.0",
+    "react-native": "^0.72.4",
+    "react-native-gradle-plugin": "^0.71.19"
+  },
+  "scripts": {
+    "start": "yarn react-native start"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.21"
+  }
+}

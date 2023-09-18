@@ -1,0 +1,33 @@
+{
+  "name": "AelfPortkey",
+  "version": "0.1.0",
+  "summary": "A short description of AelfPortkey.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/wade-portkey/AelfPortkey",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "wade-portkey": "codingwizard@portkey.finance"
+  },
+  "source": {
+    "git": "https://github.com/wade-portkey/AelfPortkey.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source_files": "AelfPortkey/Classes/**/*",
+  "resource_bundles": {
+    "JSBundle": [
+      "AelfPortkey/Assets/*.bundle"
+    ]
+  },
+  "public_header_files": "Pod/Classes/**/*.h",
+  "dependencies": {
+    "React": [
+
+    ]
+  }
+}

@@ -7,6 +7,7 @@ import CommonToast from 'components/CommonToast';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { getIDByAddContactUrl } from 'utils/scheme';
 import { useDiscoverJumpWithNetWork } from './discover';
+import { useHandlePortkeyUrl } from './useQrScan';
 const WWW_URL_PATTERN = /^www\./i;
 
 export function useJumpToChatDetails() {
@@ -34,12 +35,14 @@ export function useJumpToChatDetails() {
 
 export function useOnUrlPress() {
   const jump = useDiscoverJumpWithNetWork();
+  const handlePortkeyUrl = useHandlePortkeyUrl();
   return useThrottleCallback(
     (url: string) => {
       if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
       const id = getIDByAddContactUrl(url);
       if (id) {
         // TODO: Check whether the current network can chat and whether it is your own ID.
+        handlePortkeyUrl(id);
       } else {
         jump({ item: { url: url, name: url } });
       }

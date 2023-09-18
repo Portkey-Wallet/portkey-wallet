@@ -8,7 +8,7 @@ import { defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
 import { BGStyles } from 'assets/theme/styles';
-import useQrScanPermission from 'hooks/useQrScanPermission';
+import { useQrScanPermission } from 'hooks/useQrScan';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import ActionSheet from 'components/ActionSheet';

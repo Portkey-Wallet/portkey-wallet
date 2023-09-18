@@ -94,7 +94,7 @@ const WalletName: React.FC = () => {
           {showChat ? (
             <>
               <ProfileHeaderSection name={walletName} />
-              <ProfilePortkeyIDSection id={userId || ''} />
+              <ProfilePortkeyIDSection showQrCodeButton id={userId || ''} />
               <ProfileAddressSection isMySelf addressList={caInfoList} />
             </>
           ) : (

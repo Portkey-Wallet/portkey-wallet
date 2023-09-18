@@ -11,7 +11,7 @@ import { TextM } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import useQrScanPermission from 'hooks/useQrScanPermission';
+import { useQrScanPermission } from 'hooks/useQrScan';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import BuyButton from 'components/BuyButton';

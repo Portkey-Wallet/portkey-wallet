@@ -35,6 +35,11 @@ export default function DiscoverHome() {
           iconName: 'chat-add-contact',
           onPress: () => navigationService.navigate('FindMorePeople'),
         },
+        {
+          title: 'Scan',
+          iconName: 'scan',
+          onPress: () => navigationService.navigate('QrScanner'),
+        },
       ],
       formatType: 'dynamicWidth',
       customPosition: { right: pTd(8), top: (top || pageY) + 30 },

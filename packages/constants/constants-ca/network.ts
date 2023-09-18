@@ -1,1 +1,1 @@
-export * from './network-test1';
+export * from './network-testnet';

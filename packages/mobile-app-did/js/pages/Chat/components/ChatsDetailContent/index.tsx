@@ -59,8 +59,12 @@ export default function ChatsDetailContent() {
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   const onLoadEarlier = useLockCallback(async () => {
-    if (initializing) return;
-    if (hasNext) await next();
+    try {
+      if (initializing) return;
+      if (hasNext) await next();
+    } catch (error) {
+      console.log('error', error);
+    }
   }, [hasNext, initializing, next]);
 
   useEffectOnce(() => {

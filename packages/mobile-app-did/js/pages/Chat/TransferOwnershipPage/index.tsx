@@ -32,8 +32,6 @@ const TransferOwnershipPage = () => {
   const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
-  console.log('rawMemberList', rawMemberList);
-
   useEffect(() => {
     try {
       setFilterMembers(() => {

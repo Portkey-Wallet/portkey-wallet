@@ -1,6 +1,6 @@
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles } from 'assets/theme/styles';
-import { TextM } from 'components/CommonText';
+import { BreakWordText } from 'components/CommonText';
 import FormItem from 'components/FormItem';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
@@ -34,7 +34,7 @@ const ProfileIDSection: React.FC<ProfileIDSectionType> = props => {
           disable ? BGStyles.bg18 : BGStyles.bg1,
           styles.content,
         ]}>
-        <TextM style={styles.text}>{id}</TextM>
+        <BreakWordText containerStyle={styles.textContainerStyle}>{id}</BreakWordText>
         <Touchable onPress={copyId}>
           <Svg icon="copy" size={pTd(16)} />
         </Touchable>
@@ -56,7 +56,8 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     paddingHorizontal: pTd(16),
   },
-  text: {
+  textContainerStyle: {
     flex: 1,
+    paddingRight: pTd(10),
   },
 });

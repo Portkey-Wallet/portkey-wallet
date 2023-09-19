@@ -42,7 +42,10 @@ export function useOnUrlPress() {
       const id = getIDByAddContactUrl(url);
       if (id) {
         // TODO: Check whether the current network can chat and whether it is your own ID.
-        handlePortkeyUrl(id);
+        handlePortkeyUrl({
+          portkeyId: id,
+          showLoading: true,
+        });
       } else {
         jump({ item: { url: url, name: url } });
       }

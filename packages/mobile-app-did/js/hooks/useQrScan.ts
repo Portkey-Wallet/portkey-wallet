@@ -88,6 +88,7 @@ export const useHandlePortkeyUrl = () => {
           fields: ['ADDRESS_WITH_CHAIN'],
         });
         if (data) {
+          if (goBack) navigationService.goBack();
           return navigationService.navigate('ChatContactProfile', { contact: data, relationId: data.relationId });
         } else {
           return CommonToast.fail("This user doesn't exist. Please check the Portkey ID/QR code before you try again.");

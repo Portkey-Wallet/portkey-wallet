@@ -39,13 +39,14 @@ export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType)
         return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE, false);
       } else {
         const previousAssetsInfo = { ...previousRouteInfo.params.assetInfo };
-        navigationService.navigate('SendHome', {
+        return navigationService.navigate('SendHome', {
           ...newData,
           assetInfo: { ...newData.assetInfo, ...previousAssetsInfo },
         });
       }
     } else {
-      navigationService.navigate('SendHome', newData);
+      return navigationService.navigate('SendHome', newData);
     }
   }
+  throw new Error(InvalidQRCodeText.INVALID_QR_CODE);
 }

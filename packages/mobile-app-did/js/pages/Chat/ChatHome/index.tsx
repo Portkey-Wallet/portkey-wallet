@@ -13,8 +13,10 @@ import ChatList from '../components/ChatList';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import myEvents from 'utils/deviceEvent';
+import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 
 export default function DiscoverHome() {
+  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const onRightPress = useCallback(async (event: GestureResponderEvent) => {
     const { pageY } = event.nativeEvent;
     const top: number =
@@ -38,7 +40,10 @@ export default function DiscoverHome() {
         {
           title: 'Scan',
           iconName: 'scan',
-          onPress: () => navigationService.navigate('QrScanner'),
+          onPress: async () => {
+            if (!(await qrScanPermissionAndToast())) return;
+            navigationService.navigate('QrScanner');
+          },
         },
       ],
       formatType: 'dynamicWidth',

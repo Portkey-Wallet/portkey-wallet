@@ -28,7 +28,7 @@ export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType)
   if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
 
   if (type === 'login') {
-    navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+    return navigationService.navigate('ScanLogin', { data: data as LoginQRData });
   } else {
     // send event
     const newData: SendTokenQRDataType = { ...data } as SendTokenQRDataType;
@@ -48,5 +48,4 @@ export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType)
       return navigationService.navigate('SendHome', newData);
     }
   }
-  throw new Error(InvalidQRCodeText.INVALID_QR_CODE);
 }

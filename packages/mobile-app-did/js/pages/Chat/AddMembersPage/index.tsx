@@ -90,7 +90,7 @@ const AddMembersPage = () => {
   return (
     <PageContainer
       titleDom="Add Members"
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={styles.inputWrap}>
@@ -107,11 +107,7 @@ const AddMembersPage = () => {
         data={filterMemberList}
         keyExtractor={(item: ContactItemType) => item.imInfo?.relationId || ''}
         ListEmptyComponent={
-          debounceKeyword ? (
-            <NoData noPic message="No search found" style={BGStyles.bg4} />
-          ) : (
-            <NoData noPic message="No Member" style={BGStyles.bg4} />
-          )
+          debounceKeyword ? <NoData noPic message="No search found" /> : <NoData noPic message="No Member" />
         }
         renderItem={({ item }) => (
           <GroupMemberItem
@@ -138,7 +134,7 @@ export default AddMembersPage;
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg1,
     flex: 1,
     ...GStyles.paddingArg(0),
   },

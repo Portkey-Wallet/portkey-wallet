@@ -101,6 +101,7 @@ export default function TransferSettingsEdit() {
       symbol: state.symbol,
       decimals: state.decimals,
       restricted,
+      targetChainId: state.chainId,
     };
 
     isPrompt
@@ -120,6 +121,7 @@ export default function TransferSettingsEdit() {
     form,
     state.symbol,
     state.decimals,
+    state.chainId,
     isPrompt,
     navigate,
   ]);

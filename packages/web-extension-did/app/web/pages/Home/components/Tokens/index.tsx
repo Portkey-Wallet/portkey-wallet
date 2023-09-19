@@ -8,13 +8,15 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[] }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isTestNet = useIsTestnet();
   const amountInUsdShow = useAmountInUsdShow();
-
+  const symbolImages = useSymbolImages();
   const onNavigate = useCallback(
     (tokenInfo: TokenItemShowType) => {
       navigate('/token-detail', { state: tokenInfo });
@@ -35,7 +37,7 @@ export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[
             {item.symbol === ELF_SYMBOL ? (
               <CustomSvg className="token-logo" type="elf-icon" />
             ) : (
-              <div className="token-logo custom-word-logo">{item.symbol?.slice(0, 1)}</div>
+              <TokenImageDisplay className="custom-logo" symbol={item.symbol} src={symbolImages[item.symbol]} />
             )}
             <div className="desc">
               <div className="info">

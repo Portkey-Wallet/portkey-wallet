@@ -18,6 +18,7 @@ import { useVerifyToken } from 'hooks/authentication';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import qs from 'query-string';
+import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 
 interface GuardianItemProps {
@@ -25,8 +26,9 @@ interface GuardianItemProps {
   isExpired?: boolean;
   item: UserGuardianStatus;
   loginAccount?: LoginInfo;
+  targetChainId?: ChainId;
 }
-export default function GuardianItems({ disabled, item, isExpired, loginAccount }: GuardianItemProps) {
+export default function GuardianItems({ disabled, item, isExpired, loginAccount, targetChainId }: GuardianItemProps) {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const { state, search } = useLocation();
@@ -134,6 +136,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
             verifierId: item.verifier?.id || '',
             chainId: originChainId,
             operationType,
+            targetChainId: targetChainId,
           },
         });
         setLoading(false);
@@ -170,7 +173,17 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
         message.error(_error);
       }
     },
-    [setLoading, query, loginAccount, originChainId, operationType, guardianSendCode, dispatch, navigate],
+    [
+      setLoading,
+      query,
+      loginAccount,
+      originChainId,
+      operationType,
+      targetChainId,
+      guardianSendCode,
+      dispatch,
+      navigate,
+    ],
   );
 
   const verifyToken = useVerifyToken();
@@ -185,6 +198,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
           verifierId: item.verifier?.id,
           chainId: originChainId,
           operationType,
+          targetChainId: targetChainId,
         });
         const verifierInfo: VerifierInfo = { ...result, verifierId: item?.verifier?.id };
         const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
@@ -204,7 +218,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
         setLoading(false);
       }
     },
-    [setLoading, verifyToken, loginAccount, originChainId, operationType, dispatch],
+    [setLoading, verifyToken, loginAccount?.authenticationInfo, originChainId, operationType, targetChainId, dispatch],
   );
 
   const verifyingHandler = useCallback(

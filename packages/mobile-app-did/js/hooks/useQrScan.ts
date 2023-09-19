@@ -14,6 +14,8 @@ import { useDiscoverJumpWithNetWork } from './discover';
 import { InvalidQRCodeText, RouteInfoType, handleQRCodeData, invalidQRCode } from 'utils/qrcode';
 import { useNavigation } from '@react-navigation/native';
 import { checkAddContactUrl, getIDByAddContactUrl } from 'utils/scheme';
+import ActionSheet from 'components/ActionSheet';
+import { useLanguage } from 'i18n/hooks';
 
 export const useQrScanPermission = (): [boolean, () => Promise<boolean>] => {
   const [hasPermission, setHasPermission] = useState<any>(null);
@@ -36,6 +38,33 @@ export const useQrScanPermission = (): [boolean, () => Promise<boolean>] => {
   return [hasPermission, requirePermission];
 };
 
+export const useQrScanPermissionAndToast = () => {
+  const [, requirePermission] = useQrScanPermission();
+  const { t } = useLanguage();
+
+  const showDialog = useCallback(
+    () =>
+      ActionSheet.alert({
+        title: t('Enable Camera Access'),
+        message: t('Cannot connect to the camera. Please make sure it is turned on'),
+        buttons: [
+          {
+            title: t('Close'),
+            type: 'solid',
+          },
+        ],
+      }),
+    [t],
+  );
+
+  return useCallback(async () => {
+    const result = await requirePermission();
+    if (!result) showDialog();
+
+    return result;
+  }, [requirePermission, showDialog]);
+};
+
 export const useHandlePortkeyUrl = () => {
   const isChatShow = useIsChatShow();
   const { userId } = useWallet();
@@ -45,7 +74,7 @@ export const useHandlePortkeyUrl = () => {
       const { portkeyId, showLoading = true, goBack = false } = params;
 
       if (showLoading) Loading.show();
-      if (!isChatShow) return CommonToast.fail('Invalid qrCode');
+      if (!isChatShow) return CommonToast.fail(InvalidQRCodeText.INVALID_QR_CODE);
       try {
         // myself
         if (userId === portkeyId) {
@@ -61,11 +90,11 @@ export const useHandlePortkeyUrl = () => {
         if (data) {
           return navigationService.navigate('ChatContactProfile', { contact: data, relationId: data.relationId });
         } else {
-          return CommonToast.fail('no portkey result');
+          return CommonToast.fail("This user doesn't exist. Please check the Portkey ID/QR code before you try again.");
         }
       } catch (error: any) {
         if (error.code === '12001') {
-          return CommonToast.fail('no portkey result');
+          return CommonToast.fail("This user doesn't exist. Please check the Portkey ID/QR code before you try again.");
         }
       } finally {
         if (showLoading) Loading.hide();
@@ -82,12 +111,9 @@ export const useHandleUrl = () => {
   return useCallback(
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
-
-      console.log('checkAddContactUrl', str, checkAddContactUrl(str));
       if (checkAddContactUrl(str)) {
         const portkeyId = getIDByAddContactUrl(str);
-        const result = await handlePortkeyUrl({ portkeyId: portkeyId || '', showLoading: true, goBack: true });
-        return result;
+        return handlePortkeyUrl({ portkeyId: portkeyId || '', showLoading: true, goBack: true });
       } else {
         jumpToWebview({
           item: {
@@ -110,7 +136,7 @@ export const useHandleObjectData = () => {
   console.log(previousRouteInfo, '=====previousRouteInfo');
 
   return useCallback(
-    async (data: string) => {
+    (data: string) => {
       const qrCodeData = expandQrData(JSON.parse(data));
       // check network
       if (currentNetwork !== qrCodeData.netWorkType)

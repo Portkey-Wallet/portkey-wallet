@@ -8,11 +8,9 @@ import { defaultColors } from 'assets/theme';
 import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
 import { BGStyles } from 'assets/theme/styles';
-import { useQrScanPermission } from 'hooks/useQrScan';
+import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
-import ActionSheet from 'components/ActionSheet';
-import { useLanguage } from 'i18n/hooks';
 import { DiscoverArchivedSection } from '../components/DiscoverArchivedSection';
 import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -22,36 +20,20 @@ export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
 
-  const [, requestQrPermission] = useQrScanPermission();
-  const { t } = useLanguage();
-
-  const showDialog = useCallback(
-    () =>
-      ActionSheet.alert({
-        title: t('Enable Camera Access'),
-        message: t('Cannot connect to the camera. Please make sure it is turned on'),
-        buttons: [
-          {
-            title: t('Close'),
-            type: 'solid',
-          },
-        ],
-      }),
-    [t],
-  );
+  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
 
   const RightDom = useMemo(
     () => (
       <TouchableOpacity
         style={styles.svgWrap}
         onPress={async () => {
-          if (!(await requestQrPermission())) return showDialog();
+          if (!(await qrScanPermissionAndToast())) return;
           navigationService.navigate('QrScanner');
         }}>
         <Svg icon="scan" size={22} color={defaultColors.font2} />
       </TouchableOpacity>
     ),
-    [requestQrPermission, showDialog],
+    [qrScanPermissionAndToast],
   );
 
   useFocusEffect(

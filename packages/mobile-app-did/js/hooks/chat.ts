@@ -52,6 +52,6 @@ export function useOnUrlPress() {
         jump({ item: { url: url, name: url } });
       }
     },
-    [jump],
+    [jump, isChatShow],
   );
 }

@@ -133,8 +133,6 @@ export const useHandleObjectData = () => {
   const navigation = useNavigation();
   const routesArr: RouteInfoType[] = navigation.getState().routes;
   const previousRouteInfo = routesArr[routesArr.length - 2];
-  console.log(previousRouteInfo, '=====previousRouteInfo');
-
   return useCallback(
     (data: string) => {
       const qrCodeData = expandQrData(JSON.parse(data));

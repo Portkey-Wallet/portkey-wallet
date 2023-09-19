@@ -9,7 +9,7 @@ import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { invalidQRCode, InvalidQRCodeText } from 'utils/qrcode';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
@@ -21,6 +21,8 @@ import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import Loading from 'components/Loading';
 import { useHandleDataFromQrCode } from 'hooks/useQrScan';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { sleep } from '@portkey-wallet/utils';
+import { useLatestRef } from '@portkey-wallet/hooks';
 interface QrScannerProps {
   route?: any;
 }
@@ -33,18 +35,25 @@ const QrScanner: React.FC<QrScannerProps> = () => {
   const [refresh, setRefresh] = useState<boolean>();
   const handleDataFromQrCode = useHandleDataFromQrCode();
 
+  const isFocused = useIsFocused();
+
+  const latestIsFocused = useLatestRef(isFocused);
   useFocusEffect(
     useCallback(() => {
-      setRefresh(false);
+      (async () => {
+        setRefresh(true);
+        await sleep(10);
+        setRefresh(false);
+      })();
     }, []),
   );
 
   const handleBarCodeScanned = useLockCallback(
     async ({ data = '' }) => {
+      if (!latestIsFocused.current) return;
       if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
       try {
         await handleDataFromQrCode(data);
-        setRefresh(true);
       } catch (error) {
         return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
       } finally {
@@ -62,8 +71,6 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
     if (result && result?.uri) {
       const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);
-
-      console.log('qrResult', scanResult[0]?.data, result);
 
       if (scanResult[0]?.data) handleBarCodeScanned({ data: scanResult[0]?.data || '' });
     }

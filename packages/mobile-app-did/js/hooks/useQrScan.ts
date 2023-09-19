@@ -45,7 +45,6 @@ export const useHandlePortkeyUrl = () => {
       const { portkeyId, showLoading = true, goBack = false } = params;
 
       if (showLoading) Loading.show();
-      // TODO: return what
       if (!isChatShow) return CommonToast.fail('Invalid qrCode');
       try {
         // myself

@@ -41,7 +41,6 @@ export function useOnUrlPress() {
       if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
       const id = getIDByAddContactUrl(url);
       if (id) {
-        // TODO: Check whether the current network can chat and whether it is your own ID.
         handlePortkeyUrl({
           portkeyId: id,
           showLoading: true,

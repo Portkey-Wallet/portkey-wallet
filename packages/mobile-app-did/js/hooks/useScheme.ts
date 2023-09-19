@@ -40,7 +40,6 @@ export function useHandleParsedUrl() {
               showLoading: false,
               goBack: false,
             });
-            console.log(id, '======id');
             break;
           }
           default:

@@ -35,7 +35,11 @@ export function useHandleParsedUrl() {
           }
           case SCHEME_ACTION.addContact: {
             const id = Object.values(query).join('');
-            handlePortkeyUrl(id);
+            handlePortkeyUrl({
+              portkeyId: id,
+              showLoading: false,
+              goBack: false,
+            });
             console.log(id, '======id');
             break;
           }

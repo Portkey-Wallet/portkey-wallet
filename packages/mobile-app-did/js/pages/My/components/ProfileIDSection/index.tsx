@@ -34,14 +34,12 @@ const ProfileIDSection: React.FC<ProfileIDSectionType> = props => {
           disable ? BGStyles.bg18 : BGStyles.bg1,
           styles.content,
         ]}>
-        <TextM style={styles.text} numberOfLines={1}>
-          {id}
-        </TextM>
+        <TextM style={styles.text}>{id}</TextM>
         <Touchable onPress={copyId}>
           <Svg icon="copy" size={pTd(16)} />
         </Touchable>
         {showQrCodeButton && (
-          <Touchable onPress={() => navigationService.navigate('ChatQrCode')}>
+          <Touchable onPress={() => navigationService.navigate('ChatQrCode')} style={GStyles.marginLeft(pTd(16))}>
             <Svg icon="chat-scan" size={pTd(16)} />
           </Touchable>
         )}
@@ -59,6 +57,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(16),
   },
   text: {
-    width: pTd(260),
+    flex: 1,
   },
 });

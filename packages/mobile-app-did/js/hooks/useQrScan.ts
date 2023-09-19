@@ -41,7 +41,15 @@ export const useHandlePortkeyUrl = () => {
   const { userId } = useWallet();
 
   return useCallback(
-    async (portkeyId: string, showLoading = true) => {
+    async ({
+      portkeyId,
+      showLoading = true,
+      goBack = false,
+    }: {
+      portkeyId: string;
+      showLoading?: boolean;
+      goBack?: boolean;
+    }) => {
       if (showLoading) Loading.show();
       // TODO: return what
       if (!isChatShow) return CommonToast.fail('Invalid qrCode');
@@ -52,14 +60,15 @@ export const useHandlePortkeyUrl = () => {
           fields: ['ADDRESS_WITH_CHAIN'],
         });
         if (data) {
-          navigationService.goBack();
+          if (goBack) navigationService.goBack();
           return navigationService.navigate('ChatContactProfile', { contact: data, relationId: data.relationId });
         } else {
-          // TODO: text
           return CommonToast.fail('no portkey result');
         }
-      } catch (error) {
-        console.log('error', error);
+      } catch (error: any) {
+        if (error.code === '12001') {
+          return CommonToast.fail('no portkey result');
+        }
       } finally {
         if (showLoading) Loading.hide();
       }
@@ -77,7 +86,7 @@ export const useHandleUrl = () => {
       const str = data.replace(/("|'|\s)/g, '');
       if (checkAddContactUrl(str)) {
         const portkeyId = getIDByAddContactUrl(str);
-        const result = await handlePortkeyUrl(portkeyId || '');
+        const result = await handlePortkeyUrl({ portkeyId: portkeyId || '', showLoading: true, goBack: true });
         return result;
       } else {
         jumpToWebview({

@@ -30,7 +30,7 @@ const ChatCamera: React.FC = () => {
       <View style={PageStyle.qrCodeWrap}>
         <CommonQRCodeStyled qrData={qrCodeData || ''} pieceSize={6} style={PageStyle.qrCode} />
       </View>
-      <TextM style={GStyles.marginTop(pTd(20))}>Scan my QR code to start Portkey chat</TextM>
+      <TextM style={GStyles.marginTop(pTd(20))}>Scan the QR code to chat with me in Portkey</TextM>
       <Touchable
         style={PageStyle.buttonWrap}
         onPress={async () => {

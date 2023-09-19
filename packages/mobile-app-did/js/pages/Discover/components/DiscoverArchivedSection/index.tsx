@@ -89,7 +89,10 @@ export function DiscoverArchivedSection() {
             ) : (
               <View style={styles.tabListWrap}>
                 {bookmarkList.map((item, idx) => (
-                  <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
+                  <TouchableOpacity
+                    key={idx}
+                    style={[styles.tabItemWrap, idx === 0 && GStyles.marginLeft(0)]}
+                    onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
                       <TextS style={[styles.websiteName]} numberOfLines={2}>
@@ -109,7 +112,10 @@ export function DiscoverArchivedSection() {
             ) : (
               <View style={styles.tabListWrap}>
                 {recordsList.map((item, idx) => (
-                  <TouchableOpacity key={idx} style={styles.tabItemWrap} onPress={() => onClickJump(item)}>
+                  <TouchableOpacity
+                    key={idx}
+                    style={[styles.tabItemWrap, idx === 0 && GStyles.marginLeft(0)]}
+                    onPress={() => onClickJump(item)}>
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getFaviconUrl(item.url)} />
                       <TextS style={[styles.websiteName]} numberOfLines={2}>
@@ -156,7 +162,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   tabItemWrap: {
-    width: '25%',
+    marginLeft: pTd(8),
+    width: pTd(72),
     justifyContent: 'flex-start',
     alignItems: 'center',
   },

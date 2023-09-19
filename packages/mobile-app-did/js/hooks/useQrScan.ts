@@ -41,26 +41,24 @@ export const useHandlePortkeyUrl = () => {
   const { userId } = useWallet();
 
   return useCallback(
-    async ({
-      portkeyId,
-      showLoading = true,
-      goBack = false,
-    }: {
-      portkeyId: string;
-      showLoading?: boolean;
-      goBack?: boolean;
-    }) => {
+    async (params: { portkeyId: string; showLoading?: boolean; goBack?: boolean }) => {
+      const { portkeyId, showLoading = true, goBack = false } = params;
+
       if (showLoading) Loading.show();
-      // TODO: return what
       if (!isChatShow) return CommonToast.fail('Invalid qrCode');
       try {
-        if (userId === portkeyId) return navigationService.navigate('WalletName'); // my did
+        // myself
+        if (userId === portkeyId) {
+          if (goBack) navigationService.goBack();
+          return navigationService.navigate('WalletName'); // my did
+        }
+
+        // others
         const { data } = await im.service.getUserInfo<GetOtherUserInfoDefaultResult>({
           address: portkeyId,
           fields: ['ADDRESS_WITH_CHAIN'],
         });
         if (data) {
-          if (goBack) navigationService.goBack();
           return navigationService.navigate('ChatContactProfile', { contact: data, relationId: data.relationId });
         } else {
           return CommonToast.fail('no portkey result');
@@ -84,6 +82,8 @@ export const useHandleUrl = () => {
   return useCallback(
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
+
+      console.log('checkAddContactUrl', str, checkAddContactUrl(str));
       if (checkAddContactUrl(str)) {
         const portkeyId = getIDByAddContactUrl(str);
         const result = await handlePortkeyUrl({ portkeyId: portkeyId || '', showLoading: true, goBack: true });

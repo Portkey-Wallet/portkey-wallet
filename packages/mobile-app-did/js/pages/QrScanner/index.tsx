@@ -8,8 +8,8 @@ import { defaultColors } from 'assets/theme';
 
 import { useLanguage } from 'i18n/hooks';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { handleQRCodeData, invalidQRCode, InvalidQRCodeText, RouteInfoType } from 'utils/qrcode';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { invalidQRCode, InvalidQRCodeText } from 'utils/qrcode';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
@@ -17,11 +17,12 @@ import { FontStyles } from 'assets/theme/styles';
 import { isIOS, screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 import { Camera } from 'expo-camera';
-import { expandQrData } from '@portkey-wallet/utils/qrCode';
-import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 import Loading from 'components/Loading';
-import { useThrottleCallback } from '@portkey-wallet/hooks';
+import { useHandleDataFromQrCode } from 'hooks/useQrScan';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { sleep } from '@portkey-wallet/utils';
+import { useLatestRef } from '@portkey-wallet/hooks';
 interface QrScannerProps {
   route?: any;
 }
@@ -31,51 +32,35 @@ const QrScanner: React.FC<QrScannerProps> = () => {
   const { currentNetwork } = useWallet();
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
-  const navigation = useNavigation();
-  const routesArr: RouteInfoType[] = navigation.getState().routes;
-  const previousRouteInfo = routesArr[routesArr.length - 2];
-  console.log(previousRouteInfo, '=====previousRouteInfo');
-
   const [refresh, setRefresh] = useState<boolean>();
+  const handleDataFromQrCode = useHandleDataFromQrCode();
 
+  const isFocused = useIsFocused();
+
+  const latestIsFocused = useLatestRef(isFocused);
   useFocusEffect(
     useCallback(() => {
-      setRefresh(false);
+      (async () => {
+        setRefresh(true);
+        await sleep(10);
+        setRefresh(false);
+      })();
     }, []),
   );
 
-  const handleBarCodeScanned = useThrottleCallback(
-    ({ data = '' }) => {
+  const handleBarCodeScanned = useLockCallback(
+    async ({ data = '' }) => {
+      if (!latestIsFocused.current) return;
       if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
-
       try {
-        const str = data.replace(/("|'|\s)/g, '');
-        if (checkIsUrl(str)) {
-          jumpToWebview({
-            item: {
-              name: prefixUrlWithProtocol(str),
-              url: prefixUrlWithProtocol(str),
-            },
-          });
-          return navigationService.goBack();
-        }
-
-        const qrCodeData = expandQrData(JSON.parse(data));
-        // if not currentNetwork
-        if (currentNetwork !== qrCodeData.netWorkType)
-          return invalidQRCode(
-            currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
-          );
-
-        handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
+        await handleDataFromQrCode(data);
       } catch (error) {
-        console.log(error);
         return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
       } finally {
         Loading.hide();
       }
     },
-    [currentNetwork, jumpToWebview, previousRouteInfo],
+    [currentNetwork, jumpToWebview],
   );
 
   const selectImage = async () => {
@@ -86,8 +71,6 @@ const QrScanner: React.FC<QrScannerProps> = () => {
 
     if (result && result?.uri) {
       const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);
-
-      console.log('qrResult', scanResult[0]?.data, result);
 
       if (scanResult[0]?.data) handleBarCodeScanned({ data: scanResult[0]?.data || '' });
     }

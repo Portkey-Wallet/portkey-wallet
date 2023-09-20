@@ -25,6 +25,7 @@ import { INIT_HAS_ERROR } from 'constants/common';
 import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import { ErrorType } from 'types/common';
+import { isIOS } from '@rneui/base';
 const PageHeight = windowHeight - headerHeight;
 
 const WalletName: React.FC = () => {
@@ -94,7 +95,7 @@ const WalletName: React.FC = () => {
           {showChat ? (
             <>
               <ProfileHeaderSection name={walletName} />
-              <ProfilePortkeyIDSection id={userId || ''} />
+              <ProfilePortkeyIDSection showQrCodeButton id={userId || ''} />
               <ProfileAddressSection isMySelf addressList={caInfoList} />
             </>
           ) : (
@@ -125,6 +126,7 @@ const WalletName: React.FC = () => {
           }}
         />
       </View>
+
       {showDeletion && (
         <CommonButton
           title="Delete Account"
@@ -145,7 +147,7 @@ export const pageStyles = StyleSheet.create({
   },
   pageContainer: {
     paddingTop: 24,
-    paddingBottom: 68,
+    paddingBottom: isIOS ? 40 : 20,
     height: PageHeight,
     justifyContent: 'space-between',
   },

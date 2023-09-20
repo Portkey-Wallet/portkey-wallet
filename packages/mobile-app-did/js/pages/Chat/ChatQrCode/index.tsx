@@ -8,13 +8,13 @@ import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextM, TextXXXL } from 'components/CommonText';
-import { AddContactLinkPath } from '@portkey-wallet/constants/constants-ca/network';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { ScreenWidth } from '@rneui/base';
 import Touchable from 'components/Touchable';
 
 const ChatCamera: React.FC = () => {
   const { userId, walletName } = useWallet();
-  const qrCodeData = useMemo(() => `${AddContactLinkPath}${userId}`, [userId]);
+  const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userId}`, [userId]);
 
   return (
     <PageContainer

@@ -17,6 +17,7 @@ export default function MemberList() {
   const { t } = useTranslation();
   const { state } = useLocation();
   const [filterWord, setFilterWord] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>('');
   const navigate = useNavigate();
   const [showMemberList, setShowMemberList] = useState<ChannelMemberInfo[]>(groupInfo?.members || []);
 
@@ -34,7 +35,8 @@ export default function MemberList() {
   const searchDebounce = useDebounceCallback(
     (params) => {
       const _v = params.trim();
-      handleSearch(_v);
+      _v ? handleSearch(_v) : setShowMemberList(groupInfo?.members || []);
+      setFilterWord(_v);
     },
     [],
     500,
@@ -72,19 +74,16 @@ export default function MemberList() {
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const _value = e.target.value;
-      if (_value) {
-        setFilterWord(_value);
-        searchDebounce(_value);
-      } else {
-        handleSearch(_value);
-        setFilterWord(_value);
-      }
+      setInputValue(_value);
+      searchDebounce(_value);
     },
-    [handleSearch, searchDebounce],
+    [searchDebounce],
   );
   useEffect(() => {
-    setFilterWord(state?.search ?? '');
-    handleSearch(state?.search ?? '');
+    const _v = state?.search ?? '';
+    setFilterWord(_v);
+    setInputValue(_v);
+    handleSearch(_v);
   }, [handleSearch, state?.search]);
   useEffect(() => {
     refresh();
@@ -101,7 +100,7 @@ export default function MemberList() {
         />
         <DropdownSearch
           overlay={<></>}
-          value={filterWord}
+          value={inputValue}
           inputProps={{
             onChange: handleInputChange,
             placeholder: 'Search',

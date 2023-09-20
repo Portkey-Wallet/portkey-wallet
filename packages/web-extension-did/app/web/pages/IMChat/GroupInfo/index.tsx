@@ -4,16 +4,22 @@ import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
 import { Avatar } from '@portkey-wallet/im-ui-web';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
+import Copy from 'components/Copy';
+import ContactListDrawer from '../components/GroupShareDrawer';
+import { IContactItemSelectProps } from '../components/ContactListSelect';
 import './index.less';
 
+// TODO
+const shareLink = 'https://portkey.finance/sc/ac/';
 const GroupInfo = () => {
   const { channelUuid } = useParams();
   const leaveGroup = useLeaveChannel();
   const myRelationId = useRelationId();
+  const [shareVisible, setShareVisible] = useState(false);
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const memberLen = useMemo(
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
@@ -54,6 +60,10 @@ const GroupInfo = () => {
     },
     [myRelationId, navigate, channelUuid],
   );
+  const handleSend = useCallback(async (params: IContactItemSelectProps[]) => {
+    // TODO
+    console.log(params);
+  }, []);
   const handleRefresh = useCallback(async () => {
     try {
       await refresh();
@@ -86,6 +96,18 @@ const GroupInfo = () => {
               <div className="group-members">
                 {memberLen}
                 {memberLen > 1 ? ' members' : ' member'}
+              </div>
+            </div>
+          </div>
+          <div className="info-share flex-row-between">
+            <div className="share-link flex-column">
+              <div className="share-link-title">Invite Link</div>
+              <div className="share-link-content flex-between">
+                <div className="link-content" onClick={() => setShareVisible(true)}>{`${shareLink}${channelUuid}`}</div>
+                <div className="link-icon flex-row-center">
+                  <Copy iconType="Copy4" toCopy={`${shareLink}${channelUuid}`} />
+                  <CustomSvg type="QRCode2" onClick={() => navigate(`/chat-group-info/${channelUuid}/share`)} />
+                </div>
               </div>
             </div>
           </div>
@@ -153,6 +175,12 @@ const GroupInfo = () => {
           )}
         </div>
       </div>
+      <ContactListDrawer
+        destroyOnClose
+        open={shareVisible}
+        onConfirm={handleSend}
+        onClose={() => setShareVisible(false)}
+      />
     </div>
   );
 };

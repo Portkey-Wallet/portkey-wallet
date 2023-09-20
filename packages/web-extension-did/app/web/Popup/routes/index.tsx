@@ -30,6 +30,7 @@ import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
+import MyQRCode from 'pages/Wallet/MyQRCode';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
@@ -44,6 +45,7 @@ import EditGroupInfo from 'pages/IMChat/EditGroupInfo';
 import TransferOwnership from 'pages/IMChat/TransferOwnership';
 import MemberList from 'pages/IMChat/MemberList';
 import HandleMember from 'pages/IMChat/HandleMember';
+import GroupQRCode from 'pages/IMChat/GroupQRCode';
 
 export const PageRouter = () =>
   useRoutes([
@@ -98,6 +100,10 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet/about-us',
       element: <AboutUs />,
+    },
+    {
+      path: '/setting/wallet/qrcode',
+      element: <MyQRCode />,
     },
     {
       path: '/add-token',
@@ -230,6 +236,10 @@ export const PageRouter = () =>
     {
       path: '/chat-group-info/:channelUuid/member-list/:operate',
       element: <HandleMember />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/share',
+      element: <GroupQRCode />,
     },
     {
       path: '/new-chat',

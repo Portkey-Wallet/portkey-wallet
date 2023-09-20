@@ -1,0 +1,56 @@
+@import '../../../assets/theme/color.less';
+
+.show-qrcode-wrapper {
+  height: 100%;
+  color: @font-11;
+  background-color: @bg-11;
+  .show-qrcode-header {
+    position: relative;
+    .close2-icon {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      cursor: pointer;
+    }
+  }
+  .show-qrcode-content {
+    padding: 108px 24px 0;
+    .common-icon {
+      width: 60px;;
+      height: 60px;
+      border-radius: 50%;
+      border: 1px solid @border-2;
+      background-color: @bg-13;
+      font-size: 24px;
+      line-height: 28px;
+      &.group-icon {
+        border: 1px solid @border-3;
+        background-color: @bg-25;
+      }
+      .groupavatar-icon {
+        width: 24px;
+        height: 24px;
+        svg {
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+    .qrcode-content-name {
+      margin-top: 8px;
+      font-size: 20px;
+      line-height: 24px;
+      text-align: center;
+      word-break: break-all;
+    }
+    .qrcode-content-qrcode {
+      margin-top: 40px;
+    }
+    .qrcode-content-desc {
+      margin-top: 16px;
+      font-size: 12px;
+      line-height: 16px;
+      text-align: center;
+    }
+  }
+}

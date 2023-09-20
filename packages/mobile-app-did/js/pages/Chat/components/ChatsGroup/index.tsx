@@ -32,6 +32,7 @@ import SystemTime from '../SystemTime';
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -47,27 +48,20 @@ const ChatsUI = () => {
   const currentChannelId = useCurrentChannelId();
   const dispatch = useChatsDispatch();
   const messageContainerRef = useRef<FlatList>();
-
-  const { list, init } = useChannel(currentChannelId || '');
-
+  const { list, init, hasNext, next } = useChannel(currentChannelId || '');
   const [loading, setLoading] = useState(true);
 
   const formattedList = useMemo(() => formatMessageList(list), [list]);
 
-  useEffectOnce(() => {
-    initChatInputRecorder();
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 200);
-    return () => {
-      clearTimeout(timer);
-      dispatch(setChatText(''));
-      dispatch(setBottomBarStatus(undefined));
-      dispatch(setShowSoftInputOnFocus(true));
-      // dispatch(setCurrentChannelId());
-      destroyChatInputRecorder();
-    };
-  });
+  const onLoadEarlier = useLockCallback(async () => {
+    if (loading) return;
+    try {
+      if (loading) return;
+      if (hasNext) await next();
+    } catch (error) {
+      console.log('error', error);
+    }
+  }, [hasNext, loading, next]);
 
   const scrollToBottom = useCallback(() => {
     if (messageContainerRef?.current?.scrollToOffset)
@@ -97,12 +91,6 @@ const ChatsUI = () => {
   const renderBubble = useCallback((data: any) => {
     return <CustomBubble {...data} />;
   }, []);
-  const listViewProps: GiftedChatProps['listViewProps'] = useMemo(() => {
-    return {
-      ...ListViewProps,
-      onScrollBeginDrag: onDismiss,
-    };
-  }, [onDismiss]);
 
   const renderScrollToBottomComponent = useCallback(() => {
     return <Svg icon="chat-scroll-to-bottom" size={pTd(24)} />;
@@ -125,11 +113,34 @@ const ChatsUI = () => {
     [scrollToBottom],
   );
 
+  const listViewProps: GiftedChatProps['listViewProps'] = useMemo(() => {
+    return {
+      ...ListViewProps,
+      onScrollBeginDrag: onDismiss,
+      onEndReached: () => onLoadEarlier(),
+    };
+  }, [onDismiss, onLoadEarlier]);
+
   const relationId = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   useEffectOnce(() => {
     init();
+  });
+
+  useEffectOnce(() => {
+    initChatInputRecorder();
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 200);
+    return () => {
+      clearTimeout(timer);
+      dispatch(setChatText(''));
+      dispatch(setBottomBarStatus(undefined));
+      dispatch(setShowSoftInputOnFocus(true));
+      // dispatch(setCurrentChannelId());
+      destroyChatInputRecorder();
+    };
   });
 
   return (

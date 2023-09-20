@@ -4,6 +4,12 @@ import { setCurrentChannelId } from 'pages/Chat/context/chatsContext';
 import { useChatsDispatch } from 'pages/Chat/context/hooks';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
+import { getIDByAddContactUrl } from 'utils/scheme';
+import { useDiscoverJumpWithNetWork } from './discover';
+import { useHandlePortkeyUrl } from './useQrScan';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+const WWW_URL_PATTERN = /^www\./i;
 
 export function useJumpToChatDetails() {
   const chatDispatch = useChatsDispatch();
@@ -25,5 +31,27 @@ export function useJumpToChatDetails() {
       }
     },
     [chatDispatch, createChannel],
+  );
+}
+
+export function useOnUrlPress() {
+  const jump = useDiscoverJumpWithNetWork();
+  const handlePortkeyUrl = useHandlePortkeyUrl();
+  const isChatShow = useIsChatShow();
+
+  return useThrottleCallback(
+    (url: string) => {
+      if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
+      const id = getIDByAddContactUrl(url);
+      if (id && isChatShow) {
+        handlePortkeyUrl({
+          portkeyId: id,
+          showLoading: true,
+        });
+      } else {
+        jump({ item: { url: url, name: url } });
+      }
+    },
+    [jump, isChatShow],
   );
 }

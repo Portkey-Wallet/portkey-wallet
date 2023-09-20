@@ -21,6 +21,8 @@ import { useJumpToChatDetails } from 'hooks/chat';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import NoData from 'components/NoData';
 import Lottie from 'lottie-react-native';
+import Touchable from 'components/Touchable';
+import { copyText } from 'utils';
 
 const FindMorePeople = () => {
   const { userId } = useWallet();
@@ -121,8 +123,17 @@ const FindMorePeople = () => {
         />
       </View>
       {!keyword && (
-        <View style={[GStyles.center, styles.portkeyIdWrap]}>
-          <TextM style={styles.portkeyId}>{`My Portkey ID : ${userId}`}</TextM>
+        <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
+          <View>
+            <TextM style={styles.portkeyId}>{`My Portkey ID : `}</TextM>
+            <TextM style={styles.portkeyId}>{userId}</TextM>
+          </View>
+          <Touchable onPress={() => copyText(userId || '')}>
+            <Svg icon="copy" size={pTd(16)} />
+          </Touchable>
+          <Touchable onPress={() => navigationService.navigate('ChatQrCode')}>
+            <Svg icon="chat-scan" size={pTd(16)} />
+          </Touchable>
         </View>
       )}
       <FlatList
@@ -148,11 +159,8 @@ const styles = StyleSheet.create({
   portkeyIdWrap: {
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  portkeyId: {
     paddingHorizontal: pTd(20),
-    paddingVertical: pTd(13),
-    textAlign: 'center',
+    paddingVertical: pTd(16),
   },
   rightIconContainerStyle: {
     marginRight: pTd(10),

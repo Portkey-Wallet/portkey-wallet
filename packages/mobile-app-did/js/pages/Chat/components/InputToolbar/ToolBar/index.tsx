@@ -5,7 +5,7 @@ import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import { TextM } from 'components/CommonText';
 import * as ImagePicker from 'expo-image-picker';
-import useQrScanPermission from 'hooks/useQrScanPermission';
+import { useQrScanPermission } from 'hooks/useQrScan';
 import ActionSheet from 'components/ActionSheet';
 
 import GStyles from 'assets/theme/GStyles';

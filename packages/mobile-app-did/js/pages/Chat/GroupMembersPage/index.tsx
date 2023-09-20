@@ -52,7 +52,7 @@ const GroupMembersPage = () => {
   return (
     <PageContainer
       titleDom="Members"
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={styles.inputWrap}>
@@ -91,7 +91,7 @@ export default GroupMembersPage;
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg1,
     flex: 1,
     ...GStyles.paddingArg(0),
   },

@@ -106,19 +106,15 @@ const ContactProfile: React.FC = () => {
       try {
         Loading.show();
         const { data } = await im.service.getProfile({ relationId });
-
-        console.log('datadatadata', contactInfo, data);
-
         setProfileInfo({ ...initEditContact, ...(data || {}) });
       } catch (error) {
-        // TODO: getProfile error handle
         console.log(error);
         CommonToast.failError(error);
       } finally {
         Loading.hide();
       }
     }
-  }, [contactInfo, relationId]);
+  }, [relationId]);
 
   useEffectOnce(() => {
     getProfile();

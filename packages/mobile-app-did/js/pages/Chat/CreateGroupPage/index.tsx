@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
   },
   inputWrap: {
     paddingTop: pTd(12),
+    paddingBottom: pTd(8),
     paddingHorizontal: pTd(20),
   },
   buttonWrap: {

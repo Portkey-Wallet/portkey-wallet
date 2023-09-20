@@ -157,6 +157,7 @@ const GroupInfoPage = () => {
             <Svg icon="right-arrow" color={defaultColors.font3} size={pTd(16)} />
           </Touchable>
         )}
+        <View style={styles.bottomBlank} />
       </ScrollView>
 
       <View style={styles.buttonWrap}>
@@ -187,6 +188,9 @@ const styles = StyleSheet.create({
   },
   headerWrap: {
     marginTop: pTd(24),
+  },
+  bottomBlank: {
+    height: pTd(24),
   },
   centerSection: {
     marginTop: pTd(24),

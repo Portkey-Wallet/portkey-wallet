@@ -96,7 +96,7 @@ const RemoveMembersPage = () => {
   return (
     <PageContainer
       titleDom="Remove Members"
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={styles.inputWrap}>
@@ -113,7 +113,7 @@ const RemoveMembersPage = () => {
       <FlatList
         data={filterMembers || []}
         keyExtractor={(item: ChannelMemberInfo) => item.relationId}
-        ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg4} />}
+        ListEmptyComponent={<NoData noPic message="No search result" />}
         renderItem={({ item }) => (
           <GroupMemberItem
             selected={selectedMemberMap.has(item.relationId)}
@@ -134,7 +134,7 @@ export default RemoveMembersPage;
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg1,
     flex: 1,
     ...GStyles.paddingArg(0),
   },

@@ -15,42 +15,49 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import myEvents from 'utils/deviceEvent';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 
 export default function DiscoverHome() {
+  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
-
-  const onRightPress = useCallback(async (event: GestureResponderEvent) => {
-    const { pageY } = event.nativeEvent;
-    const top: number =
-      (await new Promise(_resolve => {
-        event.target.measure((x, y, width, height, pageX, topY) => {
-          _resolve(topY);
-        });
-      })) || 0;
-    ChatOverlay.showChatPopover({
-      list: [
-        {
-          title: 'New Chat',
-          iconName: 'chat-new-chat',
-          onPress: () => navigationService.navigate('NewChatHomePage'),
-        },
-        {
-          title: 'Create Group',
-          iconName: 'chat-create-group',
-          onPress: () => navigationService.navigate('CreateGroupPage'),
-        },
-        {
-          title: 'Find More',
-          iconName: 'chat-add-contact',
-          onPress: () => navigationService.navigate('FindMorePeoplePage'),
-        },
-      ],
-      formatType: 'dynamicWidth',
-      customPosition: { right: pTd(8), top: (top || pageY) + 30 },
-      customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
-    });
-  }, []);
+  const onRightPress = useCallback(
+    async (event: GestureResponderEvent) => {
+      const { pageY } = event.nativeEvent;
+      const top: number =
+        (await new Promise(_resolve => {
+          event.target.measure((x, y, width, height, pageX, topY) => {
+            _resolve(topY);
+          });
+        })) || 0;
+      ChatOverlay.showChatPopover({
+        list: [
+          {
+            title: 'New Chat',
+            iconName: 'chat-new-chat',
+            onPress: () => navigationService.navigate('NewChatHome'),
+          },
+          {
+            title: 'Find People',
+            iconName: 'chat-add-contact',
+            onPress: () => navigationService.navigate('FindMorePeople'),
+          },
+          {
+            title: 'Scan',
+            iconName: 'scan',
+            onPress: async () => {
+              if (!(await qrScanPermissionAndToast())) return;
+              navigationService.navigate('QrScanner');
+            },
+          },
+        ],
+        formatType: 'dynamicWidth',
+        customPosition: { right: pTd(8), top: (top || pageY) + 30 },
+        customBounds: { x: screenWidth - pTd(20), y: pageY + 20, width: 0, height: 0 },
+      });
+    },
+    [qrScanPermissionAndToast],
+  );
 
   const RightDom = useMemo(() => {
     return (

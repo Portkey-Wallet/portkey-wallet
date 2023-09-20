@@ -74,7 +74,6 @@ const TransferOwnershipPage = () => {
               Loading.show();
               await transferOwner(selectedMemberId || '');
               CommonToast.success('Owner changed');
-              // TODO: test it
               navigationService.goBack();
             } catch (error) {
               CommonToast.failError(error);
@@ -94,7 +93,7 @@ const TransferOwnershipPage = () => {
   return (
     <PageContainer
       titleDom="Transfer Group Ownership"
-      safeAreaColor={['blue', 'gray']}
+      safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={styles.inputWrap}>
@@ -112,9 +111,7 @@ const TransferOwnershipPage = () => {
       <FlatList
         data={filterMembers}
         extraData={(item: ChannelMemberInfo) => item.relationId}
-        ListEmptyComponent={
-          <NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} style={BGStyles.bg4} />
-        }
+        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />}
         renderItem={({ item }) => (
           <GroupMemberItem
             key={item.relationId}
@@ -141,7 +138,7 @@ export default TransferOwnershipPage;
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg1,
     flex: 1,
     ...GStyles.paddingArg(0),
   },

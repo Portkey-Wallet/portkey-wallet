@@ -1,4 +1,4 @@
-import { TextL, TextM } from 'components/CommonText';
+import { TextL, TextS } from 'components/CommonText';
 import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -33,7 +33,7 @@ export default function GroupInfoMemberItem(props: GroupInfoMemberItemPropsType)
       <TextL numberOfLines={1} style={[FontStyles.font5, GStyles.flex1, styles.memberItemText]}>
         {item.title}
       </TextL>
-      {isOwner && <TextM style={styles.ownerMark}>Owner</TextM>}
+      {isOwner && <TextS style={styles.ownerMark}>Owner</TextS>}
     </Touchable>
   );
 }

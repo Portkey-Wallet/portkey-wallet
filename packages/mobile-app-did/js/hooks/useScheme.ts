@@ -9,9 +9,14 @@ import { SchemeParsedUrl } from 'types/common';
 import { SCHEME_ACTION } from 'constants/scheme';
 import { showAuthLogin } from 'components/AuthLoginOverlay';
 import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { useHandlePortkeyUrl } from './useQrScan';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export function useHandleParsedUrl() {
   const jumpToWebview = useDiscoverJumpWithNetWork();
+  const handlePortkeyUrl = useHandlePortkeyUrl();
+  const isChatShow = useIsChatShow();
+
   return useCallback(
     (parsedUrl: SchemeParsedUrl) => {
       const { domain, action, query } = parsedUrl;
@@ -28,16 +33,25 @@ export function useHandleParsedUrl() {
             const { url } = query;
             if (typeof url !== 'string' || !checkIsUrl(url)) return;
             const fixUrl = prefixUrlWithProtocol(url);
-            jumpToWebview({
-              item: {
-                name: fixUrl,
-                url: fixUrl,
-              },
-              autoApprove: true,
+            jumpToWebview({ item: { name: fixUrl, url: fixUrl }, autoApprove: true });
+            break;
+          }
+          case SCHEME_ACTION.addContact: {
+            if (!isChatShow) return;
+            const id = Object.values(query).join('');
+            handlePortkeyUrl({
+              portkeyId: id,
+              showLoading: false,
+              goBack: false,
             });
             break;
           }
-
+          case SCHEME_ACTION.addGroup: {
+            if (!isChatShow) return;
+            const id = Object.values(query).join('');
+            // TODO:addGroup actions
+            break;
+          }
           default:
             console.log('this action is not supported');
         }
@@ -45,7 +59,7 @@ export function useHandleParsedUrl() {
         console.log(error);
       }
     },
-    [jumpToWebview],
+    [handlePortkeyUrl, isChatShow, jumpToWebview],
   );
 }
 

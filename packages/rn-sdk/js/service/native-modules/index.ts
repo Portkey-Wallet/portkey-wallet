@@ -30,7 +30,7 @@ export interface RouterOptions {
   navigationAnimation?: 'none' | 'slide' | 'fade';
   navigationAnimationDuration?: number;
   targetScene?: string;
-  params?: Array<string>;
+  params?: { [x: string]: string };
 }
 
 export interface NativeWrapperModule {

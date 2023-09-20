@@ -26,8 +26,15 @@ export default function AccountSetting() {
           navigate('/setting/account-setting/confirm-pin');
         },
       },
+      {
+        key: t('chat-privacy'),
+        element: 'Chat privacy and security',
+        click: () => {
+          navigate('/setting/account-setting/chat-privacy');
+        },
+      },
     ],
-    [navigate],
+    [navigate, t],
   );
 
   const headerTitle = t('Account Setting');

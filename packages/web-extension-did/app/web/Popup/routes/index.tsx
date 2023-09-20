@@ -45,6 +45,8 @@ import EditGroupInfo from 'pages/IMChat/EditGroupInfo';
 import TransferOwnership from 'pages/IMChat/TransferOwnership';
 import MemberList from 'pages/IMChat/MemberList';
 import HandleMember from 'pages/IMChat/HandleMember';
+import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
+import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 import GroupQRCode from 'pages/IMChat/GroupQRCode';
 
 export const PageRouter = () =>
@@ -172,6 +174,14 @@ export const PageRouter = () =>
     {
       path: '/setting/account-setting/set-new-pin',
       element: <SetNewPin />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy',
+      element: <ChatPrivacy />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy-edit',
+      element: <ChatPrivacyEdit />,
     },
     {
       path: '/setting/wallet-security',

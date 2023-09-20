@@ -1,4 +1,4 @@
-@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
 
 .find-more-popup {
   width: 100%;
@@ -15,12 +15,24 @@
     }
 
     .find-more-id {
-      color: @font-13;
+      margin: 2px 24px 11px;
+      gap: 16px;
+      align-items: flex-end;
       font-weight: normal;
-      text-align: center;
-      margin-left: 12px;
-      margin-right: 24px;
-      margin-bottom: 8px;
+      .my-portkey-id {
+        font-size: 12px;
+        line-height: 16px;
+        color: @font-13;
+        .portkey-id-show {
+          flex: 1;
+          word-break: break-all;
+          .text-overflow(1);
+        }
+      }
+      .show-icon {
+        gap: 16px;
+        cursor: pointer;
+      }
     }
   }
 

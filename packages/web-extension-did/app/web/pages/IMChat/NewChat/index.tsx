@@ -81,7 +81,7 @@ export default function NewChat() {
               setFilterWord(_value);
               searchDebounce(_value);
             },
-            placeholder: 'Search',
+            placeholder: 'Name/address/Portkey ID',
           }}
         />
       </div>

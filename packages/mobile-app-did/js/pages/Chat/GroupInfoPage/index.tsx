@@ -21,7 +21,7 @@ import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wa
 import { GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
 import useEffectOnce from 'hooks/useEffectOnce';
 import FormItem from 'components/FormItem';
-import { AddGroupLinkPath } from '@portkey-wallet/constants/constants-ca/network-test1';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network-test1';
 import { ShowShareWithOverlay } from '../components/ShareWithOverlay';
 import { copyText } from 'utils';
 
@@ -33,7 +33,7 @@ const GroupInfoPage = () => {
   const { members } = groupInfo || {};
   const leaveGroup = useLeaveChannel();
 
-  const inviteLink = useMemo(() => `${AddGroupLinkPath}${currentChannelId || ''}`, [currentChannelId]);
+  const inviteLink = useMemo(() => `${LinkPortkeyPath.addGroup}${currentChannelId || ''}`, [currentChannelId]);
 
   const membersShowList = useMemo(() => {
     return members?.length && members?.length >= GROUP_INFO_MEMBER_SHOW_LIMITED

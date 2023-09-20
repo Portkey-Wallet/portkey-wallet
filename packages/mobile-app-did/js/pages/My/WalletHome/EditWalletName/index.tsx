@@ -114,6 +114,6 @@ export const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...gStyles.paddingArg(32, 20, 18),
+    ...gStyles.paddingArg(24, 20, 18),
   },
 });

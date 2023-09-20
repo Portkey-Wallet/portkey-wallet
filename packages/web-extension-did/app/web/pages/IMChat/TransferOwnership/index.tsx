@@ -46,6 +46,7 @@ export default function TransferOwnership() {
     (params) => {
       const _v = params.trim();
       handleSearch(_v);
+      setFilterWord(_v);
     },
     [],
     500,
@@ -107,15 +108,9 @@ export default function TransferOwnership() {
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const _value = e.target.value;
-      if (_value) {
-        setFilterWord(_value);
-        searchDebounce(_value);
-      } else {
-        handleSearch(_value);
-        setFilterWord(_value);
-      }
+      searchDebounce(_value);
     },
-    [handleSearch, searchDebounce],
+    [searchDebounce],
   );
   return (
     <div className="transfer-ownership-page flex-column-between">
@@ -127,7 +122,6 @@ export default function TransferOwnership() {
         />
         <DropdownSearch
           overlay={<></>}
-          value={filterWord}
           inputProps={{
             onChange: handleInputChange,
             placeholder: 'Search',

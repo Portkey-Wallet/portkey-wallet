@@ -9,6 +9,7 @@
     z-index: 100;
   }
   .group-info-body {
+    width: 100%;
     height: calc(100% - 96px);
     overflow-y: auto;
     .group-info-container {
@@ -43,6 +44,36 @@
           font-size: 12px;
           line-height: 16px;
           color: @font-13;
+        }
+      }
+      .info-share {
+        padding: 24px;
+        border-bottom: 1px solid @border-2;
+        .share-link {
+          width: 100%;
+          gap: 16px;
+          .share-link-title {
+            font-size: 16px;
+            line-height: 22px;
+            font-weight: 500;
+            color: @font-1;
+          }
+          .share-link-content {
+            gap: 16px;
+            font-size: 14px;
+            line-height: 20px;
+            color: @font-9;
+            cursor: pointer;
+            .link-content {
+              flex: 1;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+            .link-icon {
+              gap: 16px;
+            }
+          }
         }
       }
       .info-operation {

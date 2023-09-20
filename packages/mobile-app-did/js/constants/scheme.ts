@@ -4,6 +4,7 @@ export enum SCHEME_ACTION {
   login = 'login',
   linkDapp = 'linkDapp',
   addContact = 'addContact',
+  addGroup = 'addGroup',
 }
 
 export enum AUTH_LOGIN_TYPE {

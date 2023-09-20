@@ -10,7 +10,7 @@ import { sleep } from '@portkey-wallet/utils';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackName } from 'navigation';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
-import { getIDByAddContactUrl } from 'utils/scheme';
+import { parseLinkPortkeyUrl } from 'utils/scheme';
 import { useDiscoverJumpWithNetWork } from './discover';
 import { useHandlePortkeyUrl } from './useQrScan';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -80,7 +80,7 @@ export function useOnUrlPress() {
   return useThrottleCallback(
     (url: string) => {
       if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
-      const id = getIDByAddContactUrl(url);
+      const { id } = parseLinkPortkeyUrl(url);
       if (id && isChatShow) {
         handlePortkeyUrl({
           portkeyId: id,

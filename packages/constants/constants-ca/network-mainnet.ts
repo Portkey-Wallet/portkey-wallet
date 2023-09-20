@@ -1,5 +1,6 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BackEndNetWorkMap } from './backend-network';
+import { LINK_PATH_ENUM } from './link';
 
 export const NetworkList: NetworkItem[] = [
   BackEndNetWorkMap['back-end-mainnet'],
@@ -13,6 +14,9 @@ export const BingoGame = 'https://portkey-bingo-game.vercel.app';
 
 export const ThirdParty = `https://thirdparty.portkey.finance`;
 
-export const LinkWebsite = OfficialWebsite;
+export const LinkPortkeyWebsite = OfficialWebsite;
 
-export const AddContactLinkPath = LinkWebsite + '/sc/ac/';
+export enum LinkPortkeyPath {
+  addContact = LinkPortkeyWebsite + LINK_PATH_ENUM.addContact,
+  addGroup = LinkPortkeyWebsite + LINK_PATH_ENUM.addGroup,
+}

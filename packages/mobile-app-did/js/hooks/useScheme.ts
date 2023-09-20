@@ -46,6 +46,12 @@ export function useHandleParsedUrl() {
             });
             break;
           }
+          case SCHEME_ACTION.addGroup: {
+            if (!isChatShow) return;
+            const id = Object.values(query).join('');
+            // TODO:addGroup actions
+            break;
+          }
           default:
             console.log('this action is not supported');
         }

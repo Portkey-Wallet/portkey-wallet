@@ -13,7 +13,7 @@ import { expandQrData } from '@portkey-wallet/utils/qrCode';
 import { useDiscoverJumpWithNetWork } from './discover';
 import { InvalidQRCodeText, RouteInfoType, handleQRCodeData, invalidQRCode } from 'utils/qrcode';
 import { useNavigation } from '@react-navigation/native';
-import { checkAddContactUrl, getIDByAddContactUrl } from 'utils/scheme';
+import { parseLinkPortkeyUrl } from 'utils/scheme';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 
@@ -111,8 +111,8 @@ export const useHandleUrl = () => {
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
 
-      if (checkAddContactUrl(str)) {
-        const portkeyId = getIDByAddContactUrl(str);
+      const { id: portkeyId } = parseLinkPortkeyUrl(str);
+      if (portkeyId) {
         return handlePortkeyUrl({ portkeyId: portkeyId || '', showLoading: true, goBack: true });
       }
 

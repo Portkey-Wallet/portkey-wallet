@@ -87,12 +87,12 @@ export const useHandlePortkeyUrl = () => {
           address: portkeyId,
           fields: ['ADDRESS_WITH_CHAIN'],
         });
-        if (data) {
-          if (goBack) navigationService.goBack();
+        if (goBack) navigationService.goBack();
+        // data standard
+        if (data)
           return navigationService.navigate('ChatContactProfile', { contact: data, relationId: data.relationId });
-        } else {
-          return CommonToast.fail("This user doesn't exist. Please check the Portkey ID/QR code before you try again.");
-        }
+
+        return CommonToast.fail("This user doesn't exist. Please check the Portkey ID/QR code before you try again.");
       } catch (error: any) {
         if (error.code === '12001') {
           return CommonToast.fail("This user doesn't exist. Please check the Portkey ID/QR code before you try again.");
@@ -112,18 +112,19 @@ export const useHandleUrl = () => {
   return useCallback(
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
+
       if (checkAddContactUrl(str)) {
         const portkeyId = getIDByAddContactUrl(str);
         return handlePortkeyUrl({ portkeyId: portkeyId || '', showLoading: true, goBack: true });
-      } else {
-        jumpToWebview({
-          item: {
-            name: prefixUrlWithProtocol(str),
-            url: prefixUrlWithProtocol(str),
-          },
-        });
-        return navigationService.goBack();
       }
+
+      jumpToWebview({
+        item: {
+          name: prefixUrlWithProtocol(str),
+          url: prefixUrlWithProtocol(str),
+        },
+      });
+      return navigationService.goBack();
     },
     [handlePortkeyUrl, jumpToWebview],
   );

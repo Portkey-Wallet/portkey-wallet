@@ -162,8 +162,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(20),
     paddingVertical: pTd(16),
   },
-  portkeyIdSectionWrap: {},
-  portkeyId: {},
   rightIconContainerStyle: {
     marginRight: pTd(10),
   },

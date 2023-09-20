@@ -1,7 +1,7 @@
 import { TextL } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import CommonAvatar from 'components/CommonAvatar';
@@ -16,13 +16,23 @@ type GroupMemberItemPropsType = {
   multiple?: boolean;
   selected?: boolean;
   item: GroupMemberItemType;
+  wrapStyle?: StyleProp<ViewStyle>;
+  innerWrapStyle?: StyleProp<ViewStyle>;
   disabled?: boolean;
   onPress?: (id: string, item?: GroupMemberItemType, selected?: boolean) => void;
 };
 
 export default memo(
   function GroupMemberItem(props: GroupMemberItemPropsType) {
-    const { multiple = true, disabled = false, selected = false, item, onPress } = props;
+    const {
+      multiple = true,
+      disabled = false,
+      selected = false,
+      item,
+      onPress,
+      wrapStyle = {},
+      innerWrapStyle = {},
+    } = props;
 
     const iconDom = useMemo(() => {
       let iconName: IconName | undefined;
@@ -40,12 +50,12 @@ export default memo(
 
     return (
       <Touchable
-        style={styles.itemWrap}
+        style={[styles.itemWrap, wrapStyle]}
         onPress={() => {
           if (disabled) return;
           onPress?.(item.relationId, item);
         }}>
-        <View style={[styles.itemRow, disabled && styles.disable]}>
+        <View style={[styles.itemRow, disabled && styles.disable, innerWrapStyle]}>
           <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
           <View style={styles.itemContent}>
             <TextL>{item.title}</TextL>

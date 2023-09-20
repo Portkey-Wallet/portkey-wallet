@@ -12,7 +12,8 @@ import TransferOwnershipPage from './TransferOwnershipPage';
 import GroupMembersPage from './GroupMembersPage';
 import AddMembersPage from './AddMembersPage';
 import RemoveMembersPage from './RemoveMembersPage';
-import ChatQrCode from './ChatQrCode';
+import ChatQrCodePage from './ChatQrCodePage';
+import ChatGroupQrCodePage from './ChatGroupQrCodePage';
 
 const stackNav = [
   { name: 'ChatHomePage', component: ChatHomePage },
@@ -29,7 +30,8 @@ const stackNav = [
   { name: 'GroupMembersPage', component: GroupMembersPage },
   { name: 'AddMembersPage', component: AddMembersPage },
   { name: 'RemoveMembersPage', component: RemoveMembersPage },
-  { name: 'ChatQrCode', component: ChatQrCode },
+  { name: 'ChatQrCodePage', component: ChatQrCodePage },
+  { name: 'ChatGroupQrCodePage', component: ChatGroupQrCodePage },
 ] as const;
 
 export default stackNav;

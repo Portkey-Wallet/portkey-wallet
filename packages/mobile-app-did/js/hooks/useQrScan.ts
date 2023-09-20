@@ -111,9 +111,15 @@ export const useHandleUrl = () => {
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
 
-      const { id: portkeyId } = parseLinkPortkeyUrl(str);
-      if (portkeyId) {
-        return handlePortkeyUrl({ portkeyId: portkeyId || '', showLoading: true, goBack: true });
+      const { id, type } = parseLinkPortkeyUrl(str);
+
+      if (type === 'addContact' && id) {
+        return handlePortkeyUrl({ portkeyId: id || '', showLoading: true, goBack: true });
+      }
+
+      // TODO : how to deal with group
+      if (type === 'addGroup') {
+        return handlePortkeyUrl({ portkeyId: id || '', showLoading: true, goBack: true });
       }
 
       jumpToWebview({

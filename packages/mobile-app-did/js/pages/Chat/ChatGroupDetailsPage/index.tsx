@@ -172,16 +172,6 @@ const ChatGroupDetailsPage = () => {
             <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500]}>
               {groupInfo?.name || displayName}
             </TextL>
-            {/* <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberInfo]}>
-              {groupMemberCount ? (
-                <TextS style={FontStyles.font2}>{groupMemberCount}</TextS>
-              ) : (
-                <>
-                  <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoadingStyle} />
-                </>
-              )}
-              <TextS style={FontStyles.font2}>{` member${groupMemberCount && groupMemberCount > 0 ? 's' : ''}`}</TextS>
-            </View> */}
           </View>
         </Touchable>
 

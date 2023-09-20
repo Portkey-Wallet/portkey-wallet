@@ -20,6 +20,10 @@ import { useCurrentChannelId } from '../context/hooks';
 import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
 import useEffectOnce from 'hooks/useEffectOnce';
+import FormItem from 'components/FormItem';
+import { AddGroupLinkPath } from '@portkey-wallet/constants/constants-ca/network-test1';
+import { ShowShareWithOverlay } from '../components/ShareWithOverlay';
+import { copyText } from 'utils';
 
 const GroupInfoPage = () => {
   const myRelationId = useRelationId();
@@ -27,8 +31,9 @@ const GroupInfoPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(currentChannelId || '', false);
   const { members } = groupInfo || {};
-
   const leaveGroup = useLeaveChannel();
+
+  const inviteLink = useMemo(() => `${AddGroupLinkPath}${currentChannelId || ''}`, [currentChannelId]);
 
   const membersShowList = useMemo(() => {
     return members?.length && members?.length >= GROUP_INFO_MEMBER_SHOW_LIMITED
@@ -111,6 +116,28 @@ const GroupInfoPage = () => {
             groupInfo?.members.length && groupInfo?.members.length > 1 ? 's' : ''
           }`}</TextM>
         </View>
+
+        <FormItem title="Invite Link" style={styles.inviteLink}>
+          <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.inviteLinkContent]}>
+            <Touchable style={styles.link} onPress={() => ShowShareWithOverlay()}>
+              <TextM numberOfLines={1}>{inviteLink}</TextM>
+            </Touchable>
+            <Touchable onPress={() => copyText(inviteLink)}>
+              <Svg icon="copy" size={pTd(16)} />
+            </Touchable>
+            <Touchable
+              style={GStyles.marginLeft(pTd(24))}
+              onPress={() => {
+                navigationService.navigate('ChatGroupQrCodePage', {
+                  groupName: groupInfo?.name || '',
+                  groupId: currentChannelId || '',
+                });
+              }}>
+              {/* TODO: change svg */}
+              <Svg icon="chat-scan" size={pTd(16)} />
+            </Touchable>
+          </View>
+        </FormItem>
 
         <View style={styles.centerSection}>
           <Touchable
@@ -198,6 +225,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(16),
     marginHorizontal: pTd(20),
     backgroundColor: defaultColors.bg1,
+  },
+  inviteLink: {
+    marginTop: pTd(24),
+    marginHorizontal: pTd(20),
+  },
+  inviteLinkContent: {
+    borderRadius: pTd(6),
+    paddingHorizontal: pTd(16),
+    paddingVertical: pTd(18),
+    backgroundColor: defaultColors.bg1,
+  },
+  link: {
+    flex: 1,
+    paddingRight: pTd(20),
   },
   membersActionWrap: {
     paddingLeft: pTd(8),

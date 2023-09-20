@@ -81,6 +81,9 @@ export function useOnUrlPress() {
     (url: string) => {
       if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
       const { id } = parseLinkPortkeyUrl(url);
+
+      // TODO : how to deal with group
+
       if (id && isChatShow) {
         handlePortkeyUrl({
           portkeyId: id,

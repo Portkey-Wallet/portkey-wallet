@@ -6,10 +6,46 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { MenuItemInfo } from 'pages/components/MenuList';
 import { useMemo } from 'react';
+import { ContactPermissionEnum, IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import CustomSvg from 'components/CustomSvg';
+import {
+  CONTACT_PERMISSION_LABEL_MAP,
+  CONTACT_PRIVACY_TYPE_LABEL_MAP,
+} from '@portkey-wallet/constants/constants-ca/contact';
+import './index.less';
+import { GuardianTypeIcon } from 'components/VerifierPair';
 
 export interface IChatPrivacyProps extends BaseHeaderProps {
   menuList: MenuItemInfo[];
+  menuItemHeight: number;
 }
+
+const mock: IContactPrivacy[] = [
+  {
+    id: '',
+    identifier: '34teyrutiyu@portkey.finance',
+    privacyType: LoginType.Apple,
+    permission: ContactPermissionEnum.EVERY_BODY,
+  },
+  {
+    id: '2',
+    identifier: '34teyrutiyu@portkey.finance',
+    privacyType: LoginType.Email,
+    permission: ContactPermissionEnum.NOBODY,
+  },
+  {
+    identifier: '34teyrutiyu@portkey.finance',
+    privacyType: LoginType.Google,
+    permission: ContactPermissionEnum.EVERY_BODY,
+  },
+  {
+    id: '',
+    identifier: '34teyrutiyu@portkey.finance',
+    privacyType: LoginType.Phone,
+    permission: ContactPermissionEnum.MY_CONTACTS,
+  },
+];
 
 export default function ChatPrivacy() {
   const { isNotLessThan768 } = useCommonState();
@@ -20,30 +56,32 @@ export default function ChatPrivacy() {
   const goBack = () => {
     navigate('/setting/account-setting');
   };
+  const menuItemHeight = 92;
 
-  const menuList: MenuItemInfo[] = useMemo(
-    () => [
-      {
-        key: 'phone number',
-        element: 'phone number',
+  const menuList: MenuItemInfo[] = useMemo(() => {
+    return mock.map((item) => {
+      return {
+        key: item.identifier + item.privacyType,
+        icon: <CustomSvg type={GuardianTypeIcon[item.privacyType]} className="info-privacy-icon" />,
+        element: (
+          <div className="flex-between-center info-privacy">
+            <div className="info-left">
+              <div className="info-left-title">{CONTACT_PRIVACY_TYPE_LABEL_MAP[item.privacyType]}</div>
+              <div className="info-left-identifier">{item.identifier}</div>
+            </div>
+            <div className="info-right">{CONTACT_PERMISSION_LABEL_MAP[item.permission]}</div>
+          </div>
+        ),
         click: () => {
-          navigate('/setting/account-setting/chat-privacy-edit', { state: {} }); // TODO state
+          navigate('/setting/account-setting/chat-privacy-edit', { state: item });
         },
-      },
-      {
-        key: 'Email',
-        element: 'Email',
-        click: () => {
-          navigate('/setting/account-setting/chat-privacy-edit', { state: {} }); // TODO state
-        },
-      },
-    ],
-    [navigate],
-  );
+      };
+    });
+  }, [navigate]);
 
   return isNotLessThan768 ? (
-    <ChatPrivacyPrompt headerTitle={title} goBack={goBack} menuList={menuList} />
+    <ChatPrivacyPrompt headerTitle={title} goBack={goBack} menuList={menuList} menuItemHeight={menuItemHeight} />
   ) : (
-    <ChatPrivacyPopup headerTitle={title} goBack={goBack} menuList={menuList} />
+    <ChatPrivacyPopup headerTitle={title} goBack={goBack} menuList={menuList} menuItemHeight={menuItemHeight} />
   );
 }

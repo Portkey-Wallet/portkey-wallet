@@ -1,20 +1,58 @@
 @import '../../../../../assets/theme/color.less';
+@import '../../../../../assets/theme/constants.less';
 
 .chat-privacy-edit-form {
-  padding: 12px 24px 0;
+  padding: 24px 0;
 
-  .form-content {
-    .@{app-prefix}-form-item .@{app-prefix}-form-item-label {
-      padding-bottom: 8px;
+  .info-privacy-label {
+    color: #262626;
+    font-size: 14px;
+    margin: 0 24px 8px;
+  }
+
+  .info-privacy {
+    height: 48px;
+    border-radius: 6px;
+    background-color: #f7f8f9;
+    border: 1px solid #c5cbd5;
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    color: #25272a;
+    font-size: 14px;
+    margin: 0 24px 40px;
+    .info-privacy-icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      svg {
+        width: 32px;
+        height: 32px;
+      }
     }
-    .@{app-prefix}-form-item-label > label {
-      color: @font-11;
+  }
+
+  .info-identifier {
+    font-size: 14px;
+    margin-left: 12px;
+    color: @font-1;
+    word-break: break-all;
+    .text-overflow(1);
+  }
+
+  .chat-privacy-permission-item {
+    .menu-item-title {
       font-size: 14px;
-      line-height: 20px;
     }
-    .@{app-prefix}-input:placeholder-shown {
-      color: @font-12;
-      line-height: 20px;
+    .icon-empty {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .chat-privacy-permission-item-selected {
+    .menu-item-title {
+      color: @font-9;
     }
   }
 }

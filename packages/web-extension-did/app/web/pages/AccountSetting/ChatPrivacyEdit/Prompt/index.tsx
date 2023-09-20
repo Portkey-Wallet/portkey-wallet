@@ -3,11 +3,17 @@ import { IChatPrivacyEditProps } from '..';
 import './index.less';
 import ChatPrivacyEditFrom from '../components/ChatPrivacyEditFrom';
 
-export default function ChatPrivacyEditPrompt({ headerTitle, goBack }: IChatPrivacyEditProps) {
+export default function ChatPrivacyEditPrompt({
+  headerTitle,
+  goBack,
+  state,
+  permissionSelected,
+  changePermission,
+}: IChatPrivacyEditProps) {
   return (
-    <div className="chat-privacy-edit-prompt flex-1">
+    <div className="chat-privacy-edit-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
-      <ChatPrivacyEditFrom />
+      <ChatPrivacyEditFrom state={state} permissionSelected={permissionSelected} changePermission={changePermission} />
     </div>
   );
 }

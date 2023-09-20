@@ -1,6 +1,6 @@
 import { IImInfo } from '@portkey-wallet/im';
 import { ChainId } from '..';
-import { CaHolderInfo } from './wallet';
+import { CaHolderInfo, LoginType } from './wallet';
 
 export interface AddressItem {
   chainId: ChainId; // AELF tDVV tDVW
@@ -69,4 +69,17 @@ export interface IClickAddressProps {
   chainName?: string;
   addressChainId?: string;
   address: string;
+}
+
+export interface IContactPrivacy {
+  id?: string;
+  identifier: string;
+  privacyType: LoginType;
+  permission: ContactPermissionEnum;
+}
+
+export enum ContactPermissionEnum {
+  EVERY_BODY = 0,
+  MY_CONTACTS = 1,
+  NOBODY = 2,
 }

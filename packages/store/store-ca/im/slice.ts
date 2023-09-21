@@ -99,7 +99,21 @@ export const imSlice = createSlice({
         const preChannelList = state.channelListNetMap[network];
         const preList = preChannelList?.list || [];
         if (preList.find(item => item.channelUuid === channel.channelUuid)) {
-          return state;
+          return {
+            ...state,
+            channelListNetMap: {
+              ...state.channelListNetMap,
+              [network]: {
+                ...preChannelList,
+                list: preList.map(item => {
+                  if (item.channelUuid === channel.channelUuid) {
+                    return channel;
+                  }
+                  return item;
+                }),
+              },
+            },
+          };
         }
 
         const channelList = formatChannelList({

@@ -109,7 +109,7 @@ export const useInitIM = () => {
                 mute: rawMsg.mute,
                 pin: channelInfo.pin,
                 pinAt: '',
-                toRelationId: rawMsg.from,
+                toRelationId: '',
               },
             }),
           );

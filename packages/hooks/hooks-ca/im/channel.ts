@@ -51,6 +51,26 @@ export const useSendChannelMessage = () => {
   const { networkType } = useCurrentNetworkInfo();
   const relationId = useRelationId();
   const { walletName } = useWallet();
+  const sendMessageToPeople = useCallback(
+    async ({ toRelationId, type = 'TEXT', content }: { toRelationId: string; type?: MessageType; content: string }) => {
+      if (!toRelationId) {
+        throw new Error('No ID');
+      }
+      if (!relationId) {
+        throw new Error('No user info');
+      }
+      const uuid = randomId();
+      const msgParams = {
+        toRelationId,
+        type,
+        content,
+        sendUuid: `${relationId}-${toRelationId}-${Date.now()}-${uuid}`,
+      };
+
+      await im.service.sendMessage(msgParams);
+    },
+    [relationId],
+  );
 
   const sendChannelMessage = useCallback(
     async (channelId: string, content: string, type = 'TEXT' as MessageType) => {
@@ -167,6 +187,7 @@ export const useSendChannelMessage = () => {
     sendChannelMessage,
     sendChannelImage,
     sendChannelImageByS3Result,
+    sendMessageToPeople,
   };
 };
 
@@ -456,15 +477,16 @@ export const useMuteChannel = () => {
   const dispatch = useAppCommonDispatch();
 
   const mute = useCallback(
-    async (channelId: string, value: boolean, isRefreshTotal = true) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (channelId: string, value: boolean, _isRefreshTotal = true) => {
       await im.service.updateChannelMute({
         channelUuid: channelId,
         mute: value,
       });
 
-      if (isRefreshTotal) {
-        await im.service.readMessage({ channelUuid: channelId, total: 9999 });
-      }
+      // if (isRefreshTotal) {
+      //   await im.service.readMessage({ channelUuid: channelId, total: 9999 });
+      // }
 
       dispatch(
         updateChannelAttribute({
@@ -472,14 +494,14 @@ export const useMuteChannel = () => {
           channelId: channelId,
           value: {
             mute: value,
-            unreadMessageCount: 0,
+            // unreadMessageCount: 0,
           },
         }),
       );
 
-      if (isRefreshTotal) {
-        im.refreshMessageCount();
-      }
+      // if (isRefreshTotal) {
+      //   im.refreshMessageCount();
+      // }
     },
     [dispatch, networkType],
   );

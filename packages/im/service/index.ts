@@ -19,6 +19,7 @@ import {
   HideChannelParams,
   IIMService,
   IMServiceCommon,
+  JoinChannelParams,
   LeaveChannelParams,
   ReadMessageParams,
   RemoveChannelMembersParams,
@@ -233,6 +234,13 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/channelContacts/update',
+      params,
+      method: 'POST',
+    });
+  }
+  joinChannel(params: JoinChannelParams): IMServiceCommon<null> {
+    return this._request.send({
+      url: '/api/v1/channelContacts/join',
       params,
       method: 'POST',
     });

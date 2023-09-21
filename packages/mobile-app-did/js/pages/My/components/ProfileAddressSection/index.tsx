@@ -10,7 +10,7 @@ import FormItem from 'components/FormItem';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { copyText } from 'utils';
 import { pTd } from 'utils/unit';
@@ -31,13 +31,21 @@ type ProfileAddressSectionPropsType = {
 };
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
-  const { title = 'Address', disable, noMarginTop, addressList, isMySelf } = props;
+  const { title = 'Address', disable, noMarginTop, addressList: addressListProps, isMySelf } = props;
   const isTestnet = useIsTestnet();
 
   const copyId = useCallback(
     (ele: addressItemType) => copyText(ele.chainName === 'aelf' ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
     [],
   );
+
+  const addressList = useMemo(() => {
+    const _addressList = [...(addressListProps || [])];
+    const index = _addressList.findIndex(ele => ele.chainId === 'AELF');
+    if (index === -1) return _addressList;
+    const aelfAddress = _addressList.splice(index, 1)[0];
+    return [aelfAddress, ..._addressList];
+  }, [addressListProps]);
 
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>

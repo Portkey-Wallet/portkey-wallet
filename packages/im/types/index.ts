@@ -99,41 +99,6 @@ export enum TriggerMessageEventActionEnum {
   EXIT_CHANNEL = 2,
 }
 
-export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
-
-export interface AddressItem {
-  chainId: ChainId; // AELF tDVV tDVW
-  chainName?: string;
-  address: string;
-  image?: string;
-}
-
-export interface CaHolderInfo {
-  userId: string;
-  caHash: string;
-  walletName: string;
-}
-
-export interface IImInfo {
-  relationId: string;
-  portkeyId: string;
-  name?: string;
-}
-
-export type ContactItemType = {
-  id: string;
-  index: string;
-  name: string;
-  avatar?: string;
-  addresses: AddressItem[];
-  modificationTime: number;
-  isDeleted: boolean;
-  userId: string;
-  caHolderInfo?: Partial<CaHolderInfo>;
-  imInfo?: Partial<IImInfo>;
-  isImputation: boolean;
-};
-
 export type GroupMemberItemType = {
   relationId: string;
   name: string;

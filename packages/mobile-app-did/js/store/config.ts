@@ -18,8 +18,8 @@ import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import assetsSlice from '@portkey-wallet/store/store-ca/assets/slice';
 import txFeeSlice from '@portkey-wallet/store/store-ca/txFee/slice';
-
 import tokenManagementSlice from '@portkey-wallet/store/store-ca/tokenManagement/slice';
+import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -55,6 +55,7 @@ const reduxPersistConfig = {
     cmsSlice.name,
     paymentSlice.name,
     txFeeSlice.name,
+    securitySlice.name,
   ],
 
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1

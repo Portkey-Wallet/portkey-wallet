@@ -40,7 +40,7 @@ const ChatGroupQrCodePage: React.FC = () => {
         {groupName || ''}
       </TextXXXL>
       <View style={PageStyle.qrCodeWrap}>
-        <CommonQRCodeStyled qrData={qrCodeData || ''} pieceSize={6} style={PageStyle.qrCode} />
+        <CommonQRCodeStyled qrData={qrCodeData || ''} width={pTd(236)} />
       </View>
       <TextM style={GStyles.marginTop(pTd(20))}>Scan QR code to invite friends chat in group</TextM>
       <Touchable

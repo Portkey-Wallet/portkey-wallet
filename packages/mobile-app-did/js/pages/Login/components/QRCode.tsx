@@ -26,6 +26,7 @@ import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/devi
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { useCheckManager } from 'hooks/useLogOut';
 import { usePreventScreenCapture } from 'expo-screen-capture';
+import { pTd } from 'utils/unit';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -139,7 +140,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
           Please use the Portkey DApp to scan the QR code
         </TextS>
         <View style={[GStyles.alignCenter, styles.qrCodeBox, GStyles.flex1]}>
-          <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} />
+          <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} width={pTd(290)} />
           {/* {isScanQRCode && (
             <View style={[GStyles.flex1, GStyles.center, GStyles.flexRow]}>
               <Lottie source={require('./scanLoading.json')} style={styles.scanLoading} autoPlay loop />

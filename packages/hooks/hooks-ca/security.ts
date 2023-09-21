@@ -36,7 +36,7 @@ export const useContactPrivacyList = () => {
         params: {
           identifier: value.identifier,
           privacyType: value.privacyType,
-          permission: value,
+          permission: value.permission,
         },
       });
       dispatch(

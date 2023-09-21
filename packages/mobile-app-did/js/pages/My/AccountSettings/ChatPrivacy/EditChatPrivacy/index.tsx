@@ -18,6 +18,7 @@ import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
 import { sleep } from '@portkey-wallet/utils';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
+import CommonToast from 'components/CommonToast';
 
 interface RouterParams {
   detail: IContactPrivacy;
@@ -60,6 +61,7 @@ const EditChatPrivacy: React.FC = () => {
                 setPermission(value);
               } catch (error) {
                 // TODO: handle error
+                CommonToast.failError(error);
                 console.log('updatePrivacyPermission: error', error);
               }
               Loading.hide();

@@ -1,9 +1,9 @@
+import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import {
   ChannelInfo,
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
-  ContactItemType,
   Message,
   MessageCount,
   TriggerMessageEventActionEnum,
@@ -215,5 +215,5 @@ export interface IIMService {
   updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null>;
 
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
-  getProfile(params: GetProfileParams): IMServiceCommon<ContactItemType>;
+  getProfile(params: GetProfileParams): IMServiceCommon<IContactProfile>;
 }

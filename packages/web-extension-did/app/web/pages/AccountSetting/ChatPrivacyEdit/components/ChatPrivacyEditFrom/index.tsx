@@ -3,7 +3,7 @@ import CustomSvg from 'components/CustomSvg';
 import { GuardianTypeIcon } from 'components/VerifierPair';
 import { ContactPermissionEnum, IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
 import {
-  CONTACT_PERMISSION_LABEL_LIST,
+  CONTACT_PERMISSION_LIST,
   CONTACT_PRIVACY_TYPE_LABEL_MAP,
 } from '@portkey-wallet/constants/constants-ca/contact';
 import MenuItem from 'components/MenuItem';
@@ -29,19 +29,19 @@ export default function ChatPrivacyEditFrom({
       </div>
 
       <div className="info-privacy-label">{`Who can see my ${CONTACT_PRIVACY_TYPE_LABEL_MAP[state.privacyType]}`}</div>
-      {CONTACT_PERMISSION_LABEL_LIST.map((item, index) => {
+      {CONTACT_PERMISSION_LIST.map((item, index) => {
         return (
           <MenuItem
             key={'chat-privacy-edit-permission' + index}
             className={clsx([
               'chat-privacy-permission-item',
-              permissionSelected === item.id ? 'chat-privacy-permission-item-selected' : null,
+              permissionSelected === item.value ? 'chat-privacy-permission-item-selected' : null,
             ])}
             height={56}
             showEnterIcon={false}
-            icon={permissionSelected === item.id ? <CustomSvg type="selected" /> : <div className="icon-empty" />}
-            onClick={() => changePermission(item.id)}>
-            {item.text}
+            icon={permissionSelected === item.value ? <CustomSvg type="selected" /> : <div className="icon-empty" />}
+            onClick={() => changePermission(item.value)}>
+            {item.label}
           </MenuItem>
         );
       })}

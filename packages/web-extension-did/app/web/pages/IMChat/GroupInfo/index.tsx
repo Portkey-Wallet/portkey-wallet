@@ -11,7 +11,7 @@ import { ChannelMemberInfo } from '@portkey-wallet/im';
 import Copy from 'components/Copy';
 import ContactListDrawer from '../components/GroupShareDrawer';
 import { IContactItemSelectProps } from '../components/ContactListSelect';
-import { LinkPortkeyPath, LinkPortkeyWebsite } from '@portkey-wallet/constants/constants-ca/network';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import './index.less';
 
 const GroupInfo = () => {
@@ -20,7 +20,7 @@ const GroupInfo = () => {
   const myRelationId = useRelationId();
   const [shareVisible, setShareVisible] = useState(false);
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
-  const shareLink = useMemo(() => LinkPortkeyWebsite + LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
+  const shareLink = useMemo(() => LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
   const memberLen = useMemo(
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
     [groupInfo?.members.length],
@@ -103,9 +103,11 @@ const GroupInfo = () => {
             <div className="share-link flex-column">
               <div className="share-link-title">Invite Link</div>
               <div className="share-link-content flex-between">
-                <div className="link-content" onClick={() => setShareVisible(true)}>{`${shareLink}${channelUuid}`}</div>
+                <div className="link-content" onClick={() => setShareVisible(true)}>
+                  {shareLink}
+                </div>
                 <div className="link-icon flex-row-center">
-                  <Copy iconType="Copy4" toCopy={`${shareLink}${channelUuid}`} />
+                  <Copy iconType="Copy4" toCopy={shareLink} />
                   <CustomSvg type="QRCode2" onClick={() => navigate(`/chat-group-info/${channelUuid}/share`)} />
                 </div>
               </div>

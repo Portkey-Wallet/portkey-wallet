@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
-import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useInitIM, useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -12,7 +12,7 @@ import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { parseLinkPortkeyUrl } from 'utils/imChat';
 import { message } from 'antd';
 import { useNavigate } from 'react-router';
-import { useWalletInfo } from 'store/Provider/hooks';
+import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 
 export default function useInit() {
   const isShowChat = useIsChatShow();
@@ -73,10 +73,12 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
   const isShowChat = useIsChatShow();
   const { userId: myPortkeyId } = useWalletInfo();
   const navigate = useNavigate();
+  const joinGroupChannel = useJoinGroupChannel();
   const fromType = useMemo(() => (isGroup ? 'chat-box-group' : 'chat-box'), [isGroup]);
+  const { setLoading } = useLoading();
 
   return useCallback(
-    ({ id, type }: IClickChatUrlProps) => {
+    async ({ id, type }: IClickChatUrlProps) => {
       if (!isShowChat) {
         message.error('Failed to chat');
         return;
@@ -92,12 +94,22 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
         return;
       }
       if (type === 'addGroup') {
-        // TODO join
-        navigate(`/chat-box-group/${id}`);
-        return;
+        try {
+          setLoading(true);
+          await joinGroupChannel(id);
+          navigate(`/chat-box-group/${id}`);
+        } catch (error: any) {
+          if (`${error?.code}` === '13302') {
+            navigate(`/chat-box-group/${id}`);
+          } else {
+            message.error(`This group doesn't exist. Please check the Portkey group ID/QR code before you try again.`);
+            console.log('Failed to join error', error);
+          }
+        } finally {
+          setLoading(false);
+        }
       }
-      message.error('Failed to view');
     },
-    [fromType, fromChannelUuid, isShowChat, myPortkeyId, navigate],
+    [isShowChat, myPortkeyId, navigate, fromType, fromChannelUuid, setLoading, joinGroupChannel],
   );
 }

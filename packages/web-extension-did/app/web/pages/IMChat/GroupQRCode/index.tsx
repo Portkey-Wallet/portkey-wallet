@@ -3,12 +3,12 @@ import { message } from 'antd';
 import { useNavigate, useParams } from 'react-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import ShowQRCode from 'pages/components/ShowQRCode';
-import { LinkPortkeyPath, LinkPortkeyWebsite } from '@portkey-wallet/constants/constants-ca/network';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 
 const GroupQRCode = () => {
   const { channelUuid } = useParams();
   const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
-  const shareLink = useMemo(() => LinkPortkeyWebsite + LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
+  const shareLink = useMemo(() => LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
   const navigate = useNavigate();
 
   const handleRefresh = useCallback(async () => {
@@ -30,7 +30,7 @@ const GroupQRCode = () => {
         isGroup
         qrCodeValue={shareLink}
         showName={groupInfo?.name || 'Group Info'}
-        desc="Scan QR code to invite friends chat in group"
+        desc="Scan this QR code to join the group"
       />
     </div>
   );

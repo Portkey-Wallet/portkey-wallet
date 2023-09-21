@@ -3,14 +3,14 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Copy from 'components/Copy';
 import { useCallback } from 'react';
 import './index.less';
-import { IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
+import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
 
 export type ILoginAccountListProps = {
-  [X in keyof typeof LoginType]: IContactPrivacy[];
+  [X in keyof typeof LoginType]: IContactProfileLoginAccount[];
 };
 
 export default function LoginAccountList({ Email, Phone, Google, Apple }: Partial<ILoginAccountListProps>) {
-  const identifierItem = useCallback((list: IContactPrivacy[]) => {
+  const identifierItem = useCallback((list: IContactProfileLoginAccount[]) => {
     return (
       <div className="login-account-list-section">
         <div className="login-account-label">{CONTACT_PRIVACY_TYPE_LABEL_MAP[list[0]?.privacyType]}</div>

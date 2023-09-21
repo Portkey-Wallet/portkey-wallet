@@ -22,6 +22,8 @@ import im from '@portkey-wallet/im';
 import { ExtraTypeEnum, IProfileDetailDataProps } from 'types/Profile';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { ILoginAccountListProps } from '../components/LoginAccountList';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -59,35 +61,35 @@ export default function ViewContact() {
   const addContactText = t('Add Contact');
 
   useEffect(() => {
-    const isMyContact = isMyContactFn({ relationId, contactId: state?.id });
+    im.service.getProfile({ relationId: relationId }).then((res) => {
+      const loginAccountMap: ILoginAccountListProps = {
+        Phone: [],
+        Email: [],
+        Google: [],
+        Apple: [],
+      };
 
-    if (state?.id && isMyContact) {
-      // ================== case one ==================
-      // have contact id, get info from local map
-      setData({ ...state, ...contactInfo });
-    } else if (relationId && isMyContact) {
-      // ================== case two ==================
-      // Can chat, and is my contact, need to get full info from local map;
-      // Because it jumped from the chat-box, the data is incomplete
-      setData({ ...state, ...contactInfo });
-    } else if (!isMyContact) {
-      // ================== case three ==================
-      // Can chat, and is stranger, need to get full info from remote db;
-      // Because it jumped from the chat-box or find-more, the data is incomplete
-      try {
-        im.service.getProfile({ relationId: relationId }).then((res) => {
-          setData({ ...state, ...res?.data });
-        });
-      } catch (error) {
-        const err = handleErrorMessage(error, 'get profile error');
-        message.error(err);
-      }
-    }
+      res.data?.loginAccounts?.forEach((element) => {
+        switch (element.privacyType) {
+          case LoginType.Phone:
+            loginAccountMap.Phone.push(element);
+            break;
+          case LoginType.Email:
+            loginAccountMap.Email.push(element);
+            break;
+          case LoginType.Google:
+            loginAccountMap.Google.push(element);
+            break;
+          case LoginType.Apple:
+            loginAccountMap.Apple.push(element);
+            break;
 
-    // ================== case four ==================
-    // default setData(state);
-    // Cant chat (no relationId), display data directly
-    // Because it jumped from contacts page only
+          default:
+            break;
+        }
+      });
+      setData({ ...state, ...res?.data, loginAccountMap });
+    });
   }, [contactInfo, isMyContactFn, relationId, state, state?.id]);
 
   const goBack = useCallback(() => {

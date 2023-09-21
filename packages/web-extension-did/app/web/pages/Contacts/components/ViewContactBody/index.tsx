@@ -7,6 +7,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useEffect, useMemo, useState } from 'react';
 import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import LoginAccountList from '../LoginAccountList';
 
 export default function ViewContactBody({
   data,
@@ -93,6 +94,14 @@ export default function ViewContactBody({
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
           addressSectionLabel={showChat && (relationId || data?.from === 'my-did') ? 'DID' : 'Address'}
+        />
+
+        {/* login account info */}
+        <LoginAccountList
+          Email={data?.loginAccountMap?.Email}
+          Phone={data?.loginAccountMap?.Phone}
+          Google={data?.loginAccountMap?.Google}
+          Apple={data?.loginAccountMap?.Apple}
         />
       </div>
 

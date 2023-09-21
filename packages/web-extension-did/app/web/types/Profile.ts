@@ -1,3 +1,4 @@
+import { ILoginAccountListProps } from 'pages/Contacts/components/LoginAccountList';
 import { BaseHeaderProps } from './UI';
 import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 
@@ -15,6 +16,7 @@ export interface IProfileDetailDataProps extends Partial<IContactProfile> {
   relationId?: string;
   isShowRemark?: boolean;
   from?: string;
+  loginAccountMap?: ILoginAccountListProps;
 }
 
 export interface IProfileDetailBodyProps {

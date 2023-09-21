@@ -28,6 +28,7 @@ import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
 import { resetTxFee } from '@portkey-wallet/store/store-ca/txFee/actions';
 import im from '@portkey-wallet/im';
 import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
+import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -42,6 +43,7 @@ export default function useLogOut() {
       resetStore();
       im.destroy();
       dispatch(resetIm(currentNetwork));
+      dispatch(resetSecurity(currentNetwork));
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
       } else {

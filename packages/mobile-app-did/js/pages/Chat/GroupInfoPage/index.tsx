@@ -119,7 +119,7 @@ const GroupInfoPage = () => {
 
         <FormItem title="Invite Link" style={styles.inviteLink}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.inviteLinkContent]}>
-            <Touchable style={styles.link} onPress={() => ShowShareWithOverlay()}>
+            <Touchable style={styles.link} onPress={() => ShowShareWithOverlay({ linkContent: inviteLink })}>
               <TextM numberOfLines={1} style={FontStyles.font4}>
                 {inviteLink}
               </TextM>

@@ -5,18 +5,22 @@ import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
 import GroupMemberItem, { GroupMemberItemType } from '../GroupMemberItem';
 import NoData from 'components/NoData';
-import { useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import CommonToast from 'components/CommonToast';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { pTd } from 'utils/unit';
 import myEvents from 'utils/deviceEvent';
+import navigationService from 'utils/navigationService';
+import Loading from 'components/Loading';
+import { useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 
-function ShareWith() {
+function ShareWith(props: { linkContent: string }) {
+  const { linkContent } = props;
   const [keyword, setKeyword] = useState('');
 
-  const currentChannelId = useCurrentChannelId();
+  const { sendMassMessage } = useSendChannelMessage();
+
   const searchContactList = useLocalContactSearch();
   const [filterMemberList, setFilterMemberList] = useState<ContactItemType[]>([]);
   const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, GroupMemberItemType>>(new Map());
@@ -36,10 +40,20 @@ function ShareWith() {
     });
   }, []);
 
-  const onPressShare = useCallback(() => {
-    // TODO: share it and nav
-    console.log('onPressShare', currentChannelId, Array.from(selectedMemberMap.keys()));
-  }, [currentChannelId, selectedMemberMap]);
+  const onPressShare = useCallback(async () => {
+    try {
+      Loading.show();
+      const toRelationIds = Array.from(selectedMemberMap.keys());
+      await sendMassMessage({ toRelationIds, content: linkContent || '' });
+
+      OverlayModal.hide();
+      navigationService.navigate('Tab');
+    } catch (error) {
+      console.log('share group to contacts error', error);
+    } finally {
+      Loading.hide();
+    }
+  }, [linkContent, selectedMemberMap, sendMassMessage]);
 
   useEffect(() => {
     try {
@@ -55,15 +69,22 @@ function ShareWith() {
     <ModalBody
       modalBodyType="bottom"
       title={'Share with'}
-      bottomButtonGroup={[{ title: 'send', type: 'primary', onPress: onPressShare }]}>
+      bottomButtonGroup={[
+        {
+          title: 'send',
+          disabled: selectedMemberMap.size === 0,
+          type: 'primary',
+          onPress: onPressShare,
+        },
+      ]}>
       <View style={styles.inputWrap}>
-        <CommonInput placeholder="Search Contacts" type="search" value={keyword} onChangeText={setKeyword} />
+        <CommonInput placeholder="Name/address/Portkey ID" type="search" value={keyword} onChangeText={setKeyword} />
       </View>
       <FlatList
         contentContainerStyle={styles.listWrap}
         data={filterMemberList}
         keyExtractor={(item: ContactItemType) => item.imInfo?.relationId || ''}
-        ListEmptyComponent={keyword ? <NoData noPic message="No search found" /> : <NoData noPic message="No Member" />}
+        ListEmptyComponent={<NoData noPic message={keyword ? 'No contact found' : 'No Member'} />}
         onLayout={e => myEvents.nestScrollViewLayout.emit(e.nativeEvent.layout)}
         renderItem={({ item }) => (
           <GroupMemberItem
@@ -82,9 +103,9 @@ function ShareWith() {
   );
 }
 
-export const ShowShareWithOverlay = () => {
+export const ShowShareWithOverlay = (props: { linkContent: string }) => {
   Keyboard.dismiss();
-  OverlayModal.show(<ShareWith />, {
+  OverlayModal.show(<ShareWith {...props} />, {
     position: 'bottom',
   });
 };

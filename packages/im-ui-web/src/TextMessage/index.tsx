@@ -39,14 +39,14 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
     ],
     [props, setCopied],
   );
-  const handleUrlPress: ParseShape['onClick'] = useCallback((url: string) => {
-    const WWW_URL_PATTERN = /^www\./i;
-    if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
-    const openWinder = window.open(url, '_blank');
-    if (openWinder) {
-      openWinder.opener = null;
-    }
-  }, []);
+  const handleUrlPress: ParseShape['onClick'] = useCallback(
+    (url: string) => {
+      if (props.onClickUrl instanceof Function) {
+        props.onClickUrl(url);
+      }
+    },
+    [props],
+  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);

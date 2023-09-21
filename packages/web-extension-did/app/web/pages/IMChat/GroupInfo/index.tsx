@@ -11,16 +11,16 @@ import { ChannelMemberInfo } from '@portkey-wallet/im';
 import Copy from 'components/Copy';
 import ContactListDrawer from '../components/GroupShareDrawer';
 import { IContactItemSelectProps } from '../components/ContactListSelect';
+import { LinkPortkeyPath, LinkPortkeyWebsite } from '@portkey-wallet/constants/constants-ca/network';
 import './index.less';
 
-// TODO
-const shareLink = 'https://portkey.finance/sc/ac/';
 const GroupInfo = () => {
   const { channelUuid } = useParams();
   const leaveGroup = useLeaveChannel();
   const myRelationId = useRelationId();
   const [shareVisible, setShareVisible] = useState(false);
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
+  const shareLink = useMemo(() => LinkPortkeyWebsite + LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
   const memberLen = useMemo(
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
     [groupInfo?.members.length],
@@ -92,7 +92,7 @@ const GroupInfo = () => {
               <div className="group-icon flex-center">
                 <CustomSvg type="GroupAvatar" />
               </div>
-              <div className="group-name">{groupInfo?.name}</div>
+              <div className="group-name">{groupInfo?.name || ''}</div>
               <div className="group-members">
                 {memberLen}
                 {memberLen > 1 ? ' members' : ' member'}

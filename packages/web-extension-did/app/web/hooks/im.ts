@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
@@ -7,6 +7,12 @@ import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
+import { LinkPortkeyType } from 'types/im';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
+import { parseLinkPortkeyUrl } from 'utils/imChat';
+import { message } from 'antd';
+import { useNavigate } from 'react-router';
+import { useWalletInfo } from 'store/Provider/hooks';
 
 export default function useInit() {
   const isShowChat = useIsChatShow();
@@ -32,4 +38,66 @@ export default function useInit() {
     isShowChat ? init() : im.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isShowChat]);
+}
+
+export interface IClickUrlProps {
+  fromChannelUuid?: string;
+  isGroup?: boolean;
+}
+
+export const useClickUrl = ({ fromChannelUuid = '', isGroup = false }: IClickUrlProps) => {
+  const isShowChat = useIsChatShow();
+  const clickChatUrl = useClickChatUrl({ fromChannelUuid, isGroup });
+
+  return useThrottleCallback((url: string) => {
+    const WWW_URL_PATTERN = /^www\./i;
+    if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
+    const { id, type } = parseLinkPortkeyUrl(url);
+    if (id && isShowChat) {
+      clickChatUrl({ id, type });
+    } else {
+      const openWinder = window.open(url, '_blank');
+      if (openWinder) {
+        openWinder.opener = null;
+      }
+    }
+  }, []);
+};
+
+export interface IClickChatUrlProps {
+  id: string;
+  type: LinkPortkeyType;
+}
+
+export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClickUrlProps) {
+  const isShowChat = useIsChatShow();
+  const { userId: myPortkeyId } = useWalletInfo();
+  const navigate = useNavigate();
+  const fromType = useMemo(() => (isGroup ? 'chat-box-group' : 'chat-box'), [isGroup]);
+
+  return useCallback(
+    ({ id, type }: IClickChatUrlProps) => {
+      if (!isShowChat) {
+        message.error('Failed to chat');
+        return;
+      }
+      if (type === 'addContact') {
+        if (id === myPortkeyId) {
+          navigate('/setting/wallet/wallet-name', { state: { from: fromType, channelUuid: fromChannelUuid } });
+        } else {
+          navigate('/setting/contacts/view', {
+            state: { portkeyId: id, from: fromType, channelUuid: fromChannelUuid },
+          });
+        }
+        return;
+      }
+      if (type === 'addGroup') {
+        // TODO join
+        navigate(`/chat-box-group/${id}`);
+        return;
+      }
+      message.error('Failed to view');
+    },
+    [fromType, fromChannelUuid, isShowChat, myPortkeyId, navigate],
+  );
 }

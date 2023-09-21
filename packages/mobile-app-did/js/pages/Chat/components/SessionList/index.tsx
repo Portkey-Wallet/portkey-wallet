@@ -74,7 +74,7 @@ export default function SessionList() {
             iconName: item.mute ? 'chat-unmute' : 'chat-mute',
             onPress: async () => {
               try {
-                await muteChannel(item.channelUuid, !item.mute, true);
+                await muteChannel(item.channelUuid, !item.mute);
               } catch (error) {
                 console.log(error);
                 CommonToast.fail(`Failed to ${item.mute ? 'unmute' : 'mute'} chat`);

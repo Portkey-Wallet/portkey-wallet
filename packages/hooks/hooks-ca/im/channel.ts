@@ -20,6 +20,7 @@ import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';
 import { request } from '@portkey-wallet/api/api-did';
 import { useWallet } from '../wallet';
+import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/service';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -51,25 +52,74 @@ export const useSendChannelMessage = () => {
   const { networkType } = useCurrentNetworkInfo();
   const relationId = useRelationId();
   const { walletName } = useWallet();
+
   const sendMessageToPeople = useCallback(
-    async ({ toRelationId, type = 'TEXT', content }: { toRelationId: string; type?: MessageType; content: string }) => {
-      if (!toRelationId) {
+    ({
+      toRelationId,
+      channelId,
+      type = 'TEXT',
+      content,
+    }: {
+      toRelationId?: string;
+      channelId?: string;
+      type?: MessageType;
+      content: string;
+    }) => {
+      if (!toRelationId || !channelId) {
         throw new Error('No ID');
       }
       if (!relationId) {
         throw new Error('No user info');
       }
       const uuid = randomId();
-      const msgParams = {
+      return im.service.sendMessage({
+        channelUuid: channelId,
         toRelationId,
         type,
         content,
         sendUuid: `${relationId}-${toRelationId}-${Date.now()}-${uuid}`,
-      };
-
-      await im.service.sendMessage(msgParams);
+      });
     },
     [relationId],
+  );
+
+  const sendMassMessage = useCallback(
+    ({
+      toRelationIds = [],
+      channelIds = [],
+      content,
+      type = 'TEXT',
+    }: {
+      toRelationIds?: string[];
+      channelIds?: string[];
+      content: string;
+      type?: MessageType;
+    }) => {
+      if (!toRelationIds.length || !channelIds.length) {
+        throw new Error('No ID');
+      }
+      const promiseList: IMServiceCommon<SendMessageResult>[] = [];
+      toRelationIds.forEach(toRelationId => {
+        promiseList.push(
+          sendMessageToPeople({
+            toRelationId,
+            content,
+            type,
+          }),
+        );
+      });
+      channelIds.forEach(channelId => {
+        promiseList.push(
+          sendMessageToPeople({
+            channelId,
+            content,
+            type,
+          }),
+        );
+      });
+      return Promise.allSettled(promiseList);
+    },
+    [sendMessageToPeople],
   );
 
   const sendChannelMessage = useCallback(
@@ -184,10 +234,11 @@ export const useSendChannelMessage = () => {
   );
 
   return {
+    sendMessageToPeople,
+    sendMassMessage,
     sendChannelMessage,
     sendChannelImage,
     sendChannelImageByS3Result,
-    sendMessageToPeople,
   };
 };
 

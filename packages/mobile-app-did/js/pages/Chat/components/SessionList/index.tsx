@@ -120,9 +120,10 @@ export default function SessionList() {
 
   const onPressItem = useCallback(
     (item: ChannelItem) => {
-      // TODO: change toast
       if (item.channelType !== ChannelTypeEnum.GROUP && item.channelType !== ChannelTypeEnum.P2P)
-        return CommonToast.fail('unsupported channel, fail!');
+        return CommonToast.warn(
+          'Downloading the latest Portkey for you. To proceed, please close and restart the App.',
+        );
 
       switch (item.status) {
         case ChannelStatusEnum.NORMAL:

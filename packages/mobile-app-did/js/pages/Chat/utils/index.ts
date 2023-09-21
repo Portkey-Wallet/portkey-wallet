@@ -95,8 +95,7 @@ function handleDeleteText(): string {
 function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | undefined {
   if (channelType === ChannelTypeEnum.GROUP) return 'chat-group-avatar';
   if (channelType === ChannelTypeEnum.P2P) return undefined;
-  // TODO: change the unsupported icon
-  return 'chat-group-avatar'; // unsupported chat avatar
+  return 'chat-unsupported-channel';
 }
 
 export {

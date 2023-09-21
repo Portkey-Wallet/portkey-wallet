@@ -69,8 +69,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
 
   const onPress = useCallback(() => {
     if (currentMessage?.messageType === 'NOT_SUPPORTED') {
-      // TODO: confirm  fail or message and change text
-      CommonToast.fail('not supported message');
+      CommonToast.warn('Downloading the latest Portkey for you. To proceed, please close and restart the App.');
     }
   }, [currentMessage?.messageType]);
 
@@ -78,7 +77,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
     <Touchable onPress={onPress} onLongPress={onLongPress}>
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
         {isNotSupported ? (
-          <TextM style={FontStyles.font7}>{currentMessage?.text}</TextM>
+          <TextM style={FontStyles.font4}>{currentMessage?.text}</TextM>
         ) : (
           <ParsedText
             style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}

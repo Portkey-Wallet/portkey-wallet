@@ -5,16 +5,17 @@ import { PortkeyEntries } from '../../config/entries';
 export default abstract class BaseContainer<
   P extends BaseContainerProps,
   S extends BaseContainerState,
+  R = { [key: string]: any },
 > extends React.Component<P, S> {
   navigationTo = (entry: PortkeyEntries, targetScene?: string) => {
     portkeyModulesEntity.RouterModule.navigateTo(entry, targetScene);
   };
 
-  navigateForResult = <R,>(entry: PortkeyEntries, params: RouterOptions, callback: (res: EntryResult<R>) => void) => {
+  navigateForResult = <V,>(entry: PortkeyEntries, params: RouterOptions, callback: (res: EntryResult<V>) => void) => {
     portkeyModulesEntity.RouterModule.navigateToWithOptions(entry, this.getEntryName(), params, callback);
   };
 
-  onFinish = <R,>(res: EntryResult<R>) => {
+  onFinish = (res: EntryResult<R>) => {
     portkeyModulesEntity.RouterModule.navigateBack(this.getEntryName(), res);
   };
 

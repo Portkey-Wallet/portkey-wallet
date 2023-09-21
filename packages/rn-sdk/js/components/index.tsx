@@ -1,5 +1,8 @@
-import React from "react";
-import { AppRegistry, StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { AppRegistry, ComponentProvider, StyleSheet, Text, View } from 'react-native';
+import { PortkeyEntries } from '../config/entries';
+import EntryPage from './entries/EntryPage';
+import LoginPage from './entries/LoginPage';
 
 const Root = () => {
   return (
@@ -11,17 +14,24 @@ const Root = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   hello: {
     fontSize: 20,
-    textAlign: "center",
-    color: "red",
+    textAlign: 'center',
+    color: 'red',
     margin: 10,
-    backgroundColor: "yellow",
+    backgroundColor: 'yellow',
   },
 });
 
-export default Root;
+type EntryConfig = Map<string, ComponentProvider>;
 
-AppRegistry.registerComponent("Root", () => Root);
+const entryConfig: EntryConfig = new Map();
+entryConfig.set(PortkeyEntries.ROOT, () => Root);
+entryConfig.set(PortkeyEntries.ENTRY, () => EntryPage);
+entryConfig.set(PortkeyEntries.LOGIN, () => LoginPage);
+
+for (const [key, value] of entryConfig) {
+  AppRegistry.registerComponent(key, value);
+}

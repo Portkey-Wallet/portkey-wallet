@@ -118,6 +118,7 @@ export type GetChannelListParams = {
   cursor?: string;
   skipCount?: number;
   maxResultCount?: number;
+  channelUuid?: string;
 };
 
 export type GetChannelListResult = {

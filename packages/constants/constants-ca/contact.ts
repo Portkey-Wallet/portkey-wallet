@@ -18,8 +18,17 @@ export const CONTACT_PRIVACY_TYPE_LABEL_MAP: { [key in LoginType]: string } = {
   [LoginType.Google]: 'Google Account',
 };
 
-export const CONTACT_PERMISSION_LABEL_LIST = [
-  { text: CONTACT_PERMISSION_LABEL_MAP[ContactPermissionEnum.EVERY_BODY], id: ContactPermissionEnum.EVERY_BODY },
-  { text: CONTACT_PERMISSION_LABEL_MAP[ContactPermissionEnum.MY_CONTACTS], id: ContactPermissionEnum.MY_CONTACTS },
-  { text: CONTACT_PERMISSION_LABEL_MAP[ContactPermissionEnum.NOBODY], id: ContactPermissionEnum.NOBODY },
+export const CONTACT_PERMISSION_LIST = [
+  {
+    label: CONTACT_PERMISSION_LABEL_MAP[ContactPermissionEnum.EVERY_BODY],
+    value: ContactPermissionEnum.EVERY_BODY,
+  },
+  {
+    label: CONTACT_PERMISSION_LABEL_MAP[ContactPermissionEnum.MY_CONTACTS],
+    value: ContactPermissionEnum.MY_CONTACTS,
+  },
+  {
+    label: CONTACT_PERMISSION_LABEL_MAP[ContactPermissionEnum.NOBODY],
+    value: ContactPermissionEnum.NOBODY,
+  },
 ];

@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import CommonToast from 'components/CommonToast';
 import { TextM } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
@@ -22,9 +22,11 @@ import { useDeleteContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isValidRemark } from '@portkey-wallet/utils/reg';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
+import ProfileLoginAccountsSection from '../components/ProfileLoginAccountsSection';
 
 type RouterParams = {
-  contact?: ContactItemType;
+  contact?: IContactProfile;
+  isFromChatProfileEditPage?: boolean;
 };
 
 const ChatContactProfileEdit: React.FC = () => {
@@ -104,6 +106,7 @@ const ChatContactProfileEdit: React.FC = () => {
           id={isShowPortkeyId ? contact?.caHolderInfo?.userId : contact?.imInfo?.relationId}
         />
         <ProfileAddressSection disable addressList={contact?.addresses} />
+        <ProfileLoginAccountsSection disable list={contact?.loginAccounts || []} />
       </ScrollView>
 
       <View style={pageStyles.btnContainer}>

@@ -105,9 +105,7 @@ const AddMembersPage = () => {
       <FlatList
         data={filterMemberList}
         keyExtractor={(item: ContactItemType) => item.imInfo?.relationId || ''}
-        ListEmptyComponent={
-          debounceKeyword ? <NoData noPic message="No search found" /> : <NoData noPic message="No Member" />
-        }
+        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search found' : 'No Member'} />}
         renderItem={({ item }) => (
           <GroupMemberItem
             disabled={!!memberRelationIdMap[item.imInfo?.relationId || '']}

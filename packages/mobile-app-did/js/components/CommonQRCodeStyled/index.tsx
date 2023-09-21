@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import QRCodeStyled, { SVGQRCodeStyledProps, useQRCodeData } from 'react-native-qrcode-styled';
 import portkeyLogo from 'assets/image/pngs/portkeyBlackBorderRadius.png';
 import { pTd } from 'utils/unit';
@@ -22,7 +22,10 @@ const BorderRadiusMap = {
 };
 
 export default function CommonQRCodeStyled(props: CommonQRCodeStyledPropsType) {
-  const { qrData, hasMask = false, pieceSize = 4.8 } = props;
+  const { qrData, hasMask = false, width = pTd(236) } = props;
+  const { qrCodeSize } = useQRCodeData(qrData, {});
+
+  const pieceSize = useMemo(() => Number(width) / qrCodeSize, [qrCodeSize, width]);
 
   return (
     <View>

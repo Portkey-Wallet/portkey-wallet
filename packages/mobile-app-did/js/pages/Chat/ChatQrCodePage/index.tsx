@@ -28,7 +28,7 @@ const ChatQrCodePage: React.FC = () => {
         {walletName}
       </TextXXXL>
       <View style={PageStyle.qrCodeWrap}>
-        <CommonQRCodeStyled qrData={qrCodeData || ''} pieceSize={6} style={PageStyle.qrCode} />
+        <CommonQRCodeStyled qrData={qrCodeData || ''} width={pTd(236)} />
       </View>
       <TextM style={GStyles.marginTop(pTd(20))}>Scan the QR code to chat with me in Portkey</TextM>
       <Touchable
@@ -71,10 +71,6 @@ export const PageStyle = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 2,
-  },
-  qrCode: {
-    width: pTd(268),
-    height: pTd(268),
   },
   buttonWrap: {
     marginTop: pTd(78),

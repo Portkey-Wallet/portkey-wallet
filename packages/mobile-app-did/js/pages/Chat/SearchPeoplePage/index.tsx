@@ -17,7 +17,7 @@ import { useSearchChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import useDebounce from 'hooks/useDebounce';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import CommonToast from 'components/CommonToast';
-import { ChannelItem } from '@portkey-wallet/im/types';
+import { ChannelItem, ChannelTypeEnum } from '@portkey-wallet/im/types';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { Input } from '@rneui/base';
 import LottieLoading from 'components/LottieLoading';
@@ -76,9 +76,10 @@ export default function SearchPeople() {
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter, styles.itemWrap]}
           onPress={() => {
-            item.channelType === 'G'
-              ? navToGroupChatDetails({ toRelationId, channelUuid })
-              : navToChatDetails({ toRelationId, channelUuid });
+            if (item.channelType === ChannelTypeEnum.GROUP) return navToGroupChatDetails({ toRelationId, channelUuid });
+            if (item.channelType === ChannelTypeEnum.P2P) navToChatDetails({ toRelationId, channelUuid });
+            // TODO: change toast
+            return CommonToast.fail('fail to enter');
           }}>
           <CommonAvatar
             title={displayName}

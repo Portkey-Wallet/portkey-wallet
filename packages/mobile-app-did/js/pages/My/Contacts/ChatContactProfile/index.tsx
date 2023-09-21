@@ -53,6 +53,7 @@ const ContactProfile: React.FC = () => {
 
   const { t } = useLanguage();
   const addStranger = useAddStrangerContact();
+  const timerRef = useRef<NodeJS.Timeout | number>();
 
   const [profileInfo, setProfileInfo] = useState<ContactItemType>();
 
@@ -104,18 +105,22 @@ const ContactProfile: React.FC = () => {
   const getProfile = useCallback(async () => {
     if (relationId) {
       try {
-        Loading.show();
+        timerRef.current = setTimeout(() => {
+          Loading.show();
+        }, 200);
         const { data } = await im.service.getProfile({ relationId });
         setProfileInfo({ ...initEditContact, ...(data || {}) });
       } catch (error) {
         console.log(error);
         CommonToast.failError(error);
       } finally {
+        clearTimeout(timerRef.current);
         Loading.hide();
       }
     }
   }, [relationId]);
 
+  useEffect(() => () => clearTimeout(timerRef.current), []);
   useEffectOnce(() => {
     getProfile();
   });

@@ -1,4 +1,9 @@
-import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useGroupChannelInfo,
+  useLeaveChannel,
+  useRelationId,
+  useSendChannelMessage,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button, Modal, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -10,8 +15,8 @@ import clsx from 'clsx';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
 import Copy from 'components/Copy';
 import ContactListDrawer from '../components/GroupShareDrawer';
-import { IContactItemSelectProps } from '../components/ContactListSelect';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
+import { useLoading } from 'store/Provider/hooks';
 import './index.less';
 
 const GroupInfo = () => {
@@ -20,6 +25,7 @@ const GroupInfo = () => {
   const myRelationId = useRelationId();
   const [shareVisible, setShareVisible] = useState(false);
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
+  const { sendMassMessage } = useSendChannelMessage();
   const shareLink = useMemo(() => LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
   const memberLen = useMemo(
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
@@ -27,6 +33,7 @@ const GroupInfo = () => {
   );
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { setLoading } = useLoading();
   const handleLeaveGroup = useCallback(() => {
     return Modal.confirm({
       width: 320,
@@ -60,10 +67,21 @@ const GroupInfo = () => {
     },
     [myRelationId, navigate, channelUuid],
   );
-  const handleSend = useCallback(async (params: IContactItemSelectProps[]) => {
-    // TODO
-    console.log(params);
-  }, []);
+  const handleSend = useCallback(
+    async (params: ChannelMemberInfo[]) => {
+      try {
+        setLoading(true);
+        const toRelationIds = params.map((m) => m.relationId || '');
+        await sendMassMessage({ toRelationIds, content: shareLink });
+      } catch (error) {
+        console.log('share group to contacts error', error);
+      } finally {
+        setLoading(false);
+        navigate('/chat-list');
+      }
+    },
+    [navigate, sendMassMessage, setLoading, shareLink],
+  );
   const handleRefresh = useCallback(async () => {
     try {
       await refresh();

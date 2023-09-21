@@ -11,7 +11,7 @@ import './index.less';
 
 interface IContactChatListProps {
   onClose: () => void;
-  onConfirm: (v: IContactItemSelectProps[]) => void;
+  onConfirm: (v: ChannelMemberInfo[]) => void;
 }
 
 export default function ContactChatList({ onClose, onConfirm }: IContactChatListProps) {

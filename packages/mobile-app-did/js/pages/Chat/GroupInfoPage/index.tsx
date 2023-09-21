@@ -120,7 +120,9 @@ const GroupInfoPage = () => {
         <FormItem title="Invite Link" style={styles.inviteLink}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.inviteLinkContent]}>
             <Touchable style={styles.link} onPress={() => ShowShareWithOverlay()}>
-              <TextM numberOfLines={1}>{inviteLink}</TextM>
+              <TextM numberOfLines={1} style={FontStyles.font4}>
+                {inviteLink}
+              </TextM>
             </Touchable>
             <Touchable onPress={() => copyText(inviteLink)}>
               <Svg icon="copy" size={pTd(16)} />
@@ -133,7 +135,6 @@ const GroupInfoPage = () => {
                   groupId: currentChannelId || '',
                 });
               }}>
-              {/* TODO: change svg */}
               <Svg icon="chat-scan" size={pTd(16)} />
             </Touchable>
           </View>

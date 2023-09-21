@@ -1,3 +1,5 @@
+import { ChannelTypeEnum } from '@portkey-wallet/im/types';
+import { IconName } from 'components/Svg';
 import { TextInputScrollEventData, TextInputSelectionChangeEventData } from 'react-native';
 
 export class ChatInputRecorder {
@@ -90,4 +92,18 @@ function handleDeleteText(): string {
   return text;
 }
 
-export { chatInputRecorder, initChatInputRecorder, destroyChatInputRecorder, handleInputText, handleDeleteText };
+function getChatListSvgName(channelType?: ChannelTypeEnum): IconName | undefined {
+  if (channelType === ChannelTypeEnum.GROUP) return 'chat-group-avatar';
+  if (channelType === ChannelTypeEnum.P2P) return undefined;
+  // TODO: change the unsupported icon
+  return 'chat-group-avatar'; // unsupported chat avatar
+}
+
+export {
+  chatInputRecorder,
+  initChatInputRecorder,
+  destroyChatInputRecorder,
+  handleInputText,
+  handleDeleteText,
+  getChatListSvgName,
+};

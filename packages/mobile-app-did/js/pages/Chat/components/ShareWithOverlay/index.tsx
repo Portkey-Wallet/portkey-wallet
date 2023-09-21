@@ -17,7 +17,6 @@ function ShareWith() {
   const [keyword, setKeyword] = useState('');
 
   const currentChannelId = useCurrentChannelId();
-
   const searchContactList = useLocalContactSearch();
   const [filterMemberList, setFilterMemberList] = useState<ContactItemType[]>([]);
   const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, GroupMemberItemType>>(new Map());
@@ -101,6 +100,7 @@ const styles = StyleSheet.create({
   },
   inputWrap: {
     paddingHorizontal: pTd(20),
+    paddingBottom: pTd(8),
   },
   listWrap: {
     paddingHorizontal: pTd(20),

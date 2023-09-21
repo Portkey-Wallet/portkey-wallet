@@ -7,6 +7,10 @@ import { useLocation, useNavigate } from 'react-router';
 import { ContactPermissionEnum, IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
 import { useCallback, useState } from 'react';
 import CustomModal from 'pages/components/CustomModal';
+import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import { message } from 'antd';
+import { CONTACT_PERMISSION_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
 
 export interface IChatPrivacyEditProps extends BaseHeaderProps {
   state: IContactPrivacy;
@@ -19,24 +23,38 @@ export default function ChatPrivacyEdit() {
   const { t } = useTranslation();
   const { state } = useLocation();
   const navigate = useNavigate();
+  const { update } = useContactPrivacyList();
 
-  const title = t('Chat privacy and security');
+  const title = t('Privacy');
   const goBack = () => {
     navigate('/setting/account-setting/chat-privacy');
   };
   const [permissionSelected, setPermissionSelected] = useState(ContactPermissionEnum.EVERY_BODY);
 
-  const changePermission = useCallback((id: ContactPermissionEnum) => {
-    CustomModal({
-      type: 'confirm',
-      content: 'confirm change',
-      onOk: () => {
-        // TODO updatePermission(id);
-        setPermissionSelected(id);
-      },
-      okText: 'Confirm',
-    });
-  }, []);
+  const changePermission = useCallback(
+    (id: ContactPermissionEnum) => {
+      CustomModal({
+        type: 'confirm',
+        content: (
+          <div>
+            <div className="modal-title">{`You are changing the visibility of this to "${CONTACT_PERMISSION_LABEL_MAP[id]}"`}</div>
+            <div>{'After confirmation, your account info will be visible to the selected group.'}</div>
+          </div>
+        ),
+        onOk: async () => {
+          try {
+            await update({ ...state, permission: id });
+            setPermissionSelected(id);
+          } catch (error) {
+            const msg = handleErrorMessage(error);
+            message.error(msg);
+          }
+        },
+        okText: 'Confirm',
+      });
+    },
+    [state, update],
+  );
 
   return isNotLessThan768 ? (
     <ChatPrivacyEditPrompt

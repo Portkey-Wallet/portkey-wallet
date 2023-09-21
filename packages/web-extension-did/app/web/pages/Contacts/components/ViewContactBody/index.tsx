@@ -93,7 +93,7 @@ export default function ViewContactBody({
           relationId={relationId}
           addresses={data?.addresses || []}
           handleCopy={handleCopy}
-          addressSectionLabel={showChat && (relationId || data?.from === 'my-did') ? 'DID' : 'Address'}
+          addressSectionLabel="Address"
         />
 
         {/* login account info */}

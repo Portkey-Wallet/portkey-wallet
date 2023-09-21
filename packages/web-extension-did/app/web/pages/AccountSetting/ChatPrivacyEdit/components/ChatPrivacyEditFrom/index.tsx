@@ -8,6 +8,8 @@ import {
 } from '@portkey-wallet/constants/constants-ca/contact';
 import MenuItem from 'components/MenuItem';
 import clsx from 'clsx';
+import { useMemo } from 'react';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 
 interface IChatPrivacyEditFromProps {
   state: IContactPrivacy;
@@ -20,15 +22,21 @@ export default function ChatPrivacyEditFrom({
   permissionSelected,
   changePermission,
 }: IChatPrivacyEditFromProps) {
+  const whoCanSeeLabel = useMemo(() => {
+    return state.privacyType === LoginType.Phone
+      ? CONTACT_PRIVACY_TYPE_LABEL_MAP[state.privacyType].toLocaleLowerCase()
+      : CONTACT_PRIVACY_TYPE_LABEL_MAP[state.privacyType];
+  }, [state.privacyType]);
+
   return (
     <div className="chat-privacy-edit-form">
-      <div className="info-privacy-label">{`My login ${CONTACT_PRIVACY_TYPE_LABEL_MAP[state.privacyType]}`}</div>
+      <div className="info-privacy-label">{`My Login ${CONTACT_PRIVACY_TYPE_LABEL_MAP[state.privacyType]}`}</div>
       <div className="info-privacy">
         <CustomSvg type={GuardianTypeIcon[state.privacyType]} className="info-privacy-icon" />
         <span className="info-identifier">{state.identifier}</span>
       </div>
 
-      <div className="info-privacy-label">{`Who can see my ${CONTACT_PRIVACY_TYPE_LABEL_MAP[state.privacyType]}`}</div>
+      <div className="info-privacy-label">{`Who can see my ${whoCanSeeLabel}`}</div>
       {CONTACT_PERMISSION_LIST.map((item, index) => {
         return (
           <MenuItem

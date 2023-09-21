@@ -61,7 +61,7 @@ export default function ViewContact() {
   const addContactText = t('Add Contact');
 
   useEffect(() => {
-    im.service.getProfile({ relationId: relationId }).then((res) => {
+    im.service.getProfile({ relationId: relationId, id: state.id }).then((res) => {
       const loginAccountMap: ILoginAccountListProps = {
         Phone: [],
         Email: [],

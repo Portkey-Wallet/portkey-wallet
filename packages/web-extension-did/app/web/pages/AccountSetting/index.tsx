@@ -28,7 +28,7 @@ export default function AccountSetting() {
       },
       {
         key: t('chat-privacy'),
-        element: 'Chat privacy and security',
+        element: 'Privacy',
         click: () => {
           navigate('/setting/account-setting/chat-privacy');
         },

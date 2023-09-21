@@ -333,19 +333,21 @@ export const useJoinGroupChannel = () => {
 
       (async () => {
         try {
-          const { data: channelInfo } = await im.service.getChannelInfo({
+          const {
+            data: { list },
+          } = await im.service.getChannelList({
             channelUuid: channelId,
           });
-          dispatch(
-            updateChannelAttribute({
-              network: networkType,
-              channelId,
-              value: {
-                displayName: channelInfo.name,
-                channelIcon: channelInfo.icon,
-              },
-            }),
-          );
+          if (list.length) {
+            const channelInfo = list[0];
+            dispatch(
+              updateChannelAttribute({
+                network: networkType,
+                channelId: channelInfo.channelUuid,
+                value: channelInfo,
+              }),
+            );
+          }
           console.log('joinGroupChannel refreshChannelInfo');
         } catch (error) {
           console.log('joinGroupChannel getChannelInfo: error', error);

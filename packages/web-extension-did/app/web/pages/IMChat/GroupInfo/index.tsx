@@ -1,4 +1,9 @@
-import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useGroupChannelInfo,
+  useLeaveChannel,
+  useRelationId,
+  useSendChannelMessage,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button, Modal, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
@@ -10,23 +15,25 @@ import clsx from 'clsx';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
 import Copy from 'components/Copy';
 import ContactListDrawer from '../components/GroupShareDrawer';
-import { IContactItemSelectProps } from '../components/ContactListSelect';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
+import { useLoading } from 'store/Provider/hooks';
 import './index.less';
 
-// TODO
-const shareLink = 'https://portkey.finance/sc/ac/';
 const GroupInfo = () => {
   const { channelUuid } = useParams();
   const leaveGroup = useLeaveChannel();
   const myRelationId = useRelationId();
   const [shareVisible, setShareVisible] = useState(false);
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
+  const { sendMassMessage } = useSendChannelMessage();
+  const shareLink = useMemo(() => LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
   const memberLen = useMemo(
     () => (typeof groupInfo?.members.length === 'number' ? groupInfo?.members.length : 0),
     [groupInfo?.members.length],
   );
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { setLoading } = useLoading();
   const handleLeaveGroup = useCallback(() => {
     return Modal.confirm({
       width: 320,
@@ -60,10 +67,21 @@ const GroupInfo = () => {
     },
     [myRelationId, navigate, channelUuid],
   );
-  const handleSend = useCallback(async (params: IContactItemSelectProps[]) => {
-    // TODO
-    console.log(params);
-  }, []);
+  const handleSend = useCallback(
+    async (params: ChannelMemberInfo[]) => {
+      try {
+        setLoading(true);
+        const toRelationIds = params.map((m) => m.relationId || '');
+        await sendMassMessage({ toRelationIds, content: shareLink });
+      } catch (error) {
+        console.log('share group to contacts error', error);
+      } finally {
+        setLoading(false);
+        navigate('/chat-list');
+      }
+    },
+    [navigate, sendMassMessage, setLoading, shareLink],
+  );
   const handleRefresh = useCallback(async () => {
     try {
       await refresh();
@@ -92,7 +110,7 @@ const GroupInfo = () => {
               <div className="group-icon flex-center">
                 <CustomSvg type="GroupAvatar" />
               </div>
-              <div className="group-name">{groupInfo?.name}</div>
+              <div className="group-name">{groupInfo?.name || ''}</div>
               <div className="group-members">
                 {memberLen}
                 {memberLen > 1 ? ' members' : ' member'}
@@ -103,9 +121,11 @@ const GroupInfo = () => {
             <div className="share-link flex-column">
               <div className="share-link-title">Invite Link</div>
               <div className="share-link-content flex-between">
-                <div className="link-content" onClick={() => setShareVisible(true)}>{`${shareLink}${channelUuid}`}</div>
+                <div className="link-content" onClick={() => setShareVisible(true)}>
+                  {shareLink}
+                </div>
                 <div className="link-icon flex-row-center">
-                  <Copy iconType="Copy4" toCopy={`${shareLink}${channelUuid}`} />
+                  <Copy iconType="Copy4" toCopy={shareLink} />
                   <CustomSvg type="QRCode2" onClick={() => navigate(`/chat-group-info/${channelUuid}/share`)} />
                 </div>
               </div>

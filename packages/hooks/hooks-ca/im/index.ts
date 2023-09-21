@@ -88,31 +88,45 @@ export const useInitIM = () => {
         }
 
         try {
-          const { data: channelInfo } = await im.service.getChannelInfo({
+          const {
+            data: { list },
+          } = await im.service.getChannelList({
             channelUuid: rawMsg.channelUuid,
           });
-
-          dispatch(
-            addChannel({
-              network: networkType,
-              channel: {
-                status: ChannelStatusEnum.NORMAL,
-                channelUuid: rawMsg.channelUuid,
-                displayName: channelInfo.name,
-                channelIcon: rawMsg.fromAvatar || '',
-                channelType: rawMsg.channelType,
-                unreadMessageCount: 1,
-                mentionsCount: 0,
-                lastMessageType: rawMsg.type,
-                lastMessageContent: rawMsg.content,
-                lastPostAt: rawMsg.createAt,
-                mute: rawMsg.mute,
-                pin: channelInfo.pin,
-                pinAt: '',
-                toRelationId: '',
-              },
-            }),
-          );
+          if (list.length) {
+            const channelInfo = list[0];
+            dispatch(
+              addChannel({
+                network: networkType,
+                channel: channelInfo,
+              }),
+            );
+          } else {
+            const { data: channelInfo } = await im.service.getChannelInfo({
+              channelUuid: rawMsg.channelUuid,
+            });
+            dispatch(
+              addChannel({
+                network: networkType,
+                channel: {
+                  status: ChannelStatusEnum.NORMAL,
+                  channelUuid: rawMsg.channelUuid,
+                  displayName: channelInfo.name,
+                  channelIcon: rawMsg.fromAvatar || '',
+                  channelType: rawMsg.channelType,
+                  unreadMessageCount: 1,
+                  mentionsCount: 0,
+                  lastMessageType: rawMsg.type,
+                  lastMessageContent: rawMsg.content,
+                  lastPostAt: rawMsg.createAt,
+                  mute: rawMsg.mute,
+                  pin: channelInfo.pin,
+                  pinAt: '',
+                  toRelationId: '',
+                },
+              }),
+            );
+          }
         } catch (error) {
           console.log('UnreadMsg addChannel error:', error);
         }

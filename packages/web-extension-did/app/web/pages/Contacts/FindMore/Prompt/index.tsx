@@ -3,6 +3,8 @@ import SecondPageHeader from 'pages/components/SecondPageHeader';
 import { IFindMoreProps } from '..';
 import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
+import Copy from 'components/Copy';
+import CustomSvg from 'components/CustomSvg';
 
 export default function FindMorePrompt({
   headerTitle,
@@ -15,6 +17,7 @@ export default function FindMorePrompt({
   handleSearch,
   clickItem,
   clickChat,
+  clickQRCode,
 }: IFindMoreProps) {
   return (
     <div className="find-more-prompt">
@@ -25,7 +28,18 @@ export default function FindMorePrompt({
           placeholder="Portkey ID/Address"
           handleChange={handleSearch}
         />
-        {!isSearch && <div className="find-more-id">My Portkey ID1234: {myPortkeyId}</div>}
+        {!isSearch && (
+          <div className="find-more-id flex-between">
+            <div className="my-portkey-id">
+              <div className="portkey-id-label">My Portkey ID:</div>
+              <div className="portkey-id-show">{myPortkeyId}</div>
+            </div>
+            <div className="show-icon flex">
+              <Copy iconType="Copy4" toCopy={myPortkeyId} />
+              <CustomSvg type="QRCode2" onClick={clickQRCode} />
+            </div>
+          </div>
+        )}
       </div>
       <div className="find-more-body">
         {(!contact || !contact.name) && isSearch && (

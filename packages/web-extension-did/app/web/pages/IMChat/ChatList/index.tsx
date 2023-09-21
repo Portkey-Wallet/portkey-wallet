@@ -60,7 +60,7 @@ export default function ChatList() {
         leftIcon: <CustomSvg type="ChatAddContact" />,
         children: 'Find More',
         onClick: () => {
-          navigate(`/setting/contacts/find-more`);
+          navigate(`/setting/contacts/find-more`, { state: { from: 'chat-list' } });
         },
       },
     ],

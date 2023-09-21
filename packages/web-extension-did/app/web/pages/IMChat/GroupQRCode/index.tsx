@@ -1,14 +1,14 @@
 import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import { message } from 'antd';
 import { useNavigate, useParams } from 'react-router';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import ShowQRCode from 'pages/components/ShowQRCode';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 
-// TODO
-const shareLink = 'https://portkey.finance/sc/ac/';
 const GroupQRCode = () => {
   const { channelUuid } = useParams();
   const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
+  const shareLink = useMemo(() => LinkPortkeyPath.addGroup + channelUuid, [channelUuid]);
   const navigate = useNavigate();
 
   const handleRefresh = useCallback(async () => {
@@ -28,9 +28,9 @@ const GroupQRCode = () => {
       <ShowQRCode
         onBack={() => navigate(-1)}
         isGroup
-        qrCodeValue={`${shareLink}${channelUuid}`}
+        qrCodeValue={shareLink}
         showName={groupInfo?.name || 'Group Info'}
-        desc="Scan QR code to invite friends chat in group"
+        desc="Scan this QR code to join the group"
       />
     </div>
   );

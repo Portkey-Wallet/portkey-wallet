@@ -14,6 +14,7 @@ import { useEffectOnce } from 'react-use';
 import { useHandle } from '../useHandle';
 import ChatBoxHeader from '../components/ChatBoxHeader';
 import CustomModal from 'pages/components/CustomModal';
+import { useClickUrl } from 'hooks/im';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -39,6 +40,7 @@ export default function ChatBox() {
     groupInfo,
     info,
   } = useGroupChannel(`${channelUuid}`);
+  const clickUrl = useClickUrl({ fromChannelUuid: channelUuid, isGroup: true });
   useEffectOnce(() => {
     init();
   });
@@ -244,6 +246,7 @@ export default function ChatBox() {
             dataSource={messageList}
             onClickAvatar={handleGoProfile}
             onDeleteMsg={handleDeleteMsg}
+            onClickUrl={clickUrl}
           />
         </StyleProvider>
       </div>

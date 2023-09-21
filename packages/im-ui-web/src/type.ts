@@ -54,6 +54,7 @@ export interface IMessage {
   showAvatar?: boolean;
   onDeleteMsg?: React.MouseEventHandler;
   onClickAvatar?: React.MouseEventHandler;
+  onClickUrl?: (v: string) => void;
 }
 
 export interface IImageMessage extends IMessage {
@@ -101,6 +102,7 @@ export interface IMessageListProps {
   onScroll?: React.UIEventHandler;
   onDeleteMsg?: MessageListEvent;
   onClickAvatar?: MessageListEvent;
+  onClickUrl?: (v: string) => void;
   onDownButtonClick?: React.RefObject<HTMLButtonElement>;
 }
 

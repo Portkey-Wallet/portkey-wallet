@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double Pods_AelfPortkey_TestsVersionNumber;
-FOUNDATION_EXPORT const unsigned char Pods_AelfPortkey_TestsVersionString[];
+FOUNDATION_EXPORT double Pods_PortkeySDKExample_ExampleVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_PortkeySDKExample_ExampleVersionString[];
 

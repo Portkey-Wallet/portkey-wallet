@@ -11,7 +11,7 @@ $react_native_path = "#{$node_modules}/react-native"
 require_relative "#{$node_modules}/react-native/scripts/react_native_pods"
 require_relative "#{$node_modules}/@react-native-community/cli-platform-ios/native_modules"
 
-target 'AelfPortkey_Example' do
+target 'PortkeySDKExample_Example' do
   
   use_react_native!(path: $react_native_path, hermes_enabled: false)
 #  use_react_native!(
@@ -24,7 +24,7 @@ target 'AelfPortkey_Example' do
   
   pod 'PortkeySDK', :path => '../'
 
-  target 'AelfPortkey_Tests' do
+  target 'PortkeySDKExample_Tests' do
     inherit! :search_paths
 
     pod 'FBSnapshotTestCase'

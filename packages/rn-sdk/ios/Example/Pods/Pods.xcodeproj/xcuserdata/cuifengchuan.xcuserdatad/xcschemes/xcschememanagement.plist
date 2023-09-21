@@ -24,12 +24,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-AelfPortkey_Example.xcscheme</key>
+		<key>Pods-PortkeySDKExample_Example.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-AelfPortkey_Tests.xcscheme</key>
+		<key>Pods-PortkeySDKExample_Tests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

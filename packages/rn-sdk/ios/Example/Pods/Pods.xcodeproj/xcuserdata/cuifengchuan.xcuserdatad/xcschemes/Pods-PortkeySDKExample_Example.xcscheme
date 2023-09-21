@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CCA459473AB8834DB0A22CD115A7BF29"
-               BuildableName = "Pods_AelfPortkey_Example.framework"
-               BlueprintName = "Pods-AelfPortkey_Example"
+               BlueprintIdentifier = "478F73F86D9593526EC2BF279A7498C7"
+               BuildableName = "Pods_PortkeySDKExample_Example.framework"
+               BlueprintName = "Pods-PortkeySDKExample_Example"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

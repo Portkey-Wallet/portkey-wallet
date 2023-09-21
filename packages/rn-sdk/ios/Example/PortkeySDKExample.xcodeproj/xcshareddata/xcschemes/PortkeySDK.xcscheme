@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6003F589195388D20070C39A"
-               BuildableName = "AelfPortkey_Example.app"
-               BlueprintName = "AelfPortkey_Example"
-               ReferencedContainer = "container:AelfPortkey.xcodeproj">
+               BuildableName = "PortkeySDKExample_Example.app"
+               BlueprintName = "PortkeySDKExample_Example"
+               ReferencedContainer = "container:PortkeySDKExample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -31,9 +31,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6003F589195388D20070C39A"
-            BuildableName = "AelfPortkey_Example.app"
-            BlueprintName = "AelfPortkey_Example"
-            ReferencedContainer = "container:AelfPortkey.xcodeproj">
+            BuildableName = "PortkeySDKExample_Example.app"
+            BlueprintName = "PortkeySDKExample_Example"
+            ReferencedContainer = "container:PortkeySDKExample.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -42,9 +42,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6003F5AD195388D20070C39A"
-               BuildableName = "AelfPortkey_Tests.xctest"
-               BlueprintName = "AelfPortkey_Tests"
-               ReferencedContainer = "container:AelfPortkey.xcodeproj">
+               BuildableName = "PortkeySDKExample_Tests.xctest"
+               BlueprintName = "PortkeySDKExample_Tests"
+               ReferencedContainer = "container:PortkeySDKExample.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -64,9 +64,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6003F589195388D20070C39A"
-            BuildableName = "AelfPortkey_Example.app"
-            BlueprintName = "AelfPortkey_Example"
-            ReferencedContainer = "container:AelfPortkey.xcodeproj">
+            BuildableName = "PortkeySDKExample_Example.app"
+            BlueprintName = "PortkeySDKExample_Example"
+            ReferencedContainer = "container:PortkeySDKExample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -81,9 +81,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "6003F589195388D20070C39A"
-            BuildableName = "AelfPortkey_Example.app"
-            BlueprintName = "AelfPortkey_Example"
-            ReferencedContainer = "container:AelfPortkey.xcodeproj">
+            BuildableName = "PortkeySDKExample_Example.app"
+            BlueprintName = "PortkeySDKExample_Example"
+            ReferencedContainer = "container:PortkeySDKExample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

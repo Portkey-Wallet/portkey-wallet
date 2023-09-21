@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
-import { LinkPortkeyPath, LinkPortkeyWebsite } from '@portkey-wallet/constants/constants-ca/network';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import MyQRCodePopup from './Popup';
 import MyQRCodePrompt from './Prompt';
 import { useCallback, useMemo } from 'react';
@@ -19,7 +19,7 @@ const MyQRCode = () => {
   const { pathname, state } = useLocation();
   const { walletName, userId } = useWalletInfo();
   const { isNotLessThan768 } = useCommonState();
-  const shareLink = useMemo(() => LinkPortkeyWebsite + LinkPortkeyPath.addContact + userId, [userId]);
+  const shareLink = useMemo(() => LinkPortkeyPath.addContact + userId, [userId]);
   const handleBack = useCallback(() => {
     const _path = pathname.toLowerCase();
     if (_path.includes('contacts')) return navigate('/setting/contacts/find-more', { state });

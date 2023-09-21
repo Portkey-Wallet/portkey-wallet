@@ -65,7 +65,7 @@ export const useSendChannelMessage = () => {
       type?: MessageType;
       content: string;
     }) => {
-      if (!toRelationId || !channelId) {
+      if (!(toRelationId || channelId)) {
         throw new Error('No ID');
       }
       if (!relationId) {
@@ -95,7 +95,7 @@ export const useSendChannelMessage = () => {
       content: string;
       type?: MessageType;
     }) => {
-      if (!toRelationIds.length || !channelIds.length) {
+      if (!(toRelationIds.length || channelIds.length)) {
         throw new Error('No ID');
       }
       const promiseList: IMServiceCommon<SendMessageResult>[] = [];

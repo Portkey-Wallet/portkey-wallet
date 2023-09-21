@@ -1,0 +1,6 @@
+framework module PortkeySDK {
+  umbrella header "PortkeySDK-umbrella.h"
+
+  export *
+  module * { export * }
+}

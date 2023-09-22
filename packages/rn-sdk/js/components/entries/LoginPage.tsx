@@ -35,6 +35,14 @@ const styles = StyleSheet.create({
 });
 
 export default class LoginPage extends BaseContainer<LoginPageProps, LoginPageState, LoginResult> {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasLogin: false,
+    };
+  }
+
   getEntryName(): string {
     return PortkeyEntries.LOGIN;
   }

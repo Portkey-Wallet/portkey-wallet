@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "DBA98EEB-66A6-470E-B30C-058BF2B181A0"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F438839F-2FDD-4237-A85B-BF7F3982F480"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../PortkeySDK/Classes/NativeModules/Router/PortkeySDKRouterModule.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "17"
+            endingLineNumber = "17"
+            landmarkName = "RCT_EXPORT_METHOD(targetScene)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "F438839F-2FDD-4237-A85B-BF7F3982F480 - 1d4e31475768fc5e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[PortkeySDKRouterModule navigationTo:targetScene:]"
+                  moduleName = "PortkeySDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Router/PortkeySDKRouterModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "17"
+                  endingLineNumber = "17"
+                  offsetFromSymbolStart = "68">
+               </Location>
+               <Location
+                  uuid = "F438839F-2FDD-4237-A85B-BF7F3982F480 - 1d4e31475768fc5e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[PortkeySDKRouterModule navigationTo:targetScene:]"
+                  moduleName = "PortkeySDK"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Router/PortkeySDKRouterModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "17"
+                  endingLineNumber = "17"
+                  offsetFromSymbolStart = "64">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

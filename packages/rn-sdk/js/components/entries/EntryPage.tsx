@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight, NativeModules } from 'react-native';
 import { PortkeyEntries } from '../../config/entries';
 import BaseContainer, { BaseContainerProps, BaseContainerState } from '../../model/container/BaseContainer';
 import { LoginResult } from './LoginPage';

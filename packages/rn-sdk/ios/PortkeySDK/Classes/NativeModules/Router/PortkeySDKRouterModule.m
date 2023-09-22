@@ -12,12 +12,30 @@
 
 RCT_EXPORT_MODULE(RouterModule);
 
-RCT_EXPORT_METHOD(navigateTo:(NSString *)entry targetScene:(NSString *)targetScene)
+RCT_EXPORT_METHOD(navigationTo:(NSString *)entry targetScene:(NSString *)targetScene)
 {
-    NSLog(@"navigateTo");
     if (entry.length <= 0) return;
-    PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry];
-    [[self topViewController].navigationController pushViewController:vc animated:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry];
+        [[self topViewController].navigationController pushViewController:vc animated:YES];
+    });
+}
+
+RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from params:(NSDictionary *)params callback:(RCTResponseSenderBlock)callback)
+{
+    if (entry.length <= 0) return;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry];
+        [[self topViewController].navigationController pushViewController:vc animated:YES];
+        
+        NSDictionary *result = @{
+            @"status": @"success",
+            @"result": @{
+                @"name": @"portkey",
+            }
+        };
+        callback(@[result]);
+    });
 }
 
 - (UIViewController *)topViewController {

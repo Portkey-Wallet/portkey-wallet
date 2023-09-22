@@ -30,7 +30,7 @@
 - (instancetype)initWithFrame:(CGRect)frame moduleName:(NSString *)moduleName {
     self = [super initWithFrame:frame];
     if (self) {
-        _bridge = [[RCTBridge alloc] initWithBundleURL:[[self class] bundleUrl] moduleProvider:nil launchOptions:nil];
+        _bridge = [[RCTBridge alloc] initWithBundleURL:[[self class] sourceURL] moduleProvider:nil launchOptions:nil];
         self.rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:moduleName.length > 0 ? moduleName : @"Root" initialProperties:nil];
         [self addSubview:self.rootView];
     }
@@ -59,6 +59,15 @@
     NSBundle *resourceBundle = [NSBundle bundleWithPath:bundlePath];
     NSURL *sourceUrl = [resourceBundle URLForResource:@"index.ios" withExtension:@"bundle"];
     return sourceUrl;
+}
+
++ (NSURL *)sourceURL
+{
+#if DEBUG
+    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+#else
+    return [self bundleUrl];
+#endif
 }
 
 @end

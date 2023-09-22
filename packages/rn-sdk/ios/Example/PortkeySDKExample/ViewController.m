@@ -23,7 +23,8 @@
     self.title = @"Hello Portkey";
     
     CGSize size = UIScreen.mainScreen.bounds.size;
-    self.rnRootView = [[PortkeySDKRootView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
+    self.rnRootView = [[PortkeySDKRootView alloc] initWithModuleName:@"entry"];
+    self.rnRootView.frame = CGRectMake(0, 0, size.width, size.height);
     [self.view addSubview:self.rnRootView];
 }
 

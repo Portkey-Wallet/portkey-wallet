@@ -71,14 +71,20 @@ function ShareWith(props: { linkContent: string }) {
       title={'Share with'}
       bottomButtonGroup={[
         {
-          title: 'send',
+          title: 'Send',
           disabled: selectedMemberMap.size === 0,
           type: 'primary',
           onPress: onPressShare,
         },
       ]}>
       <View style={styles.inputWrap}>
-        <CommonInput placeholder="Name/address/Portkey ID" type="search" value={keyword} onChangeText={setKeyword} />
+        <CommonInput
+          allowClear
+          placeholder="Name/address/Portkey ID"
+          type="search"
+          value={keyword}
+          onChangeText={setKeyword}
+        />
       </View>
       <FlatList
         contentContainerStyle={styles.listWrap}

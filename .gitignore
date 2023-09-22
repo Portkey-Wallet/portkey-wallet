@@ -22,3 +22,7 @@ coverage
 
 # network
 packages/constants/constants-ca/network.ts
+
+# iOS
+*.xcuserstate  
+

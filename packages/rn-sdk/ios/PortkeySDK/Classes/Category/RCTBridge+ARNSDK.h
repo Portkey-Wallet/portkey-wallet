@@ -2,7 +2,7 @@
 //  RCTBridge+ARNSDK.h
 //  PortkeySDK
 //
-//  Created by 崔风川 on 2023/9/15.
+//  Created by wade-portkey on 2023/9/15.
 //
 
 #import <React/RCTBridge.h>

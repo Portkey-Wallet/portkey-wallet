@@ -1,28 +1,29 @@
 //
-//  APKViewController.m
+//  ViewController.m
 //  PortkeySDK
 //
 //  Created by wade-portkey on 09/13/2023.
 //  Copyright (c) 2023 wade-portkey. All rights reserved.
 //
 
-#import "APKViewController.h"
-#import <PortkeySDK/ARNSDKRootView.h>
+#import "ViewController.h"
+#import <PortkeySDK/PortkeySDKRootView.h>
 
-@interface APKViewController ()
+@interface ViewController ()
 
-@property (nonatomic, strong) ARNSDKRootView *rnRootView;
+@property (nonatomic, strong) PortkeySDKRootView *rnRootView;
 
 @end
 
-@implementation APKViewController
+@implementation ViewController
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.title = @"Hello Portkey";
     
     CGSize size = UIScreen.mainScreen.bounds.size;
-    self.rnRootView = [[ARNSDKRootView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
+    self.rnRootView = [[PortkeySDKRootView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
     [self.view addSubview:self.rnRootView];
 }
 

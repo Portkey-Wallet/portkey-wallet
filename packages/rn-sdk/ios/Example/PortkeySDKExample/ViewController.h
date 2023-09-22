@@ -1,5 +1,5 @@
 //
-//  APKAppDelegate.h
+//  ViewController.h
 //  PortkeySDK
 //
 //  Created by wade-portkey on 09/13/2023.
@@ -8,8 +8,6 @@
 
 @import UIKit;
 
-@interface APKAppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (strong, nonatomic) UIWindow *window;
+@interface ViewController : UIViewController
 
 @end

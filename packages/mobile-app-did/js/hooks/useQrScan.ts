@@ -80,9 +80,10 @@ export const useHandleGroupId = () => {
         if (showLoading) Loading.show();
         await joinGroup(channelId);
         jumpToGroup({ channelUuid: channelId || '' });
-      } catch (error) {
-        // TODO: has entered / network error / no this group
+      } catch (error: any) {
         console.log('error', error);
+        if (error.code === '13302') return jumpToGroup({ channelUuid: channelId || '' });
+
         CommonToast.fail("This group doesn't exist. Please check the Portkey group ID/QR code before you try again.");
       } finally {
         if (showLoading) Loading.hide();

@@ -3,6 +3,7 @@ import { AppRegistry, ComponentProvider, StyleSheet, Text, View } from 'react-na
 import { PortkeyEntries } from '../config/entries';
 import EntryPage from './entries/EntryPage';
 import LoginPage from './entries/LoginPage';
+import GuardianPage from './entries/GuardianPage';
 
 const Root = () => {
   return (
@@ -31,6 +32,7 @@ const entryConfig: EntryConfig = new Map();
 entryConfig.set(PortkeyEntries.ROOT, () => Root);
 entryConfig.set(PortkeyEntries.ENTRY, () => EntryPage);
 entryConfig.set(PortkeyEntries.LOGIN, () => LoginPage);
+entryConfig.set(PortkeyEntries.GUARDIAN, () => GuardianPage);
 
 for (const [key, value] of entryConfig) {
   AppRegistry.registerComponent(key, value);

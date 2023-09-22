@@ -8,7 +8,7 @@ export default abstract class BaseContainer<
   R = { [key: string]: any },
 > extends React.Component<P, S> {
   navigationTo = (entry: PortkeyEntries, targetScene?: string) => {
-    portkeyModulesEntity.RouterModule.navigateTo(entry, targetScene);
+    portkeyModulesEntity.RouterModule.navigateTo(this.getEntryName(), entry, targetScene);
   };
 
   navigateForResult = <V,>(entry: PortkeyEntries, params: RouterOptions, callback: (res: EntryResult<V>) => void) => {

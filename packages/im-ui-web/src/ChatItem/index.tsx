@@ -7,6 +7,7 @@ import CustomSvg from '../components/CustomSvg';
 import { IChatItemProps } from '../type';
 import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
+import { ChannelTypeEnum } from '@portkey-wallet/im/types';
 import './index.less';
 
 const ChatItem: React.FC<IChatItemProps> = ({
@@ -80,7 +81,13 @@ const ChatItem: React.FC<IChatItemProps> = ({
       <div key={props.id} className={clsx('portkey-chat-item flex-column', props.className)} onClick={handleClick}>
         <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
           <div key={'avatar'} className="chat-item-avatar flex-center">
-            <Avatar src={props.avatar} alt={alt} letter={props.letter} channelType={props.channelType} />
+            {props.channelType && [ChannelTypeEnum.GROUP, ChannelTypeEnum.P2P].includes(props.channelType) ? (
+              <Avatar src={props.avatar} alt={alt} letter={props.letter} channelType={props.channelType} />
+            ) : (
+              <div className="flex-center avatar-unknown">
+                <CustomSvg type="Unknown" />
+              </div>
+            )}
           </div>
           <div key={'chat-item-body'} className="chat-item-body flex-column">
             <div className="body-top flex-row-center">

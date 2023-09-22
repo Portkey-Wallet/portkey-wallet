@@ -78,7 +78,13 @@ function ShareWith(props: { linkContent: string }) {
         },
       ]}>
       <View style={styles.inputWrap}>
-        <CommonInput placeholder="Name/address/Portkey ID" type="search" value={keyword} onChangeText={setKeyword} />
+        <CommonInput
+          allowClear
+          placeholder="Name/address/Portkey ID"
+          type="search"
+          value={keyword}
+          onChangeText={setKeyword}
+        />
       </View>
       <FlatList
         contentContainerStyle={styles.listWrap}

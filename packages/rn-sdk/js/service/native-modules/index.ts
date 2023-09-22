@@ -30,8 +30,11 @@ export interface RouterOptions {
   navigationAnimation?: 'none' | 'slide' | 'fade';
   navigationAnimationDuration?: number;
   targetScene?: string;
-  params?: { [x: string]: any };
+  params?: { [x: string]: AcceptableParamsType };
 }
+
+// we do not accept object type, because it will cause inconvenience for native code
+export type AcceptableParamsType = boolean | number | string | null;
 
 export interface NativeWrapperModule {
   onError: (from: string, errMsg: string, data: { [x: string]: any }) => void;

@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   buttonWrapper: {
-    width: '100%',
     height: 50,
     backgroundColor: 'blue',
     alignItems: 'center',
@@ -18,11 +17,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderColor: 'grey',
     borderWidth: 1,
+    marginHorizontal: 16,
+  },
+  touchable: {
+    paddingVertical: 8,
   },
   buttonText: {
-    fontSize: 8,
-    color: 'black',
-    lineHeight: 12,
+    fontSize: 20,
+    color: 'white',
+    lineHeight: 32,
     fontFamily: 'PingFangSC-Regular',
   },
   hello: {
@@ -39,6 +42,7 @@ export default class GuardianPage extends BaseContainer<GuardianPageProps, Guard
     super(props);
     this.state = {
       currGuardianNum: 0,
+      requiredGuardianNumber: 0,
     };
   }
 
@@ -47,27 +51,26 @@ export default class GuardianPage extends BaseContainer<GuardianPageProps, Guard
   }
 
   componentDidMount(): void {
-    const { currGuardianNum } = this.props;
-    this.setState({ currGuardianNum });
+    const { currGuardianNum, requiredGuardianNumber } = this.props;
+    this.setState({ currGuardianNum: Number(currGuardianNum), requiredGuardianNumber: Number(requiredGuardianNumber) });
   }
 
   render() {
-    const { currGuardianNum } = this.state;
-    const { requiredGuardianNumber } = this.props;
+    const { currGuardianNum, requiredGuardianNumber } = this.state;
     return (
       <View style={styles.container}>
         <Text style={styles.hello}>{`Guardian ${currGuardianNum} of ${requiredGuardianNumber}`}</Text>
-        <TouchableHighlight onPress={this.addGuardian}>
+        <TouchableHighlight onPress={this.addGuardian} style={styles.touchable}>
           <View style={styles.buttonWrapper}>
             <Text style={styles.buttonText}>{'Add Guardian'}</Text>
           </View>
         </TouchableHighlight>
-        <TouchableHighlight onPress={this.subGuardian}>
+        <TouchableHighlight onPress={this.subGuardian} style={styles.touchable}>
           <View style={styles.buttonWrapper}>
             <Text style={styles.buttonText}>{'Sub Guardian'}</Text>
           </View>
         </TouchableHighlight>
-        <TouchableHighlight onPress={this.onBack}>
+        <TouchableHighlight onPress={this.onBack} style={styles.touchable}>
           <View style={styles.buttonWrapper}>
             <Text style={styles.buttonText}>{'Go back'}</Text>
           </View>
@@ -95,11 +98,12 @@ export default class GuardianPage extends BaseContainer<GuardianPageProps, Guard
 }
 
 export interface GuardianPageProps extends BaseContainerProps {
-  requiredGuardianNumber: number;
-  currGuardianNum: number;
+  requiredGuardianNumber: string;
+  currGuardianNum: string;
 }
 export interface GuardianPageState extends BaseContainerState {
   currGuardianNum: number;
+  requiredGuardianNumber: number;
 }
 export interface GuardianResult {
   guardianNum: number;

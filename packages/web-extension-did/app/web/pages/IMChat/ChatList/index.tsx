@@ -95,7 +95,7 @@ export default function ChatList() {
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
-        channelType: item?.channelType || ChannelTypeEnum.P2P,
+        channelType: item?.channelType,
         status: item.status,
       };
     });

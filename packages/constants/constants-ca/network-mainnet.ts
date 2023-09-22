@@ -16,7 +16,7 @@ export const ThirdParty = `https://thirdparty.portkey.finance`;
 
 export const LinkPortkeyWebsite = OfficialWebsite;
 
-export enum LinkPortkeyPath {
-  addContact = LinkPortkeyWebsite + LINK_PATH_ENUM.addContact,
-  addGroup = LinkPortkeyWebsite + LINK_PATH_ENUM.addGroup,
-}
+export const LinkPortkeyPath = {
+  addContact: LinkPortkeyWebsite + LINK_PATH_ENUM.addContact,
+  addGroup: LinkPortkeyWebsite + LINK_PATH_ENUM.addGroup,
+};

@@ -15,6 +15,7 @@ import { useHandle } from '../useHandle';
 import ChatBoxHeader from '../components/ChatBoxHeader';
 import CustomModal from 'pages/components/CustomModal';
 import { useClickUrl } from 'hooks/im';
+import WarnTip from 'pages/IMChat/components/WarnTip';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -247,6 +248,7 @@ export default function ChatBox() {
             onClickAvatar={handleGoProfile}
             onDeleteMsg={handleDeleteMsg}
             onClickUrl={clickUrl}
+            onClickUnSupportMsg={WarnTip}
           />
         </StyleProvider>
       </div>

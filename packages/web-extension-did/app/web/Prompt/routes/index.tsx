@@ -51,6 +51,8 @@ import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
 import DappAutoTx from 'pages/DappAutoTx';
 import FindMore from 'pages/Contacts/FindMore';
+import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
+import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -240,6 +242,14 @@ export const PageRouter = () => {
               path: '/setting/account-setting/set-new-pin',
               element: <SetNewPin />,
             },
+            {
+              path: '/setting/account-setting/chat-privacy',
+              element: <ChatPrivacy />,
+            },
+            {
+              path: '/setting/account-setting/chat-privacy-edit',
+              element: <ChatPrivacyEdit />,
+            },
           ],
         },
         {
@@ -377,6 +387,14 @@ export const PageRouter = () => {
     {
       path: '/setting/account-setting/set-new-pin',
       element: <SetNewPin />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy',
+      element: <ChatPrivacy />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy-edit',
+      element: <ChatPrivacyEdit />,
     },
     {
       path: '/setting/wallet-security',

@@ -53,7 +53,6 @@ export default function HandleMember() {
 
   const handleSearch = useCallback(
     (keyword: string) => {
-      keyword = keyword.trim();
       let res: IContactItemSelectProps[] = [];
       if (isAdd) {
         if (keyword.length <= 16) {
@@ -99,6 +98,7 @@ export default function HandleMember() {
     (params) => {
       const _v = params.trim();
       _v ? handleSearch(_v) : setShowMemberList(allContactRef.current || []);
+      setFilterWord(_v);
     },
     [],
     500,
@@ -206,15 +206,9 @@ export default function HandleMember() {
   const handleInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const _value = e.target.value;
-      if (_value) {
-        setFilterWord(_value);
-        searchDebounce(_value);
-      } else {
-        handleSearch(_value);
-        setFilterWord(_value);
-      }
+      searchDebounce(_value);
     },
-    [handleSearch, searchDebounce],
+    [searchDebounce],
   );
   return (
     <div className="handle-member-page flex-column-between">
@@ -226,7 +220,6 @@ export default function HandleMember() {
         />
         <DropdownSearch
           overlay={<></>}
-          value={filterWord}
           inputProps={{
             onChange: handleInputChange,
             placeholder: 'Search',

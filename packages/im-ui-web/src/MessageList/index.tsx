@@ -16,21 +16,22 @@ const MessageList: FC<IMessageListProps> = ({
   loading = false,
   ...props
 }) => {
-  const [scrollBottom, setScrollBottom] = useState(0);
+  const scrollBottomRef = useRef<number>(0);
   const [_downButton, setDownButton] = useState(false);
   const prevProps = useRef(props);
 
   const checkScroll = useCallback(() => {
     if (!reference || !reference.current) return;
 
-    if (toBottomHeight === '100%' || (toBottomHeight && scrollBottom < (toBottomHeight as number))) {
+    if (toBottomHeight === '100%' || (toBottomHeight && scrollBottomRef.current < (toBottomHeight as number))) {
       reference.current.scrollTop = reference.current.scrollHeight; // scroll to bottom
     } else {
       if (lockable === true) {
-        reference.current.scrollTop = reference.current.scrollHeight - reference.current.offsetHeight - scrollBottom;
+        reference.current.scrollTop =
+          reference.current.scrollHeight - reference.current.offsetHeight - scrollBottomRef.current;
       }
     }
-  }, [lockable, reference, scrollBottom, toBottomHeight]);
+  }, [lockable, reference, toBottomHeight]);
 
   const getBottom = useCallback((e: any) => {
     if (e.current) return e.current.scrollHeight - e.current.scrollTop - e.current.offsetHeight;
@@ -41,8 +42,8 @@ const MessageList: FC<IMessageListProps> = ({
     if (!reference) return;
 
     if (prevProps.current.dataSource.length !== props.dataSource.length) {
-      setScrollBottom(getBottom(reference));
       checkScroll();
+      scrollBottomRef.current = getBottom(reference);
     }
 
     prevProps.current = props;
@@ -65,16 +66,16 @@ const MessageList: FC<IMessageListProps> = ({
   const onScroll = useCallback(
     (e: React.UIEvent<HTMLElement>): void => {
       const bottom = getBottom(e.currentTarget);
-      setScrollBottom(bottom);
+      scrollBottomRef.current = bottom;
       if (toBottomHeight === '100%' || (toBottomHeight && bottom > (toBottomHeight as number))) {
         if (_downButton !== true) {
           setDownButton(true);
-          setScrollBottom(bottom);
+          scrollBottomRef.current = bottom;
         }
       } else {
         if (_downButton !== false) {
           setDownButton(false);
-          setScrollBottom(bottom);
+          scrollBottomRef.current = bottom;
         }
       }
       if (reference.current.scrollTop === 0) {

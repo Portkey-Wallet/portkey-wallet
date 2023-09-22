@@ -117,7 +117,7 @@ export default function ChatListSearch() {
                 setFilterWord(_value);
                 searchDebounce(_value);
               },
-              placeholder: 'Search chats',
+              placeholder: 'Name in Chats',
             }}
           />
         </div>
@@ -127,7 +127,7 @@ export default function ChatListSearch() {
             navigate(`/setting/contacts/find-more`, { state: { search: filterWord, from: 'chat-search' } })
           }>
           <CustomSvg type="AddMorePeople" />
-          Find More
+          Find People
         </div>
       </div>
       <div className="chat-list-search-content">

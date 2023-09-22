@@ -38,7 +38,7 @@ export default function FindMore() {
   const [isSearch, setIsSearch] = useState(false);
   const createChannel = useCreateP2pChannel();
 
-  const headerTitle = 'Find More';
+  const headerTitle = 'Find People';
   const [contact, setContact] = useState<Partial<ContactItemType>>({});
 
   const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {

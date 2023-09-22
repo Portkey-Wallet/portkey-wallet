@@ -63,9 +63,8 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
             </Touchable>
           </View>
           <View style={GStyles.flexRow}>
-            {/* TODO: icon */}
             {isMySelf ? (
-              <Svg icon="elf-icon" size={pTd(16)} />
+              <Svg icon="mainnet" size={pTd(16)} />
             ) : (
               <Image
                 source={{

@@ -4,7 +4,7 @@ import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
+import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import CommonToast from 'components/CommonToast';
 import { TextM } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';

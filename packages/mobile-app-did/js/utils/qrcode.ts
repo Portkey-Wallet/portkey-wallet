@@ -23,12 +23,12 @@ export function invalidQRCode(text: InvalidQRCodeText, isBack?: boolean) {
   isBack && navigationService.goBack();
 }
 
-export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType, setRefresh: (v: boolean) => void) {
+export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType) {
   const { type, address, chainType } = data;
   if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
 
   if (type === 'login') {
-    navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+    return navigationService.navigate('ScanLogin', { data: data as LoginQRData });
   } else {
     // send event
     const newData: SendTokenQRDataType = { ...data } as SendTokenQRDataType;
@@ -39,14 +39,13 @@ export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType,
         return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE, false);
       } else {
         const previousAssetsInfo = { ...previousRouteInfo.params.assetInfo };
-        navigationService.navigate('SendHome', {
+        return navigationService.navigate('SendHome', {
           ...newData,
           assetInfo: { ...newData.assetInfo, ...previousAssetsInfo },
         });
       }
     } else {
-      navigationService.navigate('SendHome', newData);
+      return navigationService.navigate('SendHome', newData);
     }
   }
-  setRefresh(true);
 }

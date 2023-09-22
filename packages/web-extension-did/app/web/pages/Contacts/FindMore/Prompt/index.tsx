@@ -22,7 +22,7 @@ export default function FindMorePrompt({
         <SecondPageHeader className="find-more-header" paddingLeft={24} title={headerTitle} leftCallBack={goBack} />
         <ContactsSearchInput
           className="find-more-search"
-          placeholder="Portkey ID/Address"
+          placeholder="Address/Portkey ID"
           handleChange={handleSearch}
         />
         {!isSearch && <div className="find-more-id">My Portkey ID1234: {myPortkeyId}</div>}

@@ -208,6 +208,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentStyle: {
-    paddingTop: pTd(24),
+    paddingTop: pTd(20),
   },
 });

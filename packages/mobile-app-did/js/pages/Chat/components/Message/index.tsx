@@ -32,9 +32,13 @@ const styles = StyleSheet.create({
   leftMessageContainer: {
     marginLeft: pTd(16),
     marginRight: 0,
+    marginTop: 0,
+    marginBottom: 0,
   },
   rightMessageContainer: {
     marginLeft: 0,
     marginRight: pTd(16),
+    marginTop: 0,
+    marginBottom: 0,
   },
 });

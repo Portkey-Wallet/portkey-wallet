@@ -38,6 +38,11 @@ export default function DiscoverHome() {
             onPress: () => navigationService.navigate('NewChatHomePage'),
           },
           {
+            title: 'Create Group',
+            iconName: 'chat-create-group',
+            onPress: () => navigationService.navigate('CreateGroupPage'),
+          },
+          {
             title: 'Find People',
             iconName: 'chat-add-contact',
             onPress: () => navigationService.navigate('FindMorePeoplePage'),

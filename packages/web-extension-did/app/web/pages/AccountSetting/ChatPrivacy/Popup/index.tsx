@@ -15,7 +15,11 @@ export default function ChatPrivacyPopup({ headerTitle, goBack, menuList, menuIt
         />
       </div>
 
-      <MenuList list={menuList} height={menuItemHeight} />
+      {menuList?.length > 0 && <MenuList list={menuList} height={menuItemHeight} />}
+
+      {(!menuList || !Array.isArray(menuList) || menuList?.length === 0) && (
+        <div className="flex-center no-login-account">No Login Account</div>
+      )}
     </div>
   );
 }

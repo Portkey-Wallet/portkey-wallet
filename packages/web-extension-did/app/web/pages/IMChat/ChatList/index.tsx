@@ -58,8 +58,8 @@ export default function ChatList() {
       },
       {
         key: 'find-more',
-        leftIcon: <CustomSvg type="ChatAddContact" />,
-        children: 'Find More',
+        leftIcon: <CustomSvg type="AddMorePeople" />,
+        children: 'Find People',
         onClick: () => {
           navigate(`/setting/contacts/find-more`, { state: { from: 'chat-list' } });
         },

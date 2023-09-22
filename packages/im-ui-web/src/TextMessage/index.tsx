@@ -56,7 +56,9 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
       {props.subType === 'non-support-msg' ? (
         <div className={clsx(['text-body', 'flex', props.position])}>
           <div className="text-text">
-            <span className="non-support-msg">[Unsupported format]</span>
+            <span className="non-support-msg" onClick={props.onClickUnSupportMsg}>
+              [Unsupported format]
+            </span>
             <span className="text-date-hidden">{showDate}</span>
           </div>
           <div className="text-date">{showDate}</div>

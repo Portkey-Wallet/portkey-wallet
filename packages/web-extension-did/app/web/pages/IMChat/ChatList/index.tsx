@@ -10,8 +10,9 @@ import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
 import { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
-import './index.less';
 import CustomModal from 'pages/components/CustomModal';
+import WarnTip from '../components/WarnTip';
+import './index.less';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -124,7 +125,7 @@ export default function ChatList() {
           }
           break;
         default:
-          message.error('Invalid chat');
+          WarnTip();
       }
     },
     [hideChannel, navigate],

@@ -70,6 +70,10 @@ const MessageList: FC<IMessageListProps> = ({
     [props],
   );
 
+  const onClickUnSupportMsg = useCallback(() => {
+    if (props.onClickUnSupportMsg instanceof Function) props.onClickUnSupportMsg();
+  }, [props]);
+
   const onScroll = useCallback(
     (e: React.UIEvent<HTMLElement>): void => {
       const bottom = getBottom(e.currentTarget);
@@ -131,11 +135,12 @@ const MessageList: FC<IMessageListProps> = ({
           className={clsx([isShowMargin && 'show-margin', hiddenAvatar && 'hidden-avatar'])}
           onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => onDeleteMsg(x, i, e)}
           onClickUrl={(url) => onClickUrl(url)}
+          onClickUnSupportMsg={onClickUnSupportMsg}
           onClickAvatar={(e: React.MouseEvent<HTMLElement>) => onClickAvatar(x, i, e)}
         />
       );
     });
-  }, [onClickAvatar, onClickUrl, onDeleteMsg, props.dataSource]);
+  }, [onClickAvatar, onClickUrl, onDeleteMsg, onClickUnSupportMsg, props.dataSource]);
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>

@@ -44,7 +44,7 @@ export default function DiscoverHome() {
           },
           {
             title: 'Find People',
-            iconName: 'chat-add-contact',
+            iconName: 'chat-find-more',
             onPress: () => navigationService.navigate('FindMorePeoplePage'),
           },
           {

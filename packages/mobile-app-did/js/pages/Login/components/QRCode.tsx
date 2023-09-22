@@ -141,12 +141,6 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
         </TextS>
         <View style={[GStyles.alignCenter, styles.qrCodeBox, GStyles.flex1]}>
           <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} width={pTd(290)} />
-          {/* {isScanQRCode && (
-            <View style={[GStyles.flex1, GStyles.center, GStyles.flexRow]}>
-              <Lottie source={require('./scanLoading.json')} style={styles.scanLoading} autoPlay loop />
-              <TextM style={[GStyles.textAlignCenter, FontStyles.font3]}>Waiting for authorization....</TextM>
-            </View>
-          )} */}
         </View>
       </View>
     </View>

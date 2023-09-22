@@ -1,9 +1,9 @@
 import React from 'react';
 import { AppRegistry, ComponentProvider, StyleSheet, Text, View } from 'react-native';
-import { PortkeyEntries } from '../config/entries';
-import EntryPage from './entries/EntryPage';
-import LoginPage from './entries/LoginPage';
-import GuardianPage from './entries/GuardianPage';
+import { PortkeyEntries } from './js/config/entries';
+import EntryPage from './js/components/entries/EntryPage';
+import LoginPage from './js/components/entries/LoginPage';
+import GuardianPage from './js/components/entries/GuardianPage';
 
 const Root = () => {
   return (

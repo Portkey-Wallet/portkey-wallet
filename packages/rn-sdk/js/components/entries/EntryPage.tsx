@@ -6,19 +6,21 @@ import { LoginResult } from './LoginPage';
 import { GuardianPageProps, GuardianResult } from './GuardianPage';
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignContent: 'center',
   },
   buttonLine: {
-    width: '50%',
+    width: '100%',
+    height: '100%',
     flexDirection: 'column',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'grey',
+    backgroundColor: 'white',
   },
-
+  touchable: {
+    paddingVertical: 8,
+  },
   buttonWrapper: {
     width: '100%',
     height: 50,
@@ -30,15 +32,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   buttonText: {
-    fontSize: 8,
-    color: 'black',
-    lineHeight: 12,
+    fontSize: 20,
+    color: 'white',
+    lineHeight: 32,
     fontFamily: 'PingFangSC-Regular',
+    paddingHorizontal: 16,
   },
   statusText: {
-    fontSize: 8,
+    fontSize: 20,
     color: 'black',
-    lineHeight: 12,
+    lineHeight: 32,
     fontFamily: 'PingFangSC-Regular',
     textAlign: 'center',
   },
@@ -66,26 +69,29 @@ export default class EntryPage extends BaseContainer<EntryPageProps, EntryPageSt
         <View style={styles.buttonLine}>
           <Text style={styles.statusText}>{`login status : ${
             isLogin ? 'has login' : 'not login yet'
-          }, guardian count : ${guardianNum}`}</Text>
-          <TouchableHighlight onPress={this.jumpToLoginPage}>
-            <View style={styles.buttonWrapper}>
-              <Text style={styles.buttonText}>{'Login as Chara =)'}</Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight onPress={this.onTransfer}>
-            <View style={styles.buttonWrapper}>
-              <Text style={styles.buttonText}>{'Transfer'}</Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight onPress={this.onEntryResult} disabled={this.isOkNow()}>
-            <View style={styles.buttonWrapper}>
-              <Text style={styles.buttonText}>{'Go back with result'}</Text>
-            </View>
-          </TouchableHighlight>
+          }\n guardian count : ${guardianNum}`}</Text>
+          {this.functionalBtn(this.jumpToLoginPage, 'Login as Chara =)', isLogin)}
+          {this.functionalBtn(this.onTransfer, 'Transfer')}
+          {this.functionalBtn(this.onEntryResult, 'Go back with result', !this.isOkNow())}
         </View>
       </View>
     );
   }
+
+  functionalBtn = (callback: () => void, text: string, disabled: boolean = false) => {
+    return (
+      <TouchableHighlight
+        style={styles.touchable}
+        onPress={callback}
+        disabled={disabled}
+        underlayColor={'gray'}
+        activeOpacity={0.8}>
+        <View style={styles.buttonWrapper}>
+          <Text style={styles.buttonText}>{text}</Text>
+        </View>
+      </TouchableHighlight>
+    );
+  };
 
   isOkNow = () => {
     const { isLogin, guardianNum } = this.state;

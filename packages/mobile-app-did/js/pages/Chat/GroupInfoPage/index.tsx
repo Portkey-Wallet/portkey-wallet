@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     height: pTd(24),
   },
   centerSection: {
-    marginTop: pTd(24),
+    marginTop: pTd(16),
     borderRadius: pTd(6),
     paddingHorizontal: pTd(16),
     marginHorizontal: pTd(20),

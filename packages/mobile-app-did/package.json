@@ -152,7 +152,9 @@
     "stream": "^0.0.2",
     "url-parse": "^1.5.10",
     "uuid": "^8.3.2",
-    "web3-utils": "^1.8.0"
+    "web3-utils": "^1.8.0",
+    "promise.allsettled":"^1.0.7",
+    "es-abstract":"^1.22.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

@@ -73,18 +73,22 @@ export const useHandleGroupId = () => {
   const jumpToGroup = useJumpToChatGroupDetails();
 
   return useCallback(
-    async (params: { channelId: string; showLoading?: boolean }) => {
-      const { channelId, showLoading = false } = params;
+    async (params: { channelId: string; showLoading?: boolean; goBack?: boolean }) => {
+      const { channelId, showLoading = true, goBack = false } = params;
       if (!isChatShow) return CommonToast.fail(InvalidQRCodeText.INVALID_QR_CODE);
       try {
         if (showLoading) Loading.show();
         await joinGroup(channelId);
+        if (goBack) navigationService.goBack();
         jumpToGroup({ channelUuid: channelId || '' });
       } catch (error: any) {
         console.log('error', error);
-        if (error.code === '13302') return jumpToGroup({ channelUuid: channelId || '' });
-
-        CommonToast.fail("This group doesn't exist. Please check the Portkey group ID/QR code before you try again.");
+        if (error.code === '13302') {
+          if (goBack) navigationService.goBack();
+          return jumpToGroup({ channelUuid: channelId || '' });
+        } else {
+          CommonToast.fail("This group doesn't exist. Please check the Portkey group ID/QR code before you try again.");
+        }
       } finally {
         if (showLoading) Loading.hide();
       }
@@ -143,7 +147,7 @@ export const useHandleUrl = () => {
       const { id, type } = parseLinkPortkeyUrl(str);
 
       if (type === 'addContact' && id) return handlePortkeyId({ portkeyId: id || '', showLoading: true, goBack: true });
-      if (type === 'addGroup') return handleGroupId({ channelId: id, showLoading: true });
+      if (type === 'addGroup') return handleGroupId({ channelId: id, showLoading: true, goBack: true });
 
       jumpToWebview({
         item: {

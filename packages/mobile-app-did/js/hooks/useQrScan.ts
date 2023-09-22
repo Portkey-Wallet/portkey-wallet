@@ -140,9 +140,7 @@ export const useHandleUrl = () => {
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
 
-      const { id, type } = parseLinkPortkeyUrl(
-        'https://portkey-website-dev.vercel.app/sc/ag/72597ddca4674fd1a098f414a56a1153',
-      );
+      const { id, type } = parseLinkPortkeyUrl(str);
 
       if (type === 'addContact' && id) return handlePortkeyId({ portkeyId: id || '', showLoading: true, goBack: true });
       if (type === 'addGroup') return handleGroupId({ channelId: id, showLoading: true });

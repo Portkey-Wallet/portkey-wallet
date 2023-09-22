@@ -71,7 +71,7 @@ function ShareWith(props: { linkContent: string }) {
       title={'Share with'}
       bottomButtonGroup={[
         {
-          title: 'send',
+          title: 'Send',
           disabled: selectedMemberMap.size === 0,
           type: 'primary',
           onPress: onPressShare,

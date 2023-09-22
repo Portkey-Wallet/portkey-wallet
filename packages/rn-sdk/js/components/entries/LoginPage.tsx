@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
   },
   buttonWrapper: {
-    width: '100%',
     height: 50,
     backgroundColor: 'blue',
     alignItems: 'center',
@@ -18,11 +17,15 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderColor: 'grey',
     borderWidth: 1,
+    marginHorizontal: 16,
+  },
+  touchable: {
+    paddingVertical: 8,
   },
   buttonText: {
-    fontSize: 8,
-    color: 'black',
-    lineHeight: 12,
+    fontSize: 20,
+    color: 'white',
+    lineHeight: 32,
     fontFamily: 'PingFangSC-Regular',
   },
   hello: {
@@ -35,6 +38,13 @@ const styles = StyleSheet.create({
 });
 
 export default class LoginPage extends BaseContainer<LoginPageProps, LoginPageState, LoginResult> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasLogin: false,
+    };
+  }
+
   getEntryName(): string {
     return PortkeyEntries.LOGIN;
   }
@@ -43,9 +53,14 @@ export default class LoginPage extends BaseContainer<LoginPageProps, LoginPageSt
     return (
       <View style={styles.container}>
         <Text style={styles.hello}>{this.getCurrentLoginState()}</Text>
-        <TouchableHighlight onPress={this.onLogin}>
+        <TouchableHighlight onPress={this.onLogin} style={styles.touchable}>
           <View style={styles.buttonWrapper}>
             <Text style={styles.buttonText}>{'Login as Chara =)'}</Text>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={this.navigateBackWithResult} style={styles.touchable}>
+          <View style={styles.buttonWrapper}>
+            <Text style={styles.buttonText}>{'Go back'}</Text>
           </View>
         </TouchableHighlight>
       </View>

@@ -127,14 +127,14 @@ const FindMorePeople = () => {
       </View>
       {!keyword && (
         <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
-          <View>
-            <TextM style={styles.portkeyId}>{`My Portkey ID : `}</TextM>
-            <TextM style={styles.portkeyId}>{userId}</TextM>
+          <View style={[GStyles.flex1, GStyles.paddingRight(pTd(10))]}>
+            <TextM>{`My Portkey ID : `}</TextM>
+            <TextM numberOfLines={1}>{userId}</TextM>
           </View>
           <Touchable onPress={() => copyText(userId || '')}>
             <Svg icon="copy" size={pTd(16)} />
           </Touchable>
-          <Touchable onPress={() => navigationService.navigate('ChatQrCode')}>
+          <Touchable onPress={() => navigationService.navigate('ChatQrCodePage')} style={GStyles.marginLeft(pTd(24))}>
             <Svg icon="chat-scan" size={pTd(16)} />
           </Touchable>
         </View>

@@ -170,7 +170,7 @@ const ChatGroupDetailsPage = () => {
           <Svg size={pTd(32)} icon="chat-group-avatar-header" />
           <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
             <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500]}>
-              {groupInfo?.name || displayName}
+              {groupInfo?.name || displayName || ''}
             </TextL>
           </View>
         </Touchable>

@@ -20,7 +20,7 @@ export default function IdAndAddress({
   relationId,
   addresses,
   handleCopy,
-  addressSectionLabel = 'DID',
+  addressSectionLabel = 'Address',
 }: IIdAndAddressProps) {
   const showChat = useIsChatShow();
   const { userId } = useWalletInfo();

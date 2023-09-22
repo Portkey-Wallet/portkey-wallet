@@ -36,6 +36,7 @@ import {
 import { ChannelInfo, ChannelMemberInfo, Message, MessageCount } from '../types';
 import { sleep } from '@portkey-wallet/utils';
 import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
+import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 
 export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseService<T> implements IIMService {
   constructor(request: T) {
@@ -246,7 +247,9 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  getProfile(params: GetProfileParams): IMServiceCommon<IContactProfile> {
+  getProfile(
+    params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
+  ): IMServiceCommon<IContactProfile> {
     return this._request.send({
       url: '/api/v1/contacts/profile',
       params,

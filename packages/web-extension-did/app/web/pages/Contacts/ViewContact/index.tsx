@@ -41,7 +41,6 @@ export default function ViewContact() {
 
   const { name, index } = useIndexAndName(state);
 
-  // unified data structure
   const [data, setData] = useState<IProfileDetailDataProps>({
     ...state,
     id: state?.id,
@@ -61,7 +60,7 @@ export default function ViewContact() {
   const addContactText = t('Add Contact');
 
   useEffect(() => {
-    im.service.getProfile({ relationId: relationId, id: state.id }).then((res) => {
+    im.service.getProfile({ id: state.id, portkeyId: data.imInfo?.portkeyId, relationId: relationId }).then((res) => {
       const loginAccountMap: ILoginAccountListProps = {
         Phone: [],
         Email: [],
@@ -90,7 +89,7 @@ export default function ViewContact() {
       });
       setData({ ...state, ...res?.data, loginAccountMap });
     });
-  }, [contactInfo, isMyContactFn, relationId, state, state?.id]);
+  }, [contactInfo, data.imInfo?.portkeyId, isMyContactFn, relationId, state, state.id]);
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {

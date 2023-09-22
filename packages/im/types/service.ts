@@ -8,6 +8,7 @@ import {
   MessageCount,
   TriggerMessageEventActionEnum,
 } from '.';
+import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
@@ -145,7 +146,8 @@ export type AddStrangerParams = {
 };
 
 export type GetProfileParams = {
-  relationId: string;
+  portkeyId?: string;
+  relationId?: string;
   id?: string;
 };
 
@@ -215,5 +217,7 @@ export interface IIMService {
   updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null>;
 
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
-  getProfile(params: GetProfileParams): IMServiceCommon<IContactProfile>;
+  getProfile(
+    params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
+  ): IMServiceCommon<IContactProfile>;
 }

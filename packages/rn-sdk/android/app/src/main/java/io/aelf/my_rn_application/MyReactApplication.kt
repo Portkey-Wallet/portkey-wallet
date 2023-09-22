@@ -1,6 +1,7 @@
 package io.aelf.my_rn_application
 
 import android.app.Application
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.BuildConfig
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -25,7 +26,10 @@ class MyReactApplication : Application(), ReactApplication {
             override fun getBundleAssetName(): String {
                 return "index.android.bundle"
             }
+
+            override fun getJavaScriptExecutorFactory() = HermesExecutorFactory()
         }
     }
 
 }
+/**/

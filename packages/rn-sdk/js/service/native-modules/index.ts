@@ -9,7 +9,7 @@ export interface PortkeyNativeModules {
 }
 
 export interface RouterModule {
-  navigateTo: (entry: PortkeyEntries, targetScene?: string) => void;
+  navigateTo: (from: string, entry: PortkeyEntries, targetScene?: string) => void;
   navigateToWithOptions: <R>(
     targetEntry: string,
     from: string,
@@ -30,7 +30,7 @@ export interface RouterOptions {
   navigationAnimation?: 'none' | 'slide' | 'fade';
   navigationAnimationDuration?: number;
   targetScene?: string;
-  params?: { [x: string]: string };
+  params?: { [x: string]: any };
 }
 
 export interface NativeWrapperModule {

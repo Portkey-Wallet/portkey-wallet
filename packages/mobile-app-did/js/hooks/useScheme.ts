@@ -19,6 +19,24 @@ export function useHandleParsedUrl() {
 
   const isChatShow = useIsChatShow();
 
+  const handleAddAction = useCallback(
+    (id: string, action: SCHEME_ACTION) => {
+      if (SCHEME_ACTION.addContact === action) {
+        return handlePortkeyId({
+          portkeyId: id,
+          showLoading: false,
+          goBack: false,
+        });
+      }
+
+      handleGroupId({
+        channelId: id,
+        showLoading: false,
+      });
+    },
+    [handleGroupId, handlePortkeyId],
+  );
+
   return useCallback(
     (parsedUrl: SchemeParsedUrl) => {
       const { domain, action, query } = parsedUrl;
@@ -38,27 +56,12 @@ export function useHandleParsedUrl() {
             jumpToWebview({ item: { name: fixUrl, url: fixUrl }, autoApprove: true });
             break;
           }
-          case SCHEME_ACTION.addContact: {
-            if (!isChatShow) return;
-            let id: string | undefined = query.id as string;
-            if (!id) id = Object.values(query).join('');
-
-            handlePortkeyId({
-              portkeyId: id,
-              showLoading: false,
-              goBack: false,
-            });
-            break;
-          }
+          case SCHEME_ACTION.addContact:
           case SCHEME_ACTION.addGroup: {
             if (!isChatShow) return;
-            let id: string | undefined = query.id as string;
-            if (!id) id = Object.values(query).join('');
+            const id = typeof query.id === 'string' ? query.id : Object.values(query).join('');
 
-            handleGroupId({
-              channelId: id,
-              showLoading: false,
-            });
+            handleAddAction(id, action);
             break;
           }
           default:
@@ -68,7 +71,7 @@ export function useHandleParsedUrl() {
         console.log(error);
       }
     },
-    [handleGroupId, handlePortkeyId, isChatShow, jumpToWebview],
+    [handleAddAction, isChatShow, jumpToWebview],
   );
 }
 

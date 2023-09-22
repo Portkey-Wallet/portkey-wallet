@@ -9,12 +9,14 @@ import { SchemeParsedUrl } from 'types/common';
 import { SCHEME_ACTION } from 'constants/scheme';
 import { showAuthLogin } from 'components/AuthLoginOverlay';
 import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { useHandlePortkeyId } from './useQrScan';
+import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export function useHandleParsedUrl() {
   const jumpToWebview = useDiscoverJumpWithNetWork();
   const handlePortkeyId = useHandlePortkeyId();
+  const handleGroupId = useHandleGroupId();
+
   const isChatShow = useIsChatShow();
 
   return useCallback(
@@ -49,7 +51,10 @@ export function useHandleParsedUrl() {
           case SCHEME_ACTION.addGroup: {
             if (!isChatShow) return;
             const id = Object.values(query).join('');
-            // TODO:addGroup actions
+            handleGroupId({
+              channelId: id,
+              showLoading: false,
+            });
             break;
           }
           default:
@@ -59,7 +64,7 @@ export function useHandleParsedUrl() {
         console.log(error);
       }
     },
-    [handlePortkeyId, isChatShow, jumpToWebview],
+    [handleGroupId, handlePortkeyId, isChatShow, jumpToWebview],
   );
 }
 

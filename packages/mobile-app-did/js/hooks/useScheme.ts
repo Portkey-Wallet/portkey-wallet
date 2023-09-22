@@ -40,7 +40,9 @@ export function useHandleParsedUrl() {
           }
           case SCHEME_ACTION.addContact: {
             if (!isChatShow) return;
-            const id = Object.values(query).join('');
+            let id: string | undefined = query.id as string;
+            if (!id) id = Object.values(query).join('');
+
             handlePortkeyId({
               portkeyId: id,
               showLoading: false,
@@ -50,7 +52,9 @@ export function useHandleParsedUrl() {
           }
           case SCHEME_ACTION.addGroup: {
             if (!isChatShow) return;
-            const id = Object.values(query).join('');
+            let id: string | undefined = query.id as string;
+            if (!id) id = Object.values(query).join('');
+
             handleGroupId({
               channelId: id,
               showLoading: false,

@@ -11,6 +11,8 @@ import PrivacyItem from './components/PrivacyItem';
 import { useFocusEffect } from '@react-navigation/native';
 import { sleep } from '@portkey-wallet/utils';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
+import NoData from 'components/NoData';
+import { BGStyles } from 'assets/theme/styles';
 
 const ChatPrivacy: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -55,7 +57,7 @@ const ChatPrivacy: React.FC = () => {
 
   return (
     <PageContainer
-      titleDom={'Chat Privacy and Security'}
+      titleDom={'Privacy'}
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       hideTouchable={true}
@@ -67,6 +69,7 @@ const ChatPrivacy: React.FC = () => {
         keyExtractor={(_item: IContactPrivacy, index: number) => `${index}`}
         renderItem={renderItem}
         onRefresh={getList}
+        ListEmptyComponent={<NoData message={'No Login Account'} topDistance={pTd(160)} style={BGStyles.bg4} />}
       />
     </PageContainer>
   );

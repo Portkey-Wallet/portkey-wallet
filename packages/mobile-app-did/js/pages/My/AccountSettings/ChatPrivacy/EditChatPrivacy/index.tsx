@@ -8,12 +8,15 @@ import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { ContactPermissionEnum, IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
-import { PRIVACY_ITEM_TYPE_LABEL_MAP } from '../components/PrivacyItem';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import Svg from 'components/Svg';
 import { LoginGuardianTypeIcon } from 'constants/misc';
 import ListItem from 'components/ListItem';
-import { CONTACT_PERMISSION_LABEL_MAP, CONTACT_PERMISSION_LIST } from '@portkey-wallet/constants/constants-ca/contact';
+import {
+  CONTACT_PERMISSION_LABEL_MAP,
+  CONTACT_PERMISSION_LIST,
+  CONTACT_PRIVACY_TYPE_LABEL_MAP,
+  CONTACT_PRIVACY_TYPE_LOWER_LABEL_MAP,
+} from '@portkey-wallet/constants/constants-ca/contact';
 import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
 import { sleep } from '@portkey-wallet/utils';
@@ -24,13 +27,6 @@ interface RouterParams {
   detail: IContactPrivacy;
 }
 
-export const PRIVACY_ITEM_TYPE_LOWER_LABEL_MAP = {
-  [LoginType.Email]: 'email',
-  [LoginType.Phone]: 'phone number',
-  [LoginType.Google]: 'google account',
-  [LoginType.Apple]: 'Apple ID',
-};
-
 const EditChatPrivacy: React.FC = () => {
   const { detail } = useRouterParams<RouterParams>();
   const [permission, setPermission] = useState(detail.permission);
@@ -39,6 +35,7 @@ const EditChatPrivacy: React.FC = () => {
   // TOOD: change to lockCallback
   const updatePrivacyPermission = useCallback(
     (value: ContactPermissionEnum) => {
+      if (value === permission) return;
       ActionSheet.alert({
         title: `You are about to switch to ${CONTACT_PERMISSION_LABEL_MAP[value]}`,
         message: `After confirmation, your account information will be displayed according to the rules`,
@@ -70,17 +67,17 @@ const EditChatPrivacy: React.FC = () => {
         ],
       });
     },
-    [detail, update],
+    [detail, permission, update],
   );
 
   return (
     <PageContainer
-      titleDom={PRIVACY_ITEM_TYPE_LABEL_MAP[detail.privacyType]}
+      titleDom={CONTACT_PRIVACY_TYPE_LABEL_MAP[detail.privacyType]}
       safeAreaColor={['blue', 'gray']}
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <TextM style={[FontStyles.font3, pageStyles.title]}>{`My login ${
-        PRIVACY_ITEM_TYPE_LOWER_LABEL_MAP[detail.privacyType]
+        CONTACT_PRIVACY_TYPE_LABEL_MAP[detail.privacyType]
       }`}</TextM>
       <View style={pageStyles.infoWrap}>
         <Svg icon={LoginGuardianTypeIcon[detail.privacyType]} size={pTd(28)} />
@@ -90,7 +87,7 @@ const EditChatPrivacy: React.FC = () => {
       </View>
 
       <TextM style={[FontStyles.font3, pageStyles.title]}>{`Who can see my ${
-        PRIVACY_ITEM_TYPE_LOWER_LABEL_MAP[detail.privacyType]
+        CONTACT_PRIVACY_TYPE_LOWER_LABEL_MAP[detail.privacyType]
       }`}</TextM>
 
       {CONTACT_PERMISSION_LIST.map(item => (

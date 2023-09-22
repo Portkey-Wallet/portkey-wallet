@@ -1,3 +1,4 @@
+import { CONTACT_PRIVACY_TYPE_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
 import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { defaultColors } from 'assets/theme';
@@ -7,7 +8,6 @@ import { TextM } from 'components/CommonText';
 import FormItem from 'components/FormItem';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
-import { PRIVACY_ITEM_TYPE_LABEL_MAP } from 'pages/My/AccountSettings/ChatPrivacy/components/PrivacyItem';
 
 import React, { memo, useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -32,28 +32,28 @@ const ProfileLoginAccountsSection: React.FC<ProfileLoginAccountsSectionPropsType
     const phoneList = list.filter(item => item.privacyType === LoginType.Phone);
     if (phoneList.length) {
       _areaList.push({
-        title: PRIVACY_ITEM_TYPE_LABEL_MAP[LoginType.Phone],
+        title: CONTACT_PRIVACY_TYPE_LABEL_MAP[LoginType.Phone],
         list: phoneList,
       });
     }
     const emailList = list.filter(item => item.privacyType === LoginType.Email);
     if (emailList.length) {
       _areaList.push({
-        title: PRIVACY_ITEM_TYPE_LABEL_MAP[LoginType.Email],
+        title: CONTACT_PRIVACY_TYPE_LABEL_MAP[LoginType.Email],
         list: emailList,
       });
     }
     const googleList = list.filter(item => item.privacyType === LoginType.Google);
     if (googleList.length) {
       _areaList.push({
-        title: PRIVACY_ITEM_TYPE_LABEL_MAP[LoginType.Google],
+        title: CONTACT_PRIVACY_TYPE_LABEL_MAP[LoginType.Google],
         list: googleList,
       });
     }
     const appleList = list.filter(item => item.privacyType === LoginType.Apple);
     if (appleList.length) {
       _areaList.push({
-        title: PRIVACY_ITEM_TYPE_LABEL_MAP[LoginType.Apple],
+        title: CONTACT_PRIVACY_TYPE_LABEL_MAP[LoginType.Apple],
         list: appleList,
       });
     }

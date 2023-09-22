@@ -26,3 +26,5 @@ packages/constants/constants-ca/network.ts
 # iOS
 *.xcuserstate  
 /**/Pods/**
+Pods/
+Pods

@@ -6,7 +6,7 @@ export default function WarnTip() {
     className: 'chat-message-warning',
     content: (
       <div className="chat-message-warning-msg">
-        Please try updating to the latest version.You can try to terminate the APP process and then re-enter it.
+        {`Downloading the latest Portkey for you. To proceed, please close and restart the App.`}
       </div>
     ),
   });

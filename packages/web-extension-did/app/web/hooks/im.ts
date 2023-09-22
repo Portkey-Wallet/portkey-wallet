@@ -99,6 +99,7 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
           await joinGroupChannel(id);
           navigate(`/chat-box-group/${id}`);
         } catch (error: any) {
+          // already joined
           if (`${error?.code}` === '13302') {
             navigate(`/chat-box-group/${id}`);
           } else {

@@ -13,7 +13,6 @@ import Loading from 'components/Loading';
 import { useCurrentChannelId } from '../context/hooks';
 import { useGroupChannelInfo, useTransferChannelOwner } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
-import { BGStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';

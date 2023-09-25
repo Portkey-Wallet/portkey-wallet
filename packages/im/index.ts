@@ -5,7 +5,7 @@ import { IMStatusEnum, MessageCount, SocketMessage } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { IIMService } from './types/service';
 import { IMConfig } from './config';
-import { FetchRequest } from '@portkey/request';
+import { FetchRequest } from './request';
 import { IBaseRequest } from '@portkey/types';
 import { IMService } from './service';
 import { IM_TOKEN_ERROR_ARRAY } from './constant';
@@ -328,7 +328,7 @@ export class IM {
           result = await send.apply(this.fetchRequest, args);
         } catch (error: any) {
           if (caHash !== this._caHash) throw new Error('account changed');
-          if (error.status === 401 && error.message === 'unauthorized') {
+          if (error.status === 401) {
             portkeyTokenError = error;
           } else {
             throw error;

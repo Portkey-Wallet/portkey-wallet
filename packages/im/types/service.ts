@@ -44,7 +44,7 @@ export type GetUserInfoParams = {
 };
 
 export type GetUserInfoListParams = {
-  keyword?: string;
+  keywords?: string;
   fields?: string[];
 };
 

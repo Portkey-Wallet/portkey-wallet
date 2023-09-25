@@ -33,6 +33,7 @@ import { useAddStrangerContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
+import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -161,15 +162,25 @@ const ChatDetailsPage = () => {
     [handleList],
   );
 
+  const onBack = useCallback(() => {
+    navigationService.navigate('Tab');
+    myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+  }, []);
+
+  useHardwareBackPress(
+    useMemo(
+      () => () => {
+        onBack();
+        return true;
+      },
+      [onBack],
+    ),
+  );
+
   const leftDom = useMemo(
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-        <Touchable
-          style={GStyles.marginRight(pTd(20))}
-          onPress={() => {
-            navigationService.navigate('Tab');
-            myEvents.navToBottomTab.emit({ tabName: ChatTabName });
-          }}>
+        <Touchable style={GStyles.marginRight(pTd(20))} onPress={onBack}>
           <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
         </Touchable>
         <Touchable
@@ -192,8 +203,9 @@ const ChatDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [currentChannelInfo?.displayName, displayName, mute, toRelationId],
+    [currentChannelInfo?.displayName, displayName, mute, onBack, toRelationId],
   );
+
   return (
     <PageContainer
       noCenterDom

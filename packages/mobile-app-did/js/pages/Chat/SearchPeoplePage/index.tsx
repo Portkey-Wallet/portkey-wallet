@@ -78,8 +78,9 @@ export default function SearchPeople() {
           onPress={() => {
             if (item.channelType === ChannelTypeEnum.GROUP) return navToGroupChatDetails({ toRelationId, channelUuid });
             if (item.channelType === ChannelTypeEnum.P2P) navToChatDetails({ toRelationId, channelUuid });
-            // TODO: change toast
-            return CommonToast.fail('fail to enter');
+            return CommonToast.warn(
+              'Downloading the latest Portkey for you. To proceed, please close and restart the App.',
+            );
           }}>
           <CommonAvatar
             title={displayName}

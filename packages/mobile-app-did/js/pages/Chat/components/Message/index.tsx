@@ -15,15 +15,15 @@ function ChatMessageContainer(
   const { previousMessage, currentMessage } = props;
 
   const isMarginTop8 = useMemo(() => {
-    if (previousMessage?.user && previousMessage?.user === currentMessage?.user) return true;
+    if (previousMessage?.user && previousMessage?.user._id === currentMessage?.user._id) return true;
   }, [currentMessage?.user, previousMessage?.user]);
 
   return (
     <Touchable activeOpacity={1} onPress={props.onDismiss}>
       <Message
         containerStyle={{
-          left: [styles.leftMessageContainer, isMarginTop8 && GStyles.marginTop(pTd(16))],
-          right: [styles.rightMessageContainer, isMarginTop8 && GStyles.marginTop(pTd(16))],
+          left: [styles.leftMessageContainer, isMarginTop8 && GStyles.marginTop(pTd(8))],
+          right: [styles.rightMessageContainer, isMarginTop8 && GStyles.marginTop(pTd(8))],
         }}
         {...props}
       />

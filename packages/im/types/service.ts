@@ -193,6 +193,7 @@ export interface IIMService {
     times?: number,
   ): IMServiceCommon<GetAuthTokenResult>;
   getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;
+  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T[]>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
   getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;

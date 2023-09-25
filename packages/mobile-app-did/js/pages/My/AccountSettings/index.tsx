@@ -26,7 +26,7 @@ export default function AccountSettings() {
       },
       {
         name: 'ChatPrivacy',
-        label: 'Chat Privacy and Security',
+        label: 'Privacy',
         sort: 3,
       },
     ];

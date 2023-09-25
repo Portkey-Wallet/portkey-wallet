@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: pTd(20),
   },
   containerStyle: {
-    margin: pTd(4),
+    marginHorizontal: pTd(4),
   },
   notSupportStyle: {
     backgroundColor: defaultColors.bg18,

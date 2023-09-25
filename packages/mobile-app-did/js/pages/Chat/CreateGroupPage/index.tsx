@@ -13,7 +13,7 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import FormItem from 'components/FormItem';
 import { pTd } from 'utils/unit';
-import { BGStyles } from 'assets/theme/styles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
 import GroupMemberItem from '../components/GroupMemberItem';
 import NoData from 'components/NoData';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im/channelList';
@@ -91,8 +91,8 @@ const ChatGroupDetails = () => {
       </FormItem>
       <View style={[BGStyles.bg1, GStyles.flex1]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.selectHeaderWrap]}>
-          <TextM>Select Contacts</TextM>
-          <TextM>{`${selectedCount}/${totalCount}`}</TextM>
+          <TextM style={FontStyles.font3}>Select Contacts</TextM>
+          <TextM style={FontStyles.font3}>{`${selectedCount}/${totalCount}`}</TextM>
         </View>
         <View style={styles.inputWrap}>
           <CommonInput allowClear type="search" value={keyword} onChangeText={setKeyword} placeholder="Search" />

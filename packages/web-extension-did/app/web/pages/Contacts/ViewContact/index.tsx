@@ -200,12 +200,3 @@ export default function ViewContact() {
     />
   );
 }
-
-// const useA: NavigateFunction = () => {
-//   const nav = useNavigate();
-//   const call = useCallback((path:string, op:any) => {
-//     nav(path, {...op, from: location.hash});
-//   }, []);
-
-//   return call;
-// };

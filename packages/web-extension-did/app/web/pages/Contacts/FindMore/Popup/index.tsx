@@ -10,9 +10,8 @@ import { useNavigate } from 'react-router';
 export default function FindMorePopup({
   headerTitle,
   myPortkeyId,
-  contact,
+  contacts,
   showChat,
-  isAdded,
   isSearch,
   goBack,
   handleSearch,
@@ -43,15 +42,21 @@ export default function FindMorePopup({
         )}
       </div>
       <div className="find-more-body">
-        {(!contact || !contact.name) && isSearch && (
+        {(!contacts || contacts?.length === 0) && isSearch && (
           <div className="flex-center no-search-result">No Search Result</div>
         )}
-        {contact && contact.name && contact.index && (
-          <div className="flex-row-center find-more-body-contact" onClick={clickItem}>
-            <FindMoreItem item={contact} isAdded={isAdded} hasChatEntry={showChat} clickChat={clickChat} />
-          </div>
-        )}
-        {!contact && <div className="no-data">No Search Result</div>}
+        {contacts &&
+          contacts?.length > 0 &&
+          contacts.map((contact, idx) => {
+            return (
+              <div
+                className="flex-row-center find-more-body-contact"
+                key={`${idx}-${contact.imInfo?.relationId}`}
+                onClick={() => clickItem(contact)}>
+                <FindMoreItem item={contact} hasChatEntry={showChat} clickChat={clickChat} />
+              </div>
+            );
+          })}
       </div>
     </div>
   );

@@ -59,7 +59,7 @@ export default function MemberList() {
     () => (
       <div className="member-list">
         {showMemberList?.map((m) => (
-          <div className="member-item flex-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
+          <div className="member-item flex-row-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
             <div className="flex member-basic">
               <Avatar width={28} height={28} letter={m.name.slice(0, 1).toUpperCase()} />
               <div className="member-name">{m.name}</div>

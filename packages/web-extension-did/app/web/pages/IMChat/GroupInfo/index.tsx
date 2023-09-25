@@ -155,7 +155,7 @@ const GroupInfo = () => {
           <div className="info-members">
             {(groupInfo?.members || []).slice(0, 4).map(
               (m) => (
-                <div className="member-item flex-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
+                <div className="member-item flex-row-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
                   <div className="flex member-basic">
                     <Avatar width={28} height={28} letter={m.name.slice(0, 1).toUpperCase()} />
                     <div className="member-name">{m.name}</div>
@@ -176,7 +176,7 @@ const GroupInfo = () => {
           </div>
           {isAdmin && (
             <div
-              className="info-transfer flex-between"
+              className="info-transfer flex-row-between"
               onClick={() => navigate(`/chat-group-info/${channelUuid}/transfer-ownership`)}>
               Transfer Group Ownership
               <CustomSvg type="LeftArrow" className="flex-center" />

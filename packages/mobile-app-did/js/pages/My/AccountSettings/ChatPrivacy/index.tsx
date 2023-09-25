@@ -13,13 +13,13 @@ import { sleep } from '@portkey-wallet/utils';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
 import NoData from 'components/NoData';
 import { BGStyles } from 'assets/theme/styles';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const ChatPrivacy: React.FC = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const { list, refresh } = useContactPrivacyList();
 
-  // TOOD: change to lockCallback
-  const getList = useCallback(
+  const getList = useLockCallback(
     async (isInit = false) => {
       if (isInit) await sleep(100);
       setIsRefreshing(true);

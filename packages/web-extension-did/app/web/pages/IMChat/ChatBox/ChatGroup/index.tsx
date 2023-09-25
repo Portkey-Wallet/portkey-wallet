@@ -206,7 +206,7 @@ export default function ChatBox() {
       <div className="flex title-element">
         <div className="title-content flex-center" onClick={handleGoGroupInfo}>
           <div className="group-icon flex-center">
-            <CustomSvg type="GroupAvatar" />
+            <CustomSvg type="GroupAvatar" className="flex" />
           </div>
           <div className="title-name">{groupInfo?.name || info?.displayName || ''}</div>
         </div>

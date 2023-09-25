@@ -326,7 +326,7 @@ export class IM {
         let result;
         try {
           result = await send.apply(this.fetchRequest, args);
-        } catch (error) {
+        } catch (error: any) {
           if (caHash !== this._caHash) throw new Error('account changed');
           if (error.status === 401 && error.message === 'unauthorized') {
             portkeyTokenError = error;

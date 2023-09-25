@@ -109,6 +109,14 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'GET',
     });
   }
+  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams | undefined): IMServiceCommon<T[]> {
+    return this._request.send({
+      url: '/api/v1/users/userInfo/list',
+      params,
+      method: 'GET',
+    });
+  }
+
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult> {
     return this._request.send({
       url: '/api/v1/channelContacts/createChannel',

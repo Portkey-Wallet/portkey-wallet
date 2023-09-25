@@ -8,8 +8,6 @@ $root_path = "../.."
 $node_modules = "#{$root_path}/node_modules"
 $react_native_path = "#{$node_modules}/react-native"
 
-#require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
-
 require_relative "#{$node_modules}/react-native/scripts/react_native_pods"
 require_relative "#{$node_modules}/@react-native-community/cli-platform-ios/native_modules"
 
@@ -26,10 +24,7 @@ target 'PortkeySDKExample_Example' do
   
   pod 'PortkeySDK', :path => '../'
   pod 'react-native-webview', :path => "#{$node_modules}/react-native-webview"
-#  pod 'ExpoModulesCore', :path => "#{$node_modules}/expo-modules-core"
-#  pod 'Expo', :path => "#{$node_modules}/expo"
-#  pod 'ExpoRandom', :path => "#{$node_modules}/expo-random/ios"
-pod 'react-native-get-random-values', :path => "#{$node_modules}/react-native-get-random-values"
+  pod 'react-native-get-random-values', :path => "#{$node_modules}/react-native-get-random-values"
 
 
   target 'PortkeySDKExample_Tests' do

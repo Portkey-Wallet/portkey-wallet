@@ -10,11 +10,13 @@
 #endif
 #endif
 
+#import "PortkeySDKAelfModule.h"
 #import "RCTBridge+ARNSDK.h"
 #import "PortkeySDKRNViewController.h"
 #import "PortkeySDKRootView.h"
 #import "PortkeySDKRouterModule.h"
 #import "PortkeySDKNativeWrapperModule.h"
+#import "PortkeySDKBundleUtil.h"
 
 FOUNDATION_EXPORT double PortkeySDKVersionNumber;
 FOUNDATION_EXPORT const unsigned char PortkeySDKVersionString[];

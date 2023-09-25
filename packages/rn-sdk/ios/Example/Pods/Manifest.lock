@@ -289,6 +289,10 @@ PODS:
   - React-jsinspector (0.72.4)
   - React-logger (0.72.4):
     - glog
+  - react-native-get-random-values (1.9.0):
+    - React-Core
+  - react-native-webview (13.6.0):
+    - React-Core
   - React-NativeModulesApple (0.72.4):
     - React-callinvoker
     - React-Core
@@ -421,6 +425,8 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../../node_modules/react-native/ReactCommon/logger`)
+  - react-native-get-random-values (from `../../node_modules/react-native-get-random-values`)
+  - react-native-webview (from `../../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -442,10 +448,9 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://gitee.com/mirrors/CocoaPods-Specs.git:
+    - FBSnapshotTestCase
     - fmt
     - SocketRocket
-  trunk:
-    - FBSnapshotTestCase
 
 EXTERNAL SOURCES:
   boost:
@@ -490,6 +495,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../../node_modules/react-native/ReactCommon/logger"
+  react-native-get-random-values:
+    :path: "../../node_modules/react-native-get-random-values"
+  react-native-webview:
+    :path: "../../node_modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-perflogger:
@@ -551,6 +560,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: bc8a9ad812a2c88b3a41c08b5f4b3ed32d6d4766
   React-jsinspector: aaed4cf551c4a1c98092436518c2d267b13a673f
   React-logger: da1ebe05ae06eb6db4b162202faeafac4b435e77
+  react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
+  react-native-webview: 669ae162965f629a8d6a4bdd3b99a304d36ef1f2
   React-NativeModulesApple: 086565a2c2b0299b0d7ca837127a6d0dc96104c3
   React-perflogger: 496a1a3dc6737f964107cb3ddae7f9e265ddda58
   React-RCTActionSheet: 02904b932b50e680f4e26e7a686b33ebf7ef3c00
@@ -571,6 +582,6 @@ SPEC CHECKSUMS:
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
 
-PODFILE CHECKSUM: 5403cae9d4c2c714290951660b9f5b0f65078809
+PODFILE CHECKSUM: 9efb76d29c743901fa9fcbcf8ba6869bccaffb99
 
 COCOAPODS: 1.12.1

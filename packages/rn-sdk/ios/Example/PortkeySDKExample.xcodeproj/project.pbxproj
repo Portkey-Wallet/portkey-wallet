@@ -17,6 +17,7 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		637D8B3ECAFDD9DCD337AD20 /* Pods_PortkeySDKExample_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 338ED6D58D2B4428E42972A8 /* Pods_PortkeySDKExample_Example.framework */; };
 		ADBB384EFF7B65AF573E7D01 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F0982A378D3D425DA0E4867 /* Pods_PortkeySDKExample_Tests.framework */; };
+		EA74A0062AC15B92005A4810 /* JSSDKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA74A0052AC15B92005A4810 /* JSSDKViewController.m */; };
 		EAD432A92ABC29ED00EEA69D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */; };
 		EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */; };
 		EAD432AB2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329F2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist */; };
@@ -58,6 +59,8 @@
 		903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		9F0982A378D3D425DA0E4867 /* Pods_PortkeySDKExample_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D626B180E2AD432D67A0B86A /* Pods-AelfPortkey_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Tests.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Tests/Pods-AelfPortkey_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		EA74A0042AC15B92005A4810 /* JSSDKViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSDKViewController.h; sourceTree = "<group>"; };
+		EA74A0052AC15B92005A4810 /* JSSDKViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSDKViewController.m; sourceTree = "<group>"; };
 		EAD4329C2ABC29ED00EEA69D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		EAD4329D2ABC29ED00EEA69D /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -164,9 +167,19 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		EA74A0032AC15B7C005A4810 /* JSSDK */ = {
+			isa = PBXGroup;
+			children = (
+				EA74A0042AC15B92005A4810 /* JSSDKViewController.h */,
+				EA74A0052AC15B92005A4810 /* JSSDKViewController.m */,
+			);
+			path = JSSDK;
+			sourceTree = "<group>";
+		};
 		EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */ = {
 			isa = PBXGroup;
 			children = (
+				EA74A0032AC15B7C005A4810 /* JSSDK */,
 				EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */,
 				EAD432A62ABC29ED00EEA69D /* AppDelegate.h */,
 				EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */,
@@ -461,6 +474,7 @@
 			files = (
 				EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */,
 				EAD432AE2ABC29ED00EEA69D /* main.m in Sources */,
+				EA74A0062AC15B92005A4810 /* JSSDKViewController.m in Sources */,
 				EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -563,8 +577,14 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "$(inherited)  ";
-				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -607,8 +627,14 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				OTHER_CFLAGS = "$(inherited)  ";
-				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					" ",
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

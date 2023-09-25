@@ -1,4 +1,4 @@
-import { useCommonState } from 'store/Provider/hooks';
+import { useCommonState, useLoading } from 'store/Provider/hooks';
 import ChatPrivacyEditPrompt from './Prompt';
 import ChatPrivacyEditPopup from './Popup';
 import { BaseHeaderProps } from 'types/UI';
@@ -8,7 +8,7 @@ import { ContactPermissionEnum, IContactPrivacy } from '@portkey-wallet/types/ty
 import { useCallback, useState } from 'react';
 import CustomModal from 'pages/components/CustomModal';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { message } from 'antd';
 import { CONTACT_PERMISSION_LABEL_MAP } from '@portkey-wallet/constants/constants-ca/contact';
 
@@ -24,15 +24,18 @@ export default function ChatPrivacyEdit() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { update } = useContactPrivacyList();
+  const { setLoading } = useLoading();
 
   const title = t('Privacy');
   const goBack = () => {
     navigate('/setting/account-setting/chat-privacy');
   };
-  const [permissionSelected, setPermissionSelected] = useState(ContactPermissionEnum.EVERY_BODY);
+  const [permissionSelected, setPermissionSelected] = useState(state.privacyType);
 
   const changePermission = useCallback(
     (id: ContactPermissionEnum) => {
+      if (id === permissionSelected) return;
+
       CustomModal({
         type: 'confirm',
         content: (
@@ -43,9 +46,13 @@ export default function ChatPrivacyEdit() {
         ),
         onOk: async () => {
           try {
+            setLoading(true);
             await update({ ...state, permission: id });
+            sleep(1000);
             setPermissionSelected(id);
+            setLoading(false);
           } catch (error) {
+            setLoading(false);
             const msg = handleErrorMessage(error);
             message.error(msg);
           }
@@ -53,7 +60,7 @@ export default function ChatPrivacyEdit() {
         okText: 'Confirm',
       });
     },
-    [state, update],
+    [permissionSelected, setLoading, state, update],
   );
 
   return isNotLessThan768 ? (

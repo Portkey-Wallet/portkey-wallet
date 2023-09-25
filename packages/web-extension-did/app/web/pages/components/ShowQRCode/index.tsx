@@ -3,11 +3,12 @@ import QRCodeCommon from 'pages/components/QRCodeCommon';
 import './index.less';
 
 export interface IShowQRCodeProps {
-  onBack: () => void;
+  onBack?: () => void;
   showName?: string;
   isGroup?: boolean;
   desc?: string;
   qrCodeValue?: string;
+  showHeader?: boolean;
 }
 
 export default function ShowQRCode({
@@ -16,12 +17,15 @@ export default function ShowQRCode({
   isGroup = false,
   desc = '',
   qrCodeValue,
+  showHeader = true,
 }: IShowQRCodeProps) {
   return (
     <div className="show-qrcode-wrapper flex-column">
-      <div className="show-qrcode-header">
-        <CustomSvg onClick={onBack} type="Close2" />
-      </div>
+      {showHeader && (
+        <div className="show-qrcode-header">
+          <CustomSvg onClick={onBack} type="Close2" />
+        </div>
+      )}
       <div className="show-qrcode-content flex-column-center">
         <div className="qrcode-content-icon"></div>
         {isGroup ? (

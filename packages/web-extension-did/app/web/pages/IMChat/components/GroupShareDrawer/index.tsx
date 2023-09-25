@@ -1,13 +1,13 @@
 import { DrawerProps } from 'antd';
 import BaseDrawer from 'components/BaseDrawer';
 import ContactChatList from '../ContactChatList';
-import { IContactItemSelectProps } from '../ContactListSelect';
+import { ChannelMemberInfo } from '@portkey-wallet/im';
 import './index.less';
 
 interface CustomSelectProps extends DrawerProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: (v: IContactItemSelectProps[]) => void;
+  onConfirm: (v: ChannelMemberInfo[]) => void;
 }
 
 export default function ContactListDrawer({ open, onClose, onConfirm, ...props }: CustomSelectProps) {

@@ -28,6 +28,7 @@ export interface IFindMoreProps extends BaseHeaderProps {
   handleSearch: ChangeEventHandler<HTMLInputElement>;
   clickItem: (contact: IContactItemRes) => void;
   clickChat: (e: any, item: IContactItemRes) => void;
+  clickQRCode: () => void;
 }
 
 export default function FindMore() {
@@ -87,11 +88,9 @@ export default function FindMore() {
   }, []);
 
   const goBack = () => {
-    if (state?.from === 'chat-search') {
-      navigate('/chat-list-search', { state });
-    } else {
-      navigate(-1);
-    }
+    if (state?.from === 'chat-search') return navigate('/chat-list-search', { state });
+    if (state?.from === 'chat-list') return navigate('/chat-list', { state });
+    return navigate('/setting/contacts');
   };
 
   const handleChat = useCallback(
@@ -130,6 +129,7 @@ export default function FindMore() {
         navigate('/setting/contacts/view', { state: contact });
       }}
       clickChat={(e, item) => handleChat(e, item)}
+      clickQRCode={() => navigate('/setting/contacts/qrcode', { state })}
     />
   ) : (
     <FindMorePopup
@@ -144,6 +144,7 @@ export default function FindMore() {
         navigate('/setting/contacts/view', { state: contact });
       }}
       clickChat={(e, item) => handleChat(e, item)}
+      clickQRCode={() => navigate('/setting/contacts/qrcode', { state })}
     />
   );
 }

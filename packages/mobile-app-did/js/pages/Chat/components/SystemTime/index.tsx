@@ -23,7 +23,8 @@ export default SystemTime;
 const styles = StyleSheet.create({
   wrap: {
     width: '100%',
-    marginVertical: pTd(12),
+    marginBottom: 0,
+    marginTop: pTd(16),
   },
   textStyles: {
     textAlign: 'center',

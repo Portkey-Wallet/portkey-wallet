@@ -93,9 +93,9 @@ export default function ViewContact() {
   useEffect(() => {
     im.service
       .getProfile({
-        id: state.id ?? undefined,
-        portkeyId: data.imInfo?.portkeyId ?? undefined,
-        relationId: relationId ?? undefined,
+        id: state.id || undefined,
+        portkeyId: data.imInfo?.portkeyId || undefined,
+        relationId: relationId || undefined,
       })
       .then((res) => {
         const loginAccountMap = genLoginAccountMap(res.data.loginAccounts || []);

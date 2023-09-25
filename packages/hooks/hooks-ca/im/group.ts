@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { useChannel, useHideChannel, useIMGroupInfoMapNetMapState, useRelationId } from '.';
+import {
+  useChannel,
+  useHideChannel,
+  useIMChannelListNetMapState,
+  useIMGroupInfoMapNetMapState,
+  useRelationId,
+} from '.';
 import im, {
   ChannelInfo,
+  ChannelItem,
   ChannelMemberInfo,
   ChannelStatusEnum,
   ChannelTypeEnum,
@@ -9,6 +16,7 @@ import im, {
 } from '@portkey-wallet/im';
 import { useAppCommonDispatch } from '../../index';
 import {
+  addChannel,
   addChannelMembers,
   removeChannelMembers,
   setGroupInfo,
@@ -280,4 +288,76 @@ export const useGroupChannel = (channelId: string) => {
     disband,
     isAdmin,
   };
+};
+
+export const useJoinGroupChannel = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+  const channelListNetMap = useIMChannelListNetMapState();
+  const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
+  const listRef = useRef(list);
+  listRef.current = list;
+
+  const join = useCallback(
+    async (channelId: string) => {
+      await im.service.joinChannel({
+        channelUuid: channelId,
+      });
+      await sleep(1000);
+      if (listRef.current.find(item => item.channelUuid === channelId)) {
+        console.log('joinGroupChannel addChannel exist');
+        return;
+      }
+      const channel: ChannelItem = {
+        status: ChannelStatusEnum.NORMAL,
+        channelUuid: channelId,
+        displayName: '',
+        channelIcon: '',
+        channelType: ChannelTypeEnum.GROUP,
+        unreadMessageCount: 1,
+        mentionsCount: 0,
+        lastMessageType: 'SYS',
+        lastMessageContent: '',
+        lastPostAt: `${Date.now()}`,
+        mute: false,
+        pin: false,
+        pinAt: '0',
+      };
+
+      dispatch(
+        addChannel({
+          network: networkType,
+          channel,
+        }),
+      );
+
+      (async () => {
+        try {
+          const {
+            data: { list },
+          } = await im.service.getChannelList({
+            channelUuid: channelId,
+          });
+          if (list.length) {
+            const channelInfo = list[0];
+            dispatch(
+              updateChannelAttribute({
+                network: networkType,
+                channelId: channelInfo.channelUuid,
+                value: channelInfo,
+              }),
+            );
+          }
+          console.log('joinGroupChannel refreshChannelInfo');
+        } catch (error) {
+          console.log('joinGroupChannel getChannelInfo: error', error);
+        }
+      })();
+
+      console.log('joinGroupChannel success');
+    },
+    [dispatch, networkType],
+  );
+
+  return join;
 };

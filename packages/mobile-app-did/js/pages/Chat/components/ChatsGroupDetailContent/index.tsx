@@ -116,6 +116,7 @@ export default function ChatsGroupDetailContent() {
   const listViewProps: GiftedChatProps['listViewProps'] = useMemo(() => {
     return {
       ...ListViewProps,
+      contentContainerStyle: styles.contentStyle,
       onEndReached: () => onLoadEarlier(),
       onScrollBeginDrag: onDismiss,
     };
@@ -205,5 +206,8 @@ const styles = StyleSheet.create({
   messagesContainerStyle: {
     backgroundColor: defaultColors.bg1,
     flex: 1,
+  },
+  contentStyle: {
+    paddingTop: pTd(20),
   },
 });

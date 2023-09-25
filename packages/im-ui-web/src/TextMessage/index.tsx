@@ -39,14 +39,14 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
     ],
     [props, setCopied],
   );
-  const handleUrlPress: ParseShape['onClick'] = useCallback((url: string) => {
-    const WWW_URL_PATTERN = /^www\./i;
-    if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
-    const openWinder = window.open(url, '_blank');
-    if (openWinder) {
-      openWinder.opener = null;
-    }
-  }, []);
+  const handleUrlPress: ParseShape['onClick'] = useCallback(
+    (url: string) => {
+      if (props.onClickUrl instanceof Function) {
+        props.onClickUrl(url);
+      }
+    },
+    [props],
+  );
   useEffect(() => {
     document.addEventListener('click', hidePop);
     return () => document.removeEventListener('click', hidePop);
@@ -56,7 +56,9 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
       {props.subType === 'non-support-msg' ? (
         <div className={clsx(['text-body', 'flex', props.position])}>
           <div className="text-text">
-            <span className="non-support-msg">[Unsupported format]</span>
+            <span className="non-support-msg" onClick={props.onClickUnSupportMsg}>
+              [Unsupported format]
+            </span>
             <span className="text-date-hidden">{showDate}</span>
           </div>
           <div className="text-date">{showDate}</div>

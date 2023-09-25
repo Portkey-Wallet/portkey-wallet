@@ -12,7 +12,7 @@ import { RootStackName } from 'navigation';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { parseLinkPortkeyUrl } from 'utils/scheme';
 import { useDiscoverJumpWithNetWork } from './discover';
-import { useHandlePortkeyUrl } from './useQrScan';
+import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 const WWW_URL_PATTERN = /^www\./i;
 
@@ -74,21 +74,28 @@ export function useJumpToChatGroupDetails() {
 
 export function useOnUrlPress() {
   const jump = useDiscoverJumpWithNetWork();
-  const handlePortkeyUrl = useHandlePortkeyUrl();
+  const handlePortkeyId = useHandlePortkeyId();
+  const handleGroupId = useHandleGroupId();
   const isChatShow = useIsChatShow();
 
   return useThrottleCallback(
     (url: string) => {
       if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;
-      const { id } = parseLinkPortkeyUrl(url);
-      if (id && isChatShow) {
-        handlePortkeyUrl({
+      const { id, type } = parseLinkPortkeyUrl(url);
+
+      if (type === 'addContact' && isChatShow)
+        return handlePortkeyId({
           portkeyId: id,
           showLoading: true,
         });
-      } else {
-        jump({ item: { url: url, name: url } });
-      }
+
+      if (type === 'addGroup' && isChatShow)
+        return handleGroupId({
+          channelId: id,
+          showLoading: true,
+        });
+
+      jump({ item: { url: url, name: url } });
     },
     [jump, isChatShow],
   );

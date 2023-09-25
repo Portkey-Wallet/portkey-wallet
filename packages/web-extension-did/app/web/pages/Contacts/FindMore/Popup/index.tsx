@@ -5,7 +5,6 @@ import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import FindMoreItem from 'pages/Contacts/components/FindMoreItem';
 import Copy from 'components/Copy';
-import { useNavigate } from 'react-router';
 
 export default function FindMorePopup({
   headerTitle,
@@ -17,8 +16,8 @@ export default function FindMorePopup({
   handleSearch,
   clickItem,
   clickChat,
+  clickQRCode,
 }: IFindMoreProps) {
-  const navigate = useNavigate();
   return (
     <div className="find-more-popup min-width-max-height">
       <div className="flex-column find-more-top">
@@ -36,7 +35,7 @@ export default function FindMorePopup({
             </div>
             <div className="show-icon flex">
               <Copy iconType="Copy4" toCopy={myPortkeyId} />
-              <CustomSvg type="QRCode2" onClick={() => navigate('/setting/wallet/qrcode')} />
+              <CustomSvg type="QRCode2" onClick={clickQRCode} />
             </div>
           </div>
         )}

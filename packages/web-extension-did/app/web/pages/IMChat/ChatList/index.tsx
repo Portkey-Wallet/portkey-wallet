@@ -10,8 +10,9 @@ import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
 import { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
-import './index.less';
 import CustomModal from 'pages/components/CustomModal';
+import WarnTip from '../components/WarnTip';
+import './index.less';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -57,10 +58,10 @@ export default function ChatList() {
       },
       {
         key: 'find-more',
-        leftIcon: <CustomSvg type="ChatAddContact" />,
-        children: 'Find More',
+        leftIcon: <CustomSvg type="AddMorePeople" />,
+        children: 'Find People',
         onClick: () => {
-          navigate(`/setting/contacts/find-more`);
+          navigate(`/setting/contacts/find-more`, { state: { from: 'chat-list' } });
         },
       },
     ],
@@ -94,7 +95,7 @@ export default function ChatList() {
         muted: item.mute,
         pin: item.pin,
         unread: item.unreadMessageCount,
-        channelType: item?.channelType || ChannelTypeEnum.P2P,
+        channelType: item?.channelType,
         status: item.status,
       };
     });
@@ -124,7 +125,7 @@ export default function ChatList() {
           }
           break;
         default:
-          message.error('Invalid chat');
+          WarnTip();
       }
     },
     [hideChannel, navigate],

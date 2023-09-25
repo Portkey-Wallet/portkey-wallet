@@ -134,7 +134,7 @@ const FindMorePeople = () => {
           <Touchable onPress={() => copyText(userId || '')}>
             <Svg icon="copy" size={pTd(16)} />
           </Touchable>
-          <Touchable onPress={() => navigationService.navigate('ChatQrCode')}>
+          <Touchable onPress={() => navigationService.navigate('ChatQrCodePage')} style={GStyles.marginLeft(pTd(24))}>
             <Svg icon="chat-scan" size={pTd(16)} />
           </Touchable>
         </View>

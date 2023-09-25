@@ -28,6 +28,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import FloatingActionButton from '../components/FloatingActionButton';
+import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 
 const ChatGroupDetailsPage = () => {
   const pinChannel = usePinChannel();
@@ -151,15 +152,25 @@ const ChatGroupDetailsPage = () => {
     [handleList],
   );
 
+  const onBack = useCallback(() => {
+    navigationService.navigate('Tab');
+    myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+  }, []);
+
+  useHardwareBackPress(
+    useMemo(
+      () => () => {
+        onBack();
+        return true;
+      },
+      [onBack],
+    ),
+  );
+
   const leftDom = useMemo(
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-        <Touchable
-          style={GStyles.marginRight(pTd(20))}
-          onPress={() => {
-            navigationService.navigate('Tab');
-            myEvents.navToBottomTab.emit({ tabName: ChatTabName });
-          }}>
+        <Touchable style={GStyles.marginRight(pTd(20))} onPress={onBack}>
           <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
         </Touchable>
         <Touchable
@@ -170,26 +181,17 @@ const ChatGroupDetailsPage = () => {
           <Svg size={pTd(32)} icon="chat-group-avatar-header" />
           <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
             <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500]}>
-              {groupInfo?.name || displayName}
+              {groupInfo?.name || displayName || ''}
             </TextL>
-            {/* <View style={[GStyles.flexRow, GStyles.itemCenter, styles.memberInfo]}>
-              {groupMemberCount ? (
-                <TextS style={FontStyles.font2}>{groupMemberCount}</TextS>
-              ) : (
-                <>
-                  <LottieLoading type="custom" color="white" lottieStyle={styles.lottieLoadingStyle} />
-                </>
-              )}
-              <TextS style={FontStyles.font2}>{` member${groupMemberCount && groupMemberCount > 0 ? 's' : ''}`}</TextS>
-            </View> */}
           </View>
         </Touchable>
 
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [displayName, groupInfo?.name, mute],
+    [displayName, groupInfo?.name, mute, onBack],
   );
+
   return (
     <PageContainer
       noCenterDom

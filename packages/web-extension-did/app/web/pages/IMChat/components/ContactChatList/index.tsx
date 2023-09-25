@@ -11,7 +11,7 @@ import './index.less';
 
 interface IContactChatListProps {
   onClose: () => void;
-  onConfirm: (v: IContactItemSelectProps[]) => void;
+  onConfirm: (v: ChannelMemberInfo[]) => void;
 }
 
 export default function ContactChatList({ onClose, onConfirm }: IContactChatListProps) {
@@ -123,7 +123,7 @@ export default function ContactChatList({ onClose, onConfirm }: IContactChatList
           overlay={<></>}
           inputProps={{
             onChange: handleInputChange,
-            placeholder: 'Search Contacts',
+            placeholder: 'Name/address/Portkey ID',
           }}
         />
       </div>
@@ -132,7 +132,7 @@ export default function ContactChatList({ onClose, onConfirm }: IContactChatList
           {showMemberList.length !== 0 ? (
             <ContactListSelect list={showMemberList} clickItem={clickAddItem} />
           ) : (
-            <div className="flex-center member-list-empty">{filterWord ? 'No search result' : 'No contact'}</div>
+            <div className="flex-center member-list-empty">{filterWord ? 'No contact found' : 'No contact'}</div>
           )}
         </div>
         <div className="member-list-btn flex-center" onClick={() => onConfirm(selectedContactRef.current)}>

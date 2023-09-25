@@ -209,7 +209,7 @@ export class IM {
     } else {
       // no observer, update message unreadCount
       this.updateUnreadMsgObservers(e);
-      if (rawMsg.mute) return;
+      // if (rawMsg.mute) return;
       this.updateMessageCount({
         ...this._msgCount,
         unreadCount: this._msgCount.unreadCount + 1,

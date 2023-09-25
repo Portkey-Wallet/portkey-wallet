@@ -56,7 +56,7 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
           </View>
           <View style={GStyles.flexRow}>
             {isMySelf ? (
-              <Svg icon="mainnet" size={pTd(16)} />
+              <Svg icon={isTestnet ? 'testnet' : 'mainnet'} size={pTd(16)} />
             ) : (
               <Image
                 source={{

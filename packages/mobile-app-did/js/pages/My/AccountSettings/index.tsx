@@ -52,13 +52,6 @@ export default function AccountSettings() {
           onPress={() => navigationService.navigate(item.name)}
         />
       ))}
-      {biometricsReady && (
-        <MenuItem
-          style={styles.itemWrap}
-          title={t('Biometric Authentication')}
-          onPress={() => navigationService.navigate('Biometric')}
-        />
-      )}
     </PageContainer>
   );
 }

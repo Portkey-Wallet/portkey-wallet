@@ -83,7 +83,7 @@ const FindMorePeople = () => {
   }, [debounceWord, searchUser]);
 
   const renderItem = useCallback(
-    ({ item }: { item: GetOtherUserInfoDefaultResult }) => {
+    ({ item }: { item: GetUserInfoDefaultResult }) => {
       return (
         <ContactItem
           isShowChat
@@ -128,8 +128,8 @@ const FindMorePeople = () => {
       {!keyword && (
         <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
           <View>
-            <TextM style={styles.portkeyId}>{`My Portkey ID : `}</TextM>
-            <TextM style={styles.portkeyId}>{userId}</TextM>
+            <TextM>{`My Portkey ID : `}</TextM>
+            <TextM>{userId}</TextM>
           </View>
           <Touchable onPress={() => copyText(userId || '')}>
             <Svg icon="copy" size={pTd(16)} />

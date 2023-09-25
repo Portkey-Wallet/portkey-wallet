@@ -30,7 +30,7 @@ import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
-import MyQRCode from 'pages/Wallet/MyQRCode';
+import MyQRCode from 'pages/MyQRCode';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
@@ -162,6 +162,10 @@ export const PageRouter = () =>
     {
       path: '/setting/contacts/find-more',
       element: <FindMore />,
+    },
+    {
+      path: '/setting/contacts/qrcode',
+      element: <MyQRCode />,
     },
     {
       path: '/setting/account-setting',

@@ -10,10 +10,11 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
-import { ChannelItem } from '@portkey-wallet/im/types';
+import { ChannelItem, ChannelTypeEnum } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDeviceEvent } from 'hooks/useDeviceEvent';
 import myEvents from 'utils/deviceEvent';
+import { getChatListSvgName } from 'pages/Chat/utils';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -86,6 +87,19 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     },
     [item, onDelete],
   );
+
+  const RightBottomSection = useMemo(() => {
+    if (ChannelTypeEnum.GROUP !== item.channelType && ChannelTypeEnum.P2P !== item.channelType) return null;
+    if (item.pin && item.unreadMessageCount === 0)
+      return <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />;
+
+    return (
+      <TextS style={[styles.messageNum, item.mute && styles.muteMessage, !item.unreadMessageCount && styles.hide]}>
+        {formatMessageCountToStr(item.unreadMessageCount)}
+      </TextS>
+    );
+  }, [item.channelType, item.mute, item.pin, item.unreadMessageCount]);
+
   return (
     <SwipeableItem
       swipeEnabled
@@ -106,7 +120,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
           <CommonAvatar
             hasBorder
             title={item.displayName}
-            svgName={item.channelType === 'G' ? 'chat-group-avatar' : undefined}
+            svgName={getChatListSvgName(item.channelType)}
             avatarSize={48}
             style={styles.avatar}
           />
@@ -125,14 +139,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
               <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
                 {lastMessage}
               </TextS>
-              {item.pin && item.unreadMessageCount === 0 ? (
-                <Svg size={pTd(12)} icon="chat-pin" color={defaultColors.font7} />
-              ) : (
-                <TextS
-                  style={[styles.messageNum, item.mute && styles.muteMessage, !item.unreadMessageCount && styles.hide]}>
-                  {formatMessageCountToStr(item.unreadMessageCount)}
-                </TextS>
-              )}
+              {RightBottomSection}
             </View>
           </View>
         </>

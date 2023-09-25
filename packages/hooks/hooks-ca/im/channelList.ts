@@ -160,22 +160,38 @@ export const useCreateP2pChannel = () => {
 
       (async () => {
         try {
-          const { data: channelInfo } = await im.service.getChannelInfo({
+          const {
+            data: { list },
+          } = await im.service.getChannelList({
             channelUuid,
           });
-          console.log('createChannel channelInfo: ', channelInfo);
-          dispatch(
-            updateChannelAttribute({
-              network: networkType,
-              channelId: channelUuid,
-              value: {
-                displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
-                channelIcon: channelInfo.icon,
-                mute: channelInfo.mute,
-                pin: channelInfo.pin,
-              },
-            }),
-          );
+          if (list.length) {
+            const channelInfo = list[0];
+            console.log('createChannel channelInfo: ', channelInfo);
+            dispatch(
+              updateChannelAttribute({
+                network: networkType,
+                channelId: channelInfo.channelUuid,
+                value: channelInfo,
+              }),
+            );
+          } else {
+            const { data: channelInfo } = await im.service.getChannelInfo({
+              channelUuid,
+            });
+            dispatch(
+              updateChannelAttribute({
+                network: networkType,
+                channelId: channelUuid,
+                value: {
+                  displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
+                  channelIcon: channelInfo.icon,
+                  mute: channelInfo.mute,
+                  pin: channelInfo.pin,
+                },
+              }),
+            );
+          }
         } catch (error) {
           console.log('createChannel error: ', error);
         }

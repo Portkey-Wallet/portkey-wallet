@@ -43,6 +43,7 @@ const ContactProfile: React.FC = () => {
 
   const { t } = useLanguage();
   const addStranger = useAddStrangerContact();
+  const timerRef = useRef<NodeJS.Timeout | number>();
 
   const [profileInfo, setProfileInfo] = useState<IContactProfile>();
 
@@ -95,21 +96,24 @@ const ContactProfile: React.FC = () => {
   const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
-    const isLoadingShow = !storeContactInfo;
-    try {
-      isLoadingShow && Loading.show();
-      const { data } = await im.service.getProfile({ relationId: relationId || contactInfo?.imInfo?.relationId || '' });
-
-      setProfileInfo(data);
-    } catch (error) {
-      // TODO: getProfile error handle
-      console.log(error);
-      CommonToast.failError(error);
-    } finally {
-      isLoadingShow && Loading.hide();
+    if (relationId) {
+      try {
+        timerRef.current = setTimeout(() => {
+          Loading.show();
+        }, 200);
+        const { data } = await im.service.getProfile({ relationId });
+        setProfileInfo({ ...data });
+      } catch (error) {
+        console.log(error);
+        CommonToast.failError(error);
+      } finally {
+        clearTimeout(timerRef.current);
+        Loading.hide();
+      }
     }
-  }, [contactInfo?.imInfo?.relationId, relationId, storeContactInfo]);
+  }, [relationId]);
 
+  useEffect(() => () => clearTimeout(timerRef.current), []);
   useEffectOnce(() => {
     getProfile();
   });

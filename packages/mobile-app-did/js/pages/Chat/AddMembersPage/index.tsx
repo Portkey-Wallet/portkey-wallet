@@ -14,7 +14,6 @@ import { useAddChannelMembers, useGroupChannelInfo } from '@portkey-wallet/hooks
 import { useCurrentChannelId } from '../context/hooks';
 import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
-import { BGStyles } from 'assets/theme/styles';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -106,9 +105,7 @@ const AddMembersPage = () => {
       <FlatList
         data={filterMemberList}
         keyExtractor={(item: ContactItemType) => item.imInfo?.relationId || ''}
-        ListEmptyComponent={
-          debounceKeyword ? <NoData noPic message="No search found" /> : <NoData noPic message="No Member" />
-        }
+        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search found' : 'No Member'} />}
         renderItem={({ item }) => (
           <GroupMemberItem
             disabled={!!memberRelationIdMap[item.imInfo?.relationId || '']}

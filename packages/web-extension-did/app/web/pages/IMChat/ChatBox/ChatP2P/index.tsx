@@ -17,6 +17,8 @@ import ChatBoxTip from 'pages/IMChat/components/ChatBoxTip';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useHandle } from '../useHandle';
 import ChatBoxHeader from '../components/ChatBoxHeader';
+import { useClickUrl } from 'hooks/im';
+import WarnTip from 'pages/IMChat/components/WarnTip';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -32,6 +34,7 @@ export default function ChatBox() {
   const isStranger = useIsStranger(info?.toRelationId || '');
   const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });
   const { setLoading } = useLoading();
+  const clickUrl = useClickUrl({ fromChannelUuid: channelUuid, isGroup: false });
   useEffectOnce(() => {
     init();
   });
@@ -201,6 +204,8 @@ export default function ChatBox() {
             lockable
             dataSource={messageList}
             onDeleteMsg={handleDeleteMsg}
+            onClickUrl={clickUrl}
+            onClickUnSupportMsg={WarnTip}
           />
         </StyleProvider>
       </div>

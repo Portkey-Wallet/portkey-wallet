@@ -124,6 +124,7 @@ export type GetChannelListParams = {
   cursor?: string;
   skipCount?: number;
   maxResultCount?: number;
+  channelUuid?: string;
 };
 
 export type GetChannelListResult = {
@@ -184,6 +185,10 @@ export type UpdateChannelNameParams = {
   channelName: string;
 };
 
+export type JoinChannelParams = {
+  channelUuid: string;
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -221,6 +226,7 @@ export interface IIMService {
   removeChannelMembers(params: RemoveChannelMembersParams): IMServiceCommon<null>;
   leaveChannel(params: LeaveChannelParams): IMServiceCommon<null>;
   updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null>;
+  joinChannel(params: JoinChannelParams): IMServiceCommon<null>;
 
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
   getProfile(

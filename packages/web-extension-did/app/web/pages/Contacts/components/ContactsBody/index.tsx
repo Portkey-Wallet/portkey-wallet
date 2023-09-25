@@ -83,7 +83,7 @@ export default function ContactsBody({ isSearch, list, contactCount, initData, c
       <>
         <div onClick={findMoreHandler} className="flex find-more">
           <CustomSvg type="AddMorePeople" className="find-more-icon" />
-          <span className="find-more-text">Find more</span>
+          <span className="find-more-text">Find People</span>
         </div>
         {allContactListUI}
       </>

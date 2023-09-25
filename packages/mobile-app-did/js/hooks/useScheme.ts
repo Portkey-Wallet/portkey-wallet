@@ -9,13 +9,33 @@ import { SchemeParsedUrl } from 'types/common';
 import { SCHEME_ACTION } from 'constants/scheme';
 import { showAuthLogin } from 'components/AuthLoginOverlay';
 import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
-import { useHandlePortkeyUrl } from './useQrScan';
+import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export function useHandleParsedUrl() {
   const jumpToWebview = useDiscoverJumpWithNetWork();
-  const handlePortkeyUrl = useHandlePortkeyUrl();
+  const handlePortkeyId = useHandlePortkeyId();
+  const handleGroupId = useHandleGroupId();
+
   const isChatShow = useIsChatShow();
+
+  const handleAddAction = useCallback(
+    (id: string, action: SCHEME_ACTION) => {
+      if (SCHEME_ACTION.addContact === action) {
+        return handlePortkeyId({
+          portkeyId: id,
+          showLoading: false,
+          goBack: false,
+        });
+      }
+
+      handleGroupId({
+        channelId: id,
+        showLoading: false,
+      });
+    },
+    [handleGroupId, handlePortkeyId],
+  );
 
   return useCallback(
     (parsedUrl: SchemeParsedUrl) => {
@@ -36,20 +56,12 @@ export function useHandleParsedUrl() {
             jumpToWebview({ item: { name: fixUrl, url: fixUrl }, autoApprove: true });
             break;
           }
-          case SCHEME_ACTION.addContact: {
-            if (!isChatShow) return;
-            const id = Object.values(query).join('');
-            handlePortkeyUrl({
-              portkeyId: id,
-              showLoading: false,
-              goBack: false,
-            });
-            break;
-          }
+          case SCHEME_ACTION.addContact:
           case SCHEME_ACTION.addGroup: {
             if (!isChatShow) return;
-            const id = Object.values(query).join('');
-            // TODO:addGroup actions
+            const id = typeof query.id === 'string' ? query.id : Object.values(query).join('');
+
+            handleAddAction(id, action);
             break;
           }
           default:
@@ -59,7 +71,7 @@ export function useHandleParsedUrl() {
         console.log(error);
       }
     },
-    [handlePortkeyUrl, isChatShow, jumpToWebview],
+    [handleAddAction, isChatShow, jumpToWebview],
   );
 }
 

@@ -36,6 +36,7 @@ import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
+import MyQRCode from 'pages/MyQRCode';
 import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
 import Buy from 'pages/Buy';
@@ -210,6 +211,10 @@ export const PageRouter = () => {
               path: '/setting/wallet/about-us',
               element: <AboutUs />,
             },
+            {
+              path: '/setting/wallet/qrcode',
+              element: <MyQRCode />,
+            },
           ],
         },
         {
@@ -227,6 +232,10 @@ export const PageRouter = () => {
             {
               path: '/setting/contacts/find-more',
               element: <FindMore />,
+            },
+            {
+              path: '/setting/contacts/qrcode',
+              element: <MyQRCode />,
             },
           ],
         },
@@ -361,6 +370,10 @@ export const PageRouter = () => {
       element: <AboutUs />,
     },
     {
+      path: '/setting/wallet/qrcode',
+      element: <MyQRCode />,
+    },
+    {
       path: '/setting/contacts',
       element: <Contacts />,
     },
@@ -375,6 +388,10 @@ export const PageRouter = () => {
     {
       path: '/setting/contacts/find-more',
       element: <FindMore />,
+    },
+    {
+      path: '/setting/contacts/qrcode',
+      element: <MyQRCode />,
     },
     {
       path: '/setting/account-setting',

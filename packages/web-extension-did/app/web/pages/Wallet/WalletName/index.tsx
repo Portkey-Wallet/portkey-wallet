@@ -51,13 +51,14 @@ export default function WalletName() {
 
   const showView = useCallback(() => {
     if (type === MyProfilePageType.VIEW) {
-      if (locationState?.from === 'chat-group-info') {
-        navigate(`/chat-group-info/${locationState?.channelUuid}`);
-      } else if (locationState?.from === 'chat-member-list') {
-        navigate(`/chat-group-info/${locationState?.channelUuid}/member-list`, { state: locationState });
-      } else {
-        navigate('/setting/wallet');
-      }
+      if (locationState?.from === 'chat-group-info') return navigate(`/chat-group-info/${locationState?.channelUuid}`);
+
+      if (locationState?.from === 'chat-member-list')
+        return navigate(`/chat-group-info/${locationState?.channelUuid}/member-list`, { state: locationState });
+
+      if (['chat-box', 'chat-box-group'].includes(locationState?.from))
+        return navigate(`/${locationState.from}/${locationState?.channelUuid}`);
+      return navigate('/setting/wallet');
     }
     if (type === MyProfilePageType.EDIT) {
       setHeaderTitle(title);

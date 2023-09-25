@@ -3,7 +3,7 @@ import { FlatList, GestureResponderEvent } from 'react-native';
 import { BGStyles } from 'assets/theme/styles';
 import ChatOverlay from '../ChatOverlay';
 import ChatHomeListItemSwiped from '../ChatHomeListItemSwiper';
-import { ChannelItem, ChannelStatusEnum } from '@portkey-wallet/im/types';
+import { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im/types';
 import NoData from 'components/NoData';
 import { useChannelList, useHideChannel, useMuteChannel, usePinChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
@@ -54,6 +54,21 @@ export default function SessionList() {
   const longPress = useCallback(
     (event: GestureResponderEvent, item: ChannelItem) => {
       const { pageX, pageY } = event.nativeEvent;
+      if (item.channelType !== ChannelTypeEnum.GROUP && item.channelType !== ChannelTypeEnum.P2P) {
+        return ChatOverlay.showChatPopover({
+          list: [
+            {
+              title: 'Delete',
+              iconName: 'chat-delete',
+              onPress: () => onHideChannel(item),
+            },
+          ],
+          px: pageX,
+          py: pageY,
+          formatType: 'dynamicWidth',
+        });
+      }
+
       ChatOverlay.showChatPopover({
         list: [
           {
@@ -74,7 +89,7 @@ export default function SessionList() {
             iconName: item.mute ? 'chat-unmute' : 'chat-mute',
             onPress: async () => {
               try {
-                await muteChannel(item.channelUuid, !item.mute, true);
+                await muteChannel(item.channelUuid, !item.mute);
               } catch (error) {
                 console.log(error);
                 CommonToast.fail(`Failed to ${item.mute ? 'unmute' : 'mute'} chat`);
@@ -105,7 +120,10 @@ export default function SessionList() {
 
   const onPressItem = useCallback(
     (item: ChannelItem) => {
-      if (item.channelType !== 'G' && item.channelType !== 'P') return;
+      if (item.channelType !== ChannelTypeEnum.GROUP && item.channelType !== ChannelTypeEnum.P2P)
+        return CommonToast.warn(
+          'Downloading the latest Portkey for you. To proceed, please close and restart the App.',
+        );
 
       switch (item.status) {
         case ChannelStatusEnum.NORMAL:

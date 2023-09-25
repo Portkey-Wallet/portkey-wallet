@@ -12,7 +12,7 @@ import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network'
 import { ScreenWidth } from '@rneui/base';
 import Touchable from 'components/Touchable';
 
-const ChatCamera: React.FC = () => {
+const ChatQrCodePage: React.FC = () => {
   const { userId, walletName } = useWallet();
   const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userId}`, [userId]);
 
@@ -28,7 +28,7 @@ const ChatCamera: React.FC = () => {
         {walletName}
       </TextXXXL>
       <View style={PageStyle.qrCodeWrap}>
-        <CommonQRCodeStyled qrData={qrCodeData || ''} pieceSize={6} style={PageStyle.qrCode} />
+        <CommonQRCodeStyled qrData={qrCodeData || ''} width={pTd(236)} />
       </View>
       <TextM style={GStyles.marginTop(pTd(20))}>Scan the QR code to chat with me in Portkey</TextM>
       <Touchable
@@ -46,7 +46,7 @@ const ChatCamera: React.FC = () => {
   );
 };
 
-export default ChatCamera;
+export default ChatQrCodePage;
 
 export const PageStyle = StyleSheet.create({
   containerStyles: {
@@ -71,10 +71,6 @@ export const PageStyle = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 2,
-  },
-  qrCode: {
-    width: pTd(268),
-    height: pTd(268),
   },
   buttonWrap: {
     marginTop: pTd(78),

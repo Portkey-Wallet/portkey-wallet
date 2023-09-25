@@ -20,6 +20,7 @@ import { messageParser } from '@portkey-wallet/im/utils';
 import { useContactRelationIdMap } from '../contact';
 import { request } from '@portkey-wallet/api/api-did';
 import { useWallet } from '../wallet';
+import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/service';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -51,6 +52,75 @@ export const useSendChannelMessage = () => {
   const { networkType } = useCurrentNetworkInfo();
   const relationId = useRelationId();
   const { walletName } = useWallet();
+
+  const sendMessageToPeople = useCallback(
+    ({
+      toRelationId,
+      channelId,
+      type = 'TEXT',
+      content,
+    }: {
+      toRelationId?: string;
+      channelId?: string;
+      type?: MessageType;
+      content: string;
+    }) => {
+      if (!(toRelationId || channelId)) {
+        throw new Error('No ID');
+      }
+      if (!relationId) {
+        throw new Error('No user info');
+      }
+      const uuid = randomId();
+      return im.service.sendMessage({
+        channelUuid: channelId,
+        toRelationId,
+        type,
+        content,
+        sendUuid: `${relationId}-${toRelationId}-${Date.now()}-${uuid}`,
+      });
+    },
+    [relationId],
+  );
+
+  const sendMassMessage = useCallback(
+    ({
+      toRelationIds = [],
+      channelIds = [],
+      content,
+      type = 'TEXT',
+    }: {
+      toRelationIds?: string[];
+      channelIds?: string[];
+      content: string;
+      type?: MessageType;
+    }) => {
+      if (!(toRelationIds.length || channelIds.length)) {
+        throw new Error('No ID');
+      }
+      const promiseList: IMServiceCommon<SendMessageResult>[] = [];
+      toRelationIds.forEach(toRelationId => {
+        promiseList.push(
+          sendMessageToPeople({
+            toRelationId,
+            content,
+            type,
+          }),
+        );
+      });
+      channelIds.forEach(channelId => {
+        promiseList.push(
+          sendMessageToPeople({
+            channelId,
+            content,
+            type,
+          }),
+        );
+      });
+      return Promise.allSettled(promiseList);
+    },
+    [sendMessageToPeople],
+  );
 
   const sendChannelMessage = useCallback(
     async (channelId: string, content: string, type = 'TEXT' as MessageType) => {
@@ -164,6 +234,8 @@ export const useSendChannelMessage = () => {
   );
 
   return {
+    sendMessageToPeople,
+    sendMassMessage,
     sendChannelMessage,
     sendChannelImage,
     sendChannelImageByS3Result,
@@ -456,15 +528,16 @@ export const useMuteChannel = () => {
   const dispatch = useAppCommonDispatch();
 
   const mute = useCallback(
-    async (channelId: string, value: boolean, isRefreshTotal = true) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async (channelId: string, value: boolean, _isRefreshTotal = true) => {
       await im.service.updateChannelMute({
         channelUuid: channelId,
         mute: value,
       });
 
-      if (isRefreshTotal) {
-        await im.service.readMessage({ channelUuid: channelId, total: 9999 });
-      }
+      // if (isRefreshTotal) {
+      //   await im.service.readMessage({ channelUuid: channelId, total: 9999 });
+      // }
 
       dispatch(
         updateChannelAttribute({
@@ -472,14 +545,14 @@ export const useMuteChannel = () => {
           channelId: channelId,
           value: {
             mute: value,
-            unreadMessageCount: 0,
+            // unreadMessageCount: 0,
           },
         }),
       );
 
-      if (isRefreshTotal) {
-        im.refreshMessageCount();
-      }
+      // if (isRefreshTotal) {
+      //   im.refreshMessageCount();
+      // }
     },
     [dispatch, networkType],
   );

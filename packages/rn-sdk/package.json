@@ -6,11 +6,15 @@
   "author": "Carbon.lv <130360750+carbon-portkey@users.noreply.github.com>",
   "license": "MIT",
   "dependencies": {
+    "@babel/compat-data": "^7.22.20",
     "@react-native-community/cli-platform-android": "^11.3.8",
     "@react-native/metro-config": "^0.72.11",
+    "aelf-sdk": "^3.2.45-beta.1",
     "react": "^18.2.0",
     "react-native": "^0.72.4",
-    "react-native-gradle-plugin": "^0.71.19"
+    "react-native-get-random-values": "^1.9.0",
+    "react-native-gradle-plugin": "^0.71.19",
+    "react-native-webview": "^13.6.0"
   },
   "scripts": {
     "start": "yarn react-native start"

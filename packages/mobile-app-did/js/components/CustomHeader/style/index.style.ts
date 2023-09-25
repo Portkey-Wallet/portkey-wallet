@@ -7,7 +7,15 @@ const { bg1, bg5 } = defaultColors;
 
 export const headerHeight = pTd(52);
 
+const styles = StyleSheet.create({
+  leftTitle: {
+    height: '100%',
+    paddingHorizontal: pTd(16),
+  },
+});
+
 export const blueStyles = StyleSheet.create({
+  ...styles,
   sectionContainer: {
     height: pTd(52),
     width: '100%',
@@ -47,6 +55,7 @@ export const blueStyles = StyleSheet.create({
 });
 
 export const whitStyles = StyleSheet.create({
+  ...styles,
   sectionContainer: {
     height: pTd(52),
     width: '100%',

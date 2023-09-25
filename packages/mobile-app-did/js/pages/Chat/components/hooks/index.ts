@@ -1,4 +1,4 @@
-import { bottomBarHeight, isIOS } from '@portkey-wallet/utils/mobile/device';
+import { bottomBarHeight, isIOS, isXiaoMi } from '@portkey-wallet/utils/mobile/device';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Animated } from 'react-native';
 import { useKeyboard } from 'hooks/useKeyboardHeight';
@@ -15,10 +15,7 @@ import { bindUriToLocalImage } from 'utils/fs/img';
 import s3Instance from '@portkey-wallet/utils/s3';
 import { pTd } from 'utils/unit';
 
-let TopSpacing = isIOS ? bottomBarHeight : -(bottomBarHeight * 2);
-if (!isIOS) {
-  TopSpacing = TopSpacing > -30 ? -30 : TopSpacing;
-}
+const TopSpacing = isIOS ? bottomBarHeight : isXiaoMi ? Math.max(-bottomBarHeight, -10) : 0;
 
 const ToolsHeight = pTd(120);
 

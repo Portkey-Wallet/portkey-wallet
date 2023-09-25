@@ -43,11 +43,16 @@ export type GetUserInfoParams = {
   fields?: string[];
 };
 
+export type GetUserInfoListParams = {
+  keyword?: string;
+  fields?: string[];
+};
+
 export type GetUserInfoDefaultResult = {
-  avatar: string;
+  avatar?: string;
   name: string;
   relationId: string;
-  portkeyId: string;
+  portkeyId?: string;
 };
 
 export type GetOtherUserInfoDefaultResult = {
@@ -193,7 +198,7 @@ export interface IIMService {
     times?: number,
   ): IMServiceCommon<GetAuthTokenResult>;
   getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;
-  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T[]>;
+  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams): IMServiceCommon<T[]>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
   getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;

@@ -104,7 +104,7 @@ const FindMorePeople = () => {
           loading={loading}
           allowClear
           value={keyword}
-          placeholder="Address/Portkey ID"
+          placeholder="Address/Portkey ID/phone number/email"
           onChangeText={setKeyword}
           rightIcon={IptRightIcon}
           rightIconContainerStyle={styles.rightIconContainerStyle}
@@ -112,14 +112,14 @@ const FindMorePeople = () => {
       </View>
       {!keyword && (
         <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
-          <View>
+          <View style={[GStyles.flex1, GStyles.paddingRight(16)]}>
             <TextM>{`My Portkey ID : `}</TextM>
-            <TextM>{userId}</TextM>
+            <TextM numberOfLines={1}>{userId}</TextM>
           </View>
           <Touchable onPress={() => copyText(userId || '')}>
             <Svg icon="copy" size={pTd(16)} />
           </Touchable>
-          <Touchable onPress={() => navigationService.navigate('ChatQrCodePage')} style={GStyles.marginLeft(pTd(24))}>
+          <Touchable style={GStyles.marginLeft(pTd(16))} onPress={() => navigationService.navigate('ChatQrCodePage')}>
             <Svg icon="chat-scan" size={pTd(16)} />
           </Touchable>
         </View>

@@ -3,6 +3,7 @@ package io.aelf.portkey.navigation
 import android.content.Intent
 import com.facebook.react.bridge.Callback
 import io.aelf.portkey.activities.BasePortkeyReactActivity
+import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import java.lang.ref.WeakReference
 
 internal object NavigationHolder {
@@ -21,7 +22,7 @@ internal object NavigationHolder {
 
     @Synchronized
     fun invokeAnnotatedCallback(callbackId: String, after: (Callback) -> Unit) {
-        if (callbackId == "NO_CALLBACK_METHOD") return
+        if (callbackId == NO_CALLBACK_METHOD) return
         callbackMap[callbackId]?.let {
             after(it)
             callbackMap.remove(callbackId)

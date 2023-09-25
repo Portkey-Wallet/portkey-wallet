@@ -98,8 +98,8 @@ export default class GuardianPage extends BaseContainer<GuardianPageProps, Guard
 }
 
 export interface GuardianPageProps extends BaseContainerProps {
-  requiredGuardianNumber: string;
-  currGuardianNum: string;
+  requiredGuardianNumber: number;
+  currGuardianNum: number;
 }
 export interface GuardianPageState extends BaseContainerState {
   currGuardianNum: number;

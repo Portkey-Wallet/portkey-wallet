@@ -8,4 +8,4 @@ internal object StorageIdentifiers {
     const val PAGE_CALLBACK_ID = "callbackId"
 }
 
-internal const val NO_CALLBACK_METHOD="noCallbackMethod"
+internal const val NO_CALLBACK_METHOD = "noCallbackMethod"

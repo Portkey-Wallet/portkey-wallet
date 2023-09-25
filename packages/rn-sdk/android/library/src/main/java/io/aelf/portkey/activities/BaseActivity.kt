@@ -31,16 +31,18 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {
+        val componentName =
+            NavigationHolder.lastCachedIntent?.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
+                ?: PortkeyEntries.ENTRY.entryName
+        val params =
+            NavigationHolder.lastCachedIntent?.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
+                ?: Bundle()
         return object : ReactActivityDelegate(
             this,
             // in some cases, this will get null, so do not remove those code
-            NavigationHolder.lastCachedIntent?.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
-                ?: PortkeyEntries.ENTRY.entryName
+            componentName
         ) {
-            override fun getLaunchOptions(): Bundle {
-                return NavigationHolder.lastCachedIntent?.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
-                    ?: params
-            }
+            override fun getLaunchOptions(): Bundle = params
         }
     }
 
@@ -60,9 +62,9 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 }
 
 private fun ReadableMap.toWriteableNativeMap(): WritableMap {
-    val map = WritableNativeMap()
-    map.merge(this)
-    return map
+    return WritableNativeMap().apply {
+        this.merge(this@toWriteableNativeMap)
+    }
 }
 
 class DefaultReactActivity : BasePortkeyReactActivity()
@@ -105,10 +107,25 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
 private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray()): Bundle {
     val bundle = Bundle()
     this.entryIterator.forEachRemaining {
-        bundle.putString(it.key, it.value.toString())
+        bundle.putWithType(it.key, it.value)
     }
     extraEntries.forEach {
-        bundle.putString(it.first, it.second)
+        bundle.putWithType(it.first, it.second)
     }
     return bundle
+}
+
+/**
+ * React Native only accept
+ */
+private fun Bundle.putWithType(key: String, value: Any): Bundle {
+    when (value) {
+        is String -> this.putString(key, value)
+        is Int -> this.putInt(key, value)
+        is Float -> this.putDouble(key, value.toDouble())
+        is Double -> this.putDouble(key, value)
+        is Boolean -> this.putBoolean(key, value)
+        else -> this.putString(key, value.toString())
+    }
+    return this
 }

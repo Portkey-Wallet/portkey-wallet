@@ -74,9 +74,9 @@ export default class EntryPage extends BaseContainer<EntryPageProps, EntryPageSt
           <Text style={styles.statusText}>{`login status : ${
             isLogin ? 'has login' : 'not login yet'
           }\n guardian count : ${guardianNum}`}</Text>
-          {this.functionalBtn(this.jumpToLoginPage, 'Login as Chara =)', isLogin)}
+          {this.functionalBtn(this.jumpToLoginPage, 'Login as Chara =)')}
           {this.functionalBtn(this.onTransfer, 'Transfer')}
-          {this.functionalBtn(this.onEntryResult, 'Go back with result', !this.isOkNow())}
+          {this.functionalBtn(this.onEntryResult, 'Go back with result')}
         </View>
       </View>
     );
@@ -117,9 +117,14 @@ export default class EntryPage extends BaseContainer<EntryPageProps, EntryPageSt
   onTransfer = () => {
     const { guardianNum } = this.state;
     if (guardianNum < requiredGuardianNumber) {
-      this.navigateForResult<GuardianResult>(
+      this.navigateForResult<GuardianResult, GuardianPageProps>(
         PortkeyEntries.GUARDIAN,
-        { params: { currGuardianNum: guardianNum, requiredGuardianNumber } as GuardianPageProps },
+        {
+          params: {
+            currGuardianNum: guardianNum,
+            requiredGuardianNumber,
+          },
+        },
         res => {
           if (res.status === 'success') {
             console.warn(`Guardian success : guardian num ${res.result.guardianNum}`);

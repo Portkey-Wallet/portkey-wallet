@@ -1,5 +1,6 @@
 import { NativeModules } from 'react-native';
 import { PortkeyEntries } from '../../config/entries';
+import { AcceptablePropsType, AcceptableValueType } from '../../model/container/BaseContainer';
 
 export const portkeyModulesEntity = NativeModules as PortkeyNativeModules;
 
@@ -10,10 +11,10 @@ export interface PortkeyNativeModules {
 
 export interface RouterModule {
   navigateTo: (from: string, entry: PortkeyEntries, targetScene?: string) => void;
-  navigateToWithOptions: <R>(
+  navigateToWithOptions: <R, T = { [x: string]: AcceptableValueType }>(
     targetEntry: string,
     from: string,
-    params: RouterOptions,
+    params: RouterOptions<T>,
     callback: (res: EntryResult<R>) => void,
   ) => void;
   navigateBack: <R>(from: string, result: EntryResult<R>) => void;
@@ -25,12 +26,12 @@ export interface EntryResult<R> {
   extraMsg?: { [x: string]: any };
 }
 
-export interface RouterOptions {
+export interface RouterOptions<T> {
   closeCurrentScreen?: boolean;
   navigationAnimation?: 'none' | 'slide' | 'fade';
   navigationAnimationDuration?: number;
   targetScene?: string;
-  params?: { [x: string]: any };
+  params?: Partial<T>;
 }
 
 export interface NativeWrapperModule {

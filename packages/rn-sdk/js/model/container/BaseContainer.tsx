@@ -11,8 +11,17 @@ export default abstract class BaseContainer<
     portkeyModulesEntity.RouterModule.navigateTo(this.getEntryName(), entry, targetScene);
   };
 
-  navigateForResult = <V,>(entry: PortkeyEntries, params: RouterOptions, callback: (res: EntryResult<V>) => void) => {
-    portkeyModulesEntity.RouterModule.navigateToWithOptions(entry, this.getEntryName(), params, callback);
+  navigateForResult = <V, T = { [x: string]: AcceptableValueType }>(
+    entry: PortkeyEntries,
+    options: RouterOptions<T>,
+    callback: (res: EntryResult<V>) => void,
+  ) => {
+    portkeyModulesEntity.RouterModule.navigateToWithOptions(
+      entry,
+      this.getEntryName(),
+      options.params == null ? Object.assign(options, { params: {} }) : options,
+      callback,
+    );
   };
 
   onFinish = (res: EntryResult<R>) => {
@@ -34,9 +43,24 @@ export default abstract class BaseContainer<
   abstract getEntryName(): string;
 }
 
-export interface BaseContainerProps {
+export type BaseContainerProps = {
   from?: string;
   targetScene?: string;
-}
+} & AcceptablePropsType;
+
+/**
+ * Accepting object structure will cause troubles in Android native, so we need to use this type to avoid it.
+ *
+ * for example:
+ * ```
+ * const obj1 = { a: { b: { c: 1 } } }; // this makes parse operations difficult in Android native
+ * const obj2 = { a: '1', b: '2', c: 3.0 }; // this is fine
+ * ```
+ */
+export type AcceptablePropsType = {
+  [key: string]: AcceptableValueType;
+};
+
+export type AcceptableValueType = boolean | string | number | Array<string | number> | null | undefined;
 
 export interface BaseContainerState {}

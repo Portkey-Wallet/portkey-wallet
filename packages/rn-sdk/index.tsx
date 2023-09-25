@@ -5,6 +5,7 @@ import EntryPage from './js/components/entries/EntryPage';
 import LoginPage from './js/components/entries/LoginPage';
 import GuardianPage from './js/components/entries/GuardianPage';
 import TestPage from './js/components/TestPage';
+import { initJSModules } from './js/service/js-modules';
 
 const Root = () => {
   return (
@@ -39,3 +40,5 @@ entryConfig.set(PortkeyEntries.TEST, () => TestPage);
 for (const [key, value] of entryConfig) {
   AppRegistry.registerComponent(key, value);
 }
+
+initJSModules();

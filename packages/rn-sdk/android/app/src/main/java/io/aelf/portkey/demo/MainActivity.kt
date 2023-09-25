@@ -17,7 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.aelf.portkey.activities.MyReactActivity
+import io.aelf.portkey.activities.DefaultReactActivity
 import io.aelf.portkey.demo.ui.theme.MyRNApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -37,9 +37,10 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun jumpToActivity() {
-        val intent = Intent(this, MyReactActivity::class.java)
+        val intent = Intent(this, DefaultReactActivity::class.java)
         startActivity(intent)
     }
+
 }
 
 @Composable

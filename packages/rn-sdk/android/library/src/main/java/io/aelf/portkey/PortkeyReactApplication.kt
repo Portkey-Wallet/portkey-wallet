@@ -7,6 +7,7 @@ import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import io.aelf.portkey.native_modules.PortkeyNativePackages
 
 class PortkeyReactApplication : Application(), ReactApplication {
     override fun getReactNativeHost(): ReactNativeHost {
@@ -16,7 +17,9 @@ class PortkeyReactApplication : Application(), ReactApplication {
             }
 
             override fun getPackages(): MutableList<ReactPackage> {
-                return PackageList(this).packages
+                return PackageList(this).packages.apply {
+                    add(PortkeyNativePackages())
+                }
             }
 
             override fun getJSMainModuleName(): String {

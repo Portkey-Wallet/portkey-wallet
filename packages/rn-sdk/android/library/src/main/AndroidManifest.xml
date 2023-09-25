@@ -17,7 +17,8 @@
         android:theme="@style/Theme.MyRNApplication"
         tools:targetApi="31" >
         <activity
-            android:name=".activities.MyReactActivity"
+            android:name=".activities.DefaultReactActivity"
+            android:launchMode="standard"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             />
 

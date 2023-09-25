@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
 });
 
 export default class LoginPage extends BaseContainer<LoginPageProps, LoginPageState, LoginResult> {
-
   constructor(props) {
     super(props);
     this.state = {

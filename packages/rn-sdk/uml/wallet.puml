@@ -1,0 +1,11 @@
+@startuml wallet
+
+interface PortkeyWallet {
+    + constructor()
+}
+
+
+
+
+
+@enduml

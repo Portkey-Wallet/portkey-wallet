@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { StyleSheet, TouchableOpacity, StatusBar, View, ScrollView } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import CommonButton from 'components/CommonButton';
@@ -14,12 +14,11 @@ import { IToSendHomeParamsType } from '@portkey-wallet/types/types-ca/routeParam
 import SafeAreaBox from 'components/SafeAreaBox';
 import Svg from 'components/Svg';
 import CommonAvatar from 'components/CommonAvatar';
-import * as Clipboard from 'expo-clipboard';
-import CommonToast from 'components/CommonToast';
-import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { ScreenWidth } from '@rneui/base';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
+import { copyText } from 'utils';
 
 export interface TokenDetailProps {
   route?: any;
@@ -58,14 +57,6 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
     collectionInfo: { imageUrl, collectionName },
   } = nftItem;
 
-  const copyStr = useCallback(
-    async (str: string) => {
-      const isCopy = await Clipboard.setStringAsync(str);
-      isCopy && CommonToast.success(t('Copy Success'));
-    },
-    [t],
-  );
-
   return (
     <SafeAreaBox style={styles.pageWrap}>
       <StatusBar barStyle={'default'} />
@@ -92,10 +83,12 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           <View style={[GStyles.flexRow, styles.rowWrap]}>
             <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Contract address')}</TextM>
             <View style={GStyles.flex1} />
-            <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatStr2EllipsisStr(tokenContractAddress)}</TextM>
+            <TextM style={[styles.leftTitle, FontStyles.font5]}>
+              {formatStr2EllipsisStr(addressFormat(tokenContractAddress, chainId))}
+            </TextM>
             <TouchableOpacity
               style={[styles.marginLeft8, GStyles.flexCol, styles.copyIconWrap]}
-              onPress={() => copyStr(tokenContractAddress)}>
+              onPress={async () => await copyText(addressFormat(tokenContractAddress, chainId))}>
               <Svg icon="copy" size={pTd(13)} />
             </TouchableOpacity>
           </View>

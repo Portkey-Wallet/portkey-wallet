@@ -30,7 +30,7 @@ export default function ChatPrivacyEdit() {
   const goBack = () => {
     navigate('/setting/account-setting/chat-privacy');
   };
-  const [permissionSelected, setPermissionSelected] = useState(state.privacyType);
+  const [permissionSelected, setPermissionSelected] = useState(state.permission);
 
   const changePermission = useCallback(
     (id: ContactPermissionEnum) => {

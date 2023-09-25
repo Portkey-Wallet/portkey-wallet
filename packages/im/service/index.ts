@@ -15,6 +15,7 @@ import {
   GetMessageListParams,
   GetProfileParams,
   GetUserInfoDefaultResult,
+  GetUserInfoListParams,
   GetUserInfoParams,
   HideChannelParams,
   IIMService,
@@ -109,7 +110,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'GET',
     });
   }
-  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams | undefined): IMServiceCommon<T[]> {
+  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams | undefined): IMServiceCommon<T[]> {
     return this._request.send({
       url: '/api/v1/users/userInfo/list',
       params,

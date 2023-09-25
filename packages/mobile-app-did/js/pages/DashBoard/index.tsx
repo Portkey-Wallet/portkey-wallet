@@ -16,7 +16,7 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     [navigation],
   );
 
-  // nav to chat tab
+  // nav's to chat tab
   useEffect(() => {
     const listener = myEvents.navToBottomTab.addListener(({ tabName }) => navToChat(tabName));
     return () => listener.remove();

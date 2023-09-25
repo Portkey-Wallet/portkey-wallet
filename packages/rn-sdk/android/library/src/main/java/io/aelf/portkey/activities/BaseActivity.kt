@@ -76,6 +76,7 @@ internal fun getReactActivityClass(entry: String): Class<out BasePortkeyReactAct
     }
 }
 
+@Synchronized
 internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
     entryName: String,
     callbackId: String = NO_CALLBACK_METHOD,
@@ -118,7 +119,8 @@ private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emp
 /**
  * React Native only accept
  */
-private fun Bundle.putWithType(key: String, value: Any): Bundle {
+private fun Bundle.putWithType(key: String, value: Any?): Bundle {
+    if (value == null) return this
     when (value) {
         is String -> this.putString(key, value)
         is Int -> this.putInt(key, value)

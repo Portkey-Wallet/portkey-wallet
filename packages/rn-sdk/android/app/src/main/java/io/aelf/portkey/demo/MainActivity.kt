@@ -40,6 +40,7 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, DefaultReactActivity::class.java)
         startActivity(intent)
     }
+
 }
 
 @Composable

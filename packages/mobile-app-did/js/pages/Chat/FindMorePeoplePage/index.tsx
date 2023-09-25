@@ -11,9 +11,8 @@ import { BGStyles } from 'assets/theme/styles';
 import Svg from 'components/Svg';
 import ContactItem from 'components/ContactItem';
 import im from '@portkey-wallet/im';
-import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
 import { GetUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
 import navigationService from 'utils/navigationService';
@@ -33,23 +32,9 @@ const FindMorePeople = () => {
   const checkIsStranger = useCheckIsStranger();
 
   const [list, setList] = useState<GetUserInfoDefaultResult[]>([]);
-  const caAddressInfoList = useCaAddressInfoList();
-
-  const checkIsMyself = useCallback(() => {
-    if (debounceWord === userId) return true;
-    if (
-      caAddressInfoList.find(
-        ele => debounceWord === `ELF_${ele.caAddress}_${ele.chainId}` || debounceWord === ele.caAddress,
-      )
-    )
-      return true;
-    return false;
-  }, [caAddressInfoList, debounceWord, userId]);
 
   const searchUser = useLockCallback(async () => {
     if (!debounceWord) return setList([]);
-
-    if (checkIsMyself()) return CommonToast.fail('Unable to add yourself as a contact');
 
     try {
       setLoading(true);

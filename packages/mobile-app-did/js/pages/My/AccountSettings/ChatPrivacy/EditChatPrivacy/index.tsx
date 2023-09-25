@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -22,6 +22,7 @@ import Loading from 'components/Loading';
 import { sleep } from '@portkey-wallet/utils';
 import { useContactPrivacyList } from '@portkey-wallet/hooks/hooks-ca/security';
 import CommonToast from 'components/CommonToast';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 interface RouterParams {
   detail: IContactPrivacy;
@@ -32,8 +33,7 @@ const EditChatPrivacy: React.FC = () => {
   const [permission, setPermission] = useState(detail.permission);
   const { update } = useContactPrivacyList();
 
-  // TOOD: change to lockCallback
-  const updatePrivacyPermission = useCallback(
+  const updatePrivacyPermission = useLockCallback(
     (value: ContactPermissionEnum) => {
       if (value === permission) return;
       ActionSheet.alert({
@@ -57,7 +57,6 @@ const EditChatPrivacy: React.FC = () => {
                 sleep(1000);
                 setPermission(value);
               } catch (error) {
-                // TODO: handle error
                 CommonToast.failError(error);
                 console.log('updatePrivacyPermission: error', error);
               }

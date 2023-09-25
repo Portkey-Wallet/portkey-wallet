@@ -26,7 +26,7 @@ export default function FindMorePopup({
           leftCallBack={goBack}
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
-        <ContactsSearchInput placeholder="Address/Portkey ID" handleChange={handleSearch} />
+        <ContactsSearchInput placeholder="Address/Portkey ID/phone number/email" handleChange={handleSearch} />
         {!isSearch && (
           <div className="find-more-id flex-between">
             <div className="my-portkey-id">

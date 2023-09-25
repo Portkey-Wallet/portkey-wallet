@@ -24,6 +24,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { ILoginAccountListProps } from '../components/LoginAccountList';
+import { IContactProfileLoginAccount } from '@portkey-wallet/types/types-ca/contact';
 
 export default function ViewContact() {
   const { isNotLessThan768 } = useCommonState();
@@ -59,37 +60,48 @@ export default function ViewContact() {
   const addedText = t('Added');
   const addContactText = t('Add Contact');
 
-  useEffect(() => {
-    im.service.getProfile({ id: state.id, portkeyId: data.imInfo?.portkeyId, relationId: relationId }).then((res) => {
-      const loginAccountMap: ILoginAccountListProps = {
-        Phone: [],
-        Email: [],
-        Google: [],
-        Apple: [],
-      };
+  const genLoginAccountMap = useCallback((loginAccounts: IContactProfileLoginAccount[]) => {
+    const loginAccountMap: ILoginAccountListProps = {
+      Phone: [],
+      Email: [],
+      Google: [],
+      Apple: [],
+    };
 
-      res.data?.loginAccounts?.forEach((element) => {
-        switch (element.privacyType) {
-          case LoginType.Phone:
-            loginAccountMap.Phone.push(element);
-            break;
-          case LoginType.Email:
-            loginAccountMap.Email.push(element);
-            break;
-          case LoginType.Google:
-            loginAccountMap.Google.push(element);
-            break;
-          case LoginType.Apple:
-            loginAccountMap.Apple.push(element);
-            break;
+    loginAccounts?.forEach((element) => {
+      switch (element.privacyType) {
+        case LoginType.Phone:
+          loginAccountMap.Phone.push(element);
+          break;
+        case LoginType.Email:
+          loginAccountMap.Email.push(element);
+          break;
+        case LoginType.Google:
+          loginAccountMap.Google.push(element);
+          break;
+        case LoginType.Apple:
+          loginAccountMap.Apple.push(element);
+          break;
 
-          default:
-            break;
-        }
-      });
-      setData({ ...state, ...res?.data, loginAccountMap });
+        default:
+          break;
+      }
     });
-  }, [contactInfo, data.imInfo?.portkeyId, isMyContactFn, relationId, state, state.id]);
+    return loginAccountMap;
+  }, []);
+
+  useEffect(() => {
+    im.service
+      .getProfile({
+        id: state.id ?? undefined,
+        portkeyId: data.imInfo?.portkeyId ?? undefined,
+        relationId: relationId ?? undefined,
+      })
+      .then((res) => {
+        const loginAccountMap = genLoginAccountMap(res.data.loginAccounts || []);
+        setData({ ...state, ...res?.data, loginAccountMap });
+      });
+  }, [contactInfo, data.imInfo?.portkeyId, genLoginAccountMap, isMyContactFn, relationId, state, state.id]);
 
   const goBack = useCallback(() => {
     if (state?.from === 'new-chat') {

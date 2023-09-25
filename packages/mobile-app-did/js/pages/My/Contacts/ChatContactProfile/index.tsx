@@ -96,22 +96,19 @@ const ContactProfile: React.FC = () => {
   const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
-    if (relationId) {
-      try {
-        timerRef.current = setTimeout(() => {
-          Loading.show();
-        }, 200);
-        const { data } = await im.service.getProfile({ relationId });
-        setProfileInfo({ ...data });
-      } catch (error) {
-        console.log(error);
-        CommonToast.failError(error);
-      } finally {
-        clearTimeout(timerRef.current);
-        Loading.hide();
-      }
+    const isLoadingShow = !storeContactInfo;
+    try {
+      isLoadingShow && Loading.show();
+      const { data } = await im.service.getProfile({ relationId: relationId || contactInfo?.imInfo?.relationId || '' });
+
+      setProfileInfo(data);
+    } catch (error) {
+      console.log(error);
+      CommonToast.failError(error);
+    } finally {
+      isLoadingShow && Loading.hide();
     }
-  }, [relationId]);
+  }, [contactInfo?.imInfo?.relationId, relationId, storeContactInfo]);
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
   useEffectOnce(() => {

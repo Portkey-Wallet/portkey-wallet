@@ -313,18 +313,46 @@ export class IM {
   private rewriteFetch() {
     const send = this.fetchRequest.send;
     this.fetchRequest.send = async (...args) => {
-      const caHash = this._caHash;
-      const result = await send.apply(this.fetchRequest, args);
-      if (caHash !== this._caHash) throw new Error('account changed');
-
-      if (IM_TOKEN_ERROR_ARRAY.includes(result.code)) {
-        await this.refreshToken();
-
-        return await send.apply(this.fetchRequest, args);
-      } else if (result.code?.[0] !== '2') {
-        throw result;
+      if (this.status === IMStatusEnum.INIT && this._caHash === undefined) {
+        await sleep(500);
       }
-      return result;
+
+      const caHash = this._caHash;
+
+      let isIMTokenRefreshed = false;
+      let j = 0;
+      while (j < 5) {
+        let portkeyTokenError: any = undefined;
+        let result;
+        try {
+          result = await send.apply(this.fetchRequest, args);
+        } catch (error) {
+          if (caHash !== this._caHash) throw new Error('account changed');
+          if (error.status === 401 && error.message === 'unauthorized') {
+            portkeyTokenError = error;
+          } else {
+            throw error;
+          }
+        }
+        if (portkeyTokenError) {
+          await request.handleConnectToken(portkeyTokenError);
+          if (caHash !== this._caHash) throw new Error('account changed');
+          j++;
+          continue;
+        }
+
+        if (IM_TOKEN_ERROR_ARRAY.includes(result.code)) {
+          if (isIMTokenRefreshed) throw result;
+          // if throw error, will not execute the code below
+          await this.refreshToken();
+          isIMTokenRefreshed = true;
+          continue;
+        } else if (result.code?.[0] !== '2') {
+          throw result;
+        }
+
+        return result;
+      }
     };
   }
 

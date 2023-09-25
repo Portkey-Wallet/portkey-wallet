@@ -68,7 +68,8 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       if (times === 1) throw error;
       console.log('verifySignatureLoop: error', error);
     }
-    if (times <= 0) await sleep(1000);
+    // if (times <= 0) await sleep(1000);
+    await sleep(1000);
     return this.verifySignatureLoop(generateVerifyData, checkIsContinue, times - 1);
   }
 
@@ -96,7 +97,8 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       if (times === 1) throw error;
       console.log('getAuthToken: error', error);
     }
-    if (times <= 0) await sleep(1000);
+    // if (times <= 0) await sleep(1000);
+    await sleep(1000);
     return this.getAuthTokenLoop(params, checkIsContinue, times - 1);
   }
 

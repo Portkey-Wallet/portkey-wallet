@@ -2,7 +2,7 @@
 //  PortkeySDKBundleUtil.h
 //  DoubleConversion
 //
-//  Created by 崔风川 on 2023/9/25.
+//  Created by wade-portkey on 2023/9/25.
 //
 
 #import <Foundation/Foundation.h>

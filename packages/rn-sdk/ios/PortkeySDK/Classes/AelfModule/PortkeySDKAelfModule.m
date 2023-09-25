@@ -40,7 +40,7 @@
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge {
-    
+    // bundle finish load
 }
 
 #pragma mark - Notification

@@ -61,8 +61,6 @@ export default function FindMore() {
       return;
     }
 
-    if (addressTrans.address === userId) return message.error('Unable to add yourself as a contact');
-
     try {
       const res = await im.service.getUserInfoList({ keywords: addressTrans.address });
 

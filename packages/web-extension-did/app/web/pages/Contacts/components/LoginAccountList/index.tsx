@@ -18,7 +18,7 @@ export default function LoginAccountList({ Email, Phone, Google, Apple }: Partia
           return (
             <div key={item.privacyType + item.identifier} className="flex-row-between login-account-identifier-row">
               <div className="login-account-identifier">{item.identifier}</div>
-              <Copy toCopy={item.identifier} />
+              <Copy toCopy={item.identifier} iconType="Copy4" />
             </div>
           );
         })}

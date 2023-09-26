@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { Modal, message } from 'antd';
+import { message } from 'antd';
 import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { useGroupChannel, useHideChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
@@ -16,6 +16,7 @@ import ChatBoxHeader from '../components/ChatBoxHeader';
 import CustomModal from 'pages/components/CustomModal';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
+import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -51,13 +52,8 @@ export default function ChatBox() {
   const leaveGroup = useLeaveChannel();
   const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });
   const handleDeleteBox = useCallback(() => {
-    return Modal.confirm({
-      width: 320,
+    CustomModalConfirm({
       content: t('Delete chat?'),
-      className: 'chat-delete-modal',
-      autoFocusButton: null,
-      icon: null,
-      centered: true,
       okText: t('Confirm'),
       cancelText: t('Cancel'),
       onOk: async () => {
@@ -75,13 +71,8 @@ export default function ChatBox() {
     navigate(`/chat-group-info/${channelUuid}`);
   }, [navigate, channelUuid]);
   const handleLeaveGroup = useCallback(() => {
-    return Modal.confirm({
-      width: 320,
+    CustomModalConfirm({
       content: t('Are you sure to leave this group?'),
-      className: 'leave-group-modal',
-      autoFocusButton: null,
-      icon: null,
-      centered: true,
       okText: t('Yes'),
       cancelText: t('No'),
       onOk: async () => {
@@ -171,11 +162,12 @@ export default function ChatBox() {
     ],
     [handleSendMsgError, sendImage],
   );
-  const hidePop = useCallback((e: any) => {
+  const hidePop = useCallback((e: Event) => {
     try {
-      const _t = e?.target?.className;
-      const isFunc = _t.includes instanceof Function;
-      if (isFunc && !_t.includes('chat-box-more')) {
+      const _target = e?.target as Element;
+      const _className = _target?.className;
+      const isFunc = _className.includes instanceof Function;
+      if (isFunc && !_className.includes('chat-box-more')) {
         setPopVisible(false);
       }
     } catch (e) {

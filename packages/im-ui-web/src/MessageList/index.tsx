@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import MessageItem from '../MessageItem';
 import CustomSvg from '../components/CustomSvg';
 import CircleLoading from '../components/CircleLoading';
-import { IMessageListProps, MessageListEvent, MessageType } from '../type';
+import { IMessageListProps, MessageType } from '../type';
 import './index.less';
 
 const MessageList: FC<IMessageListProps> = ({
@@ -49,56 +49,19 @@ const MessageList: FC<IMessageListProps> = ({
     prevProps.current = props;
   }, [checkScroll, getBottom, prevProps, props, reference]);
 
-  const onDeleteMsg: MessageListEvent = useCallback(
-    (item, index, event) => {
-      if (props.onDeleteMsg instanceof Function) props.onDeleteMsg(item, index, event);
-    },
-    [props],
-  );
-
-  const onClickAvatar: MessageListEvent = useCallback(
-    (item, index, event) => {
-      if (props.onClickAvatar instanceof Function) props.onClickAvatar(item, index, event);
-    },
-    [props],
-  );
-
-  const onClickUrl = useCallback(
-    (url: string) => {
-      if (props.onClickUrl instanceof Function) props.onClickUrl(url);
-    },
-    [props],
-  );
-
-  const onClickUnSupportMsg = useCallback(() => {
-    if (props.onClickUnSupportMsg instanceof Function) props.onClickUnSupportMsg();
-  }, [props]);
-
   const onScroll = useCallback(
     (e: React.UIEvent<HTMLElement>): void => {
       const bottom = getBottom(e.currentTarget);
       scrollBottomRef.current = bottom;
       if (toBottomHeight === '100%' || (toBottomHeight && bottom > (toBottomHeight as number))) {
-        if (_downButton !== true) {
-          setDownButton(true);
-          scrollBottomRef.current = bottom;
-        }
+        setDownButton(true);
       } else {
-        if (_downButton !== false) {
-          setDownButton(false);
-          scrollBottomRef.current = bottom;
-        }
+        setDownButton(false);
       }
-      if (reference.current.scrollTop === 0) {
-        if (hasNext) {
-          next();
-        }
-      }
-      if (props.onScroll instanceof Function) {
-        props.onScroll(e);
-      }
+      if (reference.current.scrollTop === 0 && hasNext) next();
+      props?.onScroll?.(e);
     },
-    [_downButton, getBottom, hasNext, next, props, reference, toBottomHeight],
+    [getBottom, hasNext, next, props, reference, toBottomHeight],
   );
 
   const toBottom = useCallback(
@@ -133,14 +96,14 @@ const MessageList: FC<IMessageListProps> = ({
           {...(x as MessageType)}
           key={x.key}
           className={clsx([isShowMargin && 'show-margin', hiddenAvatar && 'hidden-avatar'])}
-          onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => onDeleteMsg(x, i, e)}
-          onClickUrl={(url) => onClickUrl(url)}
-          onClickUnSupportMsg={onClickUnSupportMsg}
-          onClickAvatar={(e: React.MouseEvent<HTMLElement>) => onClickAvatar(x, i, e)}
+          onDeleteMsg={(e: React.MouseEvent<HTMLElement>) => props?.onDeleteMsg?.(x, i, e)}
+          onClickUrl={props?.onClickUrl}
+          onClickUnSupportMsg={props?.onClickUnSupportMsg}
+          onClickAvatar={(e: React.MouseEvent<HTMLElement>) => props?.onClickAvatar?.(x, i, e)}
         />
       );
     });
-  }, [onClickAvatar, onClickUrl, onDeleteMsg, onClickUnSupportMsg, props.dataSource]);
+  }, [props]);
 
   return (
     <div className={clsx(['portkey-message-list', 'flex', props.className])} {...props.customProps}>

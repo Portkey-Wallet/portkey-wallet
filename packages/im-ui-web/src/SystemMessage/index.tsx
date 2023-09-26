@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import clsx from 'clsx';
-
 import { ISystemMessageProps } from '../type';
 import './index.less';
 

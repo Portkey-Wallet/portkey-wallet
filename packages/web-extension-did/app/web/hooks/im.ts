@@ -16,6 +16,7 @@ import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import { IChatItemProps } from '@portkey-wallet/im-ui-web';
 import CustomModal from 'pages/components/CustomModal';
 import WarnTip from 'pages/IMChat/components/WarnTip';
+import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
 
 export default function useInit() {
   const isShowChat = useIsChatShow();
@@ -103,7 +104,7 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
           navigate(`/chat-box-group/${id}`);
         } catch (error: any) {
           // already joined
-          if (`${error?.code}` === '13302') {
+          if (`${error?.code}` === ALREADY_JOINED_GROUP_CODE) {
             navigate(`/chat-box-group/${id}`);
           } else {
             message.error(`This group doesn't exist. Please check the Portkey group ID/QR code before you try again.`);

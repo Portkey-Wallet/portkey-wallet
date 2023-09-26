@@ -16,6 +16,7 @@ import myEvents from 'utils/deviceEvent';
 import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
+import { measurePageY } from 'utils/measure';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
@@ -24,12 +25,7 @@ export default function DiscoverHome() {
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
       const { pageY } = event.nativeEvent;
-      const top: number =
-        (await new Promise(_resolve => {
-          event.target.measure((x, y, width, height, pageX, topY) => {
-            _resolve(topY);
-          });
-        })) || 0;
+      const top = await measurePageY(event.target);
       ChatOverlay.showChatPopover({
         list: [
           {

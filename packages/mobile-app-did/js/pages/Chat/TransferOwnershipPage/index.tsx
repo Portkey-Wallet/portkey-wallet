@@ -32,19 +32,15 @@ const TransferOwnershipPage = () => {
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
   useEffect(() => {
-    try {
-      setFilterMembers(() => {
-        let result = [];
-        if (debounceKeyword) {
-          result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
-        } else {
-          result = rawMemberList.filter(ele => !ele.isAdmin);
-        }
-        return [...result];
-      });
-    } catch (error) {
-      CommonToast.failError(error);
-    }
+    setFilterMembers(() => {
+      let result = [];
+      if (debounceKeyword) {
+        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
+      } else {
+        result = rawMemberList.filter(ele => !ele.isAdmin);
+      }
+      return [...result];
+    });
   }, [debounceKeyword, rawMemberList]);
 
   const onPressItem = useCallback(

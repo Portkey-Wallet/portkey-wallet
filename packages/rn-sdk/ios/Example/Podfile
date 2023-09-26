@@ -23,6 +23,9 @@ target 'PortkeySDKExample_Example' do
 #  )
   
   pod 'PortkeySDK', :path => '../'
+  pod 'react-native-webview', :path => "#{$node_modules}/react-native-webview"
+  pod 'react-native-get-random-values', :path => "#{$node_modules}/react-native-get-random-values"
+
 
   target 'PortkeySDKExample_Tests' do
     inherit! :search_paths

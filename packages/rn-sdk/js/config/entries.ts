@@ -3,4 +3,5 @@ export enum PortkeyEntries {
   ENTRY = 'entry',
   LOGIN = 'login',
   GUARDIAN = 'guardian',
+  TEST = 'test',
 }

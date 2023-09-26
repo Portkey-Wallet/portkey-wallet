@@ -62,6 +62,10 @@ export default class EntryPage extends BaseContainer<EntryPageProps, EntryPageSt
     return PortkeyEntries.ENTRY;
   }
 
+  myWebComponent = () => {
+    return <WebView source={{ uri: 'https://reactnative.dev/' }} style={{ flex: 1 }} />;
+  }
+
   render() {
     const { isLogin, guardianNum } = this.state;
     return (

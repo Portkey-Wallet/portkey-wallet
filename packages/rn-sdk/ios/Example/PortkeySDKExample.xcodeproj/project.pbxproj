@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -17,6 +17,7 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		637D8B3ECAFDD9DCD337AD20 /* Pods_PortkeySDKExample_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 338ED6D58D2B4428E42972A8 /* Pods_PortkeySDKExample_Example.framework */; };
 		ADBB384EFF7B65AF573E7D01 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F0982A378D3D425DA0E4867 /* Pods_PortkeySDKExample_Tests.framework */; };
+		EA74A0062AC15B92005A4810 /* JSSDKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA74A0052AC15B92005A4810 /* JSSDKViewController.m */; };
 		EAD432A92ABC29ED00EEA69D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */; };
 		EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */; };
 		EAD432AB2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329F2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist */; };
@@ -58,6 +59,8 @@
 		903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		9F0982A378D3D425DA0E4867 /* Pods_PortkeySDKExample_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D626B180E2AD432D67A0B86A /* Pods-AelfPortkey_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Tests.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Tests/Pods-AelfPortkey_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		EA74A0042AC15B92005A4810 /* JSSDKViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSDKViewController.h; sourceTree = "<group>"; };
+		EA74A0052AC15B92005A4810 /* JSSDKViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSDKViewController.m; sourceTree = "<group>"; };
 		EAD4329C2ABC29ED00EEA69D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		EAD4329D2ABC29ED00EEA69D /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -164,9 +167,19 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		EA74A0032AC15B7C005A4810 /* JSSDK */ = {
+			isa = PBXGroup;
+			children = (
+				EA74A0042AC15B92005A4810 /* JSSDKViewController.h */,
+				EA74A0052AC15B92005A4810 /* JSSDKViewController.m */,
+			);
+			path = JSSDK;
+			sourceTree = "<group>";
+		};
 		EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */ = {
 			isa = PBXGroup;
 			children = (
+				EA74A0032AC15B7C005A4810 /* JSSDK */,
 				EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */,
 				EAD432A62ABC29ED00EEA69D /* AppDelegate.h */,
 				EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */,
@@ -209,6 +222,7 @@
 			buildConfigurationList = 6003F5C2195388D20070C39A /* Build configuration list for PBXNativeTarget "PortkeySDKExample_Tests" */;
 			buildPhases = (
 				7DF994007816945A3CAC8F1C /* [CP] Check Pods Manifest.lock */,
+				BF92CC8D09E3C76522815A53 /* [Expo] Configure project */,
 				6003F5AA195388D20070C39A /* Sources */,
 				6003F5AB195388D20070C39A /* Frameworks */,
 				6003F5AC195388D20070C39A /* Resources */,
@@ -387,6 +401,8 @@
 				"${BUILT_PRODUCTS_DIR}/Yoga/yoga.framework",
 				"${BUILT_PRODUCTS_DIR}/fmt/fmt.framework",
 				"${BUILT_PRODUCTS_DIR}/glog/glog.framework",
+				"${BUILT_PRODUCTS_DIR}/react-native-get-random-values/react_native_get_random_values.framework",
+				"${BUILT_PRODUCTS_DIR}/react-native-webview/react_native_webview.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -422,11 +438,32 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/yoga.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/fmt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/glog.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/react_native_get_random_values.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/react_native_webview.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		BF92CC8D09E3C76522815A53 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-PortkeySDKExample_Tests/expo-configure-project.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -437,6 +474,7 @@
 			files = (
 				EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */,
 				EAD432AE2ABC29ED00EEA69D /* main.m in Sources */,
+				EA74A0062AC15B92005A4810 /* JSSDKViewController.m in Sources */,
 				EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -614,8 +652,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PortkeySDKExample/PortkeySDKExample-Prefix.pch";
 				INFOPLIST_FILE = "PortkeySDKExample/PortkeySDKExample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MARKETING_VERSION = 1.0;
 				MODULE_NAME = ExampleApp;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "com.porrtkey.demo.AelfPortkey-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -634,8 +674,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PortkeySDKExample/PortkeySDKExample-Prefix.pch";
 				INFOPLIST_FILE = "PortkeySDKExample/PortkeySDKExample-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MARKETING_VERSION = 1.0;
 				MODULE_NAME = ExampleApp;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "com.porrtkey.demo.AelfPortkey-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -661,6 +703,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Tests/Tests-Info.plist";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
@@ -682,6 +725,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Tests/Tests-Prefix.pch";
 				INFOPLIST_FILE = "Tests/Tests-Info.plist";
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;

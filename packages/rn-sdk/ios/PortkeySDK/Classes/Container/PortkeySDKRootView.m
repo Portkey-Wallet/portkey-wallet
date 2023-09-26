@@ -7,7 +7,8 @@
 
 #import "PortkeySDKRootView.h"
 #import <React/React-Core-umbrella.h>
-#import "RCTBridge+ARNSDK.h"
+#import <PortkeySDK/PortkeySDKBundleUtil.h>
+#import <PortkeySDK/RCTBridge+ARNSDK.h>
 
 @interface PortkeySDKRootView () {
     RCTBridge *_bridge;
@@ -30,7 +31,7 @@
 - (instancetype)initWithFrame:(CGRect)frame moduleName:(NSString *)moduleName {
     self = [super initWithFrame:frame];
     if (self) {
-        _bridge = [[RCTBridge alloc] initWithBundleURL:[[self class] sourceURL] moduleProvider:nil launchOptions:nil];
+        _bridge = [[RCTBridge alloc] initWithBundleURL:[PortkeySDKBundleUtil sourceURL] moduleProvider:nil launchOptions:nil];
         self.rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:moduleName.length > 0 ? moduleName : @"Root" initialProperties:nil];
         [self addSubview:self.rootView];
     }
@@ -51,23 +52,6 @@
     
 //    NSData *data = [NSData dataWithContentsOfURL:sourceUrl];
     [_bridge.batchedBridge executeSourceCode:nil withSourceURL:sourceUrl sync:NO];
-}
-
-+ (NSURL *)bundleUrl {
-    NSString *bundlePath = [[NSBundle bundleForClass:[self class]].resourcePath
-                                stringByAppendingPathComponent:@"/JSBundle.bundle"];
-    NSBundle *resourceBundle = [NSBundle bundleWithPath:bundlePath];
-    NSURL *sourceUrl = [resourceBundle URLForResource:@"index.ios" withExtension:@"bundle"];
-    return sourceUrl;
-}
-
-+ (NSURL *)sourceURL
-{
-#if DEBUG
-    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
-#else
-    return [self bundleUrl];
-#endif
 }
 
 @end

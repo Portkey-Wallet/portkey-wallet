@@ -34,6 +34,7 @@ import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
+import { measurePageY } from 'utils/measure';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
@@ -141,12 +142,7 @@ const ChatDetailsPage = () => {
     async (event: GestureResponderEvent) => {
       const { pageY } = event.nativeEvent;
 
-      const top: number =
-        (await new Promise(_resolve => {
-          event.target.measure((x, y, width, height, pageX, topY) => {
-            _resolve(topY);
-          });
-        })) || 0;
+      const top = await measurePageY(event.target);
       ChatOverlay.showChatPopover({
         list: handleList,
         formatType: 'dynamicWidth',

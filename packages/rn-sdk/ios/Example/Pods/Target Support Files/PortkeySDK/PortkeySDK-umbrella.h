@@ -11,6 +11,7 @@
 #endif
 
 #import "PortkeySDKAelfModule.h"
+#import "PortkeySDKEventEmitter.h"
 #import "RCTBridge+ARNSDK.h"
 #import "PortkeySDKRNViewController.h"
 #import "PortkeySDKRootView.h"

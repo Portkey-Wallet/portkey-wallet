@@ -1,5 +1,5 @@
 import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
-import ContractModule from './sub-modules/contractModule';
+import ContractModule from './sub-modules/ContractModule';
 
 enum JSModuleIdentifier {
   CONTRACT_MODULE = 'ContractModule',

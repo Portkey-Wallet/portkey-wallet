@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
+- (void)callNativeCallbackWithEventId:(NSString *)eventId result:(NSString *)result;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -12,7 +12,6 @@ import { tokenBalanceSlice } from '@portkey-wallet/store/tokenBalance/slice';
 import settingsSlice from '@portkey-wallet/store/settings/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
-import switchSlice from '@portkey-wallet/store/store-ca/switch/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
@@ -50,7 +49,6 @@ const reduxPersistConfig = {
     recentSlice.name,
     assetsSlice.name,
     activitySlice.name,
-    switchSlice.name,
     dappSlice.name,
     cmsSlice.name,
     paymentSlice.name,

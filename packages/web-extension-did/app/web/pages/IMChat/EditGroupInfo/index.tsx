@@ -1,10 +1,11 @@
 import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelName } from '@portkey-wallet/hooks/hooks-ca/im';
-import { Button, Form, Input, Modal, message } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import './index.less';
 
 const { Item: FormItem } = Form;
@@ -50,13 +51,8 @@ export default function EditGroupInfo() {
     }
   }, [channelUuid, name, navigate, updateChannelName]);
   const handleDisband = useCallback(() => {
-    return Modal.confirm({
-      width: 320,
+    CustomModalConfirm({
       content: t('Are you sure to leave and delete this group?'),
-      className: 'disband-group-modal',
-      autoFocusButton: null,
-      icon: null,
-      centered: true,
       okText: t('Yes'),
       cancelText: t('No'),
       onOk: async () => {

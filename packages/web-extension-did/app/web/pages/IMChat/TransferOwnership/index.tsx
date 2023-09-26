@@ -5,10 +5,11 @@ import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { Button, Modal, message } from 'antd';
+import { Button, message } from 'antd';
 import { useGroupChannelInfo, useTransferChannelOwner } from '@portkey-wallet/hooks/hooks-ca/im';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { ISelectItemType } from '../components/ContactItemSelect';
+import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import './index.less';
 
 export default function TransferOwnership() {
@@ -52,13 +53,8 @@ export default function TransferOwnership() {
     500,
   );
   const handleTransfer = useCallback(() => {
-    return Modal.confirm({
-      width: 320,
+    CustomModalConfirm({
       content: t('Are you sure to transfer group ownership to others?'),
-      className: 'transfer-ownership-modal',
-      autoFocusButton: null,
-      icon: null,
-      centered: true,
       okText: t('Yes'),
       cancelText: t('No'),
       onOk: async () => {

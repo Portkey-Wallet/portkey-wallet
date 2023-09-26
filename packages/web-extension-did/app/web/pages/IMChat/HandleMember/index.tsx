@@ -5,12 +5,13 @@ import { useDebounceCallback } from '@portkey-wallet/hooks';
 import SettingHeader from 'pages/components/SettingHeader';
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { Button, Modal, message } from 'antd';
+import { Button, message } from 'antd';
 import { useAddChannelMembers, useGroupChannelInfo, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useChatContactFlatList } from '@portkey-wallet/hooks/hooks-ca/contact';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { ChannelMemberInfo } from '@portkey-wallet/im';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
+import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import './index.less';
 
 export default function HandleMember() {
@@ -114,13 +115,8 @@ export default function HandleMember() {
       }
       return false;
     } else {
-      return Modal.confirm({
-        width: 320,
+      return CustomModalConfirm({
         content: t('Remove these members from the group?'),
-        className: 'remove-group-modal',
-        autoFocusButton: null,
-        icon: null,
-        centered: true,
         okText: t('Yes'),
         cancelText: t('No'),
         onOk: async () => {

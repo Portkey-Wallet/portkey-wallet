@@ -27,14 +27,9 @@ const MyQRCode = () => {
     return navigate(-1);
   }, [navigate, pathname, state]);
   return isNotLessThan768 ? (
-    <MyQRCodePrompt
-      onBack={handleBack}
-      qrCodeValue={shareLink}
-      showName={walletName || 'Wallet 01'}
-      desc={qrCodeDesc}
-    />
+    <MyQRCodePrompt onBack={handleBack} qrCodeValue={shareLink} showName={walletName} desc={qrCodeDesc} />
   ) : (
-    <MyQRCodePopup onBack={handleBack} qrCodeValue={shareLink} showName={walletName || 'Wallet 01'} desc={qrCodeDesc} />
+    <MyQRCodePopup onBack={handleBack} qrCodeValue={shareLink} showName={walletName} desc={qrCodeDesc} />
   );
 };
 export default MyQRCode;

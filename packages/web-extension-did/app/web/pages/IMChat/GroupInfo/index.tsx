@@ -4,7 +4,7 @@ import {
   useRelationId,
   useSendChannelMessage,
 } from '@portkey-wallet/hooks/hooks-ca/im';
-import { Button, Modal, message } from 'antd';
+import { Button, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
@@ -17,6 +17,7 @@ import Copy from 'components/Copy';
 import ContactListDrawer from '../components/GroupShareDrawer';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { useLoading } from 'store/Provider/hooks';
+import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import './index.less';
 
 const GroupInfo = () => {
@@ -35,13 +36,8 @@ const GroupInfo = () => {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const handleLeaveGroup = useCallback(() => {
-    return Modal.confirm({
-      width: 320,
+    CustomModalConfirm({
       content: t('Are you sure to leave this group?'),
-      className: 'leave-group-modal',
-      autoFocusButton: null,
-      icon: null,
-      centered: true,
       okText: t('Yes'),
       cancelText: t('No'),
       onOk: async () => {

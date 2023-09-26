@@ -51,7 +51,11 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
       transItem = {
         key: `${item.createAt}`,
         id: `${item.createAt}`,
-        position: 'left',
+        title: item.fromName,
+        letter: item.fromName?.slice(0, 1)?.toUpperCase(),
+        from: item.from,
+        position: item.from === ownerRelationId ? 'right' : 'left',
+        showAvatar: item.from !== ownerRelationId && isGroup,
         date: item.createAt,
         type: 'text',
         subType: 'non-support-msg',

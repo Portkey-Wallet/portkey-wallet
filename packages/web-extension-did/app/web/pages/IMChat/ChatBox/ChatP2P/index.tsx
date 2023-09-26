@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
-import { Modal, message } from 'antd';
+import { message } from 'antd';
 import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
 import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useChannel, useIsStranger, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -19,6 +19,7 @@ import { useHandle } from '../useHandle';
 import ChatBoxHeader from '../components/ChatBoxHeader';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
+import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -41,13 +42,8 @@ export default function ChatBox() {
   const relationId = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!), [list, relationId]);
   const handleDelete = useCallback(() => {
-    return Modal.confirm({
-      width: 320,
+    CustomModalConfirm({
       content: t('Delete chat?'),
-      className: 'chat-delete-modal',
-      autoFocusButton: null,
-      icon: null,
-      centered: true,
       okText: t('Confirm'),
       cancelText: t('Cancel'),
       onOk: async () => {
@@ -139,11 +135,12 @@ export default function ChatBox() {
     ],
     [handleSendMsgError, sendImage],
   );
-  const hidePop = useCallback((e: any) => {
+  const hidePop = useCallback((e: Event) => {
     try {
-      const _t = e?.target?.className;
-      const isFunc = _t.includes instanceof Function;
-      if (isFunc && !_t.includes('chat-box-more')) {
+      const _target = e?.target as Element;
+      const _className = _target?.className;
+      const isFunc = _className.includes instanceof Function;
+      if (isFunc && !_className.includes('chat-box-more')) {
         setPopVisible(false);
       }
     } catch (e) {

@@ -120,7 +120,7 @@ export default function CustomToken() {
 
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['page-custom-token', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['page-custom-token', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper
           className="page-title"
           title={t('Custom Token')}
@@ -166,7 +166,7 @@ export default function CustomToken() {
             {t('Add')}
           </Button>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [

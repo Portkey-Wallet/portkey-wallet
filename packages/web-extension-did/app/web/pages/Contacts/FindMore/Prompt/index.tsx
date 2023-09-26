@@ -41,10 +41,10 @@ export default function FindMorePrompt({
         )}
       </div>
       <div className="find-more-body">
-        {(!contacts || contacts?.length === 0) && isSearch && (
+        {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && isSearch && (
           <div className="flex-center no-search-result">No Search Result</div>
         )}
-        {contacts &&
+        {Array.isArray(contacts) &&
           contacts?.length > 0 &&
           contacts.map((contact, idx) => {
             return (

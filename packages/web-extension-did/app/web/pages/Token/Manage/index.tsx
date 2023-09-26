@@ -212,7 +212,7 @@ export default function AddToken() {
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['add-token', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['add-token', isPrompt && 'detail-page-prompt'])}>
         <div className="add-token-top">
           <SettingHeader title={t('Add tokens')} leftCallBack={() => navigate('/')} rightElement={rightElement} />
           <DropdownSearch

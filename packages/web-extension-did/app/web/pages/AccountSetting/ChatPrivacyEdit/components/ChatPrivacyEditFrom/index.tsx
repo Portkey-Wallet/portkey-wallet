@@ -43,7 +43,7 @@ export default function ChatPrivacyEditFrom({
             key={'chat-privacy-edit-permission' + index}
             className={clsx([
               'chat-privacy-permission-item',
-              permissionSelected === item.value ? 'chat-privacy-permission-item-selected' : null,
+              permissionSelected === item.value && 'chat-privacy-permission-item-selected',
             ])}
             height={56}
             showEnterIcon={false}

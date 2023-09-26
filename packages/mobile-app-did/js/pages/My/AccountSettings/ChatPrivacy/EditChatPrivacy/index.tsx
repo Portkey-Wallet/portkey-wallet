@@ -54,7 +54,7 @@ const EditChatPrivacy: React.FC = () => {
                   permission: value,
                 });
 
-                sleep(1000);
+                await sleep(1000);
                 setPermission(value);
               } catch (error) {
                 CommonToast.failError(error);

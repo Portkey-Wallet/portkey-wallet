@@ -229,7 +229,7 @@ export const useEditIMContact = () => {
             network: networkType,
             channelId: channel.channelUuid,
             value: {
-              displayName: result.name || result.caHolderInfo?.walletName || '',
+              displayName: result.name || result.caHolderInfo?.walletName || result.imInfo?.name || '',
             },
           }),
         );

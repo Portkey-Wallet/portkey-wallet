@@ -37,11 +37,10 @@ export default memo(
     const iconDom = useMemo(() => {
       let iconName: IconName | undefined;
       if (multiple) {
-        iconName = selected ? 'selected' : 'unselected';
+        iconName = disabled || selected ? 'selected' : 'unselected';
       } else {
-        iconName = selected ? 'selected' : undefined;
+        iconName = disabled || selected ? 'selected' : undefined;
       }
-      if (disabled) iconName = 'selected';
 
       return iconName ? (
         <Svg iconStyle={styles.itemIcon} color={disabled ? defaultColors.bg16 : undefined} icon={iconName} />

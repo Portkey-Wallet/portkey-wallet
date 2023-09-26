@@ -29,7 +29,6 @@ const RemoveMembersPage = () => {
   const debounceKeyword = useDebounce(keyword, 200);
   const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
-
   const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
 
   const onRemove = useCallback(() => {
@@ -60,19 +59,15 @@ const RemoveMembersPage = () => {
   }, [removeMembers, selectedMemberMap]);
 
   useEffect(() => {
-    try {
-      setFilterMembers(() => {
-        let result = [];
-        if (debounceKeyword) {
-          result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
-        } else {
-          result = rawMemberList.filter(ele => !ele.isAdmin);
-        }
-        return result;
-      });
-    } catch (error) {
-      CommonToast.failError(error);
-    }
+    setFilterMembers(() => {
+      let result = [];
+      if (debounceKeyword) {
+        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
+      } else {
+        result = rawMemberList.filter(ele => !ele.isAdmin);
+      }
+      return result;
+    });
   }, [debounceKeyword, rawMemberList]);
 
   useEffectOnce(() => {

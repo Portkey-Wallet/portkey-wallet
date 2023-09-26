@@ -56,9 +56,8 @@ const AddMembersPage = () => {
     try {
       const { contactFilterList } = searchContactList(debounceKeyword, ContactsTab.Chats);
       setFilterMemberList(contactFilterList);
-      console.log('contactFilterList', contactFilterList);
     } catch (error) {
-      CommonToast.failError(error);
+      console.log(error);
     }
   }, [debounceKeyword, members, searchContactList]);
 

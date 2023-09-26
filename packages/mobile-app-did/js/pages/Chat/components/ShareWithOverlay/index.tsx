@@ -48,7 +48,7 @@ function ShareWith(props: { linkContent: string }) {
       setFilterMemberList(contactFilterList);
       console.log('contactFilterList', contactFilterList);
     } catch (error) {
-      CommonToast.failError(error);
+      console.log(error);
     }
   }, [keyword, searchContactList]);
 

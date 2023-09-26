@@ -14,9 +14,10 @@ function ChatMessageContainer(
 ) {
   const { previousMessage, currentMessage } = props;
 
-  const isMarginTop8 = useMemo(() => {
-    if (previousMessage?.user && previousMessage?.user._id === currentMessage?.user._id) return true;
-  }, [currentMessage?.user, previousMessage?.user]);
+  const isMarginTop8 = useMemo(
+    () => previousMessage?.user && previousMessage?.user._id === currentMessage?.user._id,
+    [currentMessage?.user, previousMessage?.user],
+  );
 
   return (
     <Touchable activeOpacity={1} onPress={props.onDismiss}>

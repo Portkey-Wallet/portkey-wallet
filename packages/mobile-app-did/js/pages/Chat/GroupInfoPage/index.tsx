@@ -102,6 +102,7 @@ const GroupInfoPage = () => {
   return (
     <PageContainer
       hideTouchable
+      leftCallback={() => navigationService.goBack()}
       titleDom="Group Info"
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}

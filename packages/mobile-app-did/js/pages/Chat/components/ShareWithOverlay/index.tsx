@@ -14,6 +14,7 @@ import myEvents from 'utils/deviceEvent';
 import navigationService from 'utils/navigationService';
 import Loading from 'components/Loading';
 import { useSendChannelMessage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
 
 function ShareWith(props: { linkContent: string }) {
   const { linkContent } = props;
@@ -23,22 +24,8 @@ function ShareWith(props: { linkContent: string }) {
 
   const searchContactList = useLocalContactSearch();
   const [filterMemberList, setFilterMemberList] = useState<ContactItemType[]>([]);
-  const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, GroupMemberItemType>>(new Map());
 
-  const onPressItem = useCallback((id: string, item?: GroupMemberItemType) => {
-    if (!item) return;
-    setSelectedMemberMap(pre => {
-      if (pre.has(id)) {
-        const newMap = new Map(pre);
-        newMap.delete(id);
-        return newMap;
-      } else {
-        const newMap = new Map(pre);
-        newMap.set(id, item);
-        return newMap;
-      }
-    });
-  }, []);
+  const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
 
   const onPressShare = useCallback(async () => {
     try {

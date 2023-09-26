@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import GroupMemberItem from '../components/GroupMemberItem';
+import GroupMemberItem, { GroupMemberItemType } from '../components/GroupMemberItem';
 import CommonInput from 'components/CommonInput';
 import useDebounce from 'hooks/useDebounce';
 import CommonToast from 'components/CommonToast';
@@ -13,11 +13,11 @@ import { useCurrentChannelId } from '../context/hooks';
 import { useGroupChannelInfo, useRemoveChannelMembers } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
 import NoData from 'components/NoData';
-import { BGStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { strIncludes } from '@portkey-wallet/utils';
+import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
 
 const RemoveMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -30,21 +30,7 @@ const RemoveMembersPage = () => {
   const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
-  const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, string>>(new Map());
-
-  const onPressItem = useCallback((id: string) => {
-    setSelectedMemberMap(pre => {
-      if (pre.has(id)) {
-        const newMap = new Map(pre);
-        newMap.delete(id);
-        return newMap;
-      } else {
-        const newMap = new Map(pre);
-        newMap.set(id, id);
-        return newMap;
-      }
-    });
-  }, []);
+  const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
 
   const onRemove = useCallback(() => {
     ActionSheet.alert({

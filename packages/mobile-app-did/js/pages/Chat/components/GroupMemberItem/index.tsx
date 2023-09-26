@@ -19,7 +19,7 @@ type GroupMemberItemPropsType = {
   wrapStyle?: StyleProp<ViewStyle>;
   innerWrapStyle?: StyleProp<ViewStyle>;
   disabled?: boolean;
-  onPress?: (id: string, item?: GroupMemberItemType, selected?: boolean) => void;
+  onPress?: (id: string, item: GroupMemberItemType, selected?: boolean) => void;
 };
 
 export default memo(

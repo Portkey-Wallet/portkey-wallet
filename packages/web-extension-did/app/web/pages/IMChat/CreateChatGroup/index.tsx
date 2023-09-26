@@ -10,6 +10,7 @@ import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import CustomSvg from 'components/CustomSvg';
 
 const { Item: FormItem } = Form;
 
@@ -116,7 +117,11 @@ export default function CreateChatGroup() {
   return (
     <div className="create-chat-group">
       <div className="create-chat-top">
-        <SettingHeader title={t('Create Group')} leftCallBack={() => navigate(-1)} />
+        <SettingHeader
+          title={t('Create Group')}
+          leftCallBack={() => navigate(-1)}
+          rightElement={<CustomSvg type="Close2" onClick={() => navigate(-1)} />}
+        />
       </div>
       <div className="create-chat-body">
         <Form

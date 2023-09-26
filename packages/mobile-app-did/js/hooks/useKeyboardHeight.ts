@@ -1,5 +1,4 @@
 import { useLatestRef } from '@portkey-wallet/hooks';
-import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { isIOS } from '@rneui/base';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { KeyboardEvent } from 'react-native';
@@ -48,7 +47,7 @@ export function useKeyboard(topSpacing = 0) {
   const show: KeyboardEventListener = useCallback(
     event => {
       if (!KeyboardOpenedRef.current || isIOS) {
-        setKeyboardHeight(isIOS ? event.endCoordinates.height : windowHeight - event.endCoordinates.screenY);
+        setKeyboardHeight(event.endCoordinates.height);
       }
       setIsKeyboardOpened(true);
     },

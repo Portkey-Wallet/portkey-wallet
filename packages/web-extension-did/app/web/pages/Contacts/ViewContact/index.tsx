@@ -104,20 +104,31 @@ export default function ViewContact() {
   }, [contactInfo, data.imInfo?.portkeyId, genLoginAccountMap, isMyContactFn, relationId, state, state.id]);
 
   const goBack = useCallback(() => {
-    if (state?.from === 'new-chat') {
-      navigate('/new-chat', { state });
-    } else if (state?.from === 'chat-box') {
-      navigate(`/chat-box/${state?.channelUuid}`);
-    } else if (state?.from === 'chat-box-group') {
-      navigate(`/chat-box-group/${state?.channelUuid}`);
-    } else if (state?.from === 'chat-group-info') {
-      navigate(`/chat-group-info/${state?.channelUuid}`);
-    } else if (data?.from === 'chat-member-list') {
-      navigate(`/chat-group-info/${state?.channelUuid}/member-list`, { state });
-    } else {
-      navigate('/setting/contacts');
+    switch (state?.from) {
+      case 'new-chat':
+        navigate('/new-chat', { state });
+        break;
+      case 'chat-box':
+        navigate(`/chat-box/${state?.channelUuid}`);
+        break;
+      case 'chat-box-group':
+        navigate(`/chat-box-group/${state?.channelUuid}`);
+        break;
+      case 'chat-group-info':
+        navigate(`/chat-group-info/${state?.channelUuid}`);
+        break;
+      case 'chat-member-list':
+        navigate(`/chat-group-info/${state?.channelUuid}/member-list`, { state });
+        break;
+      case 'contact-list':
+        navigate('/setting/contacts');
+        break;
+
+      default:
+        navigate(-1);
+        break;
     }
-  }, [data?.from, navigate, state]);
+  }, [navigate, state]);
 
   const handleEdit = useGoProfileEdit();
   const handleChat = useProfileChat();

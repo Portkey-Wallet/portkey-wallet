@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: pTd(20),
     height: pTd(72) - StyleSheet.hairlineWidth,
-    borderBottomColor: defaultColors.border1,
+    borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
     marginBottom: StyleSheet.hairlineWidth,
   },

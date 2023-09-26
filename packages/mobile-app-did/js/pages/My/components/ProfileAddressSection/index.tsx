@@ -50,7 +50,9 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
       {addressList?.map((ele, index) => (
-        <View key={index} style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap]}>
+        <View
+          key={index}
+          style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap, index !== 0 && GStyles.marginTop(8)]}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
             <TextM style={styles.address}>
               {formatStr2EllipsisStr(
@@ -89,7 +91,6 @@ const styles = StyleSheet.create({
   itemWrap: {
     padding: pTd(16),
     borderRadius: pTd(6),
-    marginBottom: pTd(8),
   },
   content: {
     marginBottom: pTd(8),

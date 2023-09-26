@@ -36,6 +36,7 @@ import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
+import MyQRCode from 'pages/MyQRCode';
 import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
 import Buy from 'pages/Buy';
@@ -51,6 +52,8 @@ import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
 import DappAutoTx from 'pages/DappAutoTx';
 import FindMore from 'pages/Contacts/FindMore';
+import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
+import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -208,6 +211,10 @@ export const PageRouter = () => {
               path: '/setting/wallet/about-us',
               element: <AboutUs />,
             },
+            {
+              path: '/setting/wallet/qrcode',
+              element: <MyQRCode />,
+            },
           ],
         },
         {
@@ -226,6 +233,10 @@ export const PageRouter = () => {
               path: '/setting/contacts/find-more',
               element: <FindMore />,
             },
+            {
+              path: '/setting/contacts/qrcode',
+              element: <MyQRCode />,
+            },
           ],
         },
         {
@@ -239,6 +250,14 @@ export const PageRouter = () => {
             {
               path: '/setting/account-setting/set-new-pin',
               element: <SetNewPin />,
+            },
+            {
+              path: '/setting/account-setting/chat-privacy',
+              element: <ChatPrivacy />,
+            },
+            {
+              path: '/setting/account-setting/chat-privacy-edit',
+              element: <ChatPrivacyEdit />,
             },
           ],
         },
@@ -351,6 +370,10 @@ export const PageRouter = () => {
       element: <AboutUs />,
     },
     {
+      path: '/setting/wallet/qrcode',
+      element: <MyQRCode />,
+    },
+    {
       path: '/setting/contacts',
       element: <Contacts />,
     },
@@ -367,6 +390,10 @@ export const PageRouter = () => {
       element: <FindMore />,
     },
     {
+      path: '/setting/contacts/qrcode',
+      element: <MyQRCode />,
+    },
+    {
       path: '/setting/account-setting',
       element: <AccountSetting />,
     },
@@ -377,6 +404,14 @@ export const PageRouter = () => {
     {
       path: '/setting/account-setting/set-new-pin',
       element: <SetNewPin />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy',
+      element: <ChatPrivacy />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy-edit',
+      element: <ChatPrivacyEdit />,
     },
     {
       path: '/setting/wallet-security',

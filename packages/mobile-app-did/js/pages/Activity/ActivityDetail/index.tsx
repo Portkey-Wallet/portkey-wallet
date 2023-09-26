@@ -28,6 +28,7 @@ import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import CommonAvatar from 'components/CommonAvatar';
 
 const ActivityDetail = () => {
   const { t } = useLanguage();
@@ -191,7 +192,7 @@ const ActivityDetail = () => {
           <>
             <View style={styles.topWrap}>
               {activityItem?.nftInfo?.imageUrl ? (
-                <Image resizeMode={'contain'} style={styles.img} source={{ uri: activityItem?.nftInfo?.imageUrl }} />
+                <CommonAvatar imageUrl={activityItem?.nftInfo?.imageUrl} style={styles.img} />
               ) : (
                 <Text style={styles.noImg}>{activityItem?.nftInfo?.alias?.slice(0, 1)}</Text>
               )}

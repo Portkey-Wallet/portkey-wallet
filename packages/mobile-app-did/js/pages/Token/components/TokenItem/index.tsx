@@ -2,16 +2,17 @@ import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextL, TextS } from 'components/CommonText';
 import { pTd } from 'utils/unit';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import CommonSwitch from 'components/CommonSwitch';
 import CommonAvatar from 'components/CommonAvatar';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { NetworkType } from '@portkey-wallet/types';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 type TokenItemProps = {
   networkType: NetworkType;
@@ -22,6 +23,9 @@ type TokenItemProps = {
 const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
   const symbolImages = useSymbolImages();
   const defaultToken = useDefaultToken();
+  const isTestnet = useIsTestnet();
+
+  const aelfIconName = useMemo<IconName>(() => (isTestnet ? 'testnet' : 'mainnet'), [isTestnet]);
 
   return (
     <TouchableOpacity style={itemStyle.wrap} key={`${item.symbol}${item.address}${item.chainId}}`}>
@@ -29,7 +33,7 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
         hasBorder
         shapeType="circular"
         title={item.symbol}
-        svgName={item.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
+        svgName={item.symbol === defaultToken.symbol ? aelfIconName : undefined}
         imageUrl={symbolImages[item.symbol]}
         avatarSize={pTd(48)}
         style={itemStyle.left}

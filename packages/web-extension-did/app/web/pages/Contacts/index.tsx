@@ -72,7 +72,7 @@ export default function Contacts() {
   }, [curList]);
 
   const { isNotLessThan768 } = useCommonState();
-  const searchPlaceholder = showChat ? 'Wallet Name/Remark/Portkey ID/Address' : 'Name or Address';
+  const searchPlaceholder = showChat ? 'Name/address/Portkey ID' : 'Name/address';
   const title = t('Contacts');
   const addText = t('Add contact');
 

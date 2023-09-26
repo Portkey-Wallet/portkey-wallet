@@ -13,9 +13,12 @@ import { expandQrData } from '@portkey-wallet/utils/qrCode';
 import { useDiscoverJumpWithNetWork } from './discover';
 import { InvalidQRCodeText, RouteInfoType, handleQRCodeData, invalidQRCode } from 'utils/qrcode';
 import { useNavigation } from '@react-navigation/native';
-import { checkAddContactUrl, getIDByAddContactUrl } from 'utils/scheme';
+import { parseLinkPortkeyUrl } from 'utils/scheme';
 import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
+import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useJumpToChatGroupDetails } from './chat';
+import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
 
 export const useQrScanPermission = (): [boolean, () => Promise<boolean>] => {
   const [hasPermission, setHasPermission] = useState<any>(null);
@@ -65,7 +68,37 @@ export const useQrScanPermissionAndToast = () => {
   }, [requirePermission, showDialog]);
 };
 
-export const useHandlePortkeyUrl = () => {
+export const useHandleGroupId = () => {
+  const isChatShow = useIsChatShow();
+  const joinGroup = useJoinGroupChannel();
+  const jumpToGroup = useJumpToChatGroupDetails();
+
+  return useCallback(
+    async (params: { channelId: string; showLoading?: boolean; goBack?: boolean }) => {
+      const { channelId, showLoading = true, goBack = false } = params;
+      if (!isChatShow) return CommonToast.fail(InvalidQRCodeText.INVALID_QR_CODE);
+      try {
+        if (showLoading) Loading.show();
+        await joinGroup(channelId);
+        if (goBack) navigationService.goBack();
+        jumpToGroup({ channelUuid: channelId || '' });
+      } catch (error: any) {
+        console.log('error', error);
+        if (error.code === ALREADY_JOINED_GROUP_CODE) {
+          if (goBack) navigationService.goBack();
+          return jumpToGroup({ channelUuid: channelId || '' });
+        } else {
+          CommonToast.fail("This group doesn't exist. Please check the Portkey group ID/QR code before you try again.");
+        }
+      } finally {
+        if (showLoading) Loading.hide();
+      }
+    },
+    [isChatShow, joinGroup, jumpToGroup],
+  );
+};
+
+export const useHandlePortkeyId = () => {
   const isChatShow = useIsChatShow();
   const { userId } = useWallet();
 
@@ -104,17 +137,18 @@ export const useHandlePortkeyUrl = () => {
 };
 
 export const useHandleUrl = () => {
-  const handlePortkeyUrl = useHandlePortkeyUrl();
+  const handlePortkeyId = useHandlePortkeyId();
+  const handleGroupId = useHandleGroupId();
   const jumpToWebview = useDiscoverJumpWithNetWork();
 
   return useCallback(
     async (data: string) => {
       const str = data.replace(/("|'|\s)/g, '');
 
-      if (checkAddContactUrl(str)) {
-        const portkeyId = getIDByAddContactUrl(str);
-        return handlePortkeyUrl({ portkeyId: portkeyId || '', showLoading: true, goBack: true });
-      }
+      const { id, type } = parseLinkPortkeyUrl(str);
+
+      if (type === 'addContact' && id) return handlePortkeyId({ portkeyId: id || '', showLoading: true, goBack: true });
+      if (type === 'addGroup') return handleGroupId({ channelId: id, showLoading: true, goBack: true });
 
       jumpToWebview({
         item: {
@@ -124,7 +158,7 @@ export const useHandleUrl = () => {
       });
       return navigationService.goBack();
     },
-    [handlePortkeyUrl, jumpToWebview],
+    [handleGroupId, handlePortkeyId, jumpToWebview],
   );
 };
 

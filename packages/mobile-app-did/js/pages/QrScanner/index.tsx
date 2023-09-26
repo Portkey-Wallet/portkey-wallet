@@ -64,10 +64,14 @@ const QrScanner: React.FC<QrScannerProps> = () => {
   );
 
   const selectImage = async () => {
-    const result = (await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: false,
-    })) as unknown as { uri: string };
+      allowsMultipleSelection: false,
+      quality: 1,
+    });
+
+    if (result.cancelled || !result.uri) return;
 
     if (result && result?.uri) {
       const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);

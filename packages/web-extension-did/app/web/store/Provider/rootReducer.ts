@@ -36,6 +36,7 @@ import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import { imSlice } from '@portkey-wallet/store/store-ca/im/slice';
+import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 
 export const tokenReducer = persistReducer(tokenPersistConfig, tokenSlice.reducer);
 export const assetReducer = persistReducer(assetPersistConfig, assetsSlice.reducer);
@@ -74,6 +75,7 @@ const rootReducer = customCombineReducers({
   [discoverSlice.name]: discoverReducer,
   [txFeeSlice.name]: txFeeReducer,
   [imSlice.name]: imReducer,
+  [securitySlice.name]: securitySlice.reducer,
 });
 
 export default rootReducer;

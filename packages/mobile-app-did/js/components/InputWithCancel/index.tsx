@@ -13,7 +13,7 @@ type InputWithCancelPropsType = CommonInputProps & {
   onCancel: () => void;
 };
 
-const InputWithCancel = (props: InputWithCancelPropsType) => {
+const InputWithCancel = React.forwardRef(function InputWithCancel(props: InputWithCancelPropsType, ref) {
   const { value, clearText, onCancel } = props;
   const { t } = useLanguage();
 
@@ -33,13 +33,14 @@ const InputWithCancel = (props: InputWithCancelPropsType) => {
         rightIconContainerStyle={styles.rightIconContainerStyle}
         style={styles.rnInputStyle}
         {...props}
+        ref={ref}
       />
       <TouchableOpacity onPress={onCancel}>
         <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
       </TouchableOpacity>
     </View>
   );
-};
+});
 
 export default InputWithCancel;
 

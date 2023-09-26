@@ -235,7 +235,7 @@ export default function Preview() {
             {t('Go to AlchemyPay')}
           </Button>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     ),
     [

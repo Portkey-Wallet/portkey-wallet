@@ -534,7 +534,7 @@ export default function Buy() {
             {t('Next')}
           </Button>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     ),
     [

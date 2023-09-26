@@ -1,10 +1,10 @@
 import im, { utils, MessageType, Message, TriggerMessageEventActionEnum, ChannelStatusEnum } from '@portkey-wallet/im';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { randomId } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 import { useCurrentNetworkInfo } from '../network';
-import { useAppCommonDispatch, useLatestRef } from '../../index';
+import useEffectOnce, { useAppCommonDispatch, useLatestRef } from '../../index';
 import {
   removeChannel,
   updateChannelAttribute,
@@ -21,6 +21,7 @@ import { useContactRelationIdMap } from '../contact';
 import { request } from '@portkey-wallet/api/api-did';
 import { useWallet } from '../wallet';
 import { IMServiceCommon, SendMessageResult } from '@portkey-wallet/im/types/service';
+import useLockCallback from '../../useLockCallback';
 
 export type ImageMessageFileType = {
   body: string | File;
@@ -309,16 +310,12 @@ export const useChannelMessageList = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
   const list = useCurrentChannelMessageList(channelId);
   const listRef = useLatestRef(list);
-  const isNextLoadingRef = useRef(false);
   const [loading, setLoading] = useState(false);
   const [hasNext, setHasNext] = useState(true);
   const dispatch = useAppCommonDispatch();
 
-  const next = useCallback(
+  const next = useLockCallback(
     async (isInit = false) => {
-      if (isNextLoadingRef.current) return;
-      isNextLoadingRef.current = true;
-
       let maxCreateAt = Date.now();
       if (!isInit) {
         const list = listRef.current;
@@ -372,7 +369,6 @@ export const useChannelMessageList = (channelId: string) => {
         throw error;
       } finally {
         setLoading(false);
-        isNextLoadingRef.current = false;
       }
     },
     [channelId, dispatch, listRef, networkType],
@@ -455,7 +451,7 @@ export const useChannel = (channelId: string) => {
   const updateListRef = useRef(updateList);
   updateListRef.current = updateList;
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
       updateListRef.current(e);
     });
@@ -484,8 +480,7 @@ export const useChannel = (channelId: string) => {
         });
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const mute = useCallback(async (value: boolean) => muteChannel(channelId, value, false), [channelId, muteChannel]);
 

@@ -1,5 +1,5 @@
 import im, { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { CHANNEL_LIST_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
@@ -13,6 +13,7 @@ import {
   updateChannelAttribute,
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useIMChannelListNetMapState, useIMHasNextNetMapState } from '.';
+import useLockCallback from '../../useLockCallback';
 
 export const useNextChannelList = () => {
   const channelListNetMap = useIMChannelListNetMapState();
@@ -27,12 +28,8 @@ export const useNextChannelList = () => {
     [hasNextNetMap, networkType],
   );
 
-  const isLoadingRef = useRef(false);
-  const next = useCallback(
+  const next = useLockCallback(
     async (isInit = false) => {
-      if (isLoadingRef.current) return;
-      isLoadingRef.current = true;
-
       const lastCursor = isInit ? '' : channelList?.cursor || '';
       try {
         const result = await im.service.getChannelList({
@@ -75,8 +72,6 @@ export const useNextChannelList = () => {
       } catch (error) {
         console.log('next: error', error);
         throw error;
-      } finally {
-        isLoadingRef.current = false;
       }
     },
     [channelList?.cursor, dispatch, networkType],

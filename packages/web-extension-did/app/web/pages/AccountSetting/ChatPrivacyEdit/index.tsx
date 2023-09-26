@@ -48,7 +48,7 @@ export default function ChatPrivacyEdit() {
           try {
             setLoading(true);
             await update({ ...state, permission: id });
-            sleep(1000);
+            await sleep(1000);
             setPermissionSelected(id);
             setLoading(false);
           } catch (error) {

@@ -9,11 +9,12 @@
 #import "ViewController.h"
 #import <PortkeySDK/PortkeySDKRootView.h>
 #import "JSSDKViewController.h"
+#import <PortkeySDK/PortkeySDKRouterModule.h>
 
 @interface ViewController ()
 
-//@property (nonatomic, strong) PortkeySDKRootView *rnRootView;
 @property (nonatomic, strong) UIButton *jssdkButton;
+@property (nonatomic, strong) UIButton *loginButton;
 
 @end
 
@@ -25,14 +26,17 @@
     self.title = @"Hello Portkey";
     
     CGSize screenSize = UIScreen.mainScreen.bounds.size;
-//    self.rnRootView = [[PortkeySDKRootView alloc] initWithModuleName:@"test"];
-//    self.rnRootView.frame = CGRectMake(0, 0, size.width, size.height);
-//    [self.view addSubview:self.rnRootView];
+    
     CGRect jssdkButtonRect = CGRectZero;
     jssdkButtonRect.size = [self buttonSize];
     jssdkButtonRect.origin = CGPointMake((screenSize.width - [self buttonSize].width) / 2, 150);
     self.jssdkButton.frame = jssdkButtonRect;
     [self.view addSubview:self.jssdkButton];
+    
+    CGRect loginButtonRect = jssdkButtonRect;
+    loginButtonRect.origin = CGPointMake((screenSize.width - [self buttonSize].width) / 2, 250);
+    self.loginButton.frame = loginButtonRect;
+    [self.view addSubview:self.loginButton];
 }
 
 - (void)didReceiveMemoryWarning
@@ -48,6 +52,10 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+- (void)loginButtonClicked:(id)sender {
+    [[PortkeySDKRouterModule sharedInstance] navigationTo:@"test" targetScene:@""];
+}
+
 #pragma mark - Getter
 
 - (UIButton *)jssdkButton {
@@ -60,6 +68,18 @@
         [_jssdkButton addTarget:self action:@selector(jssdkButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _jssdkButton;
+}
+
+- (UIButton *)loginButton {
+    if (!_loginButton) {
+        _loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        _loginButton.layer.cornerRadius = 8;
+        [_loginButton setTitle:@"Login" forState:UIControlStateNormal];
+        _loginButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
+        [_loginButton setBackgroundColor:[UIColor greenColor]];
+        [_loginButton addTarget:self action:@selector(loginButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _loginButton;
 }
 
 - (CGSize)buttonSize {

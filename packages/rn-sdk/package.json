@@ -14,6 +14,7 @@
     "react-native": "^0.72.4",
     "react-native-get-random-values": "^1.9.0",
     "react-native-gradle-plugin": "^0.71.19",
+    "react-native-mmkv": "^2.10.2",
     "react-native-webview": "^13.6.0"
   },
   "scripts": {

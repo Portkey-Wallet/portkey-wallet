@@ -16,6 +16,10 @@ RCT_EXPORT_MODULE(NativeWrapperModule);
     return @{ @"platformName": @"ios" };
 }
 
++ (BOOL)requiresMainQueueSetup {
+    return NO;
+}
+
 RCT_EXPORT_METHOD(onError:(NSString *)from errMsg:(NSString *)errMsg data:(id)data)
 {
     

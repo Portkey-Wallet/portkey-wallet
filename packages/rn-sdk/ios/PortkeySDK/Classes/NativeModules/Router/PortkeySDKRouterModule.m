@@ -10,6 +10,15 @@
 
 @implementation PortkeySDKRouterModule
 
++ (instancetype)sharedInstance {
+    static PortkeySDKRouterModule *instance = nil;
+    static dispatch_once_t token;
+    dispatch_once(&token, ^{
+        instance = [PortkeySDKRouterModule new];
+    });
+    return instance;
+}
+
 RCT_EXPORT_MODULE(RouterModule);
 
 RCT_EXPORT_METHOD(navigationTo:(NSString *)entry targetScene:(NSString *)targetScene)

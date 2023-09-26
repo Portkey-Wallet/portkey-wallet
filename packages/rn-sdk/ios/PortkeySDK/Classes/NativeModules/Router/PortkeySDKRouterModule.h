@@ -12,6 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PortkeySDKRouterModule : NSObject <RCTBridgeModule>
 
++ (instancetype)sharedInstance;
+
+- (void)navigationTo:(NSString *)entry targetScene:(NSString *)targetScene;
+
 @end
 
 NS_ASSUME_NONNULL_END

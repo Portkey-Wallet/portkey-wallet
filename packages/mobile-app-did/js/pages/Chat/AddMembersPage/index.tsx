@@ -35,15 +35,9 @@ const AddMembersPage = () => {
   const onPressItem = useCallback((id: string, item?: GroupMemberItemType) => {
     if (!item) return;
     setSelectedMemberMap(pre => {
-      if (pre.has(id)) {
-        const newMap = new Map(pre);
-        newMap.delete(id);
-        return newMap;
-      } else {
-        const newMap = new Map(pre);
-        newMap.set(id, item);
-        return newMap;
-      }
+      const newMap = new Map(pre);
+      pre.has(id) ? newMap.delete(id) : newMap.set(id, item);
+      return newMap;
     });
   }, []);
 

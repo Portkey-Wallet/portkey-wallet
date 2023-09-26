@@ -28,6 +28,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("Boolean", "IS_DEBUG", "false")
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("Boolean", "IS_DEBUG", "true")
         }
     }
     compileOptions {
@@ -36,6 +42,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    buildFeatures {
+        buildConfig true
     }
 }
 
@@ -51,6 +60,8 @@ dependencies {
     // Other dependencies here
     implementation "com.facebook.react:react-android:0.72.4"
     implementation "com.facebook.react:hermes-android:0.72.4"
+
+    implementation "com.google.code.gson:gson:2.8.8"
 
 }
 

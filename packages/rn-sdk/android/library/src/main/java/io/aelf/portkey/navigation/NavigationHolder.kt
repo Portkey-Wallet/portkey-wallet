@@ -2,6 +2,7 @@ package io.aelf.portkey.navigation
 
 import android.content.Intent
 import com.facebook.react.bridge.Callback
+import com.facebook.react.bridge.CatalystInstance
 import io.aelf.portkey.activities.BasePortkeyReactActivity
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import java.lang.ref.WeakReference
@@ -12,12 +13,17 @@ internal object NavigationHolder {
     private val callbackMap: MutableMap<String, Callback> = mutableMapOf()
     internal var lastCachedIntent: Intent? = null
 
+
     fun pushNewComponent(activity: BasePortkeyReactActivity) {
         navigationMap[activity.registerEntryName()] = WeakReference(activity)
     }
 
     fun registerNavigationCallback(callbackId: String, callback: Callback) {
         callbackMap[callbackId] = callback
+    }
+
+    fun setCatalystInstance(instance: CatalystInstance) {
+
     }
 
     @Synchronized

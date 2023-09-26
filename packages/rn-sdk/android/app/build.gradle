@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'io.aelf.show_demo'
+    namespace 'io.aelf.portkey'
     compileSdk 33
 
     defaultConfig {
-        applicationId "io.aelf.show_demo"
+        applicationId "io.aelf.portkey"
         minSdk 28
         targetSdk 33
         versionCode 1
@@ -28,6 +28,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("Boolean", "IS_DEBUG", "false")
+        }
+        debug{
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("Boolean", "IS_DEBUG", "true")
         }
     }
     compileOptions {
@@ -39,6 +45,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.4.3'

@@ -39,4 +39,5 @@ export interface NativeWrapperModule {
   onFatalError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
   onWarning: (from: string, warnMsg: string) => void;
   getPlatformName: () => string;
+  emitJSMethodResult: (eventId: string, result: string) => void;
 }

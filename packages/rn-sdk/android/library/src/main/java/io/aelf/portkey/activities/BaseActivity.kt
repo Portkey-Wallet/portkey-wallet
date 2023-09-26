@@ -29,6 +29,10 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         NavigationHolder.pushNewComponent(this)
     }
 
+    private fun executeJSMethod() {
+
+    }
+
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {
         val componentName =

@@ -17,6 +17,7 @@ import CustomModal from 'pages/components/CustomModal';
 import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -126,7 +127,7 @@ export default function ChatBox() {
   );
   const handleSendMsgError = useCallback(
     (e: any) => {
-      if (`${e.code}` === '13108') {
+      if (`${e.code}` === NO_LONGER_IN_GROUP) {
         hideChannel(`${channelUuid}`, true);
         CustomModal({
           content: `You can't send messages to this group because you are no longer in it.`,

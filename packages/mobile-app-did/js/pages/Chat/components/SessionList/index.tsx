@@ -16,6 +16,7 @@ import Touchable from 'components/Touchable';
 import myEvents from 'utils/deviceEvent';
 import GStyles from 'assets/theme/GStyles';
 import ActionSheet from 'components/ActionSheet';
+import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 
 export default function SessionList() {
   const {
@@ -79,7 +80,7 @@ export default function SessionList() {
                 await pinChannel(item.channelUuid, !item.pin);
               } catch (error: any) {
                 console.log(error);
-                if (error.code === '13310') return CommonToast.fail('Pin limit exceeded');
+                if (error.code === PIN_LIMIT_EXCEED) return CommonToast.fail('Pin limit exceeded');
                 CommonToast.fail(`Failed to ${item.pin ? 'unpin' : 'pin'} chat`);
               }
             },

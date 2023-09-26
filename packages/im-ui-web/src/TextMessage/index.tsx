@@ -7,6 +7,7 @@ import { ITextMessageProps } from '../type';
 import { formatTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import CustomSvg from '../components/CustomSvg';
+import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import './index.less';
 
 const TextMessage: React.FC<ITextMessageProps> = (props) => {
@@ -57,7 +58,7 @@ const TextMessage: React.FC<ITextMessageProps> = (props) => {
         <div className={clsx(['text-body', 'flex', props.position])}>
           <div className="text-text">
             <span className="non-support-msg" onClick={props.onClickUnSupportMsg}>
-              [Unsupported format]
+              {UN_SUPPORTED_FORMAT}
             </span>
             <span className="text-date-hidden">{showDate}</span>
           </div>

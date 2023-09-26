@@ -12,6 +12,7 @@ import { MessageTypeWeb } from 'types/im';
 import { ChannelItem } from '@portkey-wallet/im';
 import './index.less';
 import { useHandleClickChatItem } from 'hooks/im';
+import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function ChatList() {
   } = useChannelList();
   const formatSubTitle = useCallback((item: ChannelItem) => {
     const _type = MessageTypeWeb[item.lastMessageType ?? ''];
-    let subTitle = '[Not supported message]';
+    let subTitle = UN_SUPPORTED_FORMAT;
     if (_type === MessageTypeWeb.IMAGE) {
       subTitle = '[Image]';
     } else if (_type === MessageTypeWeb.TEXT) {
@@ -107,7 +108,7 @@ export default function ChatList() {
       try {
         await pinChannel(`${chatItem.id}`, !chatItem.pin);
       } catch (e: any) {
-        if (`${e?.code}` === '13310') {
+        if (`${e?.code}` === PIN_LIMIT_EXCEED) {
           message.error('Pin limit exceeded');
         } else {
           message.error(`Failed to ${chatItem?.pin ? 'unpin' : 'pin'} chat`);

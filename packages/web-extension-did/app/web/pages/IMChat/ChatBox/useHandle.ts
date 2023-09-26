@@ -1,3 +1,4 @@
+import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
 import { ChannelItem } from '@portkey-wallet/im';
 import { MessageType } from '@portkey-wallet/im-ui-web';
 import { message } from 'antd';
@@ -25,7 +26,7 @@ export const useHandle = ({ deleteMessage, pin, info, mute }: HandleProps) => {
     try {
       await pin(!info?.pin);
     } catch (e: any) {
-      if (`${e?.code}` === '13310') {
+      if (`${e?.code}` === PIN_LIMIT_EXCEED) {
         message.error('Pin limit exceeded');
       } else {
         message.error(`Failed to ${info?.pin ? 'unpin' : 'pin'} chat`);

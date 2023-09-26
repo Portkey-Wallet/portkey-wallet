@@ -9,10 +9,9 @@ import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
-import { ChannelItem, ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
-import CustomModal from 'pages/components/CustomModal';
-import WarnTip from '../components/WarnTip';
+import { ChannelItem } from '@portkey-wallet/im';
 import './index.less';
+import { useHandleClickChatItem } from 'hooks/im';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -101,35 +100,7 @@ export default function ChatList() {
     });
   }, [chatList, formatSubTitle]);
 
-  const handleClickChatItem = useCallback(
-    (item: IChatItemProps) => {
-      switch (item.channelType) {
-        case ChannelTypeEnum.P2P:
-          navigate(`/chat-box/${item.id}`);
-          break;
-        case ChannelTypeEnum.GROUP:
-          if (item.status === ChannelStatusEnum.NORMAL) {
-            navigate(`/chat-box-group/${item.id}`);
-          } else if (item.status === ChannelStatusEnum.DISBAND) {
-            CustomModal({
-              content: 'This group has been deleted by the owner',
-              onOk: () => hideChannel(String(item.id)),
-            });
-          } else if (item.status === ChannelStatusEnum.BE_REMOVED) {
-            CustomModal({
-              content: 'You have been removed by the group owner',
-              onOk: () => hideChannel(String(item.id)),
-            });
-          } else {
-            hideChannel(String(item.id));
-          }
-          break;
-        default:
-          WarnTip();
-      }
-    },
-    [hideChannel, navigate],
-  );
+  const handleClickChatItem = useHandleClickChatItem();
 
   const handlePin = useCallback(
     async (chatItem: IChatItemProps) => {

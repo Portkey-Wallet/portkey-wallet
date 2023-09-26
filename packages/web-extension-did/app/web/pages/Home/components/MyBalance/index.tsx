@@ -212,7 +212,7 @@ export default function MyBalance() {
       />
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
-      {isPrompt ? <PromptEmptyElement className="empty-element" /> : null}
+      {isPrompt && <PromptEmptyElement className="empty-element" />}
     </div>
   );
 }

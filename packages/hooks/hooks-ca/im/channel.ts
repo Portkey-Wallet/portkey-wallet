@@ -4,7 +4,7 @@ import { randomId } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
 
 import { useCurrentNetworkInfo } from '../network';
-import useEffectOnce, { useAppCommonDispatch, useLatestRef } from '../../index';
+import { useEffectOnce, useAppCommonDispatch, useLatestRef } from '../../index';
 import {
   removeChannel,
   updateChannelAttribute,

@@ -14,7 +14,7 @@ import im, {
   ChannelTypeEnum,
   SocketMessage,
 } from '@portkey-wallet/im';
-import useEffectOnce, { useAppCommonDispatch } from '../../index';
+import { useEffectOnce, useAppCommonDispatch } from '../../index';
 import {
   addChannel,
   addChannelMembers,

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
@@ -160,6 +160,7 @@ const ContactProfile: React.FC = () => {
         />
         <ProfileAddressSection addressList={contactInfo?.addresses || []} />
         <ProfileLoginAccountsSection list={contactInfo?.loginAccounts || []} />
+        <View style={pageStyles.blank} />
       </ScrollView>
       {!isStranger && (
         <CommonButton
@@ -184,8 +185,10 @@ export const pageStyles = StyleSheet.create({
     ...GStyles.paddingArg(0, 0, 18),
   },
   scrollWrap: {
-    paddingBottom: pTd(16),
     paddingHorizontal: pTd(20),
+  },
+  blank: {
+    height: pTd(24),
   },
   btnWrap: {
     paddingTop: pTd(16),

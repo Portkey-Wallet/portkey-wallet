@@ -40,7 +40,7 @@ const ChatGroupDetailsPage = () => {
 
   const leaveGroup = useLeaveChannel();
 
-  const addMembers = useCallback(async () => {
+  const addMembers = useCallback(() => {
     navigationService.navigate('AddMembersPage');
   }, []);
 

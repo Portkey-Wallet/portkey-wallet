@@ -35,6 +35,7 @@ export default memo(
     } = props;
 
     const iconDom = useMemo(() => {
+      // if disabled grey and selected ; if multiple unselected show icon, single unselect show nothing
       let iconName: IconName | undefined = multiple ? 'unselected' : undefined;
       if (disabled || selected) iconName = 'selected';
 

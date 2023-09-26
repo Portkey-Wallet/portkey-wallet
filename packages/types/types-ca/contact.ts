@@ -1,4 +1,3 @@
-import { IImInfo } from '@portkey-wallet/im';
 import { ChainId } from '..';
 import { CaHolderInfo, LoginType } from './wallet';
 
@@ -13,6 +12,12 @@ export interface RecentAddressItem extends AddressItem {
   transactionTime?: string;
 }
 
+export interface IImInfo {
+  relationId: string;
+  portkeyId: string;
+  name?: string;
+}
+
 export interface ContactItemType {
   id: string;
   index: string;
@@ -25,6 +30,15 @@ export interface ContactItemType {
   caHolderInfo?: Partial<CaHolderInfo>;
   imInfo?: Partial<IImInfo>;
   isImputation?: boolean;
+}
+
+export interface IContactProfileLoginAccount {
+  identifier: string;
+  privacyType: LoginType;
+}
+
+export interface IContactProfile extends ContactItemType {
+  loginAccounts?: IContactProfileLoginAccount[];
 }
 
 export interface EditContactItemApiType {

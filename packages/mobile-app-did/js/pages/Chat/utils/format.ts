@@ -1,5 +1,6 @@
 import { Message as IMMessage } from '@portkey-wallet/im/types';
 import { ChatMessage } from '../types';
+import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 
 export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
   return message
@@ -35,14 +36,14 @@ export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
           break;
         default: {
           msg.messageType = 'NOT_SUPPORTED';
-          msg.text = '[Unsupported format]';
+          msg.text = UN_SUPPORTED_FORMAT;
           break;
         }
       }
 
       if (typeof ele.content !== 'string') {
         msg.messageType = 'NOT_SUPPORTED';
-        msg.text = '[Unsupported format]';
+        msg.text = UN_SUPPORTED_FORMAT;
       }
       return msg;
     })

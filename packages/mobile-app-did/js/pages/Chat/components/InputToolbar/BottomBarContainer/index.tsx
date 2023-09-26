@@ -19,6 +19,7 @@ import CommonToast from 'components/CommonToast';
 import { defaultColors } from 'assets/theme';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
+import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
 
 export const ActionsIcon = memo(function ActionsIcon({ onPress }: { onPress?: () => void }) {
   return (
@@ -83,7 +84,7 @@ export function BottomBarContainer({
       scrollToBottom?.();
       typeof text === 'string' && (await sendChannelMessage(text.trim()));
     } catch (error: any) {
-      if (error?.code === '13108') {
+      if (error?.code === NO_LONGER_IN_GROUP) {
         hideChannel();
         return ActionSheet.alert({
           title: `You can't send messages to this group because you are no longer in it.`,

@@ -21,6 +21,7 @@ import { ChannelItem, ChannelTypeEnum } from '@portkey-wallet/im/types';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { Input } from '@rneui/base';
 import LottieLoading from 'components/LottieLoading';
+import { getChatListSvgName } from '../utils';
 
 export default function SearchPeople() {
   const iptRef = useRef<Input>(null);
@@ -85,7 +86,7 @@ export default function SearchPeople() {
           <CommonAvatar
             title={displayName}
             hasBorder
-            svgName={item.channelType === 'G' ? 'chat-group-avatar' : undefined}
+            svgName={getChatListSvgName(item.channelType)}
             avatarSize={pTd(36)}
             style={styles.avatarStyle}
           />

@@ -15,6 +15,7 @@ import {
   GetMessageListParams,
   GetProfileParams,
   GetUserInfoDefaultResult,
+  GetUserInfoListParams,
   GetUserInfoParams,
   HideChannelParams,
   IIMService,
@@ -34,8 +35,10 @@ import {
   VerifySignatureParams,
   VerifySignatureResult,
 } from '../types/service';
-import { ChannelInfo, ChannelMemberInfo, ContactItemType, Message, MessageCount } from '../types';
+import { ChannelInfo, ChannelMemberInfo, Message, MessageCount } from '../types';
 import { sleep } from '@portkey-wallet/utils';
+import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
+import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 
 export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseService<T> implements IIMService {
   constructor(request: T) {
@@ -67,7 +70,8 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       if (times === 1) throw error;
       console.log('verifySignatureLoop: error', error);
     }
-    if (times <= 0) await sleep(1000);
+    // if (times <= 0) await sleep(1000);
+    await sleep(1000);
     return this.verifySignatureLoop(generateVerifyData, checkIsContinue, times - 1);
   }
 
@@ -95,7 +99,8 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       if (times === 1) throw error;
       console.log('getAuthToken: error', error);
     }
-    if (times <= 0) await sleep(1000);
+    // if (times <= 0) await sleep(1000);
+    await sleep(1000);
     return this.getAuthTokenLoop(params, checkIsContinue, times - 1);
   }
 
@@ -106,6 +111,14 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'GET',
     });
   }
+  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams | undefined): IMServiceCommon<T[]> {
+    return this._request.send({
+      url: '/api/v1/users/userInfo/list',
+      params,
+      method: 'GET',
+    });
+  }
+
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult> {
     return this._request.send({
       url: '/api/v1/channelContacts/createChannel',
@@ -253,7 +266,9 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  getProfile(params: GetProfileParams): IMServiceCommon<ContactItemType> {
+  getProfile(
+    params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
+  ): IMServiceCommon<IContactProfile> {
     return this._request.send({
       url: '/api/v1/contacts/profile',
       params,

@@ -17,6 +17,7 @@ import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { useSelectedItemsMap } from '@portkey-wallet/hooks/hooks-ca/chat';
 
 const AddMembersPage = () => {
   const currentChannelId = useCurrentChannelId();
@@ -27,25 +28,11 @@ const AddMembersPage = () => {
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 800);
 
+  const { selectedItemsMap: selectedMemberMap, onPressItem } = useSelectedItemsMap<GroupMemberItemType>();
+
   const searchContactList = useLocalContactSearch();
   const [filterMemberList, setFilterMemberList] = useState<ContactItemType[]>([]);
-  const [selectedMemberMap, setSelectedMemberMap] = useState<Map<string, GroupMemberItemType>>(new Map());
   const [memberRelationIdMap, setMemberRelationIdMap] = useState<{ [id: string]: string }>({});
-
-  const onPressItem = useCallback((id: string, item?: GroupMemberItemType) => {
-    if (!item) return;
-    setSelectedMemberMap(pre => {
-      if (pre.has(id)) {
-        const newMap = new Map(pre);
-        newMap.delete(id);
-        return newMap;
-      } else {
-        const newMap = new Map(pre);
-        newMap.set(id, item);
-        return newMap;
-      }
-    });
-  }, []);
 
   const onAdd = useCallback(async () => {
     try {
@@ -69,9 +56,8 @@ const AddMembersPage = () => {
     try {
       const { contactFilterList } = searchContactList(debounceKeyword, ContactsTab.Chats);
       setFilterMemberList(contactFilterList);
-      console.log('contactFilterList', contactFilterList);
     } catch (error) {
-      CommonToast.failError(error);
+      console.log(error);
     }
   }, [debounceKeyword, members, searchContactList]);
 
@@ -81,7 +67,6 @@ const AddMembersPage = () => {
       members.forEach(ele => {
         idMap[ele.relationId] = ele.relationId;
       });
-
       return { ...preMap, ...idMap };
     });
   });

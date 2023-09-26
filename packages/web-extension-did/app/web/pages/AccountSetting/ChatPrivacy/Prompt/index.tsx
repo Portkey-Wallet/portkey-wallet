@@ -8,7 +8,11 @@ export default function ChatPrivacyPrompt({ headerTitle, goBack, menuList, menuI
     <div className="chat-privacy-prompt">
       <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
 
-      <MenuList list={menuList} height={menuItemHeight} />
+      {menuList?.length > 0 && <MenuList list={menuList} height={menuItemHeight} />}
+
+      {(!menuList || !Array.isArray(menuList) || menuList?.length === 0) && (
+        <div className="flex-center no-login-account">No Login Account</div>
+      )}
     </div>
   );
 }

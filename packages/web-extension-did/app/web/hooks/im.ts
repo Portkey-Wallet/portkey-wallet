@@ -2,17 +2,20 @@ import { useCallback, useEffect, useMemo } from 'react';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
-import { useInitIM, useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useHideChannel, useInitIM, useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import im from '@portkey-wallet/im';
+import im, { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 import { LinkPortkeyType } from 'types/im';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { parseLinkPortkeyUrl } from 'utils/imChat';
 import { message } from 'antd';
 import { useNavigate } from 'react-router';
 import { useLoading, useWalletInfo } from 'store/Provider/hooks';
+import { IChatItemProps } from '@portkey-wallet/im-ui-web';
+import CustomModal from 'pages/components/CustomModal';
+import WarnTip from 'pages/IMChat/components/WarnTip';
 
 export default function useInit() {
   const isShowChat = useIsChatShow();
@@ -114,3 +117,38 @@ export function useClickChatUrl({ fromChannelUuid = '', isGroup = false }: IClic
     [isShowChat, myPortkeyId, navigate, fromType, fromChannelUuid, setLoading, joinGroupChannel],
   );
 }
+
+export const useHandleClickChatItem = () => {
+  const navigate = useNavigate();
+  const hideChannel = useHideChannel();
+
+  return useCallback(
+    (item: IChatItemProps) => {
+      switch (item.channelType) {
+        case ChannelTypeEnum.P2P:
+          navigate(`/chat-box/${item.id}`);
+          break;
+        case ChannelTypeEnum.GROUP:
+          if (item.status === ChannelStatusEnum.NORMAL) {
+            navigate(`/chat-box-group/${item.id}`);
+          } else if (item.status === ChannelStatusEnum.DISBAND) {
+            CustomModal({
+              content: 'This group has been deleted by the owner',
+              onOk: () => hideChannel(String(item.id)),
+            });
+          } else if (item.status === ChannelStatusEnum.BE_REMOVED) {
+            CustomModal({
+              content: 'You have been removed by the group owner',
+              onOk: () => hideChannel(String(item.id)),
+            });
+          } else {
+            hideChannel(String(item.id));
+          }
+          break;
+        default:
+          WarnTip();
+      }
+    },
+    [hideChannel, navigate],
+  );
+};

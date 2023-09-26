@@ -11,8 +11,8 @@ function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage: 
   const { previousMessage, currentMessage } = props;
 
   const isMarginTop8 = useMemo(() => {
-    if (previousMessage?.messageType === 'SYS') return true;
-  }, [previousMessage?.messageType]);
+    if (previousMessage?.messageType === currentMessage?.messageType) return true;
+  }, [currentMessage, previousMessage]);
 
   console.log('previousMessage', previousMessage, currentMessage);
 

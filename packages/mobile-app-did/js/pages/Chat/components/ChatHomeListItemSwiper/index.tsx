@@ -15,6 +15,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { useDeviceEvent } from 'hooks/useDeviceEvent';
 import myEvents from 'utils/deviceEvent';
 import { getChatListSvgName } from 'pages/Chat/utils';
+import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -46,7 +47,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     } else if (item.lastMessageType === 'IMAGE') {
       return '[Image]';
     } else {
-      return '[Unsupported format]';
+      return UN_SUPPORTED_FORMAT;
     }
   }, [item.lastMessageContent, item.lastMessageType]);
 
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: pTd(20),
     height: pTd(72) - StyleSheet.hairlineWidth,
-    borderBottomColor: defaultColors.border1,
+    borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
     marginBottom: StyleSheet.hairlineWidth,
   },

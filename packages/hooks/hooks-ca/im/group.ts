@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import {
   useChannel,
   useHideChannel,
@@ -14,7 +14,7 @@ import im, {
   ChannelTypeEnum,
   SocketMessage,
 } from '@portkey-wallet/im';
-import { useAppCommonDispatch } from '../../index';
+import useEffectOnce, { useAppCommonDispatch } from '../../index';
 import {
   addChannel,
   addChannelMembers,
@@ -218,10 +218,9 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
     return adminMember && adminMember.relationId === relationId;
   }, [groupInfo, relationId]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     isInit && refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return {
     groupInfo,
@@ -273,13 +272,12 @@ export const useGroupChannel = (channelId: string) => {
   const updateListRef = useRef(updateList);
   updateListRef.current = updateList;
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const { remove: removeMsgObserver } = im.registerChannelMsgObserver(channelId, e => {
       updateListRef.current(e);
     });
     return removeMsgObserver;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   return {
     ...channel,

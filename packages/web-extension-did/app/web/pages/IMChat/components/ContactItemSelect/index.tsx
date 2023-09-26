@@ -37,7 +37,7 @@ export default function ContactItemSelect({
           ) : (
             <CustomSvg type="NotSelected" className="not-selected-icon" />
           ))}
-        {type === ISelectItemType.RADIO && (selected ? <CustomSvg type="Selected2" className="selected-icon" /> : null)}
+        {type === ISelectItemType.RADIO && selected && <CustomSvg type="Selected2" className="selected-icon" />}
       </div>
     </div>
   );

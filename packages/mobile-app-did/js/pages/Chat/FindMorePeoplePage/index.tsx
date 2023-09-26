@@ -11,11 +11,10 @@ import { BGStyles } from 'assets/theme/styles';
 import Svg from 'components/Svg';
 import ContactItem from 'components/ContactItem';
 import im from '@portkey-wallet/im';
-import CommonToast from 'components/CommonToast';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getAelfAddress } from '@portkey-wallet/utils/aelf';
-import { GetOtherUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
+import { GetUserInfoDefaultResult } from '@portkey-wallet/im/types/service';
 import navigationService from 'utils/navigationService';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useCheckIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
@@ -32,32 +31,18 @@ const FindMorePeople = () => {
   const debounceWord = useDebounce(getAelfAddress(keyword.trim()), 500);
   const checkIsStranger = useCheckIsStranger();
 
-  const [list, setList] = useState<GetOtherUserInfoDefaultResult[]>([]);
-  const caAddressInfoList = useCaAddressInfoList();
-
-  const checkIsMyself = useCallback(() => {
-    if (debounceWord === userId) return true;
-    if (
-      caAddressInfoList.find(
-        ele => debounceWord === `ELF_${ele.caAddress}_${ele.chainId}` || debounceWord === ele.caAddress,
-      )
-    )
-      return true;
-    return false;
-  }, [caAddressInfoList, debounceWord, userId]);
+  const [list, setList] = useState<GetUserInfoDefaultResult[]>([]);
 
   const searchUser = useLockCallback(async () => {
     if (!debounceWord) return setList([]);
 
-    if (checkIsMyself()) return CommonToast.fail('Unable to add yourself as a contact');
-
     try {
       setLoading(true);
-      const { data } = await im.service.getUserInfo<GetOtherUserInfoDefaultResult>({
-        address: debounceWord,
-        fields: ['ADDRESS_WITH_CHAIN'],
+      const { data } = await im.service.getUserInfoList<GetUserInfoDefaultResult>({
+        keywords: debounceWord,
+        fields: [],
       });
-      setList([{ ...data }]);
+      setList(data);
       console.log('more people', data);
     } catch (error) {
       setList([]);
@@ -83,7 +68,7 @@ const FindMorePeople = () => {
   }, [debounceWord, searchUser]);
 
   const renderItem = useCallback(
-    ({ item }: { item: GetOtherUserInfoDefaultResult }) => {
+    ({ item }: { item: GetUserInfoDefaultResult }) => {
       return (
         <ContactItem
           isShowChat
@@ -119,7 +104,7 @@ const FindMorePeople = () => {
           loading={loading}
           allowClear
           value={keyword}
-          placeholder="Address/Portkey ID"
+          placeholder="Address/Portkey ID/phone number/email"
           onChangeText={setKeyword}
           rightIcon={IptRightIcon}
           rightIconContainerStyle={styles.rightIconContainerStyle}
@@ -127,14 +112,14 @@ const FindMorePeople = () => {
       </View>
       {!keyword && (
         <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemEnd, styles.portkeyIdWrap]}>
-          <View style={[GStyles.flex1, GStyles.paddingRight(pTd(10))]}>
+          <View style={[GStyles.flex1, GStyles.paddingRight(16)]}>
             <TextM>{`My Portkey ID : `}</TextM>
             <TextM numberOfLines={1}>{userId}</TextM>
           </View>
           <Touchable onPress={() => copyText(userId || '')}>
             <Svg icon="copy" size={pTd(16)} />
           </Touchable>
-          <Touchable onPress={() => navigationService.navigate('ChatQrCodePage')} style={GStyles.marginLeft(pTd(24))}>
+          <Touchable style={GStyles.marginLeft(pTd(16))} onPress={() => navigationService.navigate('ChatQrCodePage')}>
             <Svg icon="chat-scan" size={pTd(16)} />
           </Touchable>
         </View>

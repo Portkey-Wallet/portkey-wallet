@@ -9,9 +9,8 @@ import Copy from 'components/Copy';
 export default function FindMorePopup({
   headerTitle,
   myPortkeyId,
-  contact,
+  contacts,
   showChat,
-  isAdded,
   isSearch,
   goBack,
   handleSearch,
@@ -27,7 +26,7 @@ export default function FindMorePopup({
           leftCallBack={goBack}
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
-        <ContactsSearchInput placeholder="Address/Portkey ID" handleChange={handleSearch} />
+        <ContactsSearchInput placeholder="Address/Portkey ID/phone number/email" handleChange={handleSearch} />
         {!isSearch && (
           <div className="find-more-id flex-between">
             <div className="my-portkey-id">
@@ -42,15 +41,21 @@ export default function FindMorePopup({
         )}
       </div>
       <div className="find-more-body">
-        {(!contact || !contact.name) && isSearch && (
+        {(!contacts || !Array.isArray(contacts) || contacts?.length === 0) && isSearch && (
           <div className="flex-center no-search-result">No Search Result</div>
         )}
-        {contact && contact.name && contact.index && (
-          <div className="flex-row-center find-more-body-contact" onClick={clickItem}>
-            <FindMoreItem item={contact} isAdded={isAdded} hasChatEntry={showChat} clickChat={clickChat} />
-          </div>
-        )}
-        {!contact && <div className="no-data">No Search Result</div>}
+        {Array.isArray(contacts) &&
+          contacts?.length > 0 &&
+          contacts.map((contact, idx) => {
+            return (
+              <div
+                className="flex-row-center find-more-body-contact"
+                key={`${idx}-${contact.imInfo?.relationId}`}
+                onClick={() => clickItem(contact)}>
+                <FindMoreItem item={contact} hasChatEntry={showChat} clickChat={clickChat} />
+              </div>
+            );
+          })}
       </div>
     </div>
   );

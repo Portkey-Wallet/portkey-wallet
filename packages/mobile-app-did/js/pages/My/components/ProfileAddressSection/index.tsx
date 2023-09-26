@@ -10,7 +10,7 @@ import FormItem from 'components/FormItem';
 import Svg from 'components/Svg';
 import Touchable from 'components/Touchable';
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { copyText } from 'utils';
 import { pTd } from 'utils/unit';
@@ -31,7 +31,7 @@ type ProfileAddressSectionPropsType = {
 };
 
 const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props => {
-  const { title = 'Address', disable, noMarginTop, addressList, isMySelf } = props;
+  const { title = 'Address', disable, noMarginTop, addressList: addressListProps, isMySelf } = props;
   const isTestnet = useIsTestnet();
 
   const copyId = useCallback(
@@ -39,10 +39,20 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
     [],
   );
 
+  const addressList = useMemo(() => {
+    const _addressList = [...(addressListProps || [])];
+    const index = _addressList.findIndex(ele => ele.chainId === 'AELF');
+    if (index === -1) return _addressList;
+    const aelfAddress = _addressList.splice(index, 1)[0];
+    return [aelfAddress, ..._addressList];
+  }, [addressListProps]);
+
   return (
     <FormItem title={title} style={!noMarginTop && GStyles.marginTop(pTd(24))}>
       {addressList?.map((ele, index) => (
-        <View key={index} style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap]}>
+        <View
+          key={index}
+          style={[disable ? BGStyles.bg18 : BGStyles.bg1, styles.itemWrap, index !== 0 && GStyles.marginTop(8)]}>
           <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.content]}>
             <TextM style={styles.address}>
               {formatStr2EllipsisStr(
@@ -81,7 +91,6 @@ const styles = StyleSheet.create({
   itemWrap: {
     padding: pTd(16),
     borderRadius: pTd(6),
-    marginBottom: pTd(8),
   },
   content: {
     marginBottom: pTd(8),

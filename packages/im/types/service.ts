@@ -1,13 +1,14 @@
+import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import {
   ChannelInfo,
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
-  ContactItemType,
   Message,
   MessageCount,
   TriggerMessageEventActionEnum,
 } from '.';
+import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 
 export type IMServiceCommon<T> = Promise<{
   code: string;
@@ -42,11 +43,16 @@ export type GetUserInfoParams = {
   fields?: string[];
 };
 
+export type GetUserInfoListParams = {
+  keywords?: string;
+  fields?: string[];
+};
+
 export type GetUserInfoDefaultResult = {
-  avatar: string;
+  avatar?: string;
   name: string;
   relationId: string;
-  portkeyId: string;
+  portkeyId?: string;
 };
 
 export type GetOtherUserInfoDefaultResult = {
@@ -146,7 +152,8 @@ export type AddStrangerParams = {
 };
 
 export type GetProfileParams = {
-  relationId: string;
+  portkeyId?: string;
+  relationId?: string;
   id?: string;
 };
 
@@ -196,6 +203,7 @@ export interface IIMService {
     times?: number,
   ): IMServiceCommon<GetAuthTokenResult>;
   getUserInfo<T = GetUserInfoDefaultResult>(params?: GetUserInfoParams): IMServiceCommon<T>;
+  getUserInfoList<T = GetUserInfoDefaultResult>(params?: GetUserInfoListParams): IMServiceCommon<T[]>;
 
   createChannel(params: CreateChannelParams): IMServiceCommon<CreateChannelResult>;
   getChannelInfo(params: GetChannelInfoParams): IMServiceCommon<ChannelInfo>;
@@ -221,5 +229,7 @@ export interface IIMService {
   joinChannel(params: JoinChannelParams): IMServiceCommon<null>;
 
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;
-  getProfile(params: GetProfileParams): IMServiceCommon<ContactItemType>;
+  getProfile(
+    params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
+  ): IMServiceCommon<IContactProfile>;
 }

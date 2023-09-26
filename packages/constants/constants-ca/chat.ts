@@ -53,5 +53,7 @@ export const ChatDetailsOperationList = [
 ] as const;
 
 export const ChatTabName = 'Chat';
-
 export const GROUP_INFO_MEMBER_SHOW_LIMITED = 4;
+export const UN_SUPPORTED_FORMAT = '[Unsupported format]';
+export const ALREADY_JOINED_GROUP_CODE = '13302';
+export const NO_LONGER_IN_GROUP = '13108';

@@ -23,6 +23,7 @@ import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
+import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -141,6 +142,7 @@ const reduxPersistConfig = {
     discoverSlice.name,
     txFeeSlice.name,
     imSlice.name,
+    securitySlice.name,
   ],
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1
   // transforms: [SetTokenTransform],

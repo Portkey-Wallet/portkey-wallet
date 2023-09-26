@@ -1,6 +1,6 @@
 import { TypedUseSelectorHook, useSelector, useDispatch } from 'react-redux';
 import { RootCommonState } from '../types/store';
-import { DependencyList, useCallback, useRef, useEffect } from 'react';
+import { DependencyList, useCallback, useRef, useEffect, EffectCallback } from 'react';
 
 export { useAppEOASelector } from './hooks-eoa/index';
 export { useAppCASelector } from './hooks-ca/index';
@@ -67,4 +67,9 @@ export function useUnmountedRef() {
     };
   }, []);
   return unmountedRef;
+}
+
+export default function useEffectOnce(effect: EffectCallback) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(effect, []);
 }

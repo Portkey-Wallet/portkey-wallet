@@ -46,7 +46,10 @@ const SendContactItem: React.FC<ItemType> = props => {
               key={`${ele?.address}${ele?.chainId}`}
               onPress={() => {
                 const { address, chainId } = ele;
-                onPress?.({ address: addressFormat(address, chainId), name: contact.name });
+                onPress?.({
+                  address: addressFormat(address, chainId),
+                  name: contact.name || contact.caHolderInfo?.walletName || contact.imInfo?.name,
+                });
               }}>
               <TextM style={[styles.address, !isContacts && !ele?.transactionTime && FontStyles.font7]}>
                 {formatStr2EllipsisStr(addressFormat(ele?.address, ele.chainId), 10)}

@@ -18,7 +18,7 @@ import Touchable from 'components/Touchable';
 import GroupInfoMemberItem, { GroupInfoMemberItemType } from '../components/GroupInfoMemberItem';
 import { useCurrentChannelId } from '../context/hooks';
 import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
-import { GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
+import { ChatOperationsEnum, GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
 import useEffectOnce from 'hooks/useEffectOnce';
 import FormItem from 'components/FormItem';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network-test1';
@@ -102,7 +102,8 @@ const GroupInfoPage = () => {
   return (
     <PageContainer
       hideTouchable
-      titleDom="Group Info"
+      leftCallback={() => navigationService.goBack()}
+      titleDom={ChatOperationsEnum.GROUP_INFO}
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
@@ -195,7 +196,7 @@ const GroupInfoPage = () => {
           <CommonButton
             type="outline"
             onPress={onLeave}
-            title={'Leave Group'}
+            title={ChatOperationsEnum.LEAVE_GROUP}
             buttonStyle={styles.leaveButtonStyle}
             titleStyle={styles.leaveTitleStyle}
           />

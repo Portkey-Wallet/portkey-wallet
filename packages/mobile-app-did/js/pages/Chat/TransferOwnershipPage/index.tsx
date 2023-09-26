@@ -13,7 +13,6 @@ import Loading from 'components/Loading';
 import { useCurrentChannelId } from '../context/hooks';
 import { useGroupChannelInfo, useTransferChannelOwner } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
-import { BGStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -33,19 +32,15 @@ const TransferOwnershipPage = () => {
   const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
   useEffect(() => {
-    try {
-      setFilterMembers(() => {
-        let result = [];
-        if (debounceKeyword) {
-          result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
-        } else {
-          result = rawMemberList.filter(ele => !ele.isAdmin);
-        }
-        return [...result];
-      });
-    } catch (error) {
-      CommonToast.failError(error);
-    }
+    setFilterMembers(() => {
+      let result = [];
+      if (debounceKeyword) {
+        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
+      } else {
+        result = rawMemberList.filter(ele => !ele.isAdmin);
+      }
+      return [...result];
+    });
   }, [debounceKeyword, rawMemberList]);
 
   const onPressItem = useCallback(

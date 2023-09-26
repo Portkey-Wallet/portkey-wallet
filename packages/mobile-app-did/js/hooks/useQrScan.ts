@@ -18,6 +18,7 @@ import ActionSheet from 'components/ActionSheet';
 import { useLanguage } from 'i18n/hooks';
 import { useJoinGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useJumpToChatGroupDetails } from './chat';
+import { ALREADY_JOINED_GROUP_CODE } from '@portkey-wallet/constants/constants-ca/chat';
 
 export const useQrScanPermission = (): [boolean, () => Promise<boolean>] => {
   const [hasPermission, setHasPermission] = useState<any>(null);
@@ -83,7 +84,7 @@ export const useHandleGroupId = () => {
         jumpToGroup({ channelUuid: channelId || '' });
       } catch (error: any) {
         console.log('error', error);
-        if (error.code === '13302') {
+        if (error.code === ALREADY_JOINED_GROUP_CODE) {
           if (goBack) navigationService.goBack();
           return jumpToGroup({ channelUuid: channelId || '' });
         } else {

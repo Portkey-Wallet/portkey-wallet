@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DayProps, IMessage } from 'react-native-gifted-chat';
 import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -10,9 +10,14 @@ import { defaultColors } from 'assets/theme';
 
 function SystemTime(_props: DayProps<IMessage>) {
   const sameDay = isSameDay(_props.previousMessage?.createdAt, _props.currentMessage?.createdAt);
+  const isMarginBottom8 = useMemo(() => {
+    return _props.previousMessage?.user && _props.previousMessage?.user._id === _props.currentMessage?.user._id;
+  }, [_props.currentMessage?.user._id, _props.previousMessage?.user]);
+
   if (sameDay && !!_props?.previousMessage?.createdAt) return null;
+
   return (
-    <View style={[GStyles.center, styles.wrap]}>
+    <View style={[GStyles.center, styles.wrap, isMarginBottom8 && GStyles.marginBottom(8)]}>
       <TextS style={styles.textStyles}>{formatMessageTime(_props.currentMessage?.createdAt)}</TextS>
     </View>
   );
@@ -23,7 +28,7 @@ export default SystemTime;
 const styles = StyleSheet.create({
   wrap: {
     width: '100%',
-    marginBottom: 0,
+    marginBottom: pTd(0),
     marginTop: pTd(16),
   },
   textStyles: {

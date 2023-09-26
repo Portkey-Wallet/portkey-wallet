@@ -55,3 +55,5 @@ export const ChatDetailsOperationList = [
 export const ChatTabName = 'Chat';
 
 export const GROUP_INFO_MEMBER_SHOW_LIMITED = 4;
+
+export const UN_SUPPORTED_FORMAT = '[Unsupported format]';

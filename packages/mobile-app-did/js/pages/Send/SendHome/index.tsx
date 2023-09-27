@@ -43,8 +43,9 @@ import {
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
-import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { useCheckTransferLimitWithJump } from 'hooks/security';
+import CommonToast from 'components/CommonToast';
 
 const SendHome: React.FC = () => {
   const {
@@ -76,7 +77,7 @@ const SendHome: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<any[]>([]);
 
   const checkManagerSyncState = useCheckManagerSyncState();
-  const checkTransferLimit = useCheckTransferLimit();
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
   const contractRef = useRef<ContractBasic>();
 
   useEffect(() => {
@@ -348,55 +349,33 @@ const SendHome: React.FC = () => {
     }
 
     // checkTransferLimitResult
+    Loading.show();
     if (sendType === 'token') {
-      if (!contractRef.current) {
-        contractRef.current = await getContractBasic({
-          contractAddress: chainInfo.caContractAddress,
-          rpcUrl: chainInfo.endPoint,
-          account,
-        });
-      }
-      const contract = contractRef.current;
-      const checkTransferLimitResult = await checkTransferLimit({
-        caContract: contract,
-        symbol: assetInfo.symbol,
-        decimals: assetInfo.decimals,
-        amount: sendNumber,
-      });
-      if (!checkTransferLimitResult) {
-        // TODO: add error handler
-        return { status: false };
-      }
-
-      const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
-      if (isDailyLimited || isSingleLimited) {
-        ActionSheet.alert({
-          title2: isDailyLimited
-            ? 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.'
-            : 'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first. ',
-          buttons: [
-            {
-              title: 'Cancel',
-              type: 'outline',
-            },
-            {
-              title: 'Modify',
-              onPress: async () => {
-                navigationService.navigate('PaymentSecurityEdit', {
-                  paymentSecurityDetail: {
-                    chainId: chainInfo.chainId,
-                    symbol: assetInfo.symbol,
-                    dailyLimit: dailyLimit.toString(),
-                    singleLimit: singleBalance.toString(),
-                    restricted: !dailyLimit.eq(-1),
-                    decimals: assetInfo.decimals,
-                  },
-                });
-              },
-            },
-          ],
-        });
-
+      try {
+        if (!contractRef.current) {
+          contractRef.current = await getContractBasic({
+            contractAddress: chainInfo.caContractAddress,
+            rpcUrl: chainInfo.endPoint,
+            account,
+          });
+        }
+        const contract = contractRef.current;
+        const checkTransferLimitResult = await checkTransferLimitWithJump(
+          {
+            caContract: contract,
+            symbol: assetInfo.symbol,
+            decimals: assetInfo.decimals,
+            amount: sendNumber,
+          },
+          chainInfo.chainId,
+        );
+        if (!checkTransferLimitResult) {
+          Loading.hide();
+          return { status: false };
+        }
+      } catch (error) {
+        CommonToast.failError(error);
+        Loading.hide();
         return { status: false };
       }
     }
@@ -404,6 +383,7 @@ const SendHome: React.FC = () => {
     // check is SYNCHRONIZING
     const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
     if (!_isManagerSynced) {
+      Loading.hide();
       setErrorMessage([TransactionError.SYNCHRONIZING]);
       return { status: false };
     }
@@ -419,17 +399,20 @@ const SendHome: React.FC = () => {
         // ELF
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+          Loading.hide();
           return { status: false };
         }
 
         if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
           setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
+          Loading.hide();
           return { status: false };
         }
       } else {
         //Other Token
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+          Loading.hide();
           return { status: false };
         }
       }
@@ -437,12 +420,12 @@ const SendHome: React.FC = () => {
       // nft
       if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
         setErrorMessage([TransactionError.NFT_NOT_ENOUGH]);
+        Loading.hide();
         return { status: false };
       }
     }
 
     // transaction fee check
-    Loading.show();
     try {
       fee = await getTransactionFee(isCross);
 
@@ -463,7 +446,7 @@ const SendHome: React.FC = () => {
     assetInfo.symbol,
     chainInfo,
     checkManagerSyncState,
-    checkTransferLimit,
+    checkTransferLimitWithJump,
     crossFee,
     defaultToken.decimals,
     defaultToken.symbol,

@@ -161,16 +161,20 @@ export const discoverSlice = createSlice({
       if (state.autoApproveMap[payload]) delete state.autoApproveMap[payload];
     },
     addDisclaimerConfirmedDapp: (state, { payload }: { payload: { networkType: NetworkType; dappDomain: string } }) => {
-      const preDisclaimerConfirmedSet = state.disclaimerConfirmedMap?.[payload.networkType] || new Set();
+      const preDisclaimerConfirmedArray: string[] = state.disclaimerConfirmedMap?.[payload.networkType] || [];
+      preDisclaimerConfirmedArray.push(payload.dappDomain);
+
+      console.log('state.disclaimerConfirmedMap', state.disclaimerConfirmedMap);
+
       state.disclaimerConfirmedMap = {
         ...(state.disclaimerConfirmedMap || {}),
-        [payload.networkType]: preDisclaimerConfirmedSet.add(payload.dappDomain),
+        [payload.networkType]: Array.from(new Set(preDisclaimerConfirmedArray)),
       };
     },
     resetDisclaimerConfirmedDapp: (state, { payload }: { payload: NetworkType }) => {
       state.disclaimerConfirmedMap = {
         ...(state.disclaimerConfirmedMap || {}),
-        [payload]: new Set(),
+        [payload]: [],
       };
     },
   },

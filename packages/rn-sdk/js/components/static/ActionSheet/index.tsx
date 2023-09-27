@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
-import OverlayModal from '../OverlayModal';
+import OverlayModal from '@portkey-app/components/OverlayModal';
 import { View, Text, TouchableOpacity, Keyboard } from 'react-native';
 import { styles } from './style/style';
-import { TextL, TextM, TextTitle } from 'components/CommonText';
-import ButtonRow, { ButtonRowProps } from 'components/ButtonRow';
+import { TextL, TextM, TextTitle } from '@portkey-app/components/CommonText';
+import ButtonRow, { ButtonRowProps } from '@portkey-app/components/ButtonRow';
 
 const show = (
   items: {
@@ -16,7 +16,7 @@ const show = (
 ) => {
   Keyboard.dismiss();
   OverlayModal.show(
-    <>
+    <View>
       <View style={styles.sheetBox}>
         {items.map((item, index) => {
           const { title, onPress } = item;
@@ -38,7 +38,7 @@ const show = (
           <Text style={styles.cancelText}>{cancelItem.title}</Text>
         </TouchableOpacity>
       )}
-    </>,
+    </View>,
     {
       position: 'bottom',
     },

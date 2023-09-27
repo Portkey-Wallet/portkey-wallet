@@ -291,7 +291,7 @@ export default function Transaction() {
 
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['transaction-detail-modal', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['transaction-detail-modal', isPrompt && 'detail-page-prompt'])}>
         <div className="transaction-detail-body">
           <div className="header">
             <CustomSvg type="Close2" onClick={onClose} />
@@ -309,7 +309,7 @@ export default function Transaction() {
         </div>
         <div className="transaction-footer">
           <div>{viewOnExplorerUI()}</div>
-          {isPrompt ? <PromptEmptyElement /> : null}
+          {isPrompt && <PromptEmptyElement />}
         </div>
       </div>
     );

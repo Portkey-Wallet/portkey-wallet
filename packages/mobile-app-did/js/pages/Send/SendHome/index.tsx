@@ -9,7 +9,7 @@ import { styles } from './style';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import ActionSheet from 'components/ActionSheet';
-import useQrScanPermission from 'hooks/useQrScanPermission';
+import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { getAelfAddress, getEntireDIDAelfAddress, isAllowAelfAddress, isCrossChain } from '@portkey-wallet/utils/aelf';
 import useDebounce from 'hooks/useDebounce';
@@ -60,7 +60,7 @@ const SendHome: React.FC = () => {
 
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
 
-  const [, requestQrPermission] = useQrScanPermission();
+  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
 
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const [selectedFromAccount] = useState({ name: '', address: '' }); // from
@@ -215,22 +215,8 @@ const SendHome: React.FC = () => {
 
   // warning dialog
   const showDialog = useCallback(
-    (type: 'no-authority' | 'clearAddress' | 'crossChain', confirmCallBack?: () => void) => {
+    (type: 'clearAddress' | 'crossChain', confirmCallBack?: () => void) => {
       switch (type) {
-        case 'no-authority':
-          ActionSheet.alert({
-            title: t('Enable Camera Access'),
-            message: t('Cannot connect to the camera. Please make sure it is turned on'),
-            buttons: [
-              {
-                title: t('Close'),
-                type: 'solid',
-              },
-            ],
-          });
-
-          break;
-
         case 'clearAddress':
           ActionSheet.alert({
             title: t('Clear Address First'),
@@ -464,7 +450,7 @@ const SendHome: React.FC = () => {
           <TouchableOpacity
             onPress={async () => {
               if (selectedToContact?.address) return showDialog('clearAddress');
-              if (!(await requestQrPermission())) return showDialog('no-authority');
+              if (!(await qrScanPermissionAndToast())) return;
 
               navigationService.navigate('QrScanner', { fromSendPage: true });
             }}>

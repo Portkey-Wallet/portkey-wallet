@@ -13,7 +13,7 @@ interface VerifierPairProps {
   size?: number;
 }
 
-const GuardianTypeIcon: Record<LoginType, IconType> = {
+export const GuardianTypeIcon: Record<LoginType, IconType> = {
   [LoginType.Email]: 'email',
   [LoginType.Phone]: 'GuardianPhone',
   [LoginType.Google]: 'GuardianGoogle',

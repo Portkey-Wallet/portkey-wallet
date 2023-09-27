@@ -9,9 +9,34 @@ import { SchemeParsedUrl } from 'types/common';
 import { SCHEME_ACTION } from 'constants/scheme';
 import { showAuthLogin } from 'components/AuthLoginOverlay';
 import { checkIsUrl, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export function useHandleParsedUrl() {
   const jumpToWebview = useDiscoverJumpWithNetWork();
+  const handlePortkeyId = useHandlePortkeyId();
+  const handleGroupId = useHandleGroupId();
+
+  const isChatShow = useIsChatShow();
+
+  const handleAddAction = useCallback(
+    (id: string, action: SCHEME_ACTION) => {
+      if (SCHEME_ACTION.addContact === action) {
+        return handlePortkeyId({
+          portkeyId: id,
+          showLoading: false,
+          goBack: false,
+        });
+      }
+
+      handleGroupId({
+        channelId: id,
+        showLoading: false,
+      });
+    },
+    [handleGroupId, handlePortkeyId],
+  );
+
   return useCallback(
     (parsedUrl: SchemeParsedUrl) => {
       const { domain, action, query } = parsedUrl;
@@ -28,16 +53,17 @@ export function useHandleParsedUrl() {
             const { url } = query;
             if (typeof url !== 'string' || !checkIsUrl(url)) return;
             const fixUrl = prefixUrlWithProtocol(url);
-            jumpToWebview({
-              item: {
-                name: fixUrl,
-                url: fixUrl,
-              },
-              autoApprove: true,
-            });
+            jumpToWebview({ item: { name: fixUrl, url: fixUrl }, autoApprove: true });
             break;
           }
+          case SCHEME_ACTION.addContact:
+          case SCHEME_ACTION.addGroup: {
+            if (!isChatShow) return;
+            const id = typeof query.id === 'string' ? query.id : Object.values(query).join('');
 
+            handleAddAction(id, action);
+            break;
+          }
           default:
             console.log('this action is not supported');
         }
@@ -45,7 +71,7 @@ export function useHandleParsedUrl() {
         console.log(error);
       }
     },
-    [jumpToWebview],
+    [handleAddAction, isChatShow, jumpToWebview],
   );
 }
 

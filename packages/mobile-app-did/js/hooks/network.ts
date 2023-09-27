@@ -9,7 +9,7 @@ import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useLanguage } from 'i18n/hooks';
 import ActionSheet from 'components/ActionSheet';
-import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-testnet';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import im from '@portkey-wallet/im';
 import { request } from '@portkey-wallet/api/api-did';
 

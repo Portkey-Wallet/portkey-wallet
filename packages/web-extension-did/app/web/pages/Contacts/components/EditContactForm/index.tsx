@@ -4,6 +4,7 @@ import IdAndAddress from '../IdAndAddress';
 import './index.less';
 import { ValidData } from 'pages/Contacts/AddContact';
 import EditButtonGroup from '../EditButtonGroup';
+import LoginAccountList from '../LoginAccountList';
 
 const { Item: FormItem } = Form;
 
@@ -69,6 +70,14 @@ export default function EditContactForm({
           relationId={state?.imInfo?.relationId}
           addresses={state?.addresses || []}
           handleCopy={handleCopy}
+        />
+
+        {/* login account info */}
+        <LoginAccountList
+          Email={state?.loginAccountMap?.Email}
+          Phone={state?.loginAccountMap?.Phone}
+          Google={state?.loginAccountMap?.Google}
+          Apple={state?.loginAccountMap?.Apple}
         />
       </div>
 

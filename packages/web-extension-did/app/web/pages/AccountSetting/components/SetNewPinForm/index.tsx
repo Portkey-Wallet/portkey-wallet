@@ -24,7 +24,7 @@ export default function SetNewPinForm({
 
   return (
     <Form
-      className={clsx(['set-pin-form', isNotLessThan768 ? 'set-pin-form-prompt' : null])}
+      className={clsx(['set-pin-form', isNotLessThan768 && 'set-pin-form-prompt'])}
       name="SetPinForm"
       form={form}
       requiredMark={false}

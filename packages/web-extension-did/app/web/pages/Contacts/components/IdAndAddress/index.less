@@ -18,16 +18,23 @@
     }
 
     .info-content {
+      gap: 16px;
+      font-size: 14px;
+      color: @font-13;
+      font-weight: normal;
       .info-desc {
-        font-size: 14px;
-        font-weight: normal;
-        color: @font-13;
         word-break: break-all;
-        margin-right: 16px;
         .text-overflow(1);
       }
+      .info-desc-my-wallet {
+        word-break: break-all;
+      }
       .id-copy-icon {
-        display: inline-flex;
+        cursor: pointer;
+      }
+      .info-icon {
+        gap: 16px;
+        align-items: center;
         cursor: pointer;
       }
     }

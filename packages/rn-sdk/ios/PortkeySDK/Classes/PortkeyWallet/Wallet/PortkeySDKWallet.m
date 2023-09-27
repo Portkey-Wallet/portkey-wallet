@@ -1,0 +1,12 @@
+//
+//  PortkeySDKWallet.m
+//  PortkeySDK
+//
+//  Created by wade-cui on 2023/9/26.
+//
+
+#import "PortkeySDKWallet.h"
+
+@implementation PortkeySDKWallet
+
+@end

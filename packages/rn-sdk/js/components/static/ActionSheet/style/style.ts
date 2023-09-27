@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
-import { defaultColors } from 'assets/theme';
-import { pTd } from 'utils/unit';
+import { defaultColors } from '@portkey-app/assets/theme';
+import { pTd } from '@portkey-app/utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 
 export const styles = StyleSheet.create({

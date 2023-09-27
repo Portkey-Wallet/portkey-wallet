@@ -1,11 +1,11 @@
 import React from 'react';
 import Overlay from 'rn-teaset/components/Overlay/Overlay';
 import { View, StyleSheet, Keyboard } from 'react-native';
-import { TextM } from '../../../../../mobile-app-did/js/components/CommonText';
-import { defaultColors } from '#portkey-app';
-import GStyles from 'assets/theme/GStyles';
+import { TextM } from '@portkey-app/components/CommonText';
+import { defaultColors } from '@portkey-app/assets/theme';
+import GStyles from '@portkey-app/assets/theme/GStyles';
 import Lottie from 'lottie-react-native';
-import { pTd } from 'utils/unit';
+import { pTd } from '@portkey-app/utils/unit';
 
 let elements: number[] = [];
 let timer: NodeJS.Timeout | null = null;

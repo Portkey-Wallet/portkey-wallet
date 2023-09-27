@@ -175,7 +175,7 @@ export default function ManagerApproveInner({
         <GuardianApproval
           className={`${PrefixCls}-guardian-approve`}
           header={<BackHeader leftCallBack={() => setStep(ManagerApproveStep.SetAllowance)} />}
-          chainId={originChainId}
+          originChainId={originChainId}
           guardianList={guardianList}
           onConfirm={(approvalInfo) => {
             const approved: IGuardiansApproved[] = approvalInfo.map((guardian) => ({

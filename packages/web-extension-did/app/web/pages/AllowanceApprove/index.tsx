@@ -134,6 +134,7 @@ export default function AllowanceApprove() {
       {txParams && (
         <ManagerApproveInner
           originChainId={originChainId}
+          targetChainId={chainId}
           caHash={caHash || ''}
           amount={txParams.params.paramsOption.amount}
           symbol={txParams.params.paramsOption.symbol}

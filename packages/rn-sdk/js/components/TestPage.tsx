@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import "react-native-get-random-values";
+import 'react-native-get-random-values';
 import { View, Text, TouchableOpacityProps, TouchableOpacity } from 'react-native';
 import AElf from 'aelf-sdk';
 import WebView from 'react-native-webview';

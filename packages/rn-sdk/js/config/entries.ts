@@ -1,7 +1,5 @@
 export enum PortkeyEntries {
-  ROOT = 'Root',
-  ENTRY = 'entry',
-  LOGIN = 'login',
-  GUARDIAN = 'guardian',
   TEST = 'test',
+
+  SIGN_IN_ENTRY = 'sign_in_entry',
 }

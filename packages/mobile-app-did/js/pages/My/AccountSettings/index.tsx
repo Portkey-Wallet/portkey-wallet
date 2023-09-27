@@ -8,9 +8,12 @@ import { useLanguage } from 'i18n/hooks';
 import MenuItem from '../components/MenuItem';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
+  const showChat = useIsChatShow();
+
   const { t } = useLanguage();
 
   const list = useMemo(() => {
@@ -24,12 +27,15 @@ export default function AccountSettings() {
         label: 'Change Pin',
         sort: 1,
       },
-      {
+    ];
+
+    showChat &&
+      _list.push({
         name: 'ChatPrivacy',
         label: 'Privacy',
         sort: 3,
-      },
-    ];
+      });
+
     biometricsReady &&
       _list.push({
         name: 'Biometric',
@@ -37,7 +43,7 @@ export default function AccountSettings() {
         sort: 2,
       });
     return _list.sort((a, b) => a.sort - b.sort);
-  }, [biometricsReady]);
+  }, [biometricsReady, showChat]);
 
   return (
     <PageContainer

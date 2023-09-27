@@ -20,7 +20,8 @@
     "react-redux": "^8.0.2",
     "redux-flipper": "^2.0.2",
     "redux-persist": "^6.0.0",
-    "rn-teaset": "^0.1.1"
+    "rn-teaset": "^0.1.1",
+    "typescript": "^4.4.4"
   },
   "scripts": {
     "start": "yarn react-native start"

@@ -57,7 +57,7 @@ export const useDisclaimer = () => {
   );
 
   const checkDappIsConfirmed = useCallback(
-    (dappDomain: string): boolean => !!disclaimerConfirmedMap?.[currentNetwork]?.has?.(dappDomain),
+    (dappDomain: string): boolean => !!disclaimerConfirmedMap?.[currentNetwork]?.includes?.(dappDomain),
     [currentNetwork, disclaimerConfirmedMap],
   );
 

@@ -80,7 +80,7 @@ const PAGE_LIMIT = 20;
 const PaymentSecurityList: React.FC = () => {
   const wallet = useCurrentWalletInfo();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [list, setList] = useState<Array<any>>();
+  const [list, setList] = useState<Array<IPaymentSecurityItem>>();
   const paginationRef = useRef({ page: 0, pageSize: PAGE_LIMIT, total: -1 });
 
   const getList = useLockCallback(
@@ -135,7 +135,8 @@ const PaymentSecurityList: React.FC = () => {
 
   useEffect(() => {
     const listener = myEvents.refreshPaymentSecurityList.addListener(() => {
-      getList();
+      console.log('refreshPaymentSecurityList');
+      getList(true);
     });
     return () => {
       listener.remove();

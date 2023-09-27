@@ -4,7 +4,9 @@ import { pTd } from 'utils/unit';
 import { Text } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import { Image } from 'react-native';
+import { checkIsSvgUrl } from 'utils';
+import { SvgCssUri } from 'react-native-svg';
+import FastImage from 'components/FastImage';
 
 interface CommonAvatarProps {
   title?: string;
@@ -52,9 +54,14 @@ export default function CommonAvatar(props: CommonAvatarProps) {
       />
     );
 
-  if (imageUrl)
-    return (
-      <Image
+  if (imageUrl) {
+    return checkIsSvgUrl(imageUrl) ? (
+      <SvgCssUri
+        uri={imageUrl}
+        style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
+      />
+    ) : (
+      <FastImage
         resizeMode={'contain'}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
         source={{
@@ -62,6 +69,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
         }}
       />
     );
+  }
 
   return (
     <Text

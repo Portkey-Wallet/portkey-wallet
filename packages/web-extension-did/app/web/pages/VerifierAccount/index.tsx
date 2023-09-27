@@ -23,6 +23,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import VerifierPage from 'pages/components/VerifierPage';
+import { ChainId } from '@portkey-wallet/types';
 
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
@@ -54,6 +55,14 @@ export default function VerifierAccount() {
         : false,
     [isNotLessThan768, state],
   );
+  const targetChainId: ChainId | undefined = useMemo(() => {
+    if (state && state.indexOf('setTransferLimit') !== -1) {
+      const params = state.split('_')[1];
+      const _params = JSON.parse(params || '{}');
+      return _params.targetChainId;
+    }
+    return undefined;
+  }, [state]);
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult('register');
 
   const onSuccessInGuardian = useCallback(
@@ -259,10 +268,11 @@ export default function VerifierAccount() {
           guardianType={loginAccount?.loginType}
           onSuccess={onSuccess}
           operationType={operationType}
+          targetChainId={targetChainId}
         />
       </div>
     ),
-    [currentGuardian, isInitStatus, loginAccount, onSuccess, operationType],
+    [currentGuardian, isInitStatus, loginAccount, onSuccess, operationType, targetChainId],
   );
 
   const props = useMemo(

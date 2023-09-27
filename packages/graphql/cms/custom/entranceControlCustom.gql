@@ -1,0 +1,7 @@
+query entranceControlCustom {
+  entranceControl {
+    isAndroidBridgeShow
+    isExtensionBridgeShow
+    isIOSBridgeShow
+  }
+}

@@ -47,6 +47,7 @@ import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wal
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
+import CommonAvatar from 'components/CommonAvatar';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
@@ -318,7 +319,7 @@ const SendHome: React.FC = () => {
           {!assetInfo?.imageUrl ? (
             <Text style={styles.noImg}>{assetInfo?.alias[0]}</Text>
           ) : (
-            <Image resizeMode={'contain'} style={styles.img} source={{ uri: assetInfo?.imageUrl }} />
+            <CommonAvatar style={styles.img} imageUrl={assetInfo?.imageUrl} />
           )}
           <View style={styles.topLeft}>
             <TextL style={[styles.nftTitle, fonts.mediumFont]}>{`${assetInfo.alias} #${assetInfo?.tokenId}`} </TextL>

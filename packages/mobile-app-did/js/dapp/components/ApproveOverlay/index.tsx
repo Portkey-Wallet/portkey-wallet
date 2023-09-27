@@ -21,22 +21,26 @@ import { ApprovalType } from '@portkey-wallet/types/verifier';
 import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
-import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
-import { LANG_MAX } from '@portkey-wallet/constants/misc';
-import { parseInputIntegerChange } from '@portkey-wallet/utils/input';
+import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
+import { parseInputNumberChange } from '@portkey-wallet/utils/input';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
   approveParams: ApproveParams;
   onReject: () => void;
 };
+
+const ZERO_MESSAGE = 'Please enter a nonzero value';
 const ApproveModal = (props: SignModalPropsType) => {
   const { dappInfo, approveParams, onReject } = props;
   console.log(approveParams, '====approveInfo');
+  const { decimals, amount, targetChainId } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
   const { t } = useLanguage();
 
-  const [errorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [symbolNum, setSymbolNum] = useState<string>('');
 
   const MAX_NUM = useMemo(
@@ -65,41 +69,55 @@ const ApproveModal = (props: SignModalPropsType) => {
         type: 'primary' as CommonButtonProps['type'],
         disabled: !symbolNum.trim(),
         onPress: async () => {
-          const amount = timesDecimals(symbolNum, approveParams.approveInfo.decimals);
+          if (ZERO.isEqualTo(symbolNum)) {
+            return setErrorMessage(ZERO_MESSAGE);
+          } else {
+            setErrorMessage('');
+          }
+
+          const tmpAmount = timesDecimals(symbolNum, approveParams.approveInfo.decimals);
           navigationService.navigate('GuardianApproval', {
             approveParams: {
               eventName: approveParams.eventName,
               approveInfo: {
                 ...approveParams.approveInfo,
-                amount: (LANG_MAX.lt(amount) ? LANG_MAX : amount).toFixed(0),
+                amount: (LANG_MAX.lt(tmpAmount) ? LANG_MAX : tmpAmount).toFixed(0),
               },
             } as ApproveParams,
+            targetChainId,
             approvalType: ApprovalType.managerApprove,
           });
-          await sleep(200);
+          await sleep(250);
           dispatch(changeDrawerOpenStatus(false));
           OverlayModal.hide();
         },
       },
     ],
-    [approveParams.approveInfo, approveParams.eventName, dispatch, onReject, symbolNum, t],
+    [approveParams.approveInfo, approveParams.eventName, dispatch, onReject, symbolNum, t, targetChainId],
   );
 
   const onPressMax = useCallback(() => {
+    setErrorMessage('');
     setSymbolNum(MAX_NUM.toFixed(0));
   }, [MAX_NUM]);
 
   const onChangeText = useCallback(
     (v: string) => {
       if (MAX_NUM.isLessThan(v)) return;
-      setSymbolNum(parseInputIntegerChange(v));
+      setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM));
     },
     [MAX_NUM],
   );
 
   const onUseRecommendedValue = useCallback(() => {
-    setSymbolNum(divDecimalsStr(approveParams.approveInfo.amount, approveParams.approveInfo.decimals));
-  }, [approveParams.approveInfo.amount, approveParams.approveInfo.decimals]);
+    setErrorMessage('');
+    if (LANG_MAX.lt(amount)) return onPressMax();
+    setSymbolNum(divDecimals(amount, decimals).toFixed(decimals));
+  }, [amount, decimals, onPressMax]);
+
+  useEffectOnce(() => {
+    onUseRecommendedValue();
+  });
 
   return (
     <ModalBody modalBodyType="bottom" title="" onClose={onReject}>

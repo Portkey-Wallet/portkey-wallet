@@ -122,6 +122,7 @@ const PaymentSecurityEdit: React.FC = () => {
         restricted: editInfo.restricted,
         decimals: detail?.decimals,
       },
+      targetChainId: detail?.chainId,
     });
   }, [detail, editInfo]);
 

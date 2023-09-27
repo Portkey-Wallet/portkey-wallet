@@ -5,8 +5,9 @@ import {
   getTabMenuAsync,
   getBuyButtonAsync,
   getRememberMeBlackListAsync,
+  getEntranceControlAsync,
 } from './actions';
-import { CMSState } from './types';
+import { CMSState, CmsWebsiteMapItem } from './types';
 
 const initialState: CMSState = {
   socialMediaListNetMap: {},
@@ -14,6 +15,7 @@ const initialState: CMSState = {
   discoverGroupListNetMap: {},
   buyButtonNetMap: {},
   rememberMeBlackListMap: {},
+  cmsWebsiteMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -38,11 +40,36 @@ export const cmsSlice = createSlice({
           ...state.discoverGroupListNetMap,
           ...action.payload.discoverGroupListNetMap,
         };
+
+        const newWebSiteMap: { [url: string]: CmsWebsiteMapItem } = {};
+        Object.values(action.payload.discoverGroupListNetMap).map(networkData => {
+          networkData.map(group => {
+            group.items.map(item => {
+              if (!!item.url && !state.cmsWebsiteMap?.[item.url]) {
+                newWebSiteMap[item.url] = {
+                  title: item.title,
+                  imgUrl: item.imgUrl,
+                };
+              }
+            });
+          });
+        });
+
+        state.cmsWebsiteMap = {
+          ...state.cmsWebsiteMap,
+          ...newWebSiteMap,
+        };
       })
       .addCase(getBuyButtonAsync.fulfilled, (state, action) => {
         state.buyButtonNetMap = {
           ...state.buyButtonNetMap,
           ...action.payload.buyButtonNetMap,
+        };
+      })
+      .addCase(getEntranceControlAsync.fulfilled, (state, action) => {
+        state.entranceControlNetMap = {
+          ...state.entranceControlNetMap,
+          ...action.payload.entranceControlNetMap,
         };
       })
       .addCase(getRememberMeBlackListAsync.fulfilled, (state, action) => {

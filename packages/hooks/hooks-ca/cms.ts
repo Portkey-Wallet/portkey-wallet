@@ -13,14 +13,16 @@ import {
   getBuyButtonAsync,
   getRememberMeBlackListAsync,
   getTabMenuAsync,
+  getEntranceControlAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
-import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { getFaviconUrl, getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
+export const useEntranceControlNetMap = () => useAppCASelector(state => state.cms.entranceControlNetMap);
 
 export function useTabMenuList(isInit = false) {
   const dispatch = useAppCommonDispatch();
@@ -202,6 +204,56 @@ export const useBuyButtonShow = (deviceType: VersionDeviceType) => {
   };
 };
 
+export const useEntranceControl = (isInit = false) => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkList = useNetworkList();
+
+  const entranceControlNetMap = useEntranceControlNetMap();
+
+  const entranceControl = useMemo(() => entranceControlNetMap?.[networkType], [entranceControlNetMap, networkType]);
+
+  useEffect(() => {
+    if (isInit) {
+      networkList.forEach(item => {
+        dispatch(getEntranceControlAsync(item.networkType));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const refresh = useCallback(async () => {
+    return dispatch(getEntranceControlAsync(networkType));
+  }, [dispatch, networkType]);
+
+  return {
+    entranceControl,
+    refresh,
+  };
+};
+
+export const useIsBridgeShow = (deviceType: VersionDeviceType) => {
+  const { entranceControl } = useEntranceControl();
+
+  return useMemo(() => {
+    switch (deviceType) {
+      case VersionDeviceType.iOS:
+        return entranceControl?.isIOSBridgeShow || false;
+      case VersionDeviceType.Android:
+        return entranceControl?.isAndroidBridgeShow || false;
+      case VersionDeviceType.Extension:
+        return entranceControl?.isExtensionBridgeShow || false;
+      default:
+        return false;
+    }
+  }, [
+    deviceType,
+    entranceControl?.isAndroidBridgeShow,
+    entranceControl?.isExtensionBridgeShow,
+    entranceControl?.isIOSBridgeShow,
+  ]);
+};
+
 export const useRememberMeBlackList = (isInit = false) => {
   const dispatch = useAppCommonDispatch();
   const { rememberMeBlackListMap } = useCMS();
@@ -257,4 +309,38 @@ export const useIsChatShow = () => {
   }, [isIMServiceExist, networkType, tabMenuListNetMap]);
 
   return IsChatShow;
+};
+
+export const useGetCmsWebsiteInfo = () => {
+  const { cmsWebsiteMap } = useCMS();
+  const { s3Url } = useCurrentNetworkInfo();
+
+  const getCmsWebsiteInfoImageUrl = useCallback(
+    (domain: string): string => {
+      const target = cmsWebsiteMap?.[domain];
+      // if in cms
+      if (target) {
+        return `${s3Url}/${target?.imgUrl?.filename_disk}`;
+      } else {
+        return getFaviconUrl(domain);
+      }
+    },
+    [cmsWebsiteMap, s3Url],
+  );
+
+  const getCmsWebsiteInfoName = useCallback(
+    (domain: string) => {
+      const target = cmsWebsiteMap?.[domain];
+      if (target) {
+        return target?.title || '';
+      }
+      return '';
+    },
+    [cmsWebsiteMap],
+  );
+
+  return {
+    getCmsWebsiteInfoImageUrl,
+    getCmsWebsiteInfoName,
+  };
 };

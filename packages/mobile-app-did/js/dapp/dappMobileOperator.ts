@@ -24,12 +24,17 @@ import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
 import {
   ApproveMethod,
   CA_METHOD_WHITELIST,
+  DAPP_WHITELIST,
+  DAPP_WHITELIST_ACTION_WHITELIST,
   REMEMBER_ME_ACTION_WHITELIST,
 } from '@portkey-wallet/constants/constants-ca/dapp';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
+import { request as apiRequest } from '@portkey-wallet/api/api-did';
+import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
+
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
@@ -270,6 +275,10 @@ export default class DappMobileOperator extends Operator {
     method: keyof IDappOverlay;
     callBack: SendRequest;
   }) {
+    // is whitelist && is whitelist actions
+    if (DAPP_WHITELIST.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
+      return callBack(eventName, params);
+
     const validSession = await this.verifySessionInfo();
 
     // valid session && is remember me actions
@@ -286,7 +295,7 @@ export default class DappMobileOperator extends Operator {
     const { params } = payload || {};
     const { symbol, amount, spender } = params?.paramsOption || {};
     // check approve input && check valid amount
-    if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN())
+    if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN() || ZERO.plus(amount).lte(0))
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
 
     const contractInfo = await this.getTokenContract(payload.chainId);
@@ -302,7 +311,7 @@ export default class DappMobileOperator extends Operator {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: `${symbol} error` });
 
     const info = await this.dappOverlay.approve(this.dapp, {
-      approveInfo: { ...params?.paramsOption, decimals: tokenInfo?.data.decimals },
+      approveInfo: { ...params?.paramsOption, decimals: tokenInfo?.data.decimals, targetChainId: payload.chainId },
       eventName,
     });
     if (!info) return this.userDenied(eventName);
@@ -357,6 +366,17 @@ export default class DappMobileOperator extends Operator {
       }
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
+
+        try {
+          const { isSafe } = await this.securityCheck();
+          if (!isSafe) {
+            WalletSecurityOverlay.alert();
+            return this.userDenied(eventName);
+          }
+        } catch (error) {
+          return this.userDenied(eventName);
+        }
+
         payload = request.payload;
         if (
           !payload ||
@@ -462,5 +482,10 @@ export default class DappMobileOperator extends Operator {
 
   public setIsLockDapp = (isLockDapp: boolean) => {
     this.isLockDapp = isLockDapp;
+  };
+
+  public securityCheck = async () => {
+    const caHash = getCurrentCaHash();
+    return apiRequest.privacy.securityCheck({ params: { caHash } });
   };
 }

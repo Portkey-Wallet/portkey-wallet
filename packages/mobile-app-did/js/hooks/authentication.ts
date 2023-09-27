@@ -247,6 +247,7 @@ export type VerifyTokenParams = {
   chainId: ChainId;
   id: string;
   operationType: OperationTypeEnum;
+  targetChainId?: ChainId;
 };
 
 export function useVerifyGoogleToken() {

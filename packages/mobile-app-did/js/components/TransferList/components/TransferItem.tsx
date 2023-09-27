@@ -30,6 +30,7 @@ import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import fonts from 'assets/theme/fonts';
+import { ZERO } from '@portkey-wallet/constants/misc';
 
 interface ActivityItemPropsType {
   item?: ActivityItemType;
@@ -52,7 +53,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
     const { amount = '', isReceived, decimals = 8, symbol } = item || {};
     let prefix = ' ';
 
-    if (amount) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
+    if (amount && !ZERO.isEqualTo(amount)) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
 
     return `${prefix} ${formatAmountShow(divDecimals(amount, Number(decimals)))}${symbol ? ' ' + symbol : ''}`;
   }, [item]);
@@ -114,8 +115,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
     return SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? (
       <View style={[itemStyle.right]}>
         <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
-          {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : ''}
-          {!item?.nftInfo?.nftId ? amountString : ''}
+          {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : amountString}
         </Text>
         <Text style={itemStyle.usdtBalance}>
           {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null)
@@ -132,8 +132,7 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
     ) : (
       <View style={[itemStyle.right]}>
         <Text style={[itemStyle.tokenBalance, fonts.regularFont]}>
-          {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : ''}
-          {!item?.nftInfo?.nftId ? amountString : ''}
+          {item?.nftInfo?.nftId ? `#${item?.nftInfo?.nftId}` : amountString}
         </Text>
         {isMainnet && !item?.nftInfo && (isTokenHasPrice || item?.symbol === null) && (
           <Text style={itemStyle.usdtBalance}>{`$ ${formatAmountShow(
@@ -170,7 +169,6 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
             </Text>
           )}
         </View>
-
         {RightDom}
       </View>
       {activity.failedActivityMap[item?.transactionId || ''] && (

@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { View, Text, Platform } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { View, Text } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -18,8 +18,11 @@ import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBuyButtonShow, useIsBridgeShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import BridgeButton from 'components/BridgeButton';
+import GStyles from 'assets/theme/GStyles';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const Card: React.FC = () => {
   const { t } = useLanguage();
@@ -27,9 +30,8 @@ const Card: React.FC = () => {
   const { walletName } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
   const [, requestQrPermission] = useQrScanPermission();
-  const { isBuyButtonShow } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const { isBuyButtonShow } = useBuyButtonShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
+  const isShowBridgeButton = useIsBridgeShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
 
   const showDialog = useCallback(
     () =>
@@ -46,8 +48,34 @@ const Card: React.FC = () => {
     [t],
   );
 
+  const buttonCount = useMemo(() => {
+    let count = 3;
+    if (isBuyButtonShow) count++;
+    if (isShowBridgeButton) count++;
+    // FaucetButton
+    if (!isMainnet) count++;
+    return count;
+  }, [isBuyButtonShow, isMainnet, isShowBridgeButton]);
+
+  const buttonGroupWrapStyle = useMemo(() => {
+    if (buttonCount >= 5) {
+      // styles
+      return {};
+    } else {
+      return GStyles.flexCenter;
+    }
+  }, [buttonCount]);
+
+  const buttonWrapStyle = useMemo(() => {
+    if (buttonCount >= 5) {
+      return {};
+    } else {
+      return styles.buttonWrapStyle1;
+    }
+  }, [buttonCount]);
+
   return (
-    <View style={styles.cardWrap}>
+    <View style={[styles.cardWrap]}>
       <View style={styles.refreshWrap}>
         <Text style={styles.block} />
         <TouchableOpacity
@@ -61,24 +89,14 @@ const Card: React.FC = () => {
       </View>
       <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
       <TextM style={styles.accountName}>{walletName}</TextM>
-      <View style={styles.buttonGroupWrap}>
-        {isBuyButtonShow && (
-          <>
-            <BuyButton themeType="dashBoard" />
-            <View style={styles.spacerStyle} />
-          </>
-        )}
-        <SendButton themeType="dashBoard" />
-        <View style={styles.spacerStyle} />
-        <ReceiveButton themeType="dashBoard" />
-        <View style={styles.spacerStyle} />
-        {!isMainnet && (
-          <>
-            <FaucetButton themeType="dashBoard" />
-            <View style={styles.spacerStyle} />
-          </>
-        )}
-        <ActivityButton themeType="dashBoard" />
+
+      <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+        {isBuyButtonShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        {isShowBridgeButton && <BridgeButton wrapStyle={buttonWrapStyle} />}
+        <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>
     </View>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { View, Text, Platform } from 'react-native';
+import { View, Text } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
@@ -34,6 +34,7 @@ import FaucetButton from 'components/FaucetButton';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -60,7 +61,7 @@ const TokenDetail: React.FC = () => {
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
   const { isBuyButtonShow: isBuyButtonShowStore } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
+    isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android,
   );
 
   const [reFreshing, setFreshing] = useState(false);
@@ -140,6 +141,31 @@ const TokenDetail: React.FC = () => {
     [defaultToken.symbol, isMainnet, tokenInfo.chainId, tokenInfo.symbol],
   );
 
+  const buttonCount = useMemo(() => {
+    let count = 3;
+    if (isBuyButtonShow) count++;
+    // FaucetButton
+    if (!isMainnet) count++;
+    return count;
+  }, [isBuyButtonShow, isMainnet]);
+
+  const buttonGroupWrapStyle = useMemo(() => {
+    if (buttonCount >= 5) {
+      // styles
+      return {};
+    } else {
+      return GStyles.flexCenter;
+    }
+  }, [buttonCount]);
+
+  const buttonWrapStyle = useMemo(() => {
+    if (buttonCount >= 5) {
+      return {};
+    } else {
+      return styles.buttonWrapStyle1;
+    }
+  }, [buttonCount]);
+
   return (
     <PageContainer
       type="leftBack"
@@ -166,22 +192,11 @@ const TokenDetail: React.FC = () => {
             2,
           )}`}</Text>
         )}
-        <View style={styles.buttonGroupWrap}>
-          {isBuyButtonShow && (
-            <>
-              <BuyButton themeType="innerPage" />
-              <View style={styles.spacerStyle} />
-            </>
-          )}
-          <SendButton themeType="innerPage" sentToken={currentToken} />
-          <View style={styles.spacerStyle} />
-          <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" receiveButton={currentToken} />
-          {isFaucetButtonShow && (
-            <>
-              <View style={styles.spacerStyle} />
-              <FaucetButton themeType="innerPage" />
-            </>
-          )}
+        <View style={[styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+          {isBuyButtonShow && <BuyButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
+          <SendButton themeType="innerPage" sentToken={currentToken} wrapStyle={buttonWrapStyle} />
+          <ReceiveButton currentTokenInfo={currentToken} themeType="innerPage" wrapStyle={buttonWrapStyle} />
+          {isFaucetButtonShow && <FaucetButton themeType="innerPage" wrapStyle={buttonWrapStyle} />}
         </View>
       </View>
 

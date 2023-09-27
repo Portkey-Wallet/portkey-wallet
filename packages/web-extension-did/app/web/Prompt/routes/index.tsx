@@ -54,6 +54,8 @@ import FindMore from 'pages/Contacts/FindMore';
 import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
 import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
 import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferSettingsEdit';
+import AllowanceApprove from 'pages/AllowanceApprove';
+import WalletSecurityApprove from 'pages/WalletSecurityApprove';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -181,6 +183,15 @@ export const PageRouter = () => {
       path: '/auto-execute-tx',
       element: <DappAutoTx />,
     },
+    {
+      path: '/allowance-approve',
+      element: <AllowanceApprove />,
+    },
+    {
+      path: '/approve-wallet-security',
+      element: <WalletSecurityApprove />,
+    },
+
     {
       path: '*',
       element: <NotFound />,

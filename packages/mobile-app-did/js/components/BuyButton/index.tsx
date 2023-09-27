@@ -1,38 +1,44 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import Svg from 'components/Svg';
-import { dashBoardBtnStyle, innerPageStyles } from './style';
 import navigationService from 'utils/navigationService';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { commonButtonStyle } from '../SendButton/style';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
-  sentToken?: TokenItemShowType;
+  wrapStyle?: StyleProp<ViewProps>;
 }
 
 const BuyButton = (props: SendButtonType) => {
-  const { themeType = 'dashBoard' } = props;
-  const styles = themeType === 'dashBoard' ? dashBoardBtnStyle : innerPageStyles;
+  const { themeType = 'dashBoard', wrapStyle = {} } = props;
   const isMainnet = useIsMainnet();
   const { t } = useLanguage();
 
+  const buttonTitleStyle = useMemo(
+    () =>
+      themeType === 'dashBoard'
+        ? commonButtonStyle.dashBoardTitleColorStyle
+        : commonButtonStyle.innerPageTitleColorStyle,
+    [themeType],
+  );
+
   return (
-    <View style={styles.buttonWrap}>
+    <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
       <TouchableOpacity
-        style={[styles.iconWrapStyle, GStyles.alignCenter]}
+        style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={async () => {
           if (!isMainnet) return;
           navigationService.navigate('BuyHome');
         }}>
         <Svg icon={themeType === 'dashBoard' ? 'buy' : 'buy1'} size={pTd(46)} />
       </TouchableOpacity>
-      <TextM style={styles.titleStyle}>{t('Buy')}</TextM>
+      <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Buy')}</TextM>
     </View>
   );
 };

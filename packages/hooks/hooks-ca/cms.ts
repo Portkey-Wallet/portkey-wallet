@@ -13,6 +13,7 @@ import {
   getBuyButtonAsync,
   getRememberMeBlackListAsync,
   getTabMenuAsync,
+  getEntranceControlAsync,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
 import { getFaviconUrl, getOrigin } from '@portkey-wallet/utils/dapp/browser';
@@ -215,14 +216,14 @@ export const useEntranceControl = (isInit = false) => {
   useEffect(() => {
     if (isInit) {
       networkList.forEach(item => {
-        dispatch(getRememberMeBlackListAsync(item.networkType));
+        dispatch(getEntranceControlAsync(item.networkType));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const refresh = useCallback(async () => {
-    return dispatch(getRememberMeBlackListAsync(networkType));
+    return dispatch(getEntranceControlAsync(networkType));
   }, [dispatch, networkType]);
 
   return {

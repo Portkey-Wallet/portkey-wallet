@@ -12,7 +12,7 @@ import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import { Image } from '@rneui/base';
+
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';

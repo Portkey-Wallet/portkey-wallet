@@ -1,6 +1,9 @@
+import { ReactNode } from 'react';
 import { PortkeyEntries } from '../../../config/entries';
 import BaseContainer, { BaseContainerProps, BaseContainerState } from '../../../model/container/BaseContainer';
 import { AccountCheckResult, attemptAccountCheck } from '../../../model/sign-in';
+import LoginPortkey from './LoginPortkey';
+import React from 'react';
 
 export default class SignInEntryPage extends BaseContainer<SignInPageProps, SignInPageState, SignInPageResult> {
   constructor(props: SignInPageProps) {
@@ -17,6 +20,10 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
   attemptAccountCheck = async (accountIdentifier: string): Promise<AccountCheckResult> => {
     return attemptAccountCheck(accountIdentifier);
   };
+
+  render() {
+    return <LoginPortkey />;
+  }
 }
 
 export interface SignInPageProps extends BaseContainerProps {}

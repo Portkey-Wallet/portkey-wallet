@@ -2,6 +2,7 @@
   "name": "react-native-sdk-demo",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "repository": "https://github.com/carbon-portkey/react-native-sdk-demo.git",
   "author": "Carbon.lv <130360750+carbon-portkey@users.noreply.github.com>",
   "license": "MIT",
@@ -10,6 +11,7 @@
     "@react-native-community/cli-platform-android": "^11.3.8",
     "@react-native/metro-config": "^0.72.11",
     "aelf-sdk": "^3.2.45-beta.1",
+    "lottie-react-native": "^5.1.5",
     "react": "^18.2.0",
     "react-native": "^0.72.4",
     "react-native-get-random-values": "^1.9.0",
@@ -18,12 +20,19 @@
     "react-native-webview": "^13.6.0",
     "react-redux": "^8.0.2",
     "redux-flipper": "^2.0.2",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "rn-teaset": "^0.1.1"
   },
   "scripts": {
     "start": "yarn react-native start"
   },
   "devDependencies": {
-    "@types/react": "^18.2.21"
+    "@types/react": "^18.2.21",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "@babel/core": "^7.12.9",
+    "@babel/runtime": "^7.12.5"
+  },
+  "alias": {
+    "#portkey-app": "../portkey-app-did/js"
   }
 }

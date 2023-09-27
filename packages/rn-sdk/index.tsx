@@ -1,10 +1,9 @@
-import React from 'react';
-import { AppRegistry, ComponentProvider, StyleSheet, Text, View } from 'react-native';
+import { AppRegistry } from 'react-native';
 import { PortkeyEntries } from './js/config/entries';
 import TestPage from './js/components/TestPage';
 import { initJSModules } from './js/service/js-modules';
 
-type EntryConfig = Map<string, ComponentProvider>;
+type EntryConfig = Map<string, () => () => JSX.Element>;
 
 const entryConfig: EntryConfig = new Map();
 entryConfig.set(PortkeyEntries.TEST, () => TestPage);

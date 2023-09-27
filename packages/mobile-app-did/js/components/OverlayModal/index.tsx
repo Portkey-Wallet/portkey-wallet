@@ -71,7 +71,7 @@ export function OverlayTransformView({
 }
 
 export default class OverlayModal extends React.Component {
-  static show(component: ReactNode, overlayProps: OverlayModalProps = {}): number {
+  static show(component: JSX.Element, overlayProps: OverlayModalProps = {}): number {
     const {
       position,
       style: propsStyle,

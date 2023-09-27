@@ -72,7 +72,7 @@ function AlertBody({ title, message, buttons, message2, title2, autoClose = true
         );
       })}
       <ButtonRow
-        buttons={buttons?.map(i => ({
+        buttons={buttons?.map((i: { onPress: () => void }) => ({
           ...i,
           onPress: () => {
             if (autoClose) OverlayModal.hide();

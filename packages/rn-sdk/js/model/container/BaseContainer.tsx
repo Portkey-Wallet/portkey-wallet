@@ -56,6 +56,7 @@ export type BaseContainerProps = {
  * const obj1 = { a: { b: { c: 1 } } }; // this makes parse operations difficult in Android native
  * const obj2 = { a: '1', b: '2', c: 3.0 }; // this is fine
  * ```
+ * reason: React Native provides ```ReadableMap``` object as params but requires ```Bundle``` object as given props, makes it difficult to parse them.
  */
 export type AcceptablePropsType = {
   [key: string]: AcceptableValueType;

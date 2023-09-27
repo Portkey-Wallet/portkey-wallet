@@ -28,7 +28,7 @@
     "@sentry/core": "^7.37.1",
     "@sentry/react": "^7.37.1",
     "@sentry/tracing": "^7.37.1",
-    "aelf-sdk": "3.2.45-beta.0",
+    "aelf-sdk": "3.2.45-beta.1",
     "aelf-sdk-cross-chain": "^1.0.14",
     "query-string": "^7.1.1",
     "antd": "^4.23.2",

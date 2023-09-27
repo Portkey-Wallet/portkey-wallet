@@ -311,7 +311,7 @@ export default class DappMobileOperator extends Operator {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: `${symbol} error` });
 
     const info = await this.dappOverlay.approve(this.dapp, {
-      approveInfo: { ...params?.paramsOption, decimals: tokenInfo?.data.decimals },
+      approveInfo: { ...params?.paramsOption, decimals: tokenInfo?.data.decimals, targetChainId: payload.chainId },
       eventName,
     });
     if (!info) return this.userDenied(eventName);

@@ -36,7 +36,7 @@ const ZERO_MESSAGE = 'Please enter a nonzero value';
 const ApproveModal = (props: SignModalPropsType) => {
   const { dappInfo, approveParams, onReject } = props;
   console.log(approveParams, '====approveInfo');
-  const { decimals, amount } = approveParams.approveInfo;
+  const { decimals, amount, targetChainId } = approveParams.approveInfo;
   const dispatch = useAppDispatch();
   const { t } = useLanguage();
 
@@ -84,6 +84,7 @@ const ApproveModal = (props: SignModalPropsType) => {
                 amount: (LANG_MAX.lt(tmpAmount) ? LANG_MAX : tmpAmount).toFixed(0),
               },
             } as ApproveParams,
+            targetChainId,
             approvalType: ApprovalType.managerApprove,
           });
           await sleep(250);
@@ -92,7 +93,7 @@ const ApproveModal = (props: SignModalPropsType) => {
         },
       },
     ],
-    [approveParams.approveInfo, approveParams.eventName, dispatch, onReject, symbolNum, t],
+    [approveParams.approveInfo, approveParams.eventName, dispatch, onReject, symbolNum, t, targetChainId],
   );
 
   const onPressMax = useCallback(() => {

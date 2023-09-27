@@ -1,6 +1,6 @@
 import { NativeModules } from 'react-native';
 import { PortkeyEntries } from '../../config/entries';
-import { AcceptablePropsType, AcceptableValueType } from '../../model/container/BaseContainer';
+import { AcceptableValueType } from '../../model/container/BaseContainer';
 
 export const portkeyModulesEntity = NativeModules as PortkeyNativeModules;
 
@@ -40,4 +40,39 @@ export interface NativeWrapperModule {
   onWarning: (from: string, warnMsg: string) => void;
   getPlatformName: () => string;
   emitJSMethodResult: (eventId: string, result: string) => void;
+}
+
+export interface NetworkModule {
+  fetch: (
+    url: string,
+    method: 'GET' | 'POST',
+    params: { [x: string]: string | number | null | undefined },
+  ) => Promise<string>;
+}
+
+export const nativeFetch = async <T>(
+  url: string,
+  method: 'GET' | 'POST',
+  params: { [x: string]: string | number | null | undefined },
+): Promise<ResultWrapper<T>> => {
+  const networkModule = (portkeyModulesEntity as any).NetworkModule as NetworkModule;
+  const res = await networkModule.fetch(url, method, params);
+  if (res?.length > 0) {
+    try {
+      const t = JSON.parse(res) as ResultWrapper<T>;
+      return t;
+    } catch (e) {}
+  }
+  throw new Error('fetch failed');
+};
+
+export interface ResultWrapper<T> {
+  status: NetworkResult;
+  result?: T;
+  errCode: string;
+}
+
+export enum NetworkResult {
+  success = 1,
+  failed = -1,
 }

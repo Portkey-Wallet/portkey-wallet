@@ -12,4 +12,15 @@ export interface PortkeyConfigInterface {
   currChainId: ChainId;
 }
 
-export let PortkeyConfig = {};
+export let PortkeyConfig: PortkeyConfigInterface = {
+  endPointUrl: EndPoints.MAIN_NET,
+  currChainId: 'AELF',
+};
+
+export const setEndPointUrl = (environment: EndPoints) => {
+  PortkeyConfig.endPointUrl = environment;
+};
+
+export const setCurrChainId = (chainId: ChainId) => {
+  PortkeyConfig.currChainId = chainId;
+};

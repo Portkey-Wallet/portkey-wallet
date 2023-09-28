@@ -1,6 +1,6 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
-import { useCurrentWallet, useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { Image, message } from 'antd';
 import { SecurityVulnerabilityTip, SecurityVulnerabilityTitle } from 'constants/security';
@@ -71,9 +71,8 @@ export interface ICheckLimitParams {
   from: ICheckLimitBusiness;
 }
 
-export const useCheckLimit = () => {
-  const originChainId = useOriginChainId();
-  const currentChain = useCurrentChain(originChainId);
+export const useCheckLimit = (targetChainId: ChainId) => {
+  const currentChain = useCurrentChain(targetChainId);
   const { walletInfo } = useCurrentWallet();
   const { passwordSeed } = useUserInfo();
   const checkTransferLimit = useCheckTransferLimit();

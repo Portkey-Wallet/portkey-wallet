@@ -73,7 +73,7 @@ export default function Buy() {
   const { ach: achFee } = useGetTxFee('AELF');
   const defaultToken = useDefaultToken('AELF');
   const checkSecurity = useCheckSecurity();
-  const checkLimit = useCheckLimit();
+  const checkLimit = useCheckLimit('AELF');
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(

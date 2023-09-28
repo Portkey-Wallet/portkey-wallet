@@ -58,7 +58,7 @@ export default function GuardianApproval() {
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(query);
 
   const userVerifiedList = useMemo(() => {
-    const tempVerifiedList = Object.values(userGuardianStatus ?? {});
+    const tempVerifiedList: UserGuardianStatus[] = Object.values(userGuardianStatus ?? {});
     let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
     if (query === 'guardians/edit') {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);
@@ -80,7 +80,7 @@ export default function GuardianApproval() {
   const handleGuardianRecovery = useRecovery();
 
   const handleRemoveOtherManage = useRemoveOtherManage();
-  const handleSetTransferLimit = useSetTransferLimit();
+  const handleSetTransferLimit = useSetTransferLimit(targetChainId);
 
   const recoveryWallet = useCallback(async () => {
     if (query && query.indexOf('guardians') !== -1) {

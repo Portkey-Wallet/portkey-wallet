@@ -220,9 +220,7 @@ export default function VerifierAccount() {
     } else if (state.indexOf('guardians') !== -1) {
       navigate('/setting/guardians/guardian-approval', { state: state });
     } else if (state.indexOf('setTransferLimit') !== -1) {
-      // TODO
-      const transState = state.split('_')[1];
-      navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, { state: JSON.parse(transState) });
+      navigate(`/setting/wallet-security/payment-security/guardian-approval`, { state: state });
     } else {
       navigate(-1);
     }

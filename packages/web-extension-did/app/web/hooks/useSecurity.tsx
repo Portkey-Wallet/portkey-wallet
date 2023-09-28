@@ -1,7 +1,6 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCurrentWallet, useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { Image, message } from 'antd';
 import { SecurityVulnerabilityTip, SecurityVulnerabilityTitle } from 'constants/security';
@@ -18,6 +17,7 @@ import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
+import { ICheckLimitBusiness, IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export const useCheckSecurity = () => {
   const { t } = useTranslation();
@@ -68,6 +68,7 @@ export interface ICheckLimitParams {
   symbol: string;
   decimals: number | string;
   amount: string;
+  from: ICheckLimitBusiness;
 }
 
 export const useCheckLimit = () => {
@@ -80,7 +81,7 @@ export const useCheckLimit = () => {
   const singleTransferLimitModal = useSingleTransferLimitModal();
 
   return useCallback(
-    async ({ chainId, symbol, decimals, amount }: ICheckLimitParams): Promise<boolean | object> => {
+    async ({ chainId, symbol, decimals, amount, from }: ICheckLimitParams): Promise<boolean | object> => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
 
@@ -97,13 +98,14 @@ export const useCheckLimit = () => {
         amount,
       });
 
-      const settingParams: IPaymentSecurityItem = {
+      const settingParams: IPaymentSecurityRouteState = {
         chainId: chainId,
         symbol,
         singleLimit: limitRes?.singleBalance.toString() || '',
         dailyLimit: limitRes?.dailyLimit.toString() || '',
         restricted: !limitRes?.dailyLimit.eq(-1),
         decimals,
+        from,
       };
       if (limitRes?.isSingleLimited) {
         return singleTransferLimitModal(settingParams);

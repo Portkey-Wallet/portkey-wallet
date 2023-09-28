@@ -6,11 +6,12 @@ import { useMemo } from 'react';
 import { ITransferSettingsFormInit } from '../TransferSettingsBody';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import { NoLimit, SetLimitExplain } from 'constants/security';
+import { IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 const { Item: FormItem } = Form;
 
 export interface ITransferSettingsEditBodyProps extends FormProps {
-  state: any;
+  state: IPaymentSecurityRouteState;
   restrictedValue: boolean;
   disable: boolean;
   validSingleLimit: ValidData;
@@ -37,8 +38,8 @@ export default function TransferSettingsEditBody({
 
   const initValue: ITransferSettingsFormInit = useMemo(
     () => ({
-      singleLimit: divDecimals(state.singleLimit, state.decimals).toString(),
-      dailyLimit: divDecimals(state.dailyLimit, state.decimals).toString(),
+      singleLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.singleLimit, state.decimals).toString(),
+      dailyLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.dailyLimit, state.decimals).toString(),
       restricted: state.restricted,
     }),
     [state.dailyLimit, state.decimals, state.restricted, state.singleLimit],
@@ -70,7 +71,7 @@ export default function TransferSettingsEditBody({
             <Input
               placeholder={t('Enter limit')}
               onChange={(e) => onSingleLimitChange(e.target.value)}
-              maxLength={16}
+              maxLength={18}
               suffix={state?.symbol || ''}
             />
           </FormItem>
@@ -82,7 +83,7 @@ export default function TransferSettingsEditBody({
             <Input
               placeholder={t('Enter limit')}
               onChange={(e) => onDailyLimitChange(e.target.value)}
-              maxLength={16}
+              maxLength={18}
               suffix={state?.symbol || ''}
             />
           </FormItem>

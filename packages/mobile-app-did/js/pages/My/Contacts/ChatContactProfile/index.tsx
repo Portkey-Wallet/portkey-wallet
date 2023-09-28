@@ -12,7 +12,6 @@ import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileHandleSection from 'pages/My/components/ProfileHandleSection';
 import ProfileIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
-import useEffectOnce from 'hooks/useEffectOnce';
 import im from '@portkey-wallet/im';
 import { useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
@@ -25,6 +24,7 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import ProfileLoginAccountsSection from '../components/ProfileLoginAccountsSection';
+import { useFocusEffect } from '@react-navigation/native';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -43,7 +43,6 @@ const ContactProfile: React.FC = () => {
 
   const { t } = useLanguage();
   const addStranger = useAddStrangerContact();
-  const timerRef = useRef<NodeJS.Timeout | number>();
 
   const [profileInfo, setProfileInfo] = useState<IContactProfile>();
 
@@ -95,7 +94,7 @@ const ContactProfile: React.FC = () => {
   const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
-    const isLoadingShow = !storeContactInfo;
+    const isLoadingShow = !contactInfo;
     try {
       isLoadingShow && Loading.show();
       const { data } = await im.service.getProfile({ relationId: relationId || contactInfo?.imInfo?.relationId || '' });
@@ -107,12 +106,15 @@ const ContactProfile: React.FC = () => {
     } finally {
       isLoadingShow && Loading.hide();
     }
-  }, [contactInfo?.imInfo?.relationId, relationId, storeContactInfo]);
+  }, [relationId, contactInfo]);
+  const getProfileRef = useLatestRef(getProfile);
 
-  useEffect(() => () => clearTimeout(timerRef.current), []);
-  useEffectOnce(() => {
-    getProfile();
-  });
+  useFocusEffect(
+    useCallback(() => {
+      getProfileRef.current();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
 
   const addContact = useLockCallback(async () => {
     try {

@@ -53,8 +53,8 @@
 }
 
 - (void)loginButtonClicked:(id)sender {
-//    [[PortkeySDKRouterModule sharedInstance] navigationTo:@"sign_in_entry" targetScene:@""];
-    [[PortkeySDKRouterModule sharedInstance] navigationTo:@"test" targetScene:@""];
+    [[PortkeySDKRouterModule sharedInstance] navigationTo:@"sign_in_entry" targetScene:@""];
+//    [[PortkeySDKRouterModule sharedInstance] navigationTo:@"test" targetScene:@""];
 }
 
 #pragma mark - Getter

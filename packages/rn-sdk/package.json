@@ -14,14 +14,19 @@
     "react": "^18.2.0",
     "react-native": "^0.72.4",
     "react-native-get-random-values": "^1.9.0",
+    "@react-native-async-storage/async-storage": "^1.17.6",
     "react-native-gradle-plugin": "^0.71.19",
     "react-native-mmkv": "^2.10.2",
     "react-native-webview": "^13.6.0",
+    "react-native-localize": "^2.2.1",
     "react-redux": "^8.0.2",
     "redux-flipper": "^2.0.2",
     "redux-persist": "^6.0.0",
     "rn-teaset": "^0.1.1",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "@rneui/themed": "^4.0.0-rc.6",
+    "react-native-config": "^1.4.6",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5"
   },
   "scripts": {
     "start": "react-native start"

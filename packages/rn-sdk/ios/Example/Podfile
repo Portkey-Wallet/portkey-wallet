@@ -26,6 +26,7 @@ target 'PortkeySDKExample_Example' do
   pod 'react-native-webview', :path => "#{$node_modules}/react-native-webview"
   pod 'react-native-get-random-values', :path => "#{$node_modules}/react-native-get-random-values"
   pod 'react-native-mmkv', :path => "#{$node_modules}/react-native-mmkv"
+  # pod 'RNCAsyncStorage', path => "#{$node_modules}/@react-native-async-storage/async-storage"
 
   target 'PortkeySDKExample_Tests' do
     inherit! :search_paths

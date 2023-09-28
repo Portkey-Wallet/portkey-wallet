@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { PortkeyEntries } from '../../../config/entries';
 import BaseContainer, { BaseContainerProps, BaseContainerState } from '../../../model/container/BaseContainer';
 import { AccountCheckResult, attemptAccountCheck } from '../../../model/sign-in';
-import LoginPortkey from './LoginPortkey';
+import LoginPortkey from 'pages/Login/LoginPortkey';
 import React from 'react';
 
 export default class SignInEntryPage extends BaseContainer<SignInPageProps, SignInPageState, SignInPageResult> {

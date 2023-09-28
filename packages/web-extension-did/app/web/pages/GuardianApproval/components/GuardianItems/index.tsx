@@ -158,13 +158,12 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
             }),
           );
           if (query && query.indexOf('removeManage') !== -1) {
-            navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
+            return navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
           }
           if (query && query.indexOf('setTransferLimit') !== -1) {
-            navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
-          } else {
-            navigate('/login/verifier-account', { state: 'login' });
+            return navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
           }
+          return navigate('/login/verifier-account', { state: 'login' });
         }
       } catch (error: any) {
         console.log(error, 'error===');

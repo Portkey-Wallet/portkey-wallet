@@ -46,6 +46,8 @@ import {
 } from '@portkey-wallet/constants/constants-ca/payment';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
+import { handleErrorMessage } from '@portkey-wallet/utils';
+import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -106,6 +108,12 @@ export default function Buy() {
         valueSaveRef.current.side = side;
         setAmount(initCrypto);
         valueSaveRef.current.amount = initCrypto;
+
+        // CHECK 1: security
+        checkSecurity().catch((error) => {
+          const msg = handleErrorMessage(error);
+          console.log('check security error: ', msg);
+        });
       }
       updateCrypto();
     }
@@ -284,6 +292,7 @@ export default function Buy() {
 
   const handlePageChange = useCallback(
     async (e: RadioChangeEvent) => {
+      // CHECK 1: is show buy\sell
       refreshBuyButton(); // fetch on\off ramp is display
 
       const side = e.target.value;
@@ -301,10 +310,19 @@ export default function Buy() {
         return;
       }
 
-      // check security
+      // CHECK 2: security
       if (side === PaymentTypeEnum.SELL) {
-        const res = await checkSecurity();
-        if (typeof res !== 'boolean') return;
+        try {
+          setLoading(true);
+          const res = await checkSecurity();
+          setLoading(false);
+          if (typeof res !== 'boolean') return;
+        } catch (error) {
+          setLoading(false);
+
+          const msg = handleErrorMessage(error);
+          message.error(msg);
+        }
       }
 
       stopInterval();
@@ -384,6 +402,8 @@ export default function Buy() {
   const handleNext = useCallback(async () => {
     const { side } = valueSaveRef.current;
     setLoading(true);
+
+    // CHECK 1: is show buy\sell
     const result = await refreshBuyButton();
     const isBuySectionShow = result.isBuySectionShow;
     const isSellSectionShow = result.isSellSectionShow;
@@ -407,16 +427,28 @@ export default function Buy() {
         setWarningMsg('');
       }
 
-      // transfer limit check
-      const res = await checkLimit({
-        chainId: 'AELF',
-        symbol: defaultToken.symbol,
-        amount: valueSaveRef.current?.amount,
-        decimals: defaultToken.decimals,
-      });
-      if (typeof res !== 'boolean') return;
+      try {
+        // CHECK 2: security
+        const securityRes = await checkSecurity();
+        if (typeof securityRes !== 'boolean') return setLoading(false);
 
-      // search balance from contract
+        // CHECK 3: transfer limit
+        const limitRes = await checkLimit({
+          chainId: 'AELF',
+          symbol: defaultToken.symbol,
+          amount: valueSaveRef.current?.amount,
+          decimals: defaultToken.decimals,
+          from: ICheckLimitBusiness.RAMP_SELL,
+        });
+        if (typeof limitRes !== 'boolean') return setLoading(false);
+      } catch (error) {
+        setLoading(false);
+
+        const msg = handleErrorMessage(error);
+        message.error(msg);
+      }
+
+      // CHECK 4: search balance from contract
       const result = await getBalance({
         rpcUrl: currentChain.endPoint,
         address: accountTokenList[0].tokenContractAddress || '',
@@ -457,6 +489,7 @@ export default function Buy() {
     achFee,
     checkLimit,
     checkManagerSyncState,
+    checkSecurity,
     currentChain,
     currentNetwork.walletType,
     defaultToken.decimals,

@@ -1,15 +1,15 @@
 import { Button, Form, FormProps, Input, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import './index.less';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useMemo } from 'react';
 import { AmountSign, formatWithCommas } from '@portkey-wallet/utils/converter';
 import { NoLimit, SetLimitExplain } from 'constants/security';
+import { IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 const { Item: FormItem } = Form;
 
 export interface ITransferSettingsBodyProps extends FormProps {
-  state: IPaymentSecurityItem;
+  state: IPaymentSecurityRouteState;
   onEdit: () => void;
 }
 

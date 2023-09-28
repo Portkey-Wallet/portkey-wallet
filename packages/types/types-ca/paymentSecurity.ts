@@ -9,6 +9,13 @@ export interface IPaymentSecurityItem {
   decimals: number | string;
 }
 
+export enum ICheckLimitBusiness {
+  SEND = 'send',
+  RAMP_SELL = 'ramp-sell',
+}
+
+export type IPaymentSecurityRouteState = IPaymentSecurityItem & { from: ICheckLimitBusiness };
+
 export interface ISecurityListResponse {
   data: IPaymentSecurityItem[];
   totalRecordCount: number;

@@ -1,4 +1,4 @@
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { Modal } from 'antd';
 import { ExceedDailyLimit, ExceedSingleLimit } from 'constants/security';
 import { useCallback } from 'react';
@@ -10,7 +10,7 @@ export function useSingleTransferLimitModal() {
   const navigate = useNavigate();
 
   return useCallback(
-    (state: IPaymentSecurityItem) => {
+    (state: IPaymentSecurityRouteState) => {
       return Modal.confirm({
         width: 320,
         content: ExceedSingleLimit,
@@ -20,7 +20,7 @@ export function useSingleTransferLimitModal() {
         centered: true,
         okText: t('Modify'),
         cancelText: t('Cancel'),
-        onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings', { state }), // TODO state
+        onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings', { state }),
       });
     },
     [navigate, t],
@@ -32,7 +32,7 @@ export function useDailyTransferLimitModal() {
   const navigate = useNavigate();
 
   return useCallback(
-    (state: IPaymentSecurityItem) => {
+    (state: IPaymentSecurityRouteState) => {
       return Modal.confirm({
         width: 320,
         content: ExceedDailyLimit,
@@ -42,7 +42,7 @@ export function useDailyTransferLimitModal() {
         centered: true,
         okText: t('Modify'),
         cancelText: t('Cancel'),
-        onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings', { state }), // TODO state
+        onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings', { state }),
       });
     },
     [navigate, t],

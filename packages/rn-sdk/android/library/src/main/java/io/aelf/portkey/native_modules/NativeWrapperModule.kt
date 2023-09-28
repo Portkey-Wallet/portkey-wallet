@@ -5,12 +5,20 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.annotations.ReactProp
 import io.aelf.portkey.navigation.NavigationHolder
 
-internal class NativeWrapperModule(private val context: ReactContext) : ReactContextBaseJavaModule() {
+internal class NativeWrapperModule(private val context: ReactContext) :
+    ReactContextBaseJavaModule() {
     @ReactMethod
     override fun getName(): String {
         return "NativeWrapperModule"
+    }
+
+    override fun getConstants(): MutableMap<String, Any> {
+        return mutableMapOf(
+            Pair("platformName","android")
+        )
     }
 
     @ReactMethod

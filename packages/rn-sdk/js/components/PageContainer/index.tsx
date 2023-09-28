@@ -38,7 +38,7 @@ export default function PageContainer({
   hideTouchable?: boolean;
   pageSafeBottomPadding?: boolean;
 }) {
-  const gStyles = useGStyles();
+  // const gStyles = useGStyles();
   const themeType = useMemo(() => safeAreaColor[0], [safeAreaColor]);
   return (
     <SafeAreaBox
@@ -49,14 +49,15 @@ export default function PageContainer({
         edges={['bottom']}
         pageSafeBottomPadding={pageSafeBottomPadding}
         style={[{ backgroundColor: safeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
-        {!hideHeader && <CustomHeader themeType={themeType} {...props} />}
+        {/* {!hideHeader && <CustomHeader themeType={themeType} {...props} />} */}
         {themeType === 'white' && <StatusBar barStyle="dark-content" />}
         {scrollViewProps?.disabled ? (
           hideTouchable ? (
-            <View style={[gStyles.container, containerStyles]}>{children}</View>
+            // <View style={[gStyles.container, containerStyles]}>{children}</View>
+            <View style={containerStyles}>{children}</View>
           ) : (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-              <View style={[gStyles.container, containerStyles]}>{children}</View>
+              <View style={containerStyles}>{children}</View>
             </TouchableWithoutFeedback>
           )
         ) : (
@@ -68,7 +69,7 @@ export default function PageContainer({
             // enableAutomaticScroll={false}
             enableOnAndroid={true}
             {...scrollViewProps}>
-            <View style={[gStyles.container, containerStyles]}>{children}</View>
+            <View style={containerStyles}>{children}</View>
           </KeyboardAwareScrollView>
         )}
       </SafeAreaBox>

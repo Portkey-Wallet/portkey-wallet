@@ -28,6 +28,7 @@ target 'PortkeySDKExample_Example' do
   pod 'react-native-mmkv', :path => "#{$node_modules}/react-native-mmkv"
   # pod 'RNCAsyncStorage', path => "#{$node_modules}/@react-native-async-storage/async-storage"
   pod 'RNSVG', :path => "#{$node_modules}/react-native-svg"
+  pod 'react-native-safe-area-context', :path => "#{$node_modules}/react-native-safe-area-context"
 
   target 'PortkeySDKExample_Tests' do
     inherit! :search_paths

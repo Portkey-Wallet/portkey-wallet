@@ -28,7 +28,7 @@ const BackType: any = {
   [PageLoginType.phone]: true,
 };
 
-export default function LoginPort() {
+export function LoginPort() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const loginMap = useMemo(
     () => ({
@@ -51,18 +51,18 @@ export default function LoginPort() {
   );
 }
 
-export function LoginPortkey() {
+export default function LoginPortkey() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const { t } = useLanguage();
-  const isMainnet = useIsMainnet();
+  // const isMainnet = useIsMainnet();
+  const isMainnet = true;
   const loginMap = useMemo(
     () => ({
       [PageLoginType.email]: <Email setLoginType={setLoginType} />,
       // [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.qrCode]: <View />,
       [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
-      // [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
-      [PageLoginType.referral]: <View />,
+      [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
     [],
   );
@@ -89,7 +89,6 @@ export function LoginPortkey() {
           <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey')}</TextXXXL>
         </View>
         {loginMap[loginType]}
-        {/* <SwitchNetwork /> */}
       </PageContainer>
     </ImageBackground>
   );

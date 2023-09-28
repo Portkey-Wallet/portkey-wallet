@@ -75,11 +75,11 @@ export default function Referral({
   // }, [googleSign, onLogin]);
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
-      {type === PageType.login && (
+      {/* {type === PageType.login && (
         <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.qrCode)}>
           <Image source={qrCode} style={styles.iconStyle} />
         </Touchable>
-      )}
+      )} */}
       <View style={GStyles.width100}>
         {/* <CommonButton
           type="outline"
@@ -99,7 +99,7 @@ export default function Referral({
           titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
         /> */}
 
-        <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
+        {/* <Divider title="OR" inset={true} style={pageStyles.dividerStyle} /> */}
         <CommonButton type="primary" onPress={() => setLoginType(PageLoginType.phone)} title={TitleMap[type].button} />
       </View>
       {type === PageType.login && (

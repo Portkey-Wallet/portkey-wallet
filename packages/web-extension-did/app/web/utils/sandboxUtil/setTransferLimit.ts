@@ -21,8 +21,8 @@ export const setTransferLimit = async ({
     caHash: string;
     guardiansApproved: GuardianItem[];
     symbol: string;
-    singleLimit: number;
-    dailyLimit: number;
+    singleLimit: string;
+    dailyLimit: string;
   };
 }) => {
   const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.callSendMethod, {

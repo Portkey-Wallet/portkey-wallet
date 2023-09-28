@@ -15,6 +15,7 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
 
 export default function TransferSettingsEdit() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
@@ -108,8 +109,8 @@ export default function TransferSettingsEdit() {
 
     const { restricted, singleLimit, dailyLimit } = form.getFieldsValue();
     const params = {
-      dailyLimit,
-      singleLimit,
+      dailyLimit: timesDecimals(dailyLimit, state.decimals),
+      singleLimit: timesDecimals(singleLimit, state.decimals),
       symbol: state.symbol,
       decimals: state.decimals,
       restricted,

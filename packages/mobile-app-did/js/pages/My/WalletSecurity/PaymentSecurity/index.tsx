@@ -116,7 +116,7 @@ const PaymentSecurityList: React.FC = () => {
         }
       } catch (error) {
         console.log('PaymentSecurityList: error', error);
-        CommonToast.failError(error);
+        CommonToast.failError('Failed to fetch data');
       }
 
       setIsRefreshing(false);

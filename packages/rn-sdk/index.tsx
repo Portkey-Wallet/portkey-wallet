@@ -4,7 +4,7 @@ import TestPage from './js/components/TestPage';
 import { initJSModules } from './js/service/js-modules';
 import SignInEntryPage from 'components/entries/sign-in/SignInEntryPage';
 
-type EntryConfig = Map<string, () => () => JSX.Element>;
+type EntryConfig = Map<string, any>;
 
 const entryConfig: EntryConfig = new Map();
 entryConfig.set(PortkeyEntries.TEST, () => TestPage);

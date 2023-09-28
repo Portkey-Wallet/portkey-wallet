@@ -1,0 +1,17 @@
+export enum APIPaths {
+  CHECK_GOOGLE_RECAPTCHA = '/api/app/account/isGoogleRecaptchaOpen',
+  GET_GUARDIAN_INFO = '/api/app/account/guardianIdentifiers',
+  GET_REGISTER_INFO = '/api/app/account/registerInfo',
+  SEND_VERIFICATION_CODE = '/api/app/account/sendVerificationRequest',
+  CHECK_VERIFICATION_CODE = '/api/app/account/verifyCode',
+  REQUEST_REGISTER = '/api/app/account/register/request',
+  REQUEST_RECOVERY = '/api/app/account/recovery/request',
+  STUB_GET_GUARDIAN_INFO_BY_MANAGER = '#getHolderInfoByManager_stub',
+  SEND_APPLE_USER_EXTRA_INFO = '/api/app/userExtraInfo/appleUserExtraInfo',
+  VERIFY_GOOGLE_TOKEN = '/api/app/account/verifyGoogleToken',
+  VERIFY_APPLE_TOKEN = '/api/app/account/verifyAppleToken',
+  GET_PHONE_COUNTRY_CODE = '/api/app/phone/info',
+  GET_RECOMMEND_GUARDIAN = '/api/app/account/getVerifierServer',
+  CHECK_SOCIAL_RECOVERY_STATUS = '/api/app/search/accountrecoverindex',
+  CHECK_REGISTER_STATUS = '/api/app/search/accountregisterindex',
+}

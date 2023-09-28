@@ -1,6 +1,6 @@
 import { NativeModules } from 'react-native';
 import { PortkeyEntries } from '../../config/entries';
-import { AcceptablePropsType, AcceptableValueType } from '../../model/container/BaseContainer';
+import { AcceptableValueType } from '../../model/container/BaseContainer';
 
 export const portkeyModulesEntity = NativeModules as PortkeyNativeModules;
 
@@ -34,10 +34,44 @@ export interface RouterOptions<T> {
   params?: Partial<T>;
 }
 
+export type TypedUrlParams = { [x: string]: string | number | null | undefined };
+
 export interface NativeWrapperModule {
+  platformName: string;
   onError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
   onFatalError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
   onWarning: (from: string, warnMsg: string) => void;
-  getPlatformName: () => string;
   emitJSMethodResult: (eventId: string, result: string) => void;
+}
+
+export interface NetworkModule {
+  fetch: (url: string, method: 'GET' | 'POST', params: TypedUrlParams, headers: TypedUrlParams) => Promise<string>;
+}
+
+export const nativeFetch = async <T>(
+  url: string,
+  method: 'GET' | 'POST',
+  params?: TypedUrlParams,
+  headers?: TypedUrlParams,
+): Promise<ResultWrapper<T>> => {
+  const networkModule = (portkeyModulesEntity as any).NetworkModule as NetworkModule;
+  const res = await networkModule.fetch(url, method, params ?? {}, headers ?? {});
+  if (res?.length > 0) {
+    try {
+      const t = JSON.parse(res) as ResultWrapper<T>;
+      return t;
+    } catch (e) {}
+  }
+  throw new Error('fetch failed');
+};
+
+export interface ResultWrapper<T> {
+  status: NetworkResult;
+  result?: T;
+  errCode: string;
+}
+
+export enum NetworkResult {
+  success = 1,
+  failed = -1,
 }

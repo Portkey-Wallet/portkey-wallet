@@ -34,6 +34,8 @@ export interface RouterOptions<T> {
   params?: Partial<T>;
 }
 
+export type TypedUrlParams = { [x: string]: string | number | null | undefined };
+
 export interface NativeWrapperModule {
   onError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
   onFatalError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
@@ -43,20 +45,17 @@ export interface NativeWrapperModule {
 }
 
 export interface NetworkModule {
-  fetch: (
-    url: string,
-    method: 'GET' | 'POST',
-    params: { [x: string]: string | number | null | undefined },
-  ) => Promise<string>;
+  fetch: (url: string, method: 'GET' | 'POST', params: TypedUrlParams, headers: TypedUrlParams) => Promise<string>;
 }
 
 export const nativeFetch = async <T>(
   url: string,
   method: 'GET' | 'POST',
-  params: { [x: string]: string | number | null | undefined },
+  params: TypedUrlParams,
+  headers?: TypedUrlParams,
 ): Promise<ResultWrapper<T>> => {
   const networkModule = (portkeyModulesEntity as any).NetworkModule as NetworkModule;
-  const res = await networkModule.fetch(url, method, params);
+  const res = await networkModule.fetch(url, method, params, headers ?? {});
   if (res?.length > 0) {
     try {
       const t = JSON.parse(res) as ResultWrapper<T>;

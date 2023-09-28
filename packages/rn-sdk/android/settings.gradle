@@ -1,3 +1,5 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
 pluginManagement {
     repositories {
         google()
@@ -6,14 +8,14 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
         google()
         mavenCentral()
     }
 }
 
-rootProject.name = "My-RN-Application"
+rootProject.name = "portkey-android"
 include ':library'
 
 includeBuild('../node_modules/@react-native/gradle-plugin')
@@ -23,3 +25,5 @@ apply from: file("../node_modules/@react-native-community/cli-platform-android/n
 
 
 include ':app'
+
+

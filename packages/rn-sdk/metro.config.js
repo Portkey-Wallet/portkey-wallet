@@ -6,7 +6,7 @@ const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
 // Find the project and workspace directories
 const projectRoot = __dirname;
-const workspaceRoot = path.resolve(projectRoot);
+const workspaceRoot = path.resolve(projectRoot, '../..');
 
 const config = {
   // Watch all files within the monorepo

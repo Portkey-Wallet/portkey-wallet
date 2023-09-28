@@ -12,7 +12,7 @@ import styles from '../styles';
 import Email from '../components/Email';
 // import QRCode from '../components/QRCode';
 import Phone from '../components/Phone';
-// import Referral from '../components/Referral';
+import Referral from '../components/Referral';
 import { PageLoginType } from '../types';
 // import SwitchNetwork from '../components/SwitchNetwork';
 import GStyles from 'assets/theme/GStyles';
@@ -28,7 +28,30 @@ const BackType: any = {
   [PageLoginType.phone]: true,
 };
 
-export default function LoginPortkey() {
+export default function LoginPort() {
+  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
+  const loginMap = useMemo(
+    () => ({
+      [PageLoginType.email]: <Email setLoginType={setLoginType} />,
+      // [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
+      [PageLoginType.qrCode]: <View />,
+      [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
+      // [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
+      [PageLoginType.referral]: <View />,
+    }),
+    [],
+  );
+  return (
+    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>
+      <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
+      {/* <Email setLoginType={setLoginType} /> */}
+      {/* <Phone setLoginType={setLoginType} /> */}
+      <Referral setLoginType={setLoginType} />
+    </ImageBackground>
+  );
+}
+
+export function LoginPortkey() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
@@ -43,6 +66,7 @@ export default function LoginPortkey() {
     }),
     [],
   );
+
   return (
     <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>
       <PageContainer

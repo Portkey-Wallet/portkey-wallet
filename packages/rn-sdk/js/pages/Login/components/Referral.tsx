@@ -14,12 +14,12 @@ import CommonButton from 'components/CommonButton';
 import TermsServiceButton from './TermsServiceButton';
 import { defaultColors } from 'assets/theme';
 import Divider from 'components/Divider';
-import CommonToast from 'components/CommonToast';
-import { useAppleAuthentication, useGoogleAuthentication } from 'hooks/authentication';
-import { useOnLogin } from 'hooks/login';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import Loading from 'components/Loading';
-import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+// import CommonToast from 'components/CommonToast';
+// import { useAppleAuthentication, useGoogleAuthentication } from 'hooks/authentication';
+// import { useOnLogin } from 'hooks/login';
+// import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+// import Loading from 'components/Loading';
+// import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 const TitleMap = {
   [PageType.login]: {
     apple: 'Login with Apple',
@@ -40,39 +40,39 @@ export default function Referral({
   setLoginType: (type: PageLoginType) => void;
   type?: PageType;
 }) {
-  const { appleSign } = useAppleAuthentication();
-  const { googleSign } = useGoogleAuthentication();
+  // const { appleSign } = useAppleAuthentication();
+  // const { googleSign } = useGoogleAuthentication();
 
-  const onLogin = useOnLogin(type === PageType.login);
+  // const onLogin = useOnLogin(type === PageType.login);
 
-  const onAppleSign = useLockCallback(async () => {
-    const loadingKey = Loading.show();
-    try {
-      const userInfo = await appleSign();
-      await onLogin({
-        loginAccount: userInfo.user.id,
-        loginType: LoginType.Apple,
-        authenticationInfo: { [userInfo.user.id]: userInfo.identityToken as string },
-      });
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-    Loading.hide(loadingKey);
-  }, [appleSign, onLogin]);
-  const onGoogleSign = useLockCallback(async () => {
-    const loadingKey = Loading.show();
-    try {
-      const userInfo = await googleSign();
-      await onLogin({
-        loginAccount: userInfo.user.id,
-        loginType: LoginType.Google,
-        authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
-      });
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-    Loading.hide(loadingKey);
-  }, [googleSign, onLogin]);
+  // const onAppleSign = useLockCallback(async () => {
+  //   const loadingKey = Loading.show();
+  //   try {
+  //     const userInfo = await appleSign();
+  //     await onLogin({
+  //       loginAccount: userInfo.user.id,
+  //       loginType: LoginType.Apple,
+  //       authenticationInfo: { [userInfo.user.id]: userInfo.identityToken as string },
+  //     });
+  //   } catch (error) {
+  //     CommonToast.failError(error);
+  //   }
+  //   Loading.hide(loadingKey);
+  // }, [appleSign, onLogin]);
+  // const onGoogleSign = useLockCallback(async () => {
+  //   const loadingKey = Loading.show();
+  //   try {
+  //     const userInfo = await googleSign();
+  //     await onLogin({
+  //       loginAccount: userInfo.user.id,
+  //       loginType: LoginType.Google,
+  //       authenticationInfo: { [userInfo.user.id]: userInfo.accessToken },
+  //     });
+  //   } catch (error) {
+  //     CommonToast.failError(error);
+  //   }
+  //   Loading.hide(loadingKey);
+  // }, [googleSign, onLogin]);
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
       {type === PageType.login && (
@@ -81,7 +81,7 @@ export default function Referral({
         </Touchable>
       )}
       <View style={GStyles.width100}>
-        <CommonButton
+        {/* <CommonButton
           type="outline"
           onPress={onGoogleSign}
           title={TitleMap[type].google}
@@ -97,7 +97,7 @@ export default function Referral({
           icon={<Svg icon="apple" size={24} />}
           containerStyle={pageStyles.outlineContainerStyle}
           titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
-        />
+        /> */}
 
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
         <CommonButton type="primary" onPress={() => setLoginType(PageLoginType.phone)} title={TitleMap[type].button} />

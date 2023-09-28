@@ -12,10 +12,10 @@ import CommonInput from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
-import { useOnLogin } from 'hooks/login';
+// import { useOnLogin } from 'hooks/login';
 import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
-import { useFocusEffect } from '@react-navigation/native';
+// import { useFocusEffect } from '@react-navigation/native';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const TitleMap = {
@@ -41,20 +41,21 @@ export default function Email({
   const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
-  const onLogin = useOnLogin(type === PageType.login);
+  // const onLogin = useOnLogin(type === PageType.login);
 
-  const onPageLogin = useLockCallback(async () => {
-    const message = checkEmail(loginAccount) || undefined;
-    setErrorMessage(message);
-    if (message) return;
-    const loadingKey = Loading.show();
-    try {
-      await onLogin({ loginAccount: loginAccount as string });
-    } catch (error) {
-      setErrorMessage(handleErrorMessage(error));
-    }
-    Loading.hide(loadingKey);
-  }, [loginAccount, onLogin]);
+  // const onPageLogin = useLockCallback(async () => {
+  //   const message = checkEmail(loginAccount) || undefined;
+  //   setErrorMessage(message);
+  //   if (message) return;
+  //   const loadingKey = Loading.show();
+  //   try {
+  //     await onLogin({ loginAccount: loginAccount as string });
+  //   } catch (error) {
+  //     setErrorMessage(handleErrorMessage(error));
+  //   }
+  //   Loading.hide(loadingKey);
+  // }, [loginAccount, onLogin]);
+  const onPageLogin = useLockCallback(async () => {}, []);
 
   useEffectOnce(() => {
     const listener = myEvents[type === PageType.login ? 'clearLoginInput' : 'clearSignupInput'].addListener(() => {
@@ -64,14 +65,14 @@ export default function Email({
     return () => listener.remove();
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!iptRef || !iptRef?.current) return;
-      timerRef.current = setTimeout(() => {
-        iptRef.current.focus();
-      }, 200);
-    }, []),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (!iptRef || !iptRef?.current) return;
+  //     timerRef.current = setTimeout(() => {
+  //       iptRef.current.focus();
+  //     }, 200);
+  //   }, []),
+  // );
 
   useEffect(
     () => () => {

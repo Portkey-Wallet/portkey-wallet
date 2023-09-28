@@ -8,7 +8,7 @@ import Touchable from 'components/Touchable';
 import CommonInput, { CommonInputProps } from 'components/CommonInput';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import { pTd } from 'utils/unit';
-import { useFocusEffect } from '@react-navigation/native';
+// import { useFocusEffect } from '@react-navigation/native';
 
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
@@ -34,14 +34,14 @@ export default function PhoneInput({ selectCountry, onCountryChange, ...inputPro
     };
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!iptRef || !iptRef?.current) return;
-      timer.current = setTimeout(() => {
-        iptRef.current.focus();
-      }, 200);
-    }, []),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (!iptRef || !iptRef?.current) return;
+  //     timer.current = setTimeout(() => {
+  //       iptRef.current.focus();
+  //     }, 200);
+  //   }, []),
+  // );
 
   useEffect(() => {
     return () => {

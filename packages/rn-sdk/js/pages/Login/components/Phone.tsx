@@ -12,7 +12,7 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
-import { useOnLogin } from 'hooks/login';
+// import { useOnLogin } from 'hooks/login';
 import PhoneInput from 'components/PhoneInput';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
@@ -34,36 +34,37 @@ export default function Phone({
   setLoginType: (type: PageLoginType) => void;
   type?: PageType;
 }) {
-  const { t } = useLanguage();
-  const [loading] = useState<boolean>();
+  // const { t } = useLanguage();
+  // const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
-  const { localPhoneCountryCode: country } = usePhoneCountryCode();
-  const onLogin = useOnLogin(type === PageType.login);
+  // const { localPhoneCountryCode: country } = usePhoneCountryCode();
+  // const onLogin = useOnLogin(type === PageType.login);
 
-  const onPageLogin = useLockCallback(async () => {
-    const loadingKey = Loading.show();
-    try {
-      await onLogin({
-        showLoginAccount: `+${country.code} ${loginAccount}`,
-        loginAccount: `+${country.code}${loginAccount}`,
-        loginType: LoginType.Phone,
-      });
-    } catch (error) {
-      setErrorMessage(handleErrorMessage(error));
-    }
-    Loading.hide(loadingKey);
-  }, [country.code, loginAccount, onLogin]);
+  // const onPageLogin = useLockCallback(async () => {
+  //   const loadingKey = Loading.show();
+  //   try {
+  //     await onLogin({
+  //       showLoginAccount: `+${country.code} ${loginAccount}`,
+  //       loginAccount: `+${country.code}${loginAccount}`,
+  //       loginType: LoginType.Phone,
+  //     });
+  //   } catch (error) {
+  //     setErrorMessage(handleErrorMessage(error));
+  //   }
+  //   Loading.hide(loadingKey);
+  // }, [country.code, loginAccount, onLogin]);
+  const onPageLogin = useLockCallback(async () => {}, []);
 
-  useEffectOnce(() => {
-    const listener = myEvents[type === PageType.login ? 'clearLoginInput' : 'clearSignupInput'].addListener(() => {
-      setLoginAccount('');
-      setErrorMessage(undefined);
-    });
-    return () => {
-      listener.remove();
-    };
-  });
+  // useEffectOnce(() => {
+  //   const listener = myEvents[type === PageType.login ? 'clearLoginInput' : 'clearSignupInput'].addListener(() => {
+  //     setLoginAccount('');
+  //     setErrorMessage(undefined);
+  //   });
+  //   return () => {
+  //     listener.remove();
+  //   };
+  // });
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
       <View style={GStyles.width100}>
@@ -82,17 +83,17 @@ export default function Phone({
           errorMessage={errorMessage}
           containerStyle={styles.inputContainerStyle}
           onChangeText={setLoginAccount}
-          selectCountry={country}
+          // selectCountry={country}
         />
 
-        <CommonButton
+        {/* <CommonButton
           containerStyle={GStyles.marginTop(16)}
           disabled={!loginAccount}
           type="primary"
           loading={loading}
           onPress={onPageLogin}>
           {t(TitleMap[type].button)}
-        </CommonButton>
+        </CommonButton> */}
       </View>
       <TermsServiceButton />
     </View>

@@ -107,13 +107,13 @@ export default function TransferSettingsEdit() {
     await userGuardianList({ caHash: walletInfo.caHash });
     // ====== clear guardian cache ====== end
 
-    const { restricted, singleLimit, dailyLimit } = form.getFieldsValue();
+    const { singleLimit, dailyLimit } = form.getFieldsValue();
     const params = {
       dailyLimit: timesDecimals(dailyLimit, state.decimals),
       singleLimit: timesDecimals(singleLimit, state.decimals),
       symbol: state.symbol,
       decimals: state.decimals,
-      restricted,
+      restricted: restrictedText,
       from: state.from,
       targetChainId: state.chainId,
     };
@@ -133,10 +133,11 @@ export default function TransferSettingsEdit() {
     walletInfo.caHash,
     userGuardianList,
     form,
-    state.symbol,
     state.decimals,
+    state.symbol,
     state.from,
     state.chainId,
+    restrictedText,
     isPrompt,
     navigate,
   ]);

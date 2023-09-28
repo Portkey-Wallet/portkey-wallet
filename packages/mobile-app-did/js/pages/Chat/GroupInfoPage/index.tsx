@@ -21,7 +21,7 @@ import { useGroupChannelInfo, useLeaveChannel, useRelationId } from '@portkey-wa
 import { ChatOperationsEnum, GROUP_INFO_MEMBER_SHOW_LIMITED } from '@portkey-wallet/constants/constants-ca/chat';
 import useEffectOnce from 'hooks/useEffectOnce';
 import FormItem from 'components/FormItem';
-import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network-test1';
+import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { ShowShareWithOverlay } from '../components/ShareWithOverlay';
 import { copyText } from 'utils';
 

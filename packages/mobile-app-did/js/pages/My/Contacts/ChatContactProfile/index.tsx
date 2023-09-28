@@ -35,7 +35,7 @@ type RouterParams = {
 
 const ContactProfile: React.FC = () => {
   const {
-    contactId: paramContactId,
+    contactId,
     relationId,
     isCheckImputation = false,
     isFromNoChatProfileEditPage,
@@ -47,7 +47,6 @@ const ContactProfile: React.FC = () => {
 
   const [profileInfo, setProfileInfo] = useState<IContactProfile>();
 
-  const [contactId, setContactId] = useState(paramContactId);
   const storeContactInfo = useContactInfo({
     contactId,
     relationId,
@@ -120,7 +119,7 @@ const ContactProfile: React.FC = () => {
       const id = relationId || contactInfo?.imInfo?.relationId || '';
       if (!id) return;
       const result = await addStranger(id);
-      result.data.id && setContactId(result.data.id);
+      setProfileInfo(result.data);
       CommonToast.success('Contact Added');
     } catch (error) {
       console.log('addContact', error);

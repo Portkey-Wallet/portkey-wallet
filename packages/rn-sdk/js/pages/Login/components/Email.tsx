@@ -108,7 +108,7 @@ export default function Email({
           {t(TitleMap[type].button)}
         </CommonButton>
       </View>
-      <TermsServiceButton />
+      {/* <TermsServiceButton /> */}
     </View>
   );
 }

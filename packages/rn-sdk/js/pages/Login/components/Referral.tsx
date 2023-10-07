@@ -14,6 +14,8 @@ import CommonButton from 'components/CommonButton';
 import TermsServiceButton from './TermsServiceButton';
 import { defaultColors } from 'assets/theme';
 import Divider from 'components/Divider';
+import { portkeyModulesEntity } from 'service/native-modules';
+import { PortkeyEntries } from 'config/entries';
 // import CommonToast from 'components/CommonToast';
 // import { useAppleAuthentication, useGoogleAuthentication } from 'hooks/authentication';
 // import { useOnLogin } from 'hooks/login';
@@ -73,6 +75,10 @@ export default function Referral({
   //   }
   //   Loading.hide(loadingKey);
   // }, [googleSign, onLogin]);
+  const pushToSignIn = () => {
+    portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SIGN_IN_ENTRY, PortkeyEntries.SIGN_IN_ENTRY);
+  };
+
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
       {/* {type === PageType.login && (
@@ -100,19 +106,21 @@ export default function Referral({
         /> */}
 
         {/* <Divider title="OR" inset={true} style={pageStyles.dividerStyle} /> */}
-        <CommonButton type="primary" onPress={() => setLoginType(PageLoginType.phone)} title={TitleMap[type].button} />
+        <CommonButton type="primary" onPress={pushToSignIn} title={TitleMap[type].button} />
       </View>
       {type === PageType.login && (
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.signUpTip]}
-          onPress={() => navigationService.navigate('SignupPortkey')}>
+          onPress={() =>
+            portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SIGN_UP_ENTRY, PortkeyEntries.SIGN_UP_ENTRY)
+          }>
           <TextL style={FontStyles.font3}>
             No account? <Text style={FontStyles.font4}>Sign up </Text>
           </TextL>
           <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
         </Touchable>
       )}
-      <TermsServiceButton />
+      {/* <TermsServiceButton /> */}
     </View>
   );
 }

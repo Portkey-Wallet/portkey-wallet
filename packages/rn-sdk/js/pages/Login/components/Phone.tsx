@@ -95,7 +95,7 @@ export default function Phone({
           {t(TitleMap[type].button)}
         </CommonButton>
       </View>
-      <TermsServiceButton />
+      {/* <TermsServiceButton /> */}
     </View>
   );
 }

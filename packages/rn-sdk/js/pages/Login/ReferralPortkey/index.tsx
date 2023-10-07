@@ -51,8 +51,8 @@ export function LoginPort() {
   );
 }
 
-export default function LoginPortkey() {
-  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
+export default function Referralkey() {
+  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const { t } = useLanguage();
   // const isMainnet = useIsMainnet();
   const isMainnet = true;

@@ -8,7 +8,7 @@ export default abstract class BaseContainer<
   R = { [key: string]: any },
 > extends React.Component<P, S> {
   navigationTo = (entry: PortkeyEntries, targetScene?: string) => {
-    portkeyModulesEntity.RouterModule.navigateTo(this.getEntryName(), entry, targetScene);
+    portkeyModulesEntity.RouterModule.navigateTo(entry, this.getEntryName(), targetScene);
   };
 
   navigateForResult = <V, T = { [x: string]: AcceptableValueType }>(
@@ -64,4 +64,5 @@ export type AcceptablePropsType = {
 
 export type AcceptableValueType = boolean | string | number | Array<string | number> | null | undefined;
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BaseContainerState {}

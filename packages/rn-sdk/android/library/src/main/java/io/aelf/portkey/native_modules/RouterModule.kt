@@ -15,7 +15,7 @@ class RouterModule(private val reactContext: ReactContext) : ReactContextBaseJav
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun navigateTo(from: String, entry: String, targetScene: String? = null) {
+    fun navigateTo(entry: String, from: String, targetScene: String? = null) {
         val activity = NavigationHolder.getEntryComponent(from)
         activity.navigateToAnotherReactActivity(entryName = entry, targetScene = targetScene)
     }

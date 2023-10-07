@@ -11,8 +11,6 @@ import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca
 import { ChainId } from '@portkey-wallet/types';
 import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
-import CustomSvg from 'components/CustomSvg';
 import { useAmountInUsdShow, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
@@ -151,11 +149,7 @@ export default function TokenInput({
         <div className="control">
           <div className="asset-selector">
             <div className="icon">
-              {token.symbol === ELF_SYMBOL ? (
-                <CustomSvg className="token-logo" type="elf-icon" />
-              ) : (
-                <TokenImageDisplay symbol={token.symbol} src={symbolImages[token.symbol]} width={36} />
-              )}
+              <TokenImageDisplay symbol={token.symbol} src={symbolImages[token.symbol]} width={36} />
             </div>
             <div className="center">
               <p className="symbol">{token?.symbol}</p>

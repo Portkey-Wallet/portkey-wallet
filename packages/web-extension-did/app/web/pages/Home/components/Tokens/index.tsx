@@ -1,4 +1,3 @@
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
@@ -34,11 +33,7 @@ export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[
       <ul className="token-list">
         {tokenList.map((item) => (
           <li className="token-list-item" key={`${item.chainId}_${item.symbol}`} onClick={() => onNavigate(item)}>
-            {item.symbol === ELF_SYMBOL ? (
-              <CustomSvg className="token-logo" type="elf-icon" />
-            ) : (
-              <TokenImageDisplay className="custom-logo" symbol={item.symbol} src={symbolImages[item.symbol]} />
-            )}
+            <TokenImageDisplay className="custom-logo" symbol={item.symbol} src={symbolImages[item.symbol]} />
             <div className="desc">
               <div className="info">
                 <span>{item.symbol}</span>

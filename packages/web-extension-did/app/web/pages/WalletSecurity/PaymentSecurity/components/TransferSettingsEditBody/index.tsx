@@ -55,10 +55,10 @@ export default function TransferSettingsEditBody({
       requiredMark={false}
       onFinish={onFinish}>
       <div className="customer-form form-content">
-        <FormItem name="restricted" label={t('Transfer settings')}>
+        <FormItem name="restricted" label={t('Transfer Settings')}>
           <div className="flex-start-center">
             <Switch onChange={onRestrictedChange} checked={restrictedValue} />
-            <div className="switch-text">{restrictedValue ? 'On' : 'Off'}</div>
+            <div className="switch-text">{restrictedValue ? 'ON' : 'OFF'}</div>
           </div>
         </FormItem>
 
@@ -71,7 +71,7 @@ export default function TransferSettingsEditBody({
             <Input
               placeholder={t('Enter limit')}
               onChange={(e) => onSingleLimitChange(e.target.value)}
-              maxLength={18}
+              maxLength={18 - Number(state.decimals)}
               suffix={state?.symbol || ''}
             />
           </FormItem>
@@ -83,7 +83,7 @@ export default function TransferSettingsEditBody({
             <Input
               placeholder={t('Enter limit')}
               onChange={(e) => onDailyLimitChange(e.target.value)}
-              maxLength={18}
+              maxLength={18 - Number(state.decimals)}
               suffix={state?.symbol || ''}
             />
           </FormItem>

@@ -52,20 +52,21 @@ function AlertBody() {
       <Image resizeMode="cover" source={securityWarning} style={styles.img} />
       <TextXL style={styles.alertTitle}>Upgrade Wallet Security Level</TextXL>
       <TextM style={styles.alertMessage}>
-        You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding.
+        {'You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding.'}
       </TextM>
       <ButtonRow buttons={buttons} />
     </View>
   );
 }
 
-const alert = () => {
+const alert = async () => {
   Keyboard.dismiss();
   OverlayModal.show(<AlertBody />, {
     modal: true,
     type: 'zoomOut',
     position: 'center',
   });
+  await sleep(300);
 };
 export default {
   alert,

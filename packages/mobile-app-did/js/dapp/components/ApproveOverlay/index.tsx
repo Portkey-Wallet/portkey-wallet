@@ -78,6 +78,7 @@ const ApproveModal = (props: SignModalPropsType) => {
           const tmpAmount = timesDecimals(symbolNum, approveParams.approveInfo.decimals);
           navigationService.navigate('GuardianApproval', {
             approveParams: {
+              isDiscover: approveParams.isDiscover,
               eventName: approveParams.eventName,
               approveInfo: {
                 ...approveParams.approveInfo,
@@ -93,7 +94,16 @@ const ApproveModal = (props: SignModalPropsType) => {
         },
       },
     ],
-    [approveParams.approveInfo, approveParams.eventName, dispatch, onReject, symbolNum, t, targetChainId],
+    [
+      approveParams.approveInfo,
+      approveParams.eventName,
+      approveParams.isDiscover,
+      dispatch,
+      onReject,
+      symbolNum,
+      t,
+      targetChainId,
+    ],
   );
 
   const onPressMax = useCallback(() => {

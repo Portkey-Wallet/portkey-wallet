@@ -43,6 +43,7 @@ import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecu
 import { useNavigation } from '@react-navigation/native';
 import { sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
+import { useLatestRef } from '@portkey-wallet/hooks';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -79,7 +80,7 @@ export default function GuardianApproval() {
   const onEmitDapp = useCallback(
     (guardiansApproved?: GuardiansApproved) => {
       if (approvalType !== ApprovalType.managerApprove || !approveParams) return;
-      dispatch(changeDrawerOpenStatus(true));
+      approveParams.isDiscover && dispatch(changeDrawerOpenStatus(true));
       DeviceEventEmitter.emit(
         approveParams.eventName,
         guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
@@ -88,9 +89,11 @@ export default function GuardianApproval() {
     [approvalType, approveParams, dispatch],
   );
 
+  const lastOnEmitDapp = useLatestRef(onEmitDapp);
+
   useEffectOnce(() => {
     return () => {
-      onEmitDapp();
+      lastOnEmitDapp.current();
     };
   });
 
@@ -161,24 +164,26 @@ export default function GuardianApproval() {
   });
 
   const onBack = useCallback(() => {
-    onEmitDapp();
+    lastOnEmitDapp.current();
     if (approvalType === ApprovalType.addGuardian) {
       navigationService.navigate('GuardianEdit');
     } else {
       navigationService.goBack();
     }
-  }, [approvalType, onEmitDapp]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [approvalType]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
 
   const dappApprove = useCallback(() => {
-    onEmitDapp(
+    lastOnEmitDapp.current(
       handleGuardiansApproved(
         guardiansStatus as GuardiansStatus,
         userGuardiansList as UserGuardianItem[],
       ) as GuardiansApproved,
     );
     navigationService.goBack();
-  }, [guardiansStatus, onEmitDapp, userGuardiansList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guardiansStatus, userGuardiansList]);
   const registerAccount = useCallback(() => {
     onRequestOrSetPin({
       managerInfo: {

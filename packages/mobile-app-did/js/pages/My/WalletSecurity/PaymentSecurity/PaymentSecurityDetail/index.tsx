@@ -59,7 +59,7 @@ const PaymentSecurityDetail: React.FC = () => {
               <TextM>Transfer Settings</TextM>
               <TextM style={FontStyles.font3}>Off</TextM>
             </View>
-            <TextM style={FontStyles.font3}>{'No limit for transfer.'}</TextM>
+            <TextM style={FontStyles.font3}>{'No limit for transfer'}</TextM>
           </>
         )}
       </View>

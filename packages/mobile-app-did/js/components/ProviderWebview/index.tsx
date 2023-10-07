@@ -29,6 +29,7 @@ const ProviderWebview = forwardRef<
   IWebView | undefined,
   WebViewProps & {
     isHidden?: boolean;
+    isDiscover?: boolean;
   }
 >(function ProviderWebview(props, forward) {
   const webViewRef = useRef<WebView | null>(null);
@@ -49,7 +50,6 @@ const ProviderWebview = forwardRef<
       operatorRef.current?.onDestroy();
     };
   });
-
   useEffect(() => {
     operatorRef.current?.setIsLockDapp(!!props.isHidden);
   }, [props.isHidden]);
@@ -61,13 +61,14 @@ const ProviderWebview = forwardRef<
 
       operatorRef.current = new DappMobileOperator({
         origin,
+        isDiscover: props.isDiscover,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         stream: new MobileStream(webViewRef.current!),
         dappManager: new DappMobileManager({ store: store as any }),
         dappOverlay: new DappOverlay(),
       });
     },
-    [entryScriptWeb3],
+    [entryScriptWeb3, props.isDiscover],
   );
 
   const onLoadStart = useCallback(

@@ -60,6 +60,7 @@ export type DappMobileOperatorOptions = {
   stream: IDappInteractionStream;
   dappManager: IDappManager;
   dappOverlay: IDappOverlay;
+  isDiscover?: boolean;
 };
 export default class DappMobileOperator extends Operator {
   public dapp: DappStoreItem;
@@ -67,13 +68,15 @@ export default class DappMobileOperator extends Operator {
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
   public isLockDapp?: boolean;
-  constructor({ stream, origin, dappManager, dappOverlay }: DappMobileOperatorOptions) {
+  public isDiscover?: boolean;
+  constructor({ stream, origin, dappManager, dappOverlay, isDiscover }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
     this.onCreate();
     this.stream = stream;
     this.dappManager = dappManager;
     this.dappOverlay = dappOverlay;
+    this.isDiscover = isDiscover;
   }
   private onCreate = () => {
     DappEventBus.registerOperator(this);
@@ -311,7 +314,12 @@ export default class DappMobileOperator extends Operator {
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: `${symbol} error` });
 
     const info = await this.dappOverlay.approve(this.dapp, {
-      approveInfo: { ...params?.paramsOption, decimals: tokenInfo?.data.decimals, targetChainId: payload.chainId },
+      approveInfo: {
+        ...params?.paramsOption,
+        decimals: tokenInfo?.data.decimals,
+        targetChainId: payload.chainId,
+      },
+      isDiscover: this.isDiscover,
       eventName,
     });
     if (!info) return this.userDenied(eventName);

@@ -42,11 +42,10 @@ import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTx
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
-import ActionSheet from 'components/ActionSheet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { checkSecurity } from '@portkey-wallet/utils/securityTest';
 import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
+import { useCheckTransferLimitWithJump } from 'hooks/security';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
@@ -55,7 +54,7 @@ export default function SellForm() {
   );
   const checkManagerSyncState = useCheckManagerSyncState();
   const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
-  const checkTransferLimit = useCheckTransferLimit();
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -205,7 +204,6 @@ export default function SellForm() {
       CommonToast.failError(error);
       Loading.hide();
       return;
-    } finally {
     }
 
     try {
@@ -226,46 +224,17 @@ export default function SellForm() {
       const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
 
       const caContract = await getCurrentCAContract();
-      const checkTransferLimitResult = await checkTransferLimit({
-        caContract,
-        symbol,
-        decimals,
-        amount,
-      });
-
+      const checkTransferLimitResult = await checkTransferLimitWithJump(
+        {
+          caContract,
+          symbol,
+          decimals,
+          amount,
+        },
+        chainId,
+      );
       if (!checkTransferLimitResult) {
-        // TODO: add error handler
-        return;
-      }
-      const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
-      if (isDailyLimited || isSingleLimited) {
-        ActionSheet.alert({
-          title2: isDailyLimited
-            ? 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.'
-            : 'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first. ',
-          buttons: [
-            {
-              title: 'Cancel',
-              type: 'outline',
-            },
-            {
-              title: 'Modify',
-              onPress: async () => {
-                navigationService.navigate('PaymentSecurityEdit', {
-                  paymentSecurityDetail: {
-                    chainId,
-                    symbol,
-                    dailyLimit: dailyLimit.toString(),
-                    singleLimit: singleBalance.toString(),
-                    restricted: !dailyLimit.eq(-1),
-                    decimals,
-                  },
-                });
-              },
-            },
-          ],
-        });
-
+        Loading.hide();
         return;
       }
 
@@ -316,11 +285,11 @@ export default function SellForm() {
     fiat,
     token,
     refreshBuyButton,
+    wallet,
     checkManagerSyncState,
     achFee,
     getCurrentCAContract,
-    checkTransferLimit,
-    wallet,
+    checkTransferLimitWithJump,
   ]);
 
   return (

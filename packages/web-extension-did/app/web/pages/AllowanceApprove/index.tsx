@@ -15,7 +15,8 @@ import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { ChainId } from '@portkey-wallet/types';
-import { IGuardiansApproved, ManagerApproveInner } from '@portkey/did-ui-react';
+import { IGuardiansApproved } from '@portkey/did-ui-react';
+import ManagerApproveInner from './ManagerApproveInner';
 import './index.less';
 
 export default function AllowanceApprove() {

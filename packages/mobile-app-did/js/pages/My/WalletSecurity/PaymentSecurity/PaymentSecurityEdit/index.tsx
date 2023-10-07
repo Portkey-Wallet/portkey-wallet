@@ -141,7 +141,7 @@ const PaymentSecurityEdit: React.FC = () => {
         {editInfo?.restricted ? (
           <>
             <CommonInput
-              label={'Limit Per Transaction'}
+              label={'Limit per Transaction'}
               theme="white-bg"
               type="general"
               keyboardType={isIOS ? 'number-pad' : 'numeric'}
@@ -164,12 +164,12 @@ const PaymentSecurityEdit: React.FC = () => {
             />
             <TextM style={FontStyles.font3}>
               {
-                'Transfers within the limits do not require guardian approval, but if exceed, you need to modify the settings.'
+                'Transfers exceeding the limits cannot be conducted unless you modify the limit settings first, which needs guardian approval.'
               }
             </TextM>
           </>
         ) : (
-          <TextM style={FontStyles.font3}>No limit for transfer.</TextM>
+          <TextM style={FontStyles.font3}>No limit for transfer</TextM>
         )}
       </View>
       <CommonButton type="solid" onPress={save}>

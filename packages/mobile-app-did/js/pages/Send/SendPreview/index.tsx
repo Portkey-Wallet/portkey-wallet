@@ -12,7 +12,6 @@ import { useLanguage } from 'i18n/hooks';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import { Image } from '@rneui/base';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
@@ -46,8 +45,8 @@ import { ChainId } from '@portkey-wallet/types';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import CommonAvatar from 'components/CommonAvatar';
+import { useCheckTransferLimitWithJump } from 'hooks/security';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
@@ -75,7 +74,7 @@ const SendHome: React.FC = () => {
   const isTokenHasPrice = useIsTokenHasPrice(assetInfo.symbol);
 
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
-  const checkTransferLimit = useCheckTransferLimit();
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -117,52 +116,16 @@ const SendHome: React.FC = () => {
     const contract = contractRef.current;
     const amount = timesDecimals(sendNumber, tokenInfo.decimals).toNumber();
 
-    try {
-      const checkTransferLimitResult = await checkTransferLimit({
+    const checkTransferLimitResult = await checkTransferLimitWithJump(
+      {
         caContract: contract,
         symbol: tokenInfo.symbol,
         decimals: tokenInfo.decimals,
         amount: String(sendNumber),
-      });
-      if (!checkTransferLimitResult) {
-        // TODO: add error handler
-        return;
-      }
-      const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
-      if (isDailyLimited || isSingleLimited) {
-        ActionSheet.alert({
-          title2: isDailyLimited
-            ? 'Maximum daily limit exceeded. To proceed, please modify the transfer limit first.'
-            : 'Maximum limit per transaction exceeded. To proceed, please modify the transfer limit first. ',
-          buttons: [
-            {
-              title: 'Cancel',
-              type: 'outline',
-            },
-            {
-              title: 'Modify',
-              onPress: async () => {
-                navigationService.navigate('PaymentSecurityEdit', {
-                  paymentSecurityDetail: {
-                    chainId: chainInfo.chainId,
-                    symbol: tokenInfo.symbol,
-                    dailyLimit: dailyLimit.toString(),
-                    singleLimit: singleBalance.toString(),
-                    restricted: !dailyLimit.eq(-1),
-                    decimals: tokenInfo.decimals,
-                  },
-                });
-              },
-            },
-          ],
-        });
-
-        return;
-      }
-    } catch (error) {
-      console.log('checkTransferLimit error', error);
-      //
-    }
+      },
+      chainInfo.chainId,
+    );
+    if (!checkTransferLimitResult) return;
 
     if (isCrossChainTransfer) {
       if (!tokenContractRef.current) {
@@ -222,7 +185,7 @@ const SendHome: React.FC = () => {
     caAddressInfos,
     caAddresses,
     chainInfo,
-    checkTransferLimit,
+    checkTransferLimitWithJump,
     crossDefaultFee,
     currentNetwork.walletType,
     dispatch,

@@ -46,7 +46,7 @@ export default function AmountToken({
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const symbolImages = useSymbolImages();
-  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), []);
+  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), [isTestNet]);
 
   const formatTokenNameToSuffix = (str: string) => {
     return `${str.slice(0, 5)}...`;

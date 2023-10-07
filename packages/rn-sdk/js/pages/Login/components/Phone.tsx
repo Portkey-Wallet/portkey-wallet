@@ -17,6 +17,8 @@ import PhoneInput from 'components/PhoneInput';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { getCachedCountryCodeData } from 'model/sign-in';
+import { CountryCodeItem } from 'types/wallet';
 
 const TitleMap = {
   [PageType.login]: {
@@ -38,6 +40,11 @@ export default function Phone({
   const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
+  const [country, setCountry] = useState<CountryCodeItem>();
+  useEffectOnce(() => {
+    const countryDTO = getCachedCountryCodeData();
+    setCountry(countryDTO?.locateData);
+  });
   // const { localPhoneCountryCode: country } = usePhoneCountryCode();
   // const onLogin = useOnLogin(type === PageType.login);
 
@@ -83,7 +90,7 @@ export default function Phone({
           errorMessage={errorMessage}
           containerStyle={styles.inputContainerStyle}
           onChangeText={setLoginAccount}
-          // selectCountry={country}
+          selectCountry={country}
         />
 
         <CommonButton

@@ -31,7 +31,8 @@ export const checkForCountryCodeCached = async (): Promise<void> => {
 export const getCachedCountryCodeData = (): CountryCodeDataDTO | undefined => {
   const countryCodeDataDTO = GlobalStorage.getString(COUNTRY_CODE_DATA_KEY);
   if (countryCodeDataDTO) {
-    return JSON.parse(countryCodeDataDTO);
+    const result = JSON.parse(countryCodeDataDTO);
+    return result;
   }
 };
 

@@ -19,6 +19,8 @@ import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
+import useEffectOnce from 'hooks/useEffectOnce';
+import { checkForCountryCodeCached } from 'model/sign-in';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -66,6 +68,9 @@ export default function Referralkey() {
     }),
     [],
   );
+  useEffectOnce(() => {
+    checkForCountryCodeCached();
+  });
 
   return (
     <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>

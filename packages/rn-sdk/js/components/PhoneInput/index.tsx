@@ -52,7 +52,13 @@ export default function PhoneInput({ selectCountry, onCountryChange, ...inputPro
   }, []);
 
   const pushToSelectCountry = () => {
-    portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SELECT_COUNTRY_ENTRY, PortkeyEntries.SIGN_IN_ENTRY);
+    // portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SELECT_COUNTRY_ENTRY, PortkeyEntries.SIGN_IN_ENTRY);
+    portkeyModulesEntity.RouterModule.navigateToWithOptions(
+      PortkeyEntries.SELECT_COUNTRY_ENTRY,
+      PortkeyEntries.SIGN_IN_ENTRY,
+      { selectCountry: selectCountry },
+      () => {},
+    );
   };
 
   return (

@@ -21,7 +21,9 @@
 
 RCT_EXPORT_MODULE(RouterModule);
 
-RCT_EXPORT_METHOD(navigateTo:(NSString *)entry targetScene:(NSString *)targetScene)
+RCT_EXPORT_METHOD(navigateTo:(NSString *)entry
+                  from:(NSString *)from
+                  targetScene:(NSString *)targetScene)
 {
     if (entry.length <= 0) return;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -34,7 +36,7 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
 {
     if (entry.length <= 0) return;
     dispatch_async(dispatch_get_main_queue(), ^{
-        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry];
+        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:params];
         [[self topViewController].navigationController pushViewController:vc animated:YES];
         
         NSDictionary *result = @{

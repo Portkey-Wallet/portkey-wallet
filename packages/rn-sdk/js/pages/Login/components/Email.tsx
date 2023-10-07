@@ -17,6 +17,7 @@ import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
 // import { useFocusEffect } from '@react-navigation/native';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { attemptAccountCheck } from 'model/sign-in';
 
 const TitleMap = {
   [PageType.login]: {
@@ -55,7 +56,24 @@ export default function Email({
   //   }
   //   Loading.hide(loadingKey);
   // }, [loginAccount, onLogin]);
-  const onPageLogin = useLockCallback(async () => {}, []);
+  const onPageLogin = useLockCallback(async () => {
+    const message = checkEmail(loginAccount) || undefined;
+    setErrorMessage(message);
+    if (message) return;
+    const loadingKey = Loading.show();
+    try {
+      const accountCheckResult = await attemptAccountCheck(loginAccount as string);
+      if (accountCheckResult.hasRegistered) {
+        console.log('aaaa');
+      } else {
+        console.log('bbbb');
+      }
+    } catch (error) {
+      setErrorMessage(handleErrorMessage(error));
+      Loading.hide(loadingKey);
+    }
+    Loading.hide(loadingKey);
+  }, []);
 
   useEffectOnce(() => {
     const listener = myEvents[type === PageType.login ? 'clearLoginInput' : 'clearSignupInput'].addListener(() => {

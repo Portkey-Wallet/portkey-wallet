@@ -18,23 +18,38 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import NoData from 'components/NoData';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
+import useEffectOnce from 'hooks/useEffectOnce';
+import { getCachedCountryCodeData } from 'model/sign-in';
 
 const IndexHeight = 56,
   SectionHeight = 20;
 
-export default function SelectCountry() {
-  const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
+export default function SelectCountry(selectCountry: CountryItem) {
+  // const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
 
-  const {
-    phoneCountryCodeIndex: countryCodeIndex,
-    phoneCountryCodeList,
-    setLocalPhoneCountryCode,
-  } = usePhoneCountryCode();
-  const List = useMemo(() => countryCodeIndex.map(i => ({ index: i[0], items: i[1] })), [countryCodeIndex]);
+  // const {
+  //   phoneCountryCodeIndex: countryCodeIndex,
+  //   phoneCountryCodeList,
+  //   setLocalPhoneCountryCode,
+  // } = usePhoneCountryCode();
+  // const List = useMemo(() => countryCodeIndex.map(i => ({ index: i[0], items: i[1] })), [countryCodeIndex]);
 
+  const [List, setList] = useState();
+  const [countryCodeIndex, setCountryCodeIndex] = useState();
   const [searchList, setSearchList] = useState<CountryItem[]>();
+  const [data, setData] = useState();
+  useEffectOnce(() => {
+    const phoneCountryCodeList = getCachedCountryCodeData()?.data;
+    const codeIndex = getCountryCodeIndex(phoneCountryCodeList);
+    setCountryCodeIndex(codeIndex);
+    const list = codeIndex.map(i => ({ index: i[0], items: i[1] }));
+    setList(list);
+    setData(list);
+    setSearchList(list);
+  });
 
-  const data = useMemo(() => searchList || List, [List, searchList]);
+  // const data = useMemo(() => searchList || List, [List, searchList]);
   const _renderItem = ({ section, row }: { section: number; row: number }) => {
     let item: CountryItem;
     if ('items' in data[section]) {
@@ -47,9 +62,9 @@ export default function SelectCountry() {
       <Touchable
         style={[styles.itemRow, GStyles.itemCenter, GStyles.spaceBetween]}
         onPress={() => {
-          setLocalPhoneCountryCode(item);
-          myEvents.setCountry.emit(item);
-          navigationService.goBack();
+          // setLocalPhoneCountryCode(item);
+          // myEvents.setCountry.emit(item);
+          // navigationService.goBack();
         }}>
         <TextL style={isSelected ? FontStyles.font4 : null}>{item.country}</TextL>
         <TextM style={[FontStyles.font3, isSelected ? FontStyles.font4 : null]}>+ {item.code}</TextM>
@@ -64,6 +79,9 @@ export default function SelectCountry() {
       </View>
     );
   };
+  if (!data) {
+    return <View />;
+  }
   return (
     <PageContainer
       titleDom="Country/Region"
@@ -83,10 +101,13 @@ export default function SelectCountry() {
           renderItem={_renderItem}
           indexHeight={IndexHeight}
           indexBarBoxStyle={styles.indexBarBoxStyle}
-          sectionHeight={searchList ? 0 : SectionHeight}
+          // sectionHeight={searchList ? 0 : SectionHeight}
+          sectionHeight={SectionHeight}
           extraHeight={headerHeight + bottomBarHeight + 120}
-          renderSection={searchList ? undefined : _renderSection}
-          indexArray={searchList ? undefined : countryCodeIndex.map(item => item[0])}
+          // renderSection={searchList ? undefined : _renderSection}
+          renderSection={_renderSection}
+          // indexArray={searchList ? undefined : data.map(item => item[0])}
+          indexArray={data.map(item => item.index)}
           renderEmpty={() => <NoData topDistance={64} noPic message={'There is no search result.'} />}
         />
       </View>
@@ -119,7 +140,8 @@ const styles = StyleSheet.create({
     // bottom: screenHeight > 850 ? 100 : 60,
   },
   indexBarRow: {
-    overflow: 'hidden',
-    flex: 1,
+    // overflow: 'hidden',
+    // flex: 1,
+    height: '90%',
   },
 });

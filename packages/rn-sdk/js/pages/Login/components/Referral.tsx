@@ -76,7 +76,7 @@ export default function Referral({
   //   Loading.hide(loadingKey);
   // }, [googleSign, onLogin]);
   const pushToSignIn = () => {
-    portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SIGN_IN_ENTRY, PortkeyEntries.SIGN_IN_ENTRY);
+    portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SIGN_IN_ENTRY, PortkeyEntries.SIGN_IN_ENTRY, '');
   };
 
   return (
@@ -112,7 +112,7 @@ export default function Referral({
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.signUpTip]}
           onPress={() =>
-            portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SIGN_UP_ENTRY, PortkeyEntries.SIGN_UP_ENTRY)
+            portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SIGN_UP_ENTRY, PortkeyEntries.SIGN_UP_ENTRY, '')
           }>
           <TextL style={FontStyles.font3}>
             No account? <Text style={FontStyles.font4}>Sign up </Text>

@@ -17,7 +17,7 @@ import PhoneInput from 'components/PhoneInput';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { getCachedCountryCodeData } from 'model/sign-in';
+import { getCachedCountryCodeData, attemptAccountCheck } from 'model/sign-in';
 import { CountryCodeItem } from 'types/wallet';
 
 const TitleMap = {
@@ -61,7 +61,21 @@ export default function Phone({
   //   }
   //   Loading.hide(loadingKey);
   // }, [country.code, loginAccount, onLogin]);
-  const onPageLogin = useLockCallback(async () => {}, []);
+  const onPageLogin = async () => {
+    const loadingKey = Loading.show();
+    try {
+      const accountCheckResult = await attemptAccountCheck(`+${country.code}${loginAccount}`);
+      if (accountCheckResult.hasRegistered) {
+        console.log('aaaa');
+      } else {
+        console.log('bbbb');
+      }
+    } catch (error) {
+      setErrorMessage(handleErrorMessage(error));
+      Loading.hide(loadingKey);
+    }
+    Loading.hide(loadingKey);
+  };
 
   // useEffectOnce(() => {
   //   const listener = myEvents[type === PageType.login ? 'clearLoginInput' : 'clearSignupInput'].addListener(() => {

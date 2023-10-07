@@ -17,9 +17,13 @@
 @implementation PortkeySDKRNViewController
 
 - (instancetype)initWithModuleName:(NSString *)moduleName {
+    return [self initWithModuleName:moduleName initialProperties:nil];
+}
+
+- (instancetype)initWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties {
     self = [super init];
     if (self) {
-        self.rnRootView = [[PortkeySDKRootView alloc] initWithModuleName:moduleName];
+        self.rnRootView = [[PortkeySDKRootView alloc] initWithModuleName:moduleName initialProperties:initialProperties];
     }
     return self;
 }

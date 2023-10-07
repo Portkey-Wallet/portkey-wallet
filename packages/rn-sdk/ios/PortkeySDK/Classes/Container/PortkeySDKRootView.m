@@ -38,6 +38,16 @@
     return self;
 }
 
+- (instancetype)initWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties {
+    self = [super initWithFrame:CGRectZero];
+    if (self) {
+        _bridge = [[RCTBridge alloc] initWithBundleURL:[PortkeySDKBundleUtil sourceURL] moduleProvider:nil launchOptions:nil];
+        self.rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:moduleName.length > 0 ? moduleName : @"Root" initialProperties:initialProperties];
+        [self addSubview:self.rootView];
+    }
+    return self;
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.rootView.frame = self.bounds;

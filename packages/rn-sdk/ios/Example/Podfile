@@ -29,6 +29,8 @@ target 'PortkeySDKExample_Example' do
   # pod 'RNCAsyncStorage', path => "#{$node_modules}/@react-native-async-storage/async-storage"
   pod 'RNSVG', :path => "#{$node_modules}/react-native-svg"
   pod 'react-native-safe-area-context', :path => "#{$node_modules}/react-native-safe-area-context"
+  pod 'react-native-spinkit', :path => "#{$node_modules}/react-native-spinkit"
+  pod 'RNSpringScrollView', :path => "#{$node_modules}/react-native-spring-scrollview"
 
   target 'PortkeySDKExample_Tests' do
     inherit! :search_paths

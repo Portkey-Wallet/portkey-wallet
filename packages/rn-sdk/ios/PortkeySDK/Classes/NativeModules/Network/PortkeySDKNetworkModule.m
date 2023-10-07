@@ -36,26 +36,37 @@ RCT_EXPORT_METHOD(fetch:(NSString *)url
     NSURLSessionDataTask *task= [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if(!error){
             NSHTTPURLResponse *res = (NSHTTPURLResponse *)response;
-            if (res.statusCode == 200) {
-                NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-                if (dataDict) {
-                    NSDictionary *result = @{
-                        @"status": @1,
-                        @"result": dataDict,
-                        @"errCode": @""
-                    };
-                    NSData *resultData = [NSJSONSerialization  dataWithJSONObject:result options:0 error:nil];
-                    NSString *resultString = [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
-                    resolve(resultString);
-                } else {
-                    reject(@"-101", @"response data is null", nil);
-                }
+            NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            if (dataDict) {
+                NSDictionary *result = @{
+                    @"status": @1,
+                    @"result": dataDict ?: @{},
+                    @"errCode": @""
+                };
+                NSData *resultData = [NSJSONSerialization  dataWithJSONObject:result options:0 error:nil];
+                NSString *resultString = [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
+                resolve(resultString);
+            } else {
+                resolve([self resultWrapperWithStatus:1 errCode:[@(res.statusCode) stringValue] result:nil]);
             }
         } else {
-            reject([@(error.code) stringValue], error.description, error);
+            resolve([self resultWrapperWithStatus:-1 errCode:[@(error.code) stringValue] result:nil]);
         }
     }];
     [task resume];
+}
+
+- (NSString *)resultWrapperWithStatus:(NSInteger)status
+                                  errCode:(NSString *)errCode
+                                   result:(NSDictionary *)result {
+    NSDictionary *resultDict = @{
+        @"status": @(status),
+        @"result": result ?: @{},
+        @"errCode": errCode ?: @"0"
+    };
+    NSData *resultData = [NSJSONSerialization dataWithJSONObject:resultDict options:0 error:nil];
+    NSString *resultString = [[NSString alloc] initWithData:resultData encoding:NSUTF8StringEncoding];
+    return resultString;
 }
 
 @end

@@ -18,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.aelf.portkey.activities.DefaultReactActivity
+import io.aelf.portkey.config.StorageIdentifiers
 import io.aelf.portkey.demo.ui.theme.MyRNApplicationTheme
+import io.aelf.portkey.entry.usePortkeyTest
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +39,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun jumpToActivity() {
-        val intent = Intent(this, DefaultReactActivity::class.java)
-        startActivity(intent)
+        usePortkeyTest()
     }
 
 }

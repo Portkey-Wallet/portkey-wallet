@@ -3,6 +3,7 @@ import 'react-native-get-random-values';
 import { View, Text, TouchableOpacityProps, TouchableOpacity } from 'react-native';
 import AElf from 'aelf-sdk';
 import WebView from 'react-native-webview';
+import { NetworkController } from 'network/controller';
 function Button(props: TouchableOpacityProps & { title: string }) {
   const { title, ...touchableOpacityProps } = props;
   return (
@@ -49,6 +50,12 @@ export default function Screen() {
               console.log(error, '=====error');
             }
           }, 5000);
+        }}
+      />
+      <Button
+        title="GetCountryCodeData"
+        onPress={() => {
+          NetworkController.getCountryCodeInfo().then(data => console.warn(data, '=====data'));
         }}
       />
       <WebView source={{ uri: 'https://www.baidu.com/' }} />

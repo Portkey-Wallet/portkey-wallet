@@ -11,7 +11,8 @@ internal class PortkeyNativePackages : ReactPackage {
     override fun createNativeModules(reactApplicationContext: ReactApplicationContext): MutableList<NativeModule> {
         return mutableListOf(
             RouterModule(reactApplicationContext),
-            NativeWrapperModule(reactApplicationContext)
+            NativeWrapperModule(reactApplicationContext),
+            NetworkModule(reactApplicationContext)
         )
     }
 

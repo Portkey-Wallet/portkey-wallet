@@ -1,6 +1,6 @@
 package io.aelf.portkey.config
 
-internal object StorageIdentifiers {
+object StorageIdentifiers {
     const val PAGE_ENTRY = "entry"
     const val PAGE_PARAMS = "params"
     const val PAGE_FROM = "from"

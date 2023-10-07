@@ -1,6 +1,6 @@
 import { PortkeyConfig } from 'global';
 import { AccountIdentifierStatusDTO, RegisterStatusDTO } from 'network/dto/signIn';
-import { ResultWrapper, TypedUrlParams, nativeFetch, portkeyModulesEntity } from 'service/native-modules';
+import { ResultWrapper, nativeFetch, portkeyModulesEntity } from 'service/native-modules';
 import { APIPaths } from 'network/path';
 import { ChainId } from '@portkey-wallet/types';
 import {

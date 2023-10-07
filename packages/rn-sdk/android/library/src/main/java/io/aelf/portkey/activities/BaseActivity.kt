@@ -15,7 +15,7 @@ import io.aelf.portkey.navigation.NavigationHolder
 abstract class BasePortkeyReactActivity : ReactActivity() {
     override fun getMainComponentName(): String = this.registerEntryName()
 
-    private var entryName: String = PortkeyEntries.ENTRY.entryName
+    private var entryName: String = PortkeyEntries.TEST.entryName
     private var params: Bundle = Bundle()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +23,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         if (intent != null) {
             this.entryName =
                 intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
-                    ?: PortkeyEntries.ENTRY.entryName
+                    ?: PortkeyEntries.TEST.entryName
             this.params = intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS) ?: Bundle()
         }
         NavigationHolder.pushNewComponent(this)
@@ -37,7 +37,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     override fun createReactActivityDelegate(): ReactActivityDelegate {
         val componentName =
             NavigationHolder.lastCachedIntent?.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
-                ?: PortkeyEntries.ENTRY.entryName
+                ?: PortkeyEntries.TEST.entryName
         val params =
             NavigationHolder.lastCachedIntent?.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
                 ?: Bundle()
@@ -75,7 +75,7 @@ class DefaultReactActivity : BasePortkeyReactActivity()
 
 internal fun getReactActivityClass(entry: String): Class<out BasePortkeyReactActivity> {
     return when (entry) {
-        PortkeyEntries.ENTRY.entryName -> DefaultReactActivity::class.java
+        PortkeyEntries.TEST.entryName -> DefaultReactActivity::class.java
         else -> DefaultReactActivity::class.java
     }
 }

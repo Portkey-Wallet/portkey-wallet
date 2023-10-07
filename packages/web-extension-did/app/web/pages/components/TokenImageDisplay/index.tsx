@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
 import './index.less';
+import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import CustomSvg from 'components/CustomSvg';
 
 interface TokenImageDisplayProps {
   src?: string;
@@ -15,10 +17,14 @@ export default function TokenImageDisplay({ src, symbol = 'ELF', width = 32, cla
 
   const isShowDefault = useMemo(() => isError || !src, [isError, src]);
 
-  return (
+  return symbol === ELF_SYMBOL ? (
+    <CustomSvg className="token-logo" type="elf-icon" />
+  ) : (
     <div className={clsx('token-img-loading-wrapper flex-center', className)} style={{ width, height: width }}>
       {isShowDefault ? (
-        symbol.slice(0, 1)
+        <div className="show-name-index flex-center" style={{ width, height: width }}>
+          {symbol?.slice(0, 1)}
+        </div>
       ) : (
         <img
           key={src}

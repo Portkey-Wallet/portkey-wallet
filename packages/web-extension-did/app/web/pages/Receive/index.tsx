@@ -72,11 +72,7 @@ export default function Receive() {
             <div className="name">My Wallet Address to Receive</div>
           </div>
           <div className="token-info">
-            {symbol === 'ELF' ? (
-              <CustomSvg type="elf-icon" />
-            ) : (
-              <TokenImageDisplay width={24} className="icon" symbol={symbol} src={symbolImages[symbol || '']} />
-            )}
+            <TokenImageDisplay width={24} className="icon" symbol={symbol} src={symbolImages[symbol || '']} />
             <p className="symbol">{symbol}</p>
             <p className="network">{transNetworkText(state.chainId, isTestNet)}</p>
           </div>

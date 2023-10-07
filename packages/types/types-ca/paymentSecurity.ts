@@ -14,7 +14,7 @@ export enum ICheckLimitBusiness {
   RAMP_SELL = 'ramp-sell',
 }
 
-export type IPaymentSecurityRouteState = IPaymentSecurityItem & { from: ICheckLimitBusiness };
+export type IPaymentSecurityRouteState = IPaymentSecurityItem & { from: ICheckLimitBusiness; targetChainId?: ChainId };
 
 export interface ISecurityListResponse {
   data: IPaymentSecurityItem[];

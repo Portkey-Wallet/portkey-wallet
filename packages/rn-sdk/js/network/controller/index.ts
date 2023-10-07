@@ -10,6 +10,7 @@ import {
   SendVerifyCodeResultDTO,
 } from 'network/dto/guardian';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { CountryCodeDataDTO } from 'types/wallet';
 
 export class NetworkControllerEntity {
   private endPoint: string = PortkeyConfig.endPointUrl;
@@ -70,6 +71,12 @@ export class NetworkControllerEntity {
       Object.assign(params, { platformType: getPlatformType() }),
       headers,
     );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  getCountryCodeInfo = async (): Promise<CountryCodeDataDTO> => {
+    const res = await this.realExecute<CountryCodeDataDTO>(this.parseUrl(APIPaths.GET_PHONE_COUNTRY_CODE), 'GET');
     if (!res?.result) throw new Error('network failure');
     return res.result;
   };

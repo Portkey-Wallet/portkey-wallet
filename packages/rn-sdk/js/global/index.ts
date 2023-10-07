@@ -1,4 +1,5 @@
 import { ChainId } from '@portkey-wallet/types';
+import { NetworkController } from 'network/controller';
 
 export enum EndPoints {
   MAIN_NET = 'https://did-portkey.portkey.finance',
@@ -12,13 +13,14 @@ export interface PortkeyConfigInterface {
   currChainId: ChainId;
 }
 
-export let PortkeyConfig: PortkeyConfigInterface = {
+export const PortkeyConfig: PortkeyConfigInterface = {
   endPointUrl: EndPoints.MAIN_NET,
   currChainId: 'AELF',
 };
 
 export const setEndPointUrl = (environment: EndPoints) => {
   PortkeyConfig.endPointUrl = environment;
+  NetworkController.updateEndPointUrl(environment);
 };
 
 export const setCurrChainId = (chainId: ChainId) => {

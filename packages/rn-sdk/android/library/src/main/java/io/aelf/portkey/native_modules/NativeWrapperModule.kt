@@ -2,14 +2,17 @@ package io.aelf.portkey.native_modules
 
 import android.util.Log
 import com.facebook.react.bridge.CatalystInstance
+import com.facebook.react.bridge.NativeArray
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableNativeArray
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import io.aelf.portkey.components.JSEventBus
 import io.aelf.portkey.navigation.NavigationHolder
 import io.aelf.portkey.tools.generateUniqueCallbackID
+
 
 internal class NativeWrapperModule(private val context: ReactContext) :
     ReactContextBaseJavaModule() {
@@ -75,6 +78,14 @@ internal class NativeWrapperModule(private val context: ReactContext) :
         val callbackId = generateUniqueCallbackID()
         params.pushString(callbackId)
         context.catalystInstance.jsMethodCaller(moduleName, methodName, params)
+    }
+
+    fun sendGeneralEvent(eventName: String, params: ReadableMap) {
+        this.reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+            .emit(
+                eventName,
+                params
+            )
     }
 
 }

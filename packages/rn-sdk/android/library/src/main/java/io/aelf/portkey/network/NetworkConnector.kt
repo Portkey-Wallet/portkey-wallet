@@ -74,7 +74,7 @@ internal object NetworkConnector {
             val errorCode: String =
                 if (result != null) result.asJsonObject.get("error").asJsonObject.get("code").asString
                     ?: "${response.code}" else "${response.code}"
-            ResultWrapper(-1, errorCode, result)
+            ResultWrapper(-1, errorCode, null)
         }
     }
 }

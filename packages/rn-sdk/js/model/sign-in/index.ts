@@ -3,7 +3,8 @@ import { NetworkController } from 'network/controller';
 import { GlobalStorage } from 'service/storage';
 import { CountryCodeDataDTO } from 'types/wallet';
 
-export const COUNTRY_CODE_DATA_KEY = 'countryCodeDataDTO';
+export const COUNTRY_CODE_DATA_KEY = 'countryCodeData';
+export const CURRENT_USING_COUNTRY_CODE = 'currentUsingCountryCode';
 
 export const attemptAccountCheck = async (accountIdentifier: string): Promise<AccountCheckResult> => {
   const registerResultDTO = await NetworkController.getRegisterResult(accountIdentifier);
@@ -23,10 +24,14 @@ export const attemptAccountCheck = async (accountIdentifier: string): Promise<Ac
   }
 };
 
-export const checkForCountryCodeCached = async (): Promise<void> => {
+export const checkForCountryCodeCached = async (): Promise<boolean> => {
   const countryCodeDataDTO = await NetworkController.getCountryCodeInfo();
   if (countryCodeDataDTO) {
     GlobalStorage.set(COUNTRY_CODE_DATA_KEY, JSON.stringify(countryCodeDataDTO));
+    GlobalStorage.set(CURRENT_USING_COUNTRY_CODE, JSON.stringify(countryCodeDataDTO.locateData));
+    return true;
+  } else {
+    return false;
   }
 };
 

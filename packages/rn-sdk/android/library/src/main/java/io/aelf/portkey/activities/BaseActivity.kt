@@ -4,12 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
+import io.aelf.portkey.native_modules.NativeWrapperModule
 import io.aelf.portkey.navigation.NavigationHolder
 
 abstract class BasePortkeyReactActivity : ReactActivity() {
@@ -33,7 +35,6 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
     }
 
-
     override fun createReactActivityDelegate(): ReactActivityDelegate {
         val componentName =
             NavigationHolder.lastCachedIntent?.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
@@ -47,6 +48,15 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
             componentName
         ) {
             override fun getLaunchOptions(): Bundle = params
+
+            override fun onResume() {
+                super.onResume()
+                NativeWrapperModule.instance.sendGeneralEvent(
+                    "onShow",
+                    Arguments.createMap().apply {
+                        this.putString("entryName", entryName)
+                    })
+            }
         }
     }
 

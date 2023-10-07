@@ -1,4 +1,4 @@
-import { NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules } from 'react-native';
 import { PortkeyEntries } from '../../config/entries';
 import { AcceptableValueType } from '../../model/container/BaseContainer';
 
@@ -64,6 +64,8 @@ export const nativeFetch = async <T>(
   }
   throw new Error('fetch failed');
 };
+
+export const DeviceEventEmitter = new NativeEventEmitter(portkeyModulesEntity.NativeWrapperModule as any);
 
 export interface ResultWrapper<T> {
   status: NetworkResult;

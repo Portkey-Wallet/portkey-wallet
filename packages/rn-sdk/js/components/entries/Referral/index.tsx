@@ -4,7 +4,11 @@ import ReferralPortkey from 'pages/Login/ReferralPortkey';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default class ReferralEntryPage extends BaseContainer<BaseContainerProps, BaseContainerState, SignUpPageResult> {
+export default class ReferralEntryPage extends BaseContainer<
+  BaseContainerProps,
+  BaseContainerState,
+  ReferralPageResult
+> {
   constructor(props: BaseContainerProps) {
     super(props);
     this.state = {};

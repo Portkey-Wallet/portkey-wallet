@@ -77,8 +77,6 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
     implementation 'com.google.prefab:cli:2.0.0'
 
-    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
 
 
     implementation(project(

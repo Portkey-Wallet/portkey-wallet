@@ -1,5 +1,5 @@
 import React from 'react';
-import { EntryResult, RouterOptions, portkeyModulesEntity } from '../../service/native-modules';
+import { DeviceEventEmitter, EntryResult, RouterOptions, portkeyModulesEntity } from '../../service/native-modules';
 import { PortkeyEntries } from '../../config/entries';
 
 export default abstract class BaseContainer<
@@ -7,6 +7,23 @@ export default abstract class BaseContainer<
   S extends BaseContainerState,
   R = { [key: string]: any },
 > extends React.Component<P, S> {
+  constructor(props: P) {
+    super(props);
+    this.onShowEventListener = DeviceEventEmitter.addListener('onShow', entryName => {
+      if (entryName === this.getEntryName()) {
+        this.onShow();
+      }
+    });
+  }
+
+  private onShowEventListener: any = null;
+
+  componentWillUnmount() {
+    if (this.onShowEventListener != null) {
+      this.onShowEventListener.remove();
+    }
+  }
+
   navigationTo = (entry: PortkeyEntries, targetScene?: string) => {
     portkeyModulesEntity.RouterModule.navigateTo(entry, this.getEntryName(), targetScene);
   };
@@ -23,6 +40,9 @@ export default abstract class BaseContainer<
       callback,
     );
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onShow() {}
 
   onFinish = (res: EntryResult<R>) => {
     portkeyModulesEntity.RouterModule.navigateBack(this.getEntryName(), res);

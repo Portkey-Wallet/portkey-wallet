@@ -53,7 +53,7 @@
 }
 
 - (void)loginButtonClicked:(id)sender {
-    [[PortkeySDKRouterModule sharedInstance] navigationTo:@"sign_in_entry" targetScene:@""];
+    [[PortkeySDKRouterModule sharedInstance] navigateTo:@"sign_in_entry" targetScene:@""];
 //    [[PortkeySDKRouterModule sharedInstance] navigationTo:@"test" targetScene:@""];
 }
 

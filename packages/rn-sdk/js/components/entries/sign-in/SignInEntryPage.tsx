@@ -3,6 +3,7 @@ import BaseContainer, { BaseContainerProps, BaseContainerState } from '../../../
 import { AccountCheckResult, attemptAccountCheck } from '../../../model/sign-in';
 import LoginPortkey from 'pages/Login/LoginPortkey';
 import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default class SignInEntryPage extends BaseContainer<SignInPageProps, SignInPageState, SignInPageResult> {
   constructor(props: SignInPageProps) {
@@ -21,7 +22,11 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
   };
 
   render() {
-    return <LoginPortkey />;
+    return (
+      <SafeAreaProvider>
+        <LoginPortkey />
+      </SafeAreaProvider>
+    );
   }
 }
 

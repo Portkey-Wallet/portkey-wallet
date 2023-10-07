@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
-- (void)navigationTo:(NSString *)entry targetScene:(NSString *)targetScene;
+- (void)navigateTo:(NSString *)entry targetScene:(NSString *)targetScene;
 
 @end
 

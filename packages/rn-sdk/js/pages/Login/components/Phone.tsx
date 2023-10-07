@@ -34,8 +34,8 @@ export default function Phone({
   setLoginType: (type: PageLoginType) => void;
   type?: PageType;
 }) {
-  // const { t } = useLanguage();
-  // const [loading] = useState<boolean>();
+  const { t } = useLanguage();
+  const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
   // const { localPhoneCountryCode: country } = usePhoneCountryCode();
@@ -86,14 +86,14 @@ export default function Phone({
           // selectCountry={country}
         />
 
-        {/* <CommonButton
+        <CommonButton
           containerStyle={GStyles.marginTop(16)}
           disabled={!loginAccount}
           type="primary"
           loading={loading}
           onPress={onPageLogin}>
           {t(TitleMap[type].button)}
-        </CommonButton> */}
+        </CommonButton>
       </View>
       <TermsServiceButton />
     </View>

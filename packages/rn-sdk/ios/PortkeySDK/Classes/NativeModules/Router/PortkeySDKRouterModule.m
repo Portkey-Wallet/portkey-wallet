@@ -21,7 +21,7 @@
 
 RCT_EXPORT_MODULE(RouterModule);
 
-RCT_EXPORT_METHOD(navigationTo:(NSString *)entry targetScene:(NSString *)targetScene)
+RCT_EXPORT_METHOD(navigateTo:(NSString *)entry targetScene:(NSString *)targetScene)
 {
     if (entry.length <= 0) return;
     dispatch_async(dispatch_get_main_queue(), ^{

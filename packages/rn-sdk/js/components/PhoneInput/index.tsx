@@ -13,6 +13,8 @@ import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
+import { portkeyModulesEntity } from 'service/native-modules';
+import { PortkeyEntries } from 'config/entries';
 
 interface PhoneInputProps extends CommonInputProps {
   selectCountry?: CountryItem;
@@ -49,13 +51,18 @@ export default function PhoneInput({ selectCountry, onCountryChange, ...inputPro
     };
   }, []);
 
+  const pushToSelectCountry = () => {
+    portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SELECT_COUNTRY_ENTRY, PortkeyEntries.SIGN_IN_ENTRY);
+  };
+
   return (
     <CommonInput
       ref={iptRef}
       leftIcon={
         <Touchable
           style={inputStyles.countryRow}
-          onPress={() => navigationService.navigate('SelectCountry', { selectCountry })}>
+          // onPress={() => navigationService.navigate('SelectCountry', { selectCountry })}>
+          onPress={pushToSelectCountry}>
           <TextM>+ {selectCountry?.code}</TextM>
           <Svg color={defaultColors.font3} size={12} icon="down-arrow" />
         </Touchable>

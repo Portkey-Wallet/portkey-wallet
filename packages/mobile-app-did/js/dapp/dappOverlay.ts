@@ -19,6 +19,7 @@ export type ApproveInfo = {
 export type ApproveParams = {
   approveInfo: ApproveInfo;
   eventName: string;
+  isDiscover?: boolean;
 };
 
 export interface IDappOverlay {

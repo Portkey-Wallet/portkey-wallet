@@ -2,13 +2,19 @@ import { useCallback, useEffect, useState } from 'react';
 import { getVerifierList } from '../../utils/sandboxUtil/getVerifierList';
 import { VerifierItem } from '@portkey/did';
 import { AccountTypeEnum, OperationTypeEnum } from '@portkey/services';
-import { GuardianApproval } from '@portkey/did-ui-react';
-import { BaseGuardianItem, SetAllowance, did, handleErrorMessage } from '@portkey/did-ui-react';
+import {
+  GuardianApproval,
+  BaseGuardianItem,
+  SetAllowance,
+  did,
+  IAllowance,
+  handleErrorMessage,
+  IGuardiansApproved,
+  ManagerApproveInnerProps,
+} from '@portkey/did-ui-react';
 import { useCurrentChain, useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { IAllowance } from '@portkey/did-ui-react/dist/_types/src/components/SetAllowance/index.component';
 import { useLoading } from 'store/Provider/hooks';
 import BackHeader from 'components/BackHeader';
-import { IGuardiansApproved } from '@portkey/did-ui-react';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { DEFAULT_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
@@ -18,7 +24,6 @@ import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
 import { request } from '@portkey-wallet/api/api-did';
-import { ManagerApproveInnerProps } from '@portkey/did-ui-react/dist/_types/src/components/ManagerApprove/index.component';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',
@@ -29,6 +34,7 @@ const PrefixCls = 'manager-approval';
 
 export default function ManagerApproveInner({
   originChainId,
+  targetChainId,
   caHash,
   amount,
   dappInfo,
@@ -176,6 +182,7 @@ export default function ManagerApproveInner({
           className={`${PrefixCls}-guardian-approve`}
           header={<BackHeader leftCallBack={() => setStep(ManagerApproveStep.SetAllowance)} />}
           originChainId={originChainId}
+          targetChainId={targetChainId}
           guardianList={guardianList}
           onConfirm={(approvalInfo) => {
             const approved: IGuardiansApproved[] = approvalInfo.map((guardian) => ({

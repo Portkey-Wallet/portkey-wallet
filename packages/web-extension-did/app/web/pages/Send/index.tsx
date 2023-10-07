@@ -196,7 +196,7 @@ export default function Send() {
     ],
   );
 
-  const checkLimit = useCheckLimit();
+  const checkLimit = useCheckLimit(tokenInfo.chainId);
 
   const handleCheckPreview = useCallback(async () => {
     try {

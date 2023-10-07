@@ -204,7 +204,6 @@ export default function SellForm() {
       CommonToast.failError(error);
       Loading.hide();
       return;
-    } finally {
     }
 
     try {

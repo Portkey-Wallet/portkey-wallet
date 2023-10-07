@@ -13,6 +13,9 @@ import GStyles from 'assets/theme/GStyles';
 import { checkSecurity } from '@portkey-wallet/utils/securityTest';
 import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import CommonToast from 'components/CommonToast';
+import Loading from 'components/Loading';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
@@ -34,27 +37,35 @@ const SendButton = (props: SendButtonType) => {
 
   const { t } = useLanguage();
 
+  const jumpSend = useLockCallback(async () => {
+    if (!caHash) return;
+    try {
+      Loading.show();
+      const isSafe = await checkSecurity(caHash);
+      if (!isSafe) return await WalletSecurityOverlay.alert();
+    } catch (error) {
+      CommonToast.failError(error);
+      return;
+    } finally {
+      Loading.hide();
+    }
+
+    if (themeType === 'innerPage')
+      return navigationService.navigate('SendHome', {
+        sendType: 'token',
+        assetInfo: sentToken,
+        toInfo: {
+          name: '',
+          address: '',
+        },
+      } as unknown as IToSendHomeParamsType);
+
+    AssetsOverlay.showAssetList();
+  }, [caHash, sentToken, themeType]);
+
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
-      <TouchableOpacity
-        style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter, wrapStyle]}
-        onPress={async () => {
-          if (!caHash) return;
-          const isSafe = await checkSecurity(caHash);
-          if (!isSafe) return WalletSecurityOverlay.alert();
-
-          if (themeType === 'innerPage')
-            return navigationService.navigate('SendHome', {
-              sendType: 'token',
-              assetInfo: sentToken,
-              toInfo: {
-                name: '',
-                address: '',
-              },
-            } as unknown as IToSendHomeParamsType);
-
-          AssetsOverlay.showAssetList();
-        }}>
+      <TouchableOpacity style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter, wrapStyle]} onPress={jumpSend}>
         <Svg icon={themeType === 'dashBoard' ? 'send' : 'send1'} size={pTd(46)} />
       </TouchableOpacity>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Send')}</TextM>

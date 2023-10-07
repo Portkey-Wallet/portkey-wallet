@@ -3,6 +3,9 @@
 buildscript {
     ext {
         agp_version = '7.1.1'
+        compileSdkVersion = 33
+        targetSdkVersion = 33
+        minSdkVersion = 28
     }
     repositories {
         google()

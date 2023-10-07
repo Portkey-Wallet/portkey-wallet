@@ -1,7 +1,7 @@
 package io.aelf.core
 
 internal enum class PortkeyEntries {
-    ENTRY,
+    TEST,
     LOGIN,
     GUARDIAN;
     internal val entryName: String

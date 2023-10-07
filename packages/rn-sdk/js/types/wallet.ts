@@ -19,7 +19,7 @@ export type LoginInfo = { guardianIdentifier?: string; loginAccount?: string; ca
 
 export interface CountryCodeDataDTO {
   locateData: CountryCodeItem; // current locate phone code data
-  data: Array<CountryCodeDataDTO>;
+  data: Array<CountryCodeItem>;
 }
 
 export interface CountryCodeItem {

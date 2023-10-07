@@ -8,6 +8,10 @@ internal object JSEventBus {
     fun <T> registerCallback(eventName: String, callback: (msg: T) -> Unit, tClass: Class<T>) {
         eventMap[eventName] = JSCallbackWrapper(callback, tClass)
     }
+
+    fun invoke(eventName: String, msg: String) {
+        eventMap[eventName]?.invoke(msg)
+    }
 }
 
 internal class JSCallbackWrapper<T>(
@@ -15,8 +19,13 @@ internal class JSCallbackWrapper<T>(
     private val tClass: Class<T>
 ) {
     fun invoke(msg: String) {
-        val result = Gson().fromJson(msg, tClass)
-
+        if (msg.isEmpty()) throw IllegalArgumentException("msg is empty")
+        try {
+            val result = globalGson.fromJson(msg, tClass)
+            callback(result)
+        } catch (e: Throwable) {
+            throw IllegalArgumentException("msg is not a valid json string! msg : ".plus(msg), e)
+        }
     }
 }
 

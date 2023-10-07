@@ -16,3 +16,14 @@ export interface Credentials {
 }
 
 export type LoginInfo = { guardianIdentifier?: string; loginAccount?: string; caHash?: string };
+
+export interface CountryCodeDataDTO {
+  locateData: CountryCodeItem; // current locate phone code data
+  data: Array<CountryCodeDataDTO>;
+}
+
+export interface CountryCodeItem {
+  country: string;
+  code: string; // example: "+52"
+  iso: string;
+}

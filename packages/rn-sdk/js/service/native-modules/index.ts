@@ -34,7 +34,7 @@ export interface RouterOptions<T> {
   params?: Partial<T>;
 }
 
-export type TypedUrlParams = { [x: string]: string | number | null | undefined };
+export type TypedUrlParams = { [x: string]: string | number | boolean | null | undefined };
 
 export interface NativeWrapperModule {
   platformName: string;

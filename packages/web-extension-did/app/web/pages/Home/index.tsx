@@ -47,7 +47,7 @@ export default function Home() {
   initIm();
 
   return (
-    <div className={clsx(['portkey-home', isPrompt ? 'portkey-prompt' : null])}>
+    <div className={clsx(['portkey-home', isPrompt && 'portkey-prompt'])}>
       <PortKeyHeader unReadShow={isImputation} onUserClick={onUserClick} />
       <div className="portkey-body">
         <MyBalance />

@@ -135,7 +135,7 @@ export default function RecentDetail() {
 
   const mainContent = () => {
     return (
-      <div className={clsx(['recent-detail', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['recent-detail', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper
           className="recent-detail-header"
           title="Details"

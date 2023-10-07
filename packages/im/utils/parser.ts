@@ -1,7 +1,7 @@
 import { Message, ParsedImage } from '../types';
 
 const imageMessageParser = (str: string): ParsedImage => {
-  str = str.replaceAll(/,/g, ';');
+  str = str.replace(/,/g, ';');
   const result: Record<string, string> = {};
   const pairs = str.split(';');
 
@@ -24,6 +24,7 @@ const imageMessageParser = (str: string): ParsedImage => {
 export const messageParser = (message: Message): Message => {
   switch (message.type) {
     case 'TEXT':
+    case 'SYS':
       return {
         ...message,
         parsedContent: message.content,

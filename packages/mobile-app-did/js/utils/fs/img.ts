@@ -31,17 +31,40 @@ export const checkExistsImage = async (uri?: string) => {
   }
 };
 
+export type GetCacheImageInfoResult = {
+  source?: ImageURISource;
+  path?: string;
+};
+
+export const getCacheImageInfo = async (source: ImageURISource): Promise<GetCacheImageInfoResult> => {
+  if (!source.uri) return { source };
+  let localPath;
+  try {
+    if (isLocalSource(source)) return { source };
+    const { directory, path } = getLocalImagePath(source.uri);
+    localPath = path;
+    const exists = await checkExistsImage(source.uri);
+    if (exists) return { source: { uri: path } };
+    const existsDirectory = await checkAndMakeDirectory(directory);
+    if (!existsDirectory) return { source };
+  } catch (error) {
+    //
+  }
+  return { path: localPath || '' };
+};
+
+export const downloadCacheImageSource = async (uri: string, path: string) => {
+  await downloadFile(uri, path);
+  return { uri: path };
+};
+
 export const getCacheImage = async (source: ImageURISource) => {
   if (!source.uri) return source;
   try {
-    if (isLocalSource(source)) return source;
-    const { directory, path } = getLocalImagePath(source.uri);
-    const exists = await checkExistsImage(source.uri);
-    if (exists) return { uri: path };
-    const existsDirectory = await checkAndMakeDirectory(directory);
-    if (!existsDirectory) return source;
-    await downloadFile(source.uri, path);
-    return { uri: path };
+    const { source: imageSource, path } = await getCacheImageInfo(source);
+    if (imageSource) return imageSource;
+    if (!path) return source;
+    return downloadCacheImageSource(source.uri, path);
   } catch (error) {
     return source;
   }

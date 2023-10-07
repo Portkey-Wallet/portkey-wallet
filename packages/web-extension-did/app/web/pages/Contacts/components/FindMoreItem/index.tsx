@@ -1,22 +1,21 @@
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactItemRes } from 'pages/Contacts/FindMore';
 import './index.less';
 import CustomSvg from 'components/CustomSvg';
 
 export interface IContactItemProps {
-  item: Partial<ContactItemType>;
-  isAdded?: boolean;
+  item: IContactItemRes;
   hasChatEntry?: boolean;
-  clickChat?: (e: any, item: Partial<ContactItemType>) => void;
+  clickChat?: (e: any, item: IContactItemRes) => void;
 }
 
-export default function FindMoreItem({ item, isAdded = false, hasChatEntry = true, clickChat }: IContactItemProps) {
+export default function FindMoreItem({ item, hasChatEntry = true, clickChat }: IContactItemProps) {
   return (
     <div className="flex-between-center find-more-item">
       <div className="flex-center find-more-item-right">
         <div className="flex-center find-more-index-logo">{item.index}</div>
         <div>
           <span className="find-more-item-name">{item.name}</span>
-          {isAdded && (
+          {item.isAdded && (
             <div className="flex action-item added-contact">
               <CustomSvg type="ContactAddedBlue" />
               <span>{`Contact`}</span>

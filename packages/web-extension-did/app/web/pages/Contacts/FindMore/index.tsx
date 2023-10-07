@@ -15,16 +15,20 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { getAddressInfo } from '@portkey-wallet/utils/aelf';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 
+export interface IContactItemRes extends Partial<ContactItemType> {
+  isAdded?: boolean;
+}
+
 export interface IFindMoreProps extends BaseHeaderProps {
   myPortkeyId: string;
-  contact: Partial<ContactItemType>;
+  contacts: IContactItemRes[];
   showChat: boolean;
-  isAdded?: boolean;
   isSearch?: boolean;
   goBack: () => void;
   handleSearch: ChangeEventHandler<HTMLInputElement>;
-  clickItem: () => void;
-  clickChat: (e: any, item: Partial<ContactItemType>) => void;
+  clickItem: (contact: IContactItemRes) => void;
+  clickChat: (e: any, item: IContactItemRes) => void;
+  clickQRCode: () => void;
 }
 
 export default function FindMore() {
@@ -34,19 +38,17 @@ export default function FindMore() {
   const showChat = useIsChatShow();
   const { userId } = useWalletInfo();
   const contactRelationIdMap = useContactRelationIdMap();
-  const [isAdded, setIsAdded] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
   const createChannel = useCreateP2pChannel();
 
-  const headerTitle = 'Find More';
-  const [contact, setContact] = useState<Partial<ContactItemType>>({});
+  const headerTitle = 'Find People';
+  const [contacts, setContacts] = useState<IContactItemRes[]>([]);
 
   const handleSearch = useDebounceCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
 
     if (!value) {
-      setContact({});
-      setIsAdded(false);
+      setContacts([]);
       setIsSearch(false);
       return;
     }
@@ -55,46 +57,42 @@ export default function FindMore() {
 
     const addressTrans = getAddressInfo(value.trim());
     if (!addressTrans?.address) {
-      setContact({});
-      setIsAdded(false);
+      setContacts([]);
       return;
     }
 
     try {
-      const res = await im.service.getUserInfo({ address: addressTrans.address });
+      const res = await im.service.getUserInfoList({ keywords: addressTrans.address });
 
-      if (res?.data?.portkeyId === userId) {
-        message.error('Unable to add yourself as a contact');
-      } else {
-        setContact({
-          ...res?.data,
-          index: res?.data?.name?.substring(0, 1).toLocaleUpperCase(),
-          name: res?.data?.name,
+      const resTrans: IContactItemRes[] = res.data.map((item) => {
+        return {
+          ...item,
+          index: item?.name?.substring(0, 1).toLocaleUpperCase(),
+          name: item?.name,
           imInfo: {
-            relationId: res?.data.relationId,
-            portkeyId: res?.data.portkeyId,
+            relationId: item.relationId,
+            portkeyId: item.portkeyId,
           },
-        });
-        setIsAdded(!!contactRelationIdMap?.[res?.data?.relationId]);
-      }
+          isAdded: !!contactRelationIdMap?.[item?.relationId],
+        };
+      });
+
+      setContacts(resTrans);
     } catch (error) {
       const err = handleErrorMessage(error, 'handle display error');
       message.error(err);
-      setContact({});
-      setIsAdded(false);
+      setContacts([]);
     }
   }, []);
 
   const goBack = () => {
-    if (state?.from === 'chat-search') {
-      navigate('/chat-list-search', { state });
-    } else {
-      navigate(-1);
-    }
+    if (state?.from === 'chat-search') return navigate('/chat-list-search', { state });
+    if (state?.from === 'chat-list') return navigate('/chat-list', { state });
+    return navigate('/setting/contacts');
   };
 
   const handleChat = useCallback(
-    async (e: any, item: Partial<ContactItemType>) => {
+    async (e: any, item: IContactItemRes) => {
       e.stopPropagation();
 
       if (isPrompt) {
@@ -120,31 +118,31 @@ export default function FindMore() {
     <FindMorePrompt
       headerTitle={headerTitle}
       myPortkeyId={userId || ''}
-      contact={contact}
+      contacts={contacts}
       showChat={showChat}
-      isAdded={isAdded}
       isSearch={isSearch}
       goBack={goBack}
       handleSearch={handleSearch}
-      clickItem={() => {
+      clickItem={(contact) => {
         navigate('/setting/contacts/view', { state: contact });
       }}
       clickChat={(e, item) => handleChat(e, item)}
+      clickQRCode={() => navigate('/setting/contacts/qrcode', { state })}
     />
   ) : (
     <FindMorePopup
       headerTitle={headerTitle}
       myPortkeyId={userId || ''}
-      contact={contact}
+      contacts={contacts}
       showChat={showChat}
-      isAdded={isAdded}
       isSearch={isSearch}
       goBack={goBack}
       handleSearch={handleSearch}
-      clickItem={() => {
+      clickItem={(contact) => {
         navigate('/setting/contacts/view', { state: contact });
       }}
       clickChat={(e, item) => handleChat(e, item)}
+      clickQRCode={() => navigate('/setting/contacts/qrcode', { state })}
     />
   );
 }

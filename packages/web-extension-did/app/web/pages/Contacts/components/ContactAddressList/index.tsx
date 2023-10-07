@@ -30,7 +30,7 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
             <div className="address-wrapper">
               <div className="address">{addressFormat(ads?.address, ads?.chainId, ads?.chainName as ChainType)}</div>
             </div>
-            <CustomSvg onClick={() => handleCopy(ads?.address)} type="Copy" className="address-copy-icon" />
+            <CustomSvg onClick={() => handleCopy(ads?.address)} type="Copy4" className="address-copy-icon" />
           </div>
           <div className="flex-row-center chain">
             {ads?.image && <img src={ads?.image} className="chain-img" />}

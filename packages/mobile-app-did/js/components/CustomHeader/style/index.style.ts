@@ -1,12 +1,21 @@
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
+import fonts from 'assets/theme/fonts';
 
 const { bg1, bg5 } = defaultColors;
 
 export const headerHeight = pTd(52);
 
+const styles = StyleSheet.create({
+  leftTitle: {
+    height: '100%',
+    paddingHorizontal: pTd(16),
+  },
+});
+
 export const blueStyles = StyleSheet.create({
+  ...styles,
   sectionContainer: {
     height: pTd(52),
     width: '100%',
@@ -23,7 +32,7 @@ export const blueStyles = StyleSheet.create({
     flex: 1,
   },
   centerWrap: {
-    flex: 1.2,
+    flex: 2.5,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -31,6 +40,7 @@ export const blueStyles = StyleSheet.create({
   title: {
     color: bg1,
     fontWeight: 'bold',
+    ...fonts.mediumFont,
   },
   rightDomWrap: {
     flex: 1,
@@ -45,6 +55,7 @@ export const blueStyles = StyleSheet.create({
 });
 
 export const whitStyles = StyleSheet.create({
+  ...styles,
   sectionContainer: {
     height: pTd(52),
     width: '100%',
@@ -61,7 +72,7 @@ export const whitStyles = StyleSheet.create({
     flex: 1,
   },
   centerWrap: {
-    flex: 1.2,
+    flex: 2.5,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -69,6 +80,7 @@ export const whitStyles = StyleSheet.create({
   title: {
     color: bg5,
     fontWeight: 'bold',
+    ...fonts.mediumFont,
   },
   rightDomWrap: {
     flex: 1,

@@ -92,7 +92,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     const onPress = leftCallback ? leftCallback : () => navigationService.goBack();
     if (type === 'leftBack') {
       return (
-        <TouchableOpacity style={[GStyles.flexRowWrap, GStyles.itemCenter, { padding: pTd(16) }]} onPress={onPress}>
+        <TouchableOpacity style={[GStyles.flexRow, GStyles.itemCenter, styles.leftTitle]} onPress={onPress}>
           {leftIcon}
           <TextL style={styles.leftBackTitle}>{t(backTitle)}</TextL>
         </TouchableOpacity>
@@ -103,7 +103,18 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
         {leftIcon}
       </TouchableOpacity>
     );
-  }, [backTitle, isCanGoBack, leftCallback, leftDom, leftIcon, noLeftDom, styles.leftBackTitle, t, type]);
+  }, [
+    backTitle,
+    isCanGoBack,
+    leftCallback,
+    leftDom,
+    leftIcon,
+    noLeftDom,
+    styles.leftBackTitle,
+    styles.leftTitle,
+    t,
+    type,
+  ]);
 
   const centerElement = useMemo(() => {
     if (typeof titleDom === 'string')

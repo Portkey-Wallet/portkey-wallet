@@ -149,6 +149,7 @@ const ProviderWebview = forwardRef<
       style={styles.webView}
       decelerationRate="normal"
       originWhitelist={['*']}
+      injectedJavaScript={!isIOS ? entryScriptWeb3 : undefined}
       injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
       applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
       {...props}

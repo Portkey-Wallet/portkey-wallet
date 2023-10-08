@@ -17,7 +17,11 @@ export const formatChannelList = (channelList: ChannelList): ChannelList => {
   });
   const now = Date.now();
 
-  pinList.sort((a, b) => Number(b.lastPostAt || now) - Number(a.lastPostAt || now));
+  pinList.sort(
+    (a, b) =>
+      (Math.max(Number(b.pinAt), Number(b.lastPostAt)) || now) -
+      (Math.max(Number(a.pinAt), Number(a.lastPostAt)) || now),
+  );
   normalList.sort((a, b) => Number(b.lastPostAt || now) - Number(a.lastPostAt || now));
 
   return {

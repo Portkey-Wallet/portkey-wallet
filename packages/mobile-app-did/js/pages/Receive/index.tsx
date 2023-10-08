@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PageContainer from 'components/PageContainer';
 import { TextL, TextM, TextXL, TextS } from 'components/CommonText';
 import AccountCard from 'pages/Receive/components/AccountCard';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import CommonAvatar from 'components/CommonAvatar';
@@ -17,15 +17,18 @@ import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { copyText } from 'utils';
+import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function Receive() {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
+  const isTestnet = useIsTestnet();
+  const aelfIconName = useMemo<IconName>(() => (isTestnet ? 'testnet' : 'mainnet'), [isTestnet]);
+
   const tokenItem = useRouterParams<TokenItemShowType>();
   const { chainId, symbol } = tokenItem;
-
   const symbolImages = useSymbolImages();
   const currentWallet = useCurrentWalletInfo();
 
@@ -40,7 +43,7 @@ export default function Receive() {
           style={styles.svgStyle}
           title={symbol}
           avatarSize={pTd(32)}
-          svgName={symbol === defaultToken.symbol ? 'elf-icon' : undefined}
+          svgName={symbol === defaultToken.symbol ? aelfIconName : undefined}
           imageUrl={symbolImages?.[symbol] || ''}
         />
         <View>

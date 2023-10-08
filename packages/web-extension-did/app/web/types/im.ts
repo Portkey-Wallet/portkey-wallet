@@ -7,3 +7,5 @@ export enum MessageTypeWeb {
   // 'ANNOUNCEMENT' = '',
   // 'BATCH_TRANSFER' = '',
 }
+
+export type LinkPortkeyType = 'addContact' | 'addGroup';

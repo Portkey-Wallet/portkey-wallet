@@ -32,6 +32,7 @@ import {
 } from '@portkey-wallet/store/store-ca/discover/slice';
 import im from '@portkey-wallet/im';
 import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
+import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -49,6 +50,7 @@ export default function useLogOut() {
       dispatch(changeDrawerOpenStatus(false));
       im.destroy();
       dispatch(resetIm(currentNetwork));
+      dispatch(resetSecurity(currentNetwork));
 
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));

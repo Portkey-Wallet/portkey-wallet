@@ -15,12 +15,10 @@ const CustomInput: React.FC<IInputProps> = ({
   const onChangeEvent = useCallback(
     (e: any) => {
       if (props.maxLength && (e.target.value || '').length > props.maxLength) {
-        if (props.onMaxLengthExceed instanceof Function) props.onMaxLengthExceed();
-
+        props.onMaxLengthExceed?.();
         if (props.reference?.current?.value == (e.target.value || '').substring(0, props.maxLength)) return;
       }
-
-      if (props.onChange instanceof Function) props.onChange(e);
+      props.onChange?.(e);
 
       if (multiline === true) {
         if (!e.target.value) {
@@ -68,10 +66,7 @@ const CustomInput: React.FC<IInputProps> = ({
 
   useEffect(() => {
     if (autofocus === true) props.reference?.current?.focus();
-
-    if (props.clear instanceof Function) {
-      props.clear(clear);
-    }
+    props.clear?.(clear);
   }, [autofocus, clear, props]);
 
   return (

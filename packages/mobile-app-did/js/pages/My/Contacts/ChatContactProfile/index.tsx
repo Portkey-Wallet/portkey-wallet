@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
@@ -12,7 +12,6 @@ import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileHandleSection from 'pages/My/components/ProfileHandleSection';
 import ProfileIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
-import useEffectOnce from 'hooks/useEffectOnce';
 import im from '@portkey-wallet/im';
 import { useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
@@ -24,6 +23,8 @@ import ActionSheet from 'components/ActionSheet';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import ProfileLoginAccountsSection from '../components/ProfileLoginAccountsSection';
+import { useFocusEffect } from '@react-navigation/native';
 
 type RouterParams = {
   relationId?: string; // if relationId exist, we should fetch
@@ -32,20 +33,9 @@ type RouterParams = {
   isFromNoChatProfileEditPage?: boolean;
 };
 
-const initEditContact: ContactItemType = {
-  id: '',
-  name: '',
-  addresses: [],
-  index: '',
-  modificationTime: 0,
-  isDeleted: false,
-  userId: '',
-  isImputation: false,
-};
-
 const ContactProfile: React.FC = () => {
   const {
-    contactId: paramContactId,
+    contactId,
     relationId,
     isCheckImputation = false,
     isFromNoChatProfileEditPage,
@@ -54,22 +44,24 @@ const ContactProfile: React.FC = () => {
   const { t } = useLanguage();
   const addStranger = useAddStrangerContact();
 
-  const [profileInfo, setProfileInfo] = useState<ContactItemType>();
+  const [profileInfo, setProfileInfo] = useState<IContactProfile>();
 
-  const [contactId, setContactId] = useState(paramContactId);
   const storeContactInfo = useContactInfo({
     contactId,
     relationId,
   });
 
-  const contactInfo = useMemo(() => storeContactInfo || profileInfo, [storeContactInfo, profileInfo]);
+  const contactInfo = useMemo<IContactProfile | undefined>(
+    () => profileInfo || storeContactInfo,
+    [storeContactInfo, profileInfo],
+  );
 
   const isStranger = useIsStranger(relationId || contactInfo?.imInfo?.relationId || '');
 
   const readImputation = useReadImputation();
   const isCheckedImputationRef = useRef(false);
   const checkImputation = useCallback(
-    (beCheckedInfo: ContactItemType) => {
+    (beCheckedInfo: IContactProfile) => {
       if (isCheckImputation && beCheckedInfo?.isImputation) {
         if (isCheckedImputationRef.current) return;
         isCheckedImputationRef.current = true;
@@ -102,31 +94,34 @@ const ContactProfile: React.FC = () => {
   const navToChatDetail = useJumpToChatDetails();
 
   const getProfile = useCallback(async () => {
-    if (relationId) {
-      try {
-        Loading.show();
-        const { data } = await im.service.getProfile({ relationId });
-        setProfileInfo({ ...initEditContact, ...(data || {}) });
-      } catch (error) {
-        // TODO: getProfile error handle
-        console.log(error);
-        CommonToast.failError(error);
-      } finally {
-        Loading.hide();
-      }
-    }
-  }, [relationId]);
+    const isLoadingShow = !contactInfo;
+    try {
+      isLoadingShow && Loading.show();
+      const { data } = await im.service.getProfile({ relationId: relationId || contactInfo?.imInfo?.relationId || '' });
 
-  useEffectOnce(() => {
-    getProfile();
-  });
+      setProfileInfo(data);
+    } catch (error) {
+      console.log(error);
+      CommonToast.failError(error);
+    } finally {
+      isLoadingShow && Loading.hide();
+    }
+  }, [relationId, contactInfo]);
+  const getProfileRef = useLatestRef(getProfile);
+
+  useFocusEffect(
+    useCallback(() => {
+      getProfileRef.current();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []),
+  );
 
   const addContact = useLockCallback(async () => {
     try {
       const id = relationId || contactInfo?.imInfo?.relationId || '';
       if (!id) return;
       const result = await addStranger(id);
-      result.data.id && setContactId(result.data.id);
+      setProfileInfo(result.data);
       CommonToast.success('Contact Added');
     } catch (error) {
       console.log('addContact', error);
@@ -165,6 +160,8 @@ const ContactProfile: React.FC = () => {
           id={isShowPortkeyId ? contactInfo?.caHolderInfo?.userId : contactInfo?.imInfo?.relationId}
         />
         <ProfileAddressSection addressList={contactInfo?.addresses || []} />
+        <ProfileLoginAccountsSection list={contactInfo?.loginAccounts || []} />
+        <View style={pageStyles.blank} />
       </ScrollView>
       {!isStranger && (
         <CommonButton
@@ -189,8 +186,10 @@ export const pageStyles = StyleSheet.create({
     ...GStyles.paddingArg(0, 0, 18),
   },
   scrollWrap: {
-    paddingBottom: pTd(16),
     paddingHorizontal: pTd(20),
+  },
+  blank: {
+    height: pTd(24),
   },
   btnWrap: {
     paddingTop: pTd(16),

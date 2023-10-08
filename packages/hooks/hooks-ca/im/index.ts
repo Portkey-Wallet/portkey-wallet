@@ -24,6 +24,7 @@ export const useIMChannelListNetMapState = () => useAppCASelector(state => state
 export const useIMChannelMessageListNetMapState = () => useAppCASelector(state => state.im.channelMessageListNetMap);
 export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
+export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -60,43 +61,72 @@ export const useInitIM = () => {
 
       if (!listRef.current.find(item => item.channelUuid === rawMsg.channelUuid)) {
         console.log('addChannel', rawMsg.channelUuid);
-        dispatch(
-          addChannel({
-            network: networkType,
-            channel: {
-              status: ChannelStatusEnum.NORMAL,
-              channelUuid: rawMsg.channelUuid,
-              displayName: '',
-              channelIcon: rawMsg.fromAvatar || '',
-              channelType: ChannelTypeEnum.P2P,
-              unreadMessageCount: 1,
-              mentionsCount: 0,
-              lastMessageType: rawMsg.type,
-              lastMessageContent: rawMsg.content,
-              lastPostAt: rawMsg.createAt,
-              mute: rawMsg.mute,
-              pin: false,
-              toRelationId: rawMsg.from,
-            },
-          }),
-        );
 
-        try {
-          const { data: channelInfo } = await im.service.getChannelInfo({
-            channelUuid: rawMsg.channelUuid,
-          });
-
+        if (rawMsg.channelType === ChannelTypeEnum.P2P) {
           dispatch(
-            updateChannelAttribute({
+            addChannel({
               network: networkType,
-              channelId: rawMsg.channelUuid,
-              value: {
-                displayName: channelInfo.members.find(item => item.relationId === rawMsg.from)?.name || '',
-                pin: channelInfo.pin,
-                channelType: channelInfo.type,
+              channel: {
+                status: ChannelStatusEnum.NORMAL,
+                channelUuid: rawMsg.channelUuid,
+                displayName: rawMsg.fromName || '',
+                channelIcon: rawMsg.fromAvatar || '',
+                channelType: rawMsg.channelType,
+                unreadMessageCount: 1,
+                mentionsCount: 0,
+                lastMessageType: rawMsg.type,
+                lastMessageContent: rawMsg.content,
+                lastPostAt: rawMsg.createAt,
+                mute: rawMsg.mute,
+                pin: false,
+                pinAt: '',
+                toRelationId: rawMsg.from,
               },
             }),
           );
+          return;
+        }
+
+        try {
+          const {
+            data: { list },
+          } = await im.service.getChannelList({
+            channelUuid: rawMsg.channelUuid,
+          });
+          if (list.length) {
+            const channelInfo = list[0];
+            dispatch(
+              addChannel({
+                network: networkType,
+                channel: channelInfo,
+              }),
+            );
+          } else {
+            const { data: channelInfo } = await im.service.getChannelInfo({
+              channelUuid: rawMsg.channelUuid,
+            });
+            dispatch(
+              addChannel({
+                network: networkType,
+                channel: {
+                  status: ChannelStatusEnum.NORMAL,
+                  channelUuid: rawMsg.channelUuid,
+                  displayName: channelInfo.name,
+                  channelIcon: rawMsg.fromAvatar || '',
+                  channelType: rawMsg.channelType,
+                  unreadMessageCount: 1,
+                  mentionsCount: 0,
+                  lastMessageType: rawMsg.type,
+                  lastMessageContent: rawMsg.content,
+                  lastPostAt: rawMsg.createAt,
+                  mute: rawMsg.mute,
+                  pin: channelInfo.pin,
+                  pinAt: '',
+                  toRelationId: '',
+                },
+              }),
+            );
+          }
         } catch (error) {
           console.log('UnreadMsg addChannel error:', error);
         }
@@ -190,7 +220,7 @@ export const useEditIMContact = () => {
   rawListRef.current = rawList;
 
   return useCallback(
-    async (params: EditContactItemApiType, walletName?: string) => {
+    async (params: EditContactItemApiType) => {
       const result = await editContact(params);
       const channel = rawListRef.current.find(item => item.toRelationId === params.relationId);
       if (channel) {
@@ -199,7 +229,7 @@ export const useEditIMContact = () => {
             network: networkType,
             channelId: channel.channelUuid,
             value: {
-              displayName: params.name || walletName || '',
+              displayName: result.name || result.caHolderInfo?.walletName || result.imInfo?.name || '',
             },
           }),
         );
@@ -212,3 +242,4 @@ export const useEditIMContact = () => {
 
 export * from './channelList';
 export * from './channel';
+export * from './group';

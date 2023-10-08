@@ -1,9 +1,15 @@
-import { useCallback } from 'react';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { useCurrentCaHash } from './wallet';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import BigNumber from 'bignumber.js';
+import { useCallback, useMemo } from 'react';
+import { useAppCASelector } from '.';
+import { useCurrentNetworkInfo } from './network';
+import { request } from '@portkey-wallet/api/api-did';
+import { useAppCommonDispatch } from '../index';
+import { setContactPrivacyList, updateContactPrivacy } from '@portkey-wallet/store/store-ca/security/actions';
+import { IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
 
 export type CheckTransferLimitParams = {
   caContract: ContractBasic;
@@ -69,3 +75,53 @@ export function useCheckTransferLimit() {
     [caHash],
   );
 }
+
+export const useSecurityState = () => useAppCASelector(state => state.security);
+export const useContactPrivacyListNetMap = () => useAppCASelector(state => state.security.contactPrivacyListNetMap);
+
+export const useContactPrivacyList = () => {
+  const contactPrivacyListNetMap = useContactPrivacyListNetMap();
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+
+  const list = useMemo(() => contactPrivacyListNetMap[networkType] || [], [contactPrivacyListNetMap, networkType]);
+
+  const refresh = useCallback(async () => {
+    const result = await request.contact.contactPrivacyList();
+    if (result?.permissions && Array.isArray(result.permissions)) {
+      dispatch(
+        setContactPrivacyList({
+          network: networkType,
+          list: result.permissions,
+        }),
+      );
+    } else {
+      throw result;
+    }
+  }, [dispatch, networkType]);
+
+  const update = useCallback(
+    async (value: IContactPrivacy) => {
+      await request.contact.updateContactPrivacy({
+        params: {
+          identifier: value.identifier,
+          privacyType: value.privacyType,
+          permission: value.permission,
+        },
+      });
+      dispatch(
+        updateContactPrivacy({
+          network: networkType,
+          value,
+        }),
+      );
+    },
+    [dispatch, networkType],
+  );
+
+  return {
+    list,
+    refresh,
+    update,
+  };
+};

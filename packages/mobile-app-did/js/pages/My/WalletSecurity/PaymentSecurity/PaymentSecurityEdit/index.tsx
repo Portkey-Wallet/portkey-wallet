@@ -37,6 +37,11 @@ const PaymentSecurityEdit: React.FC = () => {
   const [singleLimitError, setSingleLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
   const [dailyLimitError, setDailyLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
 
+  const isButtonDisabled = useMemo(() => {
+    if (!editInfo?.restricted) return false;
+    return !editInfo?.dailyLimit || !editInfo?.singleLimit;
+  }, [editInfo?.dailyLimit, editInfo?.restricted, editInfo?.singleLimit]);
+
   useEffectOnce(() => {
     if (detail) {
       setEditInfo({
@@ -172,7 +177,7 @@ const PaymentSecurityEdit: React.FC = () => {
           <TextM style={FontStyles.font3}>No limit for transfer</TextM>
         )}
       </View>
-      <CommonButton type="solid" onPress={save}>
+      <CommonButton disabled={isButtonDisabled} type="solid" onPress={save}>
         Send Request
       </CommonButton>
     </PageContainer>

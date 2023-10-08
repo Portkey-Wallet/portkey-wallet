@@ -332,7 +332,7 @@ export default function GuardianApproval() {
         const isPaymentSecurityDetailExist = routesArr.some(item => item.name === 'PaymentSecurityDetail');
 
         if (isPaymentSecurityDetailExist) {
-          await sleep(1000);
+          await sleep(3000);
           console.log('refreshPaymentSecurityList, emit');
           myEvents.refreshPaymentSecurityList.emit();
         }

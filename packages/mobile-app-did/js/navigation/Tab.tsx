@@ -9,7 +9,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLogOut from 'hooks/useLogOut';
 import useInitData from 'hooks/useInitData';
 import DiscoverHome from 'pages/Discover/DiscoverHome';
-import ChatHome from 'pages/Chat/ChatHome';
+import ChatHome from 'pages/Chat/ChatHomePage';
 import { formatMessageCountToStr } from '@portkey-wallet/utils/chat';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { StyleSheet, View } from 'react-native';
@@ -79,7 +79,6 @@ export default function TabRoot() {
   const tabMenuListStore = useTabMenuList();
   const unreadCount = useUnreadCount();
   const isImputation = useIsImputation();
-
   const tabMenuList = useMemo(() => {
     const _tabMenuListStore = tabMenuListStore.reduce((acc: typeof tabMenuListStore, cur) => {
       if (!acc.find(item => item.type.value === cur.type.value)) {
@@ -109,6 +108,7 @@ export default function TabRoot() {
     if (!address) logOut();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
+
   return (
     <Tab.Navigator
       initialRouteName="Wallet"

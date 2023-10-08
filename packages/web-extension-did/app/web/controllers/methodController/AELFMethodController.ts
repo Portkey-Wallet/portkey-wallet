@@ -347,7 +347,7 @@ export default class AELFMethodController {
         return sendResponse({
           ...errorHandler(200005),
           data: {
-            code: 40001,
+            code: ResponseCode.ERROR_IN_PARAMS,
             msg: 'invalid chain id',
           },
         });
@@ -356,7 +356,7 @@ export default class AELFMethodController {
         return sendResponse({
           ...errorHandler(200005),
           data: {
-            code: 40001,
+            code: ResponseCode.ERROR_IN_PARAMS,
             msg: 'Invalid contractAddress',
           },
         });
@@ -369,7 +369,7 @@ export default class AELFMethodController {
         return sendResponse({
           ...errorHandler(400001),
           data: {
-            code: 40001,
+            code: ResponseCode.USER_DENIED,
             msg: 'There are security risks in the current wallet status',
           },
         });

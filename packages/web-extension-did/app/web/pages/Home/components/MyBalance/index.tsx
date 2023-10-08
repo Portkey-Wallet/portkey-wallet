@@ -38,7 +38,7 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import { useBuyButtonShow, useIsBridgeShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import ChatEntry from 'pages/ChatEntry';
+import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
@@ -256,7 +256,7 @@ export default function MyBalance() {
       />
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
-      {isPrompt ? <PromptEmptyElement className="empty-element" /> : null}
+      {isPrompt && <PromptEmptyElement className="empty-element" />}
       <BridgeModal open={bridgeShow} onClose={() => setBridgeShow(false)} />
     </div>
   );

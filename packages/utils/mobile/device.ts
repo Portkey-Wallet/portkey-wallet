@@ -41,7 +41,8 @@ export const bottomBarHeight = (() => {
   let height = 0;
   if (!isIOS) {
     height = screenHeight - Dimensions.get('window').height - (isXiaoMi ? 0 : statusBarHeight);
-    if (height > 40) height = 40;
+    height = Math.max(height, 6);
+    height = Math.min(height, 30);
   } else if (isIOS && isIphoneX) {
     height = 34;
   }

@@ -13,7 +13,7 @@ import { useLanguage } from 'i18n/hooks';
 import CommonInput from 'components/CommonInput';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
-import { LOGIN_TYPE_LIST } from '@portkey-wallet/constants/verifier';
+import { LOGIN_TYPE_LIST } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
@@ -61,7 +61,6 @@ type thirdPartyInfoType = {
 };
 
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
-const loginTypeList = LOGIN_TYPE_LIST;
 
 const GuardianEdit: React.FC = () => {
   const { t } = useLanguage();
@@ -573,7 +572,7 @@ const GuardianEdit: React.FC = () => {
             <ListItem
               onPress={() => {
                 GuardianTypeSelectOverlay.showList({
-                  list: loginTypeList,
+                  list: LOGIN_TYPE_LIST,
                   labelAttrName: 'name',
                   value: selectedType?.value,
                   callBack: onChooseType,

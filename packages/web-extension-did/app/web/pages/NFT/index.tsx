@@ -53,7 +53,7 @@ export default function NFT() {
   const mainContent = useCallback(() => {
     const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance } = state;
     return (
-      <div className={clsx(['nft-detail', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
         <div className="nft-detail-body">
           <SettingHeader leftCallBack={() => navigate('/', { state: { key: BalanceTab.NFT } })} />
           <div className="collection flex-start-center">
@@ -83,7 +83,7 @@ export default function NFT() {
               Send
             </Button>
           </div>
-          {isPrompt ? <PromptEmptyElement /> : null}
+          {isPrompt && <PromptEmptyElement />}
         </div>
       </div>
     );

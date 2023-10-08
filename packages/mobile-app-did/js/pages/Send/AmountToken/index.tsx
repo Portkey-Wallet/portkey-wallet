@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import { parseInputChange } from '@portkey-wallet/utils/input';
@@ -46,6 +46,7 @@ export default function AmountToken({
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const symbolImages = useSymbolImages();
+  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), [isTestNet]);
 
   const formatTokenNameToSuffix = (str: string) => {
     return `${str.slice(0, 5)}...`;
@@ -76,7 +77,7 @@ export default function AmountToken({
         <View style={styles.middleLeft}>
           <CommonAvatar
             shapeType="circular"
-            svgName={selectedToken.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
+            svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
             imageUrl={symbolImages[selectedToken.symbol] || ''}
             avatarSize={28}
           />

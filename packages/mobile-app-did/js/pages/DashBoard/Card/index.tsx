@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text, Platform } from 'react-native';
+import { View, Text } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -27,9 +27,7 @@ const Card: React.FC = () => {
   const { walletName } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
-  const { isBuyButtonShow } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const { isBuyButtonShow } = useBuyButtonShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
   const isShowBridgeButton = useIsBridgeShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
 
   const buttonCount = useMemo(() => {

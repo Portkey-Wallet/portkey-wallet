@@ -16,7 +16,6 @@ const EventList = [
   'refreshMyContactDetailInfo',
   'chatHomeListCloseSwiped',
   'navToBottomTab',
-  'refreshPaymentSecurityList',
 ] as const;
 
 const BookmarkEventList = ['closeSwipeable'] as const;

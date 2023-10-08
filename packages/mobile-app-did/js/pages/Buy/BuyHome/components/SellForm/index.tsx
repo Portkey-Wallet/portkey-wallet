@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Platform, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
@@ -46,12 +46,11 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { checkSecurity } from '@portkey-wallet/utils/securityTest';
 import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
-  const { refreshBuyButton } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const { refreshBuyButton } = useBuyButtonShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
   const checkManagerSyncState = useCheckManagerSyncState();
   const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();

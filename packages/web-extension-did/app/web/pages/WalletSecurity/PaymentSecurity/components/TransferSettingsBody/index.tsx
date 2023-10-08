@@ -4,12 +4,12 @@ import './index.less';
 import { useCallback, useEffect } from 'react';
 import { AmountSign, formatWithCommas } from '@portkey-wallet/utils/converter';
 import { NoLimit, SetLimitExplain } from 'constants/security';
-import { IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 const { Item: FormItem } = Form;
 
 export interface ITransferSettingsBodyProps extends FormProps {
-  state: IPaymentSecurityRouteState;
+  state: ITransferLimitRouteState;
   onEdit: () => void;
 }
 

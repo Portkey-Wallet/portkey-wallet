@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useMemo } from 'react';
-import { Image, Platform, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -31,6 +31,7 @@ import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 interface RouterParams {
   type?: PaymentTypeEnum;
@@ -58,9 +59,7 @@ export default function BuyPreview() {
   const apiUrl = useCurrentApiUrl();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
-  const { refreshBuyButton } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const { refreshBuyButton } = useBuyButtonShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
 
   const getAchTokenInfo = useGetAchTokenInfo();
   const goPayPage = useCallback(

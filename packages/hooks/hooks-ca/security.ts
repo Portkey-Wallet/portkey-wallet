@@ -3,13 +3,20 @@ import { useCurrentCaHash } from './wallet';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import BigNumber from 'bignumber.js';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useAppCASelector } from '.';
 import { useCurrentNetworkInfo } from './network';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
-import { setContactPrivacyList, updateContactPrivacy } from '@portkey-wallet/store/store-ca/security/actions';
+import {
+  nextTransferLimitList,
+  setContactPrivacyList,
+  setTransferLimitList,
+  updateContactPrivacy,
+  updateTransferLimit,
+} from '@portkey-wallet/store/store-ca/security/actions';
 import { IContactPrivacy } from '@portkey-wallet/types/types-ca/contact';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export type CheckTransferLimitParams = {
   caContract: ContractBasic;
@@ -161,4 +168,106 @@ export const useContactPrivacyList = () => {
     refresh,
     update,
   };
+};
+
+export const useTransferLimitListNetMap = () => useAppCASelector(state => state.security.transferLimitListNetMap);
+
+const PAYMENT_SECURITY_PAGE_LIMIT = 20;
+export const useTransferLimitList = () => {
+  const transferLimitListNetMap = useTransferLimitListNetMap();
+  const { networkType } = useCurrentNetworkInfo();
+  const [isNext, setIsNext] = useState(true);
+  const caHash = useCurrentCaHash();
+  const dispatch = useAppCommonDispatch();
+
+  const listWithPagination = useMemo(
+    () => transferLimitListNetMap?.[networkType],
+    [transferLimitListNetMap, networkType],
+  );
+
+  const list = useMemo(() => listWithPagination?.list || [], [listWithPagination?.list]);
+
+  const next = useCallback(
+    async (isInit = false) => {
+      const pagination = {
+        page: 0,
+        pageSize: PAYMENT_SECURITY_PAGE_LIMIT,
+        total: -1,
+        ...listWithPagination?.pagination,
+      };
+      if (isInit) {
+        pagination.page = 0;
+        pagination.total = -1;
+      } else if (pagination.page === 0) {
+        isInit = true;
+      }
+      if (isInit) setIsNext(true);
+
+      pagination.page++;
+      const result = await request.security.securityList({
+        params: {
+          caHash,
+          skipCount: (pagination.page - 1) * pagination.pageSize,
+          maxResultCount: pagination.pageSize,
+        },
+      });
+
+      if (result.data && Array.isArray(result.data) && result.totalRecordCount !== undefined) {
+        if (result.totalRecordCount <= (pagination.page - 1) * pagination.pageSize) {
+          setIsNext(false);
+          return;
+        }
+        pagination.total = result.totalRecordCount;
+        if (isInit) {
+          dispatch(
+            setTransferLimitList({
+              network: networkType,
+              value: {
+                list: result.data,
+                pagination,
+              },
+            }),
+          );
+        } else {
+          dispatch(
+            nextTransferLimitList({
+              network: networkType,
+              value: {
+                list: result.data,
+                pagination,
+              },
+            }),
+          );
+        }
+        return;
+      }
+    },
+    [caHash, dispatch, listWithPagination?.pagination, networkType],
+  );
+
+  const init = useCallback(() => next(true), [next]);
+
+  return {
+    list,
+    init,
+    next,
+    isNext,
+  };
+};
+
+export const useUpdateTransferLimit = () => {
+  const { networkType } = useCurrentNetworkInfo();
+  const dispatch = useAppCommonDispatch();
+
+  return useCallback(
+    (value: ITransferLimitItem) => {
+      dispatch(
+        updateTransferLimit({
+          network: networkType,
+          value,
+        }),
+      );
+    },
+    [dispatch, networkType],
+  );
 };

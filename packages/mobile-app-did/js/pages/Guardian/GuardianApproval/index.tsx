@@ -39,11 +39,12 @@ import { handleGuardiansApproved } from 'utils/login';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { ApproveParams } from 'dapp/dappOverlay';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useNavigation } from '@react-navigation/native';
 import { sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useLatestRef } from '@portkey-wallet/hooks';
+import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -56,7 +57,7 @@ export type RouterParams = {
   loginType?: LoginType;
   authenticationInfo?: AuthenticationInfo;
   approveParams?: ApproveParams;
-  paymentSecurityDetail?: IPaymentSecurityItem;
+  transferLimitDetail?: ITransferLimitItem;
   targetChainId?: ChainId;
 };
 export default function GuardianApproval() {
@@ -71,7 +72,7 @@ export default function GuardianApproval() {
     loginType,
     authenticationInfo: _authenticationInfo,
     approveParams,
-    paymentSecurityDetail,
+    transferLimitDetail,
     targetChainId,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
@@ -109,6 +110,7 @@ export default function GuardianApproval() {
 
   const { t } = useLanguage();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const updateTransferLimit = useUpdateTransferLimit();
 
   const getCurrentCAContract = useGetCurrentCAContract(targetChainId);
   const [authenticationInfo, setAuthenticationInfo] = useState<AuthenticationInfo>(_authenticationInfo || {});
@@ -315,7 +317,7 @@ export default function GuardianApproval() {
   }, [caHash, getCurrentCAContract, guardiansStatus, removeManagerAddress, userGuardiansList]);
 
   const onModifyTransferLimit = useCallback(async () => {
-    if (!paymentSecurityDetail || !managerAddress || !caHash || !guardiansStatus || !userGuardiansList) return;
+    if (!transferLimitDetail || !managerAddress || !caHash || !guardiansStatus || !userGuardiansList) return;
     Loading.show();
     try {
       const caContract = await getCurrentCAContract();
@@ -325,22 +327,21 @@ export default function GuardianApproval() {
         caHash,
         userGuardiansList,
         guardiansStatus,
-        paymentSecurityDetail,
+        transferLimitDetail,
       );
       if (req && !req.error) {
         const routesArr = navigation.getState().routes;
         const isPaymentSecurityDetailExist = routesArr.some(item => item.name === 'PaymentSecurityDetail');
 
+        updateTransferLimit(transferLimitDetail);
         if (isPaymentSecurityDetailExist) {
-          await sleep(3000);
-          console.log('refreshPaymentSecurityList, emit');
-          myEvents.refreshPaymentSecurityList.emit();
+          await sleep(1000);
         }
         CommonToast.success('Saved Successful');
 
         if (isPaymentSecurityDetailExist) {
           navigationService.navigate('PaymentSecurityDetail', {
-            paymentSecurityDetail,
+            transferLimitDetail,
           });
         } else {
           navigationService.pop(2);
@@ -360,7 +361,8 @@ export default function GuardianApproval() {
     guardiansStatus,
     managerAddress,
     navigation,
-    paymentSecurityDetail,
+    transferLimitDetail,
+    updateTransferLimit,
     userGuardiansList,
   ]);
 

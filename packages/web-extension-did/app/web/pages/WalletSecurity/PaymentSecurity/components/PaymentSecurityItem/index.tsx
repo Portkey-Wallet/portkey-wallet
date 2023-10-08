@@ -1,4 +1,4 @@
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
@@ -9,8 +9,8 @@ export default function PaymentSecurityItem({
   item,
   onClick,
 }: {
-  item: IPaymentSecurityItem;
-  onClick: (item: IPaymentSecurityItem) => void;
+  item: ITransferLimitItem;
+  onClick: (item: ITransferLimitItem) => void;
 }) {
   const isMainnet = useIsMainnet();
 

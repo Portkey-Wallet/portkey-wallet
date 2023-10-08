@@ -12,7 +12,7 @@ import { formatGuardianValue } from '../utils/formatGuardianValue';
 import { setTransferLimit } from 'utils/sandboxUtil/setTransferLimit';
 import ModalTip from 'pages/components/ModalTip';
 import { sleep } from '@portkey-wallet/utils';
-import { ICheckLimitBusiness, IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { ChainId } from '@portkey-wallet/types';
 
 export const useSetTransferLimit = (targetChainId?: ChainId) => {
@@ -40,7 +40,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
   }, [query, search, state]);
 
   const checkBackPath = useCallback(
-    (state: IPaymentSecurityRouteState) => {
+    (state: ITransferLimitRouteState) => {
       const chainId = state.targetChainId || state.chainId;
       const sendStateArr = accountAssetsList?.filter((item) => {
         return item.chainId === chainId && item.symbol === state.symbol;
@@ -80,7 +80,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
-      const transQuery: IPaymentSecurityRouteState = JSON.parse(query.split('_')[1]);
+      const transQuery: ITransferLimitRouteState = JSON.parse(query.split('_')[1]);
       const symbol = transQuery?.symbol;
       const dailyLimit = transQuery?.restricted ? transQuery.dailyLimit : '-1';
       const singleLimit = transQuery?.restricted ? transQuery.singleLimit : '-1';

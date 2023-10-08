@@ -3,7 +3,7 @@ import { VerifierInfo } from '@portkey-wallet/types/verifier';
 import { GuardiansApproved, GuardiansStatus } from 'pages/Guardian/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 const getGuardiansApproved = (userGuardiansList: UserGuardianItem[], guardiansStatus: GuardiansStatus) => {
   return userGuardiansList
@@ -198,14 +198,14 @@ export function modifyTransferLimit(
   caHash: string,
   userGuardiansList: UserGuardianItem[],
   guardiansStatus: GuardiansStatus,
-  paymentSecurityDetail: IPaymentSecurityItem,
+  transferLimitDetail: ITransferLimitItem,
 ) {
   const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
   return contract?.callSendMethod('SetTransferLimit', address, {
     caHash,
-    symbol: paymentSecurityDetail.symbol,
+    symbol: transferLimitDetail.symbol,
     guardiansApproved: guardiansApproved,
-    singleLimit: paymentSecurityDetail.singleLimit,
-    dailyLimit: paymentSecurityDetail.dailyLimit,
+    singleLimit: transferLimitDetail.singleLimit,
+    dailyLimit: transferLimitDetail.dailyLimit,
   });
 }

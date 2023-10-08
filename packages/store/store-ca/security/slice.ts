@@ -1,6 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { SecurityStateType } from './type';
-import { resetSecurity, setContactPrivacyList, updateContactPrivacy } from './actions';
+import {
+  nextTransferLimitList,
+  resetSecurity,
+  setContactPrivacyList,
+  setTransferLimitList,
+  updateContactPrivacy,
+  updateTransferLimit,
+} from './actions';
 
 const initialState: SecurityStateType = {
   contactPrivacyListNetMap: {},
@@ -24,11 +31,66 @@ export const securitySlice = createSlice({
           return item;
         });
       })
+      .addCase(setTransferLimitList, (state, action) => {
+        return {
+          ...state,
+          transferLimitListNetMap: {
+            ...state.transferLimitListNetMap,
+            [action.payload.network]: action.payload.value,
+          },
+        };
+      })
+      .addCase(nextTransferLimitList, (state, action) => {
+        const { network, value } = action.payload;
+        const listWithPagination = state.transferLimitListNetMap?.[network];
+        if (!listWithPagination || listWithPagination.pagination.page + 1 !== value.pagination.page) {
+          return state;
+        }
+
+        return {
+          ...state,
+          transferLimitListNetMap: {
+            ...state.transferLimitListNetMap,
+            [network]: {
+              list: [...listWithPagination.list, ...value.list],
+              pagination: value.pagination,
+            },
+          },
+        };
+      })
+      .addCase(updateTransferLimit, (state, action) => {
+        const { network, value } = action.payload;
+        const listWithPagination = state.transferLimitListNetMap?.[network];
+        if (!listWithPagination) return state;
+
+        return {
+          ...state,
+          transferLimitListNetMap: {
+            ...state.transferLimitListNetMap,
+            [network]: {
+              list: listWithPagination.list.map(item => {
+                if (item.chainId === value.chainId && item.symbol === value.symbol) {
+                  return {
+                    ...item,
+                    ...value,
+                  };
+                }
+                return item;
+              }),
+              pagination: listWithPagination.pagination,
+            },
+          },
+        };
+      })
       .addCase(resetSecurity, (state, action) => {
         return {
           ...state,
           contactPrivacyListNetMap: {
             ...state.contactPrivacyListNetMap,
+            [action.payload]: undefined,
+          },
+          transferLimitListNetMap: {
+            ...state.transferLimitListNetMap,
             [action.payload]: undefined,
           },
         };

@@ -1,4 +1,4 @@
-import { IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { Modal } from 'antd';
 import { ExceedDailyLimit, ExceedSingleLimit } from 'constants/security';
 import { useCallback } from 'react';
@@ -10,7 +10,7 @@ export function useSingleTransferLimitModal() {
   const navigate = useNavigate();
 
   return useCallback(
-    (state: IPaymentSecurityRouteState) => {
+    (state: ITransferLimitRouteState) => {
       return Modal.confirm({
         width: 320,
         content: ExceedSingleLimit,
@@ -32,7 +32,7 @@ export function useDailyTransferLimitModal() {
   const navigate = useNavigate();
 
   return useCallback(
-    (state: IPaymentSecurityRouteState) => {
+    (state: ITransferLimitRouteState) => {
       return Modal.confirm({
         width: 320,
         content: ExceedDailyLimit,

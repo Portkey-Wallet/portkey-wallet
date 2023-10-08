@@ -94,6 +94,9 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig) => {
 export interface GuardianConfig {
   readonly accountIdentifier: string;
   readonly accountOriginalType: AccountOriginalType;
+  readonly isLoginGuardian: boolean;
+  readonly name: string;
+  readonly imageUrl: string;
   readonly sendVerifyCodeParams: SendVerifyCodeParams;
 }
 

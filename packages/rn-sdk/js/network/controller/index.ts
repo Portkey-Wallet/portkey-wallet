@@ -6,6 +6,7 @@ import { ChainId } from '@portkey-wallet/types';
 import {
   CheckVerifyCodeParams,
   CheckVerifyCodeResultDTO,
+  GetRecommendedGuardianResultDTO,
   RecaptchaPlatformType,
   SendVerifyCodeHeader,
   SendVerifyCodeParams,
@@ -61,6 +62,16 @@ export class NetworkControllerEntity {
       operationType,
     });
     return res?.result?.isOpen ?? false;
+  };
+
+  getRecommendedGuardian = async (chainId?: string): Promise<GetRecommendedGuardianResultDTO> => {
+    const res = await this.realExecute<GetRecommendedGuardianResultDTO>(
+      this.parseUrl(APIPaths.GET_RECOMMEND_GUARDIAN),
+      'POST',
+      { chainId: chainId ?? PortkeyConfig.currChainId },
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
   };
 
   sendVerifyCode = async (

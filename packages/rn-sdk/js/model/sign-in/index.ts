@@ -1,5 +1,9 @@
-import { setCurrChainId } from 'global';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { PortkeyConfig, setCurrChainId } from 'global';
+import { AccountOriginalType } from 'model/verify/after-verify';
+import { SignUpConfig } from 'model/verify/sign-up';
 import { NetworkController } from 'network/controller';
+import { AccountOrGuardianOriginalTypeStr } from 'network/dto/guardian';
 import { GlobalStorage } from 'service/storage';
 import { CountryCodeDataDTO } from 'types/wallet';
 
@@ -41,6 +45,30 @@ export const getCachedCountryCodeData = (): CountryCodeDataDTO | undefined => {
     const result = JSON.parse(countryCodeDataDTO);
     return result;
   }
+};
+
+export const getRegisterPageData = async (
+  accountIdentifier: string,
+  accountOriginalType: AccountOriginalType,
+): Promise<SignUpConfig> => {
+  const recommendedGuardian = await NetworkController.getRecommendedGuardian();
+  return {
+    accountIdentifier,
+    guardianConfig: {
+      accountIdentifier,
+      accountOriginalType,
+      isLoginGuardian: true,
+      name: recommendedGuardian.name ?? 'Portkey',
+      imageUrl: recommendedGuardian.imageUrl ?? null,
+      sendVerifyCodeParams: {
+        type: AccountOriginalType[accountOriginalType] as AccountOrGuardianOriginalTypeStr,
+        guardianIdentifier: accountIdentifier,
+        verifierId: recommendedGuardian.id,
+        chainId: PortkeyConfig.currChainId,
+        operationType: OperationTypeEnum.register,
+      },
+    },
+  };
 };
 
 export interface AccountCheckResult {

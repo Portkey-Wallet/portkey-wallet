@@ -3,6 +3,16 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { TypedUrlParams } from 'service/native-modules';
 
+export interface GetRecommendedGuardianParams {
+  chainId: string;
+}
+
+export interface GetRecommendedGuardianResultDTO {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
 export interface SendVerifyCodeParams {
   type: AccountOrGuardianOriginalTypeStr;
   guardianIdentifier: string;

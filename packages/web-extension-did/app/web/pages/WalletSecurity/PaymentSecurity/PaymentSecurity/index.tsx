@@ -3,7 +3,7 @@ import PaymentSecurityPopup from './Popup';
 import PaymentSecurityPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
 import { BaseHeaderProps } from 'types/UI';
-import { IPaymentSecurityItem, ISecurityListResponse } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitItem, ITransferLimitListResponse } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { request } from '@portkey-wallet/api/api-did';
@@ -12,8 +12,8 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import { message } from 'antd';
 
 export interface IPaymentSecurityProps extends BaseHeaderProps {
-  list: IPaymentSecurityItem[];
-  clickItem: (item: IPaymentSecurityItem) => void;
+  list: ITransferLimitItem[];
+  clickItem: (item: ITransferLimitItem) => void;
   hasMore: boolean;
   loadMore: () => Promise<void>;
   noDataText: string;
@@ -29,7 +29,7 @@ export default function PaymentSecurity() {
   const headerTitle = t('Payment Security');
   const noDataText = t('No asset');
   const wallet = useCurrentWalletInfo();
-  const [securityList, setSecurityList] = useState<IPaymentSecurityItem[]>([]);
+  const [securityList, setSecurityList] = useState<ITransferLimitItem[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
   const loadingFlag = useRef(false);
   const { setLoading } = useLoading();
@@ -39,7 +39,7 @@ export default function PaymentSecurity() {
       setLoading(true);
       loadingFlag.current = true;
 
-      const res: ISecurityListResponse = await request.security.securityList({
+      const res: ITransferLimitListResponse = await request.security.securityList({
         params: {
           caHash: wallet?.caHash || '',
           skipCount: SKIP_COUNT,
@@ -61,7 +61,7 @@ export default function PaymentSecurity() {
   }, [setLoading, wallet?.caHash]);
 
   const handleClick = useCallback(
-    (item: IPaymentSecurityItem) => {
+    (item: ITransferLimitItem) => {
       navigate('/setting/wallet-security/payment-security/transfer-settings', { state: item });
     },
     [navigate],
@@ -77,7 +77,7 @@ export default function PaymentSecurity() {
     loadingFlag.current = true;
     try {
       if (securityList?.length < totalCount) {
-        const res: ISecurityListResponse = await request.security.securityList({
+        const res: ITransferLimitListResponse = await request.security.securityList({
           params: {
             caHash: wallet?.caHash || '',
             skipCount: securityList?.length,

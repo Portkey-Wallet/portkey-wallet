@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { TextM } from 'components/CommonText';
@@ -14,21 +14,22 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { divDecimalsStr } from '@portkey-wallet/utils/converter';
 
 interface RouterParams {
-  paymentSecurityDetail?: IPaymentSecurityItem;
+  transferLimitDetail?: ITransferLimitItem;
 }
 
 const PaymentSecurityDetail: React.FC = () => {
-  const { params } = useRoute<RouteProp<{ params: RouterParams }>>();
+  const {
+    params: { transferLimitDetail },
+  } = useRoute<RouteProp<{ params: RouterParams }>>();
 
   const detail = useMemo(() => {
-    const paymentSecurityDetail = params.paymentSecurityDetail;
-    if (!paymentSecurityDetail) return undefined;
+    if (!transferLimitDetail) return undefined;
     return {
-      ...paymentSecurityDetail,
-      singleLimit: divDecimalsStr(paymentSecurityDetail.singleLimit, paymentSecurityDetail.decimals),
-      dailyLimit: divDecimalsStr(paymentSecurityDetail.dailyLimit, paymentSecurityDetail.decimals),
+      ...transferLimitDetail,
+      singleLimit: divDecimalsStr(transferLimitDetail.singleLimit, transferLimitDetail.decimals),
+      dailyLimit: divDecimalsStr(transferLimitDetail.dailyLimit, transferLimitDetail.decimals),
     };
-  }, [params.paymentSecurityDetail]);
+  }, [transferLimitDetail]);
 
   return (
     <PageContainer
@@ -67,7 +68,7 @@ const PaymentSecurityDetail: React.FC = () => {
         type="solid"
         onPress={() => {
           navigationService.navigate('PaymentSecurityEdit', {
-            paymentSecurityDetail: params.paymentSecurityDetail,
+            transferLimitDetail,
           });
         }}>
         Edit

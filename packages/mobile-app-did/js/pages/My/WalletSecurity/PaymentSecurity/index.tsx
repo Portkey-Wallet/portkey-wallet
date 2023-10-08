@@ -1,19 +1,17 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet, FlatList, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 import navigationService from 'utils/navigationService';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
-import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
 import Touchable from 'components/Touchable';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import isEqual from 'lodash/isEqual';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -21,11 +19,11 @@ import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import Svg from 'components/Svg';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { request } from '@portkey-wallet/api/api-did';
 import NoData from 'components/NoData';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
 
-const _renderPaymentSecurityItem = ({ item }: { item: IPaymentSecurityItem }) => {
+const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
   const defaultToken = useDefaultToken();
   const symbolImages = useSymbolImages();
   const { networkType } = useCurrentNetworkInfo();
@@ -33,7 +31,7 @@ const _renderPaymentSecurityItem = ({ item }: { item: IPaymentSecurityItem }) =>
   return (
     <Touchable
       onPress={() => {
-        navigationService.navigate('PaymentSecurityDetail', { paymentSecurityDetail: item });
+        navigationService.navigate('PaymentSecurityDetail', { transferLimitDetail: item });
       }}>
       <View style={ItemStyles.wrap}>
         <CommonAvatar
@@ -76,72 +74,31 @@ const ItemStyles = StyleSheet.create({
   },
 });
 
-const PAGE_LIMIT = 20;
 const PaymentSecurityList: React.FC = () => {
-  const wallet = useCurrentWalletInfo();
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [list, setList] = useState<Array<IPaymentSecurityItem>>();
-  const paginationRef = useRef({ page: 0, pageSize: PAGE_LIMIT, total: -1 });
+  const { list, isNext, next, init } = useTransferLimitList();
 
-  const getList = useLockCallback(
-    async (isInit = false) => {
-      const pagination = paginationRef.current;
-      if (isInit) {
-        pagination.page = 0;
-        pagination.total = -1;
-      }
-      if (pagination.total !== -1 && pagination.total <= pagination.page * pagination.pageSize) {
-        return;
-      }
-      pagination.page++;
+  const getList = useLockCallback(async () => {
+    if (!isNext) return;
+    setIsRefreshing(true);
+    try {
+      await next();
+    } catch (error) {
+      console.log('PaymentSecurityList: error', error);
+      CommonToast.failError('Failed to fetch data');
+    }
 
-      setIsRefreshing(true);
-      try {
-        const result = await request.security.securityList({
-          params: {
-            caHash: wallet.caHash,
-            skipCount: (pagination.page - 1) * pagination.pageSize,
-            maxResultCount: pagination.pageSize,
-          },
-        });
-        if (result.data && result.totalRecordCount !== undefined) {
-          pagination.total = result.totalRecordCount;
-          if (isInit) {
-            setList(result.data);
-          } else {
-            setList(prev => {
-              return [...(prev || []), ...result.data];
-            });
-          }
-        }
-      } catch (error) {
-        console.log('PaymentSecurityList: error', error);
-        CommonToast.failError('Failed to fetch data');
-      }
-
-      setIsRefreshing(false);
-    },
-    [wallet.caHash],
-  );
+    setIsRefreshing(false);
+  }, [isNext, next]);
 
   useEffectOnce(() => {
     const timer = setTimeout(() => {
-      getList(true);
+      init();
     }, 100);
     return () => {
       clearTimeout(timer);
     };
   });
-
-  useEffect(() => {
-    const listener = myEvents.refreshPaymentSecurityList.addListener(() => {
-      console.log('refreshPaymentSecurityList');
-      getList(true);
-    });
-    return () => {
-      listener.remove();
-    };
-  }, [getList]);
 
   return (
     <PageContainer
@@ -154,9 +111,9 @@ const PaymentSecurityList: React.FC = () => {
         style={pageStyles.listWrap}
         refreshing={isRefreshing}
         data={list || []}
-        keyExtractor={(item: IPaymentSecurityItem) => `${item.chainId}_${item.symbol}`}
+        keyExtractor={(item: ITransferLimitItem) => `${item.chainId}_${item.symbol}`}
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
-        onRefresh={() => getList(true)}
+        onRefresh={() => init()}
         onEndReached={() => getList()}
         ListEmptyComponent={() => <NoData style={BGStyles.bg4} topDistance={pTd(95)} message="No asset" />}
       />

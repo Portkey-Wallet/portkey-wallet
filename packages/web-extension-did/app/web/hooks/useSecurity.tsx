@@ -21,7 +21,7 @@ import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
-import { ICheckLimitBusiness, IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export const useCheckSecurity = () => {
   const { t } = useTranslation();
@@ -101,7 +101,7 @@ export const useCheckLimit = (targetChainId: ChainId) => {
         amount,
       });
 
-      const settingParams: IPaymentSecurityRouteState = {
+      const settingParams: ITransferLimitRouteState = {
         chainId: chainId,
         symbol,
         singleLimit: limitRes?.singleBalance.toString() || '',

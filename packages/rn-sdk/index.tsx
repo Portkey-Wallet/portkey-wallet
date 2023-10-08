@@ -6,6 +6,8 @@ import SignInEntryPage from 'components/entries/sign-in/SignInEntryPage';
 import SelectCountryPage from 'components/entries/SelectCountry';
 import SignUpEntryPage from 'components/entries/SignUp';
 import ReferralEntryPage from 'components/entries/Referral';
+import GuardianApprovalEntryPage from 'components/entries/GuardianApproval';
+import VerifierDetailsEntryPage from 'components/entries/VerifierDetails';
 
 type EntryConfig = Map<string, any>;
 
@@ -15,6 +17,8 @@ entryConfig.set(PortkeyEntries.REFERRAL_ENTRY, () => ReferralEntryPage);
 entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => SignInEntryPage);
 entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
 entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
+entryConfig.set(PortkeyEntries.GUARDIAN_APPROVAL_ENTRY, () => GuardianApprovalEntryPage);
+entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
 
 for (const [key, value] of entryConfig) {
   AppRegistry.registerComponent(key, value);

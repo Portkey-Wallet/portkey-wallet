@@ -31,6 +31,7 @@ target 'PortkeySDKExample_Example' do
   pod 'react-native-safe-area-context', :path => "#{$node_modules}/react-native-safe-area-context"
   pod 'react-native-spinkit', :path => "#{$node_modules}/react-native-spinkit"
   pod 'RNSpringScrollView', :path => "#{$node_modules}/react-native-spring-scrollview"
+  pod 'react-native-background-timer', :path => "#{$node_modules}/react-native-background-timer"
 
   target 'PortkeySDKExample_Tests' do
     inherit! :search_paths

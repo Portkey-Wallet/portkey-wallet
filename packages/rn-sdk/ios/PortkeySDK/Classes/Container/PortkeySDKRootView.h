@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PortkeySDKRootView : UIView
 
+@property (nonatomic, copy, readonly) NSString *moduleName;
+
 - (instancetype)initWithFrame:(CGRect)frame;
 
 - (instancetype)initWithModuleName:(NSString *)moduleName;

@@ -64,4 +64,8 @@
     [_bridge.batchedBridge executeSourceCode:nil withSourceURL:sourceUrl sync:NO];
 }
 
+- (NSString *)moduleName {
+    return self.rootView.moduleName;
+}
+
 @end

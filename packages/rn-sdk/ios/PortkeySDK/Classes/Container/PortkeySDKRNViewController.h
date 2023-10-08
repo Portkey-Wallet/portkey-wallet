@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithModuleName:(NSString *)moduleName;
 
-- (instancetype)initWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties;
+- (instancetype)initWithModuleName:(NSString *)moduleName initialProperties:(nullable NSDictionary *)initialProperties;
 
 @end
 

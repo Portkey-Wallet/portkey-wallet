@@ -20,7 +20,7 @@
     return [self initWithModuleName:moduleName initialProperties:nil];
 }
 
-- (instancetype)initWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties {
+- (instancetype)initWithModuleName:(NSString *)moduleName initialProperties:(nullable NSDictionary  *)initialProperties {
     self = [super init];
     if (self) {
         self.rnRootView = [[PortkeySDKRootView alloc] initWithModuleName:moduleName initialProperties:initialProperties];

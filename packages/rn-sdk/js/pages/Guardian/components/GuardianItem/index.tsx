@@ -28,7 +28,7 @@ import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { verification } from 'utils/api';
-import { useVerifyToken } from 'hooks/authentication';
+// import { useVerifyToken } from 'hooks/authentication';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import myEvents from 'utils/deviceEvent';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -71,7 +71,8 @@ function GuardianItemButton({
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
 
   const { status, requestCodeResult } = itemStatus || {};
-  const verifyToken = useVerifyToken();
+  // const verifyToken = useVerifyToken();
+  const verifyToken = null;
   const guardianInfo = useMemo(() => {
     return {
       guardianItem,
@@ -128,6 +129,10 @@ function GuardianItemButton({
   }, [guardianInfo, originChainId, operationType, onSetGuardianStatus]);
 
   const onVerifierAuth = useCallback(async () => {
+    console.log('bbb');
+  }, []);
+  /*
+  const onVerifierAuth = useCallback(async () => {
     try {
       Loading.show();
 
@@ -165,6 +170,7 @@ function GuardianItemButton({
     originChainId,
     verifyToken,
   ]);
+  */
   const onVerifier = useThrottleCallback(async () => {
     switch (guardianItem.guardianType) {
       case LoginType.Apple:

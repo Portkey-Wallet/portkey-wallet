@@ -28,7 +28,7 @@ import { portkeyModulesEntity } from 'service/native-modules';
 const IndexHeight = 56,
   SectionHeight = 20;
 
-export default function SelectCountry(selectCountry: CountryItem) {
+export default function SelectCountry({ selectCountry }: { selectCountry?: CountryItem }) {
   // const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
 
   // const {
@@ -66,7 +66,10 @@ export default function SelectCountry(selectCountry: CountryItem) {
         style={[styles.itemRow, GStyles.itemCenter, GStyles.spaceBetween]}
         onPress={() => {
           GlobalStorage.set(CURRENT_USING_COUNTRY_CODE, JSON.stringify(item));
-          portkeyModulesEntity.RouterModule.navigateBack('SelectCountry', {});
+          portkeyModulesEntity.RouterModule.navigateBack('SelectCountry', {
+            status: 'success',
+            result: { name: 'portkey' },
+          });
         }}>
         <TextL style={isSelected ? FontStyles.font4 : null}>{item.country}</TextL>
         <TextM style={[FontStyles.font3, isSelected ? FontStyles.font4 : null]}>+ {item.code}</TextM>

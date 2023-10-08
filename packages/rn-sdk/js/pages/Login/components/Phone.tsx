@@ -19,6 +19,9 @@ import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getCachedCountryCodeData, attemptAccountCheck } from 'model/sign-in';
 import { CountryCodeItem } from 'types/wallet';
+import ActionSheet from 'components/ActionSheet';
+import { portkeyModulesEntity } from 'service/native-modules';
+import { PortkeyEntries } from 'config/entries';
 
 const TitleMap = {
   [PageType.login]: {
@@ -56,7 +59,22 @@ export default function Phone({
       if (accountCheckResult.hasRegistered) {
         console.log('aaaa');
       } else {
-        console.log('bbbb');
+        ActionSheet.alert({
+          title: 'Continue with this account?',
+          message: `This account has not been registered yet. Click "Confirm" to complete the registration.`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Confirm',
+              onPress: () => {
+                portkeyModulesEntity.RouterModule.navigateTo(
+                  PortkeyEntries.SIGN_UP_ENTRY,
+                  PortkeyEntries.SIGN_IN_ENTRY,
+                );
+              },
+            },
+          ],
+        });
       }
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));

@@ -27,16 +27,16 @@ import Touchable from 'components/Touchable';
 import ActionSheet from 'components/ActionSheet';
 import myEvents from 'utils/deviceEvent';
 import Loading from 'components/Loading';
-import { useGuardiansInfo } from 'hooks/store';
+// import { useGuardiansInfo } from 'hooks/store';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from 'components/CommonToast';
 // import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { addGuardian, deleteGuardian, editGuardian, removeOtherManager } from 'utils/guardian';
-import { useGetCurrentCAContract } from 'hooks/contract';
+// import { useGetCurrentCAContract } from 'hooks/contract';
 import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../types';
 // import { handleGuardiansApproved } from 'utils/login';
-import { useOnRequestOrSetPin } from 'hooks/login';
+// import { useOnRequestOrSetPin } from 'hooks/login';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -63,20 +63,23 @@ export default function GuardianApproval() {
   } = useRouterParams<RouterParams>();
   // const dispatch = useAppDispatch();
 
-  const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
+  // const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
 
+  // const userGuardiansList = useMemo(() => {
+  //   if (paramUserGuardiansList) return paramUserGuardiansList;
+  //   if (approvalType === ApprovalType.deleteGuardian || approvalType === ApprovalType.editGuardian) {
+  //     return storeUserGuardiansList?.filter(item => item.key !== guardianItem?.key);
+  //   }
+  //   return storeUserGuardiansList;
+  // }, [approvalType, guardianItem?.key, paramUserGuardiansList, storeUserGuardiansList]);
   const userGuardiansList = useMemo(() => {
-    if (paramUserGuardiansList) return paramUserGuardiansList;
-    if (approvalType === ApprovalType.deleteGuardian || approvalType === ApprovalType.editGuardian) {
-      return storeUserGuardiansList?.filter(item => item.key !== guardianItem?.key);
-    }
-    return storeUserGuardiansList;
-  }, [approvalType, guardianItem?.key, paramUserGuardiansList, storeUserGuardiansList]);
+    return paramUserGuardiansList;
+  }, [paramUserGuardiansList]);
 
   const { t } = useLanguage();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
 
-  const getCurrentCAContract = useGetCurrentCAContract();
+  // const getCurrentCAContract = useGetCurrentCAContract();
   const [authenticationInfo, setAuthenticationInfo] = useState<AuthenticationInfo>(_authenticationInfo || {});
   useEffectOnce(() => {
     const listener = myEvents.setAuthenticationInfo.addListener((item: AuthenticationInfo) => {
@@ -130,6 +133,10 @@ export default function GuardianApproval() {
   });
 
   const onBack = useCallback(() => {
+    console.log('aaaa');
+  }, []);
+  /*
+  const onBack = useCallback(() => {
     if (approvalType === ApprovalType.addGuardian) {
       navigationService.navigate('GuardianEdit');
     } else {
@@ -144,67 +151,69 @@ export default function GuardianApproval() {
         loginAccount,
         type: loginType,
       } as ManagerInfo,
-      // guardiansApproved: handleGuardiansApproved(
-      //   guardiansStatus as GuardiansStatus,
-      //   userGuardiansList as UserGuardianItem[],
-      // ) as GuardiansApproved,
+      guardiansApproved: handleGuardiansApproved(
+        guardiansStatus as GuardiansStatus,
+        userGuardiansList as UserGuardianItem[],
+      ) as GuardiansApproved,
       verifierInfo,
     });
   }, [guardiansStatus, loginAccount, loginType, onRequestOrSetPin, userGuardiansList, verifierInfo]);
+  */
 
   const onAddGuardian = useCallback(async () => {
-    if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
-    Loading.show({ text: t('Processing on the chain...') });
-    try {
-      const caContract = await getCurrentCAContract();
-      const req = await addGuardian(
-        caContract,
-        managerAddress,
-        caHash,
-        verifierInfo,
-        guardianItem,
-        userGuardiansList,
-        guardiansStatus,
-      );
-      if (req && !req.error) {
-        CommonToast.success('Guardians Added');
-        myEvents.refreshGuardiansList.emit();
-        navigationService.navigate('GuardianHome');
-      } else {
-        CommonToast.fail(req?.error?.message || '');
-      }
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-    Loading.hide();
-  }, [caHash, getCurrentCAContract, guardianItem, guardiansStatus, managerAddress, t, userGuardiansList, verifierInfo]);
+    // if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
+    // Loading.show({ text: t('Processing on the chain...') });
+    // try {
+    //   const caContract = await getCurrentCAContract();
+    //   const req = await addGuardian(
+    //     caContract,
+    //     managerAddress,
+    //     caHash,
+    //     verifierInfo,
+    //     guardianItem,
+    //     userGuardiansList,
+    //     guardiansStatus,
+    //   );
+    //   if (req && !req.error) {
+    //     CommonToast.success('Guardians Added');
+    //     myEvents.refreshGuardiansList.emit();
+    //     navigationService.navigate('GuardianHome');
+    //   } else {
+    //     CommonToast.fail(req?.error?.message || '');
+    //   }
+    // } catch (error) {
+    //   CommonToast.failError(error);
+    // }
+    // Loading.hide();
+  }, [caHash, guardianItem, guardiansStatus, managerAddress, t, userGuardiansList, verifierInfo]);
 
   const onDeleteGuardian = useCallback(async () => {
-    if (!managerAddress || !caHash || !guardianItem || !userGuardiansList || !guardiansStatus) return;
-    Loading.show({ text: t('Processing on the chain...') });
-    try {
-      const caContract = await getCurrentCAContract();
-      const req = await deleteGuardian(
-        caContract,
-        managerAddress,
-        caHash,
-        guardianItem,
-        userGuardiansList,
-        guardiansStatus,
-      );
-      if (req && !req.error) {
-        myEvents.refreshGuardiansList.emit();
-        navigationService.navigate('GuardianHome');
-      } else {
-        CommonToast.fail(req?.error?.message || '');
-      }
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-    Loading.hide();
-  }, [caHash, getCurrentCAContract, guardianItem, guardiansStatus, managerAddress, t, userGuardiansList]);
+    // if (!managerAddress || !caHash || !guardianItem || !userGuardiansList || !guardiansStatus) return;
+    // Loading.show({ text: t('Processing on the chain...') });
+    // try {
+    //   const caContract = await getCurrentCAContract();
+    //   const req = await deleteGuardian(
+    //     caContract,
+    //     managerAddress,
+    //     caHash,
+    //     guardianItem,
+    //     userGuardiansList,
+    //     guardiansStatus,
+    //   );
+    //   if (req && !req.error) {
+    //     myEvents.refreshGuardiansList.emit();
+    //     navigationService.navigate('GuardianHome');
+    //   } else {
+    //     CommonToast.fail(req?.error?.message || '');
+    //   }
+    // } catch (error) {
+    //   CommonToast.failError(error);
+    // }
+    // Loading.hide();
+  }, [caHash, guardianItem, guardiansStatus, managerAddress, t, userGuardiansList]);
 
   const onEditGuardian = useCallback(async () => {
+    /*
     if (!managerAddress || !caHash || !preGuardian || !guardianItem || !userGuardiansList || !guardiansStatus) return;
     Loading.show({ text: t('Processing on the chain...') });
     try {
@@ -229,48 +238,49 @@ export default function GuardianApproval() {
       CommonToast.failError(error);
     }
     Loading.hide();
+    */
   }, [
     caHash,
     // dispatch,
-    getCurrentCAContract,
+    // getCurrentCAContract,
     guardianItem,
     guardiansStatus,
     managerAddress,
-    preGuardian,
+    // preGuardian,
     t,
     userGuardiansList,
   ]);
 
   const onRemoveOtherManager = useCallback(async () => {
-    if (!removeManagerAddress || !caHash || !guardiansStatus || !userGuardiansList) return;
-    Loading.show();
-    try {
-      const caContract = await getCurrentCAContract();
-      const req = await removeOtherManager(
-        caContract,
-        removeManagerAddress,
-        caHash,
-        userGuardiansList,
-        guardiansStatus,
-      );
-      if (req && !req.error) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        CommonToast.success('Device Deleted');
-        myEvents.refreshDeviceList.emit();
-        navigationService.navigate('DeviceList');
-      } else {
-        CommonToast.fail(req?.error?.message || '');
-      }
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-    Loading.hide();
-  }, [caHash, getCurrentCAContract, guardiansStatus, removeManagerAddress, userGuardiansList]);
+    // if (!removeManagerAddress || !caHash || !guardiansStatus || !userGuardiansList) return;
+    // Loading.show();
+    // try {
+    //   const caContract = await getCurrentCAContract();
+    //   const req = await removeOtherManager(
+    //     caContract,
+    //     removeManagerAddress,
+    //     caHash,
+    //     userGuardiansList,
+    //     guardiansStatus,
+    //   );
+    //   if (req && !req.error) {
+    //     await new Promise(resolve => setTimeout(resolve, 1000));
+    //     CommonToast.success('Device Deleted');
+    //     myEvents.refreshDeviceList.emit();
+    //     navigationService.navigate('DeviceList');
+    //   } else {
+    //     CommonToast.fail(req?.error?.message || '');
+    //   }
+    // } catch (error) {
+    //   CommonToast.failError(error);
+    // }
+    // Loading.hide();
+  }, [caHash, guardiansStatus, removeManagerAddress, userGuardiansList]);
 
   const onFinish = useCallback(async () => {
     switch (approvalType) {
       case ApprovalType.communityRecovery:
-        registerAccount();
+        // registerAccount();
         break;
       case ApprovalType.addGuardian:
         onAddGuardian();
@@ -287,7 +297,7 @@ export default function GuardianApproval() {
       default:
         break;
     }
-  }, [approvalType, registerAccount, onAddGuardian, onDeleteGuardian, onEditGuardian, onRemoveOtherManager]);
+  }, [approvalType, onAddGuardian, onDeleteGuardian, onEditGuardian, onRemoveOtherManager]);
 
   return (
     <PageContainer

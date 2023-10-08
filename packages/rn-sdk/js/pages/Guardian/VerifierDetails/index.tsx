@@ -23,7 +23,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import myEvents from 'utils/deviceEvent';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGetCurrentCAContract } from 'hooks/contract';
+// import { useGetCurrentCAContract } from 'hooks/contract';
 import { setLoginAccount } from 'utils/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansStatusItem } from '../types';
@@ -76,7 +76,8 @@ export default function VerifierDetails() {
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
-  const getCurrentCAContract = useGetCurrentCAContract();
+  // const getCurrentCAContract = useGetCurrentCAContract();
+  const getCurrentCAContract = null;
   const setGuardianStatus = useCallback(
     (status: GuardiansStatusItem) => {
       myEvents.setGuardianStatus.emit({

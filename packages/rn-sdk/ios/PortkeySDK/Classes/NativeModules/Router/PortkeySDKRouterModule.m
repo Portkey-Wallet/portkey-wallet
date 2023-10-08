@@ -36,23 +36,41 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
 {
     if (entry.length <= 0) return;
     dispatch_async(dispatch_get_main_queue(), ^{
+        UIViewController *topViewController = [self topViewController];
+        if (callback && [topViewController isKindOfClass:PortkeySDKRNViewController.class]) {
+            ((PortkeySDKRNViewController *)topViewController).navigateCallback = callback;
+        }
         PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:params];
-        [[self topViewController].navigationController pushViewController:vc animated:YES];
+        [topViewController.navigationController pushViewController:vc animated:YES];
         
-        NSDictionary *result = @{
-            @"status": @"success",
-            @"result": @{
-                @"name": @"portkey",
-            }
-        };
-        callback(@[result]);
+//        NSDictionary *result = @{
+//            @"status": @"success",
+//            @"result": @{
+//                @"name": @"portkey",
+//            }
+//        };
+//        callback(@[result]);
     });
 }
 
 RCT_EXPORT_METHOD(navigateBack:(NSString *)from result:(id)result)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[self topViewController].navigationController popViewControllerAnimated:YES];
+        UIViewController *topViewController = [self topViewController];
+        if (result && [topViewController.navigationController isKindOfClass:UINavigationController.class]) {
+            NSArray<__kindof UIViewController *> *viewControllers = topViewController.navigationController.viewControllers;
+            if (viewControllers.count >= 2) {
+                UIViewController *backViewController = viewControllers[viewControllers.count - 2];
+                if ([backViewController isKindOfClass:PortkeySDKRNViewController.class]) {
+                    RCTResponseSenderBlock callback = ((PortkeySDKRNViewController *)backViewController).navigateCallback;
+                    if (callback) {
+                        callback(@[result]);
+                        ((PortkeySDKRNViewController *)backViewController).navigateCallback = nil;
+                    }
+                }
+            }
+        }
+        [topViewController.navigationController popViewControllerAnimated:YES];
     });
 }
 

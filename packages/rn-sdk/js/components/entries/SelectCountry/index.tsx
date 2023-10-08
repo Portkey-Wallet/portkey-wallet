@@ -13,11 +13,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GlobalStorage } from 'service/storage';
 
 export default class SelectCountryEntryPage extends BaseContainer<
-  BaseContainerProps,
+  SelectCountryPageProps,
   SelectCountryPageState,
   SelectCountryPageResult
 > {
-  constructor(props: BaseContainerProps) {
+  constructor(props: SelectCountryPageProps) {
     super(props);
     const currUsing = GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
     const cachedData = GlobalStorage.getString(COUNTRY_CODE_DATA_KEY);
@@ -50,12 +50,17 @@ export default class SelectCountryEntryPage extends BaseContainer<
   };
 
   render() {
+    const { selectCountry } = this.props;
     return (
       <SafeAreaProvider>
-        <SelectCountry />
+        <SelectCountry selectCountry={selectCountry} />
       </SafeAreaProvider>
     );
   }
+}
+
+export interface SelectCountryPageProps extends BaseContainerProps {
+  selectCountry: CountryCodeItem;
 }
 
 export interface SelectCountryPageState {

@@ -1,7 +1,7 @@
 import { Button, Form, FormProps, Input, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import './index.less';
-import { useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import { AmountSign, formatWithCommas } from '@portkey-wallet/utils/converter';
 import { NoLimit, SetLimitExplain } from 'constants/security';
 import { IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
@@ -22,19 +22,25 @@ export interface ITransferSettingsFormInit {
 export default function TransferSettingsBody({ form, state, onEdit }: ITransferSettingsBodyProps) {
   const { t } = useTranslation();
 
-  const initValue: ITransferSettingsFormInit = useMemo(() => {
-    return {
+  const updateInputValue = useCallback(() => {
+    const formValue = {
       singleLimit:
         formatWithCommas({ amount: state.singleLimit, decimals: state?.decimals, digits: 0, sign: AmountSign.EMPTY }) +
         ' ' +
-        state.symbol, // TODO format
+        state.symbol,
       dailyLimit:
         formatWithCommas({ amount: state.dailyLimit, decimals: state?.decimals, digits: 0, sign: AmountSign.EMPTY }) +
         ' ' +
-        state.symbol, // TODO format
+        state.symbol,
       restricted: state.restricted,
     };
-  }, [state.dailyLimit, state?.decimals, state.restricted, state.singleLimit, state.symbol]);
+
+    form?.setFieldsValue(formValue);
+  }, [form, state.dailyLimit, state?.decimals, state.restricted, state.singleLimit, state.symbol]);
+
+  useEffect(() => {
+    updateInputValue();
+  }, [updateInputValue]);
 
   return (
     <Form
@@ -42,7 +48,6 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
       autoComplete="off"
       layout="vertical"
       className="flex-column transfer-settings-form"
-      initialValues={initValue}
       requiredMark={false}>
       <div className="customer-form form-content">
         {!state.restricted && (
@@ -60,12 +65,7 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
         {state.restricted && (
           <>
             <FormItem name="singleLimit" label={t('Limit per Transaction')}>
-              <Input
-                placeholder={t('Enter limit')}
-                disabled={true}
-                value={state.singleLimit + ' ' + state.symbol}
-                defaultValue={state.singleLimit + ' ' + state.symbol}
-              />
+              <Input placeholder={t('Enter limit')} disabled={true} />
             </FormItem>
             <FormItem name="dailyLimit" label={t('Daily Limit')}>
               <Input placeholder={t('Enter limit')} disabled={true} />

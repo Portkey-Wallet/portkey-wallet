@@ -21,6 +21,7 @@ import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
+import { CountryCodeItem } from 'types/wallet';
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
 
 const scrollViewProps = { extraHeight: 120 };
@@ -29,7 +30,7 @@ const BackType: any = {
   [PageLoginType.email]: true,
   [PageLoginType.phone]: true,
 };
-export default function SignupPortkey() {
+export default function SignupPortkey({ selectedCountryCode }: { selectedCountryCode: CountryCodeItem | null }) {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
   const { t } = useLanguage();
   // const isMainnet = useIsMainnet();
@@ -40,10 +41,12 @@ export default function SignupPortkey() {
       [PageLoginType.email]: <Email setLoginType={setLoginType} type={PageType.signup} />,
       // [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.qrCode]: <View />,
-      [PageLoginType.phone]: <Phone setLoginType={setLoginType} type={PageType.signup} />,
+      [PageLoginType.phone]: (
+        <Phone setLoginType={setLoginType} type={PageType.signup} selectedCountryCode={selectedCountryCode} />
+      ),
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} type={PageType.signup} />,
     }),
-    [],
+    [selectedCountryCode],
   );
   return (
     <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>

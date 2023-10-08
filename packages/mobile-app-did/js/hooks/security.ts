@@ -1,5 +1,5 @@
 import { CheckTransferLimitParams, useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
-import { ChainId } from '@portkey-wallet/im';
+import { ChainId } from '@portkey-wallet/types';
 import ActionSheet from 'components/ActionSheet';
 import { useCallback } from 'react';
 import navigationService from 'utils/navigationService';

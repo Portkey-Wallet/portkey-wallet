@@ -36,11 +36,7 @@ const ConnectModal = () => {
         <TextL style={[FontStyles.font5, fonts.mediumFont, GStyles.marginTop(pTd(8)), GStyles.marginBottom(pTd(16))]}>
           You will be redirected to eBridge, a third-party cross-chain bridge on aelf.
         </TextL>
-        <ScrollView
-          style={styles.scrollView}
-          onLayout={e => {
-            myEvents.nestScrollViewLayout.emit(e.nativeEvent.layout);
-          }}>
+        <ScrollView style={styles.scrollView} onLayout={e => myEvents.nestScrollViewLayout.emit(e.nativeEvent.layout)}>
           {EBRIDGE_DISCLAIMER_ARRAY.map((ele, index) => {
             if (ele.type === 'text') {
               return (

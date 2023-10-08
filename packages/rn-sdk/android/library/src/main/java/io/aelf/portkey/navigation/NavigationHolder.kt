@@ -22,10 +22,6 @@ internal object NavigationHolder {
         callbackMap[callbackId] = callback
     }
 
-    fun setCatalystInstance(instance: CatalystInstance) {
-
-    }
-
     @Synchronized
     fun invokeAnnotatedCallback(callbackId: String, after: (Callback) -> Unit) {
         if (callbackId == NO_CALLBACK_METHOD) return

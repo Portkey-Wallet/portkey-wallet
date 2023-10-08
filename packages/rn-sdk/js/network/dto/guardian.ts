@@ -30,3 +30,17 @@ export enum RecaptchaPlatformType {
   ANDROID = 1,
   IOS = 2,
 }
+
+export interface CheckVerifyCodeParams {
+  verifierSessionId: string;
+  verificationCode: string;
+  guardianIdentifier: string;
+  verifierId: string;
+  chainId: string;
+  operationType: OperationTypeEnum;
+}
+
+export interface CheckVerifyCodeResultDTO {
+  verificationDoc: string;
+  signature: string;
+}

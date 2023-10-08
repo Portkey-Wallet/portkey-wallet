@@ -1,4 +1,4 @@
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { List } from 'antd-mobile';
 import PaymentSecurityItem from '../PaymentSecurityItem';
 import './index.less';
@@ -7,8 +7,8 @@ export default function PaymentSecurityList({
   list,
   clickItem,
 }: {
-  list: IPaymentSecurityItem[];
-  clickItem: (item: IPaymentSecurityItem) => void;
+  list: ITransferLimitItem[];
+  clickItem: (item: ITransferLimitItem) => void;
 }) {
   return (
     <List className="payment-security-list">

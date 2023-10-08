@@ -1,5 +1,9 @@
 import { request } from '@portkey-wallet/api/api-did';
-import { useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
+import {
+  GetTransferLimitResult,
+  useCheckTransferLimit,
+  useGetTransferLimit,
+} from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { Image, message } from 'antd';
@@ -17,7 +21,7 @@ import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
-import { ICheckLimitBusiness, IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export const useCheckSecurity = () => {
   const { t } = useTranslation();
@@ -82,7 +86,7 @@ export const useCheckLimit = (targetChainId: ChainId) => {
   return useCallback(
     async ({ chainId, symbol, decimals, amount, from }: ICheckLimitParams): Promise<boolean | object> => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
-      if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
+      if (!currentChain?.endPoint || !privateKey) return message.error('Invalid user information, please check');
 
       const caContract = new ExtensionContractBasic({
         rpcUrl: currentChain?.endPoint,
@@ -97,7 +101,7 @@ export const useCheckLimit = (targetChainId: ChainId) => {
         amount,
       });
 
-      const settingParams: IPaymentSecurityRouteState = {
+      const settingParams: ITransferLimitRouteState = {
         chainId: chainId,
         symbol,
         singleLimit: limitRes?.singleBalance.toString() || '',
@@ -121,6 +125,35 @@ export const useCheckLimit = (targetChainId: ChainId) => {
       dailyTransferLimitModal,
       passwordSeed,
       singleTransferLimitModal,
+      walletInfo.AESEncryptPrivateKey,
+    ],
+  );
+};
+
+export const useGetTransferLimitWithContract = (targetChainId: ChainId) => {
+  const currentChain = useCurrentChain(targetChainId);
+  const { walletInfo } = useCurrentWallet();
+  const { passwordSeed } = useUserInfo();
+  const getTransferLimit = useGetTransferLimit();
+
+  return useCallback(
+    async ({ symbol }: { symbol: string }): Promise<GetTransferLimitResult | undefined> => {
+      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
+      if (!currentChain?.endPoint || !privateKey) return;
+
+      const caContract = new ExtensionContractBasic({
+        rpcUrl: currentChain?.endPoint,
+        contractAddress: currentChain?.caContractAddress,
+        privateKey: privateKey,
+      });
+
+      return await getTransferLimit({ caContract, symbol });
+    },
+    [
+      currentChain?.caContractAddress,
+      currentChain?.endPoint,
+      getTransferLimit,
+      passwordSeed,
       walletInfo.AESEncryptPrivateKey,
     ],
   );

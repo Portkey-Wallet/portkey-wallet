@@ -28,7 +28,7 @@ export const useCheckTransferLimitWithJump = () => {
               title: 'Modify',
               onPress: async () => {
                 navigationService.navigate('PaymentSecurityEdit', {
-                  paymentSecurityDetail: {
+                  transferLimitDetail: {
                     chainId,
                     symbol: symbol,
                     dailyLimit: dailyLimit.toString(),

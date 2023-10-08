@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
@@ -21,7 +21,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 
 interface RouterParams {
-  paymentSecurityDetail?: IPaymentSecurityItem;
+  transferLimitDetail?: ITransferLimitItem;
 }
 
 type EditInfoType = {
@@ -32,7 +32,7 @@ type EditInfoType = {
 const MAX_LENGTH = 18;
 
 const PaymentSecurityEdit: React.FC = () => {
-  const { paymentSecurityDetail: detail } = useRouterParams<RouterParams>();
+  const { transferLimitDetail: detail } = useRouterParams<RouterParams>();
   const [editInfo, setEditInfo] = useState<EditInfoType>();
   const [singleLimitError, setSingleLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
   const [dailyLimitError, setDailyLimitError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
@@ -45,8 +45,12 @@ const PaymentSecurityEdit: React.FC = () => {
   useEffectOnce(() => {
     if (detail) {
       setEditInfo({
-        singleLimit: detail.restricted ? divDecimals(detail.singleLimit, detail.decimals).toNumber().toString() : '',
-        dailyLimit: detail.restricted ? divDecimals(detail.dailyLimit, detail.decimals).toNumber().toString() : '',
+        singleLimit: detail.restricted
+          ? divDecimals(detail.singleLimit, detail.decimals).toFixed()
+          : divDecimals(detail.defaultSingleLimit, detail.decimals).toFixed(),
+        dailyLimit: detail.restricted
+          ? divDecimals(detail.dailyLimit, detail.decimals).toFixed()
+          : divDecimals(detail.defaultDailyLimit, detail.decimals).toFixed(),
         restricted: detail.restricted,
       });
     }
@@ -119,7 +123,7 @@ const PaymentSecurityEdit: React.FC = () => {
 
     navigationService.navigate('GuardianApproval', {
       approvalType: ApprovalType.modifyTransferLimit,
-      paymentSecurityDetail: {
+      transferLimitDetail: {
         chainId: detail?.chainId,
         symbol: detail?.symbol,
         singleLimit: editInfo.restricted ? timesDecimals(editInfo.singleLimit, detail?.decimals).toString() : '-1',

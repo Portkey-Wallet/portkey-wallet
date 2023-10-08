@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import usePhoneOrEmailGuardian, { GuardianConfig, GuardianStatus } from '../guardian';
-import { AfterVerifiedConfig } from '../after-verify';
+import { AccountOriginalType, AfterVerifiedConfig } from '../after-verify';
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 
 const useSignUp = (config: SignUpConfig) => {
@@ -11,6 +11,7 @@ const useSignUp = (config: SignUpConfig) => {
   const getVerifiedData = useCallback(() => {
     if (!isVerified()) throw new Error('not verified');
     return {
+      accountOriginalType: config.accountOriginalType,
       fromRecovery: false,
       accountIdentifier: config.accountIdentifier,
       verifiedGuardians: [getVerifiedGuardianDoc()],
@@ -30,6 +31,7 @@ const useSignUp = (config: SignUpConfig) => {
 
 export interface SignUpConfig {
   accountIdentifier: string;
+  accountOriginalType: AccountOriginalType;
   guardianConfig: GuardianConfig;
 }
 

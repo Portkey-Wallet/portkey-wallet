@@ -49,7 +49,7 @@ export const getCachedCountryCodeData = (): CountryCodeDataDTO | undefined => {
 
 export const isReacptchaOpen = async (scene: OperationTypeEnum): Promise<boolean> => {
   const result = await NetworkController.isGoogleRecaptchaOpen(scene);
-  return result;
+  return result ?? false;
 };
 
 export const getRegisterPageData = async (
@@ -59,6 +59,7 @@ export const getRegisterPageData = async (
   const recommendedGuardian = await NetworkController.getRecommendedGuardian();
   return {
     accountIdentifier,
+    accountOriginalType,
     guardianConfig: {
       accountIdentifier,
       accountOriginalType,

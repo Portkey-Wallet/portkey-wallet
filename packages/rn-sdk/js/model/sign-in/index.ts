@@ -47,6 +47,11 @@ export const getCachedCountryCodeData = (): CountryCodeDataDTO | undefined => {
   }
 };
 
+export const isReacptchaOpen = async (scene: OperationTypeEnum): Promise<boolean> => {
+  const result = await NetworkController.isGoogleRecaptchaOpen(scene);
+  return result;
+};
+
 export const getRegisterPageData = async (
   accountIdentifier: string,
   accountOriginalType: AccountOriginalType,

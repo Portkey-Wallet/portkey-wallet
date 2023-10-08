@@ -74,6 +74,23 @@ export class NetworkControllerEntity {
     return res.result;
   };
 
+  getGuardianInfo = async (
+    chainId: string,
+    loginGuardianIdentifier: string,
+  ): Promise<GetRecommendedGuardianResultDTO> => {
+    const res = await this.realExecute<GetRecommendedGuardianResultDTO>(
+      this.parseUrl(APIPaths.GET_GUARDIAN_INFO),
+      'POST',
+      {
+        chainId,
+        loginGuardianIdentifier,
+        guardianIdentifier: loginGuardianIdentifier,
+      },
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
   sendVerifyCode = async (
     params: SendVerifyCodeParams,
     headers?: SendVerifyCodeHeader | TypedUrlParams,

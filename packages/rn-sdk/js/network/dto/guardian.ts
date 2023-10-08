@@ -13,6 +13,44 @@ export interface GetRecommendedGuardianResultDTO {
   imageUrl: string;
 }
 
+export interface GetGuardianInfoParams {
+  chainId: string;
+  loginGuardianIdentifier: string;
+  guardianIdentifier: string;
+}
+
+export type GetGuardianInfoResultDTO = {
+  guardianList: {
+    guardians: Array<GuardianInfo>;
+  };
+  managerInfos: Array<ManagerInfo>;
+} & CaInfo;
+
+export interface GuardianInfo {
+  guardianIdentifier: string;
+  identifierHash: string;
+  isLoginGuardian: boolean;
+  salt: string;
+  type: string;
+  verifierId: string;
+  id?: string;
+  name?: string;
+  imageUrl?: string;
+  thirdPartyEmail?: string;
+  isPrivate?: boolean;
+  firstName?: string;
+  lastName?: string;
+}
+
+export interface ManagerInfo {
+  address: string;
+  extraData: string;
+}
+export interface CaInfo {
+  caAddress: string;
+  caHash: string;
+}
+
 export interface SendVerifyCodeParams {
   type: AccountOrGuardianOriginalTypeStr;
   guardianIdentifier: string;

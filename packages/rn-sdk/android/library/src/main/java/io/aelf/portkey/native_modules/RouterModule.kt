@@ -1,6 +1,7 @@
 package io.aelf.portkey.native_modules
 
 import com.facebook.react.bridge.Callback
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -9,7 +10,7 @@ import io.aelf.portkey.activities.navigateToAnotherReactActivity
 import io.aelf.portkey.navigation.NavigationHolder
 import io.aelf.portkey.tools.generateUniqueCallbackID
 
-class RouterModule(private val reactContext: ReactContext) : ReactContextBaseJavaModule() {
+class RouterModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
     override fun getName(): String {
         return "RouterModule"
     }

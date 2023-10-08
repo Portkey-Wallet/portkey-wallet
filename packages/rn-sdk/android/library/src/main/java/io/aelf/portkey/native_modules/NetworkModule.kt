@@ -1,6 +1,7 @@
 package io.aelf.portkey.native_modules
 
 import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -11,8 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-internal class NetworkModule(private val context: ReactContext) :
-    ReactContextBaseJavaModule() {
+internal class NetworkModule(context: ReactApplicationContext) :
+    ReactContextBaseJavaModule(context) {
     @ReactMethod
     fun fetch(
         url: String,

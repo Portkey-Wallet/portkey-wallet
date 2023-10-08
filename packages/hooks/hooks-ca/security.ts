@@ -76,6 +76,43 @@ export function useCheckTransferLimit() {
   );
 }
 
+export type GetTransferLimitParams = {
+  caContract: ContractBasic;
+  symbol: string;
+};
+
+export type GetTransferLimitResult = {
+  dailyLimit: string;
+  singleLimit: string;
+  restricted: boolean;
+};
+
+export function useGetTransferLimit() {
+  const caHash = useCurrentCaHash();
+
+  return useCallback(
+    async (params: GetTransferLimitParams): Promise<GetTransferLimitResult | undefined> => {
+      const { caContract, symbol } = params;
+      const limitReq = await caContract.callViewMethod('GetTransferLimit', {
+        caHash: caHash,
+        symbol: symbol,
+      });
+
+      if (!limitReq?.error) {
+        const { singleLimit, dailyLimit } = limitReq.data || {};
+
+        return {
+          dailyLimit,
+          singleLimit,
+          restricted: dailyLimit != '-1' && singleLimit != '-1',
+        };
+      }
+      return;
+    },
+    [caHash],
+  );
+}
+
 export const useSecurityState = () => useAppCASelector(state => state.security);
 export const useContactPrivacyListNetMap = () => useAppCASelector(state => state.security.contactPrivacyListNetMap);
 

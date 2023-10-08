@@ -38,8 +38,8 @@ export default function TransferSettingsEditBody({
 
   const initValue: ITransferSettingsFormInit = useMemo(
     () => ({
-      singleLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.singleLimit, state.decimals).toString(),
-      dailyLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.dailyLimit, state.decimals).toString(),
+      singleLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.singleLimit, state.decimals).toFixed(),
+      dailyLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.dailyLimit, state.decimals).toFixed(),
       restricted: state.restricted,
     }),
     [state.dailyLimit, state.decimals, state.restricted, state.singleLimit],

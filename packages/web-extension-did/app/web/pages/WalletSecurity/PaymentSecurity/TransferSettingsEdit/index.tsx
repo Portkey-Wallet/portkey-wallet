@@ -34,8 +34,20 @@ export default function TransferSettingsEdit() {
   const [validSingleLimit, setValidSingleLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [validDailyLimit, setValidDailyLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
 
+  const handleDisableCheck = useCallback(() => {
+    const { singleLimit, dailyLimit } = form.getFieldsValue();
+
+    if (restrictedTextRef.current) {
+      setDisable(!singleLimit || !dailyLimit);
+    } else {
+      setDisable(false);
+    }
+  }, [form]);
+
   const handleFormChange = useCallback(() => {
     const { singleLimit, dailyLimit } = form.getFieldsValue();
+
+    let errorCount = 0;
 
     if (restrictedTextRef.current) {
       // Transfers restricted
@@ -43,33 +55,27 @@ export default function TransferSettingsEdit() {
       if (isValidInteger(singleLimit)) {
         setValidSingleLimit({ validateStatus: '', errorMsg: '' });
       } else {
-        setDisable(true);
         setValidSingleLimit({ validateStatus: 'error', errorMsg: LimitFormatTip });
+        errorCount++;
       }
       // CHECK 2: dailyLimit is a positive integer
       if (isValidInteger(dailyLimit)) {
         setValidDailyLimit({ validateStatus: '', errorMsg: '' });
       } else {
-        setDisable(true);
         setValidDailyLimit({ validateStatus: 'error', errorMsg: LimitFormatTip });
+        errorCount++;
       }
       // CHECK 3: dailyLimit >= singleLimit
       if (isValidInteger(singleLimit) && isValidInteger(dailyLimit)) {
         if (Number(dailyLimit) >= Number(singleLimit)) {
           setValidSingleLimit({ validateStatus: '', errorMsg: '' });
         } else {
-          setDisable(true);
-          return setValidSingleLimit({ validateStatus: 'error', errorMsg: SingleExceedDaily });
+          setValidSingleLimit({ validateStatus: 'error', errorMsg: SingleExceedDaily });
+          errorCount++;
         }
       }
-
-      setDisable(
-        !(isValidInteger(singleLimit) && isValidInteger(dailyLimit) && Number(dailyLimit) >= Number(singleLimit)),
-      );
-    } else {
-      // Unlimited transfers
-      setDisable(false);
     }
+    return errorCount;
   }, [form]);
 
   const handleBack = useCallback(() => {
@@ -80,18 +86,21 @@ export default function TransferSettingsEdit() {
     (checked: boolean) => {
       setRestrictedText(checked);
       restrictedTextRef.current = checked;
-      handleFormChange();
+
+      handleDisableCheck();
     },
-    [handleFormChange],
+    [handleDisableCheck],
   );
 
   const handleSingleLimitChange = useCallback(() => {
-    handleFormChange();
-  }, [handleFormChange]);
+    handleDisableCheck();
+    setValidSingleLimit({ validateStatus: '', errorMsg: '' });
+  }, [handleDisableCheck]);
 
   const handleDailyLimitChange = useCallback(() => {
-    handleFormChange();
-  }, [handleFormChange]);
+    handleDisableCheck();
+    setValidDailyLimit({ validateStatus: '', errorMsg: '' });
+  }, [handleDisableCheck]);
 
   const handleSetLimit = useCallback(async () => {
     // ====== clear guardian cache ====== start
@@ -138,11 +147,13 @@ export default function TransferSettingsEdit() {
   ]);
 
   const onFinish = useCallback(() => {
+    const errorCount = handleFormChange();
+    if (errorCount > 0) return;
     handleSetLimit();
-  }, [handleSetLimit]);
+  }, [handleFormChange, handleSetLimit]);
 
   useEffectOnce(() => {
-    handleFormChange();
+    handleDisableCheck();
   });
 
   return isNotLessThan768 ? (

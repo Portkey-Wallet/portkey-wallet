@@ -45,8 +45,12 @@ const PaymentSecurityEdit: React.FC = () => {
   useEffectOnce(() => {
     if (detail) {
       setEditInfo({
-        singleLimit: detail.restricted ? divDecimals(detail.singleLimit, detail.decimals).toFixed() : '',
-        dailyLimit: detail.restricted ? divDecimals(detail.dailyLimit, detail.decimals).toFixed() : '',
+        singleLimit: detail.restricted
+          ? divDecimals(detail.singleLimit, detail.decimals).toFixed()
+          : divDecimals(detail.defaultSingleLimit, detail.decimals).toFixed(),
+        dailyLimit: detail.restricted
+          ? divDecimals(detail.dailyLimit, detail.decimals).toFixed()
+          : divDecimals(detail.defaultDailyLimit, detail.decimals).toFixed(),
         restricted: detail.restricted,
       });
     }

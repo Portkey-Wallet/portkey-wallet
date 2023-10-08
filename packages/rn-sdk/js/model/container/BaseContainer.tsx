@@ -18,6 +18,10 @@ export default abstract class BaseContainer<
 
   private onShowEventListener: any = null;
 
+  componentDidMount(): void {
+    this.onShow();
+  }
+
   componentWillUnmount() {
     if (this.onShowEventListener != null) {
       this.onShowEventListener.remove();

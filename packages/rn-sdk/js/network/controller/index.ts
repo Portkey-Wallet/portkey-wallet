@@ -1,9 +1,12 @@
 import { PortkeyConfig } from 'global';
 import { AccountIdentifierStatusDTO, RegisterStatusDTO } from 'network/dto/signIn';
-import { ResultWrapper, nativeFetch, portkeyModulesEntity } from 'service/native-modules';
+import { ResultWrapper, TypedUrlParams, nativeFetch, portkeyModulesEntity } from 'service/native-modules';
 import { APIPaths } from 'network/path';
 import { ChainId } from '@portkey-wallet/types';
 import {
+  CheckVerifyCodeParams,
+  CheckVerifyCodeResultDTO,
+  GetRecommendedGuardianResultDTO,
   RecaptchaPlatformType,
   SendVerifyCodeHeader,
   SendVerifyCodeParams,
@@ -61,15 +64,35 @@ export class NetworkControllerEntity {
     return res?.result?.isOpen ?? false;
   };
 
+  getRecommendedGuardian = async (chainId?: string): Promise<GetRecommendedGuardianResultDTO> => {
+    const res = await this.realExecute<GetRecommendedGuardianResultDTO>(
+      this.parseUrl(APIPaths.GET_RECOMMEND_GUARDIAN),
+      'POST',
+      { chainId: chainId ?? PortkeyConfig.currChainId },
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
   sendVerifyCode = async (
     params: SendVerifyCodeParams,
-    headers?: SendVerifyCodeHeader,
+    headers?: SendVerifyCodeHeader | TypedUrlParams,
   ): Promise<SendVerifyCodeResultDTO> => {
     const res = await this.realExecute<SendVerifyCodeResultDTO>(
       this.parseUrl(APIPaths.SEND_VERIFICATION_CODE),
       'POST',
       Object.assign(params, { platformType: getPlatformType() }),
       headers,
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  checkVerifyCode = async (params: CheckVerifyCodeParams): Promise<CheckVerifyCodeResultDTO> => {
+    const res = await this.realExecute<CheckVerifyCodeResultDTO>(
+      this.parseUrl(APIPaths.CHECK_VERIFICATION_CODE),
+      'POST',
+      params,
     );
     if (!res?.result) throw new Error('network failure');
     return res.result;

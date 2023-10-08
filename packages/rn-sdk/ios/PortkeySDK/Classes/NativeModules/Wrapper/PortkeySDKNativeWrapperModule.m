@@ -20,6 +20,10 @@ RCT_EXPORT_MODULE(NativeWrapperModule);
     return NO;
 }
 
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"onShow"];
+}
+
 RCT_EXPORT_METHOD(onError:(NSString *)from errMsg:(NSString *)errMsg data:(id)data)
 {
     
@@ -38,6 +42,15 @@ RCT_EXPORT_METHOD(onWarning:(NSString *)from warnMsg:(NSString *)errMsg)
 RCT_EXPORT_METHOD(emitJSMethodResult:(NSString *)eventId result:(NSString *)result)
 {
     
+}
+
++ (void)sendOnShowEventWithModuleName:(NSString *)moduleName bridge:(RCTBridge *)bridge {
+    PortkeySDKNativeWrapperModule *module = [bridge moduleForClass:self];
+    return [module sendOnShowEvent:moduleName];
+}
+
+- (void)sendOnShowEvent:(NSString *)moduleName {
+    [self sendEventWithName:@"onShow" body:moduleName];
 }
 
 @end

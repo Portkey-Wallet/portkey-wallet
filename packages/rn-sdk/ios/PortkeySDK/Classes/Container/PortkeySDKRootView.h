@@ -9,9 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RCTBridge;
+
 @interface PortkeySDKRootView : UIView
 
 @property (nonatomic, copy, readonly) NSString *moduleName;
+@property (nonatomic, strong, readonly) RCTBridge *bridge;
 
 - (instancetype)initWithFrame:(CGRect)frame;
 

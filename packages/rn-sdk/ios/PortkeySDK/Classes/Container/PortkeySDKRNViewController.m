@@ -7,6 +7,7 @@
 
 #import "PortkeySDKRNViewController.h"
 #import "PortkeySDKRootView.h"
+#import <PortkeySDK/PortkeySDKNativeWrapperModule.h>
 
 @interface PortkeySDKRNViewController ()
 
@@ -32,6 +33,12 @@
     [super viewDidLoad];
     
     [self.view addSubview:self.rnRootView];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [PortkeySDKNativeWrapperModule sendOnShowEventWithModuleName:self.rnRootView.moduleName
+                                                          bridge:self.rnRootView.bridge];
 }
 
 - (void)viewDidLayoutSubviews {

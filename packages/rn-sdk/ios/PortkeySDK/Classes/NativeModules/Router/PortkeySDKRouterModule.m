@@ -49,6 +49,13 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
     });
 }
 
+RCT_EXPORT_METHOD(navigateBack:(NSString *)from result:(id)result)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[self topViewController].navigationController popViewControllerAnimated:YES];
+    });
+}
+
 - (UIViewController *)topViewController {
     UIViewController *resultVC;
     resultVC = [self _topViewController:[[UIApplication sharedApplication].keyWindow rootViewController]];

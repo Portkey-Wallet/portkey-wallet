@@ -36,7 +36,7 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
   render() {
     return (
       <SafeAreaProvider>
-        <LoginPortkey />
+        <LoginPortkey selectedCountryCode={this.state.currentCountryCodeItem} />
       </SafeAreaProvider>
     );
   }

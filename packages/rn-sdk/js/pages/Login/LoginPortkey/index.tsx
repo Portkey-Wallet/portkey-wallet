@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PageContainer, { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
 import { TextM, TextXXXL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
@@ -19,6 +19,7 @@ import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
+import { CountryCodeItem } from 'types/wallet';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -51,7 +52,7 @@ export function LoginPort() {
   );
 }
 
-export default function LoginPortkey() {
+export default function LoginPortkey({ selectedCountryCode }: { selectedCountryCode: CountryCodeItem | null }) {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
   const { t } = useLanguage();
   // const isMainnet = useIsMainnet();
@@ -61,10 +62,10 @@ export default function LoginPortkey() {
       [PageLoginType.email]: <Email setLoginType={setLoginType} />,
       // [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.qrCode]: <View />,
-      [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
+      [PageLoginType.phone]: <Phone setLoginType={setLoginType} selectedCountryCode={selectedCountryCode} />,
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
-    [],
+    [selectedCountryCode],
   );
 
   return (

@@ -68,4 +68,8 @@
     return self.rootView.moduleName;
 }
 
+- (RCTBridge *)bridge {
+    return self.rootView.bridge;
+}
+
 @end

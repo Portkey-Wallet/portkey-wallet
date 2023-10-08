@@ -21,6 +21,9 @@ import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { getCachedCountryCodeData } from 'model/sign-in';
+import { GlobalStorage } from 'service/storage';
+import { CURRENT_USING_COUNTRY_CODE } from 'model/sign-in';
+import { portkeyModulesEntity } from 'service/native-modules';
 
 const IndexHeight = 56,
   SectionHeight = 20;
@@ -62,9 +65,8 @@ export default function SelectCountry(selectCountry: CountryItem) {
       <Touchable
         style={[styles.itemRow, GStyles.itemCenter, GStyles.spaceBetween]}
         onPress={() => {
-          // setLocalPhoneCountryCode(item);
-          // myEvents.setCountry.emit(item);
-          // navigationService.goBack();
+          GlobalStorage.set(CURRENT_USING_COUNTRY_CODE, JSON.stringify(item));
+          portkeyModulesEntity.RouterModule.navigateBack('SelectCountry', {});
         }}>
         <TextL style={isSelected ? FontStyles.font4 : null}>{item.country}</TextL>
         <TextM style={[FontStyles.font3, isSelected ? FontStyles.font4 : null]}>+ {item.code}</TextM>

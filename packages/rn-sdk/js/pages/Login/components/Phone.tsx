@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
@@ -32,9 +32,11 @@ const TitleMap = {
 export default function Phone({
   setLoginType,
   type = PageType.login,
+  selectedCountryCode,
 }: {
   setLoginType: (type: PageLoginType) => void;
   type?: PageType;
+  selectedCountryCode?: CountryCodeItem | null;
 }) {
   const { t } = useLanguage();
   const [loading] = useState<boolean>();
@@ -45,26 +47,12 @@ export default function Phone({
     const countryDTO = getCachedCountryCodeData();
     setCountry(countryDTO?.locateData);
   });
-  // const { localPhoneCountryCode: country } = usePhoneCountryCode();
-  // const onLogin = useOnLogin(type === PageType.login);
 
-  // const onPageLogin = useLockCallback(async () => {
-  //   const loadingKey = Loading.show();
-  //   try {
-  //     await onLogin({
-  //       showLoginAccount: `+${country.code} ${loginAccount}`,
-  //       loginAccount: `+${country.code}${loginAccount}`,
-  //       loginType: LoginType.Phone,
-  //     });
-  //   } catch (error) {
-  //     setErrorMessage(handleErrorMessage(error));
-  //   }
-  //   Loading.hide(loadingKey);
-  // }, [country.code, loginAccount, onLogin]);
   const onPageLogin = async () => {
     const loadingKey = Loading.show();
     try {
-      const accountCheckResult = await attemptAccountCheck(`+${country.code}${loginAccount}`);
+      const currentCountryCodeItem = selectedCountryCode ?? country;
+      const accountCheckResult = await attemptAccountCheck(`+${currentCountryCodeItem.code}${loginAccount}`);
       if (accountCheckResult.hasRegistered) {
         console.log('aaaa');
       } else {
@@ -77,15 +65,6 @@ export default function Phone({
     Loading.hide(loadingKey);
   };
 
-  // useEffectOnce(() => {
-  //   const listener = myEvents[type === PageType.login ? 'clearLoginInput' : 'clearSignupInput'].addListener(() => {
-  //     setLoginAccount('');
-  //     setErrorMessage(undefined);
-  //   });
-  //   return () => {
-  //     listener.remove();
-  //   };
-  // });
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
       <View style={GStyles.width100}>
@@ -104,7 +83,7 @@ export default function Phone({
           errorMessage={errorMessage}
           containerStyle={styles.inputContainerStyle}
           onChangeText={setLoginAccount}
-          selectCountry={country}
+          selectCountry={selectedCountryCode ?? country}
         />
 
         <CommonButton

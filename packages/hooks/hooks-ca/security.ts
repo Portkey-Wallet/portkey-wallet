@@ -37,6 +37,8 @@ export type CheckTransferLimitResult = {
   dailyLimit: BigNumber;
   dailyBalance: BigNumber;
   singleBalance: BigNumber;
+  defaultDailyLimit?: BigNumber;
+  defaultSingleLimit?: BigNumber;
 };
 
 export function useCheckTransferLimit() {
@@ -176,7 +178,7 @@ const PAYMENT_SECURITY_PAGE_LIMIT = 20;
 export const useTransferLimitList = () => {
   const transferLimitListNetMap = useTransferLimitListNetMap();
   const { networkType } = useCurrentNetworkInfo();
-  const [isNext, setIsNext] = useState(true);
+  const [isNext, setIsNext] = useState(false);
   const caHash = useCurrentCaHash();
   const dispatch = useAppCommonDispatch();
 
@@ -216,6 +218,9 @@ export const useTransferLimitList = () => {
         if (result.totalRecordCount <= (pagination.page - 1) * pagination.pageSize) {
           setIsNext(false);
           return;
+        }
+        if (result.totalRecordCount <= pagination.page * pagination.pageSize) {
+          setIsNext(false);
         }
         pagination.total = result.totalRecordCount;
         if (isInit) {

@@ -73,5 +73,11 @@ dependencies {
 
 }
 
+preBuild.doFirst {
+    println("Build fresh bundle...")
+    def process = "../build/build-android-bundle.sh".execute()
+    process.waitForProcessOutput(System.out, System.err)
+}
+
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 

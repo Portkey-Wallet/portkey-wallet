@@ -4,7 +4,7 @@ import { CheckVerifyCodeResultDTO, SendVerifyCodeParams } from '../../../network
 import { AccountOriginalType } from '../after-verify';
 import { VerifiedGuardianDoc } from '../after-verify/index';
 
-const usePhoneOrEmailGuardian = (config: GuardianConfig) => {
+const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
   const [status, setStatus] = useState(GuardianStatus.INIT);
   const [verifierSessionId, setVerifierSessionId] = useState<string>('');
   const [verifiedDoc, setVerifiedDoc] = useState<CheckVerifyCodeResultDTO | null>(null);
@@ -91,6 +91,14 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig) => {
     getVerifiedGuardianDoc,
   };
 };
+
+export interface GuardianEntity {
+  status: GuardianStatus;
+  sendVerifyCode: (googleRecaptchaToken?: string) => Promise<boolean>;
+  checkVerifyCode: (verificationCode: string) => Promise<boolean>;
+  getVerifiedGuardianDoc: () => VerifiedGuardianDoc;
+}
+
 export interface GuardianConfig {
   readonly accountIdentifier: string;
   readonly accountOriginalType: AccountOriginalType;

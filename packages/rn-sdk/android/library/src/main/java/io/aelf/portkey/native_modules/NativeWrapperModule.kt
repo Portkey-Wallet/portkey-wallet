@@ -2,7 +2,7 @@ package io.aelf.portkey.native_modules
 
 import android.util.Log
 import com.facebook.react.bridge.CatalystInstance
-import com.facebook.react.bridge.NativeArray
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -14,11 +14,11 @@ import io.aelf.portkey.navigation.NavigationHolder
 import io.aelf.portkey.tools.generateUniqueCallbackID
 
 
-internal class NativeWrapperModule(private val context: ReactContext) :
-    ReactContextBaseJavaModule() {
+internal class NativeWrapperModule(private val context: ReactApplicationContext) :
+    ReactContextBaseJavaModule(context) {
     companion object {
         @JvmStatic
-        lateinit var instance: NativeWrapperModule
+        var instance: NativeWrapperModule? = null
     }
 
     init {

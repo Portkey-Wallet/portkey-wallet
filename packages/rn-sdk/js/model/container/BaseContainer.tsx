@@ -9,8 +9,8 @@ export default abstract class BaseContainer<
 > extends React.Component<P, S> {
   constructor(props: P) {
     super(props);
-    this.onShowEventListener = DeviceEventEmitter.addListener('onShow', entryName => {
-      if (entryName === this.getEntryName()) {
+    this.onShowEventListener = DeviceEventEmitter.addListener('onShow', rootTag => {
+      if (rootTag === props.rootTag) {
         this.onShow();
       }
     });

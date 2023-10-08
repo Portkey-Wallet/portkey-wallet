@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.ReactDelegate
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
@@ -45,12 +46,21 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         ) {
             override fun getLaunchOptions(): Bundle = params
 
+            private fun getRootTag(): Int {
+                val reflectReactDelegateClass = ReactActivityDelegate::class.java
+                val mReactDelegateField =
+                    reflectReactDelegateClass.getDeclaredField("mReactDelegate")
+                mReactDelegateField.isAccessible = true
+                val reactDelegate = mReactDelegateField.get(this) as ReactDelegate
+                return reactDelegate.reactRootView.rootViewTag
+            }
+
             override fun onResume() {
                 super.onResume()
-                NativeWrapperModule.instance.sendGeneralEvent(
+                NativeWrapperModule.instance?.sendGeneralEvent(
                     "onShow",
                     Arguments.createMap().apply {
-                        this.putString("entryName", entryName)
+                        this.putInt("rootTag",getRootTag())
                     })
             }
         }

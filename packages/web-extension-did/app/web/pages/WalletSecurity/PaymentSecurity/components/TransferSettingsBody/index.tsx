@@ -47,10 +47,10 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
       <div className="customer-form form-content">
         {!state.restricted && (
           <>
-            <FormItem name="restricted" label={t('Transfer settings')}>
+            <FormItem name="restricted" label={t('Transfer Settings')}>
               <div className="flex-start-center">
                 <Switch checked={false} disabled={true} />
-                <div className="switch-text">{'Off'}</div>
+                <div className="switch-text">{'OFF'}</div>
               </div>
             </FormItem>
             <div className="limit-tip">{NoLimit}</div>

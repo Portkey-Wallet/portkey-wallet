@@ -34,9 +34,10 @@ import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import GuardianAddPrompt from './Prompt';
 import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
-import './index.less';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useCommonState } from 'store/Provider/hooks';
 import { MessageType } from 'antd/lib/message';
+import './index.less';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
@@ -143,7 +144,7 @@ export default function AddGuardian() {
     setCurKey(key);
   }, [emailVal, guardianType, phoneValue, socialValue, verifierVal]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (state === 'back' && opGuardian) {
       setGuardianType(opGuardian.guardianType);
       setVerifierVal(opGuardian.verifier?.id);
@@ -162,7 +163,7 @@ export default function AddGuardian() {
           break;
       }
     }
-  }, [state, opGuardian]);
+  });
 
   const guardianTypeChange = useCallback((value: LoginType) => {
     setExist(false);
@@ -347,6 +348,7 @@ export default function AddGuardian() {
 
   const handleSocialVerify = useCallback(async () => {
     try {
+      setLoading(true);
       dispatch(resetUserGuardianStatus());
       await userGuardianList({ caHash: walletInfo.caHash });
       dispatch(
@@ -355,7 +357,6 @@ export default function AddGuardian() {
           loginType: walletInfo.managerInfo?.type || LoginType.Email,
         }),
       );
-      setLoading(true);
       const newGuardian: StoreUserGuardianItem = {
         isLoginAccount: false,
         verifier: selectVerifierItem,

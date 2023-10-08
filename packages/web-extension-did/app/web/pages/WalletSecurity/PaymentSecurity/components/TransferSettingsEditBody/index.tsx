@@ -38,8 +38,8 @@ export default function TransferSettingsEditBody({
 
   const initValue: ITransferSettingsFormInit = useMemo(
     () => ({
-      singleLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.singleLimit, state.decimals).toString(),
-      dailyLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.dailyLimit, state.decimals).toString(),
+      singleLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.singleLimit, state.decimals).toFixed(),
+      dailyLimit: state.dailyLimit === '-1' ? '' : divDecimals(state.dailyLimit, state.decimals).toFixed(),
       restricted: state.restricted,
     }),
     [state.dailyLimit, state.decimals, state.restricted, state.singleLimit],
@@ -55,10 +55,10 @@ export default function TransferSettingsEditBody({
       requiredMark={false}
       onFinish={onFinish}>
       <div className="customer-form form-content">
-        <FormItem name="restricted" label={t('Transfer settings')}>
+        <FormItem name="restricted" label={t('Transfer Settings')}>
           <div className="flex-start-center">
             <Switch onChange={onRestrictedChange} checked={restrictedValue} />
-            <div className="switch-text">{restrictedValue ? 'On' : 'Off'}</div>
+            <div className="switch-text">{restrictedValue ? 'ON' : 'OFF'}</div>
           </div>
         </FormItem>
 
@@ -71,7 +71,7 @@ export default function TransferSettingsEditBody({
             <Input
               placeholder={t('Enter limit')}
               onChange={(e) => onSingleLimitChange(e.target.value)}
-              maxLength={18}
+              maxLength={18 - Number(state.decimals)}
               suffix={state?.symbol || ''}
             />
           </FormItem>
@@ -83,7 +83,7 @@ export default function TransferSettingsEditBody({
             <Input
               placeholder={t('Enter limit')}
               onChange={(e) => onDailyLimitChange(e.target.value)}
-              maxLength={18}
+              maxLength={18 - Number(state.decimals)}
               suffix={state?.symbol || ''}
             />
           </FormItem>

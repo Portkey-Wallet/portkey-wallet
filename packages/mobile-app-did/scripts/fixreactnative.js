@@ -27,7 +27,6 @@ function fixImport(str) {
 }
 
 function fixDeviceName(str) {
-  if (str.includes("const Platform = require('../Utilities/Platform');")) return str;
   const to = `"deviceName" to run {
       if (Build.VERSION.SDK_INT <= 31)
         Settings.Secure.getString(mContext.contentResolver, "bluetooth_name")

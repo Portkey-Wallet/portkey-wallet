@@ -1,4 +1,4 @@
-export type MessageType = 'TEXT' | 'IMAGE';
+export type MessageType = 'TEXT' | 'IMAGE' | 'SYS';
 export type ParsedContent = string | ParsedImage;
 export type ParsedImage = {
   type: string;
@@ -29,6 +29,7 @@ export type Message = {
 
 export type SocketMessage = Message & {
   mute: boolean;
+  channelType: ChannelTypeEnum;
 };
 
 export type ChannelMemberInfo = {
@@ -58,7 +59,7 @@ export type ChannelInfo = {
 
 export enum ChannelStatusEnum {
   NORMAL = 0,
-  EXITED = 1,
+  LEFT = 1,
   BE_REMOVED = 2,
   DISBAND = 3,
 }
@@ -67,7 +68,7 @@ export type ChannelItem = {
   channelUuid: string;
   displayName: string;
   channelIcon: string;
-  channelType: ChannelTypeEnum;
+  channelType?: ChannelTypeEnum;
   unreadMessageCount: number;
   mentionsCount: number;
   lastMessageType: MessageType | null;
@@ -75,7 +76,8 @@ export type ChannelItem = {
   lastPostAt: string | null;
   mute: boolean;
   pin: boolean;
-  toRelationId: string;
+  pinAt: string;
+  toRelationId?: string;
 };
 
 export enum IMStatusEnum {
@@ -97,37 +99,9 @@ export enum TriggerMessageEventActionEnum {
   EXIT_CHANNEL = 2,
 }
 
-export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
-
-export interface AddressItem {
-  chainId: ChainId; // AELF tDVV tDVW
-  chainName?: string;
-  address: string;
-  image?: string;
-}
-
-export interface CaHolderInfo {
-  userId: string;
-  caHash: string;
-  walletName: string;
-}
-
-export interface IImInfo {
+export type GroupMemberItemType = {
   relationId: string;
-  portkeyId: string;
-  name?: string;
-}
-
-export type ContactItemType = {
-  id: string;
-  index: string;
   name: string;
-  avatar?: string;
-  addresses: AddressItem[];
-  modificationTime: number;
-  isDeleted: boolean;
-  userId: string;
-  caHolderInfo?: CaHolderInfo;
-  imInfo?: IImInfo;
-  isImputation: boolean;
+  avatar: string;
+  isAdmin: boolean;
 };

@@ -55,7 +55,7 @@ export default function ContactCard({ user, className, fromRecents = true, chain
           {user?.addresses?.map((address: RecentAddressItem) => (
             <div key={address.address} className={clsx(['flex-between-center', 'content-item'])}>
               <div
-                className={clsx(['main-info', isDisabled(address?.transactionTime) ? 'disabled' : null])}
+                className={clsx(['main-info', isDisabled(address?.transactionTime) && 'disabled'])}
                 onClick={() =>
                   onChange({ ...address, name: transName, isDisable: isDisabled(address?.transactionTime) })
                 }>

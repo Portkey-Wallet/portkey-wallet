@@ -26,7 +26,7 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   svgWrap: {
-    marginTop: -pTd(32),
+    marginTop: -pTd(33),
     padding: pTd(16),
     paddingTop: pTd(40),
   },

@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWalletInfo } from 'store/Provider/hooks';
 import WalletNamePopup from './Popup';
 import WalletNamePrompt from './Prompt';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useCommonState } from 'store/Provider/hooks';
 import { IProfileDetailDataProps, MyProfilePageType } from 'types/Profile';
 import { useProfileCopy } from 'hooks/useProfile';
@@ -13,6 +13,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 export default function WalletName() {
   const { isNotLessThan768 } = useCommonState();
   const navigate = useNavigate();
+  const { state: locationState } = useLocation();
   const showChat = useIsChatShow();
   const { walletName, userId } = useWalletInfo();
   const caAddressInfos = useCaAddressInfoList();
@@ -29,7 +30,7 @@ export default function WalletName() {
   const { t } = useTranslation();
   const editText = t('Edit');
   const [type, setType] = useState<MyProfilePageType>(MyProfilePageType.VIEW);
-  const title = useMemo(() => (showChat ? t('My DID') : 'Wallet Name'), [showChat, t]);
+  const title = useMemo(() => (showChat ? t('My Wallet') : 'Wallet Name'), [showChat, t]);
   const [headerTitle, setHeaderTitle] = useState(title);
 
   const state: IProfileDetailDataProps = useMemo(
@@ -50,13 +51,20 @@ export default function WalletName() {
 
   const showView = useCallback(() => {
     if (type === MyProfilePageType.VIEW) {
-      navigate('/setting/wallet');
+      if (locationState?.from === 'chat-group-info') return navigate(`/chat-group-info/${locationState?.channelUuid}`);
+
+      if (locationState?.from === 'chat-member-list')
+        return navigate(`/chat-group-info/${locationState?.channelUuid}/member-list`, { state: locationState });
+
+      if (['chat-box', 'chat-box-group'].includes(locationState?.from))
+        return navigate(`/${locationState.from}/${locationState?.channelUuid}`);
+      return navigate('/setting/wallet');
     }
     if (type === MyProfilePageType.EDIT) {
       setHeaderTitle(title);
       setType(MyProfilePageType.VIEW);
     }
-  }, [navigate, title, type]);
+  }, [locationState, navigate, title, type]);
 
   const handleCopy = useProfileCopy();
   // const goBack = useCallback(() => navigate('/setting/wallet'), [navigate]);

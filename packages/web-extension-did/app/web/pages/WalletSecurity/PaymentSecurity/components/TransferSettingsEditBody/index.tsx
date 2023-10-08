@@ -6,12 +6,12 @@ import { useMemo } from 'react';
 import { ITransferSettingsFormInit } from '../TransferSettingsBody';
 import { divDecimals } from '@portkey-wallet/utils/converter';
 import { NoLimit, SetLimitExplain } from 'constants/security';
-import { IPaymentSecurityRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 const { Item: FormItem } = Form;
 
 export interface ITransferSettingsEditBodyProps extends FormProps {
-  state: IPaymentSecurityRouteState;
+  state: ITransferLimitRouteState;
   restrictedValue: boolean;
   disable: boolean;
   validSingleLimit: ValidData;

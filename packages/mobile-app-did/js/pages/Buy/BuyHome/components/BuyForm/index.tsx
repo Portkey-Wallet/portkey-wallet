@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Platform, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
@@ -32,12 +32,11 @@ import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-c
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CommonToast from 'components/CommonToast';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export default function BuyForm() {
   const { buyFiatList: fiatList } = usePayment();
-  const { refreshBuyButton } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const { refreshBuyButton } = useBuyButtonShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),

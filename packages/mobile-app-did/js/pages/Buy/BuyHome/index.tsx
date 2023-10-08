@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useState } from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -21,6 +21,7 @@ import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type TabItemType = {
   name: string;
@@ -44,7 +45,7 @@ const tabList: TabItemType[] = [
 export default function BuyHome() {
   const { t } = useLanguage();
   const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
+    isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android,
   );
   const { caHash } = useCurrentWalletInfo();
 

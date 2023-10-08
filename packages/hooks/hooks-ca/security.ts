@@ -41,6 +41,9 @@ export type CheckTransferLimitResult = {
   defaultSingleLimit?: BigNumber;
 };
 
+export const useSecurityState = () => useAppCASelector(state => state.security);
+export const useContactPrivacyListNetMap = () => useAppCASelector(state => state.security.contactPrivacyListNetMap);
+
 export function useCheckTransferLimit() {
   const caHash = useCurrentCaHash();
   return useCallback(
@@ -121,9 +124,6 @@ export function useGetTransferLimit() {
     [caHash],
   );
 }
-
-export const useSecurityState = () => useAppCASelector(state => state.security);
-export const useContactPrivacyListNetMap = () => useAppCASelector(state => state.security.contactPrivacyListNetMap);
 
 export const useContactPrivacyList = () => {
   const contactPrivacyListNetMap = useContactPrivacyListNetMap();

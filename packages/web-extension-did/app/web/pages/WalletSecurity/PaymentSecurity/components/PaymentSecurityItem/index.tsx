@@ -1,9 +1,9 @@
 import { IPaymentSecurityItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import CustomSvg from 'components/CustomSvg';
 import './index.less';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 
 export default function PaymentSecurityItem({
   item,
@@ -17,11 +17,7 @@ export default function PaymentSecurityItem({
   return (
     <div className="flex-row-between payment-security-item" onClick={() => onClick(item)}>
       <div className="flex-center">
-        {item.symbol === ELF_SYMBOL ? (
-          <CustomSvg className="token-logo" type="elf-icon" />
-        ) : (
-          <div className="token-logo custom-word-logo">{item.symbol?.slice(0, 1)}</div>
-        )}
+        <TokenImageDisplay symbol={item.symbol} />
         <div className="token-info">
           <div className="token-symbol">{item.symbol}</div>
           <div className="token-network">{transNetworkText(item.chainId, !isMainnet)}</div>

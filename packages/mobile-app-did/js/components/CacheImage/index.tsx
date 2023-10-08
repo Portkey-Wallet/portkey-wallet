@@ -4,11 +4,13 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, ImageProps, ImageSourcePropType, StyleSheet, View } from 'react-native';
 import Default_Image from 'assets/image/pngs/default_record.png';
-import { getLocalSource, initStateSource, getLocalUri } from './utils';
+import { getLocalSourceByResumable, initStateSource, getLocalUri } from './utils';
 import isEqual from 'lodash/isEqual';
 import { DeviceEventEmitter } from 'react-native';
 import { isURISource } from 'utils/fs/img';
 import { useDeviceEventListener } from 'hooks/useDeviceEvent';
+import { useOnDownload } from './hooks';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
 
 const EVENT_NAME = 'reloadCacheImage';
 export interface CacheImageProps extends ImageProps {
@@ -17,10 +19,14 @@ export interface CacheImageProps extends ImageProps {
 }
 
 export default function CacheImage(props: CacheImageProps) {
-  const [source, setSource] = useState<CacheImageProps['source'] | undefined>(() => initStateSource(props.source));
+  const [source, setSource] = useState<CacheImageProps['source'] | undefined>(() =>
+    initStateSource(props.source, props.originUri),
+  );
+  const [error, setError] = useState(false);
   const [thumb, setThumb] = useState<CacheImageProps['thumb']>(() => initStateSource(props.thumb));
+  const onDownload = useOnDownload();
 
-  const diffSetSource: React.Dispatch<React.SetStateAction<ImageSourcePropType | undefined>> = useCallback(
+  const diffSetSource: React.Dispatch<React.SetStateAction<ImageSourcePropType | undefined>> = useDebounceCallback(
     targetSource => {
       if (!isEqual(targetSource, source)) setSource(targetSource);
     },
@@ -38,15 +44,15 @@ export default function CacheImage(props: CacheImageProps) {
       if (localOriginSource) return diffSetSource(localOriginSource);
     }
     // is ImageRequireSource
-    const localSource = await getLocalSource(props.source);
+    const localSource = await getLocalSourceByResumable({ source: props.source, onDownload });
     if (localSource) diffSetSource(localSource);
     if (isURISource(props.source) && isURISource(localSource))
       DeviceEventEmitter.emit(EVENT_NAME, { uri: props.source.uri, localPath: localSource.uri });
     if (props.thumb) {
-      const localThumb = await getLocalSource(props.thumb);
+      const localThumb = await getLocalSourceByResumable({ source: props.source, onDownload });
       if (localThumb) diffSetThumb(localThumb);
     }
-  }, [diffSetSource, diffSetThumb, props.originUri, props.source, props.thumb]);
+  }, [diffSetSource, diffSetThumb, onDownload, props.originUri, props.source, props.thumb]);
 
   const listenerCallBack = useCallback(
     ({ uri, localPath }: { uri: string; localPath: string }) => {
@@ -79,7 +85,18 @@ export default function CacheImage(props: CacheImageProps) {
           source={thumb}
         />
       )}
-      {!source ? indicator : <Image defaultSource={Default_Image} {...props} style={props.style} source={source} />}
+      {!source ? (
+        indicator
+      ) : (
+        <Image
+          {...props}
+          style={props.style}
+          source={error ? Default_Image : source}
+          onError={() => {
+            setError(true);
+          }}
+        />
+      )}
     </View>
   );
 }

@@ -30,17 +30,27 @@ import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
+import MyQRCode from 'pages/MyQRCode';
 import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
 import FindMore from 'pages/Contacts/FindMore';
-import ChatList from 'pages/ChatList';
-import ChatBox from 'pages/ChatBox';
-import NewChat from 'pages/NewChat';
-import ChatListSearch from 'pages/ChatListSearch';
 import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
 import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
 import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferSettingsEdit';
+import ChatList from 'pages/IMChat/ChatList';
+import ChatBox from 'pages/IMChat/ChatBox';
+import NewChat from 'pages/IMChat/NewChat';
+import ChatListSearch from 'pages/IMChat/ChatListSearch';
+import CreateChatGroup from 'pages/IMChat/CreateChatGroup';
+import GroupInfo from 'pages/IMChat/GroupInfo';
+import EditGroupInfo from 'pages/IMChat/EditGroupInfo';
+import TransferOwnership from 'pages/IMChat/TransferOwnership';
+import MemberList from 'pages/IMChat/MemberList';
+import HandleMember from 'pages/IMChat/HandleMember';
+import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
+import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
+import GroupQRCode from 'pages/IMChat/GroupQRCode';
 
 export const PageRouter = () =>
   useRoutes([
@@ -95,6 +105,10 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet/about-us',
       element: <AboutUs />,
+    },
+    {
+      path: '/setting/wallet/qrcode',
+      element: <MyQRCode />,
     },
     {
       path: '/add-token',
@@ -153,6 +167,10 @@ export const PageRouter = () =>
       element: <FindMore />,
     },
     {
+      path: '/setting/contacts/qrcode',
+      element: <MyQRCode />,
+    },
+    {
       path: '/setting/account-setting',
       element: <AccountSetting />,
     },
@@ -163,6 +181,14 @@ export const PageRouter = () =>
     {
       path: '/setting/account-setting/set-new-pin',
       element: <SetNewPin />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy',
+      element: <ChatPrivacy />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy-edit',
+      element: <ChatPrivacyEdit />,
     },
     {
       path: '/setting/wallet-security',
@@ -225,8 +251,40 @@ export const PageRouter = () =>
       element: <ChatBox />,
     },
     {
+      path: '/chat-box-group/:channelUuid',
+      element: <ChatBox />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid',
+      element: <GroupInfo />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/edit',
+      element: <EditGroupInfo />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/transfer-ownership',
+      element: <TransferOwnership />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/member-list',
+      element: <MemberList />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/member-list/:operate',
+      element: <HandleMember />,
+    },
+    {
+      path: '/chat-group-info/:channelUuid/share',
+      element: <GroupQRCode />,
+    },
+    {
       path: '/new-chat',
       element: <NewChat />,
+    },
+    {
+      path: '/create-chat-group',
+      element: <CreateChatGroup />,
     },
     {
       path: '/unlock',

@@ -487,7 +487,7 @@ export default function Send() {
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['page-send', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper
           className="page-title"
           title={`Send ${type === 'token' ? symbol : ''}`}
@@ -528,7 +528,7 @@ export default function Send() {
             {StageObj[stage].btnText}
           </Button>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [StageObj, btnDisabled, errorMsg, isPrompt, navigate, stage, symbol, t, toAccount, type, walletName]);

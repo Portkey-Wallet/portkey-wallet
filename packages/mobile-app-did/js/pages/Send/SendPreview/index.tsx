@@ -18,7 +18,7 @@ import { usePin } from 'hooks/store';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
 import crossChainTransfer, {
-  CrossChainTransferParamsType,
+  CrossChainTransferIntervalParams,
   intervalCrossChainTransfer,
 } from 'utils/transfer/crossChainTransfer';
 import { useCurrentNetworkInfo, useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -199,7 +199,7 @@ const SendHome: React.FC = () => {
   ]);
 
   const retryCrossChain = useCallback(
-    async (managerTransferTxId: string, data: CrossChainTransferParamsType) => {
+    async (managerTransferTxId: string, data: CrossChainTransferIntervalParams) => {
       const tokenInfo = {
         symbol: assetInfo.symbol,
         decimals: assetInfo.decimals ?? 0,
@@ -282,7 +282,7 @@ const SendHome: React.FC = () => {
           {!assetInfo?.imageUrl ? (
             <Text style={styles.noImg}>{assetInfo?.alias[0]}</Text>
           ) : (
-            <CommonAvatar style={styles.img} imageUrl={assetInfo?.imageUrl} />
+            <CommonAvatar avatarSize={pTd(64)} style={styles.img} imageUrl={assetInfo?.imageUrl || ''} />
           )}
           <View style={styles.topLeft}>
             <TextL style={[styles.nftTitle, fonts.mediumFont]}>{`${assetInfo.alias} #${assetInfo?.tokenId}`} </TextL>

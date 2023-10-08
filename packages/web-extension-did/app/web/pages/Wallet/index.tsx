@@ -38,7 +38,7 @@ export default function Wallet() {
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
       {
-        element: showChat ? 'My DID' : walletName,
+        element: showChat ? 'My Wallet' : walletName,
         key: showChat ? MyDidLabel : WalletNameLabel,
         click: () => {
           if (showChat) {

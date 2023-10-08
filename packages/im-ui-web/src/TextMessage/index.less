@@ -1,21 +1,16 @@
 @import '../assets/theme/color.less';
 
 .portkey-message-text {
-  justify-content: flex-start;
-  margin-top: 8px;
   font-size: 16px;
   line-height: 24px;
   color: @font-5;
-  &.right {
-    justify-content: flex-end;
-  }
   .text-body {
     position: relative;
     flex-direction: column;
     padding: 8px 12px;
     border-radius: 2px 20px 20px;
     background: @bg-6;
-    max-width: calc(100% - 30px);
+    // max-width: calc(100% - 30px);
     &.right {
       border-radius: 20px 2px 20px 20px;
       background: @bg-9;
@@ -28,12 +23,10 @@
       .text-date-hidden {
         visibility: hidden;
       }
-      .text-link {
+      .text-link,
+      .non-support-msg {
         color: @font-4;
         cursor: pointer;
-      }
-      .non-support-msg {
-        color: @font-6;
       }
     }
     .text-date {

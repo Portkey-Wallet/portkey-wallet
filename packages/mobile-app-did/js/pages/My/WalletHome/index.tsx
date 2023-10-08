@@ -79,7 +79,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
           <MenuItem
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('WalletName')}
-            title={showChat ? t('My DID') : walletName}
+            title={showChat ? t('My Wallet') : walletName}
           />
           <MenuItem
             style={pageStyles.menuItem}

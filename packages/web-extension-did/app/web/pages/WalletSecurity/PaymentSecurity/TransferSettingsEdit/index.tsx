@@ -3,7 +3,7 @@ import TransferSettingsEditPopup from './Popup';
 import TransferSettingsEditPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ValidData } from 'pages/Contacts/AddContact';
 import { Form } from 'antd';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
@@ -16,6 +16,7 @@ import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { useEffectOnce } from 'react-use';
 
 export default function TransferSettingsEdit() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
@@ -28,6 +29,7 @@ export default function TransferSettingsEdit() {
   const [form] = Form.useForm();
   const headerTitle = t('Transfer Settings');
   const [restrictedText, setRestrictedText] = useState(!!state?.restricted);
+  const restrictedTextRef = useRef(!!state?.restricted);
   const [disable, setDisable] = useState(true);
   const [validSingleLimit, setValidSingleLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [validDailyLimit, setValidDailyLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
@@ -35,65 +37,61 @@ export default function TransferSettingsEdit() {
   const handleFormChange = useCallback(() => {
     const { singleLimit, dailyLimit } = form.getFieldsValue();
 
-    if (restrictedText) {
+    if (restrictedTextRef.current) {
       // Transfers restricted
-      if (Number(singleLimit) > Number(dailyLimit)) {
-        setDisable(true);
-        return setValidSingleLimit({ validateStatus: 'error', errorMsg: SingleExceedDaily });
-      } else {
+      // CHECK 1: singleLimit is a positive integer
+      if (isValidInteger(singleLimit)) {
         setValidSingleLimit({ validateStatus: '', errorMsg: '' });
+      } else {
+        setDisable(true);
+        setValidSingleLimit({ validateStatus: 'error', errorMsg: LimitFormatTip });
+      }
+      // CHECK 2: dailyLimit is a positive integer
+      if (isValidInteger(dailyLimit)) {
+        setValidDailyLimit({ validateStatus: '', errorMsg: '' });
+      } else {
+        setDisable(true);
+        setValidDailyLimit({ validateStatus: 'error', errorMsg: LimitFormatTip });
+      }
+      // CHECK 3: dailyLimit >= singleLimit
+      if (isValidInteger(singleLimit) && isValidInteger(dailyLimit)) {
+        if (Number(dailyLimit) >= Number(singleLimit)) {
+          setValidSingleLimit({ validateStatus: '', errorMsg: '' });
+        } else {
+          setDisable(true);
+          return setValidSingleLimit({ validateStatus: 'error', errorMsg: SingleExceedDaily });
+        }
       }
 
       setDisable(
-        !(
-          restrictedText &&
-          singleLimit &&
-          dailyLimit &&
-          validSingleLimit.validateStatus !== 'error' &&
-          validDailyLimit.validateStatus !== 'error'
-        ),
+        !(isValidInteger(singleLimit) && isValidInteger(dailyLimit) && Number(dailyLimit) >= Number(singleLimit)),
       );
     } else {
       // Unlimited transfers
       setDisable(false);
     }
-  }, [form, restrictedText, validDailyLimit.validateStatus, validSingleLimit.validateStatus]);
+  }, [form]);
 
   const handleBack = useCallback(() => {
-    navigate('/setting/wallet-security/payment-security/transfer-settings', { state: state });
+    navigate('/setting/wallet-security/payment-security/transfer-settings', { state: state?.initStateBackUp || state });
   }, [navigate, state]);
 
   const handleRestrictedChange = useCallback(
     (checked: boolean) => {
       setRestrictedText(checked);
+      restrictedTextRef.current = checked;
       handleFormChange();
     },
     [handleFormChange],
   );
 
-  const handleSingleLimitChange = useCallback(
-    (v: string) => {
-      if (isValidInteger(v)) {
-        setValidSingleLimit({ validateStatus: '', errorMsg: '' });
-        handleFormChange();
-      } else {
-        return setValidSingleLimit({ validateStatus: 'error', errorMsg: LimitFormatTip });
-      }
-    },
-    [handleFormChange],
-  );
+  const handleSingleLimitChange = useCallback(() => {
+    handleFormChange();
+  }, [handleFormChange]);
 
-  const handleDailyLimitChange = useCallback(
-    (v: string) => {
-      if (isValidInteger(v)) {
-        setValidDailyLimit({ validateStatus: '', errorMsg: '' });
-        handleFormChange();
-      } else {
-        return setValidDailyLimit({ validateStatus: 'error', errorMsg: LimitFormatTip });
-      }
-    },
-    [handleFormChange],
-  );
+  const handleDailyLimitChange = useCallback(() => {
+    handleFormChange();
+  }, [handleFormChange]);
 
   const handleSetLimit = useCallback(async () => {
     // ====== clear guardian cache ====== start
@@ -109,13 +107,14 @@ export default function TransferSettingsEdit() {
 
     const { singleLimit, dailyLimit } = form.getFieldsValue();
     const params = {
-      dailyLimit: timesDecimals(dailyLimit, state.decimals),
-      singleLimit: timesDecimals(singleLimit, state.decimals),
+      dailyLimit: timesDecimals(dailyLimit, state.decimals).toFixed(),
+      singleLimit: timesDecimals(singleLimit, state.decimals).toFixed(),
       symbol: state.symbol,
       decimals: state.decimals,
-      restricted: restrictedText,
+      restricted: restrictedTextRef.current,
       from: state.from,
       targetChainId: state.chainId,
+      initStateBackUp: state,
     };
 
     isPrompt
@@ -133,11 +132,7 @@ export default function TransferSettingsEdit() {
     walletInfo.caHash,
     userGuardianList,
     form,
-    state.decimals,
-    state.symbol,
-    state.from,
-    state.chainId,
-    restrictedText,
+    state,
     isPrompt,
     navigate,
   ]);
@@ -146,9 +141,9 @@ export default function TransferSettingsEdit() {
     handleSetLimit();
   }, [handleSetLimit]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     handleFormChange();
-  }, [handleFormChange]);
+  });
 
   return isNotLessThan768 ? (
     <TransferSettingsEditPrompt

@@ -6,7 +6,7 @@ import aes from '@portkey-wallet/utils/aes';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useAssetInfo, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import { setTransferLimit } from 'utils/sandboxUtil/setTransferLimit';
@@ -19,6 +19,9 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const { passwordSeed } = useUserInfo();
+  const {
+    accountAssets: { accountAssetsList },
+  } = useAssetInfo();
 
   const currentChain = useCurrentChain(targetChainId);
   const { state, search } = useLocation();
@@ -38,13 +41,25 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
 
   const checkBackPath = useCallback(
     (state: IPaymentSecurityRouteState) => {
+      const chainId = state.targetChainId || state.chainId;
+      const sendStateArr = accountAssetsList?.filter((item) => {
+        return item.chainId === chainId && item.symbol === state.symbol;
+      });
+      const sendState = {
+        chainId: chainId,
+        decimals: state.decimals,
+        address: sendStateArr[0]?.tokenInfo?.tokenContractAddress,
+        symbol: state.symbol,
+        name: state.symbol,
+      };
+
       switch (state.from) {
         case ICheckLimitBusiness.RAMP_SELL:
           navigate('/buy');
           break;
 
         case ICheckLimitBusiness.SEND:
-          navigate(`/send/token/${state.symbol}`, { state });
+          navigate(`/send/token/${state.symbol}`, { state: sendState });
           break;
 
         default:
@@ -53,7 +68,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
       }
       return;
     },
-    [navigate],
+    [accountAssetsList, navigate],
   );
 
   return useCallback(async () => {

@@ -10,7 +10,6 @@ import { useAppDispatch, useCommonState, useLoading, useTokenInfo, useUserInfo }
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useChainIdList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -150,16 +149,7 @@ export default function AddToken() {
     (item: TokenItemShowType) => (
       <div className="token-item" key={`${item.symbol}-${item.chainId}`}>
         <div className="token-item-content">
-          {item.symbol === ELF_SYMBOL ? (
-            <CustomSvg className="token-logo" type="elf-icon" />
-          ) : (
-            <TokenImageDisplay
-              className="custom-logo"
-              width={28}
-              symbol={item.symbol}
-              src={symbolImages[item.symbol]}
-            />
-          )}
+          <TokenImageDisplay className="custom-logo" width={28} symbol={item.symbol} src={symbolImages[item.symbol]} />
           <p className="token-info">
             <span className="token-item-symbol">{item.symbol}</span>
             <span className="token-item-net">{transNetworkText(item.chainId, !isMainnet)}</span>
@@ -219,7 +209,7 @@ export default function AddToken() {
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['add-token', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['add-token', isPrompt && 'detail-page-prompt'])}>
         <div className="add-token-top">
           <SettingHeader title={t('Add tokens')} leftCallBack={() => navigate('/')} rightElement={rightElement} />
           <DropdownSearch

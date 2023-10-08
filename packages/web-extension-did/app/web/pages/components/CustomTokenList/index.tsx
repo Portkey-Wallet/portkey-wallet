@@ -10,7 +10,6 @@ import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-w
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import TokenImageDisplay from '../TokenImageDisplay';
@@ -75,11 +74,7 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, token, 'token')}>
           <div className="icon flex-center">
-            {token.symbol === ELF_SYMBOL ? (
-              <CustomSvg type="elf-icon" />
-            ) : (
-              <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
-            )}
+            <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>
@@ -121,11 +116,7 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, tokenTmp, 'token')}>
           <div className="icon flex-center">
-            {token.symbol === ELF_SYMBOL ? (
-              <CustomSvg type="elf-icon" />
-            ) : (
-              <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
-            )}
+            <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>

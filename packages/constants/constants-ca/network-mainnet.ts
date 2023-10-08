@@ -1,5 +1,6 @@
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BackEndNetWorkMap } from './backend-network';
+import { LINK_PATH_ENUM } from './link';
 
 export const NetworkList: NetworkItem[] = [
   BackEndNetWorkMap['back-end-mainnet'],
@@ -17,3 +18,9 @@ export enum DappMap {
   bridge = 'https://ebridge.exchange',
 }
 export const DAPP_WHITELIST: string[] = [DappMap.bridge];
+export const LinkPortkeyWebsite = OfficialWebsite;
+
+export const LinkPortkeyPath = {
+  addContact: LinkPortkeyWebsite + LINK_PATH_ENUM.addContact,
+  addGroup: LinkPortkeyWebsite + LINK_PATH_ENUM.addGroup,
+};

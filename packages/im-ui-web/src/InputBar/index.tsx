@@ -3,23 +3,17 @@ import clsx from 'clsx';
 import { Popover } from 'antd';
 import { emojiList } from '../assets/emoji/index';
 import CustomSvg from '../components/CustomSvg';
-import PopoverMenuList, { IPopoverMenuListData } from '../PopoverMenuList';
+import PopoverMenuList from '../PopoverMenuList';
 import CustomInput from '../components/CustomInput';
+import { IInputBarProps, PopDataProps } from '../type';
 import './index.less';
 
-interface IInputBar {
-  maxLength?: number;
-  moreData?: IPopoverMenuListData[];
-  showEmoji?: boolean;
-  onSendMessage: (v: string) => void;
-}
-
-export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxLength = 300 }: IInputBar) {
+export default function InputBar({ moreData, showEmoji = true, onSendMessage, maxLength = 300 }: IInputBarProps) {
   const [showEmojiIcon, setShowEmojiIcon] = useState(false);
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [popVisible, setPopVisible] = useState(false);
-  const formatMoreData = moreData?.map((item) => ({
+  const formatMoreData = moreData?.map((item: PopDataProps) => ({
     ...item,
     onClick: () => {
       setPopVisible(false);

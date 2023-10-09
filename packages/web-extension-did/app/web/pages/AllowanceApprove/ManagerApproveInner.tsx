@@ -56,7 +56,7 @@ export default function ManagerApproveInner({
     issued: string;
   }>();
   const [allowance, setAllowance] = useState<string>(
-    divDecimals(amount.toString(), tokenInfo?.decimals || DEFAULT_DECIMAL).toFixed(),
+    divDecimals(amount, tokenInfo?.decimals || DEFAULT_DECIMAL).toFixed(),
   );
   const [guardianList, setGuardianList] = useState<BaseGuardianItem[]>();
   const { setLoading } = useLoading();

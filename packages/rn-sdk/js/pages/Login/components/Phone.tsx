@@ -22,6 +22,9 @@ import { CountryCodeItem } from 'types/wallet';
 import ActionSheet from 'components/ActionSheet';
 import { portkeyModulesEntity } from 'service/native-modules';
 import { PortkeyEntries } from 'config/entries';
+import { getRegisterPageData } from 'model/sign-in';
+import { AccountOriginalType } from 'model/verify/after-verify';
+import useSignUp from 'model/verify/sign-up';
 
 const TitleMap = {
   [PageType.login]: {
@@ -83,6 +86,46 @@ export default function Phone({
     Loading.hide(loadingKey);
   };
 
+  const onPageSignup = async () => {
+    const loadingKey = Loading.show();
+    try {
+      const currentCountryCodeItem = selectedCountryCode ?? country;
+      const accountCheckResult = await attemptAccountCheck(`+${currentCountryCodeItem.code}${loginAccount}`);
+      if (accountCheckResult.hasRegistered) {
+        ActionSheet.alert({
+          title: 'Continue with this account?',
+          message: `This account already exists. Click "Confirm" to log in.`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Confirm',
+              onPress: () => {
+                // log in
+              },
+            },
+          ],
+        });
+      } else {
+        // sign up
+        const accountIdentifier = `+${(selectedCountryCode ?? country).code}${loginAccount}`;
+        const pageDataResult = await getRegisterPageData(accountIdentifier, AccountOriginalType.Phone);
+        if (pageDataResult) {
+          Loading.hide(loadingKey);
+          portkeyModulesEntity.RouterModule.navigateToWithOptions(
+            PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+            PortkeyEntries.SIGN_UP_ENTRY,
+            pageDataResult,
+            () => {},
+          );
+        }
+      }
+    } catch (error) {
+      setErrorMessage(handleErrorMessage(error));
+      Loading.hide(loadingKey);
+    }
+    Loading.hide(loadingKey);
+  };
+
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
       <View style={GStyles.width100}>
@@ -109,7 +152,7 @@ export default function Phone({
           disabled={!loginAccount}
           type="primary"
           loading={loading}
-          onPress={onPageLogin}>
+          onPress={type === PageType.login ? onPageLogin : onPageSignup}>
           {t(TitleMap[type].button)}
         </CommonButton>
       </View>

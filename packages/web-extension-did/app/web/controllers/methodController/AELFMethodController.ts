@@ -320,7 +320,7 @@ export default class AELFMethodController {
           caHash,
         },
       });
-      return result.isSafe;
+      return result;
     } catch (error) {
       throw 'checkWalletSecurity error';
     }
@@ -342,6 +342,7 @@ export default class AELFMethodController {
       console.log(message, 'message====sendTransaction');
       const chainInfo = await this.dappManager.getChainInfo(payload.chainId);
       const caInfo = await this.dappManager.getCaInfo(payload.chainId);
+      const originChainId = await this.dappManager.getOriginChainId();
 
       if (!chainInfo || !chainInfo.endPoint || !caInfo)
         return sendResponse({
@@ -360,12 +361,15 @@ export default class AELFMethodController {
             msg: 'Invalid contractAddress',
           },
         });
-
-      // TODO check wallet security
-      const isSafe = await this.checkWalletSecurity();
-      if (!isSafe) {
+      const safeRes = await this.checkWalletSecurity();
+      const isOriginChainId = originChainId === payload.chainId;
+      const isSafe = (isOriginChainId && safeRes.isOriginChainSafe) || (!isOriginChainId && safeRes.isTransferSafe);
+      const showGuardian =
+        (isOriginChainId && !safeRes.isOriginChainSafe) || (!isOriginChainId && !safeRes.isSynchronizing);
+      const showSync = !isOriginChainId && safeRes.isSynchronizing;
+      if (!isSafe && (showGuardian || showSync)) {
         // Open Prompt to approve add guardian
-        this.approvalController.authorizedToCheckWalletSecurity();
+        await this.approvalController.authorizedToCheckWalletSecurity({ showSync, showGuardian });
         return sendResponse({
           ...errorHandler(400001),
           data: {

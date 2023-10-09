@@ -193,6 +193,8 @@ export const useTransferLimitList = () => {
 
   const list = useMemo(() => listWithPagination?.list || [], [listWithPagination?.list]);
 
+  const pagination = useMemo(() => listWithPagination?.pagination, [listWithPagination?.pagination]);
+
   const next = useCallback(
     async (isInit = false) => {
       const pagination = {
@@ -204,6 +206,7 @@ export const useTransferLimitList = () => {
       if (isInit) {
         pagination.page = 0;
         pagination.total = -1;
+        pagination.pageSize = PAYMENT_SECURITY_PAGE_LIMIT;
       } else if (pagination.page === 0) {
         isInit = true;
       }
@@ -258,7 +261,7 @@ export const useTransferLimitList = () => {
 
   return {
     list,
-    pagination: listWithPagination?.pagination,
+    pagination,
     init,
     next,
     isNext,

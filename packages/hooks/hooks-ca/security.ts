@@ -258,6 +258,7 @@ export const useTransferLimitList = () => {
 
   return {
     list,
+    pagination: listWithPagination?.pagination,
     init,
     next,
     isNext,

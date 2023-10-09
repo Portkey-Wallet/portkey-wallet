@@ -104,7 +104,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
         content: 'Requested successfully',
         onClose: async () => {
           await sleep(1000);
-          checkBackPath({ ...transQuery, dailyLimit: String(dailyLimit), singleLimit: String(singleLimit) });
+          checkBackPath({ ...transQuery, dailyLimit: dailyLimit, singleLimit: singleLimit });
         },
       });
     } catch (error) {

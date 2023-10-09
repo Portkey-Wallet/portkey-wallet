@@ -13,7 +13,8 @@ export const useCheckTransferLimitWithJump = () => {
       if (!checkTransferLimitResult) {
         throw new Error('Failed to fetch data');
       }
-      const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance } = checkTransferLimitResult;
+      const { isDailyLimited, isSingleLimited, dailyLimit, singleBalance, defaultDailyLimit, defaultSingleLimit } =
+        checkTransferLimitResult;
       if (isDailyLimited || isSingleLimited) {
         ActionSheet.alert({
           title2: isDailyLimited
@@ -31,10 +32,12 @@ export const useCheckTransferLimitWithJump = () => {
                   transferLimitDetail: {
                     chainId,
                     symbol: symbol,
-                    dailyLimit: dailyLimit.toString(),
-                    singleLimit: singleBalance.toString(),
+                    dailyLimit: dailyLimit.toFixed(0),
+                    singleLimit: singleBalance.toFixed(0),
                     restricted: !dailyLimit.eq(-1),
                     decimals: decimals,
+                    defaultDailyLimit: defaultDailyLimit?.toFixed(0),
+                    defaultSingleLimit: defaultSingleLimit?.toFixed(0),
                   },
                 });
               },

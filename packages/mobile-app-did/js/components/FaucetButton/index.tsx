@@ -51,7 +51,7 @@ const FaucetButton = (props: SendButtonType) => {
         methodName: 'ClaimToken',
         args: {
           symbol: 'ELF',
-          amount: timesDecimals(100, 8).toString(),
+          amount: timesDecimals(100, 8).toFixed(0),
         },
       });
       if (rst.error) {

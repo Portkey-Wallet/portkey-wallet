@@ -174,7 +174,7 @@ export default function Send() {
           chainType: currentNetwork.walletType,
           token: tokenInfo,
           caHash: wallet.caHash as string,
-          amount: timesDecimals(num || amount, tokenInfo.decimals).toNumber(),
+          amount: timesDecimals(num || amount, tokenInfo.decimals).toFixed(),
         });
         return feeRes;
       } catch (error) {
@@ -301,9 +301,9 @@ export default function Send() {
           managerAddress: wallet.address,
           tokenInfo,
           caHash: wallet?.caHash || '',
-          amount: timesDecimals(amount, tokenInfo.decimals).toNumber(),
+          amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
-          fee: timesDecimals(txFee, defaultToken.decimals).toNumber(),
+          fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
         });
       } else {
         console.log('sameChainTransfers==sendHandler');
@@ -313,7 +313,7 @@ export default function Send() {
           privateKey,
           tokenInfo,
           caHash: wallet?.caHash || '',
-          amount: timesDecimals(amount, tokenInfo.decimals).toNumber(),
+          amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
           toAddress: toAccount.address,
         });
       }

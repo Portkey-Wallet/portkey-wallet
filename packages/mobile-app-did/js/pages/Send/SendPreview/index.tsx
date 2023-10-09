@@ -114,7 +114,7 @@ const SendHome: React.FC = () => {
     }
 
     const contract = contractRef.current;
-    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toNumber();
+    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toFixed();
 
     const checkTransferLimitResult = await checkTransferLimitWithJump(
       {

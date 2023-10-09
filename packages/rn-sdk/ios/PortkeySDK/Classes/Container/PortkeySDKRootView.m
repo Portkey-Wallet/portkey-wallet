@@ -9,6 +9,7 @@
 #import <React/React-Core-umbrella.h>
 #import <PortkeySDK/PortkeySDKBundleUtil.h>
 #import <PortkeySDK/RCTBridge+ARNSDK.h>
+#import <PortkeySDK/RCTRootView+PortkeySDK.h>
 
 @interface PortkeySDKRootView () {
     RCTBridge *_bridge;
@@ -70,6 +71,10 @@
 
 - (RCTBridge *)bridge {
     return self.rootView.bridge;
+}
+
+- (NSNumber *)reactTag {
+    return [self.rootView reactTag];
 }
 
 @end

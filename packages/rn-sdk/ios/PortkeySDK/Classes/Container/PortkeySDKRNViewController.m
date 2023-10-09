@@ -38,7 +38,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [PortkeySDKNativeWrapperModule sendOnShowEventWithModuleName:self.rnRootView.moduleName
-                                                          bridge:self.rnRootView.bridge];
+                                                          bridge:self.rnRootView.bridge
+                                                        reactTag:self.rnRootView.reactTag];
 }
 
 - (void)viewDidLayoutSubviews {

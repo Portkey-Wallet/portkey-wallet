@@ -21,7 +21,7 @@ entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
 entryConfig.set(PortkeyEntries.GUARDIAN_APPROVAL_ENTRY, () => GuardianApprovalEntryPage);
 
 entryConfig.set(PortkeyEntries.CHECK_PIN, () => CheckPin);
-// entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
+entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
 
 for (const [key, value] of entryConfig) {
   AppRegistry.registerComponent(key, value);

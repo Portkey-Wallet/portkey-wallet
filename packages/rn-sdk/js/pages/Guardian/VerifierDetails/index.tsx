@@ -21,24 +21,9 @@ import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import myEvents from 'utils/deviceEvent';
-import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-// import { useGetCurrentCAContract } from 'hooks/contract';
-import { setLoginAccount } from 'utils/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { GuardiansStatusItem } from '../types';
-import { verification } from 'utils/api';
-import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useOnRequestOrSetPin } from 'hooks/login';
-import { usePin } from 'hooks/store';
-import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
+import { AccountOriginalType } from 'model/verify/after-verify';
 
-type RouterParams = {
-  guardianItem?: UserGuardianItem;
-  requestCodeResult?: { verifierSessionId: string };
-  startResend?: boolean;
-  verificationType?: VerificationType;
-};
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
     if (!isRegister)
@@ -57,36 +42,66 @@ function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; is
   );
 }
 
-export default function VerifierDetails() {
-  const {
-    guardianItem,
-    requestCodeResult: paramsRequestCodeResult,
-    startResend,
-    verificationType,
-  } = useRouterParams<RouterParams>();
-  const originChainId = useOriginChainId();
+/*
+accountIdentifier,
+accountOriginalType,
+guardianConfig: {
+  accountIdentifier,
+  accountOriginalType,
+  isLoginGuardian: true,
+  name: recommendedGuardian.name ?? 'Portkey',
+  imageUrl: recommendedGuardian.imageUrl ?? null,
+  sendVerifyCodeParams: {
+    type: AccountOriginalType[accountOriginalType] as AccountOrGuardianOriginalTypeStr,
+    guardianIdentifier: accountIdentifier,
+    verifierId: recommendedGuardian.id,
+    chainId: PortkeyConfig.currChainId,
+    operationType: OperationTypeEnum.register,
+  },
+},*/
+
+export default function VerifierDetails({
+  verificationType = VerificationType.register,
+  accountIdentifier,
+  accountOriginalType,
+}: {
+  verificationType?: VerificationType;
+  accountIdentifier: string;
+  accountOriginalType: AccountOriginalType;
+}) {
+  const guardianItem = {
+    guardianAccount: accountIdentifier,
+    guardianType: LoginType.Phone,
+    verifier: {
+      id: '123456789',
+    },
+  };
 
   const countdown = useRef<VerifierCountdownInterface>();
-  useEffectOnce(() => {
-    if (!startResend) countdown.current?.resetTime(60);
-  });
-  const [requestCodeResult, setRequestCodeResult] =
-    useState<RouterParams['requestCodeResult']>(paramsRequestCodeResult);
+  // useEffectOnce(() => {
+  //   if (!startResend) countdown.current?.resetTime(60);
+  // });
+  // const [requestCodeResult, setRequestCodeResult] =
+  //   useState<RouterParams['requestCodeResult']>(paramsRequestCodeResult);
   const digitInput = useRef<DigitInputInterface>();
-  const { caHash, address: managerAddress } = useCurrentWalletInfo();
-  const pin = usePin();
-  const onRequestOrSetPin = useOnRequestOrSetPin();
+  // const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  // const pin = usePin();
+  // const onRequestOrSetPin = useOnRequestOrSetPin();
   // const getCurrentCAContract = useGetCurrentCAContract();
   const getCurrentCAContract = null;
-  const setGuardianStatus = useCallback(
-    (status: GuardiansStatusItem) => {
-      myEvents.setGuardianStatus.emit({
-        key: guardianItem?.key,
-        status,
-      });
-    },
-    [guardianItem?.key],
-  );
+  // const setGuardianStatus = useCallback(
+  //   (status: GuardiansStatusItem) => {
+  //     myEvents.setGuardianStatus.emit({
+  //       key: guardianItem?.key,
+  //       status,
+  //     });
+  //   },
+  //   [guardianItem?.key],
+  // );
+  const onSetLoginAccount = useCallback(async () => {
+    console.log('onSetLoginAccount');
+  }, []);
+  /*
   const onSetLoginAccount = useCallback(async () => {
     if (!managerAddress || !caHash || !guardianItem) return;
 
@@ -105,95 +120,9 @@ export default function VerifierDetails() {
       CommonToast.failError(error);
     }
   }, [caHash, getCurrentCAContract, guardianItem, managerAddress]);
+  */
 
-  const operationType: OperationTypeEnum = useMemo(
-    () => VERIFICATION_TO_OPERATION_MAP[verificationType as VerificationType] || OperationTypeEnum.unknown,
-    [verificationType],
-  );
-
-  const onFinish = useLockCallback(
-    async (code: string) => {
-      if (!requestCodeResult || !guardianItem || !code) return;
-      const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
-      Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
-      try {
-        const rst = await verification.checkVerificationCode({
-          params: {
-            type: LoginType[guardianItem?.guardianType as LoginType],
-            verificationCode: code,
-            guardianIdentifier: guardianItem.guardianAccount,
-            ...requestCodeResult,
-            verifierId: guardianItem?.verifier?.id,
-            chainId: originChainId,
-            operationType,
-          },
-        });
-        !isRequestResult && CommonToast.success('Verified Successfully');
-
-        const verifierInfo: VerifierInfo = {
-          ...rst,
-          verifierId: guardianItem?.verifier?.id,
-        };
-
-        switch (verificationType) {
-          case VerificationType.communityRecovery:
-          case VerificationType.addGuardianByApprove:
-          case VerificationType.editGuardian:
-          case VerificationType.deleteGuardian:
-          case VerificationType.removeOtherManager:
-            setGuardianStatus({
-              requestCodeResult: requestCodeResult,
-              status: VerifyStatus.Verified,
-              verifierInfo,
-            });
-            navigationService.goBack();
-            break;
-          case VerificationType.addGuardian:
-            if (verifierInfo.signature && verifierInfo.verificationDoc) {
-              navigationService.navigate('GuardianApproval', {
-                approvalType: ApprovalType.addGuardian,
-                guardianItem,
-                verifierInfo,
-                verifiedTime: Date.now(),
-              });
-            }
-            break;
-          case VerificationType.setLoginAccount:
-            await onSetLoginAccount();
-            break;
-          default:
-            onRequestOrSetPin({
-              showLoading: false,
-              managerInfo: {
-                verificationType: VerificationType.register,
-                loginAccount: guardianItem.guardianAccount,
-                type: guardianItem.guardianType,
-              },
-              verifierInfo,
-            });
-            break;
-        }
-      } catch (error) {
-        CommonToast.failError(error, 'Verify Fail');
-        digitInput.current?.reset();
-        Loading.hide();
-      }
-      !isRequestResult && Loading.hide();
-    },
-    [
-      requestCodeResult,
-      guardianItem,
-      pin,
-      verificationType,
-      managerAddress,
-      originChainId,
-      operationType,
-      setGuardianStatus,
-      onSetLoginAccount,
-      onRequestOrSetPin,
-    ],
-  );
-
+  /*
   const resendCode = useCallback(async () => {
     try {
       Loading.show();
@@ -221,9 +150,18 @@ export default function VerifierDetails() {
     digitInput.current?.reset();
     Loading.hide();
   }, [guardianItem, operationType, originChainId, setGuardianStatus]);
+  */
+
+  const onFinish = useCallback(() => {}, []);
+  const resendCode = useCallback(async () => {}, []);
 
   return (
-    <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>
+    <PageContainer
+      type="leftBack"
+      titleDom="VerifierDetails"
+      safeAreaColor={['white']}
+      containerStyles={styles.containerStyles}
+      scrollViewProps={{ disabled: true }}>
       {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null}
       <TipText
         isRegister={!verificationType || (verificationType as VerificationType) === VerificationType.register}
@@ -238,5 +176,6 @@ export default function VerifierDetails() {
 const styles = StyleSheet.create({
   containerStyles: {
     paddingTop: 8,
+    paddingHorizontal: 20,
   },
 });

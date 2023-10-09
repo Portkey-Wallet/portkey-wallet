@@ -14,14 +14,14 @@ import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import ActionSheet from 'components/ActionSheet';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
-import { checkSecurity } from '@portkey-wallet/utils/securityTest';
-import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { useSecuritySafeCheckAndToast } from 'hooks/security';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 type TabItemType = {
   name: string;
@@ -48,6 +48,7 @@ export default function BuyHome() {
     isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android,
   );
   const { caHash } = useCurrentWalletInfo();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
     isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
@@ -57,8 +58,7 @@ export default function BuyHome() {
     (async () => {
       if (!isBuySectionShow) {
         try {
-          const isSafe = await checkSecurity(caHash || '');
-          if (!isSafe) return WalletSecurityOverlay.alert();
+          if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) return;
         } catch (error) {
           console.log('error', error);
           return;
@@ -97,8 +97,7 @@ export default function BuyHome() {
       if (type === PaymentTypeEnum.SELL) {
         Loading.show();
         try {
-          const isSafe = await checkSecurity(caHash || '');
-          if (!isSafe) return WalletSecurityOverlay.alert();
+          if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) return;
         } catch (error) {
           CommonToast.failError(error);
           return;

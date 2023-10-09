@@ -43,9 +43,7 @@ import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { checkSecurity } from '@portkey-wallet/utils/securityTest';
-import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
-import { useCheckTransferLimitWithJump } from 'hooks/security';
+import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export default function SellForm() {
@@ -54,6 +52,7 @@ export default function SellForm() {
   const checkManagerSyncState = useCheckManagerSyncState();
   const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
   const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -194,10 +193,9 @@ export default function SellForm() {
     }
 
     try {
-      const isSafe = await checkSecurity(wallet?.caHash || '');
-      if (!isSafe) {
+      if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) {
         Loading.hide();
-        return WalletSecurityOverlay.alert();
+        return;
       }
     } catch (error) {
       CommonToast.failError(error);

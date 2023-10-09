@@ -44,13 +44,13 @@ RCT_EXPORT_METHOD(emitJSMethodResult:(NSString *)eventId result:(NSString *)resu
     
 }
 
-+ (void)sendOnShowEventWithModuleName:(NSString *)moduleName bridge:(RCTBridge *)bridge {
++ (void)sendOnShowEventWithModuleName:(NSString *)moduleName bridge:(RCTBridge *)bridge reactTag:(NSNumber *)reactTag {
     PortkeySDKNativeWrapperModule *module = [bridge moduleForClass:self];
-    return [module sendOnShowEvent:moduleName];
+    return [module sendOnShowEvent:reactTag];
 }
 
-- (void)sendOnShowEvent:(NSString *)moduleName {
-    [self sendEventWithName:@"onShow" body:moduleName];
+- (void)sendOnShowEvent:(NSNumber *)reactTag {
+    [self sendEventWithName:@"onShow" body:reactTag];
 }
 
 @end

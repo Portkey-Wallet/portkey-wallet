@@ -18,7 +18,7 @@ entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => SignInEntryPage);
 entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
 entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
 entryConfig.set(PortkeyEntries.GUARDIAN_APPROVAL_ENTRY, () => GuardianApprovalEntryPage);
-// entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
+entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
 
 for (const [key, value] of entryConfig) {
   AppRegistry.registerComponent(key, value);

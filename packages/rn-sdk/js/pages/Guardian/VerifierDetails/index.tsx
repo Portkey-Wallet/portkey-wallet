@@ -29,8 +29,8 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { useOnRequestOrSetPin } from 'hooks/login';
-import { usePin } from 'hooks/store';
+// import { useOnRequestOrSetPin } from 'hooks/login';
+// import { usePin } from 'hooks/store';
 import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 
 type RouterParams = {
@@ -74,8 +74,8 @@ export default function VerifierDetails() {
     useState<RouterParams['requestCodeResult']>(paramsRequestCodeResult);
   const digitInput = useRef<DigitInputInterface>();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
-  const pin = usePin();
-  const onRequestOrSetPin = useOnRequestOrSetPin();
+  // const pin = usePin();
+  // const onRequestOrSetPin = useOnRequestOrSetPin();
   // const getCurrentCAContract = useGetCurrentCAContract();
   const getCurrentCAContract = null;
   const setGuardianStatus = useCallback(
@@ -87,6 +87,10 @@ export default function VerifierDetails() {
     },
     [guardianItem?.key],
   );
+  const onSetLoginAccount = useCallback(async () => {
+    console.log('onSetLoginAccount');
+  }, []);
+  /*
   const onSetLoginAccount = useCallback(async () => {
     if (!managerAddress || !caHash || !guardianItem) return;
 
@@ -105,6 +109,7 @@ export default function VerifierDetails() {
       CommonToast.failError(error);
     }
   }, [caHash, getCurrentCAContract, guardianItem, managerAddress]);
+  */
 
   const operationType: OperationTypeEnum = useMemo(
     () => VERIFICATION_TO_OPERATION_MAP[verificationType as VerificationType] || OperationTypeEnum.unknown,
@@ -114,7 +119,8 @@ export default function VerifierDetails() {
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
-      const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
+      // const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
+      const isRequestResult = false;
       Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
       try {
         const rst = await verification.checkVerificationCode({
@@ -162,15 +168,15 @@ export default function VerifierDetails() {
             await onSetLoginAccount();
             break;
           default:
-            onRequestOrSetPin({
-              showLoading: false,
-              managerInfo: {
-                verificationType: VerificationType.register,
-                loginAccount: guardianItem.guardianAccount,
-                type: guardianItem.guardianType,
-              },
-              verifierInfo,
-            });
+            // onRequestOrSetPin({
+            //   showLoading: false,
+            //   managerInfo: {
+            //     verificationType: VerificationType.register,
+            //     loginAccount: guardianItem.guardianAccount,
+            //     type: guardianItem.guardianType,
+            //   },
+            //   verifierInfo,
+            // });
             break;
         }
       } catch (error) {
@@ -183,14 +189,14 @@ export default function VerifierDetails() {
     [
       requestCodeResult,
       guardianItem,
-      pin,
+      // pin,
       verificationType,
       managerAddress,
       originChainId,
       operationType,
       setGuardianStatus,
       onSetLoginAccount,
-      onRequestOrSetPin,
+      // onRequestOrSetPin,
     ],
   );
 

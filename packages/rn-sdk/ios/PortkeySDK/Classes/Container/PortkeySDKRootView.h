@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, copy, readonly) NSString *moduleName;
 @property (nonatomic, strong, readonly) RCTBridge *bridge;
+@property (nonatomic, strong, readonly) NSNumber *reactTag;
 
 - (instancetype)initWithFrame:(CGRect)frame;
 

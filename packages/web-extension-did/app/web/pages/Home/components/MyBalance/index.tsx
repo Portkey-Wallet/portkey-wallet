@@ -188,8 +188,8 @@ export default function MyBalance() {
   }, [isMainNet, navigate]);
 
   const handleBridge = useCallback(async () => {
-    const res = await checkSecurity();
-    if (typeof res !== 'boolean') return;
+    const isSafe = await checkSecurity();
+    if (!isSafe) return;
     if (checkDappIsConfirmed(eBridgeUrl)) {
       const openWinder = window.open(eBridgeUrl, '_blank');
       if (openWinder) {

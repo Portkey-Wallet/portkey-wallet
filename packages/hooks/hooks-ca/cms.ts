@@ -222,6 +222,12 @@ export const useEntranceControl = (isInit = false) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!isInit) {
+      dispatch(getEntranceControlAsync(networkType));
+    }
+  }, [dispatch, isInit, networkType]);
+
   const refresh = useCallback(async () => {
     return dispatch(getEntranceControlAsync(networkType));
   }, [dispatch, networkType]);
@@ -234,7 +240,6 @@ export const useEntranceControl = (isInit = false) => {
 
 export const useIsBridgeShow = (deviceType: VersionDeviceType) => {
   const { entranceControl } = useEntranceControl();
-
   return useMemo(() => {
     switch (deviceType) {
       case VersionDeviceType.iOS:

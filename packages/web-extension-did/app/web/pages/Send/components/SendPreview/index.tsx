@@ -67,7 +67,7 @@ export default function SendPreview({
       return (
         <>
           <span className="usd">
-            {!isTestNet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toString(), 0, symbol)}
+            {!isTestNet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
           </span>
           {formatAmountShow(ZERO.plus(amount).minus(crossChainFee))}
         </>

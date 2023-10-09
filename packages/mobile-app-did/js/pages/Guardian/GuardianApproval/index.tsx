@@ -348,7 +348,7 @@ export default function GuardianApproval() {
         }
       } else {
         console.log('onModifyTransferLimit: req?.error?.message', req?.error?.message);
-        CommonToast.fail(req?.error?.message || '');
+        CommonToast.failError(req?.error?.message || '');
       }
     } catch (error) {
       console.log('onModifyTransferLimit: error', error);

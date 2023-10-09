@@ -5,14 +5,13 @@ import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextS } from 'components/CommonText';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { IconName } from 'components/Svg';
 interface TokenListItemType {
   noBalanceShow?: boolean;
   item?: any;
@@ -29,7 +28,6 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
   const symbolImages = useSymbolImages();
 
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
-  const aelfIconName = useMemo<IconName>(() => (isTestnet ? 'testnet' : 'mainnet'), [isTestnet]);
 
   return (
     <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
@@ -38,7 +36,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         style={itemStyle.left}
         title={item?.symbol}
         avatarSize={pTd(48)}
-        svgName={item?.symbol === defaultToken.symbol ? aelfIconName : undefined}
+        svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
         imageUrl={symbolImages[item?.symbol]}
       />
       <View style={itemStyle.right}>

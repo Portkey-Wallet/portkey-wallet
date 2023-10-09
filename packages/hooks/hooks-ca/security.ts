@@ -37,7 +37,12 @@ export type CheckTransferLimitResult = {
   dailyLimit: BigNumber;
   dailyBalance: BigNumber;
   singleBalance: BigNumber;
+  defaultDailyLimit?: BigNumber;
+  defaultSingleLimit?: BigNumber;
 };
+
+export const useSecurityState = () => useAppCASelector(state => state.security);
+export const useContactPrivacyListNetMap = () => useAppCASelector(state => state.security.contactPrivacyListNetMap);
 
 export function useCheckTransferLimit() {
   const caHash = useCurrentCaHash();
@@ -55,18 +60,20 @@ export function useCheckTransferLimit() {
         }),
       ]);
       const bigAmount = timesDecimals(amount, decimals);
-      let dailyBalance, singleBalance, dailyLimit;
+      let dailyBalance, singleBalance, dailyLimit, defaultDailyLimit, defaultSingleLimit;
       if (!limitReq?.error) {
         const { singleLimit, dailyLimit: contractDailyLimit, dailyTransferredAmount } = limitReq.data || {};
         dailyLimit = ZERO.plus(contractDailyLimit);
         dailyBalance = dailyLimit.minus(dailyTransferredAmount);
         singleBalance = ZERO.plus(singleLimit);
-      } else if (!defaultLimitReq?.error) {
-        const { defaultLimit } = defaultLimitReq.data || {};
-        dailyLimit = ZERO.plus(defaultLimit);
-        dailyBalance = dailyLimit;
-        singleBalance = ZERO.plus(defaultLimit);
       }
+      if (!defaultLimitReq?.error) {
+        const { transferLimit } = defaultLimitReq.data || {};
+        const { dayLimit, singleLimit } = transferLimit || {};
+        defaultDailyLimit = ZERO.plus(dayLimit);
+        defaultSingleLimit = ZERO.plus(singleLimit);
+      }
+
       if (!dailyLimit || !dailyBalance || !singleBalance || dailyBalance.isNaN() || singleBalance.isNaN()) return;
       return {
         isDailyLimited: !dailyLimit.eq(-1) && bigAmount.gt(dailyBalance),
@@ -77,6 +84,8 @@ export function useCheckTransferLimit() {
         showDailyBalance: divDecimals(dailyBalance, decimals),
         singleBalance,
         showSingleBalance: divDecimals(singleBalance, decimals),
+        defaultDailyLimit,
+        defaultSingleLimit,
       };
     },
     [caHash],
@@ -119,9 +128,6 @@ export function useGetTransferLimit() {
     [caHash],
   );
 }
-
-export const useSecurityState = () => useAppCASelector(state => state.security);
-export const useContactPrivacyListNetMap = () => useAppCASelector(state => state.security.contactPrivacyListNetMap);
 
 export const useContactPrivacyList = () => {
   const contactPrivacyListNetMap = useContactPrivacyListNetMap();
@@ -176,7 +182,7 @@ const PAYMENT_SECURITY_PAGE_LIMIT = 20;
 export const useTransferLimitList = () => {
   const transferLimitListNetMap = useTransferLimitListNetMap();
   const { networkType } = useCurrentNetworkInfo();
-  const [isNext, setIsNext] = useState(true);
+  const [isNext, setIsNext] = useState(false);
   const caHash = useCurrentCaHash();
   const dispatch = useAppCommonDispatch();
 
@@ -216,6 +222,9 @@ export const useTransferLimitList = () => {
         if (result.totalRecordCount <= (pagination.page - 1) * pagination.pageSize) {
           setIsNext(false);
           return;
+        }
+        if (result.totalRecordCount <= pagination.page * pagination.pageSize) {
+          setIsNext(false);
         }
         pagination.total = result.totalRecordCount;
         if (isInit) {

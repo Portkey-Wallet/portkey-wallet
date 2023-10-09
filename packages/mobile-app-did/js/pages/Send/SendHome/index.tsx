@@ -108,7 +108,7 @@ const SendHome: React.FC = () => {
             caHash: wallet.caHash,
             symbol: selectedAssets.symbol,
             to: wallet.address,
-            amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
+            amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
             memo: '',
           }
         : {
@@ -118,7 +118,7 @@ const SendHome: React.FC = () => {
             args: {
               symbol: selectedAssets.symbol,
               to: selectedToContact.address,
-              amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
+              amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
               memo: '',
             },
           };
@@ -159,11 +159,11 @@ const SendHome: React.FC = () => {
 
     // other tokens
     if (selectedAssets.symbol !== defaultToken.symbol)
-      return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
+      return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toFixed());
 
     // elf <= maxFee
     if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
-      return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
+      return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toFixed());
 
     Loading.show();
     let fee;
@@ -179,13 +179,13 @@ const SendHome: React.FC = () => {
       setSendNumber(
         divDecimals(selectedAssets.balance, selectedAssets.decimals || '0')
           .minus(fee || '0')
-          .toString(),
+          .toFixed(),
       );
     } catch (err: any) {
       if (err?.code === 500) {
         setTransactionFee(String(maxFee));
         const selectedAssetsNum = divDecimals(selectedAssets.balance, selectedAssets.decimals || '0');
-        setSendNumber(selectedAssetsNum.minus(maxFee).toString());
+        setSendNumber(selectedAssetsNum.minus(maxFee).toFixed());
       }
     }
     Loading.hide();

@@ -110,7 +110,7 @@ export default function Buy() {
         valueSaveRef.current.amount = initCrypto;
 
         // CHECK 1: security
-        checkSecurity().catch((error) => {
+        checkSecurity('AELF').catch((error) => {
           const msg = handleErrorMessage(error);
           console.log('check security error: ', msg);
         });
@@ -314,9 +314,9 @@ export default function Buy() {
       if (side === PaymentTypeEnum.SELL) {
         try {
           setLoading(true);
-          const res = await checkSecurity();
+          const securityRes = await checkSecurity('AELF');
           setLoading(false);
-          if (typeof res !== 'boolean') return;
+          if (!securityRes) return;
         } catch (error) {
           setLoading(false);
 
@@ -429,8 +429,8 @@ export default function Buy() {
 
       try {
         // CHECK 2: security
-        const securityRes = await checkSecurity();
-        if (typeof securityRes !== 'boolean') return setLoading(false);
+        const securityRes = await checkSecurity('AELF');
+        if (!securityRes) return setLoading(false);
 
         // CHECK 3: transfer limit
         const limitRes = await checkLimit({

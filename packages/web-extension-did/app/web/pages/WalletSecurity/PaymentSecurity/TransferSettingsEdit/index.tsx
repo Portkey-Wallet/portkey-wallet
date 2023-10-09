@@ -15,7 +15,7 @@ import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
-import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from 'react-use';
 
 export default function TransferSettingsEdit() {
@@ -153,6 +153,10 @@ export default function TransferSettingsEdit() {
   }, [handleFormChange, handleSetLimit]);
 
   useEffectOnce(() => {
+    if (!state?.restricted) {
+      form.setFieldValue('singleLimit', divDecimals(state?.defaultSingleLimit, state.decimals).toFixed());
+      form.setFieldValue('dailyLimit', divDecimals(state?.defaultDailyLimit, state.decimals).toFixed());
+    }
     handleDisableCheck();
   });
 

@@ -5,7 +5,7 @@ import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { NetworkController } from 'network/controller';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
-const useSignUp = (config: SignUpConfig) => {
+const useSignUp = (config: SignUpConfig): SignUpHooks => {
   const [verifiedGuardianInfo, setVerifiedGuardianInfo] = useState<VerifiedGuardianDoc | null>(null);
   const isVerified = useCallback(() => !!verifiedGuardianInfo, [verifiedGuardianInfo]);
   const getVerifiedData = useCallback(() => {
@@ -59,12 +59,18 @@ const useSignUp = (config: SignUpConfig) => {
   };
 };
 
+export interface SignUpHooks {
+  isVerified: () => boolean;
+  getVerifiedData: () => Partial<AfterVerifiedConfig>;
+  isGoogleRecaptchaOpen: () => Promise<boolean>;
+  sendVerifyCode: (googleRecaptchaToken?: string) => Promise<boolean>;
+  goToGuardianVerifyPage: () => void;
+}
+
 export interface SignUpConfig {
   accountIdentifier: string;
   accountOriginalType: AccountOriginalType;
   guardianConfig: GuardianConfig;
-  isGoogleRecaptchaOpen: () => Promise<boolean>;
-  sendVerifyCode: (googleRecaptchaToken?: string) => Promise<boolean>;
   navigateToGuardianPage: (callback: (data: VerifiedGuardianDoc) => void) => void;
 }
 

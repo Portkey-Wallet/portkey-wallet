@@ -44,7 +44,7 @@ import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
-import { useCheckTransferLimitWithJump } from 'hooks/security';
+import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import CommonToast from 'components/CommonToast';
 
 const SendHome: React.FC = () => {
@@ -58,6 +58,7 @@ const SendHome: React.FC = () => {
 
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const pin = usePin();
 
@@ -335,8 +336,17 @@ const SendHome: React.FC = () => {
       return { status: false };
     }
 
-    // checkTransferLimitResult
     Loading.show();
+    // check is security safe
+    try {
+      const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
+      if (!securitySafeResult) return { status: false };
+    } catch (err) {
+      CommonToast.failError(err);
+      Loading.hide();
+    }
+
+    // checkTransferLimitResult
     if (sendType === 'token') {
       try {
         if (!contractRef.current) {
@@ -439,6 +449,7 @@ const SendHome: React.FC = () => {
     defaultToken.symbol,
     getTransactionFee,
     pin,
+    securitySafeCheckAndToast,
     selectedAssets.balance,
     selectedAssets.decimals,
     selectedToContact.address,

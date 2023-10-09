@@ -24,6 +24,7 @@ export interface IDappManager<T = CACommonState> {
   walletName(): Promise<WalletName>;
   getSessionInfo(origin: string): Promise<SessionInfo | undefined>;
   getRememberMeBlackList(): Promise<string[] | undefined>;
+  getOriginChainId(): Promise<ChainId>;
 }
 export interface IDappManagerStore<T = CACommonState> {
   getState(): Promise<T>;

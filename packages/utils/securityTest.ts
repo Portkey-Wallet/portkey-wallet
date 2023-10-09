@@ -1,11 +1,15 @@
 import { request } from '@portkey-wallet/api/api-did';
 
-export const checkSecurity = async (caHash: string) => {
-  const { isSafe } = await request.privacy.securityCheck({
+type CheckSecurityResult = {
+  isTransferSafe: boolean;
+  isSynchronizing: boolean;
+  isOriginChainSafe: boolean;
+};
+
+export const checkSecurity = async (caHash: string): Promise<CheckSecurityResult> => {
+  return await request.privacy.securityCheck({
     params: {
       caHash,
     },
   });
-
-  return isSafe;
 };

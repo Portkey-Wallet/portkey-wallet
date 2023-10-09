@@ -96,27 +96,29 @@ const PaymentSecurityEdit: React.FC = () => {
     if (!editInfo) return;
     let isError = false;
 
-    if (!isValidInteger(editInfo.singleLimit)) {
-      setSingleLimitError({
-        ...INIT_HAS_ERROR,
-        errorMsg: 'Please enter a positive whole number',
-      });
-      isError = true;
-    }
-    if (!isValidInteger(editInfo.dailyLimit)) {
-      setDailyLimitError({
-        ...INIT_HAS_ERROR,
-        errorMsg: 'Please enter a positive whole number',
-      });
-      isError = true;
-    }
+    if (editInfo.restricted) {
+      if (!isValidInteger(editInfo.singleLimit)) {
+        setSingleLimitError({
+          ...INIT_HAS_ERROR,
+          errorMsg: 'Please enter a positive whole number',
+        });
+        isError = true;
+      }
+      if (!isValidInteger(editInfo.dailyLimit)) {
+        setDailyLimitError({
+          ...INIT_HAS_ERROR,
+          errorMsg: 'Please enter a positive whole number',
+        });
+        isError = true;
+      }
 
-    if (!isError && Number(editInfo.singleLimit) > Number(editInfo.dailyLimit)) {
-      setSingleLimitError({
-        ...INIT_HAS_ERROR,
-        errorMsg: 'Cannot exceed the daily limit',
-      });
-      isError = true;
+      if (!isError && Number(editInfo.singleLimit) > Number(editInfo.dailyLimit)) {
+        setSingleLimitError({
+          ...INIT_HAS_ERROR,
+          errorMsg: 'Cannot exceed the daily limit',
+        });
+        isError = true;
+      }
     }
 
     if (isError) return;

@@ -46,11 +46,11 @@ const PaymentSecurityEdit: React.FC = () => {
     if (detail) {
       setEditInfo({
         singleLimit: detail.restricted
-          ? divDecimals(detail.singleLimit, detail.decimals).toFixed()
-          : divDecimals(detail.defaultSingleLimit, detail.decimals).toFixed(),
+          ? divDecimals(detail.singleLimit, detail.decimals).toFixed(0)
+          : divDecimals(detail.defaultSingleLimit, detail.decimals).toFixed(0),
         dailyLimit: detail.restricted
-          ? divDecimals(detail.dailyLimit, detail.decimals).toFixed()
-          : divDecimals(detail.defaultDailyLimit, detail.decimals).toFixed(),
+          ? divDecimals(detail.dailyLimit, detail.decimals).toFixed(0)
+          : divDecimals(detail.defaultDailyLimit, detail.decimals).toFixed(0),
         restricted: detail.restricted,
       });
     }
@@ -126,8 +126,8 @@ const PaymentSecurityEdit: React.FC = () => {
       transferLimitDetail: {
         chainId: detail?.chainId,
         symbol: detail?.symbol,
-        singleLimit: editInfo.restricted ? timesDecimals(editInfo.singleLimit, detail?.decimals).toString() : '-1',
-        dailyLimit: editInfo.restricted ? timesDecimals(editInfo.dailyLimit, detail?.decimals).toString() : '-1',
+        singleLimit: editInfo.restricted ? timesDecimals(editInfo.singleLimit, detail?.decimals).toFixed(0) : '-1',
+        dailyLimit: editInfo.restricted ? timesDecimals(editInfo.dailyLimit, detail?.decimals).toFixed(0) : '-1',
         restricted: editInfo.restricted,
         decimals: detail?.decimals,
       },

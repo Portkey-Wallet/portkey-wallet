@@ -1,5 +1,10 @@
 import React from 'react';
-import { DeviceEventEmitter, EntryResult, RouterOptions, portkeyModulesEntity } from '../../service/native-modules';
+import {
+  PortkeyDeviceEventEmitter,
+  EntryResult,
+  RouterOptions,
+  portkeyModulesEntity,
+} from '../../service/native-modules';
 import { PortkeyEntries } from '../../config/entries';
 
 export default abstract class BaseContainer<
@@ -9,7 +14,8 @@ export default abstract class BaseContainer<
 > extends React.Component<P, S> {
   constructor(props: P) {
     super(props);
-    this.onShowEventListener = DeviceEventEmitter.addListener('onShow', rootTag => {
+    this.onShowEventListener = PortkeyDeviceEventEmitter.addListener('onShow', rootTag => {
+      console.warn(`rootTag is : ${props.rootTag}`);
       if (rootTag === props.rootTag) {
         this.onShow();
       }

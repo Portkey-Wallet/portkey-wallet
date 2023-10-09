@@ -3,7 +3,6 @@ package io.aelf.portkey.native_modules
 import android.util.Log
 import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
@@ -55,6 +54,16 @@ internal class NativeWrapperModule(private val context: ReactApplicationContext)
     @ReactMethod
     fun emitJSMethodResult(eventId: String, result: String) {
         JSEventBus.invoke(eventId, result)
+    }
+
+    @ReactMethod
+    fun addListener(type: String?) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    fun removeListeners(type: Int?) {
+        // Keep: Required for RN built in Event Emitter Calls.
     }
 
     fun <T> callJSMethod(

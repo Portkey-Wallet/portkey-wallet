@@ -1,22 +1,48 @@
 import React, { useState } from 'react';
 import 'react-native-get-random-values';
-import { View, Text, TouchableOpacityProps, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacityProps, TouchableOpacity, StyleSheet } from 'react-native';
 import AElf from 'aelf-sdk';
-import WebView from 'react-native-webview';
 import { NetworkController } from 'network/controller';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
+import { setPin } from 'pages/Pin/core';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingVertical: 20,
+    backgroundColor: 'white',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  button: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: 'blue',
+    borderRadius: 8,
+    color: 'white',
+  },
+  buttonWrapper: {
+    marginVertical: 3,
+  },
+});
 function Button(props: TouchableOpacityProps & { title: string }) {
   const { title, ...touchableOpacityProps } = props;
   return (
-    <TouchableOpacity {...touchableOpacityProps}>
-      <Text>{title}</Text>
+    <TouchableOpacity style={styles.buttonWrapper} {...touchableOpacityProps} activeOpacity={0.6}>
+      <Text style={styles.button}>{title}</Text>
     </TouchableOpacity>
   );
 }
 const Endpoint = 'https://tdvw-test-node.aelf.io';
-export default function Screen() {
+export default function Screen(props: any) {
+  const { navigateForResult } = useBaseContainer({
+    rootTag: props.rootTag,
+    entryName: 'test',
+  });
   const [wallet, setWallet] = useState<any>();
   return (
-    <View style={{ flex: 1, paddingVertical: 100, backgroundColor: 'white' }}>
+    <View style={styles.container}>
       <View>
         <Text>walletInfo:{wallet?.address}</Text>
       </View>
@@ -58,7 +84,28 @@ export default function Screen() {
           NetworkController.getCountryCodeInfo().then(data => console.warn(data, '=====data'));
         }}
       />
-      <WebView source={{ uri: 'https://www.baidu.com/' }} />
+      <Button
+        title="SetPinTo:123456"
+        onPress={() => {
+          setPin('123456');
+        }}
+      />
+      <Button
+        title="GoToSetPin"
+        onPress={() => {
+          navigateForResult(
+            PortkeyEntries.CHECK_PIN,
+            {
+              params: {
+                openBiometrics: false,
+              },
+            },
+            () => {
+              console.log('navigate back');
+            },
+          );
+        }}
+      />
     </View>
   );
 }

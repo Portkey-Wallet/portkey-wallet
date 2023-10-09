@@ -65,7 +65,7 @@ export const nativeFetch = async <T>(
   throw new Error('fetch failed');
 };
 
-export const DeviceEventEmitter = new NativeEventEmitter(portkeyModulesEntity.NativeWrapperModule as any);
+export const PortkeyDeviceEventEmitter = new NativeEventEmitter(portkeyModulesEntity.NativeWrapperModule as any);
 
 export interface ResultWrapper<T> {
   status: NetworkResult;

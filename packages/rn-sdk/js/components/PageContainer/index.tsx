@@ -1,7 +1,6 @@
 import React, { ReactNode, useMemo } from 'react';
-import CustomHeader, { CustomHeaderProps } from 'components/CustomHeader';
+import { CustomHeaderProps } from 'components/CustomHeader';
 import SafeAreaBox, { SafeAreaBoxProps } from 'components/SafeAreaBox';
-import { useGStyles } from 'assets/theme/useGStyles';
 import { KeyboardAwareScrollView, KeyboardAwareScrollViewProps } from 'react-native-keyboard-aware-scroll-view';
 import { TouchableWithoutFeedback, View, Keyboard, StatusBar } from 'react-native';
 import { defaultColors } from 'assets/theme';

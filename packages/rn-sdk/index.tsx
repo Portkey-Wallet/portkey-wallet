@@ -8,6 +8,7 @@ import SignUpEntryPage from 'components/entries/SignUp';
 import ReferralEntryPage from 'components/entries/Referral';
 import GuardianApprovalEntryPage from 'components/entries/GuardianApproval';
 import VerifierDetailsEntryPage from 'components/entries/VerifierDetails';
+import CheckPin from 'pages/Pin/check-pin';
 
 type EntryConfig = Map<string, any>;
 
@@ -18,6 +19,8 @@ entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => SignInEntryPage);
 entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
 entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
 entryConfig.set(PortkeyEntries.GUARDIAN_APPROVAL_ENTRY, () => GuardianApprovalEntryPage);
+
+entryConfig.set(PortkeyEntries.CHECK_PIN, () => CheckPin);
 // entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
 
 for (const [key, value] of entryConfig) {

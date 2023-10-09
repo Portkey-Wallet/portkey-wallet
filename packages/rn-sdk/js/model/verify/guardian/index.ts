@@ -4,15 +4,20 @@ import { CheckVerifyCodeResultDTO, SendVerifyCodeParams } from '../../../network
 import { AccountOriginalType } from '../after-verify';
 import { VerifiedGuardianDoc } from '../after-verify/index';
 
+const INIT_TIME_OUT = 60;
+
 const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
-  const [status, setStatus] = useState(GuardianStatus.INIT);
+  const [status, setStatus] = useState(GuardianStatus.SENT);
+  const [countDown, setCountDown] = useState<number>(0);
   const [verifierSessionId, setVerifierSessionId] = useState<string>('');
   const [verifiedDoc, setVerifiedDoc] = useState<CheckVerifyCodeResultDTO | null>(null);
-  const configCached = useRef<GuardianConfig | null>();
   const sendVerifyCode = useCallback(
     async (googleRecaptchaToken?: string): Promise<boolean> => {
       if (status === GuardianStatus.VERIFIED) {
         console.warn('Guardian already verified.');
+        return false;
+      } else if (countDown > 0) {
+        console.warn('Please wait for the countdown to finish.');
         return false;
       }
       const needGoogleRecaptcha = await NetworkController.isGoogleRecaptchaOpen(
@@ -34,8 +39,31 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
         return false;
       }
     },
-    [status, config],
+    [status, countDown, config.sendVerifyCodeParams],
   );
+
+  const timer = useRef<NodeJS.Timer | null>(null);
+
+  useEffect(() => {
+    startToCountDown();
+    return () => {
+      timer.current && clearInterval(timer.current);
+    };
+  }, []);
+
+  const startToCountDown = (seconds: number = INIT_TIME_OUT) => {
+    setCountDown(seconds);
+    timer.current = setInterval(() => {
+      setCountDown(prev => {
+        if (prev === 0) {
+          timer.current && clearInterval(timer.current);
+          return 0;
+        } else {
+          return prev - 1;
+        }
+      });
+    }, 1000);
+  };
 
   const checkVerifyCode = useCallback(
     async (verificationCode: string): Promise<boolean> => {
@@ -77,15 +105,9 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
     } as VerifiedGuardianDoc;
   }, [verifiedDoc, config]);
 
-  useEffect(() => {
-    if (config !== configCached.current) {
-      configCached.current = config;
-      setStatus(GuardianStatus.INIT);
-    }
-  }, [config]);
-
   return {
     status,
+    countDown,
     sendVerifyCode,
     checkVerifyCode,
     getVerifiedGuardianDoc,
@@ -94,6 +116,7 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
 
 export interface GuardianEntity {
   status: GuardianStatus;
+  countDown: number;
   sendVerifyCode: (googleRecaptchaToken?: string) => Promise<boolean>;
   checkVerifyCode: (verificationCode: string) => Promise<boolean>;
   getVerifiedGuardianDoc: () => VerifiedGuardianDoc;
@@ -109,7 +132,6 @@ export interface GuardianConfig {
 }
 
 export enum GuardianStatus {
-  INIT,
   SENT,
   VERIFIED,
 }

@@ -47,6 +47,13 @@ android {
     buildFeatures {
         buildConfig true
     }
+    packagingOptions {
+        pickFirst 'lib/x86_64/libreactnativejni.so'
+        pickFirst 'lib/armeabi-v7a/libreactnativejni.so'
+        pickFirst 'lib/arm64-v8a/libreactnativejni.so'
+        pickFirst 'lib/x86/libreactnativejni.so'
+    }
+
 }
 
 dependencies {

@@ -8,7 +8,6 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
 import NoData from 'components/NoData';
-import { Image } from '@rneui/themed';
 import { defaultColors } from 'assets/theme';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenListItem from 'components/TokenListItem';

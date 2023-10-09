@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
@@ -24,7 +24,7 @@ import { portkeyModulesEntity } from 'service/native-modules';
 import { PortkeyEntries } from 'config/entries';
 import { getRegisterPageData } from 'model/sign-in';
 import { AccountOriginalType } from 'model/verify/after-verify';
-import useSignUp from 'model/verify/sign-up';
+import useSignUp, { SignUpConfig } from 'model/verify/sign-up';
 
 const TitleMap = {
   [PageType.login]: {
@@ -53,7 +53,7 @@ export default function Phone({
     const countryDTO = getCachedCountryCodeData();
     setCountry(countryDTO?.locateData);
   });
-
+  const [pageDataResult, setPageDataResult] = useState<SignUpConfig>();
   const onPageLogin = async () => {
     const loadingKey = Loading.show();
     try {
@@ -108,16 +108,17 @@ export default function Phone({
       } else {
         // sign up
         const accountIdentifier = `+${(selectedCountryCode ?? country).code}${loginAccount}`;
-        const pageDataResult = await getRegisterPageData(accountIdentifier, AccountOriginalType.Phone);
-        if (pageDataResult) {
-          Loading.hide(loadingKey);
-          portkeyModulesEntity.RouterModule.navigateToWithOptions(
-            PortkeyEntries.VERIFIER_DETAIL_ENTRY,
-            PortkeyEntries.SIGN_UP_ENTRY,
-            pageDataResult,
-            () => {},
-          );
-        }
+        const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Phone);
+        setPageDataResult(pageData);
+        // if (pageDataResult) {
+        //   Loading.hide(loadingKey);
+        //   portkeyModulesEntity.RouterModule.navigateToWithOptions(
+        //     PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+        //     PortkeyEntries.SIGN_UP_ENTRY,
+        //     pageDataResult,
+        //     () => {},
+        //   );
+        // }
       }
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));

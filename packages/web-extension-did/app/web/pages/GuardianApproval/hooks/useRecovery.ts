@@ -16,7 +16,7 @@ import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo } from 'store
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { GuardianMth } from 'types/guardians';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import { formatAddGuardianValue } from '../utils/formatAddGuardianValue';
 import { formatDelGuardianValue } from '../utils/formatDelGuardianValue';
 import { formatEditGuardianValue } from '../utils/formatEditGuardianValue';
@@ -88,7 +88,7 @@ export const useRecovery = () => {
     } catch (error: any) {
       setLoading(false);
       console.log('---op-guardian-error', error);
-      const _error = contractErrorHandler(error) || 'Something error';
+      const _error = handleErrorMessage(error, 'Something error');
       message.error(_error);
     }
   }, [

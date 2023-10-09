@@ -11,7 +11,7 @@ import { GuardianMth } from 'types/guardians';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { setRegisterVerifierAction } from 'store/reducers/loginCache/actions';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import aes from '@portkey-wallet/utils/aes';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import useGuardianList from 'hooks/useGuardianList';
@@ -95,7 +95,7 @@ export default function VerifierAccount() {
           navigate('/setting/guardians/view');
         } catch (error: any) {
           setLoading(false);
-          message.error(contractErrorHandler(error));
+          message.error(handleErrorMessage(error));
           console.log('---set login account error', error);
         }
       } else {

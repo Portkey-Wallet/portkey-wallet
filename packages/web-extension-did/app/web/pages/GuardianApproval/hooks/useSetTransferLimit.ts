@@ -7,11 +7,10 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useAssetInfo, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import { setTransferLimit } from 'utils/sandboxUtil/setTransferLimit';
 import ModalTip from 'pages/components/ModalTip';
-import { sleep } from '@portkey-wallet/utils';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { ChainId } from '@portkey-wallet/types';
 
@@ -110,7 +109,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
     } catch (error) {
       setLoading(false);
 
-      const _error = contractErrorHandler(error) || 'Try again later';
+      const _error = handleErrorMessage(error, 'Try again later');
       message.error(_error);
     }
   }, [

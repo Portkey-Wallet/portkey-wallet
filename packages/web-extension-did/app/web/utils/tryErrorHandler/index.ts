@@ -10,7 +10,3 @@ export const verifyErrorHandler = (error: any) => {
   }
   return _error;
 };
-
-export const contractErrorHandler = (error: any) => {
-  return error?.Error?.Message || error?.message?.Message || error?.message || error?.Error || error;
-};

@@ -18,7 +18,7 @@ import { message } from 'antd';
 import './index.less';
 // import didSignalr from '@portkey-wallet/socket/socket-did';
 // import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { randomId } from '@portkey-wallet/utils';
+import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 
@@ -98,7 +98,7 @@ export default function ScanCard() {
               dispatch(setCAInfoType({ caInfo, pin }));
               navigate('/success-page/login');
             } catch (error: any) {
-              message.error(error);
+              message.error(handleErrorMessage(error));
             }
           } else {
             dispatch(setOriginChainId(originChainId));

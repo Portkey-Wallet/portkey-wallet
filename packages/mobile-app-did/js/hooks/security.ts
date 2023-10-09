@@ -3,6 +3,9 @@ import { ChainId } from '@portkey-wallet/types';
 import ActionSheet from 'components/ActionSheet';
 import { useCallback } from 'react';
 import navigationService from 'utils/navigationService';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { checkSecuritySafe } from 'utils/security';
 
 export const useCheckTransferLimitWithJump = () => {
   const checkTransferLimit = useCheckTransferLimit();
@@ -49,5 +52,19 @@ export const useCheckTransferLimitWithJump = () => {
       return true;
     },
     [checkTransferLimit],
+  );
+};
+
+export const useSecuritySafeCheckAndToast = (): ((fromChainId?: ChainId) => Promise<boolean>) => {
+  const { caHash } = useCurrentWalletInfo();
+  const { originChainId } = useCurrentWalletInfo();
+
+  return useLockCallback(
+    async (fromChainId?: ChainId): Promise<boolean> => {
+      // if fromChainId exit, use isOriginChainSafe to check, or use isTransferSafe & isSynchronizing
+      if (!caHash) return false;
+      return checkSecuritySafe(caHash, fromChainId && originChainId === fromChainId);
+    },
+    [caHash, originChainId],
   );
 };

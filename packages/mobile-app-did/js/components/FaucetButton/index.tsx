@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 import Svg from 'components/Svg';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
 import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';

@@ -32,8 +32,7 @@ import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@p
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
-import { request as apiRequest } from '@portkey-wallet/api/api-did';
-import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
+import { checkSecuritySafe } from 'utils/security';
 
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
@@ -375,16 +374,6 @@ export default class DappMobileOperator extends Operator {
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
 
-        try {
-          const { isSafe } = await this.securityCheck();
-          if (!isSafe) {
-            WalletSecurityOverlay.alert();
-            return this.userDenied(eventName);
-          }
-        } catch (error) {
-          return this.userDenied(eventName);
-        }
-
         payload = request.payload;
         if (
           !payload ||
@@ -395,6 +384,14 @@ export default class DappMobileOperator extends Operator {
           !payload.rpcUrl
         )
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        // is safe
+        try {
+          const originChainId = await this.dappManager.getOriginChainId();
+          const isSafe = await this.securityCheck(originChainId === payload.chainId);
+          if (!isSafe) return this.userDenied(eventName);
+        } catch (error) {
+          return this.userDenied(eventName);
+        }
         // is approve
         const isApprove = await this.isApprove(request);
         if (isApprove) return this.handleApprove(request);
@@ -492,8 +489,9 @@ export default class DappMobileOperator extends Operator {
     this.isLockDapp = isLockDapp;
   };
 
-  public securityCheck = async () => {
+  public securityCheck = async (isOrigin?: boolean) => {
     const caHash = getCurrentCaHash();
-    return apiRequest.privacy.securityCheck({ params: { caHash } });
+    if (!caHash) return false;
+    return checkSecuritySafe(caHash, isOrigin);
   };
 }

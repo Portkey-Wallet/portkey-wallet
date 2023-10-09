@@ -68,7 +68,7 @@ export default function SelectCountry({ selectCountry }: { selectCountry?: Count
           GlobalStorage.set(CURRENT_USING_COUNTRY_CODE, JSON.stringify(item));
           portkeyModulesEntity.RouterModule.navigateBack('SelectCountry', {
             status: 'success',
-            result: { name: 'portkey' },
+            data: { name: 'portkey' },
           });
         }}>
         <TextL style={isSelected ? FontStyles.font4 : null}>{item.country}</TextL>

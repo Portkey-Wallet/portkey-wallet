@@ -21,7 +21,6 @@ import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { useFocusEffect } from '@react-navigation/native';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 
 interface ManageTokenListProps {
   route?: any;
@@ -64,7 +63,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
       }));
       setFilterTokenList(tmpToken);
     } catch (error) {
-      CommonToast.fail(handleErrorMessage(error));
+      CommonToast.failError(error);
     } finally {
       setIsSearching(false);
     }
@@ -93,7 +92,7 @@ const ManageTokenList: React.FC<ManageTokenListProps> = () => {
         }, 800);
       } catch (err) {
         Loading.hide();
-        CommonToast.fail(handleErrorMessage(err));
+        CommonToast.failError(err);
       }
     },
     [caAddressArray, caAddressInfos, chainIdList, debounceWord, dispatch, fetchSearchedTokenList],

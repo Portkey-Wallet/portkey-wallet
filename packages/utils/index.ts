@@ -153,7 +153,7 @@ export const handleErrorMessage = (error: any, errorText?: string) => {
   error = handleError(error);
   if (typeof error === 'string') errorText = error;
   if (typeof error?.message === 'string') errorText = error.message;
-  return textProcessor.format(errorText || '');
+  return textProcessor.format(errorText || '') || '';
 };
 
 export const chainShowText = (chain: ChainId) => (chain === 'AELF' ? 'MainChain' : 'SideChain');

@@ -6,7 +6,7 @@ import Activity from 'pages/Home/components/Activity';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useCallback, useMemo } from 'react';
 import clsx from 'clsx';
-import { useCommonState, useLoading } from 'store/Provider/hooks';
+import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
@@ -14,9 +14,6 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
 import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
-import { useCheckSecurity } from 'hooks/useSecurity';
-import { handleErrorMessage } from '@portkey-wallet/utils';
-import { message } from 'antd';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -25,7 +22,6 @@ export enum TokenTransferStatus {
 
 function TokenDetail() {
   const navigate = useNavigate();
-  const { setLoading } = useLoading();
   const { state: currentToken } = useLocation();
   const isMainNet = useIsMainnet();
   const { isPrompt } = useCommonState();
@@ -36,7 +32,6 @@ function TokenDetail() {
   );
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
-  const checkSecurity = useCheckSecurity();
 
   const handleBuy = useCallback(() => {
     if (isMainNet) {
@@ -80,21 +75,9 @@ function TokenDetail() {
               isShowBuy={isShowBuy}
               onBuy={handleBuy}
               onSend={async () => {
-                try {
-                  setLoading(true);
-                  const res = await checkSecurity();
-                  setLoading(false);
-                  if (typeof res === 'boolean') {
-                    navigate(`/send/token/${currentToken?.symbol}`, {
-                      state: { ...currentToken, address: currentToken?.tokenContractAddress },
-                    });
-                  }
-                } catch (error) {
-                  setLoading(false);
-
-                  const msg = handleErrorMessage(error);
-                  message.error(msg);
-                }
+                navigate(`/send/token/${currentToken?.symbol}`, {
+                  state: { ...currentToken, address: currentToken?.tokenContractAddress },
+                });
               }}
               onReceive={() =>
                 navigate(`/receive/token/${currentToken?.symbol}`, {
@@ -109,7 +92,7 @@ function TokenDetail() {
         </div>
       </div>
     );
-  }, [isPrompt, currentToken, isMainNet, amountInUsdShow, isShowBuy, handleBuy, navigate, setLoading, checkSecurity]);
+  }, [isPrompt, currentToken, isMainNet, amountInUsdShow, isShowBuy, handleBuy, navigate]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

@@ -108,8 +108,10 @@ export default {
     element = show(...args);
   },
   fail(...args: TostProps) {
+    if (!args.length) return;
     if (!args[3]) args[3] = 'fail';
     Overlay.hide(element);
+    args[0] = handleErrorMessage(args[0]);
     element = show(...args);
   },
   failError(error: any, errorText?: string) {

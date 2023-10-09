@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Tabs, message } from 'antd';
+import { Tabs } from 'antd';
 import { useLocation, useNavigate } from 'react-router';
 import BalanceCard from 'pages/components/BalanceCard';
 import CustomTokenDrawer from 'pages/components/CustomTokenDrawer';
@@ -8,14 +8,7 @@ import TokenList from '../Tokens';
 import Activity from '../Activity/index';
 import { Transaction } from '@portkey-wallet/types/types-ca/trade';
 import NFT from '../NFT/NFT';
-import {
-  useAppDispatch,
-  useUserInfo,
-  useWalletInfo,
-  useAssetInfo,
-  useCommonState,
-  useLoading,
-} from 'store/Provider/hooks';
+import { useAppDispatch, useUserInfo, useWalletInfo, useAssetInfo, useCommonState } from 'store/Provider/hooks';
 import {
   useCaAddresses,
   useCaAddressInfoList,
@@ -43,7 +36,6 @@ import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCheckSecurity } from 'hooks/useSecurity';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
 import './index.less';
@@ -56,7 +48,6 @@ export interface TransactionResult {
 export default function MyBalance() {
   const { walletName } = useWalletInfo();
   const { t } = useTranslation();
-  const { setLoading } = useLoading();
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
@@ -234,20 +225,8 @@ export default function MyBalance() {
         onClickBridge={handleBridge}
         onBuy={handleBuy}
         onSend={async () => {
-          try {
-            setLoading(true);
-            const res = await checkSecurity();
-            setLoading(false);
-            if (typeof res == 'boolean') {
-              setNavTarget('send');
-              return setTokenOpen(true);
-            }
-          } catch (error) {
-            setLoading(false);
-
-            const msg = handleErrorMessage(error);
-            message.error(msg);
-          }
+          setNavTarget('send');
+          return setTokenOpen(true);
         }}
         onReceive={() => {
           setNavTarget('receive');

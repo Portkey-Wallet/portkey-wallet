@@ -7,6 +7,7 @@ import TransferSettingsBody, { ITransferSettingsBodyProps } from '../../componen
 export default function TransferSettingsPopup({
   headerTitle,
   goBack,
+  form,
   state,
   onEdit,
 }: BaseHeaderProps & ITransferSettingsBodyProps) {
@@ -19,7 +20,7 @@ export default function TransferSettingsPopup({
           rightElement={<CustomSvg type="Close2" onClick={goBack} />}
         />
       </div>
-      <TransferSettingsBody state={state} onEdit={onEdit} />
+      <TransferSettingsBody form={form} state={state} onEdit={onEdit} />
     </div>
   );
 }

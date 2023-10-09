@@ -7,6 +7,7 @@ import TransferSettingsBody, { ITransferSettingsBodyProps } from '../../componen
 export default function TransferSettingsPrompt({
   headerTitle,
   goBack,
+  form,
   state,
   onEdit,
 }: BaseHeaderProps & ITransferSettingsBodyProps) {
@@ -14,7 +15,7 @@ export default function TransferSettingsPrompt({
     <div className="three-level-prompt-container transfer-settings-prompt">
       <div className="three-level-prompt-body transfer-settings-prompt-body">
         <SecondPageHeader title={headerTitle} leftCallBack={goBack} />
-        <TransferSettingsBody state={state} onEdit={onEdit} />
+        <TransferSettingsBody form={form} state={state} onEdit={onEdit} />
       </div>
       <Outlet />
     </div>

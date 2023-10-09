@@ -24,7 +24,6 @@ import {
 import ActionSheet from 'components/ActionSheet';
 import { useCurrentChannelId } from '../context/hooks';
 import CommonToast from 'components/CommonToast';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -58,8 +57,8 @@ const ChatDetailsPage = () => {
       await addStranger(toRelationId || '');
       CommonToast.success('Contact Added');
       dispatch(fetchContactListAsync());
-    } catch (error) {
-      CommonToast.fail(handleErrorMessage(error));
+    } catch (error: any) {
+      CommonToast.failError(error);
     }
   }, [addStranger, dispatch, toRelationId]);
 

@@ -11,6 +11,7 @@ import {
 
 const initialState: SecurityStateType = {
   contactPrivacyListNetMap: {},
+  transferLimitListNetMap: {},
 };
 export const securitySlice = createSlice({
   name: 'security',

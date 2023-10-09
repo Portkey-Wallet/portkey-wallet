@@ -23,49 +23,95 @@ import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
+export interface IBalanceCheckResult {
+  isOriginChainSafe: boolean;
+  isSynchronizing: boolean;
+  isTransferSafe: boolean;
+}
+
 export const useCheckSecurity = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
   const wallet = useCurrentWalletInfo();
   const { setLoading } = useLoading();
+  const addGuardiansModal = useAddGuardiansModal();
+  const synchronizingModal = useSynchronizingModal();
 
-  return useCallback(async (): Promise<boolean | object> => {
-    try {
-      setLoading(true);
-      const res: { isSafe: boolean } = await request.security.balanceCheck({
-        params: { caHash: wallet?.caHash || '' },
-      });
+  return useCallback(
+    async (targetChainId?: ChainId): Promise<boolean> => {
+      try {
+        setLoading(true);
+        const res: IBalanceCheckResult = await request.security.balanceCheck({
+          params: { caHash: wallet?.caHash || '' },
+        });
 
-      setLoading(false);
+        setLoading(false);
 
-      if (res?.isSafe) return true;
+        // don’t know the chain of operations
+        if (!targetChainId) {
+          if (res.isTransferSafe) return true;
+          if (res.isSynchronizing) {
+            synchronizingModal();
+            return false;
+          }
+          addGuardiansModal();
+          return false;
+        }
 
-      return CustomModal({
-        type: 'confirm',
-        content: (
-          <div className="security-modal">
-            <Image
-              width={180}
-              height={108}
-              src="assets/images/securityTip.png"
-              className="modal-logo"
-              preview={false}
-            />
-            <div className="modal-title">{SecurityVulnerabilityTitle}</div>
-            <div>{SecurityVulnerabilityTip}</div>
-          </div>
-        ),
-        cancelText: t('Not Now'),
-        okText: t('Add Guardians'),
-        onOk: () => navigate('/setting/guardians'),
-      });
-    } catch (error) {
-      setLoading(false);
-      const msg = handleErrorMessage(error, 'Balance Check Error');
-      throw message.error(msg);
-    }
-  }, [navigate, setLoading, t, wallet?.caHash]);
+        // know the chain of operations
+        if (wallet.originChainId === targetChainId) {
+          if (res.isOriginChainSafe) return true;
+          addGuardiansModal();
+          return false;
+        } else {
+          if (res.isTransferSafe) return true;
+          if (res.isSynchronizing) {
+            synchronizingModal();
+            return false;
+          }
+          addGuardiansModal();
+          return false;
+        }
+      } catch (error) {
+        setLoading(false);
+        const msg = handleErrorMessage(error, 'Balance Check Error');
+        throw message.error(msg);
+      }
+    },
+    [addGuardiansModal, setLoading, synchronizingModal, wallet?.caHash, wallet.originChainId],
+  );
 };
+
+export function useSynchronizingModal() {
+  const { t } = useTranslation();
+
+  return useCallback(() => {
+    CustomModal({
+      type: 'info',
+      content: 'Syncing guardian info, which may take 1-2 minutes. Please try again later.',
+      okText: t('Ok'),
+    });
+  }, [t]);
+}
+
+export function useAddGuardiansModal() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  return useCallback(() => {
+    CustomModal({
+      type: 'confirm',
+      content: (
+        <div className="security-modal">
+          <Image width={180} height={108} src="assets/images/securityTip.png" className="modal-logo" preview={false} />
+          <div className="modal-title">{SecurityVulnerabilityTitle}</div>
+          <div>{SecurityVulnerabilityTip}</div>
+        </div>
+      ),
+      cancelText: t('Not Now'),
+      okText: t('Add Guardians'),
+      onOk: () => navigate('/setting/guardians'),
+    });
+  }, [navigate, t]);
+}
 
 export interface ICheckLimitParams {
   chainId: ChainId;
@@ -104,8 +150,8 @@ export const useCheckLimit = (targetChainId: ChainId) => {
       const settingParams: ITransferLimitRouteState = {
         chainId: chainId,
         symbol,
-        singleLimit: limitRes?.singleBalance.toString() || '',
-        dailyLimit: limitRes?.dailyLimit.toString() || '',
+        singleLimit: limitRes?.singleBalance.toFixed() || '',
+        dailyLimit: limitRes?.dailyLimit.toFixed() || '',
         restricted: !limitRes?.dailyLimit.eq(-1),
         decimals,
         from,

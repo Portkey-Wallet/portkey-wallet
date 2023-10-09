@@ -1,15 +1,15 @@
-import { useCommonState, useLoading } from 'store/Provider/hooks';
+import { useCommonState } from 'store/Provider/hooks';
 import PaymentSecurityPopup from './Popup';
 import PaymentSecurityPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
 import { BaseHeaderProps } from 'types/UI';
-import { ITransferLimitItem, ITransferLimitListResponse } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router';
-import { request } from '@portkey-wallet/api/api-did';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { message } from 'antd';
+import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
+import { useEffectOnce } from 'react-use';
 
 export interface IPaymentSecurityProps extends BaseHeaderProps {
   list: ITransferLimitItem[];
@@ -19,46 +19,30 @@ export interface IPaymentSecurityProps extends BaseHeaderProps {
   noDataText: string;
 }
 
-const MAX_RESULT_COUNT = 20;
-const SKIP_COUNT = 0;
-
 export default function PaymentSecurity() {
   const { isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const headerTitle = t('Payment Security');
   const noDataText = t('No asset');
-  const wallet = useCurrentWalletInfo();
-  const [securityList, setSecurityList] = useState<ITransferLimitItem[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
   const loadingFlag = useRef(false);
-  const { setLoading } = useLoading();
+
+  const { list: securityList, pagination, init, next, isNext } = useTransferLimitList();
 
   const getSecurityList = useCallback(async () => {
     try {
-      setLoading(true);
       loadingFlag.current = true;
 
-      const res: ITransferLimitListResponse = await request.security.securityList({
-        params: {
-          caHash: wallet?.caHash || '',
-          skipCount: SKIP_COUNT,
-          maxResultCount: MAX_RESULT_COUNT,
-        },
-      });
-      res?.data && setSecurityList(res.data);
-      res?.totalRecordCount && setTotalCount(res.totalRecordCount);
+      await init();
 
-      setLoading(false);
       loadingFlag.current = false;
     } catch (error) {
       const msg = handleErrorMessage(error, 'get security error');
       message.error(msg);
 
-      setLoading(false);
       loadingFlag.current = false;
     }
-  }, [setLoading, wallet?.caHash]);
+  }, [init]);
 
   const handleClick = useCallback(
     (item: ITransferLimitItem) => {
@@ -73,20 +57,13 @@ export default function PaymentSecurity() {
 
   const loadMoreSecurity = useCallback(async () => {
     if (loadingFlag.current) return;
+    if (!securityList || (securityList?.length && securityList?.length === 0)) return;
+    if (pagination?.total && securityList?.length >= pagination?.total) return;
 
     loadingFlag.current = true;
     try {
-      if (securityList?.length < totalCount) {
-        const res: ITransferLimitListResponse = await request.security.securityList({
-          params: {
-            caHash: wallet?.caHash || '',
-            skipCount: securityList?.length,
-            maxResultCount: MAX_RESULT_COUNT,
-          },
-        });
-        res?.data && setSecurityList(securityList.concat(res.data));
-        res?.totalRecordCount && setTotalCount(res.totalRecordCount);
-
+      if (isNext) {
+        await next();
         loadingFlag.current = false;
       }
     } catch (error) {
@@ -94,11 +71,11 @@ export default function PaymentSecurity() {
       message.error(msg);
       loadingFlag.current = false;
     }
-  }, [loadingFlag, securityList, totalCount, wallet?.caHash]);
+  }, [isNext, next, pagination?.total, securityList]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     getSecurityList();
-  }, [getSecurityList]);
+  });
 
   return isNotLessThan768 ? (
     <PaymentSecurityPrompt
@@ -106,7 +83,7 @@ export default function PaymentSecurity() {
       list={securityList}
       clickItem={handleClick}
       goBack={handleBack}
-      hasMore={securityList?.length < totalCount}
+      hasMore={isNext}
       loadMore={loadMoreSecurity}
       noDataText={noDataText}
     />
@@ -116,7 +93,7 @@ export default function PaymentSecurity() {
       list={securityList}
       clickItem={handleClick}
       goBack={handleBack}
-      hasMore={securityList?.length < totalCount}
+      hasMore={isNext}
       loadMore={loadMoreSecurity}
       noDataText={noDataText}
     />

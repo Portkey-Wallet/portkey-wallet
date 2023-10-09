@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { useCallback, useState } from 'react';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useGetTransferLimitWithContract } from 'hooks/useSecurity';
+import { Form } from 'antd';
 
 export default function TransferSettings() {
   const { isNotLessThan768 } = useCommonState();
@@ -14,6 +15,7 @@ export default function TransferSettings() {
   const [data, setData] = useState(state);
   const navigate = useNavigate();
   const headerTitle = t('Transfer Settings');
+  const [form] = Form.useForm();
   const getTransferLimit = useGetTransferLimitWithContract(state?.targetChainId || state?.chainId);
 
   useEffectOnce(() => {
@@ -31,8 +33,8 @@ export default function TransferSettings() {
   }, [data, navigate]);
 
   return isNotLessThan768 ? (
-    <TransferSettingsPrompt headerTitle={headerTitle} goBack={handleBack} state={data} onEdit={onEdit} />
+    <TransferSettingsPrompt headerTitle={headerTitle} goBack={handleBack} form={form} state={data} onEdit={onEdit} />
   ) : (
-    <TransferSettingsPopup headerTitle={headerTitle} goBack={handleBack} state={data} onEdit={onEdit} />
+    <TransferSettingsPopup headerTitle={headerTitle} goBack={handleBack} form={form} state={data} onEdit={onEdit} />
   );
 }

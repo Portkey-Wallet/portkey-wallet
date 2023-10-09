@@ -35,8 +35,8 @@ import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ChainId } from '@portkey-wallet/types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import './index.less';
-import { useCheckLimit } from 'hooks/useSecurity';
-import { ExceedLimit } from 'constants/security';
+import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
+import { ExceedLimit, WalletIsNotSecure } from 'constants/security';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 
 export type Account = { address: string; name?: string };
@@ -198,6 +198,7 @@ export default function Send() {
 
   const checkLimit = useCheckLimit(tokenInfo.chainId);
 
+  const checkSecurity = useCheckSecurity();
   const handleCheckPreview = useCallback(async () => {
     try {
       setLoading(true);
@@ -207,7 +208,11 @@ export default function Send() {
         return 'Synchronizing on-chain account information...';
       }
       if (type === 'token') {
-        // transfer limit check TODO loading
+        // wallet security check
+        const securityRes = await checkSecurity(tokenInfo.chainId);
+        if (!securityRes) return WalletIsNotSecure;
+
+        // transfer limit check
         const res = await checkLimit({
           chainId: tokenInfo.chainId,
           symbol: tokenInfo.symbol,
@@ -254,10 +259,11 @@ export default function Send() {
     state.chainId,
     type,
     getTranslationInfo,
-    checkLimit,
+    checkSecurity,
     tokenInfo.chainId,
     tokenInfo.symbol,
     tokenInfo.decimals,
+    checkLimit,
     balance,
     toAccount.address,
     chainInfo?.chainId,
@@ -402,8 +408,7 @@ export default function Send() {
         btnText: 'Preview',
         handler: async () => {
           const res = await handleCheckPreview();
-          console.log('handleCheckPreview res', res);
-          if (res === ExceedLimit) return;
+          if (res === ExceedLimit || res === WalletIsNotSecure) return;
           if (!res) {
             setTipMsg('');
             setStage(Stage.Preview);

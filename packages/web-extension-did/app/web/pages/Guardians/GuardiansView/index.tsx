@@ -20,7 +20,7 @@ import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-
 import { GuardianMth } from 'types/guardians';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import useGuardianList from 'hooks/useGuardianList';
 import { verification } from 'utils/api';
 import aes from '@portkey-wallet/utils/aes';
@@ -207,7 +207,7 @@ export default function GuardiansView() {
       }
     } catch (error: any) {
       setLoading(false);
-      message.error(contractErrorHandler(error?.error || error) || error?.type);
+      message.error(handleErrorMessage(error), error?.type);
       console.log('---setLoginAccount-error---', error);
     }
   }, [

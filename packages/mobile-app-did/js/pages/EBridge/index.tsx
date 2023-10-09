@@ -2,14 +2,16 @@ import React, { useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ProviderWebview, { IWebView } from 'components/ProviderWebview';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
-import { DappMap } from '@portkey-wallet/constants/constants-ca/network';
 import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
 import { SafeAreaColorMap } from 'components/PageContainer';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { DappMap } from '@portkey-wallet/constants/constants-ca/network';
 
 const EBridge = () => {
   const webViewRef = useRef<IWebView | null>(null);
   const progressbarRef = useRef<IProgressbar>(null);
+  const { eBridgeUrl } = useCurrentNetworkInfo();
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: SafeAreaColorMap.blue }]}>
@@ -19,7 +21,7 @@ const EBridge = () => {
         <ProviderWebview
           ref={webViewRef}
           style={styles.webview}
-          source={{ uri: DappMap.bridge }}
+          source={{ uri: eBridgeUrl || DappMap.bridge }}
           onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
         />
       </View>

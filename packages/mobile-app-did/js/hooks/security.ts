@@ -1,13 +1,11 @@
 import { CheckTransferLimitParams, useCheckTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { ChainId } from '@portkey-wallet/types';
-import { checkSecurity } from '@portkey-wallet/utils/securityTest';
 import ActionSheet from 'components/ActionSheet';
 import { useCallback } from 'react';
 import navigationService from 'utils/navigationService';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { guardianSyncingAlert } from 'utils/security';
+import { checkSecuritySafe } from 'utils/security';
 
 export const useCheckTransferLimitWithJump = () => {
   const checkTransferLimit = useCheckTransferLimit();
@@ -65,21 +63,7 @@ export const useSecuritySafeCheckAndToast = (): ((fromChainId?: ChainId) => Prom
     async (fromChainId?: ChainId): Promise<boolean> => {
       // if fromChainId exit, use isOriginChainSafe to check, or use isTransferSafe & isSynchronizing
       if (!caHash) return false;
-
-      const { isTransferSafe, isSynchronizing, isOriginChainSafe } = await checkSecurity(caHash);
-      if (fromChainId && originChainId === fromChainId) {
-        if (!isOriginChainSafe) WalletSecurityOverlay.alert();
-        return isOriginChainSafe;
-      }
-
-      if (isTransferSafe) return true;
-      if (isSynchronizing) {
-        guardianSyncingAlert();
-      } else {
-        WalletSecurityOverlay.alert();
-      }
-
-      return false;
+      return checkSecuritySafe(caHash, fromChainId && originChainId === fromChainId);
     },
     [caHash, originChainId],
   );

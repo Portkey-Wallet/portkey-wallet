@@ -33,6 +33,7 @@ export interface VerifierDetailsPageProps extends BaseContainerProps {
   verificationType: VerificationType;
   accountIdentifier: string;
   accountOriginalType: AccountOriginalType;
+  deliveredGuardianInfo: string; // GuardianConfig
 }
 
 export interface VerifierDetailsPageResult {}

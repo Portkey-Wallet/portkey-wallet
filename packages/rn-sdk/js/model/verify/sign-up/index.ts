@@ -4,12 +4,14 @@ import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from '.
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { NetworkController } from 'network/controller';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { EntryResult } from 'service/native-modules';
 
 const useSignUp = (config: SignUpConfig): SignUpHooks => {
   const [verifiedGuardianInfo, setVerifiedGuardianInfo] = useState<VerifiedGuardianDoc | null>(null);
   const isVerified = useCallback(() => !!verifiedGuardianInfo, [verifiedGuardianInfo]);
   const getVerifiedData = useCallback(() => {
     if (!isVerified()) throw new Error('not verified');
+    if (!config.guardianConfig) throw new Error('guardianConfig is not defined');
     return {
       accountOriginalType: config.accountOriginalType,
       fromRecovery: false,
@@ -22,6 +24,7 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
 
   const sendVerifyCode = useCallback(
     async (googleRecaptchaToken?: string): Promise<boolean> => {
+      if (!config.guardianConfig) throw new Error('guardianConfig is not defined');
       const needGoogleRecaptcha = await NetworkController.isGoogleRecaptchaOpen(
         config.guardianConfig.sendVerifyCodeParams.operationType,
       );
@@ -47,7 +50,12 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
   };
 
   const goToGuardianVerifyPage = useCallback(() => {
-    config.navigateToGuardianPage(setVerifiedGuardianInfo);
+    if (!config.guardianConfig) throw new Error('guardianConfig is not defined');
+    config.navigateToGuardianPage(config.guardianConfig, entryResult => {
+      if (entryResult.status === 'success') {
+        setVerifiedGuardianInfo(entryResult.result);
+      }
+    });
   }, [config]);
 
   return {
@@ -70,8 +78,11 @@ export interface SignUpHooks {
 export interface SignUpConfig {
   accountIdentifier: string;
   accountOriginalType: AccountOriginalType;
-  guardianConfig: GuardianConfig;
-  navigateToGuardianPage: (callback: (data: VerifiedGuardianDoc) => void) => void;
+  guardianConfig?: GuardianConfig;
+  navigateToGuardianPage: (
+    guardianConfig: GuardianConfig,
+    callback: (data: EntryResult<VerifiedGuardianDoc>) => void,
+  ) => void;
 }
 
 export default useSignUp;

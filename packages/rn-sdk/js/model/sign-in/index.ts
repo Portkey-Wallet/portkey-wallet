@@ -1,9 +1,11 @@
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { PortkeyConfig, setCurrChainId } from 'global';
 import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
+import { GuardianConfig } from 'model/verify/guardian';
 import { SignUpConfig } from 'model/verify/sign-up';
 import { NetworkController } from 'network/controller';
 import { AccountOrGuardianOriginalTypeStr } from 'network/dto/guardian';
+import { EntryResult } from 'service/native-modules';
 import { GlobalStorage } from 'service/storage';
 import { CountryCodeDataDTO } from 'types/wallet';
 
@@ -55,7 +57,10 @@ export const isReacptchaOpen = async (scene: OperationTypeEnum): Promise<boolean
 export const getRegisterPageData = async (
   accountIdentifier: string,
   accountOriginalType: AccountOriginalType,
-  navigateToGuardianPage: (callback: (data: VerifiedGuardianDoc) => void) => void,
+  navigateToGuardianPage: (
+    guardianConfig: GuardianConfig,
+    callback: (data: EntryResult<VerifiedGuardianDoc>) => void,
+  ) => void,
 ): Promise<SignUpConfig> => {
   const recommendedGuardian = await NetworkController.getRecommendedGuardian();
   return {

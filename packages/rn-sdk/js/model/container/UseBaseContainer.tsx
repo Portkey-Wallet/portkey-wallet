@@ -9,13 +9,15 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
   const { rootTag, entryName, onShow } = props;
 
   useEffect(() => {
-    onShowListener.current?.remove();
-    onShowListener.current = PortkeyDeviceEventEmitter.addListener('onShow', tag => {
-      console.warn(`rootTag is : ${rootTag}`);
-      if (rootTag === tag) {
-        onShow?.();
-      }
-    });
+    if (rootTag) {
+      onShowListener.current?.remove();
+      onShowListener.current = PortkeyDeviceEventEmitter.addListener('onShow', tag => {
+        console.warn(`rootTag is : ${rootTag}`);
+        if (rootTag === tag) {
+          onShow?.();
+        }
+      });
+    }
     return () => {
       onShowListener.current?.remove();
     };
@@ -82,7 +84,7 @@ export interface BaseContainerHooks {
 }
 
 export interface BaseContainerHookedProps {
-  rootTag: any;
+  rootTag?: any;
   entryName: string;
   onShow?: () => void;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
@@ -20,11 +20,15 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getCachedCountryCodeData, attemptAccountCheck } from 'model/sign-in';
 import { CountryCodeItem } from 'types/wallet';
 import ActionSheet from 'components/ActionSheet';
-import { portkeyModulesEntity } from 'service/native-modules';
+import { EntryResult, RouterOptions, portkeyModulesEntity } from 'service/native-modules';
 import { PortkeyEntries } from 'config/entries';
 import { getRegisterPageData } from 'model/sign-in';
-import { AccountOriginalType } from 'model/verify/after-verify';
+import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import useSignUp, { SignUpConfig } from 'model/verify/sign-up';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { AcceptableValueType } from 'model/container/BaseContainer';
+import { GuardianConfig } from 'model/verify/guardian';
+import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 
 const TitleMap = {
   [PageType.login]: {
@@ -49,11 +53,43 @@ export default function Phone({
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
   const [country, setCountry] = useState<CountryCodeItem>();
+
+  const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
+
   useEffectOnce(() => {
     const countryDTO = getCachedCountryCodeData();
     setCountry(countryDTO?.locateData);
   });
-  const [pageDataResult, setPageDataResult] = useState<SignUpConfig>();
+  const getWrappedPhoneNumber = useCallback(() => {
+    return `+${(selectedCountryCode ?? country).code}${loginAccount}`;
+  }, [loginAccount, country, selectedCountryCode]);
+
+  const navigateToGuardianPage = useCallback(
+    (config: GuardianConfig, callback: (result: EntryResult<VerifiedGuardianDoc>) => void) => {
+      navigateForResult<VerifiedGuardianDoc, VerifierDetailsPageProps>(
+        PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+        {
+          params: {
+            deliveredGuardianInfo: JSON.stringify(config),
+          },
+        },
+        callback,
+      );
+    },
+    [],
+  );
+
+  const { isVerified, getVerifiedData, isGoogleRecaptchaOpen, sendVerifyCode, goToGuardianVerifyPage } = useSignUp({
+    accountIdentifier: getWrappedPhoneNumber(),
+    accountOriginalType: AccountOriginalType.Phone,
+    guardianConfig,
+    navigateToGuardianPage,
+  });
+
+  const { navigateForResult } = useBaseContainer({
+    entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
+  });
+
   const onPageLogin = async () => {
     const loadingKey = Loading.show();
     try {
@@ -109,7 +145,9 @@ export default function Phone({
         // sign up
         const accountIdentifier = `+${(selectedCountryCode ?? country).code}${loginAccount}`;
         const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Phone);
-        setPageDataResult(pageData);
+        setGuardianConfig(pageData.guardianConfig);
+        // wait for setState() finish
+
         // if (pageDataResult) {
         //   Loading.hide(loadingKey);
         //   portkeyModulesEntity.RouterModule.navigateToWithOptions(

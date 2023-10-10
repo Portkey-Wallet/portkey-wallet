@@ -31,7 +31,7 @@ const ConnectModal = () => {
       <View style={styles.contentWrap}>
         <View style={[GStyles.flexRow, GStyles.itemCenter]}>
           <Svg icon="eBridgeFavIcon" size={pTd(24)} />
-          <TextM style={[FontStyles.font5, GStyles.marginLeft(pTd(4))]}>eBridge</TextM>
+          <TextM style={[FontStyles.font5, GStyles.marginLeft(pTd(8))]}>eBridge</TextM>
         </View>
         <TextL style={[FontStyles.font5, fonts.mediumFont, GStyles.marginTop(pTd(8)), GStyles.marginBottom(pTd(16))]}>
           You will be redirected to eBridge, a third-party cross-chain bridge on aelf.

@@ -20,7 +20,10 @@ export function useSingleTransferLimitModal() {
         centered: true,
         okText: t('Modify'),
         cancelText: t('Cancel'),
-        onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings', { state }),
+        onOk: () =>
+          navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
+            state: { ...state, initStateBackUp: state },
+          }),
       });
     },
     [navigate, t],
@@ -42,7 +45,10 @@ export function useDailyTransferLimitModal() {
         centered: true,
         okText: t('Modify'),
         cancelText: t('Cancel'),
-        onOk: () => navigate('/setting/wallet-security/payment-security/transfer-settings', { state }),
+        onOk: () =>
+          navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
+            state: { ...state, initStateBackUp: state },
+          }),
       });
     },
     [navigate, t],

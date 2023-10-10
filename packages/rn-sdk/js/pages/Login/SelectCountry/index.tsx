@@ -8,17 +8,13 @@ import GStyles from 'assets/theme/GStyles';
 import IndexBarLargeList from 'components/CommonLargeList/IndexBarLargeList';
 import CommonInput from 'components/CommonInput';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
-import myEvents from 'utils/deviceEvent';
-import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import NoData from 'components/NoData';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
-import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
-import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
+import { getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { getCachedCountryCodeData } from 'model/sign-in';
 import { GlobalStorage } from 'service/storage';
@@ -29,30 +25,18 @@ const IndexHeight = 56,
   SectionHeight = 20;
 
 export default function SelectCountry({ selectCountry }: { selectCountry?: CountryItem }) {
-  // const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
-
-  // const {
-  //   phoneCountryCodeIndex: countryCodeIndex,
-  //   phoneCountryCodeList,
-  //   setLocalPhoneCountryCode,
-  // } = usePhoneCountryCode();
-  // const List = useMemo(() => countryCodeIndex.map(i => ({ index: i[0], items: i[1] })), [countryCodeIndex]);
-
+  const [phoneCountryCodeList, setPhoneCountryCodeList] = useState<CountryItem[]>();
   const [List, setList] = useState();
-  const [countryCodeIndex, setCountryCodeIndex] = useState();
   const [searchList, setSearchList] = useState<CountryItem[]>();
-  const [data, setData] = useState();
   useEffectOnce(() => {
-    const phoneCountryCodeList = getCachedCountryCodeData()?.data;
-    const codeIndex = getCountryCodeIndex(phoneCountryCodeList);
-    setCountryCodeIndex(codeIndex);
+    const countryCodeList = getCachedCountryCodeData()?.data;
+    setPhoneCountryCodeList(countryCodeList);
+    const codeIndex = getCountryCodeIndex(countryCodeList);
     const list = codeIndex.map(i => ({ index: i[0], items: i[1] }));
     setList(list);
-    setData(list);
-    setSearchList(list);
   });
 
-  // const data = useMemo(() => searchList || List, [List, searchList]);
+  const data = useMemo(() => searchList || List, [List, searchList]);
   const _renderItem = ({ section, row }: { section: number; row: number }) => {
     let item: CountryItem;
     if ('items' in data[section]) {
@@ -106,13 +90,10 @@ export default function SelectCountry({ selectCountry }: { selectCountry?: Count
           renderItem={_renderItem}
           indexHeight={IndexHeight}
           indexBarBoxStyle={styles.indexBarBoxStyle}
-          // sectionHeight={searchList ? 0 : SectionHeight}
-          sectionHeight={SectionHeight}
+          sectionHeight={searchList ? 0 : SectionHeight}
           extraHeight={headerHeight + bottomBarHeight + 120}
-          // renderSection={searchList ? undefined : _renderSection}
-          renderSection={_renderSection}
-          // indexArray={searchList ? undefined : data.map(item => item[0])}
-          indexArray={data.map(item => item.index)}
+          renderSection={searchList ? undefined : _renderSection}
+          indexArray={searchList ? undefined : data.map(item => item[0] ?? item.index)}
           renderEmpty={() => <NoData topDistance={64} noPic message={'There is no search result.'} />}
         />
       </View>
@@ -135,6 +116,7 @@ const styles = StyleSheet.create({
   containerStyles: {
     ...GStyles.paddingArg(10, 0),
     backgroundColor: defaultColors.bg1,
+    height: '100%',
   },
   inputContainerStyle: {
     marginBottom: 20,
@@ -145,8 +127,7 @@ const styles = StyleSheet.create({
     // bottom: screenHeight > 850 ? 100 : 60,
   },
   indexBarRow: {
-    // overflow: 'hidden',
-    // flex: 1,
-    height: '90%',
+    overflow: 'hidden',
+    flex: 1,
   },
 });

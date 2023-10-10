@@ -54,7 +54,6 @@
 
 - (void)loginButtonClicked:(id)sender {
     [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
-//    [[PortkeySDKRouterModule sharedInstance] navigationTo:@"test" targetScene:@""];
 }
 
 #pragma mark - Getter

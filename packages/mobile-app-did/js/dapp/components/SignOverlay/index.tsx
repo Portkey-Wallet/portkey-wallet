@@ -63,6 +63,7 @@ export const showSignModal = (props: SignModalPropsType) => {
   OverlayModal.show(<SignModal {...props} />, {
     position: 'bottom',
     onCloseRequest: props.onReject,
+    containerStyle: GStyles.paddingBottom(0),
   });
 };
 

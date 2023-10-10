@@ -133,6 +133,7 @@ export const showConnectModal = (props: ConnectModalType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
     onCloseRequest: props.onReject,
+    containerStyle: GStyles.paddingBottom(0),
   });
 };
 

@@ -80,7 +80,7 @@ export default memo(
       );
     }, [isEdit]);
 
-    const bookmarkInfo = useMemo(() => {
+    const recordInfo = useMemo(() => {
       return {
         title: getCmsWebsiteInfoName(item.url || ''),
         imageUrl: getCmsWebsiteInfoImageUrl(item.url || ''),
@@ -108,11 +108,11 @@ export default memo(
               styles.marginContainer,
             ]}>
             {EditDom}
-            <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} imageUrl={bookmarkInfo.imageUrl} />
+            <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} imageUrl={recordInfo.imageUrl} />
             <View style={styles.infoWrap}>
-              <TextWithProtocolIcon url={item?.url} title={item?.name} textFontSize={pTd(16)} />
+              <TextWithProtocolIcon url={item?.url} title={recordInfo?.title || item.url} textFontSize={pTd(16)} />
               <TextS numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7]}>
-                {bookmarkInfo?.title || item.url}
+                {recordInfo?.title || item.url}
               </TextS>
             </View>
 

@@ -1,4 +1,4 @@
-#use_frameworks!
+use_frameworks! :linkage => :static
 
 source 'https://gitee.com/mirrors/CocoaPods-Specs.git'
 
@@ -12,7 +12,7 @@ require_relative "#{$node_modules}/react-native/scripts/react_native_pods"
 require_relative "#{$node_modules}/@react-native-community/cli-platform-ios/native_modules"
 
 target 'PortkeySDKExample_Example' do
-  
+  use_native_modules!
   use_react_native!(path: $react_native_path, hermes_enabled: false)
 #  use_react_native!(
 #     :path => $react_native_path],
@@ -23,15 +23,6 @@ target 'PortkeySDKExample_Example' do
 #  )
   
   pod 'PortkeySDK', :path => '../'
-  pod 'react-native-webview', :path => "#{$node_modules}/react-native-webview"
-  pod 'react-native-get-random-values', :path => "#{$node_modules}/react-native-get-random-values"
-  pod 'react-native-mmkv', :path => "#{$node_modules}/react-native-mmkv"
-  # pod 'RNCAsyncStorage', path => "#{$node_modules}/@react-native-async-storage/async-storage"
-  pod 'RNSVG', :path => "#{$node_modules}/react-native-svg"
-  pod 'react-native-safe-area-context', :path => "#{$node_modules}/react-native-safe-area-context"
-  pod 'react-native-spinkit', :path => "#{$node_modules}/react-native-spinkit"
-  pod 'RNSpringScrollView', :path => "#{$node_modules}/react-native-spring-scrollview"
-  pod 'react-native-background-timer', :path => "#{$node_modules}/react-native-background-timer"
 
   target 'PortkeySDKExample_Tests' do
     inherit! :search_paths

@@ -16,6 +16,10 @@ PODS:
     - FBSnapshotTestCase/Core
   - fmt (6.2.1)
   - glog (0.3.5)
+  - lottie-ios (3.4.4)
+  - lottie-react-native (5.1.5):
+    - lottie-ios (~> 3.4.0)
+    - React-Core
   - MMKV (1.3.1):
     - MMKVCore (~> 1.3.1)
   - MMKVCore (1.3.1)
@@ -294,17 +298,17 @@ PODS:
     - glog
   - react-native-background-timer (2.4.1):
     - React-Core
+  - react-native-config (1.4.6):
+    - react-native-config/App (= 1.4.6)
+  - react-native-config/App (1.4.6):
+    - React-Core
   - react-native-get-random-values (1.9.0):
     - React-Core
   - react-native-mmkv (2.10.2):
     - MMKV (>= 1.2.13)
     - React-Core
-  - react-native-safe-area-context (4.4.1):
-    - RCT-Folly
-    - RCTRequired
-    - RCTTypeSafety
+  - react-native-safe-area-context (4.7.2):
     - React-Core
-    - ReactCommon/turbomodule/core
   - react-native-spinkit (1.4.1):
     - React
   - react-native-webview (13.6.0):
@@ -414,6 +418,10 @@ PODS:
     - React-jsi (= 0.72.4)
     - React-logger (= 0.72.4)
     - React-perflogger (= 0.72.4)
+  - RNCAsyncStorage (1.17.10):
+    - React-Core
+  - RNLocalize (2.2.4):
+    - React-Core
   - RNSpringScrollView (3.0.2):
     - React
   - RNSVG (13.3.0):
@@ -428,6 +436,7 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../../node_modules/react-native/React/FBReactNativeSpec`)
   - FBSnapshotTestCase
   - glog (from `../../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - lottie-react-native (from `../../node_modules/lottie-react-native`)
   - PortkeySDK (from `../`)
   - RCT-Folly (from `../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../../node_modules/react-native/Libraries/RCTRequired`)
@@ -446,6 +455,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../../node_modules/react-native/ReactCommon/logger`)
   - react-native-background-timer (from `../../node_modules/react-native-background-timer`)
+  - react-native-config (from `../../node_modules/react-native-config`)
   - react-native-get-random-values (from `../../node_modules/react-native-get-random-values`)
   - react-native-mmkv (from `../../node_modules/react-native-mmkv`)
   - react-native-safe-area-context (from `../../node_modules/react-native-safe-area-context`)
@@ -468,6 +478,8 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../../node_modules/react-native/ReactCommon`)
+  - "RNCAsyncStorage (from `../../node_modules/@react-native-async-storage/async-storage`)"
+  - RNLocalize (from `../../node_modules/react-native-localize`)
   - RNSpringScrollView (from `../../node_modules/react-native-spring-scrollview`)
   - RNSVG (from `../../node_modules/react-native-svg`)
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
@@ -476,6 +488,7 @@ SPEC REPOS:
   https://gitee.com/mirrors/CocoaPods-Specs.git:
     - FBSnapshotTestCase
     - fmt
+    - lottie-ios
     - MMKV
     - MMKVCore
     - SocketRocket
@@ -491,6 +504,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../../node_modules/react-native/third-party-podspecs/glog.podspec"
+  lottie-react-native:
+    :path: "../../node_modules/lottie-react-native"
   PortkeySDK:
     :path: "../"
   RCT-Folly:
@@ -525,6 +540,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native/ReactCommon/logger"
   react-native-background-timer:
     :path: "../../node_modules/react-native-background-timer"
+  react-native-config:
+    :path: "../../node_modules/react-native-config"
   react-native-get-random-values:
     :path: "../../node_modules/react-native-get-random-values"
   react-native-mmkv:
@@ -569,6 +586,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../../node_modules/react-native/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../../node_modules/@react-native-async-storage/async-storage"
+  RNLocalize:
+    :path: "../../node_modules/react-native-localize"
   RNSpringScrollView:
     :path: "../../node_modules/react-native-spring-scrollview"
   RNSVG:
@@ -580,10 +601,12 @@ SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
-  FBReactNativeSpec: 39d37362b235389d3be59be1dbb12fa08e4477d8
+  FBReactNativeSpec: 94b00b7bba49d6e7e5ba2bfb4401e282136089fa
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
+  lottie-react-native: 3e722c63015fdb9c27638b0a77969fc412067c18
   MMKV: 5a07930c70c70b86cd87761a42c8f3836fb681d7
   MMKVCore: e50135dbd33235b6ab390635991bab437ab873c0
   PortkeySDK: 55a8e37a321f9205197ac35dc6918abc1246880d
@@ -592,44 +615,47 @@ SPEC CHECKSUMS:
   RCTTypeSafety: e90354072c21236e0bcf1699011e39acd25fea2f
   React: a1be3c6dc0a6e949ccd3e659781aa47bbae1868f
   React-callinvoker: 1020b33f6cb1a1824f9ca2a86609fbce2a73c6ed
-  React-Codegen: 97df9239bfc44a4504c4840dfae3a200e4500afe
-  React-Core: 9df7960451a433053f30a5862728f92088a9150d
-  React-CoreModules: 21abab85d7ad9038ce2b1c33d39e3baaf7dc9244
+  React-Codegen: 84fb451cebda887232de8f31f098886a062848ec
+  React-Core: 4572f4cf5f8386b07dfabda5f436ee30dbf66784
+  React-CoreModules: 621243df8863055ff30f3bb2ff71573ffa7b16c8
   React-cxxreact: 9f0bd765bbffbd2038936d1f0ba1c80ea7649e28
-  React-debug: 17366a3d5c5d2f5fc04f09101a4af38cb42b54ae
+  React-debug: 48b570b038d84a37c80a027c102ddf176c544118
   React-jsc: 844ccd35b8dbd105aa0430b658611a43f10ba8a5
   React-jsi: 8c012b3699d7427e96866dd3a539ca9611fa2546
   React-jsiexecutor: bc8a9ad812a2c88b3a41c08b5f4b3ed32d6d4766
   React-jsinspector: aaed4cf551c4a1c98092436518c2d267b13a673f
   React-logger: da1ebe05ae06eb6db4b162202faeafac4b435e77
   react-native-background-timer: 17ea5e06803401a379ebf1f20505b793ac44d0fe
+  react-native-config: 7cd105e71d903104e8919261480858940a6b9c0e
   react-native-get-random-values: dee677497c6a740b71e5612e8dbd83e7539ed5bb
   react-native-mmkv: 9ae7ca3977e8ef48dbf7f066974eb844c20b5fd7
-  react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
+  react-native-safe-area-context: 7aa8e6d9d0f3100a820efb1a98af68aa747f9284
   react-native-spinkit: da294fd828216ad211fe36a5c14c1e09f09e62db
   react-native-webview: 669ae162965f629a8d6a4bdd3b99a304d36ef1f2
-  React-NativeModulesApple: 759309419da76ef4c9f331968b840022ee2aa5b1
+  React-NativeModulesApple: 086565a2c2b0299b0d7ca837127a6d0dc96104c3
   React-perflogger: 496a1a3dc6737f964107cb3ddae7f9e265ddda58
   React-RCTActionSheet: 02904b932b50e680f4e26e7a686b33ebf7ef3c00
-  React-RCTAnimation: 88feaf0a85648fb8fd497ce749829774910276d6
-  React-RCTAppDelegate: b9e5fe0e4b71f30f3742225dc7085ae10681a1cd
-  React-RCTBlob: 455b680e457c36f8d98f4338b51cd3cbf48744bd
-  React-RCTImage: b111645ab901f8e59fc68fbe31f5731bdbeef087
-  React-RCTLinking: 3d719727b4c098aad3588aa3559361ee0579f5de
-  React-RCTNetwork: b44d3580be05d74556ba4efbf53570f17e38f734
-  React-RCTSettings: c0c54b330442c29874cd4dae6e94190dc11a6f6f
+  React-RCTAnimation: e44fe5053708c5be762943087c78dc5a6a3c645c
+  React-RCTAppDelegate: 9542a507a736f92c1b4274c086d43b39d6210f32
+  React-RCTBlob: c9c7f0621bf1af680d443b0507ecc4867dd9b5a1
+  React-RCTImage: f48859ae6a1e5c2c8659f860efdfcb8b0cb60cde
+  React-RCTLinking: 9b145f380c6b5910e3219bef73e1d7024381ad54
+  React-RCTNetwork: 179f50a80c01fa7d6a515552a24ad2e294f341a1
+  React-RCTSettings: cdc9f538f0f8e72e6f3de7c971fb4fb2f49caff9
   React-RCTText: 9b9f5589d9b649d7246c3f336e116496df28cfe6
-  React-RCTVibration: 691c67f3beaf1d084ceed5eb5c1dddd9afa8591e
-  React-rncore: 8c66c3629cbe71c0f1db4c2c5bd56b96f485b8ba
+  React-RCTVibration: 35eec7201c8ffdaccdd908a5ec874b7055f975f3
+  React-rncore: 23671a4a17350b264335aaa196c4a7913861bf3c
   React-runtimeexecutor: d465ba0c47ef3ed8281143f59605cacc2244d5c7
-  React-runtimescheduler: cbd78e16328bde1e5abac4ceb0cb635d03c359c6
-  React-utils: b79f2411931f9d3ea5781404dcbb2fa8a837e13a
-  ReactCommon: 2635a013764a291989765d6ec136513911f478c6
+  React-runtimescheduler: 8c32bf4a1934c10d3899f7737afc6f662403a077
+  React-utils: be9f7f44d58cba6960a5ffe1eccc5c34fb92023e
+  ReactCommon: 1c4f8627709eb8be1e2eec92848d0333d12bf76a
+  RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
+  RNLocalize: 0df7970cfc60389f00eb62fd7c097dc75af3fb4f
   RNSpringScrollView: e354167d96f2c3d2f20b186990b2c3946987cb3c
   RNSVG: 1869ad9534459f24caaa0416a4764548c2aeedad
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
 
-PODFILE CHECKSUM: 587c041d360bf4f073d28eb349a1f9a1fc47a211
+PODFILE CHECKSUM: df43560b88c9f76847a0fd651ec2d59d8a7982f1
 
 COCOAPODS: 1.12.1

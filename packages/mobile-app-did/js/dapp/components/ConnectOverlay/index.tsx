@@ -26,6 +26,7 @@ import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
+import { isIOS } from '@rneui/base';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -133,7 +134,7 @@ export const showConnectModal = (props: ConnectModalType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
     onCloseRequest: props.onReject,
-    containerStyle: GStyles.paddingBottom(0),
+    containerStyle: [!isIOS && GStyles.paddingBottom(0)],
   });
 };
 

@@ -25,6 +25,7 @@ import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { isIOS } from '@rneui/base';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -185,7 +186,7 @@ export const showApproveModal = (props: SignModalPropsType) => {
   OverlayModal.show(<ApproveModal {...props} />, {
     position: 'bottom',
     onCloseRequest: props.onReject,
-    containerStyle: GStyles.paddingBottom(0),
+    containerStyle: [!isIOS && GStyles.paddingBottom(0)],
   });
 };
 

@@ -14,6 +14,7 @@ import { GetSignatureParams } from '@portkey/provider-types';
 import TransactionDataSection from '../TransactionDataSection';
 import { TextXXXL } from 'components/CommonText';
 import { OverlayBottomSection } from '../OverlayBottomSection';
+import { isIOS } from '@rneui/base';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -63,7 +64,7 @@ export const showSignModal = (props: SignModalPropsType) => {
   OverlayModal.show(<SignModal {...props} />, {
     position: 'bottom',
     onCloseRequest: props.onReject,
-    containerStyle: GStyles.paddingBottom(0),
+    containerStyle: [!isIOS && GStyles.paddingBottom(0)],
   });
 };
 

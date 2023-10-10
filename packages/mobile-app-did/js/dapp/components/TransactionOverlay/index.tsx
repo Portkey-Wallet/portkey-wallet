@@ -31,6 +31,7 @@ import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { RememberInfoType, RememberMe } from 'components/RememberMe';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { OverlayBottomSection } from '../OverlayBottomSection';
+import { isIOS } from '@rneui/base';
 
 enum ErrorText {
   ESTIMATE_ERROR = 'Failed to estimate transaction fee',
@@ -453,7 +454,7 @@ export const showTransactionModal = (props: TransactionModalPropsType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
     onCloseRequest: props.onReject,
-    containerStyle: GStyles.paddingBottom(0),
+    containerStyle: [!isIOS && GStyles.paddingBottom(0)],
   });
 };
 

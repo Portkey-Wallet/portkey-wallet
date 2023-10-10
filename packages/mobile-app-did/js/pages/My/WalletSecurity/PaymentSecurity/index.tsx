@@ -1,9 +1,9 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { StyleSheet, FlatList, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
-import { TextM } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 
 import navigationService from 'utils/navigationService';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -43,7 +43,7 @@ const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
           avatarSize={pTd(32)}
         />
         <View style={ItemStyles.content}>
-          <TextM style={ItemStyles.symbolLabel}>{item.symbol || ''}</TextM>
+          <TextL style={ItemStyles.symbolLabel}>{item.symbol || ''}</TextL>
           <TextM style={FontStyles.font7}>{formatChainInfoToShow(item.chainId, networkType)}</TextM>
         </View>
         <Svg icon="right-arrow" size={pTd(20)} color={defaultColors.icon1} />

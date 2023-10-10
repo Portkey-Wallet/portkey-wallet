@@ -22,28 +22,29 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
     } as Partial<AfterVerifiedConfig>;
   }, [config, isVerified, verifiedGuardianInfo]);
 
-  const sendVerifyCode = useCallback(
-    async (googleRecaptchaToken?: string): Promise<boolean> => {
-      if (!config.guardianConfig) throw new Error('guardianConfig is not defined');
-      const needGoogleRecaptcha = await NetworkController.isGoogleRecaptchaOpen(
-        config.guardianConfig.sendVerifyCodeParams.operationType,
-      );
-      if (needGoogleRecaptcha && !googleRecaptchaToken) {
-        console.warn('Need google recaptcha! Better check it before calling this function.');
-        return false;
-      }
-      const result = await NetworkController.sendVerifyCode(
-        config.guardianConfig.sendVerifyCodeParams,
-        googleRecaptchaToken ? { reCaptchaToken: googleRecaptchaToken } : {},
-      );
-      if (result.verifierSessionId) {
-        return true;
-      } else {
-        return false;
-      }
-    },
-    [config],
-  );
+  const sendVerifyCode = async (
+    guardianConfig: GuardianConfig | undefined,
+    googleRecaptchaToken?: string,
+  ): Promise<boolean> => {
+    const guardian = guardianConfig ?? config.guardianConfig;
+    if (!guardian) throw new Error('guardianConfig is not defined');
+    const needGoogleRecaptcha = await NetworkController.isGoogleRecaptchaOpen(
+      guardian.sendVerifyCodeParams.operationType,
+    );
+    if (needGoogleRecaptcha && !googleRecaptchaToken) {
+      console.warn('Need google recaptcha! Better check it before calling this function.');
+      return false;
+    }
+    const result = await NetworkController.sendVerifyCode(
+      guardian.sendVerifyCodeParams,
+      googleRecaptchaToken ? { reCaptchaToken: googleRecaptchaToken } : {},
+    );
+    if (result.verifierSessionId) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   const isGoogleRecaptchaOpen = async () => {
     return await NetworkController.isGoogleRecaptchaOpen(OperationTypeEnum.register);
@@ -80,7 +81,7 @@ export interface SignUpHooks {
   isVerified: () => boolean;
   getVerifiedData: () => Partial<AfterVerifiedConfig>;
   isGoogleRecaptchaOpen: () => Promise<boolean>;
-  sendVerifyCode: (googleRecaptchaToken?: string) => Promise<boolean>;
+  sendVerifyCode: (guardianConfig: GuardianConfig | undefined, googleRecaptchaToken?: string) => Promise<boolean>;
   handleGuardianVerifyPage: () => Promise<boolean>;
 }
 

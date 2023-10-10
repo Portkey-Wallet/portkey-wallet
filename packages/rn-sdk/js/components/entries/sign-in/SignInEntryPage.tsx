@@ -20,7 +20,6 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
   }
 
   updateCountryCode = (countryCode: CountryCodeItem) => {
-    console.error('updateCountryCode', countryCode);
     this.setState({
       currentCountryCodeItem: countryCode,
     });

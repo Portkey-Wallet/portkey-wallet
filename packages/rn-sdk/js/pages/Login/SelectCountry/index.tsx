@@ -1,5 +1,5 @@
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Touchable from 'components/Touchable';
 import PageContainer from 'components/PageContainer';
@@ -23,7 +23,13 @@ import { CURRENT_USING_COUNTRY_CODE } from 'model/sign-in';
 const IndexHeight = 56,
   SectionHeight = 20;
 
-export default function SelectCountry({ selectCountry }: { selectCountry?: CountryItem }) {
+export default function SelectCountry({
+  selectCountry,
+  navigateBack,
+}: {
+  selectCountry?: CountryItem;
+  navigateBack: (item: CountryItem) => void;
+}) {
   const [phoneCountryCodeList, setPhoneCountryCodeList] = useState<CountryItem[]>();
   const [List, setList] = useState();
   const [searchList, setSearchList] = useState<CountryItem[]>();

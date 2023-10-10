@@ -59,6 +59,9 @@ export const nativeFetch = async <T>(
   if (res?.length > 0) {
     try {
       const t = JSON.parse(res) as ResultWrapper<T>;
+      if (t?.result && typeof t.result === 'string') {
+        t.result = JSON.parse(t.result);
+      }
       return t;
     } catch (e) {}
   }

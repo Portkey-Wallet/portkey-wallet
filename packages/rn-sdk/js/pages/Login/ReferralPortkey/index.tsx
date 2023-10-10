@@ -10,13 +10,10 @@ import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
 import Email from '../components/Email';
-// import QRCode from '../components/QRCode';
 import Phone from '../components/Phone';
 import Referral from '../components/Referral';
 import { PageLoginType } from '../types';
-// import SwitchNetwork from '../components/SwitchNetwork';
 import GStyles from 'assets/theme/GStyles';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -30,38 +27,13 @@ const BackType: any = {
   [PageLoginType.phone]: true,
 };
 
-export function LoginPort() {
-  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
-  const loginMap = useMemo(
-    () => ({
-      [PageLoginType.email]: <Email setLoginType={setLoginType} />,
-      // [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
-      [PageLoginType.qrCode]: <View />,
-      [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
-      // [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
-      [PageLoginType.referral]: <View />,
-    }),
-    [],
-  );
-  return (
-    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>
-      <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
-      {/* <Email setLoginType={setLoginType} /> */}
-      {/* <Phone setLoginType={setLoginType} /> */}
-      <Referral setLoginType={setLoginType} />
-    </ImageBackground>
-  );
-}
-
-export default function Referralkey() {
+export default function ReferralKey() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const { t } = useLanguage();
-  // const isMainnet = useIsMainnet();
   const isMainnet = true;
   const loginMap = useMemo(
     () => ({
       [PageLoginType.email]: <Email setLoginType={setLoginType} />,
-      // [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.qrCode]: <View />,
       [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,

@@ -18,7 +18,6 @@ import Referral from '../components/Referral';
 import { PageLoginType, PageType } from '../types';
 // import SwitchNetwork from '../components/SwitchNetwork';
 import GStyles from 'assets/theme/GStyles';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
 import { CountryCodeItem } from 'types/wallet';
@@ -30,10 +29,15 @@ const BackType: any = {
   [PageLoginType.email]: true,
   [PageLoginType.phone]: true,
 };
-export default function SignupPortkey({ selectedCountryCode }: { selectedCountryCode: CountryCodeItem | null }) {
+export default function SignupPortkey({
+  selectedCountryCode,
+  updateCountryCode,
+}: {
+  selectedCountryCode: CountryCodeItem | null;
+  updateCountryCode: (item: CountryCodeItem) => void;
+}) {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
   const { t } = useLanguage();
-  // const isMainnet = useIsMainnet();
   const isMainnet = true;
 
   const signupMap = useMemo(
@@ -42,11 +46,16 @@ export default function SignupPortkey({ selectedCountryCode }: { selectedCountry
       // [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.qrCode]: <View />,
       [PageLoginType.phone]: (
-        <Phone setLoginType={setLoginType} type={PageType.signup} selectedCountryCode={selectedCountryCode} />
+        <Phone
+          setLoginType={setLoginType}
+          type={PageType.signup}
+          selectedCountryCode={selectedCountryCode}
+          updateCountryCode={updateCountryCode}
+        />
       ),
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} type={PageType.signup} />,
     }),
-    [selectedCountryCode],
+    [selectedCountryCode, updateCountryCode],
   );
   return (
     <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>

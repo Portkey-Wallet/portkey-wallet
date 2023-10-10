@@ -27,7 +27,7 @@ export class NetworkControllerEntity {
     if (method === 'GET' && params) {
       url += '?';
       Object.entries(params).forEach(([key, value]) => {
-        url = url + `&${key}=${value ?? 'null'}`;
+        url = url + `&${key}=${encodeURIComponent((value ?? 'null') as string)}`;
       });
     }
     const result = nativeFetch<T>(url, method, params, headers);
@@ -58,10 +58,11 @@ export class NetworkControllerEntity {
   };
 
   isGoogleRecaptchaOpen = async (operationType: OperationTypeEnum): Promise<boolean> => {
-    const res = await this.realExecute<{ isOpen: boolean }>(this.parseUrl(APIPaths.CHECK_GOOGLE_RECAPTCHA), 'POST', {
+    const res = await this.realExecute<boolean>(this.parseUrl(APIPaths.CHECK_GOOGLE_RECAPTCHA), 'POST', {
       operationType,
     });
-    return res?.result?.isOpen ?? false;
+    console.error('isGoogleRecaptchaOpen', JSON.stringify(res));
+    return res?.result ?? false;
   };
 
   getRecommendedGuardian = async (chainId?: string): Promise<GetRecommendedGuardianResultDTO> => {

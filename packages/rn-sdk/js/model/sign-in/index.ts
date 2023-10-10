@@ -16,6 +16,7 @@ export const attemptAccountCheck = async (accountIdentifier: string): Promise<Ac
   const registerResultDTO = await NetworkController.getRegisterResult(accountIdentifier);
   if (registerResultDTO?.result) {
     const { originChainId } = registerResultDTO.result;
+    console.error(`originChainId : ${originChainId}`);
     originChainId && setCurrChainId(originChainId as any);
     const guardianResultDTO = await NetworkController.getAccountIdentifierResult(originChainId, accountIdentifier);
     return {

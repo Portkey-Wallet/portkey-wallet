@@ -10,26 +10,27 @@ import { CURRENT_USING_COUNTRY_CODE } from 'model/sign-in';
 export default class SignUpEntryPage extends BaseContainer<BaseContainerProps, SignUpPageState, SignUpPageResult> {
   constructor(props: BaseContainerProps) {
     super(props);
+    const cache = GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
     this.state = {
-      currentCountryCodeItem: null,
+      currentCountryCodeItem: cache ? JSON.parse(cache) : null,
     };
   }
 
-  onShow(): void {
-    const cache = GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
-    if (cache) {
-      this.setState({
-        currentCountryCodeItem: JSON.parse(cache) as CountryCodeItem,
-      });
-    }
-  }
+  updateCountryCode = (countryCode: CountryCodeItem) => {
+    this.setState({
+      currentCountryCodeItem: countryCode,
+    });
+  };
 
   getEntryName = (): string => PortkeyEntries.SIGN_UP_ENTRY;
 
   render() {
     return (
       <SafeAreaProvider>
-        <SignupPortkey selectedCountryCode={this.state.currentCountryCodeItem} />
+        <SignupPortkey
+          selectedCountryCode={this.state.currentCountryCodeItem}
+          updateCountryCode={this.updateCountryCode}
+        />
       </SafeAreaProvider>
     );
   }

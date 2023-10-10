@@ -26,3 +26,5 @@ export const setEndPointUrl = (environment: EndPoints) => {
 export const setCurrChainId = (chainId: ChainId) => {
   PortkeyConfig.currChainId = chainId;
 };
+
+export const RECAPTCHA_SITE_KEY = '6LdKF0EjAAAAAF8erMCHaMMoJWXLxEOC0OMtuibq';

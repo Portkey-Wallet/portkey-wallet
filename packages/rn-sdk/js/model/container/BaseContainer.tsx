@@ -14,10 +14,8 @@ export default abstract class BaseContainer<
 > extends React.Component<P, S> {
   constructor(props: P) {
     super(props);
-    this.onShowEventListener = PortkeyDeviceEventEmitter.addListener('onShow', rootTag => {
-      if (rootTag === props.rootTag) {
-        this.onShow();
-      }
+    this.onShowEventListener = PortkeyDeviceEventEmitter.addListener('onShow', result => {
+      this.onShow();
     });
   }
 

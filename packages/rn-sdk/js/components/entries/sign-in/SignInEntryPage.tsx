@@ -9,23 +9,21 @@ import { GlobalStorage } from 'service/storage';
 
 export default class SignInEntryPage extends BaseContainer<SignInPageProps, SignInPageState, SignInPageResult> {
   constructor(props: SignInPageProps) {
+    const cache = GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
     super(props);
     this.state = {
       useSignIn: false,
       accountIdentifierType: AccountIdentifierType.PHONE_NUMBER,
       enableSubmitButton: false,
-      currentCountryCodeItem: null,
+      currentCountryCodeItem: cache ? JSON.parse(cache) : null,
     };
   }
 
-  onShow(): void {
-    const cache = GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
-    if (cache) {
-      this.setState({
-        currentCountryCodeItem: JSON.parse(cache) as CountryCodeItem,
-      });
-    }
-  }
+  updateCountryCode = (countryCode: CountryCodeItem) => {
+    this.setState({
+      currentCountryCodeItem: countryCode,
+    });
+  };
 
   getEntryName = (): string => PortkeyEntries.SIGN_IN_ENTRY;
 
@@ -36,7 +34,10 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
   render() {
     return (
       <SafeAreaProvider>
-        <LoginPortkey selectedCountryCode={this.state.currentCountryCodeItem} />
+        <LoginPortkey
+          selectedCountryCode={this.state.currentCountryCodeItem}
+          updateCountryCode={this.updateCountryCode}
+        />
       </SafeAreaProvider>
     );
   }

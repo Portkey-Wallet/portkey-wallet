@@ -1,23 +1,28 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { BGStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
-import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
-import myEvents from 'utils/deviceEvent';
 import styles from '../styles';
 import CommonInput from 'components/CommonInput';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
-// import { useOnLogin } from 'hooks/login';
-import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
-// import { useFocusEffect } from '@react-navigation/native';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { attemptAccountCheck } from 'model/sign-in';
+import { attemptAccountCheck, getRegisterPageData } from 'model/sign-in';
+import ActionSheet from 'components/ActionSheet';
+import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
+import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
+import { PortkeyEntries } from 'config/entries';
+import { GuardianConfig } from 'model/verify/guardian';
+import { EntryResult } from 'service/native-modules';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import useSignUp from 'model/verify/sign-up';
+import { RECAPTCHA_SITE_KEY } from 'global';
 
 const TitleMap = {
   [PageType.login]: {
@@ -37,25 +42,36 @@ export default function Email({
 }) {
   const { t } = useLanguage();
   const iptRef = useRef<any>();
-
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
-  // const onLogin = useOnLogin(type === PageType.login);
+  const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
-  // const onPageLogin = useLockCallback(async () => {
-  //   const message = checkEmail(loginAccount) || undefined;
-  //   setErrorMessage(message);
-  //   if (message) return;
-  //   const loadingKey = Loading.show();
-  //   try {
-  //     await onLogin({ loginAccount: loginAccount as string });
-  //   } catch (error) {
-  //     setErrorMessage(handleErrorMessage(error));
-  //   }
-  //   Loading.hide(loadingKey);
-  // }, [loginAccount, onLogin]);
+  const { navigateForResult } = useBaseContainer({
+    entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
+  });
+  const navigateToGuardianPage = useCallback(
+    (config: GuardianConfig, callback: (result: EntryResult<VerifiedGuardianDoc>) => void) => {
+      navigateForResult<VerifiedGuardianDoc, VerifierDetailsPageProps>(
+        PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+        {
+          params: {
+            deliveredGuardianInfo: JSON.stringify(config),
+          },
+        },
+        callback,
+      );
+    },
+    [navigateForResult],
+  );
+
+  const { isGoogleRecaptchaOpen, sendVerifyCode, handleGuardianVerifyPage } = useSignUp({
+    accountIdentifier: loginAccount ?? '',
+    accountOriginalType: AccountOriginalType.Phone,
+    guardianConfig,
+    navigateToGuardianPage,
+  });
+
   const onPageLogin = useLockCallback(async () => {
     const message = checkEmail(loginAccount) || undefined;
     setErrorMessage(message);
@@ -64,40 +80,116 @@ export default function Email({
     try {
       const accountCheckResult = await attemptAccountCheck(loginAccount as string);
       if (accountCheckResult.hasRegistered) {
-        console.log('aaaa');
+        dealWithSignIn();
       } else {
-        console.log('bbbb');
+        ActionSheet.alert({
+          title: 'Continue with this account?',
+          message: `This account has not been registered yet. Click "Confirm" to complete the registration.`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Confirm',
+              onPress: () => {
+                dealWithSignUp();
+              },
+            },
+          ],
+        });
       }
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));
       Loading.hide(loadingKey);
     }
     Loading.hide(loadingKey);
-  }, []);
+  }, [loginAccount]);
 
-  useEffectOnce(() => {
-    const listener = myEvents[type === PageType.login ? 'clearLoginInput' : 'clearSignupInput'].addListener(() => {
-      setLoginAccount('');
-      setErrorMessage(undefined);
+  const onPageSignup = useLockCallback(async () => {
+    const message = checkEmail(loginAccount) || undefined;
+    setErrorMessage(message);
+    if (message) return;
+    const loadingKey = Loading.show();
+    try {
+      const accountCheckResult = await attemptAccountCheck(loginAccount as string);
+      if (accountCheckResult.hasRegistered) {
+        ActionSheet.alert({
+          title: 'Continue with this account?',
+          message: `This account already exists. Click "Confirm" to log in.`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Confirm',
+              onPress: () => {
+                dealWithSignIn();
+              },
+            },
+          ],
+        });
+      } else {
+        dealWithSignUp();
+      }
+    } catch (error) {
+      setErrorMessage(handleErrorMessage(error));
+      Loading.hide(loadingKey);
+    }
+    Loading.hide(loadingKey);
+  }, [loginAccount]);
+
+  const dealWithSignIn = () => {
+    console.warn(`dealWithSignIn`);
+  };
+
+  const dealWithSignUp = async () => {
+    const accountIdentifier = loginAccount as string;
+    if (!accountIdentifier) throw new Error('accountIdentifier is empty');
+    Loading.show();
+    const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Email, navigateToGuardianPage);
+    setGuardianConfig(pageData.guardianConfig);
+    Loading.hide();
+    ActionSheet.alert({
+      title: '',
+      message: `${
+        pageData.guardianConfig?.name ?? 'Portkey'
+      } will send a verification code to ${accountIdentifier} to verify your phone number.`,
+      buttons: [
+        { title: 'Cancel', type: 'outline' },
+        {
+          title: 'Confirm',
+          onPress: async () => {
+            try {
+              Loading.show();
+              const needRecaptcha = await isGoogleRecaptchaOpen();
+              let token: string | undefined;
+              if (needRecaptcha) {
+                token = (await verifyHumanMachine('en', RECAPTCHA_SITE_KEY, '')) as string;
+              }
+              const sendSuccess = await sendVerifyCode(pageData.guardianConfig, token);
+              if (sendSuccess) {
+                const guardianResult = await handleGuardianVerifyPage();
+                if (!guardianResult) {
+                  setErrorMessage('guardian verify failed, please try again.');
+                  Loading.hide();
+                  return;
+                } else {
+                  // to pin
+                }
+              } else {
+                setErrorMessage('network fail.');
+                Loading.hide();
+              }
+            } catch (e) {
+              setErrorMessage(handleErrorMessage(e));
+              Loading.hide();
+            }
+          },
+        },
+      ],
     });
-    return () => listener.remove();
-  });
+  };
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (!iptRef || !iptRef?.current) return;
-  //     timerRef.current = setTimeout(() => {
-  //       iptRef.current.focus();
-  //     }, 200);
-  //   }, []),
-  // );
-
-  useEffect(
-    () => () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    },
-    [],
-  );
+  const handleEmailChange = (msg: string) => {
+    setLoginAccount(msg);
+    setErrorMessage(undefined);
+  };
 
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>
@@ -111,7 +203,7 @@ export default function Email({
           value={loginAccount}
           type="general"
           autoCorrect={false}
-          onChangeText={setLoginAccount}
+          onChangeText={handleEmailChange}
           errorMessage={errorMessage}
           keyboardType="email-address"
           placeholder={t('Enter Email')}
@@ -122,11 +214,10 @@ export default function Email({
           disabled={!loginAccount}
           type="primary"
           loading={loading}
-          onPress={onPageLogin}>
+          onPress={type === PageType.login ? onPageLogin : onPageSignup}>
           {t(TitleMap[type].button)}
         </CommonButton>
       </View>
-      {/* <TermsServiceButton /> */}
     </View>
   );
 }

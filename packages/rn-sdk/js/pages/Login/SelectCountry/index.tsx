@@ -19,12 +19,17 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { getCachedCountryCodeData } from 'model/sign-in';
 import { GlobalStorage } from 'service/storage';
 import { CURRENT_USING_COUNTRY_CODE } from 'model/sign-in';
-import { portkeyModulesEntity } from 'service/native-modules';
 
 const IndexHeight = 56,
   SectionHeight = 20;
 
-export default function SelectCountry({ selectCountry }: { selectCountry?: CountryItem }) {
+export default function SelectCountry({
+  selectCountry,
+  navigateBack,
+}: {
+  selectCountry?: CountryItem;
+  navigateBack: (item: CountryItem) => void;
+}) {
   const [phoneCountryCodeList, setPhoneCountryCodeList] = useState<CountryItem[]>();
   const [List, setList] = useState();
   const [searchList, setSearchList] = useState<CountryItem[]>();
@@ -50,10 +55,7 @@ export default function SelectCountry({ selectCountry }: { selectCountry?: Count
         style={[styles.itemRow, GStyles.itemCenter, GStyles.spaceBetween]}
         onPress={() => {
           GlobalStorage.set(CURRENT_USING_COUNTRY_CODE, JSON.stringify(item));
-          portkeyModulesEntity.RouterModule.navigateBack('SelectCountry', {
-            status: 'success',
-            data: { name: 'portkey' },
-          });
+          navigateBack(item);
         }}>
         <TextL style={isSelected ? FontStyles.font4 : null}>{item.country}</TextL>
         <TextM style={[FontStyles.font3, isSelected ? FontStyles.font4 : null]}>+ {item.code}</TextM>
@@ -99,6 +101,10 @@ export default function SelectCountry({ selectCountry }: { selectCountry?: Count
       </View>
     </PageContainer>
   );
+}
+
+export interface SelectCountryResult {
+  result: string;
 }
 
 const styles = StyleSheet.create({

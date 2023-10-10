@@ -14,8 +14,8 @@ internal object NavigationHolder {
     internal var lastCachedIntent: Intent? = null
 
 
-    fun pushNewComponent(activity: BasePortkeyReactActivity) {
-        navigationMap[activity.registerEntryName()] = WeakReference(activity)
+    fun pushNewComponent(activity: BasePortkeyReactActivity,entryName:String?) {
+        navigationMap[entryName ?: activity.registerEntryName()] = WeakReference(activity)
     }
 
     fun registerNavigationCallback(callbackId: String, callback: Callback) {

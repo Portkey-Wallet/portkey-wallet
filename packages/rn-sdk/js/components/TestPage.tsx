@@ -107,6 +107,14 @@ export default function Screen(props: any) {
           );
         }}
       />
+      <Button
+        title="GoToLogin"
+        onPress={() => {
+          navigateForResult<unknown, any>(PortkeyEntries.REFERRAL_ENTRY, {}, res => {
+            console.warn('navigate back , status : ' + res.status + ' , data : ' + JSON.stringify(res.data));
+          });
+        }}
+      />
     </View>
   );
 }

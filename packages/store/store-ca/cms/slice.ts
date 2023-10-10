@@ -36,24 +36,22 @@ export const cmsSlice = createSlice({
         };
       })
       .addCase(getDiscoverGroupAsync.fulfilled, (state, action) => {
-        state.discoverGroupListNetMap = {
-          ...state.discoverGroupListNetMap,
-          ...action.payload.discoverGroupListNetMap,
-        };
-
         const newWebSiteMap: { [url: string]: CmsWebsiteMapItem } = {};
         Object.values(action.payload.discoverGroupListNetMap).map(networkData => {
           networkData.map(group => {
             group.items.map(item => {
-              if (!!item.url && !state.cmsWebsiteMap?.[item.url]) {
-                newWebSiteMap[item.url] = {
-                  title: item.title,
-                  imgUrl: item.imgUrl,
-                };
-              }
+              newWebSiteMap[item.url] = {
+                title: item.title,
+                imgUrl: item.imgUrl,
+              };
             });
           });
         });
+
+        state.discoverGroupListNetMap = {
+          ...state.discoverGroupListNetMap,
+          ...action.payload.discoverGroupListNetMap,
+        };
 
         state.cmsWebsiteMap = {
           ...state.cmsWebsiteMap,

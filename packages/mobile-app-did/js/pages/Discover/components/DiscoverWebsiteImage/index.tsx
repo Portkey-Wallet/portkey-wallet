@@ -22,7 +22,7 @@ export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
 
   return (
     <FastImage
-      resizeMode={'contain'}
+      resizeMode={'cover'}
       style={[styles.avatarWrap, sizeStyle, style]}
       source={{ uri: imageUrl }}
       defaultSource={Default_Image}

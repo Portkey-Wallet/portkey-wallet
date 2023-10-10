@@ -323,8 +323,9 @@ export const useGetCmsWebsiteInfo = () => {
   const getCmsWebsiteInfoImageUrl = useCallback(
     (domain: string): string => {
       const target = cmsWebsiteMap?.[domain];
+
       // if in cms
-      if (target) {
+      if (target?.imgUrl) {
         return `${s3Url}/${target?.imgUrl?.filename_disk}`;
       } else {
         return getFaviconUrl(domain);
@@ -336,7 +337,8 @@ export const useGetCmsWebsiteInfo = () => {
   const getCmsWebsiteInfoName = useCallback(
     (domain: string) => {
       const target = cmsWebsiteMap?.[domain];
-      if (target) {
+
+      if (target?.title) {
         return target?.title || '';
       }
       return '';

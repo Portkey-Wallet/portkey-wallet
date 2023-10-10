@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		18AE3C1ADA11DF9B406B91D7 /* libPods-PortkeySDKExample_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95324987DC8BA7DD9AAB7184 /* libPods-PortkeySDKExample_Example.a */; };
+		379965F6D55E5BFD355DFCC8 /* Pods_PortkeySDKExample_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -16,7 +16,6 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
-		ACB2A2D8B4267D612E2747FF /* libPods-PortkeySDKExample_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 24508BB6533260A2569BE6BF /* libPods-PortkeySDKExample_Tests.a */; };
 		EA74A0062AC15B92005A4810 /* JSSDKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA74A0052AC15B92005A4810 /* JSSDKViewController.m */; };
 		EAD432A92ABC29ED00EEA69D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */; };
 		EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */; };
@@ -26,6 +25,7 @@
 		EAD432AE2ABC29ED00EEA69D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD432A42ABC29ED00EEA69D /* main.m */; };
 		EAD432AF2ABC29ED00EEA69D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EAD432A52ABC29ED00EEA69D /* Images.xcassets */; };
 		EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD432A72ABC29ED00EEA69D /* ViewController.m */; };
+		F3F50471043C8974F9A0CC49 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,9 +39,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		120D60A7502DCA5E5DB2F3DC /* Pods-PortkeySDKExample_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Tests.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Tests/Pods-PortkeySDKExample_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		196E2FEA8BA5B37F74410ACE /* Pods-AelfPortkey_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Example.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Example/Pods-AelfPortkey_Example.release.xcconfig"; sourceTree = "<group>"; };
-		24508BB6533260A2569BE6BF /* libPods-PortkeySDKExample_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortkeySDKExample_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PortkeySDKExample_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B8649AAAEF2C57C9DAB9AD /* Pods-PortkeySDKExample_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.release.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.release.xcconfig"; sourceTree = "<group>"; };
 		6003F58A195388D20070C39A /* PortkeySDKExample_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PortkeySDKExample_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -57,7 +58,6 @@
 		82A6DA67C134C4FC8F4392A1 /* Pods-AelfPortkey_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Tests.debug.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Tests/Pods-AelfPortkey_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		868DF6131B624D1805049FD9 /* Pods-AelfPortkey_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Example.debug.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Example/Pods-AelfPortkey_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		95324987DC8BA7DD9AAB7184 /* libPods-PortkeySDKExample_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PortkeySDKExample_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D626B180E2AD432D67A0B86A /* Pods-AelfPortkey_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Tests.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Tests/Pods-AelfPortkey_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		EA74A0042AC15B92005A4810 /* JSSDKViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSDKViewController.h; sourceTree = "<group>"; };
 		EA74A0052AC15B92005A4810 /* JSSDKViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSDKViewController.m; sourceTree = "<group>"; };
@@ -82,7 +82,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				18AE3C1ADA11DF9B406B91D7 /* libPods-PortkeySDKExample_Example.a in Frameworks */,
+				379965F6D55E5BFD355DFCC8 /* Pods_PortkeySDKExample_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,7 +93,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				ACB2A2D8B4267D612E2747FF /* libPods-PortkeySDKExample_Tests.a in Frameworks */,
+				F3F50471043C8974F9A0CC49 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,8 +127,8 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				95324987DC8BA7DD9AAB7184 /* libPods-PortkeySDKExample_Example.a */,
-				24508BB6533260A2569BE6BF /* libPods-PortkeySDKExample_Tests.a */,
+				4309FEAD594FF4BCCCDCC3AB /* Pods_PortkeySDKExample_Example.framework */,
+				059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -206,8 +206,8 @@
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
-				D6587E073E5288711ADDB58F /* [CP] Copy Pods Resources */,
 				EA74A0322AD2B5C6005A4810 /* ShellScript */,
+				6A582D2C5C7FE5B1DC95747A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -322,6 +322,26 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		6A582D2C5C7FE5B1DC95747A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/PortkeySDK/JSBundle.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSBundle.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		7DF994007816945A3CAC8F1C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -362,26 +382,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-PortkeySDKExample_Tests/expo-configure-project.sh\"\n";
-		};
-		D6587E073E5288711ADDB58F /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/PortkeySDK/JSBundle.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSBundle.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-resources.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		EA74A0322AD2B5C6005A4810 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

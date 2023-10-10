@@ -51,19 +51,20 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
       requiredMark={false}>
       <div className="customer-form form-content">
         {!state.restricted && (
-          <>
+          <div className="section-one">
             <FormItem name="restricted" label={t('Transfer Settings')}>
               <div className="flex-start-center">
                 <Switch checked={false} disabled={true} />
                 <div className="switch-text">{'OFF'}</div>
               </div>
             </FormItem>
+            <div className="divide" />
             <div className="limit-tip">{NoLimit}</div>
-          </>
+          </div>
         )}
 
         {state.restricted && (
-          <>
+          <div className="section-two">
             <FormItem name="singleLimit" label={t('Limit per Transaction')}>
               <Input placeholder={t('Enter limit')} disabled={true} />
             </FormItem>
@@ -71,7 +72,7 @@ export default function TransferSettingsBody({ form, state, onEdit }: ITransferS
               <Input placeholder={t('Enter limit')} disabled={true} />
             </FormItem>
             <div className="limit-tip">{SetLimitExplain}</div>
-          </>
+          </div>
         )}
       </div>
 

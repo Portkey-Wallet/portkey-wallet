@@ -62,6 +62,8 @@ export default function TransferSettingsEditBody({
           </div>
         </FormItem>
 
+        <div className="divide" />
+
         <div className={!restrictedValue ? 'hidden-form' : ''}>
           <FormItem
             name="singleLimit"

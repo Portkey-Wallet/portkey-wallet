@@ -25,7 +25,7 @@ class TextProcessor {
       const { pattern, message, callBack } = element;
       if (!pattern) continue;
       if (typeof pattern === 'string') {
-        if (pattern !== value) continue;
+        if (pattern.trim() !== value?.trim()) continue;
         value = callBack ? callBack(value) : message || '';
         break;
       } else {
@@ -40,7 +40,17 @@ class TextProcessor {
   }
 }
 
-const replaceList: ReplaceItem[] = [{ from: 'AElf.Sdk.CSharp.AssertionException:', to: '' }];
+const replaceList: ReplaceItem[] = [
+  { from: 'AElf.Sdk.CSharp.AssertionException: ', to: '' },
+  {
+    from: 'JudgementStrategy validate failed',
+    to: 'The allowance should exceed the combined total of the transfer amount and transaction fee. Please set a higher value.',
+  },
+  {
+    from: 'Processing on the chain...',
+    to: 'This operation cannot be done before guardian info syncing is completed. Please try again later.',
+  },
+];
 
 const patternList: PatternItem[] = [
   // {

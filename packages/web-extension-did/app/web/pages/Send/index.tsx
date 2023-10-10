@@ -26,7 +26,6 @@ import getTransferFee from './utils/getTransferFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
@@ -178,7 +177,7 @@ export default function Send() {
         });
         return feeRes;
       } catch (error) {
-        const _error = contractErrorHandler(error);
+        const _error = handleErrorMessage(error);
         console.log('getFee===error', _error);
       }
     },
@@ -337,7 +336,7 @@ export default function Send() {
         showErrorModal(error.data);
         return;
       } else {
-        message.error(error);
+        message.error(handleErrorMessage(error));
       }
     } finally {
       setLoading(false);

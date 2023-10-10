@@ -2,10 +2,10 @@ import { useCallback } from 'react';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { setGuardiansAction, setVerifierListAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { getVerifierList } from 'utils/sandboxUtil/getVerifierList';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 const useGuardiansList = () => {
   const dispatch = useAppDispatch();
@@ -38,7 +38,7 @@ const useGuardiansList = () => {
         });
         dispatch(setGuardiansAction(res));
       } catch (error: any) {
-        throw contractErrorHandler(error);
+        throw handleErrorMessage(error);
       }
     },
     [dispatch, getChainInfo, getRegisterInfo],

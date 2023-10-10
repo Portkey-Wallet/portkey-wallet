@@ -340,7 +340,10 @@ const SendHome: React.FC = () => {
     // check is security safe
     try {
       const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
-      if (!securitySafeResult) return { status: false };
+      if (!securitySafeResult) {
+        Loading.hide();
+        return { status: false };
+      }
     } catch (err) {
       CommonToast.failError(err);
       Loading.hide();

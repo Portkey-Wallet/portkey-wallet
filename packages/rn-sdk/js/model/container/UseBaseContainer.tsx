@@ -12,7 +12,6 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
     if (rootTag) {
       onShowListener.current?.remove();
       onShowListener.current = PortkeyDeviceEventEmitter.addListener('onShow', tag => {
-        console.warn(`rootTag is : ${rootTag}`);
         if (rootTag === tag) {
           onShow?.();
         }

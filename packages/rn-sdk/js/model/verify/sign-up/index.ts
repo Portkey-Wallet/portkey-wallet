@@ -53,7 +53,7 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
     if (!config.guardianConfig) throw new Error('guardianConfig is not defined');
     config.navigateToGuardianPage(config.guardianConfig, entryResult => {
       if (entryResult.status === 'success') {
-        setVerifiedGuardianInfo(entryResult.result);
+        setVerifiedGuardianInfo(entryResult.data);
       }
     });
   }, [config]);

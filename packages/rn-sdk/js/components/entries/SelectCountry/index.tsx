@@ -38,7 +38,7 @@ export default class SelectCountryEntryPage extends BaseContainer<
   onSelected = (result: SelectCountryPageResult) => {
     this.onCacheData();
     this.onFinish({
-      result,
+      data: result,
       status: 'success',
     });
   };

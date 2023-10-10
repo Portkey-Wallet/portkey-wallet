@@ -21,7 +21,7 @@ export interface RouterModule {
 }
 
 export interface EntryResult<R> {
-  result: R;
+  data: R;
   status: 'success' | 'fail' | 'cancel';
   extraMsg?: { [x: string]: any };
 }

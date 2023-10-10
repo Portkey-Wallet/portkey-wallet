@@ -6,6 +6,7 @@ import { NetworkController } from 'network/controller';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { setPin } from 'pages/Pin/core';
+import { CheckPinResult } from 'pages/Pin/check-pin';
 
 const styles = StyleSheet.create({
   container: {
@@ -93,15 +94,15 @@ export default function Screen(props: any) {
       <Button
         title="GoToSetPin"
         onPress={() => {
-          navigateForResult(
+          navigateForResult<CheckPinResult>(
             PortkeyEntries.CHECK_PIN,
             {
               params: {
                 openBiometrics: false,
               },
             },
-            () => {
-              console.log('navigate back');
+            result => {
+              console.warn('navigate back , status : ' + result.status + ' , data : ' + JSON.stringify(result.data));
             },
           );
         }}

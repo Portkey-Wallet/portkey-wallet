@@ -15,7 +15,6 @@ export default abstract class BaseContainer<
   constructor(props: P) {
     super(props);
     this.onShowEventListener = PortkeyDeviceEventEmitter.addListener('onShow', rootTag => {
-      console.warn(`rootTag is : ${props.rootTag}`);
       if (rootTag === props.rootTag) {
         this.onShow();
       }

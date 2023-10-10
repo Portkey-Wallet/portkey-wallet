@@ -2,21 +2,23 @@ import React, { useCallback, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
-import myEvents from 'utils/deviceEvent';
 import PinContainer from 'components/PinContainer';
 import { StyleSheet } from 'react-native';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
 import { headPin } from '../core';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
 
 export default function CheckPin(props: CheckPinProps) {
-  const { openBiometrics } = props;
+  const { rootTag } = props;
   const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     pinRef.current?.reset();
-  //   }, []),
-  // );
+
+  const { onFinish } = useBaseContainer({
+    rootTag: rootTag,
+    entryName: PortkeyEntries.CHECK_PIN,
+  });
+
   const onChangeText = useCallback(
     (pin: string) => {
       if (pin.length === PIN_SIZE) {
@@ -24,23 +26,24 @@ export default function CheckPin(props: CheckPinProps) {
           pinRef.current?.reset();
           return setErrorMessage(PinErrorMessage.invalidPin);
         }
-        if (openBiometrics) {
-          myEvents.openBiometrics.emit(pin);
-          // navigationService.goBack();
-        } else {
-          // navigationService.navigate('SetPin', { oldPin: pin });
-        }
+        onFinish<CheckPinResult>({
+          status: 'success',
+          data: {
+            pin,
+          },
+        });
       } else if (errorMessage) {
         setErrorMessage(undefined);
       }
     },
-    [errorMessage, openBiometrics],
+    [errorMessage, onFinish],
   );
+
   return (
     <PageContainer
       titleDom
       type="leftBack"
-      backTitle={!openBiometrics ? 'Change Pin' : 'Authentication'}
+      backTitle={'back'}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
       <PinContainer showHeader ref={pinRef} title="Enter Pin" errorMessage={errorMessage} onChangeText={onChangeText} />
@@ -49,7 +52,11 @@ export default function CheckPin(props: CheckPinProps) {
 }
 
 export interface CheckPinProps {
-  openBiometrics?: boolean;
+  rootTag: any;
+}
+
+export interface CheckPinResult {
+  pin: string;
 }
 
 const styles = StyleSheet.create({

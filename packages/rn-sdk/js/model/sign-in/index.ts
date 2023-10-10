@@ -14,8 +14,10 @@ export const CURRENT_USING_COUNTRY_CODE = 'currentUsingCountryCode';
 
 export const attemptAccountCheck = async (accountIdentifier: string): Promise<AccountCheckResult> => {
   const registerResultDTO = await NetworkController.getRegisterResult(accountIdentifier);
+  console.error(JSON.stringify(registerResultDTO));
   if (registerResultDTO?.result) {
     const { originChainId } = registerResultDTO.result;
+    console.error(`originChainId : ${originChainId}`);
     originChainId && setCurrChainId(originChainId as any);
     const guardianResultDTO = await NetworkController.getAccountIdentifierResult(originChainId, accountIdentifier);
     return {

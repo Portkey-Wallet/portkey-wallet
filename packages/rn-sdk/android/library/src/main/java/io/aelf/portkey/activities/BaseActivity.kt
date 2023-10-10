@@ -14,6 +14,10 @@ import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
 import io.aelf.portkey.native_modules.NativeWrapperModule
 import io.aelf.portkey.navigation.NavigationHolder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 abstract class BasePortkeyReactActivity : ReactActivity() {
     override fun getMainComponentName(): String = this.registerEntryName()
@@ -29,7 +33,10 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                     ?: PortkeyEntries.TEST.entryName
             this.params = intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS) ?: Bundle()
         }
-        NavigationHolder.pushNewComponent(this)
+        NavigationHolder.pushNewComponent(
+            this,
+            NavigationHolder.lastCachedIntent?.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
+        )
     }
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {
@@ -57,11 +64,14 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
             override fun onResume() {
                 super.onResume()
-                NativeWrapperModule.instance?.sendGeneralEvent(
-                    "onShow",
-                    Arguments.createMap().apply {
-                        this.putInt("rootTag",getRootTag())
-                    })
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(200)
+                    NativeWrapperModule.instance?.sendGeneralEvent(
+                        "onShow",
+                        Arguments.createMap().apply {
+                            this.putInt("rootTag", getRootTag())
+                        })
+                }
             }
         }
     }

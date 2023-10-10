@@ -1,5 +1,5 @@
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Touchable from 'components/Touchable';
 import PageContainer from 'components/PageContainer';
@@ -8,36 +8,28 @@ import GStyles from 'assets/theme/GStyles';
 import IndexBarLargeList from 'components/CommonLargeList/IndexBarLargeList';
 import CommonInput from 'components/CommonInput';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
-import myEvents from 'utils/deviceEvent';
-import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { TextL, TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import NoData from 'components/NoData';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
-import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
-import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
+import { getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { getCachedCountryCodeData } from 'model/sign-in';
 import { GlobalStorage } from 'service/storage';
 import { CURRENT_USING_COUNTRY_CODE } from 'model/sign-in';
-import { portkeyModulesEntity } from 'service/native-modules';
 
 const IndexHeight = 56,
   SectionHeight = 20;
 
-export default function SelectCountry({ selectCountry }: { selectCountry?: CountryItem }) {
-  // const { selectCountry } = useRouterParams<{ selectCountry?: CountryItem }>();
-
-  // const {
-  //   phoneCountryCodeIndex: countryCodeIndex,
-  //   phoneCountryCodeList,
-  //   setLocalPhoneCountryCode,
-  // } = usePhoneCountryCode();
-  // const List = useMemo(() => countryCodeIndex.map(i => ({ index: i[0], items: i[1] })), [countryCodeIndex]);
-
+export default function SelectCountry({
+  selectCountry,
+  navigateBack,
+}: {
+  selectCountry?: CountryItem;
+  navigateBack: (item: CountryItem) => void;
+}) {
   const [List, setList] = useState();
   const [countryCodeIndex, setCountryCodeIndex] = useState();
   const [searchList, setSearchList] = useState<CountryItem[]>();
@@ -66,10 +58,7 @@ export default function SelectCountry({ selectCountry }: { selectCountry?: Count
         style={[styles.itemRow, GStyles.itemCenter, GStyles.spaceBetween]}
         onPress={() => {
           GlobalStorage.set(CURRENT_USING_COUNTRY_CODE, JSON.stringify(item));
-          portkeyModulesEntity.RouterModule.navigateBack('SelectCountry', {
-            status: 'success',
-            data: { name: 'portkey' },
-          });
+          navigateBack(item);
         }}>
         <TextL style={isSelected ? FontStyles.font4 : null}>{item.country}</TextL>
         <TextM style={[FontStyles.font3, isSelected ? FontStyles.font4 : null]}>+ {item.code}</TextM>
@@ -118,6 +107,10 @@ export default function SelectCountry({ selectCountry }: { selectCountry?: Count
       </View>
     </PageContainer>
   );
+}
+
+export interface SelectCountryResult {
+  result: string;
 }
 
 const styles = StyleSheet.create({

@@ -27,3 +27,9 @@ export interface CountryCodeItem {
   code: string; // example: "+52"
   iso: string;
 }
+
+export const defaultCountryCode: CountryCodeItem = {
+  country: 'Singapore',
+  code: '65',
+  iso: 'SG',
+};

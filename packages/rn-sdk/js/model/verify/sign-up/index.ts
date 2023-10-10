@@ -49,12 +49,21 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
     return await NetworkController.isGoogleRecaptchaOpen(OperationTypeEnum.register);
   };
 
-  const goToGuardianVerifyPage = useCallback(() => {
-    if (!config.guardianConfig) throw new Error('guardianConfig is not defined');
-    config.navigateToGuardianPage(config.guardianConfig, entryResult => {
-      if (entryResult.status === 'success') {
-        setVerifiedGuardianInfo(entryResult.data);
-      }
+  const handleGuardianVerifyPage = useCallback(async (): Promise<boolean> => {
+    const { guardianConfig } = config;
+    if (!guardianConfig) {
+      console.error('guardianConfig is not defined.');
+      return false;
+    }
+    return new Promise(resolve => {
+      config.navigateToGuardianPage(guardianConfig, result => {
+        if (result && result.data) {
+          setVerifiedGuardianInfo(result.data);
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
     });
   }, [config]);
 
@@ -63,7 +72,7 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
     getVerifiedData,
     isGoogleRecaptchaOpen,
     sendVerifyCode,
-    goToGuardianVerifyPage,
+    handleGuardianVerifyPage,
   };
 };
 
@@ -72,7 +81,7 @@ export interface SignUpHooks {
   getVerifiedData: () => Partial<AfterVerifiedConfig>;
   isGoogleRecaptchaOpen: () => Promise<boolean>;
   sendVerifyCode: (googleRecaptchaToken?: string) => Promise<boolean>;
-  goToGuardianVerifyPage: () => void;
+  handleGuardianVerifyPage: () => Promise<boolean>;
 }
 
 export interface SignUpConfig {

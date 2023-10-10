@@ -1,34 +1,28 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
-import myEvents from 'utils/deviceEvent';
 import styles from '../styles';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
-import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
-// import { useOnLogin } from 'hooks/login';
 import PhoneInput from 'components/PhoneInput';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
-import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { getCachedCountryCodeData, attemptAccountCheck } from 'model/sign-in';
-import { CountryCodeItem } from 'types/wallet';
+import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import ActionSheet from 'components/ActionSheet';
-import { EntryResult, RouterOptions, portkeyModulesEntity } from 'service/native-modules';
+import { EntryResult } from 'service/native-modules';
 import { PortkeyEntries } from 'config/entries';
 import { getRegisterPageData } from 'model/sign-in';
 import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
-import useSignUp, { SignUpConfig } from 'model/verify/sign-up';
+import useSignUp from 'model/verify/sign-up';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { AcceptableValueType } from 'model/container/BaseContainer';
 import { GuardianConfig } from 'model/verify/guardian';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
+import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 
 const TitleMap = {
   [PageType.login]: {
@@ -43,10 +37,12 @@ export default function Phone({
   setLoginType,
   type = PageType.login,
   selectedCountryCode,
+  updateCountryCode,
 }: {
   setLoginType: (type: PageLoginType) => void;
   type?: PageType;
   selectedCountryCode?: CountryCodeItem | null;
+  updateCountryCode?: (item: CountryCodeItem) => void;
 }) {
   const { t } = useLanguage();
   const [loading] = useState<boolean>();
@@ -56,12 +52,17 @@ export default function Phone({
 
   const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
+  const { navigateForResult } = useBaseContainer({
+    entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
+  });
+
   useEffectOnce(() => {
     const countryDTO = getCachedCountryCodeData();
     setCountry(countryDTO?.locateData);
   });
   const getWrappedPhoneNumber = useCallback(() => {
-    return `+${(selectedCountryCode ?? country).code}${loginAccount}`;
+    const countryCode = (selectedCountryCode ?? country ?? defaultCountryCode)?.code;
+    return `+${countryCode}${loginAccount}`;
   }, [loginAccount, country, selectedCountryCode]);
 
   const navigateToGuardianPage = useCallback(
@@ -76,27 +77,23 @@ export default function Phone({
         callback,
       );
     },
-    [],
+    [navigateForResult],
   );
 
-  const { isVerified, getVerifiedData, isGoogleRecaptchaOpen, sendVerifyCode, goToGuardianVerifyPage } = useSignUp({
+  const { isGoogleRecaptchaOpen, sendVerifyCode, handleGuardianVerifyPage } = useSignUp({
     accountIdentifier: getWrappedPhoneNumber(),
     accountOriginalType: AccountOriginalType.Phone,
     guardianConfig,
     navigateToGuardianPage,
   });
 
-  const { navigateForResult } = useBaseContainer({
-    entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
-  });
-
   const onPageLogin = async () => {
     const loadingKey = Loading.show();
     try {
-      const currentCountryCodeItem = selectedCountryCode ?? country;
+      const currentCountryCodeItem = selectedCountryCode ?? country ?? defaultCountryCode;
       const accountCheckResult = await attemptAccountCheck(`+${currentCountryCodeItem.code}${loginAccount}`);
       if (accountCheckResult.hasRegistered) {
-        console.log('aaaa');
+        // log in
       } else {
         ActionSheet.alert({
           title: 'Continue with this account?',
@@ -106,10 +103,7 @@ export default function Phone({
             {
               title: 'Confirm',
               onPress: () => {
-                portkeyModulesEntity.RouterModule.navigateTo(
-                  PortkeyEntries.SIGN_UP_ENTRY,
-                  PortkeyEntries.SIGN_IN_ENTRY,
-                );
+                dealWithSignUp();
               },
             },
           ],
@@ -125,8 +119,10 @@ export default function Phone({
   const onPageSignup = async () => {
     const loadingKey = Loading.show();
     try {
-      const currentCountryCodeItem = selectedCountryCode ?? country;
+      const currentCountryCodeItem = selectedCountryCode ?? country ?? defaultCountryCode;
+      Loading.show();
       const accountCheckResult = await attemptAccountCheck(`+${currentCountryCodeItem.code}${loginAccount}`);
+      Loading.hide();
       if (accountCheckResult.hasRegistered) {
         ActionSheet.alert({
           title: 'Continue with this account?',
@@ -136,33 +132,69 @@ export default function Phone({
             {
               title: 'Confirm',
               onPress: () => {
-                // log in
+                dealWithSignIn();
               },
             },
           ],
         });
       } else {
-        // sign up
-        const accountIdentifier = `+${(selectedCountryCode ?? country).code}${loginAccount}`;
-        const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Phone);
-        setGuardianConfig(pageData.guardianConfig);
-        // wait for setState() finish
-
-        // if (pageDataResult) {
-        //   Loading.hide(loadingKey);
-        //   portkeyModulesEntity.RouterModule.navigateToWithOptions(
-        //     PortkeyEntries.VERIFIER_DETAIL_ENTRY,
-        //     PortkeyEntries.SIGN_UP_ENTRY,
-        //     pageDataResult,
-        //     () => {},
-        //   );
-        // }
+        dealWithSignUp();
       }
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));
       Loading.hide(loadingKey);
     }
     Loading.hide(loadingKey);
+  };
+
+  const dealWithSignUp = async (): Promise<void> => {
+    // sign up
+    const accountIdentifier = getWrappedPhoneNumber();
+    const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Phone, navigateToGuardianPage);
+    setGuardianConfig(pageData.guardianConfig);
+    ActionSheet.alert({
+      title: '',
+      message: `${
+        pageData.guardianConfig?.name ?? 'Portkey'
+      } will send a verification code to ${accountIdentifier} to verify your phone number.`,
+      buttons: [
+        { title: 'Cancel', type: 'outline' },
+        {
+          title: 'Confirm',
+          onPress: async () => {
+            try {
+              Loading.show();
+              const needRecaptcha = await isGoogleRecaptchaOpen();
+              let token: string | undefined;
+              if (needRecaptcha) {
+                token = (await verifyHumanMachine('en')) as string;
+              }
+              const sendSuccess = await sendVerifyCode(token);
+              if (sendSuccess) {
+                const guardianResult = await handleGuardianVerifyPage();
+                if (!guardianResult) {
+                  setErrorMessage('guardian verify failed, please try again.');
+                  Loading.hide();
+                  return;
+                } else {
+                  dealWithSignIn();
+                }
+              } else {
+                setErrorMessage('network fail.');
+                Loading.hide();
+              }
+            } catch (e) {
+              setErrorMessage(handleErrorMessage(e));
+              Loading.hide();
+            }
+          },
+        },
+      ],
+    });
+  };
+
+  const dealWithSignIn = () => {
+    console.warn(`dealWithSignIn`);
   };
 
   return (
@@ -183,6 +215,7 @@ export default function Phone({
           errorMessage={errorMessage}
           containerStyle={styles.inputContainerStyle}
           onChangeText={setLoginAccount}
+          onCountryChange={updateCountryCode}
           selectCountry={selectedCountryCode ?? country}
         />
 

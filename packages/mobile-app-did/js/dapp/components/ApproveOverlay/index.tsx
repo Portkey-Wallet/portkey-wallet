@@ -172,7 +172,7 @@ const ApproveModal = (props: SignModalPropsType) => {
             </Touchable>
           }
         />
-        <TextM style={[FontStyles.font3, GStyles.marginTop(pTd(24))]}>
+        <TextM style={[FontStyles.font3]}>
           {`Please set a reasonable value as the allowance for this DApp. Then you can click "Authorize" to request guardian approval.`}
         </TextM>
       </View>

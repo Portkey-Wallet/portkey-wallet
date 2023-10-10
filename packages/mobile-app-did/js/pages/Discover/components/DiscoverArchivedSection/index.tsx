@@ -98,7 +98,7 @@ export function DiscoverArchivedSection() {
                     <View style={styles.tabItemContent}>
                       <DiscoverWebsiteImage size={pTd(40)} imageUrl={getCmsWebsiteInfoImageUrl(item.url)} />
                       <TextS style={[styles.websiteName]} numberOfLines={2}>
-                        {getCmsWebsiteInfoName(item?.name) || item?.name || item?.url}
+                        {getCmsWebsiteInfoName(item?.url) || item?.name || item?.url}
                       </TextS>
                     </View>
                   </TouchableOpacity>

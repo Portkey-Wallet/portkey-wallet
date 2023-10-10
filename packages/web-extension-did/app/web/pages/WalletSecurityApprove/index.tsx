@@ -1,6 +1,6 @@
 import { SecurityCheck } from '@portkey/did-ui-react';
 import { useNavigate } from 'react-router';
-import { closePrompt } from 'utils/lib/serviceWorkerAction';
+import { closeTabPrompt } from 'utils/lib/serviceWorkerAction';
 import errorHandler from 'utils/errorHandler';
 import usePromptSearch from 'hooks/usePromptSearch';
 import { Button } from 'antd';
@@ -21,7 +21,7 @@ export default function WalletSecurityApprove() {
           <SecurityCheck
             onConfirm={() => navigate('/setting/guardians')}
             onCancel={() => {
-              closePrompt(errorHandler(200001));
+              closeTabPrompt(errorHandler(200003));
             }}
           />
         </div>
@@ -38,7 +38,7 @@ export default function WalletSecurityApprove() {
             className="sync-button"
             type="primary"
             onClick={() => {
-              closePrompt({
+              closeTabPrompt({
                 ...errorHandler(0),
                 data: 'Syncing guardian info, which may take 1-2 minutes. Please try again later.',
               });

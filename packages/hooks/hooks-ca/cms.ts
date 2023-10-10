@@ -325,7 +325,7 @@ export const useGetCmsWebsiteInfo = () => {
       const target = cmsWebsiteMap?.[domain];
 
       // if in cms
-      if (target?.imgUrl) {
+      if (target?.imgUrl?.filename_disk) {
         return `${s3Url}/${target?.imgUrl?.filename_disk}`;
       } else {
         return getFaviconUrl(domain);

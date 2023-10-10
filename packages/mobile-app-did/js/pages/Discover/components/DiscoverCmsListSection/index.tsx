@@ -11,6 +11,7 @@ import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { pTd } from 'utils/unit';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import fonts from 'assets/theme/fonts';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 
 export function DiscoverCmsListSection() {
   const GroupList = useDiscoverGroupList();
@@ -37,7 +38,14 @@ export function DiscoverCmsListSection() {
           <View style={styles.itemsGroup}>
             {group.items.map((item, i) => (
               <TouchableOpacity key={i} style={styles.itemWrap} onPress={() => onClickJump(item)}>
-                <Image style={styles.image} source={{ uri: `${s3Url}/${item?.imgUrl?.filename_disk}` }} />
+                <Image
+                  style={styles.image}
+                  source={{
+                    uri: item?.imgUrl?.filename_disk
+                      ? `${s3Url}/${item?.imgUrl?.filename_disk}`
+                      : getFaviconUrl(item.url),
+                  }}
+                />
                 <View style={styles.right}>
                   <TextWithProtocolIcon textFontSize={pTd(16)} title={item?.title} url={item.url} />
                   <TextS style={FontStyles.font7} numberOfLines={1} ellipsizeMode="tail">

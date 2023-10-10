@@ -23,6 +23,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { GuardianConfig } from 'model/verify/guardian';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 
 const TitleMap = {
   [PageType.login]: {
@@ -67,14 +68,18 @@ export default function Phone({
 
   const navigateToGuardianPage = useCallback(
     (config: GuardianConfig, callback: (result: EntryResult<VerifiedGuardianDoc>) => void) => {
-      navigateForResult<VerifiedGuardianDoc, VerifierDetailsPageProps>(
+      navigateForResult<VerifyPageResult, VerifierDetailsPageProps>(
         PortkeyEntries.VERIFIER_DETAIL_ENTRY,
         {
           params: {
             deliveredGuardianInfo: JSON.stringify(config),
           },
         },
-        callback,
+        res => {
+          Loading.hide();
+          const { data } = res;
+          callback(data?.verifiedData ? JSON.parse(data.verifiedData) : null);
+        },
       );
     },
     [navigateForResult],

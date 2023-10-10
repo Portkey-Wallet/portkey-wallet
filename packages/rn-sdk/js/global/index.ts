@@ -14,7 +14,7 @@ export interface PortkeyConfigInterface {
 }
 
 export const PortkeyConfig: PortkeyConfigInterface = {
-  endPointUrl: EndPoints.TEST2,
+  endPointUrl: EndPoints.MAIN_NET,
   currChainId: 'AELF',
 };
 

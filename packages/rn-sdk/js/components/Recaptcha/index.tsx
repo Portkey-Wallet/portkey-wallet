@@ -84,7 +84,7 @@ const Recaptcha = forwardRef(function Recaptcha(
   const isInvisibleSize = size === 'invisible';
 
   const html = useMemo(() => {
-    return getTemplate(
+    const htmlStr = getTemplate(
       {
         siteKey,
         size,
@@ -97,6 +97,7 @@ const Recaptcha = forwardRef(function Recaptcha(
       gstaticDomain,
       hideBadge,
     );
+    return htmlStr;
   }, [siteKey, size, theme, lang, action, enterprise, recaptchaDomain, gstaticDomain, hideBadge]);
 
   const handleLoad = useCallback(
@@ -126,6 +127,7 @@ const Recaptcha = forwardRef(function Recaptcha(
 
   const handleMessage = useCallback(
     (content: WebViewMessageEvent) => {
+      console.error('content', content.nativeEvent.data);
       try {
         const payload = JSON.parse(content.nativeEvent.data);
 

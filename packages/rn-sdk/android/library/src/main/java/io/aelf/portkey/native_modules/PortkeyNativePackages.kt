@@ -6,6 +6,10 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage
+
+
+
 
 internal class PortkeyNativePackages : ReactPackage {
     override fun createNativeModules(reactApplicationContext: ReactApplicationContext): MutableList<NativeModule> {

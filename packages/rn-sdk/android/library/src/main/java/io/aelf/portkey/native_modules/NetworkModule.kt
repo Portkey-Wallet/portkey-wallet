@@ -1,8 +1,8 @@
 package io.aelf.portkey.native_modules
 
+import android.util.Log
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
@@ -36,7 +36,12 @@ internal class NetworkModule(context: ReactApplicationContext) :
                     ResultWrapper(-1)
                 }
             }
-            jSPromiseHandle.resolve(result.toJsonString())
+            val resultStr = result.toJsonString()
+            Log.w(
+                "NetworkModule",
+                "url:${url},headers:${headers.toHashMap()},params:${params.toHashMap()},result:${resultStr}"
+            )
+            jSPromiseHandle.resolve(resultStr)
         }
     }
 

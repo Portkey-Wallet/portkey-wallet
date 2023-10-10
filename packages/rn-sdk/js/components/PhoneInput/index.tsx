@@ -27,7 +27,6 @@ export default function PhoneInput({ selectCountry, onCountryChange, ...inputPro
       PortkeyEntries.SIGN_IN_ENTRY,
       { selectCountry: JSON.stringify(selectCountry) } as any,
       res => {
-        console.error('here');
         onCountryChange?.(JSON.parse(res.data.result));
       },
     );

@@ -23,7 +23,6 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { GuardianConfig } from 'model/verify/guardian';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { RECAPTCHA_SITE_KEY } from 'global';
 
 const TitleMap = {
   [PageType.login]: {
@@ -169,7 +168,7 @@ export default function Phone({
               const needRecaptcha = await isGoogleRecaptchaOpen();
               let token: string | undefined;
               if (needRecaptcha) {
-                token = (await verifyHumanMachine('en', RECAPTCHA_SITE_KEY, '')) as string;
+                token = (await verifyHumanMachine('en')) as string;
               }
               const sendSuccess = await sendVerifyCode(pageData.guardianConfig, token);
               if (sendSuccess) {

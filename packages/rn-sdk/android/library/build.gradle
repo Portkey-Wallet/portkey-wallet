@@ -77,6 +77,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.tencent/mmkv
     implementation 'com.tencent:mmkv:1.3.1'
 
+    implementation project(':react-native-config')
+
 
 }
 
@@ -87,4 +89,7 @@ preBuild.doFirst {
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
 

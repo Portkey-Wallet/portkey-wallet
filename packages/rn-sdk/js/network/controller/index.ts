@@ -61,7 +61,6 @@ export class NetworkControllerEntity {
     const res = await this.realExecute<boolean>(this.parseUrl(APIPaths.CHECK_GOOGLE_RECAPTCHA), 'POST', {
       operationType,
     });
-    console.error('isGoogleRecaptchaOpen', JSON.stringify(res));
     return res?.result ?? false;
   };
 

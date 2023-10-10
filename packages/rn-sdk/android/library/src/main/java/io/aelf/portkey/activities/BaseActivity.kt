@@ -23,6 +23,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     override fun getMainComponentName(): String = this.registerEntryName()
 
     private var entryName: String = PortkeyEntries.TEST.entryName
+    private var callbackId: String = NO_CALLBACK_METHOD
     private var params: Bundle = Bundle()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +33,8 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                 intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
                     ?: PortkeyEntries.TEST.entryName
             this.params = intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS) ?: Bundle()
+            this.callbackId =
+                intent.getStringExtra(StorageIdentifiers.PAGE_CALLBACK_ID) ?: NO_CALLBACK_METHOD
         }
         NavigationHolder.pushNewComponent(
             this,
@@ -80,8 +83,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         return this.entryName
     }
 
-    private fun getCallbackId(): String =
-        this.params.getString(StorageIdentifiers.PAGE_CALLBACK_ID, NO_CALLBACK_METHOD)
+    private fun getCallbackId(): String = callbackId
 
     fun navigateBackWithResult(result: ReadableMap) {
         NavigationHolder.invokeAnnotatedCallback(getCallbackId()) {

@@ -1,29 +1,38 @@
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import { PortkeyEntries } from '../../../config/entries';
-import BaseContainer, { BaseContainerProps, BaseContainerState } from '../../../model/container/BaseContainer';
+import BaseContainer, { BaseContainerProps } from '../../../model/container/BaseContainer';
 import VerifierDetails from 'pages/Guardian/VerifierDetails';
 import React from 'react';
-import { Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AccountOriginalType } from 'model/verify/after-verify';
+import { GuardianConfig } from 'model/verify/guardian';
 
 export default class VerifierDetailsEntryPage extends BaseContainer<
   VerifierDetailsPageProps,
-  BaseContainerState,
+  VerifierDetailsPageState,
   VerifierDetailsPageResult
 > {
   constructor(props: VerifierDetailsPageProps) {
     super(props);
-    this.state = {};
+    const { deliveredGuardianInfo } = props;
+    if (!deliveredGuardianInfo) throw new Error('guardianConfig is null!');
+    this.state = {
+      guardianConfig: JSON.parse(deliveredGuardianInfo),
+    };
   }
 
   getEntryName = (): string => PortkeyEntries.VERIFIER_DETAIL_ENTRY;
 
   render() {
-    const { accountIdentifier, accountOriginalType } = this.props;
+    const { guardianConfig } = this.state;
+    const { accountIdentifier, accountOriginalType } = guardianConfig;
     return (
       <SafeAreaProvider>
-        <VerifierDetails accountIdentifier={accountIdentifier} accountOriginalType={accountOriginalType} />
+        <VerifierDetails
+          accountIdentifier={accountIdentifier}
+          accountOriginalType={accountOriginalType}
+          guardianConfig={guardianConfig}
+        />
       </SafeAreaProvider>
     );
   }
@@ -34,6 +43,10 @@ export interface VerifierDetailsPageProps extends BaseContainerProps {
   accountIdentifier: string;
   accountOriginalType: AccountOriginalType;
   deliveredGuardianInfo: string; // GuardianConfig
+}
+
+export interface VerifierDetailsPageState {
+  guardianConfig: GuardianConfig;
 }
 
 export interface VerifierDetailsPageResult {}

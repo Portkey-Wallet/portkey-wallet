@@ -148,7 +148,7 @@ export default function Email({
       title: '',
       message: `${
         pageData.guardianConfig?.name ?? 'Portkey'
-      } will send a verification code to ${accountIdentifier} to verify your phone number.`,
+      } will send a verification code to ${accountIdentifier} to verify your email.`,
       buttons: [
         { title: 'Cancel', type: 'outline' },
         {
@@ -161,9 +161,14 @@ export default function Email({
               if (needRecaptcha) {
                 token = (await verifyHumanMachine('en')) as string;
               }
-              const sendSuccess = await sendVerifyCode(pageData.guardianConfig, token);
-              if (sendSuccess) {
-                const guardianResult = await handleGuardianVerifyPage();
+              const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
+              if (sendResult) {
+                const guardianResult = await handleGuardianVerifyPage(
+                  Object.assign({}, pageData.guardianConfig, {
+                    verifySessionId: sendResult.verifierSessionId,
+                  } as Partial<GuardianConfig>),
+                  true,
+                );
                 if (!guardianResult) {
                   setErrorMessage('guardian verify failed, please try again.');
                   Loading.hide();

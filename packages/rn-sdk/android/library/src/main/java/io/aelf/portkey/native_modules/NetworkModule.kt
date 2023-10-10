@@ -39,7 +39,7 @@ internal class NetworkModule(context: ReactApplicationContext) :
             val resultStr = result.toJsonString()
             Log.w(
                 "NetworkModule",
-                "url:${url},headers:${headers.toHashMap()},params:${params.toHashMap()},result:${resultStr}"
+                "url:${url}, headers:${headers.toHashMap()}, params:${params.toHashMap()}, result:${resultStr}"
             )
             jSPromiseHandle.resolve(resultStr)
         }

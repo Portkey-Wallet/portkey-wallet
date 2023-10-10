@@ -170,9 +170,14 @@ export default function Phone({
               if (needRecaptcha) {
                 token = (await verifyHumanMachine('en')) as string;
               }
-              const sendSuccess = await sendVerifyCode(pageData.guardianConfig, token);
-              if (sendSuccess) {
-                const guardianResult = await handleGuardianVerifyPage();
+              const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
+              if (sendResult) {
+                const guardianResult = await handleGuardianVerifyPage(
+                  Object.assign({}, pageData.guardianConfig, {
+                    verifySessionId: sendResult.verifierSessionId,
+                  } as Partial<GuardianConfig>),
+                  true,
+                );
                 if (!guardianResult) {
                   setErrorMessage('guardian verify failed, please try again.');
                   Loading.hide();

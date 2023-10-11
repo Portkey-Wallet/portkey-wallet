@@ -3,7 +3,7 @@ import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, Text } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
 import { BorderStyles, FontStyles } from 'assets/theme/styles';
@@ -30,6 +30,8 @@ import { PortkeyEntries } from 'config/entries';
 import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
+import { defaultColors } from 'assets/theme';
+import CommonToast from 'components/CommonToast';
 
 export default function GuardianApproval({
   guardianListConfig,
@@ -114,7 +116,17 @@ export default function GuardianApproval({
   };
 
   const particularButton = (guardian: GuardianConfig, key: string) => {
-    return (
+    const isVerified = guardiansStatus?.[key]?.status === VerifyStatus.Verified;
+    const getTitle = () => {
+      if (sentGuardianKeys.has(key)) {
+        return 'Verify';
+      } else {
+        return 'Send';
+      }
+    };
+    return isVerified ? (
+      <Text style={styles.confirmedButtonText}>Confirmed</Text>
+    ) : (
       <CommonButton
         onPress={() => {
           dealWithParticularGuardian(guardian, key);
@@ -122,8 +134,8 @@ export default function GuardianApproval({
         disabled={false}
         containerStyle={styles.activityButton}
         titleStyle={styles.activityButtonText}
-        type="primary"
-        title={sentGuardianKeys.has(key) ? 'Verify' : 'Send'}
+        type={isVerified ? 'clear' : 'primary'}
+        title={getTitle()}
       />
     );
   };
@@ -138,10 +150,12 @@ export default function GuardianApproval({
         true,
         key,
       );
-      if (!guardianResult) {
-        Loading.hide();
+      if (guardianResult) {
+        setGuardianStatus(key, { status: VerifyStatus.Verified });
         return;
       } else {
+        CommonToast.fail('guardian verify failed, please try again.');
+        Loading.hide();
       }
     } else {
       ActionSheet.alert({
@@ -177,15 +191,15 @@ export default function GuardianApproval({
                     true,
                     key,
                   );
-                  if (!guardianResult) {
-                    Loading.hide();
+                  if (guardianResult) {
+                    setGuardianStatus(key, { status: VerifyStatus.Verified });
                     return;
-                  } else {
                   }
-                } else {
-                  Loading.hide();
                 }
+                CommonToast.fail('guardian verify failed, please try again.');
+                Loading.hide();
               } catch (e) {
+                CommonToast.fail('network fail.');
                 Loading.hide();
               }
             },
@@ -297,6 +311,9 @@ export default function GuardianApproval({
     </PageContainer>
   );
 }
+
+const { primaryColor } = defaultColors;
+
 const styles = StyleSheet.create({
   containerStyle: {
     paddingTop: 8,
@@ -307,13 +324,28 @@ const styles = StyleSheet.create({
   },
   activityButton: {
     height: 24,
+    width: 56,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: primaryColor,
+  },
+  confirmButton: {
+    height: 24,
+    width: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
   activityButtonText: {
     color: '#fff',
     fontSize: 12,
     lineHeight: 16,
+  },
+  confirmedButtonText: {
+    color: 'green',
+    fontSize: 12,
+    lineHeight: 16,
+    backgroundColor: '#fff',
   },
   expireText: {
     marginTop: 8,

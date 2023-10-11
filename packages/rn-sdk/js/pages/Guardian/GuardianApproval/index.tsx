@@ -23,7 +23,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
 import Loading from 'components/Loading';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { isReacptchaOpen } from 'model/sign-in';
+import { GuardianTypeStrToEnum, isReacptchaOpen } from 'model/sign-in';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
@@ -106,7 +106,7 @@ export default function GuardianApproval({
         ...item,
         guardianAccount: accountIdentifier,
         isLoginAccount: item.isLoginGuardian,
-        guardianType: item.accountOriginalType as any,
+        guardianType: GuardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
         key: `${index}`,
         identifierHash: '',
       } as UserGuardianItem;

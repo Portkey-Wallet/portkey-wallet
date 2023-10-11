@@ -81,7 +81,7 @@ export const getRegisterPageData = async (
   };
 };
 
-export const getSocialRegisterPageData = async (
+export const getSocialRecoveryPageData = async (
   accountIdentifier: string,
   accountOriginalType: AccountOriginalType,
 ): Promise<SocialRecoveryConfig> => {
@@ -96,7 +96,7 @@ export const getSocialRegisterPageData = async (
       name: guardian.name ?? 'Portkey',
       imageUrl: guardian.imageUrl ?? '',
       sendVerifyCodeParams: {
-        type: AccountOriginalType[accountOriginalType] as AccountOrGuardianOriginalTypeStr,
+        type: guardian.type as any,
         guardianIdentifier: accountIdentifier,
         verifierId: guardian.verifierId,
         chainId: PortkeyConfig.currChainId,
@@ -104,6 +104,28 @@ export const getSocialRegisterPageData = async (
       },
     })),
   };
+};
+
+enum GuardianType {
+  Email,
+  Phone,
+  Google,
+  Apple,
+}
+
+export const GuardianTypeStrToEnum = (guardianType: AccountOrGuardianOriginalTypeStr): GuardianType => {
+  switch (guardianType) {
+    case 'Email':
+      return GuardianType.Email;
+    case 'Phone':
+      return GuardianType.Phone;
+    case 'Google':
+      return GuardianType.Google;
+    case 'Apple':
+      return GuardianType.Apple;
+    default:
+      throw new Error('invalid guardian type');
+  }
 };
 
 export interface AccountCheckResult {

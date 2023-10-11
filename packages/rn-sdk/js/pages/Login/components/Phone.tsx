@@ -11,7 +11,7 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
 import PhoneInput from 'components/PhoneInput';
-import { getCachedCountryCodeData, attemptAccountCheck, getSocialRegisterPageData } from 'model/sign-in';
+import { getCachedCountryCodeData, attemptAccountCheck, getSocialRecoveryPageData } from 'model/sign-in';
 import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import ActionSheet from 'components/ActionSheet';
 import { PortkeyEntries } from 'config/entries';
@@ -212,7 +212,7 @@ export default function Phone({
   const dealWithSignIn = async () => {
     Loading.show();
     try {
-      const signInPageData = await getSocialRegisterPageData(getWrappedPhoneNumber(), AccountOriginalType.Phone);
+      const signInPageData = await getSocialRecoveryPageData(getWrappedPhoneNumber(), AccountOriginalType.Phone);
       if (signInPageData) {
         navigateForResult<GuardianApprovalPageResult, GuardianApprovalPageProps>(
           PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,

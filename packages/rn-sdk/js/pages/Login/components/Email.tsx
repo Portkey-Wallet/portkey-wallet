@@ -12,7 +12,7 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { attemptAccountCheck, getRegisterPageData, getSocialRegisterPageData } from 'model/sign-in';
+import { attemptAccountCheck, getRegisterPageData, getSocialRecoveryPageData } from 'model/sign-in';
 import ActionSheet from 'components/ActionSheet';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
@@ -142,7 +142,7 @@ export default function Email({
   const dealWithSignIn = async () => {
     Loading.show();
     try {
-      const signInPageData = await getSocialRegisterPageData(loginAccount ?? '', AccountOriginalType.Phone);
+      const signInPageData = await getSocialRecoveryPageData(loginAccount ?? '', AccountOriginalType.Email);
       if (signInPageData) {
         navigateForResult<GuardianApprovalPageResult, GuardianApprovalPageProps>(
           PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,

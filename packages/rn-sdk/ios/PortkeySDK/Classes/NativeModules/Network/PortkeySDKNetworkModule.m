@@ -13,8 +13,8 @@ RCT_EXPORT_MODULE(NetworkModule);
 
 RCT_EXPORT_METHOD(fetch:(NSString *)url
                   method:(NSString *)method
-                  params:(id)params
-                  headers:(id)headers
+                  params:(NSDictionary *)params
+                  headers:(NSDictionary *)headers
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -32,8 +32,22 @@ RCT_EXPORT_METHOD(fetch:(NSString *)url
     NSURL *requestUrl= [NSURL URLWithString:url];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:requestUrl];
     request.HTTPMethod = method;
+    if ([method isEqualToString:@"POST"] && params) {
+        NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:params options:kNilOptions error:nil];
+        request.HTTPBody = jsonBodyData;
+    }
+    [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+    if (headers) {
+        [headers enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull value, BOOL * _Nonnull stop) {
+            if (key && value) {
+                [request setValue:value forHTTPHeaderField:key];
+            }
+        }];
+    }
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *task= [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        NSLog(@"url : %@; statusCode : %lid", url, (long)((NSHTTPURLResponse *)response).statusCode);
+        NSLog(@"response : %@", response);
         if(!error){
             NSHTTPURLResponse *res = (NSHTTPURLResponse *)response;
             NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];

@@ -19,22 +19,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FC5EE806-D69E-4286-9107-5DE82A3E2D50"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../PortkeySDK/Classes/NativeModules/Router/PortkeySDKRouterModule.m"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
-            landmarkName = "RCT_EXPORT_METHOD(targetScene)"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "9AC5D11F-A6CE-4976-A6ED-806C4CB7344A"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -46,6 +30,230 @@
             endingLineNumber = "44"
             landmarkName = "RCT_EXPORT_METHOD(callback)"
             landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CD0035C4-566C-4735-9751-DF3243143392"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../node_modules/react-native-config/ios/ReactNativeConfig/ReactNativeConfigModule.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "14"
+            endingLineNumber = "14"
+            landmarkName = "+env"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DBE9ADF5-A306-422B-B413-E78D5DBF9085"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
+            landmarkName = "RCT_EXPORT_METHOD(reject)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "045A658C-75C6-4E59-A137-142EE2F0D21F"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
+            landmarkName = "RCT_EXPORT_METHOD(reject)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "045A658C-75C6-4E59-A137-142EE2F0D21F - ca99246965dbdf51"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__70-[PortkeySDKNetworkModule fetch:method:params:headers:resolve:reject:]_block_invoke"
+                  moduleName = "PortkeySDKExample_Example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "62"
+                  endingLineNumber = "62"
+                  offsetFromSymbolStart = "1016">
+               </Location>
+               <Location
+                  uuid = "045A658C-75C6-4E59-A137-142EE2F0D21F - 31de8647fb7182a5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__70-[PortkeySDKNetworkModule fetch:method:params:headers:resolve:reject:]_block_invoke.21"
+                  moduleName = "PortkeySDKExample_Example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "62"
+                  endingLineNumber = "62"
+                  offsetFromSymbolStart = "572">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "FA625CD9-7970-41F6-8B60-753D218DF536"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
+            landmarkName = "RCT_EXPORT_METHOD(reject)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "FA625CD9-7970-41F6-8B60-753D218DF536 - a35b9ad6ebc11542"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[PortkeySDKNetworkModule fetch:method:params:headers:resolve:reject:]"
+                  moduleName = "PortkeySDKExample_Example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "64"
+                  endingLineNumber = "64"
+                  offsetFromSymbolStart = "828">
+               </Location>
+               <Location
+                  uuid = "FA625CD9-7970-41F6-8B60-753D218DF536 - 31de8647fb7182e3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__70-[PortkeySDKNetworkModule fetch:method:params:headers:resolve:reject:]_block_invoke.21"
+                  moduleName = "PortkeySDKExample_Example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "64"
+                  endingLineNumber = "64"
+                  offsetFromSymbolStart = "636">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0B59846E-FA2C-4280-9D3E-5F32DF07B8BD"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "67"
+            endingLineNumber = "67"
+            landmarkName = "RCT_EXPORT_METHOD(reject)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "0B59846E-FA2C-4280-9D3E-5F32DF07B8BD - bc03afefde8e5d6a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[PortkeySDKNetworkModule resultWrapperWithStatus:errCode:result:]"
+                  moduleName = "PortkeySDKExample_Example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "69"
+                  endingLineNumber = "69"
+                  offsetFromSymbolStart = "92">
+               </Location>
+               <Location
+                  uuid = "0B59846E-FA2C-4280-9D3E-5F32DF07B8BD - 31de8647fb71821e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__70-[PortkeySDKNetworkModule fetch:method:params:headers:resolve:reject:]_block_invoke.21"
+                  moduleName = "PortkeySDKExample_Example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "67"
+                  endingLineNumber = "67"
+                  offsetFromSymbolStart = "840">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E66E63E6-2610-433E-B055-1678B3C519D7"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
+            landmarkName = "RCT_EXPORT_METHOD(reject)"
+            landmarkType = "9">
+            <Locations>
+               <Location
+                  uuid = "E66E63E6-2610-433E-B055-1678B3C519D7 - ca99246965dbd9b8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__70-[PortkeySDKNetworkModule fetch:method:params:headers:resolve:reject:]_block_invoke"
+                  moduleName = "PortkeySDKExample_Example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "484">
+               </Location>
+               <Location
+                  uuid = "E66E63E6-2610-433E-B055-1678B3C519D7 - 31de8647fb71840e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__70-[PortkeySDKNetworkModule fetch:method:params:headers:resolve:reject:]_block_invoke.21"
+                  moduleName = "PortkeySDKExample_Example"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cuifengchuan/Desktop/Code/aelf/portkey-wallet/packages/rn-sdk/ios/PortkeySDK/Classes/NativeModules/Network/PortkeySDKNetworkModule.m"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51"
+                  offsetFromSymbolStart = "176">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

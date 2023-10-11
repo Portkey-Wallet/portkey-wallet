@@ -11,7 +11,7 @@ import { setWalletInfoAction } from 'store/reducers/loginCache/actions';
 import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
-import { ScanBase, CustomSvg } from '@portkey/did-ui-react';
+import { ScanBase } from '@portkey/did-ui-react';
 import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCheckManager } from 'hooks/useLogout';
 import { message } from 'antd';
@@ -21,6 +21,7 @@ import './index.less';
 import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
+import CustomSvg from 'components/CustomSvg';
 
 export default function ScanCard() {
   const navigate = useNavigate();

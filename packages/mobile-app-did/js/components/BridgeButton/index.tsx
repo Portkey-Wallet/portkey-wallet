@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import Svg from 'components/Svg';
 import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
@@ -25,22 +25,22 @@ const BridgeButton = (props: BridgeButtonPropsType) => {
   const { checkDappIsConfirmed } = useDisclaimer();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
+  const onPressButton = useCallback(async () => {
+    try {
+      Loading.show();
+      if (!(await securitySafeCheckAndToast())) return;
+      if (!checkDappIsConfirmed(eBridgeUrl || '')) return DisclaimerModal.showDisclaimerModal();
+      navigationService.navigate('EBridge');
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
+    }
+  }, [checkDappIsConfirmed, eBridgeUrl, securitySafeCheckAndToast]);
+
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
-      <TouchableOpacity
-        style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
-        onPress={async () => {
-          try {
-            Loading.show();
-            if (!(await securitySafeCheckAndToast())) return;
-            if (!checkDappIsConfirmed(eBridgeUrl || '')) return DisclaimerModal.showConnectModal();
-            navigationService.navigate('EBridge');
-          } catch (error) {
-            CommonToast.failError(error);
-          } finally {
-            Loading.hide();
-          }
-        }}>
+      <TouchableOpacity style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]} onPress={onPressButton}>
         <Svg icon="eBridge" size={pTd(46)} />
       </TouchableOpacity>
       <TextM style={[commonButtonStyle.commonTitleStyle, commonButtonStyle.dashBoardTitleColorStyle]}>

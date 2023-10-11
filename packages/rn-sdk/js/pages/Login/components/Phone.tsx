@@ -53,7 +53,7 @@ export default function Phone({
 
   const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
-  const { navigateForResult } = useBaseContainer({
+  const { navigateForResult, navigationTo } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
   });
 
@@ -205,7 +205,8 @@ export default function Phone({
   };
 
   const dealWithSignIn = () => {
-    console.warn(`dealWithSignIn`);
+    // console.warn(`dealWithSignIn`);
+    navigationTo(PortkeyEntries.CHECK_PIN);
   };
 
   return (

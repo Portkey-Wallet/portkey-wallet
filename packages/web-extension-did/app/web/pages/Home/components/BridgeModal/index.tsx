@@ -1,12 +1,15 @@
 import { useCallback, useState } from 'react';
-import AElf from 'aelf-sdk';
 import clsx from 'clsx';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import { EBRIDGE_DISCLAIMER_ARRAY, EBRIDGE_DISCLAIMER_TEXT } from '@portkey-wallet/constants/constants-ca/ebridge';
-import { Button, Modal, ModalProps, message } from 'antd';
+import {
+  EBRIDGE_DISCLAIMER_ARRAY,
+  EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID,
+} from '@portkey-wallet/constants/constants-ca/ebridge';
+import { Button, ModalProps, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import CustomPromptModal from 'pages/components/CustomPromptModal';
 import './index.less';
 
 export interface IBridgeModalProps extends ModalProps {
@@ -24,8 +27,7 @@ const BridgeModal = ({ onClose, open, ...props }: IBridgeModalProps) => {
   const onConfirm = useCallback(async () => {
     try {
       setLoading(true);
-      const policyId = AElf.utils.sha256(EBRIDGE_DISCLAIMER_TEXT);
-      await signPrivacyPolicy({ policyId, origin: eBridgeUrl });
+      await signPrivacyPolicy({ policyId: EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID, origin: eBridgeUrl });
       const openWinder = window.open(eBridgeUrl, '_blank');
       isPrompt && onClose();
       if (openWinder) {
@@ -45,16 +47,12 @@ const BridgeModal = ({ onClose, open, ...props }: IBridgeModalProps) => {
   }, [onClose]);
 
   return (
-    <Modal
+    <CustomPromptModal
       {...props}
       destroyOnClose
       open={open}
       wrapClassName={clsx(['bridge-disclaimer-modal', isPrompt && 'isPrompt'])}
-      maskClosable={true}
-      closable={false}
-      centered={true}
-      onCancel={handleClose}
-      footer={null}>
+      onClose={handleClose}>
       <div className="bridge-modal flex-column">
         <div className="container flex-column">
           <CustomSvg type="Close2" onClick={handleClose} />
@@ -90,7 +88,7 @@ const BridgeModal = ({ onClose, open, ...props }: IBridgeModalProps) => {
           </div>
         </div>
       </div>
-    </Modal>
+    </CustomPromptModal>
   );
 };
 

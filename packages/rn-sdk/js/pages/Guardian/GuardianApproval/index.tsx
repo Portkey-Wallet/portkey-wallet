@@ -27,7 +27,7 @@ import { isReacptchaOpen } from 'model/sign-in';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
-import { VerifiedGuardianDoc } from 'model/verify/after-verify';
+import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
 
@@ -40,7 +40,7 @@ export default function GuardianApproval({
   verifiedTime: number;
   onPageFinish: (result: GuardianApprovalPageResult) => void;
 }) {
-  const { guardians, accountIdentifier } = guardianListConfig;
+  const { guardians, accountIdentifier, accountOriginalType } = guardianListConfig;
   const { t } = useLanguage();
 
   const { navigateForResult } = useBaseContainer({
@@ -54,6 +54,8 @@ export default function GuardianApproval({
   const approvedList = useMemo(() => {
     return Object.values(guardiansStatus || {}).filter(guardian => guardian.status === VerifyStatus.Verified);
   }, [guardiansStatus]);
+
+  const [sentGuardianKeys, setSentGuardianKeys] = useState<Map<string, string>>(new Map());
 
   const setGuardianStatus = useCallback((key: string, status: GuardiansStatusItem) => {
     if (key === 'resetGuardianApproval') {
@@ -118,57 +120,79 @@ export default function GuardianApproval({
           dealWithParticularGuardian(guardian, key);
         }}
         disabled={false}
+        containerStyle={styles.activityButton}
+        titleStyle={styles.activityButtonText}
         type="primary"
-        title={'Confirm'}
+        title={sentGuardianKeys.has(key) ? 'Verify' : 'Send'}
       />
     );
   };
 
   const dealWithParticularGuardian = async (guardian: GuardianConfig, key: string) => {
-    ActionSheet.alert({
-      title: '',
-      message: `${
-        guardian.name ?? 'Portkey'
-      } will send a verification code to ${accountIdentifier} to verify your phone number.`,
-      buttons: [
-        { title: 'Cancel', type: 'outline' },
-        {
-          title: 'Confirm',
-          onPress: async () => {
-            try {
-              Loading.show();
-              const needRecaptcha = await isReacptchaOpen(OperationTypeEnum.communityRecovery);
-              let token: string | undefined;
-              if (needRecaptcha) {
-                token = (await verifyHumanMachine('en')) as string;
-              }
-              const sendResult = await NetworkController.sendVerifyCode(guardian.sendVerifyCodeParams, {
-                reCaptchaToken: token,
-              });
-              console.error(sendResult);
-              if (sendResult) {
-                const guardianResult = await handleGuardianVerifyPage(
-                  Object.assign({}, guardian, {
-                    verifySessionId: sendResult.verifierSessionId,
-                  } as Partial<GuardianConfig>),
-                  true,
-                  key,
-                );
-                if (!guardianResult) {
-                  Loading.hide();
-                  return;
-                } else {
+    if (sentGuardianKeys.has(key)) {
+      const verifierSessionId = sentGuardianKeys.get(key);
+      const guardianResult = await handleGuardianVerifyPage(
+        Object.assign({}, guardian, {
+          verifierSessionId,
+        } as Partial<GuardianConfig>),
+        true,
+        key,
+      );
+      if (!guardianResult) {
+        Loading.hide();
+        return;
+      } else {
+      }
+    } else {
+      ActionSheet.alert({
+        title: '',
+        message: `${guardian.name ?? 'Portkey'} will send a verification code to ${accountIdentifier} to verify your ${
+          accountOriginalType === AccountOriginalType.Email ? 'email' : 'phone number'
+        }.`,
+        buttons: [
+          { title: 'Cancel', type: 'outline' },
+          {
+            title: 'Confirm',
+            onPress: async () => {
+              try {
+                Loading.show();
+                const needRecaptcha = await isReacptchaOpen(OperationTypeEnum.communityRecovery);
+                let token: string | undefined;
+                if (needRecaptcha) {
+                  token = (await verifyHumanMachine('en')) as string;
                 }
-              } else {
+                const sendResult = await NetworkController.sendVerifyCode(guardian.sendVerifyCodeParams, {
+                  reCaptchaToken: token,
+                });
+                Loading.hide();
+                if (sendResult) {
+                  setSentGuardianKeys(preGuardianKeys => {
+                    preGuardianKeys.set(key, sendResult.verifierSessionId);
+                    return new Map(preGuardianKeys);
+                  });
+                  const guardianResult = await handleGuardianVerifyPage(
+                    Object.assign({}, guardian, {
+                      verifySessionId: sendResult.verifierSessionId,
+                    } as Partial<GuardianConfig>),
+                    true,
+                    key,
+                  );
+                  if (!guardianResult) {
+                    Loading.hide();
+                    return;
+                  } else {
+                  }
+                } else {
+                  Loading.hide();
+                }
+              } catch (e) {
                 Loading.hide();
               }
-            } catch (e) {
-              Loading.hide();
-            }
+            },
           },
-        },
-      ],
-    });
+        ],
+      });
+    }
   };
 
   const handleGuardianVerifyPage = async (
@@ -280,6 +304,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     height: '100%',
     justifyContent: 'space-between',
+  },
+  activityButton: {
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activityButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    lineHeight: 16,
   },
   expireText: {
     marginTop: 8,

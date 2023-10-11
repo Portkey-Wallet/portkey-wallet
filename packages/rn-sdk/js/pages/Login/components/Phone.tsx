@@ -176,6 +176,7 @@ export default function Phone({
                 token = (await verifyHumanMachine('en')) as string;
               }
               const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
+              Loading.hide();
               if (sendResult) {
                 const guardianResult = await handleGuardianVerifyPage(
                   Object.assign({}, pageData.guardianConfig, {
@@ -185,7 +186,6 @@ export default function Phone({
                 );
                 if (!guardianResult) {
                   setErrorMessage('guardian verify failed, please try again.');
-                  Loading.hide();
                   return;
                 } else {
                   dealWithSetPin();

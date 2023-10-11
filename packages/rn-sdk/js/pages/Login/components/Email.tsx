@@ -200,6 +200,7 @@ export default function Email({
                 token = (await verifyHumanMachine('en')) as string;
               }
               const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
+              Loading.hide();
               if (sendResult) {
                 const guardianResult = await handleGuardianVerifyPage(
                   Object.assign({}, pageData.guardianConfig, {

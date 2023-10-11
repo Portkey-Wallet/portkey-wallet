@@ -7,7 +7,7 @@ type CheckSecurityResult = {
 };
 
 export const checkSecurity = async (caHash: string): Promise<CheckSecurityResult> => {
-  return await request.privacy.securityCheck({
+  return await request.security.balanceCheck({
     params: {
       caHash,
     },

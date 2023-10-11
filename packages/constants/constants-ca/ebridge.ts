@@ -1,3 +1,5 @@
+import AElf from 'aelf-sdk';
+
 export const EBRIDGE_DISCLAIMER_ARRAY: { type: 'title' | 'text'; content: string }[] = [
   {
     type: 'text',
@@ -131,3 +133,4 @@ export const EBRIDGE_DISCLAIMER_ARRAY: { type: 'title' | 'text'; content: string
 ];
 
 export const EBRIDGE_DISCLAIMER_TEXT = EBRIDGE_DISCLAIMER_ARRAY.map(ele => ele.content).join('');
+export const EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID = AElf.utils.sha256(EBRIDGE_DISCLAIMER_TEXT);

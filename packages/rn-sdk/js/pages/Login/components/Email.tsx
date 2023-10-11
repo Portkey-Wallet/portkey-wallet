@@ -46,7 +46,7 @@ export default function Email({
   const [errorMessage, setErrorMessage] = useState<string>();
   const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
-  const { navigateForResult } = useBaseContainer({
+  const { navigateForResult, navigationTo } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
   });
   const navigateToGuardianPage = useCallback(
@@ -180,6 +180,7 @@ export default function Email({
                   return;
                 } else {
                   // to pin
+                  navigationTo(PortkeyEntries.CHECK_PIN);
                 }
               } else {
                 setErrorMessage('network fail.');

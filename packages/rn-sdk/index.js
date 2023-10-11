@@ -8,7 +8,8 @@ import SignUpEntryPage from 'components/entries/SignUp';
 import ReferralEntryPage from 'components/entries/Referral';
 import GuardianApprovalEntryPage from 'components/entries/GuardianApproval';
 import VerifierDetailsEntryPage from 'components/entries/VerifierDetails';
-import CheckPin from 'pages/Pin/check-pin';
+// import CheckPin from 'pages/Pin/check-pin';
+import CheckPin from 'pages/Pin/SetPin/fake';
 
 const entryConfig = new Map();
 entryConfig.set(PortkeyEntries.TEST, () => TestPage);

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleProp, ViewProps } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -39,22 +39,14 @@ const Card: React.FC = () => {
     return count;
   }, [isBuyButtonShow, isMainnet, isShowBridgeButton]);
 
-  const buttonGroupWrapStyle = useMemo(() => {
-    if (buttonCount >= 5) {
-      // styles
-      return {};
-    } else {
-      return GStyles.flexCenter;
-    }
-  }, [buttonCount]);
-
-  const buttonWrapStyle = useMemo(() => {
-    if (buttonCount >= 5) {
-      return {};
-    } else {
-      return styles.buttonWrapStyle1;
-    }
-  }, [buttonCount]);
+  const buttonGroupWrapStyle = useMemo(
+    () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
+    [buttonCount],
+  );
+  const buttonWrapStyle = useMemo(
+    () => (buttonCount < 5 ? (styles.buttonWrapStyle1 as StyleProp<ViewProps>) : undefined),
+    [buttonCount],
+  );
 
   return (
     <View style={[styles.cardWrap]}>

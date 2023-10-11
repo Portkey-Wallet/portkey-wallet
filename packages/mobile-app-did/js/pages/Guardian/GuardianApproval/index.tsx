@@ -40,11 +40,11 @@ import { useOnRequestOrSetPin } from 'hooks/login';
 import { ApproveParams } from 'dapp/dappOverlay';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
 import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
-import { useNavigation } from '@react-navigation/native';
 import { sleep } from '@portkey-wallet/utils';
 import { ChainId } from '@portkey-wallet/types';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
+import { useCheckRouteExistInRouteStack } from 'hooks/route';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -76,7 +76,7 @@ export default function GuardianApproval() {
     targetChainId,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
-  const navigation = useNavigation();
+  const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
 
   const onEmitDapp = useCallback(
     (guardiansApproved?: GuardiansApproved) => {
@@ -330,9 +330,7 @@ export default function GuardianApproval() {
         transferLimitDetail,
       );
       if (req && !req.error) {
-        const routesArr = navigation.getState().routes;
-        const isPaymentSecurityDetailExist = routesArr.some(item => item.name === 'PaymentSecurityDetail');
-
+        const isPaymentSecurityDetailExist = checkRouteExistInRouteStack('PaymentSecurityDetail');
         updateTransferLimit(transferLimitDetail);
         if (isPaymentSecurityDetailExist) {
           await sleep(1000);
@@ -357,10 +355,10 @@ export default function GuardianApproval() {
     Loading.hide();
   }, [
     caHash,
+    checkRouteExistInRouteStack,
     getCurrentCAContract,
     guardiansStatus,
     managerAddress,
-    navigation,
     transferLimitDetail,
     updateTransferLimit,
     userGuardiansList,

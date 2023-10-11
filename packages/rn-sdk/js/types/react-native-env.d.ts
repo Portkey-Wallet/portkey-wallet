@@ -5,6 +5,5 @@ declare module 'rn-teaset/components/Overlay/TopView';
 declare module 'react-native-crypto';
 declare module 'rn-teaset/components/Carousel/Carousel';
 declare module 'rn-teaset/components/TransformView/TransformView';
-declare module '*.png';
 declare module 'react-native-spring-scrollview/*';
 declare module 'rn-minimizer';

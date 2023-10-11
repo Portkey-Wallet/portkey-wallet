@@ -5,7 +5,6 @@ import { pTd } from 'utils/unit';
 import { ImageBackground, View } from 'react-native';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useLanguage } from 'i18n/hooks';
-import background from '../img/background.png';
 import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
@@ -54,7 +53,7 @@ export default function LoginPortkey({
   );
 
   return (
-    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>
+    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={require('../img/background.png')}>
       <PageContainer
         titleDom
         type="leftBack"

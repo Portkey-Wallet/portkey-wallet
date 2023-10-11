@@ -74,7 +74,7 @@
     if (!_loginButton) {
         _loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         _loginButton.layer.cornerRadius = 8;
-        [_loginButton setTitle:@"登录/注册" forState:UIControlStateNormal];
+        [_loginButton setTitle:@"login/register" forState:UIControlStateNormal];
         _loginButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
         [_loginButton setBackgroundColor:[UIColor greenColor]];
         [_loginButton addTarget:self action:@selector(loginButtonClicked:) forControlEvents:UIControlEventTouchUpInside];

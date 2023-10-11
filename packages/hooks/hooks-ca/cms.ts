@@ -325,26 +325,14 @@ export const useGetCmsWebsiteInfo = () => {
       const target = cmsWebsiteMap?.[domain];
 
       // if in cms
-      if (target?.imgUrl?.filename_disk) {
-        return `${s3Url}/${target?.imgUrl?.filename_disk}`;
-      } else {
-        return getFaviconUrl(domain);
-      }
+      if (target?.imgUrl?.filename_disk) return `${s3Url}/${target?.imgUrl?.filename_disk}`;
+
+      return getFaviconUrl(domain);
     },
     [cmsWebsiteMap, s3Url],
   );
 
-  const getCmsWebsiteInfoName = useCallback(
-    (domain: string) => {
-      const target = cmsWebsiteMap?.[domain];
-
-      if (target?.title) {
-        return target?.title || '';
-      }
-      return '';
-    },
-    [cmsWebsiteMap],
-  );
+  const getCmsWebsiteInfoName = useCallback((domain: string) => cmsWebsiteMap?.[domain]?.title || '', [cmsWebsiteMap]);
 
   return {
     getCmsWebsiteInfoImageUrl,

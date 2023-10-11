@@ -17,6 +17,8 @@ import Loading from 'components/Loading';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
+import GuardianItem from '../components/GuardianItem';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -50,12 +52,18 @@ export default function VerifierDetails({
     entryName: PortkeyEntries.VERIFIER_DETAIL_ENTRY,
   });
 
-  const guardianItem = {
+  const guardianItem: UserGuardianItem = {
     guardianAccount: accountIdentifier,
     guardianType: guardianConfig.sendVerifyCodeParams.type === 'Phone' ? LoginType.Phone : LoginType.Email,
     verifier: {
-      id: '123456789',
+      id: guardianConfig.sendVerifyCodeParams.verifierId,
+      name: guardianConfig.name ?? 'Portkey',
+      imageUrl: guardianConfig.imageUrl ?? '',
     },
+    isLoginAccount: guardianConfig.isLoginGuardian,
+    key: '0',
+    identifierHash: '',
+    salt: guardianConfig.salt ?? '',
   };
 
   const { countDown: countDownNumber, sendVerifyCode, checkVerifyCode } = usePhoneOrEmailGuardian(guardianConfig);
@@ -82,8 +90,11 @@ export default function VerifierDetails({
     }
   };
 
-  const onPageFinish = (result: CheckVerifyCodeResultDTO) => {
-    onFinish<VerifyPageResult>({ status: 'success', data: { verifiedData: JSON.stringify(result) } });
+  const onPageFinish = (result: CheckVerifyCodeResultDTO | null) => {
+    onFinish<VerifyPageResult>({
+      status: result ? 'success' : 'fail',
+      data: { verifiedData: result ? JSON.stringify(result) : '' },
+    });
   };
 
   const onInputFinish = async (code: string) => {
@@ -104,6 +115,10 @@ export default function VerifierDetails({
     }
   };
 
+  const onBack = () => {
+    onPageFinish(null);
+  };
+
   const countdown = useRef<VerifierCountdownInterface>();
   const digitInput = useRef<DigitInputInterface>();
 
@@ -118,9 +133,10 @@ export default function VerifierDetails({
       type="leftBack"
       titleDom="VerifierDetails"
       safeAreaColor={['white']}
+      leftCallback={onBack}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
-      {/* {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null} */}
+      {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null}
       <TipText
         isRegister={!verificationType || (verificationType as VerificationType) === VerificationType.register}
         guardianAccount={guardianItem?.guardianAccount}

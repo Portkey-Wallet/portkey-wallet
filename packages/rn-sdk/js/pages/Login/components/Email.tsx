@@ -12,17 +12,17 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { attemptAccountCheck, getRegisterPageData } from 'model/sign-in';
+import { attemptAccountCheck, getRegisterPageData, getSocialRegisterPageData } from 'model/sign-in';
 import ActionSheet from 'components/ActionSheet';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
 import { GuardianConfig } from 'model/verify/guardian';
-import { EntryResult } from 'service/native-modules';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import useSignUp from 'model/verify/sign-up';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
+import { GuardianApprovalPageResult, GuardianApprovalPageProps } from 'components/entries/GuardianApproval';
 
 const TitleMap = {
   [PageType.login]: {
@@ -139,8 +139,40 @@ export default function Email({
     Loading.hide(loadingKey);
   }, [loginAccount]);
 
-  const dealWithSignIn = () => {
-    console.warn(`dealWithSignIn`);
+  const dealWithSignIn = async () => {
+    Loading.show();
+    try {
+      const signInPageData = await getSocialRegisterPageData(loginAccount ?? '', AccountOriginalType.Phone);
+      if (signInPageData) {
+        navigateForResult<GuardianApprovalPageResult, GuardianApprovalPageProps>(
+          PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
+          {
+            params: {
+              deliveredGuardianListInfo: JSON.stringify(signInPageData),
+            },
+          },
+          res => {
+            Loading.hide();
+            const { data } = res;
+            if (data.isVerified) {
+              dealWithSetPin();
+            } else {
+              setErrorMessage('guardian verify failed, please try again.');
+            }
+          },
+        );
+      } else {
+        setErrorMessage('network fail.');
+        Loading.hide();
+      }
+    } catch (e) {
+      setErrorMessage(handleErrorMessage(e));
+      Loading.hide();
+    }
+  };
+
+  const dealWithSetPin = () => {
+    navigationTo(PortkeyEntries.CHECK_PIN);
   };
 
   const dealWithSignUp = async () => {
@@ -180,8 +212,7 @@ export default function Email({
                   Loading.hide();
                   return;
                 } else {
-                  // to pin
-                  navigationTo(PortkeyEntries.CHECK_PIN);
+                  dealWithSetPin();
                 }
               } else {
                 setErrorMessage('network fail.');

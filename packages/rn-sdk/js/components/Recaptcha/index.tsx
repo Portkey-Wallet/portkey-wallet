@@ -127,7 +127,6 @@ const Recaptcha = forwardRef(function Recaptcha(
 
   const handleMessage = useCallback(
     (content: WebViewMessageEvent) => {
-      console.error('content', content.nativeEvent.data);
       try {
         const payload = JSON.parse(content.nativeEvent.data);
 

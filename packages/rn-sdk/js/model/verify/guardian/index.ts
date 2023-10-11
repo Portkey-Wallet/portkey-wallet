@@ -129,6 +129,7 @@ export interface GuardianConfig {
   readonly name: string;
   readonly imageUrl: string;
   readonly sendVerifyCodeParams: SendVerifyCodeParams;
+  readonly salt?: string;
   readonly alreadySent?: boolean;
   readonly verifySessionId?: string;
 }

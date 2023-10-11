@@ -23,15 +23,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = @"Hello Portkey";
+    self.title = @"Portkey SDK";
     
     CGSize screenSize = UIScreen.mainScreen.bounds.size;
     
     CGRect jssdkButtonRect = CGRectZero;
     jssdkButtonRect.size = [self buttonSize];
     jssdkButtonRect.origin = CGPointMake((screenSize.width - [self buttonSize].width) / 2, 150);
-    self.jssdkButton.frame = jssdkButtonRect;
-    [self.view addSubview:self.jssdkButton];
+//    self.jssdkButton.frame = jssdkButtonRect;
+//    [self.view addSubview:self.jssdkButton];
     
     CGRect loginButtonRect = jssdkButtonRect;
     loginButtonRect.origin = CGPointMake((screenSize.width - [self buttonSize].width) / 2, 250);
@@ -74,7 +74,7 @@
     if (!_loginButton) {
         _loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         _loginButton.layer.cornerRadius = 8;
-        [_loginButton setTitle:@"Login" forState:UIControlStateNormal];
+        [_loginButton setTitle:@"登录/注册" forState:UIControlStateNormal];
         _loginButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
         [_loginButton setBackgroundColor:[UIColor greenColor]];
         [_loginButton addTarget:self action:@selector(loginButtonClicked:) forControlEvents:UIControlEventTouchUpInside];

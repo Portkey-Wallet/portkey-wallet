@@ -159,9 +159,12 @@ export default class ApprovalController {
   }
 
   async authorizedToCheckWalletSecurity(params: any): Promise<SendResponseParams> {
-    return this.notificationService.openPrompt({
-      method: PromptRouteTypes.WALLET_SECURITY_APPROVE,
-      search: JSON.stringify(params),
-    });
+    return this.notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.WALLET_SECURITY_APPROVE,
+        search: JSON.stringify(params),
+      },
+      'tabs',
+    );
   }
 }

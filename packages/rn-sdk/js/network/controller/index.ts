@@ -76,7 +76,7 @@ export class NetworkControllerEntity {
   };
 
   getGuardianInfo = async (chainId: string, loginGuardianIdentifier: string): Promise<GetGuardianInfoResultDTO> => {
-    const res = await this.realExecute<GetGuardianInfoResultDTO>(this.parseUrl(APIPaths.GET_GUARDIAN_INFO), 'POST', {
+    const res = await this.realExecute<GetGuardianInfoResultDTO>(this.parseUrl(APIPaths.GET_GUARDIAN_INFO), 'GET', {
       chainId,
       loginGuardianIdentifier,
       guardianIdentifier: loginGuardianIdentifier,

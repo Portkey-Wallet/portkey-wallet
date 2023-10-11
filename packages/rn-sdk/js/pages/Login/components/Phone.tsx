@@ -11,7 +11,7 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
 import PhoneInput from 'components/PhoneInput';
-import { getCachedCountryCodeData, attemptAccountCheck } from 'model/sign-in';
+import { getCachedCountryCodeData, attemptAccountCheck, getSocialRegisterPageData } from 'model/sign-in';
 import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import ActionSheet from 'components/ActionSheet';
 import { PortkeyEntries } from 'config/entries';
@@ -23,6 +23,7 @@ import { GuardianConfig } from 'model/verify/guardian';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
+import { GuardianApprovalPageProps, GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
 
 const TitleMap = {
   [PageType.login]: {
@@ -97,7 +98,7 @@ export default function Phone({
       const currentCountryCodeItem = selectedCountryCode ?? country ?? defaultCountryCode;
       const accountCheckResult = await attemptAccountCheck(`+${currentCountryCodeItem.code}${loginAccount}`);
       if (accountCheckResult.hasRegistered) {
-        // log in
+        dealWithSignIn();
       } else {
         ActionSheet.alert({
           title: 'Continue with this account?',
@@ -187,7 +188,7 @@ export default function Phone({
                   Loading.hide();
                   return;
                 } else {
-                  dealWithSignIn();
+                  dealWithSetPin();
                 }
               } else {
                 setErrorMessage('network fail.');
@@ -203,9 +204,41 @@ export default function Phone({
     });
   };
 
-  const dealWithSignIn = () => {
+  const dealWithSetPin = () => {
     // console.warn(`dealWithSignIn`);
     navigationTo(PortkeyEntries.CHECK_PIN);
+  };
+
+  const dealWithSignIn = async () => {
+    Loading.show();
+    try {
+      const signInPageData = await getSocialRegisterPageData(getWrappedPhoneNumber(), AccountOriginalType.Phone);
+      if (signInPageData) {
+        navigateForResult<GuardianApprovalPageResult, GuardianApprovalPageProps>(
+          PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
+          {
+            params: {
+              deliveredGuardianListInfo: JSON.stringify(signInPageData),
+            },
+          },
+          res => {
+            Loading.hide();
+            const { data } = res;
+            if (data.isVerified) {
+              dealWithSetPin();
+            } else {
+              setErrorMessage('guardian verify failed, please try again.');
+            }
+          },
+        );
+      } else {
+        setErrorMessage('network fail.');
+        Loading.hide();
+      }
+    } catch (e) {
+      setErrorMessage(handleErrorMessage(e));
+      Loading.hide();
+    }
   };
 
   return (

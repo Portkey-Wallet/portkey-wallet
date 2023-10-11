@@ -10,7 +10,7 @@ import { BorderStyles, FontStyles } from 'assets/theme/styles';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { getApprovalCount } from '@portkey-wallet/utils/guardian';
-import { ApprovalType, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { ApprovalType, OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
 import GuardianItem from '../components/GuardianItem';
 import useEffectOnce from 'hooks/useEffectOnce';
 import Touchable from 'components/Touchable';
@@ -21,6 +21,15 @@ import { SocialRecoveryConfig } from 'model/verify/social-recovery';
 import { GuardianConfig } from 'model/verify/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
+import Loading from 'components/Loading';
+import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { isReacptchaOpen } from 'model/sign-in';
+import { NetworkController } from 'network/controller';
+import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
+import { PortkeyEntries } from 'config/entries';
+import { VerifiedGuardianDoc } from 'model/verify/after-verify';
+import { VerifyPageResult } from '../VerifierDetails';
+import useBaseContainer from 'model/container/UseBaseContainer';
 
 export default function GuardianApproval({
   guardianListConfig,
@@ -33,6 +42,10 @@ export default function GuardianApproval({
 }) {
   const { guardians, accountIdentifier } = guardianListConfig;
   const { t } = useLanguage();
+
+  const { navigateForResult } = useBaseContainer({
+    entryName: PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
+  });
 
   const [guardiansStatus, setApproved] = useState<GuardiansStatus>();
   const [isExpired, setIsExpired] = useState<boolean>();
@@ -98,6 +111,108 @@ export default function GuardianApproval({
     });
   };
 
+  const particularButton = (guardian: GuardianConfig, key: string) => {
+    return (
+      <CommonButton
+        onPress={() => {
+          dealWithParticularGuardian(guardian, key);
+        }}
+        disabled={false}
+        type="primary"
+        title={'Confirm'}
+      />
+    );
+  };
+
+  const dealWithParticularGuardian = async (guardian: GuardianConfig, key: string) => {
+    ActionSheet.alert({
+      title: '',
+      message: `${
+        guardian.name ?? 'Portkey'
+      } will send a verification code to ${accountIdentifier} to verify your phone number.`,
+      buttons: [
+        { title: 'Cancel', type: 'outline' },
+        {
+          title: 'Confirm',
+          onPress: async () => {
+            try {
+              Loading.show();
+              const needRecaptcha = await isReacptchaOpen(OperationTypeEnum.communityRecovery);
+              let token: string | undefined;
+              if (needRecaptcha) {
+                token = (await verifyHumanMachine('en')) as string;
+              }
+              const sendResult = await NetworkController.sendVerifyCode(guardian.sendVerifyCodeParams, {
+                reCaptchaToken: token,
+              });
+              console.error(sendResult);
+              if (sendResult) {
+                const guardianResult = await handleGuardianVerifyPage(
+                  Object.assign({}, guardian, {
+                    verifySessionId: sendResult.verifierSessionId,
+                  } as Partial<GuardianConfig>),
+                  true,
+                  key,
+                );
+                if (!guardianResult) {
+                  Loading.hide();
+                  return;
+                } else {
+                }
+              } else {
+                Loading.hide();
+              }
+            } catch (e) {
+              Loading.hide();
+            }
+          },
+        },
+      ],
+    });
+  };
+
+  const handleGuardianVerifyPage = async (
+    guardianConfig?: GuardianConfig,
+    alreadySent?: boolean,
+    key?: string,
+  ): Promise<boolean> => {
+    const guardian = guardianConfig;
+    if (!guardian) {
+      console.error('guardianConfig is not defined.');
+      return false;
+    }
+    return new Promise(resolve => {
+      navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
+        console.error('config.navigateToGuardianPage', result);
+        if (result) {
+          setApproved(preGuardiansStatus => ({
+            ...preGuardiansStatus,
+            [key ?? '0']: { status: VerifyStatus.Verified },
+          }));
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
+    });
+  };
+
+  const navigateToGuardianPage = (config: GuardianConfig, callback: (result: VerifiedGuardianDoc) => void) => {
+    navigateForResult<VerifyPageResult, VerifierDetailsPageProps>(
+      PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+      {
+        params: {
+          deliveredGuardianInfo: JSON.stringify(config),
+        },
+      },
+      res => {
+        Loading.hide();
+        const { data } = res;
+        callback(data?.verifiedData ? JSON.parse(data.verifiedData) : null);
+      },
+    );
+  };
+
   return (
     <PageContainer
       scrollViewProps={{ disabled: true }}
@@ -138,6 +253,10 @@ export default function GuardianApproval({
                   <GuardianItem
                     key={index}
                     guardianItem={item}
+                    isButtonHide={true}
+                    renderBtn={_ => {
+                      return particularButton(guardians[index], item.key);
+                    }}
                     setGuardianStatus={onSetGuardianStatus}
                     guardiansStatus={guardiansStatus}
                     isExpired={isExpired}
@@ -158,6 +277,8 @@ const styles = StyleSheet.create({
   containerStyle: {
     paddingTop: 8,
     paddingBottom: 16,
+    paddingHorizontal: 16,
+    height: '100%',
     justifyContent: 'space-between',
   },
   expireText: {

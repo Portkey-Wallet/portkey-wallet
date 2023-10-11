@@ -90,9 +90,9 @@ export const getSocialRegisterPageData = async (
     accountIdentifier,
     accountOriginalType,
     guardians: (guardians.guardianList.guardians ?? []).map(guardian => ({
-      accountIdentifier: guardian.guardianIdentifier,
-      accountOriginalType: accountOriginalType,
-      isLoginGuardian: guardian.isLoginGuardian,
+      ...guardian,
+      accountIdentifier,
+      accountOriginalType,
       name: guardian.name ?? 'Portkey',
       imageUrl: guardian.imageUrl ?? '',
       sendVerifyCodeParams: {

@@ -12,13 +12,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { sleep } from '@portkey-wallet/utils';
-import {
-  ApprovalType,
-  AuthenticationInfo,
-  VerificationType,
-  OperationTypeEnum,
-  VerifyStatus,
-} from '@portkey-wallet/types/verifier';
+import { ApprovalType, VerificationType, OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { isIOS } from '@rneui/base';
 import { LoginGuardianTypeIcon } from 'constants/misc';
@@ -28,8 +22,8 @@ import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { verification } from 'utils/api';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
+import { PortkeyConfig } from 'global';
 
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
 
@@ -85,7 +79,7 @@ function GuardianItemButton({
     },
     [guardianItem.key, setGuardianStatus],
   );
-  const originChainId = useOriginChainId();
+  const originChainId = PortkeyConfig.currChainId;
 
   const onSendCode = useThrottleCallback(async () => {
     try {

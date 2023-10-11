@@ -36,3 +36,9 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
     id 'com.android.application' version '7.4.2' apply false
 }
+//
+//preBuild.doFirst {
+//    println("Build fresh bundle...")
+//    def process = "../build/build-android-bundle.sh".execute()
+//    process.waitForProcessOutput(System.out, System.err)
+//}

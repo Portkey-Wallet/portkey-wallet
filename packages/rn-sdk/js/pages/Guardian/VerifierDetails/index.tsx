@@ -16,6 +16,7 @@ import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import Loading from 'components/Loading';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
+import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
 
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -57,12 +58,7 @@ export default function VerifierDetails({
     },
   };
 
-  const {
-    countDown: countDownNumber,
-    sendVerifyCode,
-    checkVerifyCode,
-    getVerifiedGuardianDoc,
-  } = usePhoneOrEmailGuardian(guardianConfig);
+  const { countDown: countDownNumber, sendVerifyCode, checkVerifyCode } = usePhoneOrEmailGuardian(guardianConfig);
 
   const tryToResendCode = async () => {
     if (countDownNumber > 0) {
@@ -86,8 +82,8 @@ export default function VerifierDetails({
     }
   };
 
-  const onPageFinish = () => {
-    onFinish<VerifyPageResult>({ status: 'success', data: { verifiedData: JSON.stringify(getVerifiedGuardianDoc()) } });
+  const onPageFinish = (result: CheckVerifyCodeResultDTO) => {
+    onFinish<VerifyPageResult>({ status: 'success', data: { verifiedData: JSON.stringify(result) } });
   };
 
   const onInputFinish = async (code: string) => {
@@ -96,7 +92,7 @@ export default function VerifierDetails({
       const result = await checkVerifyCode(code);
       Loading.hide();
       if (result) {
-        onPageFinish();
+        onPageFinish(result);
       } else {
         if (Platform.OS === 'android') {
           ToastAndroid.show('verify Failed', 1000);

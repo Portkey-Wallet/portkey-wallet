@@ -67,7 +67,7 @@ export default function Phone({
   }, [loginAccount, country, selectedCountryCode]);
 
   const navigateToGuardianPage = useCallback(
-    (config: GuardianConfig, callback: (result: EntryResult<VerifiedGuardianDoc>) => void) => {
+    (config: GuardianConfig, callback: (result: VerifiedGuardianDoc) => void) => {
       navigateForResult<VerifyPageResult, VerifierDetailsPageProps>(
         PortkeyEntries.VERIFIER_DETAIL_ENTRY,
         {

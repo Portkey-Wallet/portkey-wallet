@@ -66,13 +66,13 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
   };
 
   const checkVerifyCode = useCallback(
-    async (verificationCode: string): Promise<boolean> => {
+    async (verificationCode: string): Promise<CheckVerifyCodeResultDTO | null> => {
       if (status !== GuardianStatus.SENT) {
         console.warn('You can not check verify code at this stage.');
-        return true;
+        return null;
       } else if (!verifierSessionId && !config.verifySessionId) {
         console.error('You must send verify code first.');
-        return false;
+        return null;
       }
       try {
         const result = await NetworkController.checkVerifyCode({
@@ -83,13 +83,13 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
         if (result.verificationDoc && result.signature) {
           setStatus(GuardianStatus.VERIFIED);
           setVerifiedDoc(result);
-          return true;
+          return result;
         } else {
-          return false;
+          return null;
         }
       } catch (e) {
         console.warn(e);
-        return false;
+        return null;
       }
     },
     [status, config, verifierSessionId],
@@ -118,7 +118,7 @@ export interface GuardianEntity {
   status: GuardianStatus;
   countDown: number;
   sendVerifyCode: (googleRecaptchaToken?: string) => Promise<boolean>;
-  checkVerifyCode: (verificationCode: string) => Promise<boolean>;
+  checkVerifyCode: (verificationCode: string) => Promise<CheckVerifyCodeResultDTO | null>;
   getVerifiedGuardianDoc: () => VerifiedGuardianDoc;
 }
 

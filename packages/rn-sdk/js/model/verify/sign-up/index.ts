@@ -61,8 +61,8 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
       return new Promise(resolve => {
         config.navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
           console.error('config.navigateToGuardianPage', result);
-          if (result && result.data) {
-            setVerifiedGuardianInfo(result.data);
+          if (result) {
+            setVerifiedGuardianInfo(result);
             resolve(true);
           } else {
             resolve(false);
@@ -97,10 +97,7 @@ export interface SignUpConfig {
   accountIdentifier: string;
   accountOriginalType: AccountOriginalType;
   guardianConfig?: GuardianConfig;
-  navigateToGuardianPage: (
-    guardianConfig: GuardianConfig,
-    callback: (data: EntryResult<VerifiedGuardianDoc>) => void,
-  ) => void;
+  navigateToGuardianPage: (guardianConfig: GuardianConfig, callback: (data: VerifiedGuardianDoc) => void) => void;
 }
 
 export default useSignUp;

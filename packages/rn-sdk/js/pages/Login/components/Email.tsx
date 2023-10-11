@@ -51,7 +51,7 @@ export default function Email({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
   });
   const navigateToGuardianPage = useCallback(
-    (config: GuardianConfig, callback: (result: EntryResult<VerifiedGuardianDoc>) => void) => {
+    (config: GuardianConfig, callback: (result: VerifiedGuardianDoc) => void) => {
       navigateForResult<VerifyPageResult, VerifierDetailsPageProps>(
         PortkeyEntries.VERIFIER_DETAIL_ENTRY,
         {
@@ -61,6 +61,7 @@ export default function Email({
         },
         res => {
           Loading.hide();
+          console.error('res', res);
           const { data } = res;
           callback(data?.verifiedData ? JSON.parse(data.verifiedData) : null);
         },

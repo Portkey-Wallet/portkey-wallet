@@ -57,10 +57,7 @@ export const isReacptchaOpen = async (scene: OperationTypeEnum): Promise<boolean
 export const getRegisterPageData = async (
   accountIdentifier: string,
   accountOriginalType: AccountOriginalType,
-  navigateToGuardianPage: (
-    guardianConfig: GuardianConfig,
-    callback: (data: EntryResult<VerifiedGuardianDoc>) => void,
-  ) => void,
+  navigateToGuardianPage: (guardianConfig: GuardianConfig, callback: (data: VerifiedGuardianDoc) => void) => void,
 ): Promise<SignUpConfig> => {
   const recommendedGuardian = await NetworkController.getRecommendedGuardian();
   return {

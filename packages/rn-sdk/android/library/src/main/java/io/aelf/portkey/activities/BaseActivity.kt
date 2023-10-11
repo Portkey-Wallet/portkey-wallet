@@ -19,6 +19,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+private val NO_DATA_CALLBACK_OBJ = Arguments.createMap().apply {
+    this.putString("status", "cancel")
+    this.putString("data", "{}")
+}
+
 abstract class BasePortkeyReactActivity : ReactActivity() {
     override fun getMainComponentName(): String = this.registerEntryName()
 
@@ -76,6 +81,11 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                         })
                 }
             }
+
+            override fun onDestroy() {
+                super.onDestroy()
+                navigateBackWithResult()
+            }
         }
     }
 
@@ -85,9 +95,13 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
     private fun getCallbackId(): String = callbackId
 
-    fun navigateBackWithResult(result: ReadableMap) {
+    fun navigateBackWithResult(result: ReadableMap? = null) {
         NavigationHolder.invokeAnnotatedCallback(getCallbackId()) {
-            it.invoke(result.toWriteableNativeMap())
+            if (result != null) {
+                it.invoke(result.toWriteableNativeMap())
+            } else {
+                it.invoke(NO_DATA_CALLBACK_OBJ)
+            }
         }
         this.finish()
     }

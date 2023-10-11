@@ -40,7 +40,8 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
         if (callback && [topViewController isKindOfClass:PortkeySDKRNViewController.class]) {
             ((PortkeySDKRNViewController *)topViewController).navigateCallback = callback;
         }
-        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:params];
+        NSDictionary *props = [params valueForKey:@"params"];
+        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:props];
         [topViewController.navigationController pushViewController:vc animated:YES];
         
 //        NSDictionary *result = @{

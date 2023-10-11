@@ -47,10 +47,11 @@ RCT_EXPORT_METHOD(fetch:(NSString *)url
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *task= [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         NSLog(@"url : %@; statusCode : %lid", url, (long)((NSHTTPURLResponse *)response).statusCode);
-        NSLog(@"response : %@", response);
+        NSLog(@"url : %@; response : %@", url, response);
         if(!error){
             NSHTTPURLResponse *res = (NSHTTPURLResponse *)response;
             NSDictionary *dataDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSLog(@"url : %@; data : %@", url, dataDict);
             if (dataDict) {
                 NSDictionary *result = @{
                     @"status": @1,

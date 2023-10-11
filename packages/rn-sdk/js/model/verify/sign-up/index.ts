@@ -4,7 +4,6 @@ import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from '.
 import { DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { NetworkController } from 'network/controller';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
-import { EntryResult } from 'service/native-modules';
 import { SendVerifyCodeResultDTO } from 'network/dto/guardian';
 
 const useSignUp = (config: SignUpConfig): SignUpHooks => {

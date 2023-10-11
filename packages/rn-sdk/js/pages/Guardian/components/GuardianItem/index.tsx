@@ -27,9 +27,7 @@ import { VerifierImage } from '../VerifierImage';
 import { GuardiansStatus, GuardiansStatusItem } from 'pages/Guardian/types';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { verification } from 'utils/api';
-// import { useVerifyToken } from 'hooks/authentication';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
-import myEvents from 'utils/deviceEvent';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 
@@ -53,7 +51,6 @@ interface GuardianAccountItemProps {
   isExpired?: boolean;
   isSuccess?: boolean;
   approvalType?: ApprovalType;
-  authenticationInfo?: AuthenticationInfo;
 }
 
 function GuardianItemButton({
@@ -63,15 +60,12 @@ function GuardianItemButton({
   isExpired,
   approvalType,
   disabled,
-  authenticationInfo,
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
 
   const { status, requestCodeResult } = itemStatus || {};
-  // const verifyToken = useVerifyToken();
-  const verifyToken = null;
   const guardianInfo = useMemo(() => {
     return {
       guardianItem,
@@ -130,46 +124,6 @@ function GuardianItemButton({
   const onVerifierAuth = useCallback(async () => {
     console.log('bbb');
   }, []);
-  /*
-  const onVerifierAuth = useCallback(async () => {
-    try {
-      Loading.show();
-
-      const rst = await verifyToken(guardianItem.guardianType, {
-        accessToken: authenticationInfo?.[guardianItem.guardianAccount],
-        id: guardianItem.guardianAccount,
-        verifierId: guardianItem.verifier?.id,
-        chainId: originChainId,
-        operationType,
-      });
-
-      if (rst.accessToken) {
-        myEvents.setAuthenticationInfo.emit({
-          [guardianItem.guardianAccount]: rst.accessToken,
-        });
-      }
-
-      CommonToast.success('Verified Successfully');
-      const verifierInfo: VerifierInfo = { ...rst, verifierId: guardianItem?.verifier?.id };
-      onSetGuardianStatus({
-        status: VerifyStatus.Verified,
-        verifierInfo,
-      });
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-    Loading.hide();
-  }, [
-    authenticationInfo,
-    guardianItem.guardianAccount,
-    guardianItem.guardianType,
-    guardianItem.verifier?.id,
-    onSetGuardianStatus,
-    operationType,
-    originChainId,
-    verifyToken,
-  ]);
-  */
   const onVerifier = useThrottleCallback(async () => {
     switch (guardianItem.guardianType) {
       case LoginType.Apple:
@@ -243,7 +197,6 @@ export default function GuardianItem({
   isExpired,
   isSuccess,
   approvalType = ApprovalType.communityRecovery,
-  authenticationInfo,
 }: GuardianAccountItemProps) {
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
   const disabled = isSuccess && itemStatus?.status !== VerifyStatus.Verified;
@@ -303,7 +256,6 @@ export default function GuardianItem({
           guardiansStatus={guardiansStatus}
           setGuardianStatus={setGuardianStatus}
           approvalType={approvalType}
-          authenticationInfo={authenticationInfo}
         />
       )}
       {renderBtn && renderBtn(guardianItem)}

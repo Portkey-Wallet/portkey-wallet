@@ -3,9 +3,9 @@ import { PortkeyConfig, setCurrChainId } from 'global';
 import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import { GuardianConfig } from 'model/verify/guardian';
 import { SignUpConfig } from 'model/verify/sign-up';
+import { SocialRecoveryConfig } from 'model/verify/social-recovery';
 import { NetworkController } from 'network/controller';
 import { AccountOrGuardianOriginalTypeStr } from 'network/dto/guardian';
-import { EntryResult } from 'service/native-modules';
 import { GlobalStorage } from 'service/storage';
 import { CountryCodeDataDTO } from 'types/wallet';
 
@@ -78,6 +78,31 @@ export const getRegisterPageData = async (
         operationType: OperationTypeEnum.register,
       },
     },
+  };
+};
+
+export const getSocialRegisterPageData = async (
+  accountIdentifier: string,
+  accountOriginalType: AccountOriginalType,
+): Promise<SocialRecoveryConfig> => {
+  const guardians = await NetworkController.getGuardianInfo(PortkeyConfig.currChainId, accountIdentifier);
+  return {
+    accountIdentifier,
+    accountOriginalType,
+    guardians: (guardians.guardianList.guardians ?? []).map(guardian => ({
+      accountIdentifier: guardian.guardianIdentifier,
+      accountOriginalType: accountOriginalType,
+      isLoginGuardian: guardian.isLoginGuardian,
+      name: guardian.name ?? 'Portkey',
+      imageUrl: guardian.imageUrl ?? '',
+      sendVerifyCodeParams: {
+        type: AccountOriginalType[accountOriginalType] as AccountOrGuardianOriginalTypeStr,
+        guardianIdentifier: accountIdentifier,
+        verifierId: guardian.verifierId,
+        chainId: PortkeyConfig.currChainId,
+        operationType: OperationTypeEnum.register,
+      },
+    })),
   };
 };
 

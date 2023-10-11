@@ -3,7 +3,6 @@ import Recaptcha from 'components/Recaptcha';
 import OverlayModal from '../OverlayModal';
 import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
 
-import Config from 'react-native-config';
 import { clearBackgroundTimeout, setBackgroundTimeout } from 'utils/backgroundTimer';
 
 const TIME_OUT = 20000; // recaptcha timeout 20 seconds

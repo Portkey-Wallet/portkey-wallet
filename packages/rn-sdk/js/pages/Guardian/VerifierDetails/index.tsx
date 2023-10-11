@@ -82,8 +82,11 @@ export default function VerifierDetails({
     }
   };
 
-  const onPageFinish = (result: CheckVerifyCodeResultDTO) => {
-    onFinish<VerifyPageResult>({ status: 'success', data: { verifiedData: JSON.stringify(result) } });
+  const onPageFinish = (result: CheckVerifyCodeResultDTO | null) => {
+    onFinish<VerifyPageResult>({
+      status: result ? 'success' : 'fail',
+      data: { verifiedData: result ? JSON.stringify(result) : '' },
+    });
   };
 
   const onInputFinish = async (code: string) => {
@@ -104,6 +107,10 @@ export default function VerifierDetails({
     }
   };
 
+  const onBack = () => {
+    onPageFinish(null);
+  };
+
   const countdown = useRef<VerifierCountdownInterface>();
   const digitInput = useRef<DigitInputInterface>();
 
@@ -118,6 +125,7 @@ export default function VerifierDetails({
       type="leftBack"
       titleDom="VerifierDetails"
       safeAreaColor={['white']}
+      leftCallback={onBack}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
       {/* {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null} */}

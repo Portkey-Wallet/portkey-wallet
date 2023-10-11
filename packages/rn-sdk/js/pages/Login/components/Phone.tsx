@@ -14,7 +14,6 @@ import PhoneInput from 'components/PhoneInput';
 import { getCachedCountryCodeData, attemptAccountCheck } from 'model/sign-in';
 import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import ActionSheet from 'components/ActionSheet';
-import { EntryResult } from 'service/native-modules';
 import { PortkeyEntries } from 'config/entries';
 import { getRegisterPageData } from 'model/sign-in';
 import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';

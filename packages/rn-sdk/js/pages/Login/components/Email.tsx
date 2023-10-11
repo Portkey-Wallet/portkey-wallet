@@ -19,7 +19,6 @@ import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-ver
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
 import { GuardianConfig } from 'model/verify/guardian';
-import { EntryResult } from 'service/native-modules';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import useSignUp from 'model/verify/sign-up';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';

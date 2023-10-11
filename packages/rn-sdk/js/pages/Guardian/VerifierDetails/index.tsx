@@ -4,25 +4,19 @@ import { TextM } from 'components/CommonText';
 import VerifierCountdown, { VerifierCountdownInterface } from 'components/VerifierCountdown';
 import PageContainer from 'components/PageContainer';
 import DigitInput, { DigitInputInterface } from 'components/DigitInput';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import {
-  ApprovalType,
-  VerificationType,
-  OperationTypeEnum,
-  VerifierInfo,
-  VerifyStatus,
-} from '@portkey-wallet/types/verifier';
-import GuardianItem from '../components/GuardianItem';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Platform, StyleSheet, Text, ToastAndroid } from 'react-native';
+import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { FontStyles } from 'assets/theme/styles';
-import Loading from 'components/Loading';
-import navigationService from 'utils/navigationService';
-import CommonToast from 'components/CommonToast';
-import useEffectOnce from 'hooks/useEffectOnce';
-import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { AccountOriginalType } from 'model/verify/after-verify';
+import usePhoneOrEmailGuardian, { GuardianConfig, INIT_TIME_OUT } from 'model/verify/guardian';
+import { NetworkController } from 'network/controller';
+import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import Loading from 'components/Loading';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
+import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
 
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -42,118 +36,82 @@ function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; is
   );
 }
 
-/*
-accountIdentifier,
-accountOriginalType,
-guardianConfig: {
-  accountIdentifier,
-  accountOriginalType,
-  isLoginGuardian: true,
-  name: recommendedGuardian.name ?? 'Portkey',
-  imageUrl: recommendedGuardian.imageUrl ?? null,
-  sendVerifyCodeParams: {
-    type: AccountOriginalType[accountOriginalType] as AccountOrGuardianOriginalTypeStr,
-    guardianIdentifier: accountIdentifier,
-    verifierId: recommendedGuardian.id,
-    chainId: PortkeyConfig.currChainId,
-    operationType: OperationTypeEnum.register,
-  },
-},*/
-
 export default function VerifierDetails({
   verificationType = VerificationType.register,
   accountIdentifier,
-  accountOriginalType,
+  guardianConfig,
 }: {
   verificationType?: VerificationType;
   accountIdentifier: string;
   accountOriginalType: AccountOriginalType;
+  guardianConfig: GuardianConfig;
 }) {
+  const { onFinish } = useBaseContainer({
+    entryName: PortkeyEntries.VERIFIER_DETAIL_ENTRY,
+  });
+
   const guardianItem = {
     guardianAccount: accountIdentifier,
-    guardianType: LoginType.Phone,
+    guardianType: guardianConfig.sendVerifyCodeParams.type === 'Phone' ? LoginType.Phone : LoginType.Email,
     verifier: {
       id: '123456789',
     },
   };
 
-  const countdown = useRef<VerifierCountdownInterface>();
-  // useEffectOnce(() => {
-  //   if (!startResend) countdown.current?.resetTime(60);
-  // });
-  // const [requestCodeResult, setRequestCodeResult] =
-  //   useState<RouterParams['requestCodeResult']>(paramsRequestCodeResult);
-  const digitInput = useRef<DigitInputInterface>();
-  // const { caHash, address: managerAddress } = useCurrentWalletInfo();
-  // const pin = usePin();
-  // const onRequestOrSetPin = useOnRequestOrSetPin();
-  // const getCurrentCAContract = useGetCurrentCAContract();
-  const getCurrentCAContract = null;
-  // const setGuardianStatus = useCallback(
-  //   (status: GuardiansStatusItem) => {
-  //     myEvents.setGuardianStatus.emit({
-  //       key: guardianItem?.key,
-  //       status,
-  //     });
-  //   },
-  //   [guardianItem?.key],
-  // );
-  const onSetLoginAccount = useCallback(async () => {
-    console.log('onSetLoginAccount');
-  }, []);
-  /*
-  const onSetLoginAccount = useCallback(async () => {
-    if (!managerAddress || !caHash || !guardianItem) return;
+  const { countDown: countDownNumber, sendVerifyCode, checkVerifyCode } = usePhoneOrEmailGuardian(guardianConfig);
 
-    try {
-      const caContract = await getCurrentCAContract();
-      const req = await setLoginAccount(caContract, managerAddress, caHash, guardianItem);
-      if (req && !req.error) {
-        myEvents.refreshGuardiansList.emit();
-        navigationService.navigate('GuardianDetail', {
-          guardian: { ...guardianItem, isLoginAccount: true },
-        });
-      } else {
-        CommonToast.fail(req?.error?.message || '');
-      }
-    } catch (error) {
-      CommonToast.failError(error);
+  const tryToResendCode = async () => {
+    if (countDownNumber > 0) {
+      console.error(`countDown: ${countDownNumber}`);
+      return;
     }
-  }, [caHash, getCurrentCAContract, guardianItem, managerAddress]);
-  */
+    try {
+      let token: string | undefined;
+      Loading.show();
+      const needRecaptcha = await NetworkController.isGoogleRecaptchaOpen(OperationTypeEnum.register); // TODO
+      if (needRecaptcha) {
+        token = (await verifyHumanMachine('en')) as string;
+      }
+      const sendSuccess = await sendVerifyCode(token);
+      if (sendSuccess) {
+        countdown.current?.resetTime(INIT_TIME_OUT);
+      }
+      Loading.hide();
+    } catch (e) {
+      Loading.hide();
+    }
+  };
 
-  /*
-  const resendCode = useCallback(async () => {
+  const onPageFinish = (result: CheckVerifyCodeResultDTO) => {
+    onFinish<VerifyPageResult>({ status: 'success', data: { verifiedData: JSON.stringify(result) } });
+  };
+
+  const onInputFinish = async (code: string) => {
     try {
       Loading.show();
-
-      const req = await verification.sendVerificationCode({
-        params: {
-          type: LoginType[guardianItem?.guardianType as LoginType],
-          guardianIdentifier: guardianItem?.guardianAccount,
-          verifierId: guardianItem?.verifier?.id,
-          chainId: originChainId,
-          operationType,
-        },
-      });
-      if (req.verifierSessionId) {
-        setRequestCodeResult(req);
-        setGuardianStatus({
-          requestCodeResult: req,
-          status: VerifyStatus.Verifying,
-        });
-        countdown.current?.resetTime(60);
+      const result = await checkVerifyCode(code);
+      Loading.hide();
+      if (result) {
+        onPageFinish(result);
+      } else {
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('verify Failed', 1000);
+        }
+        digitInput.current?.reset();
       }
-    } catch (error) {
-      CommonToast.failError(error, 'Verify Fail');
+    } catch (e) {
+      Loading.hide();
     }
-    digitInput.current?.reset();
-    Loading.hide();
-  }, [guardianItem, operationType, originChainId, setGuardianStatus]);
-  */
+  };
 
-  const onFinish = useCallback(() => {}, []);
-  const resendCode = useCallback(async () => {}, []);
+  const countdown = useRef<VerifierCountdownInterface>();
+  const digitInput = useRef<DigitInputInterface>();
+
+  useEffect(() => {
+    if (guardianConfig.alreadySent) {
+      countdown.current?.resetTime(INIT_TIME_OUT);
+    }
+  }, []);
 
   return (
     <PageContainer
@@ -162,15 +120,19 @@ export default function VerifierDetails({
       safeAreaColor={['white']}
       containerStyles={styles.containerStyles}
       scrollViewProps={{ disabled: true }}>
-      {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null}
+      {/* {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null} */}
       <TipText
         isRegister={!verificationType || (verificationType as VerificationType) === VerificationType.register}
         guardianAccount={guardianItem?.guardianAccount}
       />
-      <DigitInput ref={digitInput} onFinish={onFinish} maxLength={DIGIT_CODE.length} />
-      <VerifierCountdown style={GStyles.marginTop(24)} onResend={resendCode} ref={countdown} />
+      <DigitInput ref={digitInput} onFinish={onInputFinish} maxLength={DIGIT_CODE.length} />
+      <VerifierCountdown style={GStyles.marginTop(24)} onResend={tryToResendCode} ref={countdown} />
     </PageContainer>
   );
+}
+
+export interface VerifyPageResult {
+  verifiedData: string;
 }
 
 const styles = StyleSheet.create({

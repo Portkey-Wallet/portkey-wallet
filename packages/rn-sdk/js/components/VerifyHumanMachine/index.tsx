@@ -15,8 +15,8 @@ async function verifyHumanMachine(language: any) {
       <Recaptcha
         lang={language}
         headerComponent={null}
-        siteKey={Config.RECAPTCHA_SITE_KEY}
-        baseUrl={Config.RECAPTCHA_BASE_URL}
+        siteKey={'6LfR_bElAAAAAJSOBuxle4dCFaciuu9zfxRQfQC0'}
+        baseUrl={'https://portkey.finance'}
         onVerify={token => {
           OverlayModal.hideKey(key);
           resolve(token as string);

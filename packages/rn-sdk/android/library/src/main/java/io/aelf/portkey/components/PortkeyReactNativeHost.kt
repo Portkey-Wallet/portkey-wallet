@@ -5,7 +5,9 @@ import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.PackageList
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import com.lugg.ReactNativeConfig.ReactNativeConfigPackage
 import io.aelf.portkey.native_modules.PortkeyNativePackages
+
 
 class PortkeyReactNativeHost(
     application: Application, private val isDebug: Boolean = false

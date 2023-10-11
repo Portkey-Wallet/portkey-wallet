@@ -23,6 +23,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { GuardianConfig } from 'model/verify/guardian';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 
 const TitleMap = {
   [PageType.login]: {
@@ -66,15 +67,19 @@ export default function Phone({
   }, [loginAccount, country, selectedCountryCode]);
 
   const navigateToGuardianPage = useCallback(
-    (config: GuardianConfig, callback: (result: EntryResult<VerifiedGuardianDoc>) => void) => {
-      navigateForResult<VerifiedGuardianDoc, VerifierDetailsPageProps>(
+    (config: GuardianConfig, callback: (result: VerifiedGuardianDoc) => void) => {
+      navigateForResult<VerifyPageResult, VerifierDetailsPageProps>(
         PortkeyEntries.VERIFIER_DETAIL_ENTRY,
         {
           params: {
             deliveredGuardianInfo: JSON.stringify(config),
           },
         },
-        callback,
+        res => {
+          Loading.hide();
+          const { data } = res;
+          callback(data?.verifiedData ? JSON.parse(data.verifiedData) : null);
+        },
       );
     },
     [navigateForResult],
@@ -170,9 +175,14 @@ export default function Phone({
               if (needRecaptcha) {
                 token = (await verifyHumanMachine('en')) as string;
               }
-              const sendSuccess = await sendVerifyCode(pageData.guardianConfig, token);
-              if (sendSuccess) {
-                const guardianResult = await handleGuardianVerifyPage();
+              const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
+              if (sendResult) {
+                const guardianResult = await handleGuardianVerifyPage(
+                  Object.assign({}, pageData.guardianConfig, {
+                    verifySessionId: sendResult.verifierSessionId,
+                  } as Partial<GuardianConfig>),
+                  true,
+                );
                 if (!guardianResult) {
                   setErrorMessage('guardian verify failed, please try again.');
                   Loading.hide();

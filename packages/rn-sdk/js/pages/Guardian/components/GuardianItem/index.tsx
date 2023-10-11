@@ -17,7 +17,6 @@ import {
   AuthenticationInfo,
   VerificationType,
   OperationTypeEnum,
-  VerifierInfo,
   VerifyStatus,
 } from '@portkey-wallet/types/verifier';
 import { BGStyles, FontStyles } from 'assets/theme/styles';

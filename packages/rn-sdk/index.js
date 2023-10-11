@@ -10,9 +10,7 @@ import GuardianApprovalEntryPage from 'components/entries/GuardianApproval';
 import VerifierDetailsEntryPage from 'components/entries/VerifierDetails';
 import CheckPin from 'pages/Pin/check-pin';
 
-type EntryConfig = Map<string, any>;
-
-const entryConfig: EntryConfig = new Map();
+const entryConfig = new Map();
 entryConfig.set(PortkeyEntries.TEST, () => TestPage);
 entryConfig.set(PortkeyEntries.REFERRAL_ENTRY, () => ReferralEntryPage);
 entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => SignInEntryPage);

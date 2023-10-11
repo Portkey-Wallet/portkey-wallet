@@ -22,6 +22,7 @@ import { GuardianConfig } from 'model/verify/guardian';
 import { EntryResult } from 'service/native-modules';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import useSignUp from 'model/verify/sign-up';
+import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 
 const TitleMap = {
   [PageType.login]: {
@@ -50,15 +51,20 @@ export default function Email({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
   });
   const navigateToGuardianPage = useCallback(
-    (config: GuardianConfig, callback: (result: EntryResult<VerifiedGuardianDoc>) => void) => {
-      navigateForResult<VerifiedGuardianDoc, VerifierDetailsPageProps>(
+    (config: GuardianConfig, callback: (result: VerifiedGuardianDoc) => void) => {
+      navigateForResult<VerifyPageResult, VerifierDetailsPageProps>(
         PortkeyEntries.VERIFIER_DETAIL_ENTRY,
         {
           params: {
             deliveredGuardianInfo: JSON.stringify(config),
           },
         },
-        callback,
+        res => {
+          Loading.hide();
+          console.error('res', res);
+          const { data } = res;
+          callback(data?.verifiedData ? JSON.parse(data.verifiedData) : null);
+        },
       );
     },
     [navigateForResult],
@@ -148,7 +154,7 @@ export default function Email({
       title: '',
       message: `${
         pageData.guardianConfig?.name ?? 'Portkey'
-      } will send a verification code to ${accountIdentifier} to verify your phone number.`,
+      } will send a verification code to ${accountIdentifier} to verify your email.`,
       buttons: [
         { title: 'Cancel', type: 'outline' },
         {
@@ -161,9 +167,14 @@ export default function Email({
               if (needRecaptcha) {
                 token = (await verifyHumanMachine('en')) as string;
               }
-              const sendSuccess = await sendVerifyCode(pageData.guardianConfig, token);
-              if (sendSuccess) {
-                const guardianResult = await handleGuardianVerifyPage();
+              const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
+              if (sendResult) {
+                const guardianResult = await handleGuardianVerifyPage(
+                  Object.assign({}, pageData.guardianConfig, {
+                    verifySessionId: sendResult.verifierSessionId,
+                  } as Partial<GuardianConfig>),
+                  true,
+                );
                 if (!guardianResult) {
                   setErrorMessage('guardian verify failed, please try again.');
                   Loading.hide();

@@ -4,12 +4,12 @@ import { CheckVerifyCodeResultDTO, SendVerifyCodeParams } from '../../../network
 import { AccountOriginalType } from '../after-verify';
 import { VerifiedGuardianDoc } from '../after-verify/index';
 
-const INIT_TIME_OUT = 60;
+export const INIT_TIME_OUT = 60;
 
 const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
-  const [status, setStatus] = useState(GuardianStatus.SENT);
+  const [status, setStatus] = useState(config.alreadySent ? GuardianStatus.SENT : GuardianStatus.INIT);
   const [countDown, setCountDown] = useState<number>(0);
-  const [verifierSessionId, setVerifierSessionId] = useState<string>('');
+  const [verifierSessionId, setVerifierSessionId] = useState<string>(config.verifySessionId ?? '');
   const [verifiedDoc, setVerifiedDoc] = useState<CheckVerifyCodeResultDTO | null>(null);
   const sendVerifyCode = useCallback(
     async (googleRecaptchaToken?: string): Promise<boolean> => {
@@ -66,13 +66,13 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
   };
 
   const checkVerifyCode = useCallback(
-    async (verificationCode: string): Promise<boolean> => {
+    async (verificationCode: string): Promise<CheckVerifyCodeResultDTO | null> => {
       if (status !== GuardianStatus.SENT) {
         console.warn('You can not check verify code at this stage.');
-        return true;
-      } else if (!verifierSessionId) {
+        return null;
+      } else if (!verifierSessionId && !config.verifySessionId) {
         console.error('You must send verify code first.');
-        return false;
+        return null;
       }
       try {
         const result = await NetworkController.checkVerifyCode({
@@ -83,13 +83,13 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
         if (result.verificationDoc && result.signature) {
           setStatus(GuardianStatus.VERIFIED);
           setVerifiedDoc(result);
-          return true;
+          return result;
         } else {
-          return false;
+          return null;
         }
       } catch (e) {
         console.warn(e);
-        return false;
+        return null;
       }
     },
     [status, config, verifierSessionId],
@@ -118,7 +118,7 @@ export interface GuardianEntity {
   status: GuardianStatus;
   countDown: number;
   sendVerifyCode: (googleRecaptchaToken?: string) => Promise<boolean>;
-  checkVerifyCode: (verificationCode: string) => Promise<boolean>;
+  checkVerifyCode: (verificationCode: string) => Promise<CheckVerifyCodeResultDTO | null>;
   getVerifiedGuardianDoc: () => VerifiedGuardianDoc;
 }
 
@@ -129,9 +129,12 @@ export interface GuardianConfig {
   readonly name: string;
   readonly imageUrl: string;
   readonly sendVerifyCodeParams: SendVerifyCodeParams;
+  readonly alreadySent?: boolean;
+  readonly verifySessionId?: string;
 }
 
 export enum GuardianStatus {
+  INIT,
   SENT,
   VERIFIED,
 }

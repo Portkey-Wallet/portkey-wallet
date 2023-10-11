@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'io.aelf.portkey'
+    namespace 'io.aelf.portkey.demo'
     compileSdk rootProject.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "io.aelf.portkey"
+        applicationId "io.aelf.portkey.demo"
         minSdk rootProject.ext.minSdkVersion
         targetSdk rootProject.ext.targetSdkVersion
         versionCode 1
@@ -27,12 +27,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField("Boolean", "IS_DEBUG", "false")
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField("Boolean", "IS_DEBUG", "true")
         }
     }
     compileOptions {
@@ -44,7 +42,6 @@ android {
     }
     buildFeatures {
         compose true
-        buildConfig true
         prefab true
     }
     composeOptions {

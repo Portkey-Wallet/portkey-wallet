@@ -10,12 +10,13 @@ fun usePortkeyRecovery(entry: String, callback: () -> Unit) {
     callback()
 }
 
-fun Activity.usePortkeyTest(){
+fun Activity.usePortkeyEntry(entryName:String){
     val intent = Intent(this, DefaultReactActivity::class.java)
-    intent.putExtra(StorageIdentifiers.PAGE_ENTRY,"test")
+    intent.putExtra(StorageIdentifiers.PAGE_ENTRY,entryName)
     NavigationHolder.lastCachedIntent = intent
     startActivity(intent)
 }
+
 
 internal object ForwardEntryCallbackHolder {
     private var recoveryCallback: () -> Unit = {}

@@ -584,7 +584,7 @@
 			baseConfigurationReference = 903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 56DKXVFJS2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PortkeySDKExample/PortkeySDKExample-Prefix.pch";
@@ -610,7 +610,7 @@
 			baseConfigurationReference = 58B8649AAAEF2C57C9DAB9AD /* Pods-PortkeySDKExample_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 56DKXVFJS2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PortkeySDKExample/PortkeySDKExample-Prefix.pch";

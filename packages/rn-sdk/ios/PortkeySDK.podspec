@@ -30,11 +30,12 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '10.0'
 
+  s.resources = ['PortkeySDK/Assets/**/*.png']
   s.source_files = 'PortkeySDK/Classes/**/*'
   
   s.resource_bundles = {
     'JSBundle' => ['PortkeySDK/Assets/*.bundle'],
-    'ImageResources' => ['PortkeySDK/Assets/**/*.png']
+#    'ImageResources' => ['PortkeySDK/Assets/**/*.png']
   }
 
   s.public_header_files = 'Pod/Classes/**/*.h'

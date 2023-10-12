@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { TextL, TextS } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
@@ -18,6 +18,7 @@ import Loading from 'components/Loading';
 import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { authenticateAsync, LocalAuthenticationResult } from 'expo-local-authentication';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const ScrollViewProps = { disabled: true };
 
@@ -88,14 +89,17 @@ export default function SetBiometrics({ pin, deliveredSetPinInfo }: SetBiometric
       openBiometrics();
     }, 100);
   });
+  const biometricIcon = useMemo(() => {
+    if (isIOS) {
+      return { uri: 'biometric' };
+    } else {
+      return require('../../../assets/image/pngs/biometric.png');
+    }
+  }, []);
   return (
     <PageContainer scrollViewProps={ScrollViewProps} leftDom titleDom containerStyles={styles.containerStyles}>
       <Touchable style={GStyles.itemCenter} onPress={openBiometrics}>
-        <Image
-          resizeMode="contain"
-          source={require('../../../assets/image/pngs/biometric.png')}
-          style={styles.biometricIcon}
-        />
+        <Image resizeMode="contain" source={biometricIcon} style={styles.biometricIcon} />
         <TextL style={styles.tipText}>Enable biometric authentication</TextL>
         {errorMessage ? <TextS style={styles.errorText}>{errorMessage}</TextS> : null}
       </Touchable>

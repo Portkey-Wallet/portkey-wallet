@@ -52,8 +52,16 @@ export default function LoginPortkey({
     [selectedCountryCode, updateCountryCode],
   );
 
+  const backgroundImage = useMemo(() => {
+    if (isIOS) {
+      return { uri: 'background' };
+    } else {
+      return require('../img/background.png');
+    }
+  }, []);
+
   return (
-    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={require('../img/background.png')}>
+    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
       <PageContainer
         titleDom
         type="leftBack"

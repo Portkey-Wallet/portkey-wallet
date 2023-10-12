@@ -13,7 +13,6 @@
 
 @interface ViewController ()
 
-@property (nonatomic, strong) UIButton *jssdkButton;
 @property (nonatomic, strong) UIButton *loginButton;
 
 @end
@@ -30,8 +29,6 @@
     CGRect jssdkButtonRect = CGRectZero;
     jssdkButtonRect.size = [self buttonSize];
     jssdkButtonRect.origin = CGPointMake((screenSize.width - [self buttonSize].width) / 2, 150);
-//    self.jssdkButton.frame = jssdkButtonRect;
-//    [self.view addSubview:self.jssdkButton];
     
     CGRect loginButtonRect = jssdkButtonRect;
     loginButtonRect.origin = CGPointMake((screenSize.width - [self buttonSize].width) / 2, 250);
@@ -47,28 +44,11 @@
 
 #pragma mark - Selector
 
-- (void)jssdkButtonClicked:(id)sender {
-    JSSDKViewController *vc = [JSSDKViewController new];
-    [self.navigationController pushViewController:vc animated:YES];
-}
-
 - (void)loginButtonClicked:(id)sender {
     [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
 }
 
 #pragma mark - Getter
-
-- (UIButton *)jssdkButton {
-    if (!_jssdkButton) {
-        _jssdkButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        _jssdkButton.layer.cornerRadius = 8;
-        [_jssdkButton setTitle:@"JS SDK Test" forState:UIControlStateNormal];
-        _jssdkButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
-        [_jssdkButton setBackgroundColor:[UIColor greenColor]];
-        [_jssdkButton addTarget:self action:@selector(jssdkButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _jssdkButton;
-}
 
 - (UIButton *)loginButton {
     if (!_loginButton) {

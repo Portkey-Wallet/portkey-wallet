@@ -3,6 +3,7 @@ import { defaultColors } from 'assets/theme';
 import { Image, StyleSheet, View, Text } from 'react-native';
 import { ViewStyleType } from 'types/styles';
 import { pTd } from 'utils/unit';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export function VerifierImage({
   size = 36,
@@ -25,6 +26,22 @@ export function VerifierImage({
   }, [size]);
   const [imgLoading, setImgLoading] = useState(true);
 
+  const source = useMemo(() => {
+    if (isIOS) {
+      return { uri: 'portkeyBlueBackground' };
+    } else {
+      return require('../../../../assets/image/pngs/portkeyBlueBackground.png');
+    }
+  }, []);
+
+  const loadingIndicatorSource = useMemo(() => {
+    if (isIOS) {
+      return { uri: 'phone' };
+    } else {
+      return require('../../../../assets/image/pngs/phone.png');
+    }
+  }, []);
+
   return (
     <View style={[styles.iconBox, iconStyle, style]}>
       {imgLoading && !!label ? <Text style={{ fontSize: pTd(18) }}>{label.charAt(0)}</Text> : null}
@@ -32,9 +49,9 @@ export function VerifierImage({
         onLoad={() => {
           setImgLoading(false);
         }}
-        source={uri ? { uri } : require('../../../../assets/image/pngs/portkeyBlueBackground.png')}
+        source={uri ? { uri } : source}
         style={[iconStyle, imgLoading && styles.hiddenStyle]}
-        loadingIndicatorSource={require('../../../../assets/image/pngs/phone.png')}
+        loadingIndicatorSource={loadingIndicatorSource}
       />
     </View>
   );

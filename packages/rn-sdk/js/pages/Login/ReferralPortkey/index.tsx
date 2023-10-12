@@ -43,9 +43,15 @@ export default function ReferralKey() {
   useEffectOnce(() => {
     checkForCountryCodeCached();
   });
-
+  const backgroundImage = useMemo(() => {
+    if (isIOS) {
+      return { uri: 'background' };
+    } else {
+      return background;
+    }
+  }, []);
   return (
-    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>
+    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
       <PageContainer
         titleDom
         type="leftBack"

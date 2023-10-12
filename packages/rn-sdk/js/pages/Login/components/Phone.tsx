@@ -233,7 +233,7 @@ export default function Phone({
 
   const dealWithSetPin = (afterVerifiedData: AfterVerifiedConfig | string) => {
     navigateForResult<SetPinPageResult, SetPinPageProps>(
-      PortkeyEntries.CHECK_PIN,
+      PortkeyEntries.SET_PIN,
       {
         params: {
           deliveredSetPinInfo:

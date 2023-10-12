@@ -20,7 +20,7 @@ export interface PortkeyConfigInterface {
 }
 
 export const PortkeyConfig: PortkeyConfigInterface = {
-  endPointUrl: () => getConfigStr(ConfigIdentifier.END_POINT) || EndPoints.MAIN_NET,
+  endPointUrl: () => getConfigStr(ConfigIdentifier.END_POINT) || EndPoints.TEST1,
   currChainId: () => (getConfigStr(ConfigIdentifier.CURR_CHAIN_ID) || 'AELF') as ChainId,
 };
 

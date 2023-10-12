@@ -1,5 +1,6 @@
 package io.aelf.portkey.network
 
+import android.util.Log
 import com.facebook.react.bridge.ReadableMap
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
@@ -23,7 +24,13 @@ internal object NetworkConnector {
             val response = okHttpClient
                 .newCall(request)
                 .execute()
-            dealWithResponse(response)
+            if (!response.isSuccessful) {
+                Log.e(
+                    "NetworkConnector",
+                    "Network failed ! url:${url}, headers:${header.toHashMap()}, status:${response.code}"
+                )
+            }
+            dealWithResponse(response, printBody = !response.isSuccessful || response.code != 200)
         } catch (e: Throwable) {
             ResultWrapper(-1)
         }
@@ -39,7 +46,13 @@ internal object NetworkConnector {
             val response = okHttpClient
                 .newCall(request)
                 .execute()
-            dealWithResponse(response)
+            if (!response.isSuccessful) {
+                Log.e(
+                    "NetworkConnector",
+                    "Network failed ! url:${url}, headers:${header.toHashMap()}, status:${response.code}"
+                );
+            }
+            dealWithResponse(response, printBody = !response.isSuccessful || response.code != 200)
         } catch (e: Throwable) {
             ResultWrapper(-1)
         }
@@ -62,11 +75,14 @@ internal object NetworkConnector {
             .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
     }
 
-    private fun dealWithResponse(response: Response): ResultWrapper {
+    private fun dealWithResponse(response: Response, printBody: Boolean = false): ResultWrapper {
         var result: JsonElement? = null
         try {
             result = JsonParser.parseString(response.body?.string())
         } catch (ignored: Throwable) {
+        }
+        if (result != null && printBody) {
+            Log.w("NetworkConnector", "result: ${result} , code: ${response.code}")
         }
         return if (response.isSuccessful) {
             ResultWrapper(0, result = result)

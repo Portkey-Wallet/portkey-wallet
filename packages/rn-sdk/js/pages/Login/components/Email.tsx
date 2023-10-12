@@ -199,7 +199,7 @@ export default function Email({
 
   const dealWithSetPin = (afterVerifiedData: AfterVerifiedConfig | string) => {
     navigateForResult<SetPinPageResult, SetPinPageProps>(
-      PortkeyEntries.CHECK_PIN,
+      PortkeyEntries.SET_PIN,
       {
         params: {
           deliveredSetPinInfo:

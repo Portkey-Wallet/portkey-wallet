@@ -69,7 +69,7 @@ export function useUnmountedRef() {
   return unmountedRef;
 }
 
-export default function useEffectOnce(effect: EffectCallback) {
+export function useEffectOnce(effect: EffectCallback) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(effect, []);
 }

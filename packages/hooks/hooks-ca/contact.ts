@@ -22,6 +22,7 @@ import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useAddStranger } from './im';
 import { useWallet } from './wallet';
+import { sleep } from '@portkey-wallet/utils';
 
 export const REFRESH_DELAY_TIME = 1.5 * 1000;
 
@@ -72,9 +73,8 @@ export const useEditContact = () => {
         params: contactItem,
       });
       dispatch(editContactAction(response));
-      setTimeout(() => {
-        dispatch(fetchContactListAsync());
-      }, REFRESH_DELAY_TIME);
+      await sleep(REFRESH_DELAY_TIME);
+      dispatch(fetchContactListAsync());
       return response;
     },
     [currentNetworkInfo.apiUrl, dispatch],

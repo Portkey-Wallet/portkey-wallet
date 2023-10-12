@@ -11,9 +11,20 @@
 
 RCT_EXPORT_MODULE(NativeWrapperModule);
 
+static const NSString *kPortkeySDKTempStorageIdentifier;
+
++ (void)initialize {
+    if (self == [PortkeySDKNativeWrapperModule class]) {
+        kPortkeySDKTempStorageIdentifier = [[NSUUID UUID] UUIDString];
+    }
+}
+
 - (NSDictionary *)constantsToExport
 {
-    return @{ @"platformName": @"ios" };
+    return @{
+        @"platformName": @"ios",
+        @"tempStorageIdentifier": kPortkeySDKTempStorageIdentifier
+    };
 }
 
 + (BOOL)requiresMainQueueSetup {

@@ -43,14 +43,6 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
         NSDictionary *props = [params valueForKey:@"params"];
         PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:props];
         [topViewController.navigationController pushViewController:vc animated:YES];
-        
-//        NSDictionary *result = @{
-//            @"status": @"success",
-//            @"result": @{
-//                @"name": @"portkey",
-//            }
-//        };
-//        callback(@[result]);
     });
 }
 

@@ -9,22 +9,33 @@ import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
-import { portkeyModulesEntity } from 'service/native-modules';
+import { EntryResult, RouterOptions } from 'service/native-modules';
 import { PortkeyEntries } from 'config/entries';
 import { SelectCountryResult } from 'pages/Login/SelectCountry';
+import { AcceptableValueType } from 'model/container/BaseContainer';
+
 interface PhoneInputProps extends CommonInputProps {
   selectCountry?: CountryItem;
   onCountryChange?: (country: CountryItem) => void;
+  navigateForResult: <V, T = { [x: string]: AcceptableValueType }>(
+    entry: PortkeyEntries,
+    options: RouterOptions<T>,
+    callback: (res: EntryResult<V>) => void,
+  ) => void;
 }
 
-export default function PhoneInput({ selectCountry, onCountryChange, ...inputProps }: PhoneInputProps) {
+export default function PhoneInput({
+  selectCountry,
+  onCountryChange,
+  navigateForResult,
+  ...inputProps
+}: PhoneInputProps) {
   const { t } = useLanguage();
   const iptRef = useRef<any>();
 
   const pushToSelectCountry = () => {
-    portkeyModulesEntity.RouterModule.navigateToWithOptions<SelectCountryResult>(
+    navigateForResult<SelectCountryResult>(
       PortkeyEntries.SELECT_COUNTRY_ENTRY,
-      PortkeyEntries.SIGN_IN_ENTRY,
       { selectCountry: JSON.stringify(selectCountry) } as any,
       res => {
         onCountryChange?.(JSON.parse(res.data.result));

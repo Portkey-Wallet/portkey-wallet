@@ -79,7 +79,7 @@ function GuardianItemButton({
     },
     [guardianItem.key, setGuardianStatus],
   );
-  const originChainId = PortkeyConfig.currChainId;
+  const originChainId = PortkeyConfig.currChainId();
 
   const onSendCode = useThrottleCallback(async () => {
     try {

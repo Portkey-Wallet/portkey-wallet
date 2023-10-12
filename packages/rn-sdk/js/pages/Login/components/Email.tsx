@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { View } from 'react-native';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { BGStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
@@ -12,10 +12,21 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { attemptAccountCheck, getRegisterPageData, getSocialRecoveryPageData } from 'model/global';
+import {
+  attemptAccountCheck,
+  getRegisterPageData,
+  getSocialRecoveryPageData,
+  guardianTypeStrToEnum,
+} from 'model/global';
 import ActionSheet from 'components/ActionSheet';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { AccountOriginalType, VerifiedGuardianDoc, isTempWalletExist } from 'model/verify/after-verify';
+import {
+  AccountOriginalType,
+  AfterVerifiedConfig,
+  VerifiedGuardianDoc,
+  defaultExtraData,
+  isTempWalletExist,
+} from 'model/verify/after-verify';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
 import { GuardianConfig } from 'model/verify/guardian';
@@ -24,6 +35,9 @@ import useSignUp from 'model/verify/sign-up';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { GuardianApprovalPageResult, GuardianApprovalPageProps } from 'components/entries/GuardianApproval';
 import CommonToast from 'components/CommonToast';
+import { SetPinPageProps, SetPinPageResult } from 'pages/Pin/SetPin';
+import AElf from 'aelf-sdk';
+import { PortkeyConfig } from 'global';
 
 const TitleMap = {
   [PageType.login]: {
@@ -48,7 +62,7 @@ export default function Email({
   const [errorMessage, setErrorMessage] = useState<string>();
   const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
-  const { navigateForResult, navigationTo, onFinish } = useBaseContainer({
+  const { navigateForResult, onFinish } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
     onShow: () => {
       if (isTempWalletExist()) {
@@ -166,8 +180,8 @@ export default function Email({
           res => {
             Loading.hide();
             const { data } = res;
-            if (data.isVerified) {
-              dealWithSetPin();
+            if (data.isVerified && data.deliveredVerifiedData) {
+              dealWithSetPin(data.deliveredVerifiedData);
             } else {
               setErrorMessage('guardian verify failed, please try again.');
             }
@@ -183,8 +197,27 @@ export default function Email({
     }
   };
 
-  const dealWithSetPin = () => {
-    navigationTo(PortkeyEntries.CHECK_PIN);
+  const dealWithSetPin = (afterVerifiedData: AfterVerifiedConfig | string) => {
+    navigateForResult<SetPinPageResult, SetPinPageProps>(
+      PortkeyEntries.CHECK_PIN,
+      {
+        params: {
+          deliveredSetPinInfo:
+            typeof afterVerifiedData === 'string' ? afterVerifiedData : JSON.stringify(afterVerifiedData),
+        },
+      },
+      res => {
+        const { data } = res;
+        if (data.finished) {
+          onFinish({
+            status: 'success',
+            data: {
+              finished: true,
+            },
+          });
+        }
+      },
+    );
   };
 
   const dealWithSignUp = async () => {
@@ -206,6 +239,7 @@ export default function Email({
           onPress: async () => {
             try {
               Loading.show();
+              if (!pageData.guardianConfig) throw new Error('network failure');
               const needRecaptcha = await isGoogleRecaptchaOpen();
               let token: string | undefined;
               if (needRecaptcha) {
@@ -225,7 +259,7 @@ export default function Email({
                   Loading.hide();
                   return;
                 } else {
-                  dealWithSetPin();
+                  dealWithSetPin(getSignUpVerifiedData(pageData.guardianConfig, guardianResult));
                 }
               } else {
                 setErrorMessage('network fail.');
@@ -239,6 +273,31 @@ export default function Email({
         },
       ],
     });
+  };
+
+  const getSignUpVerifiedData = (config: GuardianConfig, verifiedData: VerifiedGuardianDoc): AfterVerifiedConfig => {
+    const wallet = AElf.wallet.createNewWallet();
+    const { address } = wallet;
+    return {
+      fromRecovery: false,
+      accountIdentifier: loginAccount,
+      chainId: PortkeyConfig.currChainId(),
+      manager: address,
+      context: {
+        clientId: address,
+        requestId: randomId(),
+      },
+      extraData: defaultExtraData,
+      verifiedGuardians: [
+        {
+          type: guardianTypeStrToEnum(config.sendVerifyCodeParams.type),
+          identifier: loginAccount,
+          verifierId: config.sendVerifyCodeParams.verifierId,
+          verificationDoc: verifiedData.verificationDoc,
+          signature: verifiedData.signature,
+        },
+      ],
+    } as AfterVerifiedConfig;
   };
 
   const handleEmailChange = (msg: string) => {

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -11,12 +11,23 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
 import PhoneInput from 'components/PhoneInput';
-import { getCachedCountryCodeData, attemptAccountCheck, getSocialRecoveryPageData } from 'model/global';
+import {
+  getCachedCountryCodeData,
+  attemptAccountCheck,
+  getSocialRecoveryPageData,
+  guardianTypeStrToEnum,
+} from 'model/global';
 import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import ActionSheet from 'components/ActionSheet';
 import { PortkeyEntries } from 'config/entries';
 import { getRegisterPageData } from 'model/global';
-import { AccountOriginalType, VerifiedGuardianDoc, isTempWalletExist } from 'model/verify/after-verify';
+import {
+  AccountOriginalType,
+  AfterVerifiedConfig,
+  VerifiedGuardianDoc,
+  defaultExtraData,
+  isTempWalletExist,
+} from 'model/verify/after-verify';
 import useSignUp from 'model/verify/sign-up';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { GuardianConfig } from 'model/verify/guardian';
@@ -25,6 +36,9 @@ import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { GuardianApprovalPageProps, GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
 import CommonToast from 'components/CommonToast';
+import { SetPinPageResult, SetPinPageProps } from 'pages/Pin/SetPin';
+import AElf from 'aelf-sdk';
+import { PortkeyConfig } from 'global';
 
 const TitleMap = {
   [PageType.login]: {
@@ -54,7 +68,7 @@ export default function Phone({
 
   const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
-  const { navigateForResult, navigationTo, onFinish } = useBaseContainer({
+  const { navigateForResult, onFinish } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
     onShow: () => {
       if (isTempWalletExist()) {
@@ -182,6 +196,7 @@ export default function Phone({
           onPress: async () => {
             try {
               Loading.show();
+              if (!pageData.guardianConfig) throw new Error('network failure');
               const needRecaptcha = await isGoogleRecaptchaOpen();
               let token: string | undefined;
               if (needRecaptcha) {
@@ -200,7 +215,7 @@ export default function Phone({
                   setErrorMessage('guardian verify failed, please try again.');
                   return;
                 } else {
-                  dealWithSetPin();
+                  dealWithSetPin(getSignUpVerifiedData(pageData.guardianConfig, guardianResult));
                 }
               } else {
                 setErrorMessage('network fail.');
@@ -216,9 +231,52 @@ export default function Phone({
     });
   };
 
-  const dealWithSetPin = () => {
-    // console.warn(`dealWithSignIn`);
-    navigationTo(PortkeyEntries.CHECK_PIN);
+  const dealWithSetPin = (afterVerifiedData: AfterVerifiedConfig | string) => {
+    navigateForResult<SetPinPageResult, SetPinPageProps>(
+      PortkeyEntries.CHECK_PIN,
+      {
+        params: {
+          deliveredSetPinInfo:
+            typeof afterVerifiedData === 'string' ? afterVerifiedData : JSON.stringify(afterVerifiedData),
+        },
+      },
+      res => {
+        const { data } = res;
+        if (data.finished) {
+          onFinish({
+            status: 'success',
+            data: {
+              finished: true,
+            },
+          });
+        }
+      },
+    );
+  };
+
+  const getSignUpVerifiedData = (config: GuardianConfig, verifiedData: VerifiedGuardianDoc): AfterVerifiedConfig => {
+    const wallet = AElf.wallet.createNewWallet();
+    const { address } = wallet;
+    return {
+      fromRecovery: false,
+      accountIdentifier: loginAccount,
+      chainId: PortkeyConfig.currChainId(),
+      manager: address,
+      context: {
+        clientId: address,
+        requestId: randomId(),
+      },
+      extraData: defaultExtraData,
+      verifiedGuardians: [
+        {
+          type: guardianTypeStrToEnum(config.sendVerifyCodeParams.type),
+          identifier: loginAccount,
+          verifierId: config.sendVerifyCodeParams.verifierId,
+          verificationDoc: verifiedData.verificationDoc,
+          signature: verifiedData.signature,
+        },
+      ],
+    } as AfterVerifiedConfig;
   };
 
   const dealWithSignIn = async () => {
@@ -236,8 +294,8 @@ export default function Phone({
           res => {
             Loading.hide();
             const { data } = res;
-            if (data.isVerified) {
-              dealWithSetPin();
+            if (data.isVerified && data.deliveredVerifiedData) {
+              dealWithSetPin(data.deliveredVerifiedData);
             } else {
               setErrorMessage('guardian verify failed, please try again.');
             }

@@ -84,7 +84,7 @@ export const getRegisterPageData = async (
         type: AccountOriginalType[accountOriginalType] as AccountOrGuardianOriginalTypeStr,
         guardianIdentifier: accountIdentifier,
         verifierId: recommendedGuardian.id,
-        chainId: PortkeyConfig.currChainId,
+        chainId: PortkeyConfig.currChainId(),
         operationType: OperationTypeEnum.register,
       },
     },
@@ -95,7 +95,7 @@ export const getSocialRecoveryPageData = async (
   accountIdentifier: string,
   accountOriginalType: AccountOriginalType,
 ): Promise<SocialRecoveryConfig> => {
-  const guardians = await NetworkController.getGuardianInfo(PortkeyConfig.currChainId, accountIdentifier);
+  const guardians = await NetworkController.getGuardianInfo(PortkeyConfig.currChainId(), accountIdentifier);
   return {
     accountIdentifier,
     accountOriginalType,
@@ -109,7 +109,7 @@ export const getSocialRecoveryPageData = async (
         type: guardian.type as any,
         guardianIdentifier: accountIdentifier,
         verifierId: guardian.verifierId,
-        chainId: PortkeyConfig.currChainId,
+        chainId: PortkeyConfig.currChainId(),
         operationType: OperationTypeEnum.register,
       },
     })),
@@ -159,7 +159,7 @@ enum GuardianType {
   Apple,
 }
 
-export const GuardianTypeStrToEnum = (guardianType: AccountOrGuardianOriginalTypeStr): GuardianType => {
+export const guardianTypeStrToEnum = (guardianType: AccountOrGuardianOriginalTypeStr): any => {
   switch (guardianType) {
     case 'Email':
       return GuardianType.Email;

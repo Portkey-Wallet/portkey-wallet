@@ -23,7 +23,7 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
 import Loading from 'components/Loading';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { GuardianTypeStrToEnum, isReacptchaOpen } from 'model/global';
+import { guardianTypeStrToEnum, isReacptchaOpen } from 'model/global';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
@@ -38,6 +38,9 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { defaultColors } from 'assets/theme';
 import CommonToast from 'components/CommonToast';
 import { PortkeyConfig } from 'global';
+import AElf from 'aelf-sdk';
+import { randomId } from '@portkey-wallet/utils';
+import { ApprovedGuardianInfo } from 'network/dto/wallet';
 
 export default function GuardianApproval({
   guardianListConfig,
@@ -102,20 +105,47 @@ export default function GuardianApproval({
     });
   };
 
-  // const getVerifiedData = (): AfterVerifiedConfig => {
-  //   return {
-  //     fromRecovery: true,
-  //     accountIdentifier,
-  //     chainId: PortkeyConfig.currChainId,
-  //     extraData: defaultExtraData,
-  //     verifiedGuardians:
-  // };
+  const getVerifiedData = (): AfterVerifiedConfig => {
+    const wallet = AElf.wallet.createNewWallet();
+    const { address } = wallet;
+    return {
+      fromRecovery: true,
+      accountIdentifier,
+      chainId: PortkeyConfig.currChainId(),
+      extraData: defaultExtraData,
+      manager: address,
+      context: {
+        clientId: address,
+        requestId: randomId(),
+      },
+      verifiedGuardians: getVerifiedGuardianInfo(),
+    };
+  };
+
+  const getVerifiedGuardianInfo = (): Array<ApprovedGuardianInfo> => {
+    return Object.entries(guardiansStatus || {})
+      .map(([key, value]) => {
+        const guardianInfo = guardians[Number(key)];
+        if (value.status === VerifyStatus.Verified && guardianInfo) {
+          return {
+            type: guardianTypeStrToEnum(guardianInfo.sendVerifyCodeParams.type),
+            identifier: accountIdentifier,
+            verifierId: guardianInfo.sendVerifyCodeParams.verifierId,
+            verificationDoc: value.verifierInfo?.verificationDoc,
+            signature: value.verifierInfo?.signature,
+          } as ApprovedGuardianInfo;
+        } else {
+          return null;
+        }
+      })
+      .filter(item => item !== null) as any;
+  };
 
   const onFinish = () => {
-    const result = {
+    onPageFinish({
       isVerified: true,
-    };
-    onPageFinish(result);
+      deliveredVerifiedData: JSON.stringify(getVerifiedData()),
+    });
   };
   const parseGuardianInfo = (guardianArray: Array<GuardianConfig>): Array<UserGuardianItem> => {
     return guardianArray?.map((item, index) => {
@@ -123,7 +153,7 @@ export default function GuardianApproval({
         ...item,
         guardianAccount: accountIdentifier,
         isLoginAccount: item.isLoginGuardian,
-        guardianType: GuardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
+        guardianType: guardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
         key: `${index}`,
         identifierHash: '',
       } as UserGuardianItem;

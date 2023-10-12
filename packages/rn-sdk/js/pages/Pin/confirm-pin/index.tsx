@@ -83,7 +83,7 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
         });
       }
     },
-    [deliveredSetPinInfo, onFinish],
+    [deliveredSetPinInfo, navigateForResult, onFinish],
   );
 
   const onChangeText = useCallback(

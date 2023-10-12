@@ -38,11 +38,11 @@ export type TypedUrlParams = { [x: string]: string | number | boolean | null | u
 
 export interface NativeWrapperModule {
   platformName: string;
+  tempStorageIdentifier: string;
   onError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
   onFatalError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
   onWarning: (from: string, warnMsg: string) => void;
   emitJSMethodResult: (eventId: string, result: string) => void;
-  getTempStorageIdentifier: () => string;
 }
 
 export interface NetworkModule {

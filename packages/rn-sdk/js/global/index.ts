@@ -1,5 +1,6 @@
 import { ChainId } from '@portkey-wallet/types';
 import { NetworkController } from 'network/controller';
+import { GlobalStorage } from 'service/storage';
 
 export enum EndPoints {
   MAIN_NET = 'https://did-portkey.portkey.finance',
@@ -8,21 +9,34 @@ export enum EndPoints {
   TEST2 = 'https://localtest-applesign2.portkey.finance',
 }
 
+enum ConfigIdentifier {
+  END_POINT = 'endPointUrl',
+  CURR_CHAIN_ID = 'currChainId',
+}
+
 export interface PortkeyConfigInterface {
-  endPointUrl: string;
-  currChainId: ChainId;
+  endPointUrl: () => string;
+  currChainId: () => ChainId;
 }
 
 export const PortkeyConfig: PortkeyConfigInterface = {
-  endPointUrl: EndPoints.TEST2,
-  currChainId: 'AELF',
+  endPointUrl: () => getConfigStr(ConfigIdentifier.END_POINT) || EndPoints.MAIN_NET,
+  currChainId: () => (getConfigStr(ConfigIdentifier.CURR_CHAIN_ID) || 'AELF') as ChainId,
+};
+
+const getConfigStr = (key: string): string | undefined => {
+  return GlobalStorage.getString(key);
+};
+
+const setConfigStr = (key: string, value: string) => {
+  GlobalStorage.set(key, value);
 };
 
 export const setEndPointUrl = (environment: EndPoints) => {
-  PortkeyConfig.endPointUrl = environment;
+  setConfigStr(ConfigIdentifier.END_POINT, environment);
   NetworkController.updateEndPointUrl(environment);
 };
 
 export const setCurrChainId = (chainId: ChainId) => {
-  PortkeyConfig.currChainId = chainId;
+  setConfigStr(ConfigIdentifier.CURR_CHAIN_ID, chainId);
 };

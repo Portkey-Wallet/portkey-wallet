@@ -51,20 +51,20 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
   };
 
   const handleGuardianVerifyPage = useCallback(
-    async (guardianConfig?: GuardianConfig, alreadySent?: boolean): Promise<boolean> => {
+    async (guardianConfig?: GuardianConfig, alreadySent?: boolean): Promise<VerifiedGuardianDoc | null> => {
       const guardian = guardianConfig ?? config.guardianConfig;
       if (!guardian) {
         console.error('guardianConfig is not defined.');
-        return false;
+        return null;
       }
       return new Promise(resolve => {
         config.navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
           console.error('config.navigateToGuardianPage', result);
           if (result) {
             setVerifiedGuardianInfo(result);
-            resolve(true);
+            resolve(result);
           } else {
-            resolve(false);
+            resolve(null);
           }
         });
       });
@@ -89,7 +89,10 @@ export interface SignUpHooks {
     guardianConfig: GuardianConfig | undefined,
     googleRecaptchaToken?: string,
   ) => Promise<SendVerifyCodeResultDTO | null>;
-  handleGuardianVerifyPage: (guardianConfig?: GuardianConfig, alreadySent?: boolean) => Promise<boolean>;
+  handleGuardianVerifyPage: (
+    guardianConfig?: GuardianConfig,
+    alreadySent?: boolean,
+  ) => Promise<VerifiedGuardianDoc | null>;
 }
 
 export interface SignUpConfig {

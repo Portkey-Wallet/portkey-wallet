@@ -72,7 +72,7 @@ const useSocialRecovery = (config: SocialRecoveryConfig): SocialRecoveryEntity =
         .filter(it => it !== null) as Array<VerifiedGuardianDoc>,
       extraData: { deviceName: 'Other', deviceType: DeviceType.OTHER },
       fromRecovery: true,
-      chainId: PortkeyConfig.currChainId,
+      chainId: PortkeyConfig.currChainId(),
     } as Partial<AfterVerifiedConfig>;
   }, [config, verifiedGuardianInfo, hasReachedVerifyLimit]);
 

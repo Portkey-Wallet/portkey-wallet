@@ -439,6 +439,6 @@ export default class DappMobileOperator extends Operator {
         return true;
       }
     }
-    return caInfo?.isSync;
+    return !!caInfo?.isSync;
   };
 }

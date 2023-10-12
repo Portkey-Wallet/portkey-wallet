@@ -11,12 +11,12 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
 import PhoneInput from 'components/PhoneInput';
-import { getCachedCountryCodeData, attemptAccountCheck, getSocialRegisterPageData } from 'model/sign-in';
+import { getCachedCountryCodeData, attemptAccountCheck, getSocialRecoveryPageData } from 'model/global';
 import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import ActionSheet from 'components/ActionSheet';
 import { PortkeyEntries } from 'config/entries';
-import { getRegisterPageData } from 'model/sign-in';
-import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
+import { getRegisterPageData } from 'model/global';
+import { AccountOriginalType, VerifiedGuardianDoc, isTempWalletExist } from 'model/verify/after-verify';
 import useSignUp from 'model/verify/sign-up';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { GuardianConfig } from 'model/verify/guardian';
@@ -24,6 +24,7 @@ import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { GuardianApprovalPageProps, GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
+import CommonToast from 'components/CommonToast';
 
 const TitleMap = {
   [PageType.login]: {
@@ -53,8 +54,19 @@ export default function Phone({
 
   const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
-  const { navigateForResult, navigationTo } = useBaseContainer({
+  const { navigateForResult, navigationTo, onFinish } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
+    onShow: () => {
+      if (isTempWalletExist()) {
+        CommonToast.success('You have logged in');
+        onFinish({
+          status: 'success',
+          data: {
+            finished: true,
+          },
+        });
+      }
+    },
   });
 
   useEffectOnce(() => {
@@ -176,6 +188,7 @@ export default function Phone({
                 token = (await verifyHumanMachine('en')) as string;
               }
               const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
+              Loading.hide();
               if (sendResult) {
                 const guardianResult = await handleGuardianVerifyPage(
                   Object.assign({}, pageData.guardianConfig, {
@@ -185,7 +198,6 @@ export default function Phone({
                 );
                 if (!guardianResult) {
                   setErrorMessage('guardian verify failed, please try again.');
-                  Loading.hide();
                   return;
                 } else {
                   dealWithSetPin();
@@ -212,7 +224,7 @@ export default function Phone({
   const dealWithSignIn = async () => {
     Loading.show();
     try {
-      const signInPageData = await getSocialRegisterPageData(getWrappedPhoneNumber(), AccountOriginalType.Phone);
+      const signInPageData = await getSocialRecoveryPageData(getWrappedPhoneNumber(), AccountOriginalType.Phone);
       if (signInPageData) {
         navigateForResult<GuardianApprovalPageResult, GuardianApprovalPageProps>(
           PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,

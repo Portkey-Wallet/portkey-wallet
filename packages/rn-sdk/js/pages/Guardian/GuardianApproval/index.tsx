@@ -3,7 +3,7 @@ import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, Text } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
 import { BorderStyles, FontStyles } from 'assets/theme/styles';
@@ -23,13 +23,21 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
 import Loading from 'components/Loading';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { isReacptchaOpen } from 'model/sign-in';
+import { GuardianTypeStrToEnum, isReacptchaOpen } from 'model/global';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
-import { VerifiedGuardianDoc } from 'model/verify/after-verify';
+import {
+  AccountOriginalType,
+  AfterVerifiedConfig,
+  VerifiedGuardianDoc,
+  defaultExtraData,
+} from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
+import { defaultColors } from 'assets/theme';
+import CommonToast from 'components/CommonToast';
+import { PortkeyConfig } from 'global';
 
 export default function GuardianApproval({
   guardianListConfig,
@@ -40,7 +48,7 @@ export default function GuardianApproval({
   verifiedTime: number;
   onPageFinish: (result: GuardianApprovalPageResult) => void;
 }) {
-  const { guardians, accountIdentifier } = guardianListConfig;
+  const { guardians, accountIdentifier, accountOriginalType } = guardianListConfig;
   const { t } = useLanguage();
 
   const { navigateForResult } = useBaseContainer({
@@ -54,6 +62,8 @@ export default function GuardianApproval({
   const approvedList = useMemo(() => {
     return Object.values(guardiansStatus || {}).filter(guardian => guardian.status === VerifyStatus.Verified);
   }, [guardiansStatus]);
+
+  const [sentGuardianKeys, setSentGuardianKeys] = useState<Map<string, string>>(new Map());
 
   const setGuardianStatus = useCallback((key: string, status: GuardiansStatusItem) => {
     if (key === 'resetGuardianApproval') {
@@ -92,6 +102,15 @@ export default function GuardianApproval({
     });
   };
 
+  // const getVerifiedData = (): AfterVerifiedConfig => {
+  //   return {
+  //     fromRecovery: true,
+  //     accountIdentifier,
+  //     chainId: PortkeyConfig.currChainId,
+  //     extraData: defaultExtraData,
+  //     verifiedGuardians:
+  // };
+
   const onFinish = () => {
     const result = {
       isVerified: true,
@@ -104,7 +123,7 @@ export default function GuardianApproval({
         ...item,
         guardianAccount: accountIdentifier,
         isLoginAccount: item.isLoginGuardian,
-        guardianType: item.accountOriginalType as any,
+        guardianType: GuardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
         key: `${index}`,
         identifierHash: '',
       } as UserGuardianItem;
@@ -112,63 +131,97 @@ export default function GuardianApproval({
   };
 
   const particularButton = (guardian: GuardianConfig, key: string) => {
-    return (
+    const isVerified = guardiansStatus?.[key]?.status === VerifyStatus.Verified;
+    const getTitle = () => {
+      if (sentGuardianKeys.has(key)) {
+        return 'Verify';
+      } else {
+        return 'Send';
+      }
+    };
+    return isVerified ? (
+      <Text style={styles.confirmedButtonText}>Confirmed</Text>
+    ) : (
       <CommonButton
         onPress={() => {
           dealWithParticularGuardian(guardian, key);
         }}
         disabled={false}
-        type="primary"
-        title={'Confirm'}
+        containerStyle={styles.activityButton}
+        titleStyle={styles.activityButtonText}
+        type={isVerified ? 'clear' : 'primary'}
+        title={getTitle()}
       />
     );
   };
 
   const dealWithParticularGuardian = async (guardian: GuardianConfig, key: string) => {
-    ActionSheet.alert({
-      title: '',
-      message: `${
-        guardian.name ?? 'Portkey'
-      } will send a verification code to ${accountIdentifier} to verify your phone number.`,
-      buttons: [
-        { title: 'Cancel', type: 'outline' },
-        {
-          title: 'Confirm',
-          onPress: async () => {
-            try {
-              Loading.show();
-              const needRecaptcha = await isReacptchaOpen(OperationTypeEnum.communityRecovery);
-              let token: string | undefined;
-              if (needRecaptcha) {
-                token = (await verifyHumanMachine('en')) as string;
-              }
-              const sendResult = await NetworkController.sendVerifyCode(guardian.sendVerifyCodeParams, {
-                reCaptchaToken: token,
-              });
-              console.error(sendResult);
-              if (sendResult) {
-                const guardianResult = await handleGuardianVerifyPage(
-                  Object.assign({}, guardian, {
-                    verifySessionId: sendResult.verifierSessionId,
-                  } as Partial<GuardianConfig>),
-                  true,
-                  key,
-                );
-                if (!guardianResult) {
-                  Loading.hide();
-                  return;
-                } else {
+    if (sentGuardianKeys.has(key)) {
+      const verifierSessionId = sentGuardianKeys.get(key);
+      const guardianResult = await handleGuardianVerifyPage(
+        Object.assign({}, guardian, {
+          verifierSessionId,
+        } as Partial<GuardianConfig>),
+        true,
+        key,
+      );
+      if (guardianResult) {
+        setGuardianStatus(key, { status: VerifyStatus.Verified });
+        return;
+      } else {
+        CommonToast.fail('guardian verify failed, please try again.');
+        Loading.hide();
+      }
+    } else {
+      ActionSheet.alert({
+        title: '',
+        message: `${guardian.name ?? 'Portkey'} will send a verification code to ${accountIdentifier} to verify your ${
+          accountOriginalType === AccountOriginalType.Email ? 'email' : 'phone number'
+        }.`,
+        buttons: [
+          { title: 'Cancel', type: 'outline' },
+          {
+            title: 'Confirm',
+            onPress: async () => {
+              try {
+                Loading.show();
+                const needRecaptcha = await isReacptchaOpen(OperationTypeEnum.communityRecovery);
+                let token: string | undefined;
+                if (needRecaptcha) {
+                  token = (await verifyHumanMachine('en')) as string;
                 }
-              } else {
+                const sendResult = await NetworkController.sendVerifyCode(guardian.sendVerifyCodeParams, {
+                  reCaptchaToken: token,
+                });
+                Loading.hide();
+                if (sendResult) {
+                  setSentGuardianKeys(preGuardianKeys => {
+                    preGuardianKeys.set(key, sendResult.verifierSessionId);
+                    return new Map(preGuardianKeys);
+                  });
+                  const guardianResult = await handleGuardianVerifyPage(
+                    Object.assign({}, guardian, {
+                      verifySessionId: sendResult.verifierSessionId,
+                    } as Partial<GuardianConfig>),
+                    true,
+                    key,
+                  );
+                  if (guardianResult) {
+                    setGuardianStatus(key, { status: VerifyStatus.Verified });
+                    return;
+                  }
+                }
+                CommonToast.fail('guardian verify failed, please try again.');
+                Loading.hide();
+              } catch (e) {
+                CommonToast.fail('network fail.');
                 Loading.hide();
               }
-            } catch (e) {
-              Loading.hide();
-            }
+            },
           },
-        },
-      ],
-    });
+        ],
+      });
+    }
   };
 
   const handleGuardianVerifyPage = async (
@@ -273,6 +326,9 @@ export default function GuardianApproval({
     </PageContainer>
   );
 }
+
+const { primaryColor } = defaultColors;
+
 const styles = StyleSheet.create({
   containerStyle: {
     paddingTop: 8,
@@ -280,6 +336,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     height: '100%',
     justifyContent: 'space-between',
+  },
+  activityButton: {
+    height: 24,
+    width: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: primaryColor,
+  },
+  confirmButton: {
+    height: 24,
+    width: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  activityButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    lineHeight: 16,
+  },
+  confirmedButtonText: {
+    color: 'green',
+    fontSize: 12,
+    lineHeight: 16,
+    backgroundColor: '#fff',
   },
   expireText: {
     marginTop: 8,

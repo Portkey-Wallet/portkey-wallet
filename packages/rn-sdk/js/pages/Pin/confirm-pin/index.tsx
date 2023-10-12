@@ -1,108 +1,89 @@
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import React, { useCallback, useRef, useState } from 'react';
-import navigationService from 'utils/navigationService';
-import { useAppDispatch } from 'store/hooks';
-import { changePin, createWallet } from '@portkey-wallet/store/store-ca/wallet/actions';
-import CommonToast from 'components/CommonToast';
-import { setCredentials } from 'store/user/actions';
-import { useUser } from 'hooks/store';
-import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
-import { CAInfoType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useOnManagerAddressAndQueryResult } from 'hooks/login';
 import myEvents from 'utils/deviceEvent';
-import { AElfWallet } from '@portkey-wallet/types/aelf';
-import { VerificationType, VerifierInfo } from '@portkey-wallet/types/verifier';
-import useBiometricsReady from 'hooks/useBiometrics';
 import PinContainer from 'components/PinContainer';
-import { GuardiansApproved } from 'pages/Guardian/types';
 import { StyleSheet } from 'react-native';
-import { useLanguage } from 'i18n/hooks';
-import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
-import { changeCanLock } from 'utils/LockManager';
-type RouterParams = {
-  oldPin?: string;
-  pin?: string;
-  managerInfo?: ManagerInfo;
-  caInfo?: CAInfoType;
-  walletInfo?: AElfWallet;
-  verifierInfo?: VerifierInfo;
-  guardiansApproved?: GuardiansApproved;
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
+import { getVerifiedAndLockWallet } from 'model/verify/after-verify';
+import Loading from 'components/Loading';
+import { isEnrolledAsync } from 'expo-local-authentication';
+import { SetBiometricsProps, SetBiometricsResult } from '../set-biometrics';
+
+const isBiometricsReady = async () => {
+  try {
+    return await isEnrolledAsync();
+  } catch (e) {
+    return false;
+  }
 };
 
-export default function ConfirmPin() {
-  const { t } = useLanguage();
-  const { walletInfo } = useCurrentWallet();
-  const {
-    pin,
-    oldPin,
-    managerInfo,
-    caInfo,
-    walletInfo: paramsWalletInfo,
-    verifierInfo,
-    guardiansApproved,
-  } = useRouterParams<RouterParams>();
-
-  const biometricsReady = useBiometricsReady();
-
+export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: ConfirmPinPageProps) {
   const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
-  const dispatch = useAppDispatch();
-  const { biometrics } = useUser();
-  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult();
-  const onChangePin = useCallback(
-    async (newPin: string) => {
-      if (!oldPin) return;
-      changeCanLock(false);
-      try {
-        if (biometrics) await setSecureStoreItem('Pin', newPin);
-        dispatch(changePin({ pin: oldPin, newPin }));
-        dispatch(setCredentials({ pin: newPin }));
-        CommonToast.success(t('Modified Successfully'));
-      } catch (error) {
-        CommonToast.failError(error);
-      }
-      changeCanLock(true);
-      navigationService.navigate('AccountSettings');
-    },
-    [biometrics, dispatch, oldPin, t],
-  );
-  const onFinish = useCallback(
+
+  const { onFinish, navigateForResult } = useBaseContainer({
+    entryName: PortkeyEntries.CONFIRM_PIN,
+  });
+
+  // const { biometrics } = useUser();
+  // const onChangePin = useCallback(async (newPin: string) => {
+  // TODO change pin process
+  // if (!oldPin) return;
+  // changeCanLock(false);
+  // try {
+  //   if (biometrics) await setSecureStoreItem('Pin', newPin);
+  //   dispatch(changePin({ pin: oldPin, newPin }));
+  //   dispatch(setCredentials({ pin: newPin }));
+  //   CommonToast.success(t('Modified Successfully'));
+  // } catch (error) {
+  //   CommonToast.failError(error);
+  // }
+  // changeCanLock(true);
+  // navigationService.navigate('AccountSettings');
+  // }, []);
+
+  const onSetPinSuccess = useCallback(
     async (confirmPin: string) => {
-      if (managerInfo?.verificationType === VerificationType.addManager) {
-        dispatch(createWallet({ walletInfo: paramsWalletInfo, caInfo, pin: confirmPin }));
-        dispatch(setCredentials({ pin: confirmPin }));
-        paramsWalletInfo?.address && sendScanLoginSuccess({ targetClientId: paramsWalletInfo.address });
-        if (biometricsReady) {
-          navigationService.navigate('SetBiometrics', { pin: confirmPin });
-        } else {
-          navigationService.reset('Tab');
-        }
+      const biometricsReady = await isBiometricsReady();
+      if (biometricsReady) {
+        navigateForResult<SetBiometricsResult, SetBiometricsProps>(
+          PortkeyEntries.SET_BIO,
+          {
+            params: {
+              pin: confirmPin,
+              deliveredSetPinInfo,
+            },
+          },
+          async result => {
+            if (result?.status === 'success') {
+              onFinish({
+                status: 'success',
+                data: {
+                  finished: true,
+                },
+              });
+            } else {
+              setErrorMessage('Failed to set biometrics');
+              pinRef.current?.reset();
+            }
+          },
+        );
       } else {
-        onManagerAddressAndQueryResult({
-          managerInfo: managerInfo as ManagerInfo,
-          confirmPin,
-          walletInfo,
-          pinRef,
-          verifierInfo,
-          guardiansApproved,
+        Loading.show();
+        await getVerifiedAndLockWallet(deliveredSetPinInfo, confirmPin);
+        Loading.hide();
+        onFinish({
+          status: 'success',
+          data: {
+            finished: true,
+          },
         });
       }
     },
-    [
-      biometricsReady,
-      caInfo,
-      dispatch,
-      guardiansApproved,
-      managerInfo,
-      onManagerAddressAndQueryResult,
-      paramsWalletInfo,
-      verifierInfo,
-      walletInfo,
-    ],
+    [deliveredSetPinInfo, onFinish],
   );
 
   const onChangeText = useCallback(
@@ -117,10 +98,10 @@ export default function ConfirmPin() {
         return setErrorMessage('Pins do not match');
       }
 
-      if (oldPin) return onChangePin(confirmPin);
-      if (managerInfo) return onFinish(confirmPin);
+      // if (oldPin) return onChangePin(confirmPin);
+      return onSetPinSuccess(confirmPin);
     },
-    [errorMessage, oldPin, onChangePin, onFinish, pin, managerInfo],
+    [pin, onSetPinSuccess, errorMessage],
   );
   return (
     <PageContainer
@@ -131,8 +112,13 @@ export default function ConfirmPin() {
         myEvents.clearSetPin.emit('clearSetPin');
       }}
       leftCallback={() => {
-        myEvents.clearSetPin.emit('clearSetPin');
-        navigationService.goBack();
+        pinRef.current?.reset();
+        onFinish({
+          status: 'cancel',
+          data: {
+            finished: false,
+          },
+        });
       }}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
@@ -152,3 +138,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+export interface ConfirmPinPageProps {
+  oldPin?: string;
+  pin: string;
+  deliveredSetPinInfo: string; // SetPinInfo
+}

@@ -15,6 +15,11 @@ import {
 } from 'network/dto/guardian';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CountryCodeDataDTO } from 'types/wallet';
+import {
+  RequestRegisterOrSocialRecoveryResult,
+  RequestRegisterParams,
+  RequestSocialRecoveryParams,
+} from 'network/dto/wallet';
 
 export class NetworkControllerEntity {
   private endPoint: string = PortkeyConfig.endPointUrl;
@@ -102,6 +107,28 @@ export class NetworkControllerEntity {
   checkVerifyCode = async (params: CheckVerifyCodeParams): Promise<CheckVerifyCodeResultDTO> => {
     const res = await this.realExecute<CheckVerifyCodeResultDTO>(
       this.parseUrl(APIPaths.CHECK_VERIFICATION_CODE),
+      'POST',
+      params,
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  requestRegister = async (params: RequestRegisterParams): Promise<RequestRegisterOrSocialRecoveryResult> => {
+    const res = await this.realExecute<RequestRegisterOrSocialRecoveryResult>(
+      this.parseUrl(APIPaths.REQUEST_REGISTER),
+      'POST',
+      params,
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  requestSocialRecovery = async (
+    params: RequestSocialRecoveryParams,
+  ): Promise<RequestRegisterOrSocialRecoveryResult> => {
+    const res = await this.realExecute<RequestRegisterOrSocialRecoveryResult>(
+      this.parseUrl(APIPaths.REQUEST_RECOVERY),
       'POST',
       params,
     );

@@ -5,7 +5,7 @@ import VerifierCountdown, { VerifierCountdownInterface } from 'components/Verifi
 import PageContainer from 'components/PageContainer';
 import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { Platform, StyleSheet, Text, ToastAndroid } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { FontStyles } from 'assets/theme/styles';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
@@ -19,6 +19,7 @@ import { PortkeyEntries } from 'config/entries';
 import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
 import GuardianItem from '../components/GuardianItem';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import CommonToast from 'components/CommonToast';
 
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -83,11 +84,13 @@ export default function VerifierDetails({
       const sendSuccess = await sendVerifyCode(token);
       if (sendSuccess) {
         countdown.current?.resetTime(INIT_TIME_OUT);
+        Loading.hide();
+        return;
       }
-      Loading.hide();
     } catch (e) {
       Loading.hide();
     }
+    CommonToast.fail('Network error, please try again.');
   };
 
   const onPageFinish = (result: CheckVerifyCodeResultDTO | null) => {
@@ -104,15 +107,13 @@ export default function VerifierDetails({
       Loading.hide();
       if (result) {
         onPageFinish(result);
-      } else {
-        if (Platform.OS === 'android') {
-          ToastAndroid.show('verify Failed', 1000);
-        }
-        digitInput.current?.reset();
+        return;
       }
     } catch (e) {
       Loading.hide();
     }
+    digitInput.current?.reset();
+    CommonToast.fail('Verification code is incorrect');
   };
 
   const onBack = () => {

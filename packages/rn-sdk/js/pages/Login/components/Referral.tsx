@@ -45,7 +45,11 @@ export default function Referral({
         <Touchable
           style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.signUpTip]}
           onPress={() =>
-            portkeyModulesEntity.RouterModule.navigateTo(PortkeyEntries.SIGN_UP_ENTRY, PortkeyEntries.SIGN_UP_ENTRY, '')
+            portkeyModulesEntity.RouterModule.navigateTo(
+              PortkeyEntries.SIGN_UP_ENTRY,
+              PortkeyEntries.REFERRAL_ENTRY,
+              '',
+            )
           }>
           <TextL style={FontStyles.font3}>
             No account? <Text style={FontStyles.font4}>Sign up </Text>

@@ -17,7 +17,7 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { checkForCountryCodeCached } from 'model/sign-in';
+import { checkForCountryCodeCached } from 'model/global';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];

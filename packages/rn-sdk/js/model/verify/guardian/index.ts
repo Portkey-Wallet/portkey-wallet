@@ -70,10 +70,11 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
       if (status !== GuardianStatus.SENT) {
         console.warn('You can not check verify code at this stage.');
         return null;
-      } else if (!verifierSessionId && !config.verifySessionId) {
-        console.error('You must send verify code first.');
-        return null;
       }
+      //  else if (!verifierSessionId && !config.verifySessionId) {
+      //   console.error('You must send verify code first.');
+      //   return null;
+      // }
       try {
         const result = await NetworkController.checkVerifyCode({
           ...config.sendVerifyCodeParams,

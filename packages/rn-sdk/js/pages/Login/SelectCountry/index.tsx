@@ -16,9 +16,9 @@ import NoData from 'components/NoData';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import { getCountryCodeIndex } from '@portkey-wallet/constants/constants-ca/country';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { getCachedCountryCodeData } from 'model/sign-in';
+import { getCachedCountryCodeData } from 'model/global';
 import { GlobalStorage } from 'service/storage';
-import { CURRENT_USING_COUNTRY_CODE } from 'model/sign-in';
+import { CURRENT_USING_COUNTRY_CODE } from 'model/global';
 
 const IndexHeight = 56,
   SectionHeight = 20;

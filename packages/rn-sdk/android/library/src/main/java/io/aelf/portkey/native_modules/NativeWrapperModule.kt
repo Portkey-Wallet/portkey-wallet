@@ -8,16 +8,15 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.modules.core.DeviceEventManagerModule
+import io.aelf.core.JSNameSpace
 import io.aelf.portkey.components.JSEventBus
 import io.aelf.portkey.navigation.NavigationHolder
 import io.aelf.portkey.tools.generateUniqueCallbackID
 
-
 internal class NativeWrapperModule(private val context: ReactApplicationContext) :
-    ReactContextBaseJavaModule(context) {
+        ReactContextBaseJavaModule(context) {
     companion object {
-        @JvmStatic
-        var instance: NativeWrapperModule? = null
+        @JvmStatic var instance: NativeWrapperModule? = null
     }
 
     init {
@@ -30,9 +29,7 @@ internal class NativeWrapperModule(private val context: ReactApplicationContext)
     }
 
     override fun getConstants(): MutableMap<String, Any> {
-        return mutableMapOf(
-            Pair("platformName", "android")
-        )
+        return mutableMapOf(Pair("platformName", "android"))
     }
 
     @ReactMethod
@@ -66,12 +63,14 @@ internal class NativeWrapperModule(private val context: ReactApplicationContext)
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
+    @ReactMethod fun getTempStorageIdentifier(): String = JSNameSpace.nameSpace
+
     fun <T> callJSMethod(
-        moduleName: String,
-        methodName: String,
-        params: WritableNativeArray,
-        callback: (T) -> Unit,
-        tClass: Class<T>
+            moduleName: String,
+            methodName: String,
+            params: WritableNativeArray,
+            callback: (T) -> Unit,
+            tClass: Class<T>
     ) {
         val callbackId = generateUniqueCallbackID()
         params.pushString(callbackId)
@@ -79,43 +78,30 @@ internal class NativeWrapperModule(private val context: ReactApplicationContext)
         context.catalystInstance.jsMethodCaller(moduleName, methodName, params)
     }
 
-    fun callJSMethod(
-        moduleName: String,
-        methodName: String,
-        params: WritableNativeArray
-    ) {
+    fun callJSMethod(moduleName: String, methodName: String, params: WritableNativeArray) {
         val callbackId = generateUniqueCallbackID()
         params.pushString(callbackId)
         context.catalystInstance.jsMethodCaller(moduleName, methodName, params)
     }
 
     fun sendGeneralEvent(eventName: String, params: ReadableMap) {
-        this.reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-            .emit(
-                eventName,
-                params
-            )
+        this.reactApplicationContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+                .emit(eventName, params)
     }
-
 }
 
-/**
- * Used just to inform the parameter name of catalystInstance
- */
+/** Used just to inform the parameter name of catalystInstance */
 fun CatalystInstance.jsMethodCaller(
-    moduleName: String,
-    methodName: String,
-    params: WritableNativeArray
+        moduleName: String,
+        methodName: String,
+        params: WritableNativeArray
 ) {
     this.callFunction(moduleName, methodName, params)
 }
 
-
 /**
- * export interface NativeWrapperModule {
- *   onError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
- *   onFatalError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
- *   onWarning: (from: string, warnMsg: string) => void;
- *   getPlatformName: () => string;
- * }
+ * export interface NativeWrapperModule { onError: (from: string, errMsg: string, data: { [x:
+ * string]: any }) => void; onFatalError: (from: string, errMsg: string, data: { [x: string]: any })
+ * => void; onWarning: (from: string, warnMsg: string) => void; getPlatformName: () => string; }
  */

@@ -1,27 +1,14 @@
 import React, { useCallback, useRef } from 'react';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
-import navigationService from 'utils/navigationService';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import ActionSheet from 'components/ActionSheet';
-import useEffectOnce from 'hooks/useEffectOnce';
-import { CAInfoType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { VerificationType, VerifierInfo } from '@portkey-wallet/types/verifier';
-import myEvents from 'utils/deviceEvent';
-import { AElfWallet } from '@portkey-wallet/types/aelf';
+import { VerificationType } from '@portkey-wallet/types/verifier';
 import PinContainer from 'components/PinContainer';
-import { GuardiansApproved } from 'pages/Guardian/types';
 import { StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
-type RouterParams = {
-  oldPin?: string;
-  managerInfo?: ManagerInfo;
-  caInfo?: CAInfoType;
-  walletInfo?: AElfWallet;
-  verifierInfo?: VerifierInfo;
-  guardiansApproved?: GuardiansApproved;
-};
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
+import { ConfirmPinPageProps } from '../confirm-pin';
+import CommonToast from 'components/CommonToast';
 
 const scrollViewProps = {
   disabled: true,
@@ -32,53 +19,40 @@ const MessageMap: any = {
     'Are you sure you want to leave this page? You will need approval from guardians again',
   [VerificationType.addManager]: 'After returning, you need to scan the code again to authorize login',
 };
-const RouterMap: any = {
-  [VerificationType.register]: 'LoginPortkey',
-  [VerificationType.communityRecovery]: 'GuardianApproval',
-  [VerificationType.addManager]: 'LoginPortkey',
-};
-export default function SetPin() {
-  const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved } = useRouterParams<RouterParams>();
+// const RouterMap: any = {
+//   [VerificationType.register]: 'LoginPortkey',
+//   [VerificationType.communityRecovery]: 'GuardianApproval',
+//   [VerificationType.addManager]: 'LoginPortkey',
+// };
+export default function SetPin({ deliveredSetPinInfo, rootTag, oldPin }: SetPinPageProps & { rootTag: any }) {
   const digitInput = useRef<DigitInputInterface>();
-  const navigation = useNavigation();
 
-  useEffectOnce(() => {
-    const listener = myEvents.clearSetPin.addListener(() => digitInput.current?.reset());
-    return () => listener.remove();
+  const { onFinish, navigateForResult } = useBaseContainer({
+    rootTag: rootTag,
+    entryName: PortkeyEntries.SET_PIN,
   });
+
   const leftCallback = useCallback(() => {
-    if (!oldPin && managerInfo && managerInfo.verificationType !== VerificationType.communityRecovery)
-      return ActionSheet.alert({
-        title: 'Leave this page?',
-        message: MessageMap[managerInfo.verificationType],
-        buttons: [
-          { title: 'No', type: 'outline' },
-          // TODO: navigate
-          {
-            title: 'Yes',
-            onPress: () => {
-              if (managerInfo.verificationType === VerificationType.addManager) myEvents.clearQRWallet.emit();
-              if (managerInfo.verificationType === VerificationType.register) {
-                const routesArr = navigation.getState().routes;
-                const isSignUpPageExist = routesArr.some(item => item.name === 'SignupPortkey');
-                if (isSignUpPageExist) {
-                  navigationService.navigate('SignupPortkey');
-                } else {
-                  navigationService.navigate('LoginPortkey');
-                }
-                return;
-              }
-              navigationService.navigate(RouterMap[managerInfo.verificationType]);
-            },
+    return ActionSheet.alert({
+      title: 'Leave this page?',
+      message: MessageMap[VerificationType.communityRecovery],
+      buttons: [
+        { title: 'No', type: 'outline' },
+        // TODO: navigate
+        {
+          title: 'Yes',
+          onPress: () => {
+            onFinish<SetPinPageResult>({
+              status: 'cancel',
+              data: {
+                finished: false,
+              },
+            });
           },
-        ],
-      });
-
-    if (managerInfo && MessageMap[managerInfo.verificationType])
-      return navigationService.navigate(RouterMap[managerInfo.verificationType]);
-
-    navigationService.goBack();
-  }, [managerInfo, navigation, oldPin]);
+        },
+      ],
+    });
+  }, [onFinish]);
   return (
     <PageContainer
       scrollViewProps={scrollViewProps}
@@ -92,15 +66,29 @@ export default function SetPin() {
         ref={digitInput}
         title={oldPin ? 'Please enter a new pin' : 'Enter pin to protect your device'}
         onFinish={pin => {
-          navigationService.navigate('ConfirmPin', {
-            oldPin,
-            pin,
-            managerInfo,
-            walletInfo,
-            caInfo,
-            verifierInfo,
-            guardiansApproved,
-          });
+          navigateForResult<ConfirmPinPageProps>(
+            PortkeyEntries.CONFIRM_PIN,
+            {
+              params: {
+                deliveredSetPinInfo,
+                oldPin,
+                pin,
+              },
+            },
+            res => {
+              if (res?.status === 'success') {
+                onFinish<SetPinPageResult>({
+                  status: 'success',
+                  data: {
+                    finished: true,
+                  },
+                });
+              } else {
+                CommonToast.failError('Retry again');
+                digitInput.current?.reset();
+              }
+            },
+          );
         }}
       />
     </PageContainer>
@@ -112,3 +100,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+export interface SetPinPageProps {
+  deliveredSetPinInfo: string; // SetPinInfo
+  oldPin?: string;
+}
+
+export interface SetPinPageResult {
+  finished: boolean;
+}

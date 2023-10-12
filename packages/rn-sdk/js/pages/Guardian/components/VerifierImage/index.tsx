@@ -32,7 +32,7 @@ export function VerifierImage({
         onLoad={() => {
           setImgLoading(false);
         }}
-        source={{ uri }}
+        source={uri ? { uri } : require('../../../../assets/image/pngs/portkeyBlueBackground.png')}
         style={[iconStyle, imgLoading && styles.hiddenStyle]}
         loadingIndicatorSource={require('../../../../assets/image/pngs/phone.png')}
       />

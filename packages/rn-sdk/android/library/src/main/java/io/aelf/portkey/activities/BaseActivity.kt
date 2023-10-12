@@ -19,12 +19,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+private fun generateCancelCallbackData(): WritableMap {
+    return Arguments.createMap().apply {
+        this.putString("status", "cancel")
+        this.putString("data", "{}")
+    }
+}
+
 abstract class BasePortkeyReactActivity : ReactActivity() {
     override fun getMainComponentName(): String = this.registerEntryName()
 
     private var entryName: String = PortkeyEntries.TEST.entryName
     private var callbackId: String = NO_CALLBACK_METHOD
     private var params: Bundle = Bundle()
+    private var callbackAccessed: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +84,11 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                         })
                 }
             }
+
+            override fun onDestroy() {
+                super.onDestroy()
+                navigateBackWithResult(thenFinish = false)
+            }
         }
     }
 
@@ -85,11 +98,20 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
     private fun getCallbackId(): String = callbackId
 
-    fun navigateBackWithResult(result: ReadableMap) {
-        NavigationHolder.invokeAnnotatedCallback(getCallbackId()) {
-            it.invoke(result.toWriteableNativeMap())
+    fun navigateBackWithResult(result: ReadableMap? = null, thenFinish: Boolean = true) {
+        if (!callbackAccessed) {
+            callbackAccessed = true
+            NavigationHolder.invokeAnnotatedCallback(getCallbackId()) {
+                if (result != null) {
+                    it.invoke(result.toWriteableNativeMap())
+                } else {
+                    it.invoke(generateCancelCallbackData())
+                }
+            }
         }
-        this.finish()
+        if (thenFinish) {
+            this.finish()
+        }
     }
 }
 

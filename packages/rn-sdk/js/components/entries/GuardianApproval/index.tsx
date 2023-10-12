@@ -55,4 +55,5 @@ export interface GuardianApprovalPageState {
 
 export interface GuardianApprovalPageResult {
   isVerified: boolean;
+  deliveredVerifiedData?: string;
 }

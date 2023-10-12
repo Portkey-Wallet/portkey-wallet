@@ -1,11 +1,21 @@
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { PortkeyConfig, setCurrChainId } from 'global';
-import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
+import {
+  AccountOriginalType,
+  AfterVerifiedConfig,
+  VerifiedGuardianDoc,
+  wrapExtraData,
+} from 'model/verify/after-verify';
 import { GuardianConfig } from 'model/verify/guardian';
 import { SignUpConfig } from 'model/verify/sign-up';
 import { SocialRecoveryConfig } from 'model/verify/social-recovery';
 import { NetworkController } from 'network/controller';
 import { AccountOrGuardianOriginalTypeStr } from 'network/dto/guardian';
+import {
+  RequestRegisterOrSocialRecoveryResult,
+  RequestRegisterParams,
+  RequestSocialRecoveryParams,
+} from 'network/dto/wallet';
 import { GlobalStorage } from 'service/storage';
 import { CountryCodeDataDTO } from 'types/wallet';
 
@@ -104,6 +114,42 @@ export const getSocialRecoveryPageData = async (
       },
     })),
   };
+};
+
+export const requestSocialRecoveryOrRegister = async (
+  params: AfterVerifiedConfig,
+): Promise<RequestRegisterOrSocialRecoveryResult> => {
+  const { fromRecovery, accountIdentifier, verifiedGuardians, manager, chainId, context, extraData } = params;
+  if (fromRecovery) {
+    const socialRecoveryParams: RequestSocialRecoveryParams = {
+      loginGuardianIdentifier: accountIdentifier,
+      manager,
+      chainId,
+      context,
+      extraData: wrapExtraData(extraData),
+      guardians: verifiedGuardians.map(guardian => ({
+        type: guardian.type,
+        identifier: guardian.identifier,
+        verifierId: guardian.verifierId,
+        verificationDoc: guardian.verificationDoc,
+        signature: guardian.signature,
+      })),
+    };
+    return await NetworkController.requestSocialRecovery(socialRecoveryParams);
+  } else {
+    const registerParams: RequestRegisterParams = {
+      chainId,
+      loginGuardianIdentifier: accountIdentifier,
+      verifierId: verifiedGuardians[0].verifierId,
+      verificationDoc: verifiedGuardians[0].verificationDoc,
+      signature: verifiedGuardians[0].signature,
+      context,
+      type: verifiedGuardians[0].type,
+      manager,
+      extraData: wrapExtraData(extraData),
+    };
+    return await NetworkController.requestRegister(registerParams);
+  }
 };
 
 enum GuardianType {

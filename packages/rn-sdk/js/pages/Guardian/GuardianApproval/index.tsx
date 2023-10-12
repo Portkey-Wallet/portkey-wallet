@@ -23,15 +23,21 @@ import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type'
 import { GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
 import Loading from 'components/Loading';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { GuardianTypeStrToEnum, isReacptchaOpen } from 'model/sign-in';
+import { GuardianTypeStrToEnum, isReacptchaOpen } from 'model/global';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
-import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
+import {
+  AccountOriginalType,
+  AfterVerifiedConfig,
+  VerifiedGuardianDoc,
+  defaultExtraData,
+} from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { defaultColors } from 'assets/theme';
 import CommonToast from 'components/CommonToast';
+import { PortkeyConfig } from 'global';
 
 export default function GuardianApproval({
   guardianListConfig,
@@ -95,6 +101,15 @@ export default function GuardianApproval({
       isVerified: false,
     });
   };
+
+  // const getVerifiedData = (): AfterVerifiedConfig => {
+  //   return {
+  //     fromRecovery: true,
+  //     accountIdentifier,
+  //     chainId: PortkeyConfig.currChainId,
+  //     extraData: defaultExtraData,
+  //     verifiedGuardians:
+  // };
 
   const onFinish = () => {
     const result = {

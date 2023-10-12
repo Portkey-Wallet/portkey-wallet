@@ -12,10 +12,10 @@ import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import { attemptAccountCheck, getRegisterPageData, getSocialRecoveryPageData } from 'model/sign-in';
+import { attemptAccountCheck, getRegisterPageData, getSocialRecoveryPageData } from 'model/global';
 import ActionSheet from 'components/ActionSheet';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { AccountOriginalType, VerifiedGuardianDoc } from 'model/verify/after-verify';
+import { AccountOriginalType, VerifiedGuardianDoc, isTempWalletExist } from 'model/verify/after-verify';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
 import { GuardianConfig } from 'model/verify/guardian';
@@ -23,6 +23,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import useSignUp from 'model/verify/sign-up';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { GuardianApprovalPageResult, GuardianApprovalPageProps } from 'components/entries/GuardianApproval';
+import CommonToast from 'components/CommonToast';
 
 const TitleMap = {
   [PageType.login]: {
@@ -47,8 +48,19 @@ export default function Email({
   const [errorMessage, setErrorMessage] = useState<string>();
   const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
-  const { navigateForResult, navigationTo } = useBaseContainer({
+  const { navigateForResult, navigationTo, onFinish } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
+    onShow: () => {
+      if (isTempWalletExist()) {
+        CommonToast.success('You have logged in');
+        onFinish({
+          status: 'success',
+          data: {
+            finished: true,
+          },
+        });
+      }
+    },
   });
   const navigateToGuardianPage = useCallback(
     (config: GuardianConfig, callback: (result: VerifiedGuardianDoc) => void) => {

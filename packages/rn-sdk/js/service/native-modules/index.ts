@@ -42,6 +42,7 @@ export interface NativeWrapperModule {
   onFatalError: (from: string, errMsg: string, data: { [x: string]: any }) => void;
   onWarning: (from: string, warnMsg: string) => void;
   emitJSMethodResult: (eventId: string, result: string) => void;
+  getTempStorageIdentifier: () => string;
 }
 
 export interface NetworkModule {

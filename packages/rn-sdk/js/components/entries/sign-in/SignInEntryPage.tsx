@@ -1,7 +1,7 @@
 import { CountryCodeItem } from 'types/wallet';
 import { PortkeyEntries } from '../../../config/entries';
 import BaseContainer, { BaseContainerProps, BaseContainerState } from '../../../model/container/BaseContainer';
-import { AccountCheckResult, CURRENT_USING_COUNTRY_CODE, attemptAccountCheck } from '../../../model/sign-in';
+import { AccountCheckResult, CURRENT_USING_COUNTRY_CODE, attemptAccountCheck } from '../../../model/global';
 import LoginPortkey from 'pages/Login/LoginPortkey';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

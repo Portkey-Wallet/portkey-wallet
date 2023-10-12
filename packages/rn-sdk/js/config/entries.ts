@@ -9,4 +9,8 @@ export enum PortkeyEntries {
   VERIFIER_DETAIL_ENTRY = 'verifier_detail_entry',
 
   CHECK_PIN = 'check_pin_entry',
+  SET_PIN = 'set_pin_entry',
+  CONFIRM_PIN = 'confirm_pin_entry',
+
+  SET_BIO = 'set_bio_entry',
 }

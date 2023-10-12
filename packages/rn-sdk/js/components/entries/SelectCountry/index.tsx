@@ -6,7 +6,7 @@ import {
   COUNTRY_CODE_DATA_KEY,
   CURRENT_USING_COUNTRY_CODE,
   attemptAccountCheck,
-} from '../../../model/sign-in';
+} from '../../../model/global';
 import SelectCountry, { SelectCountryResult } from 'pages/Login/SelectCountry';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

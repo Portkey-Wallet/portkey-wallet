@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -14,15 +14,17 @@ import { useCurrentChannelId } from '../context/hooks';
 import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelName } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
+import { useInputFocus } from 'hooks/useInputFocus';
 
 const EditGroupPage = () => {
+  const iptRef = useRef<TextInput>();
+  useInputFocus(iptRef);
+
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
   const { name } = groupInfo || {};
-
   const disbandGroup = useDisbandChannel(currentChannelId || '');
   const upDateChannelName = useUpdateChannelName();
-
   const [groupName, setGroupName] = useState(name || '');
 
   const onDisband = useCallback(() => {
@@ -75,6 +77,7 @@ const EditGroupPage = () => {
       <ScrollView style={GStyles.flex1}>
         <FormItem title={'Group Name'} style={styles.groupNameWrap}>
           <CommonInput
+            ref={iptRef}
             type="general"
             theme="white-bg"
             placeholder="Enter Name"

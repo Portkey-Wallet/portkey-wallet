@@ -1,6 +1,6 @@
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import CommonButton from 'components/CommonButton';
 import CommonInput from 'components/CommonInput';
 import { ErrorType } from 'types/common';
@@ -11,15 +11,18 @@ import CommonToast from 'components/CommonToast';
 import { useCurrentCaInfo, useSetWalletName, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import FormItem from 'components/FormItem';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, TextInput } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import gStyles from 'assets/theme/GStyles';
 import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import { ChainId } from '@portkey/provider-types';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { useInputFocus } from 'hooks/useInputFocus';
 
 const EditWalletName: React.FC = () => {
+  const iptRef = useRef<TextInput>();
+  useInputFocus(iptRef);
   const { t } = useLanguage();
   const { walletName, userId } = useWallet();
   const [nameValue, setNameValue] = useState<string>(walletName);
@@ -88,6 +91,7 @@ const EditWalletName: React.FC = () => {
         <FormItem title={'Wallet Name'}>
           <CommonInput
             type="general"
+            ref={iptRef}
             spellCheck={false}
             autoCorrect={false}
             value={nameValue}

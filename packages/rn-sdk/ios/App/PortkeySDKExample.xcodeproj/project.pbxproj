@@ -176,9 +176,17 @@
 			path = JSSDK;
 			sourceTree = "<group>";
 		};
+		EAA3A8CB2AD81AB2001D1CE0 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */ = {
 			isa = PBXGroup;
 			children = (
+				EAA3A8CB2AD81AB2001D1CE0 /* Utils */,
 				EA74A0032AC15B7C005A4810 /* JSSDK */,
 				EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */,
 				EAD432A62ABC29ED00EEA69D /* AppDelegate.h */,

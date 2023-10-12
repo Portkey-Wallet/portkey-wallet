@@ -16,6 +16,18 @@ PODS:
     - FBSnapshotTestCase/Core
   - fmt (6.2.1)
   - glog (0.3.5)
+  - libwebp (1.3.1):
+    - libwebp/demux (= 1.3.1)
+    - libwebp/mux (= 1.3.1)
+    - libwebp/sharpyuv (= 1.3.1)
+    - libwebp/webp (= 1.3.1)
+  - libwebp/demux (1.3.1):
+    - libwebp/webp
+  - libwebp/mux (1.3.1):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.3.1)
+  - libwebp/webp (1.3.1):
+    - libwebp/sharpyuv
   - lottie-ios (3.4.4)
   - lottie-react-native (5.1.5):
     - lottie-ios (~> 3.4.0)
@@ -24,6 +36,7 @@ PODS:
     - MMKVCore (~> 1.3.1)
   - MMKVCore (1.3.1)
   - PortkeySDK (0.1.0):
+    - MMKV
     - React
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -427,7 +440,13 @@ PODS:
   - RNSVG (13.3.0):
     - React-Core
   - SocketRocket (0.6.1)
+  - Toast (4.0.0)
   - Yoga (1.14.0)
+  - YYKit (1.0.9):
+    - libwebp
+    - YYKit/no-arc (= 1.0.9)
+  - YYKit/no-arc (1.0.9):
+    - libwebp
 
 DEPENDENCIES:
   - boost (from `../../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -482,16 +501,20 @@ DEPENDENCIES:
   - RNLocalize (from `../../node_modules/react-native-localize`)
   - RNSpringScrollView (from `../../node_modules/react-native-spring-scrollview`)
   - RNSVG (from `../../node_modules/react-native-svg`)
+  - Toast (= 4.0.0)
   - Yoga (from `../../node_modules/react-native/ReactCommon/yoga`)
+  - YYKit (from `https://github.com/SAGESSE-CN/YYKit.git`)
 
 SPEC REPOS:
   https://gitee.com/mirrors/CocoaPods-Specs.git:
     - FBSnapshotTestCase
     - fmt
+    - libwebp
     - lottie-ios
     - MMKV
     - MMKVCore
     - SocketRocket
+    - Toast
 
 EXTERNAL SOURCES:
   boost:
@@ -596,6 +619,13 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native-svg"
   Yoga:
     :path: "../../node_modules/react-native/ReactCommon/yoga"
+  YYKit:
+    :git: https://github.com/SAGESSE-CN/YYKit.git
+
+CHECKOUT OPTIONS:
+  YYKit:
+    :commit: 903d9e3c5a20089f152918fe8611fcafd52c2ad1
+    :git: https://github.com/SAGESSE-CN/YYKit.git
 
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
@@ -605,11 +635,12 @@ SPEC CHECKSUMS:
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  libwebp: 33dc822fbbf4503668d09f7885bbfedc76c45e96
   lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
   lottie-react-native: 3e722c63015fdb9c27638b0a77969fc412067c18
   MMKV: 5a07930c70c70b86cd87761a42c8f3836fb681d7
   MMKVCore: e50135dbd33235b6ab390635991bab437ab873c0
-  PortkeySDK: 5f17d2c4eace44ad0c3eb76d16ef94d734c49dce
+  PortkeySDK: 63d0eca3696617ead65ed18265b34a037ec49348
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: c0569ecc035894e4a68baecb30fe6a7ea6e399f9
   RCTTypeSafety: e90354072c21236e0bcf1699011e39acd25fea2f
@@ -654,8 +685,10 @@ SPEC CHECKSUMS:
   RNSpringScrollView: e354167d96f2c3d2f20b186990b2c3946987cb3c
   RNSVG: 1869ad9534459f24caaa0416a4764548c2aeedad
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
+  Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
+  YYKit: 9ac092a14e3d5af709b707479bdb76b96a62fb41
 
-PODFILE CHECKSUM: 90a3be5a73342888671abfde7c06380d1ec0cb15
+PODFILE CHECKSUM: ceac7b99507da29ba5818492873513bfe4a6d6ee
 
 COCOAPODS: 1.12.1

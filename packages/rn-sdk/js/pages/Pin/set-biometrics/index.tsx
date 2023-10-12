@@ -13,7 +13,6 @@ import { pTd } from 'utils/unit';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { changeCanLock } from 'utils/LockManager';
 import { getVerifiedAndLockWallet } from 'model/verify/after-verify';
 import Loading from 'components/Loading';
 import { PortkeyEntries } from 'config/entries';
@@ -51,7 +50,6 @@ export default function SetBiometrics({ pin, deliveredSetPinInfo }: SetBiometric
 
   const openBiometrics = async () => {
     if (!pin) return;
-    changeCanLock(false);
     try {
       await setSecureStoreItem('Pin', pin);
       const res = await touchAuth();
@@ -70,7 +68,6 @@ export default function SetBiometrics({ pin, deliveredSetPinInfo }: SetBiometric
       Loading.hide();
       setErrorMessage(handleErrorMessage(error, 'Failed To Verify'));
     }
-    changeCanLock(true);
   };
   const onSkip = async () => {
     try {

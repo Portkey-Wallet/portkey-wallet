@@ -273,6 +273,7 @@ export default function Phone({
           onChangeText={setLoginAccount}
           onCountryChange={updateCountryCode}
           selectCountry={selectedCountryCode ?? country}
+          navigateForResult={navigateForResult}
         />
 
         <CommonButton

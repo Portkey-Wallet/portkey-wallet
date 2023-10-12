@@ -117,7 +117,7 @@ export default class DappMobileOperator extends Operator {
         try {
           return generateNormalResponse({
             eventName,
-            data: await this.checkManagerSyncState(chainId),
+            data: await this.checkManagerSyncStatus(chainId),
           });
         } catch (error: any) {
           return generateErrorResponse({ ...error, eventName, msg: error.msg || handleErrorMessage(error) });
@@ -419,7 +419,7 @@ export default class DappMobileOperator extends Operator {
     this.isLockDapp = isLockDapp;
   };
 
-  protected checkManagerSyncState = async (chainId: ChainId) => {
+  protected checkManagerSyncStatus = async (chainId: ChainId) => {
     const [caInfo, managerAddress] = await Promise.all([
       this.dappManager.getCaInfo(chainId),
       this.dappManager.currentManagerAddress(),

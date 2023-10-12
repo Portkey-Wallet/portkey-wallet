@@ -26,7 +26,7 @@ import {
   AfterVerifiedConfig,
   VerifiedGuardianDoc,
   defaultExtraData,
-  isTempWalletExist,
+  isWalletUnlocked,
 } from 'model/verify/after-verify';
 import useSignUp from 'model/verify/sign-up';
 import useBaseContainer from 'model/container/UseBaseContainer';
@@ -71,7 +71,7 @@ export default function Phone({
   const { navigateForResult, onFinish } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
     onShow: () => {
-      if (isTempWalletExist()) {
+      if (isWalletUnlocked()) {
         CommonToast.success('You have logged in');
         onFinish({
           status: 'success',

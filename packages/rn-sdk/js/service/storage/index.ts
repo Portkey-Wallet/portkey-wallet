@@ -7,6 +7,7 @@ export const GlobalStorage = new MMKV({
 
 export const TempStorage = {
   wrapKey(key: string) {
+    console.log('wrapKey', key, portkeyModulesEntity.NativeWrapperModule.tempStorageIdentifier);
     return `${key}#${portkeyModulesEntity.NativeWrapperModule.tempStorageIdentifier}`;
   },
   set(key: string, value: any) {

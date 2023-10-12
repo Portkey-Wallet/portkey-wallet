@@ -237,7 +237,7 @@ export default function GuardianApproval({
                     key,
                   );
                   if (guardianResult) {
-                    setGuardianStatus(key, { status: VerifyStatus.Verified });
+                    setGuardianStatus(key, { status: VerifyStatus.Verified, verifierInfo: guardianResult });
                     return;
                   }
                 }
@@ -258,11 +258,11 @@ export default function GuardianApproval({
     guardianConfig?: GuardianConfig,
     alreadySent?: boolean,
     key?: string,
-  ): Promise<boolean> => {
+  ): Promise<VerifiedGuardianDoc | null> => {
     const guardian = guardianConfig;
     if (!guardian) {
       console.error('guardianConfig is not defined.');
-      return false;
+      return null;
     }
     return new Promise(resolve => {
       navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
@@ -272,9 +272,9 @@ export default function GuardianApproval({
             ...preGuardiansStatus,
             [key ?? '0']: { status: VerifyStatus.Verified },
           }));
-          resolve(true);
+          resolve(result);
         } else {
-          resolve(false);
+          resolve(null);
         }
       });
     });

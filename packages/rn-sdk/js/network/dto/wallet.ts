@@ -18,7 +18,7 @@ export interface RequestSocialRecoveryParams {
   chainId: string;
   context: ContextInfo;
   extraData: string;
-  guardians: ApprovedGuardianInfo[];
+  guardiansApproved: ApprovedGuardianInfo[];
 }
 
 export interface ApprovedGuardianInfo {

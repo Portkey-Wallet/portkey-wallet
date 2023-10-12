@@ -1,4 +1,5 @@
 import { DeviceInfoType, DeviceType } from '@portkey-wallet/types/types-ca/device';
+import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { requestSocialRecoveryOrRegister } from 'model/global';
 import { GlobalStorage, TempStorage } from 'service/storage';
@@ -69,6 +70,7 @@ export const getVerifiedAndLockWallet = async (
     };
     await lockWallet(pinValue, walletConfig);
     rememberUseBiometric(setBiometrics ?? false);
+    await sleep(2000);
     return true;
   } catch (e) {
     console.error(e);
@@ -81,6 +83,9 @@ const lockWallet = async (pinValue: string, config: RecoverWalletConfig): Promis
   // TODO encrypt walletConfig
   GlobalStorage.set(PIN_KEY, pinValue);
   GlobalStorage.set(WALLET_CONFIG_KEY, JSON.stringify(config));
+
+  // then set temp wallet
+  TempStorage.set(WALLET_CONFIG_KEY, JSON.stringify(config));
 };
 
 export const rememberUseBiometric = async (useBiometric: boolean): Promise<void> => {
@@ -91,9 +96,20 @@ export const getUseBiometric = (): boolean => {
   return GlobalStorage.getBoolean(USE_BIOMETRIC_KEY) ?? false;
 };
 
-export const isTempWalletExist = (): boolean => {
+export const isWalletUnlocked = (): boolean => {
   const tempWalletConfig = TempStorage.getString(WALLET_CONFIG_KEY);
   return !!tempWalletConfig;
+};
+
+export const isWalletExists = (): boolean => {
+  const storagePin = GlobalStorage.getString(PIN_KEY);
+  const walletConfig = GlobalStorage.getString(WALLET_CONFIG_KEY);
+  return !!storagePin && !!walletConfig;
+};
+
+export const checkPin = (pinValue: string): boolean => {
+  const storagePin = GlobalStorage.getString(PIN_KEY);
+  return storagePin === pinValue;
 };
 
 export const unLockTempWallet = (pinValue: string): boolean => {
@@ -102,7 +118,7 @@ export const unLockTempWallet = (pinValue: string): boolean => {
   if (storagePin !== pinValue || !walletConfig) {
     return false;
   }
-  if (isTempWalletExist()) {
+  if (isWalletUnlocked()) {
     return true;
   } else {
     // TODO decrypt walletConfig

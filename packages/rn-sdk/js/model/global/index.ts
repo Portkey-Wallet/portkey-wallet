@@ -127,7 +127,7 @@ export const requestSocialRecoveryOrRegister = async (
       chainId,
       context,
       extraData: wrapExtraData(extraData),
-      guardians: verifiedGuardians.map(guardian => ({
+      guardiansApproved: verifiedGuardians.map(guardian => ({
         type: guardian.type,
         identifier: guardian.identifier,
         verifierId: guardian.verifierId,

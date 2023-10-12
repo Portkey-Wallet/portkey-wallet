@@ -73,14 +73,19 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
         );
       } else {
         Loading.show();
-        await getVerifiedAndLockWallet(deliveredSetPinInfo, confirmPin);
+        const res = await getVerifiedAndLockWallet(deliveredSetPinInfo, confirmPin);
         Loading.hide();
-        onFinish({
-          status: 'success',
-          data: {
-            finished: true,
-          },
-        });
+        if (res) {
+          onFinish({
+            status: 'success',
+            data: {
+              finished: true,
+            },
+          });
+        } else {
+          setErrorMessage('network failure');
+          pinRef.current?.reset();
+        }
       }
     },
     [deliveredSetPinInfo, navigateForResult, onFinish],

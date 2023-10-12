@@ -4,7 +4,7 @@ import com.tencent.mmkv.MMKV
 
 private val portkeyMMKV = MMKV.mmkvWithID("portkey-sdk")
 
-internal object MMKVStorage {
+object PortkeyMMKVStorage {
     @Synchronized
     fun readString(key: String): String? {
         return portkeyMMKV.decodeString(key)
@@ -28,6 +28,10 @@ internal object MMKVStorage {
                 }
             }
         }
+    }
+
+    fun clear() {
+        portkeyMMKV.clearAll()
     }
 
     @Synchronized

@@ -5,9 +5,9 @@ import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import PinContainer from 'components/PinContainer';
 import { StyleSheet } from 'react-native';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
-import { headPin } from '../core';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
+import { checkPin } from 'model/verify/after-verify';
 
 export default function CheckPin(props: CheckPinProps) {
   const { rootTag } = props;
@@ -22,7 +22,7 @@ export default function CheckPin(props: CheckPinProps) {
   const onChangeText = useCallback(
     (pin: string) => {
       if (pin.length === PIN_SIZE) {
-        if (!headPin(pin)) {
+        if (!checkPin(pin)) {
           pinRef.current?.reset();
           return setErrorMessage(PinErrorMessage.invalidPin);
         }

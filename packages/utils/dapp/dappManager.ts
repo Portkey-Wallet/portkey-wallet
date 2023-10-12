@@ -3,13 +3,14 @@ import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { DappManagerOptions, IDappManager, IDappManagerStore } from '@portkey-wallet/types/types-ca/dapp';
 import { CACommonState } from '@portkey-wallet/types/types-ca/store';
-import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
+import { CAInfo, CAWalletInfoType } from '@portkey-wallet/types/types-ca/wallet';
 import { ChainId, ChainsInfo } from '@portkey/provider-types';
 import { handleAccounts, handleChainIds, handleCurrentCAInfo, handleOriginInfo } from './index';
 import { isEqDapp } from './browser';
 import { NetworkType } from '@portkey-wallet/types';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { SessionInfo } from '@portkey-wallet/types/session';
+import { updateCASyncState } from '@portkey-wallet/store/store-ca/wallet/actions';
 
 export abstract class BaseDappManager<T extends IDappManagerStore> {
   protected store: T;
@@ -32,6 +33,12 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   }
   async walletName(): Promise<string> {
     return (await this.getWallet()).walletName;
+  }
+  async walletInfo(): Promise<CAWalletInfoType | undefined> {
+    return (await this.getWallet()).walletInfo;
+  }
+  async currentManagerAddress(): Promise<string | undefined> {
+    return (await this.walletInfo())?.address;
   }
   async networkType(): Promise<NetworkType> {
     return (await this.getWallet()).currentNetwork;
@@ -60,6 +67,10 @@ export abstract class DappManager<T extends CACommonState = CACommonState>
   async addDapp(dapp: DappStoreItem) {
     const { currentNetwork } = await this.getWallet();
     this.store.dispatch(addDapp({ networkType: currentNetwork, dapp: dapp }));
+  }
+  async updateManagerSyncState(chainId: ChainId) {
+    const { currentNetwork } = await this.getWallet();
+    this.store.dispatch(updateCASyncState({ networkType: currentNetwork, chainId }));
   }
   async updateDapp(dapp: DappStoreItem): Promise<void> {
     const [{ currentNetwork }, originInfo] = await Promise.all([this.getWallet(), this.getOriginInfo(dapp.origin)]);

@@ -23,6 +23,9 @@ target 'PortkeySDKExample_Example' do
 #  )
   
   pod 'PortkeySDK', :path => '../'
+  
+  pod 'YYKit', git: 'https://github.com/SAGESSE-CN/YYKit.git'
+  pod 'Toast', '4.0.0'
 
   target 'PortkeySDKExample_Tests' do
     inherit! :search_paths

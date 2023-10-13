@@ -176,9 +176,17 @@
 			path = JSSDK;
 			sourceTree = "<group>";
 		};
+		EAA3A8CB2AD81AB2001D1CE0 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */ = {
 			isa = PBXGroup;
 			children = (
+				EAA3A8CB2AD81AB2001D1CE0 /* Utils */,
 				EA74A0032AC15B7C005A4810 /* JSSDK */,
 				EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */,
 				EAD432A62ABC29ED00EEA69D /* AppDelegate.h */,
@@ -329,14 +337,70 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example-resources.sh",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/assets/image/pngs/biometric.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/assets/image/pngs/phone.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/assets/image/pngs/portkeyBlueBackground.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/pages/Login/img/background.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-ratings/dist/images/airbnb-star-selected.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-ratings/dist/images/airbnb-star.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-ratings/dist/images/bell.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-ratings/dist/images/heart.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-ratings/dist/images/rocket.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-ratings/dist/images/star.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-spring-scrollview/Customize/res/arrow@2x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/fail.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/fail@2x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/fail@3x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/info.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/info@2x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/info@3x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/sad.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/sad@2x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/sad@3x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/smile.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/smile@2x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/smile@3x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/stop.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/stop@2x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/stop@3x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/success.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/success@2x.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/rn-teaset/icons/success@3x.png",
 				"${PODS_CONFIGURATION_BUILD_DIR}/PortkeySDK/JSBundle.bundle",
-				"${PODS_CONFIGURATION_BUILD_DIR}/PortkeySDK/ImageResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/biometric.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/phone.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/portkeyBlueBackground.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/background.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/airbnb-star-selected.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/airbnb-star.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/bell.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/heart.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/rocket.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/star.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/arrow@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fail.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fail@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/fail@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/info.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/info@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/info@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sad.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sad@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/sad@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/smile.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/smile@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/smile@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/stop.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/stop@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/stop@3x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/success.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/success@2x.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/success@3x.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/JSBundle.bundle",
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ImageResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -584,7 +648,7 @@
 			baseConfigurationReference = 903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 56DKXVFJS2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PortkeySDKExample/PortkeySDKExample-Prefix.pch";
@@ -610,7 +674,7 @@
 			baseConfigurationReference = 58B8649AAAEF2C57C9DAB9AD /* Pods-PortkeySDKExample_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = 56DKXVFJS2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PortkeySDKExample/PortkeySDKExample-Prefix.pch";

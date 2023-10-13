@@ -30,8 +30,11 @@ export const getCacheImageByOnDownload = async ({
     const { source: imageSource, path } = await getCacheImageInfo(source);
     if (imageSource) return imageSource;
     if (!path) return source;
-    await onDownload({ uri: source.uri, fileUri: path });
-    return { uri: path };
+    if (!CacheTempMap[source.uri || '']) {
+      await onDownload({ uri: source.uri, fileUri: path });
+      CacheTempMap[source.uri || ''] = { uri: path };
+    }
+    return CacheTempMap[source.uri || ''];
   } catch (error) {
     return source;
   }
@@ -47,11 +50,8 @@ export async function getLocalSourceByResumable({
   if (!isURISource(source)) return source;
 
   if (isLocalSource(source)) return source;
-  if (!CacheTempMap[source.uri || '']) {
-    const localSource = await getCacheImageByOnDownload({ source, onDownload });
-    if (localSource) CacheTempMap[source.uri || ''] = localSource;
-  }
-  return CacheTempMap[source.uri || ''];
+
+  return getCacheImageByOnDownload({ source, onDownload });
 }
 
 export async function getLocalUri(uri: string) {

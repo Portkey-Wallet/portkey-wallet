@@ -19,9 +19,9 @@ import NoData from 'components/NoData';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im/channelList';
 import { sleep } from '@portkey-wallet/utils';
 import { useJumpToChatGroupDetails } from 'hooks/chat';
+import UploadImage from '../components/UploadImage';
 const ChatGroupDetails = () => {
   const createChannel = useCreateGroupChannel();
-
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
 
   const [groupName, setGroupName] = useState('');
@@ -89,6 +89,7 @@ const ChatGroupDetails = () => {
           onChangeText={setGroupName}
         />
       </FormItem>
+      <UploadImage />
       <View style={[BGStyles.bg1, GStyles.flex1]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.selectHeaderWrap]}>
           <TextM style={FontStyles.font3}>Select Contacts</TextM>

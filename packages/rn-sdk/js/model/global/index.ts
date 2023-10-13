@@ -96,6 +96,7 @@ export const getSocialRecoveryPageData = async (
   accountOriginalType: AccountOriginalType,
 ): Promise<SocialRecoveryConfig> => {
   const guardians = await NetworkController.getGuardianInfo(PortkeyConfig.currChainId(), accountIdentifier);
+  console.error(JSON.stringify(guardians.guardianList.guardians));
   return {
     accountIdentifier,
     accountOriginalType,
@@ -107,7 +108,7 @@ export const getSocialRecoveryPageData = async (
       imageUrl: guardian.imageUrl ?? '',
       sendVerifyCodeParams: {
         type: guardian.type as any,
-        guardianIdentifier: accountIdentifier,
+        guardianIdentifier: guardian.guardianIdentifier,
         verifierId: guardian.verifierId,
         chainId: PortkeyConfig.currChainId(),
         operationType: OperationTypeEnum.register,

@@ -151,7 +151,7 @@ export default function GuardianApproval({
     return guardianArray?.map((item, index) => {
       return {
         ...item,
-        guardianAccount: accountIdentifier,
+        guardianAccount: item.sendVerifyCodeParams.guardianIdentifier,
         isLoginAccount: item.isLoginGuardian,
         guardianType: guardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
         key: `${index}`,

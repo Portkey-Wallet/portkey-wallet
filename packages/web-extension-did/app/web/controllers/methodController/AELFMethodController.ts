@@ -16,6 +16,8 @@ import { removeLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage
 import SWEventController from 'controllers/SWEventController';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
 import getManager from 'utils/lib/getManager';
+import { ChainId } from '@portkey-wallet/types';
+import { contractQueries } from '@portkey-wallet/graphql';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -35,6 +37,8 @@ const aelfMethodList = [
   MethodsBase.NETWORK,
   MethodsWallet.GET_WALLET_STATE,
   MethodsWallet.GET_WALLET_NAME,
+  MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS,
+  MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS,
 ];
 interface AELFMethodControllerProps {
   notificationService: NotificationService;
@@ -111,6 +115,13 @@ export default class AELFMethodController {
       case MethodsWallet.GET_WALLET_NAME:
         this.getWalletName(sendResponse, message.payload);
         break;
+
+      case MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS:
+        this.getCurrentManagerAddress(sendResponse, message.payload);
+        break;
+      case MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS:
+        this.getWalletManagerSyncStatus(sendResponse, message.payload);
+        break;
       default:
         sendResponse(
           errorHandler(
@@ -157,6 +168,101 @@ export default class AELFMethodController {
 
   isUnlocked = () => {
     return Boolean(this.getPassword());
+  };
+
+  getCurrentManagerAddress: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
+    try {
+      const isActive = await this.dappManager.isActive(message.origin);
+      if (!isActive)
+        return sendResponse({
+          ...errorHandler(400001),
+          data: {
+            code: ResponseCode.UNAUTHENTICATED,
+          },
+        });
+
+      const managerAddress = await this.dappManager.currentManagerAddress();
+      if (!managerAddress)
+        return sendResponse({
+          ...errorHandler(410001),
+          data: {
+            code: ResponseCode.INTERNAL_ERROR,
+            msg: 'Please check if the user is logged in to the wallet',
+          },
+        });
+
+      sendResponse({ ...errorHandler(0), data: managerAddress });
+    } catch (error) {
+      sendResponse({
+        ...errorHandler(500001),
+        data: {
+          code: ResponseCode.INTERNAL_ERROR,
+        },
+      });
+    }
+  };
+
+  checkManagerSyncStatus = async (chainId: ChainId) => {
+    const [caInfo, managerAddress, networkType] = await Promise.all([
+      this.dappManager.getCaInfo(chainId),
+      this.dappManager.currentManagerAddress(),
+      this.dappManager.networkType(),
+    ]);
+
+    if (!caInfo?.isSync) {
+      const { caHolderManagerInfo } = await contractQueries.getCAHolderByManager(networkType, {
+        manager: managerAddress,
+        chainId,
+        caHash: caInfo?.caHash,
+      });
+      const info = caHolderManagerInfo[0];
+      if (!info) return false;
+      const managerInfos = info.managerInfos;
+      return managerInfos?.some((manager) => manager?.address === managerAddress);
+    }
+    return caInfo?.isSync;
+  };
+
+  getWalletManagerSyncStatus: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {
+    try {
+      const isActive = await this.dappManager.isActive(message.origin);
+      if (!isActive)
+        return sendResponse({
+          ...errorHandler(400001),
+          data: {
+            code: ResponseCode.UNAUTHENTICATED,
+          },
+        });
+      const chainId = message.payload?.chainId;
+
+      if (!(await this.dappManager.getChainInfo(chainId)))
+        throw sendResponse({
+          ...errorHandler(400001),
+          data: {
+            code: ResponseCode.ERROR_IN_PARAMS,
+            msg: 'Invalid chain id',
+          },
+        });
+
+      if (!chainId)
+        return sendResponse({
+          ...errorHandler(400001),
+          data: {
+            code: ResponseCode.ERROR_IN_PARAMS,
+          },
+        });
+      return sendResponse({
+        ...errorHandler(0),
+        data: Boolean(await this.checkManagerSyncStatus(chainId)),
+      });
+    } catch (error) {
+      return sendResponse({
+        ...errorHandler(500001),
+        data: {
+          code: ResponseCode.INTERNAL_ERROR,
+        },
+      });
+    }
   };
 
   getWalletName: RequestCommonHandler = async (sendResponse: SendResponseFun, message) => {

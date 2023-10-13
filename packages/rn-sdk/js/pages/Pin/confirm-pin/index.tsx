@@ -9,8 +9,8 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { getVerifiedAndLockWallet } from 'model/verify/after-verify';
 import Loading from 'components/Loading';
-import { isEnrolledAsync } from 'expo-local-authentication';
 import { SetBiometricsProps, SetBiometricsResult } from '../set-biometrics';
+import { isEnrolledAsync } from 'expo-local-authentication';
 
 const isBiometricsReady = async () => {
   try {

@@ -19,6 +19,17 @@ import { GlobalStorage } from 'service/storage';
 import { SignInPageProps, SignInPageResult } from 'components/entries/sign-in/SignInEntryPage';
 import { sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
+import { isEnrolledAsync } from 'expo-local-authentication';
+
+const isBiometricsReady = async () => {
+  try {
+    console.error('isEnrolledAsync :>> ', isEnrolledAsync());
+    return await isEnrolledAsync();
+  } catch (e) {
+    console.error('isEnrolledAsync error :>> ', e);
+    return false;
+  }
+};
 
 const TitleMap = {
   [PageType.login]: {
@@ -44,6 +55,8 @@ export default function Referral({
   let onSuccess = (text = 'You have already logged in, page close in 3 seconds') => {
     console.log(text);
   };
+
+  isBiometricsReady();
 
   const { onFinish, navigateForResult } = useBaseContainer({
     entryName: PortkeyEntries.REFERRAL_ENTRY,

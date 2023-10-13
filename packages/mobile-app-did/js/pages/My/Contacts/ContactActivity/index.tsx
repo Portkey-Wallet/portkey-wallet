@@ -21,9 +21,9 @@ import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import { request } from '@portkey-wallet/api/api-did';
-import useEffectOnce from 'hooks/useEffectOnce';
 import myEvents from 'utils/deviceEvent';
 import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-ca/activity/type';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface ParamsType {
   fromChainId: ChainId;
@@ -185,6 +185,7 @@ const ContactActivity: React.FC = () => {
           if (activityList?.length >= totalCount) return;
           fetchActivityList(activityList?.length);
         }}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={<NoData noPic message="" />}
       />
     </PageContainer>

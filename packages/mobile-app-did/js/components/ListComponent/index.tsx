@@ -11,6 +11,7 @@ import {
 import { defaultColors } from 'assets/theme';
 import { bottomBarHeight } from '@portkey-wallet/utils/mobile/device';
 import { TextM } from 'components/CommonText';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 interface ListComponentProps<ItemT> extends FlatListProps<ItemT> {
   whetherAutomatic?: boolean; // Whether to automatically load more, if there is a ceiling, you can not set this property to true
   upPullRefresh?: () => void; // Pull-down refresh callback
@@ -39,7 +40,7 @@ const listProps = {
   // legacyImplementation: true
 };
 const ListComponent = forwardRef(function ListComponent(
-  { onEndReachedThreshold = 0.3, whetherAutomatic = false, ...props }: ListComponentProps<any>,
+  { onEndReachedThreshold = ON_END_REACHED_THRESHOLD, whetherAutomatic = false, ...props }: ListComponentProps<any>,
   forwardedRef,
 ) {
   const { upPullRefresh, loadCompleted, showFooter } = props;

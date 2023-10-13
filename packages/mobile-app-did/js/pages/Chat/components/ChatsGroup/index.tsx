@@ -33,6 +33,7 @@ import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -118,6 +119,7 @@ const ChatsUI = () => {
       ...ListViewProps,
       onScrollBeginDrag: onDismiss,
       onEndReached: () => onLoadEarlier(),
+      onEndReachedThreshold: ON_END_REACHED_THRESHOLD,
     };
   }, [onDismiss, onLoadEarlier]);
 

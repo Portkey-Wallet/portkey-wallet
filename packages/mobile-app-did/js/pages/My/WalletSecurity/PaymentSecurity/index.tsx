@@ -22,6 +22,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import NoData from 'components/NoData';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useTransferLimitList } from '@portkey-wallet/hooks/hooks-ca/security';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 const _renderPaymentSecurityItem = ({ item }: { item: ITransferLimitItem }) => {
   const defaultToken = useDefaultToken();
@@ -115,6 +116,7 @@ const PaymentSecurityList: React.FC = () => {
         renderItem={({ item }) => <PaymentSecurityItem item={item} />}
         onRefresh={() => init()}
         onEndReached={() => getList()}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={() => <NoData style={BGStyles.bg4} topDistance={pTd(95)} message="No asset" />}
       />
     </PageContainer>

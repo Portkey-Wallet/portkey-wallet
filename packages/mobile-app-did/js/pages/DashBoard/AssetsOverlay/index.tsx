@@ -24,6 +24,7 @@ import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import CommonAvatar from 'components/CommonAvatar';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
   const { symbol, onPress, item } = props;
@@ -200,6 +201,7 @@ const AssetList = () => {
         data={listShow || []}
         renderItem={renderItem}
         keyExtractor={(_item, index) => `${index}`}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={noData}
         onEndReached={() => {
           getList();

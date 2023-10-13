@@ -86,7 +86,7 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
           setVerifiedDoc(result);
           return result;
         } else {
-          return null;
+          return result;
         }
       } catch (e) {
         console.warn(e);

@@ -7,6 +7,7 @@ export const portkeyModulesEntity = NativeModules as PortkeyNativeModules;
 export interface PortkeyNativeModules {
   RouterModule: RouterModule;
   NativeWrapperModule: NativeWrapperModule;
+  StorageModule: StorageModule;
 }
 
 export interface RouterModule {
@@ -45,6 +46,16 @@ export interface NativeWrapperModule {
   emitJSMethodResult: (eventId: string, result: string) => void;
 }
 
+export interface StorageModule {
+  // set: (key: string, value: string | number | boolean | null | undefined) => void;
+  setString: (key: string, value: string) => void;
+  setBoolean: (key: string, value: boolean) => void;
+  setNumber: (key: string, value: number) => void;
+  getString: (key: string) => string | undefined;
+  getBoolean: (key: string) => boolean | undefined;
+  getNumber: (key: string) => number | undefined;
+}
+
 export interface NetworkModule {
   fetch: (url: string, method: 'GET' | 'POST', params: TypedUrlParams, headers: TypedUrlParams) => Promise<string>;
 }
@@ -75,6 +86,7 @@ export interface ResultWrapper<T> {
   status: NetworkResult;
   result?: T;
   errCode: string;
+  errMessage?: string;
 }
 
 export enum NetworkResult {

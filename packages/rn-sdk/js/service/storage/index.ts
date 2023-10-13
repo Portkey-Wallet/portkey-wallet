@@ -1,9 +1,27 @@
-import { MMKV } from 'react-native-mmkv';
-import { portkeyModulesEntity } from 'service/native-modules';
+import { StorageModule, portkeyModulesEntity } from 'service/native-modules';
 
-export const GlobalStorage = new MMKV({
-  id: 'portkey-sdk',
-});
+export const GlobalStorage: StorageModule & { set: (key: string, value: any) => void } = Object.assign(
+  {},
+  portkeyModulesEntity.StorageModule,
+  {
+    set(key: string, value: any) {
+      switch (typeof value) {
+        case 'boolean': {
+          GlobalStorage.setBoolean(key, value);
+          break;
+        }
+        case 'number': {
+          GlobalStorage.setNumber(key, value);
+          break;
+        }
+        case 'string':
+        default: {
+          GlobalStorage.setString(key, value);
+        }
+      }
+    },
+  },
+);
 
 export const TempStorage = {
   wrapKey(key: string) {
@@ -11,7 +29,7 @@ export const TempStorage = {
     return `${key}#${portkeyModulesEntity.NativeWrapperModule.tempStorageIdentifier}`;
   },
   set(key: string, value: any) {
-    return GlobalStorage.set(this.wrapKey(key), value);
+    GlobalStorage.set(this.wrapKey(key), value);
   },
   getString(key: string) {
     return GlobalStorage.getString(this.wrapKey(key));

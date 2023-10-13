@@ -201,6 +201,7 @@ export default function GuardianApproval({
         key,
       );
       if (guardianResult) {
+        CommonToast.success('Verified Successfully');
         setGuardianStatus(key, { status: VerifyStatus.Verified });
         return;
       } else {
@@ -242,6 +243,7 @@ export default function GuardianApproval({
                     key,
                   );
                   if (guardianResult) {
+                    CommonToast.success('Verified Successfully');
                     setGuardianStatus(key, { status: VerifyStatus.Verified, verifierInfo: guardianResult });
                     return;
                   }

@@ -91,4 +91,5 @@ export interface CheckVerifyCodeParams {
 export interface CheckVerifyCodeResultDTO {
   verificationDoc: string;
   signature: string;
+  failedBecauseOfTooManyRequests?: boolean;
 }

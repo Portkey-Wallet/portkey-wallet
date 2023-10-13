@@ -1,6 +1,8 @@
 package io.aelf.portkey.components
 
+import android.util.Log
 import com.tencent.mmkv.MMKV
+import java.util.Arrays
 
 private val portkeyMMKV = MMKV.mmkvWithID("portkey-sdk")
 
@@ -8,6 +10,16 @@ object PortkeyMMKVStorage {
     @Synchronized
     fun readString(key: String): String? {
         return portkeyMMKV.decodeString(key)
+    }
+
+    @Synchronized
+    fun readDouble(key: String): Double {
+        return portkeyMMKV.decodeDouble(key, 0.0)
+    }
+
+    @Synchronized
+    fun readBoolean(key: String): Boolean {
+        return portkeyMMKV.decodeBool(key, false)
     }
 
     @Synchronized
@@ -32,10 +44,29 @@ object PortkeyMMKVStorage {
 
     fun clear() {
         portkeyMMKV.clearAll()
+        portkeyMMKV.clearMemoryCache()
+        portkeyMMKV.sync()
+        Log.w("PortkeyMMKV", "keys : ${Arrays.toString(portkeyMMKV.allNonExpireKeys())}")
     }
 
     @Synchronized
     fun writeString(key: String, value: String?) {
         portkeyMMKV.encode(key, value)
     }
+
+    @Synchronized
+    fun writeDouble(key: String, value: Double) {
+        portkeyMMKV.encode(key, value)
+    }
+
+    @Synchronized
+    fun writeInt(key: String, value: Int) {
+        portkeyMMKV.encode(key, value)
+    }
+
+    @Synchronized
+    fun writeBoolean(key: String, value: Boolean) {
+        portkeyMMKV.encode(key, value)
+    }
+
 }

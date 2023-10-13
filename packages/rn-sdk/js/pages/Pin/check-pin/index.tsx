@@ -39,11 +39,10 @@ export default function CheckPin(props: CheckPinProps) {
     },
     [errorMessage, onFinish],
   );
-  console.log(`getUseBiometric: ${getUseBiometric()}`);
 
   const useBiometrics = async () => {
     const res = await touchAuth();
-    if (res) {
+    if (res?.success) {
       onFinish<CheckPinResult>({
         status: 'success',
         data: {

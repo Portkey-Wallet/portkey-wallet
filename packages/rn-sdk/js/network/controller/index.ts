@@ -110,8 +110,18 @@ export class NetworkControllerEntity {
       'POST',
       params,
     );
-    if (!res?.result) throw new Error('network failure');
-    return res.result;
+    if (!res) throw new Error('network failure');
+    const { result, errMessage } = res;
+    return Object.assign(
+      {},
+      result ?? {
+        verificationDoc: '',
+        signature: '',
+      },
+      {
+        failedBecauseOfTooManyRequests: errMessage?.includes('Too Many Retries'),
+      } as Partial<CheckVerifyCodeResultDTO>,
+    );
   };
 
   requestRegister = async (params: RequestRegisterParams): Promise<RequestRegisterOrSocialRecoveryResult> => {

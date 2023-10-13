@@ -6,9 +6,6 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
-import com.lugg.ReactNativeConfig.ReactNativeConfigPackage
-
-
 
 
 internal class PortkeyNativePackages : ReactPackage {
@@ -16,7 +13,8 @@ internal class PortkeyNativePackages : ReactPackage {
         return mutableListOf(
             RouterModule(reactApplicationContext),
             NativeWrapperModule(reactApplicationContext),
-            NetworkModule(reactApplicationContext)
+            NetworkModule(reactApplicationContext),
+            StorageModule(reactApplicationContext)
         )
     }
 

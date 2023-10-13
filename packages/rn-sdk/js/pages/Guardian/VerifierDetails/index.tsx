@@ -105,8 +105,12 @@ export default function VerifierDetails({
       Loading.show();
       const result = await checkVerifyCode(code);
       Loading.hide();
-      if (result) {
+      if (result?.signature && result?.verificationDoc) {
         onPageFinish(result);
+        return;
+      } else if (result?.failedBecauseOfTooManyRequests) {
+        digitInput.current?.reset();
+        CommonToast.fail('Too many retries');
         return;
       }
     } catch (e) {

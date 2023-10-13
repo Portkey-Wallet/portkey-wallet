@@ -1,7 +1,6 @@
 package io.aelf.portkey.network
 
 import android.util.Log
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -143,10 +142,26 @@ internal object NetworkConnector {
         return if (response.isSuccessful) {
             ResultWrapper(0, result = result)
         } else {
-            val errorCode: String =
-                if (result != null) result.asJsonObject.get("error").asJsonObject.get("code").asString
-                    ?: "${response.code}" else "${response.code}"
-            ResultWrapper(-1, errorCode, null)
+            val errorCode: String = if (result != null) {
+                val code = result.asJsonObject.get("error").asJsonObject.get("code")
+                if (!code.isJsonNull) {
+                    code.asJsonObject.toString()
+                } else {
+                    "-1"
+                }
+            } else "${response.code}"
+            val errMessage: String =
+                if (result != null) {
+                    val message = result.asJsonObject.get("error").asJsonObject.get("message")
+                    if (!message.isJsonNull) {
+                        message.asString
+                    } else {
+                        "empty"
+                    }
+                } else {
+                    "null"
+                }
+            ResultWrapper(-1, errorCode, null, errMessage)
         }
     }
 }
@@ -154,13 +169,15 @@ internal object NetworkConnector {
 internal data class ResultWrapper(
     private val status: Int,
     private val errCode: String = "0",
-    private val result: JsonElement? = null
+    private val result: JsonElement? = null,
+    private val errMessage: String? = null
 ) {
     fun toJsonString(): String {
         val jsonObject = JSONObject()
         jsonObject.put("status", status)
         jsonObject.put("result", result)
         jsonObject.put("errCode", errCode)
+        jsonObject.put("errMessage", errMessage)
         return jsonObject.toString()
     }
 }

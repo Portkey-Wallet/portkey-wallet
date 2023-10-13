@@ -89,7 +89,7 @@ const ChatGroupDetails = () => {
           onChangeText={setGroupName}
         />
       </FormItem>
-      <UploadImage />
+      <UploadImage title={''} />
       <View style={[BGStyles.bg1, GStyles.flex1]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.selectHeaderWrap]}>
           <TextM style={FontStyles.font3}>Select Contacts</TextM>

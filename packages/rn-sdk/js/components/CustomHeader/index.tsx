@@ -1,8 +1,7 @@
 import { View, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
-import React, { ReactNode, useEffect, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import Svg from 'components/Svg';
 import { blueStyles, hideTitleStyles, whitStyles } from './style/index.style';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
@@ -43,17 +42,14 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     themeType = 'white',
     style,
     leftIconType = 'back',
-    onGestureStartCallback,
     notHandleHardwareBackPress,
   } = props;
 
   // theme change
   const styles = themeType === 'blue' ? blueStyles : whitStyles;
-  const isFocused = useIsFocused();
-  const navigation = useNavigation();
 
   // if can go back
-  const isCanGoBack = useMemo(() => navigation.canGoBack(), [navigation]);
+  const isCanGoBack = true;
 
   const leftIcon = useMemo(() => {
     const isClose = leftIconType === 'close';
@@ -68,25 +64,16 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   }, [leftIconType, styles.leftBackTitle.color]);
   useHardwareBackPress(
     useMemo(() => {
-      if (isFocused && leftCallback && !notHandleHardwareBackPress) {
+      if (leftCallback && !notHandleHardwareBackPress) {
         return () => {
           leftCallback();
           return true;
         };
       }
-    }, [isFocused, leftCallback, notHandleHardwareBackPress]),
+    }, [leftCallback, notHandleHardwareBackPress]),
   );
-  useEffect(() => {
-    if (onGestureStartCallback) {
-      const unsubscribe = navigation.addListener('gestureStart' as any, () => {
-        onGestureStartCallback();
-      });
-      return unsubscribe;
-    }
-  }, [navigation, onGestureStartCallback]);
 
   const letElement = useMemo(() => {
-    console.error(backTitle, isCanGoBack, leftCallback, leftDom, leftIcon, noLeftDom, styles.leftBackTitle, t, type);
     if (noLeftDom) return null;
     if (leftDom) return leftDom;
     if (!isCanGoBack && !leftCallback) return null;

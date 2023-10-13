@@ -35,13 +35,15 @@ export default class SelectCountryEntryPage extends BaseContainer<
     return attemptAccountCheck(accountIdentifier);
   };
 
-  onSelected = (result: CountryCodeItem) => {
-    this.onCacheData(result);
+  onSelected = (result: CountryCodeItem | null | undefined) => {
+    if (result) {
+      this.onCacheData(result);
+    }
     this.onFinish({
       data: {
-        result: JSON.stringify(result),
+        result: result ? JSON.stringify(result) : '',
       },
-      status: 'success',
+      status: result ? 'success' : 'fail',
     });
   };
 

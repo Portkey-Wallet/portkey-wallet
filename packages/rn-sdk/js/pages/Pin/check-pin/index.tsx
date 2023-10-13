@@ -60,6 +60,12 @@ export default function CheckPin(props: CheckPinProps) {
       type="leftBack"
       backTitle={'back'}
       containerStyles={styles.container}
+      leftCallback={() => {
+        onFinish<CheckPinResult>({
+          status: 'cancel',
+          data: { pin: '' },
+        });
+      }}
       scrollViewProps={{ disabled: true }}>
       <PinContainer
         showHeader

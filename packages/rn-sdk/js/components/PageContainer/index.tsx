@@ -1,8 +1,8 @@
 import React, { ReactNode, useMemo } from 'react';
-import { CustomHeaderProps } from 'components/CustomHeader';
+import CustomHeader, { CustomHeaderProps } from 'components/CustomHeader';
 import SafeAreaBox, { SafeAreaBoxProps } from 'components/SafeAreaBox';
 import { KeyboardAwareScrollView, KeyboardAwareScrollViewProps } from 'react-native-keyboard-aware-scroll-view';
-import { TouchableWithoutFeedback, View, Keyboard, StatusBar } from 'react-native';
+import { TouchableWithoutFeedback, View, Keyboard, StatusBar, Platform } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { ViewStyleType } from 'types/styles';
 
@@ -48,7 +48,7 @@ export default function PageContainer({
         edges={['bottom']}
         pageSafeBottomPadding={pageSafeBottomPadding}
         style={[{ backgroundColor: safeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
-        {/* {!hideHeader && <CustomHeader themeType={themeType} {...props} />} */}
+        {!hideHeader && Platform.OS === 'android' && <CustomHeader themeType={themeType} {...props} />}
         {themeType === 'white' && <StatusBar barStyle="dark-content" />}
         {scrollViewProps?.disabled ? (
           hideTouchable ? (

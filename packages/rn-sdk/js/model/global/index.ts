@@ -96,7 +96,6 @@ export const getSocialRecoveryPageData = async (
   accountOriginalType: AccountOriginalType,
 ): Promise<SocialRecoveryConfig> => {
   const guardians = await NetworkController.getGuardianInfo(PortkeyConfig.currChainId(), accountIdentifier);
-  console.error(JSON.stringify(guardians.guardianList.guardians));
   return {
     accountIdentifier,
     accountOriginalType,

@@ -28,7 +28,7 @@ export default function SelectCountry({
   navigateBack,
 }: {
   selectCountry?: CountryItem;
-  navigateBack: (item: CountryItem) => void;
+  navigateBack: (item: CountryItem | null | undefined) => void;
 }) {
   const [phoneCountryCodeList, setPhoneCountryCodeList] = useState<CountryItem[]>();
   const [List, setList] = useState();
@@ -78,6 +78,9 @@ export default function SelectCountry({
       titleDom="Country/Region"
       safeAreaColor={['blue', 'white']}
       containerStyles={styles.containerStyles}
+      leftCallback={() => {
+        navigateBack(null);
+      }}
       scrollViewProps={{ disabled: true }}>
       <View style={styles.inputContainerStyle}>
         <CommonInput

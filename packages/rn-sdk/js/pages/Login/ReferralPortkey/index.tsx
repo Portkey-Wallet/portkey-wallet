@@ -18,6 +18,8 @@ import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { checkForCountryCodeCached } from 'model/global';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -31,6 +33,9 @@ export default function ReferralKey() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const { t } = useLanguage();
   const isMainnet = true;
+  const { onFinish } = useBaseContainer({
+    entryName: PortkeyEntries.REFERRAL_ENTRY,
+  });
   const loginMap = useMemo(
     () => ({
       [PageLoginType.email]: <Email setLoginType={setLoginType} />,
@@ -61,7 +66,12 @@ export default function ReferralKey() {
         containerStyles={styles.containerStyles}
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}
-        leftCallback={BackType[loginType] ? () => setLoginType(PageLoginType.referral) : undefined}>
+        leftCallback={() => {
+          onFinish({
+            status: 'cancel',
+            data: {},
+          });
+        }}>
         <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (

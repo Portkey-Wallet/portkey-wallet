@@ -58,6 +58,7 @@ const ContactActivity: React.FC = () => {
         {
           caAddress: address,
           chainId: chainId,
+          chainName: '',
         },
       ],
       width: NFT_MIDDLE_SIZE,

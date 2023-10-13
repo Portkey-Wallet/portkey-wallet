@@ -20,6 +20,11 @@ export default {
     target: '/api/app/account/nickname',
     config: { method: 'PUT' },
   },
+  // TODO: change api url
+  editUserInfo: {
+    target: '/api/app/account/userInfo',
+    config: { method: 'PUT' },
+  },
   pullNotify: 'api/app/notify/pullNotify',
   getPhoneCountryCode: {
     target: '/api/app/phone/info',

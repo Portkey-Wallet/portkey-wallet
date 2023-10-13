@@ -31,6 +31,12 @@ export interface ChainItemType {
   defaultToken: DefaultToken;
 }
 
+export interface UserInfoType {
+  nickName: string;
+  userId: string;
+  avatarUrl: string;
+}
+
 export interface WalletState {
   walletAvatar: string;
   walletType: WalletType;
@@ -41,4 +47,5 @@ export interface WalletState {
   chainInfo?: { [key in NetworkType]?: ChainItemType[] };
   originChainId?: ChainId;
   userId?: string;
+  userInfo?: UserInfoType;
 }

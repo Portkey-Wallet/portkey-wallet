@@ -46,6 +46,7 @@ export const getCaHolder = (
     caHash: string;
     id: string;
     nickName: string;
+    avatarUrl: string;
   }>;
 }> => {
   return request.es.getCaHolder({

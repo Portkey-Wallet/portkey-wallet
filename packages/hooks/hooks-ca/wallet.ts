@@ -7,7 +7,7 @@ import { useCurrentNetworkInfo } from './network';
 import { useCurrentChain, useCurrentChainList } from './chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
-import { setWalletNameAction } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { setWalletNameAction, setUserInfoAction } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
 import { ChainId } from '@portkey-wallet/types';
@@ -183,6 +183,24 @@ export const useSetWalletName = () => {
         },
       });
       dispatch(setWalletNameAction(nickName));
+    },
+    [dispatch, networkInfo],
+  );
+};
+
+export const useSetUserInfo = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkInfo = useCurrentNetworkInfo();
+  return useCallback(
+    async (nickName: string, avatarUrl: string) => {
+      await request.wallet.editUserInfo({
+        baseURL: networkInfo.apiUrl,
+        params: {
+          nickName,
+          avatarUrl,
+        },
+      });
+      dispatch(setUserInfoAction({ nickName, avatarUrl }));
     },
     [dispatch, networkInfo],
   );

@@ -86,6 +86,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
   }, [navigation, onGestureStartCallback]);
 
   const letElement = useMemo(() => {
+    console.error(backTitle, isCanGoBack, leftCallback, leftDom, leftIcon, noLeftDom, styles.leftBackTitle, t, type);
     if (noLeftDom) return null;
     if (leftDom) return leftDom;
     if (!isCanGoBack && !leftCallback) return null;

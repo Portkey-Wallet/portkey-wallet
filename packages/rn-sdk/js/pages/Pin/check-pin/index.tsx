@@ -7,7 +7,8 @@ import { StyleSheet } from 'react-native';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { checkPin } from 'model/verify/after-verify';
+import { checkPin, getUseBiometric } from 'model/verify/after-verify';
+import { touchAuth } from '../set-biometrics';
 
 export default function CheckPin(props: CheckPinProps) {
   const { rootTag } = props;
@@ -38,6 +39,21 @@ export default function CheckPin(props: CheckPinProps) {
     },
     [errorMessage, onFinish],
   );
+  console.log(`getUseBiometric: ${getUseBiometric()}`);
+
+  const useBiometrics = async () => {
+    const res = await touchAuth();
+    if (res) {
+      onFinish<CheckPinResult>({
+        status: 'success',
+        data: {
+          pin: 'FAKE',
+        },
+      });
+    } else {
+      setErrorMessage('Biometrics failed');
+    }
+  };
 
   return (
     <PageContainer
@@ -46,7 +62,15 @@ export default function CheckPin(props: CheckPinProps) {
       backTitle={'back'}
       containerStyles={styles.container}
       scrollViewProps={{ disabled: true }}>
-      <PinContainer showHeader ref={pinRef} title="Enter Pin" errorMessage={errorMessage} onChangeText={onChangeText} />
+      <PinContainer
+        showHeader
+        ref={pinRef}
+        title="Enter Pin"
+        errorMessage={errorMessage}
+        onChangeText={onChangeText}
+        isBiometrics={getUseBiometric()}
+        onBiometricsPress={useBiometrics}
+      />
     </PageContainer>
   );
 }

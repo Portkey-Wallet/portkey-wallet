@@ -43,7 +43,7 @@ export default function SetBiometrics({ pin, deliveredSetPinInfo }: SetBiometric
   const getResult = useCallback(
     async (useBiometrics = false) => {
       Loading.show();
-      const res = await getVerifiedAndLockWallet(deliveredSetPinInfo, pin);
+      const res = await getVerifiedAndLockWallet(deliveredSetPinInfo, pin, useBiometrics);
       Loading.hide();
       if (res) {
         onFinish({

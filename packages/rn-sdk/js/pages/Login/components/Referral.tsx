@@ -15,21 +15,9 @@ import { isWalletExists, isWalletUnlocked } from 'model/verify/after-verify';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { CheckPinProps, CheckPinResult } from 'pages/Pin/check-pin';
-import { GlobalStorage } from 'service/storage';
 import { SignInPageProps, SignInPageResult } from 'components/entries/sign-in/SignInEntryPage';
 import { sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
-import { isEnrolledAsync } from 'expo-local-authentication';
-
-const isBiometricsReady = async () => {
-  try {
-    console.error('isEnrolledAsync :>> ', isEnrolledAsync());
-    return await isEnrolledAsync();
-  } catch (e) {
-    console.error('isEnrolledAsync error :>> ', e);
-    return false;
-  }
-};
 
 const TitleMap = {
   [PageType.login]: {
@@ -56,13 +44,9 @@ export default function Referral({
     console.log(text);
   };
 
-  isBiometricsReady();
-
   const { onFinish, navigateForResult } = useBaseContainer({
     entryName: PortkeyEntries.REFERRAL_ENTRY,
     onShow: () => {
-      console.warn(`isWalletUnlocked() :>> `, isWalletUnlocked());
-      console.warn(GlobalStorage.toJSON());
       if (isWalletUnlocked()) {
         onSuccess();
       }
@@ -98,8 +82,6 @@ export default function Referral({
   };
 
   useEffectOnce(() => {
-    console.warn('isWalletExists :>> ', isWalletExists());
-    console.warn(GlobalStorage.toJSON());
     if (isWalletExists()) {
       if (isWalletUnlocked()) {
         onSuccess('wallet is unlocked already, this page will close in 3 seconds');

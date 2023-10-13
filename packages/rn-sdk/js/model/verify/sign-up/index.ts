@@ -59,7 +59,6 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
       }
       return new Promise(resolve => {
         config.navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
-          console.error('config.navigateToGuardianPage', result);
           if (result) {
             setVerifiedGuardianInfo(result);
             resolve(result);

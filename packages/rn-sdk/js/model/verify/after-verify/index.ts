@@ -6,7 +6,7 @@ import { GlobalStorage, TempStorage } from 'service/storage';
 
 const PIN_KEY = 'pin';
 const WALLET_CONFIG_KEY = 'walletConfig';
-const USE_BIOMETRIC_KEY = 'useBiometric';
+export const USE_BIOMETRIC_KEY = 'useBiometric';
 
 export interface AfterVerifiedConfig {
   fromRecovery: boolean;

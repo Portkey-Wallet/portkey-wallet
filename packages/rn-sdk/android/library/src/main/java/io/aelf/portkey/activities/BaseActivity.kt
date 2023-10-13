@@ -70,7 +70,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                     reflectReactDelegateClass.getDeclaredField("mReactDelegate")
                 mReactDelegateField.isAccessible = true
                 val reactDelegate = mReactDelegateField.get(this) as ReactDelegate
-                return reactDelegate.reactRootView.rootViewTag
+                return reactDelegate.reactRootView?.rootViewTag ?: -1
             }
 
             override fun onResume() {

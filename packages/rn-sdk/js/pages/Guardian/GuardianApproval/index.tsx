@@ -15,7 +15,6 @@ import GuardianItem from '../components/GuardianItem';
 import useEffectOnce from 'hooks/useEffectOnce';
 import Touchable from 'components/Touchable';
 import ActionSheet from 'components/ActionSheet';
-import myEvents from 'utils/deviceEvent';
 import { GuardiansStatus, GuardiansStatusItem } from '../types';
 import { SocialRecoveryConfig } from 'model/verify/social-recovery';
 import { GuardianConfig } from 'model/verify/guardian';
@@ -73,6 +72,9 @@ export default function GuardianApproval({
       setApproved(undefined);
       guardianExpiredTime.current = undefined;
     } else {
+      if (!guardianExpiredTime.current && status?.status === VerifyStatus.Verified) {
+        guardianExpiredTime.current = Date.now() + GUARDIAN_EXPIRED_TIME;
+      }
       setApproved(preGuardiansStatus => ({ ...preGuardiansStatus, [key]: status }));
     }
   }, []);
@@ -88,13 +90,11 @@ export default function GuardianApproval({
     [setGuardianStatus],
   );
   useEffectOnce(() => {
-    const listener = myEvents.setGuardianStatus.addListener(onSetGuardianStatus);
     const expiredTimer = setInterval(() => {
       if (guardianExpiredTime.current && Date.now() > guardianExpiredTime.current) setIsExpired(true);
     }, 1000);
     if (verifiedTime) guardianExpiredTime.current = verifiedTime + GUARDIAN_EXPIRED_TIME;
     return () => {
-      listener.remove();
       expiredTimer && clearInterval(expiredTimer);
     };
   });
@@ -169,20 +169,25 @@ export default function GuardianApproval({
         return 'Send';
       }
     };
-    return isVerified ? (
-      <Text style={styles.confirmedButtonText}>Confirmed</Text>
-    ) : (
-      <CommonButton
-        onPress={() => {
-          dealWithParticularGuardian(guardian, key);
-        }}
-        disabled={false}
-        containerStyle={styles.activityButton}
-        titleStyle={styles.activityButtonText}
-        type={isVerified ? 'clear' : 'primary'}
-        title={getTitle()}
-      />
-    );
+
+    if (isVerified) {
+      return <Text style={styles.confirmedButtonText}>Confirmed</Text>;
+    } else if (isExpired) {
+      return <Text style={styles.expiredButtonText}>Expired</Text>;
+    } else {
+      return (
+        <CommonButton
+          onPress={() => {
+            dealWithParticularGuardian(guardian, key);
+          }}
+          disabled={false}
+          containerStyle={styles.activityButton}
+          titleStyle={styles.activityButtonText}
+          type={isVerified ? 'clear' : 'primary'}
+          title={getTitle()}
+        />
+      );
+    }
   };
 
   const dealWithParticularGuardian = async (guardian: GuardianConfig, key: string) => {
@@ -266,7 +271,6 @@ export default function GuardianApproval({
     }
     return new Promise(resolve => {
       navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
-        console.error('config.navigateToGuardianPage', result);
         if (result) {
           setApproved(preGuardiansStatus => ({
             ...preGuardiansStatus,
@@ -387,7 +391,13 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   confirmedButtonText: {
-    color: 'green',
+    color: '#20CD85',
+    fontSize: 12,
+    lineHeight: 16,
+    backgroundColor: '#fff',
+  },
+  expiredButtonText: {
+    color: '#8F949C',
     fontSize: 12,
     lineHeight: 16,
     backgroundColor: '#fff',

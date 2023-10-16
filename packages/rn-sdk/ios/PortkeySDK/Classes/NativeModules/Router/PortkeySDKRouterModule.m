@@ -46,7 +46,7 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
     });
 }
 
-RCT_EXPORT_METHOD(navigateBack:(NSString *)from result:(id)result)
+RCT_EXPORT_METHOD(navigateBack:(id)result)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *topViewController = [self topViewController];

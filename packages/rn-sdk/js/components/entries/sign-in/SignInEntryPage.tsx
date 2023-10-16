@@ -11,16 +11,20 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
   constructor(props: SignInPageProps) {
     super(props);
     this.checkMMKVStorage();
-  }
-
-  checkMMKVStorage = async () => {
-    const cache = await GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
     this.state = {
-      currentCountryCodeItem: cache ? JSON.parse(cache) : null,
+      currentCountryCodeItem: null,
       useSignIn: false,
       accountIdentifierType: AccountIdentifierType.PHONE_NUMBER,
       enableSubmitButton: false,
     };
+  }
+
+  checkMMKVStorage = async () => {
+    const cache = await GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
+    console.log('cache', cache);
+    if (cache) {
+      this.setState({ currentCountryCodeItem: JSON.parse(cache) });
+    }
   };
 
   updateCountryCode = (countryCode: CountryCodeItem) => {

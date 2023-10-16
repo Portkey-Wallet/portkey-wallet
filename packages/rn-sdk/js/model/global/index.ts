@@ -42,6 +42,7 @@ export const attemptAccountCheck = async (accountIdentifier: string): Promise<Ac
 
 export const checkForCountryCodeCached = async (): Promise<boolean> => {
   const countryCodeDataDTO = await NetworkController.getCountryCodeInfo();
+  console.log('countryCodeDataDTO', countryCodeDataDTO);
   if (countryCodeDataDTO) {
     GlobalStorage.set(COUNTRY_CODE_DATA_KEY, JSON.stringify(countryCodeDataDTO));
     GlobalStorage.set(CURRENT_USING_COUNTRY_CODE, JSON.stringify(countryCodeDataDTO.locateData));

@@ -46,8 +46,8 @@ export default function Referral({
 
   const { onFinish, navigateForResult } = useBaseContainer({
     entryName: PortkeyEntries.REFERRAL_ENTRY,
-    onShow: () => {
-      if (isWalletUnlocked()) {
+    onShow: async () => {
+      if (await isWalletUnlocked()) {
         onSuccess();
       }
     },
@@ -82,8 +82,12 @@ export default function Referral({
   };
 
   useEffectOnce(() => {
-    if (isWalletExists()) {
-      if (isWalletUnlocked()) {
+    baseCheck();
+  });
+
+  const baseCheck = async () => {
+    if (await isWalletExists()) {
+      if (await isWalletUnlocked()) {
         onSuccess('wallet is unlocked already, this page will close in 3 seconds');
       } else {
         const tryToUnlock = async () => {
@@ -102,7 +106,7 @@ export default function Referral({
         tryToUnlock();
       }
     }
-  });
+  };
 
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>

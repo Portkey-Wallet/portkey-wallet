@@ -5,7 +5,6 @@ import { pTd } from 'utils/unit';
 import { ImageBackground, View } from 'react-native';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useLanguage } from 'i18n/hooks';
-import background from '../img/background.png';
 import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
@@ -23,11 +22,6 @@ import { PortkeyEntries } from 'config/entries';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
-
-const BackType: any = {
-  [PageLoginType.email]: true,
-  [PageLoginType.phone]: true,
-};
 
 export default function ReferralKey() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
@@ -52,7 +46,7 @@ export default function ReferralKey() {
     if (isIOS) {
       return { uri: 'background' };
     } else {
-      return background;
+      return require('../img/background.png');
     }
   }, []);
   return (

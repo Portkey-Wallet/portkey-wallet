@@ -21,10 +21,10 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
 
   checkMMKVStorage = async () => {
     const cache = await GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
-    console.log('cache', cache);
-    if (cache) {
-      this.setState({ currentCountryCodeItem: JSON.parse(cache) });
-    }
+    cache &&
+      this.setState({
+        currentCountryCodeItem: JSON.parse(cache),
+      });
   };
 
   updateCountryCode = (countryCode: CountryCodeItem) => {

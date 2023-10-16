@@ -1,6 +1,6 @@
 import { PortkeyConfig } from 'global';
 import { AccountIdentifierStatusDTO, RegisterStatusDTO } from 'network/dto/signIn';
-import { ResultWrapper, TypedUrlParams, nativeFetch, portkeyModulesEntity } from 'service/native-modules';
+import { ResultWrapper, TypedUrlParams, nativeFetch } from 'service/native-modules';
 import { APIPaths } from 'network/path';
 import { ChainId } from '@portkey-wallet/types';
 import {
@@ -160,15 +160,16 @@ export class NetworkControllerEntity {
 }
 
 const getPlatformType = (): RecaptchaPlatformType => {
-  const platformName = portkeyModulesEntity.NativeWrapperModule.platformName;
-  switch (platformName) {
-    case 'android':
-      return RecaptchaPlatformType.ANDROID;
-    case 'ios':
-      return RecaptchaPlatformType.IOS;
-    default:
-      return RecaptchaPlatformType.JS;
-  }
+  return RecaptchaPlatformType.JS;
+  //   const platformName = portkeyModulesEntity.NativeWrapperModule.platformName;
+  //   switch (platformName) {
+  //     case 'android':
+  //       return RecaptchaPlatformType.ANDROID;
+  //     case 'ios':
+  //       return RecaptchaPlatformType.IOS;
+  //     default:
+  //       return RecaptchaPlatformType.JS;
+  //   }
 };
 
 export const NetworkController = new NetworkControllerEntity();

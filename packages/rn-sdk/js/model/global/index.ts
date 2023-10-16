@@ -51,8 +51,8 @@ export const checkForCountryCodeCached = async (): Promise<boolean> => {
   }
 };
 
-export const getCachedCountryCodeData = (): CountryCodeDataDTO | undefined => {
-  const countryCodeDataDTO = GlobalStorage.getString(COUNTRY_CODE_DATA_KEY);
+export const getCachedCountryCodeData = async (): Promise<CountryCodeDataDTO | undefined> => {
+  const countryCodeDataDTO = await GlobalStorage.getString(COUNTRY_CODE_DATA_KEY);
   if (countryCodeDataDTO) {
     const result = JSON.parse(countryCodeDataDTO);
     return result;
@@ -70,6 +70,7 @@ export const getRegisterPageData = async (
   navigateToGuardianPage: (guardianConfig: GuardianConfig, callback: (data: VerifiedGuardianDoc) => void) => void,
 ): Promise<SignUpConfig> => {
   const recommendedGuardian = await NetworkController.getRecommendedGuardian();
+  const chainId = await PortkeyConfig.currChainId();
   return {
     accountIdentifier,
     accountOriginalType,
@@ -84,7 +85,7 @@ export const getRegisterPageData = async (
         type: AccountOriginalType[accountOriginalType] as AccountOrGuardianOriginalTypeStr,
         guardianIdentifier: accountIdentifier,
         verifierId: recommendedGuardian.id,
-        chainId: PortkeyConfig.currChainId(),
+        chainId,
         operationType: OperationTypeEnum.register,
       },
     },
@@ -95,7 +96,8 @@ export const getSocialRecoveryPageData = async (
   accountIdentifier: string,
   accountOriginalType: AccountOriginalType,
 ): Promise<SocialRecoveryConfig> => {
-  const guardians = await NetworkController.getGuardianInfo(PortkeyConfig.currChainId(), accountIdentifier);
+  const guardians = await NetworkController.getGuardianInfo(await PortkeyConfig.currChainId(), accountIdentifier);
+  const chainId = await PortkeyConfig.currChainId();
   return {
     accountIdentifier,
     accountOriginalType,
@@ -109,7 +111,7 @@ export const getSocialRecoveryPageData = async (
         type: guardian.type as any,
         guardianIdentifier: guardian.guardianIdentifier,
         verifierId: guardian.verifierId,
-        chainId: PortkeyConfig.currChainId(),
+        chainId,
         operationType: OperationTypeEnum.register,
       },
     })),

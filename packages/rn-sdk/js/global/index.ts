@@ -15,16 +15,20 @@ enum ConfigIdentifier {
 }
 
 export interface PortkeyConfigInterface {
-  endPointUrl: () => string;
-  currChainId: () => ChainId;
+  endPointUrl: () => Promise<string>;
+  currChainId: () => Promise<ChainId>;
 }
 
 export const PortkeyConfig: PortkeyConfigInterface = {
-  endPointUrl: () => getConfigStr(ConfigIdentifier.END_POINT) || EndPoints.TEST1,
-  currChainId: () => (getConfigStr(ConfigIdentifier.CURR_CHAIN_ID) || 'AELF') as ChainId,
+  endPointUrl: async () => {
+    return (await getConfigStr(ConfigIdentifier.END_POINT)) || EndPoints.MAIN_NET;
+  },
+  currChainId: async () => {
+    return ((await getConfigStr(ConfigIdentifier.CURR_CHAIN_ID)) as ChainId) || 'AELF';
+  },
 };
 
-const getConfigStr = (key: string): string | undefined => {
+const getConfigStr = (key: string): Promise<string | undefined> => {
   return GlobalStorage.getString(key);
 };
 

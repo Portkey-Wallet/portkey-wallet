@@ -40,7 +40,6 @@ import { PortkeyConfig } from 'global';
 import AElf from 'aelf-sdk';
 import { randomId } from '@portkey-wallet/utils';
 import { ApprovedGuardianInfo } from 'network/dto/wallet';
-import SafeAreaBox from 'components/SafeAreaBox';
 
 export default function GuardianApproval({
   guardianListConfig,
@@ -106,13 +105,13 @@ export default function GuardianApproval({
     });
   };
 
-  const getVerifiedData = (): AfterVerifiedConfig => {
+  const getVerifiedData = async (): Promise<AfterVerifiedConfig> => {
     const wallet = AElf.wallet.createNewWallet();
     const { address } = wallet;
     return {
       fromRecovery: true,
       accountIdentifier,
-      chainId: PortkeyConfig.currChainId(),
+      chainId: await PortkeyConfig.currChainId(),
       extraData: defaultExtraData,
       manager: address,
       context: {

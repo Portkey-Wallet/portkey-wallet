@@ -51,9 +51,9 @@ export interface StorageModule {
   setString: (key: string, value: string) => void;
   setBoolean: (key: string, value: boolean) => void;
   setNumber: (key: string, value: number) => void;
-  getString: (key: string) => string | undefined;
-  getBoolean: (key: string) => boolean | undefined;
-  getNumber: (key: string) => number | undefined;
+  getString: (key: string) => Promise<string | undefined>;
+  getBoolean: (key: string) => Promise<boolean | undefined>;
+  getNumber: (key: string) => Promise<number | undefined>;
 }
 
 export interface NetworkModule {

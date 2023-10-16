@@ -34,12 +34,16 @@ export default function SelectCountry({
   const [List, setList] = useState();
   const [searchList, setSearchList] = useState<CountryItem[]>();
   useEffectOnce(() => {
-    const countryCodeList = getCachedCountryCodeData()?.data;
+    checkMMKVStorage();
+  });
+
+  const checkMMKVStorage = async () => {
+    const countryCodeList = await getCachedCountryCodeData()?.data;
     setPhoneCountryCodeList(countryCodeList);
     const codeIndex = getCountryCodeIndex(countryCodeList);
     const list = codeIndex.map(i => ({ index: i[0], items: i[1] }));
     setList(list);
-  });
+  };
 
   const data = useMemo(() => searchList || List, [List, searchList]);
   const _renderItem = ({ section, row }: { section: number; row: number }) => {

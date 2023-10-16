@@ -29,4 +29,24 @@ static const MMKV *storage;
     }
 }
 
++ (BOOL)getBool:(NSString *)key {
+    return [storage getBoolForKey:key defaultValue:NO];
+}
+
++ (void)setBool:(BOOL)value forKey:(NSString *)key {
+    if (key) {
+        [storage setBool:value forKey:key];
+    }
+}
+
++ (double)getDouble:(NSString *)key {
+    return [storage getDoubleForKey:key];
+}
+
++ (void)setDouble:(double)value forKey:(NSString *)key {
+    if (key) {
+        [storage setDouble:value forKey:key];
+    }
+}
+
 @end

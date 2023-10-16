@@ -38,7 +38,7 @@ export default function SelectCountry({
   });
 
   const checkMMKVStorage = async () => {
-    const countryCodeList = await getCachedCountryCodeData()?.data;
+    const countryCodeList = (await getCachedCountryCodeData())?.data;
     setPhoneCountryCodeList(countryCodeList);
     const codeIndex = getCountryCodeIndex(countryCodeList);
     const list = codeIndex.map(i => ({ index: i[0], items: i[1] }));

@@ -22,24 +22,12 @@ import {
 } from 'network/dto/wallet';
 
 export class NetworkControllerEntity {
-  constructor() {
-    this.checkEndPointUrl();
-  }
-  checkEndPointUrl = async () => {
-    if (!this.endPoint) {
-      this.endPoint = await PortkeyConfig.endPointUrl();
-    }
-  };
-
-  private endPoint?: string;
-
   private realExecute = async <T>(
     url: string,
     method: 'GET' | 'POST',
     params?: any,
     headers?: any,
   ): Promise<ResultWrapper<T>> => {
-    await this.checkEndPointUrl();
     if (method === 'GET' && params) {
       url += '?';
       Object.entries(params).forEach(([key, value]) => {
@@ -50,12 +38,8 @@ export class NetworkControllerEntity {
     return result;
   };
 
-  updateEndPointUrl = (endPoint: string) => {
-    this.endPoint = endPoint;
-  };
-
   getRegisterResult = async (accountIdentifier: string): Promise<ResultWrapper<RegisterStatusDTO>> => {
-    return await this.realExecute<RegisterStatusDTO>(this.parseUrl(APIPaths.GET_REGISTER_INFO), 'GET', {
+    return await this.realExecute<RegisterStatusDTO>(await this.parseUrl(APIPaths.GET_REGISTER_INFO), 'GET', {
       loginGuardianIdentifier: accountIdentifier,
     });
   };
@@ -64,17 +48,21 @@ export class NetworkControllerEntity {
     chainId: ChainId | string,
     accountIdentifier: string,
   ): Promise<AccountIdentifierStatusDTO> => {
-    const res = await this.realExecute<AccountIdentifierStatusDTO>(this.parseUrl(APIPaths.GET_GUARDIAN_INFO), 'GET', {
-      chainId,
-      guardianIdentifier: accountIdentifier,
-      loginGuardianIdentifier: accountIdentifier,
-    });
+    const res = await this.realExecute<AccountIdentifierStatusDTO>(
+      await this.parseUrl(APIPaths.GET_GUARDIAN_INFO),
+      'GET',
+      {
+        chainId,
+        guardianIdentifier: accountIdentifier,
+        loginGuardianIdentifier: accountIdentifier,
+      },
+    );
     if (!res?.result) throw new Error('network failure');
     return res.result;
   };
 
   isGoogleRecaptchaOpen = async (operationType: OperationTypeEnum): Promise<boolean> => {
-    const res = await this.realExecute<boolean>(this.parseUrl(APIPaths.CHECK_GOOGLE_RECAPTCHA), 'POST', {
+    const res = await this.realExecute<boolean>(await this.parseUrl(APIPaths.CHECK_GOOGLE_RECAPTCHA), 'POST', {
       operationType,
     });
     return res?.result ?? false;
@@ -82,7 +70,7 @@ export class NetworkControllerEntity {
 
   getRecommendedGuardian = async (chainId?: string): Promise<GetRecommendedGuardianResultDTO> => {
     const res = await this.realExecute<GetRecommendedGuardianResultDTO>(
-      this.parseUrl(APIPaths.GET_RECOMMEND_GUARDIAN),
+      await this.parseUrl(APIPaths.GET_RECOMMEND_GUARDIAN),
       'POST',
       { chainId: chainId ?? (await PortkeyConfig.currChainId()) },
     );
@@ -91,11 +79,15 @@ export class NetworkControllerEntity {
   };
 
   getGuardianInfo = async (chainId: string, loginGuardianIdentifier: string): Promise<GetGuardianInfoResultDTO> => {
-    const res = await this.realExecute<GetGuardianInfoResultDTO>(this.parseUrl(APIPaths.GET_GUARDIAN_INFO), 'GET', {
-      chainId,
-      loginGuardianIdentifier,
-      guardianIdentifier: loginGuardianIdentifier,
-    });
+    const res = await this.realExecute<GetGuardianInfoResultDTO>(
+      await this.parseUrl(APIPaths.GET_GUARDIAN_INFO),
+      'GET',
+      {
+        chainId,
+        loginGuardianIdentifier,
+        guardianIdentifier: loginGuardianIdentifier,
+      },
+    );
     if (!res?.result) throw new Error('network failure');
     return res.result;
   };
@@ -105,7 +97,7 @@ export class NetworkControllerEntity {
     headers?: SendVerifyCodeHeader | TypedUrlParams,
   ): Promise<SendVerifyCodeResultDTO> => {
     const res = await this.realExecute<SendVerifyCodeResultDTO>(
-      this.parseUrl(APIPaths.SEND_VERIFICATION_CODE),
+      await this.parseUrl(APIPaths.SEND_VERIFICATION_CODE),
       'POST',
       Object.assign(params, { platformType: getPlatformType() }),
       headers,
@@ -116,7 +108,7 @@ export class NetworkControllerEntity {
 
   checkVerifyCode = async (params: CheckVerifyCodeParams): Promise<CheckVerifyCodeResultDTO> => {
     const res = await this.realExecute<CheckVerifyCodeResultDTO>(
-      this.parseUrl(APIPaths.CHECK_VERIFICATION_CODE),
+      await this.parseUrl(APIPaths.CHECK_VERIFICATION_CODE),
       'POST',
       params,
     );
@@ -136,7 +128,7 @@ export class NetworkControllerEntity {
 
   requestRegister = async (params: RequestRegisterParams): Promise<RequestRegisterOrSocialRecoveryResult> => {
     const res = await this.realExecute<RequestRegisterOrSocialRecoveryResult>(
-      this.parseUrl(APIPaths.REQUEST_REGISTER),
+      await this.parseUrl(APIPaths.REQUEST_REGISTER),
       'POST',
       params,
     );
@@ -148,7 +140,7 @@ export class NetworkControllerEntity {
     params: RequestSocialRecoveryParams,
   ): Promise<RequestRegisterOrSocialRecoveryResult> => {
     const res = await this.realExecute<RequestRegisterOrSocialRecoveryResult>(
-      this.parseUrl(APIPaths.REQUEST_RECOVERY),
+      await this.parseUrl(APIPaths.REQUEST_RECOVERY),
       'POST',
       params,
     );
@@ -157,13 +149,13 @@ export class NetworkControllerEntity {
   };
 
   getCountryCodeInfo = async (): Promise<CountryCodeDataDTO> => {
-    const res = await this.realExecute<CountryCodeDataDTO>(this.parseUrl(APIPaths.GET_PHONE_COUNTRY_CODE), 'GET');
+    const res = await this.realExecute<CountryCodeDataDTO>(await this.parseUrl(APIPaths.GET_PHONE_COUNTRY_CODE), 'GET');
     if (!res?.result) throw new Error('network failure');
     return res.result;
   };
 
-  parseUrl = (url: string) => {
-    return `${this.endPoint}${url}`;
+  parseUrl = async (url: string) => {
+    return `${await PortkeyConfig.endPointUrl()}${url}`;
   };
 }
 

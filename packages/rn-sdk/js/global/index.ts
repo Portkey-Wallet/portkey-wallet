@@ -1,5 +1,4 @@
 import { ChainId } from '@portkey-wallet/types';
-import { NetworkController } from 'network/controller';
 import { GlobalStorage } from 'service/storage';
 
 export enum EndPoints {
@@ -38,7 +37,6 @@ const setConfigStr = (key: string, value: string) => {
 
 export const setEndPointUrl = (environment: EndPoints) => {
   setConfigStr(ConfigIdentifier.END_POINT, environment);
-  NetworkController.updateEndPointUrl(environment);
 };
 
 export const setCurrChainId = (chainId: ChainId) => {

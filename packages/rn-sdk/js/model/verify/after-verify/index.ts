@@ -101,9 +101,9 @@ export const isWalletUnlocked = async (): Promise<boolean> => {
   return !!tempWalletConfig;
 };
 
-export const isWalletExists = (): boolean => {
-  const storagePin = GlobalStorage.getString(PIN_KEY);
-  const walletConfig = GlobalStorage.getString(WALLET_CONFIG_KEY);
+export const isWalletExists = async (): Promise<boolean> => {
+  const storagePin = await GlobalStorage.getString(PIN_KEY);
+  const walletConfig = await GlobalStorage.getString(WALLET_CONFIG_KEY);
   return !!storagePin && !!walletConfig;
 };
 

@@ -81,13 +81,12 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                         })
                 }
             }
-
-            override fun onDestroy() {
-                super.onDestroy()
-                NavigationHolder.popTopComponent()
-                navigateBackWithResult(thenFinish = false)
-            }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        navigateBackWithResult(thenFinish = false)
     }
 
     private fun registerEntryName(): String {
@@ -106,6 +105,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                     it.invoke(generateCancelCallbackData())
                 }
             }
+            NavigationHolder.popTopComponent()
         }
         if (thenFinish) {
             this.finish()

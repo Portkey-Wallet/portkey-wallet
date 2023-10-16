@@ -10,20 +10,16 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
 import Email from '../components/Email';
 import Phone from '../components/Phone';
-import Referral from '../components/Referral';
 import { PageLoginType } from '../types';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
 import { CountryCodeItem } from 'types/wallet';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
-
-const BackType: any = {
-  [PageLoginType.email]: true,
-  [PageLoginType.phone]: true,
-};
 
 export default function LoginPortkey({
   selectedCountryCode,
@@ -32,6 +28,10 @@ export default function LoginPortkey({
   selectedCountryCode: CountryCodeItem | null;
   updateCountryCode: (item: CountryCodeItem) => void;
 }) {
+  const { onFinish } = useBaseContainer({
+    entryName: PortkeyEntries.SIGN_IN_ENTRY,
+  });
+
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
   const { t } = useLanguage();
   // const isMainnet = useIsMainnet();
@@ -47,7 +47,6 @@ export default function LoginPortkey({
           updateCountryCode={updateCountryCode}
         />
       ),
-      [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
     [selectedCountryCode, updateCountryCode],
   );
@@ -60,6 +59,13 @@ export default function LoginPortkey({
     }
   }, []);
 
+  const onBack = () => {
+    onFinish({
+      status: 'cancel',
+      data: {},
+    });
+  };
+
   return (
     <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
       <PageContainer
@@ -71,7 +77,7 @@ export default function LoginPortkey({
         containerStyles={styles.containerStyles}
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}
-        leftCallback={BackType[loginType] ? () => setLoginType(PageLoginType.referral) : undefined}>
+        leftCallback={onBack}>
         <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (
@@ -81,7 +87,7 @@ export default function LoginPortkey({
           )}
           <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey')}</TextXXXL>
         </View>
-        {loginMap[loginType]}
+        {loginMap[loginType as keyof typeof loginMap]}
       </PageContainer>
     </ImageBackground>
   );

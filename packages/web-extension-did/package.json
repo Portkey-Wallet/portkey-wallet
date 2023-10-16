@@ -22,7 +22,7 @@
     "@portkey/provider-types": "1.1.0-alpha.2",
     "@portkey/providers": "1.1.0-alpha.2",
     "@portkey/services": "1.5.0-alpha.11",
-    "@portkey/did-ui-react": "1.5.0-alpha.14",
+    "@portkey/did-ui-react": "1.5.0-alpha.18",
     "@reduxjs/toolkit": "^1.8.5",
     "@sentry/browser": "^7.37.1",
     "@sentry/core": "^7.37.1",

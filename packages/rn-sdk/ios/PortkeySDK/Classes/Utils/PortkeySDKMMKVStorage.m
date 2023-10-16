@@ -49,4 +49,8 @@ static const MMKV *storage;
     }
 }
 
++ (void)clear {
+    [storage clearAll];
+}
+
 @end

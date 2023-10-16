@@ -52,7 +52,7 @@ export default abstract class BaseContainer<
   onShow() {}
 
   onFinish = (res: EntryResult<R>) => {
-    portkeyModulesEntity.RouterModule.navigateBack(this.getEntryName(), res);
+    portkeyModulesEntity.RouterModule.navigateBack(res);
   };
 
   onError = (err: Error) => {

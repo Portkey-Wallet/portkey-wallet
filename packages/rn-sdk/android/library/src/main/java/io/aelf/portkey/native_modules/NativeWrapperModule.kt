@@ -43,8 +43,8 @@ internal class NativeWrapperModule(private val context: ReactApplicationContext)
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun onFatalError(from: String, errMsg: String, data: ReadableMap) {
-        NavigationHolder.getEntryComponent(from).finish()
         onError(from, errMsg, data)
+        NavigationHolder.getTopComponent()?.finish()
     }
 
     @ReactMethod

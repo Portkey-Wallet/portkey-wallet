@@ -18,7 +18,7 @@ export interface RouterModule {
     params: RouterOptions<T>,
     callback: (res: EntryResult<R>) => void,
   ) => void;
-  navigateBack: <R>(from: string, result: EntryResult<R>) => void;
+  navigateBack: <R>(result: EntryResult<R>) => void;
 }
 
 export interface EntryResult<R> {
@@ -47,7 +47,7 @@ export interface NativeWrapperModule {
 }
 
 export interface StorageModule {
-  // set: (key: string, value: string | number | boolean | null | undefined) => void;
+  // set: (key: string, value: string | number | boolean | null | undefined) => void; // we can not control the type of value, so we use setString, setNumber, setBoolean instead
   setString: (key: string, value: string) => void;
   setBoolean: (key: string, value: boolean) => void;
   setNumber: (key: string, value: number) => void;

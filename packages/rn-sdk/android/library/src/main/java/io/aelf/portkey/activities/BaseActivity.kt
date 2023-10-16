@@ -44,10 +44,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
             this.callbackId =
                 intent.getStringExtra(StorageIdentifiers.PAGE_CALLBACK_ID) ?: NO_CALLBACK_METHOD
         }
-        NavigationHolder.pushNewComponent(
-            this,
-            NavigationHolder.lastCachedIntent?.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
-        )
+        NavigationHolder.pushNewComponent(this)
     }
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {
@@ -87,12 +84,13 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
             override fun onDestroy() {
                 super.onDestroy()
+                NavigationHolder.popTopComponent()
                 navigateBackWithResult(thenFinish = false)
             }
         }
     }
 
-    fun registerEntryName(): String {
+    private fun registerEntryName(): String {
         return this.entryName
     }
 
@@ -139,19 +137,18 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
     from: String? = null,
 ) {
     val intent = Intent(this, getReactActivityClass(entryName))
-    if (params != null) {
-        intent.putExtra(
-            StorageIdentifiers.PAGE_PARAMS, params.toBundle(
-                extraEntries = arrayOf(
-                    Pair(StorageIdentifiers.PAGE_FROM, from ?: ""),
-                    Pair(
-                        StorageIdentifiers.TARGET_SCENE, targetScene ?: ""
-                    ),
-                    Pair(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId)
-                )
+    intent.putExtra(
+        StorageIdentifiers.PAGE_PARAMS, (params ?: Arguments.createMap()).toBundle(
+            extraEntries = arrayOf(
+                Pair(StorageIdentifiers.PAGE_FROM, from ?: ""),
+                Pair(
+                    StorageIdentifiers.TARGET_SCENE, targetScene ?: ""
+                ),
+                Pair(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId)
             )
         )
-    }
+    )
+    intent.putExtra(StorageIdentifiers.PAGE_FROM, from)
     intent.putExtra(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId)
     intent.putExtra(StorageIdentifiers.PAGE_ENTRY, entryName)
     intent.putExtra(StorageIdentifiers.TARGET_SCENE, targetScene)

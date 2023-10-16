@@ -12,7 +12,7 @@ import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
 import { ChainId } from '@portkey-wallet/types';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-
+import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getCAHolderManagerInfo } from '@portkey-wallet/graphql/contract/queries';
 import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated__/types';
 
@@ -192,15 +192,12 @@ export const useSetUserInfo = () => {
   const dispatch = useAppCommonDispatch();
   const networkInfo = useCurrentNetworkInfo();
   return useCallback(
-    async (nickName: string, avatarUrl: string) => {
-      await request.wallet.editUserInfo({
+    async (params: RequireAtLeastOne<{ nickName: string; avatar: string }>) => {
+      await request.wallet.editHolderInfo({
         baseURL: networkInfo.apiUrl,
-        params: {
-          nickName,
-          avatarUrl,
-        },
+        params,
       });
-      dispatch(setUserInfoAction({ nickName, avatarUrl }));
+      dispatch(setUserInfoAction(params));
     },
     [dispatch, networkInfo],
   );

@@ -115,7 +115,7 @@ export const walletSlice = createSlice({
         state.walletName = action.payload;
       })
       .addCase(setUserInfoAction, (state, action) => {
-        state.userInfo = { userId: '', ...state.userInfo, ...action.payload };
+        state.userInfo = { userId: '', nickName: '', ...state.userInfo, ...action.payload };
       })
       .addCase(setOriginChainId, (state, action) => {
         state.originChainId = action.payload;

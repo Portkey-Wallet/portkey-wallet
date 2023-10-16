@@ -6,6 +6,7 @@ import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { checkPinInput, formatWalletInfo } from '@portkey-wallet/utils/wallet';
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import AElf from 'aelf-sdk';
+import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getChainList } from './api';
 import { ChainItemType, WalletState } from './type';
 
@@ -93,7 +94,7 @@ export const getCaHolderInfoAsync = createAsyncThunk<
   | {
       nickName: string;
       userId: string;
-      avatarUrl: string;
+      avatar?: string;
     }
   | undefined
 >('wallet/getCaHolderInfoAsync', async (_, thunkAPI) => {
@@ -121,10 +122,11 @@ export const getCaHolderInfoAsync = createAsyncThunk<
   return {
     nickName: caHolder.nickName,
     userId: caHolder.userId,
-    avatarUrl: caHolder.avatarUrl,
+    avatar: caHolder.avatar,
   };
 });
 
 export const setWalletNameAction = createAction<string>('wallet/setWalletName');
-export const setUserInfoAction = createAction<{ nickName: string; avatarUrl: string }>('wallet/setUserInfo');
+export const setUserInfoAction =
+  createAction<RequireAtLeastOne<{ nickName: string; avatar: string }>>('wallet/setUserInfo');
 export const setOriginChainId = createAction<ChainId>('wallet/setOriginChainId');

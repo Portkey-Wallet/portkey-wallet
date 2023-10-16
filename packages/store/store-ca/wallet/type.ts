@@ -34,7 +34,7 @@ export interface ChainItemType {
 export interface UserInfoType {
   nickName: string;
   userId: string;
-  avatarUrl: string;
+  avatar?: string | undefined;
 }
 
 export interface WalletState {

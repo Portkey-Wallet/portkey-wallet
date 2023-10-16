@@ -33,12 +33,13 @@ export class NetworkControllerEntity {
 
   private endPoint?: string;
 
-  private realExecute = <T>(
+  private realExecute = async <T>(
     url: string,
     method: 'GET' | 'POST',
     params?: any,
     headers?: any,
   ): Promise<ResultWrapper<T>> => {
+    await this.checkEndPointUrl();
     if (method === 'GET' && params) {
       url += '?';
       Object.entries(params).forEach(([key, value]) => {

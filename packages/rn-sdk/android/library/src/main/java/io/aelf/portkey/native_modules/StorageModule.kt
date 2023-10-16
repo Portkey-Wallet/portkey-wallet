@@ -38,19 +38,19 @@ class StorageModule(private val context: ReactApplicationContext) :
         }
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
+    @ReactMethod
     fun getString(key: String, handler: Promise) {
         val res = PortkeyMMKVStorage.readString(key)
         handler.resolve(res)
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
+    @ReactMethod
     fun getBoolean(key: String, handler: Promise) {
         val res = PortkeyMMKVStorage.readBoolean(key)
         handler.resolve(res)
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
+    @ReactMethod
     fun getNumber(key: String, handler: Promise) {
         val res = PortkeyMMKVStorage.readDouble(key)
         handler.resolve(res)

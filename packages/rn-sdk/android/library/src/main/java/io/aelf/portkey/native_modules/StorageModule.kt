@@ -1,5 +1,6 @@
 package io.aelf.portkey.native_modules
 
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -38,18 +39,21 @@ class StorageModule(private val context: ReactApplicationContext) :
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun getString(key: String): String? {
-        return PortkeyMMKVStorage.readString(key)
+    fun getString(key: String, handler: Promise) {
+        val res = PortkeyMMKVStorage.readString(key)
+        handler.resolve(res)
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun getBoolean(key: String): Boolean {
-        return PortkeyMMKVStorage.readBoolean(key)
+    fun getBoolean(key: String, handler: Promise) {
+        val res = PortkeyMMKVStorage.readBoolean(key)
+        handler.resolve(res)
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun getNumber(key: String): Double {
-        return PortkeyMMKVStorage.readDouble(key)
+    fun getNumber(key: String, handler: Promise) {
+        val res = PortkeyMMKVStorage.readDouble(key)
+        handler.resolve(res)
     }
 
 }

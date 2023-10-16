@@ -42,7 +42,7 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
   };
 
   const onFinish = <R,>(res: EntryResult<R>) => {
-    portkeyModulesEntity.RouterModule.navigateBack(getEntryName(), res);
+    portkeyModulesEntity.RouterModule.navigateBack(res);
   };
 
   const onError = (err: Error) => {

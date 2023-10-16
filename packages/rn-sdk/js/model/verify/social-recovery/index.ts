@@ -52,7 +52,7 @@ const useSocialRecovery = (config: SocialRecoveryConfig): SocialRecoveryEntity =
     return verifiedGuardianInfo.size >= getVerifyLimit();
   }, [verifiedGuardianInfo, getVerifyLimit]);
 
-  const getVerifiedData = useCallback(() => {
+  const getVerifiedData = useCallback(async () => {
     if (!hasReachedVerifyLimit()) throw new Error('not verified');
     return {
       accountIdentifier: config.accountIdentifier,
@@ -72,7 +72,7 @@ const useSocialRecovery = (config: SocialRecoveryConfig): SocialRecoveryEntity =
         .filter(it => it !== null) as Array<VerifiedGuardianDoc>,
       extraData: { deviceName: 'Other', deviceType: DeviceType.OTHER },
       fromRecovery: true,
-      chainId: PortkeyConfig.currChainId(),
+      chainId: await PortkeyConfig.currChainId(),
     } as Partial<AfterVerifiedConfig>;
   }, [config, verifiedGuardianInfo, hasReachedVerifyLimit]);
 
@@ -98,7 +98,7 @@ export interface SocialRecoveryEntity {
   informTargetGuardianVerified: (verifierId: string, info: VerifiedGuardianInfo) => void;
   getParticularGuardianInfo: (index: number) => GuardianConfig;
   hasReachedVerifyLimit: () => boolean;
-  getVerifiedData: () => Partial<AfterVerifiedConfig>;
+  getVerifiedData: () => Promise<Partial<AfterVerifiedConfig>>;
 }
 
 export type VerifiedGuardianInfo = CheckVerifyCodeResultDTO;

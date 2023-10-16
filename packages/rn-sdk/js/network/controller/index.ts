@@ -22,7 +22,16 @@ import {
 } from 'network/dto/wallet';
 
 export class NetworkControllerEntity {
-  private endPoint: string = PortkeyConfig.endPointUrl();
+  constructor() {
+    this.checkEndPointUrl();
+  }
+  checkEndPointUrl = async () => {
+    if (!this.endPoint) {
+      this.endPoint = await PortkeyConfig.endPointUrl();
+    }
+  };
+
+  private endPoint?: string;
 
   private realExecute = <T>(
     url: string,
@@ -74,7 +83,7 @@ export class NetworkControllerEntity {
     const res = await this.realExecute<GetRecommendedGuardianResultDTO>(
       this.parseUrl(APIPaths.GET_RECOMMEND_GUARDIAN),
       'POST',
-      { chainId: chainId ?? PortkeyConfig.currChainId() },
+      { chainId: chainId ?? (await PortkeyConfig.currChainId()) },
     );
     if (!res?.result) throw new Error('network failure');
     return res.result;

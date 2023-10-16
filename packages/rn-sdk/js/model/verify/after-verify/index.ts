@@ -92,12 +92,12 @@ export const rememberUseBiometric = async (useBiometric: boolean): Promise<void>
   GlobalStorage.set(USE_BIOMETRIC_KEY, useBiometric);
 };
 
-export const getUseBiometric = (): boolean => {
-  return GlobalStorage.getBoolean(USE_BIOMETRIC_KEY) ?? false;
+export const getUseBiometric = async (): Promise<boolean> => {
+  return (await GlobalStorage.getBoolean(USE_BIOMETRIC_KEY)) ?? false;
 };
 
-export const isWalletUnlocked = (): boolean => {
-  const tempWalletConfig = TempStorage.getString(WALLET_CONFIG_KEY);
+export const isWalletUnlocked = async (): Promise<boolean> => {
+  const tempWalletConfig = await TempStorage.getString(WALLET_CONFIG_KEY);
   return !!tempWalletConfig;
 };
 
@@ -107,18 +107,18 @@ export const isWalletExists = (): boolean => {
   return !!storagePin && !!walletConfig;
 };
 
-export const checkPin = (pinValue: string): boolean => {
-  const storagePin = GlobalStorage.getString(PIN_KEY);
+export const checkPin = async (pinValue: string): Promise<boolean> => {
+  const storagePin = await GlobalStorage.getString(PIN_KEY);
   return storagePin === pinValue;
 };
 
-export const unLockTempWallet = (pinValue: string): boolean => {
-  const storagePin = GlobalStorage.getString(PIN_KEY);
-  const walletConfig = GlobalStorage.getString(WALLET_CONFIG_KEY);
+export const unLockTempWallet = async (pinValue: string): Promise<boolean> => {
+  const storagePin = await GlobalStorage.getString(PIN_KEY);
+  const walletConfig = await GlobalStorage.getString(WALLET_CONFIG_KEY);
   if (storagePin !== pinValue || !walletConfig) {
     return false;
   }
-  if (isWalletUnlocked()) {
+  if (await isWalletUnlocked()) {
     return true;
   } else {
     // TODO decrypt walletConfig

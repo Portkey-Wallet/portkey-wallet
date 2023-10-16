@@ -70,8 +70,8 @@ export default function Phone({
 
   const { navigateForResult, onFinish } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
-    onShow: () => {
-      if (isWalletUnlocked()) {
+    onShow: async () => {
+      if (await isWalletUnlocked()) {
         CommonToast.success('You have logged in');
         onFinish({
           status: 'success',
@@ -84,9 +84,14 @@ export default function Phone({
   });
 
   useEffectOnce(() => {
-    const countryDTO = getCachedCountryCodeData();
-    setCountry(countryDTO?.locateData);
+    checkMMKVStorage();
   });
+
+  const checkMMKVStorage = async () => {
+    const countryDTO = await getCachedCountryCodeData();
+    setCountry(countryDTO?.locateData);
+  };
+
   const getWrappedPhoneNumber = useCallback(() => {
     const countryCode = (selectedCountryCode ?? country ?? defaultCountryCode)?.code;
     return `+${countryCode}${loginAccount}`;
@@ -215,7 +220,7 @@ export default function Phone({
                   setErrorMessage('guardian verify failed, please try again.');
                   return;
                 } else {
-                  dealWithSetPin(getSignUpVerifiedData(pageData.guardianConfig, guardianResult));
+                  dealWithSetPin(await getSignUpVerifiedData(pageData.guardianConfig, guardianResult));
                 }
               } else {
                 setErrorMessage('network fail.');
@@ -254,13 +259,16 @@ export default function Phone({
     );
   };
 
-  const getSignUpVerifiedData = (config: GuardianConfig, verifiedData: VerifiedGuardianDoc): AfterVerifiedConfig => {
+  const getSignUpVerifiedData = async (
+    config: GuardianConfig,
+    verifiedData: VerifiedGuardianDoc,
+  ): Promise<AfterVerifiedConfig> => {
     const wallet = AElf.wallet.createNewWallet();
     const { address } = wallet;
     return {
       fromRecovery: false,
       accountIdentifier: loginAccount,
-      chainId: PortkeyConfig.currChainId(),
+      chainId: await PortkeyConfig.currChainId(),
       manager: address,
       context: {
         clientId: address,

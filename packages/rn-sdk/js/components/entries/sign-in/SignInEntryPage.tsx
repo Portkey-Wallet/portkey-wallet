@@ -9,15 +9,19 @@ import { GlobalStorage } from 'service/storage';
 
 export default class SignInEntryPage extends BaseContainer<SignInPageProps, SignInPageState, SignInPageResult> {
   constructor(props: SignInPageProps) {
-    const cache = GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
     super(props);
+    this.checkMMKVStorage();
+  }
+
+  checkMMKVStorage = async () => {
+    const cache = await GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
     this.state = {
+      currentCountryCodeItem: cache ? JSON.parse(cache) : null,
       useSignIn: false,
       accountIdentifierType: AccountIdentifierType.PHONE_NUMBER,
       enableSubmitButton: false,
-      currentCountryCodeItem: cache ? JSON.parse(cache) : null,
     };
-  }
+  };
 
   updateCountryCode = (countryCode: CountryCodeItem) => {
     this.setState({

@@ -10,11 +10,14 @@ import { CURRENT_USING_COUNTRY_CODE } from 'model/global';
 export default class SignUpEntryPage extends BaseContainer<BaseContainerProps, SignUpPageState, SignUpPageResult> {
   constructor(props: BaseContainerProps) {
     super(props);
-    const cache = GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
+  }
+
+  checkMMKVStorage = async () => {
+    const cache = await GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
     this.state = {
       currentCountryCodeItem: cache ? JSON.parse(cache) : null,
     };
-  }
+  };
 
   updateCountryCode = (countryCode: CountryCodeItem) => {
     this.setState({

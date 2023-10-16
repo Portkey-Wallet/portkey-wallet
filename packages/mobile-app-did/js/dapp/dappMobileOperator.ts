@@ -309,7 +309,7 @@ export default class DappMobileOperator extends Operator {
 
     const tokenInfo = await contract?.callViewMethod('GetTokenInfo', { symbol });
 
-    if (tokenInfo?.error || !tokenInfo?.data.decimals)
+    if (tokenInfo?.error || isNaN(tokenInfo?.data.decimals))
       return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: `${symbol} error` });
 
     const info = await this.dappOverlay.approve(this.dapp, {

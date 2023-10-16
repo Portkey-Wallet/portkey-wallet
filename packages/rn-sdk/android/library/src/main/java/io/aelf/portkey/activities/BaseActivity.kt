@@ -178,6 +178,19 @@ private fun Bundle.putWithType(key: String, value: Any?): Bundle {
         is Float -> this.putDouble(key, value.toDouble())
         is Double -> this.putDouble(key, value)
         is Boolean -> this.putBoolean(key, value)
+        is List<*> -> {
+            val isNumber = value.isEmpty() || value[0] is Number
+            if (isNumber) {
+                this.putDoubleArray(key, value.map { (it as Number).toDouble() }.toDoubleArray())
+            } else {
+                this.putStringArrayList(key, value.map { it.toString() } as ArrayList<String>)
+            }
+        }
+
+        is Map<*, *> -> {
+            throw IllegalArgumentException("Map(Object) type props is not supported in Android here.")
+        }
+
         else -> this.putString(key, value.toString())
     }
     return this

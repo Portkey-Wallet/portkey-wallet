@@ -51,11 +51,13 @@ export const checkForCountryCodeCached = async (): Promise<boolean> => {
   }
 };
 
-export const getCachedCountryCodeData = async (): Promise<CountryCodeDataDTO | undefined> => {
+export const getCachedCountryCodeData = async (): Promise<CountryCodeDataDTO> => {
   const countryCodeDataDTO = await GlobalStorage.getString(COUNTRY_CODE_DATA_KEY);
   if (countryCodeDataDTO) {
     const result = JSON.parse(countryCodeDataDTO);
     return result;
+  } else {
+    return await NetworkController.getCountryCodeInfo();
   }
 };
 

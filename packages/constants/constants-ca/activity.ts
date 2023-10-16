@@ -7,6 +7,7 @@ export enum TransactionTypes {
 export const DEFAULT_AMOUNT = 0;
 export const DEFAULT_DECIMAL = 8;
 export const DEFAULT_DIGITS = 4;
+export const DEFAULT_NFT_DECIMAL = 0;
 
 export const ELF_DECIMAL = 8;
 

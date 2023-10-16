@@ -141,10 +141,11 @@ export default function GuardianApproval({
       .filter(item => item !== null) as any;
   };
 
-  const onFinish = () => {
+  const onFinish = async () => {
+    const pageData = await getVerifiedData();
     onPageFinish({
       isVerified: true,
-      deliveredVerifiedData: JSON.stringify(getVerifiedData()),
+      deliveredVerifiedData: JSON.stringify(pageData),
     });
   };
   const parseGuardianInfo = (guardianArray: Array<GuardianConfig>): Array<UserGuardianItem> => {

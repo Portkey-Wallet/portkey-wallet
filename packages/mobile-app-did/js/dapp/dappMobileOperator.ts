@@ -40,6 +40,12 @@ const SEND_METHOD: { [key: string]: true } = {
   [MethodsWallet.GET_WALLET_SIGNATURE]: true,
 };
 
+const ACTIVE_VIEW_METHOD: { [key: string]: true } = {
+  [MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS]: true,
+  [MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS]: true,
+  [MethodsWallet.GET_WALLET_NAME]: true,
+};
+
 function getManager() {
   const pin = getPin();
   if (!pin) return;
@@ -101,8 +107,47 @@ export default class DappMobileOperator extends Operator {
     return this.dappManager.isActive(this.dapp.origin);
   };
 
+  protected handleActiveViewRequest = async (request: IRequestParams): Promise<IResponseType> => {
+    const { eventName, method } = request;
+    const isActive = await this.isActive();
+    if (!isActive) return this.unauthenticated(eventName);
+
+    switch (method) {
+      case MethodsWallet.GET_WALLET_NAME: {
+        return generateNormalResponse({
+          eventName,
+          data: await this.dappManager.walletName(),
+        });
+      }
+      case MethodsWallet.GET_WALLET_CURRENT_MANAGER_ADDRESS: {
+        return generateNormalResponse({
+          eventName,
+          data: await this.dappManager.currentManagerAddress(),
+        });
+      }
+      case MethodsWallet.GET_WALLET_MANAGER_SYNC_STATUS: {
+        const chainId = request.payload.chainId;
+        try {
+          return generateNormalResponse({
+            eventName,
+            data: await this.checkManagerSyncState(chainId),
+          });
+        } catch (error: any) {
+          return generateErrorResponse({ ...error, eventName, msg: error.msg || handleErrorMessage(error) });
+        }
+      }
+    }
+    return generateErrorResponse({
+      eventName,
+      code: ResponseCode.UNIMPLEMENTED,
+    });
+  };
+
   protected handleViewRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { eventName, method } = request;
+    if (ACTIVE_VIEW_METHOD[method]) {
+      return this.handleActiveViewRequest(request);
+    }
     switch (method) {
       case MethodsBase.ACCOUNTS: {
         return generateNormalResponse({
@@ -121,14 +166,6 @@ export default class DappMobileOperator extends Operator {
         return generateNormalResponse({
           eventName,
           data: await this.dappManager.chainsInfo(),
-        });
-      }
-      case MethodsWallet.GET_WALLET_NAME: {
-        const isActive = await this.isActive();
-        if (!isActive) return this.unauthenticated(eventName);
-        return generateNormalResponse({
-          eventName,
-          data: await this.dappManager.walletName(),
         });
       }
       case MethodsBase.NETWORK: {
@@ -493,5 +530,27 @@ export default class DappMobileOperator extends Operator {
     const caHash = getCurrentCaHash();
     if (!caHash) return false;
     return checkSecuritySafe(caHash, isOrigin);
+  };
+  protected checkManagerSyncState = async (chainId: ChainId) => {
+    const [caInfo, managerAddress] = await Promise.all([
+      this.dappManager.getCaInfo(chainId),
+      this.dappManager.currentManagerAddress(),
+    ]);
+    if (!caInfo?.isSync) {
+      const chainInfo = await this.dappManager.getChainInfo(chainId);
+      if (!chainInfo?.endPoint || !caInfo?.caHash)
+        throw { code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' };
+      const contract = await getContract({
+        rpcUrl: chainInfo.endPoint,
+        contractAddress: chainInfo.caContractAddress,
+      });
+      const info = await contract?.callViewMethod('GetHolderInfo', { caHash: caInfo.caHash });
+      const { managerInfos }: { managerInfos: { address: string }[] } = info?.data;
+      if (managerInfos.some(item => item.address === managerAddress)) {
+        this.dappManager.updateManagerSyncState(chainId);
+        return true;
+      }
+    }
+    return !!caInfo?.isSync;
   };
 }

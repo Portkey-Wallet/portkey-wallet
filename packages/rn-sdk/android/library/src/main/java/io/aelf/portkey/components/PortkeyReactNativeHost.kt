@@ -5,13 +5,18 @@ import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.PackageList
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import com.lugg.ReactNativeConfig.ReactNativeConfigPackage
 import io.aelf.portkey.native_modules.PortkeyNativePackages
 
+var hostInstance: PortkeyReactNativeHost? = null
 
 class PortkeyReactNativeHost(
     application: Application, private val isDebug: Boolean = false
 ) : ReactNativeHost(application) {
+
+    init {
+        hostInstance = this
+    }
+
     override fun getUseDeveloperSupport(): Boolean = isDebug
     override fun getPackages(): MutableList<ReactPackage> {
         return PackageList(this).packages.apply {

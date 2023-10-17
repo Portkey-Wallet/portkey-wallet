@@ -74,6 +74,8 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
     implementation 'com.google.prefab:cli:2.0.0'
 
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
+
 
     implementation(project(
             configuration: 'default', path: ':library'

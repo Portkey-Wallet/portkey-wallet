@@ -8,7 +8,6 @@ import { TextL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import CommonButton from 'components/CommonButton';
-import qrCodeImg from 'assets/image/pngs/QR-code.png';
 import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { isWalletExists, isWalletUnlocked } from 'model/verify/after-verify';
@@ -16,8 +15,6 @@ import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { CheckPinProps, CheckPinResult } from 'pages/Pin/check-pin';
 import { SignInPageProps, SignInPageResult } from 'components/entries/sign-in/SignInEntryPage';
-import { sleep } from '@portkey-wallet/utils';
-import Loading from 'components/Loading';
 import TermsServiceButton from './TermsServiceButton';
 import Divider from 'components/Divider';
 import { defaultColors } from 'assets/theme';
@@ -31,20 +28,12 @@ const TitleMap = {
 
 export default function Referral({ setLoginType }: { setLoginType: (type: PageLoginType) => void }) {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  let onSuccess = (text = 'You have already logged in, page close in 3 seconds') => {
-    console.log(text);
-  };
 
   const { onFinish, navigateForResult } = useBaseContainer({
     entryName: PortkeyEntries.REFERRAL_ENTRY,
-    onShow: async () => {
-      if (await isWalletUnlocked()) {
-        onSuccess();
-      }
-    },
   });
 
-  onSuccess = (text = 'You have already logged in, page close in 3 seconds') => {
+  const onSuccess = (text = 'You have already logged in, page close in 3 seconds') => {
     CommonToast.success(text);
     setTimeout(() => {
       onFinish({
@@ -82,9 +71,6 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
         onSuccess('wallet is unlocked already, this page will close in 3 seconds');
       } else {
         const tryToUnlock = async () => {
-          Loading.show();
-          await sleep(1000);
-          Loading.hide();
           navigateForResult<CheckPinResult, CheckPinProps>(PortkeyEntries.CHECK_PIN, {}, res => {
             if (res.status === 'success') {
               onSuccess();
@@ -109,7 +95,7 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
       <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.qrCode)}>
-        <Image source={qrCodeImg} style={styles.iconStyle} />
+        <Image source={require('assets/image/pngs/QR-code.png')} style={styles.iconStyle} />
       </Touchable>
       <View style={GStyles.width100}>
         <CommonButton

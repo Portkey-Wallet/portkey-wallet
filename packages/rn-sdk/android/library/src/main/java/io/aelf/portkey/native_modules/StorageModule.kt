@@ -6,7 +6,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import io.aelf.portkey.components.PortkeyMMKVStorage
 
-class StorageModule(private val context: ReactApplicationContext) :
+class StorageModule(context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
     override fun getName(): String {
         return "StorageModule"

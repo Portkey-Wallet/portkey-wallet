@@ -7,13 +7,16 @@ import { StyleSheet } from 'react-native';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { checkPin, getUseBiometric } from 'model/verify/after-verify';
+import { checkPin, getUseBiometric, unLockTempWallet } from 'model/verify/after-verify';
 import { touchAuth } from '../set-biometrics';
+import Loading from 'components/Loading';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 export default function CheckPin(props: CheckPinProps) {
   const { rootTag } = props;
   const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
+  const [canUseBiometrics, setCanUseBiometrics] = useState(false);
 
   const { onFinish } = useBaseContainer({
     rootTag: rootTag,
@@ -27,11 +30,15 @@ export default function CheckPin(props: CheckPinProps) {
           pinRef.current?.reset();
           return setErrorMessage(PinErrorMessage.invalidPin);
         }
-        onFinish<CheckPinResult>({
-          status: 'success',
-          data: {
-            pin,
-          },
+        Loading.show();
+        unLockTempWallet(pin).then(() => {
+          Loading.hide();
+          onFinish<CheckPinResult>({
+            status: 'success',
+            data: {
+              pin,
+            },
+          });
         });
       } else if (errorMessage) {
         setErrorMessage(undefined);
@@ -43,6 +50,9 @@ export default function CheckPin(props: CheckPinProps) {
   const useBiometrics = async () => {
     const res = await touchAuth();
     if (res?.success) {
+      Loading.show();
+      await unLockTempWallet('use-bio', true);
+      Loading.hide();
       onFinish<CheckPinResult>({
         status: 'success',
         data: {
@@ -53,6 +63,12 @@ export default function CheckPin(props: CheckPinProps) {
       setErrorMessage('Biometrics failed');
     }
   };
+
+  useEffectOnce(() => {
+    getUseBiometric().then(res => {
+      setCanUseBiometrics(res);
+    });
+  });
 
   return (
     <PageContainer
@@ -73,7 +89,7 @@ export default function CheckPin(props: CheckPinProps) {
         title="Enter Pin"
         errorMessage={errorMessage}
         onChangeText={onChangeText}
-        isBiometrics={getUseBiometric()}
+        isBiometrics={canUseBiometrics}
         onBiometricsPress={useBiometrics}
       />
     </PageContainer>

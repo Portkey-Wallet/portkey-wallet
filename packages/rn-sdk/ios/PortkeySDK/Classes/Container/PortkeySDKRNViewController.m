@@ -12,6 +12,7 @@
 @interface PortkeySDKRNViewController ()
 
 @property (nonatomic, strong) PortkeySDKRootView *rnRootView;
+@property (nonatomic, assign) BOOL isLeave;
 
 @end
 
@@ -40,6 +41,27 @@
     [PortkeySDKNativeWrapperModule sendOnShowEventWithModuleName:self.rnRootView.moduleName
                                                           bridge:self.rnRootView.bridge
                                                         reactTag:self.rnRootView.reactTag];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.isLeave) {
+        // back from next viewcontroller
+        if (self.navigateCallback) {
+            NSDictionary *result = @{
+                @"status": @"cancel",
+                @"data": @""
+            };
+            self.navigateCallback(@[result]);
+            self.navigateCallback = nil;
+        }
+    }
+    self.isLeave = NO;
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.isLeave = YES;
 }
 
 - (void)viewDidLayoutSubviews {

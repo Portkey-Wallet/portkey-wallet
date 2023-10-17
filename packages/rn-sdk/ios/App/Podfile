@@ -8,22 +8,26 @@ $root_path = "../.."
 $node_modules = "#{$root_path}/node_modules"
 $react_native_path = "#{$node_modules}/react-native"
 
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+
 require_relative "#{$node_modules}/react-native/scripts/react_native_pods"
 require_relative "#{$node_modules}/@react-native-community/cli-platform-ios/native_modules"
 
 target 'PortkeySDKExample_Example' do
+  
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
+  
   use_native_modules!
   use_react_native!(path: $react_native_path, hermes_enabled: false)
-#  use_react_native!(
-#     :path => $react_native_path],
-#     # to enable hermes on iOS, change `false` to `true` and then install pods
-#     # By default, Hermes is disabled on Old Architecture, and enabled on New Architecture.
-#     # You can enable/disable it manually by replacing `flags[:hermes_enabled]` with `true` or `false`.
-#    :hermes_enabled => true
-#  )
   
   pod 'PortkeySDK', :path => '../'
-  pod 'ExpoModulesCore', :path => "#{$node_modules}/expo-modules-core"
   
   pod 'YYKit', git: 'https://github.com/SAGESSE-CN/YYKit.git'
   pod 'Toast', '4.0.0'

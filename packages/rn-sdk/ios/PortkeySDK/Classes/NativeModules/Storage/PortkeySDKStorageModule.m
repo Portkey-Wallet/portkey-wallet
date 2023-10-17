@@ -17,9 +17,9 @@ RCT_EXPORT_METHOD(setString:(NSString *)key value:(NSString *)value)
     [PortkeySDKMMKVStorage writeString:value forKey:key];
 }
 
-RCT_EXPORT_METHOD(setBoolean:(NSString *)key value:(NSNumber *)value)
+RCT_EXPORT_METHOD(setBoolean:(NSString *)key value:(BOOL)value)
 {
-    [PortkeySDKMMKVStorage setBool:[value boolValue] forKey:key];
+    [PortkeySDKMMKVStorage setBool:value forKey:key];
 }
 
 RCT_EXPORT_METHOD(setNumber:(NSString *)key value:(NSNumber *)value)

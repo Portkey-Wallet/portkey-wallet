@@ -143,6 +143,7 @@
 }
 
 - (void)exitWallet {
+    [PortkeySDKMMKVStorage clear];
     [self.view makeToast:@"Exit Wallet Successfully"];
 }
 

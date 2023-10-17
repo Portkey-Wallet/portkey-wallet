@@ -7,8 +7,9 @@
 //
 
 @import UIKit;
+#import <Expo/Expo.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : EXAppDelegateWrapper <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

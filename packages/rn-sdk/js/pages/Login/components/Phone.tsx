@@ -39,6 +39,7 @@ import CommonToast from 'components/CommonToast';
 import { SetPinPageResult, SetPinPageProps } from 'pages/Pin/SetPin';
 import AElf from 'aelf-sdk';
 import { PortkeyConfig } from 'global';
+import TermsServiceButton from './TermsServiceButton';
 
 const TitleMap = {
   [PageType.login]: {
@@ -351,7 +352,7 @@ export default function Phone({
           {t(TitleMap[type].button)}
         </CommonButton>
       </View>
-      {/* <TermsServiceButton /> */}
+      <TermsServiceButton />
     </View>
   );
 }

@@ -5,6 +5,8 @@ PODS:
     - ExpoModulesCore
   - EXConstants (14.4.2):
     - ExpoModulesCore
+  - EXDevice (4.3.0):
+    - ExpoModulesCore
   - EXFileSystem (15.4.4):
     - ExpoModulesCore
   - EXFont (11.4.0):
@@ -21,6 +23,8 @@ PODS:
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
+  - EXScreenCapture (4.3.0):
+    - ExpoModulesCore
   - FBLazyVector (0.72.4)
   - FBReactNativeSpec (0.72.4):
     - RCT-Folly (= 2021.07.22.00)
@@ -473,12 +477,14 @@ DEPENDENCIES:
   - DoubleConversion (from `../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../../node_modules/expo-application/ios`)
   - EXConstants (from `../../node_modules/expo-constants/ios`)
+  - EXDevice (from `../../node_modules/expo-device/ios`)
   - EXFileSystem (from `../../node_modules/expo-file-system/ios`)
   - EXFont (from `../../node_modules/expo-font/ios`)
   - Expo (from `../../node_modules/expo`)
   - ExpoKeepAwake (from `../../node_modules/expo-keep-awake/ios`)
   - ExpoLocalAuthentication (from `../../node_modules/expo-local-authentication/ios`)
   - ExpoModulesCore (from `../../node_modules/expo-modules-core`)
+  - EXScreenCapture (from `../../node_modules/expo-screen-capture/ios`)
   - FBLazyVector (from `../../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../../node_modules/react-native/React/FBReactNativeSpec`)
   - FBSnapshotTestCase
@@ -553,6 +559,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/expo-application/ios"
   EXConstants:
     :path: "../../node_modules/expo-constants/ios"
+  EXDevice:
+    :path: "../../node_modules/expo-device/ios"
   EXFileSystem:
     :path: "../../node_modules/expo-file-system/ios"
   EXFont:
@@ -565,6 +573,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/expo-local-authentication/ios"
   ExpoModulesCore:
     :path: "../../node_modules/expo-modules-core"
+  EXScreenCapture:
+    :path: "../../node_modules/expo-screen-capture/ios"
   FBLazyVector:
     :path: "../../node_modules/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -676,12 +686,14 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: 2a0d9abd4feace9c6faedfe541c1dec02e3702cd
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
+  EXDevice: 7647ca9b1fd8b269dfd896a7643d659343358054
   EXFileSystem: 2b826a3bf1071a4b80a8457e97124783d1ac860e
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
   Expo: e7d2116b947e2e6fdeb09ee4f2754f819426d1b6
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
   ExpoLocalAuthentication: 2fed4b25cf8e54d36d5d1ebc9917e8325b3b5911
   ExpoModulesCore: 81037d28453615c4206a6a2ca7556a0f364a0a0a
+  EXScreenCapture: 23de056fdb02edd1fb8f147b0fd198c6d5cada3d
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
   FBReactNativeSpec: 94b00b7bba49d6e7e5ba2bfb4401e282136089fa
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
@@ -741,6 +753,6 @@ SPEC CHECKSUMS:
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
   YYKit: 9ac092a14e3d5af709b707479bdb76b96a62fb41
 
-PODFILE CHECKSUM: 6c2ca248af2dceea2c754ab9a3955f18a38d4976
+PODFILE CHECKSUM: 4a989b6bd7ec01dcdb9a7b0838ddfda41ac64825
 
 COCOAPODS: 1.12.1

@@ -10,6 +10,7 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
 import Email from '../components/Email';
 import Phone from '../components/Phone';
+import QRCode from '../components/QRCode';
 import Referral from '../components/Referral';
 import { PageLoginType } from '../types';
 import GStyles from 'assets/theme/GStyles';
@@ -33,7 +34,7 @@ export default function ReferralKey() {
   const loginMap = useMemo(
     () => ({
       [PageLoginType.email]: <Email setLoginType={setLoginType} />,
-      [PageLoginType.qrCode]: <View />,
+      [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),

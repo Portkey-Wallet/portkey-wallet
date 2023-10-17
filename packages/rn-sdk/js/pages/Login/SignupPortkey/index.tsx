@@ -5,7 +5,6 @@ import { pTd } from 'utils/unit';
 import { ImageBackground, View } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import navigationService from 'utils/navigationService';
-import background from '../img/background.png';
 import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
@@ -57,8 +56,17 @@ export default function SignupPortkey({
     }),
     [selectedCountryCode, updateCountryCode],
   );
+
+  const backgroundImage = useMemo(() => {
+    if (isIOS) {
+      return { uri: 'background' };
+    } else {
+      return require('../img/background.png');
+    }
+  }, []);
+
   return (
-    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={background}>
+    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
       <PageContainer
         titleDom
         type="leftBack"

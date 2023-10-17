@@ -69,6 +69,9 @@ export default {
     justifyContent: 'space-between',
     paddingBottom: pTd(20),
   },
+  whiteBackgroundColor: {
+    backgroundColor: 'white',
+  },
   //-------- margin -----------
   marginArg: function (...ags: number[]) {
     switch (ags.length) {

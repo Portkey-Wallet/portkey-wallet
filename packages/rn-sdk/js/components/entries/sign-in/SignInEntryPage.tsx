@@ -6,6 +6,7 @@ import LoginPortkey from 'pages/Login/LoginPortkey';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GlobalStorage } from 'service/storage';
+import GStyles from 'assets/theme/GStyles';
 
 export default class SignInEntryPage extends BaseContainer<SignInPageProps, SignInPageState, SignInPageResult> {
   constructor(props: SignInPageProps) {
@@ -41,7 +42,7 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
 
   render() {
     return (
-      <SafeAreaProvider>
+      <SafeAreaProvider style={GStyles.whiteBackgroundColor}>
         <LoginPortkey
           selectedCountryCode={this.state.currentCountryCodeItem}
           updateCountryCode={this.updateCountryCode}

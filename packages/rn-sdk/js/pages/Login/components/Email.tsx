@@ -87,7 +87,6 @@ export default function Email({
         },
         res => {
           Loading.hide();
-          console.error('res', res);
           const { data } = res;
           callback(data?.verifiedData ? JSON.parse(data.verifiedData) : null);
         },

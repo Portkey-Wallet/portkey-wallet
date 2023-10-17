@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getVerifierList } from '../../utils/sandboxUtil/getVerifierList';
 import { VerifierItem } from '@portkey/did';
 import { AccountTypeEnum, OperationTypeEnum } from '@portkey/services';
@@ -16,7 +16,7 @@ import { useCurrentChain, useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca
 import { useLoading } from 'store/Provider/hooks';
 import BackHeader from 'components/BackHeader';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
-import { DEFAULT_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
+import { DEFAULT_DECIMAL, DEFAULT_NFT_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
 import { LANG_MAX } from '@portkey-wallet/constants/misc';
 import { ExtensionContractBasic } from 'utils/sandboxUtil/ExtensionContractBasic';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -24,6 +24,7 @@ import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
 import { request } from '@portkey-wallet/api/api-did';
+import { isNFT } from 'utils';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',
@@ -55,11 +56,11 @@ export default function ManagerApproveInner({
     issueChainId: number;
     issued: string;
   }>();
-  const [allowance, setAllowance] = useState<string>(
-    divDecimals(amount, tokenInfo?.decimals || DEFAULT_DECIMAL).toFixed(),
-  );
   const [guardianList, setGuardianList] = useState<BaseGuardianItem[]>();
   const { setLoading } = useLoading();
+
+  const DEFAULT_SYMBOL_DECIMAL = useMemo(() => (isNFT(symbol) ? DEFAULT_NFT_DECIMAL : DEFAULT_DECIMAL), [symbol]);
+  const [allowance, setAllowance] = useState<string>(divDecimals(amount, DEFAULT_SYMBOL_DECIMAL).toFixed());
 
   const getChainInfo = useGetChainInfo();
 
@@ -151,12 +152,14 @@ export default function ManagerApproveInner({
       const result = await contract.callViewMethod('GetTokenInfo', {
         symbol,
       });
+      if (!result.data) throw `${symbol} does not exist in this chain`;
       setTokenInfo(result.data);
+      setAllowance(divDecimals(amount, result.data?.decimals).toFixed());
     } catch (error) {
       console.error(error);
-      onError?.(Error('GetTokenInfo error'));
+      onError?.(Error(handleErrorMessage(error)));
     }
-  }, [chainInfo, onError, symbol, walletInfo]);
+  }, [amount, chainInfo, onError, symbol, walletInfo.AESEncryptPrivateKey]);
 
   useEffect(() => {
     getTokenInfo();
@@ -169,10 +172,11 @@ export default function ManagerApproveInner({
           className="portkey-ui-flex-column"
           symbol={symbol}
           amount={allowance}
-          recommendedAmount={divDecimals(amount, tokenInfo?.decimals || DEFAULT_DECIMAL).toFixed()}
-          max={divDecimals(LANG_MAX, tokenInfo?.decimals || DEFAULT_DECIMAL).toFixed()}
+          recommendedAmount={divDecimals(amount, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed()}
+          max={divDecimals(LANG_MAX, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed(0)}
           dappInfo={dappInfo}
           onCancel={onCancel}
+          onAllowanceChange={setAllowance}
           onConfirm={allowanceConfirm}
         />
       )}
@@ -195,7 +199,7 @@ export default function ManagerApproveInner({
               },
             }));
             onFinish?.({
-              amount: timesDecimals(allowance, tokenInfo?.decimals || DEFAULT_DECIMAL).toFixed(0),
+              amount: timesDecimals(allowance, tokenInfo?.decimals || DEFAULT_SYMBOL_DECIMAL).toFixed(0),
               guardiansApproved: approved,
             });
           }}

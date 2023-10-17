@@ -12,12 +12,12 @@ import com.facebook.react.bridge.WritableNativeMap
 import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
-import io.aelf.portkey.native_modules.NativeWrapperModule
 import io.aelf.portkey.navigation.NavigationHolder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+//import io.aelf.portkey.native_modules.NativeWrapperModule
+//import kotlinx.coroutines.CoroutineScope
+//import kotlinx.coroutines.Dispatchers
+//import kotlinx.coroutines.delay
+//import kotlinx.coroutines.launch
 
 private fun generateCancelCallbackData(): WritableMap {
     return Arguments.createMap().apply {
@@ -72,14 +72,14 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
             override fun onResume() {
                 super.onResume()
-                CoroutineScope(Dispatchers.IO).launch {
-                    delay(200)
-                    NativeWrapperModule.instance?.sendGeneralEvent(
-                        "onShow",
-                        Arguments.createMap().apply {
-                            this.putInt("rootTag", getRootTag())
-                        })
-                }
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    delay(200)
+//                    NativeWrapperModule.instance?.sendGeneralEvent(
+//                        "onShow",
+//                        Arguments.createMap().apply {
+//                            this.putInt("rootTag", getRootTag())
+//                        })
+//                }
             }
         }
     }

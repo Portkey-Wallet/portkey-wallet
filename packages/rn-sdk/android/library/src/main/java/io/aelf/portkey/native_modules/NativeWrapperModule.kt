@@ -15,14 +15,14 @@ import io.aelf.portkey.tools.generateUniqueCallbackID
 
 internal class NativeWrapperModule(private val context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
-    companion object {
-        @JvmStatic
-        var instance: NativeWrapperModule? = null
-    }
-
-    init {
-        instance = this
-    }
+//    companion object {
+//        @JvmStatic
+//        var instance: NativeWrapperModule? = null
+//    }
+//
+//    init {
+//        instance = this
+//    }
 
     @ReactMethod
     override fun getName(): String {

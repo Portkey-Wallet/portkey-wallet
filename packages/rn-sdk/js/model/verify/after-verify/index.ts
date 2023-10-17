@@ -112,10 +112,10 @@ export const checkPin = async (pinValue: string): Promise<boolean> => {
   return storagePin === pinValue;
 };
 
-export const unLockTempWallet = async (pinValue: string): Promise<boolean> => {
+export const unLockTempWallet = async (pinValue?: string, useBiometric = false): Promise<boolean> => {
   const storagePin = await GlobalStorage.getString(PIN_KEY);
   const walletConfig = await GlobalStorage.getString(WALLET_CONFIG_KEY);
-  if (storagePin !== pinValue || !walletConfig) {
+  if ((storagePin !== pinValue && !useBiometric) || !walletConfig) {
     return false;
   }
   if (await isWalletUnlocked()) {

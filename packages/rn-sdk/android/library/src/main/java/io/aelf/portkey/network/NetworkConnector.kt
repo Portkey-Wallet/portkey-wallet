@@ -145,7 +145,7 @@ internal object NetworkConnector {
             val errorCode: String = if (result != null) {
                 val code = result.asJsonObject.get("error").asJsonObject.get("code")
                 if (!code.isJsonNull) {
-                    code.asJsonObject.toString()
+                    code.asString
                 } else {
                     "-1"
                 }

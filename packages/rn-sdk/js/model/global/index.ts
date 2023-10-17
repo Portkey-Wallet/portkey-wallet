@@ -27,7 +27,10 @@ export const attemptAccountCheck = async (accountIdentifier: string): Promise<Ac
   if (registerResultDTO?.result) {
     const { originChainId } = registerResultDTO.result;
     originChainId && setCurrChainId(originChainId as any);
-    const guardianResultDTO = await NetworkController.getAccountIdentifierResult(originChainId, accountIdentifier);
+    const guardianResultDTO = await NetworkController.getAccountIdentifierResult(
+      originChainId ?? (await PortkeyConfig.currChainId()),
+      accountIdentifier,
+    );
     return {
       hasRegistered: guardianResultDTO?.guardianList?.guardians?.length > 0,
     };

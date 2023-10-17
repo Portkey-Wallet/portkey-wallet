@@ -28,7 +28,6 @@ target 'PortkeySDKExample_Example' do
   use_react_native!(path: $react_native_path, hermes_enabled: false)
   
   pod 'PortkeySDK', :path => '../'
-#  pod 'ExpoModulesCore', :path => "#{$node_modules}/expo-modules-core"
   
   pod 'YYKit', git: 'https://github.com/SAGESSE-CN/YYKit.git'
   pod 'Toast', '4.0.0'

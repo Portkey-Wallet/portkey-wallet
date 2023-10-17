@@ -27,6 +27,8 @@
 @property (nonatomic, strong) UIButton *test1NetButton;
 @property (nonatomic, strong) UIButton *test2NetButton;
 
+@property (nonatomic, strong) UIButton *exitButton;
+
 @end
 
 @implementation ViewController
@@ -107,6 +109,15 @@
         [self switchEndPointUrl:@"https://localtest-applesign2.portkey.finance"];
     }];
     [self.view addSubview:self.test2NetButton];
+    
+    self.exitButton = [self createButtonWithTitle:@"Exit Wallet"];
+    self.exitButton.frame = self.test2NetButton.frame;
+    self.exitButton.top = self.test2NetButton.bottom + 20;
+    [self.exitButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        @strongify(self)
+        [self exitWallet];
+    }];
+    [self.view addSubview:self.exitButton];
 }
 
 - (void)didReceiveMemoryWarning
@@ -129,6 +140,10 @@
 - (void)switchEndPointUrl:(NSString *)url {
     [PortkeySDKMMKVStorage writeString:url forKey:@"endPointUrl"];
     [self.view makeToast:[NSString stringWithFormat:@"endPoint changed to %@", url]];
+}
+
+- (void)exitWallet {
+    [self.view makeToast:@"Exit Wallet Successfully"];
 }
 
 #pragma mark - Getter

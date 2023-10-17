@@ -19,18 +19,22 @@ export default class SelectCountryEntryPage extends BaseContainer<
 > {
   constructor(props: SelectCountryPageProps) {
     super(props);
+    this.state = {
+      currentUsing: defaultCountryCode,
+      dataList: null,
+    };
     this.checkMMKVStorage();
   }
 
   checkMMKVStorage = async () => {
     const currUsing = await GlobalStorage.getString(CURRENT_USING_COUNTRY_CODE);
     const cachedData = await GlobalStorage.getString(COUNTRY_CODE_DATA_KEY);
-    this.state = {
+    this.setState({
       currentUsing: currUsing
         ? (JSON.parse(currUsing) as CountryCodeItem)
         : { code: '65', country: 'Singapore', iso: 'SG' },
       dataList: cachedData ? (JSON.parse(cachedData) as CountryCodeDataDTO)?.data : [],
-    };
+    });
   };
 
   getEntryName = (): string => PortkeyEntries.SELECT_COUNTRY_ENTRY;
@@ -70,5 +74,5 @@ export interface SelectCountryPageProps extends BaseContainerProps {
 
 export interface SelectCountryPageState {
   currentUsing: CountryCodeItem;
-  dataList: Array<CountryCodeItem>;
+  dataList: Array<CountryCodeItem> | null;
 }

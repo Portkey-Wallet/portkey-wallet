@@ -31,21 +31,21 @@ RCT_EXPORT_METHOD(getString:(NSString *)key
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject)
 {
-    resolve(@[[PortkeySDKMMKVStorage readString:key] ?: [NSNull null]]);
+    resolve([PortkeySDKMMKVStorage readString:key] ?: @"");
 }
 
 RCT_EXPORT_METHOD(getBoolean:(NSString *)key
                      resolve:(RCTPromiseResolveBlock)resolve
                       reject:(RCTPromiseRejectBlock)reject)
 {
-    resolve(@[@([PortkeySDKMMKVStorage getBool:key])]);
+    resolve(@([PortkeySDKMMKVStorage getBool:key]));
 }
 
 RCT_EXPORT_METHOD(getNumber:(NSString *)key
                     resolve:(RCTPromiseResolveBlock)resolve
                      reject:(RCTPromiseRejectBlock)reject)
 {
-    resolve(@[@([PortkeySDKMMKVStorage getDouble:key])]);
+    resolve(@([PortkeySDKMMKVStorage getDouble:key]));
 }
 
 @end

@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (double)getDouble:(NSString *)key;
 + (void)setDouble:(double)value forKey:(NSString *)key;
 
++ (void)clear;
+
 
 @end
 

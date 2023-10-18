@@ -8,7 +8,6 @@ import { defaultColors } from 'assets/theme';
 
 import { useLanguage } from 'i18n/hooks';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { invalidQRCode, InvalidQRCodeText } from 'utils/qrcode';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
@@ -51,11 +50,10 @@ const QrScanner: React.FC<QrScannerProps> = () => {
   const handleBarCodeScanned = useLockCallback(
     async ({ data = '' }) => {
       if (!latestIsFocused.current) return;
-      if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
       try {
         await handleDataFromQrCode(data);
-      } catch (error) {
-        return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
+      } catch {
+        navigationService.navigate('QrCodeResult', { qrCodeStr: data });
       } finally {
         Loading.hide();
       }

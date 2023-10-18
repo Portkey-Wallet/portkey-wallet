@@ -34,21 +34,35 @@ export interface DiscoverGroup {
   items: DiscoverItem[];
 }
 
-export interface BuyButtonType {
-  isBuySectionShow?: boolean;
-  isSellSectionShow?: boolean;
-  isAndroidBuyShow?: boolean;
-  isAndroidSellShow?: boolean;
-  isExtensionBuyShow?: boolean;
-  isExtensionSellShow?: boolean;
-  isIOSBuyShow?: boolean;
-  isIOSSellShow?: boolean;
-}
-
 export interface RememberMeBlackListSiteItem {
   name: string;
   url: string;
 }
+
+export type IEntranceModuleName = 'buy' | 'sell' | 'bridge';
+
+export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
+export type IEntranceMatchRuleType = 'String' | 'BigNumber' | 'Regex';
+export type IEntranceMatchRuleItem = {
+  type: IEntranceMatchRuleType;
+  left: string;
+  opt: string;
+  right: IEntranceMatchKey;
+};
+export type IEntranceMatchItem = {
+  matchRuleList: IEntranceMatchRuleItem[];
+  weight: number;
+  matchSwitch: boolean;
+};
+export type IEntranceItem = {
+  moduleName: {
+    value: IEntranceModuleName;
+  };
+  defaultSwitch: boolean;
+  matchList: Array<{
+    entranceMatch_id: IEntranceMatchItem;
+  }>;
+};
 
 export interface CMSState {
   socialMediaListNetMap: {
@@ -60,10 +74,10 @@ export interface CMSState {
   discoverGroupListNetMap: {
     [T in NetworkType]?: DiscoverGroup[];
   };
-  buyButtonNetMap?: {
-    [T in NetworkType]?: BuyButtonType;
-  };
   rememberMeBlackListMap?: {
     [T in NetworkType]?: RememberMeBlackListSiteItem[];
+  };
+  entranceListNetMap?: {
+    [T in NetworkType]?: IEntranceItem[];
   };
 }

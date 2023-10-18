@@ -30,8 +30,8 @@ export default function SelectCountry({
   selectCountry?: CountryItem;
   navigateBack: (item: CountryItem | null | undefined) => void;
 }) {
-  const [phoneCountryCodeList, setPhoneCountryCodeList] = useState<CountryItem[]>();
-  const [List, setList] = useState();
+  const [phoneCountryCodeList, setPhoneCountryCodeList] = useState<CountryItem[]>([]);
+  const [List, setList] = useState<{ index: string; items: CountryItem[] }[]>();
   const [searchList, setSearchList] = useState<CountryItem[]>();
   useEffectOnce(() => {
     checkMMKVStorage();
@@ -48,6 +48,7 @@ export default function SelectCountry({
   const data = useMemo(() => searchList || List, [List, searchList]);
   const _renderItem = ({ section, row }: { section: number; row: number }) => {
     let item: CountryItem;
+    if (!data) return <View />;
     if ('items' in data[section]) {
       item = (data[section] as { items: CountryItem[] }).items[row];
     } else {
@@ -67,6 +68,7 @@ export default function SelectCountry({
     );
   };
   const _renderSection = (index: any) => {
+    if (!List) return <View />;
     const contact = List[index];
     return (
       <View style={styles.sectionRow}>
@@ -102,7 +104,9 @@ export default function SelectCountry({
           sectionHeight={searchList ? 0 : SectionHeight}
           extraHeight={headerHeight + bottomBarHeight + 120}
           renderSection={searchList ? undefined : _renderSection}
-          indexArray={searchList ? undefined : data.map(item => item[0] ?? item.index)}
+          indexArray={
+            searchList ? undefined : data.map(item => (item as { index: string; items: CountryItem[] }).index)
+          }
           renderEmpty={() => <NoData topDistance={64} noPic message={'There is no search result.'} />}
         />
       </View>

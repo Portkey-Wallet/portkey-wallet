@@ -58,9 +58,6 @@ class MainActivity : ComponentActivity() {
                         BigButton("Switch to TEST1") {
                             changeEndPointUrl("https://localtest-applesign.portkey.finance")
                         }
-                        BigButton("Switch to TEST2") {
-                            changeEndPointUrl("https://localtest-applesign2.portkey.finance")
-                        }
                         BigButton("Sign out?") {
                             signOut()
                         }

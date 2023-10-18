@@ -12,7 +12,7 @@ import PhoneInput from 'components/PhoneInput';
 import { getCachedCountryCodeData } from 'model/global';
 import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import { PortkeyEntries } from 'config/entries';
-import { isWalletUnlocked } from 'model/verify/after-verify';
+import { AccountOriginalType, isWalletUnlocked } from 'model/verify/after-verify';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import CommonToast from 'components/CommonToast';
 import TermsServiceButton from './TermsServiceButton';
@@ -75,6 +75,7 @@ export default function Phone({
 
   const { verifyEntry } = useVerifyEntry({
     type,
+    accountOriginalType: AccountOriginalType.Phone,
     entryName: type === PageType.login ? PortkeyEntries.SIGN_IN_ENTRY : PortkeyEntries.SIGN_UP_ENTRY,
     setErrorMessage,
   });

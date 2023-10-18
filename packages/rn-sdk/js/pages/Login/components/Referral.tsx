@@ -10,7 +10,7 @@ import { pTd } from 'utils/unit';
 import CommonButton from 'components/CommonButton';
 import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import { isWalletExists, isWalletUnlocked } from 'model/verify/after-verify';
+import { AccountOriginalType, isWalletExists, isWalletUnlocked } from 'model/verify/after-verify';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { CheckPinProps, CheckPinResult } from 'pages/Pin/check-pin';
@@ -18,7 +18,8 @@ import { SignInPageProps, SignInPageResult } from 'components/entries/sign-in/Si
 import TermsServiceButton from './TermsServiceButton';
 import Divider from 'components/Divider';
 import { defaultColors } from 'assets/theme';
-import { PageLoginType } from '../types';
+import { PageLoginType, PageType } from '../types';
+import { useVerifyEntry } from 'model/verify/entry';
 
 const TitleMap = {
   apple: 'Login with Apple',
@@ -31,6 +32,19 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
 
   const { onFinish, navigateForResult } = useBaseContainer({
     entryName: PortkeyEntries.REFERRAL_ENTRY,
+  });
+
+  const setErrorMessage = (msg?: string) => {
+    if (msg) {
+      CommonToast.failError(msg);
+    }
+  };
+
+  const { thirdPartyLogin } = useVerifyEntry({
+    type: PageType.login, // keep it
+    accountOriginalType: AccountOriginalType.Apple,
+    entryName: PortkeyEntries.REFERRAL_ENTRY,
+    setErrorMessage,
   });
 
   const onSuccess = (text = 'You have already logged in, page close in 5 seconds') => {
@@ -86,11 +100,11 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
   };
 
   const onGoogleSign = useCallback(() => {
-    // TODO: google sign in
-  }, []);
+    thirdPartyLogin('google');
+  }, [thirdPartyLogin]);
   const onAppleSign = useCallback(() => {
-    // TODO: apple sign in
-  }, []);
+    thirdPartyLogin('apple');
+  }, [thirdPartyLogin]);
 
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>

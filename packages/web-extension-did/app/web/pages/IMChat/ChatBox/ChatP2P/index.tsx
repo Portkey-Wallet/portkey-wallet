@@ -162,13 +162,13 @@ export default function ChatBox() {
     () => (
       <div className="flex title-element">
         <div className="title-content flex-center" onClick={handleGoProfile}>
-          <Avatar letter={info?.displayName?.slice(0, 1).toUpperCase()} />
+          <Avatar src={info?.channelIcon} letter={info?.displayName?.slice(0, 1).toUpperCase()} />
           <div className="title-name">{info?.displayName}</div>
         </div>
         {info?.mute && <CustomSvg type="Mute" />}
       </div>
     ),
-    [handleGoProfile, info?.displayName, info?.mute],
+    [handleGoProfile, info?.channelIcon, info?.displayName, info?.mute],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);

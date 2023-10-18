@@ -5,10 +5,18 @@ export interface ThirdPartyAccountInfo {
 
 export interface GoogleAccountInfo {
   accessToken: string;
+  accountIdentifier: string;
 }
 
 export interface AppleAccountInfo {
   identityToken: string;
+  accountIdentifier: string;
 }
 
-// export const handleGoogleLogin = () => {};
+export const handleGoogleLogin = async (): Promise<GoogleAccountInfo> => {
+  throw new Error('Not implemented');
+};
+
+export const handleAppleLogin = async (): Promise<AppleAccountInfo> => {
+  throw new Error('Not implemented');
+};

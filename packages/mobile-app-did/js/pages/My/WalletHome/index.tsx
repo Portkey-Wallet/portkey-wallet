@@ -20,8 +20,6 @@ import { useAppDispatch } from 'store/hooks';
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import FormItem from 'components/FormItem';
 import WalletMenuItem from '../components/WalletMenuItem';
 
 interface WalletHomeProps {
@@ -32,13 +30,10 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
   const { t } = useLanguage();
   const appDispatch = useAppDispatch();
   const {
-    walletName,
-    walletAvatar,
     walletInfo: { caHash, address: managerAddress },
   } = useCurrentWallet();
   const getCurrentCAContract = useGetCurrentCAContract();
   const logout = useLogOut();
-  const showChat = useIsChatShow();
 
   useEffect(() => {
     appDispatch(getCaHolderInfoAsync());
@@ -73,9 +68,6 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
       safeAreaColor={['blue', 'gray']}
       containerStyles={[pageStyles.pageWrap]}
       scrollViewProps={{ disabled: true }}>
-      <View style={pageStyles.avatarWrap}>
-        <Svg icon={(walletAvatar as IconName) || 'master1'} size={pTd(80)} />
-      </View>
       <ScrollView alwaysBounceVertical={false}>
         <View>
           <WalletMenuItem />
@@ -118,7 +110,7 @@ const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(0, 16, 18),
+    ...GStyles.paddingArg(24, 16, 18),
   },
   avatarWrap: {
     height: pTd(160),
@@ -126,6 +118,6 @@ const pageStyles = StyleSheet.create({
     alignItems: 'center',
   },
   menuItem: {
-    marginBottom: pTd(12),
+    marginBottom: pTd(24),
   },
 });

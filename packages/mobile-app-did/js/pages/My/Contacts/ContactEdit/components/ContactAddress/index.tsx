@@ -12,7 +12,7 @@ import ListItem from 'components/ListItem';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
 import { EditAddressType } from '../..';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 interface ContactAddressProps {
   editAddressItem: EditAddressType;
@@ -38,6 +38,7 @@ const ContactAddress: React.FC<ContactAddressProps> = ({
   onAddressChange,
 }) => {
   const { t } = useLanguage();
+  const isMainnet = useIsMainnet();
 
   const _onDelete = useCallback(() => {
     onDelete && onDelete(editAddressIdx, editAddressItem);
@@ -66,13 +67,7 @@ const ContactAddress: React.FC<ContactAddressProps> = ({
       </View>
       <ListItem
         onPress={_onChainPress}
-        titleLeftElement={
-          editAddressItem.chainId === MAIN_CHAIN_ID ? (
-            <Svg icon="mainnet" size={pTd(28)} />
-          ) : (
-            <Svg icon="testnet" size={pTd(28)} />
-          )
-        }
+        titleLeftElement={<Svg icon={isMainnet ? 'mainnet' : 'testnet'} size={pTd(28)} />}
         titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}
         titleTextStyle={styles.chainSelectTitleStyle}
         style={styles.selectedItem}

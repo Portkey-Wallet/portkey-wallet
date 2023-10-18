@@ -82,8 +82,11 @@
         height: 24px;
         border: 2px solid @border-1;
         background: @bg-11;
-        .@{app-prefix}-switch-handle::before {
-          background: @bg-23;
+        .@{app-prefix}-switch-handle {
+          top: 1px;
+          &::before {
+            background: @bg-23;
+          }
         }
       }
       .@{app-prefix}-switch-checked {

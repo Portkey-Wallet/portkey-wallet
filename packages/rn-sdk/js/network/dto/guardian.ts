@@ -93,3 +93,17 @@ export interface CheckVerifyCodeResultDTO {
   signature: string;
   failedBecauseOfTooManyRequests?: boolean;
 }
+
+export interface VerifyGoogleGuardianParams {
+  accessToken: string;
+  verifierId: string;
+  chainId: string;
+  operationType: OperationTypeEnum;
+}
+
+export interface VerifyAppleGuardianParams {
+  identityToken: string;
+  verifierId: string;
+  chainId: string;
+  operationType: OperationTypeEnum;
+}

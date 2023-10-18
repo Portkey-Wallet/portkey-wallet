@@ -2,7 +2,6 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import { GuardianApprovalPageResult, GuardianApprovalPageProps } from 'components/entries/GuardianApproval';
 import { PortkeyEntries } from 'config/entries';
 import {
   attemptAccountCheck,
@@ -22,9 +21,10 @@ import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { useCallback } from 'react';
 import { PageType } from 'pages/Login/types';
+import { ThirdPartyAccountInfo } from '../third-party-account';
 
 export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => {
-  const { type, entryName, setErrorMessage, verifyAccountIdentifier } = verifyConfig;
+  const { type, entryName, accountOriginalType, setErrorMessage, verifyAccountIdentifier } = verifyConfig;
 
   const { navigateForResult, onFinish } = useBaseContainer({
     entryName,
@@ -33,11 +33,11 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     return await NetworkController.isGoogleRecaptchaOpen(OperationTypeEnum.register);
   };
 
-  const verifyEntry = (accountIdentifier: string) => {
+  const verifyEntry = (accountIdentifier: string, thirdPartyAccountInfo?: ThirdPartyAccountInfo) => {
     if (type === PageType.login) {
-      onPageLogin(accountIdentifier);
+      onPageLogin(accountIdentifier, thirdPartyAccountInfo);
     } else if (type === PageType.signup) {
-      onPageSignUp(accountIdentifier);
+      onPageSignUp(accountIdentifier, thirdPartyAccountInfo);
     }
   };
 
@@ -83,6 +83,12 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     [navigateForResult],
   );
 
+  const thirdPartyLogin = async (thirdPartyLoginType: 'google' | 'apple'): Promise<void> => {
+    if (thirdPartyLoginType === 'apple') {
+    } else {
+    }
+  };
+
   const handleGuardianVerifyPage = async (
     guardianConfig: GuardianConfig,
     alreadySent?: boolean,
@@ -102,7 +108,7 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     });
   };
 
-  const onPageLogin = async (accountIdentifier: string) => {
+  const onPageLogin = async (accountIdentifier: string, thirdPartyAccountInfo?: ThirdPartyAccountInfo) => {
     if (verifyAccountIdentifier) {
       const message = verifyAccountIdentifier(accountIdentifier) || undefined;
       setErrorMessage(message);
@@ -112,7 +118,7 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     try {
       const accountCheckResult = await attemptAccountCheck(accountIdentifier as string);
       if (accountCheckResult.hasRegistered) {
-        dealWithSignIn(accountIdentifier);
+        dealWithSignIn(accountIdentifier, thirdPartyAccountInfo);
       } else {
         ActionSheet.alert({
           title: 'Continue with this account?',
@@ -122,7 +128,7 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
             {
               title: 'Confirm',
               onPress: () => {
-                dealWithSignUp(accountIdentifier);
+                dealWithSignUp(accountIdentifier, thirdPartyAccountInfo);
               },
             },
           ],
@@ -135,7 +141,7 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     Loading.hide(loadingKey);
   };
 
-  const onPageSignUp = async (accountIdentifier: string) => {
+  const onPageSignUp = async (accountIdentifier: string, thirdPartyAccountInfo?: ThirdPartyAccountInfo) => {
     if (verifyAccountIdentifier) {
       const message = verifyAccountIdentifier(accountIdentifier) || undefined;
       setErrorMessage(message);
@@ -159,7 +165,7 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
           ],
         });
       } else {
-        dealWithSignUp(accountIdentifier);
+        dealWithSignUp(accountIdentifier, thirdPartyAccountInfo);
       }
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));
@@ -168,28 +174,15 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     Loading.hide(loadingKey);
   };
 
-  const dealWithSignIn = async (accountIdentifier: string) => {
+  const dealWithSignIn = async (accountIdentifier: string, thirdPartyAccountInfo?: ThirdPartyAccountInfo) => {
     Loading.show();
     try {
-      const signInPageData = await getSocialRecoveryPageData(accountIdentifier ?? '', AccountOriginalType.Email);
+      const signInPageData = await getSocialRecoveryPageData(
+        accountIdentifier ?? '',
+        accountOriginalType,
+        thirdPartyAccountInfo,
+      );
       if (signInPageData) {
-        navigateForResult<GuardianApprovalPageResult, GuardianApprovalPageProps>(
-          PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
-          {
-            params: {
-              deliveredGuardianListInfo: JSON.stringify(signInPageData),
-            },
-          },
-          res => {
-            Loading.hide();
-            const { data } = res;
-            if (data.isVerified && data.deliveredVerifiedData) {
-              dealWithSetPin(data.deliveredVerifiedData);
-            } else {
-              setErrorMessage('guardian verify failed, please try again.');
-            }
-          },
-        );
       } else {
         setErrorMessage('network fail.');
         Loading.hide();
@@ -245,75 +238,129 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     } as AfterVerifiedConfig;
   };
 
-  const dealWithSignUp = async (accountIdentifier: string) => {
+  const dealWithSignUp = async (accountIdentifier: string, thirdPartyAccountInfo?: ThirdPartyAccountInfo) => {
     if (!accountIdentifier) throw new Error('accountIdentifier is empty');
     Loading.show({
       text: 'Assigning a verifier on-chain...',
     });
-    const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Email, navigateToGuardianPage);
+    const { google, apple } = thirdPartyAccountInfo || {};
+    const useThirdPartyFunction = google || apple;
     Loading.hide();
-    ActionSheet.alert({
-      title: '',
-      message: `${
-        pageData.guardianConfig?.name ?? 'Portkey'
-      } will send a verification code to ${accountIdentifier} to verify your email.`,
-      buttons: [
-        { title: 'Cancel', type: 'outline' },
-        {
-          title: 'Confirm',
-          onPress: async () => {
-            try {
-              Loading.show();
-              if (!pageData.guardianConfig) throw new Error('network failure');
-              const needRecaptcha = await isGoogleRecaptchaOpen();
-              let token: string | undefined;
-              if (needRecaptcha) {
-                token = (await verifyHumanMachine('en')) as string;
-              }
-              const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
-              Loading.hide();
-              if (sendResult) {
-                const guardianResult = await handleGuardianVerifyPage(
-                  Object.assign({}, pageData.guardianConfig, {
-                    verifySessionId: sendResult.verifierSessionId,
-                  } as Partial<GuardianConfig>),
-                  true,
-                );
-                if (!guardianResult) {
-                  setErrorMessage('guardian verify failed, please try again.');
+    try {
+      if (useThirdPartyFunction) {
+        const recommendedGuardian = await NetworkController.getRecommendedGuardian();
+        const { id } = recommendedGuardian || {};
+        if (!id) {
+          throw new Error('network failure');
+        }
+        const guardianResult = google
+          ? await NetworkController.verifyGoogleGuardianInfo({
+              verifierId: id,
+              accessToken: google.accessToken,
+              operationType: OperationTypeEnum.register,
+              chainId: await PortkeyConfig.currChainId(),
+            })
+          : await NetworkController.verifyAppleGuardianInfo({
+              verifierId: id,
+              identityToken: apple?.identityToken ?? '',
+              operationType: OperationTypeEnum.register,
+              chainId: await PortkeyConfig.currChainId(),
+            });
+        if (!guardianResult) {
+          throw new Error('network failure');
+        }
+        Loading.hide();
+        dealWithSetPin({
+          fromRecovery: false,
+          accountIdentifier,
+          chainId: await PortkeyConfig.currChainId(),
+          extraData: defaultExtraData,
+          verifiedGuardians: [
+            {
+              type: guardianTypeStrToEnum(google ? 'Google' : 'Apple'),
+              identifier: accountIdentifier,
+              verifierId: id,
+              verificationDoc: guardianResult.verificationDoc,
+              signature: guardianResult.signature,
+            },
+          ],
+        });
+      } else {
+        const pageData = await getRegisterPageData(accountIdentifier, accountOriginalType, navigateToGuardianPage);
+        if (!pageData.guardianConfig) {
+          throw new Error('network failure');
+        }
+        ActionSheet.alert({
+          title: '',
+          message: `${
+            pageData.guardianConfig?.name ?? 'Portkey'
+          } will send a verification code to ${accountIdentifier} to verify your ${
+            accountOriginalType === AccountOriginalType.Email ? 'email' : 'phone number'
+          }.`,
+          buttons: [
+            { title: 'Cancel', type: 'outline' },
+            {
+              title: 'Confirm',
+              onPress: async () => {
+                try {
+                  Loading.show();
+                  if (!pageData.guardianConfig) throw new Error('network failure');
+                  const needRecaptcha = await isGoogleRecaptchaOpen();
+                  let token: string | undefined;
+                  if (needRecaptcha) {
+                    token = (await verifyHumanMachine('en')) as string;
+                  }
+                  const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
                   Loading.hide();
-                  return;
-                } else {
-                  dealWithSetPin(
-                    await getSignUpVerifiedData(accountIdentifier, pageData.guardianConfig, guardianResult),
-                  );
+                  if (sendResult) {
+                    const guardianResult = await handleGuardianVerifyPage(
+                      Object.assign({}, pageData.guardianConfig, {
+                        verifySessionId: sendResult.verifierSessionId,
+                      } as Partial<GuardianConfig>),
+                      true,
+                    );
+                    if (!guardianResult) {
+                      setErrorMessage('guardian verify failed, please try again.');
+                      return;
+                    } else {
+                      dealWithSetPin(
+                        await getSignUpVerifiedData(accountIdentifier, pageData.guardianConfig, guardianResult),
+                      );
+                    }
+                  } else {
+                    setErrorMessage('network fail.');
+                    Loading.hide();
+                  }
+                } catch (e) {
+                  setErrorMessage(handleErrorMessage(e));
+                  Loading.hide();
                 }
-              } else {
-                setErrorMessage('network fail.');
-                Loading.hide();
-              }
-            } catch (e) {
-              setErrorMessage(handleErrorMessage(e));
-              Loading.hide();
-            }
-          },
-        },
-      ],
-    });
+              },
+            },
+          ],
+        });
+      }
+    } catch (e) {
+      setErrorMessage(handleErrorMessage(e));
+      Loading.hide();
+    }
   };
 
   return {
     verifyEntry,
+    thirdPartyLogin,
   };
 };
 
 export interface VerifyEntryHooks {
   verifyEntry: (accountIdentifier: string) => void;
+  thirdPartyLogin: (thirdPartyLoginType: 'google' | 'apple') => Promise<void>;
 }
 
 export interface VerifyConfig {
   type: PageType;
   entryName: PortkeyEntries;
+  accountOriginalType: AccountOriginalType;
   setErrorMessage: (context: any) => void;
-  verifyAccountIdentifier?: (account: string) => string | void;
+  verifyAccountIdentifier?: (account: string, thirdPartyAccountInfo?: ThirdPartyAccountInfo) => string | void;
 }

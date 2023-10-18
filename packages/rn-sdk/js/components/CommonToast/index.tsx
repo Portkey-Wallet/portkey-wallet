@@ -106,11 +106,13 @@ export default {
     if (!args[3]) args[3] = 'warning';
     Overlay.hide(element);
     element = show(...args);
+    args[0] && console.warn('CommonToast.warn:', args[0]);
   },
   fail(...args: TostProps) {
     if (!args[3]) args[3] = 'fail';
     Overlay.hide(element);
     element = show(...args);
+    args[0] && console.error('CommonToast.fail:', args[0]);
   },
   failError(error: any, errorText?: string) {
     Overlay.hide(element);

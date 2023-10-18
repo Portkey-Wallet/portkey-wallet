@@ -38,6 +38,12 @@ import { defaultColors } from 'assets/theme';
 import CommonToast from 'components/CommonToast';
 import { PortkeyConfig } from 'global';
 import { ApprovedGuardianInfo } from 'network/dto/wallet';
+import {
+  AppleAccountInfo,
+  GoogleAccountInfo,
+  handleAppleLogin,
+  handleGoogleLogin,
+} from 'model/verify/third-party-account';
 
 export default function GuardianApproval({
   guardianListConfig,
@@ -170,7 +176,7 @@ export default function GuardianApproval({
       return (
         <CommonButton
           onPress={() => {
-            dealWithParticularGuardian(guardian, key);
+            handleGuardianOperation(guardian, key);
           }}
           disabled={false}
           containerStyle={styles.activityButton}
@@ -179,6 +185,66 @@ export default function GuardianApproval({
           title={getTitle()}
         />
       );
+    }
+  };
+
+  const isPhoneOrEmailGuardian = (guardian: GuardianConfig) => {
+    return guardian.sendVerifyCodeParams.type === 'Phone' || guardian.sendVerifyCodeParams.type === 'Email';
+  };
+
+  const isAppleLogin = (account: GoogleAccountInfo | AppleAccountInfo): account is AppleAccountInfo => {
+    return !!(account as AppleAccountInfo).identityToken;
+  };
+
+  const handleGuardianOperation = async (guardian: GuardianConfig, key: string) => {
+    if (isPhoneOrEmailGuardian(guardian)) {
+      dealWithParticularGuardian(guardian, key);
+    } else {
+      dealWithThirdPartyGuardian(guardian, key);
+    }
+  };
+
+  const dealWithThirdPartyGuardian = async (guardian: GuardianConfig, key: string) => {
+    try {
+      Loading.show();
+      const appleAccount: GoogleAccountInfo | AppleAccountInfo =
+        guardian.sendVerifyCodeParams.type === 'Apple' ? await handleAppleLogin() : await handleGoogleLogin();
+      Loading.hide();
+      if (appleAccount) {
+        Loading.show();
+        const verifyResult = isAppleLogin(appleAccount)
+          ? await NetworkController.verifyAppleGuardianInfo({
+              verifierId: guardian.sendVerifyCodeParams.verifierId,
+              identityToken: appleAccount.identityToken,
+              chainId: await PortkeyConfig.currChainId(),
+              operationType: OperationTypeEnum.communityRecovery,
+            })
+          : await NetworkController.verifyGoogleGuardianInfo({
+              verifierId: guardian.sendVerifyCodeParams.verifierId,
+              accessToken: appleAccount.accessToken,
+              chainId: await PortkeyConfig.currChainId(),
+              operationType: OperationTypeEnum.communityRecovery,
+            });
+        Loading.hide();
+        if (verifyResult) {
+          CommonToast.success('Verified Successfully');
+          setGuardianStatus(key, {
+            status: VerifyStatus.Verified,
+            verifierInfo: {
+              verificationDoc: verifyResult.verificationDoc,
+              signature: verifyResult.signature,
+              verifierId: guardian.sendVerifyCodeParams.verifierId,
+            },
+          });
+          return;
+        } else {
+          CommonToast.fail('guardian verify failed, please try again.');
+          Loading.hide();
+        }
+      }
+    } catch (e) {
+      CommonToast.fail('network fail.');
+      Loading.hide();
     }
   };
 

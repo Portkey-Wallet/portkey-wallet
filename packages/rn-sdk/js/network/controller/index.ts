@@ -12,6 +12,8 @@ import {
   SendVerifyCodeHeader,
   SendVerifyCodeParams,
   SendVerifyCodeResultDTO,
+  VerifyAppleGuardianParams,
+  VerifyGoogleGuardianParams,
 } from 'network/dto/guardian';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CountryCodeDataDTO } from 'types/wallet';
@@ -124,6 +126,26 @@ export class NetworkControllerEntity {
         failedBecauseOfTooManyRequests: errMessage?.includes('Too Many Retries'),
       } as Partial<CheckVerifyCodeResultDTO>,
     );
+  };
+
+  verifyGoogleGuardianInfo = async (params: VerifyGoogleGuardianParams): Promise<CheckVerifyCodeResultDTO> => {
+    const res = await this.realExecute<CheckVerifyCodeResultDTO>(
+      await this.parseUrl(APIPaths.VERIFY_GOOGLE_TOKEN),
+      'POST',
+      params,
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  verifyAppleGuardianInfo = async (params: VerifyAppleGuardianParams): Promise<CheckVerifyCodeResultDTO> => {
+    const res = await this.realExecute<CheckVerifyCodeResultDTO>(
+      await this.parseUrl(APIPaths.VERIFY_APPLE_TOKEN),
+      'POST',
+      params,
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
   };
 
   requestRegister = async (params: RequestRegisterParams): Promise<RequestRegisterOrSocialRecoveryResult> => {

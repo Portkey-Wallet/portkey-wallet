@@ -20,6 +20,7 @@ import AElf from 'aelf-sdk';
 import { GlobalStorage } from 'service/storage';
 import { CountryCodeDataDTO } from 'types/wallet';
 import { randomId, sleep } from '@portkey-wallet/utils';
+import { ThirdPartyAccountInfo } from 'model/verify/third-party-account';
 
 export const COUNTRY_CODE_DATA_KEY = 'countryCodeData';
 export const CURRENT_USING_COUNTRY_CODE = 'currentUsingCountryCode';
@@ -102,6 +103,7 @@ export const getRegisterPageData = async (
 export const getSocialRecoveryPageData = async (
   accountIdentifier: string,
   accountOriginalType: AccountOriginalType,
+  thirdPartyAccountInfo?: ThirdPartyAccountInfo,
 ): Promise<SocialRecoveryConfig> => {
   const guardians = await NetworkController.getGuardianInfo(await PortkeyConfig.currChainId(), accountIdentifier);
   const chainId = await PortkeyConfig.currChainId();
@@ -122,6 +124,7 @@ export const getSocialRecoveryPageData = async (
         operationType: OperationTypeEnum.register,
       },
     })),
+    thirdPartyAccountInfo,
   };
 };
 

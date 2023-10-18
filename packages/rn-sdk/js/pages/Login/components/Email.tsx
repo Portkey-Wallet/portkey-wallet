@@ -9,7 +9,7 @@ import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
-import { isWalletUnlocked } from 'model/verify/after-verify';
+import { AccountOriginalType, isWalletUnlocked } from 'model/verify/after-verify';
 import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import CommonToast from 'components/CommonToast';
@@ -55,6 +55,7 @@ export default function Email({
 
   const { verifyEntry } = useVerifyEntry({
     type,
+    accountOriginalType: AccountOriginalType.Email,
     entryName: type === PageType.login ? PortkeyEntries.SIGN_IN_ENTRY : PortkeyEntries.SIGN_UP_ENTRY,
     setErrorMessage,
     verifyAccountIdentifier: checkEmail,

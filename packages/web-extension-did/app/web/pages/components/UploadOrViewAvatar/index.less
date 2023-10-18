@@ -1,0 +1,69 @@
+/* stylelint-disable alpha-value-notation */
+/* stylelint-disable color-function-notation */
+@import '../../../assets/theme/color.less';
+
+.upload-or-view-avatar {
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 1;
+}
+
+.upload-or-view-avatar.upload-avatar {
+  background-color: @bg-25;
+
+  .upload-avatar-main {
+    position: relative;
+
+    .camera-icon-mask {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      visibility: hidden;
+    }
+
+    &:hover {
+      .camera-icon-mask {
+        visibility: visible !important;
+      }
+    }
+  }
+
+  .camera-icon {
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &:hover {
+    background-color: @bg-7;
+    .camera-icon {
+      svg {
+        width: 24px;
+        height: 24px;
+        path {
+          fill: @bg-11;
+        }
+      }
+    }
+  }
+}
+
+.upload-or-view-avatar.view-avatar {
+  .view-avatar-index {
+    color: @font-11;
+    font-size: 24px;
+    background-color: transparent;
+    border: 1px solid @border-1;
+    border-radius: 50%;
+  }
+}

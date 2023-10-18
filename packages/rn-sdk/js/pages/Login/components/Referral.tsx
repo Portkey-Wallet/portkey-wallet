@@ -33,7 +33,7 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
     entryName: PortkeyEntries.REFERRAL_ENTRY,
   });
 
-  const onSuccess = (text = 'You have already logged in, page close in 3 seconds') => {
+  const onSuccess = (text = 'You have already logged in, page close in 5 seconds') => {
     CommonToast.success(text);
     setTimeout(() => {
       onFinish({
@@ -42,7 +42,7 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
           finished: true,
         },
       });
-    }, 3000);
+    }, 5000);
   };
 
   const pushToSignIn = () => {
@@ -68,7 +68,7 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
   const baseCheck = async () => {
     if (await isWalletExists()) {
       if (await isWalletUnlocked()) {
-        onSuccess('wallet is unlocked already, this page will close in 3 seconds');
+        onSuccess('wallet is unlocked already, this page will close in 5 seconds');
       } else {
         const tryToUnlock = async () => {
           navigateForResult<CheckPinResult, CheckPinProps>(PortkeyEntries.CHECK_PIN, {}, res => {

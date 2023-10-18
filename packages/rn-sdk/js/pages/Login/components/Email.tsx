@@ -1,9 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { View } from 'react-native';
-import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { BGStyles } from 'assets/theme/styles';
-import Loading from 'components/Loading';
 import { useLanguage } from 'i18n/hooks';
 import styles from '../styles';
 import CommonInput from 'components/CommonInput';
@@ -11,34 +9,12 @@ import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
-import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
-import {
-  attemptAccountCheck,
-  getRegisterPageData,
-  getSocialRecoveryPageData,
-  guardianTypeStrToEnum,
-} from 'model/global';
-import ActionSheet from 'components/ActionSheet';
-import { verifyHumanMachine } from 'components/VerifyHumanMachine';
-import {
-  AccountOriginalType,
-  AfterVerifiedConfig,
-  VerifiedGuardianDoc,
-  defaultExtraData,
-  isWalletUnlocked,
-} from 'model/verify/after-verify';
-import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
+import { isWalletUnlocked } from 'model/verify/after-verify';
 import { PortkeyEntries } from 'config/entries';
-import { GuardianConfig } from 'model/verify/guardian';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import useSignUp from 'model/verify/sign-up';
-import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
-import { GuardianApprovalPageResult, GuardianApprovalPageProps } from 'components/entries/GuardianApproval';
 import CommonToast from 'components/CommonToast';
-import { SetPinPageProps, SetPinPageResult } from 'pages/Pin/SetPin';
-import AElf from 'aelf-sdk';
-import { PortkeyConfig } from 'global';
 import TermsServiceButton from './TermsServiceButton';
+import { useVerifyEntry } from 'model/verify/entry';
 
 const TitleMap = {
   [PageType.login]: {
@@ -59,11 +35,10 @@ export default function Email({
   const { t } = useLanguage();
   const iptRef = useRef<any>();
   const [loading] = useState<boolean>();
-  const [loginAccount, setLoginAccount] = useState<string>();
+  const [email, setEmail] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
-  const [guardianConfig, setGuardianConfig] = useState<GuardianConfig>();
 
-  const { navigateForResult, onFinish } = useBaseContainer({
+  const { onFinish } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
     onShow: async () => {
       if (await isWalletUnlocked()) {
@@ -77,234 +52,16 @@ export default function Email({
       }
     },
   });
-  const navigateToGuardianPage = useCallback(
-    (config: GuardianConfig, callback: (result: VerifiedGuardianDoc) => void) => {
-      navigateForResult<VerifyPageResult, VerifierDetailsPageProps>(
-        PortkeyEntries.VERIFIER_DETAIL_ENTRY,
-        {
-          params: {
-            deliveredGuardianInfo: JSON.stringify(config),
-          },
-        },
-        res => {
-          Loading.hide();
-          const { data } = res;
-          callback(data?.verifiedData ? JSON.parse(data.verifiedData) : null);
-        },
-      );
-    },
-    [navigateForResult],
-  );
 
-  const { isGoogleRecaptchaOpen, sendVerifyCode, handleGuardianVerifyPage } = useSignUp({
-    accountIdentifier: loginAccount ?? '',
-    accountOriginalType: AccountOriginalType.Phone,
-    guardianConfig,
-    navigateToGuardianPage,
+  const { verifyEntry } = useVerifyEntry({
+    type,
+    entryName: type === PageType.login ? PortkeyEntries.SIGN_IN_ENTRY : PortkeyEntries.SIGN_UP_ENTRY,
+    setErrorMessage,
+    verifyAccountIdentifier: checkEmail,
   });
 
-  const onPageLogin = useLockCallback(async () => {
-    const message = checkEmail(loginAccount) || undefined;
-    setErrorMessage(message);
-    if (message) return;
-    const loadingKey = Loading.show();
-    try {
-      const accountCheckResult = await attemptAccountCheck(loginAccount as string);
-      if (accountCheckResult.hasRegistered) {
-        dealWithSignIn();
-      } else {
-        ActionSheet.alert({
-          title: 'Continue with this account?',
-          message: `This account has not been registered yet. Click "Confirm" to complete the registration.`,
-          buttons: [
-            { title: 'Cancel', type: 'outline' },
-            {
-              title: 'Confirm',
-              onPress: () => {
-                dealWithSignUp();
-              },
-            },
-          ],
-        });
-      }
-    } catch (error) {
-      setErrorMessage(handleErrorMessage(error));
-      Loading.hide(loadingKey);
-    }
-    Loading.hide(loadingKey);
-  }, [loginAccount]);
-
-  const onPageSignup = useLockCallback(async () => {
-    const message = checkEmail(loginAccount) || undefined;
-    setErrorMessage(message);
-    if (message) return;
-    const loadingKey = Loading.show();
-    try {
-      const accountCheckResult = await attemptAccountCheck(loginAccount as string);
-      if (accountCheckResult.hasRegistered) {
-        ActionSheet.alert({
-          title: 'Continue with this account?',
-          message: `This account already exists. Click "Confirm" to log in.`,
-          buttons: [
-            { title: 'Cancel', type: 'outline' },
-            {
-              title: 'Confirm',
-              onPress: () => {
-                dealWithSignIn();
-              },
-            },
-          ],
-        });
-      } else {
-        dealWithSignUp();
-      }
-    } catch (error) {
-      setErrorMessage(handleErrorMessage(error));
-      Loading.hide(loadingKey);
-    }
-    Loading.hide(loadingKey);
-  }, [loginAccount]);
-
-  const dealWithSignIn = async () => {
-    Loading.show();
-    try {
-      const signInPageData = await getSocialRecoveryPageData(loginAccount ?? '', AccountOriginalType.Email);
-      if (signInPageData) {
-        navigateForResult<GuardianApprovalPageResult, GuardianApprovalPageProps>(
-          PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
-          {
-            params: {
-              deliveredGuardianListInfo: JSON.stringify(signInPageData),
-            },
-          },
-          res => {
-            Loading.hide();
-            const { data } = res;
-            if (data.isVerified && data.deliveredVerifiedData) {
-              dealWithSetPin(data.deliveredVerifiedData);
-            } else {
-              setErrorMessage('guardian verify failed, please try again.');
-            }
-          },
-        );
-      } else {
-        setErrorMessage('network fail.');
-        Loading.hide();
-      }
-    } catch (e) {
-      setErrorMessage(handleErrorMessage(e));
-      Loading.hide();
-    }
-  };
-
-  const dealWithSetPin = (afterVerifiedData: AfterVerifiedConfig | string) => {
-    navigateForResult<SetPinPageResult, SetPinPageProps>(
-      PortkeyEntries.SET_PIN,
-      {
-        params: {
-          deliveredSetPinInfo:
-            typeof afterVerifiedData === 'string' ? afterVerifiedData : JSON.stringify(afterVerifiedData),
-        },
-      },
-      res => {
-        const { data } = res;
-        if (data.finished) {
-          onFinish({
-            status: 'success',
-            data: {
-              finished: true,
-            },
-          });
-        }
-      },
-    );
-  };
-
-  const dealWithSignUp = async () => {
-    const accountIdentifier = loginAccount as string;
-    if (!accountIdentifier) throw new Error('accountIdentifier is empty');
-    Loading.show();
-    const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Email, navigateToGuardianPage);
-    setGuardianConfig(pageData.guardianConfig);
-    Loading.hide();
-    ActionSheet.alert({
-      title: '',
-      message: `${
-        pageData.guardianConfig?.name ?? 'Portkey'
-      } will send a verification code to ${accountIdentifier} to verify your email.`,
-      buttons: [
-        { title: 'Cancel', type: 'outline' },
-        {
-          title: 'Confirm',
-          onPress: async () => {
-            try {
-              Loading.show();
-              if (!pageData.guardianConfig) throw new Error('network failure');
-              const needRecaptcha = await isGoogleRecaptchaOpen();
-              let token: string | undefined;
-              if (needRecaptcha) {
-                token = (await verifyHumanMachine('en')) as string;
-              }
-              const sendResult = await sendVerifyCode(pageData.guardianConfig, token);
-              Loading.hide();
-              if (sendResult) {
-                const guardianResult = await handleGuardianVerifyPage(
-                  Object.assign({}, pageData.guardianConfig, {
-                    verifySessionId: sendResult.verifierSessionId,
-                  } as Partial<GuardianConfig>),
-                  true,
-                );
-                if (!guardianResult) {
-                  setErrorMessage('guardian verify failed, please try again.');
-                  Loading.hide();
-                  return;
-                } else {
-                  dealWithSetPin(await getSignUpVerifiedData(pageData.guardianConfig, guardianResult));
-                }
-              } else {
-                setErrorMessage('network fail.');
-                Loading.hide();
-              }
-            } catch (e) {
-              setErrorMessage(handleErrorMessage(e));
-              Loading.hide();
-            }
-          },
-        },
-      ],
-    });
-  };
-
-  const getSignUpVerifiedData = async (
-    config: GuardianConfig,
-    verifiedData: VerifiedGuardianDoc,
-  ): Promise<AfterVerifiedConfig> => {
-    const wallet = AElf.wallet.createNewWallet();
-    const { address } = wallet;
-    return {
-      fromRecovery: false,
-      accountIdentifier: loginAccount,
-      chainId: await PortkeyConfig.currChainId(),
-      manager: address,
-      context: {
-        clientId: address,
-        requestId: randomId(),
-      },
-      extraData: defaultExtraData,
-      verifiedGuardians: [
-        {
-          type: guardianTypeStrToEnum(config.sendVerifyCodeParams.type),
-          identifier: loginAccount,
-          verifierId: config.sendVerifyCodeParams.verifierId,
-          verificationDoc: verifiedData.verificationDoc,
-          signature: verifiedData.signature,
-        },
-      ],
-    } as AfterVerifiedConfig;
-  };
-
   const handleEmailChange = (msg: string) => {
-    setLoginAccount(msg);
+    setEmail(msg);
     setErrorMessage(undefined);
   };
 
@@ -317,7 +74,7 @@ export default function Email({
         </View>
         <CommonInput
           ref={iptRef}
-          value={loginAccount}
+          value={email}
           type="general"
           autoCorrect={false}
           onChangeText={handleEmailChange}
@@ -328,10 +85,10 @@ export default function Email({
         />
         <CommonButton
           containerStyle={GStyles.marginTop(16)}
-          disabled={!loginAccount}
+          disabled={!email}
           type="primary"
           loading={loading}
-          onPress={type === PageType.login ? onPageLogin : onPageSignup}>
+          onPress={() => verifyEntry(email ?? '')}>
           {t(TitleMap[type].button)}
         </CommonButton>
       </View>

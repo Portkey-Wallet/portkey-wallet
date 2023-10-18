@@ -53,6 +53,14 @@ export default function GuardianApproval({
   const { guardians, accountIdentifier, accountOriginalType } = guardianListConfig;
   const { t } = useLanguage();
 
+  const generateWallet = async () => {
+    Loading.show();
+    // avoid animation stuck
+    const wallet = await AElf.wallet.createNewWallet();
+    Loading.hide();
+    return wallet;
+  };
+
   const { navigateForResult } = useBaseContainer({
     entryName: PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
   });
@@ -106,8 +114,7 @@ export default function GuardianApproval({
   };
 
   const getVerifiedData = async (): Promise<AfterVerifiedConfig> => {
-    const wallet = AElf.wallet.createNewWallet();
-    const { address } = wallet;
+    const { address } = await generateWallet();
     return {
       fromRecovery: true,
       accountIdentifier,

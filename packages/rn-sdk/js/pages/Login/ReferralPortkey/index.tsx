@@ -56,6 +56,18 @@ export default function ReferralKey() {
       setCurrentNetwork(network);
     });
   };
+
+  const onBack = () => {
+    if (loginType !== PageLoginType.referral) {
+      setLoginType(PageLoginType.referral);
+    } else {
+      onFinish({
+        status: 'cancel',
+        data: {},
+      });
+    }
+  };
+
   const backgroundImage = useMemo(() => {
     if (isIOS) {
       return { uri: 'background' };
@@ -86,12 +98,7 @@ export default function ReferralKey() {
           containerStyles={styles.containerStyles}
           safeAreaColor={safeAreaColor}
           scrollViewProps={scrollViewProps}
-          leftCallback={() => {
-            onFinish({
-              status: 'cancel',
-              data: {},
-            });
-          }}>
+          leftCallback={onBack}>
           <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
           <View style={GStyles.center}>
             {!isMainnet && (

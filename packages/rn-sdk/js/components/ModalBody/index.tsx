@@ -9,9 +9,10 @@ import { TextXL } from 'components/CommonText';
 import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
-import { useGStyles } from 'assets/theme/useGStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
@@ -42,11 +43,9 @@ export const ModalBody: React.FC<ModalBodyProps> = props => {
     bottomButtonGroup,
   } = props;
 
-  const gStyles = useGStyles();
-
   if (modalBodyType === 'bottom') {
     return (
-      <View style={[styles.commonBox, gStyles.overlayStyle, styles.wrapStyle, style]}>
+      <View style={[styles.commonBox, styles.overlayStyle, styles.wrapStyle, style]}>
         <View style={styles.topWrap}>
           {isShowLeftBackIcon && (
             <View
@@ -151,5 +150,8 @@ export const styles = StyleSheet.create({
   },
   buttonTitleStyle: {
     fontSize: pTd(16),
+  },
+  overlayStyle: {
+    height: windowHeight - pTd(isIOS ? 68 : 100),
   },
 });

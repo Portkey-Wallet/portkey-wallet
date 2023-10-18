@@ -21,12 +21,17 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { checkForCountryCodeCached } from 'model/global';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
+import NetworkContext from '../context/NetworkContext';
+import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
+import { PortkeyConfig, setEndPointUrl } from 'global';
+import { NetworkList } from '@portkey-wallet/constants/constants-ca/network-mainnet';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
 
 export default function ReferralKey() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
+  const [currentNetwork, setCurrentNetwork] = useState<NetworkItem | undefined>(undefined);
   const { t } = useLanguage();
   const isMainnet = true;
   const { onFinish } = useBaseContainer({
@@ -43,7 +48,14 @@ export default function ReferralKey() {
   );
   useEffectOnce(() => {
     checkForCountryCodeCached();
+    loadCurrentNetwork();
   });
+  const loadCurrentNetwork = () => {
+    PortkeyConfig.endPointUrl().then(url => {
+      const network = NetworkList.find(item => item.apiUrl === url) || NetworkList[0];
+      setCurrentNetwork(network);
+    });
+  };
   const backgroundImage = useMemo(() => {
     if (isIOS) {
       return { uri: 'background' };
@@ -51,35 +63,48 @@ export default function ReferralKey() {
       return require('../img/background.png');
     }
   }, []);
+
+  const networkContext = {
+    currentNetwork: currentNetwork,
+    changeCurrentNetwork: (network: NetworkItem) => {
+      if (network.apiUrl) {
+        setCurrentNetwork(network);
+        setEndPointUrl(network.apiUrl);
+      }
+    },
+  };
+
   return (
-    <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
-      <PageContainer
-        titleDom
-        type="leftBack"
-        themeType="blue"
-        style={BGStyles.transparent}
-        pageSafeBottomPadding={!isIOS}
-        containerStyles={styles.containerStyles}
-        safeAreaColor={safeAreaColor}
-        scrollViewProps={scrollViewProps}
-        leftCallback={() => {
-          onFinish({
-            status: 'cancel',
-            data: {},
-          });
-        }}>
-        <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
-        <View style={GStyles.center}>
-          {!isMainnet && (
-            <View style={styles.labelBox}>
-              <TextM style={[FontStyles.font11, fonts.mediumFont]}>TEST</TextM>
-            </View>
-          )}
-          <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey')}</TextXXXL>
-        </View>
-        {loginMap[loginType]}
-        <SwitchNetwork />
-      </PageContainer>
-    </ImageBackground>
+    <NetworkContext.Provider value={networkContext}>
+      <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
+        <PageContainer
+          titleDom
+          type="leftBack"
+          themeType="blue"
+          style={BGStyles.transparent}
+          pageSafeBottomPadding={!isIOS}
+          containerStyles={styles.containerStyles}
+          safeAreaColor={safeAreaColor}
+          scrollViewProps={scrollViewProps}
+          leftCallback={() => {
+            onFinish({
+              status: 'cancel',
+              data: {},
+            });
+          }}>
+          <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
+          <View style={GStyles.center}>
+            {!isMainnet && (
+              <View style={styles.labelBox}>
+                <TextM style={[FontStyles.font11, fonts.mediumFont]}>TEST</TextM>
+              </View>
+            )}
+            <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey')}</TextXXXL>
+          </View>
+          {loginMap[loginType]}
+          <SwitchNetwork />
+        </PageContainer>
+      </ImageBackground>
+    </NetworkContext.Provider>
   );
 }

@@ -2,39 +2,32 @@ import React from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { TextL } from 'components/CommonText';
 import OverlayModal from 'components/OverlayModal';
-import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
 import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BorderStyles } from 'assets/theme/styles';
-// import { useChangeNetwork } from 'hooks/network';
-import { ParamListBase, RouteProp } from '@react-navigation/native';
+import { NetworkList } from '@portkey-wallet/constants/constants-ca/network-mainnet';
 import { ModalBody } from 'components/ModalBody';
-
-const showSwitchChain = () => {
-  console.log('');
-};
 
 function Network({
   network,
   hideBorder,
-  route,
+  isSelect,
+  changeNetwork,
 }: {
   network: NetworkItem;
   hideBorder?: boolean;
-  route: RouteProp<ParamListBase>;
+  isSelect: boolean;
+  changeNetwork: (network: NetworkItem) => void;
 }) {
-  const currentNetworkInfo = useCurrentNetworkInfo();
-  // const changeNetwork = useChangeNetwork(route);
-  const isSelect = currentNetworkInfo.name === network.name;
   return (
     <Touchable
       disabled={!network.isActive}
       onPress={async () => {
         OverlayModal.hide();
         if (isSelect) return;
-        // changeNetwork(network);
+        changeNetwork(network);
       }}
       style={[styles.itemRow, !network.isActive ? styles.disableItem : undefined]}
       key={network.name}>
@@ -49,26 +42,42 @@ function Network({
   );
 }
 
-function SwitchNetwork({ route }: { route: RouteProp<ParamListBase> }) {
-  const networkList = useNetworkList();
+function SwitchNetwork({
+  currentNetwork,
+  changeCurrentNetwork,
+}: {
+  currentNetwork: NetworkItem;
+  changeCurrentNetwork: (network: NetworkItem) => void;
+}) {
   return (
     <ModalBody modalBodyType="bottom" title={'Switch Networks'}>
-      {networkList.map((network, index) => (
-        <Network route={route} hideBorder={index === networkList.length - 1} network={network} key={network.name} />
+      {NetworkList.map((network, index) => (
+        <Network
+          hideBorder={index === NetworkList.length - 1}
+          network={network}
+          key={network.name}
+          isSelect={currentNetwork.name === network.name}
+          changeNetwork={changeCurrentNetwork}
+        />
       ))}
     </ModalBody>
   );
 }
 
-const showSwitchNetwork = (route: RouteProp<ParamListBase>) => {
+const showSwitchNetwork = ({
+  currentNetwork,
+  changeCurrentNetwork,
+}: {
+  currentNetwork: NetworkItem;
+  changeCurrentNetwork: (network: NetworkItem) => void;
+}) => {
   Keyboard.dismiss();
-  OverlayModal.show(<SwitchNetwork route={route} />, {
+  OverlayModal.show(<SwitchNetwork currentNetwork={currentNetwork} changeCurrentNetwork={changeCurrentNetwork} />, {
     position: 'bottom',
   });
 };
 
 export default {
-  showSwitchChain,
   showSwitchNetwork,
 };
 

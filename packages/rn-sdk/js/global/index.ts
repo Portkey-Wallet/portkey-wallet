@@ -35,7 +35,7 @@ const setConfigStr = (key: string, value: string) => {
   GlobalStorage.set(key, value);
 };
 
-export const setEndPointUrl = (environment: EndPoints) => {
+export const setEndPointUrl = (environment: EndPoints | string) => {
   setConfigStr(ConfigIdentifier.END_POINT, environment);
 };
 

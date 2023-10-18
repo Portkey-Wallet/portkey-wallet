@@ -1,42 +1,28 @@
-import { useCallback, useState } from 'react';
 import { GuardianConfig } from '../guardian';
-import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from '../after-verify';
-import { DeviceType } from '@portkey-wallet/types/types-ca/device';
+import { AccountOriginalType, VerifiedGuardianDoc } from '../after-verify';
 import { NetworkController } from 'network/controller';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { SendVerifyCodeResultDTO } from 'network/dto/guardian';
 
-const useSignUp = (config: SignUpConfig): SignUpHooks => {
-  const [verifiedGuardianInfo, setVerifiedGuardianInfo] = useState<VerifiedGuardianDoc | null>(null);
-  const isVerified = useCallback(() => !!verifiedGuardianInfo, [verifiedGuardianInfo]);
-  const getVerifiedData = useCallback(() => {
-    if (!isVerified()) throw new Error('not verified');
-    if (!config.guardianConfig) throw new Error('guardianConfig is not defined');
-    return {
-      accountOriginalType: config.accountOriginalType,
-      fromRecovery: false,
-      accountIdentifier: config.accountIdentifier,
-      verifiedGuardians: [verifiedGuardianInfo],
-      chainId: config.guardianConfig.sendVerifyCodeParams.chainId,
-      extraData: { deviceName: 'Other', deviceType: DeviceType.OTHER },
-    } as Partial<AfterVerifiedConfig>;
-  }, [config, isVerified, verifiedGuardianInfo]);
+const useSignUp = (config: Omit<SignUpConfig, 'guardianConfig'>): SignUpHooks => {
+  const isGoogleRecaptchaOpen = async () => {
+    return await NetworkController.isGoogleRecaptchaOpen(OperationTypeEnum.register);
+  };
 
   const sendVerifyCode = async (
     guardianConfig: GuardianConfig | undefined,
     googleRecaptchaToken?: string,
   ): Promise<SendVerifyCodeResultDTO | null> => {
-    const guardian = guardianConfig ?? config.guardianConfig;
-    if (!guardian) throw new Error('guardianConfig is not defined');
+    if (!guardianConfig) throw new Error('guardianConfig is not defined');
     const needGoogleRecaptcha = await NetworkController.isGoogleRecaptchaOpen(
-      guardian.sendVerifyCodeParams.operationType,
+      guardianConfig.sendVerifyCodeParams.operationType,
     );
     if (needGoogleRecaptcha && !googleRecaptchaToken) {
       console.warn('Need google recaptcha! Better check it before calling this function.');
       return null;
     }
     const result = await NetworkController.sendVerifyCode(
-      guardian.sendVerifyCodeParams,
+      guardianConfig.sendVerifyCodeParams,
       googleRecaptchaToken ? { reCaptchaToken: googleRecaptchaToken } : {},
     );
     if (result?.verifierSessionId) {
@@ -46,34 +32,29 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
     }
   };
 
-  const isGoogleRecaptchaOpen = async () => {
-    return await NetworkController.isGoogleRecaptchaOpen(OperationTypeEnum.register);
-  };
-
-  const handleGuardianVerifyPage = useCallback(
-    async (guardianConfig?: GuardianConfig, alreadySent?: boolean): Promise<VerifiedGuardianDoc | null> => {
-      const guardian = guardianConfig ?? config.guardianConfig;
-      if (!guardian) {
-        console.error('guardianConfig is not defined.');
-        return null;
-      }
-      return new Promise(resolve => {
-        config.navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
+  const handleGuardianVerifyPage = async (
+    guardianConfig: GuardianConfig,
+    alreadySent?: boolean,
+  ): Promise<VerifiedGuardianDoc | null> => {
+    if (!guardianConfig) {
+      console.error('guardianConfig is not defined.');
+      return null;
+    }
+    return new Promise(resolve => {
+      config.navigateToGuardianPage(
+        Object.assign({}, guardianConfig, { alreadySent: alreadySent ?? false }),
+        result => {
           if (result) {
-            setVerifiedGuardianInfo(result);
             resolve(result);
           } else {
             resolve(null);
           }
-        });
-      });
-    },
-    [config],
-  );
+        },
+      );
+    });
+  };
 
   return {
-    isVerified,
-    getVerifiedData,
     isGoogleRecaptchaOpen,
     sendVerifyCode,
     handleGuardianVerifyPage,
@@ -81,15 +62,13 @@ const useSignUp = (config: SignUpConfig): SignUpHooks => {
 };
 
 export interface SignUpHooks {
-  isVerified: () => boolean;
-  getVerifiedData: () => Partial<AfterVerifiedConfig>;
   isGoogleRecaptchaOpen: () => Promise<boolean>;
   sendVerifyCode: (
     guardianConfig: GuardianConfig | undefined,
     googleRecaptchaToken?: string,
   ) => Promise<SendVerifyCodeResultDTO | null>;
   handleGuardianVerifyPage: (
-    guardianConfig?: GuardianConfig,
+    guardianConfig: GuardianConfig,
     alreadySent?: boolean,
   ) => Promise<VerifiedGuardianDoc | null>;
 }

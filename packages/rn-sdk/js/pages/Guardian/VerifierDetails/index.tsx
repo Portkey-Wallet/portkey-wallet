@@ -4,7 +4,7 @@ import { TextM } from 'components/CommonText';
 import VerifierCountdown, { VerifierCountdownInterface } from 'components/VerifierCountdown';
 import PageContainer from 'components/PageContainer';
 import DigitInput, { DigitInputInterface } from 'components/DigitInput';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { OperationTypeEnum, VerificationType } from '@portkey-wallet/types/verifier';
 import { FontStyles } from 'assets/theme/styles';
@@ -20,6 +20,7 @@ import { CheckVerifyCodeResultDTO } from 'network/dto/guardian';
 import GuardianItem from '../components/GuardianItem';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import CommonToast from 'components/CommonToast';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -127,11 +128,11 @@ export default function VerifierDetails({
   const countdown = useRef<VerifierCountdownInterface>();
   const digitInput = useRef<DigitInputInterface>();
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (guardianConfig.alreadySent) {
       countdown.current?.resetTime(INIT_TIME_OUT);
     }
-  }, []);
+  });
 
   return (
     <PageContainer

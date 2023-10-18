@@ -25,7 +25,7 @@ export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteIn
   const { type, address, chainType } = data;
   if (!isAddress(address, chainType)) throw data;
 
-  if (type === 'login') navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+  if (type === 'login') return navigationService.navigate('ScanLogin', { data: data as LoginQRData });
 
   // send event
   const newData: SendTokenQRDataType = { ...data } as SendTokenQRDataType;

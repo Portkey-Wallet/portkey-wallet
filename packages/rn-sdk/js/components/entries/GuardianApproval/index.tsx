@@ -4,6 +4,7 @@ import BaseContainer, { BaseContainerProps } from '../../../model/container/Base
 import GuardianApproval from 'pages/Guardian/GuardianApproval';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import GStyles from 'assets/theme/GStyles';
 
 export default class GuardianApprovalEntryPage extends BaseContainer<
   GuardianApprovalPageProps,
@@ -33,7 +34,7 @@ export default class GuardianApprovalEntryPage extends BaseContainer<
   render() {
     const { socialRecoveryConfig, verifiedTime } = this.state;
     return (
-      <SafeAreaProvider>
+      <SafeAreaProvider style={GStyles.whiteBackgroundColor}>
         <GuardianApproval
           guardianListConfig={socialRecoveryConfig}
           verifiedTime={verifiedTime}

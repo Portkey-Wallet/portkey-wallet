@@ -8,7 +8,11 @@ import { useLanguage } from 'i18n/hooks';
 import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
+import Email from '../components/Email';
+import Phone from '../components/Phone';
+import QRCode from '../components/QRCode';
 import Referral from '../components/Referral';
+import SwitchNetwork from '../components/SwitchNetwork';
 import { PageLoginType } from '../types';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -30,9 +34,9 @@ export default function ReferralKey() {
   });
   const loginMap = useMemo(
     () => ({
-      [PageLoginType.email]: <View />,
-      [PageLoginType.qrCode]: <View />, // TODO put QRCode here
-      [PageLoginType.phone]: <View />,
+      [PageLoginType.email]: <Email setLoginType={setLoginType} />,
+      [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
+      [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
     [],
@@ -81,6 +85,7 @@ export default function ReferralKey() {
           <TextXXXL style={[styles.titleStyle, FontStyles.font11]}>{t('Log In To Portkey')}</TextXXXL>
         </View>
         {loginMap[loginType]}
+        <SwitchNetwork />
       </PageContainer>
     </ImageBackground>
   );

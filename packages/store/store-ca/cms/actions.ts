@@ -5,8 +5,8 @@ import {
   getDiscoverGroup,
   getSocialMedia,
   getTabMenu,
-  getBuyButton,
   getRememberMeBlackListSites,
+  getEntrance,
 } from '@portkey-wallet/graphql/cms/queries';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
@@ -91,23 +91,6 @@ export const getDiscoverGroupAsync = createAsyncThunk<Required<Pick<CMSState, 'd
   },
 );
 
-export const getBuyButtonAsync = createAsyncThunk<Required<Pick<CMSState, 'buyButtonNetMap'>>, NetworkType>(
-  'cms/getBuyButtonAsync',
-  async (network: NetworkType) => {
-    const result = await getBuyButton(network, {});
-
-    if (result.data.buyButton) {
-      return {
-        buyButtonNetMap: {
-          [network]: result.data.buyButton,
-        },
-      };
-    } else {
-      throw new Error('discoverGroupListNetMap error');
-    }
-  },
-);
-
 export const getRememberMeBlackListAsync = createAsyncThunk<
   Required<Pick<CMSState, 'rememberMeBlackListMap'>>,
   NetworkType
@@ -130,3 +113,29 @@ export const getRememberMeBlackListAsync = createAsyncThunk<
     throw new Error('rememberMeBlackListMap error');
   }
 });
+
+export const getEntranceListAsync = createAsyncThunk<Required<Pick<CMSState, 'entranceListNetMap'>>, NetworkType>(
+  'cms/getEntranceListAsync',
+  async (network: NetworkType) => {
+    const result = await getEntrance(network, {
+      filter: {
+        entranceMatch_id: {
+          status: {
+            _eq: 'published',
+          },
+        },
+      },
+      sort: '-entranceMatch_id.weight',
+    });
+
+    if (result.data.entrance) {
+      return {
+        entranceListNetMap: {
+          [network]: result.data.entrance,
+        },
+      };
+    } else {
+      throw new Error('getEntranceListAsync error');
+    }
+  },
+);

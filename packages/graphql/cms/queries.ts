@@ -16,12 +16,11 @@ import {
   DiscoverGroupCustomQuery,
   DiscoverGroupCustomQueryVariables,
 } from './__generated__/hooks/discoverGroupCustom';
-
 import {
-  BuyButtonCustomDocument,
-  BuyButtonCustomQuery,
-  BuyButtonCustomQueryVariables,
-} from './__generated__/hooks/buyButtonCustom';
+  EntranceCustomDocument,
+  EntranceCustomQuery,
+  EntranceCustomQueryVariables,
+} from './__generated__/hooks/entranceCustom';
 
 import {
   RememberMeBlackListSitesCustomDocument,
@@ -60,16 +59,6 @@ const getDiscoverGroup = async (network: NetworkType, params: DiscoverGroupCusto
 };
 
 // buy button show
-const getBuyButton = async (network: NetworkType, params: BuyButtonCustomQueryVariables) => {
-  const apolloClient = getApolloClient(network);
-  const result = await apolloClient.query<BuyButtonCustomQuery>({
-    query: BuyButtonCustomDocument,
-    variables: params,
-  });
-  return result;
-};
-
-// buy button show
 const getRememberMeBlackListSites = async (
   network: NetworkType,
   params: RememberMeBlackListSitesCustomQueryVariables,
@@ -82,4 +71,14 @@ const getRememberMeBlackListSites = async (
   return result;
 };
 
-export { getSocialMedia, getTabMenu, getDiscoverGroup, getBuyButton, getRememberMeBlackListSites };
+// entrance
+const getEntrance = async (network: NetworkType, params: EntranceCustomQueryVariables) => {
+  const apolloClient = getApolloClient(network);
+  const result = await apolloClient.query<EntranceCustomQuery>({
+    query: EntranceCustomDocument,
+    variables: params,
+  });
+  return result;
+};
+
+export { getSocialMedia, getTabMenu, getDiscoverGroup, getRememberMeBlackListSites, getEntrance };

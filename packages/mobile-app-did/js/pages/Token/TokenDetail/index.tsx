@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { View, Text, Platform } from 'react-native';
+import { View, Text } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import SendButton from 'components/SendButton';
 import ReceiveButton from 'components/ReceiveButton';
@@ -31,9 +31,8 @@ import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import FaucetButton from 'components/FaucetButton';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useAppBuyButtonShow } from 'hooks/cms';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -59,9 +58,7 @@ const TokenDetail: React.FC = () => {
   const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-  const { isBuyButtonShow: isBuyButtonShowStore } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const { isBuyButtonShow: isBuyButtonShowStore } = useAppBuyButtonShow();
 
   const [reFreshing, setFreshing] = useState(false);
 

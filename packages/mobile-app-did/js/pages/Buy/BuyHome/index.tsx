@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useState } from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
@@ -12,8 +12,7 @@ import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import ActionSheet from 'components/ActionSheet';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useAppBuyButtonShow } from 'hooks/cms';
 
 type TabItemType = {
   name: string;
@@ -36,9 +35,7 @@ const tabList: TabItemType[] = [
 
 export default function BuyHome() {
   const { t } = useLanguage();
-  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useAppBuyButtonShow();
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
     isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
   );

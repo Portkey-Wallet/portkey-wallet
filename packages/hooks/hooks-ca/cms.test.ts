@@ -1,6 +1,6 @@
 import * as networkHook from '@portkey-wallet/hooks/hooks-ca/network'; //{ useCurrentNetworkInfo, useNetworkList }
 import * as cmsStore from '@portkey-wallet/store/store-ca/cms/actions'; //{ getDiscoverGroupAsync, getSocialMediaAsync }
-import { useCMS, useSocialMediaList, useDiscoverGroupList, useBuyButton, useBuyButtonShow } from './cms';
+import { useCMS, useSocialMediaList, useDiscoverGroupList } from './cms';
 import * as indexHook from '../index';
 import { MainnetNetworkInfo, TestnetNetworkInfo } from '../../../test/data/networkState';
 import { setupStore } from '../../../test/utils/setup';
@@ -101,210 +101,176 @@ describe('useDiscoverGroupList', () => {
   });
 });
 
-describe('useBuyButton', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
-  });
+// describe('useBuyButtonShow', () => {
+//   beforeEach(() => {
+//     jest.clearAllMocks();
+//     jest.restoreAllMocks();
+//   });
 
-  it('should return buy button info when isInit is false', () => {
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
-    jest.spyOn(networkHook, 'useNetworkList').mockReturnValue([TestnetNetworkInfo, MainnetNetworkInfo]);
+//   it('should return buy button info when testnet', async () => {
+//     jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(false);
+//     jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
 
-    const { result } = renderHookWithProvider(useBuyButton, setupStore(CmsState));
+//     const { result } = renderHookWithProvider(useBuyButtonShow, setupStore(CmsState));
 
-    expect(result.current).toEqual(CmsState.cms.buyButtonNetMap?.TESTNET);
-  });
+//     expect(result.current).toHaveProperty('isBuyButtonShow', false);
+//     expect(result.current).toHaveProperty('isBuySectionShow', false);
+//     expect(result.current).toHaveProperty('isSellSectionShow', false);
+//     expect(result.current).toHaveProperty('refreshBuyButton');
 
-  it('should return buy button info when isInit is true', () => {
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
-    jest.spyOn(networkHook, 'useNetworkList').mockReturnValue([TestnetNetworkInfo, MainnetNetworkInfo]);
+//     const res = await result.current?.refreshBuyButton();
 
-    const { result } = renderHookWithProvider(() => useBuyButton(true), setupStore(CmsState));
+//     jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(() => {
+//       return {
+//         payload: {
+//           buyButtonNetMap: CmsState.cms.buyButtonNetMap,
+//         },
+//       } as any;
+//     });
 
-    expect(result.current).toEqual(CmsState.cms.buyButtonNetMap?.TESTNET);
-  });
+//     expect(res).toHaveProperty('isBuySectionShow', false);
+//     expect(res).toHaveProperty('isSellSectionShow', false);
+//   });
 
-  it('should return undefined when cms.buyButtonNetMap state is empty', () => {
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
-    jest.spyOn(networkHook, 'useNetworkList').mockReturnValue([TestnetNetworkInfo, MainnetNetworkInfo]);
+//   it('should return buy button info when opened buy on mainnet', async () => {
+//     jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(true);
+//     jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
 
-    const { result } = renderHookWithProvider(() => useBuyButton(true), setupStore({ cms: { buyButtonNetMap: {} } }));
+//     const { result } = renderHookWithProvider(useBuyButtonShow, setupStore(CmsState));
 
-    expect(result.current).toBeUndefined();
-  });
-});
+//     expect(result.current).toHaveProperty('isBuyButtonShow', true);
+//     expect(result.current).toHaveProperty('isBuySectionShow', true);
+//     expect(result.current).toHaveProperty('isSellSectionShow', true);
+//     expect(result.current).toHaveProperty('refreshBuyButton');
 
-describe('useBuyButtonShow', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
-  });
+//     jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(() => {
+//       return {
+//         payload: {
+//           buyButtonNetMap: CmsState.cms.buyButtonNetMap,
+//         },
+//       } as any;
+//     });
 
-  it('should return buy button info when testnet', async () => {
-    jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(false);
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
+//     const res = await result.current?.refreshBuyButton();
 
-    const { result } = renderHookWithProvider(useBuyButtonShow, setupStore(CmsState));
+//     expect(res).toHaveProperty('isBuySectionShow', true);
+//     expect(res).toHaveProperty('isSellSectionShow', true);
+//   });
 
-    expect(result.current).toHaveProperty('isBuyButtonShow', false);
-    expect(result.current).toHaveProperty('isBuySectionShow', false);
-    expect(result.current).toHaveProperty('isSellSectionShow', false);
-    expect(result.current).toHaveProperty('refreshBuyButton');
+//   it('should return error buy button info when closed buy on mainnet ', async () => {
+//     jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(true);
+//     jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
 
-    const res = await result.current?.refreshBuyButton();
+//     const buyButtonNetMap = {
+//       MAIN: {
+//         isBuySectionShow: false,
+//         isSellSectionShow: false,
+//       },
+//       TESTNET: {
+//         isBuySectionShow: false,
+//         isSellSectionShow: false,
+//       },
+//     };
 
-    jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(() => {
-      return {
-        payload: {
-          buyButtonNetMap: CmsState.cms.buyButtonNetMap,
-        },
-      } as any;
-    });
+//     const { result } = renderHookWithProvider(useBuyButtonShow, setupStore({ cms: { buyButtonNetMap } }));
 
-    expect(res).toHaveProperty('isBuySectionShow', false);
-    expect(res).toHaveProperty('isSellSectionShow', false);
-  });
+//     expect(result.current).toHaveProperty('isBuyButtonShow', false);
+//     expect(result.current).toHaveProperty('isBuySectionShow', false);
+//     expect(result.current).toHaveProperty('isSellSectionShow', false);
+//     expect(result.current).toHaveProperty('refreshBuyButton');
 
-  it('should return buy button info when opened buy on mainnet', async () => {
-    jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(true);
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
+//     jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(dispatchMock);
 
-    const { result } = renderHookWithProvider(useBuyButtonShow, setupStore(CmsState));
+//     const res = await result.current?.refreshBuyButton();
 
-    expect(result.current).toHaveProperty('isBuyButtonShow', true);
-    expect(result.current).toHaveProperty('isBuySectionShow', true);
-    expect(result.current).toHaveProperty('isSellSectionShow', true);
-    expect(result.current).toHaveProperty('refreshBuyButton');
+//     expect(res).toHaveProperty('isBuySectionShow', false);
+//     expect(res).toHaveProperty('isSellSectionShow', false);
+//   });
+// });
 
-    jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(() => {
-      return {
-        payload: {
-          buyButtonNetMap: CmsState.cms.buyButtonNetMap,
-        },
-      } as any;
-    });
+// describe('useRememberMeBlackList', () => {
+//   beforeEach(() => {
+//     jest.clearAllMocks();
+//     jest.restoreAllMocks();
+//   });
 
-    const res = await result.current?.refreshBuyButton();
+//   it('should return buy button info when testnet', async () => {
+//     jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(false);
+//     jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
 
-    expect(res).toHaveProperty('isBuySectionShow', true);
-    expect(res).toHaveProperty('isSellSectionShow', true);
-  });
+//     const { result } = renderHookWithProvider(useBuyButtonShow, setupStore(CmsState));
 
-  it('should return error buy button info when closed buy on mainnet ', async () => {
-    jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(true);
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
+//     expect(result.current).toHaveProperty('isBuyButtonShow', false);
+//     expect(result.current).toHaveProperty('isBuySectionShow', false);
+//     expect(result.current).toHaveProperty('isSellSectionShow', false);
+//     expect(result.current).toHaveProperty('refreshBuyButton');
 
-    const buyButtonNetMap = {
-      MAIN: {
-        isBuySectionShow: false,
-        isSellSectionShow: false,
-      },
-      TESTNET: {
-        isBuySectionShow: false,
-        isSellSectionShow: false,
-      },
-    };
+//     const res = await result.current?.refreshBuyButton();
 
-    const { result } = renderHookWithProvider(useBuyButtonShow, setupStore({ cms: { buyButtonNetMap } }));
+//     jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(() => {
+//       return {
+//         payload: {
+//           buyButtonNetMap: CmsState.cms.buyButtonNetMap,
+//         },
+//       } as any;
+//     });
 
-    expect(result.current).toHaveProperty('isBuyButtonShow', false);
-    expect(result.current).toHaveProperty('isBuySectionShow', false);
-    expect(result.current).toHaveProperty('isSellSectionShow', false);
-    expect(result.current).toHaveProperty('refreshBuyButton');
+//     expect(res).toHaveProperty('isBuySectionShow', false);
+//     expect(res).toHaveProperty('isSellSectionShow', false);
+//   });
 
-    jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(dispatchMock);
+//   it('should return buy button info when opened buy on mainnet', async () => {
+//     jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(true);
+//     jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
 
-    const res = await result.current?.refreshBuyButton();
+//     const { result } = renderHookWithProvider(useBuyButtonShow, setupStore(CmsState));
 
-    expect(res).toHaveProperty('isBuySectionShow', false);
-    expect(res).toHaveProperty('isSellSectionShow', false);
-  });
-});
+//     expect(result.current).toHaveProperty('isBuyButtonShow', true);
+//     expect(result.current).toHaveProperty('isBuySectionShow', true);
+//     expect(result.current).toHaveProperty('isSellSectionShow', true);
+//     expect(result.current).toHaveProperty('refreshBuyButton');
 
-describe('useRememberMeBlackList', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
-  });
+//     jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(() => {
+//       return {
+//         payload: {
+//           buyButtonNetMap: CmsState.cms.buyButtonNetMap,
+//         },
+//       } as any;
+//     });
 
-  it('should return buy button info when testnet', async () => {
-    jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(false);
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(TestnetNetworkInfo);
+//     const res = await result.current?.refreshBuyButton();
 
-    const { result } = renderHookWithProvider(useBuyButtonShow, setupStore(CmsState));
+//     expect(res).toHaveProperty('isBuySectionShow', true);
+//     expect(res).toHaveProperty('isSellSectionShow', true);
+//   });
 
-    expect(result.current).toHaveProperty('isBuyButtonShow', false);
-    expect(result.current).toHaveProperty('isBuySectionShow', false);
-    expect(result.current).toHaveProperty('isSellSectionShow', false);
-    expect(result.current).toHaveProperty('refreshBuyButton');
+//   it('should return error buy button info when closed buy on mainnet ', async () => {
+//     jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(true);
+//     jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
 
-    const res = await result.current?.refreshBuyButton();
+//     const buyButtonNetMap = {
+//       MAIN: {
+//         isBuySectionShow: false,
+//         isSellSectionShow: false,
+//       },
+//       TESTNET: {
+//         isBuySectionShow: false,
+//         isSellSectionShow: false,
+//       },
+//     };
 
-    jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(() => {
-      return {
-        payload: {
-          buyButtonNetMap: CmsState.cms.buyButtonNetMap,
-        },
-      } as any;
-    });
+//     const { result } = renderHookWithProvider(useBuyButtonShow, setupStore({ cms: { buyButtonNetMap } }));
 
-    expect(res).toHaveProperty('isBuySectionShow', false);
-    expect(res).toHaveProperty('isSellSectionShow', false);
-  });
+//     expect(result.current).toHaveProperty('isBuyButtonShow', false);
+//     expect(result.current).toHaveProperty('isBuySectionShow', false);
+//     expect(result.current).toHaveProperty('isSellSectionShow', false);
+//     expect(result.current).toHaveProperty('refreshBuyButton');
 
-  it('should return buy button info when opened buy on mainnet', async () => {
-    jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(true);
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
+//     jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(dispatchMock);
 
-    const { result } = renderHookWithProvider(useBuyButtonShow, setupStore(CmsState));
+//     const res = await result.current?.refreshBuyButton();
 
-    expect(result.current).toHaveProperty('isBuyButtonShow', true);
-    expect(result.current).toHaveProperty('isBuySectionShow', true);
-    expect(result.current).toHaveProperty('isSellSectionShow', true);
-    expect(result.current).toHaveProperty('refreshBuyButton');
-
-    jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(() => {
-      return {
-        payload: {
-          buyButtonNetMap: CmsState.cms.buyButtonNetMap,
-        },
-      } as any;
-    });
-
-    const res = await result.current?.refreshBuyButton();
-
-    expect(res).toHaveProperty('isBuySectionShow', true);
-    expect(res).toHaveProperty('isSellSectionShow', true);
-  });
-
-  it('should return error buy button info when closed buy on mainnet ', async () => {
-    jest.spyOn(networkHook, 'useIsMainnet').mockReturnValue(true);
-    jest.spyOn(networkHook, 'useCurrentNetworkInfo').mockReturnValue(MainnetNetworkInfo);
-
-    const buyButtonNetMap = {
-      MAIN: {
-        isBuySectionShow: false,
-        isSellSectionShow: false,
-      },
-      TESTNET: {
-        isBuySectionShow: false,
-        isSellSectionShow: false,
-      },
-    };
-
-    const { result } = renderHookWithProvider(useBuyButtonShow, setupStore({ cms: { buyButtonNetMap } }));
-
-    expect(result.current).toHaveProperty('isBuyButtonShow', false);
-    expect(result.current).toHaveProperty('isBuySectionShow', false);
-    expect(result.current).toHaveProperty('isSellSectionShow', false);
-    expect(result.current).toHaveProperty('refreshBuyButton');
-
-    jest.spyOn(cmsStore, 'getBuyButtonAsync').mockReturnValue(dispatchMock);
-
-    const res = await result.current?.refreshBuyButton();
-
-    expect(res).toHaveProperty('isBuySectionShow', false);
-    expect(res).toHaveProperty('isSellSectionShow', false);
-  });
-});
+//     expect(res).toHaveProperty('isBuySectionShow', false);
+//     expect(res).toHaveProperty('isSellSectionShow', false);
+//   });
+// });

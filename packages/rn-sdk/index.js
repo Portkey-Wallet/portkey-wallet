@@ -12,6 +12,7 @@ import CheckPin from 'pages/Pin/check-pin';
 import SetPin from 'pages/Pin/SetPin';
 import ConfirmPin from 'pages/Pin/confirm-pin';
 import SetBiometrics from 'pages/Pin/set-biometrics';
+import ViewOnWebView from 'pages/Activity/ViewOnWebView';
 
 const entryConfig = new Map();
 entryConfig.set(PortkeyEntries.TEST, () => TestPage);
@@ -31,6 +32,9 @@ entryConfig.set(PortkeyEntries.CHECK_PIN, () => CheckPin);
 entryConfig.set(PortkeyEntries.SET_PIN, () => SetPin);
 entryConfig.set(PortkeyEntries.CONFIRM_PIN, () => ConfirmPin);
 entryConfig.set(PortkeyEntries.SET_BIO, () => SetBiometrics);
+
+// webview
+entryConfig.set(PortkeyEntries.VIEW_ON_WEBVIEW, () => ViewOnWebView);
 
 for (const [key, value] of entryConfig) {
   AppRegistry.registerComponent(key, value);

@@ -4,6 +4,7 @@ import ReferralPortkey from 'pages/Login/ReferralPortkey';
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import GStyles from 'assets/theme/GStyles';
+import BaseContainerContext from 'model/container/BaseContainerContext';
 
 export default class ReferralEntryPage extends BaseContainer<
   BaseContainerProps,
@@ -20,7 +21,9 @@ export default class ReferralEntryPage extends BaseContainer<
   render() {
     return (
       <SafeAreaProvider style={GStyles.whiteBackgroundColor}>
-        <ReferralPortkey />
+        <BaseContainerContext.Provider value={{ entryName: this.getEntryName() }}>
+          <ReferralPortkey />
+        </BaseContainerContext.Provider>
       </SafeAreaProvider>
     );
   }

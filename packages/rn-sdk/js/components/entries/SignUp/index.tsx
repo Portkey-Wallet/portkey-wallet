@@ -7,6 +7,7 @@ import { CountryCodeItem } from 'types/wallet';
 import { GlobalStorage } from 'service/storage';
 import { CURRENT_USING_COUNTRY_CODE } from 'model/global';
 import GStyles from 'assets/theme/GStyles';
+import BaseContainerContext from 'model/container/BaseContainerContext';
 
 export default class SignUpEntryPage extends BaseContainer<BaseContainerProps, SignUpPageState, SignUpPageResult> {
   constructor(props: BaseContainerProps) {
@@ -35,10 +36,12 @@ export default class SignUpEntryPage extends BaseContainer<BaseContainerProps, S
   render() {
     return (
       <SafeAreaProvider style={GStyles.whiteBackgroundColor}>
-        <SignupPortkey
-          selectedCountryCode={this.state.currentCountryCodeItem}
-          updateCountryCode={this.updateCountryCode}
-        />
+        <BaseContainerContext.Provider value={{ entryName: this.getEntryName() }}>
+          <SignupPortkey
+            selectedCountryCode={this.state.currentCountryCodeItem}
+            updateCountryCode={this.updateCountryCode}
+          />
+        </BaseContainerContext.Provider>
       </SafeAreaProvider>
     );
   }

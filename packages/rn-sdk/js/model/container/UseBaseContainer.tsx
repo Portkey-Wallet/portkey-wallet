@@ -1,11 +1,13 @@
 import { PortkeyEntries } from 'config/entries';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef } from 'react';
 import { EmitterSubscription } from 'react-native';
 import { EntryResult, PortkeyDeviceEventEmitter, RouterOptions, portkeyModulesEntity } from 'service/native-modules';
 import { AcceptableValueType } from './BaseContainer';
+import BaseContainerContext from './BaseContainerContext';
 
 const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks => {
   const onShowListener = useRef<EmitterSubscription | null>(null);
+  const baseContainerContext = useContext(BaseContainerContext);
   const { rootTag, entryName, onShow } = props;
 
   useEffect(() => {
@@ -19,7 +21,10 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
     };
   }, [onShow, rootTag]);
 
-  const getEntryName = useCallback(() => entryName, [entryName]);
+  const getEntryName = useCallback(
+    () => entryName ?? baseContainerContext.entryName,
+    [entryName, baseContainerContext.entryName],
+  );
 
   const navigationTo = (entry: PortkeyEntries, targetScene?: string) => {
     portkeyModulesEntity.RouterModule.navigateTo(entry, getEntryName(), targetScene);
@@ -81,7 +86,7 @@ export interface BaseContainerHooks {
 
 export interface BaseContainerHookedProps {
   rootTag?: any;
-  entryName: string;
+  entryName?: string;
   onShow?: (rootTag?: any) => void;
 }
 

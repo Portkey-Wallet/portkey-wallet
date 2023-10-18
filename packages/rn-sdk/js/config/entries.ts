@@ -13,4 +13,6 @@ export enum PortkeyEntries {
   CONFIRM_PIN = 'confirm_pin_entry',
 
   SET_BIO = 'set_bio_entry',
+
+  VIEW_ON_WEBVIEW = 'view_on_webview',
 }

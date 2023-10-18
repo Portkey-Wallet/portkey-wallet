@@ -223,7 +223,9 @@ export default function Email({
   const dealWithSignUp = async () => {
     const accountIdentifier = loginAccount as string;
     if (!accountIdentifier) throw new Error('accountIdentifier is empty');
-    Loading.show();
+    Loading.show({
+      text: 'Assigning a verifier on-chain...',
+    });
     const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Email, navigateToGuardianPage);
     setGuardianConfig(pageData.guardianConfig);
     Loading.hide();

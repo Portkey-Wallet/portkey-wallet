@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
+import { handleErrorMessage, randomId, sleep } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -185,7 +185,9 @@ export default function Phone({
   };
 
   const dealWithSignUp = async (): Promise<void> => {
-    Loading.show();
+    Loading.show({
+      text: 'Assigning a verifier on-chain...',
+    });
     const accountIdentifier = getWrappedPhoneNumber();
     const pageData = await getRegisterPageData(accountIdentifier, AccountOriginalType.Phone, navigateToGuardianPage);
     setGuardianConfig(pageData.guardianConfig);
@@ -264,7 +266,10 @@ export default function Phone({
     config: GuardianConfig,
     verifiedData: VerifiedGuardianDoc,
   ): Promise<AfterVerifiedConfig> => {
+    Loading.show();
+    await sleep(1000);
     const wallet = AElf.wallet.createNewWallet();
+    Loading.hide();
     const { address } = wallet;
     return {
       fromRecovery: false,

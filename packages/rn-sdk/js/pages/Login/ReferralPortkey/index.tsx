@@ -8,8 +8,6 @@ import { useLanguage } from 'i18n/hooks';
 import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
-import Email from '../components/Email';
-import Phone from '../components/Phone';
 import Referral from '../components/Referral';
 import { PageLoginType } from '../types';
 import GStyles from 'assets/theme/GStyles';
@@ -32,9 +30,9 @@ export default function ReferralKey() {
   });
   const loginMap = useMemo(
     () => ({
-      [PageLoginType.email]: <Email setLoginType={setLoginType} />,
-      [PageLoginType.qrCode]: <View />,
-      [PageLoginType.phone]: <Phone setLoginType={setLoginType} />,
+      [PageLoginType.email]: <View />,
+      [PageLoginType.qrCode]: <View />, // TODO put QRCode here
+      [PageLoginType.phone]: <View />,
       [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
     [],
@@ -42,6 +40,18 @@ export default function ReferralKey() {
   useEffectOnce(() => {
     checkForCountryCodeCached();
   });
+
+  const onBack = () => {
+    if (loginType !== PageLoginType.referral) {
+      setLoginType(PageLoginType.referral);
+    } else {
+      onFinish({
+        status: 'cancel',
+        data: {},
+      });
+    }
+  };
+
   const backgroundImage = useMemo(() => {
     if (isIOS) {
       return { uri: 'background' };
@@ -60,12 +70,7 @@ export default function ReferralKey() {
         containerStyles={styles.containerStyles}
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}
-        leftCallback={() => {
-          onFinish({
-            status: 'cancel',
-            data: {},
-          });
-        }}>
+        leftCallback={onBack}>
         <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (

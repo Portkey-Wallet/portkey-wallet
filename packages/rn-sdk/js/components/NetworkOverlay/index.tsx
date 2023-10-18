@@ -46,7 +46,7 @@ function SwitchNetwork({
   currentNetwork,
   changeCurrentNetwork,
 }: {
-  currentNetwork: NetworkItem;
+  currentNetwork: NetworkItem | undefined;
   changeCurrentNetwork: (network: NetworkItem) => void;
 }) {
   return (
@@ -56,7 +56,7 @@ function SwitchNetwork({
           hideBorder={index === NetworkList.length - 1}
           network={network}
           key={network.name}
-          isSelect={currentNetwork.name === network.name}
+          isSelect={currentNetwork?.name === network.name}
           changeNetwork={changeCurrentNetwork}
         />
       ))}
@@ -68,7 +68,7 @@ const showSwitchNetwork = ({
   currentNetwork,
   changeCurrentNetwork,
 }: {
-  currentNetwork: NetworkItem;
+  currentNetwork: NetworkItem | undefined;
   changeCurrentNetwork: (network: NetworkItem) => void;
 }) => {
   Keyboard.dismiss();

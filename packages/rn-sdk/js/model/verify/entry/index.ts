@@ -1,4 +1,4 @@
-import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
@@ -18,7 +18,6 @@ import { SendVerifyCodeResultDTO } from 'network/dto/guardian';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { NetworkController } from 'network/controller';
 import { PortkeyConfig } from 'global';
-import AElf from 'aelf-sdk';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { useCallback } from 'react';
@@ -229,17 +228,10 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     config: GuardianConfig,
     verifiedData: VerifiedGuardianDoc,
   ): Promise<AfterVerifiedConfig> => {
-    const wallet = AElf.wallet.createNewWallet();
-    const { address } = wallet;
     return {
       fromRecovery: false,
       accountIdentifier,
       chainId: await PortkeyConfig.currChainId(),
-      manager: address,
-      context: {
-        clientId: address,
-        requestId: randomId(),
-      },
       extraData: defaultExtraData,
       verifiedGuardians: [
         {

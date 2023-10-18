@@ -14,9 +14,7 @@ export default abstract class BaseContainer<
 > extends React.Component<P, S> {
   constructor(props: P) {
     super(props);
-    this.onShowEventListener = PortkeyDeviceEventEmitter.addListener('onShow', result => {
-      this.onShow();
-    });
+    this.onShowEventListener = PortkeyDeviceEventEmitter.addListener('onShow', this.onShow);
   }
 
   private onShowEventListener: any = null;
@@ -49,7 +47,7 @@ export default abstract class BaseContainer<
   };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onShow() {}
+  onShow(_rootTag?: any) {}
 
   onFinish = (res: EntryResult<R>) => {
     portkeyModulesEntity.RouterModule.navigateBack(res);

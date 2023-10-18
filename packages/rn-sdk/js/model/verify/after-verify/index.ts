@@ -12,9 +12,7 @@ export interface AfterVerifiedConfig {
   fromRecovery: boolean;
   accountIdentifier: string;
   verifiedGuardians: Array<VerifiedGuardianDoc>;
-  manager: string; // Manager is the address of the accountIdentifier
   chainId: string;
-  context: ContextInfo;
   extraData: DeviceInfoType;
 }
 
@@ -32,7 +30,7 @@ export const defaultExtraData: DeviceInfoType = {
 
 export interface ContextInfo {
   clientId: string; // Actually it's the address of the KeyPair
-  requestId: string; // private final String requestId = UUID.randomUUID().toString().replaceAll("-", "");
+  requestId: string; // private final String requestId = UUID.randomUUID().toString().replaceAll("-", ""); || or randomId()
 }
 
 export interface VerifiedGuardianDoc {

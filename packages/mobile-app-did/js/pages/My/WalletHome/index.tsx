@@ -21,6 +21,8 @@ import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/acti
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import FormItem from 'components/FormItem';
+import WalletMenuItem from '../components/WalletMenuItem';
 
 interface WalletHomeProps {
   name?: string;
@@ -76,11 +78,7 @@ const WalletHome: React.FC<WalletHomeProps> = () => {
       </View>
       <ScrollView alwaysBounceVertical={false}>
         <View>
-          <MenuItem
-            style={pageStyles.menuItem}
-            onPress={() => navigationService.navigate('WalletName')}
-            title={showChat ? t('My Wallet') : walletName}
-          />
+          <WalletMenuItem />
           <MenuItem
             style={pageStyles.menuItem}
             onPress={() => navigationService.navigate('AutoLock')}

@@ -12,7 +12,7 @@ import { Avatar } from '@portkey-wallet/im-ui-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { ChannelMemberInfo } from '@portkey-wallet/im';
+import { ChannelMemberInfo, ChannelTypeEnum } from '@portkey-wallet/im';
 import Copy from 'components/Copy';
 import ContactListDrawer from '../components/GroupShareDrawer';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
@@ -103,9 +103,7 @@ const GroupInfo = () => {
         <div className="group-info-container">
           <div className="info-basic flex-center">
             <div className="flex-column-center">
-              <div className="group-icon flex-center">
-                <CustomSvg type="GroupAvatar" />
-              </div>
+              <Avatar channelType={ChannelTypeEnum.GROUP} src={groupInfo?.icon} groupAvatarSize="large" />
               <div className="group-name">{groupInfo?.name || ''}</div>
               <div className="group-members">
                 {memberLen}
@@ -153,7 +151,7 @@ const GroupInfo = () => {
               (m) => (
                 <div className="member-item flex-row-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
                   <div className="flex member-basic">
-                    <Avatar width={28} height={28} letter={m.name.slice(0, 1).toUpperCase()} />
+                    <Avatar width={28} height={28} src={m.avatar} letter={m.name.slice(0, 1).toUpperCase()} />
                     <div className="member-name">{m.name}</div>
                   </div>
                   {m.isAdmin && <div className="admin-icon flex-center">Owner</div>}

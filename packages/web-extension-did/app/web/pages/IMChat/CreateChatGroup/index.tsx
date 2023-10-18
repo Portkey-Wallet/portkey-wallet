@@ -11,6 +11,10 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CustomSvg from 'components/CustomSvg';
+import UploadOrViewAvatar from 'pages/components/UploadOrViewAvatar';
+import { RcFile } from 'antd/lib/upload/interface';
+import { useLoading } from 'store/Provider/hooks';
+import uploadImageToS3 from 'utils/compressAndUploadToS3';
 
 const { Item: FormItem } = Form;
 
@@ -26,6 +30,8 @@ export default function CreateChatGroup() {
   const selectedContactCount = useRef(0);
   const [disable, setDisabled] = useState<boolean>(true);
   const createGroupChannel = useCreateGroupChannel();
+  const [file, setFile] = useState<RcFile>();
+  const { setLoading } = useLoading();
 
   const handleFormValueChange = useCallback(() => {
     const { name } = form.getFieldsValue();
@@ -93,17 +99,27 @@ export default function CreateChatGroup() {
 
   const onFinish = useCallback(async () => {
     try {
+      setLoading(true);
       const { name } = form.getFieldsValue();
-      const res = await createGroupChannel(name.trim(), selectedContacts);
 
+      let s3Url = '';
+      if (file) {
+        if (file) {
+          s3Url = await uploadImageToS3(file);
+        }
+      }
+      const res = await createGroupChannel(name.trim(), selectedContacts, s3Url);
+
+      setLoading(false);
       message.success('Group Created');
 
       navigate(`/chat-box-group/${res?.channelUuid}`);
     } catch (error) {
       const msg = handleErrorMessage(error, 'Error Creating Group');
       message.error(msg);
+      setLoading(false);
     }
-  }, [createGroupChannel, form, navigate, selectedContacts]);
+  }, [createGroupChannel, file, form, navigate, selectedContacts, setLoading]);
 
   useEffect(() => {
     setIsSearch(false);
@@ -134,7 +150,22 @@ export default function CreateChatGroup() {
           <div className="form-content">
             {/* input */}
             <FormItem name="name" label={t('Group Name')} className="group-name-input">
-              <Input placeholder={t('Group Name')} onChange={handleNameChange} maxLength={40} />
+              <Input
+                prefix={
+                  <UploadOrViewAvatar
+                    wrapperClass="group-avatar-upload"
+                    isEdit
+                    wrapperWidth={40}
+                    wrapperHeight={40}
+                    cameraIconWidth={20}
+                    cameraIconHeight={20}
+                    setFile={setFile}
+                  />
+                }
+                placeholder={t('Group Name')}
+                onChange={handleNameChange}
+                maxLength={40}
+              />
             </FormItem>
 
             <div className="create-chat-search">

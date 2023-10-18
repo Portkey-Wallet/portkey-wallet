@@ -475,7 +475,7 @@ export default class AELFMethodController {
       const showSync = !isOriginChainId && safeRes.isSynchronizing;
       if (!isSafe && (showGuardian || showSync)) {
         // Open Prompt to approve add guardian
-        await this.approvalController.authorizedToCheckWalletSecurity({ showSync, showGuardian });
+        this.approvalController.authorizedToCheckWalletSecurity({ showSync, showGuardian });
         return sendResponse({
           ...errorHandler(400001),
           data: {

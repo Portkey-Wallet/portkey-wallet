@@ -188,6 +188,8 @@ export const useHandleObjectData = () => {
   return useCallback(
     (data: string) => {
       const qrCodeData = expandQrData(JSON.parse(data));
+      if (!qrCodeData?.netWorkType || !qrCodeData?.address || !qrCodeData?.type) throw data;
+
       // check network
       if (currentNetwork !== qrCodeData.netWorkType)
         return invalidQRCode(

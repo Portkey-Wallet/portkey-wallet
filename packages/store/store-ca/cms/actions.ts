@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import { CMSState } from './types';
 import { NetworkType } from '@portkey-wallet/types';
 import {
@@ -6,8 +6,8 @@ import {
   getSocialMedia,
   getTabMenu,
   getRememberMeBlackListSites,
-  getEntrance,
 } from '@portkey-wallet/graphql/cms/queries';
+import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
   'cms/getSocialMediaAsync',
@@ -114,28 +114,7 @@ export const getRememberMeBlackListAsync = createAsyncThunk<
   }
 });
 
-export const getEntranceListAsync = createAsyncThunk<Required<Pick<CMSState, 'entranceListNetMap'>>, NetworkType>(
-  'cms/getEntranceListAsync',
-  async (network: NetworkType) => {
-    const result = await getEntrance(network, {
-      filter: {
-        entranceMatch_id: {
-          status: {
-            _eq: 'published',
-          },
-        },
-      },
-      sort: '-entranceMatch_id.weight',
-    });
-
-    if (result.data.entrance) {
-      return {
-        entranceListNetMap: {
-          [network]: result.data.entrance,
-        },
-      };
-    } else {
-      throw new Error('getEntranceListAsync error');
-    }
-  },
-);
+export const setEntrance = createAction<{
+  network: NetworkType;
+  value: IEntrance;
+}>('cms/setEntrance');

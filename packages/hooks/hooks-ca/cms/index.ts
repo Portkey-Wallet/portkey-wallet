@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useAppCASelector } from '../.';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
@@ -12,13 +12,15 @@ import {
   getSocialMediaAsync,
   getRememberMeBlackListAsync,
   getTabMenuAsync,
-  getEntranceListAsync,
+  setEntrance,
 } from '@portkey-wallet/store/store-ca/cms/actions';
-import { IEntranceItem } from '@portkey-wallet/store/store-ca/cms/types';
+
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
-import { DEFAULT_ENTRANCE_SHOW, IEntranceMatchValueConfig, IEntranceShow, generateEntranceShow } from './util';
+import { DEFAULT_ENTRANCE_SHOW, generateEntranceShow, getEntrance } from './util';
+import { IEntranceItem, IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
+import { NetworkType } from '@portkey-wallet/types';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -105,40 +107,45 @@ export function useDiscoverGroupList(isInit = false) {
 
 export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) => {
   const dispatch = useAppCommonDispatch();
-  const { entranceListNetMap } = useCMS();
+  const { entranceNetMap } = useCMS();
   const { networkType } = useCurrentNetworkInfo();
   const networkList = useNetworkList();
 
-  const entranceList = useMemo(() => entranceListNetMap?.[networkType], [networkType, entranceListNetMap]);
-  const [entrance, setEntrance] = useState<IEntranceShow>({
-    ...DEFAULT_ENTRANCE_SHOW,
-  });
+  const entrance = useMemo(
+    () => ({
+      ...DEFAULT_ENTRANCE_SHOW,
+      ...entranceNetMap?.[networkType],
+    }),
+    [networkType, entranceNetMap],
+  );
 
-  useEffect(() => {
-    if (isInit) {
-      networkList.forEach(item => {
-        if (item.networkType === networkType) return;
-        // init other network entrance
-        dispatch(getEntranceListAsync(item.networkType));
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const refresh = useCallback(async () => {
-    const result = await dispatch(getEntranceListAsync(networkType));
-    const _entranceList: IEntranceItem[] = result?.payload?.entranceListNetMap?.[networkType];
-    const _entrance = await generateEntranceShow(config, _entranceList || []);
-    setEntrance(_entrance);
-    return _entrance;
-  }, [config, dispatch, networkType]);
+  const refresh = useCallback(
+    async (network?: NetworkType) => {
+      const _entranceList = (await getEntrance(network || networkType)) as IEntranceItem[];
+      const _entrance = await generateEntranceShow(config, _entranceList || []);
+      dispatch(
+        setEntrance({
+          network: networkType,
+          value: _entrance,
+        }),
+      );
+      return _entrance;
+    },
+    [config, dispatch, networkType],
+  );
 
   useEffectOnce(() => {
-    generateEntranceShow(config, entranceList || []).then(_entrance => {
-      console.log('init entrance', _entrance, entranceList);
-      setEntrance(_entrance);
-    });
-    refresh();
+    if (isInit) {
+      networkList.forEach(item => {
+        refresh(item.networkType);
+      });
+    }
+  });
+
+  useEffectOnce(() => {
+    if (!isInit) {
+      refresh();
+    }
   });
 
   return {
@@ -161,11 +168,19 @@ export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
   );
 
   const refreshBuyButton = useCallback(async () => {
-    const result = await refresh();
+    let isBuySectionShow = false;
+    let isSellSectionShow = false;
+    try {
+      const result = await refresh();
+      isBuySectionShow = result.buy;
+      isSellSectionShow = result.sell;
+    } catch (error) {
+      console.log('refreshBuyButton error');
+    }
 
     return {
-      isBuySectionShow: isMainnet && result.buy,
-      isSellSectionShow: isMainnet && result.sell,
+      isBuySectionShow: isMainnet && isBuySectionShow,
+      isSellSectionShow: isMainnet && isSellSectionShow,
     };
   }, [isMainnet, refresh]);
 

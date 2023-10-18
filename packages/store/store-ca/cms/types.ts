@@ -1,4 +1,5 @@
 import { NetworkType } from '@portkey-wallet/types';
+import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
 
 export interface SocialMediaItem {
   index: number;
@@ -39,31 +40,6 @@ export interface RememberMeBlackListSiteItem {
   url: string;
 }
 
-export type IEntranceModuleName = 'buy' | 'sell' | 'bridge';
-
-export type IEntranceMatchKey = 'version' | 'installationTime' | 'deviceType';
-export type IEntranceMatchRuleType = 'String' | 'BigNumber' | 'Regex';
-export type IEntranceMatchRuleItem = {
-  type: IEntranceMatchRuleType;
-  left: string;
-  opt: string;
-  right: IEntranceMatchKey;
-};
-export type IEntranceMatchItem = {
-  matchRuleList: IEntranceMatchRuleItem[];
-  weight: number;
-  matchSwitch: boolean;
-};
-export type IEntranceItem = {
-  moduleName: {
-    value: IEntranceModuleName;
-  };
-  defaultSwitch: boolean;
-  matchList: Array<{
-    entranceMatch_id: IEntranceMatchItem;
-  }>;
-};
-
 export interface CMSState {
   socialMediaListNetMap: {
     [T in NetworkType]?: SocialMediaItem[];
@@ -77,7 +53,7 @@ export interface CMSState {
   rememberMeBlackListMap?: {
     [T in NetworkType]?: RememberMeBlackListSiteItem[];
   };
-  entranceListNetMap?: {
-    [T in NetworkType]?: IEntranceItem[];
+  entranceNetMap?: {
+    [T in NetworkType]?: Partial<IEntrance>;
   };
 }

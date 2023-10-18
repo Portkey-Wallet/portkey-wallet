@@ -1,5 +1,5 @@
 import { useBuyButtonShow, useEntrance } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { IEntranceMatchValueConfig } from '@portkey-wallet/hooks/hooks-ca/cms/util';
+import { IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import * as Application from 'expo-application';

@@ -2,13 +2,14 @@ import {
   IEntranceItem,
   IEntranceMatchKey,
   IEntranceMatchRuleType,
+  IEntranceMatchValueConfig,
+  IEntranceMatchValueMap,
   IEntranceModuleName,
-} from '@portkey-wallet/store/store-ca/cms/types';
+  IEntrance,
+} from '@portkey-wallet/types/types-ca/cms';
 import BigNumber from 'bignumber.js';
-
-export type IEntranceShow = Record<IEntranceModuleName, boolean>;
-export type IEntranceMatchValueConfig = Partial<Record<IEntranceMatchKey, string | (() => Promise<string>)>>;
-export type IEntranceMatchValueMap = Partial<Record<IEntranceMatchKey, string>>;
+import { getEntrance as getEntranceGraphQL } from '@portkey-wallet/graphql/cms/queries';
+import { NetworkType } from '@portkey-wallet/types';
 
 const createEntranceMatchRule = (type: IEntranceMatchRuleType, params: string): any => {
   switch (type) {
@@ -23,7 +24,7 @@ const createEntranceMatchRule = (type: IEntranceMatchRuleType, params: string): 
   }
 };
 
-export const DEFAULT_ENTRANCE_SHOW: IEntranceShow = {
+export const DEFAULT_ENTRANCE_SHOW: IEntrance = {
   buy: false,
   sell: false,
   bridge: false,
@@ -32,7 +33,7 @@ export const DEFAULT_ENTRANCE_SHOW: IEntranceShow = {
 export const generateEntranceShow = async (
   config: IEntranceMatchValueConfig,
   entranceList: IEntranceItem[],
-): Promise<IEntranceShow> => {
+): Promise<IEntrance> => {
   const matchValueMap: IEntranceMatchValueMap = {};
   for (const key in config) {
     if (Object.prototype.hasOwnProperty.call(config, key)) {
@@ -50,7 +51,7 @@ export const generateEntranceShow = async (
     }
   }
 
-  const entranceShow: IEntranceShow = {
+  const entranceShow: IEntrance = {
     ...DEFAULT_ENTRANCE_SHOW,
   };
 
@@ -93,4 +94,21 @@ export const generateEntranceShow = async (
   });
 
   return entranceShow;
+};
+
+export const getEntrance = async (networkType: NetworkType) => {
+  const result = await getEntranceGraphQL(networkType, {
+    filter: {
+      entranceMatch_id: {
+        status: {
+          _eq: 'published',
+        },
+      },
+    },
+    sort: '-entranceMatch_id.weight',
+  });
+  if (result.data.entrance) {
+    return result.data.entrance;
+  }
+  throw new Error('getEntrance error');
 };

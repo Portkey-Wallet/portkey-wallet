@@ -4,7 +4,7 @@ import {
   getSocialMediaAsync,
   getTabMenuAsync,
   getRememberMeBlackListAsync,
-  getEntranceListAsync,
+  setEntrance,
 } from './actions';
 import { CMSState } from './types';
 
@@ -13,7 +13,7 @@ const initialState: CMSState = {
   tabMenuListNetMap: {},
   discoverGroupListNetMap: {},
   rememberMeBlackListMap: {},
-  entranceListNetMap: {},
+  entranceNetMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -45,10 +45,10 @@ export const cmsSlice = createSlice({
           ...action.payload.rememberMeBlackListMap,
         };
       })
-      .addCase(getEntranceListAsync.fulfilled, (state, action) => {
-        state.entranceListNetMap = {
-          ...state.entranceListNetMap,
-          ...action.payload.entranceListNetMap,
+      .addCase(setEntrance, (state, action) => {
+        state.entranceNetMap = {
+          ...state.entranceNetMap,
+          [action.payload.network]: action.payload.value,
         };
       });
   },

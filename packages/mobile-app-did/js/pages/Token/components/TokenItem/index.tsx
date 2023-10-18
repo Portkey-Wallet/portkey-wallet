@@ -29,7 +29,7 @@ const TokenItem = ({ networkType, item, onHandleToken }: TokenItemProps) => {
         hasBorder
         shapeType="circular"
         title={item.symbol}
-        svgName={item.symbol === defaultToken.symbol ? 'elf-icon' : undefined}
+        svgName={item.symbol === defaultToken.symbol ? 'testnet' : undefined}
         imageUrl={symbolImages[item.symbol]}
         avatarSize={pTd(48)}
         style={itemStyle.left}

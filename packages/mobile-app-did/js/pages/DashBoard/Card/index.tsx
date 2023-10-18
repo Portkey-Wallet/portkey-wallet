@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { View, Text, Platform } from 'react-native';
+import React from 'react';
+import { View, Text } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -11,40 +11,19 @@ import { TextM } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
 import { defaultColors } from 'assets/theme';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import useQrScanPermission from 'hooks/useQrScanPermission';
-import ActionSheet from 'components/ActionSheet';
-import { useLanguage } from 'i18n/hooks';
+import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useAppBuyButtonShow } from 'hooks/cms';
 
 const Card: React.FC = () => {
-  const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const { walletName } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
-  const [, requestQrPermission] = useQrScanPermission();
-  const { isBuyButtonShow } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
-
-  const showDialog = useCallback(
-    () =>
-      ActionSheet.alert({
-        title: t('Enable Camera Access'),
-        message: t('Cannot connect to the camera. Please make sure it is turned on'),
-        buttons: [
-          {
-            title: t('Close'),
-            type: 'solid',
-          },
-        ],
-      }),
-    [t],
-  );
+  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
+  const { isBuyButtonShow } = useAppBuyButtonShow();
 
   return (
     <View style={styles.cardWrap}>
@@ -53,7 +32,7 @@ const Card: React.FC = () => {
         <TouchableOpacity
           style={styles.svgWrap}
           onPress={async () => {
-            if (!(await requestQrPermission())) return showDialog();
+            if (!(await qrScanPermissionAndToast())) return;
             navigationService.navigate('QrScanner');
           }}>
           <Svg icon="scan" size={22} color={defaultColors.font2} />

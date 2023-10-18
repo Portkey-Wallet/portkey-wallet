@@ -32,7 +32,7 @@ export default function RecommendSection() {
           <TextS style={FontStyles.font7}>Skip</TextS>
         </Touchable>
       </View>
-      <FlatList style={BGStyles.bg1} data={new Array(2)} renderItem={renderItem} />
+      <FlatList style={BGStyles.bg1} keyExtractor={item => item} data={new Array(2)} renderItem={renderItem} />
     </View>
   );
 }

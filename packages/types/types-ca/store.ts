@@ -18,7 +18,6 @@ import { IDiscoverStateType } from '@portkey-wallet/store/store-ca/discover/type
 
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import { PaymentStateType } from '@portkey-wallet/store/store-ca/payment/type';
-import { switchSlice, SwitchStateTypes } from '@portkey-wallet/store/store-ca/switch/slice';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { MiscState } from '@portkey-wallet/store/store-ca/misc/types';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
@@ -29,6 +28,8 @@ import txFeeSlice from '@portkey-wallet/store/store-ca/txFee/slice';
 import { TxFeeType } from '@portkey-wallet/store/store-ca/txFee/type';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
 import { IMStateType } from '@portkey-wallet/store/store-ca/im/type';
+import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
+import { SecurityStateType } from '@portkey-wallet/store/store-ca/security/type';
 
 export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;
@@ -41,10 +42,10 @@ export type CACommonState = RootCommonState & {
   [guardiansSlice.name]: GuardiansState;
   [discoverSlice.name]: IDiscoverStateType;
   [paymentSlice.name]: PaymentStateType;
-  [switchSlice.name]: SwitchStateTypes;
   [miscSlice.name]: MiscState;
   [dappSlice.name]: IDappStoreState;
   [cmsSlice.name]: CMSState;
   [txFeeSlice.name]: TxFeeType;
   [imSlice.name]: IMStateType;
+  [securitySlice.name]: SecurityStateType;
 };

@@ -2,7 +2,8 @@ import { TextProps } from '@rneui/base';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
+import { TextStyleType, ViewStyleType } from 'types/styles';
 import { pTd } from 'utils/unit';
 const styles = StyleSheet.create({
   TextS: {
@@ -51,6 +52,33 @@ Object.entries(styles).map(([key, value]) => {
       </Text>
     );
   };
+});
+
+export function BreakWordText({
+  containerStyle,
+  textStyle,
+  children,
+}: {
+  containerStyle?: ViewStyleType;
+  textStyle?: TextStyleType;
+  children: string;
+}) {
+  return (
+    <View style={[breakWordTextStyles.containerStyle, containerStyle]}>
+      {(children || '').split('').map((i, k) => (
+        <TextM style={[styles.TextM, textStyle]} key={k}>
+          {i}
+        </TextM>
+      ))}
+    </View>
+  );
+}
+
+const breakWordTextStyles = StyleSheet.create({
+  containerStyle: {
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+  },
 });
 
 export const { TextS, TextM, TextL, TextXL, TextXXL, TextXXXL, TextTitle, PrimaryText } = obj as CommonText;

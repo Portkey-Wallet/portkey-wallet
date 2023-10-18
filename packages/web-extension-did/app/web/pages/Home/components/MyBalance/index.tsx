@@ -30,12 +30,12 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
-import { useBuyButtonShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import ChatEntry from 'pages/ChatEntry';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useExtensionBuyButtonShow } from 'hooks/cms';
 
 export interface TransactionResult {
   total: number;
@@ -85,7 +85,7 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
-  const { isBuyButtonShow } = useBuyButtonShow(VersionDeviceType.Extension);
+  const { isBuyButtonShow } = useExtensionBuyButtonShow();
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
 
@@ -212,7 +212,7 @@ export default function MyBalance() {
       />
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
-      {isPrompt ? <PromptEmptyElement className="empty-element" /> : null}
+      {isPrompt && <PromptEmptyElement className="empty-element" />}
     </div>
   );
 }

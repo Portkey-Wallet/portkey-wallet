@@ -24,26 +24,31 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
 
   return (
     <div className="contact-addresses">
-      {list.map((ads: AddressItem, index: number) => (
-        <div className="address-item" key={index}>
-          <div className="flex-between-center">
-            <div className="address-wrapper">
-              <div className="address">{addressFormat(ads?.address, ads?.chainId, ads?.chainName as ChainType)}</div>
+      {list.map((ads: AddressItem, index: number) => {
+        const formatAddressShow = addressFormat(ads?.address, ads?.chainId, ads?.chainName as ChainType);
+        return (
+          <div className="address-item" key={index}>
+            <div className="flex-between-center">
+              <div className="address-wrapper">
+                <div className="address">{formatAddressShow}</div>
+              </div>
+              <CustomSvg onClick={() => handleCopy(formatAddressShow)} type="Copy4" className="address-copy-icon" />
             </div>
-            <CustomSvg onClick={() => handleCopy(ads?.address)} type="Copy" className="address-copy-icon" />
-          </div>
-          <div className="flex-row-center chain">
-            {ads?.image && <img src={ads?.image} className="chain-img" />}
+            <div className="flex-row-center chain">
+              {ads?.image && <img src={ads?.image} className="chain-img" />}
 
-            {!ads?.image && ads?.chainName === 'aelf' && !isTestNet && <CustomSvg type="Aelf" className="chain-elf" />}
-            {!ads?.image && ads?.chainName === 'aelf' && isTestNet && (
-              <CustomSvg type="elf-icon" className="chain-elf" />
-            )}
+              {!ads?.image && ads?.chainName === 'aelf' && !isTestNet && (
+                <CustomSvg type="Aelf" className="chain-elf" />
+              )}
+              {!ads?.image && ads?.chainName === 'aelf' && isTestNet && (
+                <CustomSvg type="elf-icon" className="chain-elf" />
+              )}
 
-            <span className="chain-text">{transNetworkTextWithAllChain(ads.chainId, isTestNet, ads.chainName)}</span>
+              <span className="chain-text">{transNetworkTextWithAllChain(ads.chainId, isTestNet, ads.chainName)}</span>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

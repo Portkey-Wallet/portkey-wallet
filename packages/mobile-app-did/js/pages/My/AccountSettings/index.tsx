@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PageContainer from 'components/PageContainer';
 import useBiometricsReady from 'hooks/useBiometrics';
 import navigationService from 'utils/navigationService';
@@ -8,20 +8,42 @@ import { useLanguage } from 'i18n/hooks';
 import MenuItem from '../components/MenuItem';
 import { pTd } from 'utils/unit';
 import { RootStackName } from 'navigation';
-
-const list: Array<{
-  name: RootStackName;
-  label: string;
-}> = [
-  {
-    name: 'CheckPin',
-    label: 'Change Pin',
-  },
-];
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
+  const showChat = useIsChatShow();
+
   const { t } = useLanguage();
+
+  const list = useMemo(() => {
+    const _list: Array<{
+      name: RootStackName;
+      label: string;
+      sort: number;
+    }> = [
+      {
+        name: 'CheckPin',
+        label: 'Change Pin',
+        sort: 1,
+      },
+    ];
+
+    showChat &&
+      _list.push({
+        name: 'ChatPrivacy',
+        label: 'Privacy',
+        sort: 3,
+      });
+
+    biometricsReady &&
+      _list.push({
+        name: 'Biometric',
+        label: 'Biometric Authentication',
+        sort: 2,
+      });
+    return _list.sort((a, b) => a.sort - b.sort);
+  }, [biometricsReady, showChat]);
 
   return (
     <PageContainer
@@ -36,20 +58,12 @@ export default function AccountSettings() {
           onPress={() => navigationService.navigate(item.name)}
         />
       ))}
-      {biometricsReady && (
-        <MenuItem
-          style={styles.itemWrap}
-          title={t('Biometric Authentication')}
-          onPress={() => navigationService.navigate('Biometric')}
-        />
-      )}
     </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyles: {
-    paddingTop: pTd(8),
     backgroundColor: defaultColors.bg4,
   },
   itemWrap: {

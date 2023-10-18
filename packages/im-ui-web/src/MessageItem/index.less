@@ -3,8 +3,51 @@
 .portkey-message-item {
   position: relative;
   width: 100%;
+  padding-top: 8px;
   overflow-x: hidden;
+  gap: 8px;
+  .portkey-message-text,
+  .portkey-message-image {
+    margin-right: 16px;
+  }
+  &.center {
+    justify-content: center;
+  }
+  &.right {
+    flex-direction: row-reverse;
+    .portkey-message-text,
+    .portkey-message-image {
+      margin-right: 0;
+      margin-left: 16px;
+    }
+  }
+  &:last-child {
+    margin-bottom: 16px;
+  }
+  .portkey-avatar-container {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .message-item-form-name {
+    margin-bottom: 4px;
+    max-width: 210px;
+    font-size: 12px;
+    line-height: 16px;
+    color: @font-6;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }
+
 .show-margin {
   margin-top: 8px;
+}
+.hidden-avatar {
+  .portkey-avatar-container {
+    visibility: hidden;
+  }
+  .message-item-form-name {
+    display: none;
+  }
 }

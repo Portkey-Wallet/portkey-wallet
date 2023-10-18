@@ -1,5 +1,6 @@
+import { ILoginAccountListProps } from 'pages/Contacts/components/LoginAccountList';
 import { BaseHeaderProps } from './UI';
-import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
+import { IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 
 // used for route parameters
 export type ExtraType = 'can-chat-edit' | 'cant-chat-edit' | 'add-new-chat';
@@ -11,10 +12,11 @@ export enum ExtraTypeEnum {
   ADD_NEW_CHAT = 'add-new-chat', // no status（add new chat）
 }
 
-export interface IProfileDetailDataProps extends Partial<ContactItemType> {
+export interface IProfileDetailDataProps extends Partial<IContactProfile> {
   relationId?: string;
   isShowRemark?: boolean;
   from?: string;
+  loginAccountMap?: ILoginAccountListProps;
 }
 
 export interface IProfileDetailBodyProps {

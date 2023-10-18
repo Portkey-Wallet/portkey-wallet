@@ -4,6 +4,7 @@ import { ChannelStatusEnum, ChannelTypeEnum } from '@portkey-wallet/im';
 export interface IChatItemProps {
   id: string | number;
   avatar?: string;
+  showLetter?: boolean;
   letter?: string;
   unread?: number;
   className?: string;
@@ -49,6 +50,7 @@ export interface IMessage {
   dateString?: string;
   avatar?: string;
   className?: string;
+  showLetter?: boolean;
   letter?: string;
   type: string;
   showAvatar?: boolean;
@@ -178,12 +180,14 @@ export interface IPopoverMenuListProps {
 
 export interface IAvatarProps {
   src?: string;
+  showLetter?: boolean;
   letter?: string;
   className?: string;
   alt?: string;
   channelType?: ChannelTypeEnum;
   width?: number;
   height?: number;
+  groupAvatarSize?: 'default' | 'large';
   onClick?: React.MouseEventHandler;
 }
 

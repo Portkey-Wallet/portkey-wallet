@@ -11,7 +11,7 @@ import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import { pTd } from 'utils/unit';
 import { useCurrentChannelId } from '../context/hooks';
-import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelName } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import { useInputFocus } from 'hooks/useInputFocus';
@@ -24,7 +24,7 @@ const EditGroupPage = () => {
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
   const { name } = groupInfo || {};
   const disbandGroup = useDisbandChannel(currentChannelId || '');
-  const upDateChannelName = useUpdateChannelName();
+  const upDateChannelName = useUpdateChannelInfo();
   const [groupName, setGroupName] = useState(name || '');
 
   const onDisband = useCallback(() => {

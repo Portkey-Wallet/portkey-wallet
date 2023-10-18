@@ -97,6 +97,7 @@ export default function ChatList() {
         unread: item.unreadMessageCount,
         channelType: item?.channelType,
         status: item.status,
+        avatar: item.channelIcon,
       };
     });
   }, [chatList, formatSubTitle]);

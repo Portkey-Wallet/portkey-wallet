@@ -11,11 +11,8 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
   useEffect(() => {
     if (rootTag) {
       onShowListener.current?.remove();
-      onShowListener.current = PortkeyDeviceEventEmitter.addListener('onShow', tag => {
-        if (rootTag === tag) {
-          onShow?.();
-        }
-      });
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      onShowListener.current = PortkeyDeviceEventEmitter.addListener('onShow', onShow || (() => {}));
     }
     return () => {
       onShowListener.current?.remove();
@@ -85,7 +82,7 @@ export interface BaseContainerHooks {
 export interface BaseContainerHookedProps {
   rootTag?: any;
   entryName: string;
-  onShow?: () => void;
+  onShow?: (rootTag?: any) => void;
 }
 
 export default useBaseContainer;

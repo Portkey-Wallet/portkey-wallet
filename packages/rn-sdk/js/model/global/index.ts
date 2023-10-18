@@ -16,8 +16,10 @@ import {
   RequestRegisterParams,
   RequestSocialRecoveryParams,
 } from 'network/dto/wallet';
+import AElf from 'aelf-sdk';
 import { GlobalStorage } from 'service/storage';
 import { CountryCodeDataDTO } from 'types/wallet';
+import { randomId, sleep } from '@portkey-wallet/utils';
 
 export const COUNTRY_CODE_DATA_KEY = 'countryCodeData';
 export const CURRENT_USING_COUNTRY_CODE = 'currentUsingCountryCode';
@@ -126,13 +128,18 @@ export const getSocialRecoveryPageData = async (
 export const requestSocialRecoveryOrRegister = async (
   params: AfterVerifiedConfig,
 ): Promise<RequestRegisterOrSocialRecoveryResult> => {
-  const { fromRecovery, accountIdentifier, verifiedGuardians, manager, chainId, context, extraData } = params;
+  await sleep(500);
+  const { address } = AElf.wallet.createNewWallet();
+  const { fromRecovery, accountIdentifier, verifiedGuardians, chainId, extraData } = params;
   if (fromRecovery) {
     const socialRecoveryParams: RequestSocialRecoveryParams = {
       loginGuardianIdentifier: accountIdentifier,
-      manager,
+      manager: address,
       chainId,
-      context,
+      context: {
+        clientId: address,
+        requestId: randomId(),
+      },
       extraData: wrapExtraData(extraData),
       guardiansApproved: verifiedGuardians.map(guardian => ({
         type: guardian.type,
@@ -150,9 +157,12 @@ export const requestSocialRecoveryOrRegister = async (
       verifierId: verifiedGuardians[0].verifierId,
       verificationDoc: verifiedGuardians[0].verificationDoc,
       signature: verifiedGuardians[0].signature,
-      context,
+      context: {
+        clientId: address,
+        requestId: randomId(),
+      },
       type: verifiedGuardians[0].type,
-      manager,
+      manager: address,
       extraData: wrapExtraData(extraData),
     };
     return await NetworkController.requestRegister(registerParams);

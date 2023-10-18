@@ -13,6 +13,10 @@ export interface AppleAccountInfo {
   accountIdentifier: string;
 }
 
+export const isAppleLogin = (account: GoogleAccountInfo | AppleAccountInfo): account is AppleAccountInfo => {
+  return !!(account as AppleAccountInfo).identityToken;
+};
+
 export const handleGoogleLogin = async (): Promise<GoogleAccountInfo> => {
   throw new Error('Not implemented');
 };

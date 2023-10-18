@@ -116,6 +116,7 @@ export const getSocialRecoveryPageData = async (
       accountOriginalType,
       name: guardian.name ?? 'Portkey',
       imageUrl: guardian.imageUrl ?? '',
+      thirdPartyEmail: guardian.thirdPartyEmail ?? '',
       sendVerifyCodeParams: {
         type: guardian.type as any,
         guardianIdentifier: guardian.guardianIdentifier,

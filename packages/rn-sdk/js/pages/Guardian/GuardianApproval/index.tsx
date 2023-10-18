@@ -43,6 +43,7 @@ import {
   GoogleAccountInfo,
   handleAppleLogin,
   handleGoogleLogin,
+  isAppleLogin,
 } from 'model/verify/third-party-account';
 
 export default function GuardianApproval({
@@ -54,7 +55,7 @@ export default function GuardianApproval({
   verifiedTime: number;
   onPageFinish: (result: GuardianApprovalPageResult) => void;
 }) {
-  const { guardians, accountIdentifier, accountOriginalType } = guardianListConfig;
+  const { guardians, accountIdentifier, accountOriginalType, thirdPartyAccountInfo } = guardianListConfig;
   const { t } = useLanguage();
 
   const { navigateForResult } = useBaseContainer({
@@ -192,10 +193,6 @@ export default function GuardianApproval({
     return guardian.sendVerifyCodeParams.type === 'Phone' || guardian.sendVerifyCodeParams.type === 'Email';
   };
 
-  const isAppleLogin = (account: GoogleAccountInfo | AppleAccountInfo): account is AppleAccountInfo => {
-    return !!(account as AppleAccountInfo).identityToken;
-  };
-
   const handleGuardianOperation = async (guardian: GuardianConfig, key: string) => {
     if (isPhoneOrEmailGuardian(guardian)) {
       dealWithParticularGuardian(guardian, key);
@@ -207,21 +204,20 @@ export default function GuardianApproval({
   const dealWithThirdPartyGuardian = async (guardian: GuardianConfig, key: string) => {
     try {
       Loading.show();
-      const appleAccount: GoogleAccountInfo | AppleAccountInfo =
-        guardian.sendVerifyCodeParams.type === 'Apple' ? await handleAppleLogin() : await handleGoogleLogin();
+      const thirdPartyAccount: GoogleAccountInfo | AppleAccountInfo = await handleCachedThirdPartyAccountData(guardian);
       Loading.hide();
-      if (appleAccount) {
+      if (thirdPartyAccount) {
         Loading.show();
-        const verifyResult = isAppleLogin(appleAccount)
+        const verifyResult = isAppleLogin(thirdPartyAccount)
           ? await NetworkController.verifyAppleGuardianInfo({
               verifierId: guardian.sendVerifyCodeParams.verifierId,
-              identityToken: appleAccount.identityToken,
+              identityToken: thirdPartyAccount.identityToken,
               chainId: await PortkeyConfig.currChainId(),
               operationType: OperationTypeEnum.communityRecovery,
             })
           : await NetworkController.verifyGoogleGuardianInfo({
               verifierId: guardian.sendVerifyCodeParams.verifierId,
-              accessToken: appleAccount.accessToken,
+              accessToken: thirdPartyAccount.accessToken,
               chainId: await PortkeyConfig.currChainId(),
               operationType: OperationTypeEnum.communityRecovery,
             });
@@ -245,6 +241,17 @@ export default function GuardianApproval({
     } catch (e) {
       CommonToast.fail('network fail.');
       Loading.hide();
+    }
+  };
+
+  const handleCachedThirdPartyAccountData = async (
+    guardian: GuardianConfig,
+  ): Promise<GoogleAccountInfo | AppleAccountInfo> => {
+    const { google, apple } = thirdPartyAccountInfo || {};
+    if (guardian.sendVerifyCodeParams.type === 'Apple') {
+      return apple && guardian.thirdPartyEmail === apple?.accountIdentifier ? apple : await handleAppleLogin();
+    } else {
+      return google && guardian.thirdPartyEmail === google?.accountIdentifier ? google : await handleGoogleLogin();
     }
   };
 

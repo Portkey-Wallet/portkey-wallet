@@ -21,7 +21,7 @@ import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { useCallback } from 'react';
 import { PageType } from 'pages/Login/types';
-import { ThirdPartyAccountInfo } from '../third-party-account';
+import { ThirdPartyAccountInfo, handleAppleLogin, handleGoogleLogin, isAppleLogin } from '../third-party-account';
 
 export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => {
   const { type, entryName, accountOriginalType, setErrorMessage, verifyAccountIdentifier } = verifyConfig;
@@ -84,8 +84,27 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
   );
 
   const thirdPartyLogin = async (thirdPartyLoginType: 'google' | 'apple'): Promise<void> => {
-    if (thirdPartyLoginType === 'apple') {
-    } else {
+    try {
+      Loading.show();
+      const thirdPartyAccountInfo =
+        thirdPartyLoginType === 'google' ? await handleGoogleLogin() : await handleAppleLogin();
+      if (!thirdPartyAccountInfo?.accountIdentifier) {
+        throw new Error('login failed.');
+      }
+      const accountIdentifier = thirdPartyAccountInfo.accountIdentifier;
+      const accountCheckResult = await attemptAccountCheck(accountIdentifier as string);
+      const thirdPartyInfo: ThirdPartyAccountInfo = isAppleLogin(thirdPartyAccountInfo)
+        ? { apple: thirdPartyAccountInfo }
+        : { google: thirdPartyAccountInfo };
+      if (accountCheckResult.hasRegistered) {
+        dealWithSignIn(accountIdentifier, thirdPartyInfo);
+      } else {
+        dealWithSignUp(accountIdentifier, thirdPartyInfo);
+      }
+    } catch (e) {
+      console.error(e);
+      setErrorMessage('login failed.');
+      Loading.hide();
     }
   };
 

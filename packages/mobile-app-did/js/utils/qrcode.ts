@@ -23,7 +23,7 @@ export function invalidQRCode(text: InvalidQRCodeText, isBack?: boolean) {
 
 export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteInfoType) {
   const { type, address, chainType } = data;
-  if (!isAddress(address, chainType)) throw data;
+  if (!isAddress(address, chainType) || !type) throw data;
 
   if (type === 'login') return navigationService.navigate('ScanLogin', { data: data as LoginQRData });
 

@@ -2,6 +2,9 @@ import { DeviceInfoType, DeviceType } from '@portkey-wallet/types/types-ca/devic
 import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { requestSocialRecoveryOrRegister } from 'model/global';
+import { NetworkController, handleRequestPolling } from 'network/controller';
+import { CaInfo } from 'network/dto/guardian';
+import { ProgressStatus, WalletInfo, isRecoveryStatusItem } from 'network/dto/wallet';
 import { GlobalStorage, TempStorage } from 'service/storage';
 
 const PIN_KEY = 'pin';
@@ -58,17 +61,38 @@ export const getVerifiedAndLockWallet = async (
     if (!afterVerifiedConfig) {
       throw new Error('afterVerifiedConfig is null');
     }
-    const { sessionId } = await requestSocialRecoveryOrRegister(afterVerifiedConfig);
-    if (!sessionId) {
-      throw new Error('sessionId is null');
+    const { sessionId, pubKey, privKey, address } = await requestSocialRecoveryOrRegister(afterVerifiedConfig);
+    if (!sessionId || !pubKey) {
+      throw new Error('request failed');
     }
-
+    const caInfo = await handleRequestPolling(
+      async () => {
+        return afterVerifiedConfig.fromRecovery
+          ? NetworkController.checkSocialRecoveryProcess(sessionId, { maxWaitingTime: 3000 })
+          : NetworkController.checkRegisterProcess(sessionId, { maxWaitingTime: 3000 });
+      },
+      10,
+      500,
+      result => {
+        return (
+          result?.totalCount > 0 &&
+          (isRecoveryStatusItem(result)
+            ? result.items[0]?.recoveryStatus === ProgressStatus.PASS
+            : result.items[0]?.registerStatus) === ProgressStatus.PASS
+        );
+      },
+    );
     const walletConfig: RecoverWalletConfig = {
       sessionId,
+      fromRecovery: afterVerifiedConfig.fromRecovery,
+      ...caInfo.items[0],
+      pubKey,
+      privKey,
+      address,
     };
     await lockWallet(pinValue, walletConfig);
     rememberUseBiometric(setBiometrics ?? false);
-    await sleep(2000);
+    await sleep(500);
     return true;
   } catch (e) {
     console.error(e);
@@ -125,8 +149,8 @@ export const unLockTempWallet = async (pinValue?: string, useBiometric = false):
   }
 };
 
-export interface RecoverWalletConfig {
+export type RecoverWalletConfig = {
   sessionId: string;
-
-  // TODO caInfo here from /api/app/search/accountrecoverindex or /api/app/search/accountregisterindex
-}
+  fromRecovery: boolean;
+} & CaInfo &
+  WalletInfo;

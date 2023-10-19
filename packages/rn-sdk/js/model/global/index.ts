@@ -12,15 +12,15 @@ import { SocialRecoveryConfig } from 'model/verify/social-recovery';
 import { NetworkController } from 'network/controller';
 import { AccountOrGuardianOriginalTypeStr } from 'network/dto/guardian';
 import {
-  RequestRegisterOrSocialRecoveryResult,
+  AElfWeb3SDK,
+  RequestProcessResult,
   RequestRegisterParams,
   RequestSocialRecoveryParams,
 } from 'network/dto/wallet';
-import AElf from 'aelf-sdk';
-import { GlobalStorage } from 'service/storage';
 import { CountryCodeDataDTO } from 'types/wallet';
 import { randomId, sleep } from '@portkey-wallet/utils';
 import { ThirdPartyAccountInfo } from 'model/verify/third-party-account';
+import { GlobalStorage } from 'service/storage';
 
 export const COUNTRY_CODE_DATA_KEY = 'countryCodeData';
 export const CURRENT_USING_COUNTRY_CODE = 'currentUsingCountryCode';
@@ -129,12 +129,12 @@ export const getSocialRecoveryPageData = async (
   };
 };
 
-export const requestSocialRecoveryOrRegister = async (
-  params: AfterVerifiedConfig,
-): Promise<RequestRegisterOrSocialRecoveryResult> => {
+export const requestSocialRecoveryOrRegister = async (params: AfterVerifiedConfig): Promise<RequestProcessResult> => {
   await sleep(500);
-  const { address } = AElf.wallet.createNewWallet();
+  const { address, privateKey, keyPair } = AElfWeb3SDK.wallet.createNewWallet();
+  const publicKey = keyPair.getPublic('hex');
   const { fromRecovery, accountIdentifier, verifiedGuardians, chainId, extraData } = params;
+  let sessionId = '';
   if (fromRecovery) {
     const socialRecoveryParams: RequestSocialRecoveryParams = {
       loginGuardianIdentifier: accountIdentifier,
@@ -153,7 +153,7 @@ export const requestSocialRecoveryOrRegister = async (
         signature: guardian.signature,
       })),
     };
-    return await NetworkController.requestSocialRecovery(socialRecoveryParams);
+    sessionId = (await NetworkController.requestSocialRecovery(socialRecoveryParams))?.sessionId ?? '';
   } else {
     const registerParams: RequestRegisterParams = {
       chainId,
@@ -169,8 +169,15 @@ export const requestSocialRecoveryOrRegister = async (
       manager: address,
       extraData: wrapExtraData(extraData),
     };
-    return await NetworkController.requestRegister(registerParams);
+    sessionId = (await NetworkController.requestRegister(registerParams))?.sessionId ?? '';
   }
+  if (!sessionId) throw new Error('network failure');
+  return {
+    sessionId,
+    privKey: privateKey,
+    pubKey: publicKey,
+    address,
+  };
 };
 
 enum GuardianType {

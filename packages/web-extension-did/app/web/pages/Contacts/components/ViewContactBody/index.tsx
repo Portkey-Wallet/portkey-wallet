@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useIndexAndName, useIsMyContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import LoginAccountList from '../LoginAccountList';
+import Avatar from 'pages/components/Avatar';
 
 export default function ViewContactBody({
   data,
@@ -46,7 +47,7 @@ export default function ViewContactBody({
     <div className="flex-column-between view-contact-body">
       <div className="view-contact-body-main">
         <div className="info-section name-section">
-          <div className="flex-center name-index">{index}</div>
+          <Avatar avatarUrl={data?.avatar} nameIndex={index} size="large" />
           <div className="name">{transName}</div>
 
           {/* Section - Remark */}

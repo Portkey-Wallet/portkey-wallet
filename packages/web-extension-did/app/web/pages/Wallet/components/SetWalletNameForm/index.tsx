@@ -1,14 +1,17 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Input, message } from 'antd';
 import { FormItem } from 'components/BaseAntd';
-import { useSetWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { IProfileDetailDataProps } from 'types/Profile';
+import UploadAvatar from 'pages/components/UploadAvatar';
+import { RcFile } from 'antd/lib/upload';
+import uploadImageToS3 from 'utils/compressAndUploadToS3';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
@@ -22,8 +25,8 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
-  const { walletName } = useWalletInfo();
-  const setWalletName = useSetWalletName();
+  const { walletName, walletAvatar } = useWalletInfo();
+  const setUserInfo = useSetUserInfo();
   const [disable, setDisable] = useState<boolean>(false);
   const [validName, setValidName] = useState<{
     validateStatus?: ValidateStatus;
@@ -32,6 +35,9 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
     validateStatus: '',
     errorMsg: '',
   });
+
+  const [avatarDataUrl, setAvatarDataUrl] = useState(walletAvatar);
+  const newAvatarFile = useRef<RcFile>();
 
   const handleInputChange = useCallback((value: string) => {
     setValidName({
@@ -48,7 +54,12 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
   const handleUpdateName = useCallback(
     async (walletName: string) => {
       try {
-        await setWalletName(walletName);
+        let s3Url = '';
+        if (newAvatarFile.current) {
+          s3Url = await uploadImageToS3(newAvatarFile.current);
+        }
+        uploadImageToS3;
+        await setUserInfo({ nickName: walletName, avatar: s3Url });
         saveCallback?.();
         message.success(t('Saved Successful'));
       } catch (error) {
@@ -56,8 +67,12 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
         console.log('setWalletName: error', error);
       }
     },
-    [saveCallback, setWalletName, t],
+    [saveCallback, setUserInfo, t],
   );
+
+  const getFile = useCallback((file: RcFile) => {
+    newAvatarFile.current = file;
+  }, []);
 
   const handleSave = useCallback(
     (walletName: string) => {
@@ -96,6 +111,16 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
       onFinish={(v) => handleSave(v.walletName.trim())}
       onFinishFailed={onFinishFailed}>
       <div className="form-content-wrap">
+        <div className="flex-center upload-avatar-wrapper">
+          <UploadAvatar
+            avatarUrl={avatarDataUrl}
+            size="large"
+            uploadText="Set New Photo"
+            getTemporaryDataURL={setAvatarDataUrl}
+            getFile={getFile}
+          />
+        </div>
+
         <div className="form-content">
           <FormItem
             name="walletName"

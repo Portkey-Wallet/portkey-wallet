@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
-import UploadOrViewAvatar from 'pages/components/UploadOrViewAvatar';
+import UploadAvatar from 'pages/components/UploadAvatar';
 import { RcFile } from 'antd/lib/upload/interface';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import { useLoading } from 'store/Provider/hooks';
@@ -106,7 +106,7 @@ export default function EditGroupInfo() {
         onFinish={onFinish}>
         <div className="form-content">
           <div className="group-info-avatar flex-center">
-            <UploadOrViewAvatar isEdit avatarUrl={groupInfo?.icon} setFile={setFile} uploadText="Set New Photo" />
+            <UploadAvatar avatarUrl={groupInfo?.icon} getFile={setFile} uploadText="Set New Photo" size="large" />
           </div>
           <FormItem name="name" label="Group Name" validateStatus={validName.validateStatus} help={validName.errorMsg}>
             <Input

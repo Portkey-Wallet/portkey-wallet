@@ -11,7 +11,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import ContactListSelect, { IContactItemSelectProps } from '../components/ContactListSelect';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CustomSvg from 'components/CustomSvg';
-import UploadOrViewAvatar from 'pages/components/UploadOrViewAvatar';
+import UploadAvatar from 'pages/components/UploadAvatar';
 import { RcFile } from 'antd/lib/upload/interface';
 import { useLoading } from 'store/Provider/hooks';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
@@ -151,17 +151,7 @@ export default function CreateChatGroup() {
             {/* input */}
             <FormItem name="name" label={t('Group Name')} className="group-name-input">
               <Input
-                prefix={
-                  <UploadOrViewAvatar
-                    wrapperClass="group-avatar-upload"
-                    isEdit
-                    wrapperWidth={40}
-                    wrapperHeight={40}
-                    cameraIconWidth={20}
-                    cameraIconHeight={20}
-                    setFile={setFile}
-                  />
-                }
+                prefix={<UploadAvatar wrapperClass="group-avatar-upload" getFile={setFile} />}
                 placeholder={t('Group Name')}
                 onChange={handleNameChange}
                 maxLength={40}

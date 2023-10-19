@@ -4,6 +4,7 @@ import { UpdateNotify, VersionDeviceType } from '@portkey-wallet/types/types-ca/
 import { compareVersions } from '@portkey-wallet/utils/device';
 import { Modal, ModalFuncProps } from 'antd';
 import { request } from '@portkey-wallet/api/api-did';
+import { sleep } from '@portkey-wallet/utils';
 
 const currentVersion = process.env.SDK_VERSION?.replace('v', '');
 
@@ -25,9 +26,14 @@ export function checkUpdateModal(versionInfo: UpdateNotify) {
       autoFocusButton: null,
       okButtonProps: { style: { width: '100%' } },
       okText: 'Update',
-      onOk: () => {
-        window.open(versionInfo.downloadUrl);
-        chrome.runtime.reload();
+      onOk: async () => {
+        const wind = window.open(versionInfo.downloadUrl);
+        if (!wind) return;
+        wind.addEventListener('focus', async () => {
+          await sleep(2000);
+          chrome.runtime.reload();
+        });
+
         return Promise.reject();
       },
     };

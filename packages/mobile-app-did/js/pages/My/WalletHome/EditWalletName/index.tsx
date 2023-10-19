@@ -8,7 +8,7 @@ import { INIT_HAS_ERROR } from 'constants/common';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
-import { useCurrentCaInfo, useSetWalletName, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useSetUserInfo, useSetWalletName, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import FormItem from 'components/FormItem';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
@@ -19,15 +19,22 @@ import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import { ChainId } from '@portkey/provider-types';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { useInputFocus } from 'hooks/useInputFocus';
+import ImageWithUploadFunc from 'components/ImageWithUploadFunc';
+import Touchable from 'components/Touchable';
+import { TextM } from 'components/CommonText';
 
 const EditWalletName: React.FC = () => {
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
+  const uploadRef = useRef(null);
+
   const { t } = useLanguage();
-  const { walletName, userId } = useWallet();
-  const [nameValue, setNameValue] = useState<string>(walletName);
+  const { userInfo } = useWallet();
+  const [nameValue, setNameValue] = useState<string>(userInfo?.nickName || '');
+  const [avatar, setAvatar] = useState<string>(userInfo?.avatar || '');
+
   const [nameError, setNameError] = useState<ErrorType>(INIT_HAS_ERROR);
-  const setWalletName = useSetWalletName();
+  const setUserInfo = useSetUserInfo();
   const caInfo = useCurrentCaInfo();
 
   const caInfoList = useMemo(() => {
@@ -63,23 +70,19 @@ const EditWalletName: React.FC = () => {
       setNameError({ ...INIT_HAS_ERROR, errorMsg: t('3-16 characters, only a-z, A-Z, 0-9 and "_" allowed') });
       return;
     }
-    // if (_nameValue === walletName) {
-    //   CommonToast.success(t('Saved Successful'), undefined, 'bottom');
-    //   navigationService.goBack();
-    //   return;
-    // }
+    // TODO: test image size
+
     Loading.show();
     try {
-      await setWalletName(_nameValue);
-
+      await setUserInfo({ nickName: _nameValue, avatar });
       navigationService.goBack();
       CommonToast.success(t('Saved Successful'), undefined, 'bottom');
     } catch (error: any) {
       CommonToast.failError(error.error);
-      console.log('setWalletName: error', error);
+      console.log('setUserInfo: error', error);
     }
     Loading.hide();
-  }, [nameValue, setWalletName, t]);
+  }, [nameValue, t, setUserInfo, avatar]);
 
   return (
     <PageContainer
@@ -88,6 +91,15 @@ const EditWalletName: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <ScrollView>
+        <ImageWithUploadFunc
+          ref={uploadRef}
+          title={userInfo?.nickName || ''}
+          imageUrl={avatar || ''}
+          onChangeImage={url => setAvatar(url)}
+        />
+        <Touchable onPress={() => uploadRef.current?.selectPhotoAndUpload()}>
+          <TextM>NEW!!!!</TextM>
+        </Touchable>
         <FormItem title={'Wallet Name'}>
           <CommonInput
             type="general"
@@ -102,7 +114,7 @@ const EditWalletName: React.FC = () => {
             errorMessage={nameError.errorMsg}
           />
         </FormItem>
-        <ProfilePortkeyIDSection noMarginTop disable id={userId || ''} />
+        <ProfilePortkeyIDSection noMarginTop disable id={userInfo?.userId || ''} />
         <ProfileAddressSection isMySelf disable addressList={caInfoList} />
       </ScrollView>
 

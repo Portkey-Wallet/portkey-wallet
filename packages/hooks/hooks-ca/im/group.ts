@@ -150,15 +150,16 @@ export const useLeaveChannel = () => {
   return leaveChannel;
 };
 
-export const useUpdateChannelName = () => {
+export const useUpdateChannelInfo = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
 
-  const updateChannelName = useCallback(
-    async (channelId: string, name: string) => {
-      await im.service.updateChannelName({
+  const updateChannelInfo = useCallback(
+    async (channelId: string, name: string, icon?: string) => {
+      await im.service.updateChannelInfo({
         channelUuid: channelId,
         channelName: name,
+        channelIcon: icon,
       });
 
       dispatch(
@@ -184,7 +185,7 @@ export const useUpdateChannelName = () => {
     [dispatch, networkType],
   );
 
-  return updateChannelName;
+  return updateChannelInfo;
 };
 
 export const useGroupChannelInfo = (channelId: string, isInit = false) => {

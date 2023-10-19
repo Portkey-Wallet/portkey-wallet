@@ -69,7 +69,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
           <CommonAvatar imageUrl={imageUrl} title={collectionName} shapeType={'circular'} avatarSize={pTd(24)} />
           <TextM style={[FontStyles.font3, styles.marginLeft8, fonts.mediumFont]}>{collectionName}</TextM>
         </View>
-        <TextXXL style={styles.tokenId}>{`#${tokenId}`}</TextXXL>
+        <TextXXL style={styles.tokenId}>{`${alias} #${tokenId}`}</TextXXL>
 
         <CommonAvatar
           title={alias}
@@ -98,7 +98,7 @@ const NFTDetail: React.FC<TokenDetailProps> = () => {
             <TextM style={[styles.leftTitle, FontStyles.font5]}>{formatChainInfoToShow(chainId)}</TextM>
           </View>
           <View style={[GStyles.flexRow, styles.rowWrap]}>
-            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token')}</TextM>
+            <TextM style={[styles.leftTitle, FontStyles.font3]}>{t('Token symbol')}</TextM>
             <View style={GStyles.flex1} />
             <TextM style={[styles.leftTitle, FontStyles.font5]}>{symbol}</TextM>
           </View>

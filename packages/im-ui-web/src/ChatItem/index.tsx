@@ -15,6 +15,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
   unread = 0,
   alt = 'portkey',
   showMute = true,
+  showLetter = false,
   onClickDelete,
   onClickMute,
   onClickPin,
@@ -82,7 +83,13 @@ const ChatItem: React.FC<IChatItemProps> = ({
         <div className={clsx('chat-item', 'flex', props.pin && 'chat-item-pin')}>
           <div key={'avatar'} className="chat-item-avatar flex-center">
             {props.channelType && [ChannelTypeEnum.GROUP, ChannelTypeEnum.P2P].includes(props.channelType) ? (
-              <Avatar src={props.avatar} alt={alt} letter={props.letter} channelType={props.channelType} />
+              <Avatar
+                src={props.avatar}
+                alt={alt}
+                showLetter={showLetter}
+                letter={props.letter}
+                channelType={props.channelType}
+              />
             ) : (
               <div className="flex-center avatar-unknown">
                 <CustomSvg type="Unknown" />

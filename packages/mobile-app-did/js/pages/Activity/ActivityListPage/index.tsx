@@ -16,6 +16,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { ACTIVITY_PAGE_SIZE, ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface RouterParams {
   chainId?: string;
@@ -34,7 +35,7 @@ const ActivityListPage = () => {
 
   const isLoadingRef = useRef(false);
   const getActivityList = async (isInit: boolean) => {
-    const { data, maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity;
+    const { data, maxResultCount = ACTIVITY_PAGE_SIZE, skipCount = 0, totalRecordCount = 0 } = currentActivity;
     if (!isInit && data?.length >= totalRecordCount) return;
     if (isLoadingRef.current) return;
     isLoadingRef.current = true;
@@ -71,6 +72,7 @@ const ActivityListPage = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <FlatList
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         refreshing={refreshing}
         data={currentActivity?.data || []}
         keyExtractor={(_item: ActivityItemType, index: number) => `${index}`}

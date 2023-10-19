@@ -12,6 +12,7 @@ import {
   setChainListAction,
   setManagerInfo,
   setOriginChainId,
+  setUserInfoAction,
   setWalletNameAction,
   updateCASyncState,
 } from './actions';
@@ -19,7 +20,7 @@ import { WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
 
 const initialState: WalletState = {
-  walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`,
+  walletAvatar: '',
   walletType: 'aelf',
   walletName: 'Wallet 01',
   userId: '',
@@ -106,10 +107,15 @@ export const walletSlice = createSlice({
         if (action.payload) {
           state.walletName = action.payload.nickName;
           state.userId = action.payload.userId;
+
+          state.userInfo = action.payload;
         }
       })
       .addCase(setWalletNameAction, (state, action) => {
         state.walletName = action.payload;
+      })
+      .addCase(setUserInfoAction, (state, action) => {
+        state.userInfo = { userId: '', nickName: '', ...state.userInfo, ...action.payload };
       })
       .addCase(setOriginChainId, (state, action) => {
         state.originChainId = action.payload;

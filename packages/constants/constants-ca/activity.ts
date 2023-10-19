@@ -21,3 +21,6 @@ export const SHOW_FROM_TRANSACTION_TYPES = [
   TransactionTypes.CROSS_CHAIN_TRANSFER,
   TransactionTypes.CLAIM_TOKEN,
 ];
+
+export const ON_END_REACHED_THRESHOLD = 0.3;
+export const ACTIVITY_PAGE_SIZE = 20;

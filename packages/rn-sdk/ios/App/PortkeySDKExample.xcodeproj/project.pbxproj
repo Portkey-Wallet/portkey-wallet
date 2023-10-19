@@ -16,7 +16,6 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
-		EA74A0062AC15B92005A4810 /* JSSDKViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EA74A0052AC15B92005A4810 /* JSSDKViewController.m */; };
 		EAD432A92ABC29ED00EEA69D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329B2ABC29ED00EEA69D /* InfoPlist.strings */; };
 		EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */; };
 		EAD432AB2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EAD4329F2ABC29ED00EEA69D /* PortkeySDKExample-Info.plist */; };
@@ -63,8 +62,6 @@
 		903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PortkeySDKExample_Example.debug.xcconfig"; path = "Target Support Files/Pods-PortkeySDKExample_Example/Pods-PortkeySDKExample_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		AB4B7F65653A1041B86DF8CB /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-PortkeySDKExample_Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		D626B180E2AD432D67A0B86A /* Pods-AelfPortkey_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AelfPortkey_Tests.release.xcconfig"; path = "Target Support Files/Pods-AelfPortkey_Tests/Pods-AelfPortkey_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		EA74A0042AC15B92005A4810 /* JSSDKViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSSDKViewController.h; sourceTree = "<group>"; };
-		EA74A0052AC15B92005A4810 /* JSSDKViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JSSDKViewController.m; sourceTree = "<group>"; };
 		EAD4329C2ABC29ED00EEA69D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		EAD4329D2ABC29ED00EEA69D /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -197,27 +194,9 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		EA74A0032AC15B7C005A4810 /* JSSDK */ = {
-			isa = PBXGroup;
-			children = (
-				EA74A0042AC15B92005A4810 /* JSSDKViewController.h */,
-				EA74A0052AC15B92005A4810 /* JSSDKViewController.m */,
-			);
-			path = JSSDK;
-			sourceTree = "<group>";
-		};
-		EAA3A8CB2AD81AB2001D1CE0 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
 		EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */ = {
 			isa = PBXGroup;
 			children = (
-				EAA3A8CB2AD81AB2001D1CE0 /* Utils */,
-				EA74A0032AC15B7C005A4810 /* JSSDK */,
 				EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */,
 				EAD432A62ABC29ED00EEA69D /* AppDelegate.h */,
 				EAD4329E2ABC29ED00EEA69D /* AppDelegate.m */,
@@ -527,7 +506,6 @@
 			files = (
 				EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */,
 				EAD432AE2ABC29ED00EEA69D /* main.m in Sources */,
-				EA74A0062AC15B92005A4810 /* JSSDKViewController.m in Sources */,
 				EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */,
 				EDE868D741F47F2FD227CA24 /* ExpoModulesProvider.swift in Sources */,
 			);

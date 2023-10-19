@@ -20,16 +20,17 @@ internal class NetworkModule(context: ReactApplicationContext) :
         method: String,
         params: ReadableMap,
         headers: ReadableMap,
+        options: ReadableMap?,
         jSPromiseHandle: Promise
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val result = when (method) {
                 "GET" -> {
-                    NetworkConnector.getRequest(url, headers)
+                    NetworkConnector.getRequest(url, headers, options)
                 }
 
                 "POST" -> {
-                    NetworkConnector.postRequest(url, headers, params)
+                    NetworkConnector.postRequest(url, headers, params, options)
                 }
 
                 else -> {

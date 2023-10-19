@@ -62,7 +62,7 @@ export const getVerifiedAndLockWallet = async (
     if (!sessionId) {
       throw new Error('sessionId is null');
     }
-    // TODO await /api/app/search/accountregisterindex and /api/app/search/accountrecoverindex
+
     const walletConfig: RecoverWalletConfig = {
       sessionId,
     };

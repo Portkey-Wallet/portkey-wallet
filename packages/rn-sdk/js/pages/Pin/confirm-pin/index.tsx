@@ -28,23 +28,6 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
     entryName: PortkeyEntries.CONFIRM_PIN,
   });
 
-  // const { biometrics } = useUser();
-  // const onChangePin = useCallback(async (newPin: string) => {
-  // TODO change pin process
-  // if (!oldPin) return;
-  // changeCanLock(false);
-  // try {
-  //   if (biometrics) await setSecureStoreItem('Pin', newPin);
-  //   dispatch(changePin({ pin: oldPin, newPin }));
-  //   dispatch(setCredentials({ pin: newPin }));
-  //   CommonToast.success(t('Modified Successfully'));
-  // } catch (error) {
-  //   CommonToast.failError(error);
-  // }
-  // changeCanLock(true);
-  // navigationService.navigate('AccountSettings');
-  // }, []);
-
   const onSetPinSuccess = useCallback(
     async (confirmPin: string) => {
       const biometricsReady = await isBiometricsReady();

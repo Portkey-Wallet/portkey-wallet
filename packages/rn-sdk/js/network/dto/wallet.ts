@@ -32,3 +32,36 @@ export interface ApprovedGuardianInfo {
 export interface RequestRegisterOrSocialRecoveryResult {
   sessionId: string;
 }
+
+export interface CheckRegisterOrRecoveryProcessParams {
+  filter: string;
+}
+
+export interface RegisterStatusDTO {
+  registerStatus: ProgressStatus;
+  registerMessage: string;
+}
+
+export interface SocialRecoveryStatusDTO {
+  recoveryStatus: ProgressStatus;
+  recoveryMessage: string;
+}
+
+export enum ProgressStatus {
+  PENDING = 'pending',
+  PASS = 'pass',
+  FAIl = 'fail',
+}
+
+export interface BaseProgressDTO<T> {
+  totalCount: number;
+  items: Array<
+    {
+      caAddress: string;
+      caHash: string;
+    } & T
+  >;
+}
+
+export type RegisterProgressDTO = BaseProgressDTO<RegisterStatusDTO>;
+export type RecoveryProgressDTO = BaseProgressDTO<SocialRecoveryStatusDTO>;

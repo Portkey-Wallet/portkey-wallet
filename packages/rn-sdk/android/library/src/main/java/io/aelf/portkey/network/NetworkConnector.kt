@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST", "UNNECESSARY_SAFE_CALL")
+
 package io.aelf.portkey.network
 
 import android.util.Log
@@ -15,13 +17,15 @@ import org.json.JSONObject
 
 internal object NetworkConnector {
     private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(TimeOutInterceptor())
         .build()
 
-    fun getRequest(url: String, header: ReadableMap): ResultWrapper {
+    fun getRequest(url: String, header: ReadableMap, options: ReadableMap?): ResultWrapper {
         return try {
             val request = okhttp3.Request.Builder()
                 .url(url)
                 .headers(header.toHeaders())
+                .tag(TimeOutConfig(options?.getDouble("maxWaitingTime")?.toInt() ?: 5000))
                 .build()
             val response = okHttpClient
                 .newCall(request)
@@ -38,12 +42,18 @@ internal object NetworkConnector {
         }
     }
 
-    fun postRequest(url: String, header: ReadableMap, body: ReadableMap): ResultWrapper {
+    fun postRequest(
+        url: String,
+        header: ReadableMap,
+        body: ReadableMap,
+        options: ReadableMap?
+    ): ResultWrapper {
         return try {
             val request = okhttp3.Request.Builder()
                 .url(url)
                 .headers(header.toHeaders())
                 .post(body.toRequestBody())
+                .tag(TimeOutConfig(options?.getDouble("maxWaitingTime")?.toInt() ?: 5000))
                 .build()
             val response = okHttpClient
                 .newCall(request)
@@ -74,8 +84,8 @@ internal object NetworkConnector {
     }
 
     private fun ReadableMap.toJson(): JsonObject {
-        val data = this.toHashMap();
-        val jsonObject = JsonObject();
+        val data = this.toHashMap()
+        val jsonObject = JsonObject()
         data.forEach {
             when (val value = it.value) {
                 is String -> jsonObject.addProperty(it.key, value)
@@ -137,7 +147,7 @@ internal object NetworkConnector {
         } catch (ignored: Throwable) {
         }
         if (result != null && printBody) {
-            Log.w("NetworkConnector", "result: ${result} , code: ${response.code}")
+            Log.w("NetworkConnector", "result: $result , code: ${response.code}")
         }
         return if (response.isSuccessful) {
             ResultWrapper(0, result = result)

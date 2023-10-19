@@ -35,7 +35,11 @@ export interface RouterOptions<T> {
   params?: Partial<T>;
 }
 
-export type TypedUrlParams = { [x: string]: string | number | boolean | null | undefined };
+export type TypedUrlParams = { [x: string | symbol]: string | number | boolean | null | undefined };
+
+export interface NetworkOptions {
+  maxWaitingTime: number;
+}
 
 export interface NativeWrapperModule {
   platformName: string;
@@ -57,7 +61,13 @@ export interface StorageModule {
 }
 
 export interface NetworkModule {
-  fetch: (url: string, method: 'GET' | 'POST', params: TypedUrlParams, headers: TypedUrlParams) => Promise<string>;
+  fetch: (
+    url: string,
+    method: 'GET' | 'POST',
+    params: TypedUrlParams,
+    headers: TypedUrlParams,
+    extraOptions: NetworkOptions,
+  ) => Promise<string>;
 }
 
 export const nativeFetch = async <T>(
@@ -65,9 +75,16 @@ export const nativeFetch = async <T>(
   method: 'GET' | 'POST',
   params?: TypedUrlParams,
   headers?: TypedUrlParams,
+  extraOptions?: NetworkOptions,
 ): Promise<ResultWrapper<T>> => {
   const networkModule = (portkeyModulesEntity as any).NetworkModule as NetworkModule;
-  const res = await networkModule.fetch(url, method, params ?? {}, headers ?? {});
+  const res = await networkModule.fetch(
+    url,
+    method,
+    params ?? {},
+    headers ?? {},
+    extraOptions ?? { maxWaitingTime: 5000 },
+  );
   if (res?.length > 0) {
     try {
       const t = JSON.parse(res) as ResultWrapper<T>;

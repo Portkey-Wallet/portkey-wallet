@@ -1,5 +1,5 @@
 {
-  "name": "react-native-sdk-demo",
+  "name": "@portkey/react-native-sdk",
   "version": "1.0.0",
   "repository": "https://github.com/carbon-portkey/react-native-sdk-demo.git",
   "author": "Carbon.lv <130360750+carbon-portkey@users.noreply.github.com>",

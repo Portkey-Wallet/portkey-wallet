@@ -38,7 +38,6 @@ export default function SetPin({ deliveredSetPinInfo, rootTag, oldPin }: SetPinP
       message: MessageMap[VerificationType.communityRecovery],
       buttons: [
         { title: 'No', type: 'outline' },
-        // TODO: navigate
         {
           title: 'Yes',
           onPress: () => {

@@ -1,6 +1,6 @@
 import { PortkeyConfig } from 'global';
 import { AccountIdentifierStatusDTO, RegisterStatusDTO } from 'network/dto/signIn';
-import { ResultWrapper, TypedUrlParams, nativeFetch } from 'service/native-modules';
+import { NetworkOptions, ResultWrapper, TypedUrlParams, nativeFetch } from 'service/native-modules';
 import { APIPaths } from 'network/path';
 import { ChainId } from '@portkey-wallet/types';
 import {
@@ -18,6 +18,9 @@ import {
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CountryCodeDataDTO } from 'types/wallet';
 import {
+  CheckRegisterOrRecoveryProcessParams,
+  RecoveryProgressDTO,
+  RegisterProgressDTO,
   RequestRegisterOrSocialRecoveryResult,
   RequestRegisterParams,
   RequestSocialRecoveryParams,
@@ -29,6 +32,7 @@ export class NetworkControllerEntity {
     method: 'GET' | 'POST',
     params?: any,
     headers?: any,
+    extraOptions?: NetworkOptions,
   ): Promise<ResultWrapper<T>> => {
     if (method === 'GET' && params) {
       url += '?';
@@ -36,7 +40,7 @@ export class NetworkControllerEntity {
         url = url + `&${key}=${encodeURIComponent((value ?? 'null') as string)}`;
       });
     }
-    const result = nativeFetch<T>(url, method, params, headers);
+    const result = nativeFetch<T>(url, method, params, headers, extraOptions);
     return result;
   };
 
@@ -165,6 +169,26 @@ export class NetworkControllerEntity {
       await this.parseUrl(APIPaths.REQUEST_RECOVERY),
       'POST',
       params,
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  checkRegisterProcess = async (sessionId: string): Promise<RegisterProgressDTO> => {
+    const res = await this.realExecute<RegisterProgressDTO>(
+      await this.parseUrl(APIPaths.CHECK_REGISTER_STATUS),
+      'GET',
+      { filter: `_id:${sessionId}` } as CheckRegisterOrRecoveryProcessParams,
+    );
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  checkSocialRecoveryProcess = async (sessionId: string): Promise<RecoveryProgressDTO> => {
+    const res = await this.realExecute<RecoveryProgressDTO>(
+      await this.parseUrl(APIPaths.CHECK_SOCIAL_RECOVERY_STATUS),
+      'GET',
+      { filter: `_id:${sessionId}` } as CheckRegisterOrRecoveryProcessParams,
     );
     if (!res?.result) throw new Error('network failure');
     return res.result;

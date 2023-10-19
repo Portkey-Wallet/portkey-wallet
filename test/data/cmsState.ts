@@ -94,16 +94,6 @@ export const CmsState: { cms: CMSState } = {
         },
       ],
     },
-    buyButtonNetMap: {
-      MAIN: {
-        isBuySectionShow: true,
-        isSellSectionShow: true,
-      },
-      TESTNET: {
-        isBuySectionShow: false,
-        isSellSectionShow: false,
-      },
-    },
     rememberMeBlackListMap: {
       TESTNET: [{ name: 'bingoGame', url: 'https://portkey-bingo-game.vercel.app' }],
       MAIN: [{ name: 'bingoGame', url: 'https://portkey-bingo-game.vercel.app' }],

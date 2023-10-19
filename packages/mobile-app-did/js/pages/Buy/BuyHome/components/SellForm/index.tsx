@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Platform, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
@@ -35,17 +35,14 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import BigNumber from 'bignumber.js';
 import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useAppBuyButtonShow } from 'hooks/cms';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
-  const { refreshBuyButton } = useBuyButtonShow(
-    Platform.OS === 'android' ? VersionDeviceType.Android : VersionDeviceType.iOS,
-  );
+  const { refreshBuyButton } = useAppBuyButtonShow();
   const checkManagerSyncState = useCheckManagerSyncState();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(

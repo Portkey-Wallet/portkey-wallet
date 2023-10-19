@@ -2,6 +2,7 @@ import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import './index.less';
 import { useIndexAndName } from '@portkey-wallet/hooks/hooks-ca/contact';
+import Avatar from 'pages/components/Avatar';
 
 export interface IContactItemProps {
   item: Partial<ContactItemType>;
@@ -16,7 +17,7 @@ export default function ContactItem({ item, hasChatEntry = true, clickChat }: IC
     <div className="flex-between-center contact-item">
       <div className="flex-center contact-item-right">
         <div className="flex-center contact-index-logo-wrap">
-          <div className="flex-center contact-index-logo">{index}</div>
+          <Avatar nameIndex={index} size="small" wrapperClass="contact-index-logo" />
           {item.isImputation && <UnReadBadge />}
         </div>
         <span className="contact-item-name">{name}</span>

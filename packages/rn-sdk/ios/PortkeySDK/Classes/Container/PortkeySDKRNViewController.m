@@ -46,7 +46,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (self.isLeave) {
-        // back from next viewcontroller
+        // back from previous viewcontroller
         if (self.navigateCallback) {
             NSDictionary *result = @{
                 @"status": @"cancel",

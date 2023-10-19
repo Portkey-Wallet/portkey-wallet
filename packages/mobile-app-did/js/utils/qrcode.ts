@@ -32,7 +32,9 @@ export function handlePortkeyQRCodeData(data: QRData, previousRouteInfo: RouteIn
   if (previousRouteInfo.name === 'SendHome') {
     if (previousRouteInfo.params.assetInfo.symbol !== newData.assetInfo.symbol) {
       // different symbol
-      throw data;
+      CommonToast.fail(
+        'The selected token for the transfer is incorrect. Please make sure you select the token that matches the recipient address.',
+      );
     } else {
       const previousAssetsInfo = { ...previousRouteInfo.params.assetInfo };
       const params: IToSendHomeParamsType = {

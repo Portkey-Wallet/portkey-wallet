@@ -11,7 +11,7 @@ import CommonToast from 'components/CommonToast';
 import { useCurrentCaInfo, useSetUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import FormItem from 'components/FormItem';
-import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import gStyles from 'assets/theme/GStyles';
 import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';

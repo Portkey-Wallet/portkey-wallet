@@ -83,7 +83,6 @@ const ChatGroupDetails = () => {
       containerStyles={styles.container}>
       <View style={[GStyles.flexRow, GStyles.itemCenter, styles.groupNameWrap]}>
         <ImageWithUploadFunc title={groupName} imageUrl={groupAvatar} onChangeImage={url => setGroupAvatar(url)} />
-        {/* <CommonAvatar avatarSize={pTd(48)} /> */}
         <CommonInput
           type="general"
           theme="white-bg"
@@ -96,7 +95,6 @@ const ChatGroupDetails = () => {
           containerStyle={styles.nameInputContainerStyle}
         />
       </View>
-      {/* <UploadImage title={''} /> */}
       <View style={[BGStyles.bg1, GStyles.flex1]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.selectHeaderWrap]}>
           <TextM style={FontStyles.font3}>Select Contacts</TextM>

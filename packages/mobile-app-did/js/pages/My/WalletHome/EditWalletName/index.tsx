@@ -8,10 +8,10 @@ import { INIT_HAS_ERROR } from 'constants/common';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
-import { useCurrentCaInfo, useSetUserInfo, useSetWalletName, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useSetUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import FormItem from 'components/FormItem';
-import { ScrollView, StyleSheet, TextInput } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import gStyles from 'assets/theme/GStyles';
 import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
@@ -19,14 +19,17 @@ import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import { ChainId } from '@portkey/provider-types';
 import { CAInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { useInputFocus } from 'hooks/useInputFocus';
-import ImageWithUploadFunc from 'components/ImageWithUploadFunc';
+import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
 import Touchable from 'components/Touchable';
-import { TextM } from 'components/CommonText';
+import { TextL } from 'components/CommonText';
+import { FontStyles } from 'assets/theme/styles';
+import { pTd } from 'utils/unit';
+import GStyles from 'assets/theme/GStyles';
 
 const EditWalletName: React.FC = () => {
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
-  const uploadRef = useRef(null);
+  const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
 
   const { t } = useLanguage();
   const { userInfo } = useWallet();
@@ -71,7 +74,6 @@ const EditWalletName: React.FC = () => {
       return;
     }
     // TODO: test image size
-
     Loading.show();
     try {
       await setUserInfo({ nickName: _nameValue, avatar });
@@ -91,14 +93,15 @@ const EditWalletName: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <ScrollView>
-        <ImageWithUploadFunc
-          ref={uploadRef}
-          title={userInfo?.nickName || ''}
-          imageUrl={avatar || ''}
-          onChangeImage={url => setAvatar(url)}
-        />
-        <Touchable onPress={() => uploadRef.current?.selectPhotoAndUpload()}>
-          <TextM>NEW!!!!</TextM>
+        <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhotoAndUpload()}>
+          <ImageWithUploadFunc
+            avatarSize={pTd(80)}
+            ref={uploadRef}
+            title={userInfo?.nickName || ''}
+            imageUrl={avatar || ''}
+            onChangeImage={url => setAvatar(url)}
+          />
+          <TextL style={[FontStyles.font4, pageStyles.setButton]}>Set New Photo</TextL>
         </Touchable>
         <FormItem title={'Wallet Name'}>
           <CommonInput
@@ -131,5 +134,9 @@ export const pageStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: defaultColors.bg4,
     ...gStyles.paddingArg(24, 20, 18),
+  },
+  setButton: {
+    marginTop: pTd(8),
+    marginBottom: pTd(24),
   },
 });

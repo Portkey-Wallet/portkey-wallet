@@ -30,10 +30,10 @@ const PageHeight = windowHeight - headerHeight;
 
 const WalletName: React.FC = () => {
   const { t } = useLanguage();
-  const { walletName, userId } = useWallet();
+  const { userInfo } = useWallet();
   const caInfo = useCurrentCaInfo();
   const showDeletion = useIsShowDeletion();
-  const [nameValue, setNameValue] = useState<string>(walletName);
+  const [nameValue, setNameValue] = useState<string>(userInfo?.nickName || '');
   const [nameError, setNameError] = useState<ErrorType>(INIT_HAS_ERROR);
   const setWalletName = useSetWalletName();
 
@@ -94,8 +94,8 @@ const WalletName: React.FC = () => {
         <View>
           {showChat ? (
             <>
-              <ProfileHeaderSection name={walletName} />
-              <ProfilePortkeyIDSection showQrCodeButton id={userId || ''} />
+              <ProfileHeaderSection name={userInfo?.nickName || ''} avatarUrl={userInfo?.avatar || ''} />
+              <ProfilePortkeyIDSection showQrCodeButton id={userInfo?.userId || ''} />
               <ProfileAddressSection isMySelf addressList={caInfoList} />
             </>
           ) : (

@@ -8,15 +8,21 @@ import { uploadPortkeyImage } from 'utils/uploadImage';
 import Loading from 'components/Loading';
 import Touchable from 'components/Touchable';
 import { sleep } from '@portkey-wallet/utils';
+import { pTd } from 'utils/unit';
 
 type UploadImageType = {
   title: string;
   imageUrl?: string;
+  avatarSize?: number;
   onChangeImage?: (url: string) => void;
 };
 
+export type ImageWithUploadFuncInstance = {
+  selectPhotoAndUpload: () => void;
+};
+
 const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: UploadImageType, ref) {
-  const { title, imageUrl, onChangeImage } = props;
+  const { title, imageUrl, avatarSize = pTd(48), onChangeImage } = props;
 
   const selectPhotoAndUpload = useCallback(async () => {
     try {
@@ -32,6 +38,8 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
         const info = await getInfo(result.uri);
         result.fileSize = info.size;
       }
+
+      console.log('fileSize', result.fileSize);
       if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return;
       Loading.show();
       const s3Url = await uploadPortkeyImage(result);
@@ -61,7 +69,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
       <CommonAvatar
         svgName={imageUrl ? undefined : 'upload-avatar-button'}
         title={title}
-        avatarSize={48}
+        avatarSize={avatarSize}
         imageUrl={imageUrl}
         resizeMode="cover"
         shapeType="circular"

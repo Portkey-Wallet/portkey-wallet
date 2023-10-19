@@ -21,6 +21,7 @@ const ProfileHeader: React.FC<ProfileHeaderPropsType> = props => {
     <View style={[GStyles.center, styles.wrap, noMarginTop && GStyles.marginTop(0)]}>
       <CommonAvatar
         hasBorder
+        resizeMode="cover"
         avatarSize={pTd(80)}
         title={remark || name}
         imageUrl={avatarUrl}

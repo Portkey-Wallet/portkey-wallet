@@ -1,6 +1,7 @@
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
+import fonts from 'assets/theme/fonts';
 import CommonAvatar from 'components/CommonAvatar';
 import { CommonInputProps } from 'components/CommonInput';
 import { TextM, TextXXL } from 'components/CommonText';
@@ -17,10 +18,10 @@ const WalletMenuItem: React.FC<CommonInputProps> = () => {
     <Touchable
       style={[GStyles.flexRow, GStyles.center, styles.itemWrap]}
       onPress={() => navigationService.navigate('WalletName')}>
-      <CommonAvatar avatarSize={pTd(60)} />
+      <CommonAvatar avatarSize={pTd(60)} imageUrl={userInfo?.avatar || ''} resizeMode="cover" />
       <View style={[GStyles.flexCol, GStyles.flex1, styles.centerSection]}>
-        <TextXXL numberOfLines={1} style={styles.portkeyId}>
-          david
+        <TextXXL numberOfLines={1} style={styles.nickName}>
+          {userInfo?.nickName || ''}
         </TextXXL>
         <View style={styles.blank} />
         <TextM numberOfLines={1} style={styles.portkeyId}>{`Portkey ID: ${userInfo?.userId}`}</TextM>
@@ -42,6 +43,9 @@ const styles = StyleSheet.create({
   },
   centerSection: {
     paddingLeft: pTd(16),
+  },
+  nickName: {
+    ...fonts.mediumFont,
   },
   portkeyId: {
     width: pTd(180),

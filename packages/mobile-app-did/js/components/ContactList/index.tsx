@@ -127,7 +127,7 @@ const ContactsList: React.FC<ContactsListProps> = ({
             // no suffix
             result = contactMap[addressInfo.address];
           } else {
-            result = contactMap[addressInfo.address].filter(item =>
+            result = contactMap[addressInfo.address]?.filter(item =>
               item.addresses.find(address => address.chainId === addressInfo.suffix),
             );
           }

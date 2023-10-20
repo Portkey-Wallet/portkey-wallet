@@ -9,7 +9,7 @@ import { SvgCssUri } from 'react-native-svg';
 import FastImage from 'components/FastImage';
 import { ResizeMode } from 'react-native-fast-image';
 
-interface CommonAvatarProps {
+export interface CommonAvatarProps {
   title?: string;
   avatarSize?: string | number;
   hasBorder?: boolean;

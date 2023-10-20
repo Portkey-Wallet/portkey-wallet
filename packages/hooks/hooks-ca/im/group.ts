@@ -168,6 +168,7 @@ export const useUpdateChannelInfo = () => {
           channelId,
           value: {
             displayName: name,
+            channelIcon: icon,
           },
         }),
       );
@@ -178,6 +179,7 @@ export const useUpdateChannelInfo = () => {
           channelId,
           value: {
             name,
+            icon,
           },
         }),
       );

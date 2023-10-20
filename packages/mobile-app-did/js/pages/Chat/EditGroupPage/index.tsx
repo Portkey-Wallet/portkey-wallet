@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, Touchable, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -16,6 +16,8 @@ import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import { useInputFocus } from 'hooks/useInputFocus';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
+import Touchable from 'components/Touchable';
+import { TextL } from 'components/CommonText';
 
 const EditGroupPage = () => {
   const iptRef = useRef<TextInput>();
@@ -24,9 +26,11 @@ const EditGroupPage = () => {
 
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
-  const { name } = groupInfo || {};
+  const { name, icon } = groupInfo || {};
   const disbandGroup = useDisbandChannel(currentChannelId || '');
-  const upDateChannelName = useUpdateChannelInfo();
+  const updateChannelInfo = useUpdateChannelInfo();
+
+  const [avatar, setAvatar] = useState(icon || '');
   const [groupName, setGroupName] = useState(name || '');
 
   const onDisband = useCallback(() => {
@@ -59,7 +63,7 @@ const EditGroupPage = () => {
   const onSave = useCallback(async () => {
     try {
       Loading.show();
-      await upDateChannelName(currentChannelId || '', groupName?.trim());
+      await updateChannelInfo(currentChannelId || '', groupName?.trim(), avatar);
       CommonToast.success('Save successfully');
       navigationService.goBack();
     } catch (error) {
@@ -67,7 +71,7 @@ const EditGroupPage = () => {
     } finally {
       Loading.hide();
     }
-  }, [currentChannelId, groupName, upDateChannelName]);
+  }, [avatar, currentChannelId, groupName, updateChannelInfo]);
 
   return (
     <PageContainer
@@ -77,18 +81,16 @@ const EditGroupPage = () => {
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView style={GStyles.flex1}>
-        {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhotoAndUpload()}>
-          <View>
-            <ImageWithUploadFunc
-              avatarSize={pTd(80)}
-              ref={uploadRef}
-              title={userInfo?.nickName || ''}
-              imageUrl={avatar || ''}
-              onChangeImage={url => setAvatar(url)}
-            />
-            <TextL style={[FontStyles.font4, pageStyles.setButton]}>Set New Photo</TextL>
-          </View>
-        </Touchable> */}
+        <Touchable style={[GStyles.center, styles.header]} onPress={() => uploadRef.current?.selectPhotoAndUpload()}>
+          <ImageWithUploadFunc
+            avatarSize={pTd(80)}
+            ref={uploadRef}
+            title={name || ''}
+            imageUrl={avatar || ''}
+            onChangeImage={url => setAvatar(url)}
+          />
+          <TextL style={[FontStyles.font4, styles.setButton]}>Set New Photo</TextL>
+        </Touchable>
         <FormItem title={'Group Name'} style={styles.groupNameWrap}>
           <CommonInput
             ref={iptRef}
@@ -124,8 +126,11 @@ const styles = StyleSheet.create({
     flex: 1,
     ...GStyles.paddingArg(0),
   },
-  groupNameWrap: {
+  header: {
     marginTop: pTd(24),
+    marginBottom: pTd(24),
+  },
+  groupNameWrap: {
     paddingHorizontal: pTd(20),
   },
   deleteBtnStyle: {
@@ -133,5 +138,8 @@ const styles = StyleSheet.create({
   },
   buttonWrap: {
     ...GStyles.paddingArg(10, 20, 16),
+  },
+  setButton: {
+    marginTop: pTd(8),
   },
 });

@@ -16,6 +16,7 @@ import { useDeviceEvent } from 'hooks/useDeviceEvent';
 import myEvents from 'utils/deviceEvent';
 import { getChatListSvgName } from 'pages/Chat/utils';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import GroupAvatarShow from 'pages/Chat/components/GroupAvatarShow';
 
 type ChatHomeListItemSwipedType<T> = {
   item: T;
@@ -101,6 +102,32 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
     );
   }, [item.channelType, item.mute, item.pin, item.unreadMessageCount]);
 
+  const Avatar = useMemo(() => {
+    if (item.channelType === ChannelTypeEnum.P2P) {
+      return (
+        <CommonAvatar
+          hasBorder
+          avatarSize={pTd(48)}
+          resizeMode="cover"
+          style={styles.avatar}
+          imageUrl={item.channelIcon || ''}
+          title={item.displayName}
+          svgName={getChatListSvgName(item.channelType)}
+        />
+      );
+    }
+
+    return (
+      <GroupAvatarShow
+        logoSize={pTd(14)}
+        avatarSize={pTd(48)}
+        wrapStyle={styles.avatar}
+        imageUrl={item.channelIcon || ''}
+        svgName={item.channelIcon ? undefined : 'chat-group-avatar-header'}
+      />
+    );
+  }, [item.channelIcon, item.channelType, item.displayName]);
+
   return (
     <SwipeableItem
       swipeEnabled
@@ -118,13 +145,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         onLongPress={onLongPressItem}
         onPressIn={eventEmit}>
         <>
-          <CommonAvatar
-            hasBorder
-            title={item.displayName}
-            svgName={getChatListSvgName(item.channelType)}
-            avatarSize={48}
-            style={styles.avatar}
-          />
+          {Avatar}
           <View style={[styles.rightDom, GStyles.flex1, GStyles.flexCenter]}>
             <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter]}>
               <View style={[GStyles.flex1, GStyles.flexRow, GStyles.itemCenter, GStyles.paddingRight(30)]}>

@@ -15,6 +15,7 @@ RCT_EXPORT_METHOD(fetch:(NSString *)url
                   method:(NSString *)method
                   params:(NSDictionary *)params
                   headers:(NSDictionary *)headers
+                  extraOptions:(NSDictionary *)extraOptions
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -32,10 +33,14 @@ RCT_EXPORT_METHOD(fetch:(NSString *)url
     NSURL *requestUrl= [NSURL URLWithString:url];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:requestUrl];
     request.HTTPMethod = method;
+    
+    // set body
     if ([method isEqualToString:@"POST"] && params) {
         NSData *jsonBodyData = [NSJSONSerialization dataWithJSONObject:params options:kNilOptions error:nil];
         request.HTTPBody = jsonBodyData;
     }
+    
+    // set header
     [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
     if (headers) {
         [headers enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull value, BOOL * _Nonnull stop) {
@@ -44,6 +49,17 @@ RCT_EXPORT_METHOD(fetch:(NSString *)url
             }
         }];
     }
+    
+    // set other params
+    if ([extraOptions isKindOfClass:NSDictionary.class]) {
+        // set timeout interval
+        NSNumber *maxWaitingTimeValue = [extraOptions valueForKey:@"maxWaitingTime"];
+        if ([maxWaitingTimeValue isKindOfClass:NSNumber.class]) {
+            NSInteger maxWaitingTime = [maxWaitingTimeValue integerValue];
+            request.timeoutInterval = maxWaitingTime / 1000;
+        }
+    }
+    
     NSURLSession *session = [NSURLSession sharedSession];
     NSURLSessionDataTask *task= [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         NSLog(@"url : %@; statusCode : %lid", url, (long)((NSHTTPURLResponse *)response).statusCode);

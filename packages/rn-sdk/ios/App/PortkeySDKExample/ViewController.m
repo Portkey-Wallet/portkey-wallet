@@ -8,7 +8,6 @@
 
 #import "ViewController.h"
 #import <PortkeySDK/PortkeySDKRootView.h>
-#import "JSSDKViewController.h"
 #import <PortkeySDK/PortkeySDKRouterModule.h>
 #import <PortkeySDK/PortkeySDKMMKVStorage.h>
 #import <YYKit/YYKit.h>

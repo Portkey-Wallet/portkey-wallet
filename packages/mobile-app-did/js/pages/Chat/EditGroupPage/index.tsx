@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, Touchable, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -15,10 +15,12 @@ import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelInfo } from '@p
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
 import { useInputFocus } from 'hooks/useInputFocus';
+import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
 
 const EditGroupPage = () => {
   const iptRef = useRef<TextInput>();
   useInputFocus(iptRef);
+  const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
 
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
@@ -75,6 +77,18 @@ const EditGroupPage = () => {
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView style={GStyles.flex1}>
+        {/* <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhotoAndUpload()}>
+          <View>
+            <ImageWithUploadFunc
+              avatarSize={pTd(80)}
+              ref={uploadRef}
+              title={userInfo?.nickName || ''}
+              imageUrl={avatar || ''}
+              onChangeImage={url => setAvatar(url)}
+            />
+            <TextL style={[FontStyles.font4, pageStyles.setButton]}>Set New Photo</TextL>
+          </View>
+        </Touchable> */}
         <FormItem title={'Group Name'} style={styles.groupNameWrap}>
           <CommonInput
             ref={iptRef}

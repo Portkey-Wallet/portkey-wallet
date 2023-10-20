@@ -5,6 +5,7 @@ import './index.less';
 import { CustomAddressItem, ValidData } from 'pages/Contacts/AddContact';
 import EditButtonGroup from '../EditButtonGroup';
 import { ExtraType, ExtraTypeEnum } from 'types/Profile';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const { Item: FormItem } = Form;
 
@@ -32,6 +33,7 @@ export default function AddContactForm({
   handleAddressChange,
 }: IAddContactFormProps) {
   const { t } = useTranslation();
+  const isMainnet = useIsMainnet();
 
   return (
     <Form
@@ -62,12 +64,7 @@ export default function AddContactForm({
                       <Input
                         placeholder="Select Network"
                         disabled
-                        prefix={
-                          <CustomSvg
-                            className="select-svg"
-                            type={addressArr[i]?.networkName?.includes('MainChain') ? 'Aelf' : 'elf-icon'}
-                          />
-                        }
+                        prefix={<CustomSvg className="select-svg" type={isMainnet ? 'Aelf' : 'elf-icon'} />}
                         suffix={
                           <CustomSvg
                             type="Down"

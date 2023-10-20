@@ -156,4 +156,8 @@ const pageStyles = StyleSheet.create({
   dividerStyle: {
     marginVertical: 16,
   },
+  skeleton: {
+    height: '100%',
+    width: '100%',
+  },
 });

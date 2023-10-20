@@ -4,6 +4,7 @@ package io.aelf.portkey.network
 
 import android.util.Log
 import com.facebook.react.bridge.ReadableMap
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -25,7 +26,12 @@ internal object NetworkConnector {
             val request = okhttp3.Request.Builder()
                 .url(url)
                 .headers(header.toHeaders())
-                .tag(TimeOutConfig(options?.getDouble("maxWaitingTime")?.toInt() ?: 5000))
+                .get()
+                .tag<TimeOutConfig>(
+                    TimeOutConfig(
+                        options?.getDouble("maxWaitingTime")?.toInt() ?: 5000
+                    )
+                )
                 .build()
             val response = okHttpClient
                 .newCall(request)
@@ -36,8 +42,9 @@ internal object NetworkConnector {
                     "Network failed ! url:${url}, headers:${header.toHashMap()}, status:${response.code}"
                 )
             }
-            dealWithResponse(response, printBody = !response.isSuccessful || response.code != 200)
+            dealWithResponse(response, printBody = response.code != 200)
         } catch (e: Throwable) {
+            Log.e("NetworkConnector", "getRequest", e)
             ResultWrapper(-1)
         }
     }
@@ -53,7 +60,11 @@ internal object NetworkConnector {
                 .url(url)
                 .headers(header.toHeaders())
                 .post(body.toRequestBody())
-                .tag(TimeOutConfig(options?.getDouble("maxWaitingTime")?.toInt() ?: 5000))
+                .tag<TimeOutConfig>(
+                    TimeOutConfig(
+                        options?.getDouble("maxWaitingTime")?.toInt() ?: 5000
+                    )
+                )
                 .build()
             val response = okHttpClient
                 .newCall(request)
@@ -64,16 +75,23 @@ internal object NetworkConnector {
                     "Network failed ! url:${url}, headers:${header.toHashMap()}, status:${response.code}"
                 )
             }
-            dealWithResponse(response, printBody = !response.isSuccessful || response.code != 200)
+            dealWithResponse(response, printBody = response.code != 200)
         } catch (e: Throwable) {
+            Log.e("NetworkConnector", "postRequest", e)
             ResultWrapper(-1)
         }
     }
 
     private fun ReadableMap.toHeaders(): Headers {
         val headers = Headers.Builder()
-        this.toHashMap().forEach {
-            headers.add(it.key, it.value.toString())
+        this.toHashMap().forEach lambda@{
+            val (key, value) = it
+            if (value == null) {
+                return@lambda
+            } else if (value is String) {
+                if (value.isEmpty()) return@lambda
+            }
+            headers.add(key, value.toString())
         }
         return headers.build()
     }
@@ -182,12 +200,21 @@ internal data class ResultWrapper(
     private val result: JsonElement? = null,
     private val errMessage: String? = null
 ) {
-    fun toJsonString(): String {
+    private fun toJson(): JSONObject {
         val jsonObject = JSONObject()
         jsonObject.put("status", status)
         jsonObject.put("result", result)
         jsonObject.put("errCode", errCode)
         jsonObject.put("errMessage", errMessage)
-        return jsonObject.toString()
+        return jsonObject
+    }
+
+    fun toJsonString(): String {
+        return toJson().toString()
+    }
+
+    fun toPrettyJsonString(): String {
+        val prettyGson = GsonBuilder().setPrettyPrinting().create()
+        return prettyGson.toJson(toJson())
     }
 }

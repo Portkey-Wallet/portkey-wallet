@@ -34,13 +34,16 @@ class RouterModule(reactContext: ReactApplicationContext) :
     ) {
         val activity = NavigationHolder.getTopComponent()
         val targetScene = params.getString("targetScene")
+//        val navigationAnimation = params.getString("navigationAnimation")
+//        val navigationAnimationDuration: Long =
+//            params.getDouble("navigationAnimationDuration").toLong()
         val callbackId = generateUniqueCallbackID()
         activity?.navigateToAnotherReactActivity(
             entryName = targetEntry,
             params = params.getMap("params"),
             targetScene = targetScene,
             callbackId = callbackId,
-            from = from
+            from = from,
         )
         NavigationHolder.registerNavigationCallback(callbackId, callback)
     }

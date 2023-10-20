@@ -1,6 +1,6 @@
 import { AccountOriginalType, ContextInfo } from 'model/verify/after-verify';
-import { CaInfo } from './guardian';
 import AElf from 'aelf-sdk';
+import { ChainId } from '@portkey-wallet/types';
 
 export interface RequestRegisterParams {
   chainId: string;
@@ -63,9 +63,17 @@ export enum ProgressStatus {
   FAIl = 'fail',
 }
 
+export interface BaseAccountStatus {
+  chainId: ChainId;
+  managerInfo: {
+    address: string;
+    extraData: string;
+  };
+}
+
 export interface BaseProgressDTO<T> {
   totalCount: number;
-  items: Array<CaInfo & T>;
+  items: Array<BaseAccountStatus & T>;
 }
 
 export type RegisterProgressDTO = BaseProgressDTO<RegisterStatusDTO>;
@@ -75,15 +83,13 @@ export const isRecoveryStatusItem = (item: RegisterProgressDTO | RecoveryProgres
   return 'recoveryStatus' in item.items[0];
 };
 
-export const AElfWeb3SDK: AElfWeb3SDK = AElf;
+export const AElfWeb3SDK: AElfWeb3SDK = AElf.wallet;
 
 export interface AElfWeb3SDK {
-  wallet: {
-    getWalletByPrivateKey: () => AElfWalletInstance;
-    getWalletByMnemonic: () => AElfWalletInstance;
-    createNewWallet: () => AElfWalletInstance;
-    getAddressFromPubKey: (pubKey: string) => string;
-  };
+  getWalletByPrivateKey: (privKey: string) => AElfWalletInstance;
+  getWalletByMnemonic: (mnemonic: string) => AElfWalletInstance;
+  createNewWallet: () => AElfWalletInstance;
+  getAddressFromPubKey: (pubKey: string) => string;
 }
 
 export interface AElfWalletInstance {

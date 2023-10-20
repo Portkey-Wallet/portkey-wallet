@@ -2,7 +2,6 @@ import { View, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
 import React, { ReactNode, useMemo } from 'react';
 import Svg from 'components/Svg';
 import { blueStyles, hideTitleStyles, whitStyles } from './style/index.style';
-import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { TextL } from 'components/CommonText';
@@ -10,6 +9,7 @@ import type { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { ViewStyleType } from 'types/styles';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
+import { portkeyModulesEntity } from 'service/native-modules';
 
 export type CustomHeaderProps = {
   themeType?: SafeAreaColorMapKeyUnit;
@@ -77,7 +77,14 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     if (noLeftDom) return null;
     if (leftDom) return leftDom;
     if (!isCanGoBack && !leftCallback) return null;
-    const onPress = leftCallback ? leftCallback : () => navigationService.goBack();
+    const onPress = leftCallback
+      ? leftCallback
+      : () => {
+          portkeyModulesEntity.RouterModule.navigateBack({
+            status: 'cancel',
+            data: {},
+          });
+        };
     if (type === 'leftBack') {
       return (
         <TouchableOpacity style={[GStyles.flexRowWrap, GStyles.itemCenter, { padding: pTd(16) }]} onPress={onPress}>

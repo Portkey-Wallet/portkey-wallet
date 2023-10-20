@@ -4,16 +4,13 @@ import { TextM, TextXXXL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
 import { ImageBackground, View } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
-import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import myEvents from 'utils/deviceEvent';
 import styles from '../styles';
 import Email from '../components/Email';
 // import QRCode from '../components/QRCode';
 import Phone from '../components/Phone';
-import Referral from '../components/Referral';
 import { PageLoginType, PageType } from '../types';
 // import SwitchNetwork from '../components/SwitchNetwork';
 import GStyles from 'assets/theme/GStyles';
@@ -21,6 +18,8 @@ import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
 import { CountryCodeItem } from 'types/wallet';
 import useInitSkeleton from 'model/hooks/UseInitSkeleton';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const skeletonPath = require('assets/image/pngs/skeleton-email.png');
@@ -29,10 +28,6 @@ const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
 
 const scrollViewProps = { extraHeight: 120 };
 
-const BackType: any = {
-  [PageLoginType.email]: true,
-  [PageLoginType.phone]: true,
-};
 export default function SignupPortkey({
   selectedCountryCode,
   updateCountryCode,
@@ -45,10 +40,13 @@ export default function SignupPortkey({
   const isMainnet = true;
   const { initSkeleton, showSkeleton } = useInitSkeleton(skeletonPath);
 
+  const { onFinish } = useBaseContainer({
+    entryName: PortkeyEntries.SIGN_UP_ENTRY,
+  });
+
   const signupMap = useMemo(
     () => ({
       [PageLoginType.email]: <Email setLoginType={setLoginType} type={PageType.signup} />,
-      // [PageLoginType.qrCode]: <QRCode setLoginType={setLoginType} />,
       [PageLoginType.qrCode]: <View />,
       [PageLoginType.phone]: (
         <Phone
@@ -58,7 +56,7 @@ export default function SignupPortkey({
           updateCountryCode={updateCountryCode}
         />
       ),
-      [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
+      [PageLoginType.referral]: <View />,
     }),
     [selectedCountryCode, updateCountryCode],
   );
@@ -70,6 +68,15 @@ export default function SignupPortkey({
       return require('../img/background.png');
     }
   }, []);
+
+  const goBack = () => {
+    onFinish<{ status: string }>({
+      status: 'cancel',
+      data: {
+        status: 'cancel',
+      },
+    });
+  };
 
   return initSkeleton ? (
     showSkeleton()
@@ -84,14 +91,7 @@ export default function SignupPortkey({
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}
         containerStyles={styles.containerStyles}
-        leftCallback={
-          BackType[loginType]
-            ? () => setLoginType(PageLoginType.referral)
-            : () => {
-                myEvents.clearLoginInput.emit();
-                navigationService.goBack();
-              }
-        }>
+        leftCallback={goBack}>
         <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (

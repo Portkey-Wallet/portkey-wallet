@@ -35,7 +35,8 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
   const isTestnet = useIsTestnet();
 
   const copyId = useCallback(
-    (ele: addressItemType) => copyText(ele.chainName === 'aelf' ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
+    (ele: addressItemType) =>
+      copyText(ele.chainName === 'aelf' || !ele.chainName ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
     [],
   );
 

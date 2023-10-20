@@ -140,6 +140,7 @@ const SendHome: React.FC = () => {
   );
 
   const onPressMax = useCallback(async () => {
+    Loading.show();
     // check is SYNCHRONIZING
     const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
     if (!_isManagerSynced) {
@@ -157,7 +158,6 @@ const SendHome: React.FC = () => {
     if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
       return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
 
-    Loading.show();
     let fee;
     const isCross = isCrossChain(selectedAssets.chainId, selectedToContact.chainId || 'AELF');
 
@@ -179,8 +179,9 @@ const SendHome: React.FC = () => {
         const selectedAssetsNum = divDecimals(selectedAssets.balance, selectedAssets.decimals || '0');
         setSendNumber(selectedAssetsNum.minus(maxFee).toString());
       }
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
   }, [
     chainInfo?.chainId,
     checkManagerSyncState,

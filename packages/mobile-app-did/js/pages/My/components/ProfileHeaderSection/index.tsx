@@ -24,7 +24,7 @@ const ProfileHeader: React.FC<ProfileHeaderPropsType> = props => {
         resizeMode="cover"
         avatarSize={pTd(80)}
         title={remark || name}
-        imageUrl={avatarUrl}
+        imageUrl={avatarUrl || ''}
         style={styles.avatarStyle}
       />
       <TextXXXL style={[FontStyles.font5, GStyles.marginTop(pTd(8))]}>{name}</TextXXXL>

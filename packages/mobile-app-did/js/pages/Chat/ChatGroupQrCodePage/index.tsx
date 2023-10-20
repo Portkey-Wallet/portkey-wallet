@@ -5,21 +5,22 @@ import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import PageContainer from 'components/PageContainer';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
-import CommonAvatar from 'components/CommonAvatar';
 import { TextL, TextM, TextXXXL } from 'components/CommonText';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { ScreenWidth } from '@rneui/base';
 import Touchable from 'components/Touchable';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import GroupAvatarShow from '../components/GroupAvatarShow';
 
 export type ChatGroupQrCodePageRouteTypes = {
   groupId: string;
   groupName: string;
+  groupIcon: string;
 };
 
 const ChatGroupQrCodePage: React.FC = () => {
   const {
-    params: { groupId, groupName },
+    params: { groupId, groupName, groupIcon },
   } = useRoute<
     RouteProp<{
       params: ChatGroupQrCodePageRouteTypes;
@@ -35,7 +36,14 @@ const ChatGroupQrCodePage: React.FC = () => {
       hideTouchable={true}
       titleDom="Group QR Code"
       containerStyles={[PageStyle.containerStyles]}>
-      <CommonAvatar hasBorder svgName="chat-group-avatar" avatarSize={pTd(80)} style={PageStyle.avatar} />
+      <GroupAvatarShow
+        wrapStyle={PageStyle.avatarWrap}
+        logoSize={pTd(20)}
+        avatarSize={pTd(80)}
+        imageUrl={groupIcon}
+        svgName={groupIcon ? undefined : 'chat-group-avatar-header'}
+      />
+
       <TextXXXL numberOfLines={1} style={GStyles.marginTop(pTd(8))}>
         {groupName || ''}
       </TextXXXL>
@@ -69,9 +77,8 @@ export const PageStyle = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  avatar: {
+  avatarWrap: {
     marginTop: pTd(24),
-    fontSize: pTd(40),
   },
   qrCodeWrap: {
     padding: pTd(16),

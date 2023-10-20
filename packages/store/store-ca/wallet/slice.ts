@@ -20,7 +20,7 @@ import { WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
 
 const initialState: WalletState = {
-  walletAvatar: '',
+  walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`,
   walletType: 'aelf',
   walletName: 'Wallet 01',
   userId: '',
@@ -108,6 +108,7 @@ export const walletSlice = createSlice({
           state.walletName = action.payload.nickName;
           state.userId = action.payload.userId;
           state.walletAvatar = action.payload.avatar || '';
+
           state.userInfo = action.payload;
         }
       })
@@ -115,8 +116,10 @@ export const walletSlice = createSlice({
         state.walletName = action.payload;
       })
       .addCase(setUserInfoAction, (state, action) => {
+        // adjust walletName before
         state.walletName = action.payload.nickName || '';
         state.walletAvatar = action.payload.avatar || '';
+
         state.userInfo = { userId: '', nickName: '', ...state.userInfo, ...action.payload };
       })
       .addCase(setOriginChainId, (state, action) => {

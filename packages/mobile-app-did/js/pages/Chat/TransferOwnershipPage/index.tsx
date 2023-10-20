@@ -114,6 +114,7 @@ const TransferOwnershipPage = () => {
             item={{
               title: item.name,
               relationId: item.relationId,
+              avatar: item.avatar,
             }}
             selected={item.relationId === selectedMemberId}
             onPress={onPressItem}

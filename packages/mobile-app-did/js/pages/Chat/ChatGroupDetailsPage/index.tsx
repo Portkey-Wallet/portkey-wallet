@@ -30,6 +30,7 @@ import myEvents from 'utils/deviceEvent';
 import FloatingActionButton from '../components/FloatingActionButton';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
+import GroupAvatarShow from '../components/GroupAvatarShow';
 
 const ChatGroupDetailsPage = () => {
   const pinChannel = usePinChannel();
@@ -174,7 +175,12 @@ const ChatGroupDetailsPage = () => {
           onPress={() => {
             navigationService.navigate('GroupInfoPage');
           }}>
-          <Svg size={pTd(32)} icon="chat-group-avatar-header" />
+          <GroupAvatarShow
+            logoSize={pTd(12)}
+            avatarSize={pTd(32)}
+            imageUrl={groupInfo?.icon || ''}
+            svgName={groupInfo?.icon ? undefined : 'chat-group-avatar-header'}
+          />
           <View style={[GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8))]}>
             <TextL numberOfLines={1} style={[FontStyles.font2, FontStyles.weight500]}>
               {groupInfo?.name || displayName || ''}
@@ -185,7 +191,7 @@ const ChatGroupDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [displayName, groupInfo?.name, mute, onBack],
+    [displayName, groupInfo?.icon, groupInfo?.name, mute, onBack],
   );
 
   return (

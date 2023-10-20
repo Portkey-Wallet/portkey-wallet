@@ -1,6 +1,6 @@
 import { PortkeyConfig } from 'global';
 import { AccountIdentifierStatusDTO, RegisterStatusDTO } from 'network/dto/signIn';
-import { ResultWrapper, TypedUrlParams, nativeFetch } from 'service/native-modules';
+import { NetworkOptions, ResultWrapper, TypedUrlParams, nativeFetch } from 'service/native-modules';
 import { APIPaths } from 'network/path';
 import { ChainId } from '@portkey-wallet/types';
 import {
@@ -18,10 +18,14 @@ import {
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CountryCodeDataDTO } from 'types/wallet';
 import {
-  RequestRegisterOrSocialRecoveryResult,
+  CheckRegisterOrRecoveryProcessParams,
+  RecoveryProgressDTO,
+  RegisterProgressDTO,
+  RequestRegisterOrSocialRecoveryResultDTO,
   RequestRegisterParams,
   RequestSocialRecoveryParams,
 } from 'network/dto/wallet';
+import { sleep } from '@portkey-wallet/utils';
 
 export class NetworkControllerEntity {
   private realExecute = async <T>(
@@ -29,6 +33,7 @@ export class NetworkControllerEntity {
     method: 'GET' | 'POST',
     params?: any,
     headers?: any,
+    extraOptions?: NetworkOptions,
   ): Promise<ResultWrapper<T>> => {
     if (method === 'GET' && params) {
       url += '?';
@@ -36,7 +41,7 @@ export class NetworkControllerEntity {
         url = url + `&${key}=${encodeURIComponent((value ?? 'null') as string)}`;
       });
     }
-    const result = nativeFetch<T>(url, method, params, headers);
+    const result = nativeFetch<T>(url, method, params, headers, extraOptions);
     return result;
   };
 
@@ -148,8 +153,8 @@ export class NetworkControllerEntity {
     return res.result;
   };
 
-  requestRegister = async (params: RequestRegisterParams): Promise<RequestRegisterOrSocialRecoveryResult> => {
-    const res = await this.realExecute<RequestRegisterOrSocialRecoveryResult>(
+  requestRegister = async (params: RequestRegisterParams): Promise<RequestRegisterOrSocialRecoveryResultDTO> => {
+    const res = await this.realExecute<RequestRegisterOrSocialRecoveryResultDTO>(
       await this.parseUrl(APIPaths.REQUEST_REGISTER),
       'POST',
       params,
@@ -160,13 +165,41 @@ export class NetworkControllerEntity {
 
   requestSocialRecovery = async (
     params: RequestSocialRecoveryParams,
-  ): Promise<RequestRegisterOrSocialRecoveryResult> => {
-    const res = await this.realExecute<RequestRegisterOrSocialRecoveryResult>(
+  ): Promise<RequestRegisterOrSocialRecoveryResultDTO> => {
+    const res = await this.realExecute<RequestRegisterOrSocialRecoveryResultDTO>(
       await this.parseUrl(APIPaths.REQUEST_RECOVERY),
       'POST',
       params,
     );
     if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  checkRegisterProcess = async (
+    sessionId: string,
+    options?: NetworkOptions,
+  ): Promise<RegisterProgressDTO | null | undefined> => {
+    const res = await this.realExecute<RegisterProgressDTO>(
+      await this.parseUrl(APIPaths.CHECK_REGISTER_STATUS),
+      'GET',
+      { filter: `_id:${sessionId}` } as CheckRegisterOrRecoveryProcessParams,
+      {},
+      options,
+    );
+    return res.result;
+  };
+
+  checkSocialRecoveryProcess = async (
+    sessionId: string,
+    options?: NetworkOptions,
+  ): Promise<RecoveryProgressDTO | null | undefined> => {
+    const res = await this.realExecute<RecoveryProgressDTO>(
+      await this.parseUrl(APIPaths.CHECK_SOCIAL_RECOVERY_STATUS),
+      'GET',
+      { filter: `_id:${sessionId}` } as CheckRegisterOrRecoveryProcessParams,
+      {},
+      options,
+    );
     return res.result;
   };
 
@@ -195,3 +228,27 @@ const getPlatformType = (): RecaptchaPlatformType => {
 };
 
 export const NetworkController = new NetworkControllerEntity();
+
+export const handleRequestPolling = async <T>(
+  sendRequest: () => Promise<T | null | undefined>,
+  maxPollingTimes = Infinity,
+  timeGap = 500,
+  verifyResult: (result: T) => boolean = () => true,
+): Promise<T> => {
+  let pollingTimes = 0;
+  let result: T | null | undefined = null;
+  while (pollingTimes < maxPollingTimes) {
+    try {
+      result = await sendRequest();
+    } catch (ignored) {
+      console.error(ignored);
+    }
+    if (result && verifyResult(result)) {
+      break;
+    }
+    pollingTimes++;
+    await sleep(timeGap);
+  }
+  if (!result) throw new Error('network failure');
+  return result;
+};

@@ -2,7 +2,7 @@ import { AppRegistry } from 'react-native';
 import { PortkeyEntries } from './js/config/entries';
 import TestPage from './js/components/TestPage';
 import { initJSModules } from './js/service/js-modules';
-import SignInEntryPage from 'components/entries/sign-in/SignInEntryPage';
+import SignInEntryPage from 'components/entries/SignIn';
 import SelectCountryPage from 'components/entries/SelectCountry';
 import SignUpEntryPage from 'components/entries/SignUp';
 import ReferralEntryPage from 'components/entries/Referral';

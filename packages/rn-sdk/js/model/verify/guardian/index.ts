@@ -133,6 +133,7 @@ export interface GuardianConfig {
   readonly salt?: string;
   readonly alreadySent?: boolean;
   readonly verifySessionId?: string;
+  readonly thirdPartyEmail?: string;
 }
 
 export enum GuardianStatus {

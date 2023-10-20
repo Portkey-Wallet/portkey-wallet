@@ -16,7 +16,7 @@ import Referral from 'pages/Referral';
 import SecurityLock from 'pages/SecurityLock';
 import Receive from 'pages/Receive';
 import NFTDetail from 'pages/NFT/NFTDetail';
-import QrScanner from 'pages/QrScanner';
+import QrCodeNav from 'pages/QrCode';
 import MyNav from 'pages/My/router';
 import BuyNav from 'pages/Buy';
 import DiscoverNav from 'pages/Discover/index';
@@ -33,8 +33,7 @@ export const productionNav = [
   { name: 'SecurityLock', component: SecurityLock, options: { gestureEnabled: false } },
   { name: 'Receive', component: Receive },
   { name: 'NFTDetail', component: NFTDetail },
-  { name: 'QrScanner', component: QrScanner },
-
+  ...QrCodeNav,
   ...GuardianNav,
   ...ActivityNav,
   ...LoginNav,

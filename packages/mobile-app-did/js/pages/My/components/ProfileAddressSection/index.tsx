@@ -1,3 +1,4 @@
+import { AELF_CHIAN_TYPE } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChainId, ChainType } from '@portkey-wallet/types';
 import { addressFormat, formatStr2EllipsisStr } from '@portkey-wallet/utils';
@@ -35,7 +36,8 @@ const ProfileAddressSection: React.FC<ProfileAddressSectionPropsType> = props =>
   const isTestnet = useIsTestnet();
 
   const copyId = useCallback(
-    (ele: addressItemType) => copyText(ele.chainName === 'aelf' ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
+    (ele: addressItemType) =>
+      copyText(ele.chainName === AELF_CHIAN_TYPE || !ele.chainName ? `ELF_${ele.address}_${ele.chainId}` : ele.address),
     [],
   );
 

@@ -34,6 +34,7 @@ const permissionWhitelist = [
   // portkey method
   PortkeyMessageTypes.GET_SEED,
   PortkeyMessageTypes.SET_SEED,
+  PortkeyMessageTypes.CLEAR_SEED,
   PortkeyMessageTypes.LOCK_WALLET,
   PortkeyMessageTypes.CLOSE_PROMPT,
   PortkeyMessageTypes.REGISTER_WALLET,
@@ -136,6 +137,9 @@ export default class ServiceWorkerInstantiate {
         break;
       case PortkeyMessageTypes.SET_SEED:
         ServiceWorkerInstantiate.setSeed(sendResponse, message.payload);
+        break;
+      case PortkeyMessageTypes.CLEAR_SEED:
+        ServiceWorkerInstantiate.clearSeed(sendResponse);
         break;
       case PortkeyMessageTypes.LOCK_WALLET:
         ServiceWorkerInstantiate.lockWallet(sendResponse);
@@ -391,6 +395,11 @@ export default class ServiceWorkerInstantiate {
       ...errorHandler(0),
       data: { privateKey: seed },
     });
+  }
+
+  static clearSeed(sendResponse: SendResponseFun) {
+    seed = null;
+    sendResponse(errorHandler(0));
   }
 
   static async checkTimingLock(sendResponse?: SendResponseFun) {

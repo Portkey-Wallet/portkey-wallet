@@ -24,7 +24,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getManagerAccount } from 'utils/redux';
 import { usePin } from 'hooks/store';
-import { divDecimals, divDecimalsStr, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { divDecimals, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import BigNumber from 'bignumber.js';
 
@@ -140,11 +140,15 @@ const SendHome: React.FC = () => {
   );
 
   const onPressMax = useCallback(async () => {
-    Loading.show();
-    // check is SYNCHRONIZING
-    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-    if (!_isManagerSynced) {
-      return setErrorMessage([TransactionError.SYNCHRONIZING]);
+    try {
+      // check is SYNCHRONIZING
+      Loading.show();
+      const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+      if (!_isManagerSynced) return setErrorMessage([TransactionError.SYNCHRONIZING]);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      Loading.hide();
     }
 
     // balance 0
@@ -158,15 +162,10 @@ const SendHome: React.FC = () => {
     if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
       return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
 
-    let fee;
-    const isCross = isCrossChain(selectedAssets.chainId, selectedToContact.chainId || 'AELF');
-
-    console.log('divDecimalsStr', divDecimalsStr(selectedAssets.balance, selectedAssets.decimals));
-
     try {
-      fee = await getTransactionFee(isCross, divDecimals(selectedAssets.balance, selectedAssets.decimals));
-      setTransactionFee(fee || '0');
-
+      Loading.show();
+      const isCross = isCrossChain(selectedAssets.chainId, selectedToContact.chainId || 'AELF');
+      const fee = await getTransactionFee(isCross, divDecimals(selectedAssets.balance, selectedAssets.decimals));
       setTransactionFee(fee || '0');
       setSendNumber(
         divDecimals(selectedAssets.balance, selectedAssets.decimals || '0')
@@ -317,13 +316,19 @@ const SendHome: React.FC = () => {
    */
 
   const checkCanPreview = useCallback(async () => {
+    Loading.show();
     let fee;
     setErrorMessage([]);
 
-    // check is SYNCHRONIZING
-    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-    if (!_isManagerSynced) {
-      setErrorMessage([TransactionError.SYNCHRONIZING]);
+    try {
+      // check is SYNCHRONIZING
+      const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+      if (!_isManagerSynced) {
+        Loading.hide();
+        setErrorMessage([TransactionError.SYNCHRONIZING]);
+      }
+    } catch (error) {
+      Loading.hide();
       return { status: false };
     }
 
@@ -361,7 +366,6 @@ const SendHome: React.FC = () => {
     }
 
     // transaction fee check
-    Loading.show();
     try {
       fee = await getTransactionFee(isCross);
 
@@ -372,8 +376,9 @@ const SendHome: React.FC = () => {
         Loading.hide();
         return { status: false };
       }
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
 
     return { status: true, fee };
   }, [

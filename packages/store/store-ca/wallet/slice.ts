@@ -107,7 +107,7 @@ export const walletSlice = createSlice({
         if (action.payload) {
           state.walletName = action.payload.nickName;
           state.userId = action.payload.userId;
-
+          state.walletAvatar = action.payload.avatar || '';
           state.userInfo = action.payload;
         }
       })
@@ -115,6 +115,8 @@ export const walletSlice = createSlice({
         state.walletName = action.payload;
       })
       .addCase(setUserInfoAction, (state, action) => {
+        state.walletName = action.payload.nickName || '';
+        state.walletAvatar = action.payload.avatar || '';
         state.userInfo = { userId: '', nickName: '', ...state.userInfo, ...action.payload };
       })
       .addCase(setOriginChainId, (state, action) => {

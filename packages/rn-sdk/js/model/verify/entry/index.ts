@@ -22,6 +22,7 @@ import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { useCallback } from 'react';
 import { PageType } from 'pages/Login/types';
 import { ThirdPartyAccountInfo, handleAppleLogin, handleGoogleLogin, isAppleLogin } from '../third-party-account';
+import { GuardianApprovalPageProps, GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
 
 export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => {
   const { type, entryName, accountOriginalType, setErrorMessage, verifyAccountIdentifier } = verifyConfig;
@@ -201,7 +202,26 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
         accountOriginalType,
         thirdPartyAccountInfo,
       );
-      if (signInPageData) {
+      Loading.hide();
+      if (signInPageData?.guardians?.length > 0) {
+        navigateForResult<GuardianApprovalPageResult, GuardianApprovalPageProps>(
+          PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
+          {
+            params: {
+              deliveredGuardianListInfo: JSON.stringify(signInPageData),
+            },
+          },
+          res => {
+            const { data } = res || {};
+            const { deliveredVerifiedData } = data || {};
+            if (!deliveredVerifiedData) {
+              setErrorMessage('verification failed, please try again.');
+              return;
+            } else {
+              dealWithSetPin(deliveredVerifiedData);
+            }
+          },
+        );
       } else {
         setErrorMessage('network fail.');
         Loading.hide();
@@ -264,10 +284,10 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     });
     const { google, apple } = thirdPartyAccountInfo || {};
     const useThirdPartyFunction = google || apple;
-    Loading.hide();
     try {
       if (useThirdPartyFunction) {
         const recommendedGuardian = await NetworkController.getRecommendedGuardian();
+        Loading.hide();
         const { id } = recommendedGuardian || {};
         if (!id) {
           throw new Error('network failure');
@@ -309,6 +329,7 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
         if (!pageData.guardianConfig) {
           throw new Error('network failure');
         }
+        Loading.hide();
         ActionSheet.alert({
           title: '',
           message: `${

@@ -17,9 +17,12 @@ import { defaultColors } from 'assets/theme';
 import { CountryCodeItem } from 'types/wallet';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
+import useInitSkeleton from 'model/hooks/UseInitSkeleton';
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const skeletonPath = require('assets/image/pngs/skeleton-email.png');
 
 export default function LoginPortkey({
   selectedCountryCode,
@@ -31,6 +34,8 @@ export default function LoginPortkey({
   const { onFinish } = useBaseContainer({
     entryName: PortkeyEntries.SIGN_IN_ENTRY,
   });
+
+  const { initSkeleton, showSkeleton } = useInitSkeleton(skeletonPath);
 
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
   const { t } = useLanguage();
@@ -66,7 +71,9 @@ export default function LoginPortkey({
     });
   };
 
-  return (
+  return initSkeleton ? (
+    showSkeleton()
+  ) : (
     <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
       <PageContainer
         titleDom

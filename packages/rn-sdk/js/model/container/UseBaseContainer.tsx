@@ -35,10 +35,17 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
     options: RouterOptions<T>,
     callback: (res: EntryResult<V>) => void,
   ) => {
+    const { params, closeCurrentScreen, navigationAnimation, navigationAnimationDuration, targetScene } = options;
     portkeyModulesEntity.RouterModule.navigateToWithOptions(
       entry,
       getEntryName(),
-      options.params == null ? Object.assign(options, { params: {} }) : options,
+      {
+        params: params ?? ({} as any),
+        closeCurrentScreen: closeCurrentScreen ?? false,
+        navigationAnimation: navigationAnimation ?? 'slide',
+        navigationAnimationDuration: navigationAnimationDuration ?? 2000,
+        targetScene: targetScene ?? '',
+      },
       callback,
     );
   };

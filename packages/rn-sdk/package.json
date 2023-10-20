@@ -23,6 +23,7 @@
     "@react-native/metro-config": "^0.72.11",
     "@rneui/themed": "^4.0.0-rc.6",
     "aelf-sdk": "^3.2.45-beta.1",
+    "rn-placeholder": "3.0.3",
     "expo": "^49.0.13",
     "expo-application": "^5.4.0",
     "expo-constants": "~14.4.2",

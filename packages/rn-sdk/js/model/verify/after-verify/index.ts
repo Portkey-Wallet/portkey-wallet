@@ -1,10 +1,17 @@
+import { ChainId } from '@portkey-wallet/types';
 import { DeviceInfoType, DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
+import { PortkeyConfig } from 'global';
 import { requestSocialRecoveryOrRegister } from 'model/global';
 import { NetworkController, handleRequestPolling } from 'network/controller';
-import { CaInfo } from 'network/dto/guardian';
-import { ProgressStatus, WalletInfo, isRecoveryStatusItem } from 'network/dto/wallet';
+import {
+  ProgressStatus,
+  RecoveryProgressDTO,
+  RegisterProgressDTO,
+  WalletInfo,
+  isRecoveryStatusItem,
+} from 'network/dto/wallet';
 import { GlobalStorage, TempStorage } from 'service/storage';
 
 const PIN_KEY = 'pin';
@@ -57,7 +64,9 @@ export const getVerifiedAndLockWallet = async (
   setBiometrics?: boolean,
 ): Promise<boolean> => {
   try {
+    const retryTimes = 10;
     const afterVerifiedConfig: AfterVerifiedConfig = JSON.parse(deliveredAfterVerifiedConfig);
+    const chainId = await PortkeyConfig.currChainId();
     if (!afterVerifiedConfig) {
       throw new Error('afterVerifiedConfig is null');
     }
@@ -65,14 +74,14 @@ export const getVerifiedAndLockWallet = async (
     if (!sessionId || !pubKey) {
       throw new Error('request failed');
     }
-    const caInfo = await handleRequestPolling(
+    const status = await handleRequestPolling(
       async () => {
         return afterVerifiedConfig.fromRecovery
           ? NetworkController.checkSocialRecoveryProcess(sessionId, { maxWaitingTime: 3000 })
           : NetworkController.checkRegisterProcess(sessionId, { maxWaitingTime: 3000 });
       },
-      10,
-      500,
+      retryTimes,
+      2000,
       result => {
         return (
           result?.totalCount > 0 &&
@@ -82,10 +91,12 @@ export const getVerifiedAndLockWallet = async (
         );
       },
     );
+    if (findVerifyProcessOnCurrChain(chainId, status) !== ProgressStatus.PASS) {
+      console.warn(`after ${retryTimes} times polling, account status is still pending.`);
+    }
     const walletConfig: RecoverWalletConfig = {
       sessionId,
       fromRecovery: afterVerifiedConfig.fromRecovery,
-      ...caInfo.items[0],
       pubKey,
       privKey,
       address,
@@ -99,6 +110,15 @@ export const getVerifiedAndLockWallet = async (
     CommonToast.fail('Network failed, please try again later');
   }
   return false;
+};
+
+const findVerifyProcessOnCurrChain = (
+  chainId: ChainId,
+  status: RecoveryProgressDTO | RegisterProgressDTO,
+): ProgressStatus | undefined => {
+  return isRecoveryStatusItem(status)
+    ? status?.items?.find(item => item.chainId === chainId)?.recoveryStatus
+    : status?.items?.find(item => item.chainId === chainId)?.registerStatus;
 };
 
 const lockWallet = async (pinValue: string, config: RecoverWalletConfig): Promise<void> => {
@@ -152,5 +172,4 @@ export const unLockTempWallet = async (pinValue?: string, useBiometric = false):
 export type RecoverWalletConfig = {
   sessionId: string;
   fromRecovery: boolean;
-} & CaInfo &
-  WalletInfo;
+} & WalletInfo;

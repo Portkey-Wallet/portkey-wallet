@@ -20,6 +20,11 @@ import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
 import { CountryCodeItem } from 'types/wallet';
+import useInitSkeleton from 'model/hooks/UseInitSkeleton';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const skeletonPath = require('assets/image/pngs/skeleton-email.png');
+
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
 
 const scrollViewProps = { extraHeight: 120 };
@@ -38,6 +43,7 @@ export default function SignupPortkey({
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
   const { t } = useLanguage();
   const isMainnet = true;
+  const { initSkeleton, showSkeleton } = useInitSkeleton(skeletonPath);
 
   const signupMap = useMemo(
     () => ({
@@ -52,7 +58,7 @@ export default function SignupPortkey({
           updateCountryCode={updateCountryCode}
         />
       ),
-      [PageLoginType.referral]: <Referral setLoginType={setLoginType} type={PageType.signup} />,
+      [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
     [selectedCountryCode, updateCountryCode],
   );
@@ -65,7 +71,9 @@ export default function SignupPortkey({
     }
   }, []);
 
-  return (
+  return initSkeleton ? (
+    showSkeleton()
+  ) : (
     <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
       <PageContainer
         titleDom

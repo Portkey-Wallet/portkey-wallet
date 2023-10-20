@@ -110,7 +110,7 @@ export const getSocialRecoveryPageData = async (
   return {
     accountIdentifier,
     accountOriginalType,
-    guardians: (guardians.guardianList.guardians ?? []).map(guardian => ({
+    guardians: (guardians?.guardianList?.guardians ?? []).map(guardian => ({
       ...guardian,
       accountIdentifier,
       accountOriginalType,
@@ -131,7 +131,7 @@ export const getSocialRecoveryPageData = async (
 
 export const requestSocialRecoveryOrRegister = async (params: AfterVerifiedConfig): Promise<RequestProcessResult> => {
   await sleep(500);
-  const { address, privateKey, keyPair } = AElfWeb3SDK.wallet.createNewWallet();
+  const { address, privateKey, keyPair } = AElfWeb3SDK.createNewWallet();
   const publicKey = keyPair.getPublic('hex');
   const { fromRecovery, accountIdentifier, verifiedGuardians, chainId, extraData } = params;
   let sessionId = '';

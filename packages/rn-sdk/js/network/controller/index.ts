@@ -27,6 +27,8 @@ import {
 } from 'network/dto/wallet';
 import { sleep } from '@portkey-wallet/utils';
 
+const DEFAULT_MAX_POLLING_TIMES = 50;
+
 export class NetworkControllerEntity {
   private realExecute = async <T>(
     url: string,
@@ -231,7 +233,7 @@ export const NetworkController = new NetworkControllerEntity();
 
 export const handleRequestPolling = async <T>(
   sendRequest: () => Promise<T | null | undefined>,
-  maxPollingTimes = Infinity,
+  maxPollingTimes = DEFAULT_MAX_POLLING_TIMES,
   timeGap = 500,
   verifyResult: (result: T) => boolean = () => true,
 ): Promise<T> => {

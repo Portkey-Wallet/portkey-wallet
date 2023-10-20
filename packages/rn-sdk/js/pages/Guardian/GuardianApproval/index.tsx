@@ -292,7 +292,7 @@ export default function GuardianApproval({
                   token = (await verifyHumanMachine('en')) as string;
                 }
                 const sendResult = await NetworkController.sendVerifyCode(guardian.sendVerifyCodeParams, {
-                  reCaptchaToken: token,
+                  reCaptchaToken: token ?? '',
                 });
                 Loading.hide();
                 if (sendResult) {
@@ -316,6 +316,7 @@ export default function GuardianApproval({
                 CommonToast.fail('guardian verify failed, please try again.');
                 Loading.hide();
               } catch (e) {
+                console.error(e);
                 CommonToast.fail('network fail.');
                 Loading.hide();
               }

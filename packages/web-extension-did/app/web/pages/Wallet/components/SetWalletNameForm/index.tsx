@@ -4,7 +4,7 @@ import { Button, Form, Input, message } from 'antd';
 import { FormItem } from 'components/BaseAntd';
 import { useSetUserInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
-import { useWalletInfo } from 'store/Provider/hooks';
+import { useLoading, useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
 import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
@@ -38,6 +38,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
 
   const [avatarDataUrl, setAvatarDataUrl] = useState(walletAvatar);
   const newAvatarFile = useRef<RcFile>();
+  const { setLoading } = useLoading();
 
   const handleInputChange = useCallback((value: string) => {
     setValidName({
@@ -54,6 +55,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
   const handleUpdateName = useCallback(
     async (walletName: string) => {
       try {
+        setLoading(true);
         let s3Url = '';
         if (newAvatarFile.current) {
           s3Url = await uploadImageToS3(newAvatarFile.current);
@@ -65,9 +67,11 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
       } catch (error) {
         message.error('set wallet name error');
         console.log('setWalletName: error', error);
+      } finally {
+        setLoading(false);
       }
     },
-    [saveCallback, setUserInfo, t],
+    [saveCallback, setLoading, setUserInfo, t],
   );
 
   const getFile = useCallback((file: RcFile) => {

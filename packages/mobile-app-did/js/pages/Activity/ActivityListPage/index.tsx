@@ -80,7 +80,7 @@ const ActivityListPage = () => {
         onRefresh={() => getActivityList(true)}
         onEndReached={() => getActivityList(false)}
         windowSize={50}
-        maxToRenderPerBatch={5}
+        maxToRenderPerBatch={10}
         initialNumToRender={20}
         onEndReachedThreshold={0.3}
         ListEmptyComponent={<NoData message={t('You have no transactions.')} topDistance={pTd(160)} />}

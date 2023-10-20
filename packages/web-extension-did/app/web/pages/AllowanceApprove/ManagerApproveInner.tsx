@@ -134,20 +134,20 @@ export default function ManagerApproveInner({
     [getGuardianList, onError, setLoading],
   );
 
-  const chainInfo = useCurrentChain(originChainId);
+  const targetChainInfo = useCurrentChain(targetChainId);
   const { walletInfo } = useCurrentWallet();
 
   const getTokenInfo = useCallback(async () => {
     try {
-      if (!chainInfo) throw Error('Missing verifier, please check params');
+      if (!targetChainInfo) throw Error('Missing verifier, please check params');
       const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
       const pin = getSeedResult.data.privateKey;
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
       if (!privateKey) throw 'Invalid user information, please check';
       const contract = await new ExtensionContractBasic({
         privateKey,
-        rpcUrl: chainInfo.endPoint,
-        contractAddress: chainInfo.defaultToken.address,
+        rpcUrl: targetChainInfo.endPoint,
+        contractAddress: targetChainInfo.defaultToken.address,
       });
       const result = await contract.callViewMethod('GetTokenInfo', {
         symbol,
@@ -159,7 +159,7 @@ export default function ManagerApproveInner({
       console.error(error);
       onError?.(Error(handleErrorMessage(error)));
     }
-  }, [amount, chainInfo, onError, symbol, walletInfo.AESEncryptPrivateKey]);
+  }, [amount, targetChainInfo, onError, symbol, walletInfo.AESEncryptPrivateKey]);
 
   useEffect(() => {
     getTokenInfo();

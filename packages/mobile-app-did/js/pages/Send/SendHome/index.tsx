@@ -24,7 +24,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getManagerAccount } from 'utils/redux';
 import { usePin } from 'hooks/store';
-import { divDecimals, divDecimalsStr, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { divDecimals, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import BigNumber from 'bignumber.js';
 
@@ -140,33 +140,25 @@ const SendHome: React.FC = () => {
   );
 
   const onPressMax = useCallback(async () => {
-    // check is SYNCHRONIZING
-    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-    if (!_isManagerSynced) {
-      return setErrorMessage([TransactionError.SYNCHRONIZING]);
-    }
-
-    // balance 0
-    if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isEqualTo(0)) return setSendNumber('0');
-
-    // other tokens
-    if (selectedAssets.symbol !== defaultToken.symbol)
-      return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
-
-    // elf <= maxFee
-    if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
-      return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
-
     Loading.show();
-    let fee;
-    const isCross = isCrossChain(selectedAssets.chainId, selectedToContact.chainId || 'AELF');
-
-    console.log('divDecimalsStr', divDecimalsStr(selectedAssets.balance, selectedAssets.decimals));
-
     try {
-      fee = await getTransactionFee(isCross, divDecimals(selectedAssets.balance, selectedAssets.decimals));
-      setTransactionFee(fee || '0');
+      // check is SYNCHRONIZING
+      const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+      if (!_isManagerSynced) return setErrorMessage([TransactionError.SYNCHRONIZING]);
 
+      // balance 0
+      if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isEqualTo(0)) return setSendNumber('0');
+
+      // other tokens
+      if (selectedAssets.symbol !== defaultToken.symbol)
+        return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
+
+      // elf <= maxFee
+      if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
+        return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
+
+      const isCross = isCrossChain(selectedAssets.chainId, selectedToContact.chainId || 'AELF');
+      const fee = await getTransactionFee(isCross, divDecimals(selectedAssets.balance, selectedAssets.decimals));
       setTransactionFee(fee || '0');
       setSendNumber(
         divDecimals(selectedAssets.balance, selectedAssets.decimals || '0')
@@ -179,8 +171,9 @@ const SendHome: React.FC = () => {
         const selectedAssetsNum = divDecimals(selectedAssets.balance, selectedAssets.decimals || '0');
         setSendNumber(selectedAssetsNum.minus(maxFee).toString());
       }
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
   }, [
     chainInfo?.chainId,
     checkManagerSyncState,
@@ -316,54 +309,53 @@ const SendHome: React.FC = () => {
    */
 
   const checkCanPreview = useCallback(async () => {
+    Loading.show();
     let fee;
     setErrorMessage([]);
 
-    // check is SYNCHRONIZING
-    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-    if (!_isManagerSynced) {
-      setErrorMessage([TransactionError.SYNCHRONIZING]);
-      return { status: false };
-    }
-
-    const sendBigNumber = timesDecimals(sendNumber, selectedAssets.decimals || '0');
-    const assetBalanceBigNumber = ZERO.plus(selectedAssets.balance);
-    const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId);
-
-    // input check
-    if (sendType === 'token') {
-      // token
-      if (assetInfo.symbol === defaultToken.symbol) {
-        // ELF
-        if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-          setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
-          return { status: false };
-        }
-
-        if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
-          setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
-          return { status: false };
-        }
-      } else {
-        //Other Token
-        if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-          setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
-          return { status: false };
-        }
-      }
-    } else {
-      // nft
-      if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-        setErrorMessage([TransactionError.NFT_NOT_ENOUGH]);
+    try {
+      // check is SYNCHRONIZING
+      const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+      if (!_isManagerSynced) {
+        setErrorMessage([TransactionError.SYNCHRONIZING]);
         return { status: false };
       }
-    }
 
-    // transaction fee check
-    Loading.show();
-    try {
+      const sendBigNumber = timesDecimals(sendNumber, selectedAssets.decimals || '0');
+      const assetBalanceBigNumber = ZERO.plus(selectedAssets.balance);
+      const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId);
+
+      // input check
+      if (sendType === 'token') {
+        // token
+        if (assetInfo.symbol === defaultToken.symbol) {
+          // ELF
+          if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
+            setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+            return { status: false };
+          }
+
+          if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
+            setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
+            return { status: false };
+          }
+        } else {
+          //Other Token
+          if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
+            setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+            return { status: false };
+          }
+        }
+      } else {
+        // nft
+        if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
+          setErrorMessage([TransactionError.NFT_NOT_ENOUGH]);
+          return { status: false };
+        }
+      }
+
+      // transaction fee check
       fee = await getTransactionFee(isCross);
-
       setTransactionFee(fee || '0');
     } catch (err: any) {
       if (err?.code === 500) {
@@ -371,8 +363,9 @@ const SendHome: React.FC = () => {
         Loading.hide();
         return { status: false };
       }
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
 
     return { status: true, fee };
   }, [

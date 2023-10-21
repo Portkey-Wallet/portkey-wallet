@@ -17,6 +17,7 @@ import { useChannelList } from './channelList';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { request } from '@portkey-wallet/api/api-did';
 import useLockCallback from '../../useLockCallback';
+import { handleLoopFetch } from '@portkey-wallet/utils';
 
 export const useIMState = () => useAppCASelector(state => state.im);
 export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
@@ -43,9 +44,38 @@ export const useUnreadCount = () => {
   return unreadCount;
 };
 
+export const useRelationId = () => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+  const relationIdNetMap = useIMRelationIdNetMapNetMapState();
+
+  const relationId = useMemo(() => relationIdNetMap?.[networkType], [networkType, relationIdNetMap]);
+
+  const getRelationId = useCallback(async () => {
+    const { data: userInfo } = await im.service.getUserInfo();
+    if (userInfo?.relationId) {
+      dispatch(
+        setRelationId({
+          network: networkType,
+          relationId: userInfo.relationId,
+        }),
+      );
+
+      return userInfo.relationId;
+    }
+    throw new Error('can not get im info');
+  }, [dispatch, networkType]);
+
+  return {
+    relationId,
+    getRelationId,
+  };
+};
+
 export const useInitIM = () => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
+  const { getRelationId } = useRelationId();
 
   const channelListNetMap = useIMChannelListNetMapState();
   const list = useMemo(() => channelListNetMap?.[networkType]?.list || [], [channelListNetMap, networkType]);
@@ -185,26 +215,14 @@ export const useInitIM = () => {
           filter: `caHash: ${caHash}`,
         },
       });
-      const { data: userInfo } = await im.service.getUserInfo();
-      if (userInfo?.relationId) {
-        dispatch(
-          setRelationId({
-            network: networkType,
-            relationId: userInfo.relationId,
-          }),
-        );
-      }
+
+      handleLoopFetch(getRelationId, 3).catch(error => {
+        console.log('initIm getRelationId error', error);
+      });
     },
     [dispatch, networkType, relationToken],
   );
   return initIm;
-};
-
-export const useRelationId = () => {
-  const { networkType } = useCurrentNetworkInfo();
-  const relationIdNetMap = useIMRelationIdNetMapNetMapState();
-
-  return useMemo(() => relationIdNetMap?.[networkType], [networkType, relationIdNetMap]);
 };
 
 export const useIsIMReady = () => {

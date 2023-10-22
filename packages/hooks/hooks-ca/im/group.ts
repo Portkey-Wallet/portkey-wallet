@@ -197,7 +197,7 @@ export const useGroupChannelInfo = (channelId: string, isInit = false) => {
     [channelId, groupInfoMapNetMap, networkType],
   );
 
-  const relationId = useRelationId();
+  const { relationId } = useRelationId();
 
   const refresh = useCallback(async () => {
     const { data: groupInfo } = await im.service.getChannelInfo({

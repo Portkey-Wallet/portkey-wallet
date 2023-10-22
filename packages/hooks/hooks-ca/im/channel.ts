@@ -51,11 +51,11 @@ export const useIsStranger = (relationId: string) => {
 export const useSendChannelMessage = () => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
-  const relationId = useRelationId();
+  const { relationId, getRelationId } = useRelationId();
   const { walletName } = useWallet();
 
   const sendMessageToPeople = useCallback(
-    ({
+    async ({
       toRelationId,
       channelId,
       type = 'TEXT',
@@ -69,8 +69,13 @@ export const useSendChannelMessage = () => {
       if (!(toRelationId || channelId)) {
         throw new Error('No ID');
       }
-      if (!relationId) {
-        throw new Error('No user info');
+      let _relationId = relationId;
+      if (!_relationId) {
+        try {
+          _relationId = await getRelationId();
+        } catch (error) {
+          throw new Error('No user info');
+        }
       }
       const uuid = randomId();
       return im.service.sendMessage({
@@ -78,10 +83,10 @@ export const useSendChannelMessage = () => {
         toRelationId,
         type,
         content,
-        sendUuid: `${relationId}-${toRelationId}-${Date.now()}-${uuid}`,
+        sendUuid: `${_relationId}-${toRelationId}-${Date.now()}-${uuid}`,
       });
     },
-    [relationId],
+    [getRelationId, relationId],
   );
 
   const sendMassMessage = useCallback(
@@ -125,20 +130,25 @@ export const useSendChannelMessage = () => {
 
   const sendChannelMessage = useCallback(
     async (channelId: string, content: string, type = 'TEXT' as MessageType) => {
-      if (!relationId) {
-        throw new Error('No user info');
+      let _relationId = relationId;
+      if (!_relationId) {
+        try {
+          _relationId = await getRelationId();
+        } catch (error) {
+          throw new Error('No user info');
+        }
       }
       const uuid = randomId();
       const msgParams = {
         channelUuid: channelId,
         type,
         content,
-        sendUuid: `${relationId}-${channelId}-${Date.now()}-${uuid}`,
+        sendUuid: `${_relationId}-${channelId}-${Date.now()}-${uuid}`,
       };
 
       const msgObj: Message = messageParser({
         ...msgParams,
-        from: relationId,
+        from: _relationId,
         fromAvatar: '',
         fromName: walletName,
         createAt: `${Date.now()}`,
@@ -179,7 +189,7 @@ export const useSendChannelMessage = () => {
         throw error;
       }
     },
-    [dispatch, networkType, relationId, walletName],
+    [dispatch, getRelationId, networkType, relationId, walletName],
   );
   const sendChannelImageByS3Result = useCallback(
     async (channelId: string, s3Result: UploadFileType & ImageMessageFileType) => {
@@ -391,7 +401,7 @@ export const useChannel = (channelId: string) => {
   const { networkType } = useCurrentNetworkInfo();
   const dispatch = useAppCommonDispatch();
 
-  const relationId = useRelationId();
+  const { relationId } = useRelationId();
 
   const muteChannel = useMuteChannel();
   const pinChannel = usePinChannel();

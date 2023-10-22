@@ -26,7 +26,7 @@ import { ShowShareWithOverlay } from '../components/ShareWithOverlay';
 import { copyText } from 'utils';
 
 const GroupInfoPage = () => {
-  const myRelationId = useRelationId();
+  const { relationId: myRelationId } = useRelationId();
 
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(currentChannelId || '', false);

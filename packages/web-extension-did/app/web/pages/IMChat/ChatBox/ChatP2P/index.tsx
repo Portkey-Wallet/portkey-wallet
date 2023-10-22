@@ -39,7 +39,7 @@ export default function ChatBox() {
   useEffectOnce(() => {
     init();
   });
-  const relationId = useRelationId();
+  const { relationId } = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!), [list, relationId]);
   const handleDelete = useCallback(() => {
     CustomModalConfirm({

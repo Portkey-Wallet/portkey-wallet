@@ -3,6 +3,10 @@ export const DEFAULT_FEE = '0.39';
 
 export const CreateAddressLoading = 'Creating address on the chain...';
 
+export const CheckAccountLoading = 'Checking account info on the blockchain';
+
+export const AssignVerifierLoading = 'Assigning a verifier on the blockchain';
+
 export const InitLoginLoading = 'Initiating social recovery';
 
 export const DEFAULT_TOKEN = {

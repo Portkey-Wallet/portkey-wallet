@@ -103,7 +103,7 @@ const GroupInfo = () => {
         <div className="group-info-container">
           <div className="info-basic flex-center">
             <div className="flex-column-center">
-              <Avatar channelType={ChannelTypeEnum.GROUP} src={groupInfo?.icon} groupAvatarSize="large" />
+              <Avatar channelType={ChannelTypeEnum.GROUP} src={groupInfo?.icon} avatarSize="large" />
               <div className="group-name">{groupInfo?.name || ''}</div>
               <div className="group-members">
                 {memberLen}
@@ -151,7 +151,7 @@ const GroupInfo = () => {
               (m) => (
                 <div className="member-item flex-row-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
                   <div className="flex member-basic">
-                    <Avatar width={28} height={28} src={m.avatar} letter={m.name.slice(0, 1).toUpperCase()} />
+                    <Avatar src={m.avatar} letter={m.name.slice(0, 1).toUpperCase()} avatarSize="small" />
                     <div className="member-name">{m.name}</div>
                   </div>
                   {m.isAdmin && <div className="admin-icon flex-center">Owner</div>}

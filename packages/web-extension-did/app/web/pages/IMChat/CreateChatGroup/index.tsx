@@ -31,6 +31,7 @@ export default function CreateChatGroup() {
   const [disable, setDisabled] = useState<boolean>(true);
   const createGroupChannel = useCreateGroupChannel();
   const [file, setFile] = useState<RcFile>();
+  const [previewUrl, setPreviewUrl] = useState<string>('');
   const { setLoading } = useLoading();
 
   const handleFormValueChange = useCallback(() => {
@@ -151,7 +152,14 @@ export default function CreateChatGroup() {
             {/* input */}
             <FormItem name="name" label={t('Group Name')} className="group-name-input">
               <Input
-                prefix={<UploadAvatar wrapperClass="group-avatar-upload" getFile={setFile} />}
+                prefix={
+                  <UploadAvatar
+                    getTemporaryDataURL={setPreviewUrl}
+                    wrapperClass="group-avatar-upload"
+                    getFile={setFile}
+                    avatarUrl={previewUrl}
+                  />
+                }
                 placeholder={t('Group Name')}
                 onChange={handleNameChange}
                 maxLength={40}

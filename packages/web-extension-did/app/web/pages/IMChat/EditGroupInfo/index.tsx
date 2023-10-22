@@ -34,6 +34,7 @@ export default function EditGroupInfo() {
   const updateChannelInfo = useUpdateChannelInfo();
   const [file, setFile] = useState<RcFile>();
   const { setLoading } = useLoading();
+  const [previewUrl, setPreviewUrl] = useState<string>(groupInfo?.icon || '');
   const handleInputValueChange = useCallback(
     (v: string) => {
       setValidName({ validateStatus: '', errorMsg: '' });
@@ -106,7 +107,13 @@ export default function EditGroupInfo() {
         onFinish={onFinish}>
         <div className="form-content">
           <div className="group-info-avatar flex-center">
-            <UploadAvatar avatarUrl={groupInfo?.icon} getFile={setFile} uploadText="Set New Photo" size="large" />
+            <UploadAvatar
+              avatarUrl={previewUrl}
+              getTemporaryDataURL={setPreviewUrl}
+              getFile={setFile}
+              uploadText="Set New Photo"
+              size="large"
+            />
           </div>
           <FormItem name="name" label="Group Name" validateStatus={validName.validateStatus} help={validName.errorMsg}>
             <Input

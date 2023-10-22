@@ -121,7 +121,7 @@ const ChatsUI = () => {
     };
   }, [onDismiss, onLoadEarlier]);
 
-  const relationId = useRelationId();
+  const { relationId } = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   useEffectOnce(() => {

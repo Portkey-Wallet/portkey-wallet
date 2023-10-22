@@ -23,7 +23,7 @@ import './index.less';
 const GroupInfo = () => {
   const { channelUuid } = useParams();
   const leaveGroup = useLeaveChannel();
-  const myRelationId = useRelationId();
+  const { relationId: myRelationId } = useRelationId();
   const [shareVisible, setShareVisible] = useState(false);
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const { sendMassMessage } = useSendChannelMessage();

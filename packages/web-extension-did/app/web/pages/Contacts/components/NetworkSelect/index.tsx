@@ -66,7 +66,7 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
             onClick={() => {
               onChange(net);
             }}>
-            <CustomSvg type={net.networkName.includes('MainChain') ? 'Aelf' : 'elf-icon'} />
+            <CustomSvg type={isTestNet ? 'elf-icon' : 'Aelf'} />
             <div className="info">{net?.networkName}</div>
           </div>
         ))}

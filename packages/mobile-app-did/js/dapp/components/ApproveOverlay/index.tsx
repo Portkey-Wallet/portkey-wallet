@@ -154,7 +154,7 @@ const ApproveModal = (props: SignModalPropsType) => {
         </View>
 
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.inputTitle]}>
-          <TextM>{`Set Allowance (${approveParams.approveInfo.symbol})`}</TextM>
+          <TextM style={GStyles.flex1}>{`Set Allowance (${approveParams.approveInfo.symbol})`}</TextM>
           <Touchable onPress={onUseRecommendedValue}>
             <TextM style={FontStyles.font4}> Use Recommended Value</TextM>
           </Touchable>

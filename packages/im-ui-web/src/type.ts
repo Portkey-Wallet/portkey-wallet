@@ -178,6 +178,8 @@ export interface IPopoverMenuListProps {
   data?: IPopoverMenuListData[];
 }
 
+export type IAvatarSize = 'small' | 'default' | 'large';
+
 export interface IAvatarProps {
   src?: string;
   showLetter?: boolean;
@@ -187,7 +189,7 @@ export interface IAvatarProps {
   channelType?: ChannelTypeEnum;
   width?: number;
   height?: number;
-  groupAvatarSize?: 'default' | 'large';
+  avatarSize?: IAvatarSize;
   onClick?: React.MouseEventHandler;
 }
 

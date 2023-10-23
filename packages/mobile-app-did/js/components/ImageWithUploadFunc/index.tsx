@@ -38,7 +38,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
         const info = await getInfo(result.uri);
         result.fileSize = info.size;
       }
-
+      // TODO: file size limit
       console.log('fileSize', result.fileSize);
       if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return;
       Loading.show();

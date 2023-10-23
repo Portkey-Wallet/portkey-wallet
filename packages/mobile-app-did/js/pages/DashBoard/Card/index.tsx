@@ -21,7 +21,7 @@ import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const { walletName } = useWallet();
+  const { userInfo } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { isBuyButtonShow } = useBuyButtonShow(
@@ -42,7 +42,7 @@ const Card: React.FC = () => {
         </TouchableOpacity>
       </View>
       <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
-      <TextM style={styles.accountName}>{walletName}</TextM>
+      <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
       <View style={styles.buttonGroupWrap}>
         {isBuyButtonShow && (
           <>

@@ -1,28 +1,26 @@
 package io.aelf.portkey.native_modules
 
 import android.util.Log
-import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import io.aelf.core.JSNameSpace
-import io.aelf.portkey.components.JSEventBus
+import io.aelf.portkey.components.logic.JSEventBus
 import io.aelf.portkey.navigation.NavigationHolder
-import io.aelf.portkey.tools.generateUniqueCallbackID
+import java.lang.ref.WeakReference
 
-internal class NativeWrapperModule(private val context: ReactApplicationContext) :
+var portkeyReactNativeHandler: NativeWrapperModule? = null
+
+class NativeWrapperModule(context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
-//    companion object {
-//        @JvmStatic
-//        var instance: NativeWrapperModule? = null
-//    }
-//
-//    init {
-//        instance = this
-//    }
+    private var contextHolder: WeakReference<ReactApplicationContext>
+
+    init {
+        contextHolder = WeakReference(context)
+        portkeyReactNativeHandler = this
+    }
 
     @ReactMethod
     override fun getName(): String {
@@ -67,25 +65,6 @@ internal class NativeWrapperModule(private val context: ReactApplicationContext)
         // Keep: Required for RN built in Event Emitter Calls.
     }
 
-    fun <T> callJSMethod(
-        moduleName: String,
-        methodName: String,
-        params: WritableNativeArray,
-        callback: (T) -> Unit,
-        tClass: Class<T>
-    ) {
-        val callbackId = generateUniqueCallbackID()
-        params.pushString(callbackId)
-        JSEventBus.registerCallback(callbackId, callback, tClass)
-        context.catalystInstance.jsMethodCaller(moduleName, methodName, params)
-    }
-
-    fun callJSMethod(moduleName: String, methodName: String, params: WritableNativeArray) {
-        val callbackId = generateUniqueCallbackID()
-        params.pushString(callbackId)
-        context.catalystInstance.jsMethodCaller(moduleName, methodName, params)
-    }
-
     fun sendGeneralEvent(eventName: String, params: ReadableMap) {
         this.reactApplicationContext
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
@@ -93,12 +72,5 @@ internal class NativeWrapperModule(private val context: ReactApplicationContext)
     }
 }
 
-/** Used just to inform the parameter name of catalystInstance */
-fun CatalystInstance.jsMethodCaller(
-    moduleName: String,
-    methodName: String,
-    params: WritableNativeArray
-) {
-    this.callFunction(moduleName, methodName, params)
-}
+
 

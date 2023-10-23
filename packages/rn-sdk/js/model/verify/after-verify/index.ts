@@ -98,8 +98,8 @@ export const getVerifiedAndLockWallet = async (
 const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<RecoverWalletConfig> => {
   const retryTimes = 10;
   const chainId = await PortkeyConfig.currChainId();
-  const { sessionId, publicKey: pubKey, privateKey: privKey, address } = await requestSocialRecoveryOrRegister(config);
-  if (!sessionId || !pubKey) {
+  const { sessionId, publicKey, privateKey, address } = await requestSocialRecoveryOrRegister(config);
+  if (!sessionId || !publicKey) {
     throw new Error('request failed');
   }
   const status = await handleRequestPolling<RecoveryProgressDTO | RegisterProgressDTO>({
@@ -140,8 +140,8 @@ const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<Recover
     sessionId,
     fromRecovery: config.fromRecovery,
     accountIdentifier: config.accountIdentifier,
-    publicKey: pubKey,
-    privateKey: privKey,
+    publicKey,
+    privateKey,
     address,
   };
 };

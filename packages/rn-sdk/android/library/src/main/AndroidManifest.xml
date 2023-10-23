@@ -17,13 +17,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".activities.DefaultReactActivity"
+            android:name=".components.activities.DefaultReactActivity"
             android:launchMode="standard"
             android:screenOrientation="portrait"
             android:theme="@style/ReactActivityAnimation"
             />
 
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+
+        <service android:name=".components.services.GeneralJSMethodService"/>
 
     </application>
 

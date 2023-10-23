@@ -12,6 +12,7 @@ import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@po
 import { pTd } from 'utils/unit';
 import { ChainId } from '@portkey-wallet/types';
 import navigationService from 'utils/navigationService';
+import CommonAvatar from 'components/CommonAvatar';
 
 export interface ItemType {
   fromChainId?: ChainId;
@@ -29,9 +30,14 @@ const SendContactItem: React.FC<ItemType> = props => {
   return (
     <TouchableOpacity style={styles.itemWrap}>
       <TouchableOpacity style={styles.topWrap} onPress={() => setCollapsed(!collapsed)}>
-        <View style={styles.itemAvatar}>
-          <TextXXL>{contact?.index}</TextXXL>
-        </View>
+        <CommonAvatar
+          hasBorder
+          resizeMode="cover"
+          title={(contact?.name || contact?.caHolderInfo?.walletName || contact.imInfo?.name)?.toUpperCase()}
+          avatarSize={pTd(36)}
+          imageUrl={contact.avatar || ''}
+          style={styles.itemAvatar}
+        />
         <TextL style={styles.contactName}>
           {contact?.name || contact.caHolderInfo?.walletName || contact.imInfo?.name}
         </TextL>
@@ -112,16 +118,7 @@ export const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
   },
   itemAvatar: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
-    width: pTd(36),
-    height: pTd(36),
-    borderRadius: pTd(23),
-    backgroundColor: defaultColors.bg4,
     marginRight: pTd(10),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   topWrap: {
     ...GStyles.flexRowWrap,

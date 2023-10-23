@@ -66,7 +66,7 @@ export default function UploadAvatar({
         <div className={clsx(['flex-center', 'upload-avatar', uploadAvatarClass, wrapperClass])} style={wrapperStyle}>
           {avatarUrl ? (
             <div className="upload-avatar-main">
-              <ImageDisplay src={avatarUrl} defaultHeight={avatarDefaultHeight} />
+              <ImageDisplay src={avatarUrl} defaultHeight={avatarDefaultHeight} className="avatar-img" />
               <div className="camera-icon-mask">
                 <CustomSvg
                   type="Camera"

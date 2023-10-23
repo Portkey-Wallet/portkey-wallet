@@ -56,7 +56,7 @@ export default function Avatar({
   return (
     <div className={clsx(['flex-center', 'avatar', avatarClass, wrapperClass])} style={wrapperStyle} onClick={onClick}>
       {avatarUrl ? (
-        <ImageDisplay src={avatarUrl} defaultHeight={avatarDefaultHeight} />
+        <ImageDisplay src={avatarUrl} defaultHeight={avatarDefaultHeight} className="avatar-img" />
       ) : (
         <div className="flex-center name-index" style={wrapperStyle}>
           {nameIndex}

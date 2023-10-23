@@ -74,23 +74,37 @@ export const getVerifiedAndLockWallet = async (
     if (!sessionId || !pubKey) {
       throw new Error('request failed');
     }
-    const status = await handleRequestPolling(
-      async () => {
+    const status = await handleRequestPolling<RecoveryProgressDTO | RegisterProgressDTO>({
+      sendRequest: () => {
         return afterVerifiedConfig.fromRecovery
           ? NetworkController.checkSocialRecoveryProcess(sessionId, { maxWaitingTime: 3000 })
           : NetworkController.checkRegisterProcess(sessionId, { maxWaitingTime: 3000 });
       },
-      retryTimes,
-      2000,
-      result => {
-        return (
-          result?.totalCount > 0 &&
-          (isRecoveryStatusItem(result)
-            ? result.items[0]?.recoveryStatus === ProgressStatus.PASS
-            : result.items[0]?.registerStatus) === ProgressStatus.PASS
-        );
+      maxPollingTimes: retryTimes,
+      timeGap: 500,
+      verifyResult: result => {
+        const { items } = result || {};
+        const item = items?.find(it => it.chainId === chainId);
+        if (item) {
+          return isRecoveryStatusItem(item)
+            ? item.recoveryStatus === ProgressStatus.PASS
+            : item.registerStatus === ProgressStatus.PASS;
+        } else {
+          return false;
+        }
       },
-    );
+      declareFatalFail: alternative => {
+        const { items } = alternative || {};
+        const item = items?.find(it => it.chainId === chainId);
+        if (item) {
+          return isRecoveryStatusItem(item)
+            ? item.recoveryStatus === ProgressStatus.FAIL
+            : item.registerStatus === ProgressStatus.FAIL;
+        } else {
+          return false;
+        }
+      },
+    });
     if (findVerifyProcessOnCurrChain(chainId, status) !== ProgressStatus.PASS) {
       console.warn(`after ${retryTimes} times polling, account status is still pending.`);
     }
@@ -116,9 +130,12 @@ const findVerifyProcessOnCurrChain = (
   chainId: ChainId,
   status: RecoveryProgressDTO | RegisterProgressDTO,
 ): ProgressStatus | undefined => {
-  return isRecoveryStatusItem(status)
-    ? status?.items?.find(item => item.chainId === chainId)?.recoveryStatus
-    : status?.items?.find(item => item.chainId === chainId)?.registerStatus;
+  const { items } = status || {};
+  const item = items?.find(it => it.chainId === chainId);
+  if (item) {
+    return isRecoveryStatusItem(item) ? item.recoveryStatus : item.registerStatus;
+  }
+  return undefined;
 };
 
 const lockWallet = async (pinValue: string, config: RecoverWalletConfig): Promise<void> => {

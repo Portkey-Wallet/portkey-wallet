@@ -140,6 +140,7 @@ const ContactProfile: React.FC = () => {
       <ScrollView alwaysBounceVertical={true} style={pageStyles.scrollWrap}>
         <ProfileHeaderSection
           noMarginTop={false}
+          avatarUrl={contactInfo?.avatar || ''}
           showRemark={!isStranger}
           name={contactInfo?.caHolderInfo?.walletName || contactInfo?.imInfo?.name || ''}
           remark={contactInfo?.name}

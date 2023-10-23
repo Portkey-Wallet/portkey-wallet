@@ -257,7 +257,7 @@ const ContactEdit: React.FC = () => {
           editContact.addresses[0].address === addressList?.[0]?.address &&
           editContact.addresses[0].chainId === addressList?.[0]?.chainId
         ) {
-          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name });
+          myEvents.refreshMyContactDetailInfo.emit({ contactName: editContact.name, contactAvatar: result.avatar });
         }
         navigationService.goBack();
       } else {

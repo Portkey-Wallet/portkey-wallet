@@ -2,7 +2,7 @@ import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { PortkeyConfig, setCurrChainId } from 'global';
 import {
   AccountOriginalType,
-  AfterVerifiedConfig,
+  NormalVerifyPathInfo,
   VerifiedGuardianDoc,
   wrapExtraData,
 } from 'model/verify/after-verify';
@@ -129,7 +129,7 @@ export const getSocialRecoveryPageData = async (
   };
 };
 
-export const requestSocialRecoveryOrRegister = async (params: AfterVerifiedConfig): Promise<RequestProcessResult> => {
+export const requestSocialRecoveryOrRegister = async (params: NormalVerifyPathInfo): Promise<RequestProcessResult> => {
   await sleep(500);
   const { address, privateKey, keyPair } = AElfWeb3SDK.createNewWallet();
   const publicKey = keyPair.getPublic('hex');
@@ -174,8 +174,8 @@ export const requestSocialRecoveryOrRegister = async (params: AfterVerifiedConfi
   if (!sessionId) throw new Error('network failure');
   return {
     sessionId,
-    privKey: privateKey,
-    pubKey: publicKey,
+    privateKey,
+    publicKey,
     address,
   };
 };

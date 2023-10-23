@@ -36,8 +36,8 @@ export type RequestRegisterOrSocialRecoveryResultDTO = {
 };
 
 export type WalletInfo = {
-  privKey: string;
-  pubKey: string;
+  privateKey: string;
+  publicKey: string;
   address: string;
 };
 

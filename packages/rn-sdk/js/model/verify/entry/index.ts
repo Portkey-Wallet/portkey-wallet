@@ -310,19 +310,21 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
         }
         Loading.hide();
         dealWithSetPin({
-          fromRecovery: false,
-          accountIdentifier,
-          chainId: await PortkeyConfig.currChainId(),
-          extraData: defaultExtraData,
-          verifiedGuardians: [
-            {
-              type: guardianTypeStrToEnum(google ? 'Google' : 'Apple'),
-              identifier: accountIdentifier,
-              verifierId: id,
-              verificationDoc: guardianResult.verificationDoc,
-              signature: guardianResult.signature,
-            },
-          ],
+          normalVerifyPathInfo: {
+            fromRecovery: false,
+            accountIdentifier,
+            chainId: await PortkeyConfig.currChainId(),
+            extraData: defaultExtraData,
+            verifiedGuardians: [
+              {
+                type: guardianTypeStrToEnum(google ? 'Google' : 'Apple'),
+                identifier: accountIdentifier,
+                verifierId: id,
+                verificationDoc: guardianResult.verificationDoc,
+                signature: guardianResult.signature,
+              },
+            ],
+          },
         });
       } else {
         const pageData = await getRegisterPageData(accountIdentifier, accountOriginalType, navigateToGuardianPage);

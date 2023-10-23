@@ -240,6 +240,10 @@ const ContactEdit: React.FC = () => {
               title: 'OK',
               type: 'primary',
               onPress: () => {
+                myEvents.refreshMyContactDetailInfo.emit({
+                  contactName: editContact.name,
+                  contactAvatar: result.avatar,
+                });
                 navigationService.navigate('ChatContactProfile', {
                   contact: result,
                   relationId: result.imInfo?.relationId,

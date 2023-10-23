@@ -4,7 +4,7 @@ import { defaultColors } from 'assets/theme';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Collapsible from 'components/Collapsible';
-import { TextL, TextM, TextS, TextXXL } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import Svg from 'components/Svg';
 import React, { memo, useState } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
@@ -68,6 +68,7 @@ const SendRecentItem: React.FC<ItemType> = props => {
                       chainId: ele.chainId,
                       contactName: contact.name,
                       fromChainId,
+                      avatar: contact.avatar,
                     })
                   }>
                   <Svg icon="more-info" size={pTd(20)} />
@@ -90,6 +91,7 @@ const SendRecentItem: React.FC<ItemType> = props => {
                       chainId: ele.chainId,
                       contactName: contact.name,
                       fromChainId,
+                      avatar: contact.avatar,
                     })
                   }>
                   <Svg icon="more-info" size={pTd(20)} />

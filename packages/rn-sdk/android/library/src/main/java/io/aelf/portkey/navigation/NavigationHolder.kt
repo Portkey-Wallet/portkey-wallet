@@ -2,7 +2,7 @@ package io.aelf.portkey.navigation
 
 import android.content.Intent
 import com.facebook.react.bridge.Callback
-import io.aelf.portkey.activities.BasePortkeyReactActivity
+import io.aelf.portkey.components.activities.BasePortkeyReactActivity
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import java.lang.ref.WeakReference
 import java.util.LinkedList

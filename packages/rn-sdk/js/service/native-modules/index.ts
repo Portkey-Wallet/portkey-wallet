@@ -77,6 +77,7 @@ export const nativeFetch = async <T>(
   headers?: TypedUrlParams,
   extraOptions?: NetworkOptions,
 ): Promise<ResultWrapper<T>> => {
+  // it is not recommended to use this fetch() method directly, so NetworkModule isn't declared in portkeyModulesEntity
   const networkModule = (portkeyModulesEntity as any).NetworkModule as NetworkModule;
   const res = await networkModule.fetch(
     url,

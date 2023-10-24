@@ -112,11 +112,13 @@ export default function GuardianApproval({
 
   const getVerifiedData = async (): Promise<AfterVerifiedConfig> => {
     return {
-      fromRecovery: true,
-      accountIdentifier,
-      chainId: await PortkeyConfig.currChainId(),
-      extraData: defaultExtraData,
-      verifiedGuardians: getVerifiedGuardianInfo(),
+      normalVerifyPathInfo: {
+        fromRecovery: true,
+        accountIdentifier,
+        chainId: await PortkeyConfig.currChainId(),
+        extraData: defaultExtraData,
+        verifiedGuardians: getVerifiedGuardianInfo(),
+      },
     };
   };
 

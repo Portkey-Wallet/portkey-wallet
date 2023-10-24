@@ -1,7 +1,7 @@
-import { AppRegistry } from 'react-native';
+import { AppRegistry, Platform } from 'react-native';
 import { PortkeyEntries } from './js/config/entries';
 import TestPage from './js/components/TestPage';
-import { initJSModules } from './js/service/js-modules';
+import { initJSModules } from './js/service/JsModules';
 import SignInEntryPage from 'components/entries/SignIn';
 import SelectCountryPage from 'components/entries/SelectCountry';
 import SignUpEntryPage from 'components/entries/SignUp';
@@ -13,6 +13,8 @@ import SetPin from 'pages/Pin/SetPin';
 import ConfirmPin from 'pages/Pin/confirm-pin';
 import SetBiometrics from 'pages/Pin/set-biometrics';
 import ViewOnWebView from 'pages/Activity/ViewOnWebView';
+import { PortkeyBackgroundTasks } from 'config/tasks';
+import { handleBackgroundTask } from 'service/JsModules/BackgroundTasks';
 
 const entryConfig = new Map();
 entryConfig.set(PortkeyEntries.TEST, () => TestPage);
@@ -41,3 +43,11 @@ for (const [key, value] of entryConfig) {
 }
 
 initJSModules();
+
+if (Platform.OS === 'android') {
+  const taskConfig = new Map();
+  taskConfig.set(PortkeyBackgroundTasks.CALL_GENERAL_JS_METHOD, () => handleBackgroundTask);
+  for (const [key, value] of taskConfig) {
+    AppRegistry.registerHeadlessTask(key, value);
+  }
+}

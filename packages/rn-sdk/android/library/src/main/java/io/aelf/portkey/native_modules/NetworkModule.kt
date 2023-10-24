@@ -6,8 +6,11 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.google.gson.GsonBuilder
 import io.aelf.portkey.network.NetworkConnector
 import io.aelf.portkey.network.ResultWrapper
+import io.aelf.portkey.network.toJson
+import io.aelf.portkey.network.toPrettyJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,7 +43,11 @@ internal class NetworkModule(context: ReactApplicationContext) :
             val resultStr = result.toJsonString()
             Log.w(
                 "NetworkModule",
-                "method: ${method}, url:${url}, headers:${headers.toHashMap()}, params:${params.toHashMap()}, result:${result.toPrettyJsonString()}"
+                "method: ${method}\n\n url:${url}\n\n headers:${
+                    headers.toJson().toPrettyJson()
+                }\n\n params:${
+                    params.toJson().toPrettyJson()
+                }\n\n result:${result.toPrettyJsonString()}"
             )
             jSPromiseHandle.resolve(resultStr)
         }

@@ -27,6 +27,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
         debug {
             minifyEnabled false
@@ -73,12 +74,12 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
     implementation 'com.google.prefab:cli:2.0.0'
-
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
-
-
     implementation(project(
             configuration: 'default', path: ':library'
     ))
+
+    implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
+    implementation "com.facebook.react:react-android:0.72.4"
 
 }

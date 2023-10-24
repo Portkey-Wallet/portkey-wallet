@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import io.aelf.portkey.components.PortkeyMMKVStorage
+import io.aelf.portkey.components.logic.PortkeyMMKVStorage
 
 class StorageModule(context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {

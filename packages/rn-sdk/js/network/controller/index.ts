@@ -231,12 +231,14 @@ const getPlatformType = (): RecaptchaPlatformType => {
 
 export const NetworkController = new NetworkControllerEntity();
 
-export const handleRequestPolling = async <T>(
-  sendRequest: () => Promise<T | null | undefined>,
-  maxPollingTimes = DEFAULT_MAX_POLLING_TIMES,
-  timeGap = 500,
-  verifyResult: (result: T) => boolean = () => true,
-): Promise<T> => {
+export const handleRequestPolling = async <T>(config: RequestPollingConfig<T>): Promise<T> => {
+  const {
+    sendRequest,
+    maxPollingTimes = DEFAULT_MAX_POLLING_TIMES,
+    timeGap = 1000,
+    verifyResult = () => true,
+    declareFatalFail = () => false,
+  } = config;
   let pollingTimes = 0;
   let result: T | null | undefined = null;
   while (pollingTimes < maxPollingTimes) {
@@ -247,10 +249,20 @@ export const handleRequestPolling = async <T>(
     }
     if (result && verifyResult(result)) {
       break;
+    } else if (result && declareFatalFail(result)) {
+      throw new Error('fatal error in handleRequestPolling()');
     }
     pollingTimes++;
     await sleep(timeGap);
   }
   if (!result) throw new Error('network failure');
   return result;
+};
+
+export type RequestPollingConfig<T> = {
+  sendRequest: () => Promise<T | null | undefined>;
+  maxPollingTimes?: number;
+  timeGap?: number;
+  verifyResult?: (result: T) => boolean;
+  declareFatalFail?: (result: T) => boolean;
 };

@@ -36,8 +36,8 @@ export type RequestRegisterOrSocialRecoveryResultDTO = {
 };
 
 export type WalletInfo = {
-  privKey: string;
-  pubKey: string;
+  privateKey: string;
+  publicKey: string;
   address: string;
 };
 
@@ -60,7 +60,7 @@ export interface SocialRecoveryStatusDTO {
 export enum ProgressStatus {
   PENDING = 'pending',
   PASS = 'pass',
-  FAIl = 'fail',
+  FAIL = 'fail',
 }
 
 export interface BaseAccountStatus {
@@ -79,8 +79,10 @@ export interface BaseProgressDTO<T> {
 export type RegisterProgressDTO = BaseProgressDTO<RegisterStatusDTO>;
 export type RecoveryProgressDTO = BaseProgressDTO<SocialRecoveryStatusDTO>;
 
-export const isRecoveryStatusItem = (item: RegisterProgressDTO | RecoveryProgressDTO): item is RecoveryProgressDTO => {
-  return 'recoveryStatus' in item.items[0];
+export const isRecoveryStatusItem = (
+  item: RegisterStatusDTO | SocialRecoveryStatusDTO,
+): item is SocialRecoveryStatusDTO => {
+  return 'recoveryStatus' in item;
 };
 
 export const AElfWeb3SDK: AElfWeb3SDK = AElf.wallet;

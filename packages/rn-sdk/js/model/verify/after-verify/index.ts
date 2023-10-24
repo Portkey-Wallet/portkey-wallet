@@ -19,11 +19,22 @@ const WALLET_CONFIG_KEY = 'walletConfig';
 export const USE_BIOMETRIC_KEY = 'useBiometric';
 
 export interface AfterVerifiedConfig {
+  normalVerifyPathInfo?: NormalVerifyPathInfo;
+  scanQRCodePathInfo?: ScanQRCodePathInfo;
+}
+
+export interface NormalVerifyPathInfo {
   fromRecovery: boolean;
   accountIdentifier: string;
   verifiedGuardians: Array<VerifiedGuardianDoc>;
   chainId: string;
   extraData: DeviceInfoType;
+}
+
+export interface ScanQRCodePathInfo {
+  walletInfo: WalletInfo;
+  originalChainId: string;
+  accountIdentifier: string;
 }
 
 export const wrapExtraData = (extraData?: DeviceInfoType): string => {
@@ -64,43 +75,15 @@ export const getVerifiedAndLockWallet = async (
   setBiometrics?: boolean,
 ): Promise<boolean> => {
   try {
-    const retryTimes = 10;
     const afterVerifiedConfig: AfterVerifiedConfig = JSON.parse(deliveredAfterVerifiedConfig);
-    const chainId = await PortkeyConfig.currChainId();
-    if (!afterVerifiedConfig) {
-      throw new Error('afterVerifiedConfig is null');
+    const { normalVerifyPathInfo, scanQRCodePathInfo } = afterVerifiedConfig || {};
+    let walletConfig: RecoverWalletConfig | null = null;
+    if (normalVerifyPathInfo) {
+      walletConfig = await handleNormalVerify(normalVerifyPathInfo);
+    } else if (scanQRCodePathInfo) {
+      walletConfig = await handleScanQRCodeVerify(scanQRCodePathInfo);
     }
-    const { sessionId, pubKey, privKey, address } = await requestSocialRecoveryOrRegister(afterVerifiedConfig);
-    if (!sessionId || !pubKey) {
-      throw new Error('request failed');
-    }
-    const status = await handleRequestPolling(
-      async () => {
-        return afterVerifiedConfig.fromRecovery
-          ? NetworkController.checkSocialRecoveryProcess(sessionId, { maxWaitingTime: 3000 })
-          : NetworkController.checkRegisterProcess(sessionId, { maxWaitingTime: 3000 });
-      },
-      retryTimes,
-      2000,
-      result => {
-        return (
-          result?.totalCount > 0 &&
-          (isRecoveryStatusItem(result)
-            ? result.items[0]?.recoveryStatus === ProgressStatus.PASS
-            : result.items[0]?.registerStatus) === ProgressStatus.PASS
-        );
-      },
-    );
-    if (findVerifyProcessOnCurrChain(chainId, status) !== ProgressStatus.PASS) {
-      console.warn(`after ${retryTimes} times polling, account status is still pending.`);
-    }
-    const walletConfig: RecoverWalletConfig = {
-      sessionId,
-      fromRecovery: afterVerifiedConfig.fromRecovery,
-      pubKey,
-      privKey,
-      address,
-    };
+    if (!walletConfig) throw new Error('create wallet failed.');
     await lockWallet(pinValue, walletConfig);
     rememberUseBiometric(setBiometrics ?? false);
     await sleep(500);
@@ -112,13 +95,75 @@ export const getVerifiedAndLockWallet = async (
   return false;
 };
 
+const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<RecoverWalletConfig> => {
+  const retryTimes = 10;
+  const chainId = await PortkeyConfig.currChainId();
+  const { sessionId, publicKey, privateKey, address } = await requestSocialRecoveryOrRegister(config);
+  if (!sessionId || !publicKey) {
+    throw new Error('request failed');
+  }
+  const status = await handleRequestPolling<RecoveryProgressDTO | RegisterProgressDTO>({
+    sendRequest: () => {
+      return config.fromRecovery
+        ? NetworkController.checkSocialRecoveryProcess(sessionId, { maxWaitingTime: 3000 })
+        : NetworkController.checkRegisterProcess(sessionId, { maxWaitingTime: 3000 });
+    },
+    maxPollingTimes: retryTimes,
+    timeGap: 500,
+    verifyResult: result => {
+      const { items } = result || {};
+      const item = items?.find(it => it.chainId === chainId);
+      if (item) {
+        return isRecoveryStatusItem(item)
+          ? item.recoveryStatus === ProgressStatus.PASS
+          : item.registerStatus === ProgressStatus.PASS;
+      } else {
+        return false;
+      }
+    },
+    declareFatalFail: alternative => {
+      const { items } = alternative || {};
+      const item = items?.find(it => it.chainId === chainId);
+      if (item) {
+        return isRecoveryStatusItem(item)
+          ? item.recoveryStatus === ProgressStatus.FAIL
+          : item.registerStatus === ProgressStatus.FAIL;
+      } else {
+        return false;
+      }
+    },
+  });
+  if (findVerifyProcessOnCurrChain(chainId, status) !== ProgressStatus.PASS) {
+    console.warn(`after ${retryTimes} times polling, account status is still pending.`);
+  }
+  return {
+    sessionId,
+    fromRecovery: config.fromRecovery,
+    accountIdentifier: config.accountIdentifier,
+    publicKey,
+    privateKey,
+    address,
+  };
+};
+
+const handleScanQRCodeVerify = async (config: ScanQRCodePathInfo): Promise<RecoverWalletConfig> => {
+  const { walletInfo, accountIdentifier } = config || {};
+  return {
+    ...walletInfo,
+    accountIdentifier,
+  };
+};
+
 const findVerifyProcessOnCurrChain = (
   chainId: ChainId,
   status: RecoveryProgressDTO | RegisterProgressDTO,
 ): ProgressStatus | undefined => {
-  return isRecoveryStatusItem(status)
-    ? status?.items?.find(item => item.chainId === chainId)?.recoveryStatus
-    : status?.items?.find(item => item.chainId === chainId)?.registerStatus;
+  const { items } = status || {};
+  const item = items?.find(it => it.chainId === chainId);
+  if (item) {
+    return isRecoveryStatusItem(item) ? item.recoveryStatus : item.registerStatus;
+  }
+  return undefined;
 };
 
 const lockWallet = async (pinValue: string, config: RecoverWalletConfig): Promise<void> => {
@@ -170,6 +215,7 @@ export const unLockTempWallet = async (pinValue?: string, useBiometric = false):
 };
 
 export type RecoverWalletConfig = {
-  sessionId: string;
-  fromRecovery: boolean;
+  sessionId?: string;
+  fromRecovery?: boolean;
+  accountIdentifier?: string;
 } & WalletInfo;

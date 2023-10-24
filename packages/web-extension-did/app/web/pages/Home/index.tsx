@@ -13,6 +13,7 @@ import { useEffectOnce } from 'react-use';
 import { getStoreState } from 'store/utils/getStore';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import initIm from 'hooks/im';
+import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export default function Home() {
     const url = isNotLessThan768 ? `/setting/wallet` : `/setting`;
     navigate(url);
   }, [isNotLessThan768, navigate]);
+  useDiscoverGroupList();
 
   const { search } = useLocation();
   const isSell = useRef(0); // guaranteed to make only one transfer

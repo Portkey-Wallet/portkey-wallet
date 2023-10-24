@@ -46,7 +46,7 @@ export default function AmountToken({
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
 
   const symbolImages = useSymbolImages();
-  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), []);
+  const aelfIconName = useMemo(() => (isTestNet ? 'testnet' : 'mainnet'), [isTestNet]);
 
   const formatTokenNameToSuffix = (str: string) => {
     return `${str.slice(0, 5)}...`;
@@ -75,16 +75,12 @@ export default function AmountToken({
       </View>
       <View style={styles.middle}>
         <View style={styles.middleLeft}>
-          {selectedToken.symbol === defaultToken.symbol ? (
-            <CommonAvatar
-              shapeType="circular"
-              svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
-              imageUrl={symbolImages[selectedToken.symbol] || ''}
-              avatarSize={28}
-            />
-          ) : (
-            <Text style={styles.imgStyle}>{selectedToken?.symbol?.[0]}</Text>
-          )}
+          <CommonAvatar
+            shapeType="circular"
+            svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
+            imageUrl={symbolImages[selectedToken.symbol] || ''}
+            avatarSize={28}
+          />
           <Text style={styles.symbolName}>
             {selectedToken?.symbol?.length > 5 ? formatTokenNameToSuffix(selectedToken?.symbol) : selectedToken?.symbol}
           </Text>

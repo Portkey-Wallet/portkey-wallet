@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, StyleProp, ViewProps } from 'react-native';
 import Svg from 'components/Svg';
 import { styles } from './style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -16,7 +16,9 @@ import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
-import { useAppBuyButtonShow } from 'hooks/cms';
+import BridgeButton from 'components/BridgeButton';
+import GStyles from 'assets/theme/GStyles';
+import { useAppBridgeButtonShow, useAppBuyButtonShow } from 'hooks/cms';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
@@ -24,9 +26,28 @@ const Card: React.FC = () => {
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { isBuyButtonShow } = useAppBuyButtonShow();
+  const { isBridgeShow } = useAppBridgeButtonShow();
+
+  const buttonCount = useMemo(() => {
+    let count = 3;
+    if (isBuyButtonShow) count++;
+    if (isBridgeShow) count++;
+    // FaucetButton
+    if (!isMainnet) count++;
+    return count;
+  }, [isBridgeShow, isBuyButtonShow, isMainnet]);
+
+  const buttonGroupWrapStyle = useMemo(
+    () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
+    [buttonCount],
+  );
+  const buttonWrapStyle = useMemo(
+    () => (buttonCount < 5 ? (styles.buttonWrapStyle1 as StyleProp<ViewProps>) : undefined),
+    [buttonCount],
+  );
 
   return (
-    <View style={styles.cardWrap}>
+    <View style={[styles.cardWrap]}>
       <View style={styles.refreshWrap}>
         <Text style={styles.block} />
         <TouchableOpacity
@@ -40,24 +61,14 @@ const Card: React.FC = () => {
       </View>
       <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
       <TextM style={styles.accountName}>{walletName}</TextM>
-      <View style={styles.buttonGroupWrap}>
-        {isBuyButtonShow && (
-          <>
-            <BuyButton themeType="dashBoard" />
-            <View style={styles.spacerStyle} />
-          </>
-        )}
-        <SendButton themeType="dashBoard" />
-        <View style={styles.spacerStyle} />
-        <ReceiveButton themeType="dashBoard" />
-        <View style={styles.spacerStyle} />
-        {!isMainnet && (
-          <>
-            <FaucetButton themeType="dashBoard" />
-            <View style={styles.spacerStyle} />
-          </>
-        )}
-        <ActivityButton themeType="dashBoard" />
+
+      <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
+        {isBuyButtonShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        {isBridgeShow && <BridgeButton wrapStyle={buttonWrapStyle} />}
+        <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
+        {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
+        <ActivityButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
       </View>
     </View>
   );

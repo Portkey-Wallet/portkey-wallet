@@ -30,16 +30,15 @@ import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
-import { useIsBridgeShow, useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
 import './index.less';
-import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
 
 export interface TransactionResult {
   total: number;
@@ -91,7 +90,7 @@ export default function MyBalance() {
   useFreshTokenPrice();
   useVerifierList();
 
-  const isShowBridge = useIsBridgeShow(VersionDeviceType.Extension);
+  const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isBuyButtonShow } = useExtensionBuyButtonShow();
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
@@ -223,7 +222,7 @@ export default function MyBalance() {
       <BalanceCard
         amount={accountBalance}
         isShowBuy={isBuyButtonShow}
-        isShowBridge={isShowBridge}
+        isShowBridge={isBridgeShow}
         onClickBridge={handleBridge}
         onBuy={handleBuy}
         onSend={async () => {

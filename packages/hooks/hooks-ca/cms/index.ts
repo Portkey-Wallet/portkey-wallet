@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { useAppCASelector } from '.';
-import { useAppCommonDispatch } from '../index';
+import { useAppCASelector } from '../.';
+import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   useCurrentNetworkInfo,
   useIsIMServiceExist,
@@ -10,15 +10,17 @@ import {
 import {
   getDiscoverGroupAsync,
   getSocialMediaAsync,
-  getBuyButtonAsync,
   getRememberMeBlackListAsync,
   getTabMenuAsync,
+  setEntrance,
 } from '@portkey-wallet/store/store-ca/cms/actions';
-import { BuyButtonType } from '@portkey-wallet/store/store-ca/cms/types';
+
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { DEFAULT_ENTRANCE_SHOW, generateEntranceShow, getEntrance } from './util';
+import { IEntranceItem, IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
+import { NetworkType } from '@portkey-wallet/types';
 
 export const useCMS = () => useAppCASelector(state => state.cms);
 
@@ -103,81 +105,62 @@ export function useDiscoverGroupList(isInit = false) {
   return discoverGroupList || [];
 }
 
-export const useBuyButton = (isInit = false) => {
+export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) => {
   const dispatch = useAppCommonDispatch();
-  const { buyButtonNetMap } = useCMS();
+  const { entranceNetMap } = useCMS();
   const { networkType } = useCurrentNetworkInfo();
   const networkList = useNetworkList();
 
-  const buyButtonNet = useMemo(() => buyButtonNetMap?.[networkType] || undefined, [networkType, buyButtonNetMap]);
+  const entrance = useMemo(
+    () => ({
+      ...DEFAULT_ENTRANCE_SHOW,
+      ...entranceNetMap?.[networkType],
+    }),
+    [networkType, entranceNetMap],
+  );
 
-  useEffect(() => {
+  const refresh = useCallback(
+    async (network?: NetworkType) => {
+      const _entranceList = (await getEntrance(network || networkType)) as IEntranceItem[];
+      const _entrance = await generateEntranceShow(config, _entranceList || []);
+      dispatch(
+        setEntrance({
+          network: networkType,
+          value: _entrance,
+        }),
+      );
+      return _entrance;
+    },
+    [config, dispatch, networkType],
+  );
+
+  useEffectOnce(() => {
     if (isInit) {
       networkList.forEach(item => {
-        dispatch(getBuyButtonAsync(item.networkType));
+        refresh(item.networkType);
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (!isInit) {
-      dispatch(getBuyButtonAsync(networkType));
+      refresh();
     }
-  }, [dispatch, isInit, networkType]);
+  });
 
-  return buyButtonNet;
+  return {
+    entrance,
+    refresh,
+  };
 };
 
-export const useBuyButtonShow = (deviceType: VersionDeviceType) => {
-  const buyButton = useBuyButton();
-  const { networkType } = useCurrentNetworkInfo();
+export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance, refresh } = useEntrance(config);
   const isMainnet = useIsMainnet();
-  const dispatch = useAppCommonDispatch();
 
-  const getIsBuySectionShow = useCallback(
-    (isMainnet: boolean, buyButton: BuyButtonType | undefined, deviceType: VersionDeviceType) => {
-      if (!isMainnet) return false;
-      switch (deviceType) {
-        case VersionDeviceType.iOS:
-          return buyButton?.isIOSBuyShow || false;
-        case VersionDeviceType.Android:
-          return buyButton?.isAndroidBuyShow || false;
-        case VersionDeviceType.Extension:
-          return buyButton?.isExtensionBuyShow || false;
-        default:
-          return false;
-      }
-    },
-    [],
-  );
+  const isBuySectionShow = useMemo(() => isMainnet && entrance.buy, [entrance.buy, isMainnet]);
 
-  const getIsSellSectionShow = useCallback(
-    (isMainnet: boolean, buyButton: BuyButtonType | undefined, deviceType: VersionDeviceType) => {
-      if (!isMainnet) return false;
-      switch (deviceType) {
-        case VersionDeviceType.iOS:
-          return buyButton?.isIOSSellShow || false;
-        case VersionDeviceType.Android:
-          return buyButton?.isAndroidSellShow || false;
-        case VersionDeviceType.Extension:
-          return buyButton?.isExtensionSellShow || false;
-        default:
-          return false;
-      }
-    },
-    [],
-  );
-
-  const isBuySectionShow = useMemo(
-    () => getIsBuySectionShow(isMainnet, buyButton, deviceType),
-    [buyButton, deviceType, getIsBuySectionShow, isMainnet],
-  );
-
-  const isSellSectionShow = useMemo(
-    () => getIsSellSectionShow(isMainnet, buyButton, deviceType),
-    [buyButton, deviceType, getIsSellSectionShow, isMainnet],
-  );
+  const isSellSectionShow = useMemo(() => isMainnet && entrance.sell, [entrance.sell, isMainnet]);
 
   const isBuyButtonShow = useMemo(
     () => isMainnet && (isBuySectionShow || isSellSectionShow || false),
@@ -185,14 +168,21 @@ export const useBuyButtonShow = (deviceType: VersionDeviceType) => {
   );
 
   const refreshBuyButton = useCallback(async () => {
-    const result = await dispatch(getBuyButtonAsync(networkType));
-    const buyButtonResult: BuyButtonType | undefined = result?.payload?.buyButtonNetMap?.[networkType];
+    let isBuySectionShow = false;
+    let isSellSectionShow = false;
+    try {
+      const result = await refresh();
+      isBuySectionShow = result.buy;
+      isSellSectionShow = result.sell;
+    } catch (error) {
+      console.log('refreshBuyButton error');
+    }
 
     return {
-      isBuySectionShow: getIsBuySectionShow(isMainnet, buyButtonResult, deviceType),
-      isSellSectionShow: getIsSellSectionShow(isMainnet, buyButtonResult, deviceType),
+      isBuySectionShow: isMainnet && isBuySectionShow,
+      isSellSectionShow: isMainnet && isSellSectionShow,
     };
-  }, [deviceType, dispatch, getIsBuySectionShow, getIsSellSectionShow, isMainnet, networkType]);
+  }, [isMainnet, refresh]);
 
   return {
     isBuyButtonShow,

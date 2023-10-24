@@ -34,6 +34,7 @@ import useCheckVerifier from 'hooks/useVerifier';
 import CommonModal from 'components/CommonModal';
 import { useTranslation } from 'react-i18next';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -170,7 +171,7 @@ export default function RegisterStart() {
       saveState(data);
       dispatch(resetGuardians());
 
-      setLoading(true, 'Assigning a verifier on the blockchain...');
+      setLoading(true, AssignVerifierLoading);
 
       await sleep(2000);
 
@@ -336,7 +337,7 @@ export default function RegisterStart() {
           onCancel={() => setOpenSendVerifyCode(false)}>
           <p className="modal-content">
             {`${t('verificationCodeTip1', { verifier: verifierItem?.name })} `}
-            <span className="bold">{loginAccount.guardianAccount}</span>
+            <strong>{loginAccount.guardianAccount}</strong>
             {` ${t('verificationCodeTip2', { type: LoginType[loginAccount.loginType] })}`}
           </p>
           <div className="btn-wrapper">

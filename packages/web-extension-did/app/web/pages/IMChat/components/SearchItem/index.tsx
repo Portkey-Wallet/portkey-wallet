@@ -1,10 +1,8 @@
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { useIndexAndName } from '@portkey-wallet/hooks/hooks-ca/contact';
-import { ChannelTypeEnum } from '@portkey-wallet/im/types';
 import { GenerateType } from '@portkey-wallet/types/common';
+import { Avatar, IChatItemProps } from '@portkey-wallet/im-ui-web';
 import './index.less';
-import CustomSvg from 'components/CustomSvg';
-import { IChatItemProps } from '@portkey-wallet/im-ui-web';
 
 export type ISearchItem = GenerateType<ContactItemType & IChatItemProps>;
 
@@ -13,13 +11,7 @@ export default function SearchItem({ item }: { item: ISearchItem }) {
 
   return (
     <div className="flex-row-center search-item">
-      {item.channelType === ChannelTypeEnum.GROUP ? (
-        <div className="flex-center avatar-group-container">
-          <CustomSvg type="GroupAvatar" className="group-avatar-icon" />
-        </div>
-      ) : (
-        <div className="flex-center search-index-logo">{index}</div>
-      )}
+      <Avatar channelType={item.channelType} avatarSize="small" src={item.avatar} letter={index} />
 
       <span className="search-item-name">{name}</span>
     </div>

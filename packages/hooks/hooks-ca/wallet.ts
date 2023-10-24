@@ -33,7 +33,7 @@ export interface ICaAddressInfoListItemType {
   caAddress: string;
 }
 
-function getCurrentWalletInfo(
+export function getCurrentWalletInfo(
   walletInfo: WalletState['walletInfo'],
   currentNetwork: WalletState['currentNetwork'],
   originChainId: ChainId,

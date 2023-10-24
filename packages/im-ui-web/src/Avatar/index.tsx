@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { IAvatarProps } from '../type';
 import './index.less';
 import { ChannelTypeEnum } from '@portkey-wallet/im/types';
@@ -12,16 +12,38 @@ const Avatar: React.FC<IAvatarProps> = ({
   alt = 'img',
   className,
   channelType,
-  height = 40,
-  width = 40,
-  groupAvatarSize = 'default',
+  avatarSize = 'default',
   onClick,
 }) => {
   const [isError, setIsError] = useState(false);
-  return channelType === ChannelTypeEnum.GROUP ? (
-    <div className={clsx('portkey-avatar-group-container', groupAvatarSize)} onClick={onClick}>
-      {src && !isError ? (
-        <div className="portkey-avatar-group-img">
+
+  const renderGroupAvatar = useMemo(
+    () => (
+      <>
+        {src && !isError ? (
+          <img
+            alt={alt}
+            src={src}
+            className="avatar-group-img"
+            onError={() => setIsError(true)}
+            onLoad={() => setIsError(false)}
+          />
+        ) : (
+          <div className="flex-center avatar-group-default">
+            <CustomSvg type="GroupAvatar" className="group-avatar-icon" />
+          </div>
+        )}
+        <CustomSvg type="GroupAvatar" className="flex-center avatar-group-badge" />
+      </>
+    ),
+    [alt, isError, src],
+  );
+  const renderAvatar = useMemo(
+    () => (
+      <>
+        {showLetter ? (
+          <div className="avatar-letter flex-center">{letter || 'A'}</div>
+        ) : src && !isError ? (
           <img
             alt={alt}
             src={src}
@@ -29,29 +51,17 @@ const Avatar: React.FC<IAvatarProps> = ({
             onError={() => setIsError(true)}
             onLoad={() => setIsError(false)}
           />
-        </div>
-      ) : (
-        <div className="flex-center portkey-avatar-group-default">
-          <CustomSvg type="GroupAvatar" className="group-avatar-icon" />
-        </div>
-      )}
-      <CustomSvg type="GroupAvatar" className="flex-center portkey-avatar-group-badge" />
-    </div>
-  ) : (
-    <div className={clsx('portkey-avatar-container', className)} style={{ width, height }} onClick={onClick}>
-      {showLetter ? (
-        <div className="avatar-letter flex-center">{letter || 'A'}</div>
-      ) : src && !isError ? (
-        <img
-          alt={alt}
-          src={src}
-          className="avatar-img"
-          onError={() => setIsError(true)}
-          onLoad={() => setIsError(false)}
-        />
-      ) : (
-        <div className="avatar-letter flex-center">{letter || 'A'}</div>
-      )}
+        ) : (
+          <div className="avatar-letter flex-center">{letter || 'A'}</div>
+        )}
+      </>
+    ),
+    [alt, isError, letter, showLetter, src],
+  );
+
+  return (
+    <div className={clsx('portkey-avatar-container', className, `portkey-avatar-${avatarSize}`)} onClick={onClick}>
+      {channelType === ChannelTypeEnum.GROUP ? renderGroupAvatar : renderAvatar}
     </div>
   );
 };

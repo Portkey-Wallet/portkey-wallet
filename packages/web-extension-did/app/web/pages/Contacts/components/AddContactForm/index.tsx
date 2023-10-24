@@ -1,11 +1,11 @@
 import { Button, Form, Input, FormProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CustomSvg from 'components/CustomSvg';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import './index.less';
 import { CustomAddressItem, ValidData } from 'pages/Contacts/AddContact';
 import EditButtonGroup from '../EditButtonGroup';
 import { ExtraType, ExtraTypeEnum } from 'types/Profile';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const { Item: FormItem } = Form;
 
@@ -33,7 +33,7 @@ export default function AddContactForm({
   handleAddressChange,
 }: IAddContactFormProps) {
   const { t } = useTranslation();
-  const symbolImages = useSymbolImages();
+  const isMainnet = useIsMainnet();
 
   return (
     <Form
@@ -64,7 +64,7 @@ export default function AddContactForm({
                       <Input
                         placeholder="Select Network"
                         disabled
-                        prefix={<img className="select-svg" src={symbolImages['ELF']} />}
+                        prefix={<CustomSvg className="select-svg" type={isMainnet ? 'Aelf' : 'elf-icon'} />}
                         suffix={
                           <CustomSvg
                             type="Down"

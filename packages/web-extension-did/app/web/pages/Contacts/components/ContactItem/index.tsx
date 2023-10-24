@@ -17,7 +17,7 @@ export default function ContactItem({ item, hasChatEntry = true, clickChat }: IC
     <div className="flex-between-center contact-item">
       <div className="flex-center contact-item-right">
         <div className="flex-center contact-index-logo-wrap">
-          <Avatar nameIndex={index} size="small" wrapperClass="contact-index-logo" />
+          <Avatar avatarUrl={item?.avatar || ''} nameIndex={index} size="small" wrapperClass="contact-index-logo" />
           {item.isImputation && <UnReadBadge />}
         </div>
         <span className="contact-item-name">{name}</span>

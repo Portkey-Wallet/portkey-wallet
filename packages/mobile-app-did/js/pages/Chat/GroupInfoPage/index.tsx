@@ -26,7 +26,7 @@ import { copyText } from 'utils';
 import GroupAvatarShow from '../components/GroupAvatarShow';
 
 const GroupInfoPage = () => {
-  const myRelationId = useRelationId();
+  const { relationId: myRelationId } = useRelationId();
 
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(currentChannelId || '', false);

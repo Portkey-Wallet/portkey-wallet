@@ -4,6 +4,7 @@ import { ValidateHandler } from 'types/wallet';
 import EmailInput, { EmailInputInstance } from '../EmailInput';
 import { useLoading } from 'store/Provider/hooks';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { CheckAccountLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 
 interface EmailTabProps {
   confirmText: string;
@@ -18,7 +19,7 @@ export default function EmailTab({ confirmText, validateEmail, onFinish }: Email
   const { setLoading } = useLoading();
   const onClick = useCallback(async () => {
     try {
-      setLoading(true, 'Checking account info on the blockchain...');
+      setLoading(true, CheckAccountLoading);
       await emailInputInstance?.current?.validateEmail(val);
       if (val && onFinish) {
         val && onFinish(val);

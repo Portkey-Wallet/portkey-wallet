@@ -16,7 +16,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { ACTIVITY_PAGE_SIZE, ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface RouterParams {
   chainId?: string;
@@ -35,7 +35,8 @@ const ActivityListPage = () => {
 
   const isLoadingRef = useRef(false);
   const getActivityList = async (isInit: boolean) => {
-    const { data, maxResultCount = ACTIVITY_PAGE_SIZE, skipCount = 0, totalRecordCount = 0 } = currentActivity;
+    const { data, skipCount = 0, totalRecordCount = 0 } = currentActivity;
+    const maxResultCount = 30;
     if (!isInit && data?.length >= totalRecordCount) return;
     if (isLoadingRef.current) return;
     isLoadingRef.current = true;
@@ -49,6 +50,7 @@ const ActivityListPage = () => {
       chainId: chainId,
       symbol: symbol,
     };
+
     await dispatch(getActivityListAsync(params));
     setRefreshing(false);
     isLoadingRef.current = false;
@@ -79,6 +81,9 @@ const ActivityListPage = () => {
         renderItem={renderItem}
         onRefresh={() => getActivityList(true)}
         onEndReached={() => getActivityList(false)}
+        windowSize={50}
+        maxToRenderPerBatch={10}
+        initialNumToRender={20}
         ListEmptyComponent={<NoData message={t('You have no transactions.')} topDistance={pTd(160)} />}
       />
     </PageContainer>

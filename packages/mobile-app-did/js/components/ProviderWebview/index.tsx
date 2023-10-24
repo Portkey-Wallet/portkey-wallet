@@ -152,6 +152,12 @@ const ProviderWebview = forwardRef<
         operatorRef.current?.handleRequestMessage(nativeEvent.data);
         props.onMessage?.(event);
       }}
+      // fix webview show blank page when not used for some time in android
+      // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#onrenderprocessgone
+      onRenderProcessGone={() => webViewRef.current?.reload()}
+      // fix webview show blank page when not used for some time in iOS
+      // https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md#oncontentprocessdidterminate
+      onContentProcessDidTerminate={() => webViewRef.current?.reload()}
     />
   );
 });

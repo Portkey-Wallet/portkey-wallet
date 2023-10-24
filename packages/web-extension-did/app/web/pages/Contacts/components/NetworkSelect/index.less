@@ -1,7 +1,6 @@
 @import '../../../../assets/theme/color.less';
 
 .network-select {
-
   .header {
     position: sticky;
     top: 0;
@@ -40,11 +39,15 @@
       height: 56px;
       padding: 12px 16px;
       border-bottom: 1px solid @border-2;
-      img {
+      .custom-svg {
         width: 32px;
         height: 32px;
         margin-right: 8px;
         border-radius: 50%;
+        svg {
+          width: 32px;
+          height: 32px;
+        }
       }
     }
     .no-search-result {

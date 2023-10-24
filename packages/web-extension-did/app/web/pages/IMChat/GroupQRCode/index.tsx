@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useCallback, useEffect, useMemo } from 'react';
 import ShowQRCode from 'pages/components/ShowQRCode';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
+import { ChannelTypeEnum } from '@portkey-wallet/im';
 
 const GroupQRCode = () => {
   const { channelUuid } = useParams();
@@ -27,8 +28,9 @@ const GroupQRCode = () => {
     <div className="group-share-page">
       <ShowQRCode
         onBack={() => navigate(-1)}
-        isGroup
+        type={ChannelTypeEnum.GROUP}
         qrCodeValue={shareLink}
+        icon={groupInfo?.icon}
         showName={groupInfo?.name || 'Group Info'}
         desc="Scan this QR code to join the group"
       />

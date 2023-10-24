@@ -40,6 +40,7 @@ export default function ChatListSearch() {
             channelType: item.channelType,
             title: item.displayName,
             status: item.status,
+            avatar: item.channelIcon,
           }));
           setChatList(transRes);
         } catch (e) {

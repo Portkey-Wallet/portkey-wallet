@@ -29,7 +29,7 @@ export function parseInputNumberChange(value: string, max: number | BigNumber = 
   const pivot = new BigNumber(value);
   const [, dec] = value.split('.');
   if (pivot.isEqualTo(0)) {
-    return (dec?.length || 0) >= +decimal ? pivot.dp(+decimal, 1).toFixed() : value;
+    return (dec?.length || 0) >= +decimal ? pivot.dp(+decimal, 1).toFixed(+decimal) : value;
   }
   const maxLimit = !new BigNumber(max).isNaN() ? max : Infinity;
 

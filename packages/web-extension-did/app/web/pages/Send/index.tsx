@@ -206,21 +206,22 @@ export default function Send() {
       if (!_isManagerSynced) {
         return 'Synchronizing on-chain account information...';
       }
+
+      // wallet security check
+      const securityRes = await checkSecurity(tokenInfo.chainId);
+      if (!securityRes) return WalletIsNotSecure;
+
+      // transfer limit check
+      const res = await checkLimit({
+        chainId: tokenInfo.chainId,
+        symbol: tokenInfo.symbol,
+        amount: amount,
+        decimals: tokenInfo.decimals,
+        from: ICheckLimitBusiness.SEND,
+      });
+      if (typeof res !== 'boolean') return ExceedLimit;
+
       if (type === 'token') {
-        // wallet security check
-        const securityRes = await checkSecurity(tokenInfo.chainId);
-        if (!securityRes) return WalletIsNotSecure;
-
-        // transfer limit check
-        const res = await checkLimit({
-          chainId: tokenInfo.chainId,
-          symbol: tokenInfo.symbol,
-          amount: amount,
-          decimals: tokenInfo.decimals,
-          from: ICheckLimitBusiness.SEND,
-        });
-        if (typeof res !== 'boolean') return ExceedLimit;
-
         // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           return TransactionError.TOKEN_NOT_ENOUGH;

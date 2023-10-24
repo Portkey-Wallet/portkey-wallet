@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useContext } from 'react';
 import { View, Image } from 'react-native';
 import AElf from 'aelf-sdk';
-import { setCAInfoType, setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import useEffectOnce from 'hooks/useEffectOnce';
 import myEvents from 'utils/deviceEvent';
@@ -12,17 +11,21 @@ import { TextS, TextXXXL } from 'components/CommonText';
 import { PageLoginType } from '../types';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { WalletInfoType } from '@portkey-wallet/types/wallet';
-import { useIntervalQueryCAInfoByAddress } from '@portkey-wallet/hooks/hooks-ca/graphql';
+import { useIntervalQueryCAInfoByAddress } from 'hooks/useIntervalQueryCAInfoByAddress';
 import CommonToast from 'components/CommonToast';
 import { handleWalletInfo } from '@portkey-wallet/utils/wallet';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import phone from 'assets/image/pngs/phone.png';
-import { useIsFocused } from '@react-navigation/native';
 import { useGetDeviceInfo } from 'hooks/device';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
-// import { useCheckManager } from 'hooks/useLogOut';
 import { usePreventScreenCapture } from 'expo-screen-capture';
+import NetworkContext from '../context/NetworkContext';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { SetPinPageResult, SetPinPageProps } from 'pages/Pin/SetPin';
+import { PortkeyEntries } from 'config/entries';
+import { AfterVerifiedConfig } from 'model/verify/after-verify';
+import { PortkeyConfig } from 'global';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -40,77 +43,123 @@ const DEFAULT_WALLET: LoginQRData = {
 };
 
 export default function QRCode({ setLoginType }: { setLoginType: (type: PageLoginType) => void }) {
-  // const { walletInfo, currentNetwork } = useCurrentWallet();
   const [newWallet, setNewWallet] = useState<WalletInfoType>();
+  const networkContext = useContext(NetworkContext);
+  const currentNetwork = useMemo(() => {
+    return networkContext.currentNetwork?.networkType ?? 'MAIN';
+  }, [networkContext.currentNetwork?.networkType]);
+  const { navigateForResult, onFinish } = useBaseContainer({});
   // const pin = usePin();
   // const checkManager = useCheckManager();
-  // const caWalletInfo = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address, checkManager);
+  const caWalletInfo = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address);
   // const isFocused = useIsFocused();
   usePreventScreenCapture('LoginQRCode');
 
-  // useEffect(() => {
-  //   if (!isFocused) return;
-  //   const { caInfo, originChainId } = caWalletInfo || {};
-  //   if (caInfo && newWallet && originChainId) {
-  //     if (pin) {
-  //       try {
-  //         dispatch(setCAInfoType({ caInfo, pin }));
-  //         navigationService.reset('Tab');
-  //       } catch (error) {
-  //         CommonToast.failError(error);
-  //       }
-  //     } else {
-  //       dispatch(setOriginChainId(originChainId));
-  //       navigationService.navigate('SetPin', {
-  //         caInfo,
-  //         walletInfo: handleWalletInfo(newWallet),
-  //         managerInfo: caInfo.managerInfo,
-  //       });
-  //     }
-  //     setNewWallet(undefined);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [caWalletInfo, isFocused, newWallet]);
-  // const generateWallet = useCallback(() => {
-  //   try {
-  //     const wallet = walletInfo?.address ? walletInfo : AElf.wallet.createNewWallet();
-  //     setNewWallet(wallet);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }, [walletInfo]);
+  useEffect(() => {
+    // if (!isFocused) return;
+    const { caInfo, originChainId } = caWalletInfo || {};
+    if (caInfo && newWallet && originChainId) {
+      console.log('log in succ: caInfo', caInfo);
+      // if (pin) {
+      //   try {
+      //     dispatch(setCAInfoType({ caInfo, pin }));
+      //     navigationService.reset('Tab');
+      //   } catch (error) {
+      //     CommonToast.failError(error);
+      //   }
+      // } else {
+      //   dispatch(setOriginChainId(originChainId));
+      //   navigationService.navigate('SetPin', {
+      //     caInfo,
+      //     walletInfo: handleWalletInfo(newWallet),
+      //     managerInfo: caInfo.managerInfo,
+      //   });
+      // }
+      (async () => {
+        dealWithSetPin({
+          // fromRecovery: false,
+          // accountIdentifier,
+          // chainId: await PortkeyConfig.currChainId(),
+          // extraData: defaultExtraData,
+          // verifiedGuardians: [
+          //   {
+          //     type: guardianTypeStrToEnum(google ? 'Google' : 'Apple'),
+          //     identifier: accountIdentifier,
+          //     verifierId: id,
+          //     verificationDoc: guardianResult.verificationDoc,
+          //     signature: guardianResult.signature,
+          //   },
+          // ],
+        });
+      })();
+      // setNewWallet(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caWalletInfo, newWallet]);
+
+  const dealWithSetPin = (afterVerifiedData: AfterVerifiedConfig | string) => {
+    navigateForResult<SetPinPageResult, SetPinPageProps>(
+      PortkeyEntries.SET_PIN,
+      {
+        params: {
+          deliveredSetPinInfo:
+            typeof afterVerifiedData === 'string' ? afterVerifiedData : JSON.stringify(afterVerifiedData),
+        },
+      },
+      res => {
+        const { data } = res;
+        if (data.finished) {
+          onFinish({
+            status: 'success',
+            data: {
+              finished: true,
+            },
+          });
+        }
+      },
+    );
+  };
+
+  const generateWallet = useCallback(() => {
+    try {
+      const wallet = AElf.wallet.createNewWallet();
+      console.log('wallet', wallet);
+      setNewWallet(wallet);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   const getDeviceInfo = useGetDeviceInfo();
-  // useEffectOnce(() => {
-  //   const timer = setTimeout(() => {
-  //     generateWallet();
-  //   }, 10);
-  //   let timer2: any;
-  //   const listener = myEvents.clearQRWallet.addListener(() => {
-  //     timer2 = setTimeout(() => {
-  //       setNewWallet(undefined);
-  //       timer2 && clearTimeout(timer2);
-  //       timer2 = setTimeout(() => {
-  //         generateWallet();
-  //       }, 200);
-  //     }, 500);
-  //   });
-  //   return () => {
-  //     timer && clearTimeout(timer);
-  //     timer2 && clearTimeout(timer2);
-  //     listener.remove();
-  //   };
-  // });
+  useEffectOnce(() => {
+    const timer = setTimeout(() => {
+      generateWallet();
+    }, 10);
+    let timer2: any;
+    const listener = myEvents.clearQRWallet.addListener(() => {
+      timer2 = setTimeout(() => {
+        setNewWallet(undefined);
+        timer2 && clearTimeout(timer2);
+        timer2 = setTimeout(() => {
+          generateWallet();
+        }, 200);
+      }, 500);
+    });
+    return () => {
+      timer && clearTimeout(timer);
+      timer2 && clearTimeout(timer2);
+      listener.remove();
+    };
+  });
 
   const qrData: LoginQRData = useMemo(
     () =>
       newWallet
         ? {
-            // TODO: ethereum
             chainType: 'aelf',
             type: 'login',
             address: newWallet.address,
-            netWorkType: 'MAIN', // TODO: fix network type
+            netWorkType: currentNetwork,
             id: Math.floor(Date.now() / 1000),
             extraData: {
               deviceInfo: getDeviceInfo(),
@@ -118,11 +167,9 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
             },
           }
         : DEFAULT_WALLET,
-    [getDeviceInfo, newWallet],
+    [getDeviceInfo, newWallet, currentNetwork],
   );
   const qrDataStr = useMemo(() => JSON.stringify(qrData), [qrData]);
-  // const clientId = useMemo(() => (qrData.id ? `${qrData.address}_${qrData.id}` : undefined), [qrData]);
-  // const isScanQRCode = useIsScanQRCode(clientId);
 
   return (
     <View style={[BGStyles.bg1, styles.card, styles.qrCodeCard]}>
@@ -136,12 +183,6 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
         </TextS>
         <View style={[GStyles.alignCenter, styles.qrCodeBox, GStyles.flex1]}>
           <CommonQRCodeStyled qrData={qrDataStr} hasMask={!newWallet} />
-          {/* {isScanQRCode && (
-            <View style={[GStyles.flex1, GStyles.center, GStyles.flexRow]}>
-              <Lottie source={require('./scanLoading.json')} style={styles.scanLoading} autoPlay loop />
-              <TextM style={[GStyles.textAlignCenter, FontStyles.font3]}>Waiting for authorization....</TextM>
-            </View>
-          )} */}
         </View>
       </View>
     </View>

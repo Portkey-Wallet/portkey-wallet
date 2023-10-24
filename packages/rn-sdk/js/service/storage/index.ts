@@ -3,7 +3,7 @@ import { StorageModule, portkeyModulesEntity } from 'service/native-modules';
 export const GlobalStorage: StorageModule & {
   set: (key: string, value: string | number | boolean | null | undefined) => void;
 } = Object.assign({}, portkeyModulesEntity.StorageModule, {
-  set(key: string, value: any) {
+  set(key: string, value: string | number | boolean | null | undefined) {
     switch (typeof value) {
       case 'boolean': {
         GlobalStorage.setBoolean(key, value);
@@ -15,7 +15,7 @@ export const GlobalStorage: StorageModule & {
       }
       case 'string':
       default: {
-        GlobalStorage.setString(key, value);
+        GlobalStorage.setString(key, value ?? null);
       }
     }
   },
@@ -23,7 +23,6 @@ export const GlobalStorage: StorageModule & {
 
 export const TempStorage = {
   wrapKey(key: string) {
-    console.log('wrapKey', key, portkeyModulesEntity.NativeWrapperModule.tempStorageIdentifier);
     return `${key}#${portkeyModulesEntity.NativeWrapperModule.tempStorageIdentifier}`;
   },
   set(key: string, value: any) {

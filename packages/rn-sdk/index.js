@@ -15,6 +15,7 @@ import SetBiometrics from 'pages/Pin/SetBiometrics';
 import ViewOnWebView from 'pages/Activity/ViewOnWebView';
 import { PortkeyBackgroundTasks } from 'config/tasks';
 import { handleBackgroundTask } from 'service/JsModules/BackgroundTasks';
+import QrScanner from 'pages/QrScanner';
 
 const entryConfig = new Map();
 entryConfig.set(PortkeyEntries.TEST, () => TestPage);
@@ -34,6 +35,9 @@ entryConfig.set(PortkeyEntries.CHECK_PIN, () => CheckPin);
 entryConfig.set(PortkeyEntries.SET_PIN, () => SetPin);
 entryConfig.set(PortkeyEntries.CONFIRM_PIN, () => ConfirmPin);
 entryConfig.set(PortkeyEntries.SET_BIO, () => SetBiometrics);
+
+// scan QR code
+entryConfig.set(PortkeyEntries.SCAN_QR_CODE, () => QrScanner);
 
 // webview
 entryConfig.set(PortkeyEntries.VIEW_ON_WEBVIEW, () => ViewOnWebView);

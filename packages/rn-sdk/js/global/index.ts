@@ -4,8 +4,6 @@ import { GlobalStorage } from 'service/storage';
 export enum EndPoints {
   MAIN_NET = 'https://did-portkey.portkey.finance',
   TEST_NET = 'https://did-portkey-test.portkey.finance',
-  TEST1 = 'https://localtest-applesign.portkey.finance',
-  TEST2 = 'https://localtest-applesign2.portkey.finance',
 }
 
 enum ConfigIdentifier {

@@ -145,14 +145,20 @@ const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<Recover
     publicKey,
     privateKey,
     address,
+    originalChainId: chainId,
   };
 };
 
 const handleScanQRCodeVerify = async (config: ScanQRCodePathInfo): Promise<RecoverWalletConfig> => {
-  const { walletInfo, accountIdentifier } = config || {};
+  const { walletInfo, accountIdentifier, caHash, caAddress, originalChainId } = config || {};
   return {
     ...walletInfo,
     accountIdentifier,
+    originalChainId,
+    caInfo: {
+      caHash,
+      caAddress,
+    },
   };
 };
 
@@ -220,4 +226,9 @@ export type RecoverWalletConfig = {
   sessionId?: string;
   fromRecovery?: boolean;
   accountIdentifier?: string;
+  originalChainId?: string;
+  caInfo?: {
+    caHash: string;
+    caAddress: string;
+  };
 } & WalletInfo;

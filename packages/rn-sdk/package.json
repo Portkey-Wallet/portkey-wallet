@@ -30,6 +30,9 @@
     "expo-local-authentication": "^13.6.0",
     "expo-screen-capture": "^4.3.0",
     "expo-device": "^4.3.0",
+    "expo-barcode-scanner": "^12.7.0",
+    "expo-image-picker": "^14.5.0",
+    "expo-camera": "^13.6.0",
     "@expo/package-manager": "1.1.2",
     "lottie-react-native": "^5.1.5",
     "react": "^18.2.0",
@@ -54,7 +57,7 @@
     "redux-persist": "^6.0.0",
     "rn-teaset": "^0.1.1",
     "typescript": "^4.4.4",
-    "tslib":"^2.6.2"
+    "tslib": "^2.6.2"
   },
   "scripts": {
     "start": "react-native start"

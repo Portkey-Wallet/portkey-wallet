@@ -344,34 +344,32 @@ const SendHome: React.FC = () => {
     }
 
     // checkTransferLimitResult
-    if (sendType === 'token') {
-      try {
-        if (!contractRef.current) {
-          contractRef.current = await getContractBasic({
-            contractAddress: chainInfo.caContractAddress,
-            rpcUrl: chainInfo.endPoint,
-            account,
-          });
-        }
-        const contract = contractRef.current;
-        const checkTransferLimitResult = await checkTransferLimitWithJump(
-          {
-            caContract: contract,
-            symbol: assetInfo.symbol,
-            decimals: assetInfo.decimals,
-            amount: sendNumber,
-          },
-          chainInfo.chainId,
-        );
-        if (!checkTransferLimitResult) {
-          Loading.hide();
-          return { status: false };
-        }
-      } catch (error) {
-        CommonToast.failError(error);
+    try {
+      if (!contractRef.current) {
+        contractRef.current = await getContractBasic({
+          contractAddress: chainInfo.caContractAddress,
+          rpcUrl: chainInfo.endPoint,
+          account,
+        });
+      }
+      const contract = contractRef.current;
+      const checkTransferLimitResult = await checkTransferLimitWithJump(
+        {
+          caContract: contract,
+          symbol: assetInfo.symbol,
+          decimals: assetInfo.decimals,
+          amount: sendNumber,
+        },
+        chainInfo.chainId,
+      );
+      if (!checkTransferLimitResult) {
         Loading.hide();
         return { status: false };
       }
+    } catch (error) {
+      CommonToast.failError(error);
+      Loading.hide();
+      return { status: false };
     }
 
     // check is SYNCHRONIZING

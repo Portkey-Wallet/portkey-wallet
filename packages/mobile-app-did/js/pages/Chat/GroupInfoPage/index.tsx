@@ -9,7 +9,6 @@ import Svg from 'components/Svg';
 import { TextL, TextM, TextS, TextXXXL } from 'components/CommonText';
 import navigationService from 'utils/navigationService';
 import { pTd } from 'utils/unit';
-import CommonAvatar from 'components/CommonAvatar';
 import { FontStyles } from 'assets/theme/styles';
 import ActionSheet from 'components/ActionSheet';
 import CommonToast from 'components/CommonToast';
@@ -24,9 +23,10 @@ import FormItem from 'components/FormItem';
 import { LinkPortkeyPath } from '@portkey-wallet/constants/constants-ca/network';
 import { ShowShareWithOverlay } from '../components/ShareWithOverlay';
 import { copyText } from 'utils';
+import GroupAvatarShow from '../components/GroupAvatarShow';
 
 const GroupInfoPage = () => {
-  const myRelationId = useRelationId();
+  const { relationId: myRelationId } = useRelationId();
 
   const currentChannelId = useCurrentChannelId();
   const { groupInfo, isAdmin, refresh } = useGroupChannelInfo(currentChannelId || '', false);
@@ -99,6 +99,8 @@ const GroupInfoPage = () => {
     })();
   });
 
+  console.log('membersShowList', membersShowList);
+
   return (
     <PageContainer
       hideTouchable
@@ -109,7 +111,11 @@ const GroupInfoPage = () => {
       containerStyles={styles.container}>
       <ScrollView>
         <View style={[GStyles.center, styles.headerWrap]}>
-          <CommonAvatar avatarSize={pTd(80)} svgName="chat-group-avatar" />
+          <GroupAvatarShow
+            avatarSize={pTd(80)}
+            svgName={groupInfo?.icon ? undefined : 'chat-group-avatar'}
+            imageUrl={groupInfo?.icon}
+          />
           <TextXXXL numberOfLines={1} style={[GStyles.marginTop(pTd(8)), GStyles.paddingArg(0, pTd(20))]}>
             {groupInfo?.name}
           </TextXXXL>
@@ -134,6 +140,7 @@ const GroupInfoPage = () => {
                 navigationService.navigate('ChatGroupQrCodePage', {
                   groupName: groupInfo?.name || '',
                   groupId: currentChannelId || '',
+                  groupIcon: groupInfo?.icon || '',
                 });
               }}>
               <Svg icon="chat-scan" size={pTd(16)} />
@@ -164,7 +171,7 @@ const GroupInfoPage = () => {
               <GroupInfoMemberItem
                 key={index}
                 isOwner={item.isAdmin}
-                item={{ relationId: item.relationId, title: item.name }}
+                item={{ relationId: item.relationId, title: item.name, avatar: item.avatar }}
                 onPress={onPressItem}
                 style={index === membersShowList.length - 1 && !isShowViewMoreButton ? styles.noBorderBottom : {}}
               />

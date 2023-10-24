@@ -12,6 +12,7 @@ export type GroupInfoMemberItemType = {
   relationId: string;
   userId?: string;
   title: string;
+  avatar?: string;
 };
 
 export type GroupInfoMemberItemPropsType = {
@@ -29,7 +30,7 @@ export default function GroupInfoMemberItem(props: GroupInfoMemberItemPropsType)
       disabled={!onPress}
       style={[GStyles.flexRow, GStyles.itemCenter, styles.memberItem, style]}
       onPress={() => onPress?.(item)}>
-      <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
+      <CommonAvatar hasBorder resizeMode="cover" title={item.title} avatarSize={pTd(36)} imageUrl={item.avatar || ''} />
       <TextL numberOfLines={1} style={[FontStyles.font5, GStyles.flex1, styles.memberItemText]}>
         {item.title}
       </TextL>

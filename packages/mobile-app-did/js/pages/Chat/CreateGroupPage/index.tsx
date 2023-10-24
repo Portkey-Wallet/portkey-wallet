@@ -11,7 +11,6 @@ import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { TextM } from 'components/CommonText';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import FormItem from 'components/FormItem';
 import { pTd } from 'utils/unit';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import GroupMemberItem from '../components/GroupMemberItem';
@@ -19,12 +18,15 @@ import NoData from 'components/NoData';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im/channelList';
 import { sleep } from '@portkey-wallet/utils';
 import { useJumpToChatGroupDetails } from 'hooks/chat';
+import ImageWithUploadFunc from 'components/ImageWithUploadFunc';
+
 const ChatGroupDetails = () => {
   const createChannel = useCreateGroupChannel();
-
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
 
   const [groupName, setGroupName] = useState('');
+  const [groupAvatar, setGroupAvatar] = useState('');
+
   const [keyword, setKeyword] = useState('');
   const allChatList = useChatContactFlatList();
   const searchContact = useLocalContactSearch();
@@ -40,7 +42,7 @@ const ChatGroupDetails = () => {
     try {
       Loading.show();
       const selectedContactList = Object.keys(selectedContactMap);
-      const result = await createChannel(groupName.trim(), selectedContactList);
+      const result = await createChannel(groupName.trim(), selectedContactList, groupAvatar);
       CommonToast.success('Group created');
       await sleep(100);
       jumpToChatGroupDetails({ channelUuid: result.channelUuid });
@@ -49,7 +51,7 @@ const ChatGroupDetails = () => {
     } finally {
       Loading.hide();
     }
-  }, [createChannel, groupName, jumpToChatGroupDetails, selectedContactMap]);
+  }, [createChannel, groupAvatar, groupName, jumpToChatGroupDetails, selectedContactMap]);
 
   const onPressItem = useCallback((id: string) => {
     setSelectedContactMap(prevMap => {
@@ -79,7 +81,8 @@ const ChatGroupDetails = () => {
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      <FormItem title={'Group Name'} style={styles.groupNameWrap}>
+      <View style={[GStyles.flexRow, GStyles.itemCenter, styles.groupNameWrap]}>
+        <ImageWithUploadFunc title={groupName} imageUrl={groupAvatar} onChangeImage={url => setGroupAvatar(url)} />
         <CommonInput
           type="general"
           theme="white-bg"
@@ -87,8 +90,11 @@ const ChatGroupDetails = () => {
           maxLength={40}
           value={groupName}
           onChangeText={setGroupName}
+          inputStyle={styles.nameInputStyle}
+          errorStyle={styles.nameInputErrorStyle}
+          containerStyle={styles.nameInputContainerStyle}
         />
-      </FormItem>
+      </View>
       <View style={[BGStyles.bg1, GStyles.flex1]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.selectHeaderWrap]}>
           <TextM style={FontStyles.font3}>Select Contacts</TextM>
@@ -107,6 +113,7 @@ const ChatGroupDetails = () => {
               item={{
                 title: item.name || item.caHolderInfo?.walletName || item.imInfo?.name || '',
                 relationId: item.imInfo?.relationId || '',
+                avatar: item.avatar || '',
               }}
               onPress={onPressItem}
             />
@@ -130,8 +137,12 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(0),
   },
   groupNameWrap: {
-    marginTop: pTd(24),
-    paddingHorizontal: pTd(20),
+    height: pTd(72),
+    paddingHorizontal: pTd(16),
+    marginHorizontal: pTd(20),
+    marginVertical: pTd(24),
+    borderRadius: pTd(6),
+    backgroundColor: defaultColors.bg1,
   },
   selectHeaderWrap: {
     marginTop: pTd(16),
@@ -145,5 +156,16 @@ const styles = StyleSheet.create({
   buttonWrap: {
     ...GStyles.paddingArg(10, 20, 16),
     backgroundColor: defaultColors.bg1,
+  },
+  nameInputStyle: {
+    fontSize: pTd(16),
+  },
+  nameInputContainerStyle: {
+    flex: 1,
+  },
+  nameInputErrorStyle: {
+    height: 0,
+    padding: 0,
+    margin: 0,
   },
 });

@@ -21,6 +21,7 @@ import Loading from 'components/Loading';
 import ActionSheet from 'components/ActionSheet';
 import { DISCOVER_BOOKMARK_MAX_COUNT } from 'constants/common';
 import { sleep } from '@portkey-wallet/utils';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 function BookmarksSection() {
   const [{ isEdit }, dispatch] = useBookmark();
@@ -198,6 +199,7 @@ function BookmarksSection() {
             ) : undefined
           }
           onEndReached={() => getBookmarkList(false)}
+          onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
           ListEmptyComponent={<NoDiscoverData location="top" size="large" backgroundColor={defaultColors.bg4} />}
         />
       </View>

@@ -1,11 +1,15 @@
-import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelName } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import { Button, Form, Input, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
+import UploadAvatar from 'pages/components/UploadAvatar';
+import { RcFile } from 'antd/lib/upload/interface';
+import uploadImageToS3 from 'utils/compressAndUploadToS3';
+import { useLoading } from 'store/Provider/hooks';
 import './index.less';
 
 const { Item: FormItem } = Form;
@@ -23,11 +27,14 @@ export default function EditGroupInfo() {
   const { groupInfo } = useGroupChannelInfo(`${channelUuid}`);
   const disbandGroup = useDisbandChannel(`${channelUuid}`);
   const [validName, setValidName] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
-  const [name, setName] = useState<string>();
+  const [name, setName] = useState<string>(groupInfo?.name || '');
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
-  const updateChannelName = useUpdateChannelName();
+  const updateChannelInfo = useUpdateChannelInfo();
+  const [file, setFile] = useState<RcFile>();
+  const { setLoading } = useLoading();
+  const [previewUrl, setPreviewUrl] = useState<string>(groupInfo?.icon || '');
   const handleInputValueChange = useCallback(
     (v: string) => {
       setValidName({ validateStatus: '', errorMsg: '' });
@@ -35,21 +42,35 @@ export default function EditGroupInfo() {
         setDisabled(true);
       } else {
         setName(v);
-        setDisabled(v === groupInfo?.name);
+        if (file) {
+          setDisabled(false);
+        } else {
+          setDisabled(v === groupInfo?.name);
+        }
       }
     },
-    [groupInfo?.name],
+    [file, groupInfo?.name],
   );
+  useEffect(() => {
+    setDisabled(!file);
+  }, [file]);
   const onFinish = useCallback(async () => {
     try {
-      await updateChannelName(`${channelUuid}`, `${name?.trim()}`);
+      setLoading(true);
+      let s3Url = groupInfo?.icon || '';
+      if (file) {
+        s3Url = await uploadImageToS3(file);
+      }
+      await updateChannelInfo(`${channelUuid}`, `${name?.trim()}`, s3Url);
       message.success('Group name update');
       navigate(-1);
     } catch (error) {
       message.error('Failed to update group name');
       console.log('===Failed to update group name', error);
+    } finally {
+      setLoading(false);
     }
-  }, [channelUuid, name, navigate, updateChannelName]);
+  }, [channelUuid, file, groupInfo?.icon, name, navigate, setLoading, updateChannelInfo]);
   const handleDisband = useCallback(() => {
     CustomModalConfirm({
       content: t('Are you sure to leave and delete this group?'),
@@ -85,6 +106,15 @@ export default function EditGroupInfo() {
         initialValues={{ name: groupInfo?.name }}
         onFinish={onFinish}>
         <div className="form-content">
+          <div className="group-info-avatar flex-center">
+            <UploadAvatar
+              avatarUrl={previewUrl}
+              getTemporaryDataURL={setPreviewUrl}
+              getFile={setFile}
+              uploadText="Set New Photo"
+              size="large"
+            />
+          </div>
           <FormItem name="name" label="Group Name" validateStatus={validName.validateStatus} help={validName.errorMsg}>
             <Input
               value={name}

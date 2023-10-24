@@ -1,11 +1,9 @@
 import CustomSvg from 'components/CustomSvg';
 import usePromptSearch from 'hooks/usePromptSearch';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback } from 'react';
 import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import errorHandler from 'utils/errorHandler';
 import { MethodsBase, ResponseCode } from '@portkey/provider-types';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getLocalStorage } from 'utils/storage/chromeStorage';
 import aes from '@portkey-wallet/utils/aes';
 import { callSendMethod } from 'utils/sandboxUtil/sendTransactions';
@@ -13,15 +11,18 @@ import { Loading } from '@portkey/did-ui-react';
 import InternalMessage from 'messages/InternalMessage';
 import InternalMessageTypes from 'messages/InternalMessageTypes';
 import { apis } from 'utils/BrowserApis';
+import { useEffectOnce, useThrottleCallback } from '@portkey-wallet/hooks';
+import { getChainInfo, getCurrentWallet } from 'store/utils/getStore';
 import './index.less';
 
 export default function DappAutoTx() {
   const txParams = usePromptSearch<any>();
   const { payload } = txParams;
-  const chainInfo = useCurrentChain(payload?.chainId);
-  const wallet = useCurrentWalletInfo();
-  const isCAContract = useMemo(() => chainInfo?.caContractAddress === payload?.contractAddress, [chainInfo, payload]);
-  const handleTransaction = useCallback(async () => {
+  const handleTransaction = useThrottleCallback(async () => {
+    const wallet = getCurrentWallet();
+    const chainInfo = getChainInfo(payload.chainId);
+    const isCAContract = chainInfo?.caContractAddress === payload?.contractAddress;
+
     const curWindow = await apis.windows.getCurrent();
     try {
       if (!chainInfo?.endPoint || !wallet?.caHash) {
@@ -92,16 +93,7 @@ export default function DappAutoTx() {
         windowId: curWindow.id,
       });
     }
-  }, [
-    chainInfo,
-    wallet.caHash,
-    wallet.AESEncryptPrivateKey,
-    payload?.rpcUrl,
-    payload?.method,
-    payload?.contractAddress,
-    txParams,
-    isCAContract,
-  ]);
+  }, [payload?.rpcUrl, payload?.method, payload?.contractAddress, txParams]);
 
   const executeFn = useCallback(() => {
     switch (txParams.method) {
@@ -117,9 +109,9 @@ export default function DappAutoTx() {
     }
   }, [handleTransaction, txParams.method]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     executeFn();
-  }, [executeFn]);
+  });
 
   return (
     <div className="auto-tx flex-column-center">

@@ -36,6 +36,7 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import SystemInfo from '../SystemInfo';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -55,7 +56,7 @@ export default function ChatsDetailContent() {
   const { list, init, next, hasNext } = useChannel(currentChannelId || '');
   const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
-  const relationId = useRelationId();
+  const { relationId } = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   const onLoadEarlier = useLockCallback(async () => {
@@ -116,6 +117,7 @@ export default function ChatsDetailContent() {
       ...ListViewProps,
       contentContainerStyle: styles.contentStyle,
       onEndReached: () => onLoadEarlier(),
+      onEndReachedThreshold: ON_END_REACHED_THRESHOLD,
       onScrollBeginDrag: onDismiss,
     };
   }, [onDismiss, onLoadEarlier]);

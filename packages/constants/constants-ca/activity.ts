@@ -10,6 +10,7 @@ export const DEFAULT_DIGITS = 4;
 
 export const ELF_DECIMAL = 8;
 
+export const AELF_CHIAN_TYPE = 'aelf';
 export const MAIN_CHAIN_ID = 'AELF';
 export const MAIN_CHAIN = 'MainChain';
 export const SIDE_CHAIN = 'SideChain';
@@ -21,3 +22,6 @@ export const SHOW_FROM_TRANSACTION_TYPES = [
   TransactionTypes.CROSS_CHAIN_TRANSFER,
   TransactionTypes.CLAIM_TOKEN,
 ];
+
+export const ON_END_REACHED_THRESHOLD = 0.3;
+export const ACTIVITY_PAGE_SIZE = 20;

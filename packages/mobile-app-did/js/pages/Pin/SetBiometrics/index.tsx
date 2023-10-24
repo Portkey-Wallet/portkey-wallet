@@ -27,6 +27,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useSetBiometrics } from 'hooks/useBiometrics';
 import { useLanguage } from 'i18n/hooks';
 import { changeCanLock } from 'utils/LockManager';
+import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 const ScrollViewProps = { disabled: true };
 export default function SetBiometrics() {
   const { t } = useLanguage();
@@ -74,7 +75,9 @@ export default function SetBiometrics() {
     if (managerInfo) {
       timer.current?.remove();
       const isRecovery = managerInfo?.verificationType === VerificationType.communityRecovery;
-      Loading.show({ text: t(isRecovery ? 'Initiating social recovery' : 'Creating address on the chain...') });
+      Loading.show({
+        text: t(isRecovery ? 'Initiating social recovery' : CreateAddressLoading),
+      });
       timer.current = onIntervalGetResult({
         managerInfo,
         onPass: (info: CAInfo) => {

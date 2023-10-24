@@ -170,7 +170,7 @@ export default function RegisterStart() {
       saveState(data);
       dispatch(resetGuardians());
 
-      setLoading(true, 'Assigning a verifier on-chain…');
+      setLoading(true, 'Assigning a verifier on the blockchain...');
 
       await sleep(2000);
 

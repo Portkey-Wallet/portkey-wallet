@@ -1,7 +1,7 @@
 export const CROSS_FEE = '0.35';
 export const DEFAULT_FEE = '0.39';
 
-export const CreateAddressLoading = 'Creating address on the chain...';
+export const CreateAddressLoading = 'Creating a wallet address on the blockchain...';
 
 export const InitLoginLoading = 'Initiating social recovery';
 

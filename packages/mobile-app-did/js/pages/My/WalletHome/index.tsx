@@ -7,7 +7,6 @@ import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import navigationService from 'utils/navigationService';
 import { BorderStyles, FontStyles } from 'assets/theme/styles';
-import Svg, { IconName } from 'components/Svg';
 import MenuItem from '../components/MenuItem';
 import ExistOverlay from './components/ExistOverlay';
 import Loading from 'components/Loading';

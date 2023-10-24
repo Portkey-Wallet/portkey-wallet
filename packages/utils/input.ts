@@ -32,6 +32,7 @@ export function parseInputNumberChange(value: string, max: number | BigNumber = 
     return (dec?.length || 0) >= +decimal ? pivot.dp(+decimal, 1).toFixed() : value;
   }
   const maxLimit = !new BigNumber(max).isNaN() ? max : Infinity;
+
   if (pivot.gt(0)) {
     return pivot.gt(maxLimit)
       ? maxLimit === Infinity
@@ -40,7 +41,7 @@ export function parseInputNumberChange(value: string, max: number | BigNumber = 
             .dp(+decimal, 1)
             .toFixed()
       : (dec?.length || 0) >= +decimal
-      ? pivot.dp(+decimal, 1).toFixed()
+      ? pivot.dp(+decimal, 1).toFixed(+decimal)
       : value;
   } else {
     return '';

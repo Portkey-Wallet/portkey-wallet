@@ -61,7 +61,7 @@ export default function UploadAvatar({
   });
 
   return (
-    <UploadImage getTemporaryDataURL={getTemporaryDataURL} getFile={getFile}>
+    <UploadImage accept="image/png,image/jpeg,image/jpg" getTemporaryDataURL={getTemporaryDataURL} getFile={getFile}>
       <div className={clsx(['flex-column-center', 'upload-avatar-container'])}>
         <div className={clsx(['flex-center', 'upload-avatar', uploadAvatarClass, wrapperClass])} style={wrapperStyle}>
           {avatarUrl ? (

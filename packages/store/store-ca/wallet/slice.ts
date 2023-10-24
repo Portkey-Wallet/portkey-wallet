@@ -20,9 +20,9 @@ import { WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
 
 const initialState: WalletState = {
-  walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`,
+  walletAvatar: '',
   walletType: 'aelf',
-  walletName: 'Wallet 01',
+  walletName: '',
   userId: '',
   currentNetwork: 'MAIN',
   chainList: [],

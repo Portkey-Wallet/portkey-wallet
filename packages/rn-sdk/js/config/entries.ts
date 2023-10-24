@@ -13,8 +13,7 @@ export enum PortkeyEntries {
   CONFIRM_PIN = 'confirm_pin_entry',
 
   SET_BIO = 'set_bio_entry',
-
   SCAN_QR_CODE = 'scan_qr_code_entry',
-
+  SCAN_LOG_IN = 'scan_log_in_entry',
   VIEW_ON_WEBVIEW = 'view_on_webview',
 }

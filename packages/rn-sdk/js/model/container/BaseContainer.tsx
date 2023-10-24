@@ -29,8 +29,13 @@ export default abstract class BaseContainer<
     }
   }
 
-  navigationTo = (entry: PortkeyEntries, targetScene?: string) => {
-    portkeyModulesEntity.RouterModule.navigateTo(entry, this.getEntryName(), targetScene);
+  navigationTo = (entry: PortkeyEntries, targetScene?: string, closeCurrentScreen?: boolean) => {
+    portkeyModulesEntity.RouterModule.navigateTo(
+      entry,
+      this.getEntryName(),
+      targetScene ?? 'none',
+      closeCurrentScreen ?? false,
+    );
   };
 
   navigateForResult = <V, T = { [x: string]: AcceptableValueType }>(

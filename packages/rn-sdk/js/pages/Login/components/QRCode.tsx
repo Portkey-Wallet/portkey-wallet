@@ -9,11 +9,7 @@ import Touchable from 'components/Touchable';
 import GStyles from 'assets/theme/GStyles';
 import { TextS, TextXXXL } from 'components/CommonText';
 import { PageLoginType } from '../types';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { WalletInfoType } from '@portkey-wallet/types/wallet';
 import { useIntervalQueryCAInfoByAddress } from 'hooks/useIntervalQueryCAInfoByAddress';
-import CommonToast from 'components/CommonToast';
-import { handleWalletInfo } from '@portkey-wallet/utils/wallet';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import phone from 'assets/image/pngs/phone.png';
 import { useGetDeviceInfo } from 'hooks/device';
@@ -25,7 +21,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { SetPinPageResult, SetPinPageProps } from 'pages/Pin/SetPin';
 import { PortkeyEntries } from 'config/entries';
 import { AfterVerifiedConfig } from 'model/verify/after-verify';
-import { PortkeyConfig } from 'global';
+import { WalletInfo } from 'network/dto/wallet';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -43,7 +39,7 @@ const DEFAULT_WALLET: LoginQRData = {
 };
 
 export default function QRCode({ setLoginType }: { setLoginType: (type: PageLoginType) => void }) {
-  const [newWallet, setNewWallet] = useState<WalletInfoType>();
+  const [newWallet, setNewWallet] = useState<WalletInfo>();
   const networkContext = useContext(NetworkContext);
   const currentNetwork = useMemo(() => {
     return networkContext.currentNetwork?.networkType ?? 'MAIN';
@@ -60,39 +56,15 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
     const { caInfo, originChainId } = caWalletInfo || {};
     if (caInfo && newWallet && originChainId) {
       console.log('log in succ: caInfo', caInfo);
-      // if (pin) {
-      //   try {
-      //     dispatch(setCAInfoType({ caInfo, pin }));
-      //     navigationService.reset('Tab');
-      //   } catch (error) {
-      //     CommonToast.failError(error);
-      //   }
-      // } else {
-      //   dispatch(setOriginChainId(originChainId));
-      //   navigationService.navigate('SetPin', {
-      //     caInfo,
-      //     walletInfo: handleWalletInfo(newWallet),
-      //     managerInfo: caInfo.managerInfo,
-      //   });
-      // }
-      (async () => {
-        dealWithSetPin({
-          // fromRecovery: false,
-          // accountIdentifier,
-          // chainId: await PortkeyConfig.currChainId(),
-          // extraData: defaultExtraData,
-          // verifiedGuardians: [
-          //   {
-          //     type: guardianTypeStrToEnum(google ? 'Google' : 'Apple'),
-          //     identifier: accountIdentifier,
-          //     verifierId: id,
-          //     verificationDoc: guardianResult.verificationDoc,
-          //     signature: guardianResult.signature,
-          //   },
-          // ],
-        });
-      })();
-      // setNewWallet(undefined);
+      const { caAddress, caHash } = caInfo[caInfo.originChainId ?? 'AELF'];
+      dealWithSetPin({
+        scanQRCodePathInfo: {
+          caHash: caHash,
+          caAddress: caAddress,
+          walletInfo: newWallet,
+          originalChainId: originChainId,
+        },
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caWalletInfo, newWallet]);

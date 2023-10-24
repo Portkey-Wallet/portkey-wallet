@@ -195,7 +195,7 @@ export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
 
 export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {
   const { entrance } = useEntrance(config);
-  const isBridgeShow = useMemo(() => entrance?.bridge, [entrance.bridge, isMainnet]);
+  const isBridgeShow = useMemo(() => entrance?.bridge, [entrance.bridge]);
 
   return {
     isBridgeShow,

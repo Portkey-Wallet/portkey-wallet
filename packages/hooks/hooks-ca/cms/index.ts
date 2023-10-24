@@ -193,11 +193,14 @@ export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
   };
 };
 
-export const useIsBridgeShow = (deviceType: any) => {
-  return useMemo(() => {
-    // TODO: change to new cms
-    return true;
-  }, []);
+export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isMainnet = useIsMainnet();
+  const isBridgeShow = useMemo(() => isMainnet && entrance.bridge, [entrance.bridge, isMainnet]);
+
+  return {
+    isBridgeShow,
+  };
 };
 
 export const useRememberMeBlackList = (isInit = false) => {

@@ -16,12 +16,9 @@ import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
-import { useIsBridgeShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import BridgeButton from 'components/BridgeButton';
 import GStyles from 'assets/theme/GStyles';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { useAppBuyButtonShow } from 'hooks/cms';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useAppBridgeButtonShow, useAppBuyButtonShow } from 'hooks/cms';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
@@ -29,16 +26,16 @@ const Card: React.FC = () => {
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { isBuyButtonShow } = useAppBuyButtonShow();
-  const isShowBridgeButton = useIsBridgeShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
+  const { isBridgeShow } = useAppBridgeButtonShow();
 
   const buttonCount = useMemo(() => {
     let count = 3;
     if (isBuyButtonShow) count++;
-    if (isShowBridgeButton) count++;
+    if (isBridgeShow) count++;
     // FaucetButton
     if (!isMainnet) count++;
     return count;
-  }, [isBuyButtonShow, isMainnet, isShowBridgeButton]);
+  }, [isBridgeShow, isBuyButtonShow, isMainnet]);
 
   const buttonGroupWrapStyle = useMemo(
     () => (buttonCount < 5 ? (GStyles.flexCenter as StyleProp<ViewProps>) : undefined),
@@ -67,7 +64,7 @@ const Card: React.FC = () => {
 
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
         {isBuyButtonShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
-        {isShowBridgeButton && <BridgeButton wrapStyle={buttonWrapStyle} />}
+        {isBridgeShow && <BridgeButton wrapStyle={buttonWrapStyle} />}
         <SendButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         <ReceiveButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />
         {!isMainnet && <FaucetButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}

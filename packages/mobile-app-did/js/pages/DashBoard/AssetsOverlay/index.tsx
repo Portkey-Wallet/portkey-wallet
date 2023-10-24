@@ -77,7 +77,7 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = () => {
+const AssetList = ({ toAddress }: { toAddress: string }) => {
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
@@ -139,29 +139,32 @@ const AssetList = () => {
     getTokenPrice();
   });
 
-  const renderItem = useCallback(({ item }: { item: IAssetItemType }) => {
-    return (
-      <AssetItem
-        symbol={item.symbol || ''}
-        // icon={'aelf-avatar'}
-        item={item}
-        onPress={() => {
-          OverlayModal.hide();
-          const routeParams = {
-            sendType: item?.nftInfo ? 'nft' : 'token',
-            assetInfo: item?.nftInfo
-              ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
-              : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
-            toInfo: {
-              address: '',
-              name: '',
-            },
-          };
-          navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
-        }}
-      />
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: IAssetItemType }) => {
+      return (
+        <AssetItem
+          symbol={item.symbol || ''}
+          // icon={'aelf-avatar'}
+          item={item}
+          onPress={() => {
+            OverlayModal.hide();
+            const routeParams = {
+              sendType: item?.nftInfo ? 'nft' : 'token',
+              assetInfo: item?.nftInfo
+                ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
+                : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
+              toInfo: {
+                address: toAddress || '',
+                name: '',
+              },
+            };
+            navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+          }}
+        />
+      );
+    },
+    [toAddress],
+  );
 
   const noData = useMemo(() => {
     return debounceKeyword ? (
@@ -209,8 +212,9 @@ const AssetList = () => {
   );
 };
 
-export const showAssetList = () => {
-  OverlayModal.show(<AssetList />, {
+export const showAssetList = (params?: { toAddress: string }) => {
+  const { toAddress = '' } = params || {};
+  OverlayModal.show(<AssetList toAddress={toAddress} />, {
     position: 'bottom',
     autoKeyboardInsets: false,
     enabledNestScrollView: true,

@@ -42,7 +42,18 @@ export type Query = {
   discoverItem_aggregated: Array<DiscoverItem_Aggregated>;
   discoverItem_by_id?: Maybe<DiscoverItem>;
   download?: Maybe<Download>;
-  entranceControl?: Maybe<EntranceControl>;
+  entrance: Array<Entrance>;
+  entranceMatch: Array<EntranceMatch>;
+  entranceMatch_aggregated: Array<EntranceMatch_Aggregated>;
+  entranceMatch_by_id?: Maybe<EntranceMatch>;
+  entranceModuleName: Array<EntranceModuleName>;
+  entranceModuleName_aggregated: Array<EntranceModuleName_Aggregated>;
+  entranceModuleName_by_id?: Maybe<EntranceModuleName>;
+  entrance_aggregated: Array<Entrance_Aggregated>;
+  entrance_by_id?: Maybe<Entrance>;
+  entrance_entranceMatch: Array<Entrance_EntranceMatch>;
+  entrance_entranceMatch_aggregated: Array<Entrance_EntranceMatch_Aggregated>;
+  entrance_entranceMatch_by_id?: Maybe<Entrance_EntranceMatch>;
   home?: Maybe<Home>;
   mediaKit: Array<MediaKit>;
   mediaKitPage?: Maybe<MediaKitPage>;
@@ -212,6 +223,98 @@ export type QueryDiscoverItem_AggregatedArgs = {
 };
 
 export type QueryDiscoverItem_By_IdArgs = {
+  id: Scalars['ID'];
+};
+
+export type QueryEntranceArgs = {
+  filter?: InputMaybe<Entrance_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryEntranceMatchArgs = {
+  filter?: InputMaybe<EntranceMatch_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryEntranceMatch_AggregatedArgs = {
+  filter?: InputMaybe<EntranceMatch_Filter>;
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryEntranceMatch_By_IdArgs = {
+  id: Scalars['ID'];
+};
+
+export type QueryEntranceModuleNameArgs = {
+  filter?: InputMaybe<EntranceModuleName_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryEntranceModuleName_AggregatedArgs = {
+  filter?: InputMaybe<EntranceModuleName_Filter>;
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryEntranceModuleName_By_IdArgs = {
+  id: Scalars['ID'];
+};
+
+export type QueryEntrance_AggregatedArgs = {
+  filter?: InputMaybe<Entrance_Filter>;
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryEntrance_By_IdArgs = {
+  id: Scalars['ID'];
+};
+
+export type QueryEntrance_EntranceMatchArgs = {
+  filter?: InputMaybe<Entrance_EntranceMatch_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryEntrance_EntranceMatch_AggregatedArgs = {
+  filter?: InputMaybe<Entrance_EntranceMatch_Filter>;
+  groupBy?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type QueryEntrance_EntranceMatch_By_IdArgs = {
   id: Scalars['ID'];
 };
 
@@ -443,6 +546,13 @@ export type QueryTopSecondMenu_AggregatedArgs = {
 
 export type QueryTopSecondMenu_By_IdArgs = {
   id: Scalars['ID'];
+};
+
+export type Boolean_Filter_Operators = {
+  _eq?: InputMaybe<Scalars['Boolean']>;
+  _neq?: InputMaybe<Scalars['Boolean']>;
+  _nnull?: InputMaybe<Scalars['Boolean']>;
+  _null?: InputMaybe<Scalars['Boolean']>;
 };
 
 export type BottomMenu = {
@@ -1126,18 +1236,272 @@ export type DownloadIosQrCodeArgs = {
   sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
-export type EntranceControl = {
-  __typename?: 'entranceControl';
+export type Entrance = {
+  __typename?: 'entrance';
   date_created?: Maybe<Scalars['Date']>;
   date_created_func?: Maybe<Datetime_Functions>;
   date_updated?: Maybe<Scalars['Date']>;
   date_updated_func?: Maybe<Datetime_Functions>;
+  defaultSwitch?: Maybe<Scalars['Boolean']>;
   id: Scalars['ID'];
-  isAndroidBridgeShow?: Maybe<Scalars['Boolean']>;
-  isExtensionBridgeShow?: Maybe<Scalars['Boolean']>;
-  isIOSBridgeShow?: Maybe<Scalars['Boolean']>;
+  matchList?: Maybe<Array<Maybe<Entrance_EntranceMatch>>>;
+  matchList_func?: Maybe<Count_Functions>;
+  moduleName?: Maybe<EntranceModuleName>;
   user_created?: Maybe<Scalars['String']>;
   user_updated?: Maybe<Scalars['String']>;
+};
+
+export type EntranceMatchListArgs = {
+  filter?: InputMaybe<Entrance_EntranceMatch_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type EntranceModuleNameArgs = {
+  filter?: InputMaybe<EntranceModuleName_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type EntranceMatch = {
+  __typename?: 'entranceMatch';
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  matchRuleList?: Maybe<Scalars['JSON']>;
+  matchRuleList_func?: Maybe<Count_Functions>;
+  matchSwitch?: Maybe<Scalars['Boolean']>;
+  status?: Maybe<Scalars['String']>;
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
+  weight?: Maybe<Scalars['Int']>;
+};
+
+export type EntranceMatch_Aggregated = {
+  __typename?: 'entranceMatch_aggregated';
+  avg?: Maybe<EntranceMatch_Aggregated_Fields>;
+  avgDistinct?: Maybe<EntranceMatch_Aggregated_Fields>;
+  count?: Maybe<EntranceMatch_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<EntranceMatch_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<EntranceMatch_Aggregated_Fields>;
+  min?: Maybe<EntranceMatch_Aggregated_Fields>;
+  sum?: Maybe<EntranceMatch_Aggregated_Fields>;
+  sumDistinct?: Maybe<EntranceMatch_Aggregated_Fields>;
+};
+
+export type EntranceMatch_Aggregated_Count = {
+  __typename?: 'entranceMatch_aggregated_count';
+  date_created?: Maybe<Scalars['Int']>;
+  date_updated?: Maybe<Scalars['Int']>;
+  description?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+  matchRuleList?: Maybe<Scalars['Int']>;
+  matchSwitch?: Maybe<Scalars['Int']>;
+  status?: Maybe<Scalars['Int']>;
+  user_created?: Maybe<Scalars['Int']>;
+  user_updated?: Maybe<Scalars['Int']>;
+  weight?: Maybe<Scalars['Int']>;
+};
+
+export type EntranceMatch_Aggregated_Fields = {
+  __typename?: 'entranceMatch_aggregated_fields';
+  id?: Maybe<Scalars['Float']>;
+  weight?: Maybe<Scalars['Float']>;
+};
+
+export type EntranceMatch_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<EntranceMatch_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<EntranceMatch_Filter>>>;
+  date_created?: InputMaybe<Date_Filter_Operators>;
+  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  date_updated?: InputMaybe<Date_Filter_Operators>;
+  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  description?: InputMaybe<String_Filter_Operators>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  matchRuleList?: InputMaybe<String_Filter_Operators>;
+  matchRuleList_func?: InputMaybe<Count_Function_Filter_Operators>;
+  matchSwitch?: InputMaybe<Boolean_Filter_Operators>;
+  status?: InputMaybe<String_Filter_Operators>;
+  user_created?: InputMaybe<String_Filter_Operators>;
+  user_updated?: InputMaybe<String_Filter_Operators>;
+  weight?: InputMaybe<Number_Filter_Operators>;
+};
+
+export type EntranceModuleName = {
+  __typename?: 'entranceModuleName';
+  date_created?: Maybe<Scalars['Date']>;
+  date_created_func?: Maybe<Datetime_Functions>;
+  date_updated?: Maybe<Scalars['Date']>;
+  date_updated_func?: Maybe<Datetime_Functions>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  user_created?: Maybe<Scalars['String']>;
+  user_updated?: Maybe<Scalars['String']>;
+  value?: Maybe<Scalars['String']>;
+};
+
+export type EntranceModuleName_Aggregated = {
+  __typename?: 'entranceModuleName_aggregated';
+  avg?: Maybe<EntranceModuleName_Aggregated_Fields>;
+  avgDistinct?: Maybe<EntranceModuleName_Aggregated_Fields>;
+  count?: Maybe<EntranceModuleName_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<EntranceModuleName_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<EntranceModuleName_Aggregated_Fields>;
+  min?: Maybe<EntranceModuleName_Aggregated_Fields>;
+  sum?: Maybe<EntranceModuleName_Aggregated_Fields>;
+  sumDistinct?: Maybe<EntranceModuleName_Aggregated_Fields>;
+};
+
+export type EntranceModuleName_Aggregated_Count = {
+  __typename?: 'entranceModuleName_aggregated_count';
+  date_created?: Maybe<Scalars['Int']>;
+  date_updated?: Maybe<Scalars['Int']>;
+  description?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+  user_created?: Maybe<Scalars['Int']>;
+  user_updated?: Maybe<Scalars['Int']>;
+  value?: Maybe<Scalars['Int']>;
+};
+
+export type EntranceModuleName_Aggregated_Fields = {
+  __typename?: 'entranceModuleName_aggregated_fields';
+  id?: Maybe<Scalars['Float']>;
+};
+
+export type EntranceModuleName_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<EntranceModuleName_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<EntranceModuleName_Filter>>>;
+  date_created?: InputMaybe<Date_Filter_Operators>;
+  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  date_updated?: InputMaybe<Date_Filter_Operators>;
+  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  description?: InputMaybe<String_Filter_Operators>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  user_created?: InputMaybe<String_Filter_Operators>;
+  user_updated?: InputMaybe<String_Filter_Operators>;
+  value?: InputMaybe<String_Filter_Operators>;
+};
+
+export type Entrance_Aggregated = {
+  __typename?: 'entrance_aggregated';
+  avg?: Maybe<Entrance_Aggregated_Fields>;
+  avgDistinct?: Maybe<Entrance_Aggregated_Fields>;
+  count?: Maybe<Entrance_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<Entrance_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<Entrance_Aggregated_Fields>;
+  min?: Maybe<Entrance_Aggregated_Fields>;
+  sum?: Maybe<Entrance_Aggregated_Fields>;
+  sumDistinct?: Maybe<Entrance_Aggregated_Fields>;
+};
+
+export type Entrance_Aggregated_Count = {
+  __typename?: 'entrance_aggregated_count';
+  date_created?: Maybe<Scalars['Int']>;
+  date_updated?: Maybe<Scalars['Int']>;
+  defaultSwitch?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+  matchList?: Maybe<Scalars['Int']>;
+  moduleName?: Maybe<Scalars['Int']>;
+  user_created?: Maybe<Scalars['Int']>;
+  user_updated?: Maybe<Scalars['Int']>;
+};
+
+export type Entrance_Aggregated_Fields = {
+  __typename?: 'entrance_aggregated_fields';
+  id?: Maybe<Scalars['Float']>;
+  moduleName?: Maybe<Scalars['Float']>;
+};
+
+export type Entrance_EntranceMatch = {
+  __typename?: 'entrance_entranceMatch';
+  entranceMatch_id?: Maybe<EntranceMatch>;
+  entrance_id?: Maybe<Entrance>;
+  id: Scalars['ID'];
+};
+
+export type Entrance_EntranceMatchEntranceMatch_IdArgs = {
+  filter?: InputMaybe<EntranceMatch_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Entrance_EntranceMatchEntrance_IdArgs = {
+  filter?: InputMaybe<Entrance_Filter>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
+  page?: InputMaybe<Scalars['Int']>;
+  search?: InputMaybe<Scalars['String']>;
+  sort?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+};
+
+export type Entrance_EntranceMatch_Aggregated = {
+  __typename?: 'entrance_entranceMatch_aggregated';
+  avg?: Maybe<Entrance_EntranceMatch_Aggregated_Fields>;
+  avgDistinct?: Maybe<Entrance_EntranceMatch_Aggregated_Fields>;
+  count?: Maybe<Entrance_EntranceMatch_Aggregated_Count>;
+  countAll?: Maybe<Scalars['Int']>;
+  countDistinct?: Maybe<Entrance_EntranceMatch_Aggregated_Count>;
+  group?: Maybe<Scalars['JSON']>;
+  max?: Maybe<Entrance_EntranceMatch_Aggregated_Fields>;
+  min?: Maybe<Entrance_EntranceMatch_Aggregated_Fields>;
+  sum?: Maybe<Entrance_EntranceMatch_Aggregated_Fields>;
+  sumDistinct?: Maybe<Entrance_EntranceMatch_Aggregated_Fields>;
+};
+
+export type Entrance_EntranceMatch_Aggregated_Count = {
+  __typename?: 'entrance_entranceMatch_aggregated_count';
+  entranceMatch_id?: Maybe<Scalars['Int']>;
+  entrance_id?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['Int']>;
+};
+
+export type Entrance_EntranceMatch_Aggregated_Fields = {
+  __typename?: 'entrance_entranceMatch_aggregated_fields';
+  entranceMatch_id?: Maybe<Scalars['Float']>;
+  entrance_id?: Maybe<Scalars['Float']>;
+  id?: Maybe<Scalars['Float']>;
+};
+
+export type Entrance_EntranceMatch_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<Entrance_EntranceMatch_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<Entrance_EntranceMatch_Filter>>>;
+  entranceMatch_id?: InputMaybe<EntranceMatch_Filter>;
+  entrance_id?: InputMaybe<Entrance_Filter>;
+  id?: InputMaybe<Number_Filter_Operators>;
+};
+
+export type Entrance_Filter = {
+  _and?: InputMaybe<Array<InputMaybe<Entrance_Filter>>>;
+  _or?: InputMaybe<Array<InputMaybe<Entrance_Filter>>>;
+  date_created?: InputMaybe<Date_Filter_Operators>;
+  date_created_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  date_updated?: InputMaybe<Date_Filter_Operators>;
+  date_updated_func?: InputMaybe<Datetime_Function_Filter_Operators>;
+  defaultSwitch?: InputMaybe<Boolean_Filter_Operators>;
+  id?: InputMaybe<Number_Filter_Operators>;
+  matchList?: InputMaybe<Entrance_EntranceMatch_Filter>;
+  matchList_func?: InputMaybe<Count_Function_Filter_Operators>;
+  moduleName?: InputMaybe<EntranceModuleName_Filter>;
+  user_created?: InputMaybe<String_Filter_Operators>;
+  user_updated?: InputMaybe<String_Filter_Operators>;
 };
 
 export type Home = {

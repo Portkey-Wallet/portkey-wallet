@@ -24,7 +24,27 @@ module.exports.discoverItem = fs.readFileSync(path.join(__dirname, 'discoverItem
 module.exports.discoverItem_by_id = fs.readFileSync(path.join(__dirname, 'discoverItem_by_id.gql'), 'utf8');
 module.exports.discoverItem_aggregated = fs.readFileSync(path.join(__dirname, 'discoverItem_aggregated.gql'), 'utf8');
 module.exports.download = fs.readFileSync(path.join(__dirname, 'download.gql'), 'utf8');
-module.exports.entranceControl = fs.readFileSync(path.join(__dirname, 'entranceControl.gql'), 'utf8');
+module.exports.entrance = fs.readFileSync(path.join(__dirname, 'entrance.gql'), 'utf8');
+module.exports.entrance_by_id = fs.readFileSync(path.join(__dirname, 'entrance_by_id.gql'), 'utf8');
+module.exports.entrance_aggregated = fs.readFileSync(path.join(__dirname, 'entrance_aggregated.gql'), 'utf8');
+module.exports.entrance_entranceMatch = fs.readFileSync(path.join(__dirname, 'entrance_entranceMatch.gql'), 'utf8');
+module.exports.entrance_entranceMatch_by_id = fs.readFileSync(
+  path.join(__dirname, 'entrance_entranceMatch_by_id.gql'),
+  'utf8',
+);
+module.exports.entrance_entranceMatch_aggregated = fs.readFileSync(
+  path.join(__dirname, 'entrance_entranceMatch_aggregated.gql'),
+  'utf8',
+);
+module.exports.entranceMatch = fs.readFileSync(path.join(__dirname, 'entranceMatch.gql'), 'utf8');
+module.exports.entranceMatch_by_id = fs.readFileSync(path.join(__dirname, 'entranceMatch_by_id.gql'), 'utf8');
+module.exports.entranceMatch_aggregated = fs.readFileSync(path.join(__dirname, 'entranceMatch_aggregated.gql'), 'utf8');
+module.exports.entranceModuleName = fs.readFileSync(path.join(__dirname, 'entranceModuleName.gql'), 'utf8');
+module.exports.entranceModuleName_by_id = fs.readFileSync(path.join(__dirname, 'entranceModuleName_by_id.gql'), 'utf8');
+module.exports.entranceModuleName_aggregated = fs.readFileSync(
+  path.join(__dirname, 'entranceModuleName_aggregated.gql'),
+  'utf8',
+);
 module.exports.home = fs.readFileSync(path.join(__dirname, 'home.gql'), 'utf8');
 module.exports.mediaKit = fs.readFileSync(path.join(__dirname, 'mediaKit.gql'), 'utf8');
 module.exports.mediaKit_by_id = fs.readFileSync(path.join(__dirname, 'mediaKit_by_id.gql'), 'utf8');

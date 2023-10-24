@@ -17,19 +17,14 @@ import { useCheckUpdate } from 'hooks/useCheckUpdate';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useLocation } from 'react-router';
-import {
-  useBuyButton,
-  useEntranceControl,
-  useRememberMeBlackList,
-  useSocialMediaList,
-  useTabMenuList,
-} from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useRememberMeBlackList, useSocialMediaList, useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import usePortkeyUIConfig from 'hooks/usePortkeyUIConfig';
 import im from '@portkey-wallet/im';
 import s3Instance from '@portkey-wallet/utils/s3';
 import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useExtensionEntrance } from 'hooks/cms';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -87,8 +82,7 @@ export default function Updater() {
   }, [onLocking]);
   usePhoneCountryCode(true);
   useSocialMediaList(true);
-  useBuyButton(true);
-  useEntranceControl(true);
+  useExtensionEntrance(true);
   useRememberMeBlackList(true);
   useTabMenuList(true);
   useCheckContactMap();

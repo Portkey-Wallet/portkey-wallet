@@ -35,7 +35,6 @@ import { useEffectOnce } from 'react-use';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import BigNumber from 'bignumber.js';
 import CustomTipModal from 'pages/components/CustomModal';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import {
   BUY_SOON_TEXT,
@@ -44,10 +43,10 @@ import {
   SERVICE_UNAVAILABLE_TEXT,
   SYNCHRONIZING_CHAIN_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { useExtensionBuyButtonShow } from 'hooks/cms';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -67,7 +66,7 @@ export default function Buy() {
   const { setLoading } = useLoading();
   const [curFiat, setCurFiat] = useState<PartialFiatType>(initFiat);
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
-  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow(VersionDeviceType.Extension);
+  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useExtensionBuyButtonShow();
   const checkManagerSyncState = useCheckManagerSyncState();
   useFetchTxFee();
   const { ach: achFee } = useGetTxFee('AELF');

@@ -1,5 +1,5 @@
-query entranceControl{
-    entranceControl{
+query entranceModuleName_by_id($id: ID!){
+    entranceModuleName_by_id(id: $id){
         date_created
         date_created_func{
             year
@@ -22,11 +22,10 @@ query entranceControl{
             minute
             second
         }
+        description
         id
-        isAndroidBridgeShow
-        isExtensionBridgeShow
-        isIOSBridgeShow
         user_created
         user_updated
+        value
     }
 }

@@ -37,6 +37,7 @@ export const PortkeyMessageTypes = {
   // SEED
   SET_SEED: 'SET_SEED',
   GET_SEED: 'GET_SEED',
+  CLEAR_SEED: 'CLEAR_SEED',
   // Wallet
   LOCK_WALLET: 'LOCK_WALLET',
   REGISTER_WALLET: 'REGISTER_WALLET',

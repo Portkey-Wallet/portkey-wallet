@@ -16,12 +16,10 @@ import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import {
-  useBuyButton,
   useDiscoverGroupList,
   useSocialMediaList,
   useRememberMeBlackList,
   useTabMenuList,
-  useEntranceControl,
 } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
@@ -31,6 +29,7 @@ import im from '@portkey-wallet/im';
 import s3Instance from '@portkey-wallet/utils/s3';
 import Config from 'react-native-config';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useAppEntrance } from 'hooks/cms';
 
 request.setExceptionManager(exceptionManager);
 export default function Updater() {
@@ -87,8 +86,7 @@ export default function Updater() {
   useSocialMediaList(true);
   useTabMenuList(true);
   useDiscoverGroupList(true);
-  useBuyButton(true);
-  useEntranceControl(true);
+  useAppEntrance(true);
   useRememberMeBlackList(true);
   useCheckContactMap();
   return null;

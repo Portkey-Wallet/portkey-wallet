@@ -244,3 +244,21 @@ export function handlePhoneNumber(str?: string) {
   }
   return str || '';
 }
+
+export const handleLoopFetch = async <T>(
+  fetch: () => Promise<T>,
+  times = 0,
+  interval = 0,
+  checkIsContinue?: () => boolean,
+): Promise<T> => {
+  try {
+    return await fetch();
+  } catch (error) {
+    const isContinue = checkIsContinue ? checkIsContinue() : true;
+    if (!isContinue) throw new Error('fetch invalid');
+    if (times === 1) throw error;
+    console.log('handleLoopFetch: error', times, error);
+  }
+  await sleep(interval);
+  return handleLoopFetch(fetch, times - 1, interval, checkIsContinue);
+};

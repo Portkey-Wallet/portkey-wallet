@@ -34,7 +34,8 @@ const ActivityListPage = () => {
 
   const isLoadingRef = useRef(false);
   const getActivityList = async (isInit: boolean) => {
-    const { data, maxResultCount = 10, skipCount = 0, totalRecordCount = 0 } = currentActivity;
+    const { data, skipCount = 0, totalRecordCount = 0 } = currentActivity;
+    const maxResultCount = 30;
     if (!isInit && data?.length >= totalRecordCount) return;
     if (isLoadingRef.current) return;
     isLoadingRef.current = true;
@@ -48,6 +49,7 @@ const ActivityListPage = () => {
       chainId: chainId,
       symbol: symbol,
     };
+
     await dispatch(getActivityListAsync(params));
     setRefreshing(false);
     isLoadingRef.current = false;
@@ -77,6 +79,10 @@ const ActivityListPage = () => {
         renderItem={renderItem}
         onRefresh={() => getActivityList(true)}
         onEndReached={() => getActivityList(false)}
+        windowSize={50}
+        maxToRenderPerBatch={10}
+        initialNumToRender={20}
+        onEndReachedThreshold={0.3}
         ListEmptyComponent={<NoData message={t('You have no transactions.')} topDistance={pTd(160)} />}
       />
     </PageContainer>

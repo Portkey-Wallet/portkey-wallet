@@ -24,7 +24,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getManagerAccount } from 'utils/redux';
 import { usePin } from 'hooks/store';
-import { divDecimals, divDecimalsStr, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { divDecimals, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import BigNumber from 'bignumber.js';
 
@@ -149,33 +149,25 @@ const SendHome: React.FC = () => {
   );
 
   const onPressMax = useCallback(async () => {
-    // check is SYNCHRONIZING
-    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-    if (!_isManagerSynced) {
-      return setErrorMessage([TransactionError.SYNCHRONIZING]);
-    }
-
-    // balance 0
-    if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isEqualTo(0)) return setSendNumber('0');
-
-    // other tokens
-    if (selectedAssets.symbol !== defaultToken.symbol)
-      return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toFixed());
-
-    // elf <= maxFee
-    if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
-      return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toFixed());
-
     Loading.show();
-    let fee;
-    const isCross = isCrossChain(selectedAssets.chainId, selectedToContact.chainId || 'AELF');
-
-    console.log('divDecimalsStr', divDecimalsStr(selectedAssets.balance, selectedAssets.decimals));
-
     try {
-      fee = await getTransactionFee(isCross, divDecimals(selectedAssets.balance, selectedAssets.decimals));
-      setTransactionFee(fee || '0');
+      // check is SYNCHRONIZING
+      const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+      if (!_isManagerSynced) return setErrorMessage([TransactionError.SYNCHRONIZING]);
 
+      // balance 0
+      if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isEqualTo(0)) return setSendNumber('0');
+
+      // other tokens
+      if (selectedAssets.symbol !== defaultToken.symbol)
+        return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
+
+      // elf <= maxFee
+      if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
+        return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
+
+      const isCross = isCrossChain(selectedAssets.chainId, selectedToContact.chainId || 'AELF');
+      const fee = await getTransactionFee(isCross, divDecimals(selectedAssets.balance, selectedAssets.decimals));
       setTransactionFee(fee || '0');
       setSendNumber(
         divDecimals(selectedAssets.balance, selectedAssets.decimals || '0')
@@ -188,8 +180,9 @@ const SendHome: React.FC = () => {
         const selectedAssetsNum = divDecimals(selectedAssets.balance, selectedAssets.decimals || '0');
         setSendNumber(selectedAssetsNum.minus(maxFee).toFixed());
       }
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
   }, [
     chainInfo?.chainId,
     checkManagerSyncState,
@@ -308,7 +301,7 @@ const SendHome: React.FC = () => {
     }
 
     return true;
-  }, [chainInfo?.chainId, selectedToContact.address, wallet, assetInfo.chainId, isValidChainId, showDialog]);
+  }, [chainInfo?.chainId, selectedToContact.address, wallet, assetInfo?.chainId, isValidChainId, showDialog]);
 
   const nextStep = useCallback(() => {
     if (checkCanNext()) {
@@ -325,6 +318,7 @@ const SendHome: React.FC = () => {
    */
 
   const checkCanPreview = useCallback(async () => {
+    Loading.show();
     let fee;
     setErrorMessage([]);
 
@@ -409,7 +403,7 @@ const SendHome: React.FC = () => {
           return { status: false };
         }
       } else {
-        //Other Token
+        // nft
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
           setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
           Loading.hide();
@@ -428,7 +422,6 @@ const SendHome: React.FC = () => {
     // transaction fee check
     try {
       fee = await getTransactionFee(isCross);
-
       setTransactionFee(fee || '0');
     } catch (err: any) {
       if (err?.code === 500) {
@@ -436,8 +429,9 @@ const SendHome: React.FC = () => {
         Loading.hide();
         return { status: false };
       }
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
 
     return { status: true, fee };
   }, [

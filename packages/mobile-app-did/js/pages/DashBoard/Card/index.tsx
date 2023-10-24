@@ -16,18 +16,19 @@ import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import FaucetButton from 'components/FaucetButton';
-import { useBuyButtonShow, useIsBridgeShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { useIsBridgeShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import BridgeButton from 'components/BridgeButton';
 import GStyles from 'assets/theme/GStyles';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { useAppBuyButtonShow } from 'hooks/cms';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
   const { walletName } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
-  const { isBuyButtonShow } = useBuyButtonShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
+  const { isBuyButtonShow } = useAppBuyButtonShow();
   const isShowBridgeButton = useIsBridgeShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
 
   const buttonCount = useMemo(() => {

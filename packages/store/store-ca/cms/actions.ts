@@ -1,14 +1,13 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import { CMSState } from './types';
 import { NetworkType } from '@portkey-wallet/types';
 import {
   getDiscoverGroup,
   getSocialMedia,
   getTabMenu,
-  getBuyButton,
   getRememberMeBlackListSites,
-  getEntranceControl,
 } from '@portkey-wallet/graphql/cms/queries';
+import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
 
 export const getSocialMediaAsync = createAsyncThunk<Required<Pick<CMSState, 'socialMediaListNetMap'>>, NetworkType>(
   'cms/getSocialMediaAsync',
@@ -92,23 +91,6 @@ export const getDiscoverGroupAsync = createAsyncThunk<Required<Pick<CMSState, 'd
   },
 );
 
-export const getBuyButtonAsync = createAsyncThunk<Required<Pick<CMSState, 'buyButtonNetMap'>>, NetworkType>(
-  'cms/getBuyButtonAsync',
-  async (network: NetworkType) => {
-    const result = await getBuyButton(network, {});
-
-    if (result.data.buyButton) {
-      return {
-        buyButtonNetMap: {
-          [network]: result.data.buyButton,
-        },
-      };
-    } else {
-      throw new Error('discoverGroupListNetMap error');
-    }
-  },
-);
-
 export const getRememberMeBlackListAsync = createAsyncThunk<
   Required<Pick<CMSState, 'rememberMeBlackListMap'>>,
   NetworkType
@@ -132,19 +114,7 @@ export const getRememberMeBlackListAsync = createAsyncThunk<
   }
 });
 
-export const getEntranceControlAsync = createAsyncThunk<Required<Pick<CMSState, 'entranceControlNetMap'>>, NetworkType>(
-  'cms/getEntranceControlAsync',
-  async (network: NetworkType) => {
-    const result = await getEntranceControl(network, {});
-
-    if (result.data.entranceControl) {
-      return {
-        entranceControlNetMap: {
-          [network]: result.data.entranceControl,
-        },
-      };
-    } else {
-      throw new Error('getEntranceControlAsync error');
-    }
-  },
-);
+export const setEntrance = createAction<{
+  network: NetworkType;
+  value: IEntrance;
+}>('cms/setEntrance');

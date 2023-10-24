@@ -19,7 +19,18 @@ type Query {
   discoverItem_by_id(id: ID!): discoverItem
   discoverItem_aggregated(groupBy: [String], filter: discoverItem_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [discoverItem_aggregated!]!
   download: download
-  entranceControl: entranceControl
+  entrance(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance!]!
+  entrance_by_id(id: ID!): entrance
+  entrance_aggregated(groupBy: [String], filter: entrance_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_aggregated!]!
+  entrance_entranceMatch(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch!]!
+  entrance_entranceMatch_by_id(id: ID!): entrance_entranceMatch
+  entrance_entranceMatch_aggregated(groupBy: [String], filter: entrance_entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entrance_entranceMatch_aggregated!]!
+  entranceMatch(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entranceMatch!]!
+  entranceMatch_by_id(id: ID!): entranceMatch
+  entranceMatch_aggregated(groupBy: [String], filter: entranceMatch_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceMatch_aggregated!]!
+  entranceModuleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entranceModuleName!]!
+  entranceModuleName_by_id(id: ID!): entranceModuleName
+  entranceModuleName_aggregated(groupBy: [String], filter: entranceModuleName_filter, limit: Int, offset: Int, page: Int, search: String, sort: [String]): [entranceModuleName_aggregated!]!
   home: home
   mediaKit(filter: mediaKit_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [mediaKit!]!
   mediaKit_by_id(id: ID!): mediaKit
@@ -467,17 +478,164 @@ type download {
   user_updated: String
 }
 
-type entranceControl {
+type entrance {
   date_created: Date
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  defaultSwitch: Boolean
   id: ID!
-  isAndroidBridgeShow: Boolean
-  isExtensionBridgeShow: Boolean
-  isIOSBridgeShow: Boolean
+  moduleName(filter: entranceModuleName_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceModuleName
   user_created: String
   user_updated: String
+  matchList(filter: entrance_entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): [entrance_entranceMatch]
+  matchList_func: count_functions
+}
+
+type entrance_aggregated {
+  group: JSON
+  countAll: Int
+  count: entrance_aggregated_count
+  countDistinct: entrance_aggregated_count
+  avg: entrance_aggregated_fields
+  sum: entrance_aggregated_fields
+  avgDistinct: entrance_aggregated_fields
+  sumDistinct: entrance_aggregated_fields
+  min: entrance_aggregated_fields
+  max: entrance_aggregated_fields
+}
+
+type entrance_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  defaultSwitch: Int
+  id: Int
+  moduleName: Int
+  user_created: Int
+  user_updated: Int
+  matchList: Int
+}
+
+type entrance_aggregated_fields {
+  id: Float
+  moduleName: Float
+}
+
+type entrance_entranceMatch {
+  entrance_id(filter: entrance_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entrance
+  entranceMatch_id(filter: entranceMatch_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): entranceMatch
+  id: ID!
+}
+
+type entrance_entranceMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: entrance_entranceMatch_aggregated_count
+  countDistinct: entrance_entranceMatch_aggregated_count
+  avg: entrance_entranceMatch_aggregated_fields
+  sum: entrance_entranceMatch_aggregated_fields
+  avgDistinct: entrance_entranceMatch_aggregated_fields
+  sumDistinct: entrance_entranceMatch_aggregated_fields
+  min: entrance_entranceMatch_aggregated_fields
+  max: entrance_entranceMatch_aggregated_fields
+}
+
+type entrance_entranceMatch_aggregated_count {
+  entrance_id: Int
+  entranceMatch_id: Int
+  id: Int
+}
+
+type entrance_entranceMatch_aggregated_fields {
+  entrance_id: Float
+  entranceMatch_id: Float
+  id: Float
+}
+
+type entranceMatch {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  id: ID!
+  matchRuleList: JSON
+  matchRuleList_func: count_functions
+  matchSwitch: Boolean
+  status: String
+  user_created: String
+  user_updated: String
+  weight: Int
+}
+
+type entranceMatch_aggregated {
+  group: JSON
+  countAll: Int
+  count: entranceMatch_aggregated_count
+  countDistinct: entranceMatch_aggregated_count
+  avg: entranceMatch_aggregated_fields
+  sum: entranceMatch_aggregated_fields
+  avgDistinct: entranceMatch_aggregated_fields
+  sumDistinct: entranceMatch_aggregated_fields
+  min: entranceMatch_aggregated_fields
+  max: entranceMatch_aggregated_fields
+}
+
+type entranceMatch_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  id: Int
+  matchRuleList: Int
+  matchSwitch: Int
+  status: Int
+  user_created: Int
+  user_updated: Int
+  weight: Int
+}
+
+type entranceMatch_aggregated_fields {
+  id: Float
+  weight: Float
+}
+
+type entranceModuleName {
+  date_created: Date
+  date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
+  description: String
+  id: ID!
+  user_created: String
+  user_updated: String
+  value: String
+}
+
+type entranceModuleName_aggregated {
+  group: JSON
+  countAll: Int
+  count: entranceModuleName_aggregated_count
+  countDistinct: entranceModuleName_aggregated_count
+  avg: entranceModuleName_aggregated_fields
+  sum: entranceModuleName_aggregated_fields
+  avgDistinct: entranceModuleName_aggregated_fields
+  sumDistinct: entranceModuleName_aggregated_fields
+  min: entranceModuleName_aggregated_fields
+  max: entranceModuleName_aggregated_fields
+}
+
+type entranceModuleName_aggregated_count {
+  date_created: Int
+  date_updated: Int
+  description: Int
+  id: Int
+  user_created: Int
+  user_updated: Int
+  value: Int
+}
+
+type entranceModuleName_aggregated_fields {
+  id: Float
 }
 
 type home {
@@ -975,6 +1133,13 @@ type topSecondMenu_aggregated_fields {
   type: Float
 }
 
+input boolean_filter_operators {
+  _eq: Boolean
+  _neq: Boolean
+  _null: Boolean
+  _nnull: Boolean
+}
+
 input bottomMenu_filter {
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
@@ -1142,6 +1307,62 @@ input discoverItem_filter {
   user_updated: string_filter_operators
   _and: [discoverItem_filter]
   _or: [discoverItem_filter]
+}
+
+input entrance_entranceMatch_filter {
+  entrance_id: entrance_filter
+  entranceMatch_id: entranceMatch_filter
+  id: number_filter_operators
+  _and: [entrance_entranceMatch_filter]
+  _or: [entrance_entranceMatch_filter]
+}
+
+input entrance_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  defaultSwitch: boolean_filter_operators
+  id: number_filter_operators
+  moduleName: entranceModuleName_filter
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  matchList: entrance_entranceMatch_filter
+  matchList_func: count_function_filter_operators
+  _and: [entrance_filter]
+  _or: [entrance_filter]
+}
+
+input entranceMatch_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
+  matchRuleList: string_filter_operators
+  matchRuleList_func: count_function_filter_operators
+  matchSwitch: boolean_filter_operators
+  status: string_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  weight: number_filter_operators
+  _and: [entranceMatch_filter]
+  _or: [entranceMatch_filter]
+}
+
+input entranceModuleName_filter {
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
+  description: string_filter_operators
+  id: number_filter_operators
+  user_created: string_filter_operators
+  user_updated: string_filter_operators
+  value: string_filter_operators
+  _and: [entranceModuleName_filter]
+  _or: [entranceModuleName_filter]
 }
 
 input mediaKit_filter {

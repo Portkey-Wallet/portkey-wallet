@@ -31,10 +31,8 @@ import BuyButton from 'components/BuyButton';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import FaucetButton from 'components/FaucetButton';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { useAppBuyButtonShow } from 'hooks/cms';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -60,9 +58,8 @@ const TokenDetail: React.FC = () => {
   const { accountToken } = useAppCASelector(state => state.assets);
   const isTokenHasPrice = useIsTokenHasPrice(tokenInfo.symbol);
   const [tokenPriceObject, getTokenPrice] = useGetCurrentAccountTokenPrice();
-  const { isBuyButtonShow: isBuyButtonShowStore } = useBuyButtonShow(
-    isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android,
-  );
+
+  const { isBuyButtonShow: isBuyButtonShowStore } = useAppBuyButtonShow();
 
   const [reFreshing, setFreshing] = useState(false);
 

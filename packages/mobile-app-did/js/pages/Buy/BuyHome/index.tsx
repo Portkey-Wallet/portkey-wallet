@@ -12,16 +12,14 @@ import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import ActionSheet from 'components/ActionSheet';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Loading from 'components/Loading';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import useEffectOnce from 'hooks/useEffectOnce';
 import CommonToast from 'components/CommonToast';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useAppBuyButtonShow } from 'hooks/cms';
 
 type TabItemType = {
   name: string;
@@ -44,9 +42,7 @@ const tabList: TabItemType[] = [
 
 export default function BuyHome() {
   const { t } = useLanguage();
-  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useBuyButtonShow(
-    isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android,
-  );
+  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useAppBuyButtonShow();
   const { caHash } = useCurrentWalletInfo();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 

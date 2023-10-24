@@ -21,7 +21,7 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import { message } from 'antd';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import InternalMessageTypes, { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useNavigate } from 'react-router';
 import { getWalletInfo, isCurrentCaHash } from 'store/utils/getStore';
 import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
@@ -54,6 +54,7 @@ export default function useLogOut() {
         dispatch(resetSettings());
         dispatch(resetNetwork());
         dispatch(resetLoginInfoAction());
+        InternalMessage.payload(InternalMessageTypes.CLEAR_SEED).send();
       }
       dispatch(resetDappList(currentNetwork));
       dispatch(resetTxFee(currentNetwork));

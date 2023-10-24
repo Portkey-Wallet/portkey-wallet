@@ -3,9 +3,8 @@ import {
   getDiscoverGroupAsync,
   getSocialMediaAsync,
   getTabMenuAsync,
-  getBuyButtonAsync,
   getRememberMeBlackListAsync,
-  getEntranceControlAsync,
+  setEntrance,
 } from './actions';
 import { CMSState, CmsWebsiteMapItem } from './types';
 
@@ -13,9 +12,8 @@ const initialState: CMSState = {
   socialMediaListNetMap: {},
   tabMenuListNetMap: {},
   discoverGroupListNetMap: {},
-  buyButtonNetMap: {},
   rememberMeBlackListMap: {},
-  cmsWebsiteMap: {},
+  entranceNetMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -58,22 +56,16 @@ export const cmsSlice = createSlice({
           ...newWebSiteMap,
         };
       })
-      .addCase(getBuyButtonAsync.fulfilled, (state, action) => {
-        state.buyButtonNetMap = {
-          ...state.buyButtonNetMap,
-          ...action.payload.buyButtonNetMap,
-        };
-      })
-      .addCase(getEntranceControlAsync.fulfilled, (state, action) => {
-        state.entranceControlNetMap = {
-          ...state.entranceControlNetMap,
-          ...action.payload.entranceControlNetMap,
-        };
-      })
       .addCase(getRememberMeBlackListAsync.fulfilled, (state, action) => {
         state.rememberMeBlackListMap = {
           ...state.rememberMeBlackListMap,
           ...action.payload.rememberMeBlackListMap,
+        };
+      })
+      .addCase(setEntrance, (state, action) => {
+        state.entranceNetMap = {
+          ...state.entranceNetMap,
+          [action.payload.network]: action.payload.value,
         };
       });
   },

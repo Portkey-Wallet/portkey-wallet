@@ -28,10 +28,8 @@ import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
-import { useBuyButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { useAppBuyButtonShow } from 'hooks/cms';
 
 interface RouterParams {
   type?: PaymentTypeEnum;
@@ -59,7 +57,7 @@ export default function BuyPreview() {
   const apiUrl = useCurrentApiUrl();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
-  const { refreshBuyButton } = useBuyButtonShow(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android);
+  const { refreshBuyButton } = useAppBuyButtonShow();
 
   const getAchTokenInfo = useGetAchTokenInfo();
   const goPayPage = useCallback(

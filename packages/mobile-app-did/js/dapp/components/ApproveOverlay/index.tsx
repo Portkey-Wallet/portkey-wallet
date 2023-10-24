@@ -115,9 +115,9 @@ const ApproveModal = (props: SignModalPropsType) => {
   const onChangeText = useCallback(
     (v: string) => {
       if (MAX_NUM.isLessThan(v)) return;
-      setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM));
+      setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM, decimals));
     },
-    [MAX_NUM],
+    [MAX_NUM, decimals],
   );
 
   const onUseRecommendedValue = useCallback(() => {

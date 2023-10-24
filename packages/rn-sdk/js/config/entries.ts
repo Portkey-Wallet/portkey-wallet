@@ -14,5 +14,7 @@ export enum PortkeyEntries {
 
   SET_BIO = 'set_bio_entry',
 
+  SCAN_QR_CODE = 'scan_qr_code_entry',
+
   VIEW_ON_WEBVIEW = 'view_on_webview',
 }

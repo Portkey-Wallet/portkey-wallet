@@ -52,7 +52,7 @@ export interface NativeWrapperModule {
 
 export interface StorageModule {
   // set: (key: string, value: string | number | boolean | null | undefined) => void; // we can not control the type of value, so we use setString, setNumber, setBoolean instead
-  setString: (key: string, value: string) => void;
+  setString: (key: string, value: string | null) => void;
   setBoolean: (key: string, value: boolean) => void;
   setNumber: (key: string, value: number) => void;
   getString: (key: string) => Promise<string | undefined>;

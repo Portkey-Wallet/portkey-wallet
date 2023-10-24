@@ -103,25 +103,6 @@ export const BackEndNetWorkMap: {
     },
     eBridgeUrl: 'http://192.168.67.235:3000',
   },
-  'back-end-test3': {
-    name: 'aelf Mainnet',
-    walletType: 'aelf',
-    networkType: 'MAIN',
-    isActive: true,
-    apiUrl: 'http://192.168.66.203:5001',
-    graphqlUrl: 'http://192.168.66.203:8083/AElfIndexer_DApp/PortKeyIndexerCASchema/graphql',
-    connectUrl: 'http://192.168.66.203:8001',
-    cmsUrl: 'http://192.168.66.62:8055/graphql',
-    s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
-    portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
-    buyConfig: {
-      ach: {
-        appId: 'f83Is2y7L425rxl8',
-        baseUrl: 'https://ramptest.alchemypay.org',
-      },
-    },
-    eBridgeUrl: 'http://192.168.67.235:3000',
-  },
   'back-end-testnet': {
     name: 'aelf Testnet',
     walletType: 'aelf',

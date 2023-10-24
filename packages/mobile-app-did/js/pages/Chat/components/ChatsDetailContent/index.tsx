@@ -56,7 +56,7 @@ export default function ChatsDetailContent() {
   const { list, init, next, hasNext } = useChannel(currentChannelId || '');
   const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
-  const relationId = useRelationId();
+  const { relationId } = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   const onLoadEarlier = useLockCallback(async () => {

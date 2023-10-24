@@ -49,7 +49,7 @@ export default function ChatBox() {
     init();
   });
   const hideChannel = useHideChannel();
-  const relationId = useRelationId();
+  const { relationId } = useRelationId();
   const messageList: MessageType[] = useMemo(() => formatMessageList(list, relationId!, true), [list, relationId]);
   const leaveGroup = useLeaveChannel();
   const { handleDeleteMsg, handlePin, handleMute } = useHandle({ info, mute, pin, deleteMessage });

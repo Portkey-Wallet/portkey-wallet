@@ -12,7 +12,7 @@ import './index.less';
 
 export default function MemberList() {
   const { channelUuid } = useParams();
-  const myRelationId = useRelationId();
+  const { relationId: myRelationId } = useRelationId();
   const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const { state } = useLocation();

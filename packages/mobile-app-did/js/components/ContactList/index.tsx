@@ -83,8 +83,6 @@ const ContactsList: React.FC<ContactsListProps> = ({
           _flashListData = _flashListData.concat(indexContactList);
         }
       } else {
-        if (!_flashListData) console.log('uuuuuu');
-
         _flashListData.push({
           ...contactIndex,
         });

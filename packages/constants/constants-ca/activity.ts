@@ -10,6 +10,7 @@ export const DEFAULT_DIGITS = 4;
 
 export const ELF_DECIMAL = 8;
 
+export const AELF_CHIAN_TYPE = 'aelf';
 export const MAIN_CHAIN_ID = 'AELF';
 export const MAIN_CHAIN = 'MainChain';
 export const SIDE_CHAIN = 'SideChain';

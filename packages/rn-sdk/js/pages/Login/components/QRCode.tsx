@@ -21,6 +21,11 @@ import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/devi
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import NetworkContext from '../context/NetworkContext';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { SetPinPageResult, SetPinPageProps } from 'pages/Pin/SetPin';
+import { PortkeyEntries } from 'config/entries';
+import { AfterVerifiedConfig } from 'model/verify/after-verify';
+import { PortkeyConfig } from 'global';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -38,12 +43,12 @@ const DEFAULT_WALLET: LoginQRData = {
 };
 
 export default function QRCode({ setLoginType }: { setLoginType: (type: PageLoginType) => void }) {
-  // const { walletInfo, currentNetwork } = useCurrentWallet();
   const [newWallet, setNewWallet] = useState<WalletInfoType>();
   const networkContext = useContext(NetworkContext);
   const currentNetwork = useMemo(() => {
     return networkContext.currentNetwork?.networkType ?? 'MAIN';
   }, [networkContext.currentNetwork?.networkType]);
+  const { navigateForResult, onFinish } = useBaseContainer({});
   // const pin = usePin();
   // const checkManager = useCheckManager();
   const caWalletInfo = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address);
@@ -70,10 +75,51 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
       //     managerInfo: caInfo.managerInfo,
       //   });
       // }
-      setNewWallet(undefined);
+      (async () => {
+        dealWithSetPin({
+          // fromRecovery: false,
+          // accountIdentifier,
+          // chainId: await PortkeyConfig.currChainId(),
+          // extraData: defaultExtraData,
+          // verifiedGuardians: [
+          //   {
+          //     type: guardianTypeStrToEnum(google ? 'Google' : 'Apple'),
+          //     identifier: accountIdentifier,
+          //     verifierId: id,
+          //     verificationDoc: guardianResult.verificationDoc,
+          //     signature: guardianResult.signature,
+          //   },
+          // ],
+        });
+      })();
+      // setNewWallet(undefined);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [caWalletInfo, newWallet]);
+
+  const dealWithSetPin = (afterVerifiedData: AfterVerifiedConfig | string) => {
+    navigateForResult<SetPinPageResult, SetPinPageProps>(
+      PortkeyEntries.SET_PIN,
+      {
+        params: {
+          deliveredSetPinInfo:
+            typeof afterVerifiedData === 'string' ? afterVerifiedData : JSON.stringify(afterVerifiedData),
+        },
+      },
+      res => {
+        const { data } = res;
+        if (data.finished) {
+          onFinish({
+            status: 'success',
+            data: {
+              finished: true,
+            },
+          });
+        }
+      },
+    );
+  };
+
   const generateWallet = useCallback(() => {
     try {
       const wallet = AElf.wallet.createNewWallet();

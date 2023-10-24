@@ -13,7 +13,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { AccountOriginalType, isWalletExists, isWalletUnlocked } from 'model/verify/after-verify';
 import CommonToast from 'components/CommonToast';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { CheckPinProps, CheckPinResult } from 'pages/Pin/check-pin';
+import { CheckPinProps, CheckPinResult } from 'pages/Pin/CheckPin';
 import { SignInPageProps, SignInPageResult } from 'components/entries/SignIn';
 import TermsServiceButton from './TermsServiceButton';
 import Divider from 'components/Divider';

@@ -9,8 +9,8 @@ export const setPin = (pin: string) => {
 };
 
 // NOT USED NOW
-export const headPin = (pin: string) => {
+export const headPin = async (pin: string) => {
   if (pin.length !== PIN_LENGTH) throw new Error('Invalid pin length');
-  const storedPin = GlobalStorage.getString(PIN_STORAGE_KEY);
+  const storedPin = await GlobalStorage.getString(PIN_STORAGE_KEY);
   return storedPin === pin;
 };

@@ -34,7 +34,9 @@ export interface NormalVerifyPathInfo {
 export interface ScanQRCodePathInfo {
   walletInfo: WalletInfo;
   originalChainId: string;
-  accountIdentifier: string;
+  accountIdentifier?: string;
+  caHash: string;
+  caAddress: string;
 }
 
 export const wrapExtraData = (extraData?: DeviceInfoType): string => {

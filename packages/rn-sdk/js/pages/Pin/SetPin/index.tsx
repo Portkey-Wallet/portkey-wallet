@@ -7,7 +7,7 @@ import PinContainer from 'components/PinContainer';
 import { StyleSheet } from 'react-native';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { ConfirmPinPageProps } from '../confirm-pin';
+import { ConfirmPinPageProps } from '../ConfirmPin';
 import CommonToast from 'components/CommonToast';
 
 const scrollViewProps = {

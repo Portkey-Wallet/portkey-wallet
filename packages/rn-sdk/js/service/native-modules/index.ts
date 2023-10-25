@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 import { PortkeyEntries } from '../../config/entries';
 import { AcceptableValueType } from '../../model/container/BaseContainer';
 
@@ -104,6 +104,13 @@ export const nativeFetch = async <T>(
     } catch (e) {}
   }
   throw new Error('fetch failed');
+};
+
+export const chooseImageAndroid = async (): Promise<string> => {
+  if (Platform.OS !== 'android') {
+    throw new Error('chooseImageAndroid only support android');
+  }
+  return await (portkeyModulesEntity.PermissionModule as any).chooseImage();
 };
 
 export const PortkeyDeviceEventEmitter = new NativeEventEmitter(portkeyModulesEntity.NativeWrapperModule as any);

@@ -15,8 +15,13 @@ class PortkeyReactApplication : Application(), ReactApplication {
         reactNativeHost
     }
 
+
     override fun getReactNativeHost(): ReactNativeHost {
-        return hostInstance ?: PortkeyReactNativeHost(
+            return hostInstance ?: createNewHost()
+    }
+
+    private fun createNewHost(): PortkeyReactNativeHost {
+        return PortkeyReactNativeHost(
             application = this,
             isDebug = BuildConfig.IS_DEBUG
         )

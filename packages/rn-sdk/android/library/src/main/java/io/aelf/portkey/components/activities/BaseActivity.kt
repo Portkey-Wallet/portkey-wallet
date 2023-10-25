@@ -9,10 +9,10 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
-import com.facebook.react.modules.core.PermissionListener
 import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
+import io.aelf.portkey.native_modules.PORTKEY_CHOOSE_IMAGE_ACTION_CODE
 import io.aelf.portkey.navigation.NavigationHolder
 
 //import io.aelf.portkey.native_modules.NativeWrapperModule
@@ -37,6 +37,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     private var callbackAccessed: Boolean = false
 
     private var permissionCallback: (Boolean) -> Unit = {}
+    private var imageChooseCallback: (String?) -> Unit = {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,12 +121,30 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         this.permissionCallback = callback
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    fun setImageChooseCallback(callback: (String?) -> Unit) {
+        this.imageChooseCallback = callback
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(grantResults.isNotEmpty()) {
+        if (grantResults.isNotEmpty()) {
             this.permissionCallback(grantResults[0] == 0)
         } else {
             this.permissionCallback(false)
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (resultCode) {
+            PORTKEY_CHOOSE_IMAGE_ACTION_CODE -> {
+                imageChooseCallback(data?.data?.toString())
+            }
         }
     }
 

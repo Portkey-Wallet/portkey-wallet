@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
@@ -22,7 +22,7 @@ import { NetworkType } from '@portkey-wallet/types';
 import { EndPoints, PortkeyConfig } from 'global';
 import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { EntryResult, portkeyModulesEntity } from 'service/native-modules';
+import { EntryResult, chooseImageAndroid, portkeyModulesEntity } from 'service/native-modules';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { ScanToLoginProps } from 'pages/Login/ScanLogin';
 
@@ -109,17 +109,25 @@ const QrScanner: React.FC = () => {
   };
 
   const selectImage = async () => {
-    const result = (await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-    })) as unknown as { uri: string };
-
-    if (result && result?.uri) {
-      const scanResult = await BarCodeScanner.scanFromURLAsync(result?.uri, [BarCodeScanner.Constants.BarCodeType.qr]);
-
-      console.log('qrResult', scanResult[0]?.data, result);
-
-      if (scanResult[0]?.data) handleBarCodeScanned({ data: scanResult[0]?.data || '' });
+    let uri;
+    if (Platform.OS === 'android') {
+      uri = await chooseImageAndroid();
+    } else {
+      const result = (await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+      })) as unknown as { assets: Array<{ uri: string }> };
+      uri = result?.assets?.[0]?.uri ?? undefined;
+    }
+    console.log('uri', uri);
+    if (uri) {
+      const scanResult = await BarCodeScanner.scanFromURLAsync(uri, [BarCodeScanner.Constants.BarCodeType.qr]);
+      console.log('qrResult', scanResult[0]?.data, uri);
+      if (scanResult[0]?.data) {
+        handleBarCodeScanned({ data: scanResult[0]?.data || '' });
+      } else {
+        CommonToast.fail('No QR code found in the picture');
+      }
     }
   };
 

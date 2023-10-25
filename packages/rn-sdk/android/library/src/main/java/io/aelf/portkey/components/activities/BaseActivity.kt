@@ -13,6 +13,7 @@ import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
 import io.aelf.portkey.native_modules.PORTKEY_CHOOSE_IMAGE_ACTION_CODE
+import io.aelf.portkey.native_modules.PORTKEY_REQUEST_PERMISSION_ACTION_CODE
 import io.aelf.portkey.navigation.NavigationHolder
 
 //import io.aelf.portkey.native_modules.NativeWrapperModule
@@ -141,9 +142,12 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when (resultCode) {
+        when (requestCode) {
             PORTKEY_CHOOSE_IMAGE_ACTION_CODE -> {
                 imageChooseCallback(data?.data?.toString())
+            }
+            PORTKEY_REQUEST_PERMISSION_ACTION_CODE -> {
+                // Do nothing, as onRequestPermissionsResult() is declared
             }
         }
     }

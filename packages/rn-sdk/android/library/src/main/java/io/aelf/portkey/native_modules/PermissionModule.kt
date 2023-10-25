@@ -12,6 +12,7 @@ import com.facebook.react.bridge.ReactMethod
 import io.aelf.portkey.navigation.NavigationHolder
 
 const val PORTKEY_CHOOSE_IMAGE_ACTION_CODE = 999
+const val PORTKEY_REQUEST_PERMISSION_ACTION_CODE = 998
 
 class PermissionModule(private val reactApplicationContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactApplicationContext) {
@@ -91,7 +92,11 @@ class PermissionModule(private val reactApplicationContext: ReactApplicationCont
     ) {
         val activity = NavigationHolder.getTopComponent()
             ?: throw IllegalStateException("No activity found")
-        ActivityCompat.requestPermissions(activity, permissions, 1)
+        ActivityCompat.requestPermissions(
+            activity,
+            permissions,
+            PORTKEY_REQUEST_PERMISSION_ACTION_CODE
+        )
         activity.setPermissionCallback(callback)
     }
 }

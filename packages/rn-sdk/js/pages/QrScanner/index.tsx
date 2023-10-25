@@ -6,8 +6,6 @@ import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
@@ -18,58 +16,74 @@ import { expandQrData } from '@portkey-wallet/utils/qrCode';
 import { checkIsUrl } from '@portkey-wallet/utils/dapp/browser';
 // import { useDiscoverJumpWithNetWork } from 'hooks/discover'; // currently we do not use this
 import Loading from 'components/Loading';
-import { useThrottleCallback } from '@portkey-wallet/hooks';
 import CommonToast from 'components/CommonToast';
-import { QRData, LoginQRData, SendTokenQRDataType } from '@portkey-wallet/types/types-ca/qrcode';
+import { QRData, LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { isAddress } from '@portkey-wallet/utils';
+import { NetworkType } from '@portkey-wallet/types';
+import { EndPoints, PortkeyConfig } from 'global';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
+import { EntryResult } from 'service/native-modules';
+import useEffectOnce from 'hooks/useEffectOnce';
 interface QrScannerProps {
   route?: any;
 }
 
 const QrScanner: React.FC<QrScannerProps> = () => {
   const { t } = useLanguage();
-  const { currentNetwork } = useWallet();
   // const jumpToWebview = useDiscoverJumpWithNetWork();
-
-  const navigation = useNavigation();
-  const routesArr: RouteInfoType[] = navigation.getState().routes;
-  const previousRouteInfo = routesArr[routesArr.length - 2];
-  console.log(previousRouteInfo, '=====previousRouteInfo');
-
   const [refresh, setRefresh] = useState<boolean>();
-
-  useFocusEffect(
+  const { onFinish, navigateForResult } = useBaseContainer({
+    entryName: PortkeyEntries.SCAN_QR_CODE,
+  });
+  const navigateBack = (res: EntryResult<ScanQRCodeResult> = { status: 'success', data: {} }) => {
+    onFinish(res);
+  };
+  useEffectOnce(
     useCallback(() => {
       setRefresh(false);
     }, []),
   );
+  const invalidQRCode = (text: InvalidQRCodeText) => {
+    CommonToast.fail(text);
+    navigateBack();
+  };
 
-  const handleBarCodeScanned = useThrottleCallback(
-    ({ data = '' }) => {
-      if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
+  const handleQRCodeData = (data: QRData) => {
+    const { type, address, chainType } = data;
+    if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
 
-      try {
-        const str = data.replace(/("|'|\s)/g, '');
-        if (checkIsUrl(str)) {
-          CommonToast.fail('Content not supported');
-        }
-        const qrCodeData = expandQrData(JSON.parse(data));
-        // if not currentNetwork
-        if (currentNetwork !== qrCodeData.netWorkType)
-          return invalidQRCode(
-            currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
-          );
+    if (type === 'login') {
+      navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+    } else {
+      CommonToast.fail('Content not supported');
+    }
+    setRefresh(true);
+  };
 
-        handleQRCodeData(qrCodeData, previousRouteInfo, setRefresh);
-      } catch (error) {
-        console.log(error);
-        return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
-      } finally {
-        Loading.hide();
+  const handleBarCodeScanned = async ({ data = '' }) => {
+    if (typeof data !== 'string') return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
+    const currentNetwork = await determineCurrentNetwork();
+    try {
+      const str = data.replace(/("|'|\s)/g, '');
+      if (checkIsUrl(str)) {
+        CommonToast.fail('Content not supported');
+        navigateBack();
       }
-    },
-    [currentNetwork, previousRouteInfo],
-  );
+      const qrCodeData = expandQrData(JSON.parse(data));
+      // if not currentNetwork
+      if (currentNetwork !== qrCodeData.netWorkType)
+        return invalidQRCode(
+          currentNetwork === 'MAIN' ? InvalidQRCodeText.SWITCH_TO_TESTNET : InvalidQRCodeText.SWITCH_TO_MAINNET,
+        );
+      handleQRCodeData(qrCodeData);
+    } catch (error) {
+      console.log(error);
+      return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
+    } finally {
+      Loading.hide();
+    }
+  };
 
   const selectImage = async () => {
     const result = (await ImagePicker.launchImageLibraryAsync({
@@ -202,35 +216,8 @@ export enum InvalidQRCodeText {
   INVALID_QR_CODE = 'The QR code is invalid',
 }
 
-export function invalidQRCode(text: InvalidQRCodeText, isBack?: boolean) {
-  CommonToast.fail(text);
-  isBack && navigationService.goBack();
-}
+export interface ScanQRCodeResult {}
 
-export function handleQRCodeData(data: QRData, previousRouteInfo: RouteInfoType, setRefresh: (v: boolean) => void) {
-  const { type, address, chainType } = data;
-  if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
-
-  if (type === 'login') {
-    navigationService.navigate('ScanLogin', { data: data as LoginQRData });
-  } else {
-    // send event
-    const newData: SendTokenQRDataType = { ...data } as SendTokenQRDataType;
-
-    if (previousRouteInfo.name === 'SendHome') {
-      if (previousRouteInfo.params.assetInfo.symbol !== newData.assetInfo.symbol) {
-        // different symbol
-        return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE, false);
-      } else {
-        const previousAssetsInfo = { ...previousRouteInfo.params.assetInfo };
-        navigationService.navigate('SendHome', {
-          ...newData,
-          assetInfo: { ...newData.assetInfo, ...previousAssetsInfo },
-        });
-      }
-    } else {
-      navigationService.navigate('SendHome', newData);
-    }
-  }
-  setRefresh(true);
-}
+const determineCurrentNetwork = async (): Promise<NetworkType> => {
+  return (await PortkeyConfig.endPointUrl()) === EndPoints.MAIN_NET ? 'MAIN' : 'TESTNET';
+};

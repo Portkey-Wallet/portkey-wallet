@@ -26,8 +26,13 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
     [entryName, baseContainerContext.entryName],
   );
 
-  const navigationTo = (entry: PortkeyEntries, targetScene?: string) => {
-    portkeyModulesEntity.RouterModule.navigateTo(entry, getEntryName(), targetScene);
+  const navigationTo = (entry: PortkeyEntries, targetScene?: string, closeCurrentScreen?: boolean) => {
+    portkeyModulesEntity.RouterModule.navigateTo(
+      entry,
+      getEntryName(),
+      targetScene ?? 'none',
+      closeCurrentScreen ?? false,
+    );
   };
 
   const navigateForResult = <V, T = { [x: string]: AcceptableValueType }>(

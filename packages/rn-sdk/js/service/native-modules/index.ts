@@ -11,7 +11,7 @@ export interface PortkeyNativeModules {
 }
 
 export interface RouterModule {
-  navigateTo: (entry: PortkeyEntries, from: string, targetScene?: string) => void;
+  navigateTo: (entry: PortkeyEntries, from: string, targetScene: string, closeCurrentScreen: boolean) => void;
   navigateToWithOptions: <R, T = { [x: string]: AcceptableValueType }>(
     targetEntry: string,
     from: string,

@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import <PortkeySDK/PortkeySDKRootView.h>
+#import <PortkeySDK/PortkeySDKRNViewController.h>
 #import <PortkeySDK/PortkeySDKRouterModule.h>
 #import <PortkeySDK/PortkeySDKMMKVStorage.h>
 #import <YYKit/YYKit.h>
@@ -24,8 +24,8 @@
 
 @property (nonatomic, strong) UIButton *mainNetButton;
 @property (nonatomic, strong) UIButton *testNetButton;
-@property (nonatomic, strong) UIButton *test1NetButton;
-@property (nonatomic, strong) UIButton *test2NetButton;
+
+@property (nonatomic, strong) UIButton *scanQrcodeButton;
 
 @property (nonatomic, strong) UIButton *exitButton;
 
@@ -94,27 +94,9 @@
     }];
     [self.view addSubview:self.testNetButton];
     
-    self.test1NetButton = [self createButtonWithTitle:@"Switch to TEST1 NET"];
-    self.test1NetButton.frame = self.testNetButton.frame;
-    self.test1NetButton.top = self.testNetButton.bottom + 5;
-    [self.test1NetButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchEndPointUrl:@"https://localtest-applesign.portkey.finance"];
-    }];
-    [self.view addSubview:self.test1NetButton];
-    
-    self.test2NetButton = [self createButtonWithTitle:@"Switch to TEST2 NET"];
-    self.test2NetButton.frame = self.test1NetButton.frame;
-    self.test2NetButton.top = self.test1NetButton.bottom + 5;
-    [self.test2NetButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchEndPointUrl:@"https://localtest-applesign2.portkey.finance"];
-    }];
-    [self.view addSubview:self.test2NetButton];
-    
     self.exitButton = [self createButtonWithTitle:@"Exit Wallet"];
-    self.exitButton.frame = self.test2NetButton.frame;
-    self.exitButton.top = self.test2NetButton.bottom + 20;
+    self.exitButton.frame = self.testNetButton.frame;
+    self.exitButton.top = self.testNetButton.bottom + 20;
     [self.exitButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
         [self exitWallet];
@@ -129,6 +111,16 @@
         [self configTermsOfService];
     }];
     [self.view addSubview:self.termsButton];
+    
+    self.scanQrcodeButton = [self createButtonWithTitle:@"Scan QRCode"];
+    self.scanQrcodeButton.frame = self.termsButton.frame;
+    self.scanQrcodeButton.top = self.termsButton.bottom + 20;
+    [self.scanQrcodeButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        @strongify(self)
+        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:@"scan_qr_code_entry"];
+        [self.navigationController presentViewController:vc animated:YES completion:nil];
+    }];
+    [self.view addSubview:self.scanQrcodeButton];
 }
 
 - (void)didReceiveMemoryWarning

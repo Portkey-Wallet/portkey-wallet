@@ -76,9 +76,23 @@ RCT_EXPORT_METHOD(navigateBack:(id)result)
                 }
             }
         }
-        [topViewController.navigationController popViewControllerAnimated:YES];
+        if ([self isModal:topViewController]) {
+            [topViewController dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            [topViewController.navigationController popViewControllerAnimated:YES];
+        }
     });
 }
+
+- (BOOL)isModal:(UIViewController *)vc {
+     if([vc presentingViewController])
+         return YES;
+     if([[[vc navigationController] presentingViewController] presentedViewController] == [vc navigationController])
+         return YES;
+     if([[[vc tabBarController] presentingViewController] isKindOfClass:[UITabBarController class]])
+         return YES;
+    return NO;
+ }
 
 - (UIViewController *)topViewController {
     UIViewController *resultVC;

@@ -28,3 +28,4 @@ packages/constants/constants-ca/network.ts
 /**/Pods/**
 Pods/
 Pods
+packages/rn-sdk/ios/App/build/

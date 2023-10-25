@@ -14,6 +14,10 @@ export const BingoGame = 'https://portkey-bingo-game.vercel.app';
 
 export const ThirdParty = `https://thirdparty.portkey.finance`;
 
+export enum DappMap {
+  bridge = 'https://ebridge.exchange',
+}
+export const DAPP_WHITELIST: string[] = [DappMap.bridge];
 export const LinkPortkeyWebsite = OfficialWebsite;
 
 export const LinkPortkeyPath = {

@@ -1,5 +1,5 @@
 import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { Linking, StyleSheet } from 'react-native';
 import WebView, { WebViewProps } from 'react-native-webview';
 import useEffectOnce from 'hooks/useEffectOnce';
 import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
@@ -13,6 +13,10 @@ import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useDeepEQMemo } from 'hooks';
+import * as Application from 'expo-application';
+import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
+import { PROTOCOL_ALLOW_LIST, SCHEME_ALLOW_LIST } from 'constants/web';
+
 export interface IWebView {
   goBack: WebView['goBack'];
   reload: WebView['reload'];
@@ -29,6 +33,7 @@ const ProviderWebview = forwardRef<
   IWebView | undefined,
   WebViewProps & {
     isHidden?: boolean;
+    isDiscover?: boolean;
   }
 >(function ProviderWebview(props, forward) {
   const [source, setSource] = useState<WebViewProps['source']>(DefaultSource);
@@ -72,13 +77,14 @@ const ProviderWebview = forwardRef<
 
       operatorRef.current = new DappMobileOperator({
         origin,
+        isDiscover: props.isDiscover,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         stream: new MobileStream(webViewRef.current!),
         dappManager: new DappMobileManager({ store: store as any }),
         dappOverlay: new DappOverlay(),
       });
     },
-    [entryScriptWeb3],
+    [entryScriptWeb3, props.isDiscover],
   );
 
   const onLoadStart = useCallback(
@@ -139,16 +145,32 @@ const ProviderWebview = forwardRef<
     }),
     [],
   );
+
+  const onShouldStartLoadWithRequest = ({ url }: ShouldStartLoadRequest) => {
+    const { protocol } = new URL(url);
+    if (PROTOCOL_ALLOW_LIST.includes(protocol)) return true;
+    if (SCHEME_ALLOW_LIST.includes(protocol)) {
+      // open natively
+      Linking.openURL(url).catch(er => {
+        console.log('Failed to open Link:', er.message);
+      });
+    }
+    return false;
+  };
   if (!entryScriptWeb3) return null;
+
   return (
     <WebView
       ref={webViewRef}
       style={styles.webView}
       decelerationRate="normal"
+      originWhitelist={['*']}
+      injectedJavaScript={!isIOS ? entryScriptWeb3 : undefined}
       injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
-      applicationNameForUserAgent={'WebView Portkey did Mobile'}
+      applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
       {...props}
       source={source}
+      onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
       onLoadStart={event => {
         onLoadStart(event);
         props.onLoadStart?.(event);

@@ -90,10 +90,13 @@ export default function PermissionCheck({
   );
 
   const checkNeedUnlock = useCallback(async () => {
-    if (!otherNetworkLogged) return false;
+    // Check: Chrome serviceworker is working
     const res = await getWalletStatus();
-    const detail = (res as any)?.data;
     if (typeof res === 'string') return chrome.runtime.reload();
+
+    if (!otherNetworkLogged) return false;
+
+    const detail = (res as any)?.data;
     detail?.privateKey && dispatch(setPasswordSeed(detail.privateKey));
     if (detail.privateKey) return false;
     return true;

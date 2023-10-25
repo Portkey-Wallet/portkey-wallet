@@ -19,6 +19,8 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import qs from 'query-string';
 import './index.less';
+import { useSetTransferLimit } from './hooks/useSetTransferLimit';
+import { ChainId } from '@portkey-wallet/types';
 
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
@@ -39,13 +41,24 @@ export default function GuardianApproval() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const isBigScreenPrompt: boolean = useMemo(() => {
-    const isNotFromLoginAndRegister = !!(query && (query.includes('guardian') || query.includes('removeManage')));
+    const isNotFromLoginAndRegister = !!(
+      query &&
+      (query.includes('guardian') || query.includes('removeManage') || query.includes('setTransferLimit'))
+    );
     return isNotLessThan768 ? isNotFromLoginAndRegister : false;
   }, [isNotLessThan768, query]);
+  const targetChainId: ChainId | undefined = useMemo(() => {
+    if (query && query.indexOf('setTransferLimit') !== -1) {
+      const state = query.split('_')[1];
+      const _params = JSON.parse(state || '{}');
+      return _params.targetChainId;
+    }
+    return undefined;
+  }, [query]);
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(query);
 
   const userVerifiedList = useMemo(() => {
-    const tempVerifiedList = Object.values(userGuardianStatus ?? {});
+    const tempVerifiedList: UserGuardianStatus[] = Object.values(userGuardianStatus ?? {});
     let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
     if (query === 'guardians/edit') {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);
@@ -67,12 +80,15 @@ export default function GuardianApproval() {
   const handleGuardianRecovery = useRecovery();
 
   const handleRemoveOtherManage = useRemoveOtherManage();
+  const handleSetTransferLimit = useSetTransferLimit(targetChainId);
 
   const recoveryWallet = useCallback(async () => {
     if (query && query.indexOf('guardians') !== -1) {
       handleGuardianRecovery();
     } else if (query && query.indexOf('removeManage') !== -1) {
       handleRemoveOtherManage();
+    } else if (query && query.indexOf('setTransferLimit') !== -1) {
+      handleSetTransferLimit();
     } else {
       const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
       if (managerAddress && res.data.privateKey) {
@@ -84,6 +100,7 @@ export default function GuardianApproval() {
   }, [
     handleGuardianRecovery,
     handleRemoveOtherManage,
+    handleSetTransferLimit,
     managerAddress,
     navigate,
     onManagerAddressAndQueryResult,
@@ -115,6 +132,9 @@ export default function GuardianApproval() {
     } else if (query && query.indexOf('removeManage') !== -1) {
       const manageAddress = query.split('_')[1];
       navigate(`/setting/wallet-security/manage-devices/${manageAddress}`);
+    } else if (query && query.indexOf('setTransferLimit') !== -1) {
+      const state = query.split('_')[1];
+      navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, { state: JSON.parse(state) });
     } else {
       navigate('/register/start');
     }
@@ -144,6 +164,7 @@ export default function GuardianApproval() {
                 isExpired={isExpired}
                 item={item}
                 loginAccount={loginAccount}
+                targetChainId={targetChainId}
               />
             ))}
           </ul>
@@ -171,6 +192,7 @@ export default function GuardianApproval() {
       recoveryWallet,
       t,
       userVerifiedList,
+      targetChainId,
     ],
   );
 

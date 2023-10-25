@@ -8,6 +8,7 @@ export interface PortkeyNativeModules {
   RouterModule: RouterModule;
   NativeWrapperModule: NativeWrapperModule;
   StorageModule: StorageModule;
+  PermissionModule: PermissionModule;
 }
 
 export interface RouterModule {
@@ -49,6 +50,13 @@ export interface NativeWrapperModule {
   onWarning: (from: string, warnMsg: string) => void;
   emitJSMethodResult: (eventId: string, result: string) => void;
 }
+
+export interface PermissionModule {
+  isPermissionGranted: (permission: PermissionType) => Promise<boolean>;
+  requestPermission: (permission: PermissionType) => Promise<boolean>;
+}
+
+export type PermissionType = 'camera' | 'photo' | 'location' | 'microphone' | 'storage';
 
 export interface StorageModule {
   // set: (key: string, value: string | number | boolean | null | undefined) => void; // we can not control the type of value, so we use setString, setNumber, setBoolean instead

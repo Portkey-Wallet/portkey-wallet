@@ -9,6 +9,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.modules.core.PermissionListener
 import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
@@ -34,6 +35,8 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     private var callbackId: String = NO_CALLBACK_METHOD
     private var params: Bundle = Bundle()
     private var callbackAccessed: Boolean = false
+
+    private var permissionCallback: (Boolean) -> Unit = {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +115,20 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
             this.finish()
         }
     }
+
+    fun setPermissionCallback(callback: (Boolean) -> Unit) {
+        this.permissionCallback = callback
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(grantResults.isNotEmpty()) {
+            this.permissionCallback(grantResults[0] == 0)
+        } else {
+            this.permissionCallback(false)
+        }
+    }
+
 }
 
 private fun ReadableMap.toWriteableNativeMap(): WritableMap {

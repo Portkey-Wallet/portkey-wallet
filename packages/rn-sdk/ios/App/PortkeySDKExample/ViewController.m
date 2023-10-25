@@ -12,6 +12,7 @@
 #import <PortkeySDK/PortkeySDKMMKVStorage.h>
 #import <YYKit/YYKit.h>
 #import <Toast/Toast.h>
+#import "TermsOfServiceViewController.h"
 
 @interface ViewController ()
 
@@ -27,6 +28,8 @@
 @property (nonatomic, strong) UIButton *test2NetButton;
 
 @property (nonatomic, strong) UIButton *exitButton;
+
+@property (nonatomic, strong) UIButton *termsButton;
 
 @end
 
@@ -117,6 +120,15 @@
         [self exitWallet];
     }];
     [self.view addSubview:self.exitButton];
+    
+    self.termsButton = [self createButtonWithTitle:@"Config Terms Of Service"];
+    self.termsButton.frame = self.exitButton.frame;
+    self.termsButton.top = self.exitButton.bottom + 40;
+    [self.termsButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        @strongify(self)
+        [self configTermsOfService];
+    }];
+    [self.view addSubview:self.termsButton];
 }
 
 - (void)didReceiveMemoryWarning
@@ -144,6 +156,11 @@
 - (void)exitWallet {
     [PortkeySDKMMKVStorage clear];
     [self.view makeToast:@"Exit Wallet Successfully"];
+}
+
+- (void)configTermsOfService {
+    TermsOfServiceViewController *vc = [TermsOfServiceViewController new];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark - Getter

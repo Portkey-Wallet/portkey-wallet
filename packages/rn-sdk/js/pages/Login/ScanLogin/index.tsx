@@ -10,41 +10,29 @@ import navigationService from 'utils/navigationService';
 import { TextXXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
-import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
+
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from 'components/CommonToast';
-import { useGetCurrentCAContract } from 'hooks/contract';
-import { addManager } from 'utils/wallet';
-import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
-import socket from '@portkey-wallet/socket/socket-did';
-import { request } from '@portkey-wallet/api/api-did';
 import { checkQRCodeExist } from '@portkey-wallet/api/api-did/message/utils';
+import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
+import useBaseContainer from 'model/container/UseBaseContainer';
+import { PortkeyEntries } from 'config/entries';
 
 const ScrollViewProps = { disabled: true };
 
-export default function ScanLogin() {
-  const { data } = useRouterParams<{ data?: LoginQRData }>();
-  const { address: managerAddress, extraData: qrExtraData, deviceType, id } = data || {};
+export default function ScanLogin(props: ScanToLoginProps) {
+  const { data } = props;
+  const parsed: LoginQRData = useMemo(() => JSON.parse(data), [data]);
+  const { address: managerAddress, id } = parsed || {};
 
-  const { caHash, address } = useCurrentWalletInfo();
+  const { caHash } = useCurrentWalletInfo();
   const [loading, setLoading] = useState<boolean>();
-  const getCurrentCAContract = useGetCurrentCAContract();
+
+  const { onFinish } = useBaseContainer({
+    entryName: PortkeyEntries.SCAN_LOG_IN,
+  });
 
   const targetClientId = useMemo(() => (id ? `${managerAddress}_${id}` : undefined), [managerAddress, id]);
-
-  // useEffectOnce(() => {
-  //   if (!targetClientId) return;
-  //   try {
-  //     request.message.sendScanLogin({
-  //       params: {
-  //         targetClientId,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     console.log('sendScanLogin: error', error);
-  //   }
-  // });
 
   const onLogin = useCallback(async () => {
     if (!caHash || loading || !managerAddress) return;
@@ -62,22 +50,8 @@ export default function ScanLogin() {
       console.log(error);
     }
 
-    try {
-      const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
-      const contract = await getCurrentCAContract();
-      const extraData = await extraDataEncode(deviceInfo || {}, true);
-      const req = await addManager({ contract, caHash, address, managerAddress, extraData });
-      if (req?.error) throw req?.error;
-      socket.doOpen({
-        url: `${request.defaultConfig.baseURL}/ca`,
-        clientId: managerAddress,
-      });
-      navigationService.navigate('Tab');
-    } catch (error) {
-      CommonToast.failError(error);
-    }
     setLoading(false);
-  }, [caHash, loading, managerAddress, targetClientId, qrExtraData, deviceType, getCurrentCAContract, address]);
+  }, [caHash, loading, managerAddress, targetClientId]);
   return (
     <PageContainer
       scrollViewProps={ScrollViewProps}
@@ -105,6 +79,10 @@ export default function ScanLogin() {
       </View>
     </PageContainer>
   );
+}
+
+export interface ScanToLoginProps {
+  data: string; // LoginQRData
 }
 
 const styles = StyleSheet.create({

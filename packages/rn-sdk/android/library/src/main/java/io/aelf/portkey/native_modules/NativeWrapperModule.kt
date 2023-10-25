@@ -11,15 +11,12 @@ import io.aelf.portkey.components.logic.JSEventBus
 import io.aelf.portkey.navigation.NavigationHolder
 import java.lang.ref.WeakReference
 
-var portkeyReactNativeHandler: NativeWrapperModule? = null
-
 class NativeWrapperModule(context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
     private var contextHolder: WeakReference<ReactApplicationContext>
 
     init {
         contextHolder = WeakReference(context)
-        portkeyReactNativeHandler = this
     }
 
     @ReactMethod

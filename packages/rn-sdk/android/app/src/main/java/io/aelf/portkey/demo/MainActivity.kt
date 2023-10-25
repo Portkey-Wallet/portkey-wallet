@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.components.logic.PortkeyMMKVStorage
 import io.aelf.portkey.core.entry.PortkeyTest
 import io.aelf.portkey.demo.ui.theme.MyRNApplicationTheme
@@ -62,6 +63,9 @@ class MainActivity : ComponentActivity() {
 //                        BigButton("Switch to TEST1") {
 //                            changeEndPointUrl("https://localtest-applesign.portkey.finance")
 //                        }
+                        BigButton(text = "Jump to Scan Page") {
+                            jumpToActivity(PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName)
+                        }
                         BigButton(text = "Background Service Call") {
                             startJSBackgroundTaskTest(this@MainActivity)
                         }
@@ -75,9 +79,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun jumpToActivity() {
-        usePortkeyEntry("referral_entry")
+    private fun jumpToActivity(entryName: String = "referral_entry") {
+        usePortkeyEntry(entryName)
     }
+
     private fun changeChain(chainId: String) {
         PortkeyMMKVStorage.writeString("currChainId", chainId)
         Toast.makeText(this, "chainId changed to $chainId", Toast.LENGTH_SHORT).show()

@@ -6,6 +6,7 @@ import {
   portkeyModulesEntity,
 } from '../../service/native-modules';
 import { PortkeyEntries } from '../../config/entries';
+import { VoidResult } from './UseBaseContainer';
 
 export default abstract class BaseContainer<
   P extends BaseContainerProps,
@@ -38,7 +39,7 @@ export default abstract class BaseContainer<
     );
   };
 
-  navigateForResult = <V, T = { [x: string]: AcceptableValueType }>(
+  navigateForResult = <V = VoidResult, T = { [x: string]: AcceptableValueType }>(
     entry: PortkeyEntries,
     options: RouterOptions<T>,
     callback: (res: EntryResult<V>) => void,

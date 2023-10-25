@@ -17,19 +17,17 @@ import { checkIsUrl } from '@portkey-wallet/utils/dapp/browser';
 // import { useDiscoverJumpWithNetWork } from 'hooks/discover'; // currently we do not use this
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { QRData, LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
+import { QRData, isLoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { isAddress } from '@portkey-wallet/utils';
 import { NetworkType } from '@portkey-wallet/types';
 import { EndPoints, PortkeyConfig } from 'global';
-import useBaseContainer from 'model/container/UseBaseContainer';
+import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { EntryResult } from 'service/native-modules';
 import useEffectOnce from 'hooks/useEffectOnce';
-interface QrScannerProps {
-  route?: any;
-}
+import { ScanToLoginProps } from 'pages/Login/ScanLogin';
 
-const QrScanner: React.FC<QrScannerProps> = () => {
+const QrScanner: React.FC = () => {
   const { t } = useLanguage();
   // const jumpToWebview = useDiscoverJumpWithNetWork();
   const [refresh, setRefresh] = useState<boolean>();
@@ -50,11 +48,15 @@ const QrScanner: React.FC<QrScannerProps> = () => {
   };
 
   const handleQRCodeData = (data: QRData) => {
-    const { type, address, chainType } = data;
+    const { address, chainType } = data;
     if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
-
-    if (type === 'login') {
-      navigationService.navigate('ScanLogin', { data: data as LoginQRData });
+    if (isLoginQRData(data)) {
+      navigateForResult<VoidResult, ScanToLoginProps>(PortkeyEntries.SCAN_LOG_IN, {
+        closeCurrentScreen: true,
+        params: {
+          data: JSON.stringify(data),
+        },
+      });
     } else {
       CommonToast.fail('Content not supported');
     }
@@ -113,7 +115,7 @@ const QrScanner: React.FC<QrScannerProps> = () => {
               <TouchableOpacity
                 style={PageStyle.svgWrap}
                 onPress={() => {
-                  navigationService.goBack();
+                  navigateBack();
                 }}>
                 <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
               </TouchableOpacity>

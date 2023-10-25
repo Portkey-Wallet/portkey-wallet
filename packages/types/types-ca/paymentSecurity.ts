@@ -3,6 +3,7 @@ import { ChainId } from '@portkey-wallet/types';
 export interface ITransferLimitItem {
   chainId: ChainId;
   symbol: string;
+  fromSymbol?: string; // back to operate
   singleLimit: string;
   dailyLimit: string;
   restricted: boolean;

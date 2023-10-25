@@ -49,37 +49,38 @@ const getTransferFee = async ({
       },
     });
     let _firstFee = firstTxResult.result['ELF'];
-
-    const balanceRes = await getBalance({
-      rpcUrl: chainInfo.endPoint,
-      address: token.address,
-      chainType: 'aelf',
-      paramsOption: {
-        symbol: DEFAULT_TOKEN.symbol,
-        owner: managerAddress,
-      },
-    });
-
-    const balance = balanceRes.result.balance;
-    const crossChainAmount = timesDecimals(crossChainFee, DEFAULT_TOKEN.decimals);
-
-    if (crossChainAmount.gt(balance)) {
-      const firstTxResult = await getTransactionFee({
-        contractAddress: chainInfo.caContractAddress,
-        rpcUrl: chainInfo?.endPoint || '',
-        chainType,
-        methodName: 'ManagerTransfer',
-        privateKey,
+    if (token.symbol !== DEFAULT_TOKEN.symbol) {
+      const managerBalance = await getBalance({
+        rpcUrl: chainInfo.endPoint,
+        address: token.address,
+        chainType: 'aelf',
         paramsOption: {
-          caHash,
-          symbol: 'ELF',
-          to: managerAddress,
-          amount: crossChainAmount.toFixed(0),
-          memo,
+          symbol: DEFAULT_TOKEN.symbol,
+          owner: managerAddress,
         },
       });
-      const crossELFFee = firstTxResult.result['ELF'];
-      _firstFee = ZERO.plus(_firstFee).plus(crossELFFee);
+
+      const balance = managerBalance.result.balance;
+      const crossChainAmount = timesDecimals(crossChainFee, DEFAULT_TOKEN.decimals);
+
+      if (crossChainAmount.gt(balance)) {
+        const firstTxResult = await getTransactionFee({
+          contractAddress: chainInfo.caContractAddress,
+          rpcUrl: chainInfo?.endPoint || '',
+          chainType,
+          methodName: 'ManagerTransfer',
+          privateKey,
+          paramsOption: {
+            caHash,
+            symbol: 'ELF',
+            to: managerAddress,
+            amount: crossChainAmount.toFixed(0),
+            memo,
+          },
+        });
+        const crossELFFee = firstTxResult.result['ELF'];
+        _firstFee = ZERO.plus(_firstFee).plus(crossELFFee);
+      }
     }
 
     const firstFee = divDecimalsStr(_firstFee, DEFAULT_TOKEN.decimals);
@@ -90,7 +91,6 @@ const getTransferFee = async ({
       return firstFee;
     }
   } else {
-    //
     const transactionRes = await getTransactionFee({
       contractAddress: chainInfo.caContractAddress,
       rpcUrl: chainInfo?.endPoint || '',

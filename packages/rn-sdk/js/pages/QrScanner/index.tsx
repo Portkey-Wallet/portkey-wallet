@@ -1,7 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
-import navigationService from 'utils/navigationService';
 import Svg from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
@@ -23,7 +22,7 @@ import { NetworkType } from '@portkey-wallet/types';
 import { EndPoints, PortkeyConfig } from 'global';
 import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { EntryResult } from 'service/native-modules';
+import { EntryResult, portkeyModulesEntity } from 'service/native-modules';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { ScanToLoginProps } from 'pages/Login/ScanLogin';
 
@@ -37,11 +36,33 @@ const QrScanner: React.FC = () => {
   const navigateBack = (res: EntryResult<ScanQRCodeResult> = { status: 'success', data: {} }) => {
     onFinish(res);
   };
-  useEffectOnce(
-    useCallback(() => {
-      setRefresh(false);
-    }, []),
-  );
+  const checkForPermissions = async () => {
+    try {
+      const cameraOpen = await portkeyModulesEntity.PermissionModule.isPermissionGranted('camera');
+      if (!cameraOpen) {
+        await portkeyModulesEntity.PermissionModule.requestPermission('camera');
+        if (!(await portkeyModulesEntity.PermissionModule.isPermissionGranted('camera'))) {
+          throw new Error('camera permission denied');
+        }
+      }
+      const photoOpen = await portkeyModulesEntity.PermissionModule.isPermissionGranted('photo');
+      if (!photoOpen) {
+        await portkeyModulesEntity.PermissionModule.requestPermission('photo');
+        if (!(await portkeyModulesEntity.PermissionModule.isPermissionGranted('photo'))) {
+          throw new Error('photo permission denied');
+        }
+      }
+    } catch (e) {
+      CommonToast.fail('Please allow camera and photo permissions');
+      console.error(e);
+      navigateBack();
+    }
+  };
+  useEffectOnce(() => {
+    setRefresh(false);
+    checkForPermissions();
+  });
+
   const invalidQRCode = (text: InvalidQRCodeText) => {
     CommonToast.fail(text);
     navigateBack();

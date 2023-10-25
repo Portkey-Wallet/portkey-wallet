@@ -14,7 +14,8 @@ internal class PortkeyNativePackages : ReactPackage {
             RouterModule(reactApplicationContext),
             NativeWrapperModule(reactApplicationContext),
             NetworkModule(reactApplicationContext),
-            StorageModule(reactApplicationContext)
+            StorageModule(reactApplicationContext),
+            PermissionModule(reactApplicationContext)
         )
     }
 

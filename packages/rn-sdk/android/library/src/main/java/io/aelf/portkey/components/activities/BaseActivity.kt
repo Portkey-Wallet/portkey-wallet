@@ -13,6 +13,7 @@ import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
 import io.aelf.portkey.navigation.NavigationHolder
+
 //import io.aelf.portkey.native_modules.NativeWrapperModule
 //import kotlinx.coroutines.CoroutineScope
 //import kotlinx.coroutines.Dispatchers
@@ -135,6 +136,7 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
     params: ReadableMap? = null,
     targetScene: String? = null,
     from: String? = null,
+    closeSelf: Boolean = false
 ) {
     val intent = Intent(this, getReactActivityClass(entryName))
     intent.putExtra(
@@ -154,6 +156,9 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
     intent.putExtra(StorageIdentifiers.TARGET_SCENE, targetScene)
     NavigationHolder.lastCachedIntent = intent
     startActivity(intent)
+    if (closeSelf) {
+        this.finish()
+    }
 }
 
 private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray()): Bundle {

@@ -27,3 +27,7 @@ export interface SendTokenQRDataType extends QRData {
   };
   assetInfo: IToSendAssetParamsType;
 }
+
+export const isLoginQRData = (data: QRData): data is LoginQRData => {
+  return data.type === 'login';
+};

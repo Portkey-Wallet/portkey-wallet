@@ -1,5 +1,6 @@
 package io.aelf.portkey.native_modules
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -16,12 +17,20 @@ class RouterModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
-    fun navigateTo(entry: String, from: String, targetScene: String? = null) {
+    fun navigateTo(
+        entry: String,
+        from: String,
+        targetScene: String = "",
+        closeSelf: Boolean = false,
+        params: ReadableMap = Arguments.createMap()
+    ) {
         val activity = NavigationHolder.getTopComponent()
         activity?.navigateToAnotherReactActivity(
             entryName = entry,
             targetScene = targetScene,
-            from = from
+            from = from,
+            closeSelf = closeSelf,
+            params = params
         )
     }
 
@@ -34,6 +43,7 @@ class RouterModule(reactContext: ReactApplicationContext) :
     ) {
         val activity = NavigationHolder.getTopComponent()
         val targetScene = params.getString("targetScene")
+        val closeSelf = params.getBoolean("closeCurrentScreen")
 //        val navigationAnimation = params.getString("navigationAnimation")
 //        val navigationAnimationDuration: Long =
 //            params.getDouble("navigationAnimationDuration").toLong()
@@ -44,6 +54,7 @@ class RouterModule(reactContext: ReactApplicationContext) :
             targetScene = targetScene,
             callbackId = callbackId,
             from = from,
+            closeSelf = closeSelf
         )
         NavigationHolder.registerNavigationCallback(callbackId, callback)
     }

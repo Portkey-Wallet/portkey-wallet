@@ -5,7 +5,7 @@ buildscript {
         agp_version = '7.1.1'
         compileSdkVersion = 33
         targetSdkVersion = 33
-        minSdkVersion = 28
+        minSdkVersion = 26
     }
     repositories {
         google()
@@ -17,8 +17,8 @@ buildscript {
     }
 
     subprojects { subproject ->
-        afterEvaluate{
-            if((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
+        afterEvaluate {
+            if ((subproject.plugins.hasPlugin('android') || subproject.plugins.hasPlugin('android-library'))) {
                 android {
                     compileSdk 33
                 }

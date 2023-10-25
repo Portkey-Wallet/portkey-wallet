@@ -1,5 +1,5 @@
 import { PortkeyEntries } from 'config/entries';
-import { useCallback, useContext, useEffect, useRef } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { EmitterSubscription } from 'react-native';
 import { EntryResult, PortkeyDeviceEventEmitter, RouterOptions, portkeyModulesEntity } from 'service/native-modules';
 import { AcceptableValueType } from './BaseContainer';
@@ -26,75 +26,95 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
     [entryName, baseContainerContext.entryName],
   );
 
-  const navigationTo = (entry: PortkeyEntries, targetScene?: string, closeCurrentScreen?: boolean) => {
-    portkeyModulesEntity.RouterModule.navigateTo(
-      entry,
-      getEntryName(),
-      targetScene ?? 'none',
-      closeCurrentScreen ?? false,
-    );
-  };
+  const navigationTo = useCallback(
+    (entry: PortkeyEntries, targetScene?: string, closeCurrentScreen?: boolean) => {
+      portkeyModulesEntity.RouterModule.navigateTo(
+        entry,
+        getEntryName(),
+        targetScene ?? 'none',
+        closeCurrentScreen ?? false,
+      );
+    },
+    [getEntryName],
+  );
 
-  const navigateForResult = <V, T = { [x: string]: AcceptableValueType }>(
-    entry: PortkeyEntries,
-    options: RouterOptions<T>,
-    callback: (res: EntryResult<V>) => void,
-  ) => {
-    const { params, closeCurrentScreen, navigationAnimation, navigationAnimationDuration, targetScene } = options;
-    portkeyModulesEntity.RouterModule.navigateToWithOptions(
-      entry,
-      getEntryName(),
-      {
-        params: params ?? ({} as any),
-        closeCurrentScreen: closeCurrentScreen ?? false,
-        navigationAnimation: navigationAnimation ?? 'slide',
-        navigationAnimationDuration: navigationAnimationDuration ?? 2000,
-        targetScene: targetScene ?? '',
-      },
-      callback,
-    );
-  };
+  const navigateForResult = useCallback(
+    <V, T = { [x: string]: AcceptableValueType }>(
+      entry: PortkeyEntries,
+      options: RouterOptions<T>,
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      callback: (res: EntryResult<V>) => void = () => {},
+    ) => {
+      const { params, closeCurrentScreen, navigationAnimation, navigationAnimationDuration, targetScene } = options;
+      portkeyModulesEntity.RouterModule.navigateToWithOptions(
+        entry,
+        getEntryName(),
+        {
+          params: params ?? ({} as any),
+          closeCurrentScreen: closeCurrentScreen ?? false,
+          navigationAnimation: navigationAnimation ?? 'slide',
+          navigationAnimationDuration: navigationAnimationDuration ?? 2000,
+          targetScene: targetScene ?? '',
+        },
+        callback,
+      );
+    },
+    [getEntryName],
+  );
 
-  const onFinish = <R,>(res: EntryResult<R>) => {
+  const onFinish = useCallback(<R,>(res: EntryResult<R>) => {
     portkeyModulesEntity.RouterModule.navigateBack(res);
-  };
+  }, []);
 
-  const onError = (err: Error) => {
-    portkeyModulesEntity.NativeWrapperModule.onError(getEntryName(), err.message, { stack: err.stack });
-  };
+  const onError = useCallback(
+    (err: Error) => {
+      portkeyModulesEntity.NativeWrapperModule.onError(getEntryName(), err.message, { stack: err.stack });
+    },
+    [getEntryName],
+  );
 
-  const onFatal = (err: Error) => {
-    portkeyModulesEntity.NativeWrapperModule.onFatalError(getEntryName(), err.message, { stack: err.stack });
-  };
+  const onFatal = useCallback(
+    (err: Error) => {
+      portkeyModulesEntity.NativeWrapperModule.onFatalError(getEntryName(), err.message, { stack: err.stack });
+    },
+    [getEntryName],
+  );
 
-  const onWarn = (msg: string) => {
-    portkeyModulesEntity.NativeWrapperModule.onWarning(getEntryName(), msg);
-  };
+  const onWarn = useCallback(
+    (msg: string) => {
+      portkeyModulesEntity.NativeWrapperModule.onWarning(getEntryName(), msg);
+    },
+    [getEntryName],
+  );
 
-  return {
-    getEntryName,
-    navigationTo,
-    navigateForResult,
-    onFinish,
-    onError,
-    onFatal,
-    onWarn,
-  };
+  return useMemo(() => {
+    return {
+      getEntryName,
+      navigationTo,
+      navigateForResult,
+      onFinish,
+      onError,
+      onFatal,
+      onWarn,
+    };
+  }, [getEntryName, navigateForResult, navigationTo, onError, onFatal, onFinish, onWarn]);
 };
 
 export interface BaseContainerHooks {
   getEntryName: () => string;
   navigationTo: (entry: PortkeyEntries, targetScene?: string) => void;
-  navigateForResult: <V, T = { [x: string]: AcceptableValueType }>(
+  navigateForResult: <V = VoidResult, T = { [x: string]: AcceptableValueType }>(
     entry: PortkeyEntries,
     options: RouterOptions<T>,
-    callback: (res: EntryResult<V>) => void,
+    callback?: (res: EntryResult<V>) => void,
   ) => void;
   onFinish: <R>(res: EntryResult<R>) => void;
   onError: (err: Error) => void;
   onFatal: (err: Error) => void;
   onWarn: (msg: string) => void;
 }
+
+export interface VoidResult {}
 
 export interface BaseContainerHookedProps {
   rootTag?: any;

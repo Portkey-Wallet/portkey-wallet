@@ -4,7 +4,9 @@ import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainType } from '@portkey-wallet/types';
 import { BaseToken } from '@portkey-wallet/types/types-ca/token';
 import { isCrossChain } from '@portkey-wallet/utils/aelf';
-import { divDecimalsStr } from '@portkey-wallet/utils/converter';
+import { divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
+import { getTxFee } from 'store/utils/getStore';
+import { getBalance } from 'utils/sandboxUtil/getBalance';
 import getTransactionFee from 'utils/sandboxUtil/getTransactionFee';
 
 const getTransferFee = async ({
@@ -28,6 +30,8 @@ const getTransferFee = async ({
   amount: number;
   memo?: string;
 }) => {
+  const { crossChain: crossChainFee } = getTxFee(token.chainId);
+
   if (isCrossChain(toAddress, chainInfo?.chainId ?? 'AELF')) {
     // first
     const firstTxResult = await getTransactionFee({
@@ -44,7 +48,40 @@ const getTransferFee = async ({
         memo,
       },
     });
-    const _firstFee = firstTxResult.result['ELF'];
+    let _firstFee = firstTxResult.result['ELF'];
+
+    const balanceRes = await getBalance({
+      rpcUrl: chainInfo.endPoint,
+      address: token.address,
+      chainType: 'aelf',
+      paramsOption: {
+        symbol: DEFAULT_TOKEN.symbol,
+        owner: managerAddress,
+      },
+    });
+
+    const balance = balanceRes.result.balance;
+    const crossChainAmount = timesDecimals(crossChainFee, DEFAULT_TOKEN.decimals);
+
+    if (crossChainAmount.gt(balance)) {
+      const firstTxResult = await getTransactionFee({
+        contractAddress: chainInfo.caContractAddress,
+        rpcUrl: chainInfo?.endPoint || '',
+        chainType,
+        methodName: 'ManagerTransfer',
+        privateKey,
+        paramsOption: {
+          caHash,
+          symbol: 'ELF',
+          to: managerAddress,
+          amount: crossChainAmount.toFixed(0),
+          memo,
+        },
+      });
+      const crossELFFee = firstTxResult.result['ELF'];
+      _firstFee = ZERO.plus(_firstFee).plus(crossELFFee);
+    }
+
     const firstFee = divDecimalsStr(_firstFee, DEFAULT_TOKEN.decimals);
     console.log(firstTxResult, 'transactionRes===cross');
     if (Number.isNaN(ZERO.plus(firstFee).toNumber())) {

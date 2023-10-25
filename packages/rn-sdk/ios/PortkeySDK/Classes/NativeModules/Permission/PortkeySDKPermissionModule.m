@@ -43,7 +43,6 @@ RCT_EXPORT_METHOD(requestPermission:(NSString *)permission
 
 - (void)isPhotoPermissionGranted:(RCTPromiseResolveBlock)resolve {
     PHAuthorizationStatus status;
-
     if (@available(iOS 14.0, *)) {
         status = [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite];
     } else {
@@ -68,7 +67,7 @@ RCT_EXPORT_METHOD(requestPermission:(NSString *)permission
 - (void)requestPhotoPermission:(RCTPromiseResolveBlock)resolve {
     if (@available(iOS 14.0, *)) {
         [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelReadWrite handler:^(__unused PHAuthorizationStatus status) {
-          [self isPhotoPermissionGranted:resolve];
+            [self isPhotoPermissionGranted:resolve];
         }];
     } else {
         [PHPhotoLibrary requestAuthorization:^(__unused PHAuthorizationStatus status) {

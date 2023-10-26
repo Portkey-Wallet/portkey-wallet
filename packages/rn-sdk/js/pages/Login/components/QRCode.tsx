@@ -88,6 +88,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
 
   const generateWallet = useCallback(() => {
     try {
+      console.log('before createNewWallet');
       const wallet = AElf.wallet.createNewWallet();
       console.log('wallet', wallet);
       setNewWallet(wallet);

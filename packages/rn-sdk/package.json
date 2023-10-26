@@ -44,7 +44,6 @@
     "react-native-background-timer": "^2.4.1",
     "react-native-qrcode-styled": "^0.2.1",
     "react-native-config": "^1.4.6",
-    "react-native-get-random-values": "^1.9.0",
     "react-native-gradle-plugin": "^0.71.19",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-largelist": "3.1.0-rc.2",

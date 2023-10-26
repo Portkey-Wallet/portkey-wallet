@@ -76,6 +76,7 @@
 		EAD432A62ABC29ED00EEA69D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		EAD432A72ABC29ED00EEA69D /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PortkeySDKExample-Prefix.pch"; sourceTree = "<group>"; };
+		EADF94412AEA65E600B07C1D /* PortkeySDKExample_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PortkeySDKExample_Example.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -132,6 +133,7 @@
 		6003F581195388D10070C39A = {
 			isa = PBXGroup;
 			children = (
+				EADF94412AEA65E600B07C1D /* PortkeySDKExample_Example.entitlements */,
 				EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */,
 				6003F5B5195388D20070C39A /* Tests */,
 				6003F58C195388D20070C39A /* Frameworks */,
@@ -649,14 +651,8 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -699,14 +695,8 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -719,6 +709,7 @@
 			baseConfigurationReference = 903BDF27E1D312AFA5748B17 /* Pods-PortkeySDKExample_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PortkeySDKExample_Example.entitlements;
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = 56DKXVFJS2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -745,6 +736,7 @@
 			baseConfigurationReference = 58B8649AAAEF2C57C9DAB9AD /* Pods-PortkeySDKExample_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = PortkeySDKExample_Example.entitlements;
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = 56DKXVFJS2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

@@ -122,7 +122,7 @@ export const getSocialRecoveryPageData = async (
         guardianIdentifier: guardian.guardianIdentifier,
         verifierId: guardian.verifierId,
         chainId,
-        operationType: OperationTypeEnum.register,
+        operationType: OperationTypeEnum.communityRecovery,
       },
     })),
     thirdPartyAccountInfo,

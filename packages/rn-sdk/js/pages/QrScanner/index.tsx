@@ -25,6 +25,7 @@ import { PortkeyEntries } from 'config/entries';
 import { EntryResult, chooseImageAndroid, portkeyModulesEntity } from 'service/native-modules';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { ScanToLoginProps } from 'pages/Login/ScanLogin';
+import { isWalletUnlocked } from 'model/verify/after-verify';
 
 const QrScanner: React.FC = () => {
   const { t } = useLanguage();
@@ -53,9 +54,8 @@ const QrScanner: React.FC = () => {
         }
       }
     } catch (e) {
-      CommonToast.fail('Please allow camera and photo permissions');
       console.error(e);
-      navigateBack();
+      withoutPermissionWarning();
     }
   };
   useEffectOnce(() => {
@@ -63,22 +63,29 @@ const QrScanner: React.FC = () => {
     checkForPermissions();
   });
 
-  const invalidQRCode = (text: InvalidQRCodeText) => {
-    CommonToast.fail(text);
-    navigateBack();
+  const withoutPermissionWarning = () => {
+    CommonToast.fail('Please allow both camera and photo permissions to use, page will close in 3 seconds');
+    setTimeout(() => {
+      navigateBack();
+    }, 3000);
   };
 
-  const handleQRCodeData = (data: QRData) => {
+  const invalidQRCode = (text: InvalidQRCodeText) => {
+    CommonToast.fail(text);
+  };
+
+  const handleQRCodeData = async (data: QRData) => {
     const { address, chainType } = data;
     if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
     if (isLoginQRData(data)) {
+      if (!(await isWalletUnlocked())) return invalidQRCode(InvalidQRCodeText.DID_NOT_UNLOCK);
       navigateForResult<VoidResult, ScanToLoginProps>(PortkeyEntries.SCAN_LOG_IN, {
         params: {
           data: JSON.stringify(data),
         },
       });
     } else {
-      CommonToast.fail('Content not supported');
+      CommonToast.fail('Content not supported by now');
     }
     setRefresh(true);
   };
@@ -89,8 +96,7 @@ const QrScanner: React.FC = () => {
     try {
       const str = data.replace(/("|'|\s)/g, '');
       if (checkIsUrl(str)) {
-        CommonToast.fail('Content not supported');
-        navigateBack();
+        return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
       }
       const qrCodeData = expandQrData(JSON.parse(data));
       // if not currentNetwork
@@ -244,6 +250,7 @@ export enum InvalidQRCodeText {
   SWITCH_TO_MAINNET = 'Please switch to aelf Mainnet before scanning the QR code',
   SWITCH_TO_TESTNET = 'Please switch to aelf Testnet before scanning the QR code',
   INVALID_QR_CODE = 'The QR code is invalid',
+  DID_NOT_UNLOCK = 'Please unlock your wallet first',
 }
 
 export interface ScanQRCodeResult {}

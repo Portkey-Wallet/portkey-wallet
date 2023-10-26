@@ -39,7 +39,7 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
   );
 
   const navigateForResult = useCallback(
-    <V, T = { [x: string]: AcceptableValueType }>(
+    <V = VoidResult, T = { [x: string]: AcceptableValueType }>(
       entry: PortkeyEntries,
       options: RouterOptions<T>,
       // eslint-disable-next-line @typescript-eslint/no-empty-function

@@ -239,6 +239,7 @@
 				6003F588195388D20070C39A /* Resources */,
 				EA74A0322AD2B5C6005A4810 /* ShellScript */,
 				6A582D2C5C7FE5B1DC95747A /* [CP] Copy Pods Resources */,
+				EAF1224A2AEA1AFE00C60025 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -513,7 +514,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#export NODE_BINARY=node\n#sh ../../build/build-ios-bundle.sh\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n#export NODE_BINARY=node\nif [ $CONFIGURATION == Release ]; then\necho \"当前为 Release Configuration,开始自增 Build\"\nplist=${INFOPLIST_FILE}\nbuildnum=$(/usr/libexec/PlistBuddy -c \"Print CFBundleVersion\" \"${plist}\")\nif [[ \"${buildnum}\" == \"\" ]]; then\necho \"Error：在Plist文件里没有 Build 值\"\nexit 2\nfi\nbuildnum=$(expr $buildnum + 1)\n/usr/libexec/PlistBuddy -c \"Set CFBundleVersion $buildnum\" \"${plist}\"\nelse\necho $CONFIGURATION \"当前不为 Release Configuration\"\nfi\n";
+		};
+		EAF1224A2AEA1AFE00C60025 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -629,14 +647,8 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -679,14 +691,8 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

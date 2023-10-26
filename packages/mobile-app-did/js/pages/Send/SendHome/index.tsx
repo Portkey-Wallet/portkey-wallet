@@ -24,7 +24,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getManagerAccount } from 'utils/redux';
 import { usePin } from 'hooks/store';
-import { divDecimals, divDecimalsStr, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { divDecimals, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { BGStyles } from 'assets/theme/styles';
@@ -53,7 +53,7 @@ const SendHome: React.FC = () => {
   const { t } = useLanguage();
   useFetchTxFee();
   const isValidChainId = useIsValidSuffix();
-  const defaultToken = useDefaultToken();
+  const defaultToken = useDefaultToken(assetInfo.chainId);
 
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
@@ -70,7 +70,8 @@ const SendHome: React.FC = () => {
   const [selectedToContact, setSelectedToContact] = useState(toInfo); // to
   const [selectedAssets, setSelectedAssets] = useState(assetInfo); // token or nft
   const [sendNumber, setSendNumber] = useState<string>('0'); // tokenNumber  like 100
-  const [shouldSendFeeToProxy, setShouldSendFeeToProxy] = useState(false);
+  const shouldSendFeeToProxyRef = useRef<boolean>();
+
   const debounceSendNumber = useDebounce(sendNumber, 500);
   const [, setTransactionFee] = useState<string>('0'); // like 1.2ELF
 
@@ -138,9 +139,22 @@ const SendHome: React.FC = () => {
         },
       });
 
+      console.log('getSameChainTransferFee', req, sendAmount, debounceSendNumber, selectedAssets.decimals, {
+        caHash: wallet.caHash,
+        contractAddress: selectedAssets.tokenContractAddress,
+        methodName: 'Transfer',
+        args: {
+          symbol: selectedAssets.symbol,
+          to: selectedToContact.address,
+          amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
+          memo: '',
+        },
+      });
+
       if (req.error) request.errorReport('calculateTransactionFee', '', req.error);
-      const sameChainFee = req.data.TransactionFee[defaultToken.symbol] || '0';
-      if (!req?.data?.TransactionFee[defaultToken.symbol]) throw { code: 500, message: 'no enough fee' };
+      const sameChainFee = req.data.TransactionFee?.[defaultToken.symbol] || '0';
+
+      if (!req?.data?.TransactionFee?.[defaultToken.symbol]) throw { code: 500, message: 'get fee fail' };
 
       return unitConverter(divDecimals(sameChainFee, defaultToken.decimals));
     },
@@ -174,14 +188,19 @@ const SendHome: React.FC = () => {
       };
 
       const req1 = await contract.calculateTransactionFee('ManagerTransfer', calculateTransactionFeeParams);
+      console.log('getCrossChainTransferFee', req1);
 
       if (req1.error) request.errorReport('calculateTransactionFee', calculateTransactionFeeParams, req1.error);
-      fee = req1.data.TransactionFee[defaultToken.symbol] || '0';
-      if (!req1?.data?.TransactionFee[defaultToken.symbol]) throw { code: 500, message: 'no enough fee' };
+      fee = req1.data?.TransactionFee?.[defaultToken.symbol] || '0';
+      if (!req1?.data?.TransactionFee?.[defaultToken.symbol]) throw { code: 500, message: 'get fee fail' };
 
       // send is not defaultToken token like elf
       if (assetInfo.symbol !== defaultToken.symbol) {
-        const proxyBalance = await getAssetBalance(defaultToken.address, defaultToken.symbol, wallet.address);
+        const proxyBalance = await getAssetBalance(
+          defaultToken.address, // from token tokenContractAddress
+          defaultToken.symbol,
+          wallet.address,
+        );
         const crossChainAmount = timesDecimals(crossFee, defaultToken.decimals);
 
         if (crossChainAmount.gt(proxyBalance)) {
@@ -190,17 +209,16 @@ const SendHome: React.FC = () => {
             caHash: wallet.caHash,
             symbol: defaultToken.symbol,
             to: wallet.address,
-            amount: crossChainAmount.toFixed(0),
+            amount: crossChainAmount.toFixed(),
             memo: '',
           });
 
           if (req2.error) request.errorReport('calculateTransactionFee', calculateTransactionFeeParams, req2.error);
-          if (!req2?.data?.TransactionFee) throw { code: 500, message: 'no enough fee' };
-          fee = ZERO.plus(fee).plus(req2?.data?.TransactionFee[defaultToken.symbol]);
-          setShouldSendFeeToProxy(true);
+          if (!req2?.data?.TransactionFee) throw { code: 500, message: 'get fee fail' };
+          fee = ZERO.plus(fee).plus(req2?.data?.TransactionFee?.[defaultToken.symbol]);
+          shouldSendFeeToProxyRef.current = true;
         }
       }
-      console.log('crossChainTransferFee', fee);
       return unitConverter(divDecimals(fee, defaultToken.decimals));
     },
     [
@@ -220,60 +238,6 @@ const SendHome: React.FC = () => {
     ],
   );
 
-  // get transfer fee
-  // const getTransactionFee = useCallback(
-  //   async ({
-  //     cross,
-  //     sendAmount,
-  //   }: {
-  //     cross: boolean;
-  //     isProxyBalanceIsEnoughForCrossFee: boolean;
-  //     sendAmount?: number | string | BigNumber;
-  //   }) => {
-  //     const contract = contractRef.current;
-
-  //     const firstMethodName = cross ? 'ManagerTransfer' : 'ManagerForwardCall';
-  //     const secondParams = cross
-  //       ? {
-  //           contractAddress: selectedAssets.tokenContractAddress,
-  //           caHash: wallet.caHash,
-  //           symbol: selectedAssets.symbol,
-  //           to: wallet.address,
-  //           amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
-  //           memo: '',
-  //         }
-  //       : {
-  //           caHash: wallet.caHash,
-  //           contractAddress: selectedAssets.tokenContractAddress,
-  //           methodName: 'Transfer',
-  //           args: {
-  //             symbol: selectedAssets.symbol,
-  //             to: selectedToContact.address,
-  //             amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
-  //             memo: '',
-  //           },
-  //         };
-
-  //     const req = await contract.calculateTransactionFee(firstMethodName, secondParams);
-  //     if (req.error) request.errorReport('calculateTransactionFee', secondParams, req.error);
-  //     const { TransactionFee } = req.data || {};
-  //     if (!TransactionFee) throw { code: 500, message: 'no enough fee' };
-
-  //     return unitConverter(divDecimals(TransactionFee?.[defaultToken.symbol], defaultToken.decimals));
-  //   },
-  //   [
-  //     debounceSendNumber,
-  //     defaultToken.decimals,
-  //     defaultToken.symbol,
-  //     selectedAssets.decimals,
-  //     selectedAssets.symbol,
-  //     selectedAssets.tokenContractAddress,
-  //     selectedToContact.address,
-  //     wallet.address,
-  //     wallet.caHash,
-  //   ],
-  // );
-
   const onPressMax = useCallback(async () => {
     Loading.show();
     try {
@@ -286,18 +250,16 @@ const SendHome: React.FC = () => {
 
       // other tokens
       if (selectedAssets.symbol !== defaultToken.symbol)
-        return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
+        return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toFixed());
 
       // elf <= maxFee
       if (divDecimals(selectedAssets.balance, selectedAssets.decimals).isLessThanOrEqualTo(maxFee))
-        return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toString());
+        return setSendNumber(divDecimals(selectedAssets.balance, selectedAssets.decimals || '0').toFixed());
 
       const fee = isCross
-        ? await getCrossChainTransferFee(divDecimalsStr(selectedAssets.balance, selectedAssets.decimals))
-        : await getSameChainTransferFee(divDecimalsStr(selectedAssets.balance, selectedAssets.decimals));
+        ? await getCrossChainTransferFee(selectedAssets.balance)
+        : await getSameChainTransferFee(selectedAssets.balance);
 
-      // getTransactionFee(, divDecimals(selectedAssets.balance, selectedAssets.decimals));
-      setTransactionFee(fee || '0');
       setSendNumber(
         divDecimals(selectedAssets.balance, selectedAssets.decimals || '0')
           .minus(fee || '0')
@@ -305,7 +267,6 @@ const SendHome: React.FC = () => {
       );
     } catch (err: any) {
       if (err?.code === 500) {
-        setTransactionFee(String(maxFee));
         const selectedAssetsNum = divDecimals(selectedAssets.balance, selectedAssets.decimals || '0');
         setSendNumber(selectedAssetsNum.minus(maxFee).toFixed());
       }
@@ -433,25 +394,20 @@ const SendHome: React.FC = () => {
     setErrorMessage([]);
 
     try {
-      if (!chainInfo || !pin) {
-        Loading.show();
-        return { status: false };
-      }
+      if (!chainInfo || !pin) return { status: false };
+
       const account = getManagerAccount(pin);
-      if (!account) {
-        Loading.show();
-        return { status: false };
-      }
+      if (!account) return { status: false };
 
       // transaction fee check
       try {
-        fee = isCross
-          ? await getCrossChainTransferFee(divDecimalsStr(selectedAssets.balance, selectedAssets.decimals))
-          : await getSameChainTransferFee(divDecimalsStr(selectedAssets.balance, selectedAssets.decimals));
+        fee = isCross ? await getCrossChainTransferFee(sendNumber) : await getSameChainTransferFee(sendNumber);
 
         setTransactionFee(fee || '0');
       } catch (err: any) {
         if (err?.code === 500) {
+          console.log('transaction fee check err', err);
+
           setErrorMessage([TransactionError.FEE_NOT_ENOUGH]);
           Loading.hide();
           return { status: false };
@@ -484,7 +440,7 @@ const SendHome: React.FC = () => {
             decimals: assetInfo.decimals,
             amount: sendNumber,
           },
-          chainInfo.chainId,
+          assetInfo.chainId,
         );
         if (!checkTransferLimitResult) return { status: false };
 
@@ -492,22 +448,22 @@ const SendHome: React.FC = () => {
         if (isCross && assetInfo.symbol !== defaultToken.symbol) {
           const balance = await getAssetBalance(defaultToken.address, defaultToken.symbol, wallet.address);
           const crossChainFee = timesDecimals(crossFee, defaultToken.decimals);
+
           if (crossChainFee.gt(balance)) {
             const isELFExceedLimitResult = await checkTransferLimitWithJump(
               {
                 caContract: contract,
                 symbol: defaultToken.symbol,
                 decimals: defaultToken.decimals,
-                amount: crossChainFee.toFixed(),
+                amount: timesDecimals(crossChainFee, defaultToken.symbol).toFixed(),
               },
-              chainInfo.chainId,
+              assetInfo.chainId,
             );
-            if (!isELFExceedLimitResult) {
-              return { status: false };
-            }
+            if (!isELFExceedLimitResult) return { status: false };
           }
         }
       } catch (error) {
+        console.log('error', error);
         CommonToast.failError(error);
         Loading.hide();
         return { status: false };
@@ -586,7 +542,6 @@ const SendHome: React.FC = () => {
   ]);
 
   const preview = useCallback(async () => {
-    // TODO : getTransactionFee and check the balance
     const result = await checkCanPreview();
     if (!result?.status) return;
 
@@ -599,8 +554,7 @@ const SendHome: React.FC = () => {
       },
       transactionFee: result?.fee || '0',
       sendNumber,
-      // TODO: change shouldSendELFToManager
-      shouldSendFeeToProxy,
+      shouldSendFeeToProxy: shouldSendFeeToProxyRef.current,
     } as IToSendPreviewParamsType);
   }, [
     assetInfo.chainId,
@@ -609,7 +563,7 @@ const SendHome: React.FC = () => {
     selectedToContact,
     sendNumber,
     sendType,
-    shouldSendFeeToProxy,
+    shouldSendFeeToProxyRef,
   ]);
 
   useEffect(() => {

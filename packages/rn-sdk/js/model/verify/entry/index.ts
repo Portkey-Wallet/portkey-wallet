@@ -261,20 +261,22 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
     verifiedData: VerifiedGuardianDoc,
   ): Promise<AfterVerifiedConfig> => {
     return {
-      fromRecovery: false,
-      accountIdentifier,
-      chainId: await PortkeyConfig.currChainId(),
-      extraData: defaultExtraData,
-      verifiedGuardians: [
-        {
-          type: guardianTypeStrToEnum(config.sendVerifyCodeParams.type),
-          identifier: accountIdentifier,
-          verifierId: config.sendVerifyCodeParams.verifierId,
-          verificationDoc: verifiedData.verificationDoc,
-          signature: verifiedData.signature,
-        },
-      ],
-    } as AfterVerifiedConfig;
+      normalVerifyPathInfo: {
+        fromRecovery: false,
+        accountIdentifier,
+        chainId: await PortkeyConfig.currChainId(),
+        extraData: defaultExtraData,
+        verifiedGuardians: [
+          {
+            type: guardianTypeStrToEnum(config.sendVerifyCodeParams.type),
+            identifier: accountIdentifier,
+            verifierId: config.sendVerifyCodeParams.verifierId,
+            verificationDoc: verifiedData.verificationDoc,
+            signature: verifiedData.signature,
+          },
+        ],
+      },
+    };
   };
 
   const dealWithSignUp = async (accountIdentifier: string, thirdPartyAccountInfo?: ThirdPartyAccountInfo) => {

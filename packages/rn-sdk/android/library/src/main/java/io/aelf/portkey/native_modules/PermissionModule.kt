@@ -1,6 +1,7 @@
 package io.aelf.portkey.native_modules
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -9,6 +10,9 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import io.aelf.portkey.navigation.NavigationHolder
+
+const val PORTKEY_CHOOSE_IMAGE_ACTION_CODE = 999
+const val PORTKEY_REQUEST_PERMISSION_ACTION_CODE = 998
 
 class PermissionModule(private val reactApplicationContext: ReactApplicationContext) :
     ReactContextBaseJavaModule(reactApplicationContext) {
@@ -53,6 +57,24 @@ class PermissionModule(private val reactApplicationContext: ReactApplicationCont
         }
     }
 
+    @ReactMethod
+    fun chooseImage(promise: Promise) {
+        try {
+            val activity = NavigationHolder.getTopComponent()
+                ?: throw IllegalStateException("No activity found")
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            activity.startActivityForResult(intent, PORTKEY_CHOOSE_IMAGE_ACTION_CODE)
+            activity.setImageChooseCallback {
+                promise.resolve(it ?: "")
+            }
+
+        } catch (e: Throwable) {
+            promise.reject(e)
+        }
+    }
+
+
     private fun getPermissionType(name: String): String? {
         return when (name) {
             "camera" -> Manifest.permission.CAMERA
@@ -70,7 +92,11 @@ class PermissionModule(private val reactApplicationContext: ReactApplicationCont
     ) {
         val activity = NavigationHolder.getTopComponent()
             ?: throw IllegalStateException("No activity found")
-        ActivityCompat.requestPermissions(activity, permissions, 1)
+        ActivityCompat.requestPermissions(
+            activity,
+            permissions,
+            PORTKEY_REQUEST_PERMISSION_ACTION_CODE
+        )
         activity.setPermissionCallback(callback)
     }
 }

@@ -65,6 +65,8 @@ export enum ProgressStatus {
 
 export interface BaseAccountStatus {
   chainId: ChainId;
+  caHash: string;
+  caAddress: string;
   managerInfo: {
     address: string;
     extraData: string;
@@ -103,4 +105,20 @@ export interface AElfWalletInstance {
 
 export interface AElfKeyPair {
   getPublic: (enc: 'hex') => string;
+}
+
+export interface AElfChainStatusDTO {
+  totalCount: number;
+  items: Array<AElfChainStatusItemDTO>;
+}
+
+export interface AElfChainStatusItemDTO {
+  chainId: string;
+  chainName: string;
+  endPoint: string;
+  explorerUrl: string;
+  caContractAddress: string;
+  lastModifyTime: string;
+  id: string;
+  defaultToken: any;
 }

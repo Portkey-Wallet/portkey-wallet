@@ -279,9 +279,6 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "wade-portkey";
 				TargetAttributes = {
-					6003F589195388D20070C39A = {
-						DevelopmentTeam = 56DKXVFJS2;
-					};
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
 					};
@@ -385,6 +382,8 @@
 				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/assets/image/pngs/portkeyBlackBorderRadius.png",
 				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/assets/image/pngs/portkeyBlueBackground.png",
 				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/assets/image/pngs/QR-code.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/assets/image/pngs/skeleton-email.png",
+				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/assets/image/pngs/skeleton-referral.png",
 				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/js/pages/Login/img/background.png",
 				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-ratings/dist/images/airbnb-star-selected.png",
 				"${PODS_ROOT}/../../PortkeySDK/Assets/assets/node_modules/react-native-ratings/dist/images/airbnb-star.png",
@@ -422,6 +421,8 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/portkeyBlackBorderRadius.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/portkeyBlueBackground.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/QR-code.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/skeleton-email.png",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/skeleton-referral.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/background.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/airbnb-star-selected.png",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/airbnb-star.png",

@@ -110,9 +110,7 @@ export class NetworkControllerEntity {
 
   checkQrCodeStatus = async (id: string): Promise<boolean> => {
     const res = await this.realExecute<boolean>(await this.parseUrl(APIPaths.CHECK_QR_CODE_STATUS), 'POST', {
-      params: {
-        id,
-      },
+      id,
     });
     return res?.result ?? false;
   };

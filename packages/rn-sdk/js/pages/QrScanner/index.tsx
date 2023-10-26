@@ -79,15 +79,21 @@ const QrScanner: React.FC = () => {
     if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
     if (isLoginQRData(data)) {
       if (!(await isWalletUnlocked())) return invalidQRCode(InvalidQRCodeText.DID_NOT_UNLOCK);
-      navigateForResult<VoidResult, ScanToLoginProps>(PortkeyEntries.SCAN_LOG_IN, {
-        params: {
-          data: JSON.stringify(data),
+      navigateForResult<VoidResult, ScanToLoginProps>(
+        PortkeyEntries.SCAN_LOG_IN,
+        {
+          params: {
+            data: JSON.stringify(data),
+          },
         },
-      });
+        () => {
+          setRefresh(false);
+        },
+      );
+      setRefresh(true);
     } else {
       CommonToast.fail('Content not supported by now');
     }
-    setRefresh(true);
   };
 
   const handleBarCodeScanned = async ({ data = '' }) => {

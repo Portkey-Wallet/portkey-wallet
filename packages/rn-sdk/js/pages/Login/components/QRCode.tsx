@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState, useContext } from 're
 import { View, Image } from 'react-native';
 import AElf from 'aelf-sdk';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import useEffectOnce from 'hooks/useEffectOnce';
 import myEvents from 'utils/deviceEvent';
 import styles from '../styles';
 import Touchable from 'components/Touchable';
@@ -98,7 +97,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
   }, []);
 
   const getDeviceInfo = useGetDeviceInfo();
-  useEffectOnce(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       generateWallet();
     }, 10);
@@ -117,7 +116,7 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
       timer2 && clearTimeout(timer2);
       listener.remove();
     };
-  });
+  }, [networkContext.currentNetwork]);
 
   const qrData: LoginQRData = useMemo(
     () =>

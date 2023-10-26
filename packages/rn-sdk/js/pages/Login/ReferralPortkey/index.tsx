@@ -36,7 +36,9 @@ export default function ReferralKey() {
   const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const [currentNetwork, setCurrentNetwork] = useState<NetworkItem | undefined>(undefined);
   const { t } = useLanguage();
-  const isMainnet = true;
+  const isMainnet = useMemo(() => {
+    return currentNetwork?.networkType === 'MAIN';
+  }, [currentNetwork?.networkType]);
   const { initSkeleton, showSkeleton } = useInitSkeleton(skeletonPath);
   const { onFinish } = useBaseContainer({
     entryName: PortkeyEntries.REFERRAL_ENTRY,

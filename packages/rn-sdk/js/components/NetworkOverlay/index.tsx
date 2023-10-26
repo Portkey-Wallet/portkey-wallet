@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Keyboard, StyleSheet, View } from 'react-native';
 import { TextL } from 'components/CommonText';
 import OverlayModal from 'components/OverlayModal';
@@ -9,6 +9,7 @@ import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { BorderStyles } from 'assets/theme/styles';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network-mainnet';
 import { ModalBody } from 'components/ModalBody';
+import ActionSheet from 'components/ActionSheet';
 
 function Network({
   network,
@@ -21,14 +22,25 @@ function Network({
   isSelect: boolean;
   changeNetwork: (network: NetworkItem) => void;
 }) {
+  const press = useCallback(() => {
+    OverlayModal.hide();
+    if (isSelect) return;
+    ActionSheet.alert({
+      title: `You are about to switch to ${network.name}`,
+      message: `Your account on the current network can not be used on ${network.name}, so you will need to register a new account or log in to your existing ${network.name} account there.`,
+      buttons: [
+        { title: 'Cancel', type: 'outline' },
+        {
+          title: 'Confirm',
+          onPress: () => changeNetwork(network),
+        },
+      ],
+    });
+  }, [changeNetwork, isSelect, network]);
   return (
     <Touchable
       disabled={!network.isActive}
-      onPress={async () => {
-        OverlayModal.hide();
-        if (isSelect) return;
-        changeNetwork(network);
-      }}
+      onPress={press}
       style={[styles.itemRow, !network.isActive ? styles.disableItem : undefined]}
       key={network.name}>
       <Svg size={32} icon={network.networkType === 'MAIN' ? 'mainnet' : 'testnet'} />

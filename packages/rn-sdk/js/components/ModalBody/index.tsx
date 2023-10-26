@@ -152,6 +152,6 @@ export const styles = StyleSheet.create({
     fontSize: pTd(16),
   },
   overlayStyle: {
-    height: windowHeight - pTd(isIOS ? 68 : 100),
+    height: windowHeight - pTd(isIOS ? 100 : 100),
   },
 });

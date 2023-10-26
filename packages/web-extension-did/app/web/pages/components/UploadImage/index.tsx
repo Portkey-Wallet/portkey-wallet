@@ -3,17 +3,18 @@ import { RcFile } from 'antd/lib/upload';
 import { ReactNode, useMemo } from 'react';
 
 export interface IUploadImageProps {
+  accept?: string;
   children?: ReactNode;
   getTemporaryDataURL?: (url: string) => void;
   getFile?: (file: RcFile) => void;
 }
 
-export default function UploadImage({ children, getTemporaryDataURL, getFile }: IUploadImageProps) {
+export default function UploadImage({ accept = 'image/*', children, getTemporaryDataURL, getFile }: IUploadImageProps) {
   const uploadProps = useMemo(
     () => ({
       className: 'upload-image',
       showUploadList: false,
-      accept: 'image/*',
+      accept: accept,
       maxCount: 1,
       beforeUpload: async (paramFile: RcFile) => {
         try {
@@ -35,7 +36,7 @@ export default function UploadImage({ children, getTemporaryDataURL, getFile }: 
         return false;
       },
     }),
-    [getFile, getTemporaryDataURL],
+    [accept, getFile, getTemporaryDataURL],
   );
 
   return <Upload {...uploadProps}>{children}</Upload>;

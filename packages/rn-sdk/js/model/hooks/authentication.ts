@@ -1,5 +1,5 @@
 import * as WebBrowser from 'expo-web-browser';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import * as Google from 'expo-auth-session/providers/google';
@@ -13,8 +13,8 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { AppState } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import NetworkContext, { NetworkContextState } from 'pages/Login/context/NetworkContext';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -52,7 +52,11 @@ export type AppleAuthentication = {
 export type GoogleAuthResponse = GoogleAuthentication;
 export function useGoogleAuthentication() {
   const [androidResponse, setResponse] = useState<any>();
-  const [{ googleRequest, response, promptAsync }] = {} as any;
+  const [googleRequest, response, promptAsync] = Google.useAuthRequest({
+    iosClientId: Config.GOOGLE_IOS_CLIENT_ID,
+    androidClientId: Config.GOOGLE_ANDROID_CLIENT_ID,
+    shouldAutoExchangeCode: false,
+  });
   const iosPromptAsync: () => Promise<GoogleAuthResponse> = useCallback(async () => {
     await sleep(2000);
     if (AppState.currentState !== 'active') throw { message: '' };
@@ -128,17 +132,18 @@ export function useGoogleAuthentication() {
 export function useAppleAuthentication() {
   const [response, setResponse] = useState<AppleAuthentication>();
   const [androidResponse, setAndroidResponse] = useState<AppleAuthentication>();
-  const isMainnet = useIsMainnet();
+  const { currentNetwork } = useContext<NetworkContextState>(NetworkContext);
 
   useEffect(() => {
     if (isIOS) return;
     appleAuthAndroid.configure({
       clientId: Config.APPLE_CLIENT_ID,
-      redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
+      redirectUri:
+        currentNetwork?.networkType === 'MAIN' ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
       scope: appleAuthAndroid.Scope.ALL,
       responseType: appleAuthAndroid.ResponseType.ALL,
     });
-  }, [isMainnet]);
+  }, [currentNetwork]);
 
   const iosPromptAsync = useCallback(async () => {
     setResponse(undefined);

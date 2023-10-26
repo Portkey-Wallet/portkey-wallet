@@ -84,3 +84,6 @@ dependencies {
     // We use a local dependency to use dialog and loading components, it is not necessary for you to use it.
     implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
 }
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+

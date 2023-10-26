@@ -108,7 +108,7 @@ export const nativeFetch = async <T>(
 
 export const chooseImageAndroid = async (): Promise<string> => {
   if (Platform.OS !== 'android') {
-    throw new Error('chooseImageAndroid only support android');
+    throw new Error("chooseImageAndroid only supports Android, use Expo's ImagePicker instead on iOS.");
   }
   return await (portkeyModulesEntity.PermissionModule as any).chooseImage();
 };

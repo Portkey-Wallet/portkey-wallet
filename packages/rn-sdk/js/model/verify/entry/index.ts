@@ -21,11 +21,12 @@ import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { useCallback } from 'react';
 import { PageType } from 'pages/Login/types';
-import { ThirdPartyAccountInfo, handleAppleLogin, handleGoogleLogin, isAppleLogin } from '../third-party-account';
+import { AppleAccountInfo, GoogleAccountInfo, ThirdPartyAccountInfo, isAppleLogin } from '../third-party-account';
 import { GuardianApprovalPageProps, GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
 
 export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => {
-  const { type, entryName, accountOriginalType, setErrorMessage, verifyAccountIdentifier } = verifyConfig;
+  const { type, entryName, accountOriginalType, setErrorMessage, verifyAccountIdentifier, appleSign, googleSign } =
+    verifyConfig;
 
   const { navigateForResult, onFinish } = useBaseContainer({
     entryName,
@@ -85,10 +86,12 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
   );
 
   const thirdPartyLogin = async (thirdPartyLoginType: 'google' | 'apple'): Promise<void> => {
+    if (!appleSign || !googleSign) {
+      throw new Error('appleSign or googleSign is not defined.');
+    }
     try {
       Loading.show();
-      const thirdPartyAccountInfo =
-        thirdPartyLoginType === 'google' ? await handleGoogleLogin() : await handleAppleLogin();
+      const thirdPartyAccountInfo = thirdPartyLoginType === 'google' ? await googleSign() : await appleSign();
       if (!thirdPartyAccountInfo?.accountIdentifier) {
         throw new Error('login failed.');
       }
@@ -407,4 +410,6 @@ export interface VerifyConfig {
   accountOriginalType: AccountOriginalType;
   setErrorMessage: (context: any) => void;
   verifyAccountIdentifier?: (account: string, thirdPartyAccountInfo?: ThirdPartyAccountInfo) => string | void;
+  appleSign?: () => Promise<AppleAccountInfo>;
+  googleSign?: () => Promise<GoogleAccountInfo>;
 }

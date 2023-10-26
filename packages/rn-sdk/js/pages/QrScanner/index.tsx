@@ -155,7 +155,7 @@ const QrScanner: React.FC = () => {
               </TouchableOpacity>
             </View>
             <Svg icon="scan-square" size={pTd(240)} iconStyle={PageStyle.scan} />
-            <TextM style={PageStyle.tips}>{t('Receive code / Login code / URL code')}</TextM>
+            <TextM style={PageStyle.tips}>{t('only support Login code by now')}</TextM>
 
             <TouchableOpacity style={[PageStyle.albumWrap, GStyles.alignCenter]} onPress={selectImage}>
               <Svg icon="album" size={pTd(48)} />

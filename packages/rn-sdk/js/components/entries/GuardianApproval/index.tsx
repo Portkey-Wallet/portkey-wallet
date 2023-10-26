@@ -15,6 +15,7 @@ export default class GuardianApprovalEntryPage extends BaseContainer<
     super(props);
     const { deliveredGuardianListInfo } = props;
     if (!deliveredGuardianListInfo) throw new Error('guardianConfig is null!');
+    console.log('GuardianApprovalEntryPage', deliveredGuardianListInfo);
     const verifiedTime = new Date().getTime();
     this.state = {
       verifiedTime,

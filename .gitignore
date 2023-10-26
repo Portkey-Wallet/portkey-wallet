@@ -29,3 +29,4 @@ packages/constants/constants-ca/network.ts
 Pods/
 Pods
 packages/rn-sdk/ios/App/build/
+/**/app-debug.apk

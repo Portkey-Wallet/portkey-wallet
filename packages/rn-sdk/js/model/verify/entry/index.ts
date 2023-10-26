@@ -306,7 +306,7 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
             })
           : await NetworkController.verifyAppleGuardianInfo({
               verifierId: id,
-              identityToken: apple?.identityToken ?? '',
+              accessToken: apple?.identityToken ?? '',
               operationType: OperationTypeEnum.register,
               chainId: await PortkeyConfig.currChainId(),
             });

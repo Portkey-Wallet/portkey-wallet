@@ -5,6 +5,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/Users/lvzhiwei/Desktop/RN-SDK/portkey-wallet/packages/rn-sdk/android/release-key.keystore')
+            storePassword 'portkey2022'
+            keyPassword 'portkey2022'
+            keyAlias 'my-key-alias'
+        }
+    }
     namespace 'io.aelf.portkey.demo'
     compileSdk rootProject.ext.compileSdkVersion
 

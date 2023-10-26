@@ -38,13 +38,8 @@ import { defaultColors } from 'assets/theme';
 import CommonToast from 'components/CommonToast';
 import { PortkeyConfig } from 'global';
 import { ApprovedGuardianInfo } from 'network/dto/wallet';
-import {
-  AppleAccountInfo,
-  GoogleAccountInfo,
-  handleAppleLogin,
-  handleGoogleLogin,
-  isAppleLogin,
-} from 'model/verify/third-party-account';
+import { AppleAccountInfo, GoogleAccountInfo, isAppleLogin } from 'model/verify/third-party-account';
+import { useAppleAuthentication, useGoogleAuthentication } from 'model/hooks/authentication';
 
 export default function GuardianApproval({
   guardianListConfig,
@@ -61,6 +56,25 @@ export default function GuardianApproval({
   const { navigateForResult } = useBaseContainer({
     entryName: PortkeyEntries.GUARDIAN_APPROVAL_ENTRY,
   });
+
+  const { appleSign } = useAppleAuthentication();
+  const { googleSign } = useGoogleAuthentication();
+
+  const appleLoginAdapter = useCallback(async (): Promise<AppleAccountInfo> => {
+    const userInfo = await appleSign();
+    return {
+      accountIdentifier: userInfo?.user?.id,
+      identityToken: userInfo?.identityToken,
+    };
+  }, [appleSign]);
+
+  const googleLoginAdapter = useCallback(async (): Promise<GoogleAccountInfo> => {
+    const userInfo = await googleSign();
+    return {
+      accountIdentifier: userInfo?.user?.id,
+      accessToken: userInfo?.accessToken,
+    };
+  }, [googleSign]);
 
   const [guardiansStatus, setApproved] = useState<GuardiansStatus>();
   const [isExpired, setIsExpired] = useState<boolean>();
@@ -213,7 +227,7 @@ export default function GuardianApproval({
         const verifyResult = isAppleLogin(thirdPartyAccount)
           ? await NetworkController.verifyAppleGuardianInfo({
               verifierId: guardian.sendVerifyCodeParams.verifierId,
-              identityToken: thirdPartyAccount.identityToken,
+              accessToken: thirdPartyAccount.identityToken,
               chainId: await PortkeyConfig.currChainId(),
               operationType: OperationTypeEnum.communityRecovery,
             })
@@ -241,6 +255,7 @@ export default function GuardianApproval({
         }
       }
     } catch (e) {
+      console.error(e);
       CommonToast.fail('network fail.');
       Loading.hide();
     }
@@ -249,11 +264,17 @@ export default function GuardianApproval({
   const handleCachedThirdPartyAccountData = async (
     guardian: GuardianConfig,
   ): Promise<GoogleAccountInfo | AppleAccountInfo> => {
+    console.log('thirdPartyAccountInfo', thirdPartyAccountInfo);
+    console.log('guardian', guardian);
     const { google, apple } = thirdPartyAccountInfo || {};
     if (guardian.sendVerifyCodeParams.type === 'Apple') {
-      return apple && guardian.thirdPartyEmail === apple?.accountIdentifier ? apple : await handleAppleLogin();
+      return apple && guardian.sendVerifyCodeParams.guardianIdentifier === apple?.accountIdentifier
+        ? apple
+        : await appleLoginAdapter();
     } else {
-      return google && guardian.thirdPartyEmail === google?.accountIdentifier ? google : await handleGoogleLogin();
+      return google && guardian.sendVerifyCodeParams.guardianIdentifier === google?.accountIdentifier
+        ? google
+        : await googleLoginAdapter();
     }
   };
 

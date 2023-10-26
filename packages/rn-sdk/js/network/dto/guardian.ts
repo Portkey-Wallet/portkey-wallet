@@ -102,7 +102,7 @@ export interface VerifyGoogleGuardianParams {
 }
 
 export interface VerifyAppleGuardianParams {
-  identityToken: string;
+  accessToken: string;
   verifierId: string;
   chainId: string;
   operationType: OperationTypeEnum;

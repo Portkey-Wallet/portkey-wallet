@@ -12,13 +12,11 @@ export const getUnlockedWallet = async (): Promise<UnlockedWallet> => {
     privateKey,
     publicKey,
     address,
+    caInfo: originalCaInfo,
   } = (await getTempWalletConfig()) || {};
-  const caInfo = await getCaInfoByAccountIdentifierOrSessionId(
-    originalChainId,
-    accountIdentifier,
-    fromRecovery,
-    sessionId,
-  );
+  const caInfo =
+    originalCaInfo ??
+    (await getCaInfoByAccountIdentifierOrSessionId(originalChainId, accountIdentifier, fromRecovery, sessionId));
   const chainInfo = (await NetworkController.getNetworkInfo())?.items?.find(it => it.chainId === originalChainId);
   if (!chainInfo) throw new Error('network failure');
   const currChainNetworkConfig = {

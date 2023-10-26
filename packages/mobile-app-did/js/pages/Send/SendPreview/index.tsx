@@ -47,13 +47,15 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import CommonAvatar from 'components/CommonAvatar';
 import { useCheckTransferLimitWithJump } from 'hooks/security';
+import { managerTransfer } from 'utils/transfer/managerTransfer';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
   const isTestnet = useIsTestnet();
   const defaultToken = useDefaultToken();
 
-  const { sendType, assetInfo, toInfo, transactionFee, sendNumber } = useRouterParams<IToSendPreviewParamsType>();
+  const { sendType, assetInfo, toInfo, transactionFee, sendNumber, shouldSendFeeToProxy } =
+    useRouterParams<IToSendPreviewParamsType>();
 
   useFetchTxFee();
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
@@ -116,6 +118,7 @@ const SendHome: React.FC = () => {
     const contract = contractRef.current;
     const amount = timesDecimals(sendNumber, tokenInfo.decimals).toFixed();
 
+    // --- safe check start ---
     const checkTransferLimitResult = await checkTransferLimitWithJump(
       {
         caContract: contract,
@@ -126,6 +129,9 @@ const SendHome: React.FC = () => {
       chainInfo.chainId,
     );
     if (!checkTransferLimitResult) return;
+    // --- safe check end ---
+
+    // --- real transfer start ---
 
     if (isCrossChainTransfer) {
       if (!tokenContractRef.current) {
@@ -136,6 +142,20 @@ const SendHome: React.FC = () => {
         });
       }
       const tokenContract = tokenContractRef.current;
+
+      // if not default token(elf)  and proxy not enough fee , send some fee to Proxy
+      if (shouldSendFeeToProxy) {
+        await managerTransfer({
+          contract: contract,
+          paramsOption: {
+            caHash: wallet.caHash || '',
+            symbol: defaultToken.symbol,
+            to: wallet.address,
+            amount: crossDefaultFee,
+            memo: '',
+          },
+        });
+      }
 
       const crossChainTransferResult = await crossChainTransfer({
         tokenContract,
@@ -168,6 +188,7 @@ const SendHome: React.FC = () => {
       }
       console.log('sameTransferResult', sameTransferResult);
     }
+    // --- real transfer end ---
 
     await sleep(1500);
 
@@ -188,11 +209,13 @@ const SendHome: React.FC = () => {
     checkTransferLimitWithJump,
     crossDefaultFee,
     currentNetwork.walletType,
+    defaultToken.symbol,
     dispatch,
     isCrossChainTransfer,
     pin,
     sendNumber,
     sendType,
+    shouldSendFeeToProxy,
     toInfo.address,
     wallet.address,
     wallet.caHash,

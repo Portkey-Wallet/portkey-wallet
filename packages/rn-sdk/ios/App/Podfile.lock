@@ -1,4 +1,10 @@
 PODS:
+  - AppAuth (1.6.2):
+    - AppAuth/Core (= 1.6.2)
+    - AppAuth/ExternalUserAgent (= 1.6.2)
+  - AppAuth/Core (1.6.2)
+  - AppAuth/ExternalUserAgent (1.6.2):
+    - AppAuth/Core
   - boost (1.76.0)
   - DoubleConversion (1.1.6)
   - EXApplication (5.4.0):
@@ -23,6 +29,12 @@ PODS:
     - React-Core
   - Expo (49.0.13):
     - ExpoModulesCore
+  - ExpoAdapterGoogleSignIn (8.2.2):
+    - ExpoModulesCore
+    - GoogleSignIn (~> 6.2)
+    - React-Core
+  - ExpoCrypto (12.6.0):
+    - ExpoModulesCore
   - ExpoImagePicker (14.5.0):
     - ExpoModulesCore
   - ExpoKeepAwake (12.3.0):
@@ -35,6 +47,8 @@ PODS:
     - React-NativeModulesApple
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
+  - ExpoWebBrowser (11.0.0):
+    - ExpoModulesCore
   - EXScreenCapture (4.3.0):
     - ExpoModulesCore
   - FBLazyVector (0.72.4)
@@ -52,6 +66,14 @@ PODS:
     - FBSnapshotTestCase/Core
   - fmt (6.2.1)
   - glog (0.3.5)
+  - GoogleSignIn (6.2.4):
+    - AppAuth (~> 1.5)
+    - GTMAppAuth (~> 1.3)
+    - GTMSessionFetcher/Core (< 3.0, >= 1.1)
+  - GTMAppAuth (1.3.1):
+    - AppAuth/Core (~> 1.6)
+    - GTMSessionFetcher/Core (< 3.0, >= 1.5)
+  - GTMSessionFetcher/Core (2.3.0)
   - libwebp (1.3.1):
     - libwebp/demux (= 1.3.1)
     - libwebp/mux (= 1.3.1)
@@ -467,7 +489,12 @@ PODS:
     - React-jsi (= 0.72.4)
     - React-logger (= 0.72.4)
     - React-perflogger (= 0.72.4)
+  - RNAppleAuthentication (2.2.2):
+    - React-Core
   - RNCAsyncStorage (1.17.10):
+    - React-Core
+  - RNGoogleSignin (8.2.2):
+    - GoogleSignIn (~> 6.2)
     - React-Core
   - RNLocalize (2.2.4):
     - React-Core
@@ -501,10 +528,13 @@ DEPENDENCIES:
   - EXFont (from `../../node_modules/expo-font/ios`)
   - EXImageLoader (from `../../node_modules/expo-image-loader/ios`)
   - Expo (from `../../node_modules/expo`)
+  - "ExpoAdapterGoogleSignIn (from `../../node_modules/@react-native-google-signin/google-signin/expo/ios`)"
+  - ExpoCrypto (from `../../node_modules/expo-crypto/ios`)
   - ExpoImagePicker (from `../../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../node_modules/expo-keep-awake/ios`)
   - ExpoLocalAuthentication (from `../../node_modules/expo-local-authentication/ios`)
   - ExpoModulesCore (from `../../node_modules/expo-modules-core`)
+  - ExpoWebBrowser (from `../../node_modules/expo-web-browser/ios`)
   - EXScreenCapture (from `../../node_modules/expo-screen-capture/ios`)
   - FBLazyVector (from `../../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../../node_modules/react-native/React/FBReactNativeSpec`)
@@ -552,7 +582,9 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../../node_modules/react-native/ReactCommon`)
+  - "RNAppleAuthentication (from `../../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNCAsyncStorage (from `../../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNGoogleSignin (from `../../node_modules/@react-native-google-signin/google-signin`)"
   - RNLocalize (from `../../node_modules/react-native-localize`)
   - RNSpringScrollView (from `../../node_modules/react-native-spring-scrollview`)
   - RNSVG (from `../../node_modules/react-native-svg`)
@@ -562,8 +594,12 @@ DEPENDENCIES:
 
 SPEC REPOS:
   https://gitee.com/mirrors/CocoaPods-Specs.git:
+    - AppAuth
     - FBSnapshotTestCase
     - fmt
+    - GoogleSignIn
+    - GTMAppAuth
+    - GTMSessionFetcher
     - libwebp
     - lottie-ios
     - MMKV
@@ -595,6 +631,10 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/expo-image-loader/ios"
   Expo:
     :path: "../../node_modules/expo"
+  ExpoAdapterGoogleSignIn:
+    :path: "../../node_modules/@react-native-google-signin/google-signin/expo/ios"
+  ExpoCrypto:
+    :path: "../../node_modules/expo-crypto/ios"
   ExpoImagePicker:
     :path: "../../node_modules/expo-image-picker/ios"
   ExpoKeepAwake:
@@ -603,6 +643,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/expo-local-authentication/ios"
   ExpoModulesCore:
     :path: "../../node_modules/expo-modules-core"
+  ExpoWebBrowser:
+    :path: "../../node_modules/expo-web-browser/ios"
   EXScreenCapture:
     :path: "../../node_modules/expo-screen-capture/ios"
   FBLazyVector:
@@ -693,8 +735,12 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../../node_modules/react-native/ReactCommon"
+  RNAppleAuthentication:
+    :path: "../../node_modules/@invertase/react-native-apple-authentication"
   RNCAsyncStorage:
     :path: "../../node_modules/@react-native-async-storage/async-storage"
+  RNGoogleSignin:
+    :path: "../../node_modules/@react-native-google-signin/google-signin"
   RNLocalize:
     :path: "../../node_modules/react-native-localize"
   RNSpringScrollView:
@@ -712,6 +758,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/SAGESSE-CN/YYKit.git
 
 SPEC CHECKSUMS:
+  AppAuth: 3bb1d1cd9340bd09f5ed189fb00b1cc28e1e8570
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: 2a0d9abd4feace9c6faedfe541c1dec02e3702cd
@@ -723,16 +770,22 @@ SPEC CHECKSUMS:
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
   EXImageLoader: 03063370bc06ea1825713d3f55fe0455f7c88d04
   Expo: e7d2116b947e2e6fdeb09ee4f2754f819426d1b6
+  ExpoAdapterGoogleSignIn: b7792934ab1b5d559a3eee31334d752a73f0366e
+  ExpoCrypto: 42485127a5968dda6f67ac5f2b42d3c0af31d7db
   ExpoImagePicker: 9e5c745cb3e56ee00e1cfe5d6af59caab66ecf1a
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
   ExpoLocalAuthentication: 2fed4b25cf8e54d36d5d1ebc9917e8325b3b5911
   ExpoModulesCore: 81037d28453615c4206a6a2ca7556a0f364a0a0a
+  ExpoWebBrowser: 5804ac42a8269d0e534bc4461993005f72535649
   EXScreenCapture: 23de056fdb02edd1fb8f147b0fd198c6d5cada3d
   FBLazyVector: 5d4a3b7f411219a45a6d952f77d2c0a6c9989da5
   FBReactNativeSpec: 94b00b7bba49d6e7e5ba2bfb4401e282136089fa
   FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  GoogleSignIn: 5651ce3a61e56ca864160e79b484cd9ed3f49b7a
+  GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
+  GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
   libwebp: 33dc822fbbf4503668d09f7885bbfedc76c45e96
   lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
   lottie-react-native: 3e722c63015fdb9c27638b0a77969fc412067c18
@@ -778,7 +831,9 @@ SPEC CHECKSUMS:
   React-runtimescheduler: 8c32bf4a1934c10d3899f7737afc6f662403a077
   React-utils: be9f7f44d58cba6960a5ffe1eccc5c34fb92023e
   ReactCommon: 1c4f8627709eb8be1e2eec92848d0333d12bf76a
+  RNAppleAuthentication: 0571c08da8c327ae2afc0261b48b4a515b0286a6
   RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
+  RNGoogleSignin: 81521697b2c8f97f9a586ac7257b1a1d9b51b115
   RNLocalize: 0df7970cfc60389f00eb62fd7c097dc75af3fb4f
   RNSpringScrollView: e354167d96f2c3d2f20b186990b2c3946987cb3c
   RNSVG: 1869ad9534459f24caaa0416a4764548c2aeedad

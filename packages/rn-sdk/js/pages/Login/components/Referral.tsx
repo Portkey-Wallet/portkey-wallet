@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import styles from '../styles';
@@ -20,6 +20,7 @@ import Divider from 'components/Divider';
 import { defaultColors } from 'assets/theme';
 import { PageLoginType, PageType } from '../types';
 import { useVerifyEntry } from 'model/verify/entry';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const TitleMap = {
   apple: 'Login with Apple',
@@ -106,10 +107,18 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
     thirdPartyLogin('apple');
   }, [thirdPartyLogin]);
 
+  const qrcodeImage = useMemo(() => {
+    if (isIOS) {
+      return { uri: 'QR-code' };
+    } else {
+      return require('assets/image/pngs/QR-code.png');
+    }
+  }, []);
+
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
       <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.qrCode)}>
-        <Image source={require('assets/image/pngs/QR-code.png')} style={styles.iconStyle} />
+        <Image source={qrcodeImage} style={styles.iconStyle} />
       </Touchable>
       <View style={GStyles.width100}>
         <CommonButton

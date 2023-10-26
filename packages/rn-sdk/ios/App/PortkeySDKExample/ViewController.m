@@ -116,9 +116,7 @@
     self.scanQrcodeButton.frame = self.termsButton.frame;
     self.scanQrcodeButton.top = self.termsButton.bottom + 20;
     [self.scanQrcodeButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:@"scan_qr_code_entry"];
-        [self.navigationController presentViewController:vc animated:YES completion:nil];
+        [[PortkeySDKRouterModule sharedInstance] navigateTo:@"scan_qr_code_entry" from:@"" targetScene:@""];
     }];
     [self.view addSubview:self.scanQrcodeButton];
 }

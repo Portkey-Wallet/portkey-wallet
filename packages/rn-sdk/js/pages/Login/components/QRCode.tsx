@@ -11,7 +11,6 @@ import { TextS, TextXXXL } from 'components/CommonText';
 import { PageLoginType } from '../types';
 import { useIntervalQueryCAInfoByAddress } from 'hooks/useIntervalQueryCAInfoByAddress';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
-import phone from 'assets/image/pngs/phone.png';
 import { useGetDeviceInfo } from 'hooks/device';
 import { DEVICE_INFO_VERSION } from '@portkey-wallet/constants/constants-ca/device';
 import CommonQRCodeStyled from 'components/CommonQRCodeStyled';
@@ -22,6 +21,7 @@ import { SetPinPageResult, SetPinPageProps } from 'pages/Pin/SetPin';
 import { PortkeyEntries } from 'config/entries';
 import { AfterVerifiedConfig } from 'model/verify/after-verify';
 import { WalletInfo } from 'network/dto/wallet';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 // When wallet does not exist, DEFAULT_WALLET is populated as the default data
 const DEFAULT_WALLET: LoginQRData = {
@@ -45,17 +45,12 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
     return networkContext.currentNetwork?.networkType ?? 'MAIN';
   }, [networkContext.currentNetwork?.networkType]);
   const { navigateForResult, onFinish } = useBaseContainer({});
-  // const pin = usePin();
-  // const checkManager = useCheckManager();
   const caWalletInfo = useIntervalQueryCAInfoByAddress(currentNetwork, newWallet?.address);
-  // const isFocused = useIsFocused();
   usePreventScreenCapture('LoginQRCode');
 
   useEffect(() => {
-    // if (!isFocused) return;
     const { caInfo, originChainId } = caWalletInfo || {};
     if (caInfo && newWallet && originChainId) {
-      console.log('log in succ: caInfo', caInfo);
       const { caAddress, caHash } = caInfo[caInfo.originChainId ?? 'AELF'];
       dealWithSetPin({
         scanQRCodePathInfo: {
@@ -143,10 +138,18 @@ export default function QRCode({ setLoginType }: { setLoginType: (type: PageLogi
   );
   const qrDataStr = useMemo(() => JSON.stringify(qrData), [qrData]);
 
+  const phoneImage = useMemo(() => {
+    if (isIOS) {
+      return { uri: 'phone' };
+    } else {
+      return require('assets/image/pngs/phone.png');
+    }
+  }, []);
+
   return (
     <View style={[BGStyles.bg1, styles.card, styles.qrCodeCard]}>
       <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.referral)}>
-        <Image source={phone} style={styles.iconStyle} />
+        <Image source={phoneImage} style={styles.iconStyle} />
       </Touchable>
       <View style={[GStyles.flex1]}>
         <TextXXXL style={[styles.qrCodeTitle, GStyles.textAlignCenter]}>Scan code to log in</TextXXXL>

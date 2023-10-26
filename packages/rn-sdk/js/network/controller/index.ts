@@ -18,6 +18,7 @@ import {
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CountryCodeDataDTO } from 'types/wallet';
 import {
+  AElfChainStatusDTO,
   CheckRegisterOrRecoveryProcessParams,
   RecoveryProgressDTO,
   RegisterProgressDTO,
@@ -99,6 +100,21 @@ export class NetworkControllerEntity {
     );
     if (!res?.result) throw new Error('network failure');
     return res.result;
+  };
+
+  getNetworkInfo = async (): Promise<AElfChainStatusDTO> => {
+    const res = await this.realExecute<AElfChainStatusDTO>(await this.parseUrl(APIPaths.CHECK_CHAIN_STATUS), 'GET');
+    if (!res?.result) throw new Error('network failure');
+    return res.result;
+  };
+
+  checkQrCodeStatus = async (id: string): Promise<boolean> => {
+    const res = await this.realExecute<boolean>(await this.parseUrl(APIPaths.CHECK_QR_CODE_STATUS), 'POST', {
+      params: {
+        id,
+      },
+    });
+    return res?.result ?? false;
   };
 
   sendVerifyCode = async (

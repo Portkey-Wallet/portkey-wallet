@@ -180,6 +180,27 @@ export const requestSocialRecoveryOrRegister = async (params: NormalVerifyPathIn
   };
 };
 
+export const getCaInfoByAccountIdentifierOrSessionId = async (
+  originalChainId: string,
+  accountIdentifier?: string,
+  fromRecovery = false,
+  sessionId?: string,
+): Promise<{ caHash: string; caAddress: string }> => {
+  if (accountIdentifier) {
+    const result = await NetworkController.getGuardianInfo(originalChainId, accountIdentifier);
+    return result;
+  } else if (sessionId) {
+    const result = fromRecovery
+      ? await NetworkController.checkRegisterProcess(sessionId)
+      : await NetworkController.checkSocialRecoveryProcess(sessionId);
+    const item = result?.items?.find(it => it.chainId === originalChainId);
+    if (!item) throw new Error('network failure');
+    return item;
+  } else {
+    throw new Error('params error');
+  }
+};
+
 enum GuardianType {
   Email,
   Phone,

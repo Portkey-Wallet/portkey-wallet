@@ -79,6 +79,7 @@ export const getVerifiedAndLockWallet = async (
   try {
     const afterVerifiedConfig: AfterVerifiedConfig = JSON.parse(deliveredAfterVerifiedConfig);
     const { normalVerifyPathInfo, scanQRCodePathInfo } = afterVerifiedConfig || {};
+    console.log('normalVerifyPathInfo', normalVerifyPathInfo);
     let walletConfig: RecoverWalletConfig | null = null;
     if (normalVerifyPathInfo) {
       walletConfig = await handleNormalVerify(normalVerifyPathInfo);
@@ -194,6 +195,12 @@ export const getUseBiometric = async (): Promise<boolean> => {
 export const isWalletUnlocked = async (): Promise<boolean> => {
   const tempWalletConfig = await TempStorage.getString(WALLET_CONFIG_KEY);
   return !!tempWalletConfig;
+};
+
+export const getTempWalletConfig = async (): Promise<RecoverWalletConfig> => {
+  const tempWalletConfig = await TempStorage.getString(WALLET_CONFIG_KEY);
+  if (!tempWalletConfig) throw new Error('wallet not unlocked');
+  return JSON.parse(tempWalletConfig);
 };
 
 export const isWalletExists = async (): Promise<boolean> => {

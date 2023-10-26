@@ -73,7 +73,6 @@ const QrScanner: React.FC = () => {
     if (!isAddress(address, chainType)) return invalidQRCode(InvalidQRCodeText.INVALID_QR_CODE);
     if (isLoginQRData(data)) {
       navigateForResult<VoidResult, ScanToLoginProps>(PortkeyEntries.SCAN_LOG_IN, {
-        closeCurrentScreen: true,
         params: {
           data: JSON.stringify(data),
         },

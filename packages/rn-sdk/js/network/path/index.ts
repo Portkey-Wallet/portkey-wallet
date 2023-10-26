@@ -14,4 +14,6 @@ export enum APIPaths {
   GET_RECOMMEND_GUARDIAN = '/api/app/account/getVerifierServer',
   CHECK_SOCIAL_RECOVERY_STATUS = '/api/app/search/accountrecoverindex',
   CHECK_REGISTER_STATUS = '/api/app/search/accountregisterindex',
+  CHECK_CHAIN_STATUS = '/api/app/search/chainsinfoindex',
+  CHECK_QR_CODE_STATUS = '/api/app/qrcode',
 }

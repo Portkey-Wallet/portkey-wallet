@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   contentWrap: {
     paddingHorizontal: pTd(20),
     paddingTop: pTd(8),
+    flex: 1,
   },
   favIcon: {
     width: pTd(48),
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     padding: pTd(12),
     backgroundColor: defaultColors.bg6,
     borderRadius: pTd(6),
-    height: pTd(414),
+    flex: 1,
   },
   contentText: {
     color: defaultColors.font3,

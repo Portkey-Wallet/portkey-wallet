@@ -38,6 +38,7 @@ export default function Screen(_props: any) {
         <Text>walletInfo:{wallet?.address}</Text>
       </View>
       <Button
+        style={{ marginTop: 200 }}
         title="createNewWallet"
         onPress={() => {
           const tmpWalletInfo = AElf.wallet.createNewWallet();

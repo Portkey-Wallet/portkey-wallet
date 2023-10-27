@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactDelegate
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
@@ -30,54 +29,35 @@ private fun generateCancelCallbackData(): WritableMap {
 }
 
 abstract class BasePortkeyReactActivity : ReactActivity() {
-    override fun getMainComponentName(): String = this.registerEntryName()
 
-    private var entryName: String = PortkeyEntries.TEST.entryName
     private var callbackId: String = NO_CALLBACK_METHOD
-    private var params: Bundle = Bundle()
     private var callbackAccessed: Boolean = false
-    private var containerId: String = ""
 
     private var permissionCallback: (Boolean) -> Unit = {}
     private var imageChooseCallback: (String?) -> Unit = {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (intent != null) {
-            this.entryName =
-                intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
-                    ?: PortkeyEntries.TEST.entryName
-            this.params = intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS) ?: Bundle()
-            this.callbackId =
-                intent.getStringExtra(StorageIdentifiers.PAGE_CALLBACK_ID) ?: NO_CALLBACK_METHOD
-            this.containerId =
-                intent.getStringExtra(StorageIdentifiers.PAGE_CONTAINER_ID) ?: ""
-        }
+        this.callbackId =
+            intent.getStringExtra(StorageIdentifiers.PAGE_CALLBACK_ID) ?: NO_CALLBACK_METHOD
         NavigationHolder.pushNewComponent(this)
     }
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {
+        val containerId = generateUniqueCallbackID()
         val componentName =
-            NavigationHolder.lastCachedIntent?.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
-                ?: PortkeyEntries.TEST.entryName
+            intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
+                ?: PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName
         val params =
-            NavigationHolder.lastCachedIntent?.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
-                ?: Bundle()
+            (intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
+                ?: Bundle()).apply {
+                putString(StorageIdentifiers.PAGE_CONTAINER_ID, containerId)
+            }
         return object : ReactActivityDelegate(
             this,
-            // in some cases, this will get null, so do not remove those code
             componentName
         ) {
             override fun getLaunchOptions(): Bundle = params
-
-            private fun getRootTag(): Int {
-                val reflectReactDelegateClass = ReactActivityDelegate::class.java
-                val mReactDelegateField =
-                    reflectReactDelegateClass.getDeclaredField("mReactDelegate")
-                mReactDelegateField.isAccessible = true
-                val reactDelegate = mReactDelegateField.get(this) as ReactDelegate
-                return reactDelegate.reactRootView?.rootViewTag ?: -1
-            }
 
             override fun onResume() {
                 super.onResume()
@@ -94,13 +74,14 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         }
     }
 
+    override fun getIntent(): Intent {
+        val superIntent = super.getIntent()
+        return superIntent ?: NavigationHolder.lastCachedIntent ?: Intent()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         navigateBackWithResult(thenFinish = false)
-    }
-
-    private fun registerEntryName(): String {
-        return this.entryName
     }
 
     private fun getCallbackId(): String = callbackId
@@ -195,7 +176,6 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
                     StorageIdentifiers.TARGET_SCENE, targetScene ?: ""
                 ),
                 Pair(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId),
-                Pair(StorageIdentifiers.PAGE_CONTAINER_ID, generateUniqueCallbackID())
             )
         )
     )

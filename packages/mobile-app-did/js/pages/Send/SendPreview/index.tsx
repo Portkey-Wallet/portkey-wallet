@@ -387,10 +387,8 @@ const SendHome: React.FC = () => {
             )}
           </View>
 
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
-            <Text style={[styles.divider, styles.marginTop0]} />
-          )}
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
+          {isCrossChainTransfer && <Text style={[styles.divider, styles.marginTop0]} />}
+          {isCrossChainTransfer && (
             <View style={styles.section}>
               <View style={[styles.flexSpaceBetween]}>
                 <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle]}>

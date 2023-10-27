@@ -22,7 +22,7 @@ import { NetworkType } from '@portkey-wallet/types';
 import { EndPoints, PortkeyConfig } from 'global';
 import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { EntryResult, chooseImageAndroid, portkeyModulesEntity } from 'service/native-modules';
+import { EntryResult, PermissionType, chooseImageAndroid, portkeyModulesEntity } from 'service/native-modules';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { ScanToLoginProps } from 'pages/Login/ScanLogin';
 import { isWalletUnlocked } from 'model/verify/after-verify';
@@ -37,34 +37,14 @@ const QrScanner: React.FC = () => {
   const navigateBack = (res: EntryResult<ScanQRCodeResult> = { status: 'success', data: {} }) => {
     onFinish(res);
   };
-  const checkForPermissions = async () => {
-    try {
-      const cameraOpen = await portkeyModulesEntity.PermissionModule.isPermissionGranted('camera');
-      if (!cameraOpen) {
-        await portkeyModulesEntity.PermissionModule.requestPermission('camera');
-        if (!(await portkeyModulesEntity.PermissionModule.isPermissionGranted('camera'))) {
-          throw new Error('camera permission denied');
-        }
-      }
-      const photoOpen = await portkeyModulesEntity.PermissionModule.isPermissionGranted('photo');
-      if (!photoOpen) {
-        await portkeyModulesEntity.PermissionModule.requestPermission('photo');
-        if (!(await portkeyModulesEntity.PermissionModule.isPermissionGranted('photo'))) {
-          throw new Error('photo permission denied');
-        }
-      }
-    } catch (e) {
-      console.error(e);
-      withoutPermissionWarning();
-    }
-  };
+
   useEffectOnce(() => {
     setRefresh(false);
-    checkForPermissions();
+    ensurePermission('camera', withoutPermissionWarning);
   });
 
   const withoutPermissionWarning = () => {
-    CommonToast.fail('Please allow both camera and photo permissions to use, page will close in 3 seconds');
+    CommonToast.fail('Please allow permissions to use, page will close in 3 seconds');
     setTimeout(() => {
       navigateBack();
     }, 3000);
@@ -120,6 +100,8 @@ const QrScanner: React.FC = () => {
   };
 
   const selectImage = async () => {
+    const permission = await ensurePermission('photo', withoutPermissionWarning);
+    if (!permission) return;
     let uri;
     if (Platform.OS === 'android') {
       uri = await chooseImageAndroid();
@@ -263,4 +245,23 @@ export interface ScanQRCodeResult {}
 
 const determineCurrentNetwork = async (): Promise<NetworkType> => {
   return (await PortkeyConfig.endPointUrl()) === EndPoints.MAIN_NET ? 'MAIN' : 'TESTNET';
+};
+
+const ensurePermission = async (permission: PermissionType, ifThrowError: () => void): Promise<boolean> => {
+  try {
+    const isOpen = await portkeyModulesEntity.PermissionModule.isPermissionGranted(permission);
+    if (isOpen) {
+      return true;
+    } else {
+      await portkeyModulesEntity.PermissionModule.requestPermission(permission);
+      if (!(await portkeyModulesEntity.PermissionModule.isPermissionGranted(permission))) {
+        throw new Error('camera permission denied');
+      }
+      return true;
+    }
+  } catch (e) {
+    console.error(e);
+    ifThrowError();
+  }
+  return false;
 };

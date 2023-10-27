@@ -13,6 +13,7 @@ import ModalTip from 'pages/components/ModalTip';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { ChainId } from '@portkey-wallet/types';
+import { isNFT } from 'utils';
 
 export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { setLoading } = useLoading();
@@ -42,23 +43,31 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
     (state: ITransferLimitRouteState) => {
       const chainId = state.targetChainId || state.chainId;
       const sendStateArr = accountAssetsList?.filter((item) => {
-        return item.chainId === chainId && item.symbol === state.symbol;
+        return item.chainId === chainId && item.symbol === state.fromSymbol;
       });
+      const _targetState = sendStateArr[0];
+      const isNFTSymbol = isNFT(state.fromSymbol || 'ELF');
+      const _address = isNFTSymbol
+        ? _targetState?.nftInfo?.tokenContractAddress
+        : _targetState?.tokenInfo?.tokenContractAddress;
+      const _decimals = isNFTSymbol ? _targetState?.nftInfo?.decimals : _targetState?.tokenInfo?.decimals;
       const sendState = {
         chainId: chainId,
-        decimals: state.decimals,
-        address: sendStateArr[0]?.tokenInfo?.tokenContractAddress,
-        symbol: state.symbol,
-        name: state.symbol,
+        decimals: _decimals,
+        address: _address,
+        symbol: state.fromSymbol,
+        name: state.fromSymbol,
+        imageUrl: _targetState?.nftInfo?.imageUrl,
+        alias: _targetState?.nftInfo?.alias,
+        tokenId: _targetState?.nftInfo?.tokenId,
       };
-
       switch (state.from) {
         case ICheckLimitBusiness.RAMP_SELL:
           navigate('/buy');
           break;
 
         case ICheckLimitBusiness.SEND:
-          navigate(`/send/token/${state.symbol}`, { state: sendState });
+          navigate(`/send/${isNFTSymbol ? 'nft' : 'token'}/${state.fromSymbol}`, { state: sendState });
           break;
 
         default:

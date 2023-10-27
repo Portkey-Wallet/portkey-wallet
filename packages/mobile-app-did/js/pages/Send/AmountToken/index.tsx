@@ -76,10 +76,13 @@ export default function AmountToken({
       <View style={styles.middle}>
         <View style={styles.middleLeft}>
           <CommonAvatar
+            hasBorder
             shapeType="circular"
+            title={selectedToken.symbol}
             svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
             imageUrl={symbolImages[selectedToken.symbol] || ''}
             avatarSize={28}
+            style={styles.avatarStyle}
           />
           <Text style={styles.symbolName}>
             {selectedToken?.symbol?.length > 5 ? formatTokenNameToSuffix(selectedToken?.symbol) : selectedToken?.symbol}
@@ -158,14 +161,8 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  imgStyle: {
-    width: pTd(28),
-    height: pTd(28),
-    lineHeight: pTd(28),
-    borderColor: defaultColors.border1,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: pTd(14),
-    textAlign: 'center',
+  avatarStyle: {
+    fontSize: pTd(16),
   },
   symbolName: {
     flex: 1,

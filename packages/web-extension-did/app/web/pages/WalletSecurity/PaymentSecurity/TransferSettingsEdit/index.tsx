@@ -119,6 +119,7 @@ export default function TransferSettingsEdit() {
       dailyLimit: timesDecimals(dailyLimit, state.decimals).toFixed(),
       singleLimit: timesDecimals(singleLimit, state.decimals).toFixed(),
       symbol: state.symbol,
+      fromSymbol: state.fromSymbol,
       decimals: state.decimals,
       restricted: restrictedTextRef.current,
       from: state.from,

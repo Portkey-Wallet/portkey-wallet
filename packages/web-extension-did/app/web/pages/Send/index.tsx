@@ -37,6 +37,7 @@ import './index.less';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { ExceedLimit, WalletIsNotSecure } from 'constants/security';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { getBalance } from 'utils/sandboxUtil/getBalance';
 
 export type Account = { address: string; name?: string };
 
@@ -211,7 +212,7 @@ export default function Send() {
       const securityRes = await checkSecurity(tokenInfo.chainId);
       if (!securityRes) return WalletIsNotSecure;
 
-      // transfer limit check
+      // transfer limit check target asset
       const res = await checkLimit({
         chainId: tokenInfo.chainId,
         symbol: tokenInfo.symbol,
@@ -219,7 +220,35 @@ export default function Send() {
         decimals: tokenInfo.decimals,
         from: ICheckLimitBusiness.SEND,
       });
-      if (typeof res !== 'boolean') return ExceedLimit;
+      // cross transfer，check ELF limit
+      let isELFExceedLimit = false;
+      if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') && symbol !== defaultToken.symbol) {
+        if (!currentChain) throw 'No ChainInfo';
+        const managerBalance = await getBalance({
+          rpcUrl: currentChain.endPoint,
+          address: defaultToken.address,
+          chainType: 'aelf',
+          paramsOption: {
+            symbol: defaultToken.symbol,
+            owner: wallet.address,
+          },
+        });
+        const balance = managerBalance.result.balance;
+        const crossChainAmount = timesDecimals(crossChainFee, defaultToken.decimals);
+        if (crossChainAmount.gt(balance)) {
+          const resELFLimit = await checkLimit({
+            chainId: tokenInfo.chainId,
+            symbol: defaultToken.symbol,
+            fromSymbol: tokenInfo.symbol,
+            amount: `${crossChainFee}`,
+            decimals: defaultToken.decimals,
+            from: ICheckLimitBusiness.SEND,
+          });
+          isELFExceedLimit = typeof resELFLimit !== 'boolean';
+        }
+      }
+      const isExceedLimit = typeof res !== 'boolean' || isELFExceedLimit;
+      if (isExceedLimit) return ExceedLimit;
 
       if (type === 'token') {
         // insufficient balance check
@@ -257,19 +286,23 @@ export default function Send() {
     amount,
     checkManagerSyncState,
     state.chainId,
-    type,
-    getTranslationInfo,
     checkSecurity,
     tokenInfo.chainId,
     tokenInfo.symbol,
     tokenInfo.decimals,
     checkLimit,
-    balance,
     toAccount.address,
     chainInfo?.chainId,
     symbol,
     defaultToken.symbol,
+    defaultToken.address,
+    defaultToken.decimals,
+    type,
+    getTranslationInfo,
+    currentChain,
+    wallet.address,
     crossChainFee,
+    balance,
   ]);
 
   const sendHandler = useCallback(async () => {

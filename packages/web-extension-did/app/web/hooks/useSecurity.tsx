@@ -119,6 +119,7 @@ export interface ICheckLimitParams {
   decimals: number | string;
   amount: string;
   from: ICheckLimitBusiness;
+  fromSymbol?: string;
 }
 
 export const useCheckLimit = (targetChainId: ChainId) => {
@@ -130,7 +131,7 @@ export const useCheckLimit = (targetChainId: ChainId) => {
   const singleTransferLimitModal = useSingleTransferLimitModal();
 
   return useCallback(
-    async ({ chainId, symbol, decimals, amount, from }: ICheckLimitParams): Promise<boolean | object> => {
+    async ({ chainId, symbol, decimals, amount, from, fromSymbol }: ICheckLimitParams): Promise<boolean | object> => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('Invalid user information, please check');
 
@@ -150,6 +151,7 @@ export const useCheckLimit = (targetChainId: ChainId) => {
       const settingParams: ITransferLimitRouteState = {
         chainId: chainId,
         symbol,
+        fromSymbol: fromSymbol || symbol,
         singleLimit: limitRes?.singleBalance.toFixed() || '',
         dailyLimit: limitRes?.dailyLimit.toFixed() || '',
         restricted: !limitRes?.dailyLimit.eq(-1),

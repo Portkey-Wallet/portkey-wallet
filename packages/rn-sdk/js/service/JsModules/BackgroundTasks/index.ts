@@ -1,5 +1,5 @@
 import { sleep } from '@portkey-wallet/utils';
-import { portkeyModulesEntity } from 'service/native-modules';
+import { PortkeyModulesEntity } from 'service/native-modules';
 
 export const handleBackgroundTask = async ({
   taskName,
@@ -19,8 +19,8 @@ export const handleBackgroundTask = async ({
 
 export const handleCallCaContractMethod = async (config: CallCaContractMethodConfig): Promise<void> => {
   const { methodName, extraData, eventId } = config || {};
-  portkeyModulesEntity.NativeWrapperModule.onWarning('callContractMethod', 'callContractMethod called.');
-  portkeyModulesEntity.NativeWrapperModule.emitJSMethodResult(
+  PortkeyModulesEntity.NativeWrapperModule.onWarning('callContractMethod', 'callContractMethod called.');
+  PortkeyModulesEntity.NativeWrapperModule.emitJSMethodResult(
     eventId,
     JSON.stringify({
       params: {

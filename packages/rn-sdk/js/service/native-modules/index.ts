@@ -2,7 +2,7 @@ import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 import { PortkeyEntries } from '../../config/entries';
 import { AcceptableValueType } from '../../model/container/BaseContainer';
 
-export const portkeyModulesEntity = NativeModules as PortkeyNativeModules;
+export const PortkeyModulesEntity = NativeModules as PortkeyNativeModules;
 
 export interface PortkeyNativeModules {
   RouterModule: RouterModule;
@@ -86,7 +86,7 @@ export const nativeFetch = async <T>(
   extraOptions?: NetworkOptions,
 ): Promise<ResultWrapper<T>> => {
   // it is not recommended to use this fetch() method directly, so NetworkModule isn't declared in portkeyModulesEntity
-  const networkModule = (portkeyModulesEntity as any).NetworkModule as NetworkModule;
+  const networkModule = (PortkeyModulesEntity as any).NetworkModule as NetworkModule;
   const res = await networkModule.fetch(
     url,
     method,
@@ -110,10 +110,10 @@ export const chooseImageAndroid = async (): Promise<string> => {
   if (Platform.OS !== 'android') {
     throw new Error("chooseImageAndroid only supports Android, use Expo's ImagePicker instead on iOS.");
   }
-  return await (portkeyModulesEntity.PermissionModule as any).chooseImage();
+  return await (PortkeyModulesEntity.PermissionModule as any).chooseImage();
 };
 
-export const PortkeyDeviceEventEmitter = new NativeEventEmitter(portkeyModulesEntity.NativeWrapperModule as any);
+export const PortkeyDeviceEventEmitter = new NativeEventEmitter(PortkeyModulesEntity.NativeWrapperModule as any);
 
 export interface ResultWrapper<T> {
   status: NetworkResult;

@@ -12,9 +12,8 @@ import PhoneInput from 'components/PhoneInput';
 import { getCachedCountryCodeData } from 'model/global';
 import { CountryCodeItem, defaultCountryCode } from 'types/wallet';
 import { PortkeyEntries } from 'config/entries';
-import { AccountOriginalType, isWalletUnlocked } from 'model/verify/after-verify';
+import { AccountOriginalType } from 'model/verify/after-verify';
 import useBaseContainer from 'model/container/UseBaseContainer';
-import CommonToast from 'components/CommonToast';
 import TermsServiceButton from './TermsServiceButton';
 import { useVerifyEntry } from 'model/verify/entry';
 
@@ -44,19 +43,8 @@ export default function Phone({
   const [errorMessage, setErrorMessage] = useState<string>();
   const [country, setCountry] = useState<CountryCodeItem>();
 
-  const { navigateForResult, onFinish } = useBaseContainer({
+  const { navigateForResult } = useBaseContainer({
     entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
-    onShow: async () => {
-      if (await isWalletUnlocked()) {
-        CommonToast.success('You have logged in');
-        onFinish({
-          status: 'success',
-          data: {
-            finished: true,
-          },
-        });
-      }
-    },
   });
 
   useEffectOnce(() => {

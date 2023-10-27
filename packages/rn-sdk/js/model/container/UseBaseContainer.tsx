@@ -1,25 +1,29 @@
 import { PortkeyEntries } from 'config/entries';
 import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { EmitterSubscription } from 'react-native';
-import { EntryResult, PortkeyDeviceEventEmitter, RouterOptions, portkeyModulesEntity } from 'service/native-modules';
+import { EntryResult, PortkeyDeviceEventEmitter, RouterOptions, PortkeyModulesEntity } from 'service/native-modules';
 import { AcceptableValueType } from './BaseContainer';
 import BaseContainerContext from './BaseContainerContext';
 
 const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks => {
   const onShowListener = useRef<EmitterSubscription | null>(null);
   const baseContainerContext = useContext(BaseContainerContext);
-  const { rootTag, entryName, onShow } = props;
+  const { containerId, entryName, onShow } = props;
 
   useEffect(() => {
-    if (rootTag) {
+    if (containerId) {
       onShowListener.current?.remove();
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      onShowListener.current = PortkeyDeviceEventEmitter.addListener('onShow', onShow || (() => {}));
+      onShowListener.current = PortkeyDeviceEventEmitter.addListener('onShow', params => {
+        const { containerId: nativeContainerId } = params || {};
+        if (containerId === nativeContainerId) {
+          onShow?.();
+        }
+      });
     }
     return () => {
       onShowListener.current?.remove();
     };
-  }, [onShow, rootTag]);
+  }, [onShow, containerId]);
 
   const getEntryName = useCallback(
     () => entryName ?? baseContainerContext.entryName,
@@ -28,7 +32,7 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
 
   const navigationTo = useCallback(
     (entry: PortkeyEntries, targetScene?: string, closeCurrentScreen?: boolean) => {
-      portkeyModulesEntity.RouterModule.navigateTo(
+      PortkeyModulesEntity.RouterModule.navigateTo(
         entry,
         getEntryName(),
         targetScene ?? 'none',
@@ -46,7 +50,7 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
       callback: (res: EntryResult<V>) => void = () => {},
     ) => {
       const { params, closeCurrentScreen, navigationAnimation, navigationAnimationDuration, targetScene } = options;
-      portkeyModulesEntity.RouterModule.navigateToWithOptions(
+      PortkeyModulesEntity.RouterModule.navigateToWithOptions(
         entry,
         getEntryName(),
         {
@@ -63,26 +67,26 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
   );
 
   const onFinish = useCallback(<R,>(res: EntryResult<R>) => {
-    portkeyModulesEntity.RouterModule.navigateBack(res);
+    PortkeyModulesEntity.RouterModule.navigateBack(res);
   }, []);
 
   const onError = useCallback(
     (err: Error) => {
-      portkeyModulesEntity.NativeWrapperModule.onError(getEntryName(), err.message, { stack: err.stack });
+      PortkeyModulesEntity.NativeWrapperModule.onError(getEntryName(), err.message, { stack: err.stack });
     },
     [getEntryName],
   );
 
   const onFatal = useCallback(
     (err: Error) => {
-      portkeyModulesEntity.NativeWrapperModule.onFatalError(getEntryName(), err.message, { stack: err.stack });
+      PortkeyModulesEntity.NativeWrapperModule.onFatalError(getEntryName(), err.message, { stack: err.stack });
     },
     [getEntryName],
   );
 
   const onWarn = useCallback(
     (msg: string) => {
-      portkeyModulesEntity.NativeWrapperModule.onWarning(getEntryName(), msg);
+      PortkeyModulesEntity.NativeWrapperModule.onWarning(getEntryName(), msg);
     },
     [getEntryName],
   );
@@ -117,9 +121,9 @@ export interface BaseContainerHooks {
 export interface VoidResult {}
 
 export interface BaseContainerHookedProps {
-  rootTag?: any;
+  containerId?: any;
   entryName?: string;
-  onShow?: (rootTag?: any) => void;
+  onShow?: () => void;
 }
 
 export default useBaseContainer;

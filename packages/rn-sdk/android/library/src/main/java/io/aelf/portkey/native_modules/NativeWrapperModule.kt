@@ -11,12 +11,15 @@ import io.aelf.portkey.components.logic.JSEventBus
 import io.aelf.portkey.navigation.NavigationHolder
 import java.lang.ref.WeakReference
 
+internal var NativeWrapperModuleInstance: NativeWrapperModule? = null
+
 class NativeWrapperModule(context: ReactApplicationContext) :
     ReactContextBaseJavaModule(context) {
     private var contextHolder: WeakReference<ReactApplicationContext>
 
     init {
         contextHolder = WeakReference(context)
+        NativeWrapperModuleInstance = this
     }
 
     @ReactMethod

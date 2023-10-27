@@ -12,15 +12,15 @@ import com.facebook.react.bridge.WritableNativeMap
 import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
+import io.aelf.portkey.native_modules.NativeWrapperModuleInstance
 import io.aelf.portkey.native_modules.PORTKEY_CHOOSE_IMAGE_ACTION_CODE
 import io.aelf.portkey.native_modules.PORTKEY_REQUEST_PERMISSION_ACTION_CODE
 import io.aelf.portkey.navigation.NavigationHolder
-
-//import io.aelf.portkey.native_modules.NativeWrapperModule
-//import kotlinx.coroutines.CoroutineScope
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.delay
-//import kotlinx.coroutines.launch
+import io.aelf.portkey.tools.generateUniqueCallbackID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 private fun generateCancelCallbackData(): WritableMap {
     return Arguments.createMap().apply {
@@ -36,6 +36,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     private var callbackId: String = NO_CALLBACK_METHOD
     private var params: Bundle = Bundle()
     private var callbackAccessed: Boolean = false
+    private var containerId: String = ""
 
     private var permissionCallback: (Boolean) -> Unit = {}
     private var imageChooseCallback: (String?) -> Unit = {}
@@ -49,6 +50,8 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
             this.params = intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS) ?: Bundle()
             this.callbackId =
                 intent.getStringExtra(StorageIdentifiers.PAGE_CALLBACK_ID) ?: NO_CALLBACK_METHOD
+            this.containerId =
+                intent.getStringExtra(StorageIdentifiers.PAGE_CONTAINER_ID) ?: ""
         }
         NavigationHolder.pushNewComponent(this)
     }
@@ -78,14 +81,15 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
             override fun onResume() {
                 super.onResume()
-//                CoroutineScope(Dispatchers.IO).launch {
-//                    delay(200)
-//                    NativeWrapperModule.instance?.sendGeneralEvent(
-//                        "onShow",
-//                        Arguments.createMap().apply {
-//                            this.putInt("rootTag", getRootTag())
-//                        })
-//                }
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (containerId.isEmpty()) return@launch
+                    delay(200)
+                    NativeWrapperModuleInstance?.sendGeneralEvent(
+                        "onShow",
+                        Arguments.createMap().apply {
+                            this.putString("containerId", containerId)
+                        })
+                }
             }
         }
     }
@@ -146,6 +150,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
             PORTKEY_CHOOSE_IMAGE_ACTION_CODE -> {
                 imageChooseCallback(data?.data?.toString())
             }
+
             PORTKEY_REQUEST_PERMISSION_ACTION_CODE -> {
                 // Do nothing, as onRequestPermissionsResult() is declared
             }
@@ -189,7 +194,8 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
                 Pair(
                     StorageIdentifiers.TARGET_SCENE, targetScene ?: ""
                 ),
-                Pair(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId)
+                Pair(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId),
+                Pair(StorageIdentifiers.PAGE_CONTAINER_ID, generateUniqueCallbackID())
             )
         )
     )

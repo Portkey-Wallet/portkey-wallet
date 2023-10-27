@@ -3,7 +3,7 @@ import {
   PortkeyDeviceEventEmitter,
   EntryResult,
   RouterOptions,
-  portkeyModulesEntity,
+  PortkeyModulesEntity,
 } from '../../service/native-modules';
 import { PortkeyEntries } from '../../config/entries';
 import { VoidResult } from './UseBaseContainer';
@@ -15,13 +15,18 @@ export default abstract class BaseContainer<
 > extends React.Component<P, S> {
   constructor(props: P) {
     super(props);
-    this.onShowEventListener = PortkeyDeviceEventEmitter.addListener('onShow', this.onShow);
   }
 
   private onShowEventListener: any = null;
 
   componentDidMount(): void {
     this.onShow();
+    this.onShowEventListener = PortkeyDeviceEventEmitter.addListener('onShow', params => {
+      const { containerId } = params || {};
+      if (containerId === this.props.containerId) {
+        this.onShow();
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -31,7 +36,7 @@ export default abstract class BaseContainer<
   }
 
   navigationTo = (entry: PortkeyEntries, targetScene?: string, closeCurrentScreen?: boolean) => {
-    portkeyModulesEntity.RouterModule.navigateTo(
+    PortkeyModulesEntity.RouterModule.navigateTo(
       entry,
       this.getEntryName(),
       targetScene ?? 'none',
@@ -45,7 +50,7 @@ export default abstract class BaseContainer<
     callback: (res: EntryResult<V>) => void,
   ) => {
     const { params, closeCurrentScreen, navigationAnimation, navigationAnimationDuration, targetScene } = options;
-    portkeyModulesEntity.RouterModule.navigateToWithOptions(
+    PortkeyModulesEntity.RouterModule.navigateToWithOptions(
       entry,
       this.getEntryName(),
       {
@@ -60,22 +65,22 @@ export default abstract class BaseContainer<
   };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  onShow(_rootTag?: any) {}
+  onShow() {}
 
   onFinish = (res: EntryResult<R>) => {
-    portkeyModulesEntity.RouterModule.navigateBack(res);
+    PortkeyModulesEntity.RouterModule.navigateBack(res);
   };
 
   onError = (err: Error) => {
-    portkeyModulesEntity.NativeWrapperModule.onError(this.getEntryName(), err.message, { stack: err.stack });
+    PortkeyModulesEntity.NativeWrapperModule.onError(this.getEntryName(), err.message, { stack: err.stack });
   };
 
   onFatal = (err: Error) => {
-    portkeyModulesEntity.NativeWrapperModule.onFatalError(this.getEntryName(), err.message, { stack: err.stack });
+    PortkeyModulesEntity.NativeWrapperModule.onFatalError(this.getEntryName(), err.message, { stack: err.stack });
   };
 
   onWarn = (msg: string) => {
-    portkeyModulesEntity.NativeWrapperModule.onWarning(this.getEntryName(), msg);
+    PortkeyModulesEntity.NativeWrapperModule.onWarning(this.getEntryName(), msg);
   };
 
   abstract getEntryName(): string;
@@ -84,6 +89,7 @@ export default abstract class BaseContainer<
 export type BaseContainerProps = {
   from?: string;
   targetScene?: string;
+  containerId?: string;
 } & AcceptablePropsType;
 
 /**

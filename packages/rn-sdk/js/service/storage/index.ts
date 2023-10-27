@@ -1,8 +1,8 @@
-import { StorageModule, portkeyModulesEntity } from 'service/native-modules';
+import { StorageModule, PortkeyModulesEntity } from 'service/native-modules';
 
 export const GlobalStorage: StorageModule & {
   set: (key: string, value: string | number | boolean | null | undefined) => void;
-} = Object.assign({}, portkeyModulesEntity.StorageModule, {
+} = Object.assign({}, PortkeyModulesEntity.StorageModule, {
   set(key: string, value: string | number | boolean | null | undefined) {
     switch (typeof value) {
       case 'boolean': {
@@ -23,7 +23,7 @@ export const GlobalStorage: StorageModule & {
 
 export const TempStorage = {
   wrapKey(key: string) {
-    return `${key}#${portkeyModulesEntity.NativeWrapperModule.tempStorageIdentifier}`;
+    return `${key}#${PortkeyModulesEntity.NativeWrapperModule.tempStorageIdentifier}`;
   },
   set(key: string, value: any) {
     GlobalStorage.set(this.wrapKey(key), value);

@@ -32,7 +32,7 @@
     "expo-constants": "~14.4.2",
     "expo-local-authentication": "^13.6.0",
     "expo-screen-capture": "^4.3.0",
-    "expo-device": "^4.3.0",
+    "expo-device": "^5.0.0",
     "expo-auth-session": "^5.2.0",
     "expo-barcode-scanner": "^12.7.0",
     "expo-image-picker": "^14.5.0",

@@ -22,7 +22,7 @@ import { NetworkType } from '@portkey-wallet/types';
 import { EndPoints, PortkeyConfig } from 'global';
 import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { EntryResult, PermissionType, chooseImageAndroid, portkeyModulesEntity } from 'service/native-modules';
+import { EntryResult, PermissionType, chooseImageAndroid, PortkeyModulesEntity } from 'service/native-modules';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { ScanToLoginProps } from 'pages/Login/ScanLogin';
 import { isWalletUnlocked } from 'model/verify/after-verify';
@@ -249,12 +249,12 @@ const determineCurrentNetwork = async (): Promise<NetworkType> => {
 
 const ensurePermission = async (permission: PermissionType, ifThrowError: () => void): Promise<boolean> => {
   try {
-    const isOpen = await portkeyModulesEntity.PermissionModule.isPermissionGranted(permission);
+    const isOpen = await PortkeyModulesEntity.PermissionModule.isPermissionGranted(permission);
     if (isOpen) {
       return true;
     } else {
-      await portkeyModulesEntity.PermissionModule.requestPermission(permission);
-      if (!(await portkeyModulesEntity.PermissionModule.isPermissionGranted(permission))) {
+      await PortkeyModulesEntity.PermissionModule.requestPermission(permission);
+      if (!(await PortkeyModulesEntity.PermissionModule.isPermissionGranted(permission))) {
         throw new Error('camera permission denied');
       }
       return true;

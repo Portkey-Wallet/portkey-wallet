@@ -9,10 +9,8 @@ import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
 import Button from './Button';
-import { AccountOriginalType, isWalletUnlocked } from 'model/verify/after-verify';
+import { AccountOriginalType } from 'model/verify/after-verify';
 import { PortkeyEntries } from 'config/entries';
-import useBaseContainer from 'model/container/UseBaseContainer';
-import CommonToast from 'components/CommonToast';
 import TermsServiceButton from './TermsServiceButton';
 import { useVerifyEntry } from 'model/verify/entry';
 
@@ -37,21 +35,6 @@ export default function Email({
   const [loading] = useState<boolean>();
   const [email, setEmail] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
-
-  const { onFinish } = useBaseContainer({
-    entryName: type === PageType.signup ? PortkeyEntries.SIGN_UP_ENTRY : PortkeyEntries.SIGN_IN_ENTRY,
-    onShow: async () => {
-      if (await isWalletUnlocked()) {
-        CommonToast.success('You have logged in');
-        onFinish({
-          status: 'success',
-          data: {
-            finished: true,
-          },
-        });
-      }
-    },
-  });
 
   const { verifyEntry } = useVerifyEntry({
     type,

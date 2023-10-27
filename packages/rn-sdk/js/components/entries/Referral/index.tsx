@@ -15,6 +15,9 @@ export default class ReferralEntryPage extends BaseContainer<
     super(props);
     this.state = {};
   }
+  onShow(_rootTag?: any): void {
+    console.log('ReferralEntryPage onShow');
+  }
 
   getEntryName = (): string => PortkeyEntries.REFERRAL_ENTRY;
 

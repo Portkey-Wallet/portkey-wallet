@@ -9,7 +9,7 @@ import type { SafeAreaColorMapKeyUnit } from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
 import { ViewStyleType } from 'types/styles';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
-import { portkeyModulesEntity } from 'service/native-modules';
+import { PortkeyModulesEntity } from 'service/native-modules';
 
 export type CustomHeaderProps = {
   themeType?: SafeAreaColorMapKeyUnit;
@@ -80,7 +80,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     const onPress = leftCallback
       ? leftCallback
       : () => {
-          portkeyModulesEntity.RouterModule.navigateBack({
+          PortkeyModulesEntity.RouterModule.navigateBack({
             status: 'cancel',
             data: {},
           });

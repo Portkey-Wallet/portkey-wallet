@@ -29,8 +29,6 @@ const EditGroupPage = () => {
   const { name, icon } = groupInfo || {};
   const disbandGroup = useDisbandChannel(currentChannelId || '');
   const updateChannelInfo = useUpdateChannelInfo();
-
-  const [avatar, setAvatar] = useState(icon || '');
   const [groupName, setGroupName] = useState(name || '');
 
   const onDisband = useCallback(() => {
@@ -63,7 +61,8 @@ const EditGroupPage = () => {
   const onSave = useCallback(async () => {
     try {
       Loading.show();
-      await updateChannelInfo(currentChannelId || '', groupName?.trim(), avatar);
+      const s3Url = await uploadRef.current?.uploadPhoto();
+      await updateChannelInfo(currentChannelId || '', groupName?.trim(), s3Url || icon);
       CommonToast.success('Save successfully');
       navigationService.goBack();
     } catch (error) {
@@ -71,7 +70,7 @@ const EditGroupPage = () => {
     } finally {
       Loading.hide();
     }
-  }, [avatar, currentChannelId, groupName, updateChannelInfo]);
+  }, [currentChannelId, groupName, icon, updateChannelInfo]);
 
   return (
     <PageContainer
@@ -81,14 +80,8 @@ const EditGroupPage = () => {
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView style={GStyles.flex1}>
-        <Touchable style={[GStyles.center, styles.header]} onPress={() => uploadRef.current?.selectPhotoAndUpload()}>
-          <ImageWithUploadFunc
-            avatarSize={pTd(80)}
-            ref={uploadRef}
-            title={name || ''}
-            imageUrl={avatar || ''}
-            onChangeImage={url => setAvatar(url)}
-          />
+        <Touchable style={[GStyles.center, styles.header]} onPress={() => uploadRef.current?.selectPhoto()}>
+          <ImageWithUploadFunc avatarSize={pTd(80)} ref={uploadRef} title={name || ''} imageUrl={icon || ''} />
           <TextL style={[FontStyles.font4, styles.setButton]}>Set New Photo</TextL>
         </Touchable>
         <FormItem title={'Group Name'} style={styles.groupNameWrap}>

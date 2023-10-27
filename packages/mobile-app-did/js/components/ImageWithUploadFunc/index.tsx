@@ -1,14 +1,12 @@
-import React, { forwardRef, useCallback, useImperativeHandle } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
 import CommonAvatar from 'components/CommonAvatar';
 import * as ImagePicker from 'expo-image-picker';
 import { getInfo } from 'utils/fs';
 import { MAX_FILE_SIZE_BYTE } from '@portkey-wallet/constants/constants-ca/im';
-
 import { uploadPortkeyImage } from 'utils/uploadImage';
-import Loading from 'components/Loading';
 import Touchable from 'components/Touchable';
-import { sleep } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
+import FastImage from 'react-native-fast-image';
 
 type UploadImageType = {
   title: string;
@@ -18,13 +16,21 @@ type UploadImageType = {
 };
 
 export type ImageWithUploadFuncInstance = {
-  selectPhotoAndUpload: () => void;
+  selectPhoto: () => boolean;
+  uploadPhoto: () => string;
 };
 
 const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: UploadImageType, ref) {
   const { title, imageUrl, avatarSize = pTd(48), onChangeImage } = props;
+  const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImageInfo>();
 
-  const selectPhotoAndUpload = useCallback(async () => {
+  const sizeStyle = {
+    width: Number(avatarSize),
+    height: Number(avatarSize),
+    borderRadius: Number(avatarSize) / 2,
+  };
+
+  const selectPhoto = useCallback(async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -41,31 +47,52 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
         result.fileSize = info.size;
       }
       if (!result?.fileSize || result.fileSize > MAX_FILE_SIZE_BYTE) return;
-      Loading.show();
-      const s3Url = await uploadPortkeyImage(result);
-      if (s3Url) {
-        onChangeImage?.(s3Url);
-        await sleep(500);
-      }
+
+      setLocalPhotoFile(result);
+      return true;
     } catch (error) {
       console.log('==', error);
-    } finally {
-      Loading.hide();
+      return false;
     }
-  }, [onChangeImage]);
+  }, []);
+
+  const uploadPhoto = useCallback(async () => {
+    console.log('localPhotoFile', localPhotoFile);
+
+    if (!localPhotoFile) return;
+    try {
+      const s3Url = await uploadPortkeyImage(localPhotoFile);
+
+      if (s3Url) {
+        onChangeImage?.(s3Url);
+        console.log('s3Url', s3Url);
+        return s3Url;
+      }
+    } catch (error) {
+      console.log('upload error', error);
+    }
+  }, [localPhotoFile, onChangeImage]);
 
   useImperativeHandle(
     ref,
     () => {
       return {
-        selectPhotoAndUpload,
+        selectPhoto,
+        uploadPhoto,
       };
     },
-    [selectPhotoAndUpload],
+    [selectPhoto, uploadPhoto],
   );
 
+  if (localPhotoFile)
+    return (
+      <Touchable onPress={selectPhoto}>
+        <FastImage style={[sizeStyle]} resizeMode="cover" source={{ uri: localPhotoFile.uri }} />
+      </Touchable>
+    );
+
   return (
-    <Touchable onPress={selectPhotoAndUpload}>
+    <Touchable onPress={selectPhoto}>
       <CommonAvatar
         svgName={imageUrl ? undefined : 'upload-avatar-button'}
         title={title}

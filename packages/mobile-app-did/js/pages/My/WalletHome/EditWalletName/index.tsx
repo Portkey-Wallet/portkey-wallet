@@ -73,18 +73,21 @@ const EditWalletName: React.FC = () => {
       setNameError({ ...INIT_HAS_ERROR, errorMsg: t('3-16 characters, only a-z, A-Z, 0-9 and "_" allowed') });
       return;
     }
-    // TODO: test image size
     Loading.show();
     try {
-      await setUserInfo({ nickName: _nameValue, avatar });
+      const s3Url = await uploadRef.current?.uploadPhoto();
+      setAvatar(s3Url || '');
+
+      await setUserInfo({ nickName: _nameValue, avatar: s3Url || userInfo?.avatar });
       navigationService.goBack();
       CommonToast.success(t('Saved Successful'), undefined, 'bottom');
     } catch (error: any) {
-      CommonToast.failError(error.error);
       console.log('setUserInfo: error', error);
+      CommonToast.failError(error.error);
+    } finally {
+      Loading.hide();
     }
-    Loading.hide();
-  }, [nameValue, t, setUserInfo, avatar]);
+  }, [nameValue, t, setUserInfo, userInfo?.avatar]);
 
   return (
     <PageContainer
@@ -93,13 +96,12 @@ const EditWalletName: React.FC = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <ScrollView>
-        <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhotoAndUpload()}>
+        <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}>
           <ImageWithUploadFunc
             avatarSize={pTd(80)}
             ref={uploadRef}
             title={userInfo?.nickName || ''}
             imageUrl={avatar || ''}
-            onChangeImage={url => setAvatar(url)}
           />
           <TextL style={[FontStyles.font4, pageStyles.setButton]}>Set New Photo</TextL>
         </Touchable>

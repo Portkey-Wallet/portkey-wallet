@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useCallback, useState, useEffect, useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -18,14 +18,15 @@ import NoData from 'components/NoData';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im/channelList';
 import { sleep } from '@portkey-wallet/utils';
 import { useJumpToChatGroupDetails } from 'hooks/chat';
-import ImageWithUploadFunc from 'components/ImageWithUploadFunc';
+import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
 
 const ChatGroupDetails = () => {
+  const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
+
   const createChannel = useCreateGroupChannel();
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
 
   const [groupName, setGroupName] = useState('');
-  const [groupAvatar, setGroupAvatar] = useState('');
 
   const [keyword, setKeyword] = useState('');
   const allChatList = useChatContactFlatList();
@@ -42,16 +43,18 @@ const ChatGroupDetails = () => {
     try {
       Loading.show();
       const selectedContactList = Object.keys(selectedContactMap);
-      const result = await createChannel(groupName.trim(), selectedContactList, groupAvatar);
-      CommonToast.success('Group created');
+      const s3Url = await uploadRef.current?.uploadPhoto();
+      const result = await createChannel(groupName.trim(), selectedContactList, s3Url);
       await sleep(100);
+      CommonToast.success('Group created');
+
       jumpToChatGroupDetails({ channelUuid: result.channelUuid });
     } catch (error) {
       CommonToast.failError(error);
     } finally {
       Loading.hide();
     }
-  }, [createChannel, groupAvatar, groupName, jumpToChatGroupDetails, selectedContactMap]);
+  }, [createChannel, groupName, jumpToChatGroupDetails, selectedContactMap]);
 
   const onPressItem = useCallback((id: string) => {
     setSelectedContactMap(prevMap => {
@@ -82,7 +85,7 @@ const ChatGroupDetails = () => {
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <View style={[GStyles.flexRow, GStyles.itemCenter, styles.groupNameWrap]}>
-        <ImageWithUploadFunc title={groupName} imageUrl={groupAvatar} onChangeImage={url => setGroupAvatar(url)} />
+        <ImageWithUploadFunc title={groupName} ref={uploadRef} />
         <CommonInput
           type="general"
           theme="white-bg"

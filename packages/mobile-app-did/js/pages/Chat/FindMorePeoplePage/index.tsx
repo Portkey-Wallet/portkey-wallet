@@ -23,6 +23,7 @@ import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
 import { copyText } from 'utils';
 import { useInputFocus } from 'hooks/useInputFocus';
+import CommonToast from 'components/CommonToast';
 
 const FindMorePeople = () => {
   const iptRef = useRef<TextInput>(null);
@@ -50,7 +51,7 @@ const FindMorePeople = () => {
       console.log('more people', data);
     } catch (error) {
       setList([]);
-      console.log(error);
+      CommonToast.failError(error);
     } finally {
       setLoading(false);
     }

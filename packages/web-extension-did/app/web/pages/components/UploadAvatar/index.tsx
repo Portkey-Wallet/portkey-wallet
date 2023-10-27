@@ -61,12 +61,12 @@ export default function UploadAvatar({
   });
 
   return (
-    <UploadImage getTemporaryDataURL={getTemporaryDataURL} getFile={getFile}>
+    <UploadImage accept="image/png,image/jpeg,image/jpg" getTemporaryDataURL={getTemporaryDataURL} getFile={getFile}>
       <div className={clsx(['flex-column-center', 'upload-avatar-container'])}>
         <div className={clsx(['flex-center', 'upload-avatar', uploadAvatarClass, wrapperClass])} style={wrapperStyle}>
           {avatarUrl ? (
             <div className="upload-avatar-main">
-              <ImageDisplay src={avatarUrl} defaultHeight={avatarDefaultHeight} />
+              <ImageDisplay src={avatarUrl} defaultHeight={avatarDefaultHeight} className="avatar-img" />
               <div className="camera-icon-mask">
                 <CustomSvg
                   type="Camera"

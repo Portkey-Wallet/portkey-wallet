@@ -52,10 +52,10 @@ import { managerTransfer } from 'utils/transfer/managerTransfer';
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
   const isTestnet = useIsTestnet();
-  const defaultToken = useDefaultToken();
 
   const { sendType, assetInfo, toInfo, transactionFee, sendNumber, shouldSendFeeToProxy } =
     useRouterParams<IToSendPreviewParamsType>();
+  const defaultToken = useDefaultToken(assetInfo.chainId);
 
   useFetchTxFee();
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
@@ -145,16 +145,18 @@ const SendHome: React.FC = () => {
 
       // if not default token(elf)  and proxy not enough fee , send some fee to Proxy
       if (shouldSendFeeToProxy) {
-        await managerTransfer({
+        const result = await managerTransfer({
           contract: contract,
           paramsOption: {
             caHash: wallet.caHash || '',
             symbol: defaultToken.symbol,
             to: wallet.address,
-            amount: crossDefaultFee,
+            amount: timesDecimals(crossDefaultFee, defaultToken.decimals).toFixed(),
             memo: '',
           },
         });
+
+        console.log('transfer default token  to manager', result);
       }
 
       const crossChainTransferResult = await crossChainTransfer({
@@ -209,6 +211,7 @@ const SendHome: React.FC = () => {
     checkTransferLimitWithJump,
     crossDefaultFee,
     currentNetwork.walletType,
+    defaultToken.decimals,
     defaultToken.symbol,
     dispatch,
     isCrossChainTransfer,

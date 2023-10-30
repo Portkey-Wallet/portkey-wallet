@@ -27,6 +27,7 @@ import io.aelf.portkey.core.entry.PortkeyTest
 import io.aelf.portkey.demo.ui.theme.MyRNApplicationTheme
 import io.aelf.portkey.entry.usePortkeyEntry
 import io.aelf.portkey.tools.startJSBackgroundTaskTest
+import io.aelf.portkey.ui.dialog.DialogProps
 
 
 class MainActivity : ComponentActivity() {
@@ -60,14 +61,23 @@ class MainActivity : ComponentActivity() {
                         BigButton("Switch to TEST NET") {
                             changeEndPointUrl("https://did-portkey-test.portkey.finance")
                         }
-//                        BigButton("Switch to TEST1") {
-//                            changeEndPointUrl("https://localtest-applesign.portkey.finance")
-//                        }
+                        BigButton("Switch to TEST1") {
+                            changeEndPointUrl("https://localtest-applesign.portkey.finance")
+                        }
                         BigButton(text = "Jump to Scan Page") {
                             jumpToActivity(PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName)
                         }
                         BigButton(text = "Background Service Call") {
-                            startJSBackgroundTaskTest(this@MainActivity)
+                            startJSBackgroundTaskTest(this@MainActivity) {
+                                PortkeyTest.showDialogForTestOnly(
+                                    DialogProps().apply {
+                                        mainTitle = "Background Service Call"
+                                        subTitle =
+                                            "methodName: ${it.methodName}\nextraData: ${it.extraData}\neventId: ${it.eventId}"
+                                        useSingleConfirmButton = true
+                                    }
+                                )
+                            }
                         }
                         BigButton("Sign out?") {
                             signOut()

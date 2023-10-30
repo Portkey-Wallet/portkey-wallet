@@ -4,6 +4,7 @@ import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import UnReadBadge from 'pages/components/UnReadBadge';
 import Avatar from '../Avatar';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 
 interface PortKeyHeaderProps {
   onUserClick?: (e?: any) => void;
@@ -14,7 +15,8 @@ interface PortKeyHeaderProps {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true, unReadShow = false }: PortKeyHeaderProps) => {
   const { isPrompt } = useCommonState();
-  const { walletAvatar, walletName } = useWalletInfo();
+  const { walletName } = useWalletInfo();
+  const { userInfo } = useWallet();
 
   return (
     // <div className={isPrompt ? 'prompt-portkey-header' : 'portkey-header'}>
@@ -32,7 +34,7 @@ const PortKeyHeader = forwardRef(({ onUserClick, customLogoShow = true, unReadSh
           <div className="custom-logo-wrap">
             <Avatar
               wrapperClass="custom-logo"
-              avatarUrl={walletAvatar}
+              avatarUrl={userInfo?.avatar}
               nameIndex={walletName.substring(0, 1).toLocaleUpperCase()}
               onClick={onUserClick}
             />

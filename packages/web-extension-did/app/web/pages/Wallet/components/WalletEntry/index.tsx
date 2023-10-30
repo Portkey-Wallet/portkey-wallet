@@ -3,7 +3,7 @@ import './index.less';
 import Avatar from 'pages/components/Avatar';
 
 export interface IWalletEntryProps {
-  walletAvatar: string;
+  walletAvatar?: string;
   walletName: string;
   portkeyId: string;
   clickAvatar: () => void;

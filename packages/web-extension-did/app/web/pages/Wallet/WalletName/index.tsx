@@ -15,7 +15,7 @@ export default function WalletName() {
   const navigate = useNavigate();
   const { state: locationState } = useLocation();
   const showChat = useIsChatShow();
-  const { walletName, walletAvatar, userId } = useWalletInfo();
+  const { userInfo, userId } = useWalletInfo();
   const caAddressInfos = useCaAddressInfoList();
   const transAddresses = useMemo(() => {
     return caAddressInfos.map((item) => {
@@ -35,14 +35,14 @@ export default function WalletName() {
 
   const state: IProfileDetailDataProps = useMemo(
     () => ({
-      avatar: walletAvatar,
-      index: walletName.substring(0, 1).toLocaleUpperCase(),
+      avatar: userInfo?.avatar,
+      index: userInfo?.nickName.substring(0, 1).toLocaleUpperCase(),
       addresses: transAddresses, // TODO fetch profile for chain image
-      caHolderInfo: { userId: userId, walletName: walletName },
+      caHolderInfo: { userId: userId, walletName: userInfo?.nickName },
       isShowRemark: false,
       from: 'my-did',
     }),
-    [transAddresses, userId, walletAvatar, walletName],
+    [transAddresses, userId, userInfo?.avatar, userInfo?.nickName],
   );
 
   const showEdit = useCallback(() => {

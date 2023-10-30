@@ -1,7 +1,15 @@
 import { BaseConfig } from '../../types';
 
 const BASE_URL = `/api/app/contacts`;
-const KeyList = ['addContact', 'editContact', 'deleteContact', 'checkContactName'] as const;
+const KeyList = [
+  'addContact',
+  'editContact',
+  'deleteContact',
+  'checkContactName',
+  'readImputation',
+  'contactPrivacyList',
+  'updateContactPrivacy',
+] as const;
 
 const ApiObject: Record<typeof KeyList[number], BaseConfig> = {
   addContact: {
@@ -19,6 +27,18 @@ const ApiObject: Record<typeof KeyList[number], BaseConfig> = {
   checkContactName: {
     target: `${BASE_URL}/exist`,
     config: { method: 'GET' },
+  },
+  readImputation: {
+    target: `${BASE_URL}/read`,
+    config: { method: 'POST' },
+  },
+  contactPrivacyList: {
+    target: `/api/app/privacyPermission`,
+    config: { method: 'GET' },
+  },
+  updateContactPrivacy: {
+    target: `/api/app/privacyPermission`,
+    config: { method: 'POST' },
   },
 };
 

@@ -2,7 +2,6 @@ import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
@@ -20,13 +19,13 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
   const [showNetworkLists, setShowNetworkLists] = useState<any[]>([]);
   const { chainList, currentNetwork } = useCurrentWallet();
   const isTestNet = useIsTestnet();
-  const symbolImages = useSymbolImages();
 
   const networkLists = useMemo(
     () =>
       chainList?.map((chain) => ({
         networkType: currentNetwork,
         chainId: chain.chainId,
+        chainName: chain.chainName,
         networkName: transNetworkText(chain.chainId, isTestNet),
       })),
     [chainList, currentNetwork, isTestNet],
@@ -67,7 +66,7 @@ export default function NetworkSelect({ onClose, onChange }: INetworkSelectProps
             onClick={() => {
               onChange(net);
             }}>
-            <img src={symbolImages['ELF']} />
+            <CustomSvg type={isTestNet ? 'elf-icon' : 'Aelf'} />
             <div className="info">{net?.networkName}</div>
           </div>
         ))}

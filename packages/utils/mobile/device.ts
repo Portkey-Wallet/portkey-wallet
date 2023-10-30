@@ -4,13 +4,19 @@ import * as Device from 'expo-device';
 const X_WIDTH = 375;
 const X_HEIGHT = 812;
 
-export const screenWidth = Dimensions.get('screen').width;
-export const screenHeight = Dimensions.get('screen').height;
-export const windowWidth = Dimensions.get('window').width;
+export let screenWidth = Dimensions.get('screen').width;
+export let screenHeight = Dimensions.get('screen').height;
+export let windowWidth = Dimensions.get('window').width;
 
-export const isIos = Platform.OS === 'ios';
+Dimensions.addEventListener('change', ({ window, screen }) => {
+  screenWidth = screen.width;
+  screenHeight = screen.height;
+  windowWidth = window.width;
+});
 
-export const statusBarHeight = isIos ? 20 : StatusBar.currentHeight ?? 20;
+export const isIOS = Platform.OS === 'ios';
+
+export const statusBarHeight = isIOS ? 20 : StatusBar.currentHeight ?? 20;
 
 export const isIphoneX = (() => {
   return (
@@ -33,13 +39,14 @@ export const isXiaoMi = (() => {
 
 export const bottomBarHeight = (() => {
   let height = 0;
-  if (!isIos) {
+  if (!isIOS) {
     height = screenHeight - Dimensions.get('window').height - (isXiaoMi ? 0 : statusBarHeight);
-    if (height > 40) height = 40;
-  } else if (isIos && isIphoneX) {
+    height = Math.max(height, 6);
+    height = Math.min(height, 30);
+  } else if (isIOS && isIphoneX) {
     height = 34;
   }
   return height;
 })();
 
-export const windowHeight = isIos ? screenHeight - statusBarHeight - bottomBarHeight : Dimensions.get('window').height;
+export const windowHeight = isIOS ? screenHeight - statusBarHeight - bottomBarHeight : Dimensions.get('window').height;

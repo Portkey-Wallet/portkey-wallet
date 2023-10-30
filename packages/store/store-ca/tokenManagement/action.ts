@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { createAction } from '@reduxjs/toolkit';
-import { HandleTokenArgTypes, TokenState } from '@portkey-wallet/types/types-ca/token';
+import { HandleTokenArgTypes } from '@portkey-wallet/types/types-ca/token';
 import { fetchAllTokenList } from './api';
 import { request } from '@portkey-wallet/api/api-did';
 
@@ -10,16 +10,11 @@ export const deleteTokenInCurrentAccount = createAction<HandleTokenArgTypes>('to
 
 export const fetchAllTokenListAsync = createAsyncThunk(
   'tokenManagement/fetchAllTokenListAsync',
-  async ({ keyword = '', chainIdArray }: { keyword?: string; chainIdArray?: string[] }, { getState, dispatch }) => {
-    const { totalRecordCount, skipCount, maxResultCount } = getState() as TokenState;
+  async ({ keyword = '', chainIdArray }: { keyword?: string; chainIdArray?: string[] }) => {
+    const response = await fetchAllTokenList({ keyword, chainIdArray: chainIdArray || [] });
 
-    // if (totalRecordCount === 0 || totalRecordCount > accountTokenList.length) {
-    const response = await fetchAllTokenList({ skipCount, maxResultCount, keyword, chainIdArray: chainIdArray || [] });
     return { list: response.items, totalRecordCount: response.totalRecordCount };
   },
-
-  // return { list: [], totalRecordCount };
-  // },
 );
 
 export const getSymbolImagesAsync = createAsyncThunk('tokenManagement/getSymbolImagesAsync', async () => {

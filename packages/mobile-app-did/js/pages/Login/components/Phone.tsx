@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { BGStyles } from 'assets/theme/styles';
@@ -10,13 +10,13 @@ import styles from '../styles';
 import CommonButton from 'components/CommonButton';
 import GStyles from 'assets/theme/GStyles';
 import { PageLoginType, PageType } from '../types';
-import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
 import { useOnLogin } from 'hooks/login';
 import PhoneInput from 'components/PhoneInput';
-import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 
 const TitleMap = {
   [PageType.login]: {
@@ -38,10 +38,11 @@ export default function Phone({
   const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
-  const [country, setCountry] = useState<CountryItem>(DefaultCountry);
-  const onLogin = useOnLogin();
-  const onPageLogin = useCallback(async () => {
-    Loading.show();
+  const { localPhoneCountryCode: country } = usePhoneCountryCode();
+  const onLogin = useOnLogin(type === PageType.login);
+
+  const onPageLogin = useLockCallback(async () => {
+    const loadingKey = Loading.show();
     try {
       await onLogin({
         showLoginAccount: `+${country.code} ${loginAccount}`,
@@ -51,7 +52,7 @@ export default function Phone({
     } catch (error) {
       setErrorMessage(handleErrorMessage(error));
     }
-    Loading.hide();
+    Loading.hide(loadingKey);
   }, [country.code, loginAccount, onLogin]);
 
   useEffectOnce(() => {
@@ -82,7 +83,6 @@ export default function Phone({
           containerStyle={styles.inputContainerStyle}
           onChangeText={setLoginAccount}
           selectCountry={country}
-          onCountryChange={setCountry}
         />
 
         <CommonButton

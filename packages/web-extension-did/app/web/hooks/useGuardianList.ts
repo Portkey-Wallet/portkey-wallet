@@ -5,12 +5,12 @@ import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { getVerifierList } from 'utils/sandboxUtil/getVerifierList';
-import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 const useGuardiansList = () => {
   const dispatch = useAppDispatch();
   const getRegisterInfo = useGetRegisterInfo();
-  const currentChainList = useCurrentChainList();
+  const getChainInfo = useGetChainInfo();
 
   const fetch = useCallback(
     async (paramsOption: { guardianIdentifier?: string; caHash?: string }) => {
@@ -23,7 +23,7 @@ const useGuardiansList = () => {
           : (_params.caHash = paramsOption.caHash);
         const { originChainId } = await getRegisterInfo(_params);
 
-        const currentChain = currentChainList?.find((item) => item.chainId === originChainId);
+        const currentChain = await getChainInfo(originChainId);
         if (!currentChain) throw 'Miss chain info';
         const verifierRes = await getVerifierList({
           rpcUrl: currentChain.endPoint,
@@ -41,7 +41,7 @@ const useGuardiansList = () => {
         throw contractErrorHandler(error);
       }
     },
-    [currentChainList, dispatch, getRegisterInfo],
+    [dispatch, getChainInfo, getRegisterInfo],
   );
 
   return fetch;

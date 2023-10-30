@@ -14,8 +14,24 @@ import { useCheckManager } from '@portkey-wallet/hooks/hooks-ca/graphql';
 import { useCheckManagerOnLogout } from 'hooks/useLogOut';
 import socket from '@portkey-wallet/socket/socket-did';
 import CommonToast from 'components/CommonToast';
-import { useFetchIsShowBuyButton } from 'hooks/useSwitchBuy';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import {
+  useDiscoverGroupList,
+  useSocialMediaList,
+  useRememberMeBlackList,
+  useTabMenuList,
+} from '@portkey-wallet/hooks/hooks-ca/cms';
+import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
+import EntryScriptWeb3 from 'utils/EntryScriptWeb3';
+import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
+import im from '@portkey-wallet/im';
+import s3Instance from '@portkey-wallet/utils/s3';
+import Config from 'react-native-config';
+import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
+import { useAppEntrance } from 'hooks/cms';
 
+request.setExceptionManager(exceptionManager);
 export default function Updater() {
   // FIXME: delete language
   const { changeLanguage } = useLanguage();
@@ -23,7 +39,7 @@ export default function Updater() {
     changeLanguage('en');
   });
   useChainListFetch();
-  const { apiUrl } = useCurrentNetworkInfo();
+  const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   const pin = usePin();
   const onLocking = useLocking();
   const checkManagerOnLogout = useCheckManagerOnLogout();
@@ -32,23 +48,46 @@ export default function Updater() {
   useCaInfoOnChain();
   useCheckManager(checkManagerOnLogout);
 
-  useFetchIsShowBuyButton();
+  useCheckAndInitNetworkDiscoverMap();
   useFetchSymbolImages();
+  useFetchTxFee();
   useMemo(() => {
     request.set('baseURL', apiUrl);
     if (service.defaults.baseURL !== apiUrl) {
       service.defaults.baseURL = apiUrl;
     }
   }, [apiUrl]);
+  useMemo(() => {
+    im.setUrl({
+      apiUrl: imApiUrl || '',
+      wsUrl: imWsUrl || '',
+    });
+  }, [imApiUrl, imWsUrl]);
+  useMemo(() => {
+    s3Instance.setConfig({
+      bucket: imS3Bucket || '',
+      key: Config.IM_S3_KEY || '',
+    });
+  }, [imS3Bucket]);
 
   useMemo(() => {
     request.setLockCallBack(onLocking);
   }, [onLocking]);
 
   useEffectOnce(() => {
+    // init entryScriptWeb3
+    EntryScriptWeb3.init();
     socket.onScanLoginSuccess(data => {
       CommonToast.success(data.body);
     });
   });
+
+  usePhoneCountryCode(true);
+  useSocialMediaList(true);
+  useTabMenuList(true);
+  useDiscoverGroupList(true);
+  useAppEntrance(true);
+  useRememberMeBlackList(true);
+  useCheckContactMap();
   return null;
 }

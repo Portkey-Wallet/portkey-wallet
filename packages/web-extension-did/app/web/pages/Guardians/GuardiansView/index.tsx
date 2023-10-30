@@ -34,6 +34,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
 import './index.less';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -67,6 +68,7 @@ export default function GuardiansView() {
 
   const handleSocialVerify = useCallback(
     async (v: ISocialLogin) => {
+      setLoading(true);
       const result = await socialLoginAction(v, curNet);
       const data = result.data;
       if (!data) throw 'Action error';
@@ -74,23 +76,22 @@ export default function GuardiansView() {
         verifierId: opGuardian?.verifier?.id,
         chainId: currentChain?.chainId || originChainId,
         accessToken: data?.access_token,
+        operationType: OperationTypeEnum.setLoginAccount,
       };
       if (v === 'Google') {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const userInfo = await getGoogleUserInfo(data?.access_token);
-        setLoading(true);
+        await getGoogleUserInfo(data?.access_token);
+        // const userInfo = await getGoogleUserInfo(data?.access_token);
         // const { firstName, email, id } = userInfo;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const res = await request.verify.verifyGoogleToken({
+        setLoading(true);
+        await request.verify.verifyGoogleToken({
           params: verifySocialParams,
         });
       } else if (v === 'Apple') {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const userInfo = parseAppleIdentityToken(data?.access_token);
+        parseAppleIdentityToken(data?.access_token);
+        // const userInfo = parseAppleIdentityToken(data?.access_token);
         // const { email, userId } = userInfo;
         setLoading(true);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const res = await request.verify.verifyAppleToken({
+        await request.verify.verifyAppleToken({
           params: verifySocialParams,
         });
       }
@@ -185,6 +186,7 @@ export default function GuardiansView() {
             type: LoginType[opGuardian?.guardianType as LoginType],
             verifierId: opGuardian?.verifier?.id || '',
             chainId: originChainId,
+            operationType: OperationTypeEnum.setLoginAccount,
           },
         });
         setLoading(false);

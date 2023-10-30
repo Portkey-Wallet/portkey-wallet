@@ -110,7 +110,7 @@ export default function NFTItem(props: NFTItemPropsType) {
               key={ele.symbol}
               data={ele}
               onPress={() => {
-                navigationService.navigate('NFTDetail', ele);
+                navigationService.navigate('NFTDetail', { ...ele, collectionInfo: { imageUrl, collectionName } });
               }}
             />
           ))}
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     lineHeight: pTd(16),
   },
   itemAvatarStyle: {
-    marginRight: pTd(8),
+    marginRight: pTd(8) - StyleSheet.hairlineWidth,
     marginTop: pTd(8),
   },
   noMarginRight: {

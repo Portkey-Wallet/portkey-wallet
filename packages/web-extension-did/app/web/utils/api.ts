@@ -13,7 +13,7 @@ export class ExtensionVerification extends Verification {
     super(store);
   }
   public async sendVerificationCode(config: SendVerificationConfig) {
-    const { guardianIdentifier, verifierId } = config.params;
+    const { guardianIdentifier, verifierId, operationType } = config.params;
     const key = (guardianIdentifier || '') + (verifierId || '');
 
     try {
@@ -21,7 +21,7 @@ export class ExtensionVerification extends Verification {
       if (item) {
         return item;
       } else {
-        const reCaptcha = await checkReCaptcha();
+        const reCaptcha = await checkReCaptcha(operationType);
         if (reCaptcha) {
           config.headers = {
             reCaptchaToken: reCaptcha,

@@ -1,0 +1,18 @@
+@import './color.less';
+
+@page-width: 740px;
+@page-content: 560px;
+@page-content1: 350px;
+@footer-height: 70px;
+
+.text-overflow(@n) {
+  text-overflow: -o-ellipsis-lastline;
+  overflow: hidden;
+  /* stylelint-disable-next-line declaration-block-no-duplicate-properties */
+  text-overflow: ellipsis;
+  /* stylelint-disable-next-line value-no-vendor-prefix */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: @n;
+  -webkit-line-clamp: @n;
+}

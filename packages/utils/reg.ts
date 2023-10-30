@@ -65,6 +65,10 @@ export function isValidCAWalletName(walletName?: string) {
   return CA_WALLET_REG.test(walletName);
 }
 
+export function isValidRemark(remark: string) {
+  return CA_WALLET_REG.test(remark);
+}
+
 export const EmailReg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
 
 export function isValidEmail(email?: string) {
@@ -82,4 +86,8 @@ export function isValidPositiveInteger(num?: string) {
 export const isValidUrl = (url: string) => {
   var urlRegex = /^(https?|ftp):\/\/(-\.)?([^\s/?\.#]+\.?)+(\/[^\s]*)?$/i;
   return urlRegex.test(url);
+};
+
+export const isValidBase58 = (str: string) => {
+  return !/[\u4e00-\u9fa5\u3000-\u303f\uff01-\uff5e]/.test(str);
 };

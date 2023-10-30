@@ -1,23 +1,19 @@
-import { checkVerificationCode } from '@portkey-wallet/api/api-did/utils/verification';
-import { Button, message } from 'antd';
+import { message } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
-import { PasscodeInput } from 'antd-mobile';
 import { LoginInfo } from 'store/reducers/loginCache/type';
-import { DIGIT_CODE } from '@portkey-wallet/constants/misc';
-import clsx from 'clsx';
-import VerifierPair from 'components/VerifierPair';
-import './index.less';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useTranslation } from 'react-i18next';
 import { setUserGuardianSessionIdAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { useEffectOnce } from 'react-use';
 import { verification } from 'utils/api';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCommonState } from 'store/Provider/hooks';
 import { useLocation } from 'react-router';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
+import { CodeVerifyUI } from '@portkey/did-ui-react';
+import { AccountType } from '@portkey/services';
 
 const MAX_TIMER = 60;
 
@@ -27,6 +23,7 @@ enum VerificationError {
 }
 
 interface VerifierPageProps {
+  operationType: OperationTypeEnum;
   loginAccount?: LoginInfo;
   currentGuardian?: UserGuardianItem;
   guardianType?: LoginType;
@@ -34,26 +31,31 @@ interface VerifierPageProps {
   onSuccess?: (res: { verificationDoc: string; signature: string; verifierId: string }) => void;
 }
 
-export default function VerifierPage({ currentGuardian, guardianType, isInitStatus, onSuccess }: VerifierPageProps) {
+interface ICodeVerifyUIInterface {
+  setTimer: (timer: number) => void;
+}
+
+export default function VerifierPage({
+  operationType,
+  currentGuardian,
+  guardianType,
+  isInitStatus,
+  onSuccess,
+}: VerifierPageProps) {
   const { setLoading } = useLoading();
-  const [timer, setTimer] = useState<number>(0);
   const { isNotLessThan768 } = useCommonState();
   const { pathname } = useLocation();
   const [isFromLoginOrRegister, setIsFromLoginOrRegister] = useState(true);
   const [pinVal, setPinVal] = useState<string>();
-  const timerRef = useRef<NodeJS.Timer | number>();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-
   const originChainId = useOriginChainId();
+  const uiRef = useRef<ICodeVerifyUIInterface>();
 
   useEffect(() => {
     setIsFromLoginOrRegister(pathname.includes('register') || pathname.includes('login'));
-  }, [pathname]);
-
-  useEffectOnce(() => {
-    isInitStatus && setTimer(MAX_TIMER);
-  });
+    console.log('isFromLoginOrRegister', isFromLoginOrRegister);
+  }, [isFromLoginOrRegister, pathname]);
 
   const onFinish = useCallback(
     async (code: string) => {
@@ -64,13 +66,16 @@ export default function VerifierPage({ currentGuardian, guardianType, isInitStat
           if (!currentGuardian?.verifierInfo) throw 'Missing verifierInfo!!!';
           setLoading(true);
 
-          const res = await checkVerificationCode({
-            type: LoginType[currentGuardian?.guardianType as LoginType],
-            guardianIdentifier: currentGuardian.guardianAccount.replaceAll(' ', ''),
-            verifierSessionId: currentGuardian.verifierInfo.sessionId,
-            verificationCode: code,
-            verifierId: currentGuardian.verifier?.id || '',
-            chainId: originChainId,
+          const res = await verification.checkVerificationCode({
+            params: {
+              type: LoginType[currentGuardian?.guardianType as LoginType],
+              guardianIdentifier: currentGuardian.guardianAccount.replaceAll(' ', ''),
+              verifierSessionId: currentGuardian.verifierInfo.sessionId,
+              verificationCode: code,
+              verifierId: currentGuardian.verifier?.id || '',
+              chainId: originChainId,
+              operationType,
+            },
           });
 
           setLoading(false);
@@ -91,7 +96,7 @@ export default function VerifierPage({ currentGuardian, guardianType, isInitStat
         message.error(_error);
       }
     },
-    [guardianType, originChainId, currentGuardian, setLoading, onSuccess, t],
+    [guardianType, originChainId, currentGuardian, setLoading, onSuccess, t, operationType],
   );
 
   const resendCode = useCallback(async () => {
@@ -106,11 +111,12 @@ export default function VerifierPage({ currentGuardian, guardianType, isInitStat
           type: LoginType[guardianType],
           verifierId: currentGuardian.verifier?.id || '',
           chainId: originChainId,
+          operationType,
         },
       });
       setLoading(false);
       if (res.verifierSessionId) {
-        setTimer(MAX_TIMER);
+        uiRef.current?.setTimer(MAX_TIMER);
         dispatch(
           setUserGuardianSessionIdAction({
             key: currentGuardian?.key ?? `${currentGuardian?.guardianAccount}&${currentGuardian?.verifier?.name}`,
@@ -127,59 +133,24 @@ export default function VerifierPage({ currentGuardian, guardianType, isInitStat
       const _error = verifyErrorHandler(error);
       message.error(_error);
     }
-  }, [currentGuardian, guardianType, originChainId, dispatch, setLoading]);
+  }, [currentGuardian, guardianType, originChainId, dispatch, setLoading, operationType]);
 
-  useEffect(() => {
-    if (timer !== MAX_TIMER) return;
-    timerRef.current && clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setTimer((t) => {
-        const newTime = t - 1;
-        if (newTime <= 0) {
-          timerRef.current && clearInterval(timerRef.current);
-          timerRef.current = undefined;
-          return 0;
-        }
-        return newTime;
-      });
-    }, 1000);
-  }, [timer]);
-
-  return (
-    <div className={clsx('verifier-page-wrapper', isNotLessThan768 || 'popup-page')}>
-      {currentGuardian?.isLoginAccount && <div className="login-icon">{t('Login Account')}</div>}
-      <div className="flex-row-center login-account-wrapper">
-        <VerifierPair
-          guardianType={currentGuardian?.guardianType}
-          verifierSrc={currentGuardian?.verifier?.imageUrl}
-          verifierName={currentGuardian?.verifier?.name}
-        />
-        <span className="login-account">{currentGuardian?.guardianAccount || ''}</span>
-      </div>
-      <div className="send-tip">
-        {!isFromLoginOrRegister && 'Please contact your guardians, and enter '}
-        <span>{t('sendCodeTip1', { codeCount: DIGIT_CODE.length })}</span>
-        <span className="account">{currentGuardian?.guardianAccount}</span>
-        <span>{`. `}</span>
-        {t('sendCodeTip2', { minute: DIGIT_CODE.expiration })}
-      </div>
-      <div className="password-wrapper">
-        <PasscodeInput
-          value={pinVal}
-          length={DIGIT_CODE.length}
-          seperated
-          plain
-          onChange={(v) => setPinVal(v)}
-          onFill={onFinish}
-        />
-        <Button
-          type="text"
-          disabled={!!timer}
-          onClick={resendCode}
-          className={clsx('text-center resend-btn', timer && 'resend-after-btn')}>
-          {timer ? t('Resend after', { timer }) : t('Resend')}
-        </Button>
-      </div>
-    </div>
+  return currentGuardian?.verifier ? (
+    <CodeVerifyUI
+      ref={uiRef}
+      className={isNotLessThan768 ? '' : 'popup-page'}
+      verifier={currentGuardian.verifier as any}
+      guardianIdentifier={currentGuardian?.guardianAccount || ''}
+      isCountdownNow={isInitStatus}
+      isLoginGuardian={currentGuardian?.isLoginAccount}
+      accountType={LoginType[currentGuardian?.guardianType as LoginType] as AccountType}
+      code={pinVal}
+      tipExtra={!isFromLoginOrRegister && 'Please contact your guardians, and enter '}
+      onReSend={resendCode}
+      onCodeFinish={onFinish}
+      onCodeChange={setPinVal}
+    />
+  ) : (
+    <div></div>
   );
 }

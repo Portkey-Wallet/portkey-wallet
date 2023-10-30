@@ -13,7 +13,12 @@ const EventList = [
   'nestScrollViewScrolledTop',
   'nestScrollViewLayout',
   'setAuthenticationInfo',
+  'refreshMyContactDetailInfo',
+  'chatHomeListCloseSwiped',
+  'navToBottomTab',
 ] as const;
+
+const BookmarkEventList = ['closeSwipeable'] as const;
 
 // eslint-disable-next-line no-new-func
 const eventsServer = new Function();
@@ -21,9 +26,11 @@ const eventsServer = new Function();
 eventsServer.prototype.parseEvent = function (name: string, eventMap: string[]) {
   const obj: any = (this[name] = {});
   eventMap.forEach(item => {
+    const eventName = item.toLocaleUpperCase();
     obj[item] = {
-      emit: this.emit.bind(this, item.toLocaleUpperCase()),
-      addListener: this.addListener.bind(this, item.toLocaleUpperCase()),
+      emit: this.emit.bind(this, eventName),
+      addListener: this.addListener.bind(this, eventName),
+      name: eventName,
     };
   });
 };
@@ -37,12 +44,25 @@ eventsServer.prototype.addListener = function (eventType: string, listener: (dat
 
 eventsServer.prototype.parseEvent('base', EventList);
 
-export type MyEventsTypes = {
-  [x in typeof EventList[number]]: {
+eventsServer.prototype.parseEvent('bookmark', BookmarkEventList);
+
+export type BookmarkEventsTypes = {
+  [x in typeof BookmarkEventList[number]]: {
     emit: (...params: any[]) => void;
     addListener: (listener: (data: any) => void) => EmitterSubscription;
   };
 };
-const myEvents = eventsServer.prototype.base;
+
+export type MyEventsTypes = {
+  [x in typeof EventList[number]]: {
+    emit: (...params: any[]) => void;
+    addListener: (listener: (data: any) => void) => EmitterSubscription;
+    name: string;
+  };
+} & {
+  bookmark: BookmarkEventsTypes;
+};
+
+const myEvents = { ...eventsServer.prototype.base, bookmark: eventsServer.prototype.bookmark };
 
 export default myEvents as unknown as MyEventsTypes;

@@ -1,0 +1,32 @@
+query discoverGroupCustom(
+  $filter: discoverGroup_filter
+  $sort: [String]
+  $limit: Int
+  $offset: Int
+  $page: Int
+  $search: String
+  $filter1: discoverItem_filter
+  $sort1: [String]
+  $limit1: Int
+  $offset1: Int
+  $page1: Int
+  $search1: String
+) {
+  discoverGroup(filter: $filter, sort: $sort, limit: $limit, offset: $offset, page: $page, search: $search) {
+    id
+    index
+    status
+    title
+    items(filter: $filter1, sort: $sort1, limit: $limit1, offset: $offset1, page: $page1, search: $search1) {
+      id
+      index
+      status
+      title
+      description
+      url
+      imgUrl {
+        filename_disk
+      }
+    }
+  }
+}

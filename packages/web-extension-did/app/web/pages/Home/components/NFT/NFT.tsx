@@ -32,7 +32,7 @@ export default function NFT() {
   const maxNftNum = useMemo(() => (isPrompt ? PAGE_SIZE_IN_NFT_ITEM_PROMPT : PAGE_SIZE_IN_NFT_ITEM), [isPrompt]);
 
   const getMore = useCallback(
-    async (symbol: string, chainId: string) => {
+    async (symbol: string, chainId: ChainId) => {
       if (getMoreFlag) return;
       const nftColKey = `${symbol}_${chainId}`;
       const curNftNum = nftNum[nftColKey];
@@ -41,7 +41,7 @@ export default function NFT() {
         fetchNFTAsync({
           symbol,
           chainId: chainId as ChainId,
-          caAddresses: [wallet[chainId].caAddress],
+          caAddresses: [wallet?.[chainId]?.caAddress || ''],
           pageNum: curNftNum,
           caAddressInfos: caAddressInfos.filter((item) => item.chainId === chainId),
         }),
@@ -67,7 +67,7 @@ export default function NFT() {
             fetchNFTAsync({
               symbol: curTmp[0],
               chainId: curTmp[1] as ChainId,
-              caAddresses: [wallet[curTmp[1]].caAddress],
+              caAddresses: [wallet?.[curTmp[1] as ChainId]?.caAddress || ''],
               pageNum: 0,
               caAddressInfos: caAddressInfos.filter((item) => item.chainId === curTmp[1]),
             }),
@@ -115,7 +115,15 @@ export default function NFT() {
                       }}
                       className={clsx(['item', nftItem.imageUrl ? 'item-img' : ''])}
                       onClick={() => {
-                        nav('/nft', { state: { ...nftItem, address: nftItem.tokenContractAddress, decimals: 0 } });
+                        nav('/nft', {
+                          state: {
+                            ...nftItem,
+                            address: nftItem.tokenContractAddress,
+                            decimals: 0,
+                            collectionName: nft.collectionName,
+                            collectionImageUrl: nft.imageUrl,
+                          },
+                        });
                       }}>
                       <div className="mask">
                         <p className="alias">{nftItem.alias}</p>

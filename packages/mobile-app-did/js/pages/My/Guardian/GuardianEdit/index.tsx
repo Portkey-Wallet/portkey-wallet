@@ -13,9 +13,9 @@ import { useLanguage } from 'i18n/hooks';
 import CommonInput from 'components/CommonInput';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
-import { LOGIN_TYPE_LIST } from '@portkey-wallet/constants/verifier';
+import { LOGIN_TYPE_LIST } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
-import { ApprovalType, VerificationType, VerifierItem } from '@portkey-wallet/types/verifier';
+import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import GuardianTypeSelectOverlay from '../components/GuardianTypeSelectOverlay';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
@@ -33,8 +33,6 @@ import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { verification } from 'utils/api';
 import fonts from 'assets/theme/fonts';
 import PhoneInput from 'components/PhoneInput';
-import { CountryItem } from '@portkey-wallet/types/types-ca/country';
-import { DefaultCountry } from '@portkey-wallet/constants/constants-ca/country';
 import Touchable from 'components/Touchable';
 import {
   AppleAuthentication,
@@ -45,9 +43,12 @@ import {
 import GuardianAccountItem from '../components/GuardianAccountItem';
 import { request } from '@portkey-wallet/api/api-did';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
-import { DEVICE_TYPE } from 'constants/common';
-import { DeviceType } from '@portkey-wallet/types/types-ca/device';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
+import { cancelLoginAccount } from 'utils/guardian';
+import { useGetCurrentCAContract } from 'hooks/contract';
+import myEvents from 'utils/deviceEvent';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -65,23 +66,20 @@ const GuardianEdit: React.FC = () => {
   const { t } = useLanguage();
   const dispatch = useAppDispatch();
   const originChainId = useOriginChainId();
+  const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const getCurrentCAContract = useGetCurrentCAContract();
 
   const { guardian: editGuardian, isEdit = false } = useRouterParams<RouterParams>();
 
   const { verifierMap, userGuardiansList } = useGuardiansInfo();
   const verifierList = useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
 
-  const loginTypeList = useMemo(() => {
-    if (DEVICE_TYPE !== DeviceType.ANDROID) return LOGIN_TYPE_LIST;
-    return LOGIN_TYPE_LIST.filter(item => item.value !== LoginType.Apple);
-  }, []);
-
   const [selectedType, setSelectedType] = useState<TypeItemType>();
   const [selectedVerifier, setSelectedVerifier] = useState<VerifierItem>();
   const [account, setAccount] = useState<string>();
   const [guardianTypeError, setGuardianTypeError] = useState<ErrorType>({ ...INIT_HAS_ERROR });
   const [guardianError, setGuardianError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
-  const [country, setCountry] = useState<CountryItem>(DefaultCountry);
+  const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
   const verifyToken = useVerifyToken();
@@ -166,6 +164,7 @@ const GuardianEdit: React.FC = () => {
         id: thirdPartyInfo.id,
         verifierId: verifierInfo.id,
         chainId: originChainId,
+        operationType: OperationTypeEnum.addGuardian,
       });
       Loading.hide();
 
@@ -250,6 +249,7 @@ const GuardianEdit: React.FC = () => {
                     guardianIdentifier: guardianAccount,
                     verifierId: selectedVerifier.id,
                     chainId: originChainId,
+                    operationType: OperationTypeEnum.addGuardian,
                   },
                 });
                 if (req.verifierSessionId) {
@@ -303,11 +303,14 @@ const GuardianEdit: React.FC = () => {
     });
   }, [checkCurGuardianRepeat, dispatch, editGuardian, selectedVerifier]);
 
-  const onRemove = useCallback(() => {
-    if (!editGuardian) return;
-    if (editGuardian.isLoginAccount) {
+  const onRemove = useCallback(async () => {
+    if (!editGuardian || !userGuardiansList) return;
+
+    const isLastLoginAccount = checkIsLastLoginAccount(userGuardiansList, editGuardian);
+
+    if (isLastLoginAccount) {
       ActionSheet.alert({
-        title2: t(`This guardian is login account and cannot be remove`),
+        title2: t('This guardian is the only login account and cannot be removed'),
         buttons: [
           {
             title: t('OK'),
@@ -317,26 +320,58 @@ const GuardianEdit: React.FC = () => {
       return;
     }
 
-    ActionSheet.alert({
-      title: t('Are you sure you want to remove this guardian?'),
-      message: t(`Removing a guardian requires guardians' approval`),
-      buttons: [
-        {
-          title: t('Close'),
-          type: 'outline',
-        },
-        {
-          title: t('Send Request'),
-          onPress: () => {
-            navigationService.navigate('GuardianApproval', {
-              approvalType: ApprovalType.deleteGuardian,
-              guardianItem: editGuardian,
-            });
+    const isLoginAccount = editGuardian.isLoginAccount;
+    const result = await new Promise(resolve => {
+      ActionSheet.alert({
+        title: isLoginAccount ? undefined : 'Are you sure you want to remove this guardian?',
+        title2: isLoginAccount
+          ? `This guardian is set as a login account. Click "Confirm" to unset and remove this guardian`
+          : undefined,
+        message: isLoginAccount ? undefined : `Removing a guardian requires guardians' approval`,
+        buttons: [
+          {
+            title: isLoginAccount ? 'Cancel' : 'Close',
+            type: 'outline',
+            onPress: () => {
+              resolve(false);
+            },
           },
-        },
-      ],
+          {
+            title: isLoginAccount ? 'Confirm' : 'Send Request',
+            onPress: () => {
+              resolve(true);
+            },
+          },
+        ],
+      });
     });
-  }, [editGuardian, t]);
+    if (!result) return;
+
+    if (editGuardian.isLoginAccount) {
+      if (!managerAddress || !caHash) return;
+      Loading.show();
+      try {
+        const caContract = await getCurrentCAContract();
+        const req = await cancelLoginAccount(caContract, managerAddress, caHash, editGuardian);
+        if (req && !req.error) {
+          myEvents.refreshGuardiansList.emit();
+        } else {
+          CommonToast.fail(req?.error?.message || '');
+          return;
+        }
+      } catch (error) {
+        CommonToast.failError(error);
+        return;
+      } finally {
+        Loading.hide();
+      }
+    }
+
+    navigationService.navigate('GuardianApproval', {
+      approvalType: ApprovalType.deleteGuardian,
+      guardianItem: editGuardian,
+    });
+  }, [caHash, editGuardian, getCurrentCAContract, managerAddress, t, userGuardiansList]);
 
   const isConfirmDisable = useMemo(
     () => !selectedVerifier || !selectedType || !account,
@@ -467,7 +502,7 @@ const GuardianEdit: React.FC = () => {
     if (isEdit) {
       return (
         <View style={pageStyles.accountWrap}>
-          <TextM style={pageStyles.accountLabel}>Guardian Apple</TextM>
+          <TextM style={pageStyles.accountLabel}>Guardian {LoginType[editGuardian?.guardianType || 0]}</TextM>
           <GuardianAccountItem guardian={editGuardian} />
         </View>
       );
@@ -485,7 +520,6 @@ const GuardianEdit: React.FC = () => {
             label={t('Guardian email')}
             value={account}
             placeholder={t('Enter email')}
-            maxLength={30}
             onChangeText={onAccountChange}
             errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
             keyboardType="email-address"
@@ -500,7 +534,6 @@ const GuardianEdit: React.FC = () => {
             errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
             onChangeText={onAccountChange}
             selectCountry={country}
-            onCountryChange={setCountry}
           />
         );
       case LoginType.Google:
@@ -539,7 +572,7 @@ const GuardianEdit: React.FC = () => {
             <ListItem
               onPress={() => {
                 GuardianTypeSelectOverlay.showList({
-                  list: loginTypeList,
+                  list: LOGIN_TYPE_LIST,
                   labelAttrName: 'name',
                   value: selectedType?.value,
                   callBack: onChooseType,
@@ -571,7 +604,12 @@ const GuardianEdit: React.FC = () => {
           }}
           titleLeftElement={
             selectedVerifier && (
-              <VerifierImage style={pageStyles.verifierImageStyle} size={pTd(30)} uri={selectedVerifier.imageUrl} />
+              <VerifierImage
+                style={pageStyles.verifierImageStyle}
+                size={pTd(30)}
+                label={selectedVerifier.name}
+                uri={selectedVerifier.imageUrl}
+              />
             )
           }
           titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}

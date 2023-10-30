@@ -21,10 +21,14 @@ import { handleErrorMessage } from '@portkey-wallet/utils';
 import { message } from 'antd';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import InternalMessageTypes, { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useNavigate } from 'react-router';
-import { clearLocalStorage } from 'utils/storage/chromeStorage';
 import { getWalletInfo, isCurrentCaHash } from 'store/utils/getStore';
+import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { resetTxFee } from '@portkey-wallet/store/store-ca/txFee/actions';
+import im from '@portkey-wallet/im';
+import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
+import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -37,6 +41,9 @@ export default function useLogOut() {
   return useCallback(async () => {
     try {
       resetStore();
+      im.destroy();
+      dispatch(resetIm(currentNetwork));
+      dispatch(resetSecurity(currentNetwork));
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
       } else {
@@ -45,8 +52,10 @@ export default function useLogOut() {
         dispatch(resetSettings());
         dispatch(resetNetwork());
         dispatch(resetLoginInfoAction());
-        clearLocalStorage();
+        InternalMessage.payload(InternalMessageTypes.CLEAR_SEED).send();
       }
+      dispatch(resetDappList(currentNetwork));
+      dispatch(resetTxFee(currentNetwork));
 
       if (!isPrompt) {
         InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();

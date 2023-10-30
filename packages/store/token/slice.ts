@@ -53,6 +53,7 @@ export const tokenSlice = createSlice({
           isAdded: isSameTypeToken(ele, tokenItem) ? true : ele.isAdded,
         };
       });
+      // eslint-disable-next-line no-self-assign
       state.addedTokenData = state.addedTokenData;
     },
     deleteTokenInCurrentAccount: (
@@ -78,9 +79,10 @@ export const tokenSlice = createSlice({
         };
       });
 
+      // eslint-disable-next-line no-self-assign
       state.addedTokenData = state.addedTokenData;
     },
-    clearMarketToken: (state, action: PayloadAction<any>) => {
+    clearMarketToken: state => {
       console.log('initCurrentAccountToken');
       state.tokenDataShowInMarket = [];
     },

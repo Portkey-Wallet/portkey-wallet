@@ -29,13 +29,14 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
-import { VerifyStatus } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
 import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import GuardianAddPrompt from './Prompt';
 import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
 import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
+import { MessageType } from 'antd/lib/message';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
@@ -194,6 +195,7 @@ export default function AddGuardian() {
   const handleSocialAuth = useCallback(
     async (v: ISocialLogin) => {
       try {
+        setLoading(true);
         const result = await socialLoginAction(v, currentNetwork);
         const data = result.data;
         if (!data) throw 'auth error';
@@ -222,11 +224,13 @@ export default function AddGuardian() {
         }
         if (result.error) throw result.message ?? result.Error;
       } catch (error) {
+        setLoading(false);
         const msg = handleErrorMessage(error);
         message.error(msg);
       }
+      setLoading(false);
     },
-    [currentNetwork],
+    [currentNetwork, setLoading],
   );
 
   const renderSocialGuardianAccount = useCallback(
@@ -297,6 +301,7 @@ export default function AddGuardian() {
             type: LoginType[guardianType as LoginType],
             verifierId: selectVerifierItem?.id || '',
             chainId: currentChain?.chainId || originChainId,
+            operationType: OperationTypeEnum.addGuardian,
           },
         });
         setLoading(false);
@@ -371,6 +376,7 @@ export default function AddGuardian() {
         verifierId: verifierVal,
         chainId: currentChain?.chainId || originChainId,
         accessToken: socialValue?.accessToken,
+        operationType: OperationTypeEnum.addGuardian,
       };
       let res;
       if (guardianType === LoginType.Apple) {
@@ -430,7 +436,7 @@ export default function AddGuardian() {
     navigate('/setting/guardians');
   }, [dispatch, navigate]);
 
-  const handleCheck = useCallback(() => {
+  const handleCheck = useCallback((): void | MessageType => {
     if (guardianType === LoginType.Email) {
       if (!EmailReg.test(emailVal as string)) {
         setEmailErr(EmailError.invalidEmail);

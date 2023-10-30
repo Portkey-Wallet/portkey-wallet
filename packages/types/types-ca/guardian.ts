@@ -5,7 +5,7 @@ export interface Verifier {
 export interface Guardian {
   guardianIdentifier: string;
   identifierHash: string;
-  isLoginGuardian: true;
+  isLoginGuardian: boolean;
   salt: string;
   type: LoginKeyType;
   verifierId: string;
@@ -26,12 +26,4 @@ export interface Manager {
 export interface GuardiansInfo {
   guardianList: { guardians: Guardian[] };
   managerInfos: Manager[];
-}
-
-export interface GuardiansApprovedType {
-  type: LoginKeyType;
-  identifier: string;
-  verifierId: string;
-  verificationDoc: string;
-  signature: string;
 }

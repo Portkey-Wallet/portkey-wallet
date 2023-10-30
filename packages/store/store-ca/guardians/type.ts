@@ -18,7 +18,7 @@ export interface BaseGuardianItem {
 
 export interface IVerifierInfo {
   sessionId: string;
-  endPoint: string;
+  endPoint?: string;
 }
 
 export interface UserGuardianItem extends BaseGuardianItem {
@@ -38,7 +38,7 @@ export interface GuardiansState {
   userGuardianStatus?: { [x: string]: UserGuardianStatus };
   currentGuardian?: UserGuardianItem;
   preGuardian?: StoreUserGuardianItem;
-  opGuardian?: StoreUserGuardianItem;
+  opGuardian?: StoreUserGuardianItem; // operating guardians
   guardianExpiredTime?: number; // timestamp
 }
 

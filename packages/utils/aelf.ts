@@ -2,16 +2,15 @@ import AElf from 'aelf-sdk';
 import { COMMON_PRIVATE } from '@portkey-wallet/constants';
 import { AElfInterface } from '@portkey-wallet/types/aelf';
 import { ChainId } from '@portkey-wallet/types';
+import { isValidBase58 } from './reg';
 const Wallet = AElf.wallet;
-let wallet: any = null;
 
 export function isEqAddress(a1?: string, a2?: string) {
   return a1?.toLocaleLowerCase() === a2?.toLocaleLowerCase();
 }
 
 export function isAelfAddress(value?: string) {
-  if (!value) return false;
-  if (/[\u4e00-\u9fa5]/.test(value)) return false;
+  if (!value || !isValidBase58(value)) return false;
   if (value.includes('_') && value.split('_').length < 3) return false;
   try {
     return !!AElf.utils.decodeAddressRep(value);
@@ -25,8 +24,7 @@ export const getChainNumber = (chainId: string) => {
 };
 
 export function isDIDAelfAddress(value?: string) {
-  if (!value) return false;
-  if (/[\u4e00-\u9fa5]/.test(value)) return false;
+  if (!value || !isValidBase58(value)) return false;
   if (value.includes('_') && value.split('_').length === 2) {
     const arr = value.split('_');
     const res = arr[0].length > arr[1].length ? arr[0] : arr[1];
@@ -103,13 +101,13 @@ export const getELFContract = async (rpcUrl: string, tokenAddress: string, priva
 };
 
 const isWrappedBytes = (resolvedType: any, name: string) => {
-  if (!resolvedType.name || resolvedType.name !== name) {
+  if (!resolvedType?.name || resolvedType?.name !== name) {
     return false;
   }
-  if (!resolvedType.fieldsArray || resolvedType.fieldsArray.length !== 1) {
+  if (!resolvedType?.fieldsArray || resolvedType?.fieldsArray.length !== 1) {
     return false;
   }
-  return resolvedType.fieldsArray[0].type === 'bytes';
+  return resolvedType?.fieldsArray[0].type === 'bytes';
 };
 
 const isAddress = (resolvedType: any) => isWrappedBytes(resolvedType, 'Address');
@@ -122,7 +120,7 @@ export function transformArrayToMap(inputType: any, origin: any[]) {
   if (origin.length === 0) return '';
   if (isAddress(inputType) || isHash(inputType)) return origin[0];
 
-  const { fieldsArray } = inputType || {};
+  const { fieldsArray } = inputType;
   const fieldsLength = (fieldsArray || []).length;
 
   if (fieldsLength === 0) return origin;

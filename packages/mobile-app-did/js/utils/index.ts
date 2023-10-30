@@ -1,5 +1,8 @@
+import CommonToast from 'components/CommonToast';
 import dayjs from 'dayjs';
 import * as Network from 'expo-network';
+import { setStringAsync } from 'expo-clipboard';
+import i18n from 'i18n';
 
 /**
  * timestamp to formatted time like 'Nov 10 at 1:09 pm', if last year format to "2020 Nov 10 at 1:09 pm "
@@ -29,4 +32,25 @@ export const getFaviconUrl = (url: string) => {
 
 export const getFaviconUrlFromDomain = (domain = '') => {
   return `https://${domain}/favicon.ico`;
+};
+
+/**
+ * a mobile app func to copy text
+ * @param text
+ */
+export const copyText = async (text: string) => {
+  try {
+    const isCopy = await setStringAsync(text);
+    isCopy && CommonToast.success(i18n.t('Copy Success'));
+  } catch {
+    CommonToast.success(i18n.t('Copy Fail'));
+  }
+};
+/**
+ *
+ * @param imgUrl
+ * @returns
+ */
+export const checkIsSvgUrl = (imgUrl: string) => {
+  return /.svg$/.test(imgUrl);
 };

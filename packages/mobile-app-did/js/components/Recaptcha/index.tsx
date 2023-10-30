@@ -13,7 +13,7 @@ export declare type RecaptchaInterface = {
 const styles = StyleSheet.create({
   webView: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: 'transparent',
   },
   loadingContainer: {
     position: 'absolute',

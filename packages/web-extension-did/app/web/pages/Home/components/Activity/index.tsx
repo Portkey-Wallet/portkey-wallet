@@ -5,14 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { getActivityListAsync } from '@portkey-wallet/store/store-ca/activity/action';
 import { useCaAddressInfoList, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
-import { transactionTypesForActivityList } from '@portkey-wallet/constants/constants-ca/activity';
 import { IActivitiesApiParams } from '@portkey-wallet/store/store-ca/activity/type';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
+import { ChainId } from '@portkey-wallet/types';
 
 export interface ActivityProps {
   appendData?: Function;
   clearData?: Function;
-  chainId?: string;
+  chainId?: ChainId;
   symbol?: string;
 }
 
@@ -21,7 +21,7 @@ export enum EmptyTipMessage {
   NETWORK_NO_TRANSACTIONS = 'No transaction records accessible from the current custom network',
 }
 
-const AMX_RESULT_COUNT = 10;
+const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
 
 export default function Activity({ chainId, symbol }: ActivityProps) {
@@ -48,7 +48,7 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
       activity.isLoading &&
       (!currentActivity?.data?.length || currentActivity?.data?.length === 0)
     ) {
-      setLoading(true, ' ');
+      setLoading(true);
     } else {
       setLoading(false);
     }
@@ -61,13 +61,12 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
   useEffect(() => {
     if (passwordSeed) {
       const params: IActivitiesApiParams = {
-        maxResultCount: AMX_RESULT_COUNT,
+        maxResultCount: MAX_RESULT_COUNT,
         skipCount: SKIP_COUNT,
         caAddresses: chainId ? [walletInfo?.[chainId]?.caAddress || ''] : caAddressList,
         caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,
-        transactionTypes: transactionTypesForActivityList,
       };
       dispatch(getActivityListAsync(params));
     }
@@ -77,13 +76,12 @@ export default function Activity({ chainId, symbol }: ActivityProps) {
     const { data, maxResultCount, skipCount, totalRecordCount } = currentActivity;
     if (data.length < totalRecordCount) {
       const params = {
-        maxResultCount: AMX_RESULT_COUNT,
+        maxResultCount: MAX_RESULT_COUNT,
         skipCount: skipCount + maxResultCount,
         caAddresses: chainId ? [walletInfo?.[chainId]?.caAddress || ''] : caAddressList,
         caAddressInfos: chainId ? caAddressInfos.filter((item) => item.chainId === chainId) : caAddressInfos,
         chainId: chainId,
         symbol: symbol,
-        transactionTypes: transactionTypesForActivityList,
       };
       return dispatch(getActivityListAsync(params));
     }

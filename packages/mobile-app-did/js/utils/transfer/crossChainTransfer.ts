@@ -7,6 +7,9 @@ import { getChainNumber } from '@portkey-wallet/utils/aelf';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
+import { ELF_DECIMAL } from '@portkey-wallet/constants/constants-ca/activity';
+import { getTokenIssueChainId } from './getTokenInfo';
 
 export interface CrossChainTransferParamsType {
   tokenInfo: BaseToken;
@@ -16,17 +19,20 @@ export interface CrossChainTransferParamsType {
   memo?: string;
   toAddress: string;
 }
+export type CrossChainTransferIntervalParams = CrossChainTransferParamsType & {
+  issueChainId: number;
+};
 
 export const intervalCrossChainTransfer = async (
   tokenContract: ContractBasic,
-  params: CrossChainTransferParamsType,
+  params: CrossChainTransferIntervalParams,
 ) => {
-  const { managerAddress, chainType, amount, tokenInfo, memo = '', toAddress } = params;
-  const issueChainId = getChainIdByAddress(managerAddress, chainType);
+  const { chainType, amount, tokenInfo, memo = '', toAddress, issueChainId } = params;
+  // const issueChainId = getChainIdByAddress(managerAddress, chainType);
   const toChainId = getChainIdByAddress(toAddress, chainType);
 
   const paramsOption: any = {
-    issueChainId: getChainNumber(issueChainId),
+    issueChainId,
     toChainId: getChainNumber(toChainId),
     symbol: tokenInfo.symbol,
     to: toAddress,
@@ -66,6 +72,7 @@ interface CrossChainTransferParams extends CrossChainTransferParamsType {
   tokenContract: ContractBasic;
   contract: ContractBasic;
   caHash: string;
+  crossDefaultFee: number;
 }
 const crossChainTransfer = async ({
   tokenInfo,
@@ -77,11 +84,15 @@ const crossChainTransfer = async ({
   tokenContract,
   contract,
   caHash,
+  crossDefaultFee,
 }: CrossChainTransferParams) => {
   let managerTransferResult;
+  const issueChainId = await getTokenIssueChainId({ tokenContract, paramsOption: { symbol: tokenInfo.symbol } });
+
   try {
     // first transaction:transfer to manager itself
     console.log('first transaction:transfer to manager itself Amount', amount);
+
     managerTransferResult = await managerTransfer({
       contract,
       paramsOption: {
@@ -109,9 +120,13 @@ const crossChainTransfer = async ({
     tokenInfo,
     chainType,
     managerAddress,
-    amount: tokenInfo.symbol === 'ELF' ? ZERO.plus(amount).minus(timesDecimals(0.35, 8)).toFixed() : amount,
+    amount:
+      tokenInfo.symbol === ELF_SYMBOL
+        ? ZERO.plus(amount).minus(timesDecimals(crossDefaultFee, ELF_DECIMAL)).toFixed()
+        : amount,
     memo,
     toAddress,
+    issueChainId,
   };
 
   try {

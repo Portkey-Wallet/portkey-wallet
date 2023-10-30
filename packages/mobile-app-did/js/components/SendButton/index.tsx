@@ -11,6 +11,7 @@ import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import AssetsOverlay from 'pages/DashBoard/AssetsOverlay';
 import GStyles from 'assets/theme/GStyles';
+
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
   sentToken?: TokenItemShowType;
@@ -36,9 +37,8 @@ const SendButton = (props: SendButtonType) => {
                 address: '',
               },
             } as unknown as IToSendHomeParamsType);
-          // if (currentTokenList.length === 1)
-          // return navigationService.navigate('SendHome', { tokenItem: currentTokenList?.[0] });
-          AssetsOverlay.showAssetList({});
+
+          AssetsOverlay.showAssetList();
         }}>
         <Svg icon={themeType === 'dashBoard' ? 'send' : 'send1'} size={pTd(46)} />
       </TouchableOpacity>

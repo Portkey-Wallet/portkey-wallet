@@ -5,33 +5,42 @@ import { getChainIdByAddress } from '@portkey-wallet/utils';
 import { crossChainTransferToCa } from './crossChainTransferToCa';
 import { managerTransfer } from './managerTransfer';
 import { getChainNumber } from '@portkey-wallet/utils/aelf';
-import { getBalance } from './getBalance';
-import token from '@portkey-wallet/api/api-did/token';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
+import { getTxFee } from 'store/utils/getStore';
+import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
+import { getTokenInfo } from './getTokenInfo';
 
-const nativeToken = {
-  symbol: 'ELF',
-  decimals: 8,
+export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'> & {
+  issueChainId: number;
 };
 
-export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'>;
-
 export const intervalCrossChainTransfer = async (params: CrossChainTransferIntervalParams, count = 0) => {
-  const { chainInfo, chainType, privateKey, managerAddress, amount, tokenInfo, memo = '', toAddress } = params;
-  const issueChainId = getChainIdByAddress(managerAddress, chainType);
+  const { chainInfo, chainType, privateKey, issueChainId, amount, tokenInfo, memo = '', toAddress } = params;
   const toChainId = getChainIdByAddress(toAddress, chainType);
+  let _issueChainId = issueChainId;
+  if (!_issueChainId) {
+    _issueChainId = await getTokenInfo({
+      rpcUrl: chainInfo.endPoint,
+      address: tokenInfo.address,
+      chainType,
+      paramsOption: {
+        symbol: tokenInfo.symbol,
+      },
+    });
+  }
+
+  console.log(_issueChainId, 'issueChainId===');
   console.log('error===sendHandler--intervalCrossChainTransfer------', params);
   try {
-    const a = await crossChainTransferToCa({
+    const result = await crossChainTransferToCa({
       rpcUrl: chainInfo.endPoint,
       address: tokenInfo.address,
       chainType,
       privateKey,
       paramsOption: {
-        issueChainId: getChainNumber(issueChainId),
+        issueChainId: _issueChainId,
         toChainId: getChainNumber(toChainId),
         symbol: tokenInfo.symbol,
         to: toAddress,
@@ -39,7 +48,7 @@ export const intervalCrossChainTransfer = async (params: CrossChainTransferInter
         memo,
       },
     });
-    console.log(a, 'getBalance');
+    console.log(result, 'crossChainTransferToCa');
   } catch (error) {
     console.log(error, 'error===sendHandler--intervalCrossChainTransfer');
     count++;
@@ -70,9 +79,20 @@ const crossChainTransfer = async ({
   tokenInfo,
   memo = '',
   toAddress,
-  fee,
 }: CrossChainTransferParams) => {
   let managerTransferResult;
+  const issueChainId = await getTokenInfo({
+    rpcUrl: chainInfo.endPoint,
+    address: tokenInfo.address,
+    chainType,
+    paramsOption: {
+      symbol: tokenInfo.symbol,
+    },
+  });
+
+  console.log(issueChainId, 'issueChainId===');
+
+  if (typeof issueChainId !== 'number') throw Error('GetTokenInfo Error');
   try {
     // let _amount = amount;
     // if (tokenInfo.symbol === nativeToken.symbol) {
@@ -93,6 +113,7 @@ const crossChainTransfer = async ({
     //     },
     //   });
     // }
+
     // first transaction:transfer to manager itself
     managerTransferResult = await managerTransfer({
       rpcUrl: chainInfo.endPoint,
@@ -120,9 +141,11 @@ const crossChainTransfer = async ({
   // return;
   // TODO Only support chainType: aelf
   let _amount = amount;
-  if (tokenInfo.symbol === nativeToken.symbol) {
-    _amount = ZERO.plus(amount).minus(timesDecimals(CROSS_FEE, 8)).toNumber();
+  const { crossChain: crossChainFee } = getTxFee(tokenInfo.chainId);
+  if (tokenInfo.symbol === DEFAULT_TOKEN.symbol) {
+    _amount = ZERO.plus(amount).minus(timesDecimals(crossChainFee, DEFAULT_TOKEN.decimals)).toNumber();
   }
+
   const crossChainTransferParams = {
     chainInfo,
     chainType,
@@ -132,9 +155,10 @@ const crossChainTransfer = async ({
     tokenInfo,
     memo,
     toAddress,
+    issueChainId,
   };
   try {
-    const crossResult = await intervalCrossChainTransfer(crossChainTransferParams);
+    await intervalCrossChainTransfer(crossChainTransferParams);
   } catch (error) {
     const returnData: the2ThFailedActivityItemType = {
       transactionId: managerTransferResult.result.message.TransactionId,
@@ -145,6 +169,7 @@ const crossChainTransfer = async ({
         amount: _amount,
         memo,
         toAddress,
+        issueChainId,
       },
     };
     throw {

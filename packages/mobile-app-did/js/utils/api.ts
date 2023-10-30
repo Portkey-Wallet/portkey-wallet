@@ -13,7 +13,7 @@ class MobileVerification extends Verification {
     super(store);
   }
   public async sendVerificationCode(config: SendVerificationConfig) {
-    const { guardianIdentifier, verifierId } = config.params;
+    const { guardianIdentifier, verifierId, operationType } = config.params;
     const key = (guardianIdentifier || '') + (verifierId || '');
 
     try {
@@ -21,15 +21,21 @@ class MobileVerification extends Verification {
       if (item) {
         return item;
       } else {
-        const needRecaptcha = await request.verify.checkGoogleRecaptcha();
+        const result = await request.verify.checkGoogleRecaptcha({
+          params: {
+            operationType,
+          },
+        });
+        const isNeedRecaptcha = !!result;
 
-        if (needRecaptcha) {
+        if (isNeedRecaptcha) {
           // TODO: add language
           const reCaptchaToken = await verifyHumanMachine('en');
           config.headers = {
             reCaptchaToken: reCaptchaToken as string,
           };
         }
+
         const req = await request.verify.sendVerificationRequest(config);
         await this.set(key, { ...req, time: Date.now() });
         return req;

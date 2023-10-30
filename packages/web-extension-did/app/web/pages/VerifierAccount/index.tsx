@@ -1,10 +1,9 @@
 import { useNavigate } from 'react-router';
-import VerifierPage from 'pages/components/VerifierPage';
 import { useAppDispatch, useLoginInfo, useGuardiansInfo, useUserInfo, useLoading } from 'store/Provider/hooks';
 import { useCallback, useMemo } from 'react';
 import { message } from 'antd';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import useLocationState from 'hooks/useLocationState';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -23,6 +22,7 @@ import { useOnManagerAddressAndQueryResult } from 'hooks/useOnManagerAddressAndQ
 import { useCommonState } from 'store/Provider/hooks';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import VerifierPage from 'pages/components/VerifierPage';
 
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
@@ -30,7 +30,13 @@ export default function VerifierAccount() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { state } = useLocationState<
-    'register' | 'login' | 'guardians/add' | 'guardians/edit' | 'guardians/del' | 'guardians/setLoginAccount'
+    | 'register'
+    | 'login'
+    | 'guardians/add'
+    | 'guardians/edit'
+    | 'guardians/del'
+    | 'guardians/setLoginAccount'
+    | 'removeManage'
   >();
   const { isNotLessThan768 } = useCommonState();
   const { walletInfo } = useCurrentWallet();
@@ -170,7 +176,7 @@ export default function VerifierAccount() {
 
   const handleBack = useCallback(() => {
     if (state === 'register') {
-      navigate('/register/select-verifier');
+      navigate('/register/start/create');
     } else if (state === 'login') {
       navigate('/login/guardian-approval');
     } else if (state === 'guardians/add' && !userGuardianStatus?.[opGuardian?.key || '']?.signature) {
@@ -189,6 +195,29 @@ export default function VerifierAccount() {
     return !!currentGuardian?.isInitStatus;
   }, [currentGuardian, state]);
 
+  const operationType: OperationTypeEnum = useMemo(() => {
+    switch (state) {
+      case 'register':
+        return OperationTypeEnum.register;
+      case 'login':
+        return OperationTypeEnum.communityRecovery;
+      case 'guardians/add':
+        return OperationTypeEnum.addGuardian;
+      case 'guardians/edit':
+        return OperationTypeEnum.editGuardian;
+      case 'guardians/del':
+        return OperationTypeEnum.deleteGuardian;
+      case 'guardians/setLoginAccount':
+        return OperationTypeEnum.setLoginAccount;
+      default:
+        if (state && state?.indexOf('removeManage') !== -1) {
+          return OperationTypeEnum.removeOtherManager;
+        } else {
+          return OperationTypeEnum.unknown;
+        }
+    }
+  }, [state]);
+
   const renderContent = useMemo(
     () => (
       <div className="common-content1 verifier-account-content">
@@ -198,10 +227,11 @@ export default function VerifierAccount() {
           currentGuardian={currentGuardian}
           guardianType={loginAccount?.loginType}
           onSuccess={onSuccess}
+          operationType={operationType}
         />
       </div>
     ),
-    [currentGuardian, isInitStatus, loginAccount, onSuccess],
+    [currentGuardian, isInitStatus, loginAccount, onSuccess, operationType],
   );
 
   const props = useMemo(

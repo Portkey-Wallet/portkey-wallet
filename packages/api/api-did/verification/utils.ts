@@ -2,6 +2,7 @@ import { IStorage, StorageBaseLoader } from '@portkey-wallet/types/storage';
 import { request } from '@portkey-wallet/api/api-did';
 import { RequestConfig } from '../../types';
 import { LoginKeyType } from '@portkey-wallet/types/types-ca/wallet';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 type VerifierInfo = {
   verifierSessionId: string;
@@ -14,6 +15,7 @@ export interface SendVerificationConfig extends RequestConfig {
     guardianIdentifier?: string;
     verifierId?: string;
     chainId: string | number;
+    operationType: OperationTypeEnum;
   };
 }
 
@@ -41,21 +43,25 @@ export class Verification extends StorageBaseLoader {
   public async save() {
     this._store.setItem(this._defaultKeyName, JSON.stringify(this.verifierMap));
   }
-  public get(key: string) {
+  public get(key: string): void | VerifierInfo {
     const info = this.verifierMap[key];
     if (!info) return;
     const endTime = info.time + this._expirationTime;
     if (endTime > Date.now()) {
       return info;
     } else {
-      delete this.verifierMap[key];
-      this.save();
+      this.delete(key);
     }
+  }
+  public delete(key: string) {
+    delete this.verifierMap[key];
+    this.save();
   }
   public async set(key: string, value: VerifierInfo) {
     this.verifierMap[key] = value;
     await this.save();
   }
+
   public async sendVerificationCode(config: SendVerificationConfig) {
     const { guardianIdentifier, verifierId } = config.params;
     const key = (guardianIdentifier || '') + (verifierId || '');
@@ -69,5 +75,12 @@ export class Verification extends StorageBaseLoader {
       if (message === IntervalErrorMessage && item) return item;
       throw error;
     }
+  }
+  public async checkVerificationCode(config: RequestConfig) {
+    const { guardianIdentifier, verifierId } = config.params || {};
+    const key = (guardianIdentifier || '') + (verifierId || '');
+    const req = await request.verify.checkVerificationCode(config);
+    this.delete(key);
+    return req;
   }
 }

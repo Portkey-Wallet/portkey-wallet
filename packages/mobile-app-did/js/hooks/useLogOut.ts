@@ -12,13 +12,23 @@ import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions
 import { request } from '@portkey-wallet/api/api-did';
 
 import { useGetCurrentCAViewContract } from './contract';
-import { useCurrentWalletInfo, useOtherNetworkLogged, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import {
+  useCurrentWalletInfo,
+  useOriginChainId,
+  useOtherNetworkLogged,
+  useWallet,
+} from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ManagerInfo } from '@portkey-wallet/graphql/contract/__generated__/types';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { getWalletInfo, isCurrentCaHash } from 'utils/redux';
+import { resetDappList } from '@portkey-wallet/store/store-ca/dapp/actions';
+import { changeDrawerOpenStatus, resetDiscover } from '@portkey-wallet/store/store-ca/discover/slice';
+import im from '@portkey-wallet/im';
+import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
+import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -29,6 +39,13 @@ export default function useLogOut() {
   return useCallback(() => {
     try {
       resetStore();
+      dispatch(resetDappList(currentNetwork));
+      dispatch(resetDiscover(currentNetwork));
+      dispatch(changeDrawerOpenStatus(false));
+      im.destroy();
+      dispatch(resetIm(currentNetwork));
+      dispatch(resetSecurity(currentNetwork));
+
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
         navigationService.reset('LoginPortkey');
@@ -73,15 +90,16 @@ export function useCheckManagerOnLogout() {
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const checkManager = useCheckManager();
   const { caHash, address } = useCurrentWalletInfo();
+  const originChainId = useOriginChainId();
   const logout = useLogOut();
   return useLockCallback(async () => {
     if (!caHash) return;
     try {
-      const isManager = await checkManager({ caHash, address });
+      const isManager = await checkManager({ caHash, address, chainId: originChainId });
       const walletInfo = getWalletInfo();
       if (!isManager && walletInfo?.address === address && isCurrentCaHash(caHash)) logout();
     } catch (error) {
-      console.log(error, '======error');
+      console.log(error, '======error-useCheckManagerOnLogout');
     }
-  }, [address, caHash, getCurrentCAViewContract, logout]);
+  }, [address, caHash, getCurrentCAViewContract, logout, originChainId]);
 }

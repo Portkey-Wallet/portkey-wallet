@@ -1,43 +1,69 @@
-import React, { useCallback } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
-import CommonInput from 'components/CommonInput';
+import React, { useCallback, useMemo } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
-import { BGStyles } from 'assets/theme/styles';
-import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
-import { useLanguage } from 'i18n/hooks';
-import GameSection from '../components/GameSection';
-import { GamesList } from './GameData';
+import SimulatedInputBox from 'components/SimulatedInputBox';
+import { DiscoverCmsListSection } from '../components/DiscoverCmsListSection';
+import { defaultColors } from 'assets/theme';
+import SafeAreaBox from 'components/SafeAreaBox';
+import CustomHeader from 'components/CustomHeader';
+import { BGStyles } from 'assets/theme/styles';
+import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
+import Svg from 'components/Svg';
+import { pTd } from 'utils/unit';
+import { DiscoverArchivedSection } from '../components/DiscoverArchivedSection';
+import { useCheckAndInitNetworkDiscoverMap } from 'hooks/discover';
+import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function DiscoverHome() {
-  const { t } = useLanguage();
+  useCheckAndInitNetworkDiscoverMap();
+  const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
 
-  const navigateToSearch = useCallback(() => {
-    console.log('aaa');
+  const qrScanPermissionAndToast = useQrScanPermissionAndToast();
 
-    return navigationService.navigate('DiscoverSearch');
-  }, []);
+  const RightDom = useMemo(
+    () => (
+      <TouchableOpacity
+        style={styles.svgWrap}
+        onPress={async () => {
+          if (!(await qrScanPermissionAndToast())) return;
+          navigationService.navigate('QrScanner');
+        }}>
+        <Svg icon="scan" size={22} color={defaultColors.font2} />
+      </TouchableOpacity>
+    ),
+    [qrScanPermissionAndToast],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchCurrentRememberMeBlackList();
+    }, [fetchCurrentRememberMeBlackList]),
+  );
 
   return (
-    <PageContainer
-      hideHeader
-      safeAreaColor={['blue', 'white']}
-      containerStyles={styles.container}
-      scrollViewProps={{ disabled: true }}>
-      <View style={[BGStyles.bg5, styles.inputContainer]}>
-        <CommonInput placeholder={t('Enter URL to explore')} onFocus={() => navigateToSearch()} />
-      </View>
-      <GameSection data={GamesList} />
-    </PageContainer>
+    <SafeAreaBox edges={['top', 'right', 'left']} style={BGStyles.bg5}>
+      <CustomHeader noLeftDom rightDom={RightDom} themeType="blue" titleDom={'Discover'} />
+      <SimulatedInputBox onClickInput={() => navigationService.navigate('DiscoverSearch')} />
+      <ScrollView style={styles.container}>
+        <DiscoverArchivedSection />
+        <DiscoverCmsListSection />
+      </ScrollView>
+    </SafeAreaBox>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingLeft: 0,
-    paddingRight: 0,
+    backgroundColor: defaultColors.bg4,
+    paddingTop: pTd(24),
+    flex: 1,
   },
   inputContainer: {
     ...GStyles.paddingArg(8, 20),
+  },
+  svgWrap: {
+    padding: pTd(16),
   },
 });

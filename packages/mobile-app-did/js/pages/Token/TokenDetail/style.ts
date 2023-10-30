@@ -13,7 +13,6 @@ export const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: bg4,
-    display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -22,7 +21,7 @@ export const styles = StyleSheet.create({
   },
   tokenBalance: {
     ...fonts.mediumFont,
-    marginTop: pTd(60),
+    paddingTop: pTd(60),
     color: font5,
     fontSize: pTd(28),
     lineHeight: pTd(28),
@@ -38,15 +37,11 @@ export const styles = StyleSheet.create({
     marginBottom: pTd(40),
     display: 'flex',
     flexDirection: 'row',
-    width: pTd(238),
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonShortGroupWrap: {
-    width: pTd(140),
-  },
-  space: {
-    width: pTd(50),
+  spacerStyle: {
+    width: pTd(36),
   },
   transferWrap: {
     flex: 1,

@@ -24,8 +24,6 @@ const useBalances = ({ tokens, tokenAddress, rpcUrl, delay = 10000 }: useBalance
   const { currentAccount } = useAppEOASelector(state => state.wallet);
   const { currentChain } = useAppEOASelector(state => state.chain);
 
-  console.log('xxxx', currentAccount, wallet1);
-
   const getTokenContract = useCallback(async () => {
     if (!rpcUrl) return;
     const aelf = new AElf(new AElf.providers.HttpProvider(rpcUrl));

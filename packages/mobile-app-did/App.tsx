@@ -4,7 +4,7 @@ import { StatusBar, StatusBarProps } from 'react-native';
 import { ThemeProvider } from '@rneui/themed';
 import NavigationRoot from './js/navigation';
 import { useMemo } from 'react';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { Provider } from 'react-redux';
 import { store } from 'store';
 import { persistStore } from 'redux-persist';
@@ -19,37 +19,21 @@ import TopView from 'rn-teaset/components/Overlay/TopView';
 import AppListener from 'components/AppListener/index';
 import InterfaceProvider from 'contexts/useInterface';
 import GlobalStyleHandler from 'components/GlobalStyleHandler';
+import ErrorBoundary from 'components/ErrorBoundary';
 import { lockScreenOrientation } from 'utils/screenOrientation';
 import Updater from 'components/Updater';
 import CodePush from 'react-native-code-push';
-
+import 'utils/sentryInit';
+import 'utils/logBox';
 const codePushOptions = {
   updateDialog: false,
+  deploymentKey: (isIOS ? Config.CODE_PUSH_IOS_DEPLOYMENT_KEY : Config.CODE_PUSH_ANDROID_DEPLOYMENT_KEY) || '',
   installMode: CodePush.InstallMode.ON_NEXT_RESTART,
   checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
 };
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
-
-// Sentry init
-const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
-
-Sentry.init({
-  dsn: Config.SENTRY_DSN,
-  // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-  // We recommend adjusting this value in production.
-  tracesSampleRate: 1.0,
-
-  integrations: [
-    new Sentry.ReactNativeTracing({
-      // Pass instrumentation to be used as `routingInstrumentation`
-      routingInstrumentation,
-      tracingOrigins: ['localhost', 'my-site-url.com', /^\//],
-      // ...
-    }),
-  ],
-});
 
 initLanguage();
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');
@@ -59,7 +43,7 @@ const persistor = persistStore(store);
 const App = () => {
   const statusBarProps = useMemo(() => {
     const barProps: StatusBarProps = { barStyle: 'light-content' };
-    if (!isIos) {
+    if (!isIOS) {
       barProps.translucent = true;
       barProps.backgroundColor = 'transparent';
     }
@@ -71,25 +55,27 @@ const App = () => {
   }, []);
 
   return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <AppListener>
-          <GlobalStyleHandler>
-            <ThemeProvider theme={myTheme}>
-              <InterfaceProvider>
-                <TopView>
-                  <SafeAreaProvider>
-                    <StatusBar {...statusBarProps} />
-                    <NavigationRoot />
-                    <Updater />
-                  </SafeAreaProvider>
-                </TopView>
-              </InterfaceProvider>
-            </ThemeProvider>
-          </GlobalStyleHandler>
-        </AppListener>
-      </PersistGate>
-    </Provider>
+    <SafeAreaProvider>
+      <ErrorBoundary view="root">
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <AppListener>
+              <GlobalStyleHandler>
+                <ThemeProvider theme={myTheme}>
+                  <InterfaceProvider>
+                    <TopView>
+                      <StatusBar {...statusBarProps} />
+                      <NavigationRoot />
+                      <Updater />
+                    </TopView>
+                  </InterfaceProvider>
+                </ThemeProvider>
+              </GlobalStyleHandler>
+            </AppListener>
+          </PersistGate>
+        </Provider>
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
 };
 

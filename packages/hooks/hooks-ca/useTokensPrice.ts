@@ -5,28 +5,11 @@ import { useMemo, useCallback, useEffect } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../index';
 import { useIsMainnet } from './network';
 
-export function useTokenPrice(symbols: string[]) {
-  const { tokenPrices } = useAppCASelector(state => state.assets);
-  const dispatch = useAppCommonDispatch();
-  const getTokenPrice = useCallback(async () => {
-    if (!symbols) return;
-    dispatch(fetchTokensPriceAsync({ symbols }));
-  }, [dispatch, symbols]);
-
-  useEffect(() => {
-    getTokenPrice();
-  }, [getTokenPrice]);
-
-  const chainTokenPrices = useMemo(
-    // TODO
-    () => symbols.map(symbol => tokenPrices.tokenPriceObject?.[symbol] || 0),
-    [tokenPrices, symbols],
-  );
-
-  return useMemo(() => chainTokenPrices, [chainTokenPrices]);
-}
-
-export function useGetCurrentAccountTokenPrice(): [Record<string, number | string>, (symbol?: string) => void] {
+export function useGetCurrentAccountTokenPrice(): [
+  Record<string, number | string>,
+  (symbol?: string) => void,
+  (symbols: string[]) => void,
+] {
   const {
     tokenPrices: { tokenPriceObject },
     accountToken,
@@ -45,7 +28,14 @@ export function useGetCurrentAccountTokenPrice(): [Record<string, number | strin
     [dispatch, symbols],
   );
 
-  return [tokenPriceObject, getTokenPrice];
+  const getTokensPrice = useCallback(
+    (symbols: string[]) => {
+      dispatch(fetchTokensPriceAsync({ symbols }));
+    },
+    [dispatch],
+  );
+
+  return [tokenPriceObject, getTokenPrice, getTokensPrice];
 }
 
 export function useFreshTokenPrice() {

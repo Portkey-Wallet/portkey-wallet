@@ -43,7 +43,7 @@ export default function AccountCard({
 
   return (
     <View style={[styles.container, style]}>
-      <CommonQRCodeStyled qrData={JSON.stringify(shrinkSendQrData(info))} />
+      <CommonQRCodeStyled qrData={JSON.stringify(shrinkSendQrData(info))} width={pTd(236)} />
       <TextM style={styles.textStyle}>{toCaAddress}</TextM>
     </View>
   );

@@ -21,4 +21,17 @@ export default {
     config: { method: 'PUT' },
   },
   pullNotify: 'api/app/notify/pullNotify',
+  getPhoneCountryCode: {
+    target: '/api/app/phone/info',
+    config: { method: 'GET' },
+  },
+  getShowDeletionEntrance: {
+    target: '/api/app/account/revoke/entrance',
+    config: { method: 'GET' },
+  },
+  deletionCheck: {
+    target: '/api/app/account/revoke/check',
+    config: { method: 'GET' },
+  },
+  deletionAccount: '/api/app/account/revoke/request',
 } as const;

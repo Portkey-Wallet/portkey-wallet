@@ -3,14 +3,14 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.0.1",
+  "version": "1.3.0",
   "type": "commonjs",
   "scripts": {
-    "generate": "rm -rf ./**/*/__generated__ && node gqlg.js && graphql-codegen --config codegen.config.ts && eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+    "generate": "rm -rf ./*/__generated__ && node gqlg.js && graphql-codegen --config codegen.config.ts && eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "dependencies": {
     "@apollo/client": "^3.7.3",
-    "@portkey-wallet/constants": "^0.0.1",
+    "@portkey-wallet/constants": "^1.3.0",
     "graphql": "^16.6.0",
     "subscriptions-transport-ws": "^0.11.0"
   },

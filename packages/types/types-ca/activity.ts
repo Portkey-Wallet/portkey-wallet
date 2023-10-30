@@ -1,11 +1,11 @@
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { ChainId, ChainType } from '..';
 import { BaseToken } from './token';
 
 export type ActivityItemType = {
   chainId: string;
   transactionType: TransactionTypes;
+  transactionName?: string; // item title
   from: string; // wallet name
   to: string; // to user nick name
   fromAddress: string;
@@ -24,6 +24,7 @@ export type ActivityItemType = {
   nftInfo?: NftInfo;
   transactionFees: TransactionFees[];
   listIcon?: string;
+  isDelegated?: boolean;
 };
 
 export type NftInfo = {
@@ -48,6 +49,7 @@ export type the2ThFailedActivityItemType = {
     amount: number;
     toAddress: string;
     memo?: string;
+    issueChainId: number;
   };
 };
 

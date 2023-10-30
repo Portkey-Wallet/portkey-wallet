@@ -3,7 +3,15 @@
 .balance {
   overflow-y: overlay;
 
+  .chat-body {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9999;
+  }
+
   .wallet-name {
+    position: relative;
     line-height: 22px;
     color: @font-11;
     font-size: 16px;
@@ -11,6 +19,11 @@
     font-weight: 500;
     padding: 21px 24px;
     border-bottom: 1px solid @border-2;
+    .account-connect {
+      position: absolute;
+      top: 16px;
+      left: 8px;
+    }
   }
   .balance-amount {
     display: flex;
@@ -28,6 +41,7 @@
   }
 
   .@{app-prefix}-tabs {
+    background-color: @bg-11;
     overflow: hidden;
 
     .@{app-prefix}-tabs-nav {
@@ -36,7 +50,7 @@
       z-index: 9;
       position: sticky;
       // top: 68px;
-      background: white;
+      background: @bg-11;
 
       .@{app-prefix}-tabs-nav-wrap {
         min-width: 100%;
@@ -235,5 +249,9 @@
         }
       }
     }
+  }
+
+  .empty-element {
+    background-color: transparent;
   }
 }

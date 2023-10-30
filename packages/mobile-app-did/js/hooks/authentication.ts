@@ -1,9 +1,7 @@
 import * as WebBrowser from 'expo-web-browser';
-import { useCallback, useMemo, useState } from 'react';
-import * as appleAuthentication from 'utils/appleAuthentication';
-import { AppleAuthenticationCredential } from 'expo-apple-authentication';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import * as Google from 'expo-auth-session/providers/google';
 import Config from 'react-native-config';
 import * as Application from 'expo-application';
@@ -16,8 +14,11 @@ import { useInterface } from 'contexts/useInterface';
 import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { changeCanLock } from 'utils/LockManager';
 import { AppState } from 'react-native';
+import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
-if (!isIos) {
+if (!isIOS) {
   GoogleSignin.configure({
     offlineAccess: true,
     webClientId: Config.GOOGLE_WEB_CLIENT_ID,
@@ -40,11 +41,15 @@ export type GoogleAuthentication = {
 };
 
 export type AppleAuthentication = {
-  user?: AppleUserInfo & {
+  user: AppleUserInfo & {
     id: string;
-    isPrivate: boolean;
   };
-} & AppleAuthenticationCredential;
+  identityToken: string;
+  fullName?: {
+    givenName?: string;
+    familyName?: string;
+  };
+};
 
 export type GoogleAuthResponse = GoogleAuthentication;
 export function useGoogleAuthentication() {
@@ -109,7 +114,7 @@ export function useGoogleAuthentication() {
   const googleSign = useCallback(async () => {
     changeCanLock(false);
     try {
-      return await (isIos ? iosPromptAsync : androidPromptAsync)();
+      return await (isIOS ? iosPromptAsync : androidPromptAsync)();
     } finally {
       changeCanLock(true);
     }
@@ -117,7 +122,7 @@ export function useGoogleAuthentication() {
 
   return useMemo(
     () => ({
-      googleResponse: isIos ? response : androidResponse,
+      googleResponse: isIOS ? response : androidResponse,
       googleSign,
     }),
     [androidResponse, googleSign, response],
@@ -126,10 +131,27 @@ export function useGoogleAuthentication() {
 
 export function useAppleAuthentication() {
   const [response, setResponse] = useState<AppleAuthentication>();
-  const promptAsync = useCallback(async () => {
+  const [androidResponse, setAndroidResponse] = useState<AppleAuthentication>();
+  const isMainnet = useIsMainnet();
+
+  useEffect(() => {
+    if (isIOS) return;
+    appleAuthAndroid.configure({
+      clientId: Config.APPLE_CLIENT_ID,
+      redirectUri: isMainnet ? Config.APPLE_MAIN_REDIRECT_URI : Config.APPLE_TESTNET_REDIRECT_URI,
+      scope: appleAuthAndroid.Scope.ALL,
+      responseType: appleAuthAndroid.ResponseType.ALL,
+    });
+  }, [isMainnet]);
+
+  const iosPromptAsync = useCallback(async () => {
     setResponse(undefined);
     try {
-      const appleInfo = await appleAuthentication.signInAsync();
+      const appleInfo = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      });
+
       const user = parseAppleIdentityToken(appleInfo.identityToken);
       if (appleInfo.fullName?.familyName) {
         try {
@@ -153,7 +175,49 @@ export function useAppleAuthentication() {
       setResponse(userInfo);
       return userInfo;
     } catch (error: any) {
-      const message = error?.code === 'ERR_CANCELED' ? '' : handleErrorMessage(error);
+      console.log(error, '======error');
+
+      const message = error?.code === appleAuth.Error.CANCELED ? '' : handleErrorMessage(error);
+      // : 'It seems that the authorization with your Apple ID has failed.';
+      throw { ...error, message };
+    }
+  }, []);
+
+  const androidPromptAsync = useCallback(async () => {
+    setAndroidResponse(undefined);
+    try {
+      const appleInfo = await appleAuthAndroid.signIn();
+      const user = parseAppleIdentityToken(appleInfo.id_token);
+      if (appleInfo.user?.name?.lastName) {
+        try {
+          await request.verify.sendAppleUserExtraInfo({
+            params: {
+              identityToken: appleInfo.id_token,
+              userInfo: {
+                name: {
+                  firstName: appleInfo.user.name.firstName,
+                  lastName: appleInfo.user.name.lastName,
+                },
+                email: user?.email || appleInfo.user.email,
+              },
+            },
+          });
+        } catch (error) {
+          console.log(error, '======error');
+        }
+      }
+      const userInfo = {
+        identityToken: appleInfo.id_token,
+        fullName: {
+          givenName: appleInfo.user?.name?.firstName,
+          familyName: appleInfo.user?.name?.lastName,
+        },
+        user: { ...user, id: user?.userId },
+      } as AppleAuthentication;
+      setAndroidResponse(userInfo);
+      return userInfo;
+    } catch (error: any) {
+      const message = error?.message === appleAuthAndroid.Error.SIGNIN_CANCELLED ? '' : handleErrorMessage(error);
       // : 'It seems that the authorization with your Apple ID has failed.';
       throw { ...error, message };
     }
@@ -162,13 +226,19 @@ export function useAppleAuthentication() {
   const appleSign = useCallback(async () => {
     changeCanLock(false);
     try {
-      return await promptAsync();
+      return await (isIOS ? iosPromptAsync : androidPromptAsync)();
     } finally {
       changeCanLock(true);
     }
-  }, [promptAsync]);
+  }, [androidPromptAsync, iosPromptAsync]);
 
-  return { appleResponse: response, appleSign };
+  return useMemo(
+    () => ({
+      appleResponse: isIOS ? response : androidResponse,
+      appleSign,
+    }),
+    [androidResponse, appleSign, response],
+  );
 }
 
 export type VerifyTokenParams = {
@@ -176,6 +246,7 @@ export type VerifyTokenParams = {
   verifierId?: string;
   chainId: ChainId;
   id: string;
+  operationType: OperationTypeEnum;
 };
 
 export function useVerifyGoogleToken() {

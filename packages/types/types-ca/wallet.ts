@@ -26,6 +26,7 @@ export type ISocialLogin = LoginKey;
 export interface CAInfo {
   caAddress: string;
   caHash: string;
+  isSync?: boolean;
   // TODO: id
 }
 export type CAInfoType = {
@@ -70,4 +71,10 @@ export interface CaAccountRegisterResult {
 export interface CaAccountRecoverResult {
   requestId: string;
   body: RecoverBody;
+}
+
+export interface CaHolderInfo {
+  userId: string;
+  caHash: string;
+  walletName: string;
 }

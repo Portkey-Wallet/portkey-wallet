@@ -25,8 +25,9 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   svgWrap: {
-    marginTop: -pTd(16),
+    marginTop: -pTd(33),
     padding: pTd(16),
+    paddingTop: pTd(40),
   },
   usdtBalance: {
     ...fonts.mediumFont,
@@ -41,10 +42,12 @@ export const styles = StyleSheet.create({
   },
   buttonGroupWrap: {
     marginTop: pTd(24),
-    width: pTd(296),
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
+  },
+  spacerStyle: {
+    width: pTd(32),
   },
 });

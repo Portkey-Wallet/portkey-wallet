@@ -5,6 +5,7 @@ import './index.less';
 import { IConfirmPinProps } from '..';
 import SubmitPinButton from 'pages/AccountSetting/components/SubmitPinButton';
 import InputPin from 'pages/AccountSetting/components/InputPin';
+import { Form } from 'antd';
 
 export default function ConfirmPinPopup({
   headerTitle,
@@ -19,27 +20,35 @@ export default function ConfirmPinPopup({
   goBack,
 }: IConfirmPinProps) {
   const navigate = useNavigate();
+  const [form] = Form.useForm();
 
   return (
-    <div className="min-width-max-height flex-column-between confirm-pin-popup">
-      <div>
-        <div className="confirm-pin-title">
-          <BackHeader
-            title={headerTitle}
-            leftCallBack={goBack}
-            rightElement={
-              <CustomSvg
-                type="Close2"
-                onClick={() => {
-                  navigate('/setting/account-setting');
-                }}
-              />
-            }
-          />
+    <div className="min-width-max-height confirm-pin-popup">
+      <Form
+        form={form}
+        colon={false}
+        layout="vertical"
+        onFinish={handleNext}
+        className="flex-column-between confirm-pin-form">
+        <div>
+          <div className="confirm-pin-title">
+            <BackHeader
+              title={headerTitle}
+              leftCallBack={goBack}
+              rightElement={
+                <CustomSvg
+                  type="Close2"
+                  onClick={() => {
+                    navigate('/setting/account-setting');
+                  }}
+                />
+              }
+            />
+          </div>
+          <InputPin label={pinLabel} value={pin} placeholder={placeholder} errMsg={errMsg} onChange={onChangePin} />
         </div>
-        <InputPin label={pinLabel} value={pin} placeholder={placeholder} errMsg={errMsg} onChange={onChangePin} />
-      </div>
-      <SubmitPinButton text={btnText} disable={submitDisable} onClick={handleNext} className="confirm-pin-btn" />
+        <SubmitPinButton text={btnText} disable={submitDisable} className="confirm-pin-btn" />
+      </Form>
     </div>
   );
 }

@@ -5,12 +5,13 @@ import errorHandler from 'utils/errorHandler';
 import getPromptConfig from 'service/NotificationService/getPromptConfig';
 import ExtensionPlatform from 'utils/platforms/extension';
 import { sleep } from '@portkey-wallet/utils';
-import { removeOpenTabs, saveOpenTabs } from 'utils/clearOpenTabs';
+import OpenNewTabController from 'controllers/openNewTabController';
 
 export interface NotificationType {
   sendResponse?: SendResponseFun;
   message: PromptMessage & { externalLink?: string };
   promptType?: CreatePromptType;
+  promptConfig?: chrome.windows.CreateData;
 }
 
 export interface CloseParams extends SendResponseParams {
@@ -40,7 +41,7 @@ export default class NotificationService {
         this.openWindow = null;
       }
       if (this.closeSender?.[number]) {
-        this.closeSender?.[number]?.sendResponse?.(errorHandler(200010));
+        this.closeSender?.[number]?.sendResponse?.(errorHandler(200003));
         delete this.closeSender?.[number];
       }
     });
@@ -50,14 +51,16 @@ export default class NotificationService {
         this.openTag = null;
       }
       if (this.closeSender?.[number]) {
-        this.closeSender?.[number]?.sendResponse?.(errorHandler(200010));
+        this.closeSender?.[number]?.sendResponse?.(errorHandler(200003));
         delete this.closeSender?.[number];
       }
     });
   }
 
-  showWindow = async (notification: Omit<NotificationType, 'promptType'>) => {
+  showWindow = async (notification: Omit<NotificationType, 'promptType'>): Promise<void | chrome.windows.Window> => {
     try {
+      const promptConfig = notification?.promptConfig;
+
       const { height, width, top, left, isFullscreen } = await getPromptConfig({
         message: notification.message,
       });
@@ -77,19 +80,29 @@ export default class NotificationService {
       }
 
       // create new notification popup
-      const popupWindow = await this.platform.openWindow({
-        url,
-        height,
-        width,
-        type: 'popup',
-        focused: true,
-        state: isFullscreen ? 'fullscreen' : 'normal',
-        top,
-        left,
-      });
+      let config: chrome.windows.CreateData = { url };
+      if (promptConfig?.state === 'minimized') {
+        config = { ...config, ...promptConfig };
+      } else {
+        config = {
+          ...config,
+          height,
+          width,
+          type: 'popup',
+          focused: true,
+          state: isFullscreen ? 'fullscreen' : 'normal',
+          top,
+          left,
+          ...promptConfig,
+        };
+      }
+
+      // create new notification popup
+      const popupWindow = await this.platform.openWindow(config);
+      console.log('popupWindow', popupWindow, promptConfig);
 
       // Firefox currently ignores left/top for create, but it works for update
-      if (popupWindow.left !== left && popupWindow.state !== 'fullscreen') {
+      if (popupWindow.left !== left && popupWindow.state !== 'fullscreen' && config.state !== 'minimized') {
         if (!popupWindow.id) return;
         await this.platform.updateWindowPosition(popupWindow.id, left, top);
       }
@@ -108,7 +121,7 @@ export default class NotificationService {
     });
     this.openTag = tag;
     this.closeSender = { ...this.closeSender, [tag.id?.toString() ?? '']: notification };
-    saveOpenTabs(tag.id || '');
+    OpenNewTabController.saveOpenTabs(tag.id || '');
     return tag;
   };
 
@@ -134,7 +147,7 @@ export default class NotificationService {
       // virus-like behavior as apps overflow the queue causing the user
       // to have to quit the apis to regain control.
     } else if (promptType === 'tabs' && this.openTag) {
-      removeOpenTabs(this.openTag.id || '');
+      OpenNewTabController.removeOpenTabs(this.openTag.id || '');
       this.platform.closeTab(this.openTag.id);
       this.openTag = null;
     }
@@ -164,8 +177,10 @@ export default class NotificationService {
   openPrompt = (
     message: NotificationType['message'],
     promptType: CreatePromptType = 'windows',
+    promptConfig?: NotificationType['promptConfig'],
   ): Promise<SendResponseParams> => {
     return new Promise((resolve) => {
+      console.log(message, 'openPrompt==message');
       const promptParam = {
         sendResponse: async (response?: SendResponseParams) => {
           await sleep(500);
@@ -173,6 +188,7 @@ export default class NotificationService {
         },
         message,
         promptType,
+        promptConfig,
       };
       this.open(promptParam);
     });

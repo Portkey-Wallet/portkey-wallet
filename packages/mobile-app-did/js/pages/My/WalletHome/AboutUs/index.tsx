@@ -1,7 +1,7 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Linking, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
@@ -11,57 +11,73 @@ import MenuItem from '../../components/MenuItem';
 import Divider from 'components/Divider';
 import navigationService from 'utils/navigationService';
 import { OfficialWebsite } from '@portkey-wallet/constants/constants-ca/network';
+import { useSocialMediaList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 
 const AboutUs = () => {
   const { t } = useLanguage();
+  const socialMediaList = useSocialMediaList();
+  const { s3Url } = useCurrentNetworkInfo();
+
+  const officialList = useMemo(
+    (): { iconName: IconName; title: string; onPress: () => void }[] => [
+      {
+        iconName: 'terms',
+        title: 'Terms of Service',
+        onPress: () => {
+          navigationService.navigate('ViewOnWebView', {
+            title: 'Terms of Service',
+            url: `${OfficialWebsite}/terms-of-service`,
+          });
+        },
+      },
+      {
+        iconName: 'privacy-policy',
+        title: 'Privacy Policy',
+        onPress: () => {
+          navigationService.navigate('ViewOnWebView', {
+            title: 'Privacy Policy',
+            url: `${OfficialWebsite}/privacy-policy`,
+          });
+        },
+      },
+    ],
+    [],
+  );
+
   return (
     <PageContainer
       titleDom={t('About Us')}
       safeAreaColor={['blue', 'gray']}
       containerStyles={styles.pageContainer}
-      scrollViewProps={{ disabled: true }}>
+      scrollViewProps={{ disabled: false }}>
       <View style={styles.logoWrap}>
         <Svg icon="app-blue-logo" oblongSize={[pTd(48.89), pTd(48.89)]} />
       </View>
       <TextXXXL>Portkey</TextXXXL>
-      <TextM style={styles.version}>V {Application.nativeApplicationVersion}</TextM>
-
+      <TextM style={styles.version}>{`V${Application.nativeApplicationVersion}`}</TextM>
       <View style={styles.btnContainer}>
-        <MenuItem
-          icon="twitter"
-          title="Follow us on Twitter"
-          onPress={() => {
-            Linking.openURL('https://twitter.com/Portkey_DID');
-          }}
-        />
-        <Divider style={styles.dividerStyle} />
-        <MenuItem
-          icon="discord"
-          title="Join us on Discord"
-          onPress={() => {
-            Linking.openURL('https://discord.com/invite/EUBq3rHQhr');
-          }}
-        />
-        <Divider style={styles.dividerStyle} />
-        <MenuItem
-          icon="telegram"
-          title="Join us on Telegram"
-          onPress={() => {
-            Linking.openURL('https://t.me/Portkey_Official_Group');
-          }}
-        />
+        {socialMediaList.map((item, index) => (
+          <View key={index}>
+            <MenuItem
+              svgUrl={s3Url && item.svgUrl?.filename_disk ? `${s3Url}/${item.svgUrl.filename_disk}` : ''}
+              title={item.title}
+              onPress={() => {
+                Linking.openURL(item.link);
+              }}
+            />
+            {index !== socialMediaList.length - 1 && <Divider style={styles.dividerStyle} />}
+          </View>
+        ))}
       </View>
-
-      <MenuItem
-        icon="terms"
-        title="Terms of Service"
-        onPress={() => {
-          navigationService.navigate('ViewOnWebView', {
-            title: 'Terms of Service',
-            url: `${OfficialWebsite}/terms-of-service`,
-          });
-        }}
-      />
+      <View style={styles.btnContainer}>
+        {officialList.map((item, index) => (
+          <View key={index}>
+            <MenuItem icon={item.iconName} title={item.title} onPress={() => item.onPress()} />
+            {index !== officialList.length - 1 && <Divider style={styles.dividerStyle} />}
+          </View>
+        ))}
+      </View>
     </PageContainer>
   );
 };

@@ -16,3 +16,10 @@ export type ESBaseConfig = BaseConfig & {
 };
 
 export type ES_API_REQ_FUNCTION = (config?: RequestConfig & ESConfig) => Promise<{ type: 'timeout' } | any>;
+
+export interface IGetContactListParams {
+  page: number;
+  size: number;
+  modificationTime: string;
+  keyword?: string;
+}

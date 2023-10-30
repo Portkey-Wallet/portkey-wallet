@@ -6,6 +6,7 @@ import { TokenItemType } from '@portkey-wallet/types/types-ca/token';
 import { customFetch } from '@portkey-wallet/utils/fetch';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import UISdkSandboxEventTypes from 'messages/UISdkSandboxEventTypes';
 
 interface useBalancesProps {
   tokens: TokenItemType | TokenItemType[];
@@ -55,9 +56,11 @@ class SandboxUtil {
           SandboxUtil.getBalances(event, SandboxUtil.callback);
           break;
         case SandboxEventTypes.callViewMethod:
+        case UISdkSandboxEventTypes.callViewMethod:
           SandboxUtil.callViewMethod(event, SandboxUtil.callback);
           break;
         case SandboxEventTypes.callSendMethod:
+        case UISdkSandboxEventTypes.callSendMethod:
           SandboxUtil.callSendMethod(event, SandboxUtil.callback);
           break;
         case SandboxEventTypes.getTransactionFee:
@@ -65,6 +68,9 @@ class SandboxUtil {
           break;
         case SandboxEventTypes.initViewContract:
           SandboxUtil.initViewContract(event, SandboxUtil.callback);
+          break;
+        case SandboxEventTypes.getTransactionRaw:
+          SandboxUtil.getTransactionRaw(event, SandboxUtil.callback);
           break;
         default:
           break;
@@ -232,7 +238,7 @@ class SandboxUtil {
     const data = event.data.data ?? {};
 
     try {
-      const { rpcUrl, address, methodName, privateKey, paramsOption, chainType, isGetSignTx = 0, sendOptions } = data;
+      const { rpcUrl, address, methodName, privateKey, paramsOption, chainType, sendOptions } = data;
       console.log(data, 'sendHandler=data');
       if (!rpcUrl || !address || !methodName)
         return callback(event, {
@@ -251,8 +257,9 @@ class SandboxUtil {
       const account = getWallet(privateKey);
       const contract = await SandboxUtil._getELFSendContract(rpcUrl, address, privateKey);
 
-      const contractMethod = !isGetSignTx ? contract?.callSendMethod : contract?.encodedTx;
+      const contractMethod = contract?.callSendMethod;
       const req = await contractMethod?.(methodName, account, paramsOption, sendOptions);
+      console.log(req, 'req===callSendMethod');
       if (req?.error)
         return callback(event, {
           code: SandboxErrorCode.error,
@@ -260,7 +267,11 @@ class SandboxUtil {
           sid: data.sid,
           error: req.error,
         });
-      return callback(event, { code: SandboxErrorCode.success, message: req?.data, sid: data.sid });
+      return callback(event, {
+        code: SandboxErrorCode.success,
+        message: req?.data || req,
+        sid: data.sid,
+      });
     } catch (e: any) {
       callback(event, {
         code: SandboxErrorCode.error,
@@ -282,13 +293,34 @@ class SandboxUtil {
       const transaction = await customFetch(`${rpcUrl}/api/blockChain/calculateTransactionFee`, {
         method: 'POST',
         params: {
-          RawTransaction: raw,
+          RawTransaction: raw.data,
         },
       });
       if (!transaction?.Success) throw 'Transaction failed';
       callback(event, {
         code: SandboxErrorCode.success,
         message: transaction.TransactionFee,
+        sid: data.sid,
+      });
+    } catch (e) {
+      return callback(event, {
+        code: SandboxErrorCode.error,
+        message: e,
+        sid: data.sid,
+      });
+    }
+  }
+
+  static async getTransactionRaw(event: MessageEvent<any>, callback: SendBack) {
+    const data = event.data.data ?? {};
+    try {
+      const { rpcUrl, address, paramsOption, chainType, methodName, privateKey } = data;
+      if (chainType !== 'aelf') throw 'Not support';
+      const aelfContract = await SandboxUtil._getELFSendContract(rpcUrl, address, privateKey);
+      const raw = await aelfContract.encodedTx(methodName, paramsOption);
+      callback(event, {
+        code: SandboxErrorCode.success,
+        message: raw,
         sid: data.sid,
       });
     } catch (e) {

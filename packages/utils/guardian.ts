@@ -1,10 +1,11 @@
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
-const APPROVAL_COUNT = ZERO.plus(3).div(5);
 import BigNumber from 'bignumber.js';
 
+const APPROVAL_COUNT = ZERO.plus(3).div(5);
 export function getApprovalCount(length: number) {
   if (length <= 3) return length;
   return APPROVAL_COUNT.times(length).dp(0, BigNumber.ROUND_DOWN).plus(1).toNumber();
@@ -32,4 +33,17 @@ export function handleUserGuardiansList(
       isLoginAccount: item.isLoginGuardian,
     };
   });
+}
+
+export function checkIsLastLoginAccount(guardiansList: UserGuardianItem[], guardian: UserGuardianItem) {
+  const loginIndex = guardiansList.findIndex(
+    item =>
+      item.isLoginAccount &&
+      !(
+        item.guardianType === guardian.guardianType &&
+        item.guardianAccount === guardian.guardianAccount &&
+        item.verifier?.id === guardian.verifier?.id
+      ),
+  );
+  return loginIndex === -1;
 }

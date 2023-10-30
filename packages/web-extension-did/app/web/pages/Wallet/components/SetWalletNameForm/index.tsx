@@ -6,12 +6,22 @@ import { useSetWalletName } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
 import { useWalletInfo } from 'store/Provider/hooks';
 import './index.less';
+import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { IProfileDetailDataProps } from 'types/Profile';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
-export default function SetWalletNameForm() {
+export interface ISetWalletNameFormProps {
+  data: IProfileDetailDataProps;
+  handleCopy: (v: string) => void;
+  saveCallback?: () => void;
+}
+
+export default function SetWalletNameForm({ data, handleCopy, saveCallback }: ISetWalletNameFormProps) {
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const showChat = useIsChatShow();
   const { walletName } = useWalletInfo();
   const setWalletName = useSetWalletName();
   const [disable, setDisable] = useState<boolean>(false);
@@ -36,35 +46,36 @@ export default function SetWalletNameForm() {
   }, []);
 
   const handleUpdateName = useCallback(
-    async (name: string) => {
+    async (walletName: string) => {
       try {
-        await setWalletName(name);
+        await setWalletName(walletName);
+        saveCallback?.();
         message.success(t('Saved Successful'));
       } catch (error) {
         message.error('set wallet name error');
         console.log('setWalletName: error', error);
       }
     },
-    [setWalletName, t],
+    [saveCallback, setWalletName, t],
   );
 
   const handleSave = useCallback(
-    (name: string) => {
-      if (!name) {
+    (walletName: string) => {
+      if (!walletName) {
         setValidName({
           validateStatus: 'error',
           errorMsg: 'Please Enter Wallet Name',
         });
-        form.setFieldValue('name', '');
+        form.setFieldValue('walletName', '');
         setDisable(true);
-      } else if (!isValidCAWalletName(name)) {
+      } else if (!isValidCAWalletName(walletName)) {
         setValidName({
           validateStatus: 'error',
           errorMsg: '3-16 characters, only a-z, A-Z, 0-9, space and "_" allowed',
         });
         setDisable(true);
       } else {
-        handleUpdateName(name);
+        handleUpdateName(walletName);
       }
     },
     [form, handleUpdateName],
@@ -81,23 +92,34 @@ export default function SetWalletNameForm() {
       className="set-wallet-name-form"
       colon={false}
       layout="vertical"
-      initialValues={{ name: walletName }}
-      onFinish={(v) => handleSave(v.name.trim())}
+      initialValues={{ walletName: walletName }}
+      onFinish={(v) => handleSave(v.walletName.trim())}
       onFinishFailed={onFinishFailed}>
-      <div className="form-content">
-        <FormItem
-          name="name"
-          label="Wallet Name"
-          validateStatus={validName.validateStatus}
-          help={validName.errorMsg}
-          validateTrigger="onBlur">
-          <Input
-            autoComplete="off"
-            onChange={(e) => handleInputChange(e.target.value)}
-            placeholder={t('Enter Waller Name')}
-            maxLength={16}
+      <div className="form-content-wrap">
+        <div className="form-content">
+          <FormItem
+            name="walletName"
+            label="Wallet Name"
+            validateStatus={validName.validateStatus}
+            help={validName.errorMsg}
+            validateTrigger="onBlur">
+            <Input
+              autoComplete="off"
+              onChange={(e) => handleInputChange(e.target.value)}
+              placeholder={t('Enter Waller Name')}
+              maxLength={16}
+            />
+          </FormItem>
+        </div>
+
+        {showChat && (
+          <IdAndAddress
+            portkeyId={data?.caHolderInfo?.userId}
+            relationId={data?.relationId}
+            addresses={data?.addresses || []}
+            handleCopy={handleCopy}
           />
-        </FormItem>
+        )}
       </div>
       <div className="form-btn">
         <FormItem>

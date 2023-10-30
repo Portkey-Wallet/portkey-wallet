@@ -18,6 +18,12 @@ import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import activitySlice from '@portkey-wallet/store/store-ca/activity/slice';
 import recentSlice from '@portkey-wallet/store/store-ca/recent/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
+import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
+import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
+import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
+import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
+import imSlice from '@portkey-wallet/store/store-ca/im/slice';
+import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 
 interface ThunkOptions<E = any> {
   extraArgument: E;
@@ -58,6 +64,21 @@ export const walletPersistConfig = {
   blacklist: [''],
 };
 
+export const dappPersistConfig = {
+  key: dappSlice.name,
+  storage: localStorage,
+};
+
+export const discoverPersistConfig = {
+  key: discoverSlice.name,
+  storage: localStorage,
+};
+
+export const txFeePersistConfig = {
+  key: txFeeSlice.name,
+  storage: localStorage,
+};
+
 export const loginPersistConfig = {
   key: loginSlice.name,
   storage: localStorage,
@@ -86,6 +107,17 @@ export const paymentPersistConfig = {
   storage: localStorage,
 };
 
+export const cmsPersistConfig = {
+  key: cmsSlice.name,
+  storage: localStorage,
+};
+
+export const imPersistConfig = {
+  key: imSlice.name,
+  storage: localStorage,
+  blacklist: ['channelMessageListNetMap', 'groupInfoMapNetMap'],
+};
+
 const reduxPersistConfig = {
   key: reduxStorageRoot,
   storage: localStorage,
@@ -106,6 +138,11 @@ const reduxPersistConfig = {
     recentSlice.name,
     contactSlice.name,
     guardiansSlice.name,
+    dappSlice.name,
+    discoverSlice.name,
+    txFeeSlice.name,
+    imSlice.name,
+    securitySlice.name,
   ],
   // More info here:  https://shift.infinite.red/shipping-persistant-reducers-7341691232b1
   // transforms: [SetTokenTransform],

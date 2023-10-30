@@ -4,7 +4,7 @@ import { checkPassword } from './utils';
 import {
   changePin,
   createWalletAction,
-  getWalletNameAsync,
+  getCaHolderInfoAsync,
   resetCaInfo,
   resetWallet,
   setCAInfo,
@@ -13,6 +13,7 @@ import {
   setManagerInfo,
   setOriginChainId,
   setWalletNameAction,
+  updateCASyncState,
 } from './actions';
 import { WalletError, WalletState } from './type';
 import { changeEncryptStr } from '../../wallet/utils';
@@ -21,6 +22,7 @@ const initialState: WalletState = {
   walletAvatar: `master${(Math.floor(Math.random() * 10000) % 6) + 1}`,
   walletType: 'aelf',
   walletName: 'Wallet 01',
+  userId: '',
   currentNetwork: 'MAIN',
   chainList: [],
 };
@@ -60,6 +62,16 @@ export const walletSlice = createSlice({
           [chainId]: caInfo,
         } as any;
       })
+      .addCase(updateCASyncState, (state, action) => {
+        const { chainId, networkType } = action.payload;
+        // check pin
+        const currentNetwork = networkType || state.currentNetwork || initialState.currentNetwork;
+        if (!state.walletInfo?.AESEncryptMnemonic) throw new Error(WalletError.noCreateWallet);
+        const caInfo = state.walletInfo.caInfo[currentNetwork][chainId];
+        if (!caInfo) throw new Error(WalletError.caAccountNotExists);
+        state.walletInfo.caInfo[currentNetwork][chainId] = { ...caInfo, isSync: true };
+      })
+
       .addCase(setManagerInfo, (state, action) => {
         const { pin, managerInfo } = action.payload;
         // check pin
@@ -90,11 +102,11 @@ export const walletSlice = createSlice({
         if (!state.walletInfo?.AESEncryptMnemonic) throw new Error(WalletError.noCreateWallet);
         state.walletInfo.caInfo = { ...state.walletInfo.caInfo, [currentNetwork]: caInfo };
       })
-      .addCase(getWalletNameAsync.fulfilled, (state, action) => {
-        if (action.payload) state.walletName = action.payload;
-      })
-      .addCase(getWalletNameAsync.rejected, (_, action) => {
-        console.log(action.error);
+      .addCase(getCaHolderInfoAsync.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.walletName = action.payload.nickName;
+          state.userId = action.payload.userId;
+        }
       })
       .addCase(setWalletNameAction, (state, action) => {
         state.walletName = action.payload;

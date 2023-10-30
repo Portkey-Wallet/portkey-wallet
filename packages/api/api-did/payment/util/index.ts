@@ -1,6 +1,7 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { CryptoInfoType, GetAchTokenDataType, OrderQuoteType } from '../type';
 import { TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export interface GetOrderQuoteParamsType {
   crypto: string;
@@ -23,14 +24,24 @@ export const getOrderQuote = async (params: GetOrderQuoteParamsType) => {
   return rst.data as OrderQuoteType;
 };
 
-export const getCryptoInfo = async (params: { fiat: string }, symbol: string, chainId: string) => {
+export const getCryptoInfo = async (
+  params: { fiat: string },
+  symbol: string,
+  network: string,
+  side: PaymentTypeEnum,
+) => {
   const rst = await request.payment.getCryptoList({
     params,
   });
   if (rst.returnCode !== '0000') {
     throw new Error(rst.returnMsg);
   }
-  return (rst.data as CryptoInfoType[]).find((item: any) => item.crypto === symbol && item.network === symbol);
+  return (rst.data as CryptoInfoType[]).find(
+    (item: any) =>
+      item.crypto === symbol &&
+      item.network === network &&
+      (side === PaymentTypeEnum.BUY ? Number(item.buyEnable) === 1 : Number(item.sellEnable) === 1),
+  );
 };
 
 export const getCryptoList = async (params: { fiat: string }) => {

@@ -8,13 +8,16 @@ import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { getDeviceInfo } from 'utils/device';
 import { DEVICE_TYPE } from 'constants/index';
 import { recoveryDIDWallet, registerDIDWallet } from '@portkey-wallet/api/api-did/utils/wallet';
-import { GuardiansApprovedType } from '@portkey-wallet/types/types-ca/guardian';
+import type { AccountType, GuardiansApproved } from '@portkey/services';
 import { VerificationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useFetchDidWallet from './useFetchDidWallet';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
 import { message } from 'antd';
+import ModalTip from 'pages/components/ModalTip';
+import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useTranslation } from 'react-i18next';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -24,14 +27,15 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const getWalletCAAddressResult = useFetchDidWallet(true);
   const { loginAccount, registerVerifier } = useLoginInfo();
   const network = useCurrentNetworkInfo();
+  const { t } = useTranslation();
 
   const originChainId = useOriginChainId();
 
-  const getGuardiansApproved: () => GuardiansApprovedType[] = useCallback(() => {
+  const getGuardiansApproved: () => GuardiansApproved[] = useCallback(() => {
     return Object.values(userGuardianStatus ?? {})
       .filter((guardian) => guardian.status === VerifyStatus.Verified)
       .map((guardian) => ({
-        type: LoginType[guardian.guardianType],
+        type: LoginType[guardian.guardianType] as AccountType,
         identifier: guardian.guardianAccount,
         verifierId: guardian.verifier?.id || '',
         verificationDoc: guardian.verificationDoc || '',
@@ -108,7 +112,13 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       try {
         if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
           return message.error('Missing account!!! Please login/register again');
-        setLoading(true, 'Creating address on the chain...');
+
+        if (loginAccount.createType === 'register') {
+          setLoading(true, t(CreateAddressLoading));
+        } else {
+          setLoading(true, t(InitLoginLoading));
+        }
+
         const _walletInfo = walletInfo.address ? walletInfo : AElf.wallet.createNewWallet();
         console.log(walletInfo.address, 'onCreate==');
 
@@ -151,6 +161,10 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           pwd: pin,
           managerAddress: _walletInfo.address,
         });
+        setLoading(false);
+        ModalTip({
+          content: 'Requested successfully',
+        });
       } catch (error: any) {
         console.log(error, 'onCreate==error');
         const walletError = isWalletError(error);
@@ -171,6 +185,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       requestRegisterDIDWallet,
       setLoading,
       state,
+      t,
       walletInfo,
     ],
   );

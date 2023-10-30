@@ -1,23 +1,17 @@
 @import '../../../../assets/theme/color.less';
 
 .contact-list {
-  .contact-empty {
-    display: none;
+  .adm-list {
+    --border-top: solid 1px @border-2;
+    --border-bottom: solid 1px @border-2;
   }
-
-  .contact-item-content {
-    .contact-index-logo {
-      margin-right: 12px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      color: @font-11;
-      font-size: 16px;
-      background-color: @bg-13;
-      border: 1px solid @border-1;
-    }
+  .adm-list-item {
+    border-top: 1px solid @border-2;
   }
-
+  .adm-list-item-content {
+    height: 60px;
+    border-top: none;
+  }
   .adm-list-item-content-arrow {
     display: none;
   }

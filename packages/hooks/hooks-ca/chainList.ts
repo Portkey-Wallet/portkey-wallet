@@ -3,6 +3,7 @@ import { useAppCommonDispatch } from '../index';
 import { getChainListAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentWallet, useOriginChainId, useWallet } from './wallet';
 import { ChainId } from '@portkey-wallet/types';
+import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export function useChainListFetch() {
   const { currentNetwork } = useWallet();
@@ -22,6 +23,11 @@ export function useCurrentChain(_chainId?: ChainId) {
   const chainId = useMemo(() => _chainId || originChainId, [_chainId, originChainId]);
   const currentChainList = useCurrentChainList();
   return useMemo(() => currentChainList?.find(chain => chain.chainId === chainId), [currentChainList, chainId]);
+}
+
+export function useDefaultToken(_chainId?: ChainId) {
+  const chainInfo = useCurrentChain(_chainId);
+  return chainInfo?.defaultToken || DEFAULT_TOKEN;
 }
 
 export function useIsValidSuffix() {

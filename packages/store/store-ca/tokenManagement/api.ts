@@ -1,13 +1,9 @@
 import { request } from '@portkey-wallet/api/api-did';
 
 export function fetchAllTokenList({
-  maxResultCount,
-  skipCount,
   keyword,
   chainIdArray,
 }: {
-  maxResultCount?: number;
-  skipCount?: number;
   keyword: string;
   chainIdArray: string[];
 }): Promise<{ items: any[]; totalRecordCount: number }> {
@@ -21,7 +17,7 @@ export function fetchAllTokenList({
       filter: `${filterKeywords} AND (${chainIdSearchLanguage})`,
       // filter: `${filterKeywords}`,
 
-      sort: 'sortWeight desc,token.symbol acs,token.chainId acs',
+      sort: 'sortWeight desc,isDisplay  desc,token.symbol  acs,token.chainId acs',
       skipCount: 0,
       maxResultCount: 1000,
     },

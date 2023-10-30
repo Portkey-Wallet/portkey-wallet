@@ -10,9 +10,9 @@ fun usePortkeyRecovery(entry: String, callback: () -> Unit) {
     callback()
 }
 
-fun Activity.usePortkeyEntry(entryName:String){
+fun Activity.usePortkeyEntry(entryName: String) {
     val intent = Intent(this, DefaultReactActivity::class.java)
-    intent.putExtra(StorageIdentifiers.PAGE_ENTRY,entryName)
+    intent.putExtra(StorageIdentifiers.PAGE_ENTRY, entryName)
     startActivity(intent)
 }
 

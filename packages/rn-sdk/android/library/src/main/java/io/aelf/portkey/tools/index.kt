@@ -3,7 +3,6 @@ package io.aelf.portkey.tools
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import io.aelf.portkey.components.logic.JSEventBus
 import io.aelf.portkey.components.services.GeneralJSMethodService
 import org.json.JSONObject
@@ -13,7 +12,7 @@ internal fun generateUniqueCallbackID(): String {
 }
 
 
-fun startJSBackgroundTaskTest(applicationContext: Context) {
+fun startJSBackgroundTaskTest(applicationContext: Context, callback: (JSMethodData) -> Unit = {}) {
     val taskName = "callCaContractMethod"
     val service = Intent(applicationContext, GeneralJSMethodService::class.java)
     val bundle = Bundle()
@@ -28,13 +27,11 @@ fun startJSBackgroundTaskTest(applicationContext: Context) {
             .toString()
     )
     service.putExtras(bundle)
-    JSEventBus.registerCallback(callbackId, {
-        Log.e("Portkey", "callback : $it")
-    }, JSMethodData::class.java)
+    JSEventBus.registerCallback(callbackId, callback, JSMethodData::class.java)
     applicationContext.startService(service)
 }
 
-internal data class JSMethodData(
+data class JSMethodData(
     val methodName: String,
     val extraData: String,
     val eventId: String

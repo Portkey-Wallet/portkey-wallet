@@ -27,8 +27,13 @@ export const OfficialWebsite = 'https://portkey.finance';
 
 export const ThirdParty = `https://openlogin-test.portkey.finance`;
 
-export const LinkPortkeyWebsite = 'https://portkey-website-dev.vercel.app';
+// TODO: test2 bridge
+export enum DappMap {
+  bridge = 'http://192.168.67.173:3000',
+}
+export const DAPP_WHITELIST: string[] = [DappMap.bridge];
 
+export const LinkPortkeyWebsite = 'https://portkey-website-dev.vercel.app';
 export const LinkPortkeyPath = {
   addContact: LinkPortkeyWebsite + LINK_PATH_ENUM.addContact,
   addGroup: LinkPortkeyWebsite + LINK_PATH_ENUM.addGroup,

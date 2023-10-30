@@ -6,11 +6,12 @@ import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
-import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
+import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import Svg from 'components/Svg';
 import { DappStoreItem } from '@portkey-wallet/store/store-ca/dapp/type';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface DappListItemProps {
   type?: 'home' | 'detail';
@@ -19,23 +20,25 @@ interface DappListItemProps {
 }
 
 const DappListItem: React.FC<DappListItemProps> = ({ item, type = 'home', onPress }) => {
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
+
   if (type === 'detail') {
     return (
       <View key={item?.name} style={itemStyles.itemWrap}>
         <DiscoverWebsiteImage
           size={pTd(32)}
-          imageUrl={getFaviconUrl(item?.origin || '')}
+          imageUrl={getCmsWebsiteInfoImageUrl(item?.origin || '')}
           style={itemStyles.itemImage}
         />
         <View style={itemStyles.itemCenter}>
           <TextWithProtocolIcon
             textFontSize={pTd(16)}
-            title={item?.name || getHost(item?.origin || '')}
+            title={getCmsWebsiteInfoName(item?.origin || '') || item?.name || getHost(item?.origin || '')}
             url={item?.origin || ''}
           />
           <TouchableOpacity onPress={() => onPress?.(item)}>
             <TextM numberOfLines={1} style={[FontStyles.font4, itemStyles.itemDappUrl]}>
-              {item?.origin || getHost(item?.origin || '')}
+              {item?.origin}
             </TextM>
           </TouchableOpacity>
         </View>
@@ -45,15 +48,19 @@ const DappListItem: React.FC<DappListItemProps> = ({ item, type = 'home', onPres
 
   return (
     <Touchable key={item?.name} style={itemStyles.itemWrap} onPress={() => onPress?.(item)}>
-      <DiscoverWebsiteImage size={pTd(32)} imageUrl={getFaviconUrl(item?.origin || '')} style={itemStyles.itemImage} />
+      <DiscoverWebsiteImage
+        size={pTd(32)}
+        imageUrl={getCmsWebsiteInfoImageUrl(item?.origin || '')}
+        style={itemStyles.itemImage}
+      />
       <View style={itemStyles.itemCenter}>
         <TextWithProtocolIcon
           textFontSize={pTd(16)}
-          title={item?.name || getHost(item?.origin || '')}
+          title={getCmsWebsiteInfoName(item?.origin || '') || item?.name || getHost(item?.origin || '')}
           url={item?.origin || ''}
         />
         <TextM numberOfLines={1} style={[FontStyles.font7, itemStyles.itemDappUrl]}>
-          {item?.origin || getHost(item?.origin || '')}
+          {item?.origin}
         </TextM>
       </View>
       <Svg icon="right-arrow" size={pTd(20)} />

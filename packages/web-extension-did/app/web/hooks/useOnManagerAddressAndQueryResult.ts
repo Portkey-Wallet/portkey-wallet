@@ -2,7 +2,7 @@ import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-
 import AElf from 'aelf-sdk';
 import { useCallback } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
-import { randomId } from '@portkey-wallet/utils';
+import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { getDeviceInfo } from 'utils/device';
@@ -169,9 +169,8 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         console.log(error, 'onCreate==error');
         const walletError = isWalletError(error);
         if (walletError) return message.error(walletError);
-        if (error?.message || error?.error?.message) return message.error(error?.message || error?.error?.message);
-        const errorString = typeof error === 'string' ? error : 'Something error';
-        message.error(walletError || errorString);
+        const errorTip = handleErrorMessage(error, 'Something error');
+        message.error(errorTip);
       } finally {
         setLoading(false);
       }

@@ -32,12 +32,14 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
 import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
+import { ChainId } from '@portkey-wallet/types';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
   requestCodeResult?: { verifierSessionId: string };
   startResend?: boolean;
   verificationType?: VerificationType;
+  targetChainId?: ChainId;
 };
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -63,6 +65,7 @@ export default function VerifierDetails() {
     requestCodeResult: paramsRequestCodeResult,
     startResend,
     verificationType,
+    targetChainId,
   } = useRouterParams<RouterParams>();
   const originChainId = useOriginChainId();
 
@@ -125,6 +128,7 @@ export default function VerifierDetails() {
             verifierId: guardianItem?.verifier?.id,
             chainId: originChainId,
             operationType,
+            targetChainId,
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -135,18 +139,18 @@ export default function VerifierDetails() {
         };
 
         switch (verificationType) {
-          case VerificationType.communityRecovery:
-          case VerificationType.addGuardianByApprove:
-          case VerificationType.editGuardian:
-          case VerificationType.deleteGuardian:
-          case VerificationType.removeOtherManager:
-            setGuardianStatus({
-              requestCodeResult: requestCodeResult,
-              status: VerifyStatus.Verified,
+          case VerificationType.register:
+            onRequestOrSetPin({
+              showLoading: false,
+              managerInfo: {
+                verificationType: VerificationType.register,
+                loginAccount: guardianItem.guardianAccount,
+                type: guardianItem.guardianType,
+              },
               verifierInfo,
             });
-            navigationService.goBack();
             break;
+
           case VerificationType.addGuardian:
             if (verifierInfo.signature && verifierInfo.verificationDoc) {
               navigationService.navigate('GuardianApproval', {
@@ -160,16 +164,14 @@ export default function VerifierDetails() {
           case VerificationType.setLoginAccount:
             await onSetLoginAccount();
             break;
+
           default:
-            onRequestOrSetPin({
-              showLoading: false,
-              managerInfo: {
-                verificationType: VerificationType.register,
-                loginAccount: guardianItem.guardianAccount,
-                type: guardianItem.guardianType,
-              },
+            setGuardianStatus({
+              requestCodeResult: requestCodeResult,
+              status: VerifyStatus.Verified,
               verifierInfo,
             });
+            navigationService.goBack();
             break;
         }
       } catch (error) {
@@ -187,9 +189,10 @@ export default function VerifierDetails() {
       managerAddress,
       originChainId,
       operationType,
-      setGuardianStatus,
-      onSetLoginAccount,
+      targetChainId,
       onRequestOrSetPin,
+      onSetLoginAccount,
+      setGuardianStatus,
     ],
   );
 
@@ -204,6 +207,7 @@ export default function VerifierDetails() {
           verifierId: guardianItem?.verifier?.id,
           chainId: originChainId,
           operationType,
+          targetChainId,
         },
       });
       if (req.verifierSessionId) {
@@ -219,7 +223,7 @@ export default function VerifierDetails() {
     }
     digitInput.current?.reset();
     Loading.hide();
-  }, [guardianItem, operationType, originChainId, setGuardianStatus]);
+  }, [guardianItem, operationType, originChainId, setGuardianStatus, targetChainId]);
 
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>

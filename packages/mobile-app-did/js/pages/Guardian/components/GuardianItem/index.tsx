@@ -32,17 +32,13 @@ import { useVerifyToken } from 'hooks/authentication';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import myEvents from 'utils/deviceEvent';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
+import {
+  APPROVAL_TO_OPERATION_MAP,
+  APPROVAL_TO_VERIFICATION_MAP,
+} from '@portkey-wallet/constants/constants-ca/verifier';
+import { ChainId } from '@portkey-wallet/types';
 
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
-
-const APPROVAL_TO_VERIFICATION_MAP = {
-  [ApprovalType.addGuardian]: VerificationType.addGuardianByApprove,
-  [ApprovalType.editGuardian]: VerificationType.editGuardian,
-  [ApprovalType.deleteGuardian]: VerificationType.deleteGuardian,
-  [ApprovalType.removeOtherManager]: VerificationType.removeOtherManager,
-  [ApprovalType.communityRecovery]: VerificationType.communityRecovery,
-};
 
 interface GuardianAccountItemProps {
   guardianItem: UserGuardianItem;
@@ -55,6 +51,7 @@ interface GuardianAccountItemProps {
   isSuccess?: boolean;
   approvalType?: ApprovalType;
   authenticationInfo?: AuthenticationInfo;
+  targetChainId?: ChainId;
 }
 
 function GuardianItemButton({
@@ -65,6 +62,7 @@ function GuardianItemButton({
   approvalType,
   disabled,
   authenticationInfo,
+  targetChainId,
 }: GuardianAccountItemProps & {
   disabled?: boolean;
 }) {
@@ -103,6 +101,7 @@ function GuardianItemButton({
           verifierId: guardianInfo.guardianItem.verifier?.id,
           chainId: originChainId,
           operationType,
+          targetChainId,
         },
       });
       if (req.verifierSessionId) {
@@ -115,6 +114,7 @@ function GuardianItemButton({
         navigationService.push('VerifierDetails', {
           ...guardianInfo,
           requestCodeResult: req,
+          targetChainId,
         });
       } else {
         throw new Error('send fail');
@@ -137,6 +137,7 @@ function GuardianItemButton({
         verifierId: guardianItem.verifier?.id,
         chainId: originChainId,
         operationType,
+        targetChainId,
       });
 
       if (rst.accessToken) {
@@ -163,6 +164,7 @@ function GuardianItemButton({
     onSetGuardianStatus,
     operationType,
     originChainId,
+    targetChainId,
     verifyToken,
   ]);
   const onVerifier = useThrottleCallback(async () => {
@@ -175,6 +177,7 @@ function GuardianItemButton({
         navigationService.push('VerifierDetails', {
           ...guardianInfo,
           requestCodeResult,
+          targetChainId,
           startResend: true,
         });
         break;
@@ -239,6 +242,7 @@ export default function GuardianItem({
   isSuccess,
   approvalType = ApprovalType.communityRecovery,
   authenticationInfo,
+  targetChainId,
 }: GuardianAccountItemProps) {
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
   const disabled = isSuccess && itemStatus?.status !== VerifyStatus.Verified;
@@ -299,6 +303,7 @@ export default function GuardianItem({
           setGuardianStatus={setGuardianStatus}
           approvalType={approvalType}
           authenticationInfo={authenticationInfo}
+          targetChainId={targetChainId}
         />
       )}
       {renderBtn && renderBtn(guardianItem)}

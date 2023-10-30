@@ -10,7 +10,7 @@ export const managerTransfer = async ({
   paramsOption,
   sendOptions,
 }: BaseSendOption & {
-  paramsOption: { caHash: string; symbol: string; to: string; amount: number; memo?: string };
+  paramsOption: { caHash: string; symbol: string; to: string; amount: number | string; memo?: string };
 }) => {
   const resMessage = await SandboxEventService.dispatchAndReceive(SandboxEventTypes.callSendMethod, {
     rpcUrl: rpcUrl,

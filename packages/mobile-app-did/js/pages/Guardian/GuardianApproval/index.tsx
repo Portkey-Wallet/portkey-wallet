@@ -4,7 +4,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useLanguage } from 'i18n/hooks';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { DeviceEventEmitter, ScrollView, StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import CommonButton from 'components/CommonButton';
 import { BorderStyles, FontStyles } from 'assets/theme/styles';
@@ -32,11 +32,19 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from 'components/CommonToast';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
-import { addGuardian, deleteGuardian, editGuardian, removeOtherManager } from 'utils/guardian';
+import { addGuardian, deleteGuardian, editGuardian, modifyTransferLimit, removeOtherManager } from 'utils/guardian';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../types';
 import { handleGuardiansApproved } from 'utils/login';
 import { useOnRequestOrSetPin } from 'hooks/login';
+import { ApproveParams } from 'dapp/dappOverlay';
+import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
+import { ITransferLimitItem } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import { sleep } from '@portkey-wallet/utils';
+import { ChainId } from '@portkey-wallet/types';
+import { useLatestRef } from '@portkey-wallet/hooks';
+import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
+import { useCheckRouteExistInRouteStack } from 'hooks/route';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -48,6 +56,9 @@ export type RouterParams = {
   removeManagerAddress?: string;
   loginType?: LoginType;
   authenticationInfo?: AuthenticationInfo;
+  approveParams?: ApproveParams;
+  transferLimitDetail?: ITransferLimitItem;
+  targetChainId?: ChainId;
 };
 export default function GuardianApproval() {
   const {
@@ -60,8 +71,32 @@ export default function GuardianApproval() {
     removeManagerAddress,
     loginType,
     authenticationInfo: _authenticationInfo,
+    approveParams,
+    transferLimitDetail,
+    targetChainId,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
+  const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
+
+  const onEmitDapp = useCallback(
+    (guardiansApproved?: GuardiansApproved) => {
+      if (approvalType !== ApprovalType.managerApprove || !approveParams) return;
+      approveParams.isDiscover && dispatch(changeDrawerOpenStatus(true));
+      DeviceEventEmitter.emit(
+        approveParams.eventName,
+        guardiansApproved ? { approveInfo: approveParams.approveInfo, success: true, guardiansApproved } : undefined,
+      );
+    },
+    [approvalType, approveParams, dispatch],
+  );
+
+  const lastOnEmitDapp = useLatestRef(onEmitDapp);
+
+  useEffectOnce(() => {
+    return () => {
+      lastOnEmitDapp.current();
+    };
+  });
 
   const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
 
@@ -75,8 +110,9 @@ export default function GuardianApproval() {
 
   const { t } = useLanguage();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
+  const updateTransferLimit = useUpdateTransferLimit();
 
-  const getCurrentCAContract = useGetCurrentCAContract();
+  const getCurrentCAContract = useGetCurrentCAContract(targetChainId);
   const [authenticationInfo, setAuthenticationInfo] = useState<AuthenticationInfo>(_authenticationInfo || {});
   useEffectOnce(() => {
     const listener = myEvents.setAuthenticationInfo.addListener((item: AuthenticationInfo) => {
@@ -130,13 +166,26 @@ export default function GuardianApproval() {
   });
 
   const onBack = useCallback(() => {
+    lastOnEmitDapp.current();
     if (approvalType === ApprovalType.addGuardian) {
       navigationService.navigate('GuardianEdit');
     } else {
       navigationService.goBack();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [approvalType]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
+
+  const dappApprove = useCallback(() => {
+    lastOnEmitDapp.current(
+      handleGuardiansApproved(
+        guardiansStatus as GuardiansStatus,
+        userGuardiansList as UserGuardianItem[],
+      ) as GuardiansApproved,
+    );
+    navigationService.goBack();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guardiansStatus, userGuardiansList]);
   const registerAccount = useCallback(() => {
     onRequestOrSetPin({
       managerInfo: {
@@ -254,7 +303,7 @@ export default function GuardianApproval() {
         guardiansStatus,
       );
       if (req && !req.error) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await sleep(1000);
         CommonToast.success('Device Deleted');
         myEvents.refreshDeviceList.emit();
         navigationService.navigate('DeviceList');
@@ -266,6 +315,54 @@ export default function GuardianApproval() {
     }
     Loading.hide();
   }, [caHash, getCurrentCAContract, guardiansStatus, removeManagerAddress, userGuardiansList]);
+
+  const onModifyTransferLimit = useCallback(async () => {
+    if (!transferLimitDetail || !managerAddress || !caHash || !guardiansStatus || !userGuardiansList) return;
+    Loading.show();
+    try {
+      const caContract = await getCurrentCAContract();
+      const req = await modifyTransferLimit(
+        caContract,
+        managerAddress,
+        caHash,
+        userGuardiansList,
+        guardiansStatus,
+        transferLimitDetail,
+      );
+      if (req && !req.error) {
+        const isPaymentSecurityDetailExist = checkRouteExistInRouteStack('PaymentSecurityDetail');
+        updateTransferLimit(transferLimitDetail);
+        if (isPaymentSecurityDetailExist) {
+          await sleep(1000);
+        }
+        CommonToast.success('Saved Successful');
+
+        if (isPaymentSecurityDetailExist) {
+          navigationService.navigate('PaymentSecurityDetail', {
+            transferLimitDetail,
+          });
+        } else {
+          navigationService.pop(2);
+        }
+      } else {
+        console.log('onModifyTransferLimit: req?.error?.message', req?.error?.message);
+        CommonToast.failError(req?.error?.message || '');
+      }
+    } catch (error) {
+      console.log('onModifyTransferLimit: error', error);
+      CommonToast.failError(error);
+    }
+    Loading.hide();
+  }, [
+    caHash,
+    checkRouteExistInRouteStack,
+    getCurrentCAContract,
+    guardiansStatus,
+    managerAddress,
+    transferLimitDetail,
+    updateTransferLimit,
+    userGuardiansList,
+  ]);
 
   const onFinish = useCallback(async () => {
     switch (approvalType) {
@@ -284,10 +381,25 @@ export default function GuardianApproval() {
       case ApprovalType.removeOtherManager:
         onRemoveOtherManager();
         break;
+      case ApprovalType.managerApprove:
+        dappApprove();
+        break;
+      case ApprovalType.modifyTransferLimit:
+        onModifyTransferLimit();
+        break;
       default:
         break;
     }
-  }, [approvalType, registerAccount, onAddGuardian, onDeleteGuardian, onEditGuardian, onRemoveOtherManager]);
+  }, [
+    approvalType,
+    registerAccount,
+    onAddGuardian,
+    onDeleteGuardian,
+    onEditGuardian,
+    onRemoveOtherManager,
+    dappApprove,
+    onModifyTransferLimit,
+  ]);
 
   return (
     <PageContainer
@@ -335,6 +447,7 @@ export default function GuardianApproval() {
                     isSuccess={isSuccess}
                     approvalType={approvalType}
                     authenticationInfo={authenticationInfo}
+                    targetChainId={targetChainId}
                   />
                 );
               })}

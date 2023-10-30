@@ -12,6 +12,7 @@ import { DappOverlay } from 'dapp/dappOverlay';
 import { DappMobileManager } from 'dapp/dappManager';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { useDeepEQMemo } from 'hooks';
 import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { PROTOCOL_ALLOW_LIST, SCHEME_ALLOW_LIST } from 'constants/web';
@@ -24,6 +25,9 @@ export interface IWebView {
   goForward: WebView['goForward'];
   autoApprove: () => void;
 }
+// DefaultSource
+// fix android not refreshing
+const DefaultSource = { uri: '' };
 
 const ProviderWebview = forwardRef<
   IWebView | undefined,
@@ -32,6 +36,7 @@ const ProviderWebview = forwardRef<
     isDiscover?: boolean;
   }
 >(function ProviderWebview(props, forward) {
+  const [source, setSource] = useState<WebViewProps['source']>(DefaultSource);
   const webViewRef = useRef<WebView | null>(null);
   const operatorRef = useRef<DappMobileOperator | null>(null);
   // Android will trigger onLoadEnd before onLoadStart, Mark start status.
@@ -50,6 +55,17 @@ const ProviderWebview = forwardRef<
       operatorRef.current?.onDestroy();
     };
   });
+
+  const memoSource = useDeepEQMemo(() => props.source, [props.source]);
+
+  useEffect(() => {
+    // fix android not refreshing
+    // asynchronously change Source
+    setTimeout(() => {
+      setSource(memoSource);
+    }, 0);
+  }, [memoSource]);
+
   useEffect(() => {
     operatorRef.current?.setIsLockDapp(!!props.isHidden);
   }, [props.isHidden]);
@@ -106,7 +122,7 @@ const ProviderWebview = forwardRef<
       /**
        * Stop loading the current page.
        */
-      stopLoading: () => webViewRef.current?.reload(),
+      stopLoading: () => webViewRef.current?.stopLoading(),
 
       /**
        * Executes the JavaScript string.
@@ -153,6 +169,7 @@ const ProviderWebview = forwardRef<
       injectedJavaScriptBeforeContentLoaded={isIOS ? entryScriptWeb3 : undefined}
       applicationNameForUserAgent={`WebView Portkey did Mobile PortkeyV${Application.nativeApplicationVersion}`}
       {...props}
+      source={source}
       onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
       onLoadStart={event => {
         onLoadStart(event);

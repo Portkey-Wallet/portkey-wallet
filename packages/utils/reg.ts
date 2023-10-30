@@ -30,7 +30,7 @@ export function isSymbol(symbol: string) {
   return SYMBOL_REG.test(symbol);
 }
 
-const P_N_REG = /^[0-9]+.?[0-9]*$/;
+const P_N_REG = /^[0-9]+\.?[0-9]*$/;
 
 export function isValidNumber(n: string) {
   if (n.includes('-')) return false;

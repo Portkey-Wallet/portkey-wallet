@@ -26,6 +26,7 @@ import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
+import { isValidNumber } from '@portkey-wallet/utils/reg';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -114,8 +115,9 @@ const ApproveModal = (props: SignModalPropsType) => {
 
   const onChangeText = useCallback(
     (v: string) => {
-      if (MAX_NUM.isLessThan(v)) return;
-      setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM, decimals));
+      if (isValidNumber(v.trim())) return setSymbolNum(parseInputNumberChange(v.trim(), MAX_NUM, decimals));
+
+      if (!v.trim()) return setSymbolNum('');
     },
     [MAX_NUM, decimals],
   );

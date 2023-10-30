@@ -172,6 +172,7 @@ export default function ManagerApproveInner({
           className="portkey-ui-flex-column"
           symbol={symbol}
           amount={allowance}
+          decimals={tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL}
           recommendedAmount={divDecimals(amount, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed()}
           max={divDecimals(LANG_MAX, tokenInfo?.decimals ?? DEFAULT_SYMBOL_DECIMAL).toFixed(0)}
           dappInfo={dappInfo}

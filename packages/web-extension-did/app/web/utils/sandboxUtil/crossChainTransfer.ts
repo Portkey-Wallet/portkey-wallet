@@ -11,6 +11,7 @@ import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/act
 import { getTxFee } from 'store/utils/getStore';
 import { DEFAULT_TOKEN } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getTokenInfo } from './getTokenInfo';
+import { getBalance } from './getBalance';
 
 export type CrossChainTransferIntervalParams = Omit<CrossChainTransferParams, 'caHash' | 'fee'> & {
   issueChainId: number;
@@ -93,26 +94,38 @@ const crossChainTransfer = async ({
   console.log(issueChainId, 'issueChainId===');
 
   if (typeof issueChainId !== 'number') throw Error('GetTokenInfo Error');
+  const { crossChain: crossChainFee } = getTxFee(tokenInfo.chainId);
+
   try {
-    // let _amount = amount;
-    // if (tokenInfo.symbol === nativeToken.symbol) {
-    //   //
-    //   _amount = ZERO.plus(amount).plus(fee).toNumber();
-    // } else {
-    //   await managerTransfer({
-    //     rpcUrl: chainInfo.endPoint,
-    //     address: chainInfo.caContractAddress,
-    //     chainType,
-    //     privateKey,
-    //     paramsOption: {
-    //       caHash,
-    //       symbol: 'ELF',
-    //       to: managerAddress,
-    //       amount: fee,
-    //       memo,
-    //     },
-    //   });
-    // }
+    // first transaction:transfer fee to manager itself when token is not default token
+    if (tokenInfo.symbol !== DEFAULT_TOKEN.symbol) {
+      const balanceRes = await getBalance({
+        rpcUrl: chainInfo.endPoint,
+        address: tokenInfo.address,
+        chainType: 'aelf',
+        paramsOption: {
+          symbol: DEFAULT_TOKEN.symbol,
+          owner: managerAddress,
+        },
+      });
+
+      const balance = balanceRes.result.balance;
+      const crossChainAmount = timesDecimals(crossChainFee, DEFAULT_TOKEN.decimals);
+      if (crossChainAmount.gt(balance))
+        await managerTransfer({
+          rpcUrl: chainInfo.endPoint,
+          address: chainInfo.caContractAddress,
+          chainType,
+          privateKey,
+          paramsOption: {
+            caHash,
+            symbol: 'ELF',
+            to: managerAddress,
+            amount: crossChainAmount.toFixed(0),
+            memo,
+          },
+        });
+    }
 
     // first transaction:transfer to manager itself
     managerTransferResult = await managerTransfer({
@@ -141,7 +154,6 @@ const crossChainTransfer = async ({
   // return;
   // TODO Only support chainType: aelf
   let _amount = amount;
-  const { crossChain: crossChainFee } = getTxFee(tokenInfo.chainId);
   if (tokenInfo.symbol === DEFAULT_TOKEN.symbol) {
     _amount = ZERO.plus(amount).minus(timesDecimals(crossChainFee, DEFAULT_TOKEN.decimals)).toNumber();
   }

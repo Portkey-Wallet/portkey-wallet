@@ -54,6 +54,10 @@ export const setCAInfo = createAction<{
   networkType?: NetworkType;
 }>('wallet/setCAInfo');
 
+export const updateCASyncState = createAction<{
+  chainId: ChainId;
+  networkType?: NetworkType;
+}>('wallet/updateCASyncState');
 export const setCAInfoType = createAction<{
   caInfo: CAInfoType;
   pin: string;
@@ -85,33 +89,40 @@ export const getChainListAsync = createAsyncThunk(
   },
 );
 
-export const getWalletNameAsync = createAsyncThunk<WalletState['walletName'] | undefined, void>(
-  'wallet/getWalletNameAsync',
-  async (_, thunkAPI) => {
-    const {
-      wallet: { currentNetwork, walletInfo },
-    } = thunkAPI.getState() as {
-      wallet: WalletState;
-    };
-    const baseUrl = NetworkList.find(item => item.networkType === currentNetwork)?.apiUrl;
-    const caHash = walletInfo?.caInfo[currentNetwork].AELF?.caHash;
-    if (!caHash || !baseUrl) return undefined;
-    let caHolder = undefined;
-    try {
-      const response = await getCaHolder(baseUrl, {
-        caHash,
-      });
-      console.log('getCaHolderEs', response);
-      if (response.items && response.items.length > 0) {
-        caHolder = response.items[0];
-      }
-    } catch (err) {
-      console.log('getCaHolderEs: err', err);
+export const getCaHolderInfoAsync = createAsyncThunk<
+  | {
+      nickName: WalletState['walletName'];
+      userId: WalletState['userId'];
     }
-    if (!caHolder) return undefined;
-    return caHolder.nickName;
-  },
-);
+  | undefined,
+  void
+>('wallet/getCaHolderInfoAsync', async (_, thunkAPI) => {
+  const {
+    wallet: { currentNetwork, walletInfo },
+  } = thunkAPI.getState() as {
+    wallet: WalletState;
+  };
+  const baseUrl = NetworkList.find(item => item.networkType === currentNetwork)?.apiUrl;
+  const caHash = walletInfo?.caInfo[currentNetwork].AELF?.caHash;
+  if (!caHash || !baseUrl) return undefined;
+  let caHolder = undefined;
+  try {
+    const response = await getCaHolder(baseUrl, {
+      caHash,
+    });
+    console.log('getCaHolderEs', response);
+    if (response.items && response.items.length > 0) {
+      caHolder = response.items[0];
+    }
+  } catch (err) {
+    console.log('getCaHolderEs: err', err);
+  }
+  if (!caHolder) return undefined;
+  return {
+    nickName: caHolder.nickName,
+    userId: caHolder.userId,
+  };
+});
 
 export const setWalletNameAction = createAction<string>('wallet/setWalletName');
 

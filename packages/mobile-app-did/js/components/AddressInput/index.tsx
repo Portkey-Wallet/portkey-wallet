@@ -10,7 +10,7 @@ type AelfInputWithAffixProps = InputProps & {
 };
 
 const AelfInputWithAffix: React.FC<AelfInputWithAffixProps> = props => {
-  const { placeholder = 'send', errorMessage = '', affix = ['ELF', 'AELF'] } = props;
+  const { placeholder = 'send', errorMessage = '', affix = ['', ''] } = props;
 
   return (
     <View>
@@ -19,13 +19,13 @@ const AelfInputWithAffix: React.FC<AelfInputWithAffixProps> = props => {
           <TextM>{affix[0]}</TextM>
         </View>
         <Input
-          selectionColor={defaultColors.bg15}
           containerStyle={generalStyles.containerStyle}
           inputContainerStyle={generalStyles.inputContainerStyle}
           inputStyle={generalStyles.inputStyle}
           rightIconContainerStyle={generalStyles.rightIconContainerStyle}
           placeholder={placeholder}
           disabledInputStyle={generalStyles.disabledInputStyle}
+          placeholderTextColor={defaultColors.font7}
           {...props}
         />
         <View style={[generalStyles.commonFix, generalStyles.suffix]}>

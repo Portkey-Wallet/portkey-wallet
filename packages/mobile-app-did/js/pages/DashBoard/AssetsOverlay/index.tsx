@@ -4,12 +4,10 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { TextL, TextS } from 'components/CommonText';
 import { ModalBody } from 'components/ModalBody';
 import CommonInput from 'components/CommonInput';
-import { AccountType } from '@portkey-wallet/types/wallet';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import useDebounce from 'hooks/useDebounce';
 import NoData from 'components/NoData';
-import { Image } from '@rneui/themed';
 import { defaultColors } from 'assets/theme';
 import { useCaAddressInfoList, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import TokenListItem from 'components/TokenListItem';
@@ -25,12 +23,7 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-
-type onFinishSelectTokenType = (tokenItem: any) => void;
-type TokenListProps = {
-  account?: AccountType;
-  onFinishSelectToken?: onFinishSelectTokenType;
-};
+import CommonAvatar from 'components/CommonAvatar';
 
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
   const { symbol, onPress, item } = props;
@@ -52,14 +45,14 @@ const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: 
     return (
       <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.(item)}>
         {item.nftInfo.imageUrl ? (
-          <Image resizeMode={'contain'} style={[itemStyle.left]} source={{ uri: item?.nftInfo?.imageUrl }} />
+          <CommonAvatar style={[itemStyle.left]} imageUrl={item?.nftInfo?.imageUrl} />
         ) : (
           <Text style={[itemStyle.left, itemStyle.noPic]}>{item.symbol[0]}</Text>
         )}
         <View style={itemStyle.right}>
           <View>
             <TextL numberOfLines={1} ellipsizeMode={'tail'} style={[FontStyles.font5]}>
-              {`${symbol || 'Name'} #${tokenId}`}
+              {`${symbol} #${tokenId}`}
             </TextL>
 
             <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.nftItemInfo]}>
@@ -84,7 +77,7 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ account }: TokenListProps) => {
+const AssetList = ({ toAddress }: { toAddress: string }) => {
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
@@ -112,6 +105,7 @@ const AssetList = ({ account }: TokenListProps) => {
           skipCount: pageInfoRef.current.curPage * MAX_RESULT_COUNT,
           keyword: _keyword,
         });
+
         pageInfoRef.current.curPage = pageInfoRef.current.curPage + 1;
         pageInfoRef.current.total = response.totalRecordCount;
         console.log('fetchAccountAssetsByKeywords:', response);
@@ -145,30 +139,32 @@ const AssetList = ({ account }: TokenListProps) => {
     getTokenPrice();
   });
 
-  const renderItem = useCallback(({ item }: { item: IAssetItemType }) => {
-    return (
-      <AssetItem
-        symbol={item.symbol || ''}
-        // icon={'aelf-avatar'}
-        item={item}
-        onPress={() => {
-          OverlayModal.hide();
-          // onFinishSelectToken?.(item);
-          const routeParams = {
-            sendType: item?.nftInfo ? 'nft' : 'token',
-            assetInfo: item?.nftInfo
-              ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
-              : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
-            toInfo: {
-              address: '',
-              name: '',
-            },
-          };
-          navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
-        }}
-      />
-    );
-  }, []);
+  const renderItem = useCallback(
+    ({ item }: { item: IAssetItemType }) => {
+      return (
+        <AssetItem
+          symbol={item.symbol || ''}
+          // icon={'aelf-avatar'}
+          item={item}
+          onPress={() => {
+            OverlayModal.hide();
+            const routeParams = {
+              sendType: item?.nftInfo ? 'nft' : 'token',
+              assetInfo: item?.nftInfo
+                ? { ...item?.nftInfo, chainId: item.chainId, symbol: item.symbol }
+                : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
+              toInfo: {
+                address: toAddress || '',
+                name: '',
+              },
+            };
+            navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
+          }}
+        />
+      );
+    },
+    [toAddress],
+  );
 
   const noData = useMemo(() => {
     return debounceKeyword ? (
@@ -216,8 +212,9 @@ const AssetList = ({ account }: TokenListProps) => {
   );
 };
 
-export const showAssetList = (props: TokenListProps) => {
-  OverlayModal.show(<AssetList {...props} />, {
+export const showAssetList = (params?: { toAddress: string }) => {
+  const { toAddress = '' } = params || {};
+  OverlayModal.show(<AssetList toAddress={toAddress} />, {
     position: 'bottom',
     autoKeyboardInsets: false,
     enabledNestScrollView: true,

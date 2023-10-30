@@ -4,20 +4,28 @@ import { Button, message } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
-import { disclaimer, initPreviewData, MAX_UPDATE_TIME } from '../const';
+import { initPreviewData, MAX_UPDATE_TIME } from '../const';
 import { getAchSignature, getOrderQuote, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import { ACH_APP_ID, ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import {
+  ACH_MERCHANT_NAME,
+  TransDirectEnum,
+  DISCLAIMER_TEXT,
+  SERVICE_UNAVAILABLE_TEXT,
+} from '@portkey-wallet/constants/constants-ca/payment';
 import clsx from 'clsx';
 import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
 import paymentApi from '@portkey-wallet/api/api-did/payment';
-import { useCurrentApiUrl } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentApiUrl, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import CustomModal from 'pages/components/CustomModal';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import { ACH_WITHDRAW_URL } from 'constants/index';
+import { useExtensionBuyButtonShow } from 'hooks/cms';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -29,26 +37,50 @@ export default function Preview() {
   const [rate, setRate] = useState('');
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
+  const { buyConfig } = useCurrentNetworkInfo();
+  const { refreshBuyButton } = useExtensionBuyButtonShow();
 
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
   const showRateText = useMemo(() => `1 ${data.crypto} ≈ ${formatAmountShow(rate, 2)} ${data.fiat}`, [data, rate]);
   const receiveText = useMemo(
-    () => `I will receive ≈ ${formatAmountShow(receive)} ${data.side === 'BUY' ? data.crypto : data.fiat}`,
+    () =>
+      `I will receive ≈ ${formatAmountShow(receive)} ${data.side === PaymentTypeEnum.BUY ? data.crypto : data.fiat}`,
     [data, receive],
   );
   const apiUrl = useCurrentApiUrl();
   const getAchTokenInfo = useGetAchTokenInfo();
 
+  const setReceiveCase = useCallback(
+    ({
+      fiatQuantity,
+      rampFee,
+      cryptoQuantity,
+    }: {
+      fiatQuantity?: string;
+      rampFee: string;
+      cryptoQuantity?: string;
+    }) => {
+      if (data.side === PaymentTypeEnum.SELL && fiatQuantity && rampFee) {
+        const receive = Number(fiatQuantity) - Number(rampFee);
+        setReceive(formatAmountShow(receive, 4));
+      }
+      if (data.side === PaymentTypeEnum.BUY) {
+        setReceive(formatAmountShow(cryptoQuantity || '', 4));
+      }
+    },
+    [data.side],
+  );
+
   const updateReceive = useCallback(async () => {
     try {
       const rst = await getOrderQuote(data);
-      const { cryptoPrice, cryptoQuantity } = rst;
-      setReceive(cryptoQuantity || '');
+      const { cryptoPrice, fiatQuantity, rampFee, cryptoQuantity } = rst;
+      setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
       setRate(cryptoPrice);
     } catch (error) {
       console.log('error', error);
     }
-  }, [data]);
+  }, [data, setReceiveCase]);
 
   useEffect(() => {
     updateReceive();
@@ -69,23 +101,26 @@ export default function Preview() {
   }, []);
 
   const goPayPage = useCallback(async () => {
+    const { side } = data;
+    setLoading(true);
+    const result = await refreshBuyButton();
+    const isBuySectionShow = result.isBuySectionShow;
+    const isSellSectionShow = result.isSellSectionShow;
+    // Compatible with the situation where the function is turned off when the user is on the page.
+    if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
+      setLoading(false);
+      message.error(SERVICE_UNAVAILABLE_TEXT);
+      return navigate('/');
+    }
+
+    const appId = buyConfig?.ach?.appId;
+    const baseUrl = buyConfig?.ach?.baseUrl;
+    if (!appId || !baseUrl) return setLoading(false);
     try {
-      setLoading(true);
-      const { network, country, fiat, side, amount, crypto } = data;
-      let achUrl = `https://ramp.alchemypay.org/?crypto=${crypto}&network=${network}&country=${country}&fiat=${fiat}&appId=${ACH_APP_ID}&callbackUrl=${encodeURIComponent(
+      const { network, country, fiat, amount, crypto } = data;
+      let achUrl = `${baseUrl}/?crypto=${crypto}&network=${network}&country=${country}&fiat=${fiat}&appId=${appId}&callbackUrl=${encodeURIComponent(
         `${apiUrl}${paymentApi.updateAchOrder}`,
       )}`;
-
-      if (side === 'BUY') {
-        achUrl += `&type=buy&fiatAmount=${amount}`;
-      } else {
-        achUrl += `&type=sell&cryptoAmount=${amount}`;
-      }
-
-      const achTokenInfo = await getAchTokenInfo();
-      if (achTokenInfo !== undefined) {
-        achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
-      }
 
       const orderNo = await getPaymentOrderNo({
         transDirect: side === 'BUY' ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
@@ -93,9 +128,24 @@ export default function Preview() {
       });
       achUrl += `&merchantOrderNo=${orderNo}`;
 
-      const address = wallet?.AELF?.caAddress || '';
-      const signature = await getAchSignature({ address });
-      achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
+      if (side === PaymentTypeEnum.BUY) {
+        achUrl += `&type=buy&fiatAmount=${amount}`;
+
+        const achTokenInfo = await getAchTokenInfo();
+        if (achTokenInfo !== undefined) {
+          achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
+        }
+
+        const address = wallet?.AELF?.caAddress || '';
+        const signature = await getAchSignature({ address });
+        achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
+      } else {
+        const withdrawUrl = encodeURIComponent(
+          ACH_WITHDRAW_URL + `&payload=${encodeURIComponent(JSON.stringify({ orderNo: orderNo }))}`,
+        );
+
+        achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
+      }
 
       console.log('achUrl', achUrl);
       const openWinder = window.open(achUrl, '_blank');
@@ -110,18 +160,28 @@ export default function Preview() {
     } finally {
       setLoading(false);
     }
-  }, [apiUrl, data, getAchTokenInfo, navigate, setLoading, wallet]);
+  }, [
+    apiUrl,
+    buyConfig?.ach?.appId,
+    buyConfig?.ach?.baseUrl,
+    data,
+    getAchTokenInfo,
+    navigate,
+    refreshBuyButton,
+    setLoading,
+    wallet?.AELF?.caAddress,
+  ]);
 
   const showDisclaimerTipModal = useCallback(() => {
     CustomModal({
       content: (
         <>
           <div className="title">Disclaimer</div>
-          {disclaimer}
+          {t(DISCLAIMER_TEXT)}
         </>
       ),
     });
-  }, []);
+  }, [t]);
 
   const handleBack = useCallback(() => {
     navigate('/buy', { state: state });
@@ -132,7 +192,7 @@ export default function Preview() {
       <div className={clsx(['preview-frame flex-column', isPrompt ? 'detail-page-prompt' : ''])}>
         <div className="preview-title">
           <BackHeader
-            title={`Buy ${state.crypto}`}
+            title={`${data.side === PaymentTypeEnum.BUY ? 'Buy' : 'Sell'} ${state.crypto}`}
             leftCallBack={handleBack}
             rightElement={<CustomSvg type="Close2" onClick={handleBack} />}
           />
@@ -141,7 +201,7 @@ export default function Preview() {
           <div className="transaction flex-column-center">
             <div className="send">
               <span className="amount">{formatAmountShow(data.amount)}</span>
-              <span className="currency">{data.side === 'BUY' ? data.fiat : data.crypto}</span>
+              <span className="currency">{data.side === PaymentTypeEnum.BUY ? data.fiat : data.crypto}</span>
             </div>
             <div className="receive">{receiveText}</div>
           </div>
@@ -174,7 +234,7 @@ export default function Preview() {
             {t('Go to AlchemyPay')}
           </Button>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     ),
     [

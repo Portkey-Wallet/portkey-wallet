@@ -1,24 +1,24 @@
 import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
-import { CryptoItemType, LimitType, TypeEnum } from './types';
+import { CryptoItemType } from './types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MAX_REFRESH_TIME } from './constants';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { GetOrderQuoteParamsType, getOrderQuote } from '@portkey-wallet/api/api-did/payment/util';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
-import CommonToast from 'components/CommonToast';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
-import { useIsFocused } from '@react-navigation/native';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export const useReceive = (
-  type: TypeEnum,
+  type: PaymentTypeEnum,
   amount: string,
   fiat?: FiatType,
   token?: CryptoItemType,
   initialReceiveAmount = '',
   initialRate = '',
-  limitAmountRef?: React.MutableRefObject<LimitType | undefined>,
+  limitAmountRef?: React.MutableRefObject<PaymentLimitType | undefined>,
   isRefreshReceiveValid?: React.MutableRefObject<boolean>,
 ) => {
   const [receiveAmount, setReceiveAmount] = useState<string>(initialReceiveAmount);
@@ -27,13 +27,12 @@ export const useReceive = (
   const [rateRefreshTime, setRateRefreshTime] = useState<number>(MAX_REFRESH_TIME);
   const refreshReceiveRef = useRef<() => void>();
   const refreshReceiveTimerRef = useRef<NodeJS.Timer>();
-  const isFocused = useIsFocused();
-  const isFocusedRef = useRef(isFocused);
-  isFocusedRef.current = isFocused;
+  const isFocusedRef = useRef(false);
 
   const [amountError, setAmountError] = useState<ErrorType>(INIT_NONE_ERROR);
 
-  const isAllowAmount = useMemo(() => {
+  const isAllowAmountRef = useRef(false);
+  isAllowAmountRef.current = useMemo(() => {
     const reg = /^\d+(\.\d+)?$/;
     if (amount === '' || !reg.test(amount)) return false;
     return true;
@@ -45,14 +44,15 @@ export const useReceive = (
   }, []);
 
   useEffectOnce(() => {
+    isFocusedRef.current = true;
     return () => {
+      isFocusedRef.current = false;
       clearRefreshReceive();
     };
   });
 
   const registerRefreshReceive = useCallback(() => {
     clearRefreshReceive();
-
     if (!isFocusedRef.current) return;
 
     rateRefreshTimeRef.current = MAX_REFRESH_TIME;
@@ -72,7 +72,14 @@ export const useReceive = (
 
   const lastParams = useRef<GetOrderQuoteParamsType>();
   const refreshReceive = useCallback(async () => {
-    if (fiat === undefined || token === undefined || !isAllowAmount) return;
+    if (amount === '') {
+      setRate('');
+      setReceiveAmount('');
+      clearRefreshReceive();
+      return;
+    }
+
+    if (fiat === undefined || token === undefined || !isAllowAmountRef.current) return;
 
     if (limitAmountRef) {
       if (limitAmountRef.current === undefined) return;
@@ -82,12 +89,16 @@ export const useReceive = (
       if (amountNum < min || amountNum > max) {
         setAmountError({
           ...INIT_HAS_ERROR,
-          errorMsg: `Limit Amount ${formatAmountShow(min)}-${formatAmountShow(max)} ${fiat?.currency}`,
+          errorMsg: `Limit Amount ${formatAmountShow(min, 4)}-${formatAmountShow(max, 4)} ${
+            type === PaymentTypeEnum.BUY ? fiat?.currency : token.crypto
+          }`,
         });
         setRate('');
         setReceiveAmount('');
         clearRefreshReceive();
         return;
+      } else {
+        setAmountError(INIT_NONE_ERROR);
       }
     }
 
@@ -97,7 +108,7 @@ export const useReceive = (
       fiat: fiat.currency,
       country: fiat.country,
       amount,
-      side: type === TypeEnum.BUY ? 'BUY' : 'SELL',
+      side: type === PaymentTypeEnum.BUY ? 'BUY' : 'SELL',
     };
     lastParams.current = params;
 
@@ -108,12 +119,13 @@ export const useReceive = (
         registerRefreshReceive();
       }
 
+      if (!isFocusedRef.current) return;
       if (!isEqual(params, lastParams.current)) return;
       if (
         !rst ||
         !rst.cryptoPrice ||
-        (type === TypeEnum.BUY && !rst.cryptoQuantity) ||
-        (type === TypeEnum.SELL && !rst.fiatQuantity)
+        (type === PaymentTypeEnum.BUY && !rst.cryptoQuantity) ||
+        (type === PaymentTypeEnum.SELL && !rst.fiatQuantity)
       ) {
         setRate('');
         setReceiveAmount('');
@@ -121,9 +133,15 @@ export const useReceive = (
       }
 
       if (isRefreshReceiveValid) isRefreshReceiveValid.current = true;
-
       const _rate = Number(rst.cryptoPrice).toFixed(2) + '';
-      const _receiveAmount = formatAmountShow((type === TypeEnum.BUY ? rst.cryptoQuantity : rst.fiatQuantity) || '', 4);
+      let _receiveAmount = '';
+      if (type === PaymentTypeEnum.BUY) {
+        _receiveAmount = formatAmountShow(rst.cryptoQuantity || '', 4);
+      } else {
+        const fiatQuantity = ZERO.plus(rst.fiatQuantity || 0).minus(rst.rampFee || 0);
+        _receiveAmount = formatAmountShow(fiatQuantity.valueOf(), 4);
+      }
+
       setRate(_rate);
       setReceiveAmount(_receiveAmount);
       return {
@@ -132,19 +150,8 @@ export const useReceive = (
       };
     } catch (error) {
       console.log('error', error);
-      CommonToast.failError(error);
     }
-  }, [
-    amount,
-    clearRefreshReceive,
-    fiat,
-    isAllowAmount,
-    isRefreshReceiveValid,
-    limitAmountRef,
-    registerRefreshReceive,
-    token,
-    type,
-  ]);
+  }, [amount, clearRefreshReceive, fiat, isRefreshReceiveValid, limitAmountRef, registerRefreshReceive, token, type]);
   refreshReceiveRef.current = refreshReceive;
 
   const timer = useRef<NodeJS.Timeout>();
@@ -163,5 +170,11 @@ export const useReceive = (
     debounceRefreshReceiveRef.current?.();
   }, [amount]);
 
-  return { receiveAmount, rate, rateRefreshTime, refreshReceive, amountError, isAllowAmount };
+  useEffect(() => {
+    if (!isAllowAmountRef.current) {
+      setReceiveAmount('');
+    }
+  }, [fiat, token]);
+
+  return { receiveAmount, rate, rateRefreshTime, refreshReceive, amountError, isAllowAmount: isAllowAmountRef.current };
 };

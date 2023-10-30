@@ -1,31 +1,26 @@
-import { useCMS } from '@portkey-wallet/hooks/hooks-ca/cms';
-import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
-import { getTabMenuAsync } from '@portkey-wallet/store/store-ca/cms/actions';
-import { useEffect, useMemo } from 'react';
-import { useAppDispatch } from 'store/hooks';
+import { useBuyButtonShow, useEntrance } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
+import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import * as Application from 'expo-application';
 
-export function useTabMenuList(isInit = false) {
-  const dispatch = useAppDispatch();
-  const { tabMenuListNetMap } = useCMS();
-  const { networkType } = useCurrentNetworkInfo();
-  const networkList = useNetworkList();
+export const useEntranceConfig = (): IEntranceMatchValueConfig => {
+  return {
+    deviceType: String(isIOS ? VersionDeviceType.iOS : VersionDeviceType.Android),
+    version: Application.nativeApplicationVersion || undefined,
+    installationTime: async () => {
+      const date = await Application.getInstallationTimeAsync();
+      return String(date.getTime());
+    },
+  };
+};
 
-  const tabMenuList = useMemo(() => tabMenuListNetMap[networkType] || [], [networkType, tabMenuListNetMap]);
+export const useAppEntrance = (isInit = false) => {
+  const config = useEntranceConfig();
+  return useEntrance(config, isInit);
+};
 
-  useEffect(() => {
-    if (isInit) {
-      networkList.forEach(item => {
-        dispatch(getTabMenuAsync(item.networkType));
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!isInit) {
-      dispatch(getTabMenuAsync(networkType));
-    }
-  }, [dispatch, isInit, networkType]);
-
-  return tabMenuList;
-}
+export const useAppBuyButtonShow = () => {
+  const config = useEntranceConfig();
+  return useBuyButtonShow(config);
+};

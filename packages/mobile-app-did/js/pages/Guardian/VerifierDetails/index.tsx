@@ -7,7 +7,13 @@ import DigitInput, { DigitInputInterface } from 'components/DigitInput';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { ApprovalType, VerificationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import {
+  ApprovalType,
+  VerificationType,
+  OperationTypeEnum,
+  VerifierInfo,
+  VerifyStatus,
+} from '@portkey-wallet/types/verifier';
 import GuardianItem from '../components/GuardianItem';
 import { FontStyles } from 'assets/theme/styles';
 import Loading from 'components/Loading';
@@ -25,6 +31,7 @@ import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
+import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -98,6 +105,11 @@ export default function VerifierDetails() {
     }
   }, [caHash, getCurrentCAContract, guardianItem, managerAddress]);
 
+  const operationType: OperationTypeEnum = useMemo(
+    () => VERIFICATION_TO_OPERATION_MAP[verificationType as VerificationType] || OperationTypeEnum.unknown,
+    [verificationType],
+  );
+
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
@@ -112,6 +124,7 @@ export default function VerifierDetails() {
             ...requestCodeResult,
             verifierId: guardianItem?.verifier?.id,
             chainId: originChainId,
+            operationType,
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -123,7 +136,10 @@ export default function VerifierDetails() {
 
         switch (verificationType) {
           case VerificationType.communityRecovery:
-          case VerificationType.editGuardianApproval:
+          case VerificationType.addGuardianByApprove:
+          case VerificationType.editGuardian:
+          case VerificationType.deleteGuardian:
+          case VerificationType.removeOtherManager:
             setGuardianStatus({
               requestCodeResult: requestCodeResult,
               status: VerifyStatus.Verified,
@@ -163,17 +179,31 @@ export default function VerifierDetails() {
       }
       !isRequestResult && Loading.hide();
     },
-    [requestCodeResult, guardianItem, originChainId, verificationType, setGuardianStatus, onSetLoginAccount],
+    [
+      requestCodeResult,
+      guardianItem,
+      pin,
+      verificationType,
+      managerAddress,
+      originChainId,
+      operationType,
+      setGuardianStatus,
+      onSetLoginAccount,
+      onRequestOrSetPin,
+    ],
   );
+
   const resendCode = useCallback(async () => {
     try {
       Loading.show();
+
       const req = await verification.sendVerificationCode({
         params: {
           type: LoginType[guardianItem?.guardianType as LoginType],
           guardianIdentifier: guardianItem?.guardianAccount,
           verifierId: guardianItem?.verifier?.id,
           chainId: originChainId,
+          operationType,
         },
       });
       if (req.verifierSessionId) {
@@ -189,13 +219,8 @@ export default function VerifierDetails() {
     }
     digitInput.current?.reset();
     Loading.hide();
-  }, [
-    guardianItem?.guardianAccount,
-    guardianItem?.guardianType,
-    guardianItem?.verifier?.id,
-    originChainId,
-    setGuardianStatus,
-  ]);
+  }, [guardianItem, operationType, originChainId, setGuardianStatus]);
+
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>
       {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null}

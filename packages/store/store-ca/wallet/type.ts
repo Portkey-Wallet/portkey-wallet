@@ -11,15 +11,24 @@ export enum BaseWalletError {
   invalidPrivateKey = 'Invalid Private Key',
   walletExists = 'Wallet Already Exists!',
   caAccountExists = 'Account Already Exists!',
+  caAccountNotExists = 'CA Account Not Exists!',
 }
 export const WalletError = Object.assign({}, BaseWalletError, PinErrorMessage);
 
+export type DefaultToken = {
+  address: string;
+  decimals: string;
+  imageUrl: string;
+  name: string;
+  symbol: string;
+};
 export interface ChainItemType {
   chainId: ChainId;
   chainName: string;
   endPoint: string;
   explorerUrl: string;
   caContractAddress: string;
+  defaultToken: DefaultToken;
 }
 
 export interface WalletState {
@@ -31,4 +40,5 @@ export interface WalletState {
   chainList: ChainItemType[];
   chainInfo?: { [key in NetworkType]?: ChainItemType[] };
   originChainId?: ChainId;
+  userId?: string;
 }

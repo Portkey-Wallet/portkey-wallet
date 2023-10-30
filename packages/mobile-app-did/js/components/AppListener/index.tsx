@@ -4,7 +4,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import usePrevious from 'hooks/usePrevious';
 import { useSettings } from 'hooks/store';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { isIos } from '@portkey-wallet/utils/mobile/device';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { AppState, AppStateStatus } from 'react-native';
 import { useCheckUpdate } from 'hooks/device';
 let appState = 'active',
@@ -21,7 +21,7 @@ const AppListener: React.FC<AppListenerProps> = props => {
   const originChainId = useOriginChainId();
   const lockingTime = useMemo(() => {
     if (!walletInfo?.address || (walletInfo.address && !walletInfo[originChainId])) return AutoLockUpTime;
-    if (autoLockingTime === 0 && !isIos) return 0.5;
+    if (autoLockingTime === 0 && !isIOS) return 0.5;
     return autoLockingTime;
   }, [autoLockingTime, originChainId, walletInfo]);
   const prevLockingTime = usePrevious(lockingTime);

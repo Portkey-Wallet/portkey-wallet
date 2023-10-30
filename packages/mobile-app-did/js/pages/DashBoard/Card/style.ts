@@ -25,8 +25,9 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   svgWrap: {
-    marginTop: -pTd(16),
+    marginTop: -pTd(33),
     padding: pTd(16),
+    paddingTop: pTd(40),
   },
   usdtBalance: {
     ...fonts.mediumFont,

@@ -9,6 +9,7 @@ import MenuItem from './components/MenuItem';
 import { RootStackName } from 'navigation';
 import { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 
 interface MenuItemType {
   name: RootStackName;
@@ -46,6 +47,8 @@ const MenuList: Array<MenuItemType> = [
 
 export default function MyMenu() {
   const { t } = useLanguage();
+  const isImputation = useIsImputation();
+
   return (
     <PageContainer
       leftDom={<TextM />}
@@ -55,6 +58,7 @@ export default function MyMenu() {
       {MenuList.map(ele => {
         return (
           <MenuItem
+            showWarningCycle={ele.name === 'ContactsHome' && isImputation}
             style={styles.menuItemWrap}
             icon={ele?.icon || 'setting'}
             title={t(ele.label)}

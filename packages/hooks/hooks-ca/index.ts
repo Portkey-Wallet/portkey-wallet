@@ -5,22 +5,22 @@ import { useAppCommonDispatch } from '../index';
 import { resetAssets } from '@portkey-wallet/store/store-ca/assets/slice';
 import { resetRecent } from '@portkey-wallet/store/store-ca/recent/slice';
 import { resetActivity } from '@portkey-wallet/store/store-ca/activity/slice';
-import { resetDiscover } from '@portkey-wallet/store/store-ca/discover/slice';
 import { resetContact } from '@portkey-wallet/store/store-ca/contact/actions';
 import { resetGuardiansState } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { resetPayment } from '@portkey-wallet/store/store-ca/payment/actions';
+import { resetTokenManagement } from '@portkey-wallet/store/store-ca/tokenManagement/slice';
 
 export const useAppCASelector: TypedUseSelectorHook<CACommonState> = useSelector;
 
 export function useResetStore() {
   const dispatch = useAppCommonDispatch();
   return useCallback(() => {
+    dispatch(resetTokenManagement());
     dispatch(resetAssets());
     dispatch(resetRecent());
     dispatch(resetActivity());
     dispatch(resetGuardiansState());
     dispatch(resetContact());
     dispatch(resetPayment());
-    dispatch(resetDiscover());
   }, [dispatch]);
 }

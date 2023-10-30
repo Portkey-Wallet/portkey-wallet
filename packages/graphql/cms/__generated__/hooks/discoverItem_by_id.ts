@@ -57,6 +57,7 @@ export type DiscoverItem_By_IdQuery = {
     sort?: number | null;
     status?: string | null;
     title?: string | null;
+    url?: string | null;
     user_created?: string | null;
     user_updated?: string | null;
     date_created_func?: {
@@ -124,6 +125,7 @@ export type DiscoverItem_By_IdQuery = {
         sort?: number | null;
         status?: string | null;
         title?: string | null;
+        url?: string | null;
         user_created?: string | null;
         user_updated?: string | null;
         date_created_func?: {
@@ -418,6 +420,7 @@ export const DiscoverItem_By_IdDocument = gql`
           sort
           status
           title
+          url
           user_created
           user_updated
         }
@@ -450,6 +453,7 @@ export const DiscoverItem_By_IdDocument = gql`
       sort
       status
       title
+      url
       user_created
       user_updated
     }

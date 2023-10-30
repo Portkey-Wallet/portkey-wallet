@@ -18,7 +18,7 @@ import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import { ADDRESS_NUM_LIMIT } from '@portkey-wallet/constants/constants-ca/contact';
 import ContactAddress from './components/ContactAddress';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
-import ChainOverlay from './components/ChainOverlay';
+import ChainOverlay from 'components/ChainOverlay';
 import { getAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -31,6 +31,7 @@ import Loading from 'components/Loading';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
 import myEvents from 'utils/deviceEvent';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 type RouterParams = {
   contact?: ContactItemType;
@@ -49,7 +50,6 @@ type CustomChainItemType = ChainItemType & {
 
 const initEditContact: EditContactType = {
   id: '',
-  index: '',
   name: '',
   error: { ...INIT_HAS_ERROR },
   addresses: [],
@@ -57,6 +57,7 @@ const initEditContact: EditContactType = {
 
 const ContactEdit: React.FC = () => {
   const { contact, addressList } = useRouterParams<RouterParams>();
+  const defaultToken = useDefaultToken();
   const { t } = useLanguage();
   const addContactApi = useAddContact();
   const editContactApi = useEditContact();
@@ -104,6 +105,7 @@ const ContactEdit: React.FC = () => {
       if (!addressList) {
         _editContact.addresses = [
           {
+            chainName: 'aelf',
             chainId: chainList[0].chainId,
             address: '',
             error: { ...INIT_HAS_ERROR },
@@ -113,6 +115,7 @@ const ContactEdit: React.FC = () => {
         _editContact.addresses = [];
         addressList.forEach(item => {
           _editContact.addresses.push({
+            chainName: 'aelf',
             chainId: chainMap[item.chainId]?.chainId || chainList[0].chainId,
             address: item.address,
             error: { ...INIT_HAS_ERROR },
@@ -131,23 +134,23 @@ const ContactEdit: React.FC = () => {
     }));
   }, []);
 
-  const addAddress = useCallback(() => {
-    if (editContact.addresses.length >= ADDRESS_NUM_LIMIT) return;
-    if (chainList.length < 1) return;
-    setEditContact(preEditContact => ({
-      ...preEditContact,
-      addresses: [
-        ...preEditContact.addresses,
-        {
-          id: '',
-          chainType: currentNetwork,
-          chainId: chainList[0].chainId,
-          address: '',
-          error: { ...INIT_HAS_ERROR },
-        },
-      ],
-    }));
-  }, [chainList, currentNetwork, editContact.addresses.length]);
+  // const addAddress = useCallback(() => {
+  //   if (editContact.addresses.length >= ADDRESS_NUM_LIMIT) return;
+  //   if (chainList.length < 1) return;
+  //   setEditContact(preEditContact => ({
+  //     ...preEditContact,
+  //     addresses: [
+  //       ...preEditContact.addresses,
+  //       {
+  //         id: '',
+  //         chainType: currentNetwork,
+  //         chainId: chainList[0].chainId,
+  //         address: '',
+  //         error: { ...INIT_HAS_ERROR },
+  //       },
+  //     ],
+  //   }));
+  // }, [chainList, currentNetwork, editContact.addresses.length]);
 
   const deleteAddress = useCallback((deleteIdx: number) => {
     setEditContact(preEditContact => ({
@@ -329,6 +332,7 @@ const ContactEdit: React.FC = () => {
           <View style={GStyles.paddingArg(0, 4)}>
             {editContact.addresses.map((addressItem, addressIdx) => (
               <ContactAddress
+                isDeleteShow={false}
                 key={addressIdx}
                 editAddressItem={addressItem}
                 editAddressIdx={addressIdx}
@@ -345,19 +349,19 @@ const ContactEdit: React.FC = () => {
                   })
                 }
                 addressValue={addressItem.address}
-                affix={['ELF', addressItem.chainId]}
+                affix={[defaultToken.symbol, addressItem.chainId]}
                 onAddressChange={onAddressChange}
               />
             ))}
 
-            {editContact.addresses.length < 5 && (
+            {/* {editContact.addresses.length < 5 && (
               <View>
                 <Touchable onPress={addAddress} style={pageStyles.addAddressBtn}>
                   <Svg icon="add-token" size={pTd(20)} />
                   <TextM style={pageStyles.addAddressText}>{t('Add Address')}</TextM>
                 </Touchable>
               </View>
-            )}
+            )} */}
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAwareScrollView>

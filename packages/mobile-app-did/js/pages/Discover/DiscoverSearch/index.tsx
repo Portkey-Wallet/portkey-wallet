@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import GStyles from 'assets/theme/GStyles';
@@ -11,66 +11,85 @@ import { TextM } from 'components/CommonText';
 import { useFocusEffect } from '@react-navigation/native';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
-import RecordSection from '../components/RecordSection';
-import GameSection from '../components/GameSection';
-import { GamesList } from '../DiscoverHome/GameData';
-import { IGameListItemType } from '@portkey-wallet/types/types-ca/discover';
-import { isValidUrl } from '@portkey-wallet/utils/reg';
-import { useAppCommonDispatch } from '@portkey-wallet/hooks';
-import { addRecordsItem } from '@portkey-wallet/store/store-ca/discover/slice';
+import RecordSection from '../components/SearchRecordSection';
+import SearchDiscoverSection from '../components/SearchDiscoverSection';
 import { isIOS } from '@rneui/base';
-
-let timer: any = null;
+import { checkIsUrl, getHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
+import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
+import { useDiscoverJumpWithNetWork } from 'hooks/discover';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
 
-  const dispatch = useAppCommonDispatch();
+  const discoverGroupList = useDiscoverGroupList();
+  const jumpToWebview = useDiscoverJumpWithNetWork();
 
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const iptRef = useRef<any>();
   const [value, setValue] = useState<string>('');
   const [showRecord, setShowRecord] = useState<boolean>(true);
-  const [filterGameList, setFilterGameList] = useState<IGameListItemType[]>(GamesList);
-
-  const navBack = useCallback(() => {
-    navigationService.goBack();
-  }, []);
+  const [filteredDiscoverList, setFilteredDiscoverList] = useState<DiscoverItem[]>([]);
 
   const clearText = useCallback(() => setValue(''), []);
+
+  const flatList = useMemo((): DiscoverItem[] => {
+    const list = [] as DiscoverItem[];
+    discoverGroupList.map(group => {
+      group?.items?.map(item => {
+        list.push(item);
+      });
+    });
+
+    return list;
+  }, [discoverGroupList]);
 
   useEffect(() => {
     if (!value) setShowRecord(true);
   }, [value]);
 
-  const onSearch = useCallback(() => {
-    const newValue = value.trim().replace(' ', '');
-    // if URL is valid, navigate to webview
+  const onDiscoverJump = useCallback(
+    (name: string, url: string) => {
+      jumpToWebview({
+        item: {
+          name,
+          url,
+        },
+      });
+    },
+    [jumpToWebview],
+  );
 
-    if (isValidUrl(newValue)) {
-      dispatch(addRecordsItem({ title: newValue, url: newValue }));
-      navigationService.navigate('ViewOnWebView', { url: newValue, webViewPageType: 'discover' });
-      setShowRecord(true);
+  const onSearch = useCallback(() => {
+    const newValue = value.replace(/\s+/g, '').toLocaleLowerCase();
+    if (!newValue) return;
+
+    if (checkIsUrl(newValue)) {
+      onDiscoverJump(getHost(prefixUrlWithProtocol(newValue)), prefixUrlWithProtocol(newValue));
     } else {
-      // else search in game list
-      const filterList = GamesList.filter(item => item.name.replace(' ', '').includes(newValue));
-      setFilterGameList(filterList);
+      // else search in Discover list
+      const filterList = flatList.filter(item => item.title.replace(/\s+/g, '').toLocaleLowerCase().includes(newValue));
+      setFilteredDiscoverList(filterList);
       setShowRecord(false);
     }
-  }, [dispatch, value]);
+  }, [flatList, onDiscoverJump, value]);
 
   useFocusEffect(
     useCallback(() => {
       if (iptRef?.current && !isIOS) {
-        timer = setTimeout(() => {
+        timerRef.current = setTimeout(() => {
           iptRef.current.focus();
         }, 300);
       }
     }, []),
   );
 
-  useEffect(() => {
-    return () => clearTimeout(timer);
-  }, []);
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    [],
+  );
 
   return (
     <PageContainer
@@ -86,7 +105,7 @@ export default function DiscoverSearch() {
           onChangeText={v => setValue(v)}
           onSubmitEditing={onSearch}
           returnKeyType="search"
-          placeholder={t('Enter URL to explorer')}
+          placeholder={t('Search Dapp or enter URL')}
           containerStyle={styles.inputStyle}
           rightIcon={
             value ? (
@@ -96,12 +115,13 @@ export default function DiscoverSearch() {
             ) : undefined
           }
           rightIconContainerStyle={styles.rightIconContainerStyle}
+          style={styles.rnInputStyle}
         />
-        <TouchableOpacity onPress={navBack}>
+        <TouchableOpacity onPress={navigationService.goBack}>
           <TextM style={[FontStyles.font2, styles.cancelButton]}>{t('Cancel')}</TextM>
         </TouchableOpacity>
       </View>
-      {showRecord ? <RecordSection /> : <GameSection data={filterGameList} />}
+      {showRecord ? <RecordSection /> : <SearchDiscoverSection searchedDiscoverList={filteredDiscoverList || []} />}
     </PageContainer>
   );
 }
@@ -119,6 +139,9 @@ const styles = StyleSheet.create({
   },
   sectionWrap: {
     ...GStyles.paddingArg(24, 20),
+  },
+  rnInputStyle: {
+    fontSize: pTd(14),
   },
   headerWrap: {
     height: pTd(22),

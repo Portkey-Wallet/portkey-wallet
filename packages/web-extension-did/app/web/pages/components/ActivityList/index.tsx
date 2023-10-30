@@ -16,13 +16,14 @@ import { useTranslation } from 'react-i18next';
 import { intervalCrossChainTransfer } from 'utils/sandboxUtil/crossChainTransfer';
 import { useAppDispatch, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
-import { useCurrentChainList } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChainList, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import aes from '@portkey-wallet/utils/aes';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { ChainId } from '@portkey/provider-types';
 
 export interface IActivityListProps {
   data?: ActivityItemType[];
@@ -42,6 +43,7 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
   const chainList = useCurrentChainList();
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
+  const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
 
   const activityListLeftIcon = (type: TransactionTypes) => {
     return SHOW_FROM_TRANSACTION_TYPES.includes(type) ? 'Transfer' : 'socialRecovery';
@@ -84,11 +86,13 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
         <p className="row-2">
           <span>{`From: ${formatStr2EllipsisStr(transFromAddress, [7, 4])}`}</span>
           {nftInfo?.nftId && <span className="nft-name">{formatStr2EllipsisStr(nftInfo.alias)}</span>}
-          {!isTestNet && !nftInfo?.nftId && <span>{amountInUsdShow(amount, decimals || 8, symbol)}</span>}
+          {!isTestNet && !nftInfo?.nftId && (
+            <span>{amountInUsdShow(amount, decimals || defaultToken.decimals, symbol)}</span>
+          )}
         </p>
       );
     },
-    [amountInUsdShow, currentNetwork.walletType, isTestNet],
+    [amountInUsdShow, currentNetwork.walletType, defaultToken.decimals, isTestNet],
   );
 
   const networkUI = useCallback(
@@ -181,12 +185,14 @@ export default function ActivityList({ data, chainId, hasMore, loadMore }: IActi
           <span>{item?.transactionName}</span>
           <div className="right-not-from-amount">
             <div>{`${formatWithCommas({ sign, amount, decimals, digits: 4 })} ${symbol ?? ''}`}</div>
-            {!isTestNet && <div className="usd">{amountInUsdShow(amount, decimals || 8, symbol)}</div>}
+            {!isTestNet && (
+              <div className="usd">{amountInUsdShow(amount, decimals || defaultToken.decimals, symbol)}</div>
+            )}
           </div>
         </div>
       );
     },
-    [amountInUsdShow, isTestNet],
+    [amountInUsdShow, defaultToken.decimals, isTestNet],
   );
 
   return (

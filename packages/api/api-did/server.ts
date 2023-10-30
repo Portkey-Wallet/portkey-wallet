@@ -5,6 +5,8 @@ import { BaseConfig, RequestConfig } from '../types';
 import { getRequestConfig, spliceUrl } from '../utils';
 import { isValidRefreshTokenConfig, queryAuthorization, RefreshTokenConfig } from './utils/index';
 import { sleep } from '@portkey-wallet/utils';
+import im from '@portkey-wallet/im';
+import { IM_TOKEN_ERROR_ARRAY } from '@portkey-wallet/im/constant';
 export class DidService extends ServiceInit {
   protected refreshTokenConfig?: RefreshTokenConfig;
   protected onLockApp?: (expired?: boolean) => void;
@@ -23,6 +25,15 @@ export class DidService extends ServiceInit {
       if (!this.refreshTokenConfig || !isValidRefreshTokenConfig(this.refreshTokenConfig)) return;
       const authorization = await queryAuthorization(this.refreshTokenConfig);
       this.defaultConfig.headers = { ...this.defaultConfig.headers, Authorization: authorization };
+
+      im.config.setConfig({
+        requestDefaults: {
+          headers: {
+            ...im.config.requestConfig?.headers,
+            Authorization: authorization,
+          },
+        },
+      });
       this.locked = false;
       return authorization;
     } catch (error) {
@@ -49,6 +60,11 @@ export class DidService extends ServiceInit {
       };
     }
     this.refreshTokenConfig = config;
+    try {
+      this.getConnectToken();
+    } catch (error) {
+      console.log(error);
+    }
   };
   send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     try {
@@ -70,6 +86,17 @@ export class DidService extends ServiceInit {
       fetchConfig,
     };
   };
+  handleConnectToken = async (fetchResult: any) => {
+    const token = await this.getConnectToken();
+    if (!token) {
+      if (this.refreshTokenConfig && !isValidRefreshTokenConfig(this.refreshTokenConfig)) {
+        this.onLockApp?.(true);
+        // TODO: definite message
+        throw { ...fetchResult, code: 402, message: 'token expires' };
+      }
+      throw fetchResult;
+    }
+  };
   sendOrigin = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
     const { URL, fetchConfig, method } = this.getConfig(base, config);
     const fetchResult = await customFetch(URL, {
@@ -79,15 +106,10 @@ export class DidService extends ServiceInit {
     if (fetchResult && fetchResult.status === 401 && fetchResult.message === 'unauthorized') {
       if (!this.refreshTokenConfig) throw fetchResult;
       if (reCount > 5) throw fetchResult;
-      const token = await this.getConnectToken();
-      if (!token) {
-        if (this.refreshTokenConfig && !isValidRefreshTokenConfig(this.refreshTokenConfig)) {
-          this.onLockApp?.(true);
-          // TODO: definite message
-          throw { ...fetchResult, code: 402, message: 'token expires' };
-        }
-        throw fetchResult;
-      }
+      await this.handleConnectToken(fetchResult);
+      return this.send(base, config, ++reCount);
+    } else if (fetchResult && IM_TOKEN_ERROR_ARRAY.includes(fetchResult.code)) {
+      await im.refreshToken();
       return this.send(base, config, ++reCount);
     }
     return fetchResult;

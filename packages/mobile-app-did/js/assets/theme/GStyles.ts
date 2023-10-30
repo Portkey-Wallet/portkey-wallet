@@ -23,6 +23,9 @@ export default {
     flexDirection: 'column',
     flexWrap: 'wrap',
   },
+  itemStart: {
+    alignItems: 'flex-start',
+  },
   itemCenter: {
     alignItems: 'center',
   },
@@ -34,6 +37,9 @@ export default {
   },
   alignEnd: {
     alignSelf: 'flex-end',
+  },
+  flexCenter: {
+    justifyContent: 'center',
   },
   flexEnd: {
     justifyContent: 'flex-end',

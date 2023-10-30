@@ -1,4 +1,5 @@
 import { ChainId, ChainType } from '..';
+import type { SendType } from './send';
 
 export interface IToSendHomeAssetParamsBaseType {
   symbol: string;
@@ -22,7 +23,7 @@ export interface IToSendNftParamsType extends IToSendHomeAssetParamsBaseType {
 export type IToSendAssetParamsType = IToSendTokenParamsType | IToSendNftParamsType;
 
 export interface IToSendHomeParamsType {
-  sendType: 'nft' | 'token';
+  sendType: SendType;
   toInfo: {
     address: string;
     name: string;

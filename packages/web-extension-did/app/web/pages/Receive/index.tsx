@@ -23,7 +23,7 @@ export default function Receive() {
   const { currentNetwork } = useWalletInfo();
   const isTestNet = useIsTestnet();
   const caAddress = useMemo(
-    () => `ELF_${wallet?.[state.chainId || 'AELF']?.caAddress}_${state.chainId}`,
+    () => `ELF_${wallet?.[(state.chainId as ChainId) || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
 
@@ -62,7 +62,7 @@ export default function Receive() {
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['receive-wrapper', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['receive-wrapper', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper leftElement rightElement={rightElement} />
         <div className="receive-content">
           <div className={clsx(['single-account'])}>
@@ -79,7 +79,7 @@ export default function Receive() {
             <Copy className="copy-icon" toCopy={caAddress}></Copy>
           </div>
         </div>
-        {isPrompt ? <PromptEmptyElement /> : null}
+        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [caAddress, isPrompt, isTestNet, rightElement, state.chainId, symbol, value]);

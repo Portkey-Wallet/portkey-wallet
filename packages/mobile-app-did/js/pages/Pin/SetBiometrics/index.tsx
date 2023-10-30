@@ -26,6 +26,7 @@ import { useIntervalGetResult, useOnResultFail } from 'hooks/login';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useSetBiometrics } from 'hooks/useBiometrics';
 import { useLanguage } from 'i18n/hooks';
+import { changeCanLock } from 'utils/LockManager';
 const ScrollViewProps = { disabled: true };
 export default function SetBiometrics() {
   const { t } = useLanguage();
@@ -72,7 +73,8 @@ export default function SetBiometrics() {
     }
     if (managerInfo) {
       timer.current?.remove();
-      Loading.show({ text: t('Creating address on the chain...') });
+      const isRecovery = managerInfo?.verificationType === VerificationType.communityRecovery;
+      Loading.show({ text: t(isRecovery ? 'Initiating social recovery' : 'Creating address on the chain...') });
       timer.current = onIntervalGetResult({
         managerInfo,
         onPass: (info: CAInfo) => {
@@ -86,13 +88,13 @@ export default function SetBiometrics() {
           Loading.hide();
           navigationService.reset('Tab');
         },
-        onFail: message =>
-          onResultFail(message, managerInfo?.verificationType === VerificationType.communityRecovery, true),
+        onFail: message => onResultFail(message, isRecovery, true),
       });
     }
   }, [caInfo, dispatch, isSyncCAInfo, managerInfo, onIntervalGetResult, onResultFail, originChainId, pin, t]);
   const openBiometrics = useCallback(async () => {
     if (!pin) return;
+    changeCanLock(false);
     try {
       await setSecureStoreItem('Pin', pin);
       await setBiometrics(true);
@@ -100,6 +102,7 @@ export default function SetBiometrics() {
     } catch (error) {
       setErrorMessage(handleErrorMessage(error, 'Failed To Verify'));
     }
+    changeCanLock(true);
   }, [getResult, pin, setBiometrics]);
   const onSkip = useCallback(async () => {
     try {

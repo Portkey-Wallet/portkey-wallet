@@ -17,19 +17,25 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
-import { getWalletNameAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
-import { fetchBuyFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
+import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
-import { FaucetUrl } from '@portkey-wallet/constants/constants-ca/payment';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import AccountConnect from 'pages/components/AccountConnect';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import ChatEntry from 'pages/IMChat/ChatEntry';
+import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
+import { useExtensionBuyButtonShow } from 'hooks/cms';
 
 export interface TransactionResult {
   total: number;
@@ -79,6 +85,9 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
+  const { isBuyButtonShow } = useExtensionBuyButtonShow();
+  const isShowChat = useIsChatShow();
+  const unreadCount = useUnreadCount();
 
   useEffect(() => {
     if (state?.key) {
@@ -87,16 +96,21 @@ export default function MyBalance() {
     if (!passwordSeed) return;
     appDispatch(fetchTokenListAsync({ caAddresses, caAddressInfos }));
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
-    appDispatch(getWalletNameAsync());
+    appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-    // appDispatch(fetchSellFiatListAsync());
   }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
     isMainNet && appDispatch(fetchBuyFiatListAsync());
+    isMainNet && appDispatch(fetchSellFiatListAsync());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMainNet]);
+
+  useEffect(() => {
+    appDispatch(fetchContactListAsync());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSelectedToken = useCallback(
     (v: AccountAssetItem, type: 'token' | 'nft') => {
@@ -158,7 +172,7 @@ export default function MyBalance() {
     if (isMainNet) {
       navigate('/buy');
     } else {
-      const openWinder = window.open(FaucetUrl, '_blank');
+      const openWinder = window.open(FAUCET_URL, '_blank');
       if (openWinder) {
         openWinder.opener = null;
       }
@@ -167,7 +181,15 @@ export default function MyBalance() {
 
   return (
     <div className="balance">
-      <div className="wallet-name">{walletName}</div>
+      {isShowChat && !isPrompt && (
+        <div className="chat-body">
+          <ChatEntry unread={unreadCount} />
+        </div>
+      )}
+      <div className="wallet-name">
+        {!isPrompt && <AccountConnect />}
+        {walletName}
+      </div>
       <div className="balance-amount">
         {isMainNet ? (
           <span className="amount">{`$ ${accountBalanceUSD}`}</span>
@@ -177,7 +199,7 @@ export default function MyBalance() {
       </div>
       <BalanceCard
         amount={accountBalance}
-        isShowBuy={true}
+        isShowBuy={isBuyButtonShow}
         onBuy={handleBuy}
         onSend={() => {
           setNavTarget('send');
@@ -190,7 +212,7 @@ export default function MyBalance() {
       />
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
-      {isPrompt ? <PromptEmptyElement className="empty-element" /> : null}
+      {isPrompt && <PromptEmptyElement className="empty-element" />}
     </div>
   );
 }

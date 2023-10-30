@@ -27,6 +27,11 @@ export default function AboutUsBody() {
         label: 'Terms of service',
         link: `${OfficialWebsite}/terms-of-service`,
       },
+      {
+        icon: 'PortkeyPrivacyPolicy',
+        label: 'Privacy Policy',
+        link: `${OfficialWebsite}/privacy-policy`,
+      },
     ],
     [],
   );
@@ -38,7 +43,7 @@ export default function AboutUsBody() {
           <CustomSvg type="PortKey" />
         </div>
         <span className="name">{t('Portkey')}</span>
-        <span className="version">{`${process.env.SDK_VERSION?.toUpperCase()} beta`}</span>
+        <span className="version">{`${process.env.SDK_VERSION?.toUpperCase()}`}</span>
       </div>
       <div className="content">
         <div className="content-item social">

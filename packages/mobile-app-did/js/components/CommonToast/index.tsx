@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   toastRow: {
-    maxWidth: '85%',
+    maxWidth: '86%',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
@@ -64,7 +64,7 @@ const icons: any = {
   success: <Svg icon="success" size={pTd(22)} />,
   fail: <Svg icon="fail" size={pTd(22)} />,
   warning: <Svg icon="warning" size={pTd(22)} />,
-  loading: <Lottie source={require('./loading.json')} style={{ height: pTd(22) }} autoPlay loop />,
+  loading: <Lottie source={require('assets/lottieFiles/loading.json')} style={{ height: pTd(22) }} autoPlay loop />,
 } as const;
 
 const show = (...args: TostProps) => {

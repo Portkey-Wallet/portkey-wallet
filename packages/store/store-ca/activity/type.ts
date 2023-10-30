@@ -1,6 +1,7 @@
 import { ActivityItemType, the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
 import { ICaAddressInfoListItemType } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { ChainId } from '@portkey-wallet/types';
 
 export type ActivityStateType = {
   activityMap: ActivityStateMap;
@@ -26,7 +27,7 @@ export interface IActivitiesApiParams {
   maxResultCount: number;
   skipCount: number;
   caAddresses?: string[];
-  caAddressInfos?: { chainId: string; caAddress: string }[];
+  caAddressInfos?: { chainId: ChainId; chainName: string; caAddress: string }[];
   managerAddresses?: string[];
   transactionTypes?: TransactionTypes[];
   chainId?: string;

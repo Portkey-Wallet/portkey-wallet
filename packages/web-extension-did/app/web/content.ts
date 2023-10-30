@@ -1,33 +1,37 @@
-import IdGenerator from './utils/IdGenerator';
-import EncryptedStream from './utils/EncryptedStream';
-import * as PageContentTags from './messages/PageContentTags';
-import InternalMessageTypes, { MethodMessageTypes } from './messages/InternalMessageTypes';
 import InternalMessage from './messages/InternalMessage';
 import { apis } from './utils/BrowserApis';
 import { getUrl } from './utils/getHostname';
-import errorHandler, { PortKeyResultType } from './utils/errorHandler';
-import { unrestrictedMethods } from 'messages/unrestrictedMethods';
 import { runWorkerKeepAliveInterval } from 'utils/keepAlive';
 import { checkForError } from 'utils';
+import { ContentPostStream } from '@portkey/extension-provider';
+import {
+  MethodsWallet,
+  IRequestParams,
+  MethodsType,
+  ProviderError,
+  ResponseMessagePreset,
+  ResponseCode,
+} from '@portkey/provider-types';
+import { generateErrorResponse, generateNormalResponse } from '@portkey/provider-utils';
+import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
+import { isMethodsBase, isMethodsUnimplemented } from '@portkey/providers';
+import { isMethodsWalletMessage } from 'messages/utils';
 /**
  * Don't run the keep-worker-alive logic for JSON-RPC methods called on initial load.
  * This is to prevent the service worker from being kept alive when accounts are not
  * connected to the dapp or when the user is not interacting with the extension.
  * The keep-alive logic should not work for non-dapp pages.
  */
-const IGNORE_INIT_METHODS_FOR_KEEP_ALIVE = [MethodMessageTypes.GET_WALLET_STATE];
+const IGNORE_INIT_METHODS_FOR_KEEP_ALIVE: string[] = [MethodsWallet.GET_WALLET_STATE];
 
-// The stream that connects between the content script
-// and the website
-let stream: EncryptedStream;
+const EXTENSION_CONTEXT_INVALIDATED_CHROMIUM_ERROR = 'Extension context invalidated.';
+// The stream that connects between the content script and the website
+let pageStream: ContentPostStream;
+const CONTENT_TARGET = 'portkey-content';
+const INPAGE_TARGET = 'portkey-inpage';
 
 // The filename of the injected communication script.
 const INJECTION_SCRIPT_FILENAME = 'js/inject.js';
-
-interface RespondPayload extends PortKeyResultType {
-  sid: string;
-  message?: string;
-}
 
 let extensionPort: chrome.runtime.Port | null;
 
@@ -79,10 +83,8 @@ const onMessageSetUpExtensionStreams = (msg: any) => {
  * It also injects and instance of Scatterdapp
  */
 class Content {
-  aesKey: string;
   constructor() {
-    this.aesKey = IdGenerator.text(256);
-    this.setupEncryptedStream();
+    this.setupPageStream();
     this.injectInteractionScript();
     this.extensionWatch();
   }
@@ -104,32 +106,40 @@ class Content {
 
   extensionWatch() {
     apis.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      this.respond(message);
+      console.log(message, 'message=content==extensionWatch');
+      this.respond({ ...message, target: INPAGE_TARGET });
       sendResponse(true);
     });
   }
 
-  setupEncryptedStream() {
+  respond(msg: any) {
+    try {
+      console.log('respond:', msg);
+      pageStream.send(msg);
+    } catch (error) {
+      console.error(error, 'respond');
+    }
+  }
+
+  setupPageStream() {
     // Setting up a new encrypted stream for
     // interaction between the extension and the application
-    stream = new EncryptedStream(PageContentTags.CONTENT_PORTKEY, this.aesKey);
+    pageStream = new ContentPostStream({ name: CONTENT_TARGET });
 
-    stream.addEventListener((result) => {
-      console.log(result, 'setupEncryptedStream====content');
-      this.contentListener(result);
+    pageStream.on('data', (data: Buffer) => {
+      const params = JSON.parse(data.toString());
+
+      this.contentListener(params);
     });
 
-    stream.setupEstablishEncryptedCommunication(PageContentTags.PAGE_PORTKEY);
-    // stream.sendPublicKey(PageContentTags.PAGE_PORTKEY);
     Content.keepConnect();
-  }
 
-  respond(payload: RespondPayload) {
-    stream.send(payload, PageContentTags.PAGE_PORTKEY);
-  }
-
-  getVersion() {
-    return 'beta';
+    const err = checkForError();
+    if (err) {
+      err.message === EXTENSION_CONTEXT_INVALIDATED_CHROMIUM_ERROR
+        ? console.error(`Please refresh the page. Portkey: ${err}`)
+        : console.error(`Portkey: ${err}`);
+    }
   }
 
   /***
@@ -143,70 +153,70 @@ class Content {
     (document.head || document.documentElement).appendChild(script);
     console.log(script.src, 'injectInteractionScript');
     script.onload = () => {
-      console.log('portKey_did inject.js onload!!!');
+      console.log('portkey inject.js onload!!!');
       script.remove();
     };
   }
 
-  contentListener(input: any) {
+  methodCheck = (method: string): method is MethodsType => {
+    return isMethodsBase(method) || isMethodsUnimplemented(method) || isMethodsWalletMessage(method);
+  };
+
+  contentListener(input: IRequestParams) {
+    const URL = getUrl();
+    const icon = getFaviconUrl(URL.href, 50);
+
     const message = Object.assign({}, input, {
-      hostname: getUrl().hostname,
-      origin: getUrl().origin,
-      href: getUrl().href,
+      hostname: URL.hostname,
+      origin: URL.origin,
+      href: URL.href,
+      icon,
     });
 
-    console.log('contentListener: ', message, location.host || location.hostname);
-    // message: sid, method, appName, hostname, params
-    const { method, sid } = message;
-    console.log('message: ', message);
-
+    const method = message.method;
+    console.log('contentListener=message: ', message);
+    console.log(this.methodCheck(method), 'methodCheck');
     if (!IGNORE_INIT_METHODS_FOR_KEEP_ALIVE.includes(method)) {
       runWorkerKeepAliveInterval();
     }
-    if (method === InternalMessageTypes.CHECK_CONTENT) {
-      this.respond({
-        sid,
-        ...errorHandler(0, 'Refuse'),
-        message: 'Portkey is ready.',
-      });
-      return;
+    if (!this.methodCheck(method)) {
+      return this.respond(new ProviderError(ResponseMessagePreset['UNKNOWN_METHOD'], ResponseCode.UNKNOWN_METHOD));
     }
-
-    if (method === InternalMessageTypes.OPEN_PROMPT) {
-      if (!unrestrictedMethods.includes(message.payload.method)) {
-        this.respond({
-          sid,
-          ...errorHandler(
-            400001,
-            `${message.payload.method} is illegal method. ${unrestrictedMethods.join(', ')} are legal.`,
-          ),
-        });
-        return;
-      }
-    } else if (!unrestrictedMethods.includes(message.method)) {
-      this.respond({
-        sid,
-        ...errorHandler(400001, `${message.method} is illegal method. ${unrestrictedMethods.join(', ')} are legal.`),
-      });
-      return;
-    }
-
     this.internalCommunicate(method, message);
   }
 
-  internalCommunicate(method: keyof typeof InternalMessageTypes, message: any) {
+  internalCommunicate(method: string, message: any) {
+    console.log('internalCommunicate', 'method');
     InternalMessage.payload(method, message)
       .send()
       .then((result) => {
-        const data = {
-          ...result,
-          sid: message.sid,
-        };
-        console.log(method, result, 'back');
-        this.respond({
-          ...errorHandler(0),
-          ...data,
-        });
+        delete message.payload;
+        let response;
+        if (result.error === 0) {
+          response = generateNormalResponse({
+            ...message,
+            data: result.data,
+            target: INPAGE_TARGET,
+          });
+          // send response to the page
+        } else {
+          response = generateErrorResponse({ ...message, ...result.data, msg: result.message, target: INPAGE_TARGET });
+        }
+        console.log(result, response, 'result===internalCommunicate');
+
+        this.respond(response);
+      })
+      .catch((error) => {
+        delete message.payload;
+        this.respond(
+          generateErrorResponse({
+            ...message,
+            code: ResponseCode.INTERNAL_ERROR,
+            msg: 'Chrome internal error, please reload page',
+            target: INPAGE_TARGET,
+          }),
+        );
+        console.error('internalCommunicate', error);
       });
   }
 }

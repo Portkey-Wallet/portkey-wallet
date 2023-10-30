@@ -5,7 +5,16 @@ import { pTd } from 'utils/unit';
 
 const { bg1, border1, font3, font5, bg4 } = defaultColors;
 
-export const searchStyle = StyleSheet.create({
+export const commonStyles = StyleSheet.create({
+  rightIconContainerStyle: {
+    marginRight: pTd(10),
+  },
+  loadingStyle: {
+    width: pTd(20),
+  },
+});
+
+export const searchStyles = StyleSheet.create({
   containerStyle: {
     height: pTd(36),
     paddingLeft: 0,
@@ -18,7 +27,7 @@ export const searchStyle = StyleSheet.create({
     borderRadius: pTd(6),
   },
   inputStyle: {
-    fontSize: pTd(16),
+    fontSize: pTd(14),
     // ...GStyles.marginArg(14, 16),
     // height: pTd(50),
     marginLeft: pTd(4),

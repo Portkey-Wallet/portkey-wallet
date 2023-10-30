@@ -4,7 +4,6 @@ import { pTd } from 'utils/unit';
 export const styles = StyleSheet.create({
   sectionListWrap: {
     flex: 1,
-    paddingRight: pTd(20),
     overflow: 'hidden',
   },
   sectionListWrapFull: {

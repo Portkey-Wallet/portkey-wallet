@@ -42,7 +42,6 @@ export const runWorkerKeepAliveInterval = () => {
   clearInterval(keepAliveInterval);
 
   sendMessageWorkerKeepAlive();
-  console.log('runWorkerKeepAliveInterval==keep', keepAliveTimer);
   keepAliveInterval = setInterval(() => {
     if (apis.runtime.id) {
       sendMessageWorkerKeepAlive();

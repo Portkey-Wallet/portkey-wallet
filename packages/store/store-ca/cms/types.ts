@@ -1,4 +1,5 @@
 import { NetworkType } from '@portkey-wallet/types';
+import { IEntrance } from '@portkey-wallet/types/types-ca/cms';
 
 export interface SocialMediaItem {
   index: number;
@@ -21,6 +22,8 @@ export interface DiscoverItem {
   id: string;
   index: number;
   title: string;
+  description: string;
+  url: string;
   imgUrl?: {
     filename_disk?: string;
   };
@@ -32,6 +35,11 @@ export interface DiscoverGroup {
   items: DiscoverItem[];
 }
 
+export interface RememberMeBlackListSiteItem {
+  name: string;
+  url: string;
+}
+
 export interface CMSState {
   socialMediaListNetMap: {
     [T in NetworkType]?: SocialMediaItem[];
@@ -41,5 +49,11 @@ export interface CMSState {
   };
   discoverGroupListNetMap: {
     [T in NetworkType]?: DiscoverGroup[];
+  };
+  rememberMeBlackListMap?: {
+    [T in NetworkType]?: RememberMeBlackListSiteItem[];
+  };
+  entranceNetMap?: {
+    [T in NetworkType]?: Partial<IEntrance>;
   };
 }

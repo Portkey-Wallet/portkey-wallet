@@ -141,6 +141,7 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
                     sort
                     status
                     title
+                    url
                     user_created
                     user_updated
                 }
@@ -153,6 +154,7 @@ query discoverGroup_by_id($filter: directus_files_filter, $sort: [String], $limi
             sort
             status
             title
+            url
             user_created
             user_updated
         }

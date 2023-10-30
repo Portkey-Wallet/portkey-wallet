@@ -14,7 +14,7 @@ import { useGuardiansInfo } from 'hooks/store';
 import { useGetGuardiansInfo } from 'hooks/guardian';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import { VerificationType } from '@portkey-wallet/types/verifier';
+import { VerificationType, OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import myEvents from 'utils/deviceEvent';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
@@ -95,6 +95,7 @@ export default function GuardianDetail() {
           guardianIdentifier: guardian.guardianAccount,
           verifierId: guardian.verifier?.id,
           chainId: originChainId,
+          operationType: OperationTypeEnum.setLoginAccount,
         },
       });
       if (req.verifierSessionId) {
@@ -231,7 +232,12 @@ export default function GuardianDetail() {
           <GuardianAccountItem guardian={guardian} />
           <Divider style={pageStyles.dividerStyle} />
           <View style={pageStyles.verifierInfoWrap}>
-            <VerifierImage style={pageStyles.verifierImageStyle} size={pTd(28)} uri={guardian?.verifier?.imageUrl} />
+            <VerifierImage
+              style={pageStyles.verifierImageStyle}
+              size={pTd(28)}
+              label={guardian?.verifier?.name}
+              uri={guardian?.verifier?.imageUrl}
+            />
             <TextL>{guardian?.verifier?.name || ''}</TextL>
           </View>
         </View>

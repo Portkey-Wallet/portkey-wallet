@@ -14,8 +14,6 @@ import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
 
-let timer: string | number | NodeJS.Timeout | undefined;
-
 interface PhoneInputProps extends CommonInputProps {
   selectCountry?: CountryItem;
   onCountryChange?: (country: CountryItem) => void;
@@ -24,6 +22,7 @@ interface PhoneInputProps extends CommonInputProps {
 export default function PhoneInput({ selectCountry, onCountryChange, ...inputProps }: PhoneInputProps) {
   const { t } = useLanguage();
 
+  const timer = useRef<NodeJS.Timeout | null>(null);
   const iptRef = useRef<any>();
 
   useEffectOnce(() => {
@@ -38,14 +37,16 @@ export default function PhoneInput({ selectCountry, onCountryChange, ...inputPro
   useFocusEffect(
     useCallback(() => {
       if (!iptRef || !iptRef?.current) return;
-      timer = setTimeout(() => {
+      timer.current = setTimeout(() => {
         iptRef.current.focus();
       }, 200);
     }, []),
   );
 
   useEffect(() => {
-    return () => clearTimeout(timer);
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
   }, []);
 
   return (

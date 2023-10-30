@@ -1,5 +1,4 @@
 import RegisterStart from 'pages/RegisterStart';
-import SelectVerifier from 'pages/SelectVerifier';
 import { useRoutes } from 'react-router-dom';
 import ScreenOpeningPage from 'pages/ScreenOpening';
 import VerifierAccount from 'pages/VerifierAccount';
@@ -19,12 +18,13 @@ import AddGuardian from 'pages/Guardians/GuardiansAdd';
 import GuardiansEdit from 'pages/Guardians/GuardiansEdit';
 import GuardiansView from 'pages/Guardians/GuardiansView';
 import AddToken from 'pages/Token/Manage';
+import CustomToken from 'pages/Token/Custom';
 import Transaction from 'pages/Transaction';
 import TokenDetail from 'pages/Token/Detail';
 import Send from 'pages/Send';
 import Receive from 'pages/Receive';
 import NFT from 'pages/NFT';
-import Contact from 'pages/Contacts/ContactDetail';
+import ContactDetail from 'pages/Contacts/ContactDetail';
 import AccountSetting from 'pages/AccountSetting';
 import PromptMy from 'pages/PromptMy';
 import Guardians from 'pages/Guardians';
@@ -36,16 +36,24 @@ import AboutUs from 'pages/Wallet/AboutUs';
 import AutoLock from 'pages/Wallet/AutoLock';
 import SwitchNetworks from 'pages/Wallet/SwitchNetwork';
 import WalletName from 'pages/Wallet/WalletName';
+import MyQRCode from 'pages/MyQRCode';
 import Devices from 'pages/WalletSecurity/ManageDevices/Devices';
 import DeviceDetail from 'pages/WalletSecurity/ManageDevices/DeviceDetail';
 import Buy from 'pages/Buy';
 import BuyPreview from 'pages/Buy/Preview';
-import BuyTest from 'pages/BuyTest';
-import BuyTestPreview from 'pages/BuyTest/Preview';
-import BuyTestConfirm from 'pages/BuyTest/Confirm';
 import { useCommonState } from 'store/Provider/hooks';
 import My from 'pages/My';
 import RecentDetail from 'pages/Send/components/RecentDetail';
+import Permission from 'pages/Permission';
+import ConnectWallet from 'pages/ConnectWallet';
+import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
+import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
+import SendTransactions from 'pages/SendTransactions';
+import GetSignature from 'pages/GetSignature';
+import DappAutoTx from 'pages/DappAutoTx';
+import FindMore from 'pages/Contacts/FindMore';
+import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
+import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 
 export const PageRouter = () => {
   const { isNotLessThan768 } = useCommonState();
@@ -66,10 +74,6 @@ export const PageRouter = () => {
     {
       path: '/register/start/:type',
       element: <RegisterStart />,
-    },
-    {
-      path: '/register/select-verifier',
-      element: <SelectVerifier />,
     },
     {
       path: '/register/verifier-account',
@@ -94,6 +98,10 @@ export const PageRouter = () => {
     {
       path: '/add-token',
       element: <AddToken />,
+    },
+    {
+      path: '/custom-token',
+      element: <CustomToken />,
     },
     {
       path: '/transaction',
@@ -124,18 +132,6 @@ export const PageRouter = () => {
       element: <BuyPreview />,
     },
     {
-      path: '/buy-test',
-      element: <BuyTest />,
-    },
-    {
-      path: '/buy-test/preview',
-      element: <BuyTestPreview />,
-    },
-    {
-      path: '/buy-test/confirm',
-      element: <BuyTestConfirm />,
-    },
-    {
       path: '/nft',
       element: <NFT />,
     },
@@ -146,6 +142,10 @@ export const PageRouter = () => {
     {
       path: 'query-page',
       element: <QueryPage />,
+    },
+    {
+      path: '/permission',
+      element: <Permission />,
     },
     {
       path: '/test',
@@ -164,6 +164,22 @@ export const PageRouter = () => {
     {
       path: '/test/socket',
       element: <TestSocket />,
+    },
+    {
+      path: '/connect-wallet',
+      element: <ConnectWallet />,
+    },
+    {
+      path: '/send-transactions',
+      element: <SendTransactions />,
+    },
+    {
+      path: '/get-signature',
+      element: <GetSignature />,
+    },
+    {
+      path: '/auto-execute-tx',
+      element: <DappAutoTx />,
     },
     {
       path: '*',
@@ -195,6 +211,10 @@ export const PageRouter = () => {
               path: '/setting/wallet/about-us',
               element: <AboutUs />,
             },
+            {
+              path: '/setting/wallet/qrcode',
+              element: <MyQRCode />,
+            },
           ],
         },
         {
@@ -203,7 +223,19 @@ export const PageRouter = () => {
           children: [
             {
               path: '/setting/contacts/:type',
-              element: <Contact />,
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/contacts/:type/:extra',
+              element: <ContactDetail />,
+            },
+            {
+              path: '/setting/contacts/find-more',
+              element: <FindMore />,
+            },
+            {
+              path: '/setting/contacts/qrcode',
+              element: <MyQRCode />,
             },
           ],
         },
@@ -218,6 +250,14 @@ export const PageRouter = () => {
             {
               path: '/setting/account-setting/set-new-pin',
               element: <SetNewPin />,
+            },
+            {
+              path: '/setting/account-setting/chat-privacy',
+              element: <ChatPrivacy />,
+            },
+            {
+              path: '/setting/account-setting/chat-privacy-edit',
+              element: <ChatPrivacyEdit />,
             },
           ],
         },
@@ -266,6 +306,14 @@ export const PageRouter = () => {
             {
               path: '/setting/wallet-security/manage-devices/guardian-approval',
               element: <GuardianApproval />,
+            },
+            {
+              path: '/setting/wallet-security/connected-sites',
+              element: <ConnectedSites />,
+            },
+            {
+              path: '/setting/wallet-security/connected-sites/:origin',
+              element: <SiteDetail />,
             },
           ],
         },
@@ -322,12 +370,28 @@ export const PageRouter = () => {
       element: <AboutUs />,
     },
     {
+      path: '/setting/wallet/qrcode',
+      element: <MyQRCode />,
+    },
+    {
       path: '/setting/contacts',
       element: <Contacts />,
     },
     {
       path: '/setting/contacts/:type',
-      element: <Contact />,
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/:type/:extra',
+      element: <ContactDetail />,
+    },
+    {
+      path: '/setting/contacts/find-more',
+      element: <FindMore />,
+    },
+    {
+      path: '/setting/contacts/qrcode',
+      element: <MyQRCode />,
     },
     {
       path: '/setting/account-setting',
@@ -340,6 +404,14 @@ export const PageRouter = () => {
     {
       path: '/setting/account-setting/set-new-pin',
       element: <SetNewPin />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy',
+      element: <ChatPrivacy />,
+    },
+    {
+      path: '/setting/account-setting/chat-privacy-edit',
+      element: <ChatPrivacyEdit />,
     },
     {
       path: '/setting/wallet-security',
@@ -360,6 +432,14 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/manage-devices/guardian-approval',
       element: <GuardianApproval />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites',
+      element: <ConnectedSites />,
+    },
+    {
+      path: '/setting/wallet-security/connected-sites/:origin',
+      element: <SiteDetail />,
     },
   ];
 

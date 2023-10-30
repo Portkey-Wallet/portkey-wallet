@@ -1,5 +1,5 @@
 import { ELF_DECIMAL, TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaAddresses, useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
@@ -28,9 +28,12 @@ import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { SHOW_FROM_TRANSACTION_TYPES } from '@portkey-wallet/constants/constants-ca/activity';
 import { useIsTokenHasPrice, useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import CommonAvatar from 'components/CommonAvatar';
 
 const ActivityDetail = () => {
   const { t } = useLanguage();
+  const defaultToken = useDefaultToken();
+
   const activityItemFromRoute = useRouterParams<ActivityItemType>();
   const { transactionId = '', blockHash = '', isReceived: isReceivedParams } = activityItemFromRoute;
   const caAddresses = useCaAddresses();
@@ -131,7 +134,7 @@ const ActivityDetail = () => {
   const feeUI = useMemo(() => {
     const transactionFees =
       activityItem?.transactionFees?.length === 0
-        ? [{ fee: 0, symbol: 'ELF', feeInUsd: 0 }]
+        ? [{ fee: 0, symbol: defaultToken.symbol, feeInUsd: 0 }]
         : activityItem?.transactionFees || [];
 
     return (
@@ -140,7 +143,7 @@ const ActivityDetail = () => {
           <TextM style={[styles.blackFontColor, styles.fontBold]}>{t('Transaction Fee')}</TextM>
           {activityItem?.isDelegated ? (
             <View style={[styles.transactionFeeItemWrap]}>
-              <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ELF`}</TextM>
+              <TextM style={[styles.blackFontColor, styles.fontBold]}>{`0 ${defaultToken.symbol}`}</TextM>
               {!isTestnet && (
                 <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(0, 2)}`}</TextS>
               )}
@@ -165,7 +168,7 @@ const ActivityDetail = () => {
         </View>
       </View>
     );
-  }, [activityItem?.isDelegated, activityItem?.transactionFees, isTestnet, t]);
+  }, [activityItem?.isDelegated, activityItem?.transactionFees, defaultToken.symbol, isTestnet, t]);
 
   useEffectOnce(() => {
     getTokenPrice(activityItem?.symbol);
@@ -189,7 +192,7 @@ const ActivityDetail = () => {
           <>
             <View style={styles.topWrap}>
               {activityItem?.nftInfo?.imageUrl ? (
-                <Image resizeMode={'contain'} style={styles.img} source={{ uri: activityItem?.nftInfo?.imageUrl }} />
+                <CommonAvatar imageUrl={activityItem?.nftInfo?.imageUrl} style={styles.img} />
               ) : (
                 <Text style={styles.noImg}>{activityItem?.nftInfo?.alias?.slice(0, 1)}</Text>
               )}

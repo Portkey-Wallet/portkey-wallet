@@ -12,6 +12,9 @@ import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import svgsList from 'assets/svgs';
+import UnReadBadge from 'pages/components/UnReadBadge';
 
 interface MenuItemInfo {
   label: string;
@@ -24,6 +27,7 @@ export default function My() {
   const navigate = useNavigate();
   const lockWallet = useLockWallet();
   const { isPrompt } = useCommonState();
+  const isImputation = useIsImputation();
 
   const MenuList: MenuItemInfo[] = useMemo(
     () => [
@@ -65,9 +69,19 @@ export default function My() {
     InternalMessage.payload(PortkeyMessageTypes.SETTING).send();
   };
 
+  const menuItemIcon = (iconType: keyof typeof svgsList, unReadShow: boolean) => {
+    return (
+      <div className="menu-icon-wrap">
+        <CustomSvg type={iconType || 'Aelf'} />
+        {unReadShow && <UnReadBadge />}
+      </div>
+    );
+  };
+
   return (
     <div className="flex-column my-frame">
       <PortKeyHeader
+        unReadShow={isImputation}
         onUserClick={() => {
           navigate('/');
         }}
@@ -85,7 +99,7 @@ export default function My() {
             <MenuItem
               key={item.label}
               height={56}
-              icon={<CustomSvg type={item.icon || 'Aelf'} />}
+              icon={menuItemIcon(item.icon, !!(isImputation && item.label === 'Contacts'))}
               onClick={() => {
                 navigate(item.router);
               }}>

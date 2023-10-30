@@ -5,9 +5,6 @@
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:/Users/weizixuan/Desktop/AElf/portkey-wallet/packages/mobile-app-ca/ios/Portkey.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:Portkey.xcodeproj">
    </FileRef>
 </Workspace>

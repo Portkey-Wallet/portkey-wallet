@@ -1,21 +1,11 @@
 import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 import { ChainId } from '@portkey-wallet/types';
-
-export const sellSoonText = 'Off-ramp is currently not supported. It will be launched in the coming weeks.';
-
-export const soonText = 'On-ramp is not supported on the Testnet. The on-ramp service on Mainnet is coming soon.';
-
-export const disclaimer =
-  'AlchemyPay is a fiat-to-crypto platform independently operated by a third-party entity. Portkey shall not be held liable for any losses or damages suffered as a result of using AlchemyPay services. ';
+import { ICurToken } from './components/TokenInput';
+import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 
 export enum DrawerType {
   token,
   currency,
-}
-
-export enum PageType {
-  buy,
-  sell,
 }
 
 export type PartialFiatType = Partial<FiatType>;
@@ -25,7 +15,7 @@ export type TokenType = {
   chainId: ChainId;
 };
 
-export const initToken = {
+export const initToken: ICurToken = {
   crypto: 'ELF',
   network: 'ELF', // TODO 'AELF'
 };
@@ -35,19 +25,9 @@ export const initFiat: PartialFiatType = {
   currency: 'USD',
 };
 
-export type Limit = {
-  min: number | null;
-  max: number | null;
-};
-
-export const initLimit = {
-  min: null,
-  max: null,
-};
-
 export const MAX_UPDATE_TIME = 15;
 export const initCurrency = '200';
-export const initCrypto = '100';
+export const initCrypto = '400';
 export const initValueSave: {
   amount: string;
   currency: string;
@@ -56,7 +36,9 @@ export const initValueSave: {
   network: string;
   min: number | null;
   max: number | null;
-  side: string;
+  side: PaymentTypeEnum;
+  receive: string;
+  isShowErrMsg: boolean;
 } = {
   amount: initCurrency,
   currency: 'USD',
@@ -65,17 +47,10 @@ export const initValueSave: {
   network: 'ELF', // TODO 'AELF'
   min: null,
   max: null,
-  side: 'BUY',
+  side: PaymentTypeEnum.BUY,
+  receive: '',
+  isShowErrMsg: false,
 };
-
-export interface IFetchOrderQuote {
-  crypto: string;
-  network: string;
-  fiat: string;
-  country: string;
-  amount: string;
-  side: string;
-}
 
 export const initPreviewData = {
   crypto: 'ELF',
@@ -83,5 +58,5 @@ export const initPreviewData = {
   fiat: 'USD',
   country: 'US',
   amount: '200',
-  side: 'BUY',
+  side: PaymentTypeEnum.BUY,
 };

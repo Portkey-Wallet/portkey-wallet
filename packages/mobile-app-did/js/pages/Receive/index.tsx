@@ -1,8 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PageContainer from 'components/PageContainer';
 import { TextL, TextM, TextXL, TextS } from 'components/CommonText';
-import { setStringAsync } from 'expo-clipboard';
-import CommonToast from 'components/CommonToast';
 import AccountCard from 'pages/Receive/components/AccountCard';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -15,17 +13,18 @@ import GStyles from 'assets/theme/GStyles';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { copyText } from 'utils';
 
 export default function Receive() {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
+  const defaultToken = useDefaultToken();
 
   const tokenItem = useRouterParams<TokenItemShowType>();
   const { chainId, symbol } = tokenItem;
-
   const symbolImages = useSymbolImages();
   const currentWallet = useCurrentWalletInfo();
 
@@ -40,7 +39,7 @@ export default function Receive() {
           style={styles.svgStyle}
           title={symbol}
           avatarSize={pTd(32)}
-          svgName={symbol === ELF_SYMBOL ? 'elf-icon' : undefined}
+          svgName={symbol === defaultToken.symbol ? 'testnet' : undefined}
           imageUrl={symbolImages?.[symbol] || ''}
         />
         <View>
@@ -58,10 +57,9 @@ export default function Receive() {
       <View style={styles.buttonWrap}>
         <TouchableOpacity
           style={styles.buttonTop}
-          onPress={async () => {
+          onPress={() => {
             const tmpStr = `ELF_${currentCaAddress}_${chainId}`;
-            const isCopy = await setStringAsync(tmpStr);
-            isCopy && CommonToast.success(t('Copy Success'));
+            copyText(tmpStr);
           }}>
           <Svg icon="copy" size={pTd(20)} color={defaultColors.font2} />
         </TouchableOpacity>

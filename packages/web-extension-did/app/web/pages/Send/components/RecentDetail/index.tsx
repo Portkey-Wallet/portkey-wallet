@@ -17,6 +17,9 @@ import { IActivitiesApiResponse } from '@portkey-wallet/store/store-ca/activity/
 import { fetchRecentContactActivities } from '@portkey-wallet/store/store-ca/activity/api';
 import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useEffectOnce } from 'react-use';
+import { ChainId } from '@portkey-wallet/types';
+import { useGoAddNewContact } from 'hooks/useProfile';
+import { ExtraTypeEnum } from 'types/Profile';
 
 const MAX_RESULT_COUNT = 10;
 const SKIP_COUNT = 0;
@@ -28,9 +31,9 @@ export default function RecentDetail() {
   const myChainId = state?.chainId; // get my chainId from url state
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
-  const myAddress = walletInfo?.[myChainId]?.caAddress || ''; // get my address from url state
+  const myAddress = myChainId ? walletInfo?.[myChainId as ChainId]?.caAddress || '' : ''; // get my address from url state
 
-  const chainInfo = useCurrentChain(myChainId);
+  const chainInfo = useCurrentChain(targetChainId);
   const currentNetwork = useCurrentNetworkInfo();
   const transTargetAddress = addressFormat(targetAddress, targetChainId, currentNetwork.walletType);
   const [activityInfo, setActivityList] = useState<IActivitiesApiResponse>({
@@ -47,14 +50,15 @@ export default function RecentDetail() {
     nav(-1);
   }, [nav]);
 
+  const handleAdd = useGoAddNewContact();
   const goAddContact = useCallback(() => {
     const initContactItem: Partial<ContactItemType> = {
       id: '-1',
       name: '',
-      addresses: [{ chainId: targetChainId || 'AELF', address: targetAddress || '' }],
+      addresses: [{ chainId: targetChainId || 'AELF', address: targetAddress || '', chainName: 'aelf' }],
     };
-    nav('/setting/contacts/add', { state: initContactItem });
-  }, [targetChainId, targetAddress, nav]);
+    handleAdd(ExtraTypeEnum.ADD_NEW_CHAT, initContactItem);
+  }, [targetChainId, targetAddress, handleAdd]);
 
   const viewOnExplorer = useCallback(() => {
     const openWinder = window.open(
@@ -74,16 +78,18 @@ export default function RecentDetail() {
         {
           caAddress: myAddress,
           chainId: myChainId,
+          chainName: chainInfo?.chainName || 'aelf',
         },
       ],
       targetAddressInfos: [
         {
           caAddress: targetAddress,
           chainId: targetChainId,
+          chainName: chainInfo?.chainName || 'aelf',
         },
       ],
     };
-  }, [myAddress, myChainId, targetAddress, targetChainId]);
+  }, [chainInfo?.chainName, myAddress, myChainId, targetAddress, targetChainId]);
 
   useEffectOnce(() => {
     if (passwordSeed) {
@@ -129,7 +135,7 @@ export default function RecentDetail() {
 
   const mainContent = () => {
     return (
-      <div className={clsx(['recent-detail', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['recent-detail', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper
           className="recent-detail-header"
           title="Details"

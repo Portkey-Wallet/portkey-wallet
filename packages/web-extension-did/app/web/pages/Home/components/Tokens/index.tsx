@@ -40,7 +40,7 @@ export default function TokenList({ tokenList }: { tokenList: TokenItemShowType[
             <div className="desc">
               <div className="info">
                 <span>{item.symbol}</span>
-                <span>{formatAmountShow(divDecimals(item.balance, item.decimals || 8))}</span>
+                <span>{formatAmountShow(divDecimals(item.balance, item.decimals))}</span>
               </div>
               <div className="amount">
                 <p>{transNetworkText(item.chainId, isTestNet)}</p>

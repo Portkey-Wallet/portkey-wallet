@@ -1,11 +1,19 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { getDiscoverGroupAsync, getSocialMediaAsync, getTabMenuAsync } from './actions';
+import {
+  getDiscoverGroupAsync,
+  getSocialMediaAsync,
+  getTabMenuAsync,
+  getRememberMeBlackListAsync,
+  setEntrance,
+} from './actions';
 import { CMSState } from './types';
 
 const initialState: CMSState = {
   socialMediaListNetMap: {},
   tabMenuListNetMap: {},
   discoverGroupListNetMap: {},
+  rememberMeBlackListMap: {},
+  entranceNetMap: {},
 };
 export const cmsSlice = createSlice({
   name: 'cms',
@@ -19,17 +27,11 @@ export const cmsSlice = createSlice({
           ...action.payload.socialMediaListNetMap,
         };
       })
-      .addCase(getSocialMediaAsync.rejected, (_state, action) => {
-        console.log('getSocialMediaAsync error', action);
-      })
       .addCase(getTabMenuAsync.fulfilled, (state, action) => {
         state.tabMenuListNetMap = {
           ...state.tabMenuListNetMap,
           ...action.payload.tabMenuListNetMap,
         };
-      })
-      .addCase(getTabMenuAsync.rejected, (_state, action) => {
-        console.log('getTabMenuAsync error', action);
       })
       .addCase(getDiscoverGroupAsync.fulfilled, (state, action) => {
         state.discoverGroupListNetMap = {
@@ -37,8 +39,17 @@ export const cmsSlice = createSlice({
           ...action.payload.discoverGroupListNetMap,
         };
       })
-      .addCase(getDiscoverGroupAsync.rejected, (_state, action) => {
-        console.log('getDiscoverGroupAsync error', action);
+      .addCase(getRememberMeBlackListAsync.fulfilled, (state, action) => {
+        state.rememberMeBlackListMap = {
+          ...state.rememberMeBlackListMap,
+          ...action.payload.rememberMeBlackListMap,
+        };
+      })
+      .addCase(setEntrance, (state, action) => {
+        state.entranceNetMap = {
+          ...state.entranceNetMap,
+          [action.payload.network]: action.payload.value,
+        };
       });
   },
 });

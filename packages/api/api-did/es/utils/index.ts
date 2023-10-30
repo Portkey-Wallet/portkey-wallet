@@ -1,9 +1,10 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { GetContractListApiType } from '@portkey-wallet/types/types-ca/contact';
+import { IGetContactListParams } from '../type';
 
 export const getContactList = (
   baseURL: string,
-  { page, size, modificationTime }: { page: number; size: number; modificationTime: string },
+  { page, size, modificationTime, keyword }: IGetContactListParams,
 ): Promise<GetContractListApiType> => {
   return request.es.getContactList({
     baseURL,
@@ -13,18 +14,14 @@ export const getContactList = (
       sortType: 0,
       skipCount: (page - 1) * size,
       maxResultCount: size,
+      keyword,
     },
   });
 };
 
 export const getContactEventList = (
   baseURL: string,
-  {
-    page,
-    size,
-    modificationTime,
-    fetchTime,
-  }: { page: number; size: number; modificationTime: string; fetchTime: string },
+  { page, size, modificationTime, fetchTime, keyword }: IGetContactListParams & { fetchTime: string },
 ): Promise<GetContractListApiType> => {
   return request.es.getContactList({
     baseURL,
@@ -34,6 +31,7 @@ export const getContactEventList = (
       sortType: 0,
       skipCount: (page - 1) * size,
       maxResultCount: size,
+      keyword,
     },
   });
 };

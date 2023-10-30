@@ -131,8 +131,12 @@ export function formatWithCommas({
   return amountTrans;
 }
 
-export const formatAmountShow = (count: number | BigNumber | string, decimal = 4) => {
+export const formatAmountShow = (
+  count: number | BigNumber | string,
+  decimal: string | number = 4,
+  roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN,
+) => {
   const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
   if (bigCount.isNaN()) return '0';
-  return bigCount.decimalPlaces(decimal, BigNumber.ROUND_DOWN).toFormat();
+  return bigCount.decimalPlaces(typeof decimal !== 'number' ? Number(decimal) : decimal, roundingMode).toFormat();
 };

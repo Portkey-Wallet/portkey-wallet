@@ -44,12 +44,16 @@ export function getRequestConfig(base: BaseConfig, config?: RequestConfig) {
     const { baseConfig } = base || {};
     const { query, method, params, data } = config || {};
     return {
-      ...config,
       ...baseConfig,
+      ...config,
       query: (baseConfig.query || '') + (query || ''),
       method: method ? method : baseConfig.method,
       params: Object.assign({}, baseConfig.params, params),
       data: Object.assign({}, baseConfig.data, data),
+      headers: {
+        ...baseConfig.headers,
+        ...config?.headers,
+      },
     };
   }
 }

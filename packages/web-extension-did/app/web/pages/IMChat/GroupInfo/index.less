@@ -1,0 +1,204 @@
+@import '../../../assets/theme/constants.less';
+
+.group-info-page {
+  height: 100%;
+  .group-info-header {
+    width: 100%;
+    padding-top: 16px;
+    background-color: @bg-13;
+    z-index: 100;
+  }
+  .group-info-body {
+    width: 100%;
+    height: calc(100% - 96px);
+    overflow-y: auto;
+    .group-info-container {
+      .info-basic {
+        padding: 24px 0 16px;
+        background-color: @bg-13;
+        .group-icon {
+          width: 60px;
+          height: 60px;
+          margin-bottom: 8px;
+          border-radius: 50%;
+          border: 1px solid @border-3;
+          background-color: @bg-25;
+          .groupavatar-icon {
+            width: 24px;
+            height: 24px;
+            svg {
+              width: 24px;
+              height: 24px;
+            }
+          }
+        }
+        .group-name {
+          margin-bottom: 4px;
+          max-width: 312px;
+          font-size: 20px;
+          line-height: 24px;
+          color: @font-11;
+          .text-overflow(1);
+        }
+        .group-members {
+          font-size: 12px;
+          line-height: 16px;
+          color: @font-13;
+        }
+      }
+      .info-share {
+        padding: 24px;
+        border-bottom: 1px solid @border-2;
+        .share-link {
+          width: 100%;
+          gap: 16px;
+          .share-link-title {
+            font-size: 16px;
+            line-height: 22px;
+            font-weight: 500;
+            color: @font-1;
+          }
+          .share-link-content {
+            gap: 16px;
+            font-size: 14px;
+            line-height: 20px;
+            color: @font-9;
+            cursor: pointer;
+            .link-content {
+              flex: 1;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+            .link-icon {
+              gap: 16px;
+            }
+          }
+        }
+      }
+      .info-operation {
+        .op-member {
+          align-items: center;
+          gap: 8px;
+          padding: 10px 0 9px 24px;
+          font-size: 16px;
+          line-height: 22px;
+          border-bottom: 1px solid @border-2;
+          cursor: pointer;
+          .custom-svg {
+            width: 28px;
+            height: 28px;
+            svg {
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
+        .add-member {
+          color: @font-9;
+        }
+        .remove-member {
+          color: @font-18;
+          &.remove-disable {
+            pointer-events: none;
+            .removemem-icon,
+            .remove-members-text {
+              opacity: 0.3;
+            }
+          }
+        }
+      }
+      .info-members {
+        .member-item {
+          padding: 16px 24px;
+          font-size: 14px;
+          line-height: 20px;
+          color: @font-11;
+          border-bottom: 1px solid @border-2;
+          cursor: pointer;
+          .member-basic {
+            align-items: center;
+            gap: 12px;
+            .member-name {
+              max-width: 250px;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+          }
+          .portkey-avatar-container {
+            .avatar-letter {
+              font-size: 14px;
+            }
+          }
+          .admin-icon {
+            height: 20px;
+            padding: 2px 4px;
+            font-size: 12px;
+            line-height: 16px;
+            color: @font-9;
+            border-radius: 4px;
+            background-color: @bg-24;
+          }
+        }
+        .view-more-members {
+          padding: 16px 0;
+          gap: 8px;
+          font-size: 12px;
+          line-height: 16px;
+          color: @font-13;
+          cursor: pointer;
+          .custom-svg {
+            rotate: 180deg;
+            /* stylelint-disable-next-line no-descending-specificity */
+            svg {
+              width: 12px;
+              height: 16px;
+            }
+          }
+          &.is-admin {
+            border-bottom: 1px solid @border-2;
+          }
+        }
+      }
+      .info-transfer {
+        padding: 14px 24px;
+        font-size: 16px;
+        line-height: 22px;
+        color: @font-11;
+        cursor: pointer;
+        /* stylelint-disable-next-line no-descending-specificity */
+        .custom-svg {
+          rotate: 180deg;
+          /* stylelint-disable-next-line no-descending-specificity */
+          svg {
+            width: 12px;
+            height: 16px;
+          }
+        }
+      }
+    }
+    .group-info-footer {
+      width: 100%;
+      height: 80px;
+      padding: 16px;
+      border-top: 1px solid @border-2;
+      .op-btn {
+        height: 48px;
+        font-size: 16px;
+        line-height: 22px;
+        border-radius: 22px;
+        cursor: pointer;
+      }
+      .edit-group-btn {
+        color: @font-5;
+        background-color: @bg-7;
+        border: 1px solid @border-3;
+      }
+      .leave-group-btn {
+        color: @font-14;
+        border: 1px solid @border-7;
+      }
+    }
+  }
+}

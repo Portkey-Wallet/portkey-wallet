@@ -34,6 +34,7 @@ import { useCommonState } from 'store/Provider/hooks';
 import AccountShow from '../components/AccountShow';
 import { guardianIconMap } from '../utils';
 import './index.less';
+import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 
 export default function GuardiansView() {
   const { t } = useTranslation();
@@ -75,6 +76,7 @@ export default function GuardiansView() {
         verifierId: opGuardian?.verifier?.id,
         chainId: currentChain?.chainId || originChainId,
         accessToken: data?.access_token,
+        operationType: OperationTypeEnum.setLoginAccount,
       };
       if (v === 'Google') {
         await getGoogleUserInfo(data?.access_token);
@@ -184,6 +186,7 @@ export default function GuardiansView() {
             type: LoginType[opGuardian?.guardianType as LoginType],
             verifierId: opGuardian?.verifier?.id || '',
             chainId: originChainId,
+            operationType: OperationTypeEnum.setLoginAccount,
           },
         });
         setLoading(false);

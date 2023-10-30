@@ -33,6 +33,13 @@ const CHAIN_INFO = {
   explorerUrl: 'https://localhost',
   id: 'AELF',
   lastModifyTime: '2023-02-25T07:15:23.6079047Z',
+  defaultToken: {
+    address: '2ZpT...3Udb',
+    decimals: '8',
+    imageUrl: 'https://localhost',
+    name: 'AELF',
+    symbol: 'ELF',
+  },
 };
 
 const CA_HOLDER_MANAGER_INFO: CaHolderWithGuardian[] = [

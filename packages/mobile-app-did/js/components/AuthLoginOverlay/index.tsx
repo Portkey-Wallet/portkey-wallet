@@ -6,7 +6,6 @@ import { pTd } from 'utils/unit';
 import { FontStyles } from 'assets/theme/styles';
 import { TextM, TextXXL } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
-import CommonButton from 'components/CommonButton';
 import { LoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from 'components/CommonToast';
@@ -18,7 +17,6 @@ import { useLanguage } from 'i18n/hooks';
 import { defaultColors } from 'assets/theme';
 import ActionSheet from 'components/ActionSheet';
 import minimizer from 'rn-minimizer';
-import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { AUTH_LOGIN_MAP } from 'constants/scheme';
 import { getFaviconUrlFromDomain } from 'utils';
 
@@ -45,7 +43,7 @@ function ThirdAuthImage({ websiteIcon, domain, style }: { websiteIcon?: string; 
 function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverlayPropsTypes) {
   const { t } = useLanguage();
 
-  const { address: managerAddress, extraData: qrExtraData, deviceType } = loginData || {};
+  const { address: managerAddress, extraData: qrExtraData } = loginData || {};
 
   const { caHash, address } = useCurrentWalletInfo();
   const { currentNetwork } = useWallet();
@@ -73,7 +71,7 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
 
     try {
       setLoading(true);
-      const deviceInfo = getDeviceInfoFromQR(qrExtraData, deviceType);
+      const deviceInfo = getDeviceInfoFromQR(qrExtraData);
       const contract = await getCurrentCAContract();
       const extraData = await extraDataEncode(deviceInfo || {}, true);
 
@@ -94,13 +92,15 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
     loading,
     managerAddress,
     qrExtraData,
-    deviceType,
     getCurrentCAContract,
     address,
   ]);
 
   return (
-    <ModalBody modalBodyType="bottom" title="" style={styles.modal} onClose={minimizer.goBack}>
+    <ModalBody
+      modalBodyType="bottom"
+      onClose={minimizer.goBack}
+      bottomButtonGroup={[{ title: t('Allow'), type: 'primary', loading: loading, onPress: onLogin }]}>
       <View style={[styles.topSection, GStyles.itemCenter]}>
         <View style={GStyles.flexRow}>
           <Image
@@ -116,10 +116,6 @@ function AuthLogin({ loginData, domain, extraData: websiteInfo }: AuthLoginOverl
         <TextM style={[styles.tips, FontStyles.font3, GStyles.textAlignCenter]}>
           {t('This application will be able to use your wallet account.')}
         </TextM>
-      </View>
-      <View style={GStyles.flex1} />
-      <View style={styles.bottomBox}>
-        <CommonButton type="primary" title={t('Allow')} onPress={onLogin} loading={loading} />
       </View>
     </ModalBody>
   );
@@ -137,9 +133,6 @@ export default {
 };
 
 const styles = StyleSheet.create({
-  modal: {
-    height: windowHeight * 0.6,
-  },
   itemRow: {
     height: 72,
     paddingLeft: pTd(20),
@@ -185,17 +178,6 @@ const styles = StyleSheet.create({
   tips: {
     marginTop: pTd(16),
   },
-  loginTypeIcon: {
-    width: pTd(64),
-  },
-  bottomBox: {
-    marginTop: pTd(80),
-    marginHorizontal: pTd(16),
-  },
-  cancelButtonStyle: {
-    marginTop: pTd(8),
-    backgroundColor: 'transparent',
-  },
   baseImage: {
     width: pTd(64),
     height: pTd(64),
@@ -208,8 +190,5 @@ const styles = StyleSheet.create({
     width: pTd(64),
     height: pTd(64),
     marginRight: -pTd(12),
-  },
-  iconWrap: {
-    marginLeft: pTd(21),
   },
 });

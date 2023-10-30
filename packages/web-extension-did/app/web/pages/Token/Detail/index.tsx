@@ -9,9 +9,10 @@ import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { FaucetUrl } from '@portkey-wallet/constants/constants-ca/payment';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
+import { useExtensionBuyButtonShow } from 'hooks/cms';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -23,7 +24,11 @@ function TokenDetail() {
   const { state: currentToken } = useLocation();
   const isMainNet = useIsMainnet();
   const { isPrompt } = useCommonState();
-  const isShowBuy = useMemo(() => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF', [currentToken]);
+  const { isBuyButtonShow } = useExtensionBuyButtonShow();
+  const isShowBuy = useMemo(
+    () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isBuyButtonShow,
+    [currentToken.chainId, currentToken.symbol, isBuyButtonShow],
+  );
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
 
@@ -31,7 +36,7 @@ function TokenDetail() {
     if (isMainNet) {
       navigate('/buy', { state: { tokenInfo: currentToken } });
     } else {
-      const openWinder = window.open(FaucetUrl, '_blank');
+      const openWinder = window.open(FAUCET_URL, '_blank');
       if (openWinder) {
         openWinder.opener = null;
       }
@@ -56,7 +61,7 @@ function TokenDetail() {
           <div className="balance">
             <div className="balance-amount">
               <span className="amount">
-                {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals || 8))} {currentToken.symbol}
+                {formatAmountShow(divDecimals(currentToken.balance, currentToken.decimals))} {currentToken.symbol}
               </span>
               {isMainNet && (
                 <span className="convert">

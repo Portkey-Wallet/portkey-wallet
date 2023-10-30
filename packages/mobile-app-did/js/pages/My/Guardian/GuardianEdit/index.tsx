@@ -13,9 +13,9 @@ import { useLanguage } from 'i18n/hooks';
 import CommonInput from 'components/CommonInput';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { useGuardiansInfo } from 'hooks/store';
-import { LOGIN_TYPE_LIST } from '@portkey-wallet/constants/verifier';
+import { LOGIN_TYPE_LIST } from 'constants/misc';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
-import { ApprovalType, VerificationType, VerifierItem } from '@portkey-wallet/types/verifier';
+import { ApprovalType, VerificationType, OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import GuardianTypeSelectOverlay from '../components/GuardianTypeSelectOverlay';
 import VerifierSelectOverlay from '../components/VerifierSelectOverlay';
@@ -61,7 +61,6 @@ type thirdPartyInfoType = {
 };
 
 type TypeItemType = typeof LOGIN_TYPE_LIST[number];
-const loginTypeList = LOGIN_TYPE_LIST;
 
 const GuardianEdit: React.FC = () => {
   const { t } = useLanguage();
@@ -165,6 +164,7 @@ const GuardianEdit: React.FC = () => {
         id: thirdPartyInfo.id,
         verifierId: verifierInfo.id,
         chainId: originChainId,
+        operationType: OperationTypeEnum.addGuardian,
       });
       Loading.hide();
 
@@ -249,6 +249,7 @@ const GuardianEdit: React.FC = () => {
                     guardianIdentifier: guardianAccount,
                     verifierId: selectedVerifier.id,
                     chainId: originChainId,
+                    operationType: OperationTypeEnum.addGuardian,
                   },
                 });
                 if (req.verifierSessionId) {
@@ -501,7 +502,7 @@ const GuardianEdit: React.FC = () => {
     if (isEdit) {
       return (
         <View style={pageStyles.accountWrap}>
-          <TextM style={pageStyles.accountLabel}>Guardian Apple</TextM>
+          <TextM style={pageStyles.accountLabel}>Guardian {LoginType[editGuardian?.guardianType || 0]}</TextM>
           <GuardianAccountItem guardian={editGuardian} />
         </View>
       );
@@ -571,7 +572,7 @@ const GuardianEdit: React.FC = () => {
             <ListItem
               onPress={() => {
                 GuardianTypeSelectOverlay.showList({
-                  list: loginTypeList,
+                  list: LOGIN_TYPE_LIST,
                   labelAttrName: 'name',
                   value: selectedType?.value,
                   callBack: onChooseType,
@@ -603,7 +604,12 @@ const GuardianEdit: React.FC = () => {
           }}
           titleLeftElement={
             selectedVerifier && (
-              <VerifierImage style={pageStyles.verifierImageStyle} size={pTd(30)} uri={selectedVerifier.imageUrl} />
+              <VerifierImage
+                style={pageStyles.verifierImageStyle}
+                size={pTd(30)}
+                label={selectedVerifier.name}
+                uri={selectedVerifier.imageUrl}
+              />
             )
           }
           titleStyle={[GStyles.flexRowWrap, GStyles.itemCenter]}

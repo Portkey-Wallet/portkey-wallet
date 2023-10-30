@@ -10,6 +10,8 @@ import SettingHeader from 'pages/components/SettingHeader';
 import './index.less';
 import { Outlet } from 'react-router-dom';
 import clsx from 'clsx';
+import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
+import UnReadBadge from 'pages/components/UnReadBadge';
 
 interface MyMenuItemInfo {
   label: string;
@@ -21,6 +23,7 @@ interface MyMenuItemInfo {
 export default function PromptMy() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const isImputation = useIsImputation();
 
   const { pathname } = useLocation();
 
@@ -72,9 +75,18 @@ export default function PromptMy() {
     navigate('/');
   }, [navigate]);
 
+  const menuItemIcon = (iconType: keyof typeof svgsList, unReadShow: boolean) => {
+    return (
+      <div className="menu-icon-wrap">
+        <CustomSvg type={iconType || 'Aelf'} />
+        {unReadShow && <UnReadBadge />}
+      </div>
+    );
+  };
+
   return (
     <div className="prompt-my-page flex-column">
-      <PortKeyHeader onUserClick={backCb} />
+      <PortKeyHeader unReadShow={isImputation} onUserClick={backCb} />
 
       <div className="prompt-my-frame">
         <SettingHeader title={t('My')} leftCallBack={backCb} />
@@ -85,7 +97,7 @@ export default function PromptMy() {
                 className={clsx(['menu-item-common', item.key === curMenuInfo?.key ? 'menu-item-selected' : undefined])}
                 key={item.key}
                 height={56}
-                icon={<CustomSvg type={item.icon || 'Aelf'} />}
+                icon={menuItemIcon(item.icon, !!(isImputation && item.key === 'contacts'))}
                 onClick={() =>
                   navigate(item.pathname, {
                     replace: true,

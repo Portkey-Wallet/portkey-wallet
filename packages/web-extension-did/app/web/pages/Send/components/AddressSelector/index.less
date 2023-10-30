@@ -21,7 +21,7 @@
       box-shadow: none;
       z-index: 10;
       position: sticky;
-      background: white;
+      background: @bg-11;
       border-bottom: 1px solid @border-2;
 
       .@{app-prefix}-tabs-nav-wrap {
@@ -116,6 +116,9 @@
     }
     .contact-card-in-recent {
       border-bottom: 1px solid @border-2;
+      .@{app-prefix}-collapse-header {
+        padding-left: 24px !important;
+      }
     }
     .loading {
       margin-top: 14px;
@@ -152,8 +155,10 @@
     }
     .adm-list-item {
       padding: 0;
+      border-top: 1px solid @border-2;
       .adm-list-item-content {
         padding: 0;
+        border-top: none;
         .adm-list-item-content-main {
           padding: 0;
           width: 100%;
@@ -175,7 +180,7 @@
     border-top: 0;
     border-left: 0;
     border-right: 0;
-    background: white;
+    background: @bg-11;
     .@{app-prefix}-collapse-item {
       border-bottom: none;
     }
@@ -190,7 +195,7 @@
     .@{app-prefix}-collapse-header {
       flex-direction: row-reverse;
       align-items: center !important;
-      padding: 16px 18px !important;
+      padding: 16px 18px 16px 0!important;
       .@{app-prefix}-collapse-arrow {
         margin-right: 8px !important;
         svg {

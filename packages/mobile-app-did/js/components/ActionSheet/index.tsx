@@ -52,15 +52,25 @@ type AlertBodyProps = {
   message2?: ReactNode;
   buttons?: ButtonRowProps['buttons'];
   autoClose?: boolean;
+  messageList?: ReactNode[];
 };
 
-function AlertBody({ title, message, buttons, message2, title2, autoClose = true }: AlertBodyProps) {
+function AlertBody({ title, message, buttons, message2, title2, autoClose = true, messageList }: AlertBodyProps) {
   return (
     <View style={styles.alertBox}>
       {title ? <TextTitle style={styles.alertTitle}>{title}</TextTitle> : null}
       {typeof title2 === 'string' ? <TextL style={styles.alertTitle2}>{title2}</TextL> : title2}
       {typeof message === 'string' ? <TextM style={styles.alertMessage}>{message}</TextM> : message}
       {typeof message2 === 'string' ? <TextM style={styles.alertMessage}>{message2}</TextM> : message2}
+      {messageList?.map((item, index) => {
+        return typeof item === 'string' ? (
+          <TextM key={index} style={styles.alertMessage}>
+            {item}
+          </TextM>
+        ) : (
+          item
+        );
+      })}
       <ButtonRow
         buttons={buttons?.map(i => ({
           ...i,

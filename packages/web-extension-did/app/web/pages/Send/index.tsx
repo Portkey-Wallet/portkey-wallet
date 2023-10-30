@@ -1,4 +1,4 @@
-import { useCurrentChain, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { addFailedActivity, removeFailedActivity } from '@portkey-wallet/store/store-ca/activity/slice';
@@ -25,14 +25,16 @@ import { WalletError } from '@portkey-wallet/store/wallet/type';
 import getTransferFee from './utils/getTransferFee';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { TransactionError } from '@portkey-wallet/constants/constants-ca/assets';
-import './index.less';
 import { the2ThFailedActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { contractErrorHandler } from 'utils/tryErrorHandler';
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import PromptFrame from 'pages/components/PromptFrame';
 import clsx from 'clsx';
 import { AddressCheckError } from '@portkey-wallet/store/store-ca/assets/type';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
+import { ChainId } from '@portkey-wallet/types';
+import { useCheckManagerSyncState } from 'hooks/wallet';
+import './index.less';
 
 export type Account = { address: string; name?: string };
 
@@ -67,10 +69,11 @@ export default function Send() {
   const [amount, setAmount] = useState('');
   const [balance, setBalance] = useState('');
   const isValidSuffix = useIsValidSuffix();
-
+  const checkManagerSyncState = useCheckManagerSyncState();
   const [txFee, setTxFee] = useState<string>();
   const currentChain = useCurrentChain(state.chainId);
-
+  useFetchTxFee();
+  const { crossChain: crossChainFee } = useGetTxFee(state.chainId);
   const tokenInfo = useMemo(
     () => ({
       chainId: state.chainId,
@@ -84,6 +87,7 @@ export default function Send() {
     }),
     [state],
   );
+  const defaultToken = useDefaultToken(state.chainId as ChainId);
 
   const validateToAddress = useCallback(
     (value: { name?: string; address: string } | undefined) => {
@@ -93,7 +97,7 @@ export default function Send() {
         setErrorMsg(AddressCheckError.recipientAddressIsInvalid);
         return false;
       }
-      const selfAddress = wallet[state.chainId].caAddress;
+      const selfAddress = wallet?.[state.chainId as ChainId]?.caAddress || '';
       if (isEqAddress(selfAddress, getAelfAddress(toAccount.address)) && suffix === state.chainId) {
         setErrorMsg(AddressCheckError.equalIsValid);
         return false;
@@ -194,17 +198,21 @@ export default function Send() {
     try {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
+      const _isManagerSynced = await checkManagerSyncState(state.chainId);
+      if (!_isManagerSynced) {
+        return 'Synchronizing on-chain account information...';
+      }
       if (type === 'token') {
-        if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(ZERO.plus(balance))) {
+        if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
           return TransactionError.TOKEN_NOT_ENOUGH;
         }
-        if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') && symbol === 'ELF') {
-          if (ZERO.plus(CROSS_FEE).isGreaterThanOrEqualTo(ZERO.plus(amount))) {
+        if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF') && symbol === defaultToken.symbol) {
+          if (ZERO.plus(crossChainFee).isGreaterThanOrEqualTo(amount)) {
             return TransactionError.CROSS_NOT_ENOUGH;
           }
         }
       } else if (type === 'nft') {
-        if (ZERO.plus(amount).isGreaterThan(ZERO.plus(balance))) {
+        if (ZERO.plus(amount).isGreaterThan(balance)) {
           return TransactionError.NFT_NOT_ENOUGH;
         }
       } else {
@@ -228,12 +236,16 @@ export default function Send() {
     setLoading,
     amount,
     type,
+    checkManagerSyncState,
+    state.chainId,
     getTranslationInfo,
     tokenInfo.decimals,
     balance,
     toAccount.address,
     chainInfo?.chainId,
     symbol,
+    defaultToken.symbol,
+    crossChainFee,
   ]);
 
   const sendHandler = useCallback(async () => {
@@ -254,7 +266,7 @@ export default function Send() {
           caHash: wallet?.caHash || '',
           amount: timesDecimals(amount, tokenInfo.decimals).toNumber(),
           toAddress: toAccount.address,
-          fee: timesDecimals(txFee, 8).toNumber(),
+          fee: timesDecimals(txFee, defaultToken.decimals).toNumber(),
         });
       } else {
         console.log('sameChainTransfers==sendHandler');
@@ -291,6 +303,7 @@ export default function Send() {
     amount,
     chainInfo,
     currentNetwork.walletType,
+    defaultToken.decimals,
     dispatch,
     navigate,
     passwordSeed,
@@ -340,7 +353,6 @@ export default function Send() {
                 address: `ELF_${account.address}_${account?.addressChainId || account?.chainId}`,
               };
               setToAccount(value);
-              // validateToAddress(value);
             }}
             chainId={tokenInfo.chainId}
           />
@@ -349,7 +361,6 @@ export default function Send() {
       1: {
         btnText: 'Preview',
         handler: async () => {
-          // if (!validateToAddress(toAccount)) return;
           const res = await handleCheckPreview();
           console.log('handleCheckPreview res', res);
           if (!res) {
@@ -368,7 +379,7 @@ export default function Send() {
           <AmountInput
             type={type as any}
             fromAccount={{
-              address: wallet[state.chainId].caAddress,
+              address: wallet?.[state.chainId as ChainId]?.caAddress || '',
               AESEncryptPrivateKey: wallet.AESEncryptPrivateKey,
             }}
             toAccount={{
@@ -382,6 +393,7 @@ export default function Send() {
               setBalance(balance);
             }}
             getTranslationInfo={getTranslationInfo}
+            setErrorMsg={setTipMsg}
           />
         ),
       },
@@ -434,7 +446,7 @@ export default function Send() {
   const { isPrompt } = useCommonState();
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['page-send', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['page-send', isPrompt && 'detail-page-prompt'])}>
         <TitleWrapper
           className="page-title"
           title={`Send ${type === 'token' ? symbol : ''}`}
@@ -454,12 +466,7 @@ export default function Send() {
             <div className="item to">
               <span className="label">{t('To_with_colon')}</span>
               <div className="control">
-                <ToAccount
-                  value={toAccount}
-                  onChange={(v) => setToAccount(v)}
-                  focus={stage !== Stage.Amount}
-                  // onBlur={() => validateToAddress(toAccount)}
-                />
+                <ToAccount value={toAccount} onChange={(v) => setToAccount(v)} focus={stage !== Stage.Amount} />
                 {stage === Stage.Amount && (
                   <CustomSvg
                     type="Close2"
@@ -475,20 +482,12 @@ export default function Send() {
           </div>
         )}
         <div className="stage-ele">{StageObj[stage].element}</div>
-        {stage === Stage.Preview ? (
-          <div className="btn-wrap">
-            <Button disabled={btnDisabled} className="stage-btn" type="primary" onClick={StageObj[stage].handler}>
-              {StageObj[stage].btnText}
-            </Button>
-          </div>
-        ) : (
-          <p className="btn-wrap">
-            <Button disabled={btnDisabled} className="stage-btn" type="primary" onClick={StageObj[stage].handler}>
-              {StageObj[stage].btnText}
-            </Button>
-          </p>
-        )}
-        {isPrompt ? <PromptEmptyElement /> : null}
+        <div className="btn-wrap">
+          <Button disabled={btnDisabled} className="stage-btn" type="primary" onClick={StageObj[stage].handler}>
+            {StageObj[stage].btnText}
+          </Button>
+        </div>
+        {isPrompt && <PromptEmptyElement />}
       </div>
     );
   }, [StageObj, btnDisabled, errorMsg, isPrompt, navigate, stage, symbol, t, toAccount, type, walletName]);

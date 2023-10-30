@@ -21,8 +21,13 @@ export const defaultColors = {
   bg12: '#BDD2FB',
   bg13: '#0075FF',
   bg14: '#CEDDFC',
-  bg15: 'rgba(104，170，253，.2)',
+  bg15: 'rgba(104, 170, 253, .2)',
   bg16: '#C5CBD5',
+  bg17: '#EA4F45',
+  bg18: '#F0F1F4',
+  bg19: '#000000',
+  bg20: '#515A62',
+  bg21: '#FDEDEC',
 
   font1: '#464B53',
   font2: 'white',
@@ -36,6 +41,7 @@ export const defaultColors = {
   font10: '#34C759',
   font11: '#ffffff',
   font12: '#B34B4B',
+  font13: '#EA4F45',
 
   icon1: '#515A62',
   icon2: '#ffffff',

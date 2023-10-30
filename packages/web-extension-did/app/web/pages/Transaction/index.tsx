@@ -16,7 +16,7 @@ import { useEffectOnce } from 'react-use';
 import './index.less';
 import { useIsTestnet } from 'hooks/useNetwork';
 import { dateFormatTransTo13 } from 'utils';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
@@ -24,6 +24,7 @@ import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/ho
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { ChainId } from '@portkey-wallet/types';
 
 export interface ITransactionQuery {
   item: ActivityItemType;
@@ -39,10 +40,11 @@ export default function Transaction() {
   const currentWallet = useCurrentWallet();
   const { walletInfo } = currentWallet;
   const caAddresses = useCaAddresses();
-  const caAddress = chainId ? [walletInfo[chainId]?.caAddress] : '';
+  const caAddress = chainId ? [walletInfo?.[chainId as ChainId]?.caAddress] : '';
   const isTestNet = useIsTestnet();
   useFreshTokenPrice();
   const amountInUsdShow = useAmountInUsdShow();
+  const defaultToken = useDefaultToken(chainId ? (chainId as ChainId) : undefined);
 
   // Obtain data through routing to ensure that the page must have data and prevent Null Data Errors.
   const [activityItem, setActivityItem] = useState<ActivityItemType>(state.item);
@@ -121,7 +123,7 @@ export default function Transaction() {
       return (
         <p className="amount">
           {`${formatWithCommas({ amount, decimals, sign })} ${symbol ?? ''}`}
-          {!isTestNet && <span className="usd">{amountInUsdShow(amount, decimals || 8, symbol)}</span>}
+          {!isTestNet && <span className="usd">{amountInUsdShow(amount, decimals || 0, symbol)}</span>}
         </p>
       );
     } else {
@@ -229,10 +231,12 @@ export default function Transaction() {
                 <div key={'transactionFee' + idx} className="right-item">
                   <span>{`${formatWithCommas({
                     amount: item.fee,
-                    decimals: item?.decimals || 8,
+                    decimals: item.decimals || defaultToken.decimals,
                   })} ${item.symbol ?? ''}`}</span>
                   {!isTestNet && (
-                    <span className="right-usd">{amountInUsdShow(item.fee, item?.decimals || 8, 'ELF')}</span>
+                    <span className="right-usd">
+                      {amountInUsdShow(item.fee, item?.decimals || defaultToken.decimals, defaultToken.symbol)}
+                    </span>
                   )}
                 </div>
               );
@@ -240,7 +244,16 @@ export default function Transaction() {
         </span>
       </div>
     );
-  }, [activityItem.isDelegated, amountInUsdShow, feeInfo, isTestNet, noFeeUI, t]);
+  }, [
+    activityItem.isDelegated,
+    amountInUsdShow,
+    defaultToken.decimals,
+    defaultToken.symbol,
+    feeInfo,
+    isTestNet,
+    noFeeUI,
+    t,
+  ]);
 
   const transactionUI = useCallback(() => {
     return (
@@ -278,7 +291,7 @@ export default function Transaction() {
 
   const mainContent = useCallback(() => {
     return (
-      <div className={clsx(['transaction-detail-modal', isPrompt ? 'detail-page-prompt' : null])}>
+      <div className={clsx(['transaction-detail-modal', isPrompt && 'detail-page-prompt'])}>
         <div className="transaction-detail-body">
           <div className="header">
             <CustomSvg type="Close2" onClick={onClose} />
@@ -296,7 +309,7 @@ export default function Transaction() {
         </div>
         <div className="transaction-footer">
           <div>{viewOnExplorerUI()}</div>
-          {isPrompt ? <PromptEmptyElement /> : null}
+          {isPrompt && <PromptEmptyElement />}
         </div>
       </div>
     );

@@ -88,8 +88,14 @@ export function formatRpcUrl(rpc: string) {
   return rpc;
 }
 
-export function strIncludes(str1: string, str2: string) {
-  return str1.toLowerCase().includes(str2.toLowerCase().trim());
+/**
+ *
+ * @param str
+ * @param keyword
+ * @returns
+ */
+export function strIncludes(str: string, keyword: string) {
+  return str.toLocaleUpperCase().includes(keyword.toLocaleUpperCase().trim());
 }
 
 export const sleep = (time: number) => {
@@ -161,7 +167,12 @@ export const handleErrorCode = (error: any) => {
  * @param isMainChain
  * @returns
  */
-export const formatChainInfoToShow = (chainId: ChainId = 'AELF', networkType?: NetworkType): string => {
+export const formatChainInfoToShow = (
+  chainId: ChainId = 'AELF',
+  networkType?: NetworkType,
+  chainType: ChainType = 'aelf',
+): string => {
+  if (chainType !== 'aelf') return chainType;
   if (typeof networkType === 'string')
     return `${chainId === 'AELF' ? 'MainChain' : 'SideChain'} ${chainId} ${networkType === 'MAIN' ? '' : 'Testnet'}`;
 
@@ -233,3 +244,21 @@ export function handlePhoneNumber(str?: string) {
   }
   return str || '';
 }
+
+export const handleLoopFetch = async <T>(
+  fetch: () => Promise<T>,
+  times = 0,
+  interval = 0,
+  checkIsContinue?: () => boolean,
+): Promise<T> => {
+  try {
+    return await fetch();
+  } catch (error) {
+    const isContinue = checkIsContinue ? checkIsContinue() : true;
+    if (!isContinue) throw new Error('fetch invalid');
+    if (times === 1) throw error;
+    console.log('handleLoopFetch: error', times, error);
+  }
+  await sleep(interval);
+  return handleLoopFetch(fetch, times - 1, interval, checkIsContinue);
+};

@@ -5,13 +5,14 @@ import { useWalletInfo } from 'store/Provider/hooks';
 // import { useTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import './index.less';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { CROSS_FEE } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/aelf';
 import { ChainId } from '@portkey-wallet/types';
 import { chainShowText } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useIsTestnet } from 'hooks/useNetwork';
+import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 export default function SendPreview({
   amount,
@@ -32,7 +33,7 @@ export default function SendPreview({
   toAccount: { name?: string; address: string };
   transactionFee: string | number;
   type: 'nft' | 'token';
-  chainId: string;
+  chainId: ChainId;
   isCross: boolean;
   tokenId: string;
 }) {
@@ -41,6 +42,8 @@ export default function SendPreview({
   const isTestNet = useIsTestnet();
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
+  const { crossChain: crossChainFee } = useGetTxFee(chainId);
+  const defaultToken = useDefaultToken(chainId);
 
   const toChain = useMemo(() => {
     const arr = toAccount.address.split('_');
@@ -50,11 +53,11 @@ export default function SendPreview({
     return arr[arr.length - 1];
   }, [toAccount.address]);
   const entireFromAddressShow = useMemo(
-    () => getEntireDIDAelfAddress(wallet[chainId].caAddress, undefined, chainId),
+    () => getEntireDIDAelfAddress(wallet?.[chainId]?.caAddress || '', undefined, chainId),
     [chainId, wallet],
   );
   const renderEstimateAmount = useMemo(() => {
-    if (ZERO.plus(amount).isLessThanOrEqualTo(ZERO.plus(CROSS_FEE))) {
+    if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee)) {
       return (
         <>
           <span className="usd">{!isTestNet && '$0'}</span>0
@@ -64,13 +67,13 @@ export default function SendPreview({
       return (
         <>
           <span className="usd">
-            {!isTestNet && amountInUsdShow(ZERO.plus(amount).minus(ZERO.plus(CROSS_FEE)).toString(), 0, symbol)}
+            {!isTestNet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toString(), 0, symbol)}
           </span>
-          {formatAmountShow(ZERO.plus(amount).minus(ZERO.plus(CROSS_FEE)))}
+          {formatAmountShow(ZERO.plus(amount).minus(crossChainFee))}
         </>
       );
     }
-  }, [amount, amountInUsdShow, isTestNet, symbol]);
+  }, [amount, amountInUsdShow, crossChainFee, isTestNet, symbol]);
 
   return (
     <div className="send-preview">
@@ -127,19 +130,19 @@ export default function SendPreview({
         <span className="label">Transaction fee</span>
         <p className="value">
           <span className="symbol">
-            <span className="usd">{!isTestNet && amountInUsdShow(transactionFee, 0, 'ELF')}</span>
-            {` ${formatAmountShow(transactionFee)} ELF`}
+            <span className="usd">{!isTestNet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</span>
+            {` ${formatAmountShow(transactionFee)} ${defaultToken.symbol}`}
           </span>
         </p>
       </div>
-      {isCross && symbol === 'ELF' && (
+      {isCross && symbol === defaultToken.symbol && (
         <>
           <div className="fee-preview">
             <span className="label">Cross-chain Transaction fee</span>
             <p className="value">
               <span className="symbol">
-                <span className="usd">{!isTestNet && amountInUsdShow(CROSS_FEE, 0, symbol)}</span>
-                {` ${formatAmountShow(CROSS_FEE)} ELF`}
+                <span className="usd">{!isTestNet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
+                {` ${formatAmountShow(crossChainFee)} ${defaultToken.symbol}`}
               </span>
             </p>
           </div>

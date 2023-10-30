@@ -1,0 +1,99 @@
+@import '../../../../assets/theme/color.less';
+@import '../../../../assets/theme/constants.less';
+
+.bookmark-list {
+  .header {
+    top: 0;
+    position: sticky;
+    padding: 17px;
+    z-index: 10;
+    background: @bg-11;
+    p {
+      font-size: 18px;
+      line-height: 22px;
+      color: @font-11;
+    }
+    .custom-svg {
+      position: absolute;
+      right: 16px;
+      top: 20px;
+      width: 18px;
+      height: 18px;
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+  .list {
+    .circle-loading {
+      margin: 7px auto;
+      width: 24px;
+      height: 24px;
+    }
+    .menu-item {
+      padding: 0 16px;
+      .menu-item-title {
+        height: 44px;
+      }
+    }
+    .content {
+      align-items: center;
+      width: 100%;
+      .icon {
+        flex-shrink: 0;
+        width: 32px;
+        border-radius: 50%;
+        .dappdefault-icon {
+          width: 32px;
+          height: 32px;
+          svg {
+            width: 32px;
+            height: 32px;
+          }
+        }
+        img {
+          border-radius: 50%;
+        }
+      }
+      .desc {
+        flex: 1;
+        width: 0;
+        word-wrap: break-word;
+        margin-left: 16px;
+        .text {
+          line-break: anywhere;
+          .text-overflow(1);
+        }
+        .name {
+          display: flex;
+          font-size: 16px;
+          line-height: 22px;
+          color: @font-11;
+          .dapp-name {
+            line-break: anywhere;
+            .text-overflow(1);
+          }
+          .custom-svg {
+            margin-left: 4px;
+          }
+        }
+        .origin {
+          margin-top: 2px;
+          font-size: 14px;
+          line-height: 20px;
+          color: @font-12;
+        }
+      }
+    }
+    .empty-content {
+      width: 100%;
+      margin-top: 82px;
+      .empty-text {
+        font-size: 14px;
+        line-height: 20px;
+        color: @font-13;
+      }
+    }
+  }
+}

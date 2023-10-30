@@ -89,6 +89,7 @@ export type DiscoverGroupQuery = {
       sort?: number | null;
       status?: string | null;
       title?: string | null;
+      url?: string | null;
       user_created?: string | null;
       user_updated?: string | null;
       date_created_func?: {
@@ -156,6 +157,7 @@ export type DiscoverGroupQuery = {
           sort?: number | null;
           status?: string | null;
           title?: string | null;
+          url?: string | null;
           user_created?: string | null;
           user_updated?: string | null;
           imgUrl?: {
@@ -389,6 +391,7 @@ export const DiscoverGroupDocument = gql`
             sort
             status
             title
+            url
             user_created
             user_updated
           }
@@ -401,6 +404,7 @@ export const DiscoverGroupDocument = gql`
         sort
         status
         title
+        url
         user_created
         user_updated
       }

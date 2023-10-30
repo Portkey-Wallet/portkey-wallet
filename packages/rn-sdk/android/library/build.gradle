@@ -11,16 +11,22 @@ plugins {
     id 'com.facebook.react'
 }
 
+preBuild.doFirst {
+    System.err.println("Build fresh bundle...")
+    def process = (getRootProject().rootDir.path + "/../build/build-android-bundle.sh").execute()
+    process.waitForProcessOutput(System.out, System.err)
+}
+
 android {
     namespace 'io.aelf.portkey'
     compileSdk 33
     ndkVersion "25.2.9519653"
 
     defaultConfig {
-        minSdk 24
+        minSdk 26
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName "1.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

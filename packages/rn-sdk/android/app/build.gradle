@@ -7,7 +7,13 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file('/Users/lvzhiwei/Desktop/RN-SDK/portkey-wallet/packages/rn-sdk/android/release-key.keystore')
+            storeFile file('../release-key.keystore')
+            storePassword 'portkey2022'
+            keyPassword 'portkey2022'
+            keyAlias 'my-key-alias'
+        }
+        release {
+            storeFile file('../release-key.keystore')
             storePassword 'portkey2022'
             keyPassword 'portkey2022'
             keyAlias 'my-key-alias'
@@ -21,7 +27,7 @@ android {
         minSdk rootProject.ext.minSdkVersion
         targetSdk rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.1.0"
         ndk {
             //noinspection ChromeOsAbiSupport
             abiFilters 'arm64-v8a'
@@ -90,7 +96,7 @@ dependencies {
     implementation "com.facebook.react:react-android:0.72.4"
 
     // We use a local dependency to use dialog and loading components, it is not necessary for you to use it.
-    implementation fileTree(dir: 'libs', include: ['*.jar','*.aar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 }
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"

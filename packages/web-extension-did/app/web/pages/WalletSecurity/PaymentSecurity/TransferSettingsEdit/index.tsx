@@ -1,4 +1,4 @@
-import { useAppDispatch, useCommonState } from 'store/Provider/hooks';
+import { useAppDispatch, useCommonState, useLoading } from 'store/Provider/hooks';
 import TransferSettingsEditPopup from './Popup';
 import TransferSettingsEditPrompt from './Prompt';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,7 @@ import { isValidInteger } from '@portkey-wallet/utils/reg';
 import { LimitFormatTip, SingleExceedDaily } from 'constants/security';
 import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from 'react-use';
+import { useThrottleCallback } from '@portkey-wallet/hooks';
 
 export default function TransferSettingsEdit() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
@@ -33,6 +34,7 @@ export default function TransferSettingsEdit() {
   const [disable, setDisable] = useState(true);
   const [validSingleLimit, setValidSingleLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
   const [validDailyLimit, setValidDailyLimit] = useState<ValidData>({ validateStatus: '', errorMsg: '' });
+  const { setLoading } = useLoading();
 
   const handleDisableCheck = useCallback(() => {
     const { singleLimit, dailyLimit } = form.getFieldsValue();
@@ -102,39 +104,46 @@ export default function TransferSettingsEdit() {
     setValidDailyLimit({ validateStatus: '', errorMsg: '' });
   }, [handleDisableCheck]);
 
-  const handleSetLimit = useCallback(async () => {
-    // ====== clear guardian cache ====== start
-    dispatch(
-      setLoginAccountAction({
-        guardianAccount: walletInfo.managerInfo?.loginAccount as string,
-        loginType: walletInfo.managerInfo?.type as LoginType,
-      }),
-    );
-    dispatch(resetUserGuardianStatus());
-    await userGuardianList({ caHash: walletInfo.caHash });
-    // ====== clear guardian cache ====== end
+  const handleSetLimit = useThrottleCallback(async () => {
+    setLoading(true);
+    try {
+      // ====== clear guardian cache ====== start
+      dispatch(
+        setLoginAccountAction({
+          guardianAccount: walletInfo.managerInfo?.loginAccount as string,
+          loginType: walletInfo.managerInfo?.type as LoginType,
+        }),
+      );
+      dispatch(resetUserGuardianStatus());
+      await userGuardianList({ caHash: walletInfo.caHash });
+      // ====== clear guardian cache ====== end
 
-    const { singleLimit, dailyLimit } = form.getFieldsValue();
-    const params = {
-      dailyLimit: timesDecimals(dailyLimit, state.decimals).toFixed(),
-      singleLimit: timesDecimals(singleLimit, state.decimals).toFixed(),
-      symbol: state.symbol,
-      fromSymbol: state.fromSymbol,
-      decimals: state.decimals,
-      restricted: restrictedTextRef.current,
-      from: state.from,
-      targetChainId: state.chainId,
-      initStateBackUp: state,
-    };
-
-    isPrompt
-      ? navigate('/setting/wallet-security/payment-security/guardian-approval', {
-          state: `setTransferLimit_${JSON.stringify(params)}`,
-        })
-      : InternalMessage.payload(
-          PortkeyMessageTypes.GUARDIANS_APPROVAL,
-          `setTransferLimit_${JSON.stringify(params)}`,
-        ).send();
+      const { singleLimit, dailyLimit } = form.getFieldsValue();
+      const params = {
+        dailyLimit: timesDecimals(dailyLimit, state.decimals).toFixed(),
+        singleLimit: timesDecimals(singleLimit, state.decimals).toFixed(),
+        symbol: state.symbol,
+        fromSymbol: state.fromSymbol,
+        decimals: state.decimals,
+        restricted: restrictedTextRef.current,
+        from: state.from,
+        targetChainId: state.targetChainId || state.chainId,
+        initStateBackUp: state,
+      };
+      setLoading(false);
+      isPrompt
+        ? navigate('/setting/wallet-security/payment-security/guardian-approval', {
+            state: `setTransferLimit_${JSON.stringify(params)}`,
+          })
+        : InternalMessage.payload(
+            PortkeyMessageTypes.GUARDIANS_APPROVAL,
+            `setTransferLimit_${JSON.stringify(params)}`,
+          ).send();
+    } catch (error) {
+      console.log('set limit error: ', error);
+    } finally {
+      setLoading(false);
+    }
   }, [
     dispatch,
     walletInfo.managerInfo?.loginAccount,

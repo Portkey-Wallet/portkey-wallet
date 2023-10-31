@@ -2,9 +2,19 @@
 
 interface NativePortkeyWallet extends PortkeyManager {
     isUnlocked: (callback:MethodCallback<Boolean>) => void
+    login: () => Promise<boolean>
     exitWallet: (callback:MethodCallback<Boolean>) => void
     callCaMethod: (params:CaContractConfig,callback:MethodCallback<Boolean>) => void
     callContractMethod: (params:GeneralContractConfi,callback:MethodCallback<Boolean>) => void
+
+    setConfig: () => void
+    addNetwork: (config: NetworkConfig) => Promise<boolean>
+    switchNetwork: (config: NetworkConfig) => Promise<boolean>
+    clearAllData: () => Promise<boolean>
+
+    getLoginStatus: () => Promise<LoginStatus>
+    getCaInfo: () => Promise<CAInfo>
+    getWalletIngo: () => Promise<WalletInfo>
 }
 
 interface PortkeyManager extends GuardianManager, AnyManager {

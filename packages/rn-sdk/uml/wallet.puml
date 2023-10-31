@@ -30,6 +30,23 @@ interface GeneralContractConfig extends CaContractConfig {
     contractName?: string
 }
 
+interface NetworkConfig {
+    name: string
+    endPointUrl: string
+}
+
+interface LoginStatus {
+
+}
+
+interface CAInfo {
+
+}
+
+interface WalletInfo {
+
+}
+
 GeneralJSMethodConfig --> PortkeyWallet 
 
 @enduml

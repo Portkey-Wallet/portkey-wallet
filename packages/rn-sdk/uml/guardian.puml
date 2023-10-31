@@ -1,0 +1,9 @@
+@startuml guardian
+
+interface GuardianModule {
+    guardianCount: () => Promise<number>
+    openGuardianList: () => void
+    addGuardian: () => void
+}
+
+@enduml

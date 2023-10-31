@@ -130,7 +130,10 @@
 #pragma mark - Selector
 
 - (void)loginButtonClicked:(id)sender {
-    [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
+//    [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
+    [[PortkeySDKRouterModule sharedInstance] navigateToWithOptions:@"referral_entry" from:@"" params:NULL callback:^(NSArray *response) {
+        NSLog(@"response: %@", response);
+    }];
 }
 
 - (void)switchChainWithChainId:(NSString *)chainId {

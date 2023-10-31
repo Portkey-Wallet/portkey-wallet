@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import Svg from 'components/Svg';
-import { StyleProp, TouchableOpacity, View, ViewProps } from 'react-native';
+import { StyleProp, View, ViewProps } from 'react-native';
 import { commonButtonStyle } from '../SendButton/style';
 import navigationService from 'utils/navigationService';
 import { TextM } from 'components/CommonText';
@@ -9,6 +9,7 @@ import TokenOverlay from 'components/TokenOverlay';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
+import Touchable from 'components/Touchable';
 
 interface SendButtonType {
   currentTokenInfo?: TokenItemShowType;
@@ -30,7 +31,7 @@ export default function ReceiveButton(props: SendButtonType) {
 
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
-      <TouchableOpacity
+      <Touchable
         style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={() => {
           if (themeType === 'innerPage') return navigationService.navigate('Receive', currentTokenInfo);
@@ -42,7 +43,7 @@ export default function ReceiveButton(props: SendButtonType) {
           });
         }}>
         <Svg icon={themeType === 'dashBoard' ? 'receive' : 'receive1'} size={pTd(46)} />
-      </TouchableOpacity>
+      </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Receive')}</TextM>
     </View>
   );

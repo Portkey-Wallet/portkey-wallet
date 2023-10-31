@@ -20,8 +20,6 @@ internal object NavigationHolder {
     private val naviStack = LinkedList<WeakReference<BasePortkeyReactActivity>>()
     private val callbackMap: MutableMap<String, Callback> = mutableMapOf()
     private val nativeCallbackMap: MutableMap<String, (WritableMap) -> Unit> = mutableMapOf()
-    internal var lastCachedIntent: Intent? = null
-
 
     fun pushNewComponent(activity: BasePortkeyReactActivity) {
         naviStack.push(WeakReference(activity))

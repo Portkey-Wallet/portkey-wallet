@@ -18,6 +18,5 @@ fun Activity.usePortkeyEntry(entryName: String, callback: (WritableMap) -> Unit 
     intent.putExtra(StorageIdentifiers.PAGE_ENTRY, entryName)
     intent.putExtra(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId)
     NavigationHolder.registerNativeCallback(callbackId, callback)
-    NavigationHolder.lastCachedIntent = intent
     startActivity(intent)
 }

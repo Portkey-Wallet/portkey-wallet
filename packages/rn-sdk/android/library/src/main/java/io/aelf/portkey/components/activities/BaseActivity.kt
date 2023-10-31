@@ -38,20 +38,22 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {
         val containerId = generateUniqueCallbackID()
-        val componentName =
-            intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
-                ?: PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName
-        val params =
-            (intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
-                ?: Bundle()).apply {
-                putString(StorageIdentifiers.PAGE_CONTAINER_ID, containerId)
-            }
         return object : ReactActivityDelegate(
             this,
-            componentName
+            null
         ) {
-            override fun getLaunchOptions(): Bundle = params
-
+            override fun getLaunchOptions(): Bundle{
+                val params =
+                    (intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
+                        ?: Bundle()).apply {
+                        putString(StorageIdentifiers.PAGE_CONTAINER_ID, containerId)
+                    }
+                return params
+            }
+            override fun getMainComponentName(): String {
+                return intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
+                    ?: PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName
+            }
             override fun onResume() {
                 super.onResume()
                 CoroutineScope(Dispatchers.IO).launch {
@@ -65,11 +67,6 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                 }
             }
         }
-    }
-
-    override fun getIntent(): Intent {
-        val superIntent = super.getIntent()
-        return superIntent ?: NavigationHolder.lastCachedIntent ?: Intent()
     }
 
     override fun onDestroy() {
@@ -170,7 +167,6 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
     intent.putExtra(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId)
     intent.putExtra(StorageIdentifiers.PAGE_ENTRY, entryName)
     intent.putExtra(StorageIdentifiers.TARGET_SCENE, targetScene)
-    NavigationHolder.lastCachedIntent = intent
     startActivity(intent)
 
 }

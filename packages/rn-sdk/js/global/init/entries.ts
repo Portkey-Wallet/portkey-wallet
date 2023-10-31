@@ -13,10 +13,12 @@ import ConfirmPin from 'pages/Pin/ConfirmPin';
 import SetBiometrics from 'pages/Pin/SetBiometrics';
 import SetPin from 'pages/Pin/SetPin';
 import QrScanner from 'pages/QrScanner';
-import { AppRegistry } from 'react-native';
+import { AppRegistry, ComponentProvider } from 'react-native';
+
+type AcceptableComponentType = ComponentProvider;
 
 const initEntries = () => {
-  const entryConfig = new Map<string, any>();
+  const entryConfig = new Map<string, AcceptableComponentType>();
   entryConfig.set(PortkeyEntries.TEST, () => TestPage);
 
   // entry stage

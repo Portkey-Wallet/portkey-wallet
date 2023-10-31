@@ -90,7 +90,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun jumpToActivity(entryName: String = "referral_entry") {
-        usePortkeyEntry(entryName)
+        usePortkeyEntry(entryName) {
+            PortkeyTest.showDialogForTestOnly(
+                DialogProps().apply {
+                    mainTitle = "Login Result"
+                    subTitle = "$it"
+                    useSingleConfirmButton = true
+                }
+            )
+        }
     }
 
     private fun changeChain(chainId: String) {

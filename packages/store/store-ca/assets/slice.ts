@@ -321,10 +321,13 @@ export const assetsSlice = createSlice({
         state.accountAssets.totalRecordCount = totalRecordCount;
         state.accountAssets.isFetching = false;
         if (!keyword) {
-          state.accountAllAssets.accountAssetsList = list as AccountAssets;
-          state.accountAllAssets.skipCount = state.accountAllAssets.accountAssetsList.length;
-          state.accountAllAssets.totalRecordCount = totalRecordCount;
-          state.accountAllAssets.isFetching = false;
+          state.accountAllAssets = {
+            ...state.accountAllAssets,
+            accountAssetsList: list as AccountAssets,
+            skipCount: state.accountAllAssets.accountAssetsList.length,
+            totalRecordCount: totalRecordCount,
+            isFetching: false,
+          };
         }
       })
       .addCase(fetchAssetAsync.rejected, state => {

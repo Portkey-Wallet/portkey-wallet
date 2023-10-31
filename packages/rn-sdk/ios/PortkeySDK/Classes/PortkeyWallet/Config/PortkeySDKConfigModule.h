@@ -1,5 +1,5 @@
 //
-//  PortkeySDKConfig.h
+//  PortkeySDKConfigModule.h
 //  PortkeySDK
 //
 //  Created by wade-cui on 2023/10/25.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PortkeySDKConfig : NSObject
+@interface PortkeySDKConfigModule : NSObject
 
 + (void)configTermsOfServiceWithPrefix:(NSString *)prefix title:(NSString *)title;
 + (NSString *)termsOfServicePrefix;

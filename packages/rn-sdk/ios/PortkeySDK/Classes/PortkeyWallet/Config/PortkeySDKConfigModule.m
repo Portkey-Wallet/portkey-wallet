@@ -1,17 +1,17 @@
 //
-//  PortkeySDKConfig.m
+//  PortkeySDKConfigModule.m
 //  PortkeySDK
 //
 //  Created by wade-cui on 2023/10/25.
 //
 
-#import "PortkeySDKConfig.h"
+#import "PortkeySDKConfigModule.h"
 #import <PortkeySDK/PortkeySDKMMKVStorage.h>
 
 const static NSString *kTermsOfServicePrefix = @"PortkeySDKTermsOfServicePrefix";
 const static NSString *kTermsOfServiceTitle = @"PortkeySDKTermsOfServiceTitle";
 
-@implementation PortkeySDKConfig
+@implementation PortkeySDKConfigModule
 
 + (void)configTermsOfServiceWithPrefix:(NSString *)prefix title:(NSString *)title {
     [PortkeySDKMMKVStorage writeString:prefix forKey:(NSString *)kTermsOfServicePrefix];

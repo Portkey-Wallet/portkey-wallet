@@ -143,7 +143,10 @@
 
 - (void)loginButtonClicked:(id)sender {
 //    [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
-    [[PortkeySDKRouterModule sharedInstance] navigateToWithOptions:@"referral_entry" from:@"" params:NULL callback:^(NSArray *response) {
+    [[PortkeySDKRouterModule sharedInstance] navigateToWithOptions:@"referral_entry"
+                                                              from:@""
+                                                            params:@{}
+                                                          callback:^(NSArray *response) {
         NSLog(@"response: %@", response);
     }];
 }

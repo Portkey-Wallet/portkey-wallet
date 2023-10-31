@@ -25,6 +25,7 @@ import s3Instance from '@portkey-wallet/utils/s3';
 import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
+import ramp from '@portkey-wallet/ramp';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -41,6 +42,7 @@ export default function Updater() {
     if (request.defaultConfig.baseURL !== apiUrl) {
       request.defaultConfig.baseURL = apiUrl;
     }
+    ramp.config.setConfig({ baseUrl: apiUrl });
   }, [apiUrl]);
   useMemo(() => {
     im.setUrl({

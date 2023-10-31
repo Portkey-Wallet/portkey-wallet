@@ -18,7 +18,7 @@ import { NetworkController } from 'network/controller';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { addManager } from 'utils/wallet';
 import { extraDataEncode, getDeviceInfoFromQR } from '@portkey-wallet/utils/device';
-import { PortkeyConfig } from 'global';
+import { PortkeyConfig } from 'global/constants';
 import { getUnlockedWallet } from 'model/wallet';
 import { AElfWeb3SDK } from 'network/dto/wallet';
 

@@ -1,15 +1,15 @@
 import BatchedBridge from 'react-native/Libraries/BatchedBridge/BatchedBridge';
-import ContractModule from './SubModules/ContractModule';
+import { WalletModule } from '../SubModules/WalletModule';
 
 enum JSModuleIdentifier {
   CONTRACT_MODULE = 'ContractModule',
 }
 
 const jsModuleEntries: { [key: string]: object } = {
-  [JSModuleIdentifier.CONTRACT_MODULE]: ContractModule,
+  [JSModuleIdentifier.CONTRACT_MODULE]: WalletModule,
 };
 
-export const initJSModules = () => {
+export const initJSBatchedBridgeModules = () => {
   Object.entries(jsModuleEntries).forEach(([key, value]) => {
     BatchedBridge.registerCallableModule(key, value);
   });

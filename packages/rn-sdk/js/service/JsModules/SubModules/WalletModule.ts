@@ -1,23 +1,19 @@
 import { sleep } from '@portkey-wallet/utils';
 import { PortkeyModulesEntity } from '../../native-modules';
+import { BaseJSModule, BaseMethodParams } from '../types';
 
-const ContractModule = {
-  callContractMethod: async (contractName: string, methodName: string, data: any, eventId: string) => {
+const WalletModule: BaseJSModule = {
+  callContractMethod: async ({ eventId }: BaseMethodParams) => {
     await sleep(1000);
     console.warn('callContractMethod called.');
     PortkeyModulesEntity.NativeWrapperModule.onWarning('callContractMethod', 'callContractMethod called.');
     PortkeyModulesEntity.NativeWrapperModule.emitJSMethodResult(
       eventId,
       JSON.stringify({
-        params: {
-          contractName,
-          methodName,
-          data,
-          eventId,
-        },
+        params: {},
       }),
     );
   },
 };
 
-export default ContractModule;
+export { WalletModule };

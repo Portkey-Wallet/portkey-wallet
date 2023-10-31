@@ -11,7 +11,7 @@
 
 @interface PortkeySDKJSCallModule () <RCTBridgeDelegate>
 
-@property (nonatomic, strong) RCTBridge *bridge;
+@property (nonatomic, strong, readwrite) RCTBridge *bridge;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, PortkeySDKJSMethodCallback> *methodEventDict;
 
 @end

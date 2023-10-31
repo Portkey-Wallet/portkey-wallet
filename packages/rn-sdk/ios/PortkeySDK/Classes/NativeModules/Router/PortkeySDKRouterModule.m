@@ -36,27 +36,6 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
 {
     if (entry.length <= 0) return;
     dispatch_async(dispatch_get_main_queue(), ^{
-        /*
-        UIViewController *topViewController = [self topViewController];
-        NSDictionary *props = [params valueForKey:@"params"];
-        PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:props];
-        if (callback) {
-            vc.navigateCallback = callback;
-        }
-        UINavigationController *navigationController = topViewController.navigationController;
-        [navigationController pushViewController:vc animated:YES];
-        
-        // close current top view controller after push to new view controller
-        if ([[params valueForKey:@"closeCurrentScreen"] isKindOfClass:NSNumber.class]) {
-            BOOL closeCurrentScreen = [[params valueForKey:@"closeCurrentScreen"] boolValue];
-            if (closeCurrentScreen) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    NSMutableArray<UIViewController *> *viewControllers = [navigationController.viewControllers mutableCopy];
-                    [viewControllers removeObject:topViewController];
-                    navigationController.viewControllers = viewControllers;
-                });
-            }
-        }*/
         UIViewController *topViewController = [self topViewController];
         UINavigationController *navigationController = topViewController.navigationController;
         NSDictionary *props = [params valueForKey:@"params"];

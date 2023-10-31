@@ -11,7 +11,11 @@ typedef void(^PortkeySDKJSMethodCallback)(NSString *_Nullable);
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class RCTBridge;
+
 @interface PortkeySDKJSCallModule : NSObject
+
+@property (nonatomic, strong, readonly) RCTBridge *bridge;
 
 + (instancetype)sharedInstance;
 

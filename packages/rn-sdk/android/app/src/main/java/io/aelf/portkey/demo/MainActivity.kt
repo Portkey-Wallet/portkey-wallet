@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                                     DialogProps().apply {
                                         mainTitle = "Background Service Call"
                                         subTitle =
-                                            "methodName: ${it.methodName}\nextraData: ${it.extraData}\neventId: ${it.eventId}"
+                                            "data: ${it.data}"
                                         useSingleConfirmButton = true
                                     }
                                 )

@@ -10,7 +10,7 @@ const WalletModule: BaseJSModule = {
     PortkeyModulesEntity.NativeWrapperModule.emitJSMethodResult(
       eventId,
       JSON.stringify({
-        params: {},
+        data: { 'i-am-a': 'mock-result' },
       }),
     );
   },

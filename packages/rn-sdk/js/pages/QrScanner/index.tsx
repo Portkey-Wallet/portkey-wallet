@@ -43,11 +43,12 @@ const QrScanner: React.FC = () => {
     ensurePermission('camera', withoutPermissionWarning);
   });
 
-  const withoutPermissionWarning = () => {
-    CommonToast.fail('Please allow permissions to use, page will close in 3 seconds');
-    setTimeout(() => {
-      navigateBack();
-    }, 3000);
+  const withoutPermissionWarning = (fatal = true) => {
+    CommonToast.fail(`Please allow permissions to use${fatal ? ', page will close in 3 seconds' : ''}.`);
+    fatal &&
+      setTimeout(() => {
+        navigateBack({ status: 'fail', data: {} });
+      }, 3000);
   };
 
   const invalidQRCode = (text: InvalidQRCodeText) => {
@@ -100,7 +101,7 @@ const QrScanner: React.FC = () => {
   };
 
   const selectImage = async () => {
-    const permission = await ensurePermission('photo', withoutPermissionWarning);
+    const permission = await ensurePermission('photo', withoutPermissionWarning, false);
     if (!permission) return;
     let uri;
     if (Platform.OS === 'android') {
@@ -137,7 +138,7 @@ const QrScanner: React.FC = () => {
               <TouchableOpacity
                 style={PageStyle.svgWrap}
                 onPress={() => {
-                  navigateBack();
+                  navigateBack({ status: 'cancel', data: {} });
                 }}>
                 <Svg icon="close1" size={pTd(14)} iconStyle={PageStyle.icon} />
               </TouchableOpacity>
@@ -247,7 +248,11 @@ const determineCurrentNetwork = async (): Promise<NetworkType> => {
   return (await PortkeyConfig.endPointUrl()) === EndPoints.MAIN_NET ? 'MAIN' : 'TESTNET';
 };
 
-const ensurePermission = async (permission: PermissionType, ifThrowError: () => void): Promise<boolean> => {
+const ensurePermission = async (
+  permission: PermissionType,
+  ifThrowError: (fatal?: boolean) => void,
+  fatal = true,
+): Promise<boolean> => {
   try {
     const isOpen = await PortkeyModulesEntity.PermissionModule.isPermissionGranted(permission);
     if (isOpen) {
@@ -261,7 +266,7 @@ const ensurePermission = async (permission: PermissionType, ifThrowError: () => 
     }
   } catch (e) {
     console.error(e);
-    ifThrowError();
+    ifThrowError(fatal);
   }
   return false;
 };

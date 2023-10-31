@@ -36,6 +36,13 @@ export type AssetsStateType = {
     accountAssetsList: AccountAssets;
     totalRecordCount: number;
   };
+  accountAllAssets: {
+    isFetching: boolean;
+    skipCount: number;
+    maxResultCount: number;
+    accountAssetsList: AccountAssets;
+    totalRecordCount: number;
+  };
   accountBalance: number | string;
 };
 
@@ -55,6 +62,13 @@ const initialState: AssetsStateType = {
     totalRecordCount: 0,
   },
   accountAssets: {
+    isFetching: false,
+    skipCount: 0,
+    maxResultCount: 1000,
+    accountAssetsList: [],
+    totalRecordCount: 0,
+  },
+  accountAllAssets: {
     isFetching: false,
     skipCount: 0,
     maxResultCount: 1000,
@@ -170,7 +184,7 @@ export const fetchAssetAsync = createAsyncThunk(
     // if (totalRecordCount === 0 || totalRecordCount > accountAssetsList.length) {
     const response = await fetchAssetList({ caAddresses, caAddressInfos, keyword, skipCount: 0, maxResultCount: 1000 });
 
-    return { list: response.data, totalRecordCount: response.totalRecordCount };
+    return { list: response.data, totalRecordCount: response.totalRecordCount, keyword };
     // }
 
     // return { list: [], totalRecordCount };
@@ -299,13 +313,19 @@ export const assetsSlice = createSlice({
         // state.status = 'loading';
       })
       .addCase(fetchAssetAsync.fulfilled, (state, action) => {
-        const { list, totalRecordCount } = action.payload;
+        const { list, totalRecordCount, keyword } = action.payload;
 
         state.accountAssets.accountAssetsList = list as AccountAssets;
         // state.accountAssets.accountAssetsList = [...state.accountAssets.accountAssetsList, ...list];
         state.accountAssets.skipCount = state.accountAssets.accountAssetsList.length;
         state.accountAssets.totalRecordCount = totalRecordCount;
         state.accountAssets.isFetching = false;
+        if (!keyword) {
+          state.accountAllAssets.accountAssetsList = list as AccountAssets;
+          state.accountAllAssets.skipCount = state.accountAllAssets.accountAssetsList.length;
+          state.accountAllAssets.totalRecordCount = totalRecordCount;
+          state.accountAllAssets.isFetching = false;
+        }
       })
       .addCase(fetchAssetAsync.rejected, state => {
         state.accountToken.isFetching = false;

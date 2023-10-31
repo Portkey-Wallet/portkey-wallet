@@ -19,7 +19,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { walletInfo } = useCurrentWallet();
   const { passwordSeed } = useUserInfo();
   const {
-    accountAssets: { accountAssetsList },
+    accountAllAssets: { accountAssetsList },
   } = useAssetInfo();
 
   const currentChain = useCurrentChain(targetChainId);

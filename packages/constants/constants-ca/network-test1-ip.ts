@@ -24,4 +24,5 @@ export const LinkPortkeyPath = {
 export enum DappMap {
   bridge = 'http://192.168.67.173:3000',
 }
-export const DAPP_WHITELIST: string[] = [DappMap.bridge];
+const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
+export const DAPP_WHITELIST: string[] = [...EBridgeList];

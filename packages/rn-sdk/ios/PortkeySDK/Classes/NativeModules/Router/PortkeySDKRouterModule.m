@@ -37,11 +37,11 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
     if (entry.length <= 0) return;
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *topViewController = [self topViewController];
-        if (callback && [topViewController isKindOfClass:PortkeySDKRNViewController.class]) {
-            ((PortkeySDKRNViewController *)topViewController).navigateCallback = callback;
-        }
         NSDictionary *props = [params valueForKey:@"params"];
         PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:props];
+        if (callback) {
+            vc.navigateCallback = callback;
+        }
         UINavigationController *navigationController = topViewController.navigationController;
         [navigationController pushViewController:vc animated:YES];
         
@@ -63,17 +63,11 @@ RCT_EXPORT_METHOD(navigateBack:(id)result)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *topViewController = [self topViewController];
-        if (result && [topViewController.navigationController isKindOfClass:UINavigationController.class]) {
-            NSArray<__kindof UIViewController *> *viewControllers = topViewController.navigationController.viewControllers;
-            if (viewControllers.count >= 2) {
-                UIViewController *backViewController = viewControllers[viewControllers.count - 2];
-                if ([backViewController isKindOfClass:PortkeySDKRNViewController.class]) {
-                    RCTResponseSenderBlock callback = ((PortkeySDKRNViewController *)backViewController).navigateCallback;
-                    if (callback) {
-                        callback(@[result]);
-                        ((PortkeySDKRNViewController *)backViewController).navigateCallback = nil;
-                    }
-                }
+        if (result && [topViewController isKindOfClass:PortkeySDKRNViewController.class]) {
+            RCTResponseSenderBlock callback = ((PortkeySDKRNViewController *)topViewController).navigateCallback;
+            if (callback) {
+                callback(@[result]);
+                ((PortkeySDKRNViewController *)topViewController).navigateCallback = nil;
             }
         }
         if ([self isModal:topViewController]) {

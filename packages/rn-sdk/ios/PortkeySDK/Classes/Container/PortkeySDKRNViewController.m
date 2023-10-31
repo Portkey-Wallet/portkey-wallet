@@ -45,23 +45,10 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if (self.isLeave) {
-        // back from previous viewcontroller
-        if (self.navigateCallback) {
-            NSDictionary *result = @{
-                @"status": @"cancel",
-                @"data": @""
-            };
-            self.navigateCallback(@[result]);
-            self.navigateCallback = nil;
-        }
-    }
-    self.isLeave = NO;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    self.isLeave = YES;
 }
 
 - (void)viewDidLayoutSubviews {

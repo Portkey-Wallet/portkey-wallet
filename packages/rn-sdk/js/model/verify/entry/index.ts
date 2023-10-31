@@ -16,7 +16,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { SendVerifyCodeResultDTO } from 'network/dto/guardian';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { NetworkController } from 'network/controller';
-import { PortkeyConfig } from 'global';
+import { PortkeyConfig } from 'global/constants';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { useCallback } from 'react';

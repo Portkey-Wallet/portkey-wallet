@@ -1,0 +1,54 @@
+@startuml wallet
+
+interface NativePortkeyWallet extends PortkeyManager {
+    isUnlocked: (callback:MethodCallback<Boolean>) => void
+    exitWallet: (callback:MethodCallback<Boolean>) => void
+    callCaMethod: (params:CaContractConfig,callback:MethodCallback<Boolean>) => void
+    callContractMethod: (params:GeneralContractConfi,callback:MethodCallback<Boolean>) => void
+}
+
+interface PortkeyManager extends GuardianManager, AnyManager {
+
+}
+
+interface GuardianManager {
+    addGuardian: (params:AddGuardianConfig,callback:MethodCallback<AddGuardianResult>) => void
+    ...
+}
+
+interface AnyManager {
+    ...
+}
+
+interface AddGuardianConfig {
+    guardianName: string
+    guardianType: string
+    ...
+}
+
+interface AddGuardianResult {
+    status: number
+}
+
+interface MethodCallback<T> {
+    (error?: Error, result?: T): void;
+}
+
+interface CaContractConfig {
+    methodName: string
+    params: any
+    isViewMethod: boolean
+}
+
+interface GeneralContractConfig extends CaContractConfig {
+    contractAddress?: string
+    contractName?: string
+}
+
+MethodCallback --> NativePortkeyWallet
+MethodCallback --> GuardianManager
+CaContractConfig --> NativePortkeyWallet
+AddGuardianConfig --> GuardianManager
+AddGuardianResult --> GuardianManager
+
+@enduml

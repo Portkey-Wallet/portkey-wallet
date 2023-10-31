@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                                     DialogProps().apply {
                                         mainTitle = "Background Service Call"
                                         subTitle =
-                                            "methodName: ${it.methodName}\nextraData: ${it.extraData}\neventId: ${it.eventId}"
+                                            "data: ${it.data}"
                                         useSingleConfirmButton = true
                                     }
                                 )
@@ -90,7 +90,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun jumpToActivity(entryName: String = "referral_entry") {
-        usePortkeyEntry(entryName)
+        usePortkeyEntry(entryName) {
+            PortkeyTest.showDialogForTestOnly(
+                DialogProps().apply {
+                    mainTitle = "Login Result"
+                    subTitle = "$it"
+                    useSingleConfirmButton = true
+                }
+            )
+        }
     }
 
     private fun changeChain(chainId: String) {

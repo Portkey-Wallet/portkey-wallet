@@ -23,7 +23,7 @@ import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { verification } from 'utils/api';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
-import { PortkeyConfig } from 'global';
+import { PortkeyConfig } from 'global/constants';
 
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
 

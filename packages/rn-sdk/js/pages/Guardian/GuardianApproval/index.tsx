@@ -36,7 +36,7 @@ import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { defaultColors } from 'assets/theme';
 import CommonToast from 'components/CommonToast';
-import { PortkeyConfig } from 'global';
+import { PortkeyConfig } from 'global/constants';
 import { ApprovedGuardianInfo } from 'network/dto/wallet';
 import { AppleAccountInfo, GoogleAccountInfo, isAppleLogin } from 'model/verify/third-party-account';
 import { useAppleAuthentication, useGoogleAuthentication } from 'model/hooks/authentication';

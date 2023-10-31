@@ -21,13 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private fun generateCancelCallbackData(): WritableMap {
-    return Arguments.createMap().apply {
-        this.putString("status", "cancel")
-        this.putString("data", "{}")
-    }
-}
-
 abstract class BasePortkeyReactActivity : ReactActivity() {
 
     private var callbackId: String = NO_CALLBACK_METHOD
@@ -86,13 +79,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     fun navigateBackWithResult(result: ReadableMap? = null, thenFinish: Boolean = true) {
         if (!callbackAccessed) {
             callbackAccessed = true
-            NavigationHolder.invokeAnnotatedCallback(getCallbackId()) {
-                if (result != null) {
-                    it.invoke(result.toWriteableNativeMap())
-                } else {
-                    it.invoke(generateCancelCallbackData())
-                }
-            }
+            NavigationHolder.invokeAnnotatedCallback(getCallbackId(),result?.toWriteableNativeMap())
             NavigationHolder.popTopComponent()
         }
         if (thenFinish) {

@@ -1,5 +1,5 @@
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
-import { PortkeyConfig, setCurrChainId } from 'global';
+import { PortkeyConfig, setCurrChainId } from 'global/constants';
 import {
   AccountOriginalType,
   NormalVerifyPathInfo,

@@ -19,7 +19,7 @@ import CommonToast from 'components/CommonToast';
 import { QRData, isLoginQRData } from '@portkey-wallet/types/types-ca/qrcode';
 import { isAddress } from '@portkey-wallet/utils';
 import { NetworkType } from '@portkey-wallet/types';
-import { EndPoints, PortkeyConfig } from 'global';
+import { EndPoints, PortkeyConfig } from 'global/constants';
 import useBaseContainer, { VoidResult } from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { EntryResult, PermissionType, chooseImageAndroid, PortkeyModulesEntity } from 'service/native-modules';

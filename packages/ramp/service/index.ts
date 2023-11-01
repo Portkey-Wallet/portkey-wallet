@@ -30,19 +30,24 @@ import {
 } from '../types/services';
 import RampApi from '../api';
 import { RampType } from '../constants';
-import { IRampRequestConfig } from '../types';
+import { IClientType, IRampRequestConfig } from '../types';
 
 export class RampService implements IRampService {
   public baseUrl: string;
+  public clientType: IClientType;
 
   constructor(options: IRampRequestConfig) {
     this.baseUrl = options?.baseUrl || '';
+    this.clientType = options?.clientType || 'iOS';
   }
 
   getRampInfo(): IRampServiceCommon<IRampInfoResult> {
     return request.send(this.baseUrl, {
       url: RampApi.getRampInfo.target,
       method: RampApi.getRampInfo.config.method,
+      headers: {
+        ClientType: this.clientType,
+      },
     });
   }
   getBuyCryptoData(params?: IGetCryptoDataRequest): IRampServiceCommon<IRampCryptoResult> {

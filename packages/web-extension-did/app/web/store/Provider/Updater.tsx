@@ -42,7 +42,8 @@ export default function Updater() {
     if (request.defaultConfig.baseURL !== apiUrl) {
       request.defaultConfig.baseURL = apiUrl;
     }
-    ramp.config.setConfig({ baseUrl: apiUrl });
+    ramp.config.setBaseUrl(apiUrl);
+    ramp.config.setClientType('Extension');
   }, [apiUrl]);
   useMemo(() => {
     im.setUrl({

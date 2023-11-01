@@ -29,13 +29,11 @@ export default {
   },
   sendSellTransaction: '/api/app/thirdPart/ramp/transaction',
   getOrderNo: '/api/app/thirdPart/order',
-
-  // TODO ramp
-  updateAchOrder: '/api/app/thirdPart/order/alchemy',
-  updateTransakOrder: '/api/app/thirdPart/order/transak',
-  getAchToken: '/api/app/thirdPart/alchemy/token',
+  updateAchOrder: '/api/app/thirdPart/order/alchemy', // alchemy callbackUrl
+  updateTransakOrder: '/api/app/thirdPart/order/transak', // transak callbackUrl
+  getAchToken: '/api/app/thirdPart/ramp/alchemy/token',
   getAchSignature: {
-    target: '/api/app/thirdPart/alchemy/signature',
+    target: '/api/app/thirdPart/ramp/alchemy/signature',
     config: { method: 'GET' },
   },
 } as const;

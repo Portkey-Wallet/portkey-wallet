@@ -23,6 +23,7 @@ import {
   assetPersistConfig,
   miscPersistConfig,
   paymentPersistConfig,
+  rampPersistConfig,
   cmsPersistConfig,
   dappPersistConfig,
   txFeePersistConfig,
@@ -31,6 +32,7 @@ import {
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
 import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
+import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 import { cmsSlice } from '@portkey-wallet/store/store-ca/cms/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
@@ -48,6 +50,7 @@ export const guardiansReducer = persistReducer(guardiansPersistConfig, guardians
 export const contactReducer = persistReducer(contactPersistConfig, contactSlice.reducer);
 export const miscReducer = persistReducer(miscPersistConfig, miscSlice.reducer);
 export const paymentReducer = persistReducer(paymentPersistConfig, paymentSlice.reducer);
+export const rampReducer = persistReducer(rampPersistConfig, rampSlice.reducer);
 export const cmsReducer = persistReducer(cmsPersistConfig, cmsSlice.reducer);
 export const dappReducer = persistReducer(dappPersistConfig, dappSlice.reducer);
 export const discoverReducer = persistReducer(dappPersistConfig, discoverSlice.reducer);
@@ -70,6 +73,7 @@ const rootReducer = customCombineReducers({
   [assetsSlice.name]: assetReducer,
   [miscSlice.name]: miscReducer,
   [paymentSlice.name]: paymentReducer,
+  [rampSlice.name]: rampReducer,
   [cmsSlice.name]: cmsReducer,
   [dappSlice.name]: dappReducer,
   [discoverSlice.name]: discoverReducer,

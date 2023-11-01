@@ -187,6 +187,23 @@ export type IGetOrderNoResult = {
   orderNo: string;
 };
 
+export type IGetAchTokenRequest = {
+  email: string;
+};
+
+export type IGetAchTokenResult = {
+  email: string;
+  accessToken: string;
+};
+
+export type IGetAchSignatureRequest = {
+  address: string;
+};
+
+export type IGetAchSignatureResult = {
+  signature: string;
+};
+
 export interface IRampService {
   getRampInfo: () => IRampServiceCommon<IRampInfoResult>;
 
@@ -206,4 +223,8 @@ export interface IRampService {
 
   sendSellTransaction: (params: IGetSellTransactionRequest) => IRampServiceCommon<void>;
   getOrderNo: (params: IGetOrderNoRequest) => IRampServiceCommon<{ orderNo: string }>;
+
+  // for ach
+  getAchToken: (params: IGetAchTokenRequest) => IRampServiceCommon<IGetAchTokenResult>;
+  getAchSignature: (params: IGetAchSignatureRequest) => IRampServiceCommon<IGetAchSignatureResult>;
 }

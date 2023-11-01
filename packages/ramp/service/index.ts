@@ -3,6 +3,10 @@ import {
   IBuyDetailResult,
   IBuyLimitResult,
   IBuyPriceResult,
+  IGetAchSignatureRequest,
+  IGetAchSignatureResult,
+  IGetAchTokenRequest,
+  IGetAchTokenResult,
   IGetBuyDetailRequest,
   IGetBuyPriceRequest,
   IGetCryptoDataRequest,
@@ -32,7 +36,7 @@ export class RampService implements IRampService {
   public baseUrl: string;
 
   constructor(options: IRampRequestConfig) {
-    this.baseUrl = options.baseUrl;
+    this.baseUrl = options?.baseUrl || '';
   }
 
   getRampInfo(): IRampServiceCommon<IRampInfoResult> {
@@ -134,6 +138,21 @@ export class RampService implements IRampService {
   getOrderNo(params: IGetOrderNoRequest): IRampServiceCommon<IGetOrderNoResult> {
     return request.send(this.baseUrl, {
       url: RampApi.getOrderNo,
+      params,
+    });
+  }
+
+  // for ach
+  getAchToken(params: IGetAchTokenRequest): IRampServiceCommon<IGetAchTokenResult> {
+    return request.send(this.baseUrl, {
+      url: RampApi.getAchToken,
+      params,
+    });
+  }
+  getAchSignature(params: IGetAchSignatureRequest): IRampServiceCommon<IGetAchSignatureResult> {
+    return request.send(this.baseUrl, {
+      url: RampApi.getAchSignature.target,
+      method: RampApi.getAchSignature.config.method,
       params,
     });
   }

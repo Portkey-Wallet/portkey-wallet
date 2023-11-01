@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import { useCallback } from 'react';
 import { useAppCommonDispatch } from '../../index';
 import ramp, {
@@ -9,136 +8,98 @@ import ramp, {
   IGetSellPriceRequest,
   IGetSellTransactionRequest,
 } from '@portkey-wallet/ramp';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import {
   setSellCryptoList,
   setSellDefaultCrypto,
   setSellDefaultFiat,
-  setSellFiatList,
 } from '@portkey-wallet/store/store-ca/ramp/actions';
+import { useRamp } from '.';
 
-export const useUpdateSellDefault = () => {
+export const useUpdateSellCrypto = () => {
   const dispatch = useAppCommonDispatch();
-
-  return useCallback(async () => {
+  const { sellDefaultCrypto, sellCryptoList } = useRamp();
+  const refreshSellCrypto = useCallback(async () => {
     const {
-      data: { defaultCrypto: sellDefaultCrypto },
+      data: { cryptoList, defaultCrypto },
     } = await ramp.service.getSellCryptoData();
-    const {
-      data: { defaultFiat: sellDefaultFiat },
-    } = await ramp.service.getSellFiatData();
-    dispatch(setSellDefaultCrypto({ ...sellDefaultCrypto }));
-    dispatch(setSellDefaultFiat({ ...sellDefaultFiat }));
 
-    return {
-      sellDefaultCrypto,
-      sellDefaultFiat,
-    };
+    dispatch(setSellDefaultCrypto(defaultCrypto));
+    dispatch(setSellCryptoList({ list: cryptoList }));
+    return { sellCryptoList: cryptoList, sellDefaultCrypto: defaultCrypto };
   }, [dispatch]);
+
+  return { sellDefaultCrypto, sellCryptoList, refreshSellCrypto };
 };
 
-export const useUpdateSellCryptoList = () => {
+export const useUpdateSellFiat = () => {
   const dispatch = useAppCommonDispatch();
+  const { sellDefaultFiat } = useRamp();
 
-  return useCallback(
-    async (defaultFiatSymbol: string) => {
-      const {
-        data: { cryptoList: sellCryptoList },
-      } = await ramp.service.getSellCryptoData({ fiat: defaultFiatSymbol });
-      dispatch(setSellCryptoList({ list: sellCryptoList }));
-    },
-    [dispatch],
-  );
-};
-
-export const useUpdateSellFiatList = () => {
-  const dispatch = useAppCommonDispatch();
-
-  return useCallback(
+  const refreshSellFiat = useCallback(
     async (defaultCryptoSymbol: string) => {
       const {
-        data: { fiatList: sellFiatList },
+        data: { fiatList, defaultFiat },
       } = await ramp.service.getSellFiatData({ crypto: defaultCryptoSymbol });
-      dispatch(setSellFiatList({ list: sellFiatList }));
+
+      dispatch(setSellDefaultFiat(defaultFiat));
+      return { sellFiatList: fiatList, sellDefaultFiat: defaultFiat };
     },
     [dispatch],
   );
+  return { sellDefaultFiat, refreshSellFiat };
 };
 
 export const useUpdateSellLimit = () => {
   return useCallback(async (params: IGetLimitRequest) => {
-    try {
-      const {
-        data: {
-          crypto: { symbol, minLimit, maxLimit },
-        },
-      } = await ramp.service.getSellLimit(params);
-      return {
-        symbol,
-        minLimit,
-        maxLimit,
-      };
-    } catch (error) {
-      message.error(handleErrorMessage(error));
-    }
+    const {
+      data: {
+        crypto: { symbol, minLimit, maxLimit },
+      },
+    } = await ramp.service.getSellLimit(params);
+    return {
+      symbol,
+      minLimit,
+      maxLimit,
+    };
   }, []);
 };
 
 export const useUpdateSellExchange = () => {
   return useCallback(async (params: IGetExchangeRequest) => {
-    try {
-      const {
-        data: { exchange },
-      } = await ramp.service.getSellExchange(params);
-      return { exchange };
-    } catch (error) {
-      message.error(handleErrorMessage(error));
-    }
+    const {
+      data: { exchange },
+    } = await ramp.service.getSellExchange(params);
+    return exchange;
   }, []);
 };
 
 export const useUpdateSellPrice = () => {
   return useCallback(async (params: IGetSellPriceRequest) => {
-    try {
-      const {
-        data: { fiatAmount, exchange, feeInfo },
-      } = await ramp.service.getSellPrice(params);
-      return { fiatAmount, exchange, feeInfo };
-    } catch (error) {
-      message.error(handleErrorMessage(error));
-    }
+    const {
+      data: { fiatAmount, exchange, feeInfo },
+    } = await ramp.service.getSellPrice(params);
+    return { fiatAmount, exchange, feeInfo };
   }, []);
 };
 
 export const useUpdateSellDetail = () => {
   return useCallback(async (params: IGetSellDetailRequest) => {
-    try {
-      const {
-        data: { providersList },
-      } = await ramp.service.getSellDetail(params);
-      return { providersList };
-    } catch (error) {
-      message.error(handleErrorMessage(error));
-    }
+    const {
+      data: { providersList },
+    } = await ramp.service.getSellDetail(params);
+    return providersList;
   }, []);
 };
 
 export const useSendSellTransaction = () => {
   return useCallback(async (params: IGetSellTransactionRequest) => {
-    try {
-      await ramp.service.sendSellTransaction(params);
-    } catch (error) {
-      message.error(handleErrorMessage(error));
-    }
+    await ramp.service.sendSellTransaction(params);
   }, []);
 };
 
 export const useGetOrderNo = () => {
   return useCallback(async (params: IGetOrderNoRequest) => {
-    try {
-      await ramp.service.getOrderNo(params);
-    } catch (error) {
-      message.error(handleErrorMessage(error));
-    }
+    const { data: orderNo } = await ramp.service.getOrderNo(params);
+    return orderNo;
   }, []);
 };

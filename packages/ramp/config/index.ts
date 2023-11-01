@@ -4,10 +4,10 @@ export class RampConfig implements IRampConfig {
   public baseUrl: string;
 
   constructor(options?: IRampRequestConfig) {
-    if (options) this.setConfig(options);
+    this.baseUrl = options?.baseUrl || '';
   }
 
   setConfig(options: IRampRequestConfig) {
-    this.baseUrl = options.baseUrl;
+    this.baseUrl = options?.baseUrl || '';
   }
 }

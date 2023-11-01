@@ -1,5 +1,5 @@
 export interface IRampRequestConfig {
-  baseUrl: string;
+  baseUrl?: string;
 }
 
 export interface IRampConfig extends IRampRequestConfig {

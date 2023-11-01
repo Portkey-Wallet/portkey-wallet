@@ -1,6 +1,6 @@
 import { RampConfig } from './config';
 import { RampService } from './service';
-import { IRampConfig, IRampService } from './types';
+import { IExtraInfo, IInputInfo, IProviderInfo, IRampConfig, IRampProvider, IRampService } from './types';
 
 export class Ramp {
   public config: IRampConfig;
@@ -15,6 +15,21 @@ export class Ramp {
 const ramp = new Ramp();
 
 export default ramp;
+
+export abstract class RampProvider {
+  public providerInfo: IProviderInfo;
+  public inputInfo: IInputInfo;
+  public extraInfo: IExtraInfo;
+
+  constructor(options: IRampProvider) {
+    this.providerInfo = options.providerInfo;
+    this.inputInfo = options.inputInfo;
+    this.extraInfo = options?.extraInfo;
+  }
+
+  // for go to pay
+  abstract generateUrl(): void;
+}
 
 export * from './api';
 export * from './constants';

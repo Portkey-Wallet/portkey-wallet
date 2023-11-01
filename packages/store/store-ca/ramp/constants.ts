@@ -1,8 +1,6 @@
 import { IRampStateType } from './type';
 
 export const initialRampState: IRampStateType = {
-  buyFiatList: [],
-  sellFiatList: [],
   rampInfo: {
     Alchemy: {
       name: '',
@@ -32,7 +30,7 @@ export const initialRampState: IRampStateType = {
     isBuySectionShow: true,
     isSellSectionShow: true,
   },
-  buyCryptoList: [],
+  buyFiatList: [],
   buyDefaultCrypto: {
     symbol: '',
     amount: '',

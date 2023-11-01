@@ -11,10 +11,6 @@ export const setRampEntry = createAction<{
   isSellSectionShow: boolean;
 }>('ramp/setRampEntry');
 
-export const setBuyCryptoList = createAction<{
-  list: IRampCryptoItem[];
-}>('ramp/setBuyCryptoList');
-
 export const setBuyFiatList = createAction<{
   list: IRampFiatItem[];
 }>('ramp/setBuyFiatList');
@@ -32,10 +28,6 @@ export const setBuyDefaultFiat = createAction<{
 export const setSellCryptoList = createAction<{
   list: IRampCryptoItem[];
 }>('ramp/setSellCryptoList');
-
-export const setSellFiatList = createAction<{
-  list: IRampFiatItem[];
-}>('ramp/setSellFiatList');
 
 export const setSellDefaultCrypto = createAction<{
   symbol: string;

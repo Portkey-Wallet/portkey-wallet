@@ -30,6 +30,8 @@ import imSlice from '@portkey-wallet/store/store-ca/im/slice';
 import { IMStateType } from '@portkey-wallet/store/store-ca/im/type';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
 import { SecurityStateType } from '@portkey-wallet/store/store-ca/security/type';
+import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
+import { IRampStateType } from '@portkey-wallet/store/store-ca/ramp/type';
 
 export type CACommonState = RootCommonState & {
   [tokenManagementSlice.name]: TokenState;
@@ -42,6 +44,7 @@ export type CACommonState = RootCommonState & {
   [guardiansSlice.name]: GuardiansState;
   [discoverSlice.name]: IDiscoverStateType;
   [paymentSlice.name]: PaymentStateType;
+  [rampSlice.name]: IRampStateType;
   [miscSlice.name]: MiscState;
   [dappSlice.name]: IDappStoreState;
   [cmsSlice.name]: CMSState;

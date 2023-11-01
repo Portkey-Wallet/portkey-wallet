@@ -71,6 +71,7 @@ const DisclaimerModal = () => {
 export const showDisclaimerModal = () => {
   OverlayModal.show(<DisclaimerModal />, {
     position: 'bottom',
+    enabledNestScrollView: true,
   });
 };
 

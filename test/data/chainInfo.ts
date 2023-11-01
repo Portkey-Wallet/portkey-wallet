@@ -36,7 +36,7 @@ export const currentWallet = (currentNetwork: NetworkType) => {
     },
     chainList: undefined,
     chainInfo: { MAIN: [{ chainId: 'AELF' } as any] },
-    walletAvatar: '',
+    walletAvatar: 'master6',
     walletType: 'aelf' as ChainType,
     walletName: 'Wallet k',
     currentNetwork: currentNetwork,

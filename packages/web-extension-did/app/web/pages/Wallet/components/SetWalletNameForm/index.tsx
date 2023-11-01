@@ -25,7 +25,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const showChat = useIsChatShow();
-  const { walletName, walletAvatar } = useWalletInfo();
+  const { userInfo } = useWalletInfo();
   const setUserInfo = useSetUserInfo();
   const [disable, setDisable] = useState<boolean>(false);
   const [validName, setValidName] = useState<{
@@ -36,7 +36,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
     errorMsg: '',
   });
 
-  const [avatarDataUrl, setAvatarDataUrl] = useState(walletAvatar);
+  const [avatarDataUrl, setAvatarDataUrl] = useState(userInfo?.avatar);
   const newAvatarFile = useRef<RcFile>();
   const { setLoading } = useLoading();
 
@@ -111,7 +111,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
       className="set-wallet-name-form"
       colon={false}
       layout="vertical"
-      initialValues={{ walletName: walletName }}
+      initialValues={{ walletName: userInfo?.nickName }}
       onFinish={(v) => handleSave(v.walletName.trim())}
       onFinishFailed={onFinishFailed}>
       <div className="form-content-wrap">

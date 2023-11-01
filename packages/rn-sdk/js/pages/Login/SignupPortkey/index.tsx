@@ -18,6 +18,7 @@ import { CountryCodeItem } from 'types/wallet';
 import useInitSkeleton from 'model/hooks/UseInitSkeleton';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
+import Referral from '../components/Referral';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const skeletonPath = require('assets/image/pngs/skeleton-email.png');
@@ -33,7 +34,7 @@ export default function SignupPortkey({
   selectedCountryCode: CountryCodeItem | null;
   updateCountryCode: (item: CountryCodeItem) => void;
 }) {
-  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
+  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const { t } = useLanguage();
   const isMainnet = true;
   const { initSkeleton, showSkeleton } = useInitSkeleton(skeletonPath);
@@ -54,7 +55,7 @@ export default function SignupPortkey({
           updateCountryCode={updateCountryCode}
         />
       ),
-      [PageLoginType.referral]: <View />,
+      [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
     [selectedCountryCode, updateCountryCode],
   );

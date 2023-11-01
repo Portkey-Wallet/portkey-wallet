@@ -164,11 +164,8 @@ export default class TransformView extends Component<TransformViewProps, Transfo
         const { dx, dy } = gestureState;
 
         if (isIOS) {
-          const isNotNestScrollViewArea =
-            pageY < this.viewLayout.y + this.nestScrollViewLayout.y ||
-            pageY > this.viewLayout.y + this.nestScrollViewLayout.y + this.nestScrollViewLayout.height;
-
-          return isNotNestScrollViewArea;
+          const isNotNestScrollViewArea = pageY < this.viewLayout.y + this.nestScrollViewLayout.y;
+          return isNotNestScrollViewArea || (!!this.panResponderStatus && dx !== 0 && dy > 5);
         }
         return !!this.panResponderStatus && dx !== 0 && dy !== 0 && (Math.abs(dx) > 5 || Math.abs(dy) > 5);
       },

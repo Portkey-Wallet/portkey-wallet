@@ -13,7 +13,7 @@ plugins {
 
 preBuild.doFirst {
     System.err.println("Build fresh bundle...")
-    def process = "../../build/build-android-bundle.sh".execute()
+    def process = (getRootProject().rootDir.path.replace("/android","") + "/script/build-android-bundle.sh").execute()
     process.waitForProcessOutput(System.out, System.err)
 }
 

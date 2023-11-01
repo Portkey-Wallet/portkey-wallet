@@ -37,13 +37,21 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from 
     if (entry.length <= 0) return;
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *topViewController = [self topViewController];
-        if (callback && [topViewController isKindOfClass:PortkeySDKRNViewController.class]) {
-            ((PortkeySDKRNViewController *)topViewController).navigateCallback = callback;
-        }
+        UINavigationController *navigationController = topViewController.navigationController;
         NSDictionary *props = [params valueForKey:@"params"];
         PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:props];
-        UINavigationController *navigationController = topViewController.navigationController;
-        [navigationController pushViewController:vc animated:YES];
+        if (callback) {
+            vc.navigateCallback = callback;
+        }
+        
+        NSString *navigateType = [params valueForKey:@"navigateType"];
+        BOOL isPresent = [navigateType isKindOfClass:NSString.class] && [navigateType isEqualToString:@"present"];
+        if (isPresent) {
+            UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:vc];
+            [topViewController presentViewController:nc animated:YES completion:^{}];
+        } else {
+            [navigationController pushViewController:vc animated:YES];
+        }
         
         // close current top view controller after push to new view controller
         if ([[params valueForKey:@"closeCurrentScreen"] isKindOfClass:NSNumber.class]) {
@@ -63,17 +71,11 @@ RCT_EXPORT_METHOD(navigateBack:(id)result)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *topViewController = [self topViewController];
-        if (result && [topViewController.navigationController isKindOfClass:UINavigationController.class]) {
-            NSArray<__kindof UIViewController *> *viewControllers = topViewController.navigationController.viewControllers;
-            if (viewControllers.count >= 2) {
-                UIViewController *backViewController = viewControllers[viewControllers.count - 2];
-                if ([backViewController isKindOfClass:PortkeySDKRNViewController.class]) {
-                    RCTResponseSenderBlock callback = ((PortkeySDKRNViewController *)backViewController).navigateCallback;
-                    if (callback) {
-                        callback(@[result]);
-                        ((PortkeySDKRNViewController *)backViewController).navigateCallback = nil;
-                    }
-                }
+        if (result && [topViewController isKindOfClass:PortkeySDKRNViewController.class]) {
+            RCTResponseSenderBlock callback = ((PortkeySDKRNViewController *)topViewController).navigateCallback;
+            if (callback) {
+                callback(@[result]);
+                ((PortkeySDKRNViewController *)topViewController).navigateCallback = nil;
             }
         }
         if ([self isModal:topViewController]) {

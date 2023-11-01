@@ -2,7 +2,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { DeviceInfoType, DeviceType } from '@portkey-wallet/types/types-ca/device';
 import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
-import { PortkeyConfig } from 'global';
+import { PortkeyConfig } from 'global/constants';
 import { requestSocialRecoveryOrRegister } from 'model/global';
 import { NetworkController, handleRequestPolling } from 'network/controller';
 import {
@@ -16,7 +16,7 @@ import { GlobalStorage, TempStorage } from 'service/storage';
 
 const PIN_KEY = 'pin';
 const WALLET_CONFIG_KEY = 'walletConfig';
-export const USE_BIOMETRIC_KEY = 'useBiometric';
+const USE_BIOMETRIC_KEY = 'useBiometric';
 
 export interface AfterVerifiedConfig {
   normalVerifyPathInfo?: NormalVerifyPathInfo;
@@ -28,7 +28,7 @@ export interface NormalVerifyPathInfo {
   accountIdentifier: string;
   verifiedGuardians: Array<VerifiedGuardianDoc>;
   chainId: string;
-  extraData: DeviceInfoType;
+  extraData?: DeviceInfoType;
 }
 
 export interface ScanQRCodePathInfo {
@@ -39,14 +39,14 @@ export interface ScanQRCodePathInfo {
   caAddress: string;
 }
 
-export const wrapExtraData = (extraData?: DeviceInfoType): string => {
+export const wrapExtraData = (extraData: DeviceInfoType = DefaultExtraData): string => {
   return JSON.stringify({
-    deviceInfo: JSON.stringify(extraData ?? defaultExtraData),
+    deviceInfo: JSON.stringify(extraData),
     transactionTime: Date.now(),
   });
 };
 
-export const defaultExtraData: DeviceInfoType = {
+const DefaultExtraData: DeviceInfoType = {
   deviceName: 'Other',
   deviceType: DeviceType.OTHER,
 };
@@ -100,14 +100,15 @@ export const getVerifiedAndLockWallet = async (
 
 const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<RecoverWalletConfig> => {
   const retryTimes = 10;
-  const chainId = await PortkeyConfig.currChainId();
+  const originalChainId = await PortkeyConfig.currChainId();
+  const { fromRecovery, accountIdentifier } = config || {};
   const { sessionId, publicKey, privateKey, address } = await requestSocialRecoveryOrRegister(config);
   if (!sessionId || !publicKey) {
     throw new Error('request failed');
   }
   const status = await handleRequestPolling<RecoveryProgressDTO | RegisterProgressDTO>({
     sendRequest: () => {
-      return config.fromRecovery
+      return fromRecovery
         ? NetworkController.checkSocialRecoveryProcess(sessionId, { maxWaitingTime: 3000 })
         : NetworkController.checkRegisterProcess(sessionId, { maxWaitingTime: 3000 });
     },
@@ -115,7 +116,7 @@ const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<Recover
     timeGap: 500,
     verifyResult: result => {
       const { items } = result || {};
-      const item = items?.find(it => it.chainId === chainId);
+      const item = items?.find(it => it.chainId === originalChainId);
       if (item) {
         return isRecoveryStatusItem(item)
           ? item.recoveryStatus === ProgressStatus.PASS
@@ -126,7 +127,7 @@ const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<Recover
     },
     declareFatalFail: alternative => {
       const { items } = alternative || {};
-      const item = items?.find(it => it.chainId === chainId);
+      const item = items?.find(it => it.chainId === originalChainId);
       if (item) {
         return isRecoveryStatusItem(item)
           ? item.recoveryStatus === ProgressStatus.FAIL
@@ -136,17 +137,18 @@ const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<Recover
       }
     },
   });
-  if (findVerifyProcessOnCurrChain(chainId, status) !== ProgressStatus.PASS) {
+  if (findVerifyProcessOnCurrChain(originalChainId, status) !== ProgressStatus.PASS) {
     console.warn(`after ${retryTimes} times polling, account status is still pending.`);
   }
   return {
     sessionId,
-    fromRecovery: config.fromRecovery,
-    accountIdentifier: config.accountIdentifier,
+    fromRecovery,
+    accountIdentifier,
     publicKey,
     privateKey,
     address,
-    originalChainId: chainId,
+    originalChainId,
+    caInfo: status?.items?.find(it => it.chainId === originalChainId) ?? undefined,
   };
 };
 

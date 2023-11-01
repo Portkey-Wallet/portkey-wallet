@@ -10,13 +10,13 @@ import {
   guardianTypeStrToEnum,
 } from 'model/global';
 import { SetPinPageResult, SetPinPageProps } from 'pages/Pin/SetPin';
-import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc, defaultExtraData } from '../after-verify';
+import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from '../after-verify';
 import { GuardianConfig } from '../guardian';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { SendVerifyCodeResultDTO } from 'network/dto/guardian';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { NetworkController } from 'network/controller';
-import { PortkeyConfig } from 'global';
+import { PortkeyConfig } from 'global/constants';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { VerifyPageResult } from 'pages/Guardian/VerifierDetails';
 import { useCallback } from 'react';
@@ -246,7 +246,7 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
       },
       res => {
         const { data } = res;
-        if (data.finished) {
+        if (data?.finished) {
           onFinish({
             status: 'success',
             data: {
@@ -268,7 +268,6 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
         fromRecovery: false,
         accountIdentifier,
         chainId: await PortkeyConfig.currChainId(),
-        extraData: defaultExtraData,
         verifiedGuardians: [
           {
             type: guardianTypeStrToEnum(config.sendVerifyCodeParams.type),
@@ -319,7 +318,6 @@ export const useVerifyEntry = (verifyConfig: VerifyConfig): VerifyEntryHooks => 
             fromRecovery: false,
             accountIdentifier,
             chainId: await PortkeyConfig.currChainId(),
-            extraData: defaultExtraData,
             verifiedGuardians: [
               {
                 type: guardianTypeStrToEnum(google ? 'Google' : 'Apple'),

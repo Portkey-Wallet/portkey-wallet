@@ -8,12 +8,10 @@
 #import "PortkeySDKRootView.h"
 #import <React/React-Core-umbrella.h>
 #import <PortkeySDK/PortkeySDKBundleUtil.h>
-#import <PortkeySDK/RCTBridge+ARNSDK.h>
 #import <PortkeySDK/RCTRootView+PortkeySDK.h>
+#import <PortkeySDK/PortkeySDKJSCallModule.h>
 
-@interface PortkeySDKRootView () {
-    RCTBridge *_bridge;
-}
+@interface PortkeySDKRootView ()
 
 @property (nonatomic, strong) RCTRootView *rootView;
 
@@ -32,8 +30,7 @@
 - (instancetype)initWithFrame:(CGRect)frame moduleName:(NSString *)moduleName {
     self = [super initWithFrame:frame];
     if (self) {
-        _bridge = [[RCTBridge alloc] initWithBundleURL:[PortkeySDKBundleUtil sourceURL] moduleProvider:nil launchOptions:nil];
-        self.rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:moduleName.length > 0 ? moduleName : @"Root" initialProperties:nil];
+        self.rootView = [[RCTRootView alloc] initWithBridge:[PortkeySDKJSCallModule sharedInstance].bridge moduleName:moduleName.length > 0 ? moduleName : @"Root" initialProperties:nil];
         [self addSubview:self.rootView];
     }
     return self;
@@ -42,8 +39,7 @@
 - (instancetype)initWithModuleName:(NSString *)moduleName initialProperties:(NSDictionary *)initialProperties {
     self = [super initWithFrame:CGRectZero];
     if (self) {
-        _bridge = [[RCTBridge alloc] initWithBundleURL:[PortkeySDKBundleUtil sourceURL] moduleProvider:nil launchOptions:nil];
-        self.rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:moduleName.length > 0 ? moduleName : @"Root" initialProperties:initialProperties];
+        self.rootView = [[RCTRootView alloc] initWithBridge:[PortkeySDKJSCallModule sharedInstance].bridge moduleName:moduleName.length > 0 ? moduleName : @"Root" initialProperties:initialProperties];
         [self addSubview:self.rootView];
     }
     return self;
@@ -52,17 +48,6 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.rootView.frame = self.bounds;
-}
-
-- (void)loadSource {
-    NSString *bundlePath = [[NSBundle bundleForClass:[self class]].resourcePath
-                                stringByAppendingPathComponent:@"/JSBundle.bundle"];
-    NSBundle *resourceBundle = [NSBundle bundleWithPath:bundlePath];
-    
-    NSURL *sourceUrl = [resourceBundle URLForResource:@"index.ios" withExtension:@"bundle"];
-    
-//    NSData *data = [NSData dataWithContentsOfURL:sourceUrl];
-    [_bridge.batchedBridge executeSourceCode:nil withSourceURL:sourceUrl sync:NO];
 }
 
 - (NSString *)moduleName {

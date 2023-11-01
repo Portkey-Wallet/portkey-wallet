@@ -18,8 +18,6 @@ PODS:
     - ExpoModulesCore
   - EXConstants (14.4.2):
     - ExpoModulesCore
-  - EXDevice (4.3.0):
-    - ExpoModulesCore
   - EXFileSystem (15.4.4):
     - ExpoModulesCore
   - EXFont (11.4.0):
@@ -34,6 +32,8 @@ PODS:
     - GoogleSignIn (~> 6.2)
     - React-Core
   - ExpoCrypto (12.6.0):
+    - ExpoModulesCore
+  - ExpoDevice (5.6.0):
     - ExpoModulesCore
   - ExpoImagePicker (14.5.0):
     - ExpoModulesCore
@@ -523,13 +523,13 @@ DEPENDENCIES:
   - EXBarCodeScanner (from `../../node_modules/expo-barcode-scanner/ios`)
   - EXCamera (from `../../node_modules/expo-camera/ios`)
   - EXConstants (from `../../node_modules/expo-constants/ios`)
-  - EXDevice (from `../../node_modules/expo-device/ios`)
   - EXFileSystem (from `../../node_modules/expo-file-system/ios`)
   - EXFont (from `../../node_modules/expo-font/ios`)
   - EXImageLoader (from `../../node_modules/expo-image-loader/ios`)
   - Expo (from `../../node_modules/expo`)
   - "ExpoAdapterGoogleSignIn (from `../../node_modules/@react-native-google-signin/google-signin/expo/ios`)"
   - ExpoCrypto (from `../../node_modules/expo-crypto/ios`)
+  - ExpoDevice (from `../../node_modules/expo-device/ios`)
   - ExpoImagePicker (from `../../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../node_modules/expo-keep-awake/ios`)
   - ExpoLocalAuthentication (from `../../node_modules/expo-local-authentication/ios`)
@@ -621,8 +621,6 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/expo-camera/ios"
   EXConstants:
     :path: "../../node_modules/expo-constants/ios"
-  EXDevice:
-    :path: "../../node_modules/expo-device/ios"
   EXFileSystem:
     :path: "../../node_modules/expo-file-system/ios"
   EXFont:
@@ -635,6 +633,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@react-native-google-signin/google-signin/expo/ios"
   ExpoCrypto:
     :path: "../../node_modules/expo-crypto/ios"
+  ExpoDevice:
+    :path: "../../node_modules/expo-device/ios"
   ExpoImagePicker:
     :path: "../../node_modules/expo-image-picker/ios"
   ExpoKeepAwake:
@@ -765,13 +765,13 @@ SPEC CHECKSUMS:
   EXBarCodeScanner: 296dd50f6c03928d1d71d37ea17473b304cfdb00
   EXCamera: 2dc2bd2828bca4e283018a0b5a84aec6639ff0b4
   EXConstants: ce5bbea779da8031ac818c36bea41b10e14d04e1
-  EXDevice: 7647ca9b1fd8b269dfd896a7643d659343358054
   EXFileSystem: 2b826a3bf1071a4b80a8457e97124783d1ac860e
   EXFont: 738c44c390953ebcbab075a4848bfbef025fd9ee
   EXImageLoader: 03063370bc06ea1825713d3f55fe0455f7c88d04
   Expo: e7d2116b947e2e6fdeb09ee4f2754f819426d1b6
   ExpoAdapterGoogleSignIn: b7792934ab1b5d559a3eee31334d752a73f0366e
   ExpoCrypto: 42485127a5968dda6f67ac5f2b42d3c0af31d7db
+  ExpoDevice: 4b9825263a3f996fd5a89ec26426e22e6cbc32d6
   ExpoImagePicker: 9e5c745cb3e56ee00e1cfe5d6af59caab66ecf1a
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
   ExpoLocalAuthentication: 2fed4b25cf8e54d36d5d1ebc9917e8325b3b5911

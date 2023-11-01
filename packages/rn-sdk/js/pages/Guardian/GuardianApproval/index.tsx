@@ -26,17 +26,12 @@ import { guardianTypeStrToEnum, isReacptchaOpen } from 'model/global';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
-import {
-  AccountOriginalType,
-  AfterVerifiedConfig,
-  VerifiedGuardianDoc,
-  defaultExtraData,
-} from 'model/verify/after-verify';
+import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { defaultColors } from 'assets/theme';
 import CommonToast from 'components/CommonToast';
-import { PortkeyConfig } from 'global';
+import { PortkeyConfig } from 'global/constants';
 import { ApprovedGuardianInfo } from 'network/dto/wallet';
 import { AppleAccountInfo, GoogleAccountInfo, isAppleLogin } from 'model/verify/third-party-account';
 import { useAppleAuthentication, useGoogleAuthentication } from 'model/hooks/authentication';
@@ -130,7 +125,6 @@ export default function GuardianApproval({
         fromRecovery: true,
         accountIdentifier,
         chainId: await PortkeyConfig.currChainId(),
-        extraData: defaultExtraData,
         verifiedGuardians: getVerifiedGuardianInfo(),
       },
     };
@@ -178,7 +172,11 @@ export default function GuardianApproval({
   const particularButton = (guardian: GuardianConfig, key: string) => {
     const isVerified = guardiansStatus?.[key]?.status === VerifyStatus.Verified;
     const getTitle = () => {
-      if (sentGuardianKeys.has(key)) {
+      if (
+        sentGuardianKeys.has(key) ||
+        guardian.sendVerifyCodeParams.type === 'Apple' ||
+        guardian.sendVerifyCodeParams.type === 'Google'
+      ) {
         return 'Verify';
       } else {
         return 'Send';

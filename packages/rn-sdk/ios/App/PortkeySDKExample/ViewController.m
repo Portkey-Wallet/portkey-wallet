@@ -13,6 +13,7 @@
 #import <YYKit/YYKit.h>
 #import <Toast/Toast.h>
 #import "TermsOfServiceViewController.h"
+#import <PortkeySDK/PortkeySDKJSCallModule.h>
 
 @interface ViewController ()
 
@@ -30,6 +31,8 @@
 @property (nonatomic, strong) UIButton *exitButton;
 
 @property (nonatomic, strong) UIButton *termsButton;
+
+@property (nonatomic, strong) UIButton *jsCallButton;
 
 @end
 
@@ -119,18 +122,33 @@
         [[PortkeySDKRouterModule sharedInstance] navigateTo:@"scan_qr_code_entry" from:@"" targetScene:@""];
     }];
     [self.view addSubview:self.scanQrcodeButton];
+    
+    self.jsCallButton = [self createButtonWithTitle:@"Call JS"];
+    self.jsCallButton.frame = self.scanQrcodeButton.frame;
+    self.jsCallButton.top = self.scanQrcodeButton.bottom + 20;
+    [self.jsCallButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        [[PortkeySDKJSCallModule sharedInstance] enqueueJSCall:@"WalletModule" method:@"callContractMethod" params:@{@"name": @"portkey"} callback:^(NSString * _Nullable result) {
+            NSLog(@"js call result : %@", result);
+        }];
+    }];
+    [self.view addSubview:self.jsCallButton];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Selector
 
 - (void)loginButtonClicked:(id)sender {
-    [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
+//    [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
+    [[PortkeySDKRouterModule sharedInstance] navigateToWithOptions:@"referral_entry"
+                                                              from:@""
+                                                            params:@{}
+                                                          callback:^(NSArray *response) {
+        NSLog(@"response: %@", response);
+    }];
 }
 
 - (void)switchChainWithChainId:(NSString *)chainId {

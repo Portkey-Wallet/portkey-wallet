@@ -1,4 +1,4 @@
-import { PortkeyConfig } from 'global';
+import { PortkeyConfig } from 'global/constants';
 import { AccountIdentifierStatusDTO, RegisterStatusDTO } from 'network/dto/signIn';
 import { NetworkOptions, ResultWrapper, TypedUrlParams, nativeFetch } from 'service/native-modules';
 import { APIPaths } from 'network/path';

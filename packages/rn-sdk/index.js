@@ -5,6 +5,7 @@ import { initJSModules } from './js/service/JsModules';
 import SignInEntryPage from 'components/entries/SignIn';
 import SelectCountryPage from 'components/entries/SelectCountry';
 import SignUpEntryPage from 'components/entries/SignUp';
+import SignUpReferralEntryPage from 'components/entries/SignUp/referral';
 import ReferralEntryPage from 'components/entries/Referral';
 import GuardianApprovalEntryPage from 'components/entries/GuardianApproval';
 import VerifierDetailsEntryPage from 'components/entries/VerifierDetails';
@@ -26,6 +27,7 @@ entryConfig.set(PortkeyEntries.REFERRAL_ENTRY, () => ReferralEntryPage);
 entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => SignInEntryPage);
 entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
 entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
+entryConfig.set(PortkeyEntries.SIGN_UP_REFERRAL_ENTRY, () => SignUpReferralEntryPage);
 
 // verify stage
 entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);

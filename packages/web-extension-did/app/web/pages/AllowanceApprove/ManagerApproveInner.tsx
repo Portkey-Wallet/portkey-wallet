@@ -25,6 +25,7 @@ import InternalMessageTypes from 'messages/InternalMessageTypes';
 import aes from '@portkey-wallet/utils/aes';
 import { request } from '@portkey-wallet/api/api-did';
 import { isNFT } from 'utils';
+import { useDebounceCallback } from '@portkey-wallet/hooks';
 
 export enum ManagerApproveStep {
   SetAllowance = 'SetAllowance',
@@ -137,7 +138,7 @@ export default function ManagerApproveInner({
   const targetChainInfo = useCurrentChain(targetChainId);
   const { walletInfo } = useCurrentWallet();
 
-  const getTokenInfo = useCallback(async () => {
+  const getTokenInfo = useDebounceCallback(async () => {
     try {
       if (!targetChainInfo) throw Error('Missing verifier, please check params');
       const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
@@ -158,13 +159,15 @@ export default function ManagerApproveInner({
     } catch (error) {
       console.error(error);
       onError?.(Error(handleErrorMessage(error)));
+    } finally {
+      setLoading(false);
     }
   }, [amount, targetChainInfo, onError, symbol, walletInfo.AESEncryptPrivateKey]);
 
   useEffect(() => {
+    setLoading(true);
     getTokenInfo();
-  }, [getTokenInfo]);
-
+  }, [getTokenInfo, setLoading]);
   return (
     <div className="portkey-ui-flex-column portkey-ui-manager-approval-wrapper">
       {step === ManagerApproveStep.SetAllowance && (

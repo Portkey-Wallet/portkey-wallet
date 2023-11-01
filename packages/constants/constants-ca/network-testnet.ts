@@ -16,7 +16,9 @@ export const ThirdParty = `https://thirdparty.portkey.finance`;
 export enum DappMap {
   bridge = 'https://test.ebridge.exchange',
 }
-export const DAPP_WHITELIST: string[] = [DappMap.bridge];
+
+const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
+export const DAPP_WHITELIST: string[] = [...EBridgeList];
 
 export const LinkPortkeyWebsite = OfficialWebsite;
 export const LinkPortkeyPath = {

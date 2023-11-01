@@ -12,21 +12,19 @@ import { touchAuth } from '../SetBiometrics';
 import Loading from 'components/Loading';
 import useEffectOnce from 'hooks/useEffectOnce';
 
-export default function CheckPin(props: CheckPinProps) {
-  const { rootTag } = props;
+export default function CheckPin() {
   const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
   const [canUseBiometrics, setCanUseBiometrics] = useState(false);
 
   const { onFinish } = useBaseContainer({
-    rootTag: rootTag,
     entryName: PortkeyEntries.CHECK_PIN,
   });
 
   const onChangeText = useCallback(
-    (pin: string) => {
+    async (pin: string) => {
       if (pin.length === PIN_SIZE) {
-        if (!checkPin(pin)) {
+        if (!(await checkPin(pin))) {
           pinRef.current?.reset();
           return setErrorMessage(PinErrorMessage.invalidPin);
         }

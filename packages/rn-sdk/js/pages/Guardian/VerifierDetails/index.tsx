@@ -42,7 +42,6 @@ function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; is
 
 export default function VerifierDetails({
   verificationType = VerificationType.register,
-  accountIdentifier,
   guardianConfig,
 }: {
   verificationType?: VerificationType;

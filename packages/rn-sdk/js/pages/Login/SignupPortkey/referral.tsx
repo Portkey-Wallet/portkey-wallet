@@ -23,7 +23,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import NetworkContext from '../context/NetworkContext';
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
-import { PortkeyConfig, setEndPointUrl } from 'global';
+import { PortkeyConfig, setEndPointUrl } from 'global/constants';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network-mainnet';
 import useInitSkeleton from 'model/hooks/UseInitSkeleton';
 // eslint-disable-next-line @typescript-eslint/no-var-requires

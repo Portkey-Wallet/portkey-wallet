@@ -26,12 +26,7 @@ import { guardianTypeStrToEnum, isReacptchaOpen } from 'model/global';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
-import {
-  AccountOriginalType,
-  AfterVerifiedConfig,
-  VerifiedGuardianDoc,
-  DefaultExtraData,
-} from 'model/verify/after-verify';
+import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { defaultColors } from 'assets/theme';
@@ -130,7 +125,6 @@ export default function GuardianApproval({
         fromRecovery: true,
         accountIdentifier,
         chainId: await PortkeyConfig.currChainId(),
-        extraData: DefaultExtraData,
         verifiedGuardians: getVerifiedGuardianInfo(),
       },
     };
@@ -178,7 +172,11 @@ export default function GuardianApproval({
   const particularButton = (guardian: GuardianConfig, key: string) => {
     const isVerified = guardiansStatus?.[key]?.status === VerifyStatus.Verified;
     const getTitle = () => {
-      if (sentGuardianKeys.has(key)) {
+      if (
+        sentGuardianKeys.has(key) ||
+        guardian.sendVerifyCodeParams.type === 'Apple' ||
+        guardian.sendVerifyCodeParams.type === 'Google'
+      ) {
         return 'Verify';
       } else {
         return 'Send';

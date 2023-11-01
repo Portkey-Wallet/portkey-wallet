@@ -156,18 +156,6 @@ export default function GuardianApproval({
       deliveredVerifiedData: JSON.stringify(pageData),
     });
   };
-  const parseGuardianInfo = (guardianArray: Array<GuardianConfig>): Array<UserGuardianItem> => {
-    return guardianArray?.map((item, index) => {
-      return {
-        ...item,
-        guardianAccount: item.sendVerifyCodeParams.guardianIdentifier,
-        isLoginAccount: item.isLoginGuardian,
-        guardianType: guardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
-        key: `${index}`,
-        identifierHash: '',
-      } as UserGuardianItem;
-    });
-  };
 
   const particularButton = (guardian: GuardianConfig, key: string) => {
     const isVerified = guardiansStatus?.[key]?.status === VerifyStatus.Verified;
@@ -413,14 +401,22 @@ export default function GuardianApproval({
           </View>
           <View style={GStyles.flex1}>
             <ScrollView>
-              {parseGuardianInfo(guardians)?.map((item, index) => {
+              {guardians?.map((item, index) => {
+                const parsedItem = {
+                  ...item,
+                  guardianAccount: item.sendVerifyCodeParams.guardianIdentifier,
+                  isLoginAccount: item.isLoginGuardian,
+                  guardianType: guardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
+                  key: `${index}`,
+                  identifierHash: '',
+                } as UserGuardianItem;
                 return (
                   <GuardianItem
                     key={index}
-                    guardianItem={item}
+                    guardianItem={parsedItem}
                     isButtonHide={true}
                     renderBtn={_ => {
-                      return particularButton(guardians[index], item.key);
+                      return particularButton(item, `${index}`);
                     }}
                     setGuardianStatus={onSetGuardianStatus}
                     guardiansStatus={guardiansStatus}

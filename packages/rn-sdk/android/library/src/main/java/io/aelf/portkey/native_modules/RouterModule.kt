@@ -30,7 +30,7 @@ class RouterModule(reactContext: ReactApplicationContext) :
             targetScene = targetScene,
             from = from,
             closeSelf = closeSelf,
-            params = params
+            params = params 
         )
     }
 

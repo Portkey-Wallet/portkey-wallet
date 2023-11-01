@@ -30,7 +30,7 @@ import {
   AccountOriginalType,
   AfterVerifiedConfig,
   VerifiedGuardianDoc,
-  defaultExtraData,
+  DefaultExtraData,
 } from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
@@ -130,7 +130,7 @@ export default function GuardianApproval({
         fromRecovery: true,
         accountIdentifier,
         chainId: await PortkeyConfig.currChainId(),
-        extraData: defaultExtraData,
+        extraData: DefaultExtraData,
         verifiedGuardians: getVerifiedGuardianInfo(),
       },
     };

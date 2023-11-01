@@ -97,16 +97,8 @@ export default function Referral({
   };
 
   const pushToSignIn = () => {
-    navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_IN_ENTRY, {}, res => {
-      if (res.status === 'success') {
-        onSuccess();
-      }
-    });
-  };
-
-  const pushToSignUp = () => {
     if (type === PageType.login) {
-      navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_UP_REFERRAL_ENTRY, {}, res => {
+      navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_IN_ENTRY, {}, res => {
         if (res.status === 'success') {
           onSuccess();
         }
@@ -118,6 +110,14 @@ export default function Referral({
         }
       });
     }
+  };
+
+  const pushToSignUp = () => {
+    navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_UP_REFERRAL_ENTRY, {}, res => {
+      if (res.status === 'success') {
+        onSuccess();
+      }
+    });
   };
 
   useEffectOnce(() => {

@@ -55,7 +55,7 @@ export default function VerifierDetails({
   });
 
   const guardianItem: UserGuardianItem = {
-    guardianAccount: accountIdentifier,
+    guardianAccount: guardianConfig.sendVerifyCodeParams.guardianIdentifier,
     guardianType: guardianConfig.sendVerifyCodeParams.type === 'Phone' ? LoginType.Phone : LoginType.Email,
     verifier: {
       id: guardianConfig.sendVerifyCodeParams.verifierId,

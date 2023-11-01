@@ -284,11 +284,10 @@ export default function GuardianApproval({
           verifierSessionId,
         } as Partial<GuardianConfig>),
         true,
-        key,
       );
       if (guardianResult) {
         CommonToast.success('Verified Successfully');
-        setGuardianStatus(key, { status: VerifyStatus.Verified });
+        setGuardianStatus(key, { status: VerifyStatus.Verified, verifierInfo: guardianResult });
         return;
       } else {
         CommonToast.fail('guardian verify failed, please try again.');
@@ -297,9 +296,9 @@ export default function GuardianApproval({
     } else {
       ActionSheet.alert({
         title: '',
-        message: `${guardian.name ?? 'Portkey'} will send a verification code to ${accountIdentifier} to verify your ${
-          accountOriginalType === AccountOriginalType.Email ? 'email' : 'phone number'
-        }.`,
+        message: `${guardian.name ?? 'Portkey'} will send a verification code to ${
+          guardian.sendVerifyCodeParams.guardianIdentifier
+        } to verify your ${accountOriginalType === AccountOriginalType.Email ? 'email' : 'phone number'}.`,
         buttons: [
           { title: 'Cancel', type: 'outline' },
           {
@@ -326,7 +325,6 @@ export default function GuardianApproval({
                       verifySessionId: sendResult.verifierSessionId,
                     } as Partial<GuardianConfig>),
                     true,
-                    key,
                   );
                   if (guardianResult) {
                     CommonToast.success('Verified Successfully');
@@ -351,7 +349,6 @@ export default function GuardianApproval({
   const handleGuardianVerifyPage = async (
     guardianConfig?: GuardianConfig,
     alreadySent?: boolean,
-    key?: string,
   ): Promise<VerifiedGuardianDoc | null> => {
     const guardian = guardianConfig;
     if (!guardian) {
@@ -360,15 +357,7 @@ export default function GuardianApproval({
     }
     return new Promise(resolve => {
       navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
-        if (result) {
-          setApproved(preGuardiansStatus => ({
-            ...preGuardiansStatus,
-            [key ?? '0']: { status: VerifyStatus.Verified },
-          }));
-          resolve(result);
-        } else {
-          resolve(null);
-        }
+        resolve(result);
       });
     });
   };

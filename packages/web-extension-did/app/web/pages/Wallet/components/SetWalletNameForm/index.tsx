@@ -60,7 +60,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
           s3Url = await uploadImageToS3(newAvatarFile.current);
         }
 
-        await setUserInfo({ nickName: walletName, avatar: s3Url });
+        await setUserInfo({ nickName: walletName, avatar: s3Url || userInfo?.avatar });
         saveCallback?.();
         message.success(t('Saved Successful'));
       } catch (error) {
@@ -70,7 +70,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
         setLoading(false);
       }
     },
-    [saveCallback, setLoading, setUserInfo, t],
+    [saveCallback, setLoading, setUserInfo, t, userInfo?.avatar],
   );
 
   const getFile = useCallback((file: File) => {

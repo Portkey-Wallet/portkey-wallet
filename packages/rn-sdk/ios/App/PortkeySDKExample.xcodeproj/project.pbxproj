@@ -25,6 +25,7 @@
 		EAD432AE2ABC29ED00EEA69D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD432A42ABC29ED00EEA69D /* main.m */; };
 		EAD432AF2ABC29ED00EEA69D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EAD432A52ABC29ED00EEA69D /* Images.xcassets */; };
 		EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EAD432A72ABC29ED00EEA69D /* ViewController.m */; };
+		EADF94572AF3847F00B07C1D /* BundleConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EADF94562AF3847F00B07C1D /* BundleConfigViewController.m */; };
 		EDE868D741F47F2FD227CA24 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB237CBC0EF8A113646C992 /* ExpoModulesProvider.swift */; };
 		F3F50471043C8974F9A0CC49 /* Pods_PortkeySDKExample_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 059DB1ABAA48E398AC16B0AA /* Pods_PortkeySDKExample_Tests.framework */; };
 		FB9C76A798DED3DBCC764D3F /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4B7F65653A1041B86DF8CB /* ExpoModulesProvider.swift */; };
@@ -77,6 +78,8 @@
 		EAD432A72ABC29ED00EEA69D /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PortkeySDKExample-Prefix.pch"; sourceTree = "<group>"; };
 		EADF94412AEA65E600B07C1D /* PortkeySDKExample_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PortkeySDKExample_Example.entitlements; sourceTree = "<group>"; };
+		EADF94552AF3847F00B07C1D /* BundleConfigViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BundleConfigViewController.h; sourceTree = "<group>"; };
+		EADF94562AF3847F00B07C1D /* BundleConfigViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BundleConfigViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +214,7 @@
 		EAD4329A2ABC29ED00EEA69D /* PortkeySDKExample */ = {
 			isa = PBXGroup;
 			children = (
+				EADF94542AF3846600B07C1D /* BundleConfig */,
 				EAA3A8DA2AE8B867001D1CE0 /* TermsOfServiceConfig */,
 				EAD432A82ABC29ED00EEA69D /* PortkeySDKExample-Prefix.pch */,
 				EAD432A62ABC29ED00EEA69D /* AppDelegate.h */,
@@ -225,6 +229,15 @@
 				EAD432A52ABC29ED00EEA69D /* Images.xcassets */,
 			);
 			path = PortkeySDKExample;
+			sourceTree = "<group>";
+		};
+		EADF94542AF3846600B07C1D /* BundleConfig */ = {
+			isa = PBXGroup;
+			children = (
+				EADF94552AF3847F00B07C1D /* BundleConfigViewController.h */,
+				EADF94562AF3847F00B07C1D /* BundleConfigViewController.m */,
+			);
+			path = BundleConfig;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -526,6 +539,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EADF94572AF3847F00B07C1D /* BundleConfigViewController.m in Sources */,
 				EAD432B02ABC29ED00EEA69D /* ViewController.m in Sources */,
 				EAD432AE2ABC29ED00EEA69D /* main.m in Sources */,
 				EAD432AA2ABC29ED00EEA69D /* AppDelegate.m in Sources */,
@@ -633,14 +647,8 @@
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -683,14 +691,8 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				OTHER_CFLAGS = (
-					"$(inherited)",
-					" ",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_CFLAGS = "$(inherited)  ";
+				OTHER_CPLUSPLUSFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

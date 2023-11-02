@@ -41,7 +41,9 @@ const NSString *kBundleConfigKey = @"BundleConfigKey";
     self.useLocalSwitch.centerY = self.useLocalLabel.centerY;
 }
 
-- (void)initShowSwitch
+- (void)initShowSwitch {
+    
+}
 
 #pragma mark - Selector
 

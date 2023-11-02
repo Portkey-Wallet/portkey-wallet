@@ -18,7 +18,7 @@ const qrCodeDesc = 'Scan my QR code to start Portkey chat';
 const MyQRCode = () => {
   const navigate = useNavigate();
   const { pathname, state } = useLocation();
-  const { walletName, userId, walletAvatar } = useWalletInfo();
+  const { userId, userInfo } = useWalletInfo();
   const { isNotLessThan768 } = useCommonState();
   const shareLink = useMemo(() => LinkPortkeyPath.addContact + userId, [userId]);
   const handleBack = useCallback(() => {
@@ -29,18 +29,18 @@ const MyQRCode = () => {
   }, [navigate, pathname, state]);
   return isNotLessThan768 ? (
     <MyQRCodePrompt
-      icon={walletAvatar}
+      icon={userInfo?.avatar}
       onBack={handleBack}
       qrCodeValue={shareLink}
-      showName={walletName}
+      showName={userInfo?.nickName || ''}
       desc={qrCodeDesc}
     />
   ) : (
     <MyQRCodePopup
-      icon={walletAvatar}
+      icon={userInfo?.avatar}
       onBack={handleBack}
       qrCodeValue={shareLink}
-      showName={walletName}
+      showName={userInfo?.nickName || ''}
       desc={qrCodeDesc}
     />
   );

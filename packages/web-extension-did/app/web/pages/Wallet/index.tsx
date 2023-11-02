@@ -20,7 +20,7 @@ export default function Wallet() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { isPrompt, isNotLessThan768 } = useCommonState();
-  const { walletAvatar, walletName, userId } = useWalletInfo();
+  const { userInfo, userId } = useWalletInfo();
   const [exitVisible, setExitVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
 
@@ -73,7 +73,7 @@ export default function Wallet() {
         }
       });
     }
-  }, [MenuList, isPrompt, pathname, walletName]);
+  }, [MenuList, isPrompt, pathname]);
 
   const title = t('Wallet');
   const exitText = t('Exit Wallet');
@@ -91,8 +91,8 @@ export default function Wallet() {
       exitText={exitText}
       exitVisible={exitVisible}
       select={selectedItem}
-      walletAvatar={walletAvatar}
-      walletName={walletName}
+      walletAvatar={userInfo?.avatar}
+      walletName={userInfo?.nickName || ''}
       portkeyId={userId || ''}
       clickAvatar={clickAvatar}
       menuList={MenuList}
@@ -104,8 +104,8 @@ export default function Wallet() {
       headerTitle={title}
       exitText={exitText}
       exitVisible={exitVisible}
-      walletAvatar={walletAvatar}
-      walletName={walletName}
+      walletAvatar={userInfo?.avatar}
+      walletName={userInfo?.nickName || ''}
       portkeyId={userId || ''}
       clickAvatar={clickAvatar}
       menuList={MenuList}

@@ -38,7 +38,7 @@ export interface UserInfoType {
 }
 
 export interface WalletState {
-  walletAvatar: string;
+  walletAvatar: string; // to be scrapped, please use userInfo.avatar
   walletType: WalletType;
   walletName: string;
   currentNetwork: NetworkType;

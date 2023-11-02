@@ -3,7 +3,6 @@ import CustomSvg from 'components/CustomSvg';
 import './index.less';
 import ImageDisplay from '../ImageDisplay';
 import { CSSProperties, useState } from 'react';
-import { RcFile } from 'antd/lib/upload/interface';
 import UploadImage from '../UploadImage';
 import { useEffectOnce } from 'react-use';
 
@@ -17,8 +16,7 @@ interface IUploadAvatarProps {
   uploadText?: string;
   size?: 'large' | 'default';
   getTemporaryDataURL?: (url: string) => void;
-  getFile?: (file: RcFile) => void;
-  setFile?: (file: RcFile) => void;
+  getFile?: (file: File) => void;
 }
 
 export default function UploadAvatar({

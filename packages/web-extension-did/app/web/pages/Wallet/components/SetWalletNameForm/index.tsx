@@ -10,7 +10,6 @@ import IdAndAddress from 'pages/Contacts/components/IdAndAddress';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { IProfileDetailDataProps } from 'types/Profile';
 import UploadAvatar from 'pages/components/UploadAvatar';
-import { RcFile } from 'antd/lib/upload';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
@@ -37,7 +36,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
   });
 
   const [avatarDataUrl, setAvatarDataUrl] = useState(userInfo?.avatar);
-  const newAvatarFile = useRef<RcFile>();
+  const newAvatarFile = useRef<File>();
   const { setLoading } = useLoading();
 
   const handleInputChange = useCallback((value: string) => {
@@ -60,7 +59,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
         if (newAvatarFile.current) {
           s3Url = await uploadImageToS3(newAvatarFile.current);
         }
-        uploadImageToS3;
+
         await setUserInfo({ nickName: walletName, avatar: s3Url });
         saveCallback?.();
         message.success(t('Saved Successful'));
@@ -74,7 +73,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
     [saveCallback, setLoading, setUserInfo, t],
   );
 
-  const getFile = useCallback((file: RcFile) => {
+  const getFile = useCallback((file: File) => {
     newAvatarFile.current = file;
   }, []);
 

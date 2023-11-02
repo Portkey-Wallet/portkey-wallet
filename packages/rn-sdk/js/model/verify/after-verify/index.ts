@@ -28,7 +28,7 @@ export interface NormalVerifyPathInfo {
   accountIdentifier: string;
   verifiedGuardians: Array<VerifiedGuardianDoc>;
   chainId: string;
-  extraData: DeviceInfoType;
+  extraData?: DeviceInfoType;
 }
 
 export interface ScanQRCodePathInfo {

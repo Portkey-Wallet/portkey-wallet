@@ -134,6 +134,7 @@ export interface GuardianConfig {
   readonly alreadySent?: boolean;
   readonly verifySessionId?: string;
   readonly thirdPartyEmail?: string;
+  readonly verifiedDoc?: CheckVerifyCodeResultDTO;
 }
 
 export enum GuardianStatus {

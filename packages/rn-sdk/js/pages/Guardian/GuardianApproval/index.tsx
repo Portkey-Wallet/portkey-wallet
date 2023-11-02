@@ -16,7 +16,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import Touchable from 'components/Touchable';
 import ActionSheet from 'components/ActionSheet';
 import { GuardiansStatus, GuardiansStatusItem } from '../types';
-import { SocialRecoveryConfig } from 'model/verify/social-recovery';
+import { GuardianVerifyConfig } from 'model/verify/social-recovery';
 import { GuardianConfig } from 'model/verify/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
@@ -26,12 +26,7 @@ import { guardianTypeStrToEnum, isReacptchaOpen } from 'model/global';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
-import {
-  AccountOriginalType,
-  AfterVerifiedConfig,
-  VerifiedGuardianDoc,
-  DefaultExtraData,
-} from 'model/verify/after-verify';
+import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { defaultColors } from 'assets/theme';
@@ -46,7 +41,7 @@ export default function GuardianApproval({
   verifiedTime,
   onPageFinish,
 }: {
-  guardianListConfig: SocialRecoveryConfig;
+  guardianListConfig: GuardianVerifyConfig;
   verifiedTime: number;
   onPageFinish: (result: GuardianApprovalPageResult) => void;
 }) {
@@ -130,7 +125,6 @@ export default function GuardianApproval({
         fromRecovery: true,
         accountIdentifier,
         chainId: await PortkeyConfig.currChainId(),
-        extraData: DefaultExtraData,
         verifiedGuardians: getVerifiedGuardianInfo(),
       },
     };

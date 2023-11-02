@@ -8,7 +8,7 @@ import {
 } from 'model/verify/after-verify';
 import { GuardianConfig } from 'model/verify/guardian';
 import { SignUpConfig } from 'model/verify/sign-up';
-import { SocialRecoveryConfig } from 'model/verify/social-recovery';
+import { GuardianVerifyConfig, GuardianVerifyType } from 'model/verify/social-recovery';
 import { NetworkController } from 'network/controller';
 import { AccountOrGuardianOriginalTypeStr } from 'network/dto/guardian';
 import {
@@ -104,12 +104,13 @@ export const getSocialRecoveryPageData = async (
   accountIdentifier: string,
   accountOriginalType: AccountOriginalType,
   thirdPartyAccountInfo?: ThirdPartyAccountInfo,
-): Promise<SocialRecoveryConfig> => {
+): Promise<GuardianVerifyConfig> => {
   const guardians = await NetworkController.getGuardianInfo(await PortkeyConfig.currChainId(), accountIdentifier);
   const chainId = await PortkeyConfig.currChainId();
   return {
     accountIdentifier,
     accountOriginalType,
+    guardianVerifyType: GuardianVerifyType.CREATE_WALLET,
     guardians: (guardians?.guardianList?.guardians ?? []).map(guardian => ({
       ...guardian,
       accountIdentifier,

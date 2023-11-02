@@ -26,6 +26,7 @@ export type IRampCryptoItem = {
 export type IRampCryptoDefault = {
   symbol: string;
   amount: string;
+  network: string; // chain-chainId
 };
 
 export type IRampFiatItem = {
@@ -38,6 +39,8 @@ export type IRampFiatItem = {
 export type IRampFiatDefault = {
   symbol: string;
   amount: string;
+  country: string;
+  countryName: string;
 };
 
 export type IRampCryptoResult = {
@@ -124,10 +127,12 @@ export type IGetOrderNoRequest = {
 
 export type IGetCryptoDataRequest = {
   fiat?: string;
+  country?: string;
 };
 
 export type IGetFiatDataRequest = {
   crypto?: string;
+  network?: string;
 };
 
 export type IGetLimitRequest = {

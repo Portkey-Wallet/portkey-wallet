@@ -4,10 +4,12 @@ export interface IRampStateType {
   rampInfo: IRampInfo;
   rampEntry: IRampEntry;
   buyFiatList: IRampFiatItem[];
-  buyDefaultCrypto: IRampCryptoDefault;
   buyDefaultFiat: IRampFiatDefault;
+  buyDefaultCryptoList: IRampCryptoItem[];
+  buyDefaultCrypto: IRampCryptoDefault;
   sellCryptoList: IRampCryptoItem[];
   sellDefaultCrypto: IRampCryptoDefault;
+  sellDefaultFiatList: IRampFiatItem[];
   sellDefaultFiat: IRampFiatDefault;
 }
 

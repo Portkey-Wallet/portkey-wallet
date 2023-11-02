@@ -3,46 +3,47 @@ import { useAppCASelector, useAppCommonDispatch } from '../../index';
 import ramp from '@portkey-wallet/ramp';
 import { sleep } from '@portkey-wallet/utils';
 import { setRampEntry, setRampInfo } from '@portkey-wallet/store/store-ca/ramp/actions';
-import { useUpdateBuyCrypto, useUpdateBuyFiat } from './buy';
-import { useUpdateSellCrypto, useUpdateSellFiat } from './sell';
+import { useBuyFiat } from './buy';
+import { useSellCrypto } from './sell';
 import { useIsMainnet } from '../network';
 
-export const useRamp = () => useAppCASelector(state => state.ramp);
+export const useRampState = () => useAppCASelector(state => state.ramp);
+
+export const useBuyFiatListState = () => useAppCASelector(state => state.ramp.buyFiatList);
+export const useBuyDefaultFiatState = () => useAppCASelector(state => state.ramp.buyDefaultFiat);
+export const useBuyDefaultCryptoListState = () => useAppCASelector(state => state.ramp.buyDefaultCryptoList);
+export const useBuyDefaultCryptoState = () => useAppCASelector(state => state.ramp.buyDefaultCrypto);
+
+export const useSellCryptoListState = () => useAppCASelector(state => state.ramp.sellCryptoList);
+export const useSellDefaultCryptoState = () => useAppCASelector(state => state.ramp.sellDefaultCrypto);
+export const useSellDefaultFiatListState = () => useAppCASelector(state => state.ramp.sellDefaultFiatList);
+export const useSellDefaultFiatState = () => useAppCASelector(state => state.ramp.sellDefaultFiat);
 
 export const useInitRamp = () => {
-  const isMainnet = useIsMainnet();
-  const { refreshRampShow } = useRampShow();
-  const { refreshBuyCrypto } = useUpdateBuyCrypto();
-  const { refreshBuyFiat } = useUpdateBuyFiat();
-  const { refreshSellCrypto } = useUpdateSellCrypto();
-  const { refreshSellFiat } = useUpdateSellFiat();
+  const { refreshRampShow } = useRampStateShow();
+  const { refreshBuyFiat } = useBuyFiat();
+  const { refreshSellCrypto } = useSellCrypto();
 
   return useCallback(async () => {
-    if (!isMainnet) return;
-
     const { isBuySectionShow, isSellSectionShow } = await refreshRampShow();
 
     await sleep(1000);
 
     if (isBuySectionShow) {
       // fetch fiatList and defaultFiat
-      const { buyDefaultFiat } = await refreshBuyFiat();
-      // fetch defaultCrypto
-      refreshBuyCrypto(buyDefaultFiat.symbol);
+      await refreshBuyFiat();
     }
 
     if (isSellSectionShow) {
       // fetch cryptoList and defaultCrypto
-      const { sellDefaultCrypto } = await refreshSellCrypto();
-      // fetch defaultFiat
-      refreshSellFiat(sellDefaultCrypto.symbol);
+      await refreshSellCrypto();
     }
-  }, [isMainnet, refreshRampShow, refreshBuyFiat, refreshBuyCrypto, refreshSellCrypto, refreshSellFiat]);
+  }, [refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
 };
 
 export const useRefreshRampInfo = () => {
   const dispatch = useAppCommonDispatch();
-  const { rampInfo } = useRamp();
+  const { rampInfo } = useRampState();
 
   const refreshRampInfo = useCallback(async () => {
     const {
@@ -57,10 +58,10 @@ export const useRefreshRampInfo = () => {
   return { rampInfo, refreshRampInfo };
 };
 
-export const useRampShow = () => {
+export const useRampStateShow = () => {
   const dispatch = useAppCommonDispatch();
   const isMainnet = useIsMainnet();
-  const { rampEntry } = useRamp();
+  const { rampEntry } = useRampState();
   const { refreshRampInfo } = useRefreshRampInfo();
 
   const isBuySectionShow = useMemo(

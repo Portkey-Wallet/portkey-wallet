@@ -33,21 +33,29 @@ export const initialRampState: IRampStateType = {
     isSellSectionShow: true,
   },
   buyFiatList: [],
-  buyDefaultCrypto: {
-    symbol: '',
-    amount: '',
-  },
   buyDefaultFiat: {
     symbol: '',
     amount: '',
+    country: '',
+    countryName: '',
+  },
+  buyDefaultCryptoList: [],
+  buyDefaultCrypto: {
+    symbol: '',
+    amount: '',
+    network: '',
   },
   sellCryptoList: [],
   sellDefaultCrypto: {
     symbol: '',
     amount: '',
+    network: '',
   },
+  sellDefaultFiatList: [],
   sellDefaultFiat: {
     symbol: '',
     amount: '',
+    country: '',
+    countryName: '',
   },
 };

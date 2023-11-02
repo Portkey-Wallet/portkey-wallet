@@ -14,6 +14,7 @@
 #import <Toast/Toast.h>
 #import "TermsOfServiceViewController.h"
 #import <PortkeySDK/PortkeySDKJSCallModule.h>
+#import "BundleConfigViewController.h"
 
 @interface ViewController ()
 
@@ -31,8 +32,8 @@
 @property (nonatomic, strong) UIButton *exitButton;
 
 @property (nonatomic, strong) UIButton *termsButton;
-
 @property (nonatomic, strong) UIButton *jsCallButton;
+@property (nonatomic, strong) UIButton *bundleConfigButton;
 
 @end
 
@@ -108,7 +109,7 @@
     
     self.termsButton = [self createButtonWithTitle:@"Config Terms Of Service"];
     self.termsButton.frame = self.exitButton.frame;
-    self.termsButton.top = self.exitButton.bottom + 40;
+    self.termsButton.top = self.exitButton.bottom + 5;
     [self.termsButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
         [self configTermsOfService];
@@ -117,7 +118,7 @@
     
     self.scanQrcodeButton = [self createButtonWithTitle:@"Scan QRCode"];
     self.scanQrcodeButton.frame = self.termsButton.frame;
-    self.scanQrcodeButton.top = self.termsButton.bottom + 20;
+    self.scanQrcodeButton.top = self.termsButton.bottom + 5;
     [self.scanQrcodeButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         [[PortkeySDKRouterModule sharedInstance] navigateTo:@"scan_qr_code_entry" from:@"" targetScene:@""];
     }];
@@ -125,13 +126,23 @@
     
     self.jsCallButton = [self createButtonWithTitle:@"Call JS"];
     self.jsCallButton.frame = self.scanQrcodeButton.frame;
-    self.jsCallButton.top = self.scanQrcodeButton.bottom + 20;
+    self.jsCallButton.top = self.scanQrcodeButton.bottom + 5;
     [self.jsCallButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         [[PortkeySDKJSCallModule sharedInstance] enqueueJSCall:@"WalletModule" method:@"callContractMethod" params:@{@"name": @"portkey"} callback:^(NSString * _Nullable result) {
             NSLog(@"js call result : %@", result);
         }];
     }];
     [self.view addSubview:self.jsCallButton];
+    
+    self.bundleConfigButton = [self createButtonWithTitle:@"Config Bundle"];
+    self.bundleConfigButton.frame = self.jsCallButton.frame;
+    self.bundleConfigButton.top = self.jsCallButton.bottom + 5;
+    [self.bundleConfigButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        @strongify(self)
+        [self.navigationController pushViewController:[BundleConfigViewController new] animated:YES];
+    }];
+    [self.view addSubview:self.bundleConfigButton];
+    
 }
 
 - (void)didReceiveMemoryWarning

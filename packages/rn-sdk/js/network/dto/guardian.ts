@@ -104,6 +104,7 @@ export interface VerifyGoogleGuardianParams {
 export interface VerifyAppleGuardianParams {
   accessToken: string;
   verifierId: string;
+  id: string;
   chainId: string;
   operationType: OperationTypeEnum;
 }

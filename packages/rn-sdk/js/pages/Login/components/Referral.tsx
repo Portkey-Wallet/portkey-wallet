@@ -25,12 +25,25 @@ import { useAppleAuthentication, useGoogleAuthentication } from 'model/hooks/aut
 import { AppleAccountInfo, GoogleAccountInfo } from 'model/verify/third-party-account';
 
 const TitleMap = {
-  apple: 'Login with Apple',
-  google: 'Login with Google',
-  button: 'Login with Phone / Email',
+  [PageType.login]: {
+    apple: 'Login with Apple',
+    google: 'Login with Google',
+    button: 'Login with Phone / Email',
+  },
+  [PageType.signup]: {
+    apple: 'Signup with Apple',
+    google: 'Signup with Google',
+    button: 'Signup with Phone / Email',
+  },
 };
 
-export default function Referral({ setLoginType }: { setLoginType: (type: PageLoginType) => void }) {
+export default function Referral({
+  setLoginType,
+  type = PageType.login,
+}: {
+  setLoginType: (type: PageLoginType) => void;
+  type?: PageType;
+}) {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
 
   const { appleSign } = useAppleAuthentication();
@@ -84,15 +97,23 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
   };
 
   const pushToSignIn = () => {
-    navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_IN_ENTRY, {}, res => {
-      if (res.status === 'success') {
-        onSuccess();
-      }
-    });
+    if (type === PageType.login) {
+      navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_IN_ENTRY, {}, res => {
+        if (res.status === 'success') {
+          onSuccess();
+        }
+      });
+    } else {
+      navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_UP_ENTRY, {}, res => {
+        if (res.status === 'success') {
+          onSuccess();
+        }
+      });
+    }
   };
 
   const pushToSignUp = () => {
-    navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_UP_ENTRY, {}, res => {
+    navigateForResult<SignInPageResult, SignInPageProps>(PortkeyEntries.SIGN_UP_REFERRAL_ENTRY, {}, res => {
       if (res.status === 'success') {
         onSuccess();
       }
@@ -140,14 +161,16 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
 
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter, GStyles.spaceBetween]}>
-      <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.qrCode)}>
-        <Image source={qrcodeImage} style={styles.iconStyle} />
-      </Touchable>
+      {type === PageType.login && (
+        <Touchable style={styles.iconBox} onPress={() => setLoginType(PageLoginType.qrCode)}>
+          <Image source={qrcodeImage} style={styles.iconStyle} />
+        </Touchable>
+      )}
       <View style={GStyles.width100}>
         <CommonButton
           type="outline"
           onPress={onGoogleSign}
-          title={TitleMap.google}
+          title={TitleMap[type].google}
           icon={<Svg icon="google" size={24} />}
           containerStyle={pageStyles.outlineContainerStyle}
           titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
@@ -156,21 +179,23 @@ export default function Referral({ setLoginType }: { setLoginType: (type: PageLo
         <CommonButton
           type="outline"
           onPress={onAppleSign}
-          title={TitleMap.apple}
+          title={TitleMap[type].apple}
           icon={<Svg icon="apple" size={24} />}
           containerStyle={pageStyles.outlineContainerStyle}
           titleStyle={[FontStyles.font3, pageStyles.outlineTitleStyle]}
         />
 
         <Divider title="OR" inset={true} style={pageStyles.dividerStyle} />
-        <CommonButton type="primary" onPress={pushToSignIn} title={TitleMap.button} />
+        <CommonButton type="primary" onPress={pushToSignIn} title={TitleMap[type].button} />
       </View>
-      <Touchable style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.signUpTip]} onPress={pushToSignUp}>
-        <TextL style={FontStyles.font3}>
-          No account? <Text style={FontStyles.font4}>Sign up </Text>
-        </TextL>
-        <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
-      </Touchable>
+      {type === PageType.login && (
+        <Touchable style={[GStyles.flexRowWrap, GStyles.itemCenter, styles.signUpTip]} onPress={pushToSignUp}>
+          <TextL style={FontStyles.font3}>
+            No account? <Text style={FontStyles.font4}>Sign up </Text>
+          </TextL>
+          <Svg size={pTd(20)} color={FontStyles.font4.color} icon="right-arrow2" />
+        </Touchable>
+      )}
       <TermsServiceButton />
     </View>
   );

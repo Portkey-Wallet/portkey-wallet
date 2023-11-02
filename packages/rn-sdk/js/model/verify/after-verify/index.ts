@@ -99,7 +99,7 @@ export const getVerifiedAndLockWallet = async (
 };
 
 const handleNormalVerify = async (config: NormalVerifyPathInfo): Promise<RecoverWalletConfig> => {
-  const retryTimes = 10;
+  const retryTimes = 30;
   const originalChainId = await PortkeyConfig.currChainId();
   const { fromRecovery, accountIdentifier } = config || {};
   const { sessionId, publicKey, privateKey, address } = await requestSocialRecoveryOrRegister(config);

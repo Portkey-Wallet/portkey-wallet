@@ -189,6 +189,7 @@ export function useAppleAuthentication() {
     try {
       const appleInfo = await appleAuthAndroid.signIn();
       const user = parseAppleIdentityToken(appleInfo.id_token);
+      console.log(appleInfo, '======appleInfo');
       if (appleInfo.user?.name?.lastName) {
         try {
           await request.verify.sendAppleUserExtraInfo({

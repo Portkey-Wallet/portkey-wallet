@@ -24,16 +24,15 @@ const MessageMap: any = {
 //   [VerificationType.communityRecovery]: 'GuardianApproval',
 //   [VerificationType.addManager]: 'LoginPortkey',
 // };
-export default function SetPin({ deliveredSetPinInfo, rootTag, oldPin }: SetPinPageProps & { rootTag: any }) {
+export default function SetPin({ deliveredSetPinInfo, oldPin }: SetPinPageProps) {
   const digitInput = useRef<DigitInputInterface>();
 
   const { onFinish, navigateForResult } = useBaseContainer({
-    rootTag: rootTag,
     entryName: PortkeyEntries.SET_PIN,
   });
 
   const leftCallback = useCallback(() => {
-    return ActionSheet.alert({
+    ActionSheet.alert({
       title: 'Leave this page?',
       message: MessageMap[VerificationType.communityRecovery],
       buttons: [

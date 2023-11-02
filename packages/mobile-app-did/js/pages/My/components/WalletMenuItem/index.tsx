@@ -18,7 +18,14 @@ const WalletMenuItem: React.FC<CommonInputProps> = () => {
     <Touchable
       style={[GStyles.flexRow, GStyles.center, styles.itemWrap]}
       onPress={() => navigationService.navigate('WalletName')}>
-      <CommonAvatar avatarSize={pTd(60)} imageUrl={userInfo?.avatar || ''} resizeMode="cover" />
+      <CommonAvatar
+        hasBorder={!userInfo?.avatar}
+        title={userInfo?.nickName}
+        avatarSize={pTd(60)}
+        imageUrl={userInfo?.avatar || ''}
+        resizeMode="cover"
+        style={styles.avatar}
+      />
       <View style={[GStyles.flexCol, GStyles.flex1, styles.centerSection]}>
         <TextXXL numberOfLines={1} style={styles.nickName}>
           {userInfo?.nickName || ''}
@@ -40,6 +47,9 @@ const styles = StyleSheet.create({
     marginBottom: pTd(24),
     backgroundColor: defaultColors.bg1,
     borderRadius: pTd(6),
+  },
+  avatar: {
+    fontSize: pTd(24),
   },
   centerSection: {
     paddingLeft: pTd(16),

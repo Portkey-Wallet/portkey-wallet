@@ -26,6 +26,7 @@
 
 @property (nonatomic, strong) UIButton *mainNetButton;
 @property (nonatomic, strong) UIButton *testNetButton;
+@property (nonatomic, strong) UIButton *test1NetButton;
 
 @property (nonatomic, strong) UIButton *scanQrcodeButton;
 
@@ -98,9 +99,18 @@
     }];
     [self.view addSubview:self.testNetButton];
     
+    self.test1NetButton = [self createButtonWithTitle:@"Switch to TEST1 NET"];
+    self.test1NetButton.frame = self.testNetButton.frame;
+    self.test1NetButton.top = self.testNetButton.bottom + 5;
+    [self.test1NetButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        @strongify(self)
+        [self switchEndPointUrl:@"https://localtest-applesign.portkey.finance"];
+    }];
+    [self.view addSubview:self.test1NetButton];
+    
     self.exitButton = [self createButtonWithTitle:@"Exit Wallet"];
-    self.exitButton.frame = self.testNetButton.frame;
-    self.exitButton.top = self.testNetButton.bottom + 20;
+    self.exitButton.frame = self.test1NetButton.frame;
+    self.exitButton.top = self.test1NetButton.bottom + 20;
     [self.exitButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
         [self exitWallet];

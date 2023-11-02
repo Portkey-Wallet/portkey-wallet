@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useAppCommonDispatch } from '../../index';
 import ramp, {
   IGetExchangeRequest,
+  IGetFiatDataRequest,
   IGetLimitRequest,
   IGetOrderNoRequest,
   IGetSellDetailRequest,
@@ -12,41 +13,74 @@ import {
   setSellCryptoList,
   setSellDefaultCrypto,
   setSellDefaultFiat,
+  setSellDefaultFiatList,
 } from '@portkey-wallet/store/store-ca/ramp/actions';
-import { useRamp } from '.';
+import {
+  useSellCryptoListState,
+  useSellDefaultCryptoState,
+  useSellDefaultFiatListState,
+  useSellDefaultFiatState,
+} from '.';
 
-export const useUpdateSellCrypto = () => {
+export const useSellCrypto = () => {
   const dispatch = useAppCommonDispatch();
-  const { sellDefaultCrypto, sellCryptoList } = useRamp();
+  const sellCryptoList = useSellCryptoListState();
+  const sellDefaultCrypto = useSellDefaultCryptoState();
+  const sellDefaultFiatList = useSellDefaultFiatListState();
+  const sellDefaultFiat = useSellDefaultFiatState();
+
   const refreshSellCrypto = useCallback(async () => {
     const {
       data: { cryptoList, defaultCrypto },
     } = await ramp.service.getSellCryptoData();
+    const {
+      data: { fiatList, defaultFiat },
+    } = await ramp.service.getSellFiatData({
+      crypto: defaultCrypto.symbol,
+      network: defaultCrypto.network,
+    });
 
-    dispatch(setSellDefaultCrypto(defaultCrypto));
     dispatch(setSellCryptoList({ list: cryptoList }));
-    return { sellCryptoList: cryptoList, sellDefaultCrypto: defaultCrypto };
+    dispatch(
+      setSellDefaultCrypto({
+        value: defaultCrypto,
+      }),
+    );
+    dispatch(
+      setSellDefaultFiatList({
+        list: fiatList,
+      }),
+    );
+    dispatch(
+      setSellDefaultFiat({
+        value: defaultFiat,
+      }),
+    );
+    return {
+      sellCryptoList: cryptoList,
+      sellDefaultCrypto: defaultCrypto,
+      sellDefaultFiatList: fiatList,
+      sellDefaultFiat: defaultFiat,
+    };
   }, [dispatch]);
 
-  return { sellDefaultCrypto, sellCryptoList, refreshSellCrypto };
+  return {
+    sellCryptoList,
+    sellDefaultCrypto,
+    sellDefaultFiatList,
+    sellDefaultFiat,
+    refreshSellCrypto,
+  };
 };
 
 export const useUpdateSellFiat = () => {
-  const dispatch = useAppCommonDispatch();
-  const { sellDefaultFiat } = useRamp();
+  return useCallback(async (params: Required<IGetFiatDataRequest>) => {
+    const {
+      data: { fiatList, defaultFiat },
+    } = await ramp.service.getSellFiatData(params);
 
-  const refreshSellFiat = useCallback(
-    async (defaultCryptoSymbol: string) => {
-      const {
-        data: { fiatList, defaultFiat },
-      } = await ramp.service.getSellFiatData({ crypto: defaultCryptoSymbol });
-
-      dispatch(setSellDefaultFiat(defaultFiat));
-      return { sellFiatList: fiatList, sellDefaultFiat: defaultFiat };
-    },
-    [dispatch],
-  );
-  return { sellDefaultFiat, refreshSellFiat };
+    return { sellFiatList: fiatList, sellDefaultFiat: defaultFiat };
+  }, []);
 };
 
 export const useUpdateSellLimit = () => {

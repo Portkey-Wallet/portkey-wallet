@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { IRampCryptoItem, IRampFiatItem, IRampInfo } from '@portkey-wallet/ramp';
+import { IRampCryptoDefault, IRampCryptoItem, IRampFiatDefault, IRampFiatItem, IRampInfo } from '@portkey-wallet/ramp';
 
 export const setRampInfo = createAction<{
   info: IRampInfo;
@@ -15,26 +15,30 @@ export const setBuyFiatList = createAction<{
   list: IRampFiatItem[];
 }>('ramp/setBuyFiatList');
 
-export const setBuyDefaultCrypto = createAction<{
-  symbol: string;
-  amount: string;
-}>('ramp/setBuyDefaultCrypto');
-
 export const setBuyDefaultFiat = createAction<{
-  symbol: string;
-  amount: string;
+  value: IRampFiatDefault;
 }>('ramp/setBuyDefaultFiat');
+
+export const setBuyDefaultCryptoList = createAction<{
+  list: IRampCryptoItem[];
+}>('ramp/setBuyDefaultCryptoList');
+
+export const setBuyDefaultCrypto = createAction<{
+  value: IRampCryptoDefault;
+}>('ramp/setBuyDefaultCrypto');
 
 export const setSellCryptoList = createAction<{
   list: IRampCryptoItem[];
 }>('ramp/setSellCryptoList');
 
 export const setSellDefaultCrypto = createAction<{
-  symbol: string;
-  amount: string;
+  value: IRampCryptoDefault;
 }>('ramp/setSellDefaultCrypto');
 
+export const setSellDefaultFiatList = createAction<{
+  list: IRampFiatItem[];
+}>('ramp/setSellDefaultFiatList');
+
 export const setSellDefaultFiat = createAction<{
-  symbol: string;
-  amount: string;
+  value: IRampFiatDefault;
 }>('ramp/setSellDefaultFiat');

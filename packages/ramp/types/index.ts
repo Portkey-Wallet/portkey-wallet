@@ -9,4 +9,6 @@ export interface IRampProvider {
   providerInfo: IRampProviderInfo;
 }
 
-export type IRampProviderMap = Record<keyof typeof IRampProviderType, RampProvider>;
+export type IRampProviderMap = {
+  [T in IRampProviderType]?: RampProvider;
+};

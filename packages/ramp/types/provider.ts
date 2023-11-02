@@ -1,6 +1,8 @@
 import { IRampProviderType } from '../constants';
 
-export type IRampProvidersInfo = Record<keyof typeof IRampProviderType, IRampProviderInfo>;
+export type IRampProvidersInfo = {
+  [T in IRampProviderType]?: IRampProviderInfo;
+};
 
 export type IRampProviderInfo = {
   key: IRampProviderType;

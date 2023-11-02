@@ -1,7 +1,6 @@
-import { IRampCryptoDefault, IRampCryptoItem, IRampFiatDefault, IRampFiatItem, IRampInfo } from '@portkey-wallet/ramp';
+import { IRampCryptoDefault, IRampCryptoItem, IRampFiatDefault, IRampFiatItem } from '@portkey-wallet/ramp';
 
 export interface IRampStateType {
-  rampInfo: IRampInfo;
   rampEntry: IRampEntry;
   buyFiatList: IRampFiatItem[];
   buyDefaultFiat: IRampFiatDefault;

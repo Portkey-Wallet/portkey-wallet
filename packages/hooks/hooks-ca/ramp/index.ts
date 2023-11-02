@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../../index';
 import ramp from '@portkey-wallet/ramp';
 import { sleep } from '@portkey-wallet/utils';
-import { setRampEntry, setRampInfo } from '@portkey-wallet/store/store-ca/ramp/actions';
+import { setRampEntry } from '@portkey-wallet/store/store-ca/ramp/actions';
 import { useBuyFiat } from './buy';
 import { useSellCrypto } from './sell';
 import { useIsMainnet } from '../network';
@@ -41,28 +41,10 @@ export const useInitRamp = () => {
   }, [refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
 };
 
-export const useRefreshRampInfo = () => {
-  const dispatch = useAppCommonDispatch();
-  const { rampInfo } = useRampState();
-
-  const refreshRampInfo = useCallback(async () => {
-    const {
-      data: { thirdPart: rampProviders },
-    } = await ramp.service.getRampInfo();
-
-    dispatch(setRampInfo({ info: rampProviders }));
-
-    return rampProviders;
-  }, [dispatch]);
-
-  return { rampInfo, refreshRampInfo };
-};
-
 export const useRampStateShow = () => {
   const dispatch = useAppCommonDispatch();
   const isMainnet = useIsMainnet();
   const { rampEntry } = useRampState();
-  const { refreshRampInfo } = useRefreshRampInfo();
 
   const isBuySectionShow = useMemo(
     () => isMainnet && rampEntry.isBuySectionShow,
@@ -77,7 +59,8 @@ export const useRampStateShow = () => {
   const isRampShow = useMemo(() => isMainnet && rampEntry.isRampShow, [isMainnet, rampEntry.isRampShow]);
 
   const refreshRampShow = useCallback(async () => {
-    const rampProviders = await refreshRampInfo();
+    await ramp.refreshRampProvider();
+    const rampProviders = ramp.providerMap;
 
     const isBuySectionShowNew = Object.keys(rampProviders).some(key => {
       return rampProviders[key].coverage.buy === true;
@@ -100,7 +83,7 @@ export const useRampStateShow = () => {
       isBuySectionShow: isMainnet && isBuySectionShowNew,
       isSellSectionShow: isMainnet && isSellSectionShowNew,
     };
-  }, [dispatch, isMainnet, refreshRampInfo]);
+  }, [dispatch, isMainnet]);
 
   return {
     isRampShow,

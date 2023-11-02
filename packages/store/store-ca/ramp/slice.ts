@@ -5,7 +5,6 @@ import {
   setBuyDefaultFiat,
   setBuyFiatList,
   setRampEntry,
-  setRampInfo,
   setSellCryptoList,
   setSellDefaultCrypto,
   setSellDefaultFiat,
@@ -21,9 +20,6 @@ export const rampSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(setRampInfo, (state, action) => {
-        state.rampInfo = action.payload.info;
-      })
       .addCase(setRampEntry, (state, action) => {
         state.rampEntry.isRampShow = action.payload.isRampShow;
         state.rampEntry.isBuySectionShow = action.payload.isBuySectionShow;

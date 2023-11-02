@@ -1,19 +1,19 @@
 import { RampConfig } from './config';
 import { IRampProviderType, InitRampProvidersInfo, RampType } from './constants';
 import { RampService } from './service';
-import { IRampConfig, IRampProvider, IRampProviderMap, IRampService } from './types';
+import { IRampConfig, IRampProvider, IRampProviderMap, IRampService, IRequestConfig } from './types';
 import { IRampProviderInfo } from './types/provider';
 
-export interface IRamp {
+export interface IBaseRamp {
   config: IRampConfig;
   service: IRampService;
   providerMap: IRampProviderMap;
   setProvider: (provider: RampProvider) => void;
-  getProvider: (name: IRampProviderType) => RampProvider;
+  getProvider: (name: IRampProviderType) => RampProvider | undefined;
   updateProvider: (name: IRampProviderType, provider: RampProvider) => void;
 }
 
-export abstract class BaseRamp implements IRamp {
+export abstract class BaseRamp implements IBaseRamp {
   public config: IRampConfig;
   public service: IRampService;
 
@@ -58,22 +58,31 @@ export class Ramp extends BaseRamp {
       },
     });
     this.service = new RampService(this.config.requestConfig);
-    this.providerMap = InitRampProvidersInfo;
+    this.providerMap = {};
   }
 
-  async init() {
-    const { data } = await this.service.getRampInfo();
-    Object.keys(data.thirdPart).forEach(key => {
+  async init(requestConfig: IRequestConfig) {
+    this.config.setRequestConfig(requestConfig);
+
+    await this.refreshRampProvider();
+  }
+
+  async refreshRampProvider() {
+    const {
+      data: { thirdPart },
+    } = await this.service.getRampInfo();
+
+    Object.keys(thirdPart).forEach(key => {
       switch (key) {
         case IRampProviderType.Alchemy:
           this.setProvider(
-            new AlchemyProvider({ providerInfo: { key: IRampProviderType.Alchemy, ...data.thirdPart.Alchemy } }),
+            new AlchemyProvider({ providerInfo: { key: IRampProviderType.Alchemy, ...thirdPart.Alchemy } }),
           );
           break;
 
         case IRampProviderType.Transak:
           this.setProvider(
-            new TransakProvider({ providerInfo: { key: IRampProviderType.Transak, ...data.thirdPart.Alchemy } }),
+            new TransakProvider({ providerInfo: { key: IRampProviderType.Transak, ...thirdPart.Alchemy } }),
           );
           break;
 
@@ -129,7 +138,9 @@ export class TransakProvider extends RampProvider {
   }
 }
 
-export const ramp = new Ramp();
+const ramp = new Ramp();
+
+export default ramp;
 
 export * from './api';
 export * from './constants';

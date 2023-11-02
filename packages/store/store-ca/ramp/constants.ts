@@ -6,6 +6,7 @@ export const initialRampState: IRampStateType = {
       name: '',
       appId: '',
       baseUrl: '',
+      callbackUrl: '',
       logo: '',
       coverage: {
         buy: false,
@@ -17,6 +18,7 @@ export const initialRampState: IRampStateType = {
       name: '',
       appId: '',
       baseUrl: '',
+      callbackUrl: '',
       logo: '',
       coverage: {
         buy: false,

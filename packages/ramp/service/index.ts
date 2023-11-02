@@ -1,4 +1,3 @@
-import { request } from '@portkey-wallet/api/api-did';
 import {
   IBuyDetailResult,
   IBuyLimitResult,
@@ -30,13 +29,14 @@ import {
 } from '../types/services';
 import RampApi from '../api';
 import { RampType } from '../constants';
-import { IClientType, IRampRequestConfig } from '../types';
+import { IClientType, IRequestConfig } from '../types';
+import { request } from '@portkey-wallet/api/api-did';
 
 export class RampService implements IRampService {
   public baseUrl: string;
   public clientType: IClientType;
 
-  constructor(options: IRampRequestConfig) {
+  constructor(options: IRequestConfig) {
     this.baseUrl = options?.baseUrl || '';
     this.clientType = options?.clientType || 'iOS';
   }
@@ -136,13 +136,15 @@ export class RampService implements IRampService {
   }
   sendSellTransaction(params: IGetSellTransactionRequest): IRampServiceCommon<any> {
     return request.send(this.baseUrl, {
-      url: RampApi.sendSellTransaction,
+      url: RampApi.sendSellTransaction.target,
+      method: RampApi.sendSellTransaction.config.method,
       params,
     });
   }
   getOrderNo(params: IGetOrderNoRequest): IRampServiceCommon<IGetOrderNoResult> {
     return request.send(this.baseUrl, {
-      url: RampApi.getOrderNo,
+      url: RampApi.getOrderNo.target,
+      method: RampApi.getOrderNo.config.method,
       params,
     });
   }
@@ -150,7 +152,8 @@ export class RampService implements IRampService {
   // for ach
   getAchToken(params: IGetAchTokenRequest): IRampServiceCommon<IGetAchTokenResult> {
     return request.send(this.baseUrl, {
-      url: RampApi.getAchToken,
+      url: RampApi.getAchToken.target,
+      method: RampApi.getAchToken.config.method,
       params,
     });
   }

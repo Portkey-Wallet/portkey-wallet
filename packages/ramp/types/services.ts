@@ -1,33 +1,19 @@
+import { IRampProviderType } from '../constants';
+import { IRampProviderInfo } from './provider';
+
 export type IRampServiceCommon<T> = Promise<{
   code: string;
   message: string;
   data: T;
 }>;
 
-export enum IRampProviders {
-  Alchemy = 'Alchemy',
-  Transak = 'Transak',
-}
-
 export type IRampInfoResult = {
-  thirdPart: IRampInfo;
+  thirdPart: IThirdPartsInfo;
 };
 
-export type IRampInfo = Record<keyof typeof IRampProviders, IRampProviderInfo>;
+export type IThirdPartsInfo = Record<keyof typeof IRampProviderType, IThirdPartInfo>;
 
-export type IRampProviderInfo = {
-  name: string;
-  appId: string;
-  baseUrl: string;
-  logo: string;
-  coverage: IRampProviderCoverage;
-  paymentTags: string[];
-};
-
-export type IRampProviderCoverage = {
-  buy: boolean;
-  sell: boolean;
-};
+export type IThirdPartInfo = Omit<IRampProviderInfo, 'key'>;
 
 export type IRampCryptoItem = {
   symbol: string;
@@ -118,7 +104,7 @@ export type ISellDetailResult = {
 };
 
 export type IProviderDetail = {
-  thirdPart: IRampProviders;
+  thirdPart: IRampProviderType;
   fiatAmount: string;
   cryptoAmount: string;
   exchange: string;

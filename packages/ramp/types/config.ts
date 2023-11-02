@@ -1,11 +1,14 @@
 export type IClientType = 'Android' | 'iOS' | 'Extension';
 
-export interface IRampRequestConfig {
-  baseUrl?: string;
-  clientType?: IClientType;
+export interface IRequestConfig {
+  baseUrl: string;
+  clientType: IClientType;
 }
 
-export interface IRampConfig extends IRampRequestConfig {
-  setBaseUrl(baseUrl: string): void;
-  setClientType(clientType: IClientType): void;
+export interface IRampConfigOptions {
+  requestConfig: IRequestConfig;
+}
+
+export interface IRampConfig extends IRampConfigOptions {
+  setRequestConfig(config: IRequestConfig): void;
 }

@@ -1,19 +1,13 @@
-import { IClientType, IRampConfig, IRampRequestConfig } from '../types';
+import { IRampConfig, IRampConfigOptions, IRequestConfig } from '../types';
 
 export class RampConfig implements IRampConfig {
-  public baseUrl: string;
-  public clientType: IClientType;
+  public requestConfig: IRequestConfig;
 
-  constructor(options?: IRampRequestConfig) {
-    this.baseUrl = options?.baseUrl || '';
-    this.clientType = options?.clientType || 'iOS';
+  constructor(options: IRampConfigOptions) {
+    this.requestConfig = options.requestConfig;
   }
 
-  setBaseUrl(baseUrl: string) {
-    this.baseUrl = baseUrl;
-  }
-
-  setClientType(clientType: IClientType) {
-    this.clientType = clientType;
+  setRequestConfig(config: IRequestConfig) {
+    this.requestConfig = config;
   }
 }

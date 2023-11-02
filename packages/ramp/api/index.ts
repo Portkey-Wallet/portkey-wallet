@@ -27,11 +27,18 @@ export default {
     target: '/api/app/thirdPart/ramp/detail',
     config: { method: 'GET' },
   },
-  sendSellTransaction: '/api/app/thirdPart/ramp/transaction',
-  getOrderNo: '/api/app/thirdPart/order',
-  updateAchOrder: '/api/app/thirdPart/order/alchemy', // alchemy callbackUrl
-  updateTransakOrder: '/api/app/thirdPart/order/transak', // transak callbackUrl
-  getAchToken: '/api/app/thirdPart/ramp/alchemy/token',
+  sendSellTransaction: {
+    target: '/api/app/thirdPart/ramp/transaction',
+    config: { method: 'POST' },
+  },
+  getOrderNo: {
+    target: '/api/app/thirdPart/order',
+    config: { method: 'POST' },
+  },
+  getAchToken: {
+    target: '/api/app/thirdPart/ramp/alchemy/token',
+    config: { method: 'POST' },
+  },
   getAchSignature: {
     target: '/api/app/thirdPart/ramp/alchemy/signature',
     config: { method: 'GET' },

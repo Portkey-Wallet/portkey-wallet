@@ -3,46 +3,69 @@ import { useAppCommonDispatch } from '../../index';
 import ramp, {
   IGetBuyDetailRequest,
   IGetBuyPriceRequest,
+  IGetCryptoDataRequest,
   IGetExchangeRequest,
   IGetLimitRequest,
 } from '@portkey-wallet/ramp';
-import { setBuyDefaultCrypto, setBuyDefaultFiat, setBuyFiatList } from '@portkey-wallet/store/store-ca/ramp/actions';
-import { useRamp } from '.';
+import {
+  setBuyDefaultCrypto,
+  setBuyDefaultCryptoList,
+  setBuyDefaultFiat,
+  setBuyFiatList,
+} from '@portkey-wallet/store/store-ca/ramp/actions';
+import { useBuyDefaultCryptoListState, useBuyDefaultCryptoState, useBuyDefaultFiatState, useBuyFiatListState } from '.';
 
-export const useUpdateBuyCrypto = () => {
+export const useBuyFiat = () => {
   const dispatch = useAppCommonDispatch();
-  const { buyDefaultCrypto } = useRamp();
-
-  const refreshBuyCrypto = useCallback(
-    async (targetFiatSymbol: string) => {
-      const {
-        data: { cryptoList, defaultCrypto },
-      } = await ramp.service.getBuyCryptoData({ fiat: targetFiatSymbol });
-
-      dispatch(setBuyDefaultCrypto(defaultCrypto));
-      return { buyCryptoList: cryptoList };
-    },
-    [dispatch],
-  );
-
-  return { buyDefaultCrypto, refreshBuyCrypto };
-};
-
-export const useUpdateBuyFiat = () => {
-  const dispatch = useAppCommonDispatch();
-  const { buyDefaultFiat, buyFiatList } = useRamp();
+  const buyFiatList = useBuyFiatListState();
+  const buyDefaultFiat = useBuyDefaultFiatState();
+  const buyDefaultCryptoList = useBuyDefaultCryptoListState();
+  const buyDefaultCrypto = useBuyDefaultCryptoState();
 
   const refreshBuyFiat = useCallback(async () => {
     const {
       data: { fiatList, defaultFiat },
     } = await ramp.service.getBuyFiatData();
+    const {
+      data: { cryptoList, defaultCrypto },
+    } = await ramp.service.getBuyCryptoData({ fiat: defaultFiat.symbol, country: defaultFiat.country });
 
-    dispatch(setBuyDefaultFiat(defaultFiat));
     dispatch(setBuyFiatList({ list: fiatList }));
-    return { buyFiatList: fiatList, buyDefaultFiat: defaultFiat };
+    dispatch(
+      setBuyDefaultFiat({
+        value: defaultFiat,
+      }),
+    );
+    dispatch(
+      setBuyDefaultCryptoList({
+        list: cryptoList,
+      }),
+    );
+    dispatch(
+      setBuyDefaultCrypto({
+        value: defaultCrypto,
+      }),
+    );
+
+    return {
+      buyFiatList: fiatList,
+      buyDefaultFiat: defaultFiat,
+      buyDefaultCryptoList: cryptoList,
+      buyDefaultCrypto: defaultCrypto,
+    };
   }, [dispatch]);
 
-  return { buyDefaultFiat, buyFiatList, refreshBuyFiat };
+  return { buyDefaultFiat, buyFiatList, buyDefaultCryptoList, buyDefaultCrypto, refreshBuyFiat };
+};
+
+export const useUpdateBuyCrypto = () => {
+  return useCallback(async (params: Required<IGetCryptoDataRequest>) => {
+    const {
+      data: { cryptoList, defaultCrypto },
+    } = await ramp.service.getBuyCryptoData(params);
+
+    return { buyCryptoList: cryptoList, buyDefaultCrypto: defaultCrypto };
+  }, []);
 };
 
 export const useUpdateBuyLimit = () => {

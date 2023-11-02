@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
   setBuyDefaultCrypto,
+  setBuyDefaultCryptoList,
   setBuyDefaultFiat,
   setBuyFiatList,
   setRampEntry,
@@ -8,6 +9,7 @@ import {
   setSellCryptoList,
   setSellDefaultCrypto,
   setSellDefaultFiat,
+  setSellDefaultFiatList,
 } from './actions';
 import { initialRampState } from './constants';
 
@@ -30,24 +32,27 @@ export const rampSlice = createSlice({
       .addCase(setBuyFiatList, (state, action) => {
         state.buyFiatList = action.payload.list;
       })
-      .addCase(setBuyDefaultCrypto, (state, action) => {
-        state.buyDefaultCrypto.amount = action.payload.amount;
-        state.buyDefaultCrypto.symbol = action.payload.symbol;
-      })
       .addCase(setBuyDefaultFiat, (state, action) => {
-        state.buyDefaultFiat.amount = action.payload.amount;
-        state.buyDefaultFiat.symbol = action.payload.symbol;
+        state.buyDefaultFiat = action.payload.value;
       })
+      .addCase(setBuyDefaultCryptoList, (state, action) => {
+        state.buyDefaultCryptoList = action.payload.list;
+      })
+      .addCase(setBuyDefaultCrypto, (state, action) => {
+        state.buyDefaultCrypto = action.payload.value;
+      })
+
       .addCase(setSellCryptoList, (state, action) => {
         state.sellCryptoList = action.payload.list;
       })
       .addCase(setSellDefaultCrypto, (state, action) => {
-        state.sellDefaultCrypto.amount = action.payload.amount;
-        state.sellDefaultCrypto.symbol = action.payload.symbol;
+        state.sellDefaultCrypto = action.payload.value;
+      })
+      .addCase(setSellDefaultFiatList, (state, action) => {
+        state.sellDefaultFiatList = action.payload.list;
       })
       .addCase(setSellDefaultFiat, (state, action) => {
-        state.sellDefaultFiat.amount = action.payload.amount;
-        state.sellDefaultFiat.symbol = action.payload.symbol;
+        state.sellDefaultFiat = action.payload.value;
       });
   },
 });

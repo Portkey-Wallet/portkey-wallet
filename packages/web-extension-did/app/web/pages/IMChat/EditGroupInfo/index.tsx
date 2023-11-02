@@ -7,7 +7,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import UploadAvatar from 'pages/components/UploadAvatar';
-import { RcFile } from 'antd/lib/upload/interface';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import { useLoading } from 'store/Provider/hooks';
 import './index.less';
@@ -32,7 +31,7 @@ export default function EditGroupInfo() {
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
   const updateChannelInfo = useUpdateChannelInfo();
-  const [file, setFile] = useState<RcFile>();
+  const [file, setFile] = useState<File>();
   const { setLoading } = useLoading();
   const [previewUrl, setPreviewUrl] = useState<string>(groupInfo?.icon || '');
   const handleInputValueChange = useCallback(

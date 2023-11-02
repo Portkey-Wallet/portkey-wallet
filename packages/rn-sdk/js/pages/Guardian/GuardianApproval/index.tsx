@@ -212,6 +212,7 @@ export default function GuardianApproval({
         Loading.show();
         const verifyResult = isAppleLogin(thirdPartyAccount)
           ? await NetworkController.verifyAppleGuardianInfo({
+              id: thirdPartyAccount.accountIdentifier,
               verifierId: guardian.sendVerifyCodeParams.verifierId,
               accessToken: thirdPartyAccount.identityToken,
               chainId: await PortkeyConfig.currChainId(),

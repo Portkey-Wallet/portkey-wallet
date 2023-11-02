@@ -15,6 +15,7 @@ import { AppState } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import NetworkContext, { NetworkContextState } from 'pages/Login/context/NetworkContext';
+import { appleLogin } from './apple-login';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -148,11 +149,15 @@ export function useAppleAuthentication() {
   const iosPromptAsync = useCallback(async () => {
     setResponse(undefined);
     try {
-      const appleInfo = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-      });
+      // const appleInfo = await appleAuth.performRequest({
+      //   requestedOperation: appleAuth.Operation.LOGIN,
+      //   requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      // });
+      const appleInfo = await appleLogin('en');
+      console.log('appleInfo', appleInfo);
 
+      return null;
+      /*
       const user = parseAppleIdentityToken(appleInfo.identityToken);
       if (appleInfo.fullName?.familyName) {
         try {
@@ -175,6 +180,7 @@ export function useAppleAuthentication() {
       const userInfo = { ...appleInfo, user: { ...user, id: user?.userId } } as AppleAuthentication;
       setResponse(userInfo);
       return userInfo;
+      */
     } catch (error: any) {
       console.log(error, '======error');
 

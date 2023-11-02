@@ -137,7 +137,7 @@ export default function GuardianApproval({
         if (value.status === VerifyStatus.Verified && guardianInfo) {
           return {
             type: guardianTypeStrToEnum(guardianInfo.sendVerifyCodeParams.type),
-            identifier: accountIdentifier,
+            identifier: guardianInfo.sendVerifyCodeParams.guardianIdentifier,
             verifierId: guardianInfo.sendVerifyCodeParams.verifierId,
             verificationDoc: value.verifierInfo?.verificationDoc,
             signature: value.verifierInfo?.signature,

@@ -28,4 +28,4 @@ export const DIGIT_CODE = {
 export const VERIFIER_EXPIRATION = 1;
 
 // guardian expired time (millisecond)
-export const GUARDIAN_EXPIRED_TIME = 58 * 60 * 1000;
+export const GUARDIAN_EXPIRED_TIME = 1 * 60 * 1000;

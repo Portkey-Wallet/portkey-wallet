@@ -58,7 +58,7 @@ export const useBuyFiat = () => {
   return { buyDefaultFiat, buyFiatList, buyDefaultCryptoList, buyDefaultCrypto, refreshBuyFiat };
 };
 
-export const useUpdateBuyCrypto = () => {
+export const useGetBuyCrypto = () => {
   return useCallback(async (params: Required<IGetCryptoDataRequest>) => {
     const {
       data: { cryptoList, defaultCrypto },
@@ -68,7 +68,7 @@ export const useUpdateBuyCrypto = () => {
   }, []);
 };
 
-export const useUpdateBuyLimit = () => {
+export const useGetBuyLimit = () => {
   return useCallback(async (params: IGetLimitRequest) => {
     const {
       data: {
@@ -83,7 +83,7 @@ export const useUpdateBuyLimit = () => {
   }, []);
 };
 
-export const useUpdateBuyExchange = () => {
+export const useGetBuyExchange = () => {
   return useCallback(async (params: IGetExchangeRequest) => {
     const {
       data: { exchange },
@@ -92,7 +92,7 @@ export const useUpdateBuyExchange = () => {
   }, []);
 };
 
-export const useUpdateBuyPrice = () => {
+export const useGetBuyPrice = () => {
   return useCallback(async (params: IGetBuyPriceRequest) => {
     const {
       data: { cryptoAmount, exchange, feeInfo },
@@ -101,7 +101,7 @@ export const useUpdateBuyPrice = () => {
   }, []);
 };
 
-export const useUpdateBuyDetail = () => {
+export const useGetBuyDetail = () => {
   return useCallback(async (params: IGetBuyDetailRequest) => {
     const {
       data: { providersList },

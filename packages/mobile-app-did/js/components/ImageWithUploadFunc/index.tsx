@@ -70,6 +70,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
       }
     } catch (error) {
       console.log('upload error', error);
+      throw error
     }
   }, [localPhotoFile, onChangeImage]);
 

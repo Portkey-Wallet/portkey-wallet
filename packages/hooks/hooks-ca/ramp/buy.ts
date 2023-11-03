@@ -1,12 +1,6 @@
 import { useCallback } from 'react';
 import { useAppCommonDispatch } from '../../index';
-import ramp, {
-  IGetBuyDetailRequest,
-  IGetBuyPriceRequest,
-  IGetCryptoDataRequest,
-  IGetExchangeRequest,
-  IGetLimitRequest,
-} from '@portkey-wallet/ramp';
+import ramp from '@portkey-wallet/ramp';
 import {
   setBuyDefaultCrypto,
   setBuyDefaultCryptoList,
@@ -56,56 +50,4 @@ export const useBuyFiat = () => {
   }, [dispatch]);
 
   return { buyDefaultFiat, buyFiatList, buyDefaultCryptoList, buyDefaultCrypto, refreshBuyFiat };
-};
-
-export const useGetBuyCrypto = () => {
-  return useCallback(async (params: Required<IGetCryptoDataRequest>) => {
-    const {
-      data: { cryptoList, defaultCrypto },
-    } = await ramp.service.getBuyCryptoData(params);
-
-    return { buyCryptoList: cryptoList, buyDefaultCrypto: defaultCrypto };
-  }, []);
-};
-
-export const useGetBuyLimit = () => {
-  return useCallback(async (params: IGetLimitRequest) => {
-    const {
-      data: {
-        fiat: { symbol, minLimit, maxLimit },
-      },
-    } = await ramp.service.getBuyLimit(params);
-    return {
-      symbol,
-      minLimit,
-      maxLimit,
-    };
-  }, []);
-};
-
-export const useGetBuyExchange = () => {
-  return useCallback(async (params: IGetExchangeRequest) => {
-    const {
-      data: { exchange },
-    } = await ramp.service.getBuyExchange(params);
-    return exchange;
-  }, []);
-};
-
-export const useGetBuyPrice = () => {
-  return useCallback(async (params: IGetBuyPriceRequest) => {
-    const {
-      data: { cryptoAmount, exchange, feeInfo },
-    } = await ramp.service.getBuyPrice(params);
-    return { cryptoAmount, exchange, feeInfo };
-  }, []);
-};
-
-export const useGetBuyDetail = () => {
-  return useCallback(async (params: IGetBuyDetailRequest) => {
-    const {
-      data: { providersList },
-    } = await ramp.service.getBuyDetail(params);
-    return providersList;
-  }, []);
 };

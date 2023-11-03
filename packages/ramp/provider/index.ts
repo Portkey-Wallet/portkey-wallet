@@ -3,11 +3,14 @@ import {
   IRampProviderInfo,
   IRampService,
   IRampSellSocket,
-  IRampProvider,
+  IRampProviderOptions,
   IAlchemyRampService,
-  IAlchemyRampProvider,
+  IAlchemyRampProviderOptions,
   ITransakRampService,
-  ITransakRampProvider,
+  ITransakRampProviderOptions,
+  IAlchemyProvider,
+  ITransakProvider,
+  IRampProviderGenerateUrl,
 } from '../types';
 
 export abstract class RampProvider {
@@ -15,56 +18,65 @@ export abstract class RampProvider {
   public service: IRampService;
   public sellSocket: IRampSellSocket;
 
-  constructor(options: IRampProvider) {
+  constructor(options: IRampProviderOptions) {
     this.providerInfo = options.providerInfo;
     this.service = options.service;
     this.sellSocket = options.sellSocket;
   }
 
   // for go to pay
-  abstract generateUrl(type: RampType): void;
+  abstract generateUrl(params: IRampProviderGenerateUrl): void;
 }
 
-export default class AlchemyProvider extends RampProvider {
+export default class AlchemyProvider extends RampProvider implements IAlchemyProvider {
   public providerInfo: IRampProviderInfo;
   public service: IAlchemyRampService;
   public sellSocket: IRampSellSocket;
 
-  constructor(options: IAlchemyRampProvider) {
+  constructor(options: IAlchemyRampProviderOptions) {
     super(options);
     this.providerInfo = options.providerInfo;
     this.service = options.service;
     this.sellSocket = options.sellSocket;
   }
 
-  generateUrl(type: RampType) {
+  generateUrl(params: IRampProviderGenerateUrl) {
+    if (params?.email) {
+      this.getAchToken(params.email);
+    }
+
     // TODO
-    if (type === RampType.BUY) {
+    this.getAchSignature(params.address);
+    if (params.type === RampType.BUY) {
       return '';
     }
     return '';
   }
 
-  getAchToken() {
-    this.service.getAchToken;
+  public getAchToken(email: string) {
+    this.service.getAchToken({ email });
+  }
+
+  public getAchSignature(address: string) {
+    this.service.getAchSignature({ address });
   }
 }
 
-export class TransakProvider extends RampProvider {
+export class TransakProvider extends RampProvider implements ITransakProvider {
   public providerInfo: IRampProviderInfo;
   public service: ITransakRampService;
   public sellSocket: IRampSellSocket;
 
-  constructor(options: ITransakRampProvider) {
+  constructor(options: ITransakRampProviderOptions) {
     super(options);
     this.providerInfo = options.providerInfo;
     this.service = options.service;
     this.sellSocket = options.sellSocket;
   }
 
-  generateUrl(type: RampType) {
+  generateUrl(params: IRampProviderGenerateUrl) {
     // TODO
-    if (type === RampType.BUY) {
+    if (params.type === RampType.BUY) {
       return '';
     }
     return '';

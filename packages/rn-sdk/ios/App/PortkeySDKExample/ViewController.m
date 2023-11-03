@@ -20,9 +20,9 @@
 
 @property (nonatomic, strong) UIButton *loginButton;
 
-@property (nonatomic, strong) UIButton *mainChainButton;
-@property (nonatomic, strong) UIButton *tdvvChainButton;
-@property (nonatomic, strong) UIButton *tdvwChainButton;
+@property (nonatomic, strong) UIButton *switchChainButton;
+
+@property (nonatomic, strong) UIButton *switchNetworkButton;
 
 @property (nonatomic, strong) UIButton *mainNetButton;
 @property (nonatomic, strong) UIButton *testNetButton;
@@ -53,64 +53,28 @@
     self.loginButton.frame = loginButtonRect;
     [self.view addSubview:self.loginButton];
     
-    self.mainChainButton = [self createButtonWithTitle:@"Switch to MAIN CHAIN"];
-    self.mainChainButton.frame = self.loginButton.frame;
-    self.mainChainButton.top = self.loginButton.bottom + 20;
+    self.switchChainButton = [self createButtonWithTitle:@"Switch Chain"];
+    self.switchChainButton.frame = self.loginButton.frame;
+    self.switchChainButton.top = self.loginButton.bottom + 20;
     @weakify(self)
-    [self.mainChainButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+    [self.switchChainButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
-        [self switchChainWithChainId:@"AELF"];
+        [self presentViewController:[self createSwitchChainAlertController] animated:YES completion:nil];
     }];
-    [self.view addSubview:self.mainChainButton];
+    [self.view addSubview:self.switchChainButton];
     
-    self.tdvvChainButton = [self createButtonWithTitle:@"Switch to SIDE CHAIN tDVV"];
-    self.tdvvChainButton.frame = self.mainChainButton.frame;
-    self.tdvvChainButton.top = self.mainChainButton.bottom + 5;
-    [self.tdvvChainButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+    self.switchNetworkButton = [self createButtonWithTitle:@"Switch Network"];
+    self.switchNetworkButton.frame = self.loginButton.frame;
+    self.switchNetworkButton.top = self.switchChainButton.bottom + 20;
+    [self.switchNetworkButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
-        [self switchChainWithChainId:@"tDVV"];
+        [self presentViewController:[self createSwitchNetworkAlertController] animated:YES completion:nil];
     }];
-    [self.view addSubview:self.tdvvChainButton];
-    
-    self.tdvwChainButton = [self createButtonWithTitle:@"Switch to SIDE CHAIN tDVW"];
-    self.tdvwChainButton.frame = self.tdvvChainButton.frame;
-    self.tdvwChainButton.top = self.tdvvChainButton.bottom + 5;
-    [self.tdvwChainButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchChainWithChainId:@"tDVW"];
-    }];
-    [self.view addSubview:self.tdvwChainButton];
-    
-    self.mainNetButton = [self createButtonWithTitle:@"Switch to MAIN NET"];
-    self.mainNetButton.frame = self.tdvwChainButton.frame;
-    self.mainNetButton.top = self.tdvwChainButton.bottom + 20;
-    [self.mainNetButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchEndPointUrl:@"https://did-portkey.portkey.finance"];
-    }];
-    [self.view addSubview:self.mainNetButton];
-    
-    self.testNetButton = [self createButtonWithTitle:@"Switch to TEST NET"];
-    self.testNetButton.frame = self.mainNetButton.frame;
-    self.testNetButton.top = self.mainNetButton.bottom + 5;
-    [self.testNetButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchEndPointUrl:@"https://did-portkey-test.portkey.finance"];
-    }];
-    [self.view addSubview:self.testNetButton];
-    
-    self.test1NetButton = [self createButtonWithTitle:@"Switch to TEST1 NET"];
-    self.test1NetButton.frame = self.testNetButton.frame;
-    self.test1NetButton.top = self.testNetButton.bottom + 5;
-    [self.test1NetButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchEndPointUrl:@"https://localtest-applesign.portkey.finance"];
-    }];
-    [self.view addSubview:self.test1NetButton];
+    [self.view addSubview:self.switchNetworkButton];
     
     self.exitButton = [self createButtonWithTitle:@"Exit Wallet"];
-    self.exitButton.frame = self.test1NetButton.frame;
-    self.exitButton.top = self.test1NetButton.bottom + 20;
+    self.exitButton.frame = self.switchNetworkButton.frame;
+    self.exitButton.top = self.switchNetworkButton.bottom + 20;
     [self.exitButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
         [self exitWallet];
@@ -160,10 +124,53 @@
     [super didReceiveMemoryWarning];
 }
 
+#pragma mark - Private
+
+- (UIAlertController *)createSwitchChainAlertController {
+    NSString *currentChain = [PortkeySDKMMKVStorage readString:@"currChainId"] ?: @"Default";
+    NSString *message = [NSString stringWithFormat:@"Current Chain is %@", currentChain];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Switch Chain" message:message preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *mainChain = [UIAlertAction actionWithTitle:@"MAIN CHAIN" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchChainWithChainId:@"AELF"];
+    }];
+    UIAlertAction *tdvvChain = [UIAlertAction actionWithTitle:@"SIDE CHAIN tDVV" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchChainWithChainId:@"tDVV"];
+    }];
+    UIAlertAction *tdvwChain = [UIAlertAction actionWithTitle:@"SIDE CHAIN tDVW" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchChainWithChainId:@"tDVW"];
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:mainChain];
+    [alert addAction:tdvvChain];
+    [alert addAction:tdvwChain];
+    [alert addAction:cancel];
+    return alert;
+}
+
+- (UIAlertController *)createSwitchNetworkAlertController {
+    NSString *currentUrl = [PortkeySDKMMKVStorage readString:@"endPointUrl"] ?: @"Default";
+    NSString *message = [NSString stringWithFormat:@"Current endPointUrl is %@", currentUrl];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Switch Network" message:message preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *mainNetwork = [UIAlertAction actionWithTitle:@"MAIN NET" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchEndPointUrl:@"https://did-portkey.portkey.finance"];
+    }];
+    UIAlertAction *testNetwork = [UIAlertAction actionWithTitle:@"TEST NET" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchEndPointUrl:@"https://did-portkey-test.portkey.finance"];
+    }];
+    UIAlertAction *test1Network = [UIAlertAction actionWithTitle:@"TEST1 NET" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchEndPointUrl:@"https://localtest-applesign.portkey.finance"];
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:mainNetwork];
+    [alert addAction:testNetwork];
+    [alert addAction:test1Network];
+    [alert addAction:cancel];
+    return alert;
+}
+
 #pragma mark - Selector
 
 - (void)loginButtonClicked:(id)sender {
-//    [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
     [[PortkeySDKRouterModule sharedInstance] navigateToWithOptions:@"referral_entry"
                                                               from:@""
                                                             params:@{}

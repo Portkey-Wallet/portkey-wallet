@@ -16,7 +16,6 @@
 @property (nonatomic, strong) UILabel *useLocalLabel;
 @property (nonatomic, strong) UISwitch *useLocalSwitch;
 
-
 @end
 
 @implementation BundleConfigViewController

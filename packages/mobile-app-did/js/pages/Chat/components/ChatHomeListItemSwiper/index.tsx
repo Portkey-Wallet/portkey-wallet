@@ -123,7 +123,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         avatarSize={pTd(48)}
         wrapStyle={styles.avatar}
         imageUrl={item.channelIcon || ''}
-        svgName={item.channelIcon ? undefined : 'chat-group-avatar-header'}
+        svgName={item.channelIcon ? undefined : 'chat-group-avatar'}
       />
     );
   }, [item.channelIcon, item.channelType, item.displayName]);

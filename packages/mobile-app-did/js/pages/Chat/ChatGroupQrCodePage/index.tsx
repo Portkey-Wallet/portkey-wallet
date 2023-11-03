@@ -41,7 +41,7 @@ const ChatGroupQrCodePage: React.FC = () => {
         logoSize={pTd(20)}
         avatarSize={pTd(80)}
         imageUrl={groupIcon}
-        svgName={groupIcon ? undefined : 'chat-group-avatar-header'}
+        svgName={groupIcon ? undefined : 'chat-group-avatar'}
       />
 
       <TextXXXL numberOfLines={1} style={GStyles.marginTop(pTd(8))}>

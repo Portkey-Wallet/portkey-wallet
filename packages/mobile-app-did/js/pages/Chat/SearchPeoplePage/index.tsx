@@ -92,7 +92,7 @@ export default function SearchPeople() {
             avatarSize={pTd(36)}
             wrapStyle={styles.avatarStyle}
             imageUrl={item.channelIcon || ''}
-            svgName={item.channelIcon ? undefined : 'chat-group-avatar-header'}
+            svgName={item.channelIcon ? undefined : 'chat-group-avatar'}
           />
         );
 

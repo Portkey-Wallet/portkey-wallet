@@ -52,13 +52,14 @@ const styles = StyleSheet.create({
     fontSize: pTd(24),
   },
   centerSection: {
-    paddingLeft: pTd(16),
+    paddingHorizontal: pTd(16),
   },
   nickName: {
     ...fonts.mediumFont,
   },
   portkeyId: {
-    width: pTd(180),
+    width: pTd(200),
+    color: defaultColors.font3,
   },
   blank: {
     width: '100%',

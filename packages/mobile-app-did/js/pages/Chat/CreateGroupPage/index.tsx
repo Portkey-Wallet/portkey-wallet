@@ -89,7 +89,7 @@ const ChatGroupDetails = () => {
         <CommonInput
           type="general"
           theme="white-bg"
-          placeholder="Enter Name"
+          placeholder="Group Name"
           maxLength={40}
           value={groupName}
           onChangeText={setGroupName}

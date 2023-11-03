@@ -83,7 +83,7 @@ const EditWalletName: React.FC = () => {
       CommonToast.success(t('Saved Successful'), undefined, 'bottom');
     } catch (error: any) {
       console.log('setUserInfo: error', error);
-      CommonToast.failError(error.error);
+      CommonToast.failError(error);
     } finally {
       Loading.hide();
     }

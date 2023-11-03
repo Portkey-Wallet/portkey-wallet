@@ -5,16 +5,12 @@ import { bindUriToLocalImage } from './fs/img';
 import * as ImagePicker from 'expo-image-picker';
 
 export const uploadPortkeyImage = async (file: ImagePicker.ImageInfo): Promise<string> => {
-  try {
-    const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
-    const data = formatRNImage(file, fileBase64);
-    const s3Result = await s3Instance.uploadFile({
-      body: data.body,
-      suffix: data.suffix,
-    });
-    bindUriToLocalImage(file.uri, s3Result.url);
-    return s3Result.url;
-  } catch (error) {
-    return '';
-  }
+  const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
+  const data = formatRNImage(file, fileBase64);
+  const s3Result = await s3Instance.uploadFile({
+    body: data.body,
+    suffix: data.suffix,
+  });
+  bindUriToLocalImage(file.uri, s3Result.url);
+  return s3Result.url;
 };

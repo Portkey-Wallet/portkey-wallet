@@ -58,14 +58,14 @@ export type IRampFiatResult = {
 };
 
 export type IBuyLimitResult = {
-  fiat: IRampLimit;
+  fiat: IRampLimitResult;
 };
 
 export type ISellLimitResult = {
-  crypto: IRampLimit;
+  crypto: IRampLimitResult;
 };
 
-export type IRampLimit = {
+export type IRampLimitResult = {
   symbol: string;
   minLimit: string;
   maxLimit: string;

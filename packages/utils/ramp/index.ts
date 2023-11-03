@@ -1,3 +1,4 @@
+import { ZERO } from '@portkey-wallet/constants/misc';
 import ramp, {
   IGetCryptoDataRequest,
   IGetLimitRequest,
@@ -10,17 +11,18 @@ import ramp, {
   IGetSellTransactionRequest,
   IGetOrderNoRequest,
 } from '@portkey-wallet/ramp';
+import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
+import BigNumber from 'bignumber.js';
 
 // ======== buy ========
-export const useGetBuyCrypto = async (params: Required<IGetCryptoDataRequest>) => {
+export const getBuyCrypto = async (params: Required<IGetCryptoDataRequest>) => {
   const {
     data: { cryptoList, defaultCrypto },
   } = await ramp.service.getBuyCryptoData(params);
-
   return { buyCryptoList: cryptoList, buyDefaultCrypto: defaultCrypto };
 };
 
-export const useGetBuyLimit = async (params: IGetLimitRequest) => {
+export const getBuyLimit = async (params: IGetLimitRequest): Promise<IRampLimit> => {
   const {
     data: {
       fiat: { symbol, minLimit, maxLimit },
@@ -28,26 +30,26 @@ export const useGetBuyLimit = async (params: IGetLimitRequest) => {
   } = await ramp.service.getBuyLimit(params);
   return {
     symbol,
-    minLimit,
-    maxLimit,
+    minLimit: Number(ZERO.plus(minLimit).decimalPlaces(4, BigNumber.ROUND_UP).valueOf()),
+    maxLimit: Number(ZERO.plus(maxLimit).decimalPlaces(4, BigNumber.ROUND_DOWN).valueOf()),
   };
 };
 
-export const useGetBuyExchange = async (params: IGetExchangeRequest) => {
+export const getBuyExchange = async (params: IGetExchangeRequest) => {
   const {
     data: { exchange },
   } = await ramp.service.getBuyExchange(params);
   return exchange;
 };
 
-export const useGetBuyPrice = async (params: IGetBuyPriceRequest) => {
+export const getBuyPrice = async (params: IGetBuyPriceRequest) => {
   const {
     data: { cryptoAmount, exchange, feeInfo },
   } = await ramp.service.getBuyPrice(params);
   return { cryptoAmount, exchange, feeInfo };
 };
 
-export const useGetBuyDetail = async (params: IGetBuyDetailRequest) => {
+export const getBuyDetail = async (params: IGetBuyDetailRequest) => {
   const {
     data: { providersList },
   } = await ramp.service.getBuyDetail(params);
@@ -55,7 +57,7 @@ export const useGetBuyDetail = async (params: IGetBuyDetailRequest) => {
 };
 
 // ======== sell ========
-export const useGetSellFiat = async (params: Required<IGetFiatDataRequest>) => {
+export const getSellFiat = async (params: Required<IGetFiatDataRequest>) => {
   const {
     data: { fiatList, defaultFiat },
   } = await ramp.service.getSellFiatData(params);
@@ -63,7 +65,7 @@ export const useGetSellFiat = async (params: Required<IGetFiatDataRequest>) => {
   return { sellFiatList: fiatList, sellDefaultFiat: defaultFiat };
 };
 
-export const useGetSellLimit = async (params: IGetLimitRequest) => {
+export const getSellLimit = async (params: IGetLimitRequest): Promise<IRampLimit> => {
   const {
     data: {
       crypto: { symbol, minLimit, maxLimit },
@@ -71,37 +73,37 @@ export const useGetSellLimit = async (params: IGetLimitRequest) => {
   } = await ramp.service.getSellLimit(params);
   return {
     symbol,
-    minLimit,
-    maxLimit,
+    minLimit: Number(ZERO.plus(minLimit).decimalPlaces(4, BigNumber.ROUND_UP).valueOf()),
+    maxLimit: Number(ZERO.plus(maxLimit).decimalPlaces(4, BigNumber.ROUND_DOWN).valueOf()),
   };
 };
 
-export const useGetSellExchange = async (params: IGetExchangeRequest) => {
+export const getSellExchange = async (params: IGetExchangeRequest) => {
   const {
     data: { exchange },
   } = await ramp.service.getSellExchange(params);
   return exchange;
 };
 
-export const useGetSellPrice = async (params: IGetSellPriceRequest) => {
+export const getSellPrice = async (params: IGetSellPriceRequest) => {
   const {
     data: { fiatAmount, exchange, feeInfo },
   } = await ramp.service.getSellPrice(params);
   return { fiatAmount, exchange, feeInfo };
 };
 
-export const useGetSellDetail = async (params: IGetSellDetailRequest) => {
+export const getSellDetail = async (params: IGetSellDetailRequest) => {
   const {
     data: { providersList },
   } = await ramp.service.getSellDetail(params);
   return providersList;
 };
 
-export const useSendSellTransaction = async (params: IGetSellTransactionRequest) => {
+export const sendSellTransaction = async (params: IGetSellTransactionRequest) => {
   await ramp.service.sendSellTransaction(params);
 };
 
-export const useGetOrderNo = async (params: IGetOrderNoRequest) => {
+export const getOrderNo = async (params: IGetOrderNoRequest) => {
   const { data: orderNo } = await ramp.service.getOrderNo(params);
   return orderNo;
 };

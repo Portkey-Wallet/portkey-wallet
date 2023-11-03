@@ -23,6 +23,7 @@ import { txFeeSlice } from '@portkey-wallet/store/store-ca/txFee/slice';
 import imSlice from '@portkey-wallet/store/store-ca/im/slice';
 import { chatSlice } from './chat/slice';
 import securitySlice from '@portkey-wallet/store/store-ca/security/slice';
+import { rampSlice } from '@portkey-wallet/store/store-ca/ramp/slice';
 
 const userPersistConfig = {
   key: userSlice.name,
@@ -66,6 +67,7 @@ const rootReducer = combineReducers({
   [imSlice.name]: imReducer,
   [securitySlice.name]: securitySlice.reducer,
   [chatSlice.name]: chatSlice.reducer,
+  [rampSlice.name]: rampSlice.reducer,
 });
 
 export default rootReducer;

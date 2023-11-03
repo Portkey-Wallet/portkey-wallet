@@ -49,5 +49,11 @@ export const useBuyFiat = () => {
     };
   }, [dispatch]);
 
-  return { buyDefaultFiat, buyFiatList, buyDefaultCryptoList, buyDefaultCrypto, refreshBuyFiat };
+  return {
+    buyDefaultFiat,
+    buyFiatList,
+    buyDefaultCryptoList,
+    buyDefaultCrypto,
+    refreshBuyFiat,
+  };
 };

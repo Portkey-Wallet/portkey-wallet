@@ -13,6 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSURL *)sourceURL;
 
++ (void)setUseLocalBundle:(BOOL)useLocal;
+
++ (BOOL)useLocalBundle;
+
 @end
 
 NS_ASSUME_NONNULL_END

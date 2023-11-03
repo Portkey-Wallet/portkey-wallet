@@ -8,8 +8,8 @@
 
 #import "BundleConfigViewController.h"
 #import <YYKit/YYKit.h>
-
-const NSString *kBundleConfigKey = @"BundleConfigKey";
+#import <PortkeySDK/PortkeySDKBundleUtil.h>
+#import <Toast/Toast.h>
 
 @interface BundleConfigViewController ()
 
@@ -27,6 +27,8 @@ const NSString *kBundleConfigKey = @"BundleConfigKey";
     
     [self.view addSubview:self.useLocalLabel];
     [self.view addSubview:self.useLocalSwitch];
+    
+    [self initShowSwitch];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -42,13 +44,14 @@ const NSString *kBundleConfigKey = @"BundleConfigKey";
 }
 
 - (void)initShowSwitch {
-    
+    self.useLocalSwitch.on = [PortkeySDKBundleUtil useLocalBundle];
 }
 
 #pragma mark - Selector
 
 - (void)switchValueChanged:(UISwitch *)useLocalSwitch {
-    
+    [PortkeySDKBundleUtil setUseLocalBundle:useLocalSwitch.on];
+    [self.view makeToast:@"Please Restart Your Device"];
 }
 
 #pragma mark - Getter
@@ -56,7 +59,7 @@ const NSString *kBundleConfigKey = @"BundleConfigKey";
 - (UILabel *)useLocalLabel {
     if (!_useLocalLabel) {
         _useLocalLabel = [UILabel new];
-        _useLocalLabel.text = @"use local host: ";
+        _useLocalLabel.text = @"use local bundle: ";
     }
     return _useLocalLabel;
 }

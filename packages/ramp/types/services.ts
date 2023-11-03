@@ -1,5 +1,9 @@
-import { IRampProviderType } from '../constants';
-import { IRampProviderInfo } from './provider';
+import { IRampProviderInfo, IRampRequest, IRequestConfig } from '.';
+import { IRampProviderType } from '..';
+
+export type IRampServiceOptions = IRequestConfig & {
+  request: IRampRequest;
+};
 
 export type IRampServiceCommon<T> = Promise<{
   code: string;

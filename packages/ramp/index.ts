@@ -1,8 +1,16 @@
+import { request } from '@portkey-wallet/api/api-did';
 import { RampConfig } from './config';
 import { IRampProviderType, InitRampProvidersInfo } from './constants';
 import { AlchemyProvider, RampProvider, TransakProvider } from './provider';
 import { AlchemyRampService, RampSellSocket, RampService, TransakRampService } from './service';
-import { IRampConfig, IRampProviderMap, IRampSellSocket, IRampService, IRequestConfig } from './types';
+import {
+  IBaseRampOptions,
+  IRampConfig,
+  IRampProviderMap,
+  IRampSellSocket,
+  IRampService,
+  IRequestConfig,
+} from './types';
 
 export interface IBaseRamp {
   config: IRampConfig;
@@ -20,14 +28,15 @@ export abstract class BaseRamp implements IBaseRamp {
   public sellSocket: IRampSellSocket;
   public providerMap: IRampProviderMap;
 
-  constructor() {
+  constructor(options: IBaseRampOptions) {
     this.config = new RampConfig({
       requestConfig: {
         baseUrl: '',
         clientType: 'Android',
       },
     });
-    this.service = new RampService(this.config.requestConfig);
+
+    this.service = new RampService({ request: options.request, ...this.config.requestConfig });
     this.sellSocket = {};
     this.providerMap = InitRampProvidersInfo;
   }
@@ -51,15 +60,19 @@ export class Ramp extends BaseRamp {
   public sellSocket: IRampSellSocket;
   public providerMap: IRampProviderMap;
 
-  constructor() {
-    super();
+  public request: any;
+
+  constructor(options: IBaseRampOptions) {
+    super(options);
+
     this.config = new RampConfig({
       requestConfig: {
         baseUrl: '',
         clientType: 'Android',
       },
     });
-    this.service = new RampService(this.config.requestConfig);
+    this.request = options.request;
+    this.service = new RampService({ request: options.request, ...this.config.requestConfig });
     this.sellSocket = {}; // TODO
     this.providerMap = {};
   }
@@ -81,7 +94,7 @@ export class Ramp extends BaseRamp {
           this.setProvider(
             new AlchemyProvider({
               providerInfo: { key: IRampProviderType.Alchemy, ...thirdPart.Alchemy },
-              service: new AlchemyRampService(this.config.requestConfig),
+              service: new AlchemyRampService({ request: this.request, ...this.config.requestConfig }),
               sellSocket: new RampSellSocket(),
             }),
           );
@@ -91,7 +104,7 @@ export class Ramp extends BaseRamp {
           this.setProvider(
             new TransakProvider({
               providerInfo: { key: IRampProviderType.Transak, ...thirdPart.Alchemy },
-              service: new TransakRampService(this.config.requestConfig),
+              service: new TransakRampService({ request: this.request, ...this.config.requestConfig }),
               sellSocket: new RampSellSocket(),
             }),
           );
@@ -104,7 +117,7 @@ export class Ramp extends BaseRamp {
   }
 }
 
-const ramp = new Ramp();
+const ramp = new Ramp({ request: request });
 
 export default ramp;
 

@@ -25,8 +25,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const originWhitelist = ['*'];
-
 export type AppleLoginProps = {
   headerComponent?: ReactNode;
   footerComponent?: ReactNode;
@@ -39,7 +37,6 @@ export type AppleLoginProps = {
   onLoad?: (...args: any[]) => void;
   theme?: 'dark' | 'light';
   size?: 'invisible' | 'normal' | 'compact';
-  siteKey: string;
   baseUrl: string;
   lang?: string;
   style?: StyleProp<ViewStyle>;
@@ -55,23 +52,14 @@ const AppleLogin = forwardRef(function AppleLogin(
     headerComponent,
     footerComponent,
     loadingComponent,
-    webViewProps,
     onVerify,
     onExpire,
     onError,
     onClose,
     onLoad,
-    theme,
     size,
-    siteKey,
     baseUrl,
-    lang,
     style,
-    enterprise,
-    appleLoginDomain,
-    gstaticDomain,
-    hideBadge,
-    action,
   }: AppleLoginProps,
   ref,
 ) {
@@ -86,15 +74,9 @@ const AppleLogin = forwardRef(function AppleLogin(
     (...args: any[]) => {
       onLoad?.(...args);
 
-      if (isInvisibleSize) {
-        webViewRef.current?.injectJavaScript(`
-                window.rnRecaptcha.execute();
-            `);
-      }
-
       setLoading(false);
     },
-    [onLoad, isInvisibleSize],
+    [onLoad],
   );
 
   const handleClose = useCallback(
@@ -165,23 +147,19 @@ const AppleLogin = forwardRef(function AppleLogin(
       {headerComponent}
       <WebView
         ref={webViewRef}
-        bounces={false}
-        incognito
-        // allowsBackForwardNavigationGestures={false}
-        originWhitelist={originWhitelist}
-        onShouldStartLoadWithRequest={event => {
-          // prevent navigation on iOS
-          return event.navigationType === 'other';
-        }}
-        onNavigationStateChange={() => {
-          // prevent navigation on Android
-          if (!loading) webViewRef.current?.stopLoading();
-        }}
-        {...webViewProps}
         source={{ uri: baseUrl }}
         style={webViewStyles}
         onMessage={handleMessage}
-        injectedJavaScriptBeforeContentLoaded={`window.opener.postMessage = (obj) => {window.ReactNativeWebView.postMessage(JSON.stringify(obj))}`}
+        injectedJavaScript={`(()=>{
+          try {
+            if(!window.opener) window.opener = {}
+            window.opener.postMessage = obj => {
+              window.ReactNativeWebView.postMessage(JSON.stringify(obj));
+            };
+          } catch (error) {
+            alert(JSON.stringify(error));
+          }
+        })()`}
       />
       {footerComponent}
       {renderLoading()}

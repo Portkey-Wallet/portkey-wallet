@@ -5,7 +5,7 @@ import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
 
 import { clearBackgroundTimeout, setBackgroundTimeout } from 'utils/backgroundTimer';
 
-const TIME_OUT = 120000; // recaptcha timeout 20 seconds
+const TIME_OUT = 120000; // timeout 20 seconds
 
 async function appleLogin(language: any) {
   let timer: undefined | NodeJS.Timer;
@@ -14,7 +14,6 @@ async function appleLogin(language: any) {
       <AppleLogin
         lang={language}
         headerComponent={null}
-        siteKey={'6LfR_bElAAAAAJSOBuxle4dCFaciuu9zfxRQfQC0'}
         baseUrl={'https://openlogin.portkey.finance/social-login/Apple'}
         onVerify={token => {
           OverlayModal.hideKey(key);

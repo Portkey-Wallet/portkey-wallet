@@ -7,6 +7,9 @@
 
 #import "PortkeySDKBundleUtil.h"
 #import <React/RCTBundleURLProvider.h>
+#import <PortkeySDK/PortkeySDKMMKVStorage.h>
+
+const static NSString *kUseLocalBundleKey = @"UseLocalBundleKey";
 
 @implementation PortkeySDKBundleUtil
 
@@ -18,10 +21,22 @@
     return sourceUrl;
 }
 
++ (void)setUseLocalBundle:(BOOL)useLocal {
+    [PortkeySDKMMKVStorage setBool:useLocal forKey:(NSString *)kUseLocalBundleKey];
+}
+
++ (BOOL)useLocalBundle {
+    return [PortkeySDKMMKVStorage getBool:(NSString *)kUseLocalBundleKey];
+}
+
 + (NSURL *)sourceURL
 {
 #if DEBUG
-    return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+    if ([self useLocalBundle]) {
+        return [self bundleUrl];
+    } else {
+        return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+    }
 #else
     return [self bundleUrl];
 #endif

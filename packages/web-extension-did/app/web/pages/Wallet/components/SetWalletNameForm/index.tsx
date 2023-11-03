@@ -11,6 +11,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { IProfileDetailDataProps } from 'types/Profile';
 import UploadAvatar from 'pages/components/UploadAvatar';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
 
@@ -64,7 +65,7 @@ export default function SetWalletNameForm({ data, handleCopy, saveCallback }: IS
         saveCallback?.();
         message.success(t('Saved Successful'));
       } catch (error) {
-        message.error('set wallet name error');
+        message.error(handleErrorMessage(error, 'set wallet name error'));
         console.log('setWalletName: error', error);
       } finally {
         setLoading(false);

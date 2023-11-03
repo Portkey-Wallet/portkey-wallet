@@ -10,6 +10,7 @@ import UploadAvatar from 'pages/components/UploadAvatar';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import { useLoading } from 'store/Provider/hooks';
 import './index.less';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 const { Item: FormItem } = Form;
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
@@ -64,7 +65,7 @@ export default function EditGroupInfo() {
       message.success('Group name update');
       navigate(-1);
     } catch (error) {
-      message.error('Failed to update group name');
+      message.error(handleErrorMessage(error, 'Failed to update group name'));
       console.log('===Failed to update group name', error);
     } finally {
       setLoading(false);

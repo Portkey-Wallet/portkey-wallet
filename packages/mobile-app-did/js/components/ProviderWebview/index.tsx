@@ -15,7 +15,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { useDeepEQMemo } from 'hooks';
 import * as Application from 'expo-application';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { PROTOCOL_ALLOW_LIST, SCHEME_ALLOW_LIST } from 'constants/web';
+import { PROTOCOL_ALLOW_LIST } from 'constants/web';
 
 export interface IWebView {
   goBack: WebView['goBack'];
@@ -149,12 +149,12 @@ const ProviderWebview = forwardRef<
   const onShouldStartLoadWithRequest = ({ url }: ShouldStartLoadRequest) => {
     const { protocol } = new URL(url);
     if (PROTOCOL_ALLOW_LIST.includes(protocol)) return true;
-    if (SCHEME_ALLOW_LIST.includes(protocol)) {
-      // open natively
-      Linking.openURL(url).catch(er => {
-        console.log('Failed to open Link:', er.message);
-      });
-    }
+    // if (SCHEME_ALLOW_LIST.includes(protocol)) {
+    // open natively
+    Linking.openURL(url).catch(er => {
+      console.log('Failed to open Link:', er.message);
+    });
+    // }
     return false;
   };
   if (!entryScriptWeb3) return null;

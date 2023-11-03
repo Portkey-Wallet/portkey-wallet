@@ -1,5 +1,5 @@
 import { TransakProvider } from '..';
-import AlchemyProvider from '../provider';
+import { AlchemyProvider } from '../provider';
 import { IRampProviderMap } from '../types';
 
 export enum RampType {

@@ -1,6 +1,6 @@
 import { RampConfig } from './config';
 import { IRampProviderType, InitRampProvidersInfo } from './constants';
-import AlchemyProvider, { RampProvider, TransakProvider } from './provider';
+import { AlchemyProvider, RampProvider, TransakProvider } from './provider';
 import { AlchemyRampService, RampSellSocket, RampService, TransakRampService } from './service';
 import { IRampConfig, IRampProviderMap, IRampSellSocket, IRampService, IRequestConfig } from './types';
 

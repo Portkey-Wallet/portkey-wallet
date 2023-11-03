@@ -28,7 +28,7 @@ export abstract class RampProvider {
   abstract generateUrl(params: IRampProviderGenerateUrl): void;
 }
 
-export default class AlchemyProvider extends RampProvider implements IAlchemyProvider {
+export class AlchemyProvider extends RampProvider implements IAlchemyProvider {
   public providerInfo: IRampProviderInfo;
   public service: IAlchemyRampService;
   public sellSocket: IRampSellSocket;

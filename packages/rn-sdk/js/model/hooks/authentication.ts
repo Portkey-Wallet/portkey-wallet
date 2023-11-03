@@ -153,12 +153,13 @@ export function useAppleAuthentication() {
       //   requestedOperation: appleAuth.Operation.LOGIN,
       //   requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
       // });
-      const appleInfo = await appleLogin('en');
-      console.log('appleInfo', appleInfo);
+      const appleLoginToken = await appleLogin();
+      const appleInfo = {
+        identityToken: appleLoginToken as string,
+      };
 
-      return null;
-      /*
       const user = parseAppleIdentityToken(appleInfo.identityToken);
+      /*
       if (appleInfo.fullName?.familyName) {
         try {
           await request.verify.sendAppleUserExtraInfo({
@@ -176,11 +177,10 @@ export function useAppleAuthentication() {
         } catch (error) {
           console.log(error, '======error');
         }
-      }
+      }*/
       const userInfo = { ...appleInfo, user: { ...user, id: user?.userId } } as AppleAuthentication;
       setResponse(userInfo);
       return userInfo;
-      */
     } catch (error: any) {
       console.log(error, '======error');
 

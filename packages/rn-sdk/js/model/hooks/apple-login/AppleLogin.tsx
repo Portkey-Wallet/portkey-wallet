@@ -1,7 +1,6 @@
 import React from 'react';
 import { forwardRef, useMemo, useState, useCallback, useRef, useImperativeHandle, ReactNode } from 'react';
 import { StyleSheet, View, ViewStyle, StyleProp } from 'react-native';
-
 import WebView, { WebViewMessageEvent, WebViewProps } from 'react-native-webview';
 
 export declare type AppleLoginInterface = {
@@ -38,7 +37,6 @@ export type AppleLoginProps = {
   theme?: 'dark' | 'light';
   size?: 'invisible' | 'normal' | 'compact';
   baseUrl: string;
-  lang?: string;
   style?: StyleProp<ViewStyle>;
   enterprise?: boolean;
   appleLoginDomain?: string;
@@ -48,19 +46,7 @@ export type AppleLoginProps = {
 };
 
 const AppleLogin = forwardRef(function AppleLogin(
-  {
-    headerComponent,
-    footerComponent,
-    loadingComponent,
-    onVerify,
-    onExpire,
-    onError,
-    onClose,
-    onLoad,
-    size,
-    baseUrl,
-    style,
-  }: AppleLoginProps,
+  { loadingComponent, onVerify, onExpire, onError, onClose, onLoad, size, baseUrl, style }: AppleLoginProps,
   ref,
 ) {
   const isClosed = useRef(false);
@@ -111,9 +97,13 @@ const AppleLogin = forwardRef(function AppleLogin(
           handleClose();
           onError?.(payload.error[0]);
         }
-        if (payload.verify) {
+        if (
+          payload?.type === 'PortkeySocialLoginOnSuccess' &&
+          payload?.data?.provider === 'Apple' &&
+          payload?.data?.token
+        ) {
           handleClose('verified');
-          onVerify?.(payload.verify[0]);
+          onVerify?.(payload?.data?.token);
         }
       } catch (err) {
         console.warn(err);
@@ -144,7 +134,6 @@ const AppleLogin = forwardRef(function AppleLogin(
 
   return (
     <>
-      {headerComponent}
       <WebView
         ref={webViewRef}
         source={{ uri: baseUrl }}
@@ -161,7 +150,6 @@ const AppleLogin = forwardRef(function AppleLogin(
           }
         })()`}
       />
-      {footerComponent}
       {renderLoading()}
     </>
   );

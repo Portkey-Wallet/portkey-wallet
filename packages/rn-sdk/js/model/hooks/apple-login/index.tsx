@@ -2,17 +2,15 @@ import React from 'react';
 import AppleLogin from './AppleLogin';
 import OverlayModal from 'components/OverlayModal';
 import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
-
 import { clearBackgroundTimeout, setBackgroundTimeout } from 'utils/backgroundTimer';
 
 const TIME_OUT = 120000; // timeout 20 seconds
 
-async function appleLogin(language: any) {
+async function appleLogin() {
   let timer: undefined | NodeJS.Timer;
   return new Promise((resolve, reject) => {
     const key = OverlayModal.show(
       <AppleLogin
-        lang={language}
         headerComponent={null}
         baseUrl={'https://openlogin.portkey.finance/social-login/Apple'}
         onVerify={token => {
@@ -40,7 +38,6 @@ async function appleLogin(language: any) {
         onError={error => {
           reject(error);
         }}
-        style={{ backgroundColor: 'white' }}
       />,
       {
         modal: true,
@@ -49,6 +46,7 @@ async function appleLogin(language: any) {
         containerStyle: {
           width: screenWidth,
           height: screenHeight * 0.8,
+          backgroundColor: 'white',
         },
       },
     );

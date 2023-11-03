@@ -12,7 +12,6 @@ import ContactListSelect, { IContactItemSelectProps } from '../components/Contac
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im';
 import CustomSvg from 'components/CustomSvg';
 import UploadAvatar from 'pages/components/UploadAvatar';
-import { RcFile } from 'antd/lib/upload/interface';
 import { useLoading } from 'store/Provider/hooks';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 
@@ -30,7 +29,7 @@ export default function CreateChatGroup() {
   const selectedContactCount = useRef(0);
   const [disable, setDisabled] = useState<boolean>(true);
   const createGroupChannel = useCreateGroupChannel();
-  const [file, setFile] = useState<RcFile>();
+  const [file, setFile] = useState<File>();
   const [previewUrl, setPreviewUrl] = useState<string>('');
   const { setLoading } = useLoading();
 
@@ -105,10 +104,9 @@ export default function CreateChatGroup() {
 
       let s3Url = '';
       if (file) {
-        if (file) {
-          s3Url = await uploadImageToS3(file);
-        }
+        s3Url = await uploadImageToS3(file);
       }
+
       const res = await createGroupChannel(name.trim(), selectedContacts, s3Url);
 
       setLoading(false);

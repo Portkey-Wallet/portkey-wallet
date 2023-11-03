@@ -7,10 +7,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import UploadAvatar from 'pages/components/UploadAvatar';
-import { RcFile } from 'antd/lib/upload/interface';
 import uploadImageToS3 from 'utils/compressAndUploadToS3';
 import { useLoading } from 'store/Provider/hooks';
 import './index.less';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 const { Item: FormItem } = Form;
 type ValidateStatus = Parameters<typeof Form.Item>[0]['validateStatus'];
@@ -32,7 +32,7 @@ export default function EditGroupInfo() {
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(true);
   const updateChannelInfo = useUpdateChannelInfo();
-  const [file, setFile] = useState<RcFile>();
+  const [file, setFile] = useState<File>();
   const { setLoading } = useLoading();
   const [previewUrl, setPreviewUrl] = useState<string>(groupInfo?.icon || '');
   const handleInputValueChange = useCallback(
@@ -65,7 +65,7 @@ export default function EditGroupInfo() {
       message.success('Group name update');
       navigate(-1);
     } catch (error) {
-      message.error('Failed to update group name');
+      message.error(handleErrorMessage(error, 'Failed to update group name'));
       console.log('===Failed to update group name', error);
     } finally {
       setLoading(false);

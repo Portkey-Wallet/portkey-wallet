@@ -69,8 +69,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
         return s3Url;
       }
     } catch (error) {
-      console.log('upload error', error);
-      throw error
+      throw new Error('upload fail');
     }
   }, [localPhotoFile, onChangeImage]);
 

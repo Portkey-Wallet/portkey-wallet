@@ -1,12 +1,13 @@
 import { RampConfig } from './config';
-import { IRampProviderType, InitRampProvidersInfo, RampType } from './constants';
-import { RampService } from './service';
-import { IRampConfig, IRampProvider, IRampProviderMap, IRampService, IRequestConfig } from './types';
-import { IRampProviderInfo } from './types/provider';
+import { IRampProviderType, InitRampProvidersInfo } from './constants';
+import AlchemyProvider, { RampProvider, TransakProvider } from './provider';
+import { AlchemyRampService, RampSellSocket, RampService, TransakRampService } from './service';
+import { IRampConfig, IRampProviderMap, IRampSellSocket, IRampService, IRequestConfig } from './types';
 
 export interface IBaseRamp {
   config: IRampConfig;
   service: IRampService;
+  sellSocket: IRampSellSocket;
   providerMap: IRampProviderMap;
   setProvider: (provider: RampProvider) => void;
   getProvider: (name: IRampProviderType) => RampProvider | undefined;
@@ -16,7 +17,7 @@ export interface IBaseRamp {
 export abstract class BaseRamp implements IBaseRamp {
   public config: IRampConfig;
   public service: IRampService;
-
+  public sellSocket: IRampSellSocket;
   public providerMap: IRampProviderMap;
 
   constructor() {
@@ -27,7 +28,7 @@ export abstract class BaseRamp implements IBaseRamp {
       },
     });
     this.service = new RampService(this.config.requestConfig);
-
+    this.sellSocket = {};
     this.providerMap = InitRampProvidersInfo;
   }
 
@@ -47,6 +48,7 @@ export abstract class BaseRamp implements IBaseRamp {
 export class Ramp extends BaseRamp {
   public config: IRampConfig;
   public service: IRampService;
+  public sellSocket: IRampSellSocket;
   public providerMap: IRampProviderMap;
 
   constructor() {
@@ -58,6 +60,7 @@ export class Ramp extends BaseRamp {
       },
     });
     this.service = new RampService(this.config.requestConfig);
+    this.sellSocket = {}; // TODO
     this.providerMap = {};
   }
 
@@ -76,13 +79,21 @@ export class Ramp extends BaseRamp {
       switch (key) {
         case IRampProviderType.Alchemy:
           this.setProvider(
-            new AlchemyProvider({ providerInfo: { key: IRampProviderType.Alchemy, ...thirdPart.Alchemy } }),
+            new AlchemyProvider({
+              providerInfo: { key: IRampProviderType.Alchemy, ...thirdPart.Alchemy },
+              service: new AlchemyRampService(this.config.requestConfig),
+              sellSocket: new RampSellSocket(),
+            }),
           );
           break;
 
         case IRampProviderType.Transak:
           this.setProvider(
-            new TransakProvider({ providerInfo: { key: IRampProviderType.Transak, ...thirdPart.Alchemy } }),
+            new TransakProvider({
+              providerInfo: { key: IRampProviderType.Transak, ...thirdPart.Alchemy },
+              service: new TransakRampService(this.config.requestConfig),
+              sellSocket: new RampSellSocket(),
+            }),
           );
           break;
 
@@ -93,51 +104,6 @@ export class Ramp extends BaseRamp {
   }
 }
 
-export abstract class RampProvider {
-  public providerInfo: IRampProviderInfo;
-
-  constructor(options: IRampProvider) {
-    this.providerInfo = options.providerInfo;
-  }
-
-  // for go to pay
-  abstract generateUrl(type: RampType): void;
-}
-
-export class AlchemyProvider extends RampProvider {
-  public providerInfo: IRampProviderInfo;
-
-  constructor(options: IRampProvider) {
-    super(options);
-    this.providerInfo = options.providerInfo;
-  }
-
-  generateUrl(type: RampType) {
-    // TODO
-    if (type === RampType.BUY) {
-      return '';
-    }
-    return '';
-  }
-}
-
-export class TransakProvider extends RampProvider {
-  public providerInfo: IRampProviderInfo;
-
-  constructor(options: IRampProvider) {
-    super(options);
-    this.providerInfo = options.providerInfo;
-  }
-
-  generateUrl(type: RampType) {
-    // TODO
-    if (type === RampType.BUY) {
-      return '';
-    }
-    return '';
-  }
-}
-
 const ramp = new Ramp();
 
 export default ramp;
@@ -145,4 +111,5 @@ export default ramp;
 export * from './api';
 export * from './constants';
 export * from './service';
+export * from './provider';
 export * from './types';

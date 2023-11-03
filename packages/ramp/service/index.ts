@@ -1,4 +1,5 @@
 import {
+  IAlchemyRampService,
   IBuyDetailResult,
   IBuyLimitResult,
   IBuyPriceResult,
@@ -26,6 +27,7 @@ import {
   ISellDetailResult,
   ISellLimitResult,
   ISellPriceResult,
+  ITransakRampService,
 } from '../types/services';
 import RampApi from '../api';
 import { RampType } from '../constants';
@@ -148,8 +150,18 @@ export class RampService implements IRampService {
       params,
     });
   }
+}
 
-  // for ach
+export class AlchemyRampService extends RampService implements IAlchemyRampService {
+  public baseUrl: string;
+  public clientType: IClientType;
+
+  constructor(options: IRequestConfig) {
+    super(options);
+    this.baseUrl = options?.baseUrl || '';
+    this.clientType = options?.clientType || 'iOS';
+  }
+
   getAchToken(params: IGetAchTokenRequest): IRampServiceCommon<IGetAchTokenResult> {
     return request.send(this.baseUrl, {
       url: RampApi.getAchToken.target,
@@ -165,3 +177,16 @@ export class RampService implements IRampService {
     });
   }
 }
+
+export class TransakRampService extends RampService implements ITransakRampService {
+  public baseUrl: string;
+  public clientType: IClientType;
+
+  constructor(options: IRequestConfig) {
+    super(options);
+    this.baseUrl = options?.baseUrl || '';
+    this.clientType = options?.clientType || 'iOS';
+  }
+}
+
+export * from './sellSocket';

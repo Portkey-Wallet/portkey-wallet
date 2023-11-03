@@ -1,4 +1,25 @@
+import { RampProvider } from '..';
 import { IRampProviderType } from '../constants';
+import { IRampSellSocket } from './sellSocket';
+import { IAlchemyRampService, IRampService, ITransakRampService } from './services';
+
+export interface IRampProvider {
+  providerInfo: IRampProviderInfo;
+  service: IRampService;
+  sellSocket: IRampSellSocket;
+}
+
+export interface IAlchemyRampProvider extends IRampProvider {
+  service: IAlchemyRampService;
+}
+
+export interface ITransakRampProvider extends IRampProvider {
+  service: ITransakRampService;
+}
+
+export type IRampProviderMap = {
+  [T in IRampProviderType]?: RampProvider;
+};
 
 export type IRampProvidersInfo = {
   [T in IRampProviderType]?: IRampProviderInfo;

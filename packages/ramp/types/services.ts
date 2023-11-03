@@ -214,8 +214,11 @@ export interface IRampService {
 
   sendSellTransaction: (params: IGetSellTransactionRequest) => IRampServiceCommon<void>;
   getOrderNo: (params: IGetOrderNoRequest) => IRampServiceCommon<{ orderNo: string }>;
+}
 
-  // for ach
+export interface IAlchemyRampService extends IRampService {
   getAchToken: (params: IGetAchTokenRequest) => IRampServiceCommon<IGetAchTokenResult>;
   getAchSignature: (params: IGetAchSignatureRequest) => IRampServiceCommon<IGetAchSignatureResult>;
 }
+
+export type ITransakRampService = IRampService;

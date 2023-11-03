@@ -31,6 +31,8 @@ export const InitRampProvidersInfo: IRampProviderMap = {
       },
       paymentTags: [],
     },
+    service: {} as any,
+    sellSocket: {},
   }),
   Transak: new TransakProvider({
     providerInfo: {
@@ -46,5 +48,7 @@ export const InitRampProvidersInfo: IRampProviderMap = {
       },
       paymentTags: [],
     },
+    service: {} as any,
+    sellSocket: {},
   }),
 };

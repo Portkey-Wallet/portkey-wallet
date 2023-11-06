@@ -7,6 +7,7 @@ import { uploadPortkeyImage } from 'utils/uploadImage';
 import Touchable from 'components/Touchable';
 import { pTd } from 'utils/unit';
 import FastImage from 'react-native-fast-image';
+import Loading from 'components/Loading';
 
 type UploadImageType = {
   title: string;
@@ -32,6 +33,7 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
 
   const selectPhoto = useCallback(async () => {
     try {
+      Loading.show();
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: false,
@@ -53,6 +55,8 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
     } catch (error) {
       console.log('==', error);
       return false;
+    } finally {
+      Loading.hide();
     }
   }, []);
 

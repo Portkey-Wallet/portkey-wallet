@@ -36,6 +36,7 @@ export default function WalletPopup({
           portkeyId={portkeyId}
           clickAvatar={clickAvatar}
         />
+        <div className="empty-placeholder" />
 
         <MenuList list={menuList} />
       </div>

@@ -1,3 +1,4 @@
+import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
@@ -45,5 +46,6 @@ const styles = StyleSheet.create({
   },
   avatarStyle: {
     fontSize: pTd(40),
+    backgroundColor: defaultColors.bg18,
   },
 });

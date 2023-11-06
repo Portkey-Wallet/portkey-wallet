@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   },
   avatar: {
     fontSize: pTd(24),
+    backgroundColor: defaultColors.bg18,
   },
   centerSection: {
     paddingHorizontal: pTd(16),

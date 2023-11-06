@@ -2,9 +2,21 @@ package io.aelf.portkey.components.logic
 
 import android.util.Log
 import com.tencent.mmkv.MMKV
+import io.aelf.core.JSNameSpace
 import java.util.Arrays
 
 private val portkeyMMKV = MMKV.mmkvWithID("portkey-sdk")
+
+internal infix fun String.but(options: StorageKeyOptions): String {
+    return when (options) {
+        TEMP -> "$this#${JSNameSpace.nameSpace}"
+        else -> this
+    }
+}
+
+internal val TEMP: StorageKeyOptions = object : StorageKeyOptions {}
+
+internal interface StorageKeyOptions
 
 object PortkeyMMKVStorage {
     @Synchronized

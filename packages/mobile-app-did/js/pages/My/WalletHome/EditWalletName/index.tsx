@@ -76,7 +76,7 @@ const EditWalletName: React.FC = () => {
     Loading.show();
     try {
       const s3Url = await uploadRef.current?.uploadPhoto();
-      setAvatar(s3Url || '');
+      if (s3Url) setAvatar(s3Url);
 
       await setUserInfo({ nickName: _nameValue, avatar: s3Url || userInfo?.avatar });
       navigationService.goBack();

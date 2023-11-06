@@ -70,6 +70,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomColor: defaultColors.border6,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    marginBottom: StyleSheet.hairlineWidth,
     ...GStyles.paddingArg(0, 20),
   },
   itemAvatar: {

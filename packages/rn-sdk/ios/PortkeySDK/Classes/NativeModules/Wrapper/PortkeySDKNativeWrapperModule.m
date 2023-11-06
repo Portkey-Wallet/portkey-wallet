@@ -12,7 +12,7 @@
 
 RCT_EXPORT_MODULE(NativeWrapperModule);
 
-static const NSString *kPortkeySDKTempStorageIdentifier;
+const NSString *kPortkeySDKTempStorageIdentifier;
 
 + (void)initialize {
     if (self == [PortkeySDKNativeWrapperModule class]) {

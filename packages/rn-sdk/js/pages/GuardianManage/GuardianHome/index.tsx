@@ -18,7 +18,8 @@ import GStyles from 'assets/theme/GStyles';
 export default function GuardianHome() {
   const { t } = useLanguage();
 
-  const { userGuardiansList } = useGuardiansInfo();
+  // const { userGuardiansList } = useGuardiansInfo();
+  const userGuardiansList = null;
   const guardianList = useMemo(() => {
     if (!userGuardiansList) return [];
     return [...userGuardiansList].reverse();

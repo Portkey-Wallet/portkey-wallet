@@ -1,17 +1,15 @@
 import { useCallback } from 'react';
 import { request } from '@portkey-wallet/api/api-did';
+import { PortkeyConfig } from 'global/constants';
 
 export const useGetHolderInfo = () => {
-  const originChainId = useOriginChainId();
-  return useCallback(
-    async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
-      if (!loginInfo) throw new Error('Could not find accountInfo');
-      return request.wallet.guardianIdentifiers({
-        params: { chainId: chainInfo?.chainId || originChainId, ...loginInfo },
-      });
-    },
-    [originChainId],
-  );
+  return useCallback(async (loginInfo: LoginInfo) => {
+    if (!loginInfo) throw new Error('Could not find accountInfo');
+    const chainId = await PortkeyConfig.currChainId();
+    return request.wallet.guardianIdentifiers({
+      params: { chainId: chainId, ...loginInfo },
+    });
+  }, []);
 };
 
 export const useGetGuardiansInfo = () => {

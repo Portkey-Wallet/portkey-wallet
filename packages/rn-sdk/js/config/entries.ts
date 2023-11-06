@@ -8,6 +8,7 @@ export enum PortkeyEntries {
   SELECT_COUNTRY_ENTRY = 'select_country_entry',
   GUARDIAN_APPROVAL_ENTRY = 'guardian_approval_entry',
   VERIFIER_DETAIL_ENTRY = 'verifier_detail_entry',
+  GUARDIAN_HOME_ENTRY = 'guardian_home_entry',
 
   CHECK_PIN = 'check_pin_entry',
   SET_PIN = 'set_pin_entry',

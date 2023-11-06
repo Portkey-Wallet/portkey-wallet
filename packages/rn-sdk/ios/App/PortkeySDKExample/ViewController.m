@@ -29,6 +29,7 @@
 @property (nonatomic, strong) UIButton *test1NetButton;
 
 @property (nonatomic, strong) UIButton *scanQrcodeButton;
+@property (nonatomic, strong) UIButton *guardianHomeButton;
 
 @property (nonatomic, strong) UIButton *exitButton;
 
@@ -65,7 +66,7 @@
     
     self.switchNetworkButton = [self createButtonWithTitle:@"Switch Network"];
     self.switchNetworkButton.frame = self.loginButton.frame;
-    self.switchNetworkButton.top = self.switchChainButton.bottom + 20;
+    self.switchNetworkButton.top = self.switchChainButton.bottom + 5;
     [self.switchNetworkButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
         [self presentViewController:[self createSwitchNetworkAlertController] animated:YES completion:nil];
@@ -98,9 +99,23 @@
     }];
     [self.view addSubview:self.scanQrcodeButton];
     
+    self.guardianHomeButton = [self createButtonWithTitle:@"Guardian Home"];
+    self.guardianHomeButton.frame = self.scanQrcodeButton.frame;
+    self.guardianHomeButton.top = self.scanQrcodeButton.bottom + 5;
+    [self.guardianHomeButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        @strongify(self)
+        NSString *walletConfig = [PortkeySDKMMKVStorage readTempString:@"walletConfig"];
+        if ([walletConfig isKindOfClass:NSString.class] && walletConfig.length) {
+            [[PortkeySDKRouterModule sharedInstance] navigateTo:@"guardian_home_entry" from:@"" targetScene:@""];
+        } else {
+            [self.view makeToast:@"Please login or unlock first"];
+        }
+    }];
+    [self.view addSubview:self.guardianHomeButton];
+    
     self.jsCallButton = [self createButtonWithTitle:@"Call JS"];
-    self.jsCallButton.frame = self.scanQrcodeButton.frame;
-    self.jsCallButton.top = self.scanQrcodeButton.bottom + 5;
+    self.jsCallButton.frame = self.guardianHomeButton.frame;
+    self.jsCallButton.top = self.guardianHomeButton.bottom + 5;
     [self.jsCallButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         [[PortkeySDKJSCallModule sharedInstance] enqueueJSCall:@"WalletModule" method:@"callContractMethod" params:@{@"name": @"portkey"} callback:^(NSString * _Nullable result) {
             NSLog(@"js call result : %@", result);

@@ -14,6 +14,7 @@ import ConfirmPin from 'pages/Pin/ConfirmPin';
 import SetBiometrics from 'pages/Pin/SetBiometrics';
 import SetPin from 'pages/Pin/SetPin';
 import QrScanner from 'pages/QrScanner';
+import GuardianHome from 'pages/GuardianManage/GuardianHome';
 import { AppRegistry, ComponentProvider } from 'react-native';
 
 type AcceptableComponentType = ComponentProvider;
@@ -42,6 +43,9 @@ const initEntries = () => {
   // scan QR code
   entryConfig.set(PortkeyEntries.SCAN_QR_CODE, () => QrScanner);
   entryConfig.set(PortkeyEntries.SCAN_LOG_IN, () => ScanLogin);
+
+  // guardian manage
+  entryConfig.set(PortkeyEntries.GUARDIAN_HOME_ENTRY, () => GuardianHome);
 
   // webview
   entryConfig.set(PortkeyEntries.VIEW_ON_WEBVIEW, () => ViewOnWebView);

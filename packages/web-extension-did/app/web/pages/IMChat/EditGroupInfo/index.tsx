@@ -3,7 +3,7 @@ import { Button, Form, Input, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
 import { useNavigate, useParams } from 'react-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import UploadAvatar from 'pages/components/UploadAvatar';
@@ -30,30 +30,16 @@ export default function EditGroupInfo() {
   const [name, setName] = useState<string>(groupInfo?.name || '');
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [disabled, setDisabled] = useState(true);
+  const [disabled, setDisabled] = useState(false);
   const updateChannelInfo = useUpdateChannelInfo();
   const [file, setFile] = useState<File>();
   const { setLoading } = useLoading();
   const [previewUrl, setPreviewUrl] = useState<string>(groupInfo?.icon || '');
-  const handleInputValueChange = useCallback(
-    (v: string) => {
-      setValidName({ validateStatus: '', errorMsg: '' });
-      if (!v.trim()) {
-        setDisabled(true);
-      } else {
-        setName(v);
-        if (file) {
-          setDisabled(false);
-        } else {
-          setDisabled(v === groupInfo?.name);
-        }
-      }
-    },
-    [file, groupInfo?.name],
-  );
-  useEffect(() => {
-    setDisabled(!file);
-  }, [file]);
+  const handleInputValueChange = useCallback((v: string) => {
+    setValidName({ validateStatus: '', errorMsg: '' });
+    setName(v);
+    setDisabled(!v.trim());
+  }, []);
   const onFinish = useCallback(async () => {
     try {
       setLoading(true);

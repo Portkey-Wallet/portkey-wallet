@@ -29,7 +29,6 @@ import io.aelf.portkey.entry.usePortkeyEntry
 import io.aelf.portkey.entry.usePortkeyEntryWithParams
 import io.aelf.portkey.tools.startJSBackgroundTaskTest
 import io.aelf.portkey.ui.dialog.DialogProps
-import kotlin.concurrent.thread
 
 
 class MainActivity : ComponentActivity() {

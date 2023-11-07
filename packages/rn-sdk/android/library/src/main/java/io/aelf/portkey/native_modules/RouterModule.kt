@@ -50,14 +50,17 @@ class RouterModule(reactContext: ReactApplicationContext) :
 //        val navigationAnimationDuration: Long =
 //            params.getDouble("navigationAnimationDuration").toLong()
         val callbackId = generateUniqueCallbackID()
-        if((launchMode == "single_task" || launchMode == "single_top")&& NavigationHolder.hasEntry(targetEntry)){
+        if ((launchMode == "single_task" || launchMode == "single_top") && NavigationHolder.hasEntry(
+                targetEntry
+            )
+        ) {
             // 1. mode match, 2.task stack has entry instance
-            if(launchMode == "single_task"){
-                if(NavigationHolder.singleTaskOp(targetEntry)){
+            if (launchMode == "single_task") {
+                if (NavigationHolder.singleTaskOp(targetEntry)) {
                     return
                 }
-            } else{
-                if(NavigationHolder.singleTopOp(targetEntry)){
+            } else {
+                if (NavigationHolder.singleTopOp(targetEntry)) {
                     return
                 }
             }

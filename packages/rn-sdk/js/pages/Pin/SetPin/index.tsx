@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import ActionSheet from 'components/ActionSheet';
@@ -9,7 +9,6 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { ConfirmPinPageProps } from '../ConfirmPin';
 import CommonToast from 'components/CommonToast';
-import { PortkeyModulesEntity } from 'service/native-modules';
 
 const scrollViewProps = {
   disabled: true,

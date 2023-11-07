@@ -322,6 +322,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:30.3.1')
     implementation 'com.google.firebase:firebase-perf'
 
+    implementation 'com.facebook.fresco:animated-gif:2.5.0' // For animated GIF support
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
     //noinspection GradleDynamicVersion

@@ -16,7 +16,6 @@ import myEvents from 'utils/deviceEvent';
 
 export default function CheckPin(props: CheckPinProps) {
   const { targetScene, openBiometrics } = props;
-  console.log('propsssssss', props);
   const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
   const [canUseBiometrics, setCanUseBiometrics] = useState(false);
@@ -31,7 +30,7 @@ export default function CheckPin(props: CheckPinProps) {
           pinRef.current?.reset();
           return setErrorMessage(PinErrorMessage.invalidPin);
         }
-        if (targetScene === 'changPin') {
+        if (targetScene === 'changePin') {
           navigationTo(PortkeyEntries.SET_PIN, {
             params: {
               oldPin: pin,
@@ -76,8 +75,8 @@ export default function CheckPin(props: CheckPinProps) {
   };
 
   useEffectOnce(() => {
-    if (openBiometrics) {
-      // from Biometric op switch page
+    if (openBiometrics || targetScene === 'changePin') {
+      // from Biometric op switch page, or from changePin Scene. do not need Biometrics op button
       return;
     }
     getUseBiometric().then(res => {
@@ -113,7 +112,7 @@ export default function CheckPin(props: CheckPinProps) {
 
 export interface CheckPinProps {
   rootTag?: any;
-  targetScene: 'changPin';
+  targetScene: 'changePin';
   openBiometrics?: boolean;
 }
 

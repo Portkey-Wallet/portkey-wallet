@@ -43,7 +43,7 @@ export default function AccountSettings() {
     (menuName: string) => {
       console.log('menuName', menuName);
       if (menuName === 'CheckPin') {
-        navigationTo<CheckPinProps>(PortkeyEntries.CHECK_PIN, { targetScene: 'changPin' });
+        navigationTo<CheckPinProps>(PortkeyEntries.CHECK_PIN, { targetScene: 'changePin' });
       } else if (menuName === 'Biometric') {
         navigationTo(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY, {});
       }

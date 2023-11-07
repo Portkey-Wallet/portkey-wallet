@@ -70,9 +70,7 @@ class MainActivity : ComponentActivity() {
                             jumpToActivity(PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName)
                         }
                         BigButton(text = "Jump to AccountSettings Page") {
-                            jumpToActivityWithParams(PortkeyEntries.ACCOUNT_SETTING_ENTRY.entryName, Bundle().apply {
-                                putString("name", "设置页");
-                            })
+                            jumpToActivityWithParams(PortkeyEntries.ACCOUNT_SETTING_ENTRY.entryName)
                         }
                         BigButton(text = "Background Service Call") {
                             startJSBackgroundTaskTest(this@MainActivity) {

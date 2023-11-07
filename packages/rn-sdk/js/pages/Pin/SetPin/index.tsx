@@ -87,7 +87,7 @@ export default function SetPin({ deliveredSetPinInfo, oldPin }: SetPinPageProps)
                     finished: true,
                   },
                 });
-              } else {
+              } else if (res?.status !== 'system') {
                 CommonToast.failError('Retry again');
                 digitInput.current?.reset();
               }

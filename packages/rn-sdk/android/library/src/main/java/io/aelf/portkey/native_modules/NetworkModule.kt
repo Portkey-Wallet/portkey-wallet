@@ -6,7 +6,6 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
-import com.google.gson.GsonBuilder
 import io.aelf.portkey.network.NetworkConnector
 import io.aelf.portkey.network.ResultWrapper
 import io.aelf.portkey.network.toJson

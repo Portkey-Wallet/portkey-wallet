@@ -1,3 +1,5 @@
+@file:OptIn(DelicateCoroutinesApi::class)
+
 package io.aelf.portkey.native_modules
 
 import android.app.Activity
@@ -7,7 +9,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.UiThread
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
@@ -26,6 +27,7 @@ import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.localauthentication.addIf
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -40,7 +42,8 @@ private const val SECURITY_LEVEL_NONE = 0
 private const val SECURITY_LEVEL_SECRET = 1
 private const val SECURITY_LEVEL_BIOMETRIC = 2
 private const val DEVICE_CREDENTIAL_FALLBACK_CODE = 6
-class BiometricModule(private val context: ReactApplicationContext): ReactContextBaseJavaModule() {
+
+class BiometricModule(private val context: ReactApplicationContext) : ReactContextBaseJavaModule() {
     private val biometricManager by lazy { BiometricManager.from(context) }
     private var authOptions: AuthOptions? = null
     private var isAuthenticating = false
@@ -52,11 +55,8 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
         get() = context.applicationContext.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
     private val packageManager by lazy { context.applicationContext.packageManager }
     private val isDeviceSecure: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        get() =
             keyguardManager.isDeviceSecure
-        } else {
-            keyguardManager.isKeyguardSecure
-        }
     private val mActivityEventListener: ActivityEventListener =
         object : BaseActivityEventListener() {
             override fun onActivityResult(
@@ -86,14 +86,16 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
                     // If the user uses PIN as an authentication method, the result will be passed to the `onActivityResult`.
                     // Unfortunately, react-native doesn't pass this value to the underlying fragment - we won't resolve the promise.
                     // So we need to do it manually.
-                    val fragment = activity.supportFragmentManager.findFragmentByTag("androidx.biometric.BiometricFragment")
+                    val fragment =
+                        activity.supportFragmentManager.findFragmentByTag("androidx.biometric.BiometricFragment")
                     fragment?.onActivityResult(requestCode and 0xffff, resultCode, data)
                 }
             }
         }
+
     init {
         context.addActivityEventListener(mActivityEventListener)
-        context.addLifecycleEventListener(object : LifecycleEventListener{
+        context.addLifecycleEventListener(object : LifecycleEventListener {
             override fun onHostResume() {
                 println("$TAG ${context.currentActivity.toString()} onHostResume")
             }
@@ -108,66 +110,72 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
 
         });
     }
-    private val authenticationCallback: BiometricPrompt.AuthenticationCallback = object : BiometricPrompt.AuthenticationCallback() {
-        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-            isAuthenticating = false
-            isRetryingWithDeviceCredentials = false
-            biometricPrompt = null
-            promise?.resolve(
-                Arguments.fromBundle(Bundle().apply {
-                    putBoolean("success", true)
-                })
-            )
-            promise = null
-            authOptions = null
-        }
 
-        override fun onAuthenticationError(errMsgId: Int, errString: CharSequence) {
-            // Make sure to fallback to the Device Credentials if the Biometrics hardware is unavailable.
-            if (isBiometricUnavailable(errMsgId) && isDeviceSecure && !isRetryingWithDeviceCredentials) {
-                val options = authOptions
+    private val authenticationCallback: BiometricPrompt.AuthenticationCallback =
+        object : BiometricPrompt.AuthenticationCallback() {
+            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                isAuthenticating = false
+                isRetryingWithDeviceCredentials = false
+                biometricPrompt = null
+                promise?.resolve(
+                    Arguments.fromBundle(Bundle().apply {
+                        putBoolean("success", true)
+                    })
+                )
+                promise = null
+                authOptions = null
+            }
 
-                if (options != null) {
-                    val disableDeviceFallback = options.disableDeviceFallback
+            override fun onAuthenticationError(errMsgId: Int, errString: CharSequence) {
+                // Make sure to fallback to the Device Credentials if the Biometrics hardware is unavailable.
+                if (isBiometricUnavailable(errMsgId) && isDeviceSecure && !isRetryingWithDeviceCredentials) {
+                    val options = authOptions
 
-                    // Don't run the device credentials fallback if it's disabled.
-                    if (!disableDeviceFallback) {
-                        promise?.let {
-                            isRetryingWithDeviceCredentials = true
-                            promptDeviceCredentialsFallback(options, it)
-                            return
+                    if (options != null) {
+                        val disableDeviceFallback = options.disableDeviceFallback
+
+                        // Don't run the device credentials fallback if it's disabled.
+                        if (!disableDeviceFallback) {
+                            promise?.let {
+                                isRetryingWithDeviceCredentials = true
+                                promptDeviceCredentialsFallback(options, it)
+                                return
+                            }
                         }
                     }
                 }
-            }
 
-            isAuthenticating = false
-            isRetryingWithDeviceCredentials = false
-            biometricPrompt = null
-            promise?.resolve(
-                createResponse(
-                    error = convertErrorCode(errMsgId),
-                    warning = errString.toString()
+                isAuthenticating = false
+                isRetryingWithDeviceCredentials = false
+                biometricPrompt = null
+                promise?.resolve(
+                    createResponse(
+                        error = convertErrorCode(errMsgId),
+                        warning = errString.toString()
+                    )
                 )
-            )
-            promise = null
-            authOptions = null
+                promise = null
+                authOptions = null
+            }
         }
-    }
-    private fun hasSystemFeature(feature: String) = packageManager.hasSystemFeature(feature)
+
+    fun hasSystemFeature(feature: String) = packageManager.hasSystemFeature(feature)
     override fun getName(): String = "BiometricModule"
-    private fun canAuthenticateUsingWeakBiometrics(): Int =
+    fun canAuthenticateUsingWeakBiometrics(): Int =
         biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+
     @ReactMethod
-    private fun isEnrolledAsync(promise:Promise) {
+    fun isEnrolledAsync(promise: Promise) {
         promise.resolve(canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_SUCCESS);
     }
+
     @ReactMethod
-    public fun hasHardwareAsync(promise:Promise) {
+    fun hasHardwareAsync(promise: Promise) {
         promise.resolve(canAuthenticateUsingWeakBiometrics() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE)
     }
+
     @ReactMethod
-    public fun getEnrolledLevelAsync(promise: Promise) {
+    fun getEnrolledLevelAsync(promise: Promise) {
         var level = SECURITY_LEVEL_NONE
         if (isDeviceSecure) {
             level = SECURITY_LEVEL_SECRET
@@ -179,23 +187,23 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
     }
 
     @ReactMethod
-    private fun bioAuthenticateAsync(params: ReadableMap, promise: Promise) {
-        val promptMessage =params.getString("promptMessage") ?: "Authenticate"
-        val cancelLabel =params.getString("cancelLabel")?: "Cancel authorization"
-        val disableDeviceFallback =params.getBoolean("disableDeviceFallback")
-        val requireConfirmation =params.getBoolean("requireConfirmation")
-        val options = AuthOptions(promptMessage, cancelLabel, disableDeviceFallback, requireConfirmation)
+    fun bioAuthenticateAsync(params: ReadableMap, promise: Promise) {
+        val promptMessage = params.getString("promptMessage") ?: "Authenticate"
+        val cancelLabel = params.getString("cancelLabel") ?: "Cancel authorization"
+        val disableDeviceFallback = params.getBoolean("disableDeviceFallback")
+        val requireConfirmation = params.getBoolean("requireConfirmation")
+        val options =
+            AuthOptions(promptMessage, cancelLabel, disableDeviceFallback, requireConfirmation)
         val currentActivity = context.currentActivity
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            promise.reject("E_NOT_SUPPORTED", "Cannot display biometric prompt on android versions below 6.0", null)
-            return
-        }
         val fragmentActivity = currentActivity as? FragmentActivity
         if (fragmentActivity == null) {
             promise.reject(Exceptions.MissingActivity())
-            Log.e(TAG,"BiometricVerify failed: If you mean to use biometric, please make sure the context that Compose" +
-                    "lives in is a FragmentActivity.\n" +
-                    "It's simple: just make your Activity extends from FragmentActivity instead of other Activity class.")
+            Log.e(
+                TAG,
+                "BiometricVerify failed: If you mean to use biometric, please make sure the context that Compose" +
+                        "lives in is a FragmentActivity.\n" +
+                        "It's simple: just make your Activity extends from FragmentActivity instead of other Activity class."
+            )
             return
         }
         if (!keyguardManager.isDeviceSecure) {
@@ -216,8 +224,13 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
             authenticate(fragmentActivity, options, promise)
         }
     }
+
     @UiThread
-    private fun authenticate(fragmentActivity: FragmentActivity, options: AuthOptions, promise: Promise) {
+    private fun authenticate(
+        fragmentActivity: FragmentActivity,
+        options: AuthOptions,
+        promise: Promise
+    ) {
         println("$TAG $fragmentActivity authenticate")
         if (isAuthenticating) {
             this.promise?.resolve(
@@ -253,12 +266,18 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
         }
         try {
             val promptInfo = promptInfoBuilder.build()
-                biometricPrompt!!.authenticate(promptInfo)
+            biometricPrompt!!.authenticate(promptInfo)
         } catch (e: NullPointerException) {
             isAuthenticating = false
-            promise.reject(UnexpectedException("Canceled authentication due to an internal error", e))
+            promise.reject(
+                UnexpectedException(
+                    "Canceled authentication due to an internal error",
+                    e
+                )
+            )
         }
     }
+
     @ReactMethod
     private fun cancelAuthenticate(promise: Promise) {
         GlobalScope.launch(Dispatchers.Main) {
@@ -266,6 +285,7 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
             isAuthenticating = false
         }
     }
+
     @ReactMethod
     private fun supportedAuthenticationTypesAsync(promise: Promise) {
         val results = mutableSetOf<Int>()
@@ -276,21 +296,26 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
         // note(cedric): replace hardcoded system feature strings with constants from
         // PackageManager when dropping support for Android SDK 28
         results.apply {
-            addIf(hasSystemFeature("android.hardware.fingerprint"),
+            addIf(
+                hasSystemFeature("android.hardware.fingerprint"),
                 AUTHENTICATION_TYPE_FINGERPRINT
             )
-            addIf(hasSystemFeature("android.hardware.biometrics.face"),
+            addIf(
+                hasSystemFeature("android.hardware.biometrics.face"),
                 AUTHENTICATION_TYPE_FACIAL_RECOGNITION
             )
-            addIf(hasSystemFeature("android.hardware.biometrics.iris"),
+            addIf(
+                hasSystemFeature("android.hardware.biometrics.iris"),
                 AUTHENTICATION_TYPE_IRIS
             )
-            addIf(hasSystemFeature("com.samsung.android.bio.face"),
+            addIf(
+                hasSystemFeature("com.samsung.android.bio.face"),
                 AUTHENTICATION_TYPE_FACIAL_RECOGNITION
             )
         }
         promise.resolve(results)
     }
+
     private fun createResponse(
         error: String? = null,
         warning: String? = null
@@ -303,6 +328,7 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
             putString("warning", it)
         }
     })
+
     private fun isBiometricUnavailable(code: Int): Boolean {
         return when (code) {
             BiometricPrompt.ERROR_HW_NOT_PRESENT,
@@ -314,6 +340,7 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
             else -> false
         }
     }
+
     private fun promptDeviceCredentialsFallback(options: AuthOptions, promise: Promise) {
         val fragmentActivity = currentActivity as FragmentActivity?
         if (fragmentActivity == null) {
@@ -334,15 +361,18 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
         GlobalScope.launch(Dispatchers.Main) {
             // On Android devices older than 11, we need to use Keyguard to unlock by Device Credentials.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                val credentialConfirmationIntent = keyguardManager.createConfirmDeviceCredentialIntent(promptMessage, "")
-                fragmentActivity.startActivityForResult(credentialConfirmationIntent,
+                val credentialConfirmationIntent =
+                    keyguardManager.createConfirmDeviceCredentialIntent(promptMessage, "")
+                fragmentActivity.startActivityForResult(
+                    credentialConfirmationIntent,
                     DEVICE_CREDENTIAL_FALLBACK_CODE
                 )
                 return@launch
             }
 
             val executor: Executor = Executors.newSingleThreadExecutor()
-            val localBiometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
+            val localBiometricPrompt =
+                BiometricPrompt(fragmentActivity, executor, authenticationCallback)
 
             biometricPrompt = localBiometricPrompt
 
@@ -356,10 +386,16 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
             try {
                 localBiometricPrompt.authenticate(promptInfo)
             } catch (e: NullPointerException) {
-                promise.reject(UnexpectedException("Canceled authentication due to an internal error", e))
+                promise.reject(
+                    UnexpectedException(
+                        "Canceled authentication due to an internal error",
+                        e
+                    )
+                )
             }
         }
     }
+
     private fun convertErrorCode(code: Int): String {
         return when (code) {
             BiometricPrompt.ERROR_CANCELED, BiometricPrompt.ERROR_NEGATIVE_BUTTON, BiometricPrompt.ERROR_USER_CANCELED -> "user_cancel"
@@ -373,4 +409,9 @@ class BiometricModule(private val context: ReactApplicationContext): ReactContex
     }
 }
 
-class AuthOptions(@Field val promptMessage:String, @Field val cancelLabel: String, @Field val disableDeviceFallback: Boolean, @Field val requireConfirmation: Boolean) : Record
+class AuthOptions(
+    @Field val promptMessage: String,
+    @Field val cancelLabel: String,
+    @Field val disableDeviceFallback: Boolean,
+    @Field val requireConfirmation: Boolean
+) : Record

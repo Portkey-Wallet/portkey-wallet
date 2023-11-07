@@ -4,9 +4,7 @@ import BaseContainer, { BaseContainerProps, BaseContainerState } from '../../../
 import { AccountCheckResult, CURRENT_USING_COUNTRY_CODE, attemptAccountCheck } from '../../../model/global';
 import LoginPortkey from 'pages/Login/LoginPortkey';
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GlobalStorage } from 'service/storage';
-import GStyles from 'assets/theme/GStyles';
 import BaseContainerContext from 'model/container/BaseContainerContext';
 
 export default class SignInEntryPage extends BaseContainer<SignInPageProps, SignInPageState, SignInPageResult> {
@@ -43,14 +41,14 @@ export default class SignInEntryPage extends BaseContainer<SignInPageProps, Sign
 
   render() {
     return (
-      <SafeAreaProvider style={GStyles.whiteBackgroundColor}>
+      <>
         <BaseContainerContext.Provider value={{ entryName: this.getEntryName() }}>
           <LoginPortkey
             selectedCountryCode={this.state.currentCountryCodeItem}
             updateCountryCode={this.updateCountryCode}
           />
         </BaseContainerContext.Provider>
-      </SafeAreaProvider>
+      </>
     );
   }
 }

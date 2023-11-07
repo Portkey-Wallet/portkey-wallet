@@ -14,6 +14,9 @@ export enum PortkeyEntries {
   SET_PIN = 'set_pin_entry',
   CONFIRM_PIN = 'confirm_pin_entry',
 
+  ACCOUNT_SETTING_ENTRY = 'account_setting_entry',
+  BIOMETRIC_SWITCH_ENTRY = 'biometric_switch_entry',
+
   SET_BIO = 'set_bio_entry',
   SCAN_QR_CODE = 'scan_qr_code_entry',
   SCAN_LOG_IN = 'scan_log_in_entry',

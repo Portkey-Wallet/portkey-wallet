@@ -2,7 +2,7 @@ import React, { useCallback, useState, useMemo } from 'react';
 import { TextL, TextS } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import CommonButton from 'components/CommonButton';
-import { setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
+import { getSecureStoreItem, setSecureStoreItem } from '@portkey-wallet/utils/mobile/biometric';
 import { Image, StyleSheet } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
 import { defaultColors } from 'assets/theme';
@@ -60,7 +60,9 @@ export default function SetBiometrics({ pin, deliveredSetPinInfo }: SetBiometric
   );
 
   const openBiometrics = async () => {
-    if (!pin) return;
+    if (!pin) {
+      return;
+    }
     try {
       await setSecureStoreItem('Pin', pin);
       const res = await touchAuth();

@@ -4,6 +4,7 @@ import { EmitterSubscription } from 'react-native';
 import { EntryResult, PortkeyDeviceEventEmitter, RouterOptions, PortkeyModulesEntity } from 'service/native-modules';
 import { AcceptableValueType } from './BaseContainer';
 import BaseContainerContext from './BaseContainerContext';
+import { LanuchMode, LaunchModeSet } from 'global/init/entries';
 
 const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks => {
   const onShowListener = useRef<EmitterSubscription | null>(null);
@@ -31,12 +32,25 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
   );
 
   const navigationTo = useCallback(
-    (entry: PortkeyEntries, targetScene?: string, closeCurrentScreen?: boolean) => {
+    <T = { [x: string]: AcceptableValueType }>(
+      entry: PortkeyEntries,
+      {
+        params = {} as any,
+        targetScene = 'none',
+        closeCurrentScreen = false,
+      }: {
+        params?: T;
+        targetScene?: string;
+        closeCurrentScreen?: boolean;
+      },
+    ) => {
       PortkeyModulesEntity.RouterModule.navigateTo(
         entry,
+        LaunchModeSet.get(entry) || LanuchMode.STANDARD,
         getEntryName(),
         targetScene ?? 'none',
         closeCurrentScreen ?? false,
+        params as any,
       );
     },
     [getEntryName],
@@ -52,6 +66,7 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
       const { params, closeCurrentScreen, navigationAnimation, navigationAnimationDuration, targetScene } = options;
       PortkeyModulesEntity.RouterModule.navigateToWithOptions(
         entry,
+        LaunchModeSet.get(entry) || LanuchMode.STANDARD,
         getEntryName(),
         {
           params: params ?? ({} as any),
@@ -106,7 +121,18 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
 
 export interface BaseContainerHooks {
   getEntryName: () => string;
-  navigationTo: (entry: PortkeyEntries, targetScene?: string) => void;
+  navigationTo: <T = { [x: string]: AcceptableValueType }>(
+    entry: PortkeyEntries,
+    {
+      params = {} as any,
+      targetScene = 'none',
+      closeCurrentScreen = false,
+    }: {
+      params?: T;
+      targetScene?: string;
+      closeCurrentScreen?: boolean;
+    },
+  ) => void;
   navigateForResult: <V = VoidResult, T = { [x: string]: AcceptableValueType }>(
     entry: PortkeyEntries,
     options: RouterOptions<T>,

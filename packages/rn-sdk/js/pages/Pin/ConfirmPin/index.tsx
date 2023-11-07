@@ -7,10 +7,13 @@ import PinContainer from 'components/PinContainer';
 import { StyleSheet } from 'react-native';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
-import { getVerifiedAndLockWallet } from 'model/verify/after-verify';
+import { changePin, getVerifiedAndLockWallet } from 'model/verify/after-verify';
 import Loading from 'components/Loading';
-import { SetBiometricsProps, SetBiometricsResult } from '../SetBiometrics';
+import { SetBiometricsProps, SetBiometricsResult, touchAuth } from '../SetBiometrics';
 import { isEnrolledAsync } from 'expo-local-authentication';
+import CommonToast from 'components/CommonToast';
+import { useLanguage } from 'i18n/hooks';
+import { authenticateBioReady, isBiomtricsCanUse } from 'service/biometric';
 
 const isBiometricsReady = async () => {
   try {
@@ -23,14 +26,40 @@ const isBiometricsReady = async () => {
 export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: ConfirmPinPageProps) {
   const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
+  const { t } = useLanguage();
 
-  const { onFinish, navigateForResult } = useBaseContainer({
+  const { onFinish, navigateForResult, navigationTo } = useBaseContainer({
     entryName: PortkeyEntries.CONFIRM_PIN,
   });
-
+  const onChangePin = useCallback(
+    async (newPin: string) => {
+      if (!oldPin) return;
+      try {
+        const canUse = isBiomtricsCanUse();
+        const biometricsReady = authenticateBioReady();
+        if (await canUse) {
+          if (await biometricsReady) {
+            const res = await touchAuth();
+            if (!res?.success) {
+              CommonToast.failError('Failed To Verify');
+              return;
+            }
+          }
+          changePin(newPin);
+        } else {
+          changePin(newPin);
+        }
+        CommonToast.success(t('Modified Successfully'));
+      } catch (error) {
+        CommonToast.failError(error);
+      }
+      navigateForResult(PortkeyEntries.ACCOUNT_SETTING_ENTRY, {});
+    },
+    [navigateForResult, oldPin, t],
+  );
   const onSetPinSuccess = useCallback(
     async (confirmPin: string) => {
-      const biometricsReady = await isBiometricsReady();
+      const biometricsReady = await authenticateBioReady();
       if (biometricsReady) {
         navigateForResult<SetBiometricsResult, SetBiometricsProps>(
           PortkeyEntries.SET_BIO,
@@ -86,10 +115,10 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
         return setErrorMessage('Pins do not match');
       }
 
-      // if (oldPin) return onChangePin(confirmPin);
+      if (oldPin) return onChangePin(confirmPin);
       return onSetPinSuccess(confirmPin);
     },
-    [pin, onSetPinSuccess, errorMessage],
+    [pin, oldPin, onChangePin, onSetPinSuccess, errorMessage],
   );
   return (
     <PageContainer

@@ -44,7 +44,6 @@ const CustomHeader: React.FC<CustomHeaderProps> = props => {
     leftIconType = 'back',
     notHandleHardwareBackPress,
   } = props;
-
   // theme change
   const styles = themeType === 'blue' ? blueStyles : whitStyles;
 

@@ -33,7 +33,9 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         super.onCreate(savedInstanceState)
         this.callbackId =
             intent.getStringExtra(StorageIdentifiers.PAGE_CALLBACK_ID) ?: NO_CALLBACK_METHOD
-        NavigationHolder.pushNewComponent(this)
+        val pageEntry = intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
+            ?: PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName
+        NavigationHolder.pushNewComponent(this, pageEntry)
     }
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {

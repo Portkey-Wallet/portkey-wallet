@@ -16,7 +16,7 @@ import useEffectOnce from 'hooks/useEffectOnce';
 import Touchable from 'components/Touchable';
 import ActionSheet from 'components/ActionSheet';
 import { GuardiansStatus, GuardiansStatusItem } from '../types';
-import { SocialRecoveryConfig } from 'model/verify/social-recovery';
+import { GuardianVerifyConfig } from 'model/verify/social-recovery';
 import { GuardianConfig } from 'model/verify/guardian';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { GuardianApprovalPageResult } from 'components/entries/GuardianApproval';
@@ -26,12 +26,7 @@ import { guardianTypeStrToEnum, isReacptchaOpen } from 'model/global';
 import { NetworkController } from 'network/controller';
 import { VerifierDetailsPageProps } from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
-import {
-  AccountOriginalType,
-  AfterVerifiedConfig,
-  VerifiedGuardianDoc,
-  defaultExtraData,
-} from 'model/verify/after-verify';
+import { AccountOriginalType, AfterVerifiedConfig, VerifiedGuardianDoc } from 'model/verify/after-verify';
 import { VerifyPageResult } from '../VerifierDetails';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { defaultColors } from 'assets/theme';
@@ -46,7 +41,7 @@ export default function GuardianApproval({
   verifiedTime,
   onPageFinish,
 }: {
-  guardianListConfig: SocialRecoveryConfig;
+  guardianListConfig: GuardianVerifyConfig;
   verifiedTime: number;
   onPageFinish: (result: GuardianApprovalPageResult) => void;
 }) {
@@ -130,7 +125,6 @@ export default function GuardianApproval({
         fromRecovery: true,
         accountIdentifier,
         chainId: await PortkeyConfig.currChainId(),
-        extraData: defaultExtraData,
         verifiedGuardians: getVerifiedGuardianInfo(),
       },
     };
@@ -143,7 +137,7 @@ export default function GuardianApproval({
         if (value.status === VerifyStatus.Verified && guardianInfo) {
           return {
             type: guardianTypeStrToEnum(guardianInfo.sendVerifyCodeParams.type),
-            identifier: accountIdentifier,
+            identifier: guardianInfo.sendVerifyCodeParams.guardianIdentifier,
             verifierId: guardianInfo.sendVerifyCodeParams.verifierId,
             verificationDoc: value.verifierInfo?.verificationDoc,
             signature: value.verifierInfo?.signature,
@@ -162,23 +156,15 @@ export default function GuardianApproval({
       deliveredVerifiedData: JSON.stringify(pageData),
     });
   };
-  const parseGuardianInfo = (guardianArray: Array<GuardianConfig>): Array<UserGuardianItem> => {
-    return guardianArray?.map((item, index) => {
-      return {
-        ...item,
-        guardianAccount: item.sendVerifyCodeParams.guardianIdentifier,
-        isLoginAccount: item.isLoginGuardian,
-        guardianType: guardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
-        key: `${index}`,
-        identifierHash: '',
-      } as UserGuardianItem;
-    });
-  };
 
   const particularButton = (guardian: GuardianConfig, key: string) => {
     const isVerified = guardiansStatus?.[key]?.status === VerifyStatus.Verified;
     const getTitle = () => {
-      if (sentGuardianKeys.has(key)) {
+      if (
+        sentGuardianKeys.has(key) ||
+        guardian.sendVerifyCodeParams.type === 'Apple' ||
+        guardian.sendVerifyCodeParams.type === 'Google'
+      ) {
         return 'Verify';
       } else {
         return 'Send';
@@ -226,6 +212,7 @@ export default function GuardianApproval({
         Loading.show();
         const verifyResult = isAppleLogin(thirdPartyAccount)
           ? await NetworkController.verifyAppleGuardianInfo({
+              id: thirdPartyAccount.accountIdentifier,
               verifierId: guardian.sendVerifyCodeParams.verifierId,
               accessToken: thirdPartyAccount.identityToken,
               chainId: await PortkeyConfig.currChainId(),
@@ -286,11 +273,10 @@ export default function GuardianApproval({
           verifierSessionId,
         } as Partial<GuardianConfig>),
         true,
-        key,
       );
       if (guardianResult) {
         CommonToast.success('Verified Successfully');
-        setGuardianStatus(key, { status: VerifyStatus.Verified });
+        setGuardianStatus(key, { status: VerifyStatus.Verified, verifierInfo: guardianResult });
         return;
       } else {
         CommonToast.fail('guardian verify failed, please try again.');
@@ -299,9 +285,9 @@ export default function GuardianApproval({
     } else {
       ActionSheet.alert({
         title: '',
-        message: `${guardian.name ?? 'Portkey'} will send a verification code to ${accountIdentifier} to verify your ${
-          accountOriginalType === AccountOriginalType.Email ? 'email' : 'phone number'
-        }.`,
+        message: `${guardian.name ?? 'Portkey'} will send a verification code to ${
+          guardian.sendVerifyCodeParams.guardianIdentifier
+        } to verify your ${accountOriginalType === AccountOriginalType.Email ? 'email' : 'phone number'}.`,
         buttons: [
           { title: 'Cancel', type: 'outline' },
           {
@@ -328,7 +314,6 @@ export default function GuardianApproval({
                       verifySessionId: sendResult.verifierSessionId,
                     } as Partial<GuardianConfig>),
                     true,
-                    key,
                   );
                   if (guardianResult) {
                     CommonToast.success('Verified Successfully');
@@ -353,7 +338,6 @@ export default function GuardianApproval({
   const handleGuardianVerifyPage = async (
     guardianConfig?: GuardianConfig,
     alreadySent?: boolean,
-    key?: string,
   ): Promise<VerifiedGuardianDoc | null> => {
     const guardian = guardianConfig;
     if (!guardian) {
@@ -362,15 +346,7 @@ export default function GuardianApproval({
     }
     return new Promise(resolve => {
       navigateToGuardianPage(Object.assign({}, guardian, { alreadySent: alreadySent ?? false }), result => {
-        if (result) {
-          setApproved(preGuardiansStatus => ({
-            ...preGuardiansStatus,
-            [key ?? '0']: { status: VerifyStatus.Verified },
-          }));
-          resolve(result);
-        } else {
-          resolve(null);
-        }
+        resolve(result);
       });
     });
   };
@@ -426,14 +402,22 @@ export default function GuardianApproval({
           </View>
           <View style={GStyles.flex1}>
             <ScrollView>
-              {parseGuardianInfo(guardians)?.map((item, index) => {
+              {guardians?.map((item, index) => {
+                const parsedItem = {
+                  ...item,
+                  guardianAccount: item.sendVerifyCodeParams.guardianIdentifier,
+                  isLoginAccount: item.isLoginGuardian,
+                  guardianType: guardianTypeStrToEnum(item.sendVerifyCodeParams.type) as any,
+                  key: `${index}`,
+                  identifierHash: '',
+                } as UserGuardianItem;
                 return (
                   <GuardianItem
                     key={index}
-                    guardianItem={item}
+                    guardianItem={parsedItem}
                     isButtonHide={true}
                     renderBtn={_ => {
-                      return particularButton(guardians[index], item.key);
+                      return particularButton(item, `${index}`);
                     }}
                     setGuardianStatus={onSetGuardianStatus}
                     guardiansStatus={guardiansStatus}

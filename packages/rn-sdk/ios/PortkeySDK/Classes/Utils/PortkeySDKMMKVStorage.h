@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PortkeySDKMMKVStorage : NSObject
 
 + (NSString *)readString:(NSString *)key;
++ (NSString *)readTempString:(NSString *)key;
 + (void)writeString:(NSString *)value forKey:(NSString *)key;
 
 + (BOOL)getBool:(NSString *)key;

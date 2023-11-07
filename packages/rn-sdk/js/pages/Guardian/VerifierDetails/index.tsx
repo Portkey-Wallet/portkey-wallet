@@ -42,7 +42,6 @@ function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; is
 
 export default function VerifierDetails({
   verificationType = VerificationType.register,
-  accountIdentifier,
   guardianConfig,
 }: {
   verificationType?: VerificationType;
@@ -55,7 +54,7 @@ export default function VerifierDetails({
   });
 
   const guardianItem: UserGuardianItem = {
-    guardianAccount: accountIdentifier,
+    guardianAccount: guardianConfig.sendVerifyCodeParams.guardianIdentifier,
     guardianType: guardianConfig.sendVerifyCodeParams.type === 'Phone' ? LoginType.Phone : LoginType.Email,
     verifier: {
       id: guardianConfig.sendVerifyCodeParams.verifierId,

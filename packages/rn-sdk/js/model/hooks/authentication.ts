@@ -15,6 +15,7 @@ import { AppState } from 'react-native';
 import appleAuth, { appleAuthAndroid } from '@invertase/react-native-apple-authentication';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import NetworkContext, { NetworkContextState } from 'pages/Login/context/NetworkContext';
+import { appleLogin } from './apple-login';
 
 if (!isIOS) {
   GoogleSignin.configure({
@@ -148,12 +149,17 @@ export function useAppleAuthentication() {
   const iosPromptAsync = useCallback(async () => {
     setResponse(undefined);
     try {
-      const appleInfo = await appleAuth.performRequest({
-        requestedOperation: appleAuth.Operation.LOGIN,
-        requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-      });
+      // const appleInfo = await appleAuth.performRequest({
+      //   requestedOperation: appleAuth.Operation.LOGIN,
+      //   requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
+      // });
+      const appleLoginToken = await appleLogin();
+      const appleInfo = {
+        identityToken: appleLoginToken as string,
+      };
 
       const user = parseAppleIdentityToken(appleInfo.identityToken);
+      /*
       if (appleInfo.fullName?.familyName) {
         try {
           await request.verify.sendAppleUserExtraInfo({
@@ -171,7 +177,7 @@ export function useAppleAuthentication() {
         } catch (error) {
           console.log(error, '======error');
         }
-      }
+      }*/
       const userInfo = { ...appleInfo, user: { ...user, id: user?.userId } } as AppleAuthentication;
       setResponse(userInfo);
       return userInfo;
@@ -189,6 +195,7 @@ export function useAppleAuthentication() {
     try {
       const appleInfo = await appleAuthAndroid.signIn();
       const user = parseAppleIdentityToken(appleInfo.id_token);
+      console.log(appleInfo, '======appleInfo');
       if (appleInfo.user?.name?.lastName) {
         try {
           await request.verify.sendAppleUserExtraInfo({

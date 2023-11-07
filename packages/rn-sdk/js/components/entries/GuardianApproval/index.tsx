@@ -1,4 +1,4 @@
-import { SocialRecoveryConfig } from 'model/verify/social-recovery';
+import { GuardianVerifyConfig } from 'model/verify/social-recovery';
 import { PortkeyEntries } from '../../../config/entries';
 import BaseContainer, { BaseContainerProps } from '../../../model/container/BaseContainer';
 import GuardianApproval from 'pages/Guardian/GuardianApproval';
@@ -52,10 +52,11 @@ export interface GuardianApprovalPageProps extends BaseContainerProps {
 
 export interface GuardianApprovalPageState {
   verifiedTime: number;
-  socialRecoveryConfig: SocialRecoveryConfig;
+  socialRecoveryConfig: GuardianVerifyConfig;
 }
 
 export interface GuardianApprovalPageResult {
   isVerified: boolean;
   deliveredVerifiedData?: string;
+  errorMessage?: string;
 }

@@ -6,12 +6,13 @@
 //
 
 #import "PortkeySDKNativeWrapperModule.h"
+#import <PortkeySDK/PortkeySDKJSCallModule.h>
 
 @implementation PortkeySDKNativeWrapperModule
 
 RCT_EXPORT_MODULE(NativeWrapperModule);
 
-static const NSString *kPortkeySDKTempStorageIdentifier;
+const NSString *kPortkeySDKTempStorageIdentifier;
 
 + (void)initialize {
     if (self == [PortkeySDKNativeWrapperModule class]) {
@@ -52,7 +53,7 @@ RCT_EXPORT_METHOD(onWarning:(NSString *)from warnMsg:(NSString *)errMsg)
 
 RCT_EXPORT_METHOD(emitJSMethodResult:(NSString *)eventId result:(NSString *)result)
 {
-    
+    [[PortkeySDKJSCallModule sharedInstance] callCallbackWithEventId:eventId result:result];
 }
 
 + (void)sendOnShowEventWithModuleName:(NSString *)moduleName bridge:(RCTBridge *)bridge reactTag:(NSNumber *)reactTag {

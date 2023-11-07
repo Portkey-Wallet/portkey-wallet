@@ -25,20 +25,15 @@ const MessageMap: any = {
 //   [VerificationType.communityRecovery]: 'GuardianApproval',
 //   [VerificationType.addManager]: 'LoginPortkey',
 // };
-export default function SetPin({ deliveredSetPinInfo, rootTag, oldPin }: SetPinPageProps & { rootTag: any }) {
+export default function SetPin({ deliveredSetPinInfo, oldPin }: SetPinPageProps) {
   const digitInput = useRef<DigitInputInterface>();
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const { onFinish, navigateForResult } = useBaseContainer({
-    rootTag: rootTag,
     entryName: PortkeyEntries.SET_PIN,
   });
 
   const leftCallback = () => {
-    PortkeyModulesEntity.RouterModule.navigateBack({
-      status: 'cancel',
-      data: {},
-    });
     return ActionSheet.alert({
       title: 'Leave this page?',
       message: oldPin ? MessageMap[VerificationType.communityRecovery] : MessageMap[VerificationType.communityRecovery],

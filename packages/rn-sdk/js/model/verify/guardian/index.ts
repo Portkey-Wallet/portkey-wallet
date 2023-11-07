@@ -99,7 +99,7 @@ const usePhoneOrEmailGuardian = (config: GuardianConfig): GuardianEntity => {
   const getVerifiedGuardianDoc = useCallback(() => {
     return {
       type: config.accountOriginalType,
-      identifier: config.accountIdentifier,
+      identifier: config.sendVerifyCodeParams.guardianIdentifier,
       verifierId: config.sendVerifyCodeParams.verifierId,
       verificationDoc: verifiedDoc?.verificationDoc ?? '',
       signature: verifiedDoc?.signature ?? '',
@@ -134,6 +134,7 @@ export interface GuardianConfig {
   readonly alreadySent?: boolean;
   readonly verifySessionId?: string;
   readonly thirdPartyEmail?: string;
+  readonly verifiedDoc?: CheckVerifyCodeResultDTO;
 }
 
 export enum GuardianStatus {

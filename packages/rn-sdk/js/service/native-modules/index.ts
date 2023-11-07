@@ -32,7 +32,7 @@ export interface RouterModule {
 }
 
 export interface EntryResult<R> {
-  data: R;
+  data?: R;
   status: 'success' | 'fail' | 'cancel';
   extraMsg?: { [x: string]: any };
 }

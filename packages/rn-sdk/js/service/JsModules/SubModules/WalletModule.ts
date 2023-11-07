@@ -6,6 +6,7 @@ const WalletModule: BaseJSModule = {
   callContractMethod: async ({ eventId }: BaseMethodParams) => {
     await sleep(1000);
     console.warn('callContractMethod called.');
+    console.warn('eventId： ', eventId);
     PortkeyModulesEntity.NativeWrapperModule.onWarning('callContractMethod', 'callContractMethod called.');
     PortkeyModulesEntity.NativeWrapperModule.emitJSMethodResult(
       eventId,

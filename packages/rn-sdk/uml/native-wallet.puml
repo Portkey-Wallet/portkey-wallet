@@ -1,33 +1,90 @@
 @startuml wallet
 
-interface NativePortkeyWallet extends PortkeyManager {
-    isUnlocked: (callback:MethodCallback<Boolean>) => void
-    exitWallet: (callback:MethodCallback<Boolean>) => void
-    callCaMethod: (params:CaContractConfig,callback:MethodCallback<Boolean>) => void
-    callContractMethod: (params:GeneralContractConfi,callback:MethodCallback<Boolean>) => void
+class Portkey {
+    static private wallet: NativePortkeyWallet
+    static getWallet: () => NativePortkeyWallet
+    static login: (callback:MethodCallback<CallResult>) => void
+    static logout: (callback:MethodCallback<CallResult>) => void
 }
 
-interface PortkeyManager extends GuardianManager, AnyManager {
+note left of Portkey::getWallet
+    return wallet
+end note
+note left of Portkey::login
+    if (loginSuccess) {
+        wallet = new NativePortkeyWallet()
+    }
+end note
+note left of Portkey::logout
+    if (logoutSuccess) {
+        wallet.invaliate()
+        wallet = null
+    }
+end note
 
+class NativePortkeyWallet {
+    isUnlocked: () => boolean
+    lock: (callback:MethodCallback<boolean>) => void
+    unlock: (callback:MethodCallback<boolean>) => void
+    exitWallet: (callback:MethodCallback<boolean>) => void
+
+    guardianModule: GuardianModule
+    contractModule: ContractModule
 }
 
-interface GuardianManager {
-    addGuardian: (params:AddGuardianConfig,callback:MethodCallback<AddGuardianResult>) => void
-    ...
+class LoginModule {
+    {static} login: (callback:MethodCallback<CallResult>) => void
+    {static} logout: (callback:MethodCallback<CallResult>) => void
+    {static} loginStatus: () => LoginStatus
 }
 
-interface AnyManager {
-    ...
+class GuardianModule {
+    guardianCount: (callback:MethodCallback<number>) => void
+    openGuardianList: (callback:MethodCallback<CallResult>) => void
+    openAddGuardian: (callback:MethodCallback<CallResult>) => void
 }
 
-interface AddGuardianConfig {
-    guardianName: string
-    guardianType: string
-    ...
+class ConfigModule {
+    {static} getNetworkList: (void) => NetworkConfig[]
+    {static} addNetwork: (config: NetworkConfig) => boolean
+    {static} removeNetwork: (config: NetworkConfig) => boolean
+    {static} switchNetwork: (config: NetworkConfig) => boolean
+    
+    {static} setTermsOfService: (prefix: string, title: string) => void
+    
+    {static} clearAllData: () => boolean
 }
 
-interface AddGuardianResult {
-    status: number
+interface NetworkConfig {
+    name: string;
+    walletType: 'ethereum' | 'aelf';
+    networkType: 'MAIN' | 'TESTNET';
+    apiUrl: string;
+    graphqlUrl: string;
+    networkIconUrl?: string;
+}
+
+class ThemeModule {
+    {static} setTheme: (theme: Theme) => void
+    {static} setAppName: (appName: string) => void
+    {static} setNavigationTheme: (navigationTheme: NavigationTheme) => void
+}
+
+interface Theme {
+    themeColor: string
+    themeFont: string
+}
+
+interface NavigationTheme {
+    tintColor: string
+    backImage: string
+    titleColor: string
+    titleFont: string
+}
+
+class ContractModule {
+    callCaMethod: (params:CaContractConfig,callback:MethodCallback<CallResult>) => void
+    callContractMethod: (params:GeneralContractConfi,callback:MethodCallback<CallResult>) => void
 }
 
 interface MethodCallback<T> {
@@ -45,10 +102,27 @@ interface GeneralContractConfig extends CaContractConfig {
     contractName?: string
 }
 
-MethodCallback --> NativePortkeyWallet
-MethodCallback --> GuardianManager
-CaContractConfig --> NativePortkeyWallet
-AddGuardianConfig --> GuardianManager
-AddGuardianResult --> GuardianManager
+interface CallResult {
+    status: 'success' | 'fail' | 'pending'
+    data: any
+    errorMsg: string
+}
+
+' MethodCallback --> NativePortkeyWallet
+' MethodCallback --> GuardianManager
+' CaContractConfig --> NativePortkeyWallet
+' AddGuardianConfig --> GuardianManager
+' AddGuardianResult --> GuardianManager
+Portkey *--> NativePortkeyWallet
+Portkey *--> LoginModule
+NativePortkeyWallet *--> GuardianModule
+NativePortkeyWallet *--> ContractModule
+
+CallResult --> LoginModule
+CallResult --> GuardianModule
+NetworkConfig --> ConfigModule
+Theme --> ThemeModule
+NavigationTheme --> ThemeModule
+CaContractConfig --> ContractModule
 
 @enduml

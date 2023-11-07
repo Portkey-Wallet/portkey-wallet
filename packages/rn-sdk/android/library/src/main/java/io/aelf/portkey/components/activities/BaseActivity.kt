@@ -44,7 +44,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
             this,
             null
         ) {
-            override fun getLaunchOptions(): Bundle{
+            override fun getLaunchOptions(): Bundle {
                 val params =
                     (intent.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
                         ?: Bundle()).apply {
@@ -52,10 +52,12 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                     }
                 return params
             }
+
             override fun getMainComponentName(): String {
                 return intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
                     ?: PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName
             }
+
             override fun onResume() {
                 super.onResume()
                 CoroutineScope(Dispatchers.IO).launch {
@@ -64,7 +66,7 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
                     NativeWrapperModuleInstance?.sendGeneralEvent(
                         "onShow",
                         Arguments.createMap().apply {
-                            this.putString("containerId", containerId)
+                            this.putString(StorageIdentifiers.PAGE_CONTAINER_ID, containerId)
                         })
                 }
             }
@@ -81,7 +83,10 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     fun navigateBackWithResult(result: ReadableMap? = null, thenFinish: Boolean = true) {
         if (!callbackAccessed) {
             callbackAccessed = true
-            NavigationHolder.invokeAnnotatedCallback(getCallbackId(),result?.toWriteableNativeMap())
+            NavigationHolder.invokeAnnotatedCallback(
+                getCallbackId(),
+                result?.toWriteableNativeMap()
+            )
             NavigationHolder.popTopComponent()
         }
         if (thenFinish) {

@@ -9,10 +9,8 @@ import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import styles from '../styles';
 import Email from '../components/Email';
-// import QRCode from '../components/QRCode';
 import Phone from '../components/Phone';
 import { PageLoginType, PageType } from '../types';
-// import SwitchNetwork from '../components/SwitchNetwork';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
 import { defaultColors } from 'assets/theme';
@@ -20,6 +18,7 @@ import { CountryCodeItem } from 'types/wallet';
 import useInitSkeleton from 'model/hooks/UseInitSkeleton';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
+import Referral from '../components/Referral';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const skeletonPath = require('assets/image/pngs/skeleton-email.png');
@@ -35,7 +34,7 @@ export default function SignupPortkey({
   selectedCountryCode: CountryCodeItem | null;
   updateCountryCode: (item: CountryCodeItem) => void;
 }) {
-  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
+  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
   const { t } = useLanguage();
   const isMainnet = true;
   const { initSkeleton, showSkeleton } = useInitSkeleton(skeletonPath);
@@ -56,7 +55,7 @@ export default function SignupPortkey({
           updateCountryCode={updateCountryCode}
         />
       ),
-      [PageLoginType.referral]: <View />,
+      [PageLoginType.referral]: <Referral setLoginType={setLoginType} />,
     }),
     [selectedCountryCode, updateCountryCode],
   );

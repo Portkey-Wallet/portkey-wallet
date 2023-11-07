@@ -9,6 +9,7 @@
 #import <MMKV/MMKV.h>
 
 static const MMKV *storage;
+extern const NSString *kPortkeySDKTempStorageIdentifier;
 
 @implementation PortkeySDKMMKVStorage
 
@@ -21,6 +22,11 @@ static const MMKV *storage;
 
 + (NSString *)readString:(NSString *)key {
     return [storage getStringForKey:key];
+}
+
++ (NSString *)readTempString:(NSString *)key {
+    NSString *tempKey = [NSString stringWithFormat:@"%@#%@", key, kPortkeySDKTempStorageIdentifier];
+    return [self readString:tempKey];
 }
 
 + (void)writeString:(NSString *)value forKey:(NSString *)key {

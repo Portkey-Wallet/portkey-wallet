@@ -5,7 +5,7 @@ import { screenWidth, screenHeight } from '@portkey-wallet/utils/mobile/device';
 
 import { clearBackgroundTimeout, setBackgroundTimeout } from 'utils/backgroundTimer';
 
-const TIME_OUT = 20000; // recaptcha timeout 20 seconds
+const TIME_OUT = 120000; // recaptcha timeout 20 seconds
 
 async function verifyHumanMachine(language: any) {
   let timer: undefined | NodeJS.Timer;

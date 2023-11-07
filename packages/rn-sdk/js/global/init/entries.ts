@@ -4,6 +4,7 @@ import ReferralEntryPage from 'components/entries/Referral';
 import SignInEntryPage from 'components/entries/SignIn';
 import SelectCountryPage from 'components/entries/SelectCountry';
 import SignUpEntryPage from 'components/entries/SignUp';
+import SignUpReferralEntryPage from 'components/entries/SignUp/referral';
 import VerifierDetailsEntryPage from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
 import ViewOnWebView from 'pages/Activity/ViewOnWebView';
@@ -14,6 +15,7 @@ import ConfirmPin from 'pages/Pin/ConfirmPin';
 import SetBiometrics from 'pages/Pin/SetBiometrics';
 import SetPin from 'pages/Pin/SetPin';
 import QrScanner from 'pages/QrScanner';
+import GuardianHome from 'pages/GuardianManage/GuardianHome';
 import { AppRegistry, ComponentProvider } from 'react-native';
 import Biometric from 'pages/My/Biometric';
 
@@ -28,6 +30,7 @@ const initEntries = () => {
   entryConfig.set(PortkeyEntries.SIGN_IN_ENTRY, () => SignInEntryPage);
   entryConfig.set(PortkeyEntries.SELECT_COUNTRY_ENTRY, () => SelectCountryPage);
   entryConfig.set(PortkeyEntries.SIGN_UP_ENTRY, () => SignUpEntryPage);
+  entryConfig.set(PortkeyEntries.SIGN_UP_REFERRAL_ENTRY, () => SignUpReferralEntryPage);
 
   // verify stage
   entryConfig.set(PortkeyEntries.VERIFIER_DETAIL_ENTRY, () => VerifierDetailsEntryPage);
@@ -42,6 +45,9 @@ const initEntries = () => {
   // scan QR code
   entryConfig.set(PortkeyEntries.SCAN_QR_CODE, () => QrScanner);
   entryConfig.set(PortkeyEntries.SCAN_LOG_IN, () => ScanLogin);
+
+  // guardian manage
+  entryConfig.set(PortkeyEntries.GUARDIAN_HOME_ENTRY, () => GuardianHome);
 
   // webview
   entryConfig.set(PortkeyEntries.VIEW_ON_WEBVIEW, () => ViewOnWebView);

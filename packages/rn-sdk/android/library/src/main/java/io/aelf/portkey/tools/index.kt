@@ -18,6 +18,11 @@ fun startJSBackgroundTaskTest(applicationContext: Context, callback: (JSMethodDa
     val callbackId = generateUniqueCallbackID()
     bundle.putString("methodName", methodName)
     bundle.putString("eventId", callbackId)
+    bundle.putBoolean("isViewMethod",false)
+    bundle.putBundle("params", Bundle().apply {
+        putString("contractAddress", "2.0.0")
+        putString("methodName", "GetBlockHeight")
+    })
     service.putExtras(bundle)
     JSEventBus.registerCallback(callbackId, callback, JSMethodData::class.java)
     applicationContext.startService(service)

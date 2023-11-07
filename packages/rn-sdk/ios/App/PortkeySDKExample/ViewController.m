@@ -13,23 +13,29 @@
 #import <YYKit/YYKit.h>
 #import <Toast/Toast.h>
 #import "TermsOfServiceViewController.h"
+#import <PortkeySDK/PortkeySDKJSCallModule.h>
+#import "BundleConfigViewController.h"
 
 @interface ViewController ()
 
 @property (nonatomic, strong) UIButton *loginButton;
 
-@property (nonatomic, strong) UIButton *mainChainButton;
-@property (nonatomic, strong) UIButton *tdvvChainButton;
-@property (nonatomic, strong) UIButton *tdvwChainButton;
+@property (nonatomic, strong) UIButton *switchChainButton;
+
+@property (nonatomic, strong) UIButton *switchNetworkButton;
 
 @property (nonatomic, strong) UIButton *mainNetButton;
 @property (nonatomic, strong) UIButton *testNetButton;
+@property (nonatomic, strong) UIButton *test1NetButton;
 
 @property (nonatomic, strong) UIButton *scanQrcodeButton;
+@property (nonatomic, strong) UIButton *guardianHomeButton;
 
 @property (nonatomic, strong) UIButton *exitButton;
 
 @property (nonatomic, strong) UIButton *termsButton;
+@property (nonatomic, strong) UIButton *jsCallButton;
+@property (nonatomic, strong) UIButton *bundleConfigButton;
 
 @end
 
@@ -48,55 +54,28 @@
     self.loginButton.frame = loginButtonRect;
     [self.view addSubview:self.loginButton];
     
-    self.mainChainButton = [self createButtonWithTitle:@"Switch to MAIN CHAIN"];
-    self.mainChainButton.frame = self.loginButton.frame;
-    self.mainChainButton.top = self.loginButton.bottom + 20;
+    self.switchChainButton = [self createButtonWithTitle:@"Switch Chain"];
+    self.switchChainButton.frame = self.loginButton.frame;
+    self.switchChainButton.top = self.loginButton.bottom + 20;
     @weakify(self)
-    [self.mainChainButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+    [self.switchChainButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
-        [self switchChainWithChainId:@"AELF"];
+        [self presentViewController:[self createSwitchChainAlertController] animated:YES completion:nil];
     }];
-    [self.view addSubview:self.mainChainButton];
+    [self.view addSubview:self.switchChainButton];
     
-    self.tdvvChainButton = [self createButtonWithTitle:@"Switch to SIDE CHAIN tDVV"];
-    self.tdvvChainButton.frame = self.mainChainButton.frame;
-    self.tdvvChainButton.top = self.mainChainButton.bottom + 5;
-    [self.tdvvChainButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+    self.switchNetworkButton = [self createButtonWithTitle:@"Switch Network"];
+    self.switchNetworkButton.frame = self.loginButton.frame;
+    self.switchNetworkButton.top = self.switchChainButton.bottom + 5;
+    [self.switchNetworkButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
-        [self switchChainWithChainId:@"tDVV"];
+        [self presentViewController:[self createSwitchNetworkAlertController] animated:YES completion:nil];
     }];
-    [self.view addSubview:self.tdvvChainButton];
-    
-    self.tdvwChainButton = [self createButtonWithTitle:@"Switch to SIDE CHAIN tDVW"];
-    self.tdvwChainButton.frame = self.tdvvChainButton.frame;
-    self.tdvwChainButton.top = self.tdvvChainButton.bottom + 5;
-    [self.tdvwChainButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchChainWithChainId:@"tDVW"];
-    }];
-    [self.view addSubview:self.tdvwChainButton];
-    
-    self.mainNetButton = [self createButtonWithTitle:@"Switch to MAIN NET"];
-    self.mainNetButton.frame = self.tdvwChainButton.frame;
-    self.mainNetButton.top = self.tdvwChainButton.bottom + 20;
-    [self.mainNetButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchEndPointUrl:@"https://did-portkey.portkey.finance"];
-    }];
-    [self.view addSubview:self.mainNetButton];
-    
-    self.testNetButton = [self createButtonWithTitle:@"Switch to TEST NET"];
-    self.testNetButton.frame = self.mainNetButton.frame;
-    self.testNetButton.top = self.mainNetButton.bottom + 5;
-    [self.testNetButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        @strongify(self)
-        [self switchEndPointUrl:@"https://did-portkey-test.portkey.finance"];
-    }];
-    [self.view addSubview:self.testNetButton];
+    [self.view addSubview:self.switchNetworkButton];
     
     self.exitButton = [self createButtonWithTitle:@"Exit Wallet"];
-    self.exitButton.frame = self.testNetButton.frame;
-    self.exitButton.top = self.testNetButton.bottom + 20;
+    self.exitButton.frame = self.switchNetworkButton.frame;
+    self.exitButton.top = self.switchNetworkButton.bottom + 20;
     [self.exitButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
         [self exitWallet];
@@ -105,7 +84,7 @@
     
     self.termsButton = [self createButtonWithTitle:@"Config Terms Of Service"];
     self.termsButton.frame = self.exitButton.frame;
-    self.termsButton.top = self.exitButton.bottom + 40;
+    self.termsButton.top = self.exitButton.bottom + 5;
     [self.termsButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
         [self configTermsOfService];
@@ -114,23 +93,105 @@
     
     self.scanQrcodeButton = [self createButtonWithTitle:@"Scan QRCode"];
     self.scanQrcodeButton.frame = self.termsButton.frame;
-    self.scanQrcodeButton.top = self.termsButton.bottom + 20;
+    self.scanQrcodeButton.top = self.termsButton.bottom + 5;
     [self.scanQrcodeButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         [[PortkeySDKRouterModule sharedInstance] navigateTo:@"scan_qr_code_entry" from:@"" targetScene:@""];
     }];
     [self.view addSubview:self.scanQrcodeButton];
+    
+    self.guardianHomeButton = [self createButtonWithTitle:@"Guardian Home"];
+    self.guardianHomeButton.frame = self.scanQrcodeButton.frame;
+    self.guardianHomeButton.top = self.scanQrcodeButton.bottom + 5;
+    [self.guardianHomeButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        @strongify(self)
+        NSString *walletConfig = [PortkeySDKMMKVStorage readTempString:@"walletConfig"];
+        if ([walletConfig isKindOfClass:NSString.class] && walletConfig.length) {
+            [[PortkeySDKRouterModule sharedInstance] navigateTo:@"guardian_home_entry" from:@"" targetScene:@""];
+        } else {
+            [self.view makeToast:@"Please login or unlock first"];
+        }
+    }];
+    [self.view addSubview:self.guardianHomeButton];
+    
+    self.jsCallButton = [self createButtonWithTitle:@"Call JS"];
+    self.jsCallButton.frame = self.guardianHomeButton.frame;
+    self.jsCallButton.top = self.guardianHomeButton.bottom + 5;
+    [self.jsCallButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        [[PortkeySDKJSCallModule sharedInstance] enqueueJSCall:@"WalletModule" method:@"callContractMethod" params:@{@"name": @"portkey"} callback:^(NSString * _Nullable result) {
+            NSLog(@"js call result : %@", result);
+        }];
+    }];
+    [self.view addSubview:self.jsCallButton];
+    
+    self.bundleConfigButton = [self createButtonWithTitle:@"Config Bundle"];
+    self.bundleConfigButton.frame = self.jsCallButton.frame;
+    self.bundleConfigButton.top = self.jsCallButton.bottom + 5;
+    [self.bundleConfigButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
+        @strongify(self)
+        [self.navigationController pushViewController:[BundleConfigViewController new] animated:YES];
+    }];
+    [self.view addSubview:self.bundleConfigButton];
+    
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - Private
+
+- (UIAlertController *)createSwitchChainAlertController {
+    NSString *currentChain = [PortkeySDKMMKVStorage readString:@"currChainId"] ?: @"Default";
+    NSString *message = [NSString stringWithFormat:@"Current Chain is %@", currentChain];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Switch Chain" message:message preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *mainChain = [UIAlertAction actionWithTitle:@"MAIN CHAIN" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchChainWithChainId:@"AELF"];
+    }];
+    UIAlertAction *tdvvChain = [UIAlertAction actionWithTitle:@"SIDE CHAIN tDVV" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchChainWithChainId:@"tDVV"];
+    }];
+    UIAlertAction *tdvwChain = [UIAlertAction actionWithTitle:@"SIDE CHAIN tDVW" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchChainWithChainId:@"tDVW"];
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:mainChain];
+    [alert addAction:tdvvChain];
+    [alert addAction:tdvwChain];
+    [alert addAction:cancel];
+    return alert;
+}
+
+- (UIAlertController *)createSwitchNetworkAlertController {
+    NSString *currentUrl = [PortkeySDKMMKVStorage readString:@"endPointUrl"] ?: @"Default";
+    NSString *message = [NSString stringWithFormat:@"Current endPointUrl is %@", currentUrl];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Switch Network" message:message preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *mainNetwork = [UIAlertAction actionWithTitle:@"MAIN NET" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchEndPointUrl:@"https://did-portkey.portkey.finance"];
+    }];
+    UIAlertAction *testNetwork = [UIAlertAction actionWithTitle:@"TEST NET" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchEndPointUrl:@"https://did-portkey-test.portkey.finance"];
+    }];
+    UIAlertAction *test1Network = [UIAlertAction actionWithTitle:@"TEST1 NET" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self switchEndPointUrl:@"https://localtest-applesign.portkey.finance"];
+    }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:mainNetwork];
+    [alert addAction:testNetwork];
+    [alert addAction:test1Network];
+    [alert addAction:cancel];
+    return alert;
 }
 
 #pragma mark - Selector
 
 - (void)loginButtonClicked:(id)sender {
-    [[PortkeySDKRouterModule sharedInstance] navigateTo:@"referral_entry" from:@"" targetScene:@""];
+    [[PortkeySDKRouterModule sharedInstance] navigateToWithOptions:@"referral_entry"
+                                                              from:@""
+                                                            params:@{}
+                                                          callback:^(NSArray *response) {
+        NSLog(@"response: %@", response);
+    }];
 }
 
 - (void)switchChainWithChainId:(NSString *)chainId {

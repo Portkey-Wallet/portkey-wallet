@@ -79,7 +79,6 @@ function GuardianItemButton({
     },
     [guardianItem.key, setGuardianStatus],
   );
-  const originChainId = PortkeyConfig.currChainId();
 
   const onSendCode = useThrottleCallback(async () => {
     try {
@@ -89,7 +88,7 @@ function GuardianItemButton({
           type: LoginType[guardianInfo.guardianItem.guardianType],
           guardianIdentifier: guardianInfo.guardianItem.guardianAccount,
           verifierId: guardianInfo.guardianItem.verifier?.id,
-          chainId: originChainId,
+          chainId: await PortkeyConfig.currChainId(),
           operationType,
         },
       });
@@ -113,7 +112,7 @@ function GuardianItemButton({
       CommonToast.failError(error);
     }
     Loading.hide();
-  }, [guardianInfo, originChainId, operationType, onSetGuardianStatus]);
+  }, [guardianInfo, operationType, onSetGuardianStatus]);
 
   const onVerifierAuth = useCallback(async () => {
     console.log('bbb');

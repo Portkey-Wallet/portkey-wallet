@@ -102,9 +102,9 @@ interface GeneralContractConfig extends CaContractConfig {
     contractName?: string
 }
 
-interface CallResult {
+interface CallResult<T> {
     status: 'success' | 'fail' | 'pending'
-    data: any
+    data: T
     errorMsg: string
 }
 

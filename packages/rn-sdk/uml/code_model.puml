@@ -1,0 +1,15 @@
+@startuml model
+
+interface BaseModel {
+    id: string
+}
+
+interface LoginParams extends BaseModel {
+    identifier: string
+}
+
+interface GuardianItem extends BaseModel {
+    
+}
+
+@enduml

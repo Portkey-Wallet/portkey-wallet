@@ -1,0 +1,24 @@
+@startuml module
+
+interface IPortkeyCoreBaseModule {
+
+}
+
+interface IPortkeyCoreAccountModule extends IPortkeyCoreBaseModule{
+    login: (loginParams:LoginParams, callback: MethodCallback<AccountModel>) => void
+    logout: (accountModel: AccountModel, callback: MethodCallback<boolean>) => void
+}
+
+interface IPortkeyCoreGuardianModule extends IPortkeyCoreBaseModule{
+    guardianCount: (accountModel: AccountModel, callback:MethodCallback<number>) => void
+    getGuardianList: (accountModel: AccountModel, callback:MethodCallback<GuardianItem>) => void
+    addGuardian: (accountModel: AccountModel, guardianItem: GuardianItem, callback:MethodCallback<boolean>) => void
+    removeGuardian: (accountModel: AccountModel, guardianItem: GuardianItem, callback:MethodCallback<boolean>) => void
+}
+
+interface IPortkeyCoreContractModule extends IPortkeyCoreBaseModule{
+    callCaMethod: (accountModel: AccountModel, params: CaContractConfig, callback:MethodCallback<string>) => void
+    callContractMethod: (accountModel: AccountModel, params: GeneralContractConfig, callback:MethodCallback<string>) => void
+}
+
+@enduml

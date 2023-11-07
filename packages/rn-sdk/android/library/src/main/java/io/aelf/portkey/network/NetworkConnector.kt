@@ -21,17 +21,19 @@ internal fun JsonObject.toPrettyJson(): String {
     val prettyGson = GsonBuilder().setPrettyPrinting().create()
     return prettyGson.toJson(this)
 }
+
 internal fun ReadableMap.toJson(): JsonObject {
     val data = this.toHashMap()
     val jsonObject = JsonObject()
     data.forEach {
-        when (val value = it.value) {
-            is String -> jsonObject.addProperty(it.key, value)
-            is Int -> jsonObject.addProperty(it.key, value)
-            is Number -> jsonObject.addProperty(it.key, value.toFixedType())
-            is Map<*, *> -> jsonObject.add(it.key, (value as HashMap<String, Any>).toJson())
-            is List<*> -> jsonObject.add(it.key, (value as ArrayList<Any>).toJson())
-            else -> jsonObject.addProperty(it.key, value?.toString())
+        val (key, value) = it
+        when (value) {
+            is String -> jsonObject.addProperty(key, value)
+            is Int -> jsonObject.addProperty(key, value)
+            is Number -> jsonObject.addProperty(key, value.toFixedType())
+            is Map<*, *> -> jsonObject.add(key, (value as HashMap<String, Any>).toJson())
+            is List<*> -> jsonObject.add(key, (value as ArrayList<Any>).toJson())
+            else -> jsonObject.addProperty(key, value?.toString())
         }
     }
     return jsonObject
@@ -40,13 +42,14 @@ internal fun ReadableMap.toJson(): JsonObject {
 private fun HashMap<String, Any>.toJson(): JsonObject {
     val jsonObject = JsonObject()
     this.forEach {
-        when (val value = it.value) {
-            is String -> jsonObject.addProperty(it.key, value)
-            is Int -> jsonObject.addProperty(it.key, value)
-            is Number -> jsonObject.addProperty(it.key, value.toFixedType())
-            is Map<*, *> -> jsonObject.add(it.key, (value as HashMap<String, Any>).toJson())
-            is List<*> -> jsonObject.add(it.key, (value as ArrayList<Any>).toJson())
-            else -> jsonObject.addProperty(it.key, value?.toString())
+        val (key, value) = it
+        when (value) {
+            is String -> jsonObject.addProperty(key, value)
+            is Int -> jsonObject.addProperty(key, value)
+            is Number -> jsonObject.addProperty(key, value.toFixedType())
+            is Map<*, *> -> jsonObject.add(key, (value as HashMap<String, Any>).toJson())
+            is List<*> -> jsonObject.add(key, (value as ArrayList<Any>).toJson())
+            else -> jsonObject.addProperty(key, value?.toString())
         }
     }
     return jsonObject
@@ -55,13 +58,13 @@ private fun HashMap<String, Any>.toJson(): JsonObject {
 private fun List<*>.toJson(): JsonArray {
     val array = JsonArray()
     this.forEach {
-        when (val value = it) {
-            is String -> array.add(value)
-            is Number -> array.add(value.toFixedType())
-            is Boolean -> array.add(value)
-            is Map<*, *> -> array.add((value as HashMap<String, Any>).toJson())
-            is List<*> -> array.add((value as ArrayList<Any>).toJson())
-            else -> array.add(value.toString())
+        when (it) {
+            is String -> array.add(it)
+            is Number -> array.add(it.toFixedType())
+            is Boolean -> array.add(it)
+            is Map<*, *> -> array.add((it as HashMap<String, Any>).toJson())
+            is List<*> -> array.add((it as ArrayList<Any>).toJson())
+            else -> array.add(it.toString())
         }
     }
     return array
@@ -163,7 +166,6 @@ internal object NetworkConnector {
         val json = this.toJson().toString()
         return json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
     }
-
 
 
     private fun dealWithResponse(response: Response, printBody: Boolean = false): ResultWrapper {

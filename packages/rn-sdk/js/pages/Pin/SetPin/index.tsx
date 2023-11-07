@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import ActionSheet from 'components/ActionSheet';
@@ -9,6 +9,7 @@ import useBaseContainer from 'model/container/UseBaseContainer';
 import { PortkeyEntries } from 'config/entries';
 import { ConfirmPinPageProps } from '../ConfirmPin';
 import CommonToast from 'components/CommonToast';
+import { PortkeyModulesEntity } from 'service/native-modules';
 
 const scrollViewProps = {
   disabled: true,
@@ -26,16 +27,21 @@ const MessageMap: any = {
 // };
 export default function SetPin({ deliveredSetPinInfo, rootTag, oldPin }: SetPinPageProps & { rootTag: any }) {
   const digitInput = useRef<DigitInputInterface>();
+  const [errorMessage, setErrorMessage] = useState<string>();
 
   const { onFinish, navigateForResult } = useBaseContainer({
     rootTag: rootTag,
     entryName: PortkeyEntries.SET_PIN,
   });
 
-  const leftCallback = useCallback(() => {
+  const leftCallback = () => {
+    PortkeyModulesEntity.RouterModule.navigateBack({
+      status: 'cancel',
+      data: {},
+    });
     return ActionSheet.alert({
       title: 'Leave this page?',
-      message: MessageMap[VerificationType.communityRecovery],
+      message: oldPin ? MessageMap[VerificationType.communityRecovery] : MessageMap[VerificationType.communityRecovery],
       buttons: [
         { title: 'No', type: 'outline' },
         {
@@ -51,7 +57,7 @@ export default function SetPin({ deliveredSetPinInfo, rootTag, oldPin }: SetPinP
         },
       ],
     });
-  }, [onFinish]);
+  };
   return (
     <PageContainer
       scrollViewProps={scrollViewProps}
@@ -65,6 +71,10 @@ export default function SetPin({ deliveredSetPinInfo, rootTag, oldPin }: SetPinP
         ref={digitInput}
         title={oldPin ? 'Please enter a new pin' : 'Enter pin to protect your device'}
         onFinish={pin => {
+          if (pin === oldPin) {
+            setErrorMessage('The same pin!');
+            return;
+          }
           navigateForResult<ConfirmPinPageProps>(
             PortkeyEntries.CONFIRM_PIN,
             {
@@ -89,6 +99,7 @@ export default function SetPin({ deliveredSetPinInfo, rootTag, oldPin }: SetPinP
             },
           );
         }}
+        errorMessage={errorMessage}
       />
     </PageContainer>
   );
@@ -101,7 +112,7 @@ const styles = StyleSheet.create({
 });
 
 export interface SetPinPageProps {
-  deliveredSetPinInfo: string; // SetPinInfo
+  deliveredSetPinInfo?: string; // SetPinInfo
   oldPin?: string;
 }
 

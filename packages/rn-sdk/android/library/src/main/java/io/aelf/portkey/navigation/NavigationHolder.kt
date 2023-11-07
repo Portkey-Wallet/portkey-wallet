@@ -18,11 +18,14 @@ private fun generateCancelCallbackData(): WritableMap {
 
 internal object NavigationHolder {
     private val naviStack = LinkedList<WeakReference<BasePortkeyReactActivity>>()
+    private val entryMap = HashMap<String, WeakReference<BasePortkeyReactActivity>>();
     private val callbackMap: MutableMap<String, Callback> = mutableMapOf()
     private val nativeCallbackMap: MutableMap<String, (WritableMap) -> Unit> = mutableMapOf()
 
-    fun pushNewComponent(activity: BasePortkeyReactActivity) {
-        naviStack.push(WeakReference(activity))
+    fun pushNewComponent(activity: BasePortkeyReactActivity, pageEntry: String) {
+        val wrfActivity = WeakReference(activity)
+        naviStack.push(wrfActivity)
+        entryMap[pageEntry] = wrfActivity
     }
 
     fun registerNavigationCallback(callbackId: String, callback: Callback) {
@@ -60,5 +63,41 @@ internal object NavigationHolder {
 
     fun popTopComponent() {
         naviStack.pop()
+        val topComponentKey = entryMap.entries.find { it == getTopComponent() }?.key
+        entryMap.remove(topComponentKey)
+    }
+    private fun findComponentByEntry(pageEntry: String): WeakReference<BasePortkeyReactActivity>? {
+        return entryMap[pageEntry]
+    }
+    fun hasEntry(pageEntry: String): Boolean {
+        return entryMap.keys.contains(pageEntry)
+    }
+    fun singleTaskOp(pageEntry: String): Boolean {
+        return false
+//        val component = findComponentByEntry(pageEntry)
+//        val iterator = naviStack.iterator()
+//        val list = arrayListOf<WeakReference<BasePortkeyReactActivity>>()
+//
+//        if (component != null) {
+//            while (iterator.hasNext()) {
+//                val topComponent = iterator.next()
+//                if (topComponent == component) {
+//                    break
+//                }
+//                list.add(topComponent)
+//                iterator.remove()
+//            }
+//            list.forEach {
+//                val componentKey = entryMap.entries.find {inIt-> it == inIt }?.key
+//                entryMap.remove(componentKey)
+//                it.get()?.finish()
+//            }
+//            return true
+//        } else {
+//            return false
+//        }
+    }
+    fun singleTopOp(pageEntry: String): Boolean{
+        return false
     }
 }

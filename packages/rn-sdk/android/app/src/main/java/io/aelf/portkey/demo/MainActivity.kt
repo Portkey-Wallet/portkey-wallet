@@ -26,8 +26,10 @@ import io.aelf.portkey.components.logic.PortkeyMMKVStorage
 import io.aelf.portkey.core.entry.PortkeyTest
 import io.aelf.portkey.demo.ui.theme.MyRNApplicationTheme
 import io.aelf.portkey.entry.usePortkeyEntry
+import io.aelf.portkey.entry.usePortkeyEntryWithParams
 import io.aelf.portkey.tools.startJSBackgroundTaskTest
 import io.aelf.portkey.ui.dialog.DialogProps
+import kotlin.concurrent.thread
 
 
 class MainActivity : ComponentActivity() {
@@ -67,6 +69,11 @@ class MainActivity : ComponentActivity() {
                         BigButton(text = "Jump to Scan Page") {
                             jumpToActivity(PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName)
                         }
+                        BigButton(text = "Jump to AccountSettings Page") {
+                            jumpToActivityWithParams(PortkeyEntries.ACCOUNT_SETTING_ENTRY.entryName, Bundle().apply {
+                                putString("name", "设置页");
+                            })
+                        }
                         BigButton(text = "Background Service Call") {
                             startJSBackgroundTaskTest(this@MainActivity) {
                                 PortkeyTest.showDialogForTestOnly(
@@ -100,7 +107,17 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-
+    private fun jumpToActivityWithParams(entryName: String = "referral_entry", params: Bundle? = null) {
+        usePortkeyEntryWithParams(entryName, params) {
+            PortkeyTest.showDialogForTestOnly(
+                DialogProps().apply {
+                    mainTitle = "Login Result"
+                    subTitle = "$it"
+                    useSingleConfirmButton = true
+                }
+            )
+        }
+    }
     private fun changeChain(chainId: String) {
         PortkeyMMKVStorage.writeString("currChainId", chainId)
         Toast.makeText(this, "chainId changed to $chainId", Toast.LENGTH_SHORT).show()

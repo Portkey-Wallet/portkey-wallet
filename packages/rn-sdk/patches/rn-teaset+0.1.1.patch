@@ -1,0 +1,21 @@
+diff --git a/node_modules/rn-teaset/components/Overlay/TopView.js b/node_modules/rn-teaset/components/Overlay/TopView.js
+index 2c90f39..f10d2a8 100644
+--- a/node_modules/rn-teaset/components/Overlay/TopView.js
++++ b/node_modules/rn-teaset/components/Overlay/TopView.js
+@@ -100,11 +100,11 @@ export default class TopView extends Component {
+       return;
+     }
+ 
+-    DeviceEventEmitter.removeAllListeners("addOverlay");
+-    DeviceEventEmitter.removeAllListeners("removeOverlay");
+-    DeviceEventEmitter.removeAllListeners("removeAllOverlay");
+-    DeviceEventEmitter.removeAllListeners("transformRoot");
+-    DeviceEventEmitter.removeAllListeners("restoreRoot");
++    // DeviceEventEmitter.removeAllListeners("addOverlay");
++    // DeviceEventEmitter.removeAllListeners("removeOverlay");
++    // DeviceEventEmitter.removeAllListeners("removeAllOverlay");
++    // DeviceEventEmitter.removeAllListeners("transformRoot");
++    // DeviceEventEmitter.removeAllListeners("restoreRoot");
+   }
+ 
+   add(e) {

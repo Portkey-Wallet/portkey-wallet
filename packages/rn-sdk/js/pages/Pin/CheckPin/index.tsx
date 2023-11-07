@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import { DigitInputInterface } from 'components/DigitInput';
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
@@ -11,26 +11,36 @@ import { checkPin, getUseBiometric, unLockTempWallet } from 'model/verify/after-
 import { touchAuth } from '../SetBiometrics';
 import Loading from 'components/Loading';
 import useEffectOnce from 'hooks/useEffectOnce';
+import { TempStorage } from 'service/storage';
+import myEvents from 'utils/deviceEvent';
 
 export default function CheckPin(props: CheckPinProps) {
-  const { rootTag } = props;
+  const { targetScene, openBiometrics } = props;
+  console.log('propsssssss', props);
   const [errorMessage, setErrorMessage] = useState<string>();
   const pinRef = useRef<DigitInputInterface>();
   const [canUseBiometrics, setCanUseBiometrics] = useState(false);
-
-  const { onFinish } = useBaseContainer({
-    rootTag: rootTag,
+  const { onFinish, navigationTo } = useBaseContainer({
     entryName: PortkeyEntries.CHECK_PIN,
   });
 
   const onChangeText = useCallback(
-    (pin: string) => {
+    async (pin: string) => {
       if (pin.length === PIN_SIZE) {
-        if (!checkPin(pin)) {
+        if (!(await checkPin(pin))) {
           pinRef.current?.reset();
           return setErrorMessage(PinErrorMessage.invalidPin);
         }
+        if (targetScene === 'changPin') {
+          navigationTo(PortkeyEntries.SET_PIN, {
+            params: {
+              oldPin: pin,
+            },
+          });
+          return;
+        }
         Loading.show();
+        myEvents.openBiometrics.emit(pin);
         unLockTempWallet(pin).then(() => {
           Loading.hide();
           onFinish<CheckPinResult>({
@@ -44,7 +54,7 @@ export default function CheckPin(props: CheckPinProps) {
         setErrorMessage(undefined);
       }
     },
-    [errorMessage, onFinish],
+    [errorMessage, navigationTo, onFinish, targetScene],
   );
 
   const useBiometrics = async () => {
@@ -52,6 +62,7 @@ export default function CheckPin(props: CheckPinProps) {
     if (res?.success) {
       Loading.show();
       await unLockTempWallet('use-bio', true);
+      myEvents.openBiometrics.emit('use-bio');
       Loading.hide();
       onFinish<CheckPinResult>({
         status: 'success',
@@ -65,6 +76,10 @@ export default function CheckPin(props: CheckPinProps) {
   };
 
   useEffectOnce(() => {
+    if (openBiometrics) {
+      // from Biometric op switch page
+      return;
+    }
     getUseBiometric().then(res => {
       setCanUseBiometrics(res);
     });
@@ -97,7 +112,9 @@ export default function CheckPin(props: CheckPinProps) {
 }
 
 export interface CheckPinProps {
-  rootTag: any;
+  rootTag?: any;
+  targetScene: 'changPin';
+  openBiometrics?: boolean;
 }
 
 export interface CheckPinResult {

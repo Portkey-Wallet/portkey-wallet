@@ -7,6 +7,7 @@ import SignUpEntryPage from 'components/entries/SignUp';
 import VerifierDetailsEntryPage from 'components/entries/VerifierDetails';
 import { PortkeyEntries } from 'config/entries';
 import ViewOnWebView from 'pages/Activity/ViewOnWebView';
+import AccountSettings from 'pages/My/AccountSettings';
 import ScanLogin from 'pages/Login/ScanLogin';
 import CheckPin from 'pages/Pin/CheckPin';
 import ConfirmPin from 'pages/Pin/ConfirmPin';
@@ -14,6 +15,7 @@ import SetBiometrics from 'pages/Pin/SetBiometrics';
 import SetPin from 'pages/Pin/SetPin';
 import QrScanner from 'pages/QrScanner';
 import { AppRegistry, ComponentProvider } from 'react-native';
+import Biometric from 'pages/My/Biometric';
 
 type AcceptableComponentType = ComponentProvider;
 
@@ -44,9 +46,20 @@ const initEntries = () => {
   // webview
   entryConfig.set(PortkeyEntries.VIEW_ON_WEBVIEW, () => ViewOnWebView);
 
+  entryConfig.set(PortkeyEntries.ACCOUNT_SETTING_ENTRY, () => AccountSettings);
+  entryConfig.set(PortkeyEntries.BIOMETRIC_SWITCH_ENTRY, () => Biometric);
+
   for (const [key, value] of entryConfig) {
     AppRegistry.registerComponent(key, value);
   }
 };
-
-export { initEntries };
+export enum LanuchMode {
+  STANDARD = 'standard',
+  SINGLE_TASK = 'single_task',
+  SINGLE_TOP = 'single_top',
+}
+const registerLaunchMode = () => {
+  LaunchModeSet.set(PortkeyEntries.ACCOUNT_SETTING_ENTRY, LanuchMode.SINGLE_TASK.toString());
+};
+export const LaunchModeSet = new Map();
+export { initEntries, registerLaunchMode };

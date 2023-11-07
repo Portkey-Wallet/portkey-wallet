@@ -19,6 +19,7 @@ class RouterModule(reactContext: ReactApplicationContext) :
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun navigateTo(
         entry: String,
+        launchMode: String,
         from: String,
         targetScene: String = "",
         closeSelf: Boolean = false,
@@ -37,6 +38,7 @@ class RouterModule(reactContext: ReactApplicationContext) :
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun navigateToWithOptions(
         targetEntry: String,
+        launchMode: String,
         from: String,
         params: ReadableMap,
         callback: Callback
@@ -48,6 +50,18 @@ class RouterModule(reactContext: ReactApplicationContext) :
 //        val navigationAnimationDuration: Long =
 //            params.getDouble("navigationAnimationDuration").toLong()
         val callbackId = generateUniqueCallbackID()
+        if((launchMode == "single_task" || launchMode == "single_top")&& NavigationHolder.hasEntry(targetEntry)){
+            // 1. mode match, 2.task stack has entry instance
+            if(launchMode == "single_task"){
+                if(NavigationHolder.singleTaskOp(targetEntry)){
+                    return
+                }
+            } else{
+                if(NavigationHolder.singleTopOp(targetEntry)){
+                    return
+                }
+            }
+        }
         activity?.navigateToAnotherReactActivity(
             entryName = targetEntry,
             params = params.getMap("params"),

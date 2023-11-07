@@ -17,6 +17,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { measurePageY } from 'utils/measure';
+import { requestUserPermission } from 'utils/FCM';
+import ActionSheet from 'components/ActionSheet';
+import { openSettings } from 'react-native-permissions';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
@@ -78,11 +81,33 @@ export default function DiscoverHome() {
     );
   }, [onRightPress]);
 
+  const requestPermission = useCallback(() => {
+    (async () => {
+      const result = await requestUserPermission();
+      if (result === false || result === 'denied') {
+        return ActionSheet.alert({
+          title: 'open setting',
+          buttons: [
+            {
+              title: 'jump to setting',
+              type: 'primary',
+              onPress: () => {
+                openSettings();
+              },
+            },
+          ],
+        });
+      }
+    })();
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       lastEmitCloseSwiped.current();
     }, [lastEmitCloseSwiped]),
   );
+
+  useFocusEffect(requestPermission);
 
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>

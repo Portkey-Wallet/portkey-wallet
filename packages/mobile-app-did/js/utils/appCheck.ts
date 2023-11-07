@@ -4,16 +4,12 @@ import { copyText } from 'utils';
 export const getAppCheckToken = async (): Promise<string> => {
   try {
     const { token } = await firebase.appCheck().getToken();
-    console.log('appcheck token!!!', token);
-
-    if (token?.length > 0) {
-      console.log('AppCheck verification passed');
-      await copyText(token);
-    }
+    if (token?.length > 0 && __DEV__) await copyText(token);
+    console.log('app check token!', token);
 
     return token || '';
   } catch (error) {
-    console.log('AppCheck verification failed', error);
+    console.log('get appCheck token failed', error);
     return '';
   }
 };

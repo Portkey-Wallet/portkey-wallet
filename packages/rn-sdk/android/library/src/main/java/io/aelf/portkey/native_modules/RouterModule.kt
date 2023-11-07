@@ -18,21 +18,39 @@ class RouterModule(reactContext: ReactApplicationContext) :
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     fun navigateTo(
-        entry: String,
+        targetEntry: String,
         launchMode: String,
         from: String,
         targetScene: String = "",
-        closeSelf: Boolean = false,
+        closeCurrentScreen: Boolean = false,
         params: ReadableMap = Arguments.createMap()
     ) {
         val activity = NavigationHolder.getTopComponent()
+        if(closeCurrentScreen) {
+            NavigationHolder.popAndFinish(activity)
+        }
+        if(startLaunchModeActivity(launchMode, targetEntry)){
+            return
+        }
+
         activity?.navigateToAnotherReactActivity(
-            entryName = entry,
+            entryName = targetEntry,
             targetScene = targetScene,
             from = from,
-            closeSelf = closeSelf,
             params = params
         )
+    }
+
+    private fun startLaunchModeActivity(launchMode: String, targetEntry: String): Boolean {
+        if((launchMode == "single_task" || launchMode == "single_top")&& NavigationHolder.hasEntry(targetEntry)){
+            // 1. mode match, 2.task stack has entry instance
+            return if(launchMode == "single_task"){
+                NavigationHolder.singleTaskOp(targetEntry)
+            } else{
+                NavigationHolder.singleTopOp(targetEntry)
+            }
+        }
+        return false
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -46,24 +64,12 @@ class RouterModule(reactContext: ReactApplicationContext) :
         val activity = NavigationHolder.getTopComponent()
         val targetScene = params.getString("targetScene")
         val closeSelf = params.getBoolean("closeCurrentScreen")
-//        val navigationAnimation = params.getString("navigationAnimation")
-//        val navigationAnimationDuration: Long =
-//            params.getDouble("navigationAnimationDuration").toLong()
         val callbackId = generateUniqueCallbackID()
-        if ((launchMode == "single_task" || launchMode == "single_top") && NavigationHolder.hasEntry(
-                targetEntry
-            )
-        ) {
-            // 1. mode match, 2.task stack has entry instance
-            if (launchMode == "single_task") {
-                if (NavigationHolder.singleTaskOp(targetEntry)) {
-                    return
-                }
-            } else {
-                if (NavigationHolder.singleTopOp(targetEntry)) {
-                    return
-                }
-            }
+        if(closeSelf) {
+            NavigationHolder.popAndFinish(activity)
+        }
+        if(startLaunchModeActivity(launchMode, targetEntry)){
+            return
         }
         activity?.navigateToAnotherReactActivity(
             entryName = targetEntry,
@@ -71,7 +77,6 @@ class RouterModule(reactContext: ReactApplicationContext) :
             targetScene = targetScene,
             callbackId = callbackId,
             from = from,
-            closeSelf = closeSelf
         )
         NavigationHolder.registerNavigationCallback(callbackId, callback)
     }

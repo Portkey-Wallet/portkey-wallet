@@ -14,7 +14,7 @@ export interface PortkeyNativeModules {
 
 export interface RouterModule {
   navigateTo: <T = { [x: string]: AcceptableValueType }>(
-    entry: PortkeyEntries,
+    targetEntry: PortkeyEntries,
     launchMode: string,
     from: string,
     targetScene: string,
@@ -33,7 +33,7 @@ export interface RouterModule {
 
 export interface EntryResult<R> {
   data?: R;
-  status: 'success' | 'fail' | 'cancel';
+  status: 'success' | 'fail' | 'cancel' | 'system'; // never use system status, only for system
   extraMsg?: { [x: string]: any };
 }
 

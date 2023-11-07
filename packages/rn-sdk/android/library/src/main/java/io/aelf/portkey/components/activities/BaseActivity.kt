@@ -153,11 +153,7 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
     params: ReadableMap? = null,
     targetScene: String? = null,
     from: String? = null,
-    closeSelf: Boolean = false
 ) {
-    if (closeSelf) {
-        this.finish()
-    }
     val intent = Intent(this, getReactActivityClass(entryName))
     intent.putExtra(
         StorageIdentifiers.PAGE_PARAMS, (params ?: Arguments.createMap()).toBundle(

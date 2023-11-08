@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
@@ -20,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 
 abstract class BasePortkeyReactActivity : ReactActivity() {
 
@@ -36,6 +38,15 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         val pageEntry = intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
             ?: PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName
         NavigationHolder.pushNewComponent(this, pageEntry)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val paramsBundle = intent?.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
+        val params = Arguments.fromBundle(paramsBundle)
+        reactInstanceManager.currentReactContext?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)?.emit(
+            "onNewIntent", params
+        )
     }
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {
@@ -174,7 +185,7 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
 
 }
 
-private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray()): Bundle {
+fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray()): Bundle {
     val bundle = Bundle()
     this.entryIterator.forEachRemaining {
         bundle.putWithType(it.key, it.value)
@@ -184,7 +195,6 @@ private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emp
     }
     return bundle
 }
-
 /**
  * React Native only accept
  */

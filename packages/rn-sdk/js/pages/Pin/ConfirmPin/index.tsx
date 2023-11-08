@@ -53,6 +53,9 @@ export default function ConfirmPin({ oldPin, pin, deliveredSetPinInfo }: Confirm
       } catch (error) {
         CommonToast.failError(error);
       }
+      // navigateForResult(PortkeyEntries.ACCOUNT_SETTING_ENTRY, {
+      //   params: { name: 'frank', age: 20, sex: 'male' },
+      // });
       navigateForResult(PortkeyEntries.ACCOUNT_SETTING_ENTRY, {});
     },
     [navigateForResult, oldPin, t],

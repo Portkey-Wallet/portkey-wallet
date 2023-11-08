@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import PageContainer from 'components/PageContainer';
 import useBiometricsReady from 'hooks/useBiometrics';
-import { StyleSheet, Modal, NativeModules } from 'react-native';
+import { StyleSheet, Modal, NativeModules, DeviceEventEmitter } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { useLanguage } from 'i18n/hooks';
 import MenuItem from '../components/MenuItem';
@@ -10,10 +10,11 @@ import BaseContainerContext from 'model/container/BaseContainerContext';
 import { PortkeyEntries } from 'config/entries';
 import useBaseContainer from 'model/container/UseBaseContainer';
 import { CheckPinProps } from 'pages/Pin/CheckPin';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 export default function AccountSettings() {
   const biometricsReady = useBiometricsReady();
-  const { navigationTo } = useBaseContainer({
+  const { navigationTo, onNewIntent } = useBaseContainer({
     entryName: PortkeyEntries.ACCOUNT_SETTING_ENTRY,
   });
   const { t } = useLanguage();
@@ -50,7 +51,11 @@ export default function AccountSettings() {
     },
     [navigationTo],
   );
-
+  // useEffectOnce(() => {
+  //   onNewIntent((params: { name: any }) => {
+  //     console.log('wfs:::', params.name);
+  //   });
+  // });
   return (
     <BaseContainerContext.Provider value={{ entryName: PortkeyEntries.ACCOUNT_SETTING_ENTRY }}>
       <PageContainer

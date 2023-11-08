@@ -43,32 +43,12 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         val paramsBundle = intent?.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
-        val params = paramsBundle?.toWritableMap()
+        val params = Arguments.fromBundle(paramsBundle)
         reactInstanceManager.currentReactContext?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)?.emit(
             "onNewIntent", params
         )
     }
-    private fun bundleToWritableMap(bundle: Bundle?): WritableMap {
-        val writableMap: WritableMap = Arguments.createMap()
-        if(bundle == null) {
-            return writableMap
-        }
-        for (key in bundle.keySet()) {
 
-            when (val value = bundle.get(key)) {
-                is Boolean -> writableMap.putBoolean(key, value)
-                is Int -> writableMap.putInt(key, value)
-                is Double -> writableMap.putDouble(key, value)
-                is String -> writableMap.putString(key, value)
-                is Bundle -> writableMap.putMap(key, bundleToWritableMap(value))
-                else -> {
-                    // Handle other data types if needed
-                }
-            }
-        }
-
-        return writableMap
-    }
     override fun createReactActivityDelegate(): ReactActivityDelegate {
         val containerId = generateUniqueCallbackID()
         return object : ReactActivityDelegate(
@@ -214,24 +194,6 @@ fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray(
         bundle.putWithType(it.first, it.second)
     }
     return bundle
-}
-fun Bundle.toWritableMap(): WritableMap {
-    val writableMap: WritableMap = Arguments.createMap()
-    for (key in this.keySet()) {
-
-        when (val value = this.get(key)) {
-            is Boolean -> writableMap.putBoolean(key, value)
-            is Int -> writableMap.putInt(key, value)
-            is Double -> writableMap.putDouble(key, value)
-            is String -> writableMap.putString(key, value)
-            is Bundle -> writableMap.putMap(key, value.toWritableMap())
-            else -> {
-                // Handle other data types if needed
-            }
-        }
-    }
-
-    return writableMap
 }
 /**
  * React Native only accept

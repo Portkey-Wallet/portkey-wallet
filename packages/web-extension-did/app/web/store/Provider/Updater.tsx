@@ -4,7 +4,7 @@ import { keepAliveOnPages } from 'utils/keepSWActive';
 import useUpdateRedux from './useUpdateRedux';
 import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
 import { useUserInfo } from './hooks';
 import { request } from '@portkey-wallet/api/api-did';
@@ -34,6 +34,7 @@ export default function Updater() {
   const { pathname } = useLocation();
   const { passwordSeed } = useUserInfo();
   const checkManagerOnLogout = useCheckManagerOnLogout();
+  const isMainnet = useIsMainnet();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
   useMemo(() => {
@@ -49,11 +50,12 @@ export default function Updater() {
     });
   }, [imApiUrl, imWsUrl]);
   useMemo(() => {
+    const s3_key = isMainnet ? process.env.IM_S3_KEY : process.env.IM_S3_TEST_KEY;
     s3Instance.setConfig({
       bucket: imS3Bucket || '',
-      key: process.env.IM_S3_KEY || '',
+      key: s3_key || '',
     });
-  }, [imS3Bucket]);
+  }, [imS3Bucket, isMainnet]);
   initIm();
   useVerifierList();
   useUpdateRedux();

@@ -1,10 +1,11 @@
 import { firebase } from '@react-native-firebase/app-check';
 import { copyText } from 'utils';
 
-export const getAppCheckToken = async (): Promise<string> => {
+export const getAppCheckToken = async (forceRefresh?: boolean): Promise<string> => {
   try {
-    const { token } = await firebase.appCheck().getToken();
+    const { token } = await firebase.appCheck().getToken(forceRefresh);
     if (token?.length > 0 && __DEV__) await copyText(token);
+    alert(token);
     console.log('app check token!', token);
 
     return token || '';
@@ -19,7 +20,7 @@ export async function setupAppCheck() {
   appCheckProvider.configure({
     android: {
       provider: __DEV__ ? 'debug' : 'playIntegrity',
-      debugToken: '698956B2-187B-49C6-9E25-C3F3530EEBAF',
+      debugToken: '21214D7B-5841-48EE-931D-90E6A02B2EB3',
     },
     apple: {
       provider: __DEV__ ? 'debug' : 'appAttestWithDeviceCheckFallback',

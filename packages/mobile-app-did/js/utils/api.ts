@@ -32,7 +32,7 @@ class MobileVerification extends Verification {
         if (isNeedRecaptcha) {
           // app check
           try {
-            const appCheckToken = await getAppCheckToken();
+            const appCheckToken = await getAppCheckToken(true);
             config.headers = {
               appCheckToken: appCheckToken || '',
             };

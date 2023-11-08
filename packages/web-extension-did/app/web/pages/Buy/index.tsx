@@ -43,7 +43,7 @@ import {
   SERVICE_UNAVAILABLE_TEXT,
   SYNCHRONIZING_CHAIN_TEXT,
 } from '@portkey-wallet/constants/constants-ca/payment';
-import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -63,7 +63,7 @@ export default function Buy() {
   const { setLoading } = useLoading();
   const [curFiat, setCurFiat] = useState<PartialFiatType>(initFiat);
   const [rateUpdateTime, setRateUpdateTime] = useState(MAX_UPDATE_TIME);
-  const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useExtensionBuyButtonShow();
+  const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useRampEntryShow();
   const checkManagerSyncState = useCheckManagerSyncState();
   useFetchTxFee();
   const { ach: achFee } = useGetTxFee('AELF');
@@ -280,7 +280,7 @@ export default function Buy() {
 
   const handlePageChange = useCallback(
     async (e: RadioChangeEvent) => {
-      refreshBuyButton(); // fetch on\off ramp is display
+      refreshRampShow(); // fetch on\off ramp is display
 
       const side = e.target.value;
       // Compatible with the situation where the function is turned off when the user is on the page.
@@ -325,7 +325,7 @@ export default function Buy() {
         setLoading(false);
       }
     },
-    [isBuySectionShow, isSellSectionShow, refreshBuyButton, setLoading, stopInterval, t, updateCrypto],
+    [isBuySectionShow, isSellSectionShow, refreshRampShow, setLoading, stopInterval, t, updateCrypto],
   );
 
   const handleSelect = useCallback(
@@ -374,7 +374,7 @@ export default function Buy() {
   const handleNext = useCallback(async () => {
     const { side } = valueSaveRef.current;
     setLoading(true);
-    const result = await refreshBuyButton();
+    const result = await refreshRampShow();
     const isBuySectionShow = result.isBuySectionShow;
     const isSellSectionShow = result.isSellSectionShow;
     // Compatible with the situation where the function is turned off when the user is on the page.
@@ -442,7 +442,7 @@ export default function Buy() {
     defaultToken.decimals,
     defaultToken.symbol,
     navigate,
-    refreshBuyButton,
+    refreshRampShow,
     setInsufficientFundsMsg,
     setLoading,
     state,

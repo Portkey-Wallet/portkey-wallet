@@ -34,15 +34,14 @@ class MobileVerification extends Verification {
           try {
             const appCheckToken = await getAppCheckToken(true);
             config.headers = {
-              appCheckToken: appCheckToken || '',
+              acToken: appCheckToken || '',
             };
             const request1 = await request.verify.sendVerificationRequest(config);
             await this.set(key, { ...request1, time: Date.now() });
             return request1;
           } catch (err: any) {
             // google  human-machine verification
-            if (err?.code === 206) {
-              // TODO: change response code
+            if (err?.code === 208) {
               // TODO: add language
               const reCaptchaToken = await verifyHumanMachine('en');
               config.headers = {

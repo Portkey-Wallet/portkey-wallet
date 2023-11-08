@@ -55,11 +55,13 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg18,
     borderTopLeftRadius: pTd(2),
     marginLeft: -pTd(8),
+    overflow: 'hidden',
   },
   wrapRight: {
     backgroundColor: defaultColors.bg9,
     borderTopRightRadius: pTd(2),
     marginRight: 0,
+    overflow: 'hidden',
   },
   containerToNextRightStyle: {
     borderBottomRightRadius: pTd(20),

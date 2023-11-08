@@ -113,6 +113,7 @@ export const BackEndNetWorkMap: {
     tokenClaimContractAddress: '233wFn5JbyD4i8R5Me4cW4z6edfFGRn5bpWnGuY8fjR7b2kRsD',
     cmsUrl: 'https://cms-test.portkey.finance/graphql',
     s3Url: 'https://portkey-cms-testnet.s3.ap-northeast-1.amazonaws.com',
+    imS3Bucket: 'portkey-im-testnet',
     portkeyFinanceUrl: 'https://test.portkey.finance',
     eBridgeUrl: 'https://test.ebridge.exchange',
   },

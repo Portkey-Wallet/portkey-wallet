@@ -18,6 +18,8 @@ import { useInputFocus } from 'hooks/useInputFocus';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
 import Touchable from 'components/Touchable';
 import { TextL } from 'components/CommonText';
+import { sleep } from '@portkey-wallet/utils';
+import { isIOS } from '@rneui/base';
 
 const EditGroupPage = () => {
   const iptRef = useRef<TextInput>();
@@ -61,6 +63,8 @@ const EditGroupPage = () => {
   const onSave = useCallback(async () => {
     try {
       Loading.show();
+      if (!isIOS) await sleep(500); // adjust large size photo on android
+
       const s3Url = await uploadRef.current?.uploadPhoto();
       await updateChannelInfo(currentChannelId || '', groupName?.trim(), s3Url || icon);
       CommonToast.success('Save successfully');

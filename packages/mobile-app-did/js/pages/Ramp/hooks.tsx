@@ -7,26 +7,41 @@ import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
 import isEqual from 'lodash/isEqual';
 import {
   IBuyPriceResult,
+  IBuyProviderPrice,
   IGetBuyDetailRequest,
   IGetSellDetailRequest,
   IRampCryptoItem,
   IRampFiatItem,
   ISellPriceResult,
+  ISellProviderPrice,
   RampType,
 } from '@portkey-wallet/ramp';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
-import { getBuyPrice, getSellPrice } from '@portkey-wallet/utils/ramp';
+import { getBuyDetail, getBuyPrice, getSellDetail, getSellPrice } from '@portkey-wallet/utils/ramp';
 
-export const useReceive = (
-  type: RampType,
-  amount: string,
-  fiat?: IRampFiatItem,
-  crypto?: IRampCryptoItem,
+export interface UseReceiveParams {
+  type: RampType;
+  amount: string;
+  fiat?: IRampFiatItem;
+  crypto?: IRampCryptoItem;
+  initialReceiveAmount?: string;
+  initialRate?: string;
+  limitAmountRef?: React.MutableRefObject<IRampLimit | undefined>;
+  isRefreshReceiveValid?: React.MutableRefObject<boolean>;
+  isProviderShow?: boolean;
+}
+
+export const useReceive = ({
+  type,
+  amount,
+  fiat,
+  crypto,
   initialReceiveAmount = '',
   initialRate = '',
-  limitAmountRef?: React.MutableRefObject<IRampLimit | undefined>,
-  isRefreshReceiveValid?: React.MutableRefObject<boolean>,
-) => {
+  limitAmountRef,
+  isRefreshReceiveValid,
+  isProviderShow = false,
+}: UseReceiveParams) => {
   const [receiveAmount, setReceiveAmount] = useState<string>(initialReceiveAmount);
   const [rate, setRate] = useState<string>(initialRate);
   const rateRefreshTimeRef = useRef(MAX_REFRESH_TIME);
@@ -34,6 +49,8 @@ export const useReceive = (
   const refreshReceiveRef = useRef<() => void>();
   const refreshReceiveTimerRef = useRef<NodeJS.Timer>();
   const isFocusedRef = useRef(false);
+
+  const [providerPriceList, setProviderPriceList] = useState<IBuyProviderPrice[] | ISellProviderPrice[]>([]);
 
   const [amountError, setAmountError] = useState<ErrorType>(INIT_NONE_ERROR);
 
@@ -110,6 +127,7 @@ export const useReceive = (
 
     let params: IGetBuyDetailRequest | IGetSellDetailRequest;
     let rst: IBuyPriceResult | ISellPriceResult;
+    let providerRst: IBuyProviderPrice[] | ISellProviderPrice[] = [];
     try {
       if (type === RampType.BUY) {
         params = {
@@ -121,6 +139,9 @@ export const useReceive = (
         };
         lastParams.current = params;
         rst = await getBuyPrice(params);
+        if (isProviderShow) {
+          providerRst = await getBuyDetail(params);
+        }
       } else {
         params = {
           crypto: crypto.symbol,
@@ -132,6 +153,9 @@ export const useReceive = (
         lastParams.current = params;
 
         rst = await getSellPrice(params);
+        if (isProviderShow) {
+          providerRst = await getSellDetail(params);
+        }
       }
 
       if (refreshReceiveTimerRef.current === undefined) {
@@ -160,16 +184,45 @@ export const useReceive = (
         _receiveAmount = formatAmountShow((rst as ISellPriceResult).fiatAmount, 4);
       }
 
+      if (isProviderShow && providerRst && Array.isArray(providerRst)) {
+        if (type === RampType.BUY) {
+          providerRst = providerRst.map(item => ({
+            ...item,
+            cryptoAmount: formatAmountShow((item as IBuyProviderPrice).cryptoAmount || '', 4),
+          }));
+        } else {
+          providerRst = providerRst.map(item => ({
+            ...item,
+            cryptoAmount: formatAmountShow((item as ISellProviderPrice).fiatAmount || '', 4),
+          }));
+        }
+      } else {
+        providerRst = [];
+      }
+
       setRate(_rate);
       setReceiveAmount(_receiveAmount);
+      isProviderShow && setProviderPriceList(providerRst);
+
       return {
         rate: _rate,
         receiveAmount: _receiveAmount,
+        providerPriceList: providerRst,
       };
     } catch (error) {
       console.log('error', error);
     }
-  }, [amount, fiat, crypto, limitAmountRef, clearRefreshReceive, type, isRefreshReceiveValid, registerRefreshReceive]);
+  }, [
+    amount,
+    fiat,
+    crypto,
+    limitAmountRef,
+    clearRefreshReceive,
+    type,
+    isRefreshReceiveValid,
+    isProviderShow,
+    registerRefreshReceive,
+  ]);
   refreshReceiveRef.current = refreshReceive;
 
   const timer = useRef<NodeJS.Timeout>();
@@ -194,5 +247,13 @@ export const useReceive = (
     }
   }, [fiat, crypto]);
 
-  return { receiveAmount, rate, rateRefreshTime, refreshReceive, amountError, isAllowAmount: isAllowAmountRef.current };
+  return {
+    receiveAmount,
+    rate,
+    providerPriceList,
+    rateRefreshTime,
+    refreshReceive,
+    amountError,
+    isAllowAmount: isAllowAmountRef.current,
+  };
 };

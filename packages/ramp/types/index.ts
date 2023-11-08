@@ -6,6 +6,7 @@ export * from './signalr';
 export * from './config';
 export * from './provider';
 export * from './request';
+export * from './utils';
 
 export interface IBaseRampOptions {
   request: IRampRequest;
@@ -25,7 +26,7 @@ export interface IOrderInfo {
   cryptoPrice: string;
   status: string;
   displayStatus: string;
-  transDirect: ITransDirectEnum; // TokeyBuy,TokenSell
+  transDirect: ITransDirectEnum; // TokenBuy,TokenSell
 }
 
 export interface IGenerateTransactionResult {

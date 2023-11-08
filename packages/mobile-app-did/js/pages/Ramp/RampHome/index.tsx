@@ -32,7 +32,7 @@ const tabList: TabItemType[] = [
   },
 ];
 
-export default function BuyHome() {
+export default function RampHome() {
   const { isBuySectionShow, isSellSectionShow, refreshBuyButton } = useAppBuyButtonShow();
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
     isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,

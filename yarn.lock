@@ -5672,13 +5672,13 @@
     aelf-sdk "^3.2.44"
     query-string "^7.1.1"
 
-"@portkey/socket@1.0.0-alpha.2":
-  version "1.0.0-alpha.2"
-  resolved "https://registry.npmjs.org/@portkey/socket/-/socket-1.0.0-alpha.2.tgz#fc243b61c03d2d5c0856190478af566841c00c0e"
-  integrity sha512-B2qr5wIYMS1A0d7UtnfhRJtOPJ+S51tf8Vyp3UdND5BT4d9b63XdeSjSnaBmzLuxXwT9zVP4kRJNkhLPaMpGQA==
+"@portkey/socket@1.5.0-alpha.8":
+  version "1.5.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/@portkey/socket/-/socket-1.5.0-alpha.8.tgz#9f246ad8838b5404bd85c5dbaf4366cc2378721a"
+  integrity sha512-u03W7f2kzc+DVPyHbe1tneB/p/5BKmJj70ds2kUUadl2oigqFdJEHFBtuJtQZVKYA2kbgmoRnSQtamtMmeF2QQ==
   dependencies:
     "@abp/signalr" "^7.0.0"
-    "@portkey/utils" "^1.0.0-alpha.2"
+    "@portkey/utils" "^1.5.0-alpha.8"
 
 "@portkey/socket@^1.0.10":
   version "1.0.10"
@@ -5716,13 +5716,6 @@
   dependencies:
     "@types/elliptic" "^6.4.14"
 
-"@portkey/utils@^1.0.0-alpha.2":
-  version "1.0.0-alpha.2"
-  resolved "https://registry.npmjs.org/@portkey/utils/-/utils-1.0.0-alpha.2.tgz#719184830e520976c35db44ed131bcd95923df0b"
-  integrity sha512-Q+6yQuOPqXk/I4QzJD8AgEP/FhBd1NjnPkoEn1rjWAskONaVlBDKWL3lB2ihtGoSK+kn/c5YJ5aNLZJ4KLbkog==
-  dependencies:
-    aelf-sdk "^3.2.44"
-
 "@portkey/utils@^1.0.10":
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/@portkey/utils/-/utils-1.0.10.tgz#d996f6609816869c35e0881890063f908a0545d3"
@@ -5735,6 +5728,14 @@
   version "1.4.3"
   resolved "https://registry.npmjs.org/@portkey/utils/-/utils-1.4.3.tgz#fbd2e42ebb4e52132c10445dc1bc00e9af632670"
   integrity sha512-jOvVT2eID8p5pAAAZuQ61xoysloto45Bh6ao1s7tu/iZ1mcytoGz2fQqFxheULUZ4xz1KtXQi+qgWW5+E7D5Bw==
+  dependencies:
+    aelf-sdk "3.2.45-beta.0"
+    query-string "^7.1.1"
+
+"@portkey/utils@^1.5.0-alpha.8":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@portkey/utils/-/utils-1.5.0.tgz#eb5d1e719271769869e9c58cdce4b9fd8ca66cdf"
+  integrity sha512-Yrk7R7AIVvmy8XjQoKE/bVv9Z3br97XoJpTZ8lN6h0FHbh7XH2FcfsexN4m4bf1F6sHZkpf6Wv0R4QT9QPKmOQ==
   dependencies:
     aelf-sdk "3.2.45-beta.0"
     query-string "^7.1.1"

@@ -2,83 +2,73 @@ import { RampType } from '../constants';
 import {
   IRampProviderInfo,
   IRampService,
-  IRampSellSocket,
   IRampProviderOptions,
-  IAlchemyRampService,
-  IAlchemyRampProviderOptions,
-  ITransakRampService,
-  ITransakRampProviderOptions,
-  IAlchemyProvider,
-  ITransakProvider,
-  IRampProviderGenerateUrl,
+  IAlchemyPayRampService,
+  IAlchemyPayRampProviderOptions,
+  IAlchemyPayProvider,
+  IRampProviderCreateOrderParams,
+  IRampProvider,
+  IRampProviderCreateOrderResult,
 } from '../types';
 
-export abstract class RampProvider {
+export abstract class RampProvider implements IRampProvider {
   public providerInfo: IRampProviderInfo;
   public service: IRampService;
-  public sellSocket: IRampSellSocket;
 
   constructor(options: IRampProviderOptions) {
     this.providerInfo = options.providerInfo;
     this.service = options.service;
-    this.sellSocket = options.sellSocket;
   }
-
-  // for go to pay
-  abstract generateUrl(params: IRampProviderGenerateUrl): void;
+  abstract createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult>;
 }
 
-export class AlchemyProvider extends RampProvider implements IAlchemyProvider {
+export class AlchemyPayProvider extends RampProvider implements IAlchemyPayProvider {
   public providerInfo: IRampProviderInfo;
-  public service: IAlchemyRampService;
-  public sellSocket: IRampSellSocket;
+  public service: IAlchemyPayRampService;
 
-  constructor(options: IAlchemyRampProviderOptions) {
+  constructor(options: IAlchemyPayRampProviderOptions) {
     super(options);
     this.providerInfo = options.providerInfo;
     this.service = options.service;
-    this.sellSocket = options.sellSocket;
   }
 
-  generateUrl(params: IRampProviderGenerateUrl) {
+  async createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult> {
     if (params?.email) {
-      this.getAchToken(params.email);
+      this.getToken(params.email);
     }
 
     // TODO
-    this.getAchSignature(params.address);
+    this.getSignature(params.address);
     if (params.type === RampType.BUY) {
-      return '';
+      return { orderId: '', url: '' };
     }
-    return '';
+    return { orderId: '', url: '' };
   }
 
-  public getAchToken(email: string) {
-    this.service.getAchToken({ email });
+  public getToken(email: string) {
+    this.service.getAchPayToken({ email });
   }
 
-  public getAchSignature(address: string) {
-    this.service.getAchSignature({ address });
+  public getSignature(address: string) {
+    this.service.getAchPaySignature({ address });
   }
 }
 
-export class TransakProvider extends RampProvider implements ITransakProvider {
+export class TransakProvider extends RampProvider implements IRampProvider {
   public providerInfo: IRampProviderInfo;
-  public service: ITransakRampService;
-  public sellSocket: IRampSellSocket;
+  public service: IRampService;
 
-  constructor(options: ITransakRampProviderOptions) {
+  constructor(options: IRampProviderOptions) {
     super(options);
     this.providerInfo = options.providerInfo;
     this.service = options.service;
-    this.sellSocket = options.sellSocket;
   }
 
-  generateUrl(params: IRampProviderGenerateUrl) {
+  async createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult> {
     // TODO
     if (params.type === RampType.BUY) {
-      return '';
+      return { orderId: '', url: '' };
     }
-    return '';
+    return { orderId: '', url: '' };
   }
 }

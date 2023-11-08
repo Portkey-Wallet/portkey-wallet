@@ -1,44 +1,31 @@
 import { IRampProviderType, RampType } from '../constants';
-import { RampProvider } from '../provider';
-import { IRampSellSocket } from './sellSocket';
-import { IAlchemyRampService, IRampService, ITransakRampService } from './services';
+import { IAlchemyPayRampService, IRampService } from './services';
 
 export interface IRampProvider {
   providerInfo: IRampProviderInfo;
   service: IRampService;
-  sellSocket: IRampSellSocket;
-  generateUrl: (params: IRampProviderGenerateUrl) => void;
+  createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult>;
 }
-export interface IAlchemyProvider extends IRampProvider {
-  getAchToken: (email: string) => void;
-  getAchSignature: (address: string) => void;
+export interface IAlchemyPayProvider extends IRampProvider {
+  service: IAlchemyPayRampService;
+  getToken(email: string): void;
+  getSignature(address: string): void;
 }
-
-export type ITransakProvider = IRampProvider;
 
 export interface IRampProviderOptions {
   providerInfo: IRampProviderInfo;
   service: IRampService;
-  sellSocket: IRampSellSocket;
 }
 
-export interface IAlchemyRampProviderOptions extends IRampProviderOptions {
-  service: IAlchemyRampService;
-}
-
-export interface ITransakRampProviderOptions extends IRampProviderOptions {
-  service: ITransakRampService;
+export interface IAlchemyPayRampProviderOptions extends IRampProviderOptions {
+  service: IAlchemyPayRampService;
 }
 
 export type IRampProviderMap = {
-  [T in IRampProviderType]?: RampProvider; // AlchemyProvider | TransakProvider
+  [T in IRampProviderType]?: IRampProvider; // AlchemyPayProvider | TransakProvider
 };
 
-export type IRampProvidersInfo = {
-  [T in IRampProviderType]?: IRampProviderInfo;
-};
-
-export type IRampProviderInfo = {
+export interface IRampProviderInfo {
   key: IRampProviderType;
   name: string;
   appId: string;
@@ -47,15 +34,17 @@ export type IRampProviderInfo = {
   logo: string;
   coverage: IRampProviderCoverage;
   paymentTags: string[];
-};
+}
 
-export type IRampProviderCoverage = {
+export interface IRampProviderCoverage {
   buy: boolean;
   sell: boolean;
-};
+}
 
-export type IRampProviderGenerateUrl = {
+export type IRampProviderCreateOrderParams = {
   type: RampType;
   address: string;
   email?: string;
 };
+
+export type IRampProviderCreateOrderResult = { orderId: string; url: string };

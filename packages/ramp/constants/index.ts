@@ -1,6 +1,3 @@
-import { AlchemyProvider, TransakProvider } from '../provider';
-import { IRampProviderMap } from '../types';
-
 export enum RampType {
   BUY = 'BUY',
   SELL = 'SELL',
@@ -12,43 +9,10 @@ export enum RampTypeLower {
 }
 
 export enum IRampProviderType {
-  Alchemy = 'Alchemy',
+  AlchemyPay = 'Alchemy',
   Transak = 'Transak',
 }
 
-export const InitRampProvidersInfo: IRampProviderMap = {
-  Alchemy: new AlchemyProvider({
-    providerInfo: {
-      key: IRampProviderType.Alchemy,
-      name: 'Alchemy Pay',
-      appId: '',
-      baseUrl: '',
-      callbackUrl: '',
-      logo: '',
-      coverage: {
-        buy: false,
-        sell: false,
-      },
-      paymentTags: [],
-    },
-    service: {} as any,
-    sellSocket: {},
-  }),
-  Transak: new TransakProvider({
-    providerInfo: {
-      key: IRampProviderType.Transak,
-      name: 'Transak',
-      appId: '',
-      baseUrl: '',
-      callbackUrl: '',
-      logo: '',
-      coverage: {
-        buy: false,
-        sell: false,
-      },
-      paymentTags: [],
-    },
-    service: {} as any,
-    sellSocket: {},
-  }),
-};
+export declare const DefaultRampListenList: readonly ['onRampOrderChanged'];
+
+export const RAMP_SOCKET_TIMEOUT = 15 * 1000;

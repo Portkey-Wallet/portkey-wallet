@@ -35,11 +35,11 @@ export default {
     target: '/api/app/thirdPart/order',
     config: { method: 'POST' },
   },
-  getAchToken: {
+  getAchPayToken: {
     target: '/api/app/thirdPart/ramp/alchemy/token',
     config: { method: 'POST' },
   },
-  getAchSignature: {
+  getAchPaySignature: {
     target: '/api/app/thirdPart/ramp/alchemy/signature',
     config: { method: 'GET' },
   },

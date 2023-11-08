@@ -1,12 +1,12 @@
 import {
-  IAlchemyRampService,
+  IAlchemyPayRampService,
   IBuyDetailResult,
   IBuyLimitResult,
   IBuyPriceResult,
-  IGetAchSignatureRequest,
-  IGetAchSignatureResult,
-  IGetAchTokenRequest,
-  IGetAchTokenResult,
+  IGetAchPaySignatureRequest,
+  IGetAchPaySignatureResult,
+  IGetAchPayTokenRequest,
+  IGetAchPayTokenResult,
   IGetBuyDetailRequest,
   IGetBuyPriceRequest,
   IGetCryptoDataRequest,
@@ -28,7 +28,6 @@ import {
   ISellDetailResult,
   ISellLimitResult,
   ISellPriceResult,
-  ITransakRampService,
 } from '../types/services';
 import RampApi from '../api';
 import { RampType } from '../constants';
@@ -154,7 +153,7 @@ export class RampService implements IRampService {
   }
 }
 
-export class AlchemyRampService extends RampService implements IAlchemyRampService {
+export class AlchemyPayRampService extends RampService implements IAlchemyPayRampService {
   public baseUrl: string;
   public clientType: IClientType;
   public request: IRampRequest;
@@ -166,33 +165,20 @@ export class AlchemyRampService extends RampService implements IAlchemyRampServi
     this.request = options?.request;
   }
 
-  getAchToken(params: IGetAchTokenRequest): IRampServiceCommon<IGetAchTokenResult> {
+  getAchPayToken(params: IGetAchPayTokenRequest): IRampServiceCommon<IGetAchPayTokenResult> {
     return this.request.send(this.baseUrl, {
-      url: RampApi.getAchToken.target,
-      method: RampApi.getAchToken.config.method,
+      url: RampApi.getAchPayToken.target,
+      method: RampApi.getAchPayToken.config.method,
       params,
     });
   }
-  getAchSignature(params: IGetAchSignatureRequest): IRampServiceCommon<IGetAchSignatureResult> {
+  getAchPaySignature(params: IGetAchPaySignatureRequest): IRampServiceCommon<IGetAchPaySignatureResult> {
     return this.request.send(this.baseUrl, {
-      url: RampApi.getAchSignature.target,
-      method: RampApi.getAchSignature.config.method,
+      url: RampApi.getAchPaySignature.target,
+      method: RampApi.getAchPaySignature.config.method,
       params,
     });
   }
 }
 
-export class TransakRampService extends RampService implements ITransakRampService {
-  public baseUrl: string;
-  public clientType: IClientType;
-  public request: IRampRequest;
-
-  constructor(options: IRampServiceOptions) {
-    super(options);
-    this.baseUrl = options?.baseUrl || '';
-    this.clientType = options?.clientType || 'iOS';
-    this.request = options?.request;
-  }
-}
-
-export * from './sellSocket';
+export * from '../signalr';

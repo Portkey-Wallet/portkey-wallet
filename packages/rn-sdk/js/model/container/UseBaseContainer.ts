@@ -1,16 +1,22 @@
 import { PortkeyEntries } from 'config/entries';
 import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
-import { EmitterSubscription } from 'react-native';
+import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
 import { EntryResult, PortkeyDeviceEventEmitter, RouterOptions, PortkeyModulesEntity } from 'service/native-modules';
 import { AcceptableValueType } from './BaseContainer';
 import BaseContainerContext from './BaseContainerContext';
 import { LanuchMode, LaunchModeSet } from 'global/init/entries';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks => {
   const onShowListener = useRef<EmitterSubscription | null>(null);
   const baseContainerContext = useContext(BaseContainerContext);
   const { containerId, entryName, onShow } = props;
-
+  const onNewIntent = useCallback((listener: (arg0: any) => void) => {
+    DeviceEventEmitter.addListener('onNewIntent', params => {
+      // 处理传递的参数
+      listener(params);
+    });
+  }, []);
   useEffect(() => {
     if (containerId) {
       onShowListener.current?.remove();
@@ -115,8 +121,9 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
       onError,
       onFatal,
       onWarn,
+      onNewIntent,
     };
-  }, [getEntryName, navigateForResult, navigationTo, onError, onFatal, onFinish, onWarn]);
+  }, [getEntryName, navigateForResult, navigationTo, onError, onFatal, onFinish, onWarn, onNewIntent]);
 };
 
 export interface BaseContainerHooks {
@@ -142,6 +149,7 @@ export interface BaseContainerHooks {
   onError: (err: Error) => void;
   onFatal: (err: Error) => void;
   onWarn: (msg: string) => void;
+  onNewIntent: (params: any) => void;
 }
 
 export interface VoidResult {}

@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
@@ -20,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
 
 abstract class BasePortkeyReactActivity : ReactActivity() {
 
@@ -38,6 +40,35 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         NavigationHolder.pushNewComponent(this, pageEntry)
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val paramsBundle = intent?.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
+        val params = paramsBundle?.toWritableMap()
+        reactInstanceManager.currentReactContext?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)?.emit(
+            "onNewIntent", params
+        )
+    }
+    private fun bundleToWritableMap(bundle: Bundle?): WritableMap {
+        val writableMap: WritableMap = Arguments.createMap()
+        if(bundle == null) {
+            return writableMap
+        }
+        for (key in bundle.keySet()) {
+
+            when (val value = bundle.get(key)) {
+                is Boolean -> writableMap.putBoolean(key, value)
+                is Int -> writableMap.putInt(key, value)
+                is Double -> writableMap.putDouble(key, value)
+                is String -> writableMap.putString(key, value)
+                is Bundle -> writableMap.putMap(key, bundleToWritableMap(value))
+                else -> {
+                    // Handle other data types if needed
+                }
+            }
+        }
+
+        return writableMap
+    }
     override fun createReactActivityDelegate(): ReactActivityDelegate {
         val containerId = generateUniqueCallbackID()
         return object : ReactActivityDelegate(
@@ -174,7 +205,7 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
 
 }
 
-private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray()): Bundle {
+fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray()): Bundle {
     val bundle = Bundle()
     this.entryIterator.forEachRemaining {
         bundle.putWithType(it.key, it.value)
@@ -184,7 +215,24 @@ private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emp
     }
     return bundle
 }
+fun Bundle.toWritableMap(): WritableMap {
+    val writableMap: WritableMap = Arguments.createMap()
+    for (key in this.keySet()) {
 
+        when (val value = this.get(key)) {
+            is Boolean -> writableMap.putBoolean(key, value)
+            is Int -> writableMap.putInt(key, value)
+            is Double -> writableMap.putDouble(key, value)
+            is String -> writableMap.putString(key, value)
+            is Bundle -> writableMap.putMap(key, value.toWritableMap())
+            else -> {
+                // Handle other data types if needed
+            }
+        }
+    }
+
+    return writableMap
+}
 /**
  * React Native only accept
  */

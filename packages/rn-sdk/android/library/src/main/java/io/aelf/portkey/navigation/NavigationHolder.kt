@@ -1,12 +1,14 @@
 package io.aelf.portkey.navigation
 
 import android.content.Intent
+import android.os.Bundle
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.WritableMap
 import io.aelf.portkey.components.activities.BasePortkeyReactActivity
 import io.aelf.portkey.components.activities.DefaultReactActivity
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
+import io.aelf.portkey.config.StorageIdentifiers
 import java.lang.ref.WeakReference
 import java.util.LinkedList
 
@@ -80,7 +82,7 @@ internal object NavigationHolder {
     fun hasEntry(pageEntry: String): Boolean {
         return entryMap.keys.contains(pageEntry)
     }
-    fun singleTaskOp(pageEntry: String): Boolean {
+    fun singleTaskOp(pageEntry: String, bundle: Bundle): Boolean {
         val component = findComponentByEntry(pageEntry)
         val iterator = naviStack.listIterator()
         val list = arrayListOf<WeakReference<BasePortkeyReactActivity>>()
@@ -98,12 +100,15 @@ internal object NavigationHolder {
                 entryMap.remove(componentKey)
                 it.get()?.navigateBackWithResult(generateSystemCallbackData())
             }
+            getTopComponent()?.onNewIntent(Intent().apply {
+                putExtra(StorageIdentifiers.PAGE_PARAMS, bundle)
+            })
             return true
         } else {
             return false
         }
     }
-    fun singleTopOp(pageEntry: String): Boolean{
+    fun singleTopOp(pageEntry: String, bundle: Bundle): Boolean{
         return false
     }
 

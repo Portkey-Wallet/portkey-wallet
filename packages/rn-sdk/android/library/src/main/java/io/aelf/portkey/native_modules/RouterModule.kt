@@ -1,12 +1,16 @@
 package io.aelf.portkey.native_modules
 
+import android.os.Bundle
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import io.aelf.portkey.components.activities.navigateToAnotherReactActivity
+import io.aelf.portkey.components.activities.toBundle
+import io.aelf.portkey.config.StorageIdentifiers
 import io.aelf.portkey.navigation.NavigationHolder
 import io.aelf.portkey.tools.generateUniqueCallbackID
 
@@ -29,7 +33,8 @@ class RouterModule(reactContext: ReactApplicationContext) :
         if(closeCurrentScreen) {
             NavigationHolder.popAndFinish(activity)
         }
-        if(startLaunchModeActivity(launchMode, targetEntry)){
+        val bundle = params.toBundle()
+        if(startLaunchModeActivity(launchMode, targetEntry, bundle)){
             return
         }
 
@@ -41,13 +46,13 @@ class RouterModule(reactContext: ReactApplicationContext) :
         )
     }
 
-    private fun startLaunchModeActivity(launchMode: String, targetEntry: String): Boolean {
+    private fun startLaunchModeActivity(launchMode: String, targetEntry: String, bundle: Bundle): Boolean {
         if((launchMode == "single_task" || launchMode == "single_top")&& NavigationHolder.hasEntry(targetEntry)){
             // 1. mode match, 2.task stack has entry instance
             return if(launchMode == "single_task"){
-                NavigationHolder.singleTaskOp(targetEntry)
+                NavigationHolder.singleTaskOp(targetEntry, bundle)
             } else{
-                NavigationHolder.singleTopOp(targetEntry)
+                NavigationHolder.singleTopOp(targetEntry, bundle)
             }
         }
         return false
@@ -68,7 +73,16 @@ class RouterModule(reactContext: ReactApplicationContext) :
         if(closeSelf) {
             NavigationHolder.popAndFinish(activity)
         }
-        if(startLaunchModeActivity(launchMode, targetEntry)){
+        val bundle = (params.getMap("params")?:Arguments.createMap()).toBundle(
+            extraEntries = arrayOf(
+                Pair(StorageIdentifiers.PAGE_FROM, from ?: ""),
+                Pair(
+                    StorageIdentifiers.TARGET_SCENE, targetScene ?: ""
+                ),
+                Pair(StorageIdentifiers.PAGE_CALLBACK_ID, callbackId),
+            )
+        )
+        if(startLaunchModeActivity(launchMode, targetEntry, bundle)){
             return
         }
         activity?.navigateToAnotherReactActivity(

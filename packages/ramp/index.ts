@@ -1,6 +1,6 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { RampConfig } from './config';
-import { IRampProviderType, RAMP_SOCKET_TIMEOUT } from './constants';
+import { IRampProviderType, RAMP_SOCKET_TIMEOUT, SELL_ORDER_DISPLAY_STATUS } from './constants';
 import { AlchemyPayProvider, RampProvider, TransakProvider } from './provider';
 import { AlchemyPayRampService, RampService } from './service';
 import {
@@ -79,41 +79,57 @@ export abstract class BaseRamp implements IBaseRamp {
       }, RAMP_SOCKET_TIMEOUT);
     });
 
-    // const signalrSellPromise = new Promise<IOrderInfo>(resolve => {
-    //   const { remove: removeAchTx } = this.rampSignalr.onRampOrderChanged(async data => {
-    //     if (data === null) {
-    //       throw new Error('Transaction failed.');
-    //     }
+    let signalFinishPromiseResolve: (value: IOrderInfo | PromiseLike<IOrderInfo | null> | null) => void;
+    const signalFinishPromise = new Promise<IOrderInfo | null>(resolve => {
+      signalFinishPromiseResolve = resolve;
+    });
 
-    //     try {
-    //       status.current = STAGE.TRANSACTION;
-    //       const result = await paymentSellTransfer(data);
-    //       await request.payment.sendSellTransaction({
-    //         params: {
-    //           merchantName: ACH_MERCHANT_NAME,
-    //           orderId,
-    //           rawTransaction: result.rawTransaction,
-    //           signature: result.signature,
-    //           publicKey: result.publicKey,
-    //         },
-    //       });
-    //     } catch (e) {
-    //       resolve(null);
-    //       return;
-    //     }
+    let isTransferred = false;
+    const { remove: removeAchTx } = this.rampSignalr.onRampOrderChanged(async data => {
+      if (data.displayStatus === SELL_ORDER_DISPLAY_STATUS.TRANSFERRED) {
+        signalFinishPromiseResolve(data);
+        return;
+      }
 
-    //     const { remove: removeRes } = signalrSell.onRequestOrderTransferred({ clientId, orderId }, async data => {
-    //       status.current = STAGE.ORDER;
-    //       resolve(data);
-    //     });
-    //     signalrOrderRemove = removeRes;
-    //     signalrSell.requestOrderTransferred(clientId, orderId);
-    //   });
-    //   signalrAchTxRemove = removeAchTx;
-    //   signalrSell.requestAchTxAddress(clientId, orderId);
-    // });
+      if (data.displayStatus !== SELL_ORDER_DISPLAY_STATUS.CREATED) {
+        return;
+      }
 
-    return {} as any;
+      try {
+        const result = await generateTransaction(data);
+        await this.service.sendSellTransaction({
+          merchantName: data.merchantName,
+          orderId,
+          rawTransaction: result.rawTransaction,
+          signature: result.signature,
+          publicKey: result.publicKey,
+        });
+        isTransferred = true;
+      } catch (e) {
+        signalFinishPromiseResolve(null);
+        return;
+      }
+    });
+
+    await this.rampSignalr.requestRampOrderStatus(clientId, orderId);
+    const signalrSellResult = await Promise.race([timerPromise, signalFinishPromise]);
+
+    removeAchTx();
+    this.rampSignalr.stop();
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+
+    if (signalrSellResult === null) throw new Error('Transaction failed.');
+    if (signalrSellResult === 'timeout') {
+      if (!isTransferred) throw new Error('Transaction failed.');
+      throw {
+        code: 'TIMEOUT',
+        message: 'The waiting time is too long, it will be put on hold in the background.',
+      };
+    }
+    return signalrSellResult;
   }
 }
 

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../../index';
-import ramp from '@portkey-wallet/ramp';
+import ramp, { IRampProviderType } from '@portkey-wallet/ramp';
 import { sleep } from '@portkey-wallet/utils';
 import { setRampEntry } from '@portkey-wallet/store/store-ca/ramp/actions';
 import { useBuyFiat } from './buy';
@@ -20,7 +20,7 @@ export const useSellDefaultFiatListState = () => useAppCASelector(state => state
 export const useSellDefaultFiatState = () => useAppCASelector(state => state.ramp.sellDefaultFiat);
 
 export const useInitRamp = () => {
-  const { refreshRampShow } = useRampStateShow();
+  const { refreshRampShow } = useRampEntryShow();
   const { refreshBuyFiat } = useBuyFiat();
   const { refreshSellCrypto } = useSellCrypto();
 
@@ -41,7 +41,7 @@ export const useInitRamp = () => {
   }, [refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
 };
 
-export const useRampStateShow = () => {
+export const useRampEntryShow = () => {
   const dispatch = useAppCommonDispatch();
   const isMainnet = useIsMainnet();
   const { rampEntry } = useRampState();
@@ -63,10 +63,10 @@ export const useRampStateShow = () => {
     const rampProviders = ramp.providerMap;
 
     const isBuySectionShowNew = Object.keys(rampProviders).some(key => {
-      return rampProviders[key].coverage.buy === true;
+      return rampProviders[key as IRampProviderType]?.providerInfo.coverage.buy === true;
     });
     const isSellSectionShowNew = Object.keys(rampProviders).some(key => {
-      return rampProviders[key].coverage.sell === true;
+      return rampProviders[key as IRampProviderType]?.providerInfo.coverage.sell === true;
     });
     const isRampShowNew = isBuySectionShowNew || isSellSectionShowNew;
 

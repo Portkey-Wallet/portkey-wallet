@@ -38,7 +38,6 @@ export default function BuyForm() {
     refreshBuyFiat,
   } = useBuyFiat();
 
-  // const { buyFiatList: fiatList } = usePayment();
   const { refreshBuyButton } = useAppBuyButtonShow();
 
   const [fiatList, setFiatList] = useState<IRampFiatItem[]>(fiatListState);
@@ -124,7 +123,16 @@ export default function BuyForm() {
     refreshReceive,
     amountError: amountFetchError,
     isAllowAmount,
-  } = useReceive(RampType.BUY, amount, fiat, crypto, '', '', limitAmountRef, isRefreshReceiveValid);
+  } = useReceive({
+    type: RampType.BUY,
+    amount,
+    fiat,
+    crypto,
+    initialReceiveAmount: '',
+    initialRate: '',
+    limitAmountRef,
+    isRefreshReceiveValid,
+  });
   const refreshReceiveRef = useRef<typeof refreshReceive>();
   refreshReceiveRef.current = refreshReceive;
 
@@ -196,9 +204,9 @@ export default function BuyForm() {
       if (!rst) return;
       _rate = rst.rate;
       _receiveAmount = rst.receiveAmount;
-    } else {
-      Loading.hide();
     }
+
+    Loading.hide();
     navigationService.navigate('RampPreview', {
       amount,
       fiat,

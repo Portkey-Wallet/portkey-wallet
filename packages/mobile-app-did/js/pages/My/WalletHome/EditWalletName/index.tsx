@@ -25,6 +25,8 @@ import { TextL } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { sleep } from '@portkey-wallet/utils';
 
 const EditWalletName: React.FC = () => {
   const iptRef = useRef<TextInput>();
@@ -75,6 +77,7 @@ const EditWalletName: React.FC = () => {
     }
     Loading.show();
     try {
+      if (!isIOS) await sleep(500); // adjust large size on android
       const s3Url = await uploadRef.current?.uploadPhoto();
       if (s3Url) setAvatar(s3Url);
 

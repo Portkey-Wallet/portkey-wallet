@@ -9,12 +9,21 @@ export interface PortkeyNativeModules {
   NativeWrapperModule: NativeWrapperModule;
   StorageModule: StorageModule;
   PermissionModule: PermissionModule;
+  BiometricModule: BiometricModule;
 }
 
 export interface RouterModule {
-  navigateTo: (entry: PortkeyEntries, from: string, targetScene: string, closeCurrentScreen: boolean) => void;
+  navigateTo: <T = { [x: string]: AcceptableValueType }>(
+    targetEntry: PortkeyEntries,
+    launchMode: string,
+    from: string,
+    targetScene: string,
+    closeCurrentScreen: boolean,
+    params: Partial<T>,
+  ) => void;
   navigateToWithOptions: <R, T = { [x: string]: AcceptableValueType }>(
     targetEntry: string,
+    launchMode: string,
     from: string,
     params: RouterOptions<T>,
     callback: (res: EntryResult<R>) => void,
@@ -24,7 +33,7 @@ export interface RouterModule {
 
 export interface EntryResult<R> {
   data?: R;
-  status: 'success' | 'fail' | 'cancel';
+  status: 'success' | 'fail' | 'cancel' | 'system'; // never use system status, only for system
   extraMsg?: { [x: string]: any };
 }
 
@@ -77,7 +86,42 @@ export interface NetworkModule {
     extraOptions: NetworkOptions,
   ) => Promise<string>;
 }
-
+export interface BiometricModule {
+  bioAuthenticateAsync: (options: AuthenticationBioOptions) => Promise<AuthenticationBioResult>;
+  isEnrolledAsync: () => Promise<boolean>;
+}
+export type AuthenticationBioOptions = {
+  /**
+   * A message that is shown alongside the TouchID or FaceID prompt.
+   */
+  promptMessage?: string;
+  /**
+   * Allows to customize the default `Cancel` label shown.
+   */
+  cancelLabel?: string;
+  /**
+   * After several failed attempts the system will fallback to the device passcode. This setting
+   * allows you to disable this option and instead handle the fallback yourself. This can be
+   * preferable in certain custom authentication workflows. This behaviour maps to using the iOS
+   * Defaults to `false`.
+   */
+  disableDeviceFallback?: boolean;
+  /**
+   * Sets a hint to the system for whether to require user confirmation after authentication.
+   * This may be ignored by the system if the user has disabled implicit authentication in Settings
+   * or if it does not apply to a particular biometric modality. Defaults to `true`.
+   * @platform android
+   */
+  requireConfirmation?: boolean;
+  /**
+   * Allows to customize the default `Use Passcode` label shown after several failed
+   * authentication attempts. Setting this option to an empty string disables this button from
+   * showing in the prompt.
+   * @platform ios
+   */
+  fallbackLabel?: string;
+};
+export type AuthenticationBioResult = { success: true } | { success: false; error: string; warning?: string };
 export const nativeFetch = async <T>(
   url: string,
   method: 'GET' | 'POST',

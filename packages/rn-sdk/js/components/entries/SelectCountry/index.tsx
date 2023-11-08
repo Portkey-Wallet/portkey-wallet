@@ -9,9 +9,7 @@ import {
 } from '../../../model/global';
 import SelectCountry, { SelectCountryResult } from 'pages/Login/SelectCountry';
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GlobalStorage } from 'service/storage';
-import GStyles from 'assets/theme/GStyles';
 
 export default class SelectCountryEntryPage extends BaseContainer<
   SelectCountryPageProps,
@@ -62,9 +60,9 @@ export default class SelectCountryEntryPage extends BaseContainer<
 
   render() {
     return (
-      <SafeAreaProvider style={GStyles.whiteBackgroundColor}>
+      <>
         <SelectCountry selectCountry={this.state.currentUsing ?? defaultCountryCode} navigateBack={this.onSelected} />
-      </SafeAreaProvider>
+      </>
     );
   }
 }

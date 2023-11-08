@@ -25,9 +25,6 @@ import NetworkContext from '../context/NetworkContext';
 import { NetworkItem } from '@portkey-wallet/types/types-ca/network';
 import { PortkeyConfig, setEndPointUrl } from 'global/constants';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network-mainnet';
-import useInitSkeleton from 'model/hooks/UseInitSkeleton';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const skeletonPath = require('assets/image/pngs/skeleton-referral.png');
 
 const scrollViewProps = { extraHeight: 120 };
 const safeAreaColor: SafeAreaColorMapKeyUnit[] = ['transparent', 'transparent'];
@@ -39,7 +36,6 @@ export default function ReferralKey() {
   const isMainnet = useMemo(() => {
     return currentNetwork?.networkType === 'MAIN';
   }, [currentNetwork?.networkType]);
-  const { initSkeleton, showSkeleton } = useInitSkeleton(skeletonPath);
   const { onFinish } = useBaseContainer({
     entryName: PortkeyEntries.REFERRAL_ENTRY,
   });
@@ -92,9 +88,7 @@ export default function ReferralKey() {
     },
   };
 
-  return initSkeleton ? (
-    showSkeleton()
-  ) : (
+  return (
     <NetworkContext.Provider value={networkContext}>
       <ImageBackground style={styles.backgroundContainer} resizeMode="cover" source={backgroundImage}>
         <PageContainer

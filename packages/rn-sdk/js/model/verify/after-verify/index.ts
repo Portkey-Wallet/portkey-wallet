@@ -215,6 +215,9 @@ export const checkPin = async (pinValue: string): Promise<boolean> => {
   const storagePin = await GlobalStorage.getString(PIN_KEY);
   return storagePin === pinValue;
 };
+export const changePin = async (pinValue: string): Promise<void> => {
+  GlobalStorage.set(PIN_KEY, pinValue);
+};
 
 export const unLockTempWallet = async (pinValue?: string, useBiometric = false): Promise<boolean> => {
   const storagePin = await GlobalStorage.getString(PIN_KEY);

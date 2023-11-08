@@ -1,15 +1,22 @@
 import { PortkeyEntries } from 'config/entries';
 import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
-import { EmitterSubscription } from 'react-native';
+import { DeviceEventEmitter, EmitterSubscription } from 'react-native';
 import { EntryResult, PortkeyDeviceEventEmitter, RouterOptions, PortkeyModulesEntity } from 'service/native-modules';
 import { AcceptableValueType } from './BaseContainer';
 import BaseContainerContext from './BaseContainerContext';
+import { LanuchMode, LaunchModeSet } from 'global/init/entries';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks => {
   const onShowListener = useRef<EmitterSubscription | null>(null);
   const baseContainerContext = useContext(BaseContainerContext);
   const { containerId, entryName, onShow } = props;
-
+  const onNewIntent = useCallback((listener: (arg0: any) => void) => {
+    DeviceEventEmitter.addListener('onNewIntent', params => {
+      // 处理传递的参数
+      listener(params);
+    });
+  }, []);
   useEffect(() => {
     if (containerId) {
       onShowListener.current?.remove();
@@ -31,12 +38,25 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
   );
 
   const navigationTo = useCallback(
-    (entry: PortkeyEntries, targetScene?: string, closeCurrentScreen?: boolean) => {
+    <T = { [x: string]: AcceptableValueType }>(
+      entry: PortkeyEntries,
+      {
+        params = {} as any,
+        targetScene = 'none',
+        closeCurrentScreen = false,
+      }: {
+        params?: T;
+        targetScene?: string;
+        closeCurrentScreen?: boolean;
+      },
+    ) => {
       PortkeyModulesEntity.RouterModule.navigateTo(
         entry,
+        LaunchModeSet.get(entry) || LanuchMode.STANDARD,
         getEntryName(),
         targetScene ?? 'none',
         closeCurrentScreen ?? false,
+        params as any,
       );
     },
     [getEntryName],
@@ -52,6 +72,7 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
       const { params, closeCurrentScreen, navigationAnimation, navigationAnimationDuration, targetScene } = options;
       PortkeyModulesEntity.RouterModule.navigateToWithOptions(
         entry,
+        LaunchModeSet.get(entry) || LanuchMode.STANDARD,
         getEntryName(),
         {
           params: params ?? ({} as any),
@@ -100,13 +121,25 @@ const useBaseContainer = (props: BaseContainerHookedProps): BaseContainerHooks =
       onError,
       onFatal,
       onWarn,
+      onNewIntent,
     };
-  }, [getEntryName, navigateForResult, navigationTo, onError, onFatal, onFinish, onWarn]);
+  }, [getEntryName, navigateForResult, navigationTo, onError, onFatal, onFinish, onWarn, onNewIntent]);
 };
 
 export interface BaseContainerHooks {
   getEntryName: () => string;
-  navigationTo: (entry: PortkeyEntries, targetScene?: string) => void;
+  navigationTo: <T = { [x: string]: AcceptableValueType }>(
+    entry: PortkeyEntries,
+    {
+      params = {} as any,
+      targetScene = 'none',
+      closeCurrentScreen = false,
+    }: {
+      params?: T;
+      targetScene?: string;
+      closeCurrentScreen?: boolean;
+    },
+  ) => void;
   navigateForResult: <V = VoidResult, T = { [x: string]: AcceptableValueType }>(
     entry: PortkeyEntries,
     options: RouterOptions<T>,
@@ -116,6 +149,7 @@ export interface BaseContainerHooks {
   onError: (err: Error) => void;
   onFatal: (err: Error) => void;
   onWarn: (msg: string) => void;
+  onNewIntent: (params: any) => void;
 }
 
 export interface VoidResult {}

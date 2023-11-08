@@ -8,6 +8,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.modules.core.DeviceEventManagerModule
 import io.aelf.core.PortkeyEntries
 import io.aelf.portkey.config.NO_CALLBACK_METHOD
 import io.aelf.portkey.config.StorageIdentifiers
@@ -21,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
 abstract class BasePortkeyReactActivity : ReactActivity() {
 
     private var callbackId: String = NO_CALLBACK_METHOD
@@ -33,7 +35,18 @@ abstract class BasePortkeyReactActivity : ReactActivity() {
         super.onCreate(savedInstanceState)
         this.callbackId =
             intent.getStringExtra(StorageIdentifiers.PAGE_CALLBACK_ID) ?: NO_CALLBACK_METHOD
-        NavigationHolder.pushNewComponent(this)
+        val pageEntry = intent.getStringExtra(StorageIdentifiers.PAGE_ENTRY)
+            ?: PortkeyEntries.SCAN_QR_CODE_ENTRY.entryName
+        NavigationHolder.pushNewComponent(this, pageEntry)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val paramsBundle = intent?.getBundleExtra(StorageIdentifiers.PAGE_PARAMS)
+        val params = Arguments.fromBundle(paramsBundle)
+        reactInstanceManager.currentReactContext?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)?.emit(
+            "onNewIntent", params
+        )
     }
 
     override fun createReactActivityDelegate(): ReactActivityDelegate {
@@ -151,11 +164,7 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
     params: ReadableMap? = null,
     targetScene: String? = null,
     from: String? = null,
-    closeSelf: Boolean = false
 ) {
-    if (closeSelf) {
-        this.finish()
-    }
     val intent = Intent(this, getReactActivityClass(entryName))
     intent.putExtra(
         StorageIdentifiers.PAGE_PARAMS, (params ?: Arguments.createMap()).toBundle(
@@ -176,7 +185,7 @@ internal fun BasePortkeyReactActivity.navigateToAnotherReactActivity(
 
 }
 
-private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray()): Bundle {
+fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emptyArray()): Bundle {
     val bundle = Bundle()
     this.entryIterator.forEachRemaining {
         bundle.putWithType(it.key, it.value)
@@ -186,7 +195,6 @@ private fun ReadableMap.toBundle(extraEntries: Array<Pair<String, String>> = emp
     }
     return bundle
 }
-
 /**
  * React Native only accept
  */

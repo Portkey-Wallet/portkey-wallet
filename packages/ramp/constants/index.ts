@@ -16,3 +16,14 @@ export enum IRampProviderType {
 export declare const DefaultRampListenList: readonly ['onRampOrderChanged'];
 
 export const RAMP_SOCKET_TIMEOUT = 15 * 1000;
+
+export enum SELL_ORDER_DISPLAY_STATUS {
+  INITIALIZED = 'Initialized',
+  CREATED = 'Created',
+  TRANSFERRING = 'Transferring',
+  TRANSFERRED = 'Transferred',
+  START_PAYMENT = 'StartPayment',
+  FINISH = 'Finish',
+  FAILED = 'Failed',
+  EXPIRED = 'Expired',
+}

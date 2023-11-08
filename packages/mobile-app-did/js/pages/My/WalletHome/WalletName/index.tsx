@@ -31,6 +31,7 @@ import GStyles from 'assets/theme/GStyles';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
 import { TextL } from 'components/CommonText';
 import { pTd } from 'utils/unit';
+import { sleep } from '@portkey-wallet/utils';
 const PageHeight = windowHeight - headerHeight;
 
 const WalletName: React.FC = () => {
@@ -87,6 +88,7 @@ const WalletName: React.FC = () => {
     // }
     Loading.show();
     try {
+      if (!isIOS) await sleep(500); // adjust large size on android
       const s3Url = await uploadRef.current?.uploadPhoto();
       setAvatar(s3Url || userInfo?.avatar || '');
       await setUserInfo({ nickName: _nameValue, avatar: s3Url || userInfo?.avatar || '' });

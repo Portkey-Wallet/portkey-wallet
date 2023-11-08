@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 import CommonAvatar from 'components/CommonAvatar';
 import * as ImagePicker from 'expo-image-picker';
 import { getInfo } from 'utils/fs';
@@ -25,12 +25,14 @@ const ImageWithUploadFunc = forwardRef(function ImageWithUploadFunc(props: Uploa
   const { title, imageUrl, avatarSize = pTd(48), onChangeImage } = props;
   const [localPhotoFile, setLocalPhotoFile] = useState<ImagePicker.ImageInfo>();
 
-  const sizeStyle = {
-    width: Number(avatarSize),
-    height: Number(avatarSize),
-    borderRadius: Number(avatarSize) / 2,
-  };
-
+  const sizeStyle = useMemo(
+    () => ({
+      width: Number(avatarSize),
+      height: Number(avatarSize),
+      borderRadius: Number(avatarSize) / 2,
+    }),
+    [avatarSize],
+  );
   const selectPhoto = useCallback(async () => {
     try {
       Loading.show();

@@ -19,6 +19,7 @@ import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im/channel
 import { sleep } from '@portkey-wallet/utils';
 import { useJumpToChatGroupDetails } from 'hooks/chat';
 import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
+import { isIOS } from '@rneui/base';
 
 const ChatGroupDetails = () => {
   const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
@@ -42,6 +43,8 @@ const ChatGroupDetails = () => {
   const onPressConfirm = useCallback(async () => {
     try {
       Loading.show();
+      if (!isIOS) await sleep(500); // adjust large size photo on android
+
       const selectedContactList = Object.keys(selectedContactMap);
       const s3Url = await uploadRef.current?.uploadPhoto();
       const result = await createChannel(groupName.trim(), selectedContactList, s3Url);

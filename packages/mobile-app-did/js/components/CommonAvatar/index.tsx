@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { Text } from 'react-native';
@@ -35,12 +35,15 @@ export default function CommonAvatar(props: CommonAvatarProps) {
   } = props;
   const initialsTitle = String(title?.[0] || '').toUpperCase();
 
-  const sizeStyle = {
-    width: Number(avatarSize),
-    height: Number(avatarSize),
-    lineHeight: hasBorder ? Number(avatarSize) - pTd(2) : Number(avatarSize),
-    borderRadius: shapeType === 'square' ? pTd(6) : Number(avatarSize) / 2,
-  };
+  const sizeStyle = useMemo(
+    () => ({
+      width: Number(avatarSize),
+      height: Number(avatarSize),
+      lineHeight: hasBorder ? Number(avatarSize) - pTd(2) : Number(avatarSize),
+      borderRadius: shapeType === 'square' ? pTd(6) : Number(avatarSize) / 2,
+    }),
+    [avatarSize, hasBorder, shapeType],
+  );
 
   if (svgName)
     return (

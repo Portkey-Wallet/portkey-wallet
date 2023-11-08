@@ -9,6 +9,7 @@ export interface IRampConfigOptions {
   requestConfig: IRequestConfig;
 }
 
-export interface IRampConfig extends IRampConfigOptions {
+export interface IRampConfig {
+  requestConfig: IRequestConfig;
   setRequestConfig(config: IRequestConfig): void;
 }

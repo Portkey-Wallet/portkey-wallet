@@ -1,4 +1,4 @@
-import { IRampProviderInfo, IRampRequest, IRequestConfig } from '.';
+import { IRampProviderInfo, IRampRequest, IRequestConfig, ITransDirectEnum } from '.';
 import { IRampProviderType } from '..';
 
 export type IRampServiceOptions = IRequestConfig & {
@@ -119,11 +119,6 @@ export type IBuyProviderDetail = Omit<IProviderDetail, 'fiatAmount'>;
 
 export type ISellProviderDetail = Omit<IProviderDetail, 'cryptoAmount'>;
 
-export enum ITransDirectEnum {
-  TOKEN_BUY = 'TokenBuy',
-  TOKEN_SELL = 'TokenSell',
-}
-
 export type IGetOrderNoRequest = {
   transDirect: ITransDirectEnum;
   merchantName: string;
@@ -182,47 +177,45 @@ export type IGetOrderNoResult = {
   orderNo: string;
 };
 
-export type IGetAchTokenRequest = {
+export type IGetAchPayTokenRequest = {
   email: string;
 };
 
-export type IGetAchTokenResult = {
+export type IGetAchPayTokenResult = {
   email: string;
   accessToken: string;
 };
 
-export type IGetAchSignatureRequest = {
+export type IGetAchPaySignatureRequest = {
   address: string;
 };
 
-export type IGetAchSignatureResult = {
+export type IGetAchPaySignatureResult = {
   signature: string;
 };
 
 export interface IRampService {
-  getRampInfo: () => IRampServiceCommon<IRampInfoResult>;
+  getRampInfo(): IRampServiceCommon<IRampInfoResult>;
 
-  getBuyCryptoData: (params?: IGetCryptoDataRequest) => IRampServiceCommon<IRampCryptoResult>;
-  getBuyFiatData: (params?: IGetFiatDataRequest) => IRampServiceCommon<IRampFiatResult>;
-  getBuyLimit: (params: IGetLimitRequest) => IRampServiceCommon<IBuyLimitResult>;
-  getBuyExchange: (params: IGetExchangeRequest) => IRampServiceCommon<IRampExchangeResult>;
-  getBuyPrice: (params: IGetBuyPriceRequest) => IRampServiceCommon<IBuyPriceResult>;
-  getBuyDetail: (params: IGetBuyDetailRequest) => IRampServiceCommon<IBuyDetailResult>;
+  getBuyCryptoData(params?: IGetCryptoDataRequest): IRampServiceCommon<IRampCryptoResult>;
+  getBuyFiatData(params?: IGetFiatDataRequest): IRampServiceCommon<IRampFiatResult>;
+  getBuyLimit(params: IGetLimitRequest): IRampServiceCommon<IBuyLimitResult>;
+  getBuyExchange(params: IGetExchangeRequest): IRampServiceCommon<IRampExchangeResult>;
+  getBuyPrice(params: IGetBuyPriceRequest): IRampServiceCommon<IBuyPriceResult>;
+  getBuyDetail(params: IGetBuyDetailRequest): IRampServiceCommon<IBuyDetailResult>;
 
-  getSellCryptoData: (params?: IGetCryptoDataRequest) => IRampServiceCommon<IRampCryptoResult>;
-  getSellFiatData: (params?: IGetFiatDataRequest) => IRampServiceCommon<IRampFiatResult>;
-  getSellLimit: (params: IGetLimitRequest) => IRampServiceCommon<ISellLimitResult>;
-  getSellExchange: (params: IGetExchangeRequest) => IRampServiceCommon<IRampExchangeResult>;
-  getSellPrice: (params: IGetSellPriceRequest) => IRampServiceCommon<ISellPriceResult>;
-  getSellDetail: (params: IGetSellDetailRequest) => IRampServiceCommon<ISellDetailResult>;
+  getSellCryptoData(params?: IGetCryptoDataRequest): IRampServiceCommon<IRampCryptoResult>;
+  getSellFiatData(params?: IGetFiatDataRequest): IRampServiceCommon<IRampFiatResult>;
+  getSellLimit(params: IGetLimitRequest): IRampServiceCommon<ISellLimitResult>;
+  getSellExchange(params: IGetExchangeRequest): IRampServiceCommon<IRampExchangeResult>;
+  getSellPrice(params: IGetSellPriceRequest): IRampServiceCommon<ISellPriceResult>;
+  getSellDetail(params: IGetSellDetailRequest): IRampServiceCommon<ISellDetailResult>;
 
-  sendSellTransaction: (params: IGetSellTransactionRequest) => IRampServiceCommon<void>;
-  getOrderNo: (params: IGetOrderNoRequest) => IRampServiceCommon<{ orderNo: string }>;
+  sendSellTransaction(params: IGetSellTransactionRequest): IRampServiceCommon<void>;
+  getOrderNo(params: IGetOrderNoRequest): IRampServiceCommon<IGetOrderNoResult>;
 }
 
-export interface IAlchemyRampService extends IRampService {
-  getAchToken: (params: IGetAchTokenRequest) => IRampServiceCommon<IGetAchTokenResult>;
-  getAchSignature: (params: IGetAchSignatureRequest) => IRampServiceCommon<IGetAchSignatureResult>;
+export interface IAlchemyPayRampService extends IRampService {
+  getAchPayToken(params: IGetAchPayTokenRequest): IRampServiceCommon<IGetAchPayTokenResult>;
+  getAchPaySignature(params: IGetAchPaySignatureRequest): IRampServiceCommon<IGetAchPaySignatureResult>;
 }
-
-export type ITransakRampService = IRampService;

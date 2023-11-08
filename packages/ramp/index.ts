@@ -1,31 +1,37 @@
 import { request } from '@portkey-wallet/api/api-did';
 import { RampConfig } from './config';
-import { IRampProviderType, InitRampProvidersInfo } from './constants';
-import { AlchemyProvider, RampProvider, TransakProvider } from './provider';
-import { AlchemyRampService, RampSellSocket, RampService, TransakRampService } from './service';
+import { IRampProviderType, RAMP_SOCKET_TIMEOUT } from './constants';
+import { AlchemyPayProvider, RampProvider, TransakProvider } from './provider';
+import { AlchemyPayRampService, RampService } from './service';
 import {
   IBaseRampOptions,
   IRampConfig,
   IRampProviderMap,
-  IRampSellSocket,
+  IRampSignalr,
   IRampService,
   IRequestConfig,
+  IRampProvider,
+  IGenerateTransaction,
+  IOrderInfo,
 } from './types';
+import { RampSignalr } from './signalr';
+import { randomId } from '@portkey-wallet/utils';
 
 export interface IBaseRamp {
   config: IRampConfig;
   service: IRampService;
-  sellSocket: IRampSellSocket;
+  rampSignalr: IRampSignalr;
   providerMap: IRampProviderMap;
-  setProvider: (provider: RampProvider) => void;
-  getProvider: (name: IRampProviderType) => RampProvider | undefined;
-  updateProvider: (name: IRampProviderType, provider: RampProvider) => void;
+  setProvider(provider: IRampProvider): void;
+  getProvider(name: IRampProviderType): RampProvider | undefined;
+  removeProvider(name: IRampProviderType): RampProvider | undefined;
+  transferCrypto(orderId: string, generateTransaction: IGenerateTransaction): Promise<IOrderInfo>;
 }
 
 export abstract class BaseRamp implements IBaseRamp {
   public config: IRampConfig;
   public service: IRampService;
-  public sellSocket: IRampSellSocket;
+  public rampSignalr: IRampSignalr;
   public providerMap: IRampProviderMap;
 
   constructor(options: IBaseRampOptions) {
@@ -35,13 +41,13 @@ export abstract class BaseRamp implements IBaseRamp {
         clientType: 'Android',
       },
     });
-
     this.service = new RampService({ request: options.request, ...this.config.requestConfig });
-    this.sellSocket = {};
-    this.providerMap = InitRampProvidersInfo;
+
+    this.rampSignalr = new RampSignalr();
+    this.providerMap = {};
   }
 
-  public setProvider(provider: RampProvider) {
+  public setProvider(provider: IRampProvider) {
     this.providerMap[provider.providerInfo.key] = provider;
   }
 
@@ -49,32 +55,75 @@ export abstract class BaseRamp implements IBaseRamp {
     return this.providerMap[key];
   }
 
-  public updateProvider(key: IRampProviderType, provider: RampProvider) {
-    this.providerMap[key] = provider;
+  public removeProvider(key: IRampProviderType) {
+    const provider = this.providerMap[key];
+    delete this.providerMap[key];
+    return provider;
+  }
+
+  async transferCrypto(orderId: string, generateTransaction: IGenerateTransaction): Promise<IOrderInfo> {
+    const clientId = randomId();
+    try {
+      await this.rampSignalr.doOpen({
+        url: `${this.config.requestConfig.baseUrl}/ca`,
+        clientId,
+      });
+    } catch (error) {
+      //
+    }
+
+    let timer: NodeJS.Timeout | undefined = undefined;
+    const timerPromise = new Promise<'timeout'>(resolve => {
+      timer = setTimeout(() => {
+        resolve('timeout');
+      }, RAMP_SOCKET_TIMEOUT);
+    });
+
+    // const signalrSellPromise = new Promise<IOrderInfo>(resolve => {
+    //   const { remove: removeAchTx } = this.rampSignalr.onRampOrderChanged(async data => {
+    //     if (data === null) {
+    //       throw new Error('Transaction failed.');
+    //     }
+
+    //     try {
+    //       status.current = STAGE.TRANSACTION;
+    //       const result = await paymentSellTransfer(data);
+    //       await request.payment.sendSellTransaction({
+    //         params: {
+    //           merchantName: ACH_MERCHANT_NAME,
+    //           orderId,
+    //           rawTransaction: result.rawTransaction,
+    //           signature: result.signature,
+    //           publicKey: result.publicKey,
+    //         },
+    //       });
+    //     } catch (e) {
+    //       resolve(null);
+    //       return;
+    //     }
+
+    //     const { remove: removeRes } = signalrSell.onRequestOrderTransferred({ clientId, orderId }, async data => {
+    //       status.current = STAGE.ORDER;
+    //       resolve(data);
+    //     });
+    //     signalrOrderRemove = removeRes;
+    //     signalrSell.requestOrderTransferred(clientId, orderId);
+    //   });
+    //   signalrAchTxRemove = removeAchTx;
+    //   signalrSell.requestAchTxAddress(clientId, orderId);
+    // });
+
+    return {} as any;
   }
 }
 
 export class Ramp extends BaseRamp {
-  public config: IRampConfig;
-  public service: IRampService;
-  public sellSocket: IRampSellSocket;
-  public providerMap: IRampProviderMap;
-
   public request: any;
 
   constructor(options: IBaseRampOptions) {
     super(options);
 
-    this.config = new RampConfig({
-      requestConfig: {
-        baseUrl: '',
-        clientType: 'Android',
-      },
-    });
     this.request = options.request;
-    this.service = new RampService({ request: options.request, ...this.config.requestConfig });
-    this.sellSocket = {}; // TODO
-    this.providerMap = {};
   }
 
   async init(requestConfig: IRequestConfig) {
@@ -90,12 +139,11 @@ export class Ramp extends BaseRamp {
 
     Object.keys(thirdPart).forEach(key => {
       switch (key) {
-        case IRampProviderType.Alchemy:
+        case IRampProviderType.AlchemyPay:
           this.setProvider(
-            new AlchemyProvider({
-              providerInfo: { key: IRampProviderType.Alchemy, ...thirdPart.Alchemy },
-              service: new AlchemyRampService({ request: this.request, ...this.config.requestConfig }),
-              sellSocket: new RampSellSocket(),
+            new AlchemyPayProvider({
+              providerInfo: { key: IRampProviderType.AlchemyPay, ...thirdPart.AlchemyPay },
+              service: new AlchemyPayRampService({ request: this.request, ...this.config.requestConfig }),
             }),
           );
           break;
@@ -103,9 +151,8 @@ export class Ramp extends BaseRamp {
         case IRampProviderType.Transak:
           this.setProvider(
             new TransakProvider({
-              providerInfo: { key: IRampProviderType.Transak, ...thirdPart.Alchemy },
-              service: new TransakRampService({ request: this.request, ...this.config.requestConfig }),
-              sellSocket: new RampSellSocket(),
+              providerInfo: { key: IRampProviderType.Transak, ...thirdPart.AlchemyPay },
+              service: new RampService({ request: this.request, ...this.config.requestConfig }),
             }),
           );
           break;

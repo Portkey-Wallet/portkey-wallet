@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import ImageDisplay from '../ImageDisplay';
-import { CSSProperties, useState } from 'react';
+import { CSSProperties, useCallback, useState } from 'react';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import './index.less';
@@ -26,7 +26,7 @@ export default function Avatar({
 
   const [avatarDefaultHeight, setAvatarDefaultHeight] = useState<60 | 40 | 28>(40);
 
-  const sizeRule = () => {
+  const sizeRule = useCallback(() => {
     switch (size) {
       case 'large':
         setAvatarClass('avatar-large');
@@ -46,8 +46,7 @@ export default function Avatar({
       default:
         break;
     }
-    return size;
-  };
+  }, [size]);
 
   useEffectOnce(() => {
     sizeRule();

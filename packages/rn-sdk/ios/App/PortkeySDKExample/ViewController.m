@@ -34,7 +34,6 @@
 @property (nonatomic, strong) UIButton *exitButton;
 
 @property (nonatomic, strong) UIButton *termsButton;
-@property (nonatomic, strong) UIButton *jsCallButton;
 @property (nonatomic, strong) UIButton *bundleConfigButton;
 
 @end
@@ -113,19 +112,9 @@
     }];
     [self.view addSubview:self.guardianHomeButton];
     
-    self.jsCallButton = [self createButtonWithTitle:@"Call JS"];
-    self.jsCallButton.frame = self.guardianHomeButton.frame;
-    self.jsCallButton.top = self.guardianHomeButton.bottom + 5;
-    [self.jsCallButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
-        [[PortkeySDKJSCallModule sharedInstance] enqueueJSCall:@"WalletModule" method:@"callContractMethod" params:@{@"name": @"portkey"} callback:^(NSString * _Nullable result) {
-            NSLog(@"js call result : %@", result);
-        }];
-    }];
-    [self.view addSubview:self.jsCallButton];
-    
     self.bundleConfigButton = [self createButtonWithTitle:@"Config Bundle"];
-    self.bundleConfigButton.frame = self.jsCallButton.frame;
-    self.bundleConfigButton.top = self.jsCallButton.bottom + 5;
+    self.bundleConfigButton.frame = self.guardianHomeButton.frame;
+    self.bundleConfigButton.top = self.guardianHomeButton.bottom + 20;
     [self.bundleConfigButton addBlockForControlEvents:UIControlEventTouchUpInside block:^(id  _Nonnull sender) {
         @strongify(self)
         [self.navigationController pushViewController:[BundleConfigViewController new] animated:YES];
@@ -221,7 +210,7 @@
     if (!_loginButton) {
         _loginButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         _loginButton.layer.cornerRadius = 8;
-        [_loginButton setTitle:@"login/register" forState:UIControlStateNormal];
+        [_loginButton setTitle:@"Login and Register" forState:UIControlStateNormal];
         _loginButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
         [_loginButton setBackgroundColor:[UIColor lightGrayColor]];
         [_loginButton addTarget:self action:@selector(loginButtonClicked:) forControlEvents:UIControlEventTouchUpInside];

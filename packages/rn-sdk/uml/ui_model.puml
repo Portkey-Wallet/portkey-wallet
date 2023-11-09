@@ -35,12 +35,8 @@ interface IBaseConfig extends IBaseModel {
 }
 
 interface INetworkConfig extends IBaseConfig {
-    name: string;
-    walletType: 'ethereum' | 'aelf';
-    networkType: 'MAIN' | 'TESTNET';
     apiUrl: string;
     graphqlUrl: string;
-    networkIconUrl?: string;
 }
 
 interface ICaContractConfig extends IBaseConfig {

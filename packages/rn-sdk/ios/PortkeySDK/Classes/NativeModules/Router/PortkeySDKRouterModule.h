@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)sharedInstance;
 
 - (void)navigateTo:(NSString *)entry from:(NSString *)from targetScene:(NSString *)targetScene;
-- (void)navigateToWithOptions:(NSString *)entry from:(NSString *)from params:(NSDictionary *)params callback:(RCTResponseSenderBlock)callback;
+- (void)navigateToWithOptions:(NSString *)entry launchMode:(NSString *)launchMode from:(NSString *)from params:(NSDictionary *)params callback:(RCTResponseSenderBlock)callback;
 
 @end
 

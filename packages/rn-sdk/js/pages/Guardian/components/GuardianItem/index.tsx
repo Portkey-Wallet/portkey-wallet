@@ -24,6 +24,7 @@ import { verification } from 'utils/api';
 import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca/guardian';
 import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 import { PortkeyConfig } from 'global/constants';
+import useEffectOnce from 'hooks/useEffectOnce';
 
 export const AuthTypes = [LoginType.Apple, LoginType.Google];
 
@@ -193,6 +194,9 @@ export default function GuardianItem({
 }: GuardianAccountItemProps) {
   const itemStatus = useMemo(() => guardiansStatus?.[guardianItem.key], [guardianItem.key, guardiansStatus]);
   const disabled = isSuccess && itemStatus?.status !== VerifyStatus.Verified;
+  useEffectOnce(() => {
+    console.log('guardianItem.guardianType', guardianItem.type);
+  });
 
   const guardianAccount = useMemo(() => {
     if (![LoginType.Apple, LoginType.Google].includes(guardianItem.guardianType)) {
@@ -232,7 +236,8 @@ export default function GuardianItem({
         </View>
       )}
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
-        <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[guardianItem.guardianType]} size={pTd(32)} />
+        {/* <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[guardianItem.guardianType]} size={pTd(32)} /> */}
+        <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[LoginType.Apple]} size={pTd(32)} />
         <VerifierImage
           size={pTd(32)}
           label={guardianItem?.verifier?.name}

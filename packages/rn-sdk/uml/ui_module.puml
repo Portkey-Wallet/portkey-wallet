@@ -1,52 +1,39 @@
 @startuml module
 
-interface IPortkeyAccountModule {
+interface IPortkeyAccount {
     login: (callback: MethodCallback<AccountModel>) => void
     logout: (callback: MethodCallback<boolean>) => void
     loginStatus: () => LoginStatus
 }
 
-interface IPortkeyBaseModule {
-
-}
-
-interface IPortkeyLockModule extends IPortkeyBaseModule{
+interface IPortkeyLockModule{
     isUnlocked: () => boolean
     lock: (callback: MethodCallback<boolean>) => void
     unlock: (callback: MethodCallback<boolean>) => void
 }
 
-interface IPortkeyGuardianModule extends IPortkeyBaseModule{
+interface IPortkeyGuardianModule{
     guardianCount: (callback:MethodCallback<number>) => void
     openGuardianList: (callback:MethodCallback<boolean>) => void
     openAddGuardian: (callback:MethodCallback<boolean>) => void
 }
 
-interface IPortkeyAssetsModule extends IPortkeyBaseModule{
+interface IPortkeyAssetsModule{
     openAssetsCard: (callback:MethodCallback<boolean>) => void
 }
 
-interface IPortkeyContractModule extends IPortkeyBaseModule {
+interface IPortkeyContractModule {
     callCaMethod: (params: CaContractConfig, callback:MethodCallback<string>) => void
     callContractMethod: (params: GeneralContractConfig, callback:MethodCallback<string>) => void
 }
 
-interface IPortkeyConfigModule extends IPortkeyBaseModule{
-    getNetworkList: (void) => NetworkConfig[]
-    addNetwork: (config: NetworkConfig) => boolean
-    removeNetwork: (config: NetworkConfig) => boolean
-    switchToNetwork: (config: NetworkConfig) => boolean
-    
+interface IPortkeyConfig {
+    setNetwork: (config: NetworkConfig) => void
     setTermsOfService: (prefix: string, title: string) => void
-    
     clearAllData: () => boolean
 }
 
-note top of IPortkeyConfigModule
-    submodules not related to login status
-end note
-
-interface IPortkeyThemeModule extends IPortkeyBaseModule {
+interface IPortkeyTheme {
     setTheme: (theme: Theme) => void
     setAppName: (appName: string) => void
     setNavigationTheme: (navigationTheme: NavigationTheme) => void
@@ -63,11 +50,14 @@ note left of IPortkeyService
     manage submodules in login state
 end note
 
-interface IPortkey implements IPortkeyAccountModule {
-    private accountModule: IPortkeyAccountModule
+interface IPortkey implements IPortkeyAccount {
+    private portkeyAccount: IPortkeyAccount
     private portkeyService: IPortkeyService
     public getPortkeyService: () => IPortkeyService
+    public portkeyConfig: IPortkeyConfig
+    public portkeyTheme: IPortkeyTheme
 
+    static init: () => void
     static getInstance: () => IPortkey
     login: (callback: MethodCallback<AccountModel>) => void
     logout: (callback: MethodCallback<boolean>) => void
@@ -91,7 +81,7 @@ note left of IPortkey::logout
     }
 end note
 
-class PortkeyAccountModule extends IPortkeyAccountModule{
+class PortkeyAccount extends IPortkeyAccount{
     
 }
 
@@ -111,18 +101,12 @@ class PortkeyContractModule extends IPortkeyContractModule{
     
 }
 
-class PortkeyThemeModule extends IPortkeyThemeModule{
-    
-}
-
-class PortkeyConfigModule extends IPortkeyConfigModule{
-    
-}
-
 IPortkeyService --> IPortkeyLockModule
 IPortkeyService --> IPortkeyGuardianModule
 IPortkeyService --> IPortkeyContractModule
 IPortkeyService --> IPortkeyAssetsModule
 IPortkey --> IPortkeyService
+IPortkey --> IPortkeyConfig
+IPortkey --> IPortkeyTheme
 
 @enduml

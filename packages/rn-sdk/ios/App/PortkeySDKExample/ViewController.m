@@ -187,6 +187,7 @@
 
 - (void)loginButtonClicked:(id)sender {
     [[PortkeySDKRouterModule sharedInstance] navigateToWithOptions:@"referral_entry"
+                                                        launchMode:@""
                                                               from:@""
                                                             params:@{}
                                                           callback:^(NSArray *response) {

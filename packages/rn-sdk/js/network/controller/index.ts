@@ -88,15 +88,21 @@ export class NetworkControllerEntity {
     return res.result;
   };
 
-  getGuardianInfo = async (chainId: string, loginGuardianIdentifier: string): Promise<GetGuardianInfoResultDTO> => {
+  getGuardianInfo = async (
+    chainId: string,
+    loginGuardianIdentifier?: string,
+    caHash?: string,
+  ): Promise<GetGuardianInfoResultDTO> => {
+    let params = {
+      chainId,
+    };
+    caHash && (params = Object.assign(params, { caHash }));
+    loginGuardianIdentifier &&
+      (params = Object.assign(params, { loginGuardianIdentifier, guardianIdentifier: loginGuardianIdentifier }));
     const res = await this.realExecute<GetGuardianInfoResultDTO>(
       await this.parseUrl(APIPaths.GET_GUARDIAN_INFO),
       'GET',
-      {
-        chainId,
-        loginGuardianIdentifier,
-        guardianIdentifier: loginGuardianIdentifier,
-      },
+      params,
     );
     if (!res?.result) throw new Error('network failure');
     return res.result;

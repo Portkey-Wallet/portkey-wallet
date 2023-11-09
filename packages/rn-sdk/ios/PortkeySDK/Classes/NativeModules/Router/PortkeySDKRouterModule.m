@@ -32,7 +32,11 @@ RCT_EXPORT_METHOD(navigateTo:(NSString *)entry
     });
 }
 
-RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry from:(NSString *)from params:(NSDictionary *)params callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry
+                             launchMode:(NSString *)launchMode
+                                   from:(NSString *)from
+                                 params:(NSDictionary *)params
+                               callback:(RCTResponseSenderBlock)callback)
 {
     if (entry.length <= 0) return;
     dispatch_async(dispatch_get_main_queue(), ^{

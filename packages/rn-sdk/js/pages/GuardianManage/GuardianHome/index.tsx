@@ -1,29 +1,48 @@
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
-// import { useGuardiansInfo } from 'hooks/store';
 import GuardianItem from 'pages/Guardian/components/GuardianItem';
 import Touchable from 'components/Touchable';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-// import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from 'hooks/guardian';
 import useEffectOnce from 'hooks/useEffectOnce';
 import myEvents from 'utils/deviceEvent';
 import GStyles from 'assets/theme/GStyles';
+import { getTempWalletConfig, RecoverWalletConfig } from 'model/verify/after-verify';
+import { NetworkController } from 'network/controller';
+import { PortkeyConfig } from 'global/constants';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { getStatusBarHeight, getBottomSpace } from 'utils/screen';
 
 export default function GuardianHome() {
   const { t } = useLanguage();
 
   // const { userGuardiansList } = useGuardiansInfo();
-  const userGuardiansList = null;
-  const guardianList = useMemo(() => {
-    if (!userGuardiansList) return [];
-    return [...userGuardiansList].reverse();
-  }, [userGuardiansList]);
+  // const guardianList = useMemo(() => {
+  //   if (!userGuardiansList) return [];
+  //   return [...userGuardiansList].reverse();
+  // }, [userGuardiansList]);
+  const [guardianList, setGuardianList] = useState<UserGuardianItem[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const config: RecoverWalletConfig = await getTempWalletConfig();
+      // console.log('config', config);
+      const chainId = (await PortkeyConfig.currChainId()) ?? config.originalChainId;
+      const guardianInfo = await NetworkController.getGuardianInfo(
+        chainId,
+        config.accountIdentifier as string,
+        config?.caInfo?.caHash,
+      );
+      console.log('guardianInfo： ', JSON.stringify(guardianInfo));
+      if (guardianInfo?.guardianList?.guardians) {
+        setGuardianList(guardianInfo?.guardianList?.guardians);
+      }
+    })();
+  }, []);
 
   /*
   const { caHash } = useCurrentWalletInfo();
@@ -74,7 +93,7 @@ export default function GuardianHome() {
       scrollViewProps={{ disabled: false }}
       rightDom={
         <TouchableOpacity
-          style={{ padding: pTd(16) }}
+          style={{ padding: pTd(16), backgroundColor: 'red' }}
           onPress={() => {
             navigationService.navigate('GuardianEdit');
           }}>
@@ -105,6 +124,8 @@ const pageStyles = StyleSheet.create({
   pageWrap: {
     flex: 1,
     backgroundColor: defaultColors.bg1,
+    paddingTop: getStatusBarHeight(true),
+    paddingBottom: getBottomSpace(),
     ...GStyles.paddingArg(16, 20),
   },
 });

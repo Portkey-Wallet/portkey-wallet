@@ -180,7 +180,7 @@ export const useCreateP2pChannel = () => {
                 channelId: channelUuid,
                 value: {
                   displayName: channelInfo.members.find(item => item.relationId === relationId)?.name || '',
-                  channelIcon: channelInfo.icon,
+                  channelIcon: channelInfo.members.find(item => item.relationId === relationId)?.avatar || '',
                   mute: channelInfo.mute,
                   pin: channelInfo.pin,
                 },

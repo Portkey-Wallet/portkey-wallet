@@ -171,7 +171,7 @@ const ChatGroupDetailsPage = () => {
   const leftDom = useMemo(
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-        <Touchable style={GStyles.marginRight(pTd(20))}>
+        <Touchable onPress={onBack} style={GStyles.marginRight(pTd(20))}>
           <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
         </Touchable>
         <Touchable
@@ -195,7 +195,7 @@ const ChatGroupDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [displayName, groupInfo?.icon, groupInfo?.name, mute],
+    [displayName, groupInfo?.icon, groupInfo?.name, mute, onBack],
   );
 
   return (

@@ -9,10 +9,17 @@ export default function useExceptionMessage() {
   const currentNetwork = useCurrentNetwork();
   return useCallback(
     (message: string) => {
-      exceptionManager.reportErrorMessage(
-        `${caHash}-${currentNetwork}-${Application.nativeApplicationVersion}-${message}`,
-        Severity.Info,
-      );
+      const version = Application.nativeApplicationVersion;
+      exceptionManager.reportErrorMessage(`${caHash}-${currentNetwork}-${version}-${message}`, Severity.Info);
+      exceptionManager.reportAnalyticsEvent({
+        eventName: 'ExceptionMessage',
+        params: {
+          caHash,
+          currentNetwork,
+          message,
+          version,
+        },
+      });
     },
     [caHash, currentNetwork],
   );

@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/react-native';
-import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
 import Config from 'react-native-config';
 
 // Sentry init
@@ -22,5 +21,4 @@ if (!__DEV__) {
       }),
     ],
   });
-  exceptionManager.setSentryInstance(Sentry);
 }

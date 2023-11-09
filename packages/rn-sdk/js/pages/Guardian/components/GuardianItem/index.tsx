@@ -236,8 +236,7 @@ export default function GuardianItem({
         </View>
       )}
       <View style={[GStyles.flexRowWrap, GStyles.itemCenter, GStyles.flex1]}>
-        {/* <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[guardianItem.guardianType]} size={pTd(32)} /> */}
-        <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[LoginType.Apple]} size={pTd(32)} />
+        <Svg iconStyle={styles.loginTypeIcon} icon={LoginGuardianTypeIcon[guardianItem.guardianType]} size={pTd(32)} />
         <VerifierImage
           size={pTd(32)}
           label={guardianItem?.verifier?.name}

@@ -2,9 +2,10 @@ import React, { ReactNode, useMemo } from 'react';
 import CustomHeader, { CustomHeaderProps } from 'components/CustomHeader';
 import SafeAreaBox, { SafeAreaBoxProps } from 'components/SafeAreaBox';
 import { KeyboardAwareScrollView, KeyboardAwareScrollViewProps } from 'react-native-keyboard-aware-scroll-view';
-import { TouchableWithoutFeedback, View, Keyboard, StatusBar, Platform } from 'react-native';
+import { TouchableWithoutFeedback, View, Keyboard, StatusBar, StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { ViewStyleType } from 'types/styles';
+import { getStatusBarHeight } from 'utils/screen';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -12,6 +13,12 @@ const safeAreaColorMap = {
   gray: defaultColors.bg4,
   transparent: 'transparent',
 };
+
+const styles = StyleSheet.create({
+  pagePaddingTop: {
+    paddingTop: getStatusBarHeight(true),
+  },
+});
 
 export type SafeAreaColorMapKeyUnit = keyof typeof safeAreaColorMap;
 
@@ -37,22 +44,24 @@ export default function PageContainer({
   hideTouchable?: boolean;
   pageSafeBottomPadding?: boolean;
 }) {
-  // const gStyles = useGStyles();
   const themeType = useMemo(() => safeAreaColor[0], [safeAreaColor]);
   return (
     <SafeAreaBox
       {...safeAreaProps}
       edges={['top', 'right', 'left']}
-      style={[{ backgroundColor: safeAreaColorMap[safeAreaColor[0]] }, safeAreaProps?.[0]?.style]}>
+      style={[
+        { backgroundColor: safeAreaColorMap[safeAreaColor[0]] },
+        safeAreaProps?.[0]?.style,
+        styles.pagePaddingTop,
+      ]}>
       <SafeAreaBox
         edges={['bottom']}
         pageSafeBottomPadding={pageSafeBottomPadding}
         style={[{ backgroundColor: safeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
-        {!hideHeader && Platform.OS === 'android' && <CustomHeader themeType={themeType} {...props} />}
+        {!hideHeader && <CustomHeader themeType={themeType} {...props} />}
         {themeType === 'white' && <StatusBar barStyle="dark-content" />}
         {scrollViewProps?.disabled ? (
           hideTouchable ? (
-            // <View style={[gStyles.container, containerStyles]}>{children}</View>
             <View style={containerStyles}>{children}</View>
           ) : (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

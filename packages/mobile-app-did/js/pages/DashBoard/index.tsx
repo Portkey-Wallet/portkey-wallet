@@ -5,8 +5,12 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import { BGStyles } from 'assets/theme/styles';
 import { RootStackName } from 'navigation';
 import myEvents from 'utils/deviceEvent';
+import useExceptionMessage from 'hooks/userExceptionMessage';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
+  const exceptionMessage = useExceptionMessage();
+
   const navToChat = useCallback(
     (tabName: RootStackName) => {
       if (navigation && navigation.jumpTo) {
@@ -15,6 +19,10 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     },
     [navigation],
   );
+
+  useEffectOnce(() => {
+    exceptionMessage('DashBoard');
+  });
 
   // nav's to chat tab
   useEffect(() => {

@@ -11,7 +11,6 @@ import CommonToast from 'components/CommonToast';
 import Progressbar, { IProgressbar } from 'components/Progressbar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import GStyles from 'assets/theme/GStyles';
-import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 const safeAreaColorMap = {
   white: defaultColors.bg1,
@@ -75,7 +74,7 @@ const ViewOnWebView = ({
   return (
     <SafeAreaProvider style={GStyles.whiteBackgroundColor}>
       <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: safeAreaColorMap.blue }]}>
-        {!isIOS && <CustomHeader themeType={'blue'} titleDom={browserInfo?.title} />}
+        {<CustomHeader themeType={'blue'} titleDom={browserInfo?.title} />}
         <View style={pageStyles.contentWrap}>
           <Progressbar ref={progressBarRef} />
           <WebView

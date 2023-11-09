@@ -12,11 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PortkeySDKRNViewController : UIViewController
 
+@property (nonatomic, copy, readonly) NSString *moduleName;
 @property (nonatomic, copy, nullable) RCTResponseSenderBlock navigateCallback;
+@property (nonatomic, copy) NSString *launchMode;
 
 - (instancetype)initWithModuleName:(NSString *)moduleName;
 
 - (instancetype)initWithModuleName:(NSString *)moduleName initialProperties:(nullable NSDictionary *)initialProperties;
+
+- (BOOL)isSingleTask;
 
 @end
 

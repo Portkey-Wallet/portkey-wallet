@@ -62,4 +62,12 @@
     self.rnRootView.frame = self.view.bounds;
 }
 
+- (BOOL)isSingleTask {
+    return self.launchMode.length && [self.launchMode isEqualToString:@"single_task"];
+}
+
+- (NSString *)moduleName {
+    return self.rnRootView.moduleName;
+}
+
 @end

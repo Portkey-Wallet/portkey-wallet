@@ -33,7 +33,7 @@ const NSString *kPortkeySDKTempStorageIdentifier;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"onShow"];
+    return @[@"onShow", @"onNewIntent"];
 }
 
 RCT_EXPORT_METHOD(onError:(NSString *)from errMsg:(NSString *)errMsg data:(id)data)
@@ -59,6 +59,11 @@ RCT_EXPORT_METHOD(emitJSMethodResult:(NSString *)eventId result:(NSString *)resu
 + (void)sendOnShowEventWithModuleName:(NSString *)moduleName bridge:(RCTBridge *)bridge reactTag:(NSNumber *)reactTag {
     PortkeySDKNativeWrapperModule *module = [bridge moduleForClass:self];
     return [module sendOnShowEvent:reactTag];
+}
+
++ (void)sendOnNewIntentWithParams:(NSDictionary *)params bridge:(RCTBridge *)bridge {
+    PortkeySDKNativeWrapperModule *module = [bridge moduleForClass:self];
+    [module sendEventWithName:@"onNewIntent" body:params];
 }
 
 - (void)sendOnShowEvent:(NSNumber *)reactTag {

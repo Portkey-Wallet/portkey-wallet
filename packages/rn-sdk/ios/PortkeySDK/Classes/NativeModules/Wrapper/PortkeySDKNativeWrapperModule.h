@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendOnShowEventWithModuleName:(NSString *)moduleName bridge:(RCTBridge *)bridge reactTag:(NSNumber *)reactTag;
 
++ (void)sendOnNewIntentWithParams:(NSDictionary *)params bridge:(RCTBridge *)bridge;
+
 @end
 
 NS_ASSUME_NONNULL_END

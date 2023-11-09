@@ -7,6 +7,7 @@
 
 #import "PortkeySDKRouterModule.h"
 #import <PortkeySDK/PortkeySDKRNViewController.h>
+#import <PortkeySDK/PortkeySDKNativeWrapperModule.h>
 
 @implementation PortkeySDKRouterModule
 
@@ -42,6 +43,12 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry
     dispatch_async(dispatch_get_main_queue(), ^{
         UIViewController *topViewController = [self topViewController];
         UINavigationController *navigationController = topViewController.navigationController;
+        
+        if ([self isNavigateToSingleTask:navigationController entry:entry]) {
+            [self navigateToSingleTask:navigationController entry:entry params:params];
+            return;
+        }
+        
         NSDictionary *props = [params valueForKey:@"params"];
         PortkeySDKRNViewController *vc = [[PortkeySDKRNViewController alloc] initWithModuleName:entry initialProperties:props];
         if (callback) {
@@ -56,6 +63,8 @@ RCT_EXPORT_METHOD(navigateToWithOptions:(NSString *)entry
         } else {
             [navigationController pushViewController:vc animated:YES];
         }
+        
+        if (launchMode.length) vc.launchMode = launchMode;
         
         // close current top view controller after push to new view controller
         if ([[params valueForKey:@"closeCurrentScreen"] isKindOfClass:NSNumber.class]) {
@@ -118,6 +127,39 @@ RCT_EXPORT_METHOD(navigateBack:(id)result)
         return vc;
     }
     return nil;
+}
+
+- (BOOL)isNavigateToSingleTask:(UINavigationController *)navigationController entry:(NSString *)entry {
+    __block BOOL result = NO;
+    [navigationController.viewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull vc, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([vc isKindOfClass:PortkeySDKRNViewController.class]) {
+            PortkeySDKRNViewController *portkeyVC = (PortkeySDKRNViewController *)vc;
+            if ([portkeyVC.moduleName isEqualToString:entry] && [portkeyVC isSingleTask]) {
+                result = YES;
+                *stop = YES;
+            }
+        }
+    }];
+    return result;
+}
+
+- (void)navigateToSingleTask:(UINavigationController *)navigationController entry:(NSString *)entry params:(NSDictionary *)params {
+    NSArray<UIViewController *> *viewControllers = navigationController.viewControllers;
+    __block NSInteger singleTaskIndex = -1;
+    [viewControllers enumerateObjectsUsingBlock:^(UIViewController * _Nonnull vc, NSUInteger idx, BOOL * _Nonnull stop) {
+        if ([vc isKindOfClass:PortkeySDKRNViewController.class]) {
+            PortkeySDKRNViewController *portkeyVC = (PortkeySDKRNViewController *)vc;
+            if ([portkeyVC.moduleName isEqualToString:entry] && [portkeyVC isSingleTask]) {
+                singleTaskIndex = idx;
+                *stop = YES;
+            }
+        }
+    }];
+    if (singleTaskIndex >= 0 && singleTaskIndex < viewControllers.count) {
+        NSArray<UIViewController *> *subViewControllers = [viewControllers subarrayWithRange:NSMakeRange(0, singleTaskIndex)];
+        navigationController.viewControllers = subViewControllers;
+        [PortkeySDKNativeWrapperModule sendOnNewIntentWithParams:params bridge:self.bridge];
+    }
 }
 
 @end

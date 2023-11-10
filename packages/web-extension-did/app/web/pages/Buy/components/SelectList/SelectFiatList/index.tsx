@@ -2,14 +2,13 @@ import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PartialFiatType } from 'pages/Buy/const';
-import './index.less';
+import '../index.less';
 import { useBuyFiat } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampFiatItem } from '@portkey-wallet/ramp';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
 
 export interface ISelectFiatListProps {
-  onChange?: (v: PartialFiatType) => void;
+  onChange?: (v: IRampFiatItem) => void;
   onClose?: () => void;
   title?: ReactNode;
   searchPlaceHolder?: string;

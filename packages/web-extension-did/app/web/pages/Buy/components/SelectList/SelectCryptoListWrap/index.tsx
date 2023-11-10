@@ -6,6 +6,7 @@ import CustomPromptModal from 'pages/components/CustomPromptModal';
 import SelectCryptoList from '../SelectCryptoList';
 
 interface SelectCryptoListWrapPartialProps {
+  title: string;
   searchPlaceHolder?: string;
   defaultFiat?: string;
   country?: string;

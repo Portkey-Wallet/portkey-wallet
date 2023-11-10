@@ -35,9 +35,7 @@ import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
-import { useExtensionBuyButtonShow } from 'hooks/cms';
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
-import ramp from '@portkey-wallet/ramp';
 
 export interface TransactionResult {
   total: number;

@@ -1,29 +1,28 @@
 import { Input } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import { DrawerType, PartialFiatType } from 'pages/Buy/const';
 import { useState } from 'react';
-import { countryCodeMap } from '@portkey-wallet/constants/constants-ca/payment';
-import SuffixSelect from '../SuffixSelect';
 import { IKeyDownParams } from 'types';
-import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
+import SelectFiatListWrap from '../SelectList/SelectFiatListWrap';
+import { IRampFiatItem } from '@portkey-wallet/ramp';
 
 export interface ICurrencyInputProps {
   value: string;
-  side: PaymentTypeEnum;
-  onChange: (val: string) => void;
+  curFiat: IRampFiatItem;
   readOnly: boolean;
+  onChange?: (val: string) => void;
   onKeyDown: (e: IKeyDownParams) => void;
-  curFiat: PartialFiatType;
-  onSelect: (v: PartialFiatType) => void;
+  onSelect: (v: IRampFiatItem) => void;
 }
+
+const SelectFiat = 'Select Currency';
+const SearchFiat = 'Search currency';
 
 export default function CurrencyInput({
   value,
-  side,
-  onChange,
-  readOnly,
-  onKeyDown,
   curFiat,
+  readOnly,
+  onChange,
+  onKeyDown,
   onSelect,
 }: ICurrencyInputProps) {
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
@@ -33,25 +32,25 @@ export default function CurrencyInput({
       <Input
         value={value}
         autoComplete="off"
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange?.(e.target.value)}
         readOnly={readOnly}
         onKeyDown={onKeyDown}
         suffix={
           <div className="flex-center" onClick={() => setOpenDrawer(true)}>
             <div className="img">
-              <img src={countryCodeMap[curFiat.country || '']?.icon} alt="" />
+              <img src={curFiat.icon} />
             </div>
-            <div className="currency">{curFiat.currency}</div>
+            <div className="currency">{curFiat.symbol}</div>
             <CustomSvg type="Down" />
           </div>
         }
       />
-      <SuffixSelect
-        drawerType={DrawerType.currency}
-        side={side}
+      <SelectFiatListWrap
+        title={SelectFiat}
+        searchPlaceHolder={SearchFiat}
         open={openDrawer}
         onClose={() => setOpenDrawer(false)}
-        onSelect={onSelect}
+        onChange={onSelect}
       />
     </>
   );

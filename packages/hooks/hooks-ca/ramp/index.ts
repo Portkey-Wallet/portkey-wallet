@@ -20,7 +20,7 @@ export const useSellDefaultFiatListState = () => useAppCASelector(state => state
 export const useSellDefaultFiatState = () => useAppCASelector(state => state.ramp.sellDefaultFiat);
 
 export const useInitRamp = () => {
-  const { refreshRampShow } = useRampStateShow();
+  const { refreshRampShow } = useRampEntryShow();
   const { refreshBuyFiat } = useBuyFiat();
   const { refreshSellCrypto } = useSellCrypto();
 
@@ -41,7 +41,7 @@ export const useInitRamp = () => {
   }, [refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
 };
 
-export const useRampStateShow = () => {
+export const useRampEntryShow = () => {
   const dispatch = useAppCommonDispatch();
   const isMainnet = useIsMainnet();
   const { rampEntry } = useRampState();

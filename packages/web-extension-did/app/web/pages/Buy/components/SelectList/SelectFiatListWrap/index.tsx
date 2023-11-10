@@ -4,12 +4,14 @@ import './index.less';
 import { useCommonState } from 'store/Provider/hooks';
 import CustomPromptModal from 'pages/components/CustomPromptModal';
 import SelectFiatList from '../SelectFiatList';
+import { IRampFiatItem } from '@portkey-wallet/ramp';
 
 interface SelectFiatListWrapPartialProps {
+  title: string;
   searchPlaceHolder?: string;
   defaultCrypto?: string;
   network?: string;
-  onChange?: (v: any) => void;
+  onChange?: (v: IRampFiatItem) => void;
   onClose: () => void;
 }
 

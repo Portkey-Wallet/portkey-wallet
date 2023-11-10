@@ -2,8 +2,7 @@ import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PartialFiatType } from 'pages/Buy/const';
-import './index.less';
+import '../index.less';
 import { useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem } from '@portkey-wallet/ramp';
 import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
@@ -11,7 +10,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 
 export interface ISelectCryptoListProps {
-  onChange?: (v: PartialFiatType) => void;
+  onChange?: (v: IRampCryptoItem) => void;
   onClose?: () => void;
   title?: ReactNode;
   searchPlaceHolder?: string;
@@ -34,16 +33,16 @@ export default function SelectCryptoList({
   const filterCryptoListRef = useRef<IRampCryptoItem[]>([]);
   const { sellCryptoList: totalCryptoList } = useSellCrypto();
 
-  const getFilterFiatList = useCallback(async () => {
+  const getFilterCryptoList = useCallback(async () => {
     const { buyCryptoList } = await getBuyCrypto({ fiat: defaultFiat, country });
     filterCryptoListRef.current = buyCryptoList;
   }, [country, defaultFiat]);
 
   useEffect(() => {
     if (defaultFiat || country) {
-      getFilterFiatList();
+      getFilterCryptoList();
     }
-  }, [country, defaultFiat, getFilterFiatList]);
+  }, [country, defaultFiat, getFilterCryptoList]);
 
   const cryptoList: IRampCryptoItem[] = useMemo(() => {
     return defaultFiat ? filterCryptoListRef.current : totalCryptoList;

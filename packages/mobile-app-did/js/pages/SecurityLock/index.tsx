@@ -58,7 +58,7 @@ export default function SecurityLock() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSyncCAInfo]);
-  const handleRouter = useCallback(
+  const handleRouter = useThrottleCallback(
     (pinInput: string) => {
       Loading.hide();
       if (!managerInfo) return navigationService.reset('LoginPortkey');
@@ -73,6 +73,7 @@ export default function SecurityLock() {
       }
     },
     [biometrics, biometricsReady, managerInfo, navigation],
+    2000,
   );
   const handlePassword = useCallback(
     (pwd: string) => {

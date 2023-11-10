@@ -27,6 +27,7 @@ export default function TransferOwnership() {
           id: m.relationId,
           index: m.name?.slice(0, 1),
           name: m.name,
+          avatar: m.avatar,
         })) || [],
     [groupInfo?.members],
   );

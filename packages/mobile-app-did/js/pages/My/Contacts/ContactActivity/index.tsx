@@ -4,7 +4,7 @@ import { useRoute, RouteProp } from '@react-navigation/native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
-import { TextL, TextM, TextS, TextXXL } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import CommonToast from 'components/CommonToast';
 import PageContainer from 'components/PageContainer';
 import Svg from 'components/Svg';
@@ -21,22 +21,24 @@ import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { useCaAddressInfoList } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { NFT_MIDDLE_SIZE } from '@portkey-wallet/constants/constants-ca/assets';
 import { request } from '@portkey-wallet/api/api-did';
-import useEffectOnce from 'hooks/useEffectOnce';
 import myEvents from 'utils/deviceEvent';
 import { IActivityListWithAddressApiParams } from '@portkey-wallet/store/store-ca/activity/type';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import CommonAvatar from 'components/CommonAvatar';
 
 interface ParamsType {
   fromChainId: ChainId;
   address: string;
   chainId: ChainId;
   contactName?: string;
+  avatar?: string;
 }
 
 const MAX_RESULT_COUNT = 10;
 
 const ContactActivity: React.FC = () => {
   const {
-    params: { fromChainId, address, chainId, contactName },
+    params: { fromChainId, address, chainId, contactName, avatar },
   } = useRoute<RouteProp<{ params: ParamsType }>>();
 
   const { t } = useLanguage();
@@ -44,6 +46,7 @@ const ContactActivity: React.FC = () => {
   const caAddressInfos = useCaAddressInfoList();
 
   const [addressName, setAddressName] = useState<string | undefined>(contactName);
+  const [addressAvatar, setAddressAvatar] = useState<string | undefined>(avatar);
 
   const [isFetching, setIsFetching] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
@@ -58,6 +61,7 @@ const ContactActivity: React.FC = () => {
         {
           caAddress: address,
           chainId: chainId,
+          chainName: '',
         },
       ],
       width: NFT_MIDDLE_SIZE,
@@ -123,7 +127,10 @@ const ContactActivity: React.FC = () => {
 
   useEffect(() => {
     init();
-    const listener = myEvents.refreshMyContactDetailInfo.addListener(({ contactName: name }) => setAddressName(name));
+    const listener = myEvents.refreshMyContactDetailInfo.addListener(({ contactName: name, contactAvatar }) => {
+      setAddressName(name);
+      setAddressAvatar(contactAvatar);
+    });
     return () => listener.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -143,10 +150,15 @@ const ContactActivity: React.FC = () => {
           <>
             <TextM style={FontStyles.font3}>{t('Name')}</TextM>
             <View style={[GStyles.flexRow, BGStyles.bg1, styles.nameSection]}>
-              <View style={styles.itemAvatar}>
-                <TextXXL>{addressName.match(/^[a-zA-Z]/) ? addressName.slice(0, 1).toUpperCase() : '#'}</TextXXL>
-              </View>
-              <TextL>{addressName}</TextL>
+              <CommonAvatar
+                hasBorder
+                resizeMode="cover"
+                title={addressName.toUpperCase() || contactName}
+                avatarSize={pTd(36)}
+                imageUrl={addressAvatar || ''}
+                style={styles.itemAvatar}
+              />
+              <TextL>{addressName || contactName || ''}</TextL>
             </View>
           </>
         )}
@@ -185,6 +197,7 @@ const ContactActivity: React.FC = () => {
           if (activityList?.length >= totalCount) return;
           fetchActivityList(activityList?.length);
         }}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         ListEmptyComponent={<NoData noPic message="" />}
       />
     </PageContainer>
@@ -198,16 +211,7 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(0, 0),
   },
   itemAvatar: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: defaultColors.border1,
-    width: pTd(36),
-    height: pTd(36),
-    borderRadius: pTd(23),
-    backgroundColor: defaultColors.bg4,
     marginRight: pTd(10),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   topSection: {
     ...GStyles.paddingArg(24, 20),

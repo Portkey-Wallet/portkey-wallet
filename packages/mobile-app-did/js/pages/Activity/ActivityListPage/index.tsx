@@ -16,6 +16,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { getCurrentActivityMapKey } from '@portkey-wallet/utils/activity';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface RouterParams {
   chainId?: string;
@@ -73,6 +74,7 @@ const ActivityListPage = () => {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: true }}>
       <FlatList
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         refreshing={refreshing}
         data={currentActivity?.data || []}
         keyExtractor={(_item: ActivityItemType, index: number) => `${index}`}
@@ -82,7 +84,6 @@ const ActivityListPage = () => {
         windowSize={50}
         maxToRenderPerBatch={10}
         initialNumToRender={20}
-        onEndReachedThreshold={0.3}
         ListEmptyComponent={<NoData message={t('You have no transactions.')} topDistance={pTd(160)} />}
       />
     </PageContainer>

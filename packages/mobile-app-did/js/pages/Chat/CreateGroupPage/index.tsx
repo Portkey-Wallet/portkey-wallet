@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo } from 'react';
+import React, { useCallback, useState, useEffect, useMemo, useRef } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -11,7 +11,6 @@ import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
 import { TextM } from 'components/CommonText';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
-import FormItem from 'components/FormItem';
 import { pTd } from 'utils/unit';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import GroupMemberItem from '../components/GroupMemberItem';
@@ -19,12 +18,17 @@ import NoData from 'components/NoData';
 import { useCreateGroupChannel } from '@portkey-wallet/hooks/hooks-ca/im/channelList';
 import { sleep } from '@portkey-wallet/utils';
 import { useJumpToChatGroupDetails } from 'hooks/chat';
-const ChatGroupDetails = () => {
-  const createChannel = useCreateGroupChannel();
+import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
+import { isIOS } from '@rneui/base';
 
+const ChatGroupDetails = () => {
+  const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
+
+  const createChannel = useCreateGroupChannel();
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
 
   const [groupName, setGroupName] = useState('');
+
   const [keyword, setKeyword] = useState('');
   const allChatList = useChatContactFlatList();
   const searchContact = useLocalContactSearch();
@@ -39,10 +43,14 @@ const ChatGroupDetails = () => {
   const onPressConfirm = useCallback(async () => {
     try {
       Loading.show();
+      if (!isIOS) await sleep(500); // adjust large size photo on android
+
       const selectedContactList = Object.keys(selectedContactMap);
-      const result = await createChannel(groupName.trim(), selectedContactList);
-      CommonToast.success('Group created');
+      const s3Url = await uploadRef.current?.uploadPhoto();
+      const result = await createChannel(groupName.trim(), selectedContactList, s3Url);
       await sleep(100);
+      CommonToast.success('Group created');
+
       jumpToChatGroupDetails({ channelUuid: result.channelUuid });
     } catch (error) {
       CommonToast.failError(error);
@@ -79,16 +87,20 @@ const ChatGroupDetails = () => {
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      <FormItem title={'Group Name'} style={styles.groupNameWrap}>
+      <View style={[GStyles.flexRow, GStyles.itemCenter, styles.groupNameWrap]}>
+        <ImageWithUploadFunc title={groupName} ref={uploadRef} />
         <CommonInput
           type="general"
           theme="white-bg"
-          placeholder="Enter Name"
+          placeholder="Group Name"
           maxLength={40}
           value={groupName}
           onChangeText={setGroupName}
+          inputStyle={styles.nameInputStyle}
+          errorStyle={styles.nameInputErrorStyle}
+          containerStyle={styles.nameInputContainerStyle}
         />
-      </FormItem>
+      </View>
       <View style={[BGStyles.bg1, GStyles.flex1]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.selectHeaderWrap]}>
           <TextM style={FontStyles.font3}>Select Contacts</TextM>
@@ -107,6 +119,7 @@ const ChatGroupDetails = () => {
               item={{
                 title: item.name || item.caHolderInfo?.walletName || item.imInfo?.name || '',
                 relationId: item.imInfo?.relationId || '',
+                avatar: item.avatar || '',
               }}
               onPress={onPressItem}
             />
@@ -130,8 +143,12 @@ const styles = StyleSheet.create({
     ...GStyles.paddingArg(0),
   },
   groupNameWrap: {
-    marginTop: pTd(24),
-    paddingHorizontal: pTd(20),
+    height: pTd(72),
+    paddingHorizontal: pTd(16),
+    marginHorizontal: pTd(20),
+    marginVertical: pTd(24),
+    borderRadius: pTd(6),
+    backgroundColor: defaultColors.bg1,
   },
   selectHeaderWrap: {
     marginTop: pTd(16),
@@ -145,5 +162,16 @@ const styles = StyleSheet.create({
   buttonWrap: {
     ...GStyles.paddingArg(10, 20, 16),
     backgroundColor: defaultColors.bg1,
+  },
+  nameInputStyle: {
+    fontSize: pTd(16),
+  },
+  nameInputContainerStyle: {
+    flex: 1,
+  },
+  nameInputErrorStyle: {
+    height: 0,
+    padding: 0,
+    margin: 0,
   },
 });

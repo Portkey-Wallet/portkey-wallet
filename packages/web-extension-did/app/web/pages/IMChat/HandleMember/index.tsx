@@ -44,7 +44,7 @@ export default function HandleMember() {
             name: m.name,
             id: m.relationId,
             index: m.name.slice(0, 1),
-            avatar: '',
+            avatar: m.avatar,
           })) || []
       );
     }
@@ -141,7 +141,7 @@ export default function HandleMember() {
           isAdmin: false,
           name: item.name || '',
           relationId: item.imInfo?.relationId || '',
-          avatar: '',
+          avatar: item.avatar || '',
         });
         selectedContactRef.current = target;
       }
@@ -175,7 +175,7 @@ export default function HandleMember() {
           isAdmin: false,
           name: item.name || '',
           relationId: item.id || '',
-          avatar: '',
+          avatar: item.avatar || '',
         });
         selectedContactRef.current = target;
       }

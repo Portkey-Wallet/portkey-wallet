@@ -3,6 +3,7 @@ import './index.less';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import CustomSvg from 'components/CustomSvg';
 import clsx from 'clsx';
+import Avatar from 'pages/components/Avatar';
 
 export enum ISelectItemType {
   RADIO = 'RADIO',
@@ -27,7 +28,7 @@ export default function ContactItemSelect({
   return (
     <div className={clsx(['flex-between-center', 'contact-item-select', disable && 'im-disable'])}>
       <div className="flex-center contact-item-left">
-        <div className="flex-center contact-index-logo">{index}</div>
+        <Avatar wrapperClass="contact-index-logo" avatarUrl={item?.avatar || ''} nameIndex={index} size="small" />
         <span className="contact-item-name">{name}</span>
       </div>
       <div className="flex-center contact-item-right">

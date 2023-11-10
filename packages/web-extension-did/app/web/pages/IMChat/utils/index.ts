@@ -46,6 +46,7 @@ export const formatMessageList = (list: Message[], ownerRelationId: string, isGr
         type: transType,
         date: item.createAt,
         showAvatar: item.from !== ownerRelationId && isGroup,
+        avatar: item.fromAvatar,
       };
     } else {
       transItem = {

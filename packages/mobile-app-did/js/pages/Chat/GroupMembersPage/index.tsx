@@ -75,6 +75,7 @@ const GroupMembersPage = () => {
             item={{
               relationId: item.relationId,
               title: item.name,
+              avatar: item.avatar,
             }}
             isOwner={item.isAdmin}
             onPress={onPressItem}

@@ -31,8 +31,11 @@ import FloatingActionButton from '../components/FloatingActionButton';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
 import GroupAvatarShow from '../components/GroupAvatarShow';
+import { useIsFocused } from '@react-navigation/native';
 
 const ChatGroupDetailsPage = () => {
+  const isFocused = useIsFocused();
+
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
   const hideChannel = useHideChannel();
@@ -155,19 +158,20 @@ const ChatGroupDetailsPage = () => {
   }, []);
 
   useHardwareBackPress(
-    useMemo(
-      () => () => {
-        onBack();
-        return true;
-      },
-      [onBack],
-    ),
+    useMemo(() => {
+      if (isFocused) {
+        return () => {
+          onBack();
+          return true;
+        };
+      }
+    }, [isFocused, onBack]),
   );
 
   const leftDom = useMemo(
     () => (
       <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.paddingLeft(pTd(16))]}>
-        <Touchable style={GStyles.marginRight(pTd(20))} onPress={onBack}>
+        <Touchable onPress={onBack} style={GStyles.marginRight(pTd(20))}>
           <Svg size={pTd(20)} icon="left-arrow" color={defaultColors.bg1} />
         </Touchable>
         <Touchable

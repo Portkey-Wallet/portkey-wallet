@@ -15,6 +15,10 @@ export interface IWalletProps extends IExitWalletProps, BaseHeaderProps, IWallet
   onClose?: () => void;
 }
 
+const AutoLockLabel = 'auto-lock';
+const SwitchNetworksLabel = 'switch-networks';
+const AboutUsLabel = 'about-us';
+
 export default function Wallet() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -23,10 +27,6 @@ export default function Wallet() {
   const { userInfo, userId } = useWalletInfo();
   const [exitVisible, setExitVisible] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string>('');
-
-  const AutoLockLabel = 'auto-lock';
-  const SwitchNetworksLabel = 'switch-networks';
-  const AboutUsLabel = 'about-us';
 
   const clickAvatar = useCallback(() => {
     navigate('/setting/wallet/wallet-name');

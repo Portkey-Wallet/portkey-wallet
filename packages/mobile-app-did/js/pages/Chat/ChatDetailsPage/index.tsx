@@ -35,9 +35,11 @@ import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
+import { useIsFocused } from '@react-navigation/native';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
+  const isFocused = useIsFocused();
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
@@ -165,13 +167,14 @@ const ChatDetailsPage = () => {
   }, []);
 
   useHardwareBackPress(
-    useMemo(
-      () => () => {
-        onBack();
-        return true;
-      },
-      [onBack],
-    ),
+    useMemo(() => {
+      if (isFocused) {
+        return () => {
+          onBack();
+          return true;
+        };
+      }
+    }, [isFocused, onBack]),
   );
 
   const leftDom = useMemo(
@@ -190,7 +193,13 @@ const ChatDetailsPage = () => {
               },
             });
           }}>
-          <CommonAvatar title={displayName} avatarSize={pTd(32)} style={FontStyles.size16} imageUrl={avatar} />
+          <CommonAvatar
+            title={displayName}
+            avatarSize={pTd(32)}
+            style={FontStyles.size16}
+            imageUrl={avatar}
+            resizeMode="cover"
+          />
 
           <TextL
             style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8)), FontStyles.weight500]}>

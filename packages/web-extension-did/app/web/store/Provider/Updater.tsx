@@ -50,7 +50,7 @@ export default function Updater() {
     });
   }, [imApiUrl, imWsUrl]);
   useMemo(() => {
-    const s3_key = isMainnet ? process.env.IM_S3_KEY : process.env.IM_S3_TEST_KEY;
+    const s3_key = isMainnet ? process.env.IM_S3_KEY : process.env.IM_S3_TESTNET_KEY;
     s3Instance.setConfig({
       bucket: imS3Bucket || '',
       key: s3_key || '',

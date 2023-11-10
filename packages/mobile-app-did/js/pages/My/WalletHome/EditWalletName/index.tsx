@@ -77,7 +77,7 @@ const EditWalletName: React.FC = () => {
     }
     Loading.show();
     try {
-      if (!isIOS) await sleep(500); // adjust large size on android
+      await sleep(500); // adjust large size on android
       const s3Url = await uploadRef.current?.uploadPhoto();
       if (s3Url) setAvatar(s3Url);
 

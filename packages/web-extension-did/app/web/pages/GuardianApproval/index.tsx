@@ -125,7 +125,9 @@ export default function GuardianApproval() {
       <div className="common-content1 guardian-approval-content flex-1 flex-column-between">
         <div>
           <div className="title">{t('Guardian Approval')}</div>
-          <p className="description">{isExpired ? t('Expired') : t('Expire after 1 hour')}</p>
+          <p className="description">
+            {isExpired ? t('Expired. Please initiate social recovery again.') : t('Expire after 1 hour')}
+          </p>
           <div className="flex-between-center approve-count">
             <span className="flex-row-center">
               {t("Guardians' approval")}

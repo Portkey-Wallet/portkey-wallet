@@ -7,6 +7,7 @@ import {
 import { IStorage } from '@portkey-wallet/types/storage';
 import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { getAppCheckToken } from './appCheck';
 
 class MobileVerification extends Verification {
   constructor(store: IStorage) {
@@ -29,7 +30,29 @@ class MobileVerification extends Verification {
         const isNeedRecaptcha = !!result;
 
         if (isNeedRecaptcha) {
-          // TODO: add language
+          // app check
+          try {
+            const appCheckToken = await getAppCheckToken(true);
+            config.headers = {
+              acToken: appCheckToken || '',
+            };
+            const request1 = await request.verify.sendVerificationRequest(config);
+            await this.set(key, { ...request1, time: Date.now() });
+            return request1;
+          } catch (err: any) {
+            // google  human-machine verification
+            if (err?.code === 208) {
+              // TODO: add language
+              const reCaptchaToken = await verifyHumanMachine('en');
+              config.headers = {
+                reCaptchaToken: reCaptchaToken as string,
+              };
+              const request2 = await request.verify.sendVerificationRequest(config);
+              await this.set(key, { ...request2, time: Date.now() });
+              return request2;
+            }
+          }
+
           const reCaptchaToken = await verifyHumanMachine('en');
           config.headers = {
             reCaptchaToken: reCaptchaToken as string,

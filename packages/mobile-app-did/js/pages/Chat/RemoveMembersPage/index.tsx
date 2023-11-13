@@ -98,7 +98,7 @@ const RemoveMembersPage = () => {
         renderItem={({ item }) => (
           <GroupMemberItem
             selected={selectedMemberMap.has(item.relationId)}
-            item={{ title: item.name, relationId: item.relationId }}
+            item={{ title: item.name, relationId: item.relationId, avatar: item.avatar }}
             onPress={onPressItem}
           />
         )}

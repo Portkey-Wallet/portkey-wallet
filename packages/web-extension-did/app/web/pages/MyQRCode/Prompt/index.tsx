@@ -3,7 +3,7 @@ import SecondPageHeader from 'pages/components/SecondPageHeader';
 import { IMyQRCodeProps } from '..';
 import './index.less';
 
-const MyQRCode = ({ onBack, qrCodeValue, showName, desc }: IMyQRCodeProps) => {
+const MyQRCode = ({ onBack, qrCodeValue, showName, desc, icon }: IMyQRCodeProps) => {
   return (
     <div className="my-wallet-share-page-prompt">
       <SecondPageHeader
@@ -12,7 +12,7 @@ const MyQRCode = ({ onBack, qrCodeValue, showName, desc }: IMyQRCodeProps) => {
         title="My QR Code"
         leftCallBack={onBack}
       />
-      <ShowQRCode qrCodeValue={qrCodeValue} showName={showName} desc={desc} showHeader={false} />
+      <ShowQRCode icon={icon} qrCodeValue={qrCodeValue} showName={showName} desc={desc} showHeader={false} />
     </div>
   );
 };

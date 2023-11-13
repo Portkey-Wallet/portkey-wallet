@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -11,18 +11,25 @@ import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import { pTd } from 'utils/unit';
 import { useCurrentChannelId } from '../context/hooks';
-import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelName } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useDisbandChannel, useGroupChannelInfo, useUpdateChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 import ActionSheet from 'components/ActionSheet';
 import navigationService from 'utils/navigationService';
+import { useInputFocus } from 'hooks/useInputFocus';
+import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
+import Touchable from 'components/Touchable';
+import { TextL } from 'components/CommonText';
+import { sleep } from '@portkey-wallet/utils';
 
 const EditGroupPage = () => {
+  const iptRef = useRef<TextInput>();
+  useInputFocus(iptRef);
+  const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
+
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
-  const { name } = groupInfo || {};
-
+  const { name, icon } = groupInfo || {};
   const disbandGroup = useDisbandChannel(currentChannelId || '');
-  const upDateChannelName = useUpdateChannelName();
-
+  const updateChannelInfo = useUpdateChannelInfo();
   const [groupName, setGroupName] = useState(name || '');
 
   const onDisband = useCallback(() => {
@@ -55,7 +62,10 @@ const EditGroupPage = () => {
   const onSave = useCallback(async () => {
     try {
       Loading.show();
-      await upDateChannelName(currentChannelId || '', groupName?.trim());
+      await sleep(500); // adjust large size photo on android
+
+      const s3Url = await uploadRef.current?.uploadPhoto();
+      await updateChannelInfo(currentChannelId || '', groupName?.trim(), s3Url || icon);
       CommonToast.success('Save successfully');
       navigationService.goBack();
     } catch (error) {
@@ -63,7 +73,7 @@ const EditGroupPage = () => {
     } finally {
       Loading.hide();
     }
-  }, [currentChannelId, groupName, upDateChannelName]);
+  }, [currentChannelId, groupName, icon, updateChannelInfo]);
 
   return (
     <PageContainer
@@ -73,8 +83,13 @@ const EditGroupPage = () => {
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
       <ScrollView style={GStyles.flex1}>
+        <Touchable style={[GStyles.center, styles.header]} onPress={() => uploadRef.current?.selectPhoto()}>
+          <ImageWithUploadFunc avatarSize={pTd(80)} ref={uploadRef} title={name || ''} imageUrl={icon || ''} />
+          <TextL style={[FontStyles.font4, styles.setButton]}>Set New Photo</TextL>
+        </Touchable>
         <FormItem title={'Group Name'} style={styles.groupNameWrap}>
           <CommonInput
+            ref={iptRef}
             type="general"
             theme="white-bg"
             placeholder="Enter Name"
@@ -107,8 +122,11 @@ const styles = StyleSheet.create({
     flex: 1,
     ...GStyles.paddingArg(0),
   },
-  groupNameWrap: {
+  header: {
     marginTop: pTd(24),
+    marginBottom: pTd(24),
+  },
+  groupNameWrap: {
     paddingHorizontal: pTd(20),
   },
   deleteBtnStyle: {
@@ -116,5 +134,8 @@ const styles = StyleSheet.create({
   },
   buttonWrap: {
     ...GStyles.paddingArg(10, 20, 16),
+  },
+  setButton: {
+    marginTop: pTd(8),
   },
 });

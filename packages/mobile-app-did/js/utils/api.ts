@@ -19,6 +19,7 @@ class MobileVerification extends Verification {
 
     try {
       const item = this.get(key);
+
       if (item) {
         return item;
       } else {
@@ -33,30 +34,29 @@ class MobileVerification extends Verification {
           // app check
           try {
             const appCheckToken = await getAppCheckToken(true);
+            if (!appCheckToken) throw Error('get appCheckToken fail');
+
             config.headers = {
               acToken: appCheckToken || '',
             };
+
             const request1 = await request.verify.sendVerificationRequest(config);
             await this.set(key, { ...request1, time: Date.now() });
-            return request1;
-          } catch (err: any) {
-            // google  human-machine verification
-            if (err?.code === 208) {
-              // TODO: add language
-              const reCaptchaToken = await verifyHumanMachine('en');
-              config.headers = {
-                reCaptchaToken: reCaptchaToken as string,
-              };
-              const request2 = await request.verify.sendVerificationRequest(config);
-              await this.set(key, { ...request2, time: Date.now() });
-              return request2;
-            }
-          }
 
-          const reCaptchaToken = await verifyHumanMachine('en');
-          config.headers = {
-            reCaptchaToken: reCaptchaToken as string,
-          };
+            return request1;
+          } catch (err) {
+            // google  human-machine verification
+            // TODO: add language
+            console.log('appCheck  error', err);
+            const reCaptchaToken = await verifyHumanMachine('en');
+            config.headers = {
+              reCaptchaToken: reCaptchaToken as string,
+            };
+
+            const request2 = await request.verify.sendVerificationRequest(config);
+            await this.set(key, { ...request2, time: Date.now() });
+            return request2;
+          }
         }
 
         const req = await request.verify.sendVerificationRequest(config);

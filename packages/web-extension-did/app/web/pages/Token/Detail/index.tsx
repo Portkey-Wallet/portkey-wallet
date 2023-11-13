@@ -12,7 +12,7 @@ import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/ho
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import './index.less';
-import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -24,10 +24,10 @@ function TokenDetail() {
   const { state: currentToken } = useLocation();
   const isMainNet = useIsMainnet();
   const { isPrompt } = useCommonState();
-  const { isBuyButtonShow } = useExtensionBuyButtonShow();
+  const { isRampShow } = useRampEntryShow();
   const isShowBuy = useMemo(
-    () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isBuyButtonShow,
-    [currentToken.chainId, currentToken.symbol, isBuyButtonShow],
+    () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isRampShow,
+    [currentToken.chainId, currentToken.symbol, isRampShow],
   );
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();

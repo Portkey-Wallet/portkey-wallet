@@ -5,7 +5,7 @@ import { sleep } from '@portkey-wallet/utils';
 import { setRampEntry } from '@portkey-wallet/store/store-ca/ramp/actions';
 import { useBuyFiat } from './buy';
 import { useSellCrypto } from './sell';
-import { useIsMainnet } from '../network';
+import { useCurrentNetworkInfo, useIsMainnet } from '../network';
 
 export const useRampState = () => useAppCASelector(state => state.ramp);
 
@@ -23,8 +23,11 @@ export const useInitRamp = () => {
   const { refreshRampShow } = useRampEntryShow();
   const { refreshBuyFiat } = useBuyFiat();
   const { refreshSellCrypto } = useSellCrypto();
+  const { apiUrl } = useCurrentNetworkInfo();
 
   return useCallback(async () => {
+    await ramp.init({ baseUrl: apiUrl, clientType: 'Extension' });
+
     const { isBuySectionShow, isSellSectionShow } = await refreshRampShow();
 
     await sleep(1000);
@@ -38,7 +41,7 @@ export const useInitRamp = () => {
       // fetch cryptoList and defaultCrypto
       await refreshSellCrypto();
     }
-  }, [refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
+  }, [apiUrl, refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
 };
 
 export const useRampEntryShow = () => {

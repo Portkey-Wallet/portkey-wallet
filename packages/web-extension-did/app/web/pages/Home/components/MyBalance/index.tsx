@@ -35,7 +35,7 @@ import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
-import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 export interface TransactionResult {
   total: number;
@@ -85,7 +85,7 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
-  const { isBuyButtonShow } = useExtensionBuyButtonShow();
+  const { isRampShow } = useRampEntryShow();
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
 
@@ -98,7 +98,7 @@ export default function MyBalance() {
     appDispatch(fetchAllTokenListAsync({ keyword: '', chainIdArray }));
     appDispatch(getCaHolderInfoAsync());
     appDispatch(getSymbolImagesAsync());
-  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key]);
+  }, [passwordSeed, appDispatch, caAddresses, chainIdArray, caAddressInfos, isMainNet, state?.key, isRampShow]);
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
@@ -199,7 +199,7 @@ export default function MyBalance() {
       </div>
       <BalanceCard
         amount={accountBalance}
-        isShowBuy={isBuyButtonShow}
+        isShowBuy={isRampShow}
         onBuy={handleBuy}
         onSend={() => {
           setNavTarget('send');

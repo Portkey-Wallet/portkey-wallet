@@ -43,7 +43,7 @@ const ChatGroupDetails = () => {
   const onPressConfirm = useCallback(async () => {
     try {
       Loading.show();
-      if (!isIOS) await sleep(500); // adjust large size photo on android
+      await sleep(500); // adjust large size photo on android
 
       const selectedContactList = Object.keys(selectedContactMap);
       const s3Url = await uploadRef.current?.uploadPhoto();

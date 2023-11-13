@@ -88,7 +88,7 @@ const WalletName: React.FC = () => {
     // }
     Loading.show();
     try {
-      if (!isIOS) await sleep(500); // adjust large size on android
+      await sleep(500); // adjust large size on android
       const s3Url = await uploadRef.current?.uploadPhoto();
       setAvatar(s3Url || userInfo?.avatar || '');
       await setUserInfo({ nickName: _nameValue, avatar: s3Url || userInfo?.avatar || '' });

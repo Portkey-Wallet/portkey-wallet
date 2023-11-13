@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../../index';
-import ramp, { IRampProviderType } from '@portkey-wallet/ramp';
+import ramp, { IClientType, IRampProviderType } from '@portkey-wallet/ramp';
 import { sleep } from '@portkey-wallet/utils';
 import { setRampEntry } from '@portkey-wallet/store/store-ca/ramp/actions';
 import { useBuyFiat } from './buy';
@@ -19,16 +19,19 @@ export const useSellDefaultCryptoState = () => useAppCASelector(state => state.r
 export const useSellDefaultFiatListState = () => useAppCASelector(state => state.ramp.sellDefaultFiatList);
 export const useSellDefaultFiatState = () => useAppCASelector(state => state.ramp.sellDefaultFiat);
 
-export const useInitRamp = () => {
+export interface UseInitRampParams {
+  clientType: IClientType;
+}
+export const useInitRamp = ({ clientType }: UseInitRampParams) => {
   const { refreshRampShow } = useRampEntryShow();
   const { refreshBuyFiat } = useBuyFiat();
   const { refreshSellCrypto } = useSellCrypto();
   const { apiUrl } = useCurrentNetworkInfo();
 
   return useCallback(async () => {
-    await ramp.init({ baseUrl: apiUrl, clientType: 'Extension' });
+    await ramp.init({ baseUrl: apiUrl, clientType });
 
-    const { isBuySectionShow, isSellSectionShow } = await refreshRampShow();
+    const { isBuySectionShow, isSellSectionShow } = await refreshRampShow(false);
 
     await sleep(1000);
 
@@ -41,7 +44,7 @@ export const useInitRamp = () => {
       // fetch cryptoList and defaultCrypto
       await refreshSellCrypto();
     }
-  }, [apiUrl, refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
+  }, [apiUrl, clientType, refreshRampShow, refreshBuyFiat, refreshSellCrypto]);
 };
 
 export const useRampEntryShow = () => {
@@ -61,32 +64,38 @@ export const useRampEntryShow = () => {
 
   const isRampShow = useMemo(() => isMainnet && rampEntry.isRampShow, [isMainnet, rampEntry.isRampShow]);
 
-  const refreshRampShow = useCallback(async () => {
-    await ramp.refreshRampProvider();
-    const rampProviders = ramp.providerMap;
+  const refreshRampShow = useCallback(
+    async (isFetch = true) => {
+      if (isFetch) {
+        await ramp.refreshRampProvider();
+      }
 
-    const isBuySectionShowNew = Object.keys(rampProviders).some(key => {
-      return rampProviders[key as IRampProviderType]?.providerInfo.coverage.buy === true;
-    });
-    const isSellSectionShowNew = Object.keys(rampProviders).some(key => {
-      return rampProviders[key as IRampProviderType]?.providerInfo.coverage.sell === true;
-    });
-    const isRampShowNew = isBuySectionShowNew || isSellSectionShowNew;
+      const rampProviders = ramp.providerMap;
 
-    dispatch(
-      setRampEntry({
-        isRampShow: isRampShowNew,
-        isBuySectionShow: isBuySectionShowNew,
-        isSellSectionShow: isSellSectionShowNew,
-      }),
-    );
+      const isBuySectionShowNew = Object.keys(rampProviders).some(key => {
+        return rampProviders[key as IRampProviderType]?.providerInfo.coverage.buy === true;
+      });
+      const isSellSectionShowNew = Object.keys(rampProviders).some(key => {
+        return rampProviders[key as IRampProviderType]?.providerInfo.coverage.sell === true;
+      });
+      const isRampShowNew = isBuySectionShowNew || isSellSectionShowNew;
 
-    return {
-      isRampShow: isMainnet && isRampShowNew,
-      isBuySectionShow: isMainnet && isBuySectionShowNew,
-      isSellSectionShow: isMainnet && isSellSectionShowNew,
-    };
-  }, [dispatch, isMainnet]);
+      dispatch(
+        setRampEntry({
+          isRampShow: isRampShowNew,
+          isBuySectionShow: isBuySectionShowNew,
+          isSellSectionShow: isSellSectionShowNew,
+        }),
+      );
+
+      return {
+        isRampShow: isMainnet && isRampShowNew,
+        isBuySectionShow: isMainnet && isBuySectionShowNew,
+        isSellSectionShow: isMainnet && isSellSectionShowNew,
+      };
+    },
+    [dispatch, isMainnet],
+  );
 
   return {
     isRampShow,

@@ -17,6 +17,8 @@ import { useInitIM } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useBookmarkList } from '@portkey-wallet/hooks/hooks-ca/discover';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import im from '@portkey-wallet/im';
+import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 // const getCurrentCAContract = useGetCurrentCAContract();
 
@@ -41,6 +43,9 @@ export default function useInitData() {
 
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
+  const initRamp = useInitRamp({
+    clientType: isIOS ? 'iOS' : 'Android',
+  });
 
   const loadIM = useCallback(async () => {
     if (!pin) return;
@@ -69,6 +74,7 @@ export default function useInitData() {
       dispatch(getSymbolImagesAsync());
 
       loadBookmarkList();
+      initRamp();
       // getGuardiansInfoWriteStore after getVerifierServers
       await getVerifierServers();
       getGuardiansInfoWriteStore({
@@ -82,6 +88,7 @@ export default function useInitData() {
     getCurrentCAViewContract,
     getGuardiansInfoWriteStore,
     getVerifierServers,
+    initRamp,
     isMainNetwork,
     loadBookmarkList,
     wallet.caHash,

@@ -50,7 +50,15 @@ export default function RampPreview() {
 
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
-  const { rate, receiveAmount } = useReceive(type, amount || '', fiat, crypto, receiveAmountProps, rateProps);
+  const { rate, receiveAmount, providerPriceList } = useReceive({
+    type,
+    amount: amount || '',
+    fiat,
+    crypto,
+    initialReceiveAmount: receiveAmountProps,
+    initialRate: rateProps,
+    isProviderShow: true,
+  });
   const isBuy = useMemo(() => type === RampType.BUY, [type]);
   const apiUrl = useCurrentApiUrl();
   const wallet = useCurrentWalletInfo();
@@ -81,7 +89,7 @@ export default function RampPreview() {
 
       try {
         const callbackUrl = encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`);
-        let achUrl = `${baseUrl}/?crypto=${crypto.symbol}&network=${crypto.network}&country=${fiat.country}&fiat=${fiat.currency}&appId=${appId}&callbackUrl=${callbackUrl}`;
+        let achUrl = `${baseUrl}/?crypto=${crypto.symbol}&network=${crypto.network}&country=${fiat.country}&fiat=${fiat.symbol}&appId=${appId}&callbackUrl=${callbackUrl}`;
 
         const orderNo = await getPaymentOrderNo({
           transDirect: type === RampType.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
@@ -164,10 +172,10 @@ export default function RampPreview() {
         <View style={styles.amountContainer}>
           <View style={styles.primaryWrap}>
             <Text style={styles.primaryAmount}>{amount}</Text>
-            <TextM style={styles.primaryUnit}>{isBuy ? fiat?.currency || '' : crypto?.symbol || ''}</TextM>
+            <TextM style={styles.primaryUnit}>{isBuy ? fiat?.symbol || '' : crypto?.symbol || ''}</TextM>
           </View>
           <TextM style={FontStyles.font3}>
-            I will receive {receiveAmount} {isBuy ? crypto?.symbol || '' : fiat?.currency || ''}
+            I will receive {receiveAmount} {isBuy ? crypto?.symbol || '' : fiat?.symbol || ''}
           </TextM>
         </View>
 
@@ -175,7 +183,7 @@ export default function RampPreview() {
         <View style={styles.paymentWrap}>
           <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.marginBottom(24)]}>
             <Image resizeMode="contain" source={achImg} style={styles.achImgStyle} />
-            <TextM style={FontStyles.font3}>{`1 ${crypto?.symbol || ''} ≈ ${rate} ${fiat?.currency}`}</TextM>
+            <TextM style={FontStyles.font3}>{`1 ${crypto?.symbol || ''} ≈ ${rate} ${fiat?.symbol}`}</TextM>
           </View>
           <Image resizeMode="contain" source={achPaymentImg} style={styles.achPaymentImgStyle} />
         </View>

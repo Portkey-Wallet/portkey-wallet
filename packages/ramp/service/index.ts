@@ -31,7 +31,7 @@ import {
 } from '../types/services';
 import RampApi from '../api';
 import { RampType } from '../constants';
-import { IClientType, IRampRequest } from '../types';
+import { IClientType, IRampRequest, IRequestConfig } from '../types';
 
 export class RampService implements IRampService {
   public baseUrl: string;
@@ -40,8 +40,13 @@ export class RampService implements IRampService {
 
   constructor(options: IRampServiceOptions) {
     this.baseUrl = options?.baseUrl || '';
-    this.clientType = options?.clientType || 'iOS';
+    this.clientType = options?.clientType || 'Android';
     this.request = options?.request;
+  }
+
+  setRequestOptions(options: IRequestConfig) {
+    this.baseUrl = options?.baseUrl || this.baseUrl;
+    this.clientType = options?.clientType || this.clientType;
   }
 
   getRampInfo(): IRampServiceCommon<IRampInfoResult> {
@@ -49,7 +54,7 @@ export class RampService implements IRampService {
       url: RampApi.getRampInfo.target,
       method: RampApi.getRampInfo.config.method,
       headers: {
-        ClientType: this.clientType,
+        'Client-Type': this.clientType,
       },
     });
   }
@@ -154,15 +159,8 @@ export class RampService implements IRampService {
 }
 
 export class AlchemyPayRampService extends RampService implements IAlchemyPayRampService {
-  public baseUrl: string;
-  public clientType: IClientType;
-  public request: IRampRequest;
-
   constructor(options: IRampServiceOptions) {
     super(options);
-    this.baseUrl = options?.baseUrl || '';
-    this.clientType = options?.clientType || 'iOS';
-    this.request = options?.request;
   }
 
   getAchPayToken(params: IGetAchPayTokenRequest): IRampServiceCommon<IGetAchPayTokenResult> {

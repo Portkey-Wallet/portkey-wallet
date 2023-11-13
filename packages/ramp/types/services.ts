@@ -1,4 +1,4 @@
-import { IRampProviderInfo, IRampRequest, IRequestConfig, ITransDirectEnum } from '.';
+import { IClientType, IRampProviderInfo, IRampRequest, IRequestConfig, ITransDirectEnum } from '.';
 import { IRampProviderType } from '..';
 
 export type IRampServiceOptions = IRequestConfig & {
@@ -195,6 +195,11 @@ export type IGetAchPaySignatureResult = {
 };
 
 export interface IRampService {
+  request: IRampRequest;
+  baseUrl?: string;
+  clientType?: IClientType;
+
+  setRequestOptions(options: IRequestConfig): void;
   getRampInfo(): IRampServiceCommon<IRampInfoResult>;
 
   getBuyCryptoData(params?: IGetCryptoDataRequest): IRampServiceCommon<IRampCryptoResult>;

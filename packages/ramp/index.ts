@@ -1,11 +1,9 @@
 import { request } from '@portkey-wallet/api/api-did';
-import { RampConfig } from './config';
 import { IRampProviderType, RAMP_SOCKET_TIMEOUT, SELL_ORDER_DISPLAY_STATUS } from './constants';
 import { AlchemyPayProvider, RampProvider, TransakProvider } from './provider';
 import { AlchemyPayRampService, RampService } from './service';
 import {
   IBaseRampOptions,
-  IRampConfig,
   IRampProviderMap,
   IRampSignalr,
   IRampService,
@@ -13,12 +11,13 @@ import {
   IRampProvider,
   IGenerateTransaction,
   IOrderInfo,
+  IClientType,
 } from './types';
 import { RampSignalr } from './signalr';
 import { randomId } from '@portkey-wallet/utils';
 
 export interface IBaseRamp {
-  config: IRampConfig;
+  // config: IRampConfig;
   service: IRampService;
   rampSignalr: IRampSignalr;
   providerMap: IRampProviderMap;
@@ -29,19 +28,23 @@ export interface IBaseRamp {
 }
 
 export abstract class BaseRamp implements IBaseRamp {
-  public config: IRampConfig;
+  // public config: IRampConfig;
   public service: IRampService;
   public rampSignalr: IRampSignalr;
   public providerMap: IRampProviderMap;
 
   constructor(options: IBaseRampOptions) {
-    this.config = new RampConfig({
-      requestConfig: {
-        baseUrl: '',
-        clientType: 'Android',
-      },
+    // this.config = new RampConfig({
+    //   requestConfig: {
+    //     baseUrl: 'http://192.168.11.180:3000',
+    //     clientType: 'Extension',
+    //   },
+    // });
+    this.service = new RampService({
+      request: options.request,
+      baseUrl: options?.baseUrl || '',
+      clientType: options?.clientType || 'Android',
     });
-    this.service = new RampService({ request: options.request, ...this.config.requestConfig });
 
     this.rampSignalr = new RampSignalr();
     this.providerMap = {};
@@ -65,7 +68,7 @@ export abstract class BaseRamp implements IBaseRamp {
     const clientId = randomId();
     try {
       await this.rampSignalr.doOpen({
-        url: `${this.config.requestConfig.baseUrl}/ca`,
+        url: `${this.service.baseUrl}/ca`,
         clientId,
       });
     } catch (error) {
@@ -135,17 +138,27 @@ export abstract class BaseRamp implements IBaseRamp {
 
 export class Ramp extends BaseRamp {
   public request: any;
+  public baseUrl: string;
+  public clientType: IClientType;
 
   constructor(options: IBaseRampOptions) {
     super(options);
 
     this.request = options.request;
+    this.baseUrl = options.baseUrl || '';
+    this.clientType = options.clientType || 'Android';
   }
 
-  async init(requestConfig: IRequestConfig) {
-    this.config.setRequestConfig(requestConfig);
-
+  async init(requestOptions: IRequestConfig) {
+    this.setRequestOptions(requestOptions);
     await this.refreshRampProvider();
+  }
+
+  setRequestOptions(options: IRequestConfig) {
+    this.baseUrl = options.baseUrl;
+    this.clientType = options.clientType;
+
+    this.service.setRequestOptions(options);
   }
 
   async refreshRampProvider() {
@@ -159,7 +172,11 @@ export class Ramp extends BaseRamp {
           this.setProvider(
             new AlchemyPayProvider({
               providerInfo: { key: IRampProviderType.AlchemyPay, ...thirdPart.AlchemyPay },
-              service: new AlchemyPayRampService({ request: this.request, ...this.config.requestConfig }),
+              service: new AlchemyPayRampService({
+                request: this.request,
+                baseUrl: this.baseUrl,
+                clientType: this.clientType,
+              }),
             }),
           );
           break;
@@ -168,7 +185,11 @@ export class Ramp extends BaseRamp {
           this.setProvider(
             new TransakProvider({
               providerInfo: { key: IRampProviderType.Transak, ...thirdPart.AlchemyPay },
-              service: new RampService({ request: this.request, ...this.config.requestConfig }),
+              service: new RampService({
+                request: this.request,
+                baseUrl: this.baseUrl,
+                clientType: this.clientType,
+              }),
             }),
           );
           break;

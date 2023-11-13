@@ -20,7 +20,6 @@ import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/st
 import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/actions';
 import CustomTokenModal from 'pages/components/CustomTokenModal';
 import { AccountAssetItem } from '@portkey-wallet/types/types-ca/token';
-import { fetchBuyFiatListAsync, fetchSellFiatListAsync } from '@portkey-wallet/store/store-ca/payment/actions';
 import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
@@ -35,7 +34,7 @@ import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
-import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { useInitRamp, useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 export interface TransactionResult {
   total: number;
@@ -85,6 +84,7 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
+  const initRamp = useInitRamp({ clientType: 'Extension' });
   const { isRampShow } = useRampEntryShow();
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
@@ -102,8 +102,7 @@ export default function MyBalance() {
 
   useEffect(() => {
     getGuardianList({ caHash: walletInfo?.caHash });
-    isMainNet && appDispatch(fetchBuyFiatListAsync());
-    isMainNet && appDispatch(fetchSellFiatListAsync());
+    initRamp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMainNet]);
 

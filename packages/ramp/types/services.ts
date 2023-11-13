@@ -93,7 +93,7 @@ export type IFeeInfo = {
 
 export type IFeeItem = {
   type: ICurrencyType;
-  price: string;
+  amount: string;
   symbol: string;
 };
 

@@ -1,6 +1,6 @@
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../index.less';
 import { useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
@@ -30,23 +30,23 @@ export default function SelectCryptoList({
   const isMainNet = useIsMainnet();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
   const [filterWord, setFilterWord] = useState<string>('');
-  const filterCryptoListRef = useRef<IRampCryptoItem[]>([]);
+  const [filterCryptoList, setFilterCryptoList] = useState<IRampCryptoItem[]>([]);
   const { sellCryptoList: totalCryptoList } = useSellCrypto();
 
   const getFilterCryptoList = useCallback(async () => {
     const { buyCryptoList } = await getBuyCrypto({ fiat: defaultFiat, country });
-    filterCryptoListRef.current = buyCryptoList;
+    setFilterCryptoList(buyCryptoList);
   }, [country, defaultFiat]);
 
   useEffect(() => {
-    if (defaultFiat || country) {
+    if (defaultFiat && country) {
       getFilterCryptoList();
     }
   }, [country, defaultFiat, getFilterCryptoList]);
 
   const cryptoList: IRampCryptoItem[] = useMemo(() => {
-    return defaultFiat ? filterCryptoListRef.current : totalCryptoList;
-  }, [defaultFiat, totalCryptoList]);
+    return defaultFiat ? filterCryptoList : totalCryptoList;
+  }, [defaultFiat, filterCryptoList, totalCryptoList]);
 
   const showCryptoList = useMemo(() => {
     return filterWord === '' ? cryptoList : cryptoList.filter((item) => filterWord === item.symbol);

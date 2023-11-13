@@ -11,8 +11,7 @@ import {
 } from '@portkey-wallet/hooks/hooks-ca/ramp';
 import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import { handleKeyDown } from 'utils/keyDown';
-import { getSellLimit, getSellPrice } from '@portkey-wallet/utils/ramp';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals } from '@portkey-wallet/utils/converter';
 import ExchangeRate from '../ExchangeRate';
 import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
 import { useLoading } from 'store/Provider/hooks';
@@ -28,6 +27,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { generateRateText } from 'pages/Buy/utils';
 
 export default function SellFrom() {
   const { t } = useTranslation();
@@ -51,32 +51,32 @@ export default function SellFrom() {
   );
   useFetchTxFee(); // TODO
 
+  // pay
+  const [cryptoAmount, setCryptoAmount] = useState<string>(defaultCryptoAmount);
+  const cryptoAmountRef = useRef<string>(defaultCryptoAmount);
+  const [cryptoSelected, setCryptoSelected] = useState<IRampCryptoItem>({ ...filterCryptoSelected[0] });
+  const cryptoSelectedRef = useRef<IRampCryptoItem>({ ...filterCryptoSelected[0] });
+
+  // receive
+  const [fiatSelected, setFiatSelected] = useState<IRampFiatItem>({ ...filterFiatSelected[0] });
+  const fiatSelectedRef = useRef<IRampFiatItem>({ ...filterFiatSelected[0] });
+
   // 15s interval
   const {
+    receive,
     exchange,
     updateTime,
     errMsg,
     warningMsg,
     updateSellReceive,
-    sellErrMsgHandler,
     setInsufficientFundsMsg,
     checkManagerSynced,
-  } = useUpdateReceiveAndInterval(RampType.SELL);
+  } = useUpdateReceiveAndInterval(RampType.SELL, {
+    cryptoSelectedRef,
+    fiatSelectedRef,
+    cryptoAmountRef,
+  });
 
-  // pay
-  const [cryptoAmount, setCryptoAmount] = useState<string>(defaultCryptoAmount);
-  const cryptoAmountRef = useRef<string>('');
-  const [cryptoSelected, setCryptoSelected] = useState<IRampCryptoItem>({ ...filterCryptoSelected[0] });
-  const cryptoSelectedRef = useRef<IRampCryptoItem>({ ...filterCryptoSelected[0] });
-
-  // receive
-  const [fiatAmount, setFiatAmount] = useState('');
-  const fiatAmountRef = useRef<string>('');
-  const [fiatSelected, setFiatSelected] = useState<IRampFiatItem>({ ...filterFiatSelected[0] });
-  const fiatSelectedRef = useRef<IRampFiatItem>({ ...filterFiatSelected[0] });
-
-  const minLimitRef = useRef<number>();
-  const maxLimitRef = useRef<number>();
   const disabled = useMemo(() => !!errMsg || !cryptoAmount, [cryptoAmount, errMsg]);
 
   // change handler
@@ -95,79 +95,42 @@ export default function SellFrom() {
       setCryptoAmount(v);
       cryptoAmountRef.current = v;
 
-      const { fiatAmount } = await getSellPrice({
-        network: cryptoSelectedRef.current.network,
-        crypto: cryptoSelectedRef.current.symbol,
-        cryptoAmount: cryptoAmountRef.current,
-        fiat: fiatSelectedRef.current.symbol,
-        country: fiatSelectedRef.current.country,
-      });
-
-      fiatAmountRef.current = formatAmountShow(Number(fiatAmount), 4);
-      setFiatAmount(fiatAmountRef.current);
-
-      // check min<amount<max
-      const { minLimit, maxLimit } = await getSellLimit({
-        crypto: cryptoSelectedRef.current.symbol,
-        network: cryptoSelectedRef.current.network,
-        fiat: fiatSelectedRef.current.symbol,
-        country: fiatSelectedRef.current.country,
-      });
-      minLimitRef.current = minLimit;
-      maxLimitRef.current = maxLimit;
-      sellErrMsgHandler({ crypto: cryptoSelectedRef.current.symbol, cryptoAmount: v, min: minLimit, max: maxLimit });
+      await updateSellReceive();
     },
-    [sellErrMsgHandler],
+    [updateSellReceive],
   );
 
   const handleCryptoSelect = useCallback(
-    (v: IRampCryptoItem) => {
-      if (v.symbol && v.network) {
-        setCryptoSelected(v);
-        // valueSaveRef.current.fiat = v.symbol;
-        // valueSaveRef.current.country = v.country;
-      } else {
-        return;
-      }
-
+    async (v: IRampCryptoItem) => {
       try {
-        setLoading(true);
-        // TODO update receive
+        if (v.symbol && v.network) {
+          setCryptoSelected(v);
+          cryptoSelectedRef.current = v;
+          await updateSellReceive();
+        }
       } catch (error) {
         console.log('error', error);
-      } finally {
-        setLoading(false);
       }
     },
-    [setLoading],
+    [updateSellReceive],
   );
 
   const handleFiatSelect = useCallback(
-    (v: IRampFiatItem) => {
-      if (v.symbol && v.country) {
-        setFiatSelected(v);
-        // valueSaveRef.current.fiat = v.symbol;
-        // valueSaveRef.current.country = v.country;
-      } else {
-        return;
-      }
-
+    async (v: IRampFiatItem) => {
       try {
-        setLoading(true);
-        // TODO update receive
+        if (v.symbol && v.country) {
+          setFiatSelected(v);
+          fiatSelectedRef.current = v;
+          await updateSellReceive();
+        }
       } catch (error) {
         console.log('error', error);
-      } finally {
-        setLoading(false);
       }
     },
-    [setLoading],
+    [updateSellReceive],
   );
 
-  const showRateText = useMemo(
-    () => `1 ${cryptoSelected.symbol} ≈ ${formatAmountShow(exchange, 2)} ${fiatSelected.symbol}`,
-    [fiatSelected.symbol, exchange, cryptoSelected.symbol],
-  );
+  const showRateText = generateRateText(cryptoSelected.symbol, exchange, fiatSelected.symbol);
 
   const {
     accountToken: { accountTokenList },
@@ -249,14 +212,7 @@ export default function SellFrom() {
   ]);
 
   useEffectOnce(() => {
-    updateSellReceive({
-      network: cryptoSelectedRef.current.network,
-      crypto: cryptoSelectedRef.current.symbol,
-      cryptoAmount: cryptoAmountRef.current,
-      fiat: fiatSelectedRef.current.symbol,
-      country: fiatSelectedRef.current.country,
-      fiatAmount: '',
-    });
+    updateSellReceive();
   });
 
   return (
@@ -278,14 +234,16 @@ export default function SellFrom() {
         <div className="sell-input">
           <div className="label">{`I will receive≈`}</div>
           <FiatInput
-            value={fiatAmount}
+            value={receive}
             readOnly={true}
             curFiat={fiatSelected}
+            defaultCrypto={defaultCrypto}
+            network={defaultNetwork}
             onSelect={handleFiatSelect}
             onKeyDown={handleKeyDown}
           />
         </div>
-        {exchange !== '' && <ExchangeRate showRateText={showRateText} rateUpdateTime={updateTime} />}
+        {exchange !== '' && !errMsg && <ExchangeRate showRateText={showRateText} rateUpdateTime={updateTime} />}
       </div>
       <div className="ramp-footer">
         <Button type="primary" htmlType="submit" disabled={disabled} onClick={handleNext}>

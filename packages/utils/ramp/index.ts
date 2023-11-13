@@ -51,17 +51,21 @@ export const getBuyPrice = async (params: IGetBuyPriceRequest) => {
   return { cryptoAmount, exchange, feeInfo };
 };
 
+export type IGetBuyDetail = IBuyProviderPrice & { amount: string };
+export type IGetSellDetail = ISellProviderPrice & { amount: string };
+
 export const getBuyDetail = async (params: IGetBuyDetailRequest) => {
   const {
     data: { providersList: resultList },
   } = await ramp.service.getBuyDetail(params);
 
-  const providersList: IBuyProviderPrice[] = [];
+  const providersList: IGetBuyDetail[] = [];
   resultList.forEach(item => {
     const provider = ramp.getProvider(item.thirdPart);
     if (!provider) return;
     providersList.push({
       ...item,
+      amount: item.cryptoAmount,
       providerInfo: provider.providerInfo,
     });
   });
@@ -110,12 +114,13 @@ export const getSellDetail = async (params: IGetSellDetailRequest) => {
     data: { providersList: resultList },
   } = await ramp.service.getSellDetail(params);
 
-  const providersList: ISellProviderPrice[] = [];
+  const providersList: IGetSellDetail[] = [];
   resultList.forEach(item => {
     const provider = ramp.getProvider(item.thirdPart);
     if (!provider) return;
     providersList.push({
       ...item,
+      amount: item.fiatAmount,
       providerInfo: provider.providerInfo,
     });
   });

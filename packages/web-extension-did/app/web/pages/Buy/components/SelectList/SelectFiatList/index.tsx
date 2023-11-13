@@ -1,6 +1,6 @@
 import CustomSvg from 'components/CustomSvg';
 import DropdownSearch from 'components/DropdownSearch';
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '../index.less';
 import { useBuyFiat } from '@portkey-wallet/hooks/hooks-ca/ramp';
@@ -27,23 +27,23 @@ export default function SelectFiatList({
   const { t } = useTranslation();
   const [openDrop, setOpenDrop] = useState<boolean>(false);
   const [filterWord, setFilterWord] = useState<string>('');
-  const filterFiatListRef = useRef<IRampFiatItem[]>([]);
+  const [filterFiatList, setFilterFiatList] = useState<IRampFiatItem[]>([]);
   const { buyFiatList: totalFiatList } = useBuyFiat();
 
   const getFilterFiatList = useCallback(async () => {
     const { sellFiatList } = await getSellFiat({ crypto: defaultCrypto, network });
-    filterFiatListRef.current = sellFiatList;
+    setFilterFiatList(sellFiatList);
   }, [defaultCrypto, network]);
 
   useEffect(() => {
-    if (defaultCrypto || network) {
+    if (defaultCrypto && network) {
       getFilterFiatList();
     }
   }, [defaultCrypto, getFilterFiatList, network]);
 
   const fiatList: IRampFiatItem[] = useMemo(() => {
-    return defaultCrypto ? filterFiatListRef.current : totalFiatList;
-  }, [defaultCrypto, totalFiatList]);
+    return defaultCrypto ? filterFiatList : totalFiatList;
+  }, [defaultCrypto, filterFiatList, totalFiatList]);
 
   const showFiatList = useMemo(() => {
     return filterWord === ''

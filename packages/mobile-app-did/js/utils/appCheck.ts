@@ -2,11 +2,21 @@ import { firebase } from '@react-native-firebase/app-check';
 import { copyText } from 'utils';
 
 export const getAppCheckToken = async (forceRefresh?: boolean): Promise<string> => {
-  const { token } = await firebase.appCheck().getToken(forceRefresh);
-  if (token?.length > 0 && __DEV__) await copyText(token);
-  console.log('app check token!', token);
-
-  return token || '';
+  return new Promise<string>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error('getAppCheckToken timeout'));
+    }, 8000);
+    firebase
+      .appCheck()
+      .getToken(forceRefresh)
+      .then(({ token }) => {
+        if (token?.length > 0 && __DEV__) copyText(token);
+        console.log('app check token!', token);
+        resolve(token || '');
+      })
+      .catch(error => reject(error))
+      .finally(() => clearTimeout(timeout));
+  });
 };
 
 export async function setupAppCheck() {

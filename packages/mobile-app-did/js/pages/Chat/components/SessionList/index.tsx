@@ -17,6 +17,7 @@ import myEvents from 'utils/deviceEvent';
 import GStyles from 'assets/theme/GStyles';
 import ActionSheet from 'components/ActionSheet';
 import { PIN_LIMIT_EXCEED } from '@portkey-wallet/constants/constants-ca/chat';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 export default function SessionList() {
   const {
@@ -180,6 +181,7 @@ export default function SessionList() {
         ListEmptyComponent={<NoData icon="no-message" message="No message" />}
         keyExtractor={item => item.channelUuid}
         onEndReached={onEndReached}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
         renderItem={({ item }) => (
           <ChatHomeListItemSwiped
             item={item}

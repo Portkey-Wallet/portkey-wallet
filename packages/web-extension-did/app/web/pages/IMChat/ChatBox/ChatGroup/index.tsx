@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import CustomSvg from 'components/CustomSvg';
 import { message } from 'antd';
-import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps } from '@portkey-wallet/im-ui-web';
+import { MessageList, InputBar, StyleProvider, MessageType, PopDataProps, Avatar } from '@portkey-wallet/im-ui-web';
 import { useGroupChannel, useHideChannel, useLeaveChannel, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import BookmarkListDrawer from '../../components/BookmarkListDrawer';
 import { formatMessageList } from '../../utils';
@@ -18,6 +18,7 @@ import { useClickUrl } from 'hooks/im';
 import WarnTip from 'pages/IMChat/components/WarnTip';
 import CustomModalConfirm from 'pages/components/CustomModalConfirm';
 import { NO_LONGER_IN_GROUP } from '@portkey-wallet/constants/constants-ca/chat';
+import { ChannelTypeEnum } from '@portkey-wallet/im';
 
 export default function ChatBox() {
   const { channelUuid } = useParams();
@@ -198,15 +199,13 @@ export default function ChatBox() {
     () => (
       <div className="flex title-element">
         <div className="title-content flex-center" onClick={handleGoGroupInfo}>
-          <div className="group-icon flex-center">
-            <CustomSvg type="GroupAvatar" className="flex" />
-          </div>
+          <Avatar channelType={ChannelTypeEnum.GROUP} src={groupInfo?.icon} />
           <div className="title-name">{groupInfo?.name || info?.displayName || ''}</div>
         </div>
         <div>{info?.mute && <CustomSvg type="Mute" />}</div>
       </div>
     ),
-    [handleGoGroupInfo, groupInfo?.name, info?.displayName, info?.mute],
+    [handleGoGroupInfo, groupInfo?.icon, groupInfo?.name, info?.displayName, info?.mute],
   );
   useEffect(() => {
     document.addEventListener('click', hidePop);

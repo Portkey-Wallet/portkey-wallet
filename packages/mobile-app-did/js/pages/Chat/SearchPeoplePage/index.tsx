@@ -22,6 +22,7 @@ import { useJumpToChatDetails, useJumpToChatGroupDetails } from 'hooks/chat';
 import { Input } from '@rneui/base';
 import LottieLoading from 'components/LottieLoading';
 import { getChatListSvgName } from '../utils';
+import GroupAvatarShow from '../components/GroupAvatarShow';
 
 export default function SearchPeople() {
   const iptRef = useRef<Input>(null);
@@ -73,6 +74,28 @@ export default function SearchPeople() {
   const renderItem = useCallback(
     ({ item }: { item: ChannelItem }) => {
       const { toRelationId = '', channelUuid = '', displayName = '' } = item;
+
+      const Avatar =
+        item.channelType === ChannelTypeEnum.P2P ? (
+          <CommonAvatar
+            hasBorder
+            avatarSize={pTd(36)}
+            resizeMode="cover"
+            style={styles.avatarStyle}
+            imageUrl={item.channelIcon || ''}
+            title={item.displayName}
+            svgName={getChatListSvgName(item.channelType)}
+          />
+        ) : (
+          <GroupAvatarShow
+            logoSize={pTd(12)}
+            avatarSize={pTd(36)}
+            wrapStyle={styles.avatarStyle}
+            imageUrl={item.channelIcon || ''}
+            svgName={item.channelIcon ? undefined : 'chat-group-avatar'}
+          />
+        );
+
       return (
         <Touchable
           style={[GStyles.flexRow, GStyles.itemCenter, styles.itemWrap]}
@@ -83,13 +106,7 @@ export default function SearchPeople() {
               'Downloading the latest Portkey for you. To proceed, please close and restart the App.',
             );
           }}>
-          <CommonAvatar
-            title={displayName}
-            hasBorder
-            svgName={getChatListSvgName(item.channelType)}
-            avatarSize={pTd(36)}
-            style={styles.avatarStyle}
-          />
+          {Avatar}
           <View style={styles.rightSection}>
             <TextL numberOfLines={1}>{displayName}</TextL>
           </View>

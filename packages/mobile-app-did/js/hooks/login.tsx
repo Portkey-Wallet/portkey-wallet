@@ -55,6 +55,7 @@ import { verification } from 'utils/api';
 import { Text } from 'react-native';
 import { TextL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
+import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -120,7 +121,9 @@ export function useOnManagerAddressAndQueryResult() {
     }) => {
       const isRecovery = managerInfo.verificationType === VerificationType.communityRecovery;
       showLoading &&
-        Loading.show({ text: t(isRecovery ? 'Initiating social recovery' : 'Creating address on the chain...') });
+        Loading.show({
+          text: t(isRecovery ? 'Initiating social recovery' : CreateAddressLoading),
+        });
 
       await sleep(500);
       try {
@@ -278,7 +281,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
     async ({ loginAccount, loginType, authenticationInfo, selectedVerifier, chainId }: LoginAuthParams) => {
       const isRequestResult = !!(pin && address);
 
-      const loadingKey = Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
+      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
 
       try {
         const rst = await verifyToken(loginType, {
@@ -347,7 +350,7 @@ export function useGoSelectVerifier(isLogin?: boolean) {
       dispatch(setOriginChainId(DefaultChainId));
 
       const loadingKey = Loading.show({
-        text: 'Assigning a verifier on-chain...',
+        text: 'Assigning a verifier on the blockchain...',
       });
       try {
         await sleep(ALLOCATE_SLEEP_TIME);

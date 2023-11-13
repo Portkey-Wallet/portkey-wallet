@@ -28,7 +28,7 @@ export function useChangeNetwork() {
 
       resetStore();
       im.destroy();
-      dispatch(setWalletNameAction('Wallet 01'));
+      dispatch(setWalletNameAction(''));
       dispatch(changeNetworkType(network.networkType));
       if (tmpCaInfo?.managerInfo && tmpCaInfo?.[tmpChainId]?.caAddress) {
         if (!isPrompt) {

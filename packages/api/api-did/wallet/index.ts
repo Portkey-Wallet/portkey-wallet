@@ -20,6 +20,7 @@ export default {
     target: '/api/app/account/nickname',
     config: { method: 'PUT' },
   },
+  editHolderInfo: '/api/app/account/holderInfo',
   pullNotify: 'api/app/notify/pullNotify',
   getPhoneCountryCode: {
     target: '/api/app/phone/info',

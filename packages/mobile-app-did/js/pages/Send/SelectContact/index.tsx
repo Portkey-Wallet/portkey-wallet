@@ -25,6 +25,7 @@ import { useRecent } from '@portkey-wallet/hooks/hooks-ca/useRecent';
 import { fetchRecentListAsync } from '@portkey-wallet/store/store-ca/recent/slice';
 import MyAddressItem from '../components/MyAddressItem';
 import myEvents from 'utils/deviceEvent';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface SelectContactProps {
   chainId: ChainId;
@@ -109,6 +110,7 @@ export default function SelectContact(props: SelectContactProps) {
                 if (recentContactList.length >= totalRecordCount) return;
                 loadMore();
               }}
+              onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
             />
           </View>
         ),

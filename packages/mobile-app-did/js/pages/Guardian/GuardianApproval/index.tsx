@@ -302,7 +302,7 @@ export default function GuardianApproval() {
       <View style={GStyles.flex1}>
         <TextXXXL style={GStyles.alignCenter}>{t(`Guardians' approval`)}</TextXXXL>
         <TextM style={[styles.expireText, GStyles.alignCenter, FontStyles.font3]}>
-          {isExpired ? 'Expired' : `Expire after ${VERIFIER_EXPIRATION} hour`}
+          {isExpired ? 'Expired. Please initiate social recovery again.' : `Expire after ${VERIFIER_EXPIRATION} hour`}
         </TextM>
         <View style={[styles.verifierBody, GStyles.flex1]}>
           <View style={[GStyles.itemCenter, GStyles.flexRowWrap, BorderStyles.border6, styles.approvalTitleRow]}>

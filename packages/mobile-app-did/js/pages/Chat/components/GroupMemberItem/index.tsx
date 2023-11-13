@@ -10,6 +10,7 @@ import { defaultColors } from 'assets/theme';
 export type GroupMemberItemType = {
   title: string;
   relationId: string;
+  avatar?: string;
 };
 
 type GroupMemberItemPropsType = {
@@ -52,7 +53,7 @@ export default memo(
           onPress?.(item.relationId, item);
         }}>
         <View style={[styles.itemRow, disabled && styles.disable, innerWrapStyle]}>
-          <CommonAvatar hasBorder title={item.title} avatarSize={pTd(36)} />
+          <CommonAvatar hasBorder resizeMode="cover" title={item.title} avatarSize={pTd(36)} imageUrl={item.avatar} />
           <View style={styles.itemContent}>
             <TextL>{item.title}</TextL>
             {iconDom}

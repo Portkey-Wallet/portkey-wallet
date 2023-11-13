@@ -16,6 +16,7 @@ import Lottie from 'lottie-react-native';
 import useEffectOnce from 'hooks/useEffectOnce';
 import NoData from 'components/NoData';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 type SelectListProps = {
   onPressCallBack: (item: IBookmarkItem) => void;
@@ -80,6 +81,7 @@ const BookmarksOverlay = (props: SelectListProps) => {
           keyExtractor={item => item.id}
           data={bookmarkList}
           onEndReached={fetchBookmarkList}
+          onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
           ListEmptyComponent={<NoData noPic message="No bookmarks" />}
           renderItem={renderItem}
         />

@@ -279,7 +279,10 @@ export default function AddContact() {
 
   const { isNotLessThan768 } = useCommonState();
 
-  const headerTitle = useMemo(() => t('Add New Contact'), [t]);
+  const headerTitle = useMemo(
+    () => (extra === ExtraTypeEnum.CANT_CHAT ? t('Edit Contact') : t('Add New Contact')),
+    [extra, t],
+  );
   return isNotLessThan768 ? (
     <AddContactPrompt
       headerTitle={headerTitle}

@@ -29,7 +29,7 @@ import {
   TransferChannelOwnerParams,
   TriggerMessageEvent,
   UpdateChannelMuteParams,
-  UpdateChannelNameParams,
+  UpdateChannelInfoParams,
   UpdateChannelPinParams,
   VerifySignatureLoopParams,
   VerifySignatureParams,
@@ -244,7 +244,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null> {
+  updateChannelInfo(params: UpdateChannelInfoParams): IMServiceCommon<null> {
     return this._request.send({
       url: '/api/v1/channelContacts/update',
       params,

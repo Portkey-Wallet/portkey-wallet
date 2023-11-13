@@ -99,6 +99,7 @@ const AddMembersPage = () => {
             item={{
               title: item.name || item.caHolderInfo?.walletName || item.imInfo?.name || '',
               relationId: item.imInfo?.relationId || '',
+              avatar: item.avatar || '',
             }}
             onPress={onPressItem}
           />

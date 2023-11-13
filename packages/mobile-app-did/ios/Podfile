@@ -31,15 +31,25 @@ target 'Portkey' do
   pod 'Firebase', :modular_headers => true
   pod 'FirebaseCore', :modular_headers => true
   pod 'FirebaseCoreInternal', :modular_headers => true
-  pod 'FirebaseStorageInternal', :modular_headers => true
   pod 'FirebaseCoreExtension', :modular_headers => true
-  pod 'FirebaseAppCheckInterop', :modular_headers => true
-  pod 'FirebaseAuthInterop', :modular_headers => true
-  pod 'FirebaseMessagingInterop', :modular_headers => true
+  pod 'FirebaseAppCheck', :modular_headers => true
+  pod 'FirebaseCrashlytics', :modular_headers => true
+  pod 'FirebaseMessaging', :modular_headers => true
   pod 'GTMSessionFetcher', :modular_headers => true
-  pod 'FirebaseAppCheckInterop', :modular_headers => true
-  pod 'FirebaseAuthInterop', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
+
+  pod 'FirebaseInstallations', :modular_headers => true
+  pod 'GoogleDataTransport', :modular_headers => true
+  # pod 'RNFBAnalytics', :modular_headers => true
+  # pod 'RNFBApp', :modular_headers => true
+  # pod 'RNFBAppCheck', :modular_headers => true
+  # pod 'RNFBCrashlytics', :modular_headers => true
+  # pod 'RNFBMessaging', :modular_headers => true
+  # pod 'RNFBPerf', :modular_headers => true
+  pod 'nanopb', :modular_headers => true
+
+  # use_frameworks! :linkage => :static
+  # $RNFirebaseAsStaticFramework = true
 
   use_react_native!(
     :path => config[:reactNativePath],

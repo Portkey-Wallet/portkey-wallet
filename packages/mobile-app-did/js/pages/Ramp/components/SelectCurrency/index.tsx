@@ -11,6 +11,7 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
 import { defaultColors } from 'assets/theme';
 import { IRampFiatItem } from '@portkey-wallet/ramp';
+import CommonAvatar from 'components/CommonAvatar';
 
 type SelectListProps = {
   value?: string; // `${country}_${symbol}`
@@ -43,7 +44,7 @@ const SelectCurrency = ({ list, callBack, value }: SelectListProps) => {
             callBack(item);
           }}>
           <View style={styles.itemRow}>
-            <Image style={styles.fiatIconStyle} source={{ uri: item.icon || '' }} />
+            <CommonAvatar hasBorder title={item.symbol} avatarSize={pTd(32)} imageUrl={item.icon || ' '} />
             <View style={styles.itemContent}>
               <TextL>{`${item.countryName || ''} - ${item.symbol}`}</TextL>
 
@@ -86,6 +87,7 @@ const showList = (params: SelectListProps) => {
   Keyboard.dismiss();
   OverlayModal.show(<SelectCurrency {...params} />, {
     position: 'bottom',
+    enabledNestScrollView: true,
   });
 };
 
@@ -135,10 +137,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: pTd(60),
     color: defaultColors.font7,
-  },
-  fiatIconStyle: {
-    width: pTd(32),
-    height: pTd(32),
-    marginRight: pTd(16),
   },
 });

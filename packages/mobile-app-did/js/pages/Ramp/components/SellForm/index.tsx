@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
@@ -10,100 +10,130 @@ import Touchable from 'components/Touchable';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import SelectToken from '../SelectToken';
-import { usePayment, usePin } from 'hooks/store';
+import { usePin } from 'hooks/store';
 import SelectCurrency from '../SelectCurrency';
-import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 
 import { FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
-import { getCryptoList } from '@portkey-wallet/api/api-did/payment/util';
 import { ErrorType } from 'types/common';
 import { INIT_HAS_ERROR, INIT_NONE_ERROR } from 'constants/common';
-import { CryptoInfoType } from '@portkey-wallet/api/api-did/payment/type';
-import { CryptoItemType } from 'pages/Buy/types';
-import { INIT_SELL_AMOUNT, tokenList } from 'pages/Buy/constants';
 import Loading from 'components/Loading';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { useReceive } from 'pages/Buy/hooks';
-import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
+import { useReceive } from '../../hooks';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getManagerAccount } from 'utils/redux';
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import BigNumber from 'bignumber.js';
-import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import { useSellCrypto } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
+import isEqual from 'lodash/isEqual';
+import { getSellLimit } from '@portkey-wallet/utils/ramp';
+import CommonAvatar from 'components/CommonAvatar';
+import { ChainId } from '@portkey-wallet/types';
 
 export default function SellForm() {
-  const { sellFiatList: fiatList } = usePayment();
-  const { refreshBuyButton } = useAppBuyButtonShow();
-  const checkManagerSyncState = useCheckManagerSyncState();
+  const {
+    sellCryptoList: cryptoListState,
+    sellDefaultCrypto: defaultCrypto,
+    sellDefaultFiatList: defaultFiatList,
+    sellDefaultFiat: defaultFiat,
+    refreshSellCrypto,
+  } = useSellCrypto();
 
-  const [fiat, setFiat] = useState<FiatType | undefined>(
-    fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
+  const { refreshBuyButton } = useAppBuyButtonShow();
+
+  const [cryptoList, setCryptoList] = useState<IRampCryptoItem[]>(cryptoListState);
+  const [crypto, setCrypto] = useState<IRampCryptoItem | undefined>(
+    cryptoList.find(item => item.symbol === defaultCrypto.symbol && item.network === defaultCrypto.network),
   );
-  const [token, setToken] = useState<CryptoItemType>(tokenList[0]);
-  const [amount, setAmount] = useState<string>(INIT_SELL_AMOUNT);
-  const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
+  const cryptoRef = useRef<IRampCryptoItem | undefined>(crypto);
+  cryptoRef.current = crypto;
+
+  const [fiatList, setFiatList] = useState<IRampFiatItem[]>(defaultFiatList);
+  const [fiat, setFiat] = useState<IRampFiatItem | undefined>(
+    defaultFiatList.find(item => item.symbol === defaultFiat.symbol && item.country === defaultFiat.country),
+  );
+  const fiatRef = useRef<IRampFiatItem | undefined>(fiat);
+  fiatRef.current = fiat;
+
+  const checkManagerSyncState = useCheckManagerSyncState();
   useFetchTxFee();
+  // TODO: useGetTxFee input
   const { ach: achFee } = useGetTxFee('AELF');
 
-  const { accountToken } = useAssets();
-  const aelfToken = useMemo(
-    () => accountToken.accountTokenList.find(item => item.symbol === 'ELF' && item.chainId === 'AELF'),
-    [accountToken],
-  );
+  const [amount, setAmount] = useState<string>(defaultCrypto.amount);
+  const [amountLocalError, setAmountLocalError] = useState<ErrorType>(INIT_NONE_ERROR);
+
   const chainInfo = useCurrentChain('AELF');
   const pin = usePin();
   const wallet = useCurrentWalletInfo();
 
-  const limitAmountRef = useRef<PaymentLimitType>();
-  const cryptoListRef = useRef<CryptoInfoType[]>();
-  const isRefreshReceiveValid = useRef<boolean>(false);
-  const cryptoListCurrency = useRef<string>();
-
-  useEffect(() => {
-    if (fiat === undefined) {
-      setFiat(fiatList.find(item => item.currency === 'USD' && item.country === 'US'));
+  const refreshList = useCallback(async () => {
+    try {
+      const { sellDefaultCrypto, sellCryptoList, sellDefaultFiatList, sellDefaultFiat } = await refreshSellCrypto();
+      setCryptoList(sellCryptoList);
+      setFiatList(sellDefaultFiatList);
+      const _fiat = sellDefaultFiatList.find(
+        item => item.symbol === sellDefaultFiat.symbol && item.country === sellDefaultFiat.country,
+      );
+      const _crypto = sellCryptoList.find(
+        item => item.symbol === sellDefaultCrypto.symbol && item.network === sellDefaultCrypto.network,
+      );
+      if (_fiat) {
+        setFiat(pre => {
+          if (_fiat.symbol !== pre?.symbol || _fiat.country !== pre?.country) {
+            return _fiat;
+          }
+          return pre;
+        });
+      }
+      if (_crypto) {
+        setCrypto(pre => {
+          if (_crypto.symbol !== pre?.symbol || _crypto.network !== pre?.network) {
+            return _crypto;
+          }
+          return pre;
+        });
+      }
+    } catch (error) {
+      console.log('error', error);
     }
-  }, [fiat, fiatList]);
+  }, [refreshSellCrypto]);
+  useEffectOnce(() => {
+    refreshList();
+  });
 
+  const limitAmountRef = useRef<IRampLimit>();
+  const isRefreshReceiveValid = useRef<boolean>(false);
   const setLimitAmount = useCallback(async () => {
     limitAmountRef.current = undefined;
-    if (fiat === undefined || token === undefined) return;
+    if (fiat === undefined || crypto === undefined) return;
 
-    if (cryptoListRef.current === undefined || fiat.currency !== cryptoListCurrency.current) {
-      Loading.show();
-      try {
-        const rst = await getCryptoList({ fiat: fiat.currency });
-        cryptoListRef.current = rst;
-        cryptoListCurrency.current = fiat.currency;
-      } catch (error) {
-        console.log(error);
+    const loadingKey = Loading.show();
+    try {
+      const limitResult = await getSellLimit({
+        crypto: crypto.symbol,
+        network: crypto.network,
+        fiat: fiat.symbol,
+        country: fiat.country,
+      });
+      if (isEqual(fiat, fiatRef.current) && isEqual(crypto, cryptoRef.current)) {
+        limitAmountRef.current = limitResult;
       }
-      Loading.hide();
+    } catch (error) {
+      console.log('Buy setLimitAmount', error);
     }
-    if (token === undefined || cryptoListRef.current === undefined) return;
-    const cryptoInfo = cryptoListRef.current.find(
-      item => item.crypto === token.crypto && item.network === token.network && Number(item.sellEnable) === 1,
-    );
-
-    if (cryptoInfo === undefined || cryptoInfo.minSellAmount === null || cryptoInfo.maxSellAmount === null) {
-      limitAmountRef.current = undefined;
-      return;
-    }
-
-    limitAmountRef.current = {
-      min: Number(ZERO.plus(cryptoInfo.minSellAmount).decimalPlaces(4, BigNumber.ROUND_UP).valueOf()),
-      max: Number(ZERO.plus(cryptoInfo.maxSellAmount).decimalPlaces(4, BigNumber.ROUND_DOWN).valueOf()),
-    };
-  }, [fiat, token]);
+    Loading.hide(loadingKey);
+  }, [crypto, fiat]);
 
   const {
     receiveAmount,
@@ -112,12 +142,23 @@ export default function SellForm() {
     refreshReceive,
     amountError: amountFetchError,
     isAllowAmount,
-  } = useReceive(PaymentTypeEnum.SELL, amount, fiat, token, '', '', limitAmountRef, isRefreshReceiveValid);
+  } = useReceive({
+    type: RampType.SELL,
+    amount,
+    fiat,
+    crypto,
+    initialReceiveAmount: '',
+    initialRate: '',
+    limitAmountRef,
+    isRefreshReceiveValid,
+  });
   const refreshReceiveRef = useRef<typeof refreshReceive>();
   refreshReceiveRef.current = refreshReceive;
 
   const amountError = useMemo(() => {
-    if (amountFetchError.isError && amountFetchError.errorMsg !== '') return amountFetchError;
+    if (amountFetchError.isError && amountFetchError.errorMsg !== '') {
+      return amountFetchError;
+    }
     return amountLocalError;
   }, [amountFetchError, amountLocalError]);
 
@@ -152,18 +193,21 @@ export default function SellForm() {
   const onNext = useCallback(async () => {
     if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
-    const { min, max } = limitAmountRef.current;
-    if (amountNum < min || amountNum > max) {
+    const { minLimit, maxLimit } = limitAmountRef.current;
+    if (amountNum < minLimit || amountNum > maxLimit) {
       setAmountLocalError({
         ...INIT_HAS_ERROR,
-        errorMsg: `Limit Amount ${formatAmountShow(min, 4)}-${formatAmountShow(max, 4)} ${token.crypto}`,
+        errorMsg: `Limit Amount ${formatAmountShow(minLimit, 4)}-${formatAmountShow(maxLimit, 4)} ${
+          crypto?.symbol || ''
+        }`,
       });
       return;
     }
     let _rate = rate,
       _receiveAmount = receiveAmount;
 
-    const { tokenContractAddress, decimals, symbol, chainId } = aelfToken || {};
+    const { address: tokenContractAddress, decimals, symbol, network } = crypto || {};
+    const chainId: ChainId = ((network || '').split('-')[1] || 'AELF') as ChainId;
     const { endPoint } = chainInfo || {};
     if (!tokenContractAddress || decimals === undefined || !symbol || !chainId) return;
     if (!pin || !endPoint) return;
@@ -233,8 +277,8 @@ export default function SellForm() {
     navigationService.navigate('RampPreview', {
       amount,
       fiat,
-      token,
-      type: PaymentTypeEnum.SELL,
+      crypto,
+      type: RampType.SELL,
       receiveAmount: _receiveAmount,
       rate: _rate,
     });
@@ -242,11 +286,10 @@ export default function SellForm() {
     amount,
     rate,
     receiveAmount,
-    aelfToken,
+    crypto,
     chainInfo,
     pin,
     fiat,
-    token,
     refreshBuyButton,
     checkManagerSyncState,
     achFee,
@@ -266,13 +309,20 @@ export default function SellForm() {
               style={styles.unitWrap}
               onPress={() => {
                 SelectToken.showList({
-                  value: `${token.network}_${token.crypto}`,
-                  list: tokenList,
-                  callBack: setToken,
+                  value: `${crypto?.network}_${crypto?.symbol}`,
+                  list: cryptoList,
+                  callBack: setCrypto,
                 });
               }}>
-              <Svg size={24} icon="elf-icon" iconStyle={styles.unitIconStyle} />
-              <TextL style={[GStyles.flex1, fonts.mediumFont]}>{token.crypto}</TextL>
+              {crypto?.icon && (
+                <CommonAvatar
+                  hasBorder
+                  title={crypto?.symbol || ''}
+                  style={styles.unitIconStyle}
+                  imageUrl={crypto?.icon}
+                />
+              )}
+              <TextL style={[GStyles.flex1, fonts.mediumFont]}>{crypto?.symbol || ''}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
             </Touchable>
           }
@@ -296,13 +346,15 @@ export default function SellForm() {
               style={styles.unitWrap}
               onPress={() => {
                 SelectCurrency.showList({
-                  value: `${fiat?.country}_${fiat?.currency}`,
+                  value: `${fiat?.country}_${fiat?.symbol}`,
                   list: fiatList,
                   callBack: setFiat,
                 });
               }}>
-              {fiat?.icon && <Image style={styles.unitIconStyle} source={{ uri: fiat?.icon }} />}
-              <TextL style={[GStyles.flex1, fonts.mediumFont]}>{fiat?.currency}</TextL>
+              {fiat?.icon && (
+                <CommonAvatar hasBorder title={fiat?.symbol || ''} style={styles.unitIconStyle} imageUrl={fiat?.icon} />
+              )}
+              <TextL style={[GStyles.flex1, fonts.mediumFont]}>{fiat?.symbol || ''}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
             </Touchable>
           }
@@ -315,7 +367,9 @@ export default function SellForm() {
 
         {rate !== '' && (
           <View style={styles.rateWrap}>
-            <TextM style={[GStyles.flex1, FontStyles.font3]}>{`1 ${token?.crypto} ≈ ${rate} ${fiat?.currency}`}</TextM>
+            <TextM style={[GStyles.flex1, FontStyles.font3]}>{`1 ${crypto?.symbol || ''} ≈ ${rate} ${
+              fiat?.symbol || ''
+            }`}</TextM>
             <View style={[GStyles.flexRow, GStyles.alignCenter]}>
               <Svg size={16} icon="time" />
               <TextS style={styles.refreshLabel}>{rateRefreshTime}s</TextS>

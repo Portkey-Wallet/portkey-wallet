@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { TextL, TextM, TextS } from 'components/CommonText';
@@ -28,6 +28,7 @@ import { useEffectOnce } from '@portkey-wallet/hooks';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import isEqual from 'lodash/isEqual';
 import { getBuyLimit } from '@portkey-wallet/utils/ramp';
+import CommonAvatar from 'components/CommonAvatar';
 
 export default function BuyForm() {
   const {
@@ -175,7 +176,9 @@ export default function BuyForm() {
     if (amountNum < minLimit || amountNum > maxLimit) {
       setAmountLocalError({
         ...INIT_HAS_ERROR,
-        errorMsg: `Limit Amount ${formatAmountShow(minLimit, 4)}-${formatAmountShow(maxLimit, 4)} ${fiat?.symbol}`,
+        errorMsg: `Limit Amount ${formatAmountShow(minLimit, 4)}-${formatAmountShow(maxLimit, 4)} ${
+          fiat?.symbol || ''
+        }`,
       });
       return;
     }
@@ -235,7 +238,9 @@ export default function BuyForm() {
                   callBack: setFiat,
                 });
               }}>
-              {fiat?.icon && <Image style={styles.unitIconStyle} source={{ uri: fiat?.icon }} />}
+              {fiat?.icon && (
+                <CommonAvatar hasBorder title={fiat?.symbol || ''} style={styles.unitIconStyle} imageUrl={fiat?.icon} />
+              )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{fiat?.symbol}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
             </Touchable>
@@ -264,7 +269,14 @@ export default function BuyForm() {
                   callBack: setCrypto,
                 });
               }}>
-              <Svg size={24} icon="elf-icon" iconStyle={styles.unitIconStyle} />
+              {crypto?.icon && (
+                <CommonAvatar
+                  hasBorder
+                  title={crypto?.symbol || ''}
+                  style={styles.unitIconStyle}
+                  imageUrl={crypto?.icon}
+                />
+              )}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{crypto?.symbol || ''}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
             </Touchable>

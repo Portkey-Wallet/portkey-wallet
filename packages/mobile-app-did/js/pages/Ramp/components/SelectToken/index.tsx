@@ -11,8 +11,6 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { ModalBody } from 'components/ModalBody';
 import { defaultColors } from 'assets/theme';
 import CommonAvatar from 'components/CommonAvatar';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { chainShowText } from '@portkey-wallet/utils';
 import { FontStyles } from 'assets/theme/styles';
 import { ChainId } from '@portkey-wallet/types';
@@ -30,7 +28,6 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
   const { t } = useLanguage();
   const gStyle = useGStyles();
   const [keyWord, setKeyWord] = useState<string>('');
-  const symbolImages = useSymbolImages();
 
   const _list = useMemo(() => {
     const _keyWord = keyWord?.trim();
@@ -61,20 +58,13 @@ const SelectList = ({ list, callBack, value }: SelectListProps) => {
                   callBack(item);
                 }}>
                 <View style={styles.itemRow}>
-                  <CommonAvatar
-                    hasBorder
-                    title={item.symbol}
-                    avatarSize={pTd(32)}
-                    svgName={item.symbol === ELF_SYMBOL ? 'elf-icon' : undefined}
-                    imageUrl={symbolImages[item.symbol]}
-                  />
+                  <CommonAvatar hasBorder title={item.symbol} avatarSize={pTd(32)} imageUrl={item.icon || ' '} />
                   <View style={styles.itemContent}>
                     <View>
                       <TextL>{item.symbol}</TextL>
-                      {/* TODO: item.network */}
-                      <TextM style={FontStyles.font7}>{`${chainShowText(item.network as ChainId)} ${
-                        item.network
-                      }`}</TextM>
+                      <TextM style={FontStyles.font7}>{`${chainShowText(
+                        ((item.network || '').split('-')[1] || 'AELF') as ChainId,
+                      )} ${item.network}`}</TextM>
                     </View>
 
                     {value !== undefined && value === `${item.network}_${item.symbol}` && (

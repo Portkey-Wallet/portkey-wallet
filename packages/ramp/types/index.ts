@@ -1,4 +1,5 @@
 import { IRampProviderType } from '../constants';
+import { IClientType } from './config';
 import { IRampRequest } from './request';
 
 export * from './services';
@@ -10,6 +11,8 @@ export * from './utils';
 
 export interface IBaseRampOptions {
   request: IRampRequest;
+  baseUrl?: string;
+  clientType?: IClientType;
 }
 
 export enum ITransDirectEnum {

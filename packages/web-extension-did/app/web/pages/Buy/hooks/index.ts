@@ -1,14 +1,22 @@
-import { IGetRampDetailRequest, RampType } from '@portkey-wallet/ramp';
-import { getBuyPrice, getSellPrice } from '@portkey-wallet/utils/ramp';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
+import { getBuyLimit, getBuyPrice, getSellLimit, getSellPrice } from '@portkey-wallet/utils/ramp';
+import { MutableRefObject, useCallback, useMemo, useRef, useState } from 'react';
 import { MAX_UPDATE_TIME } from '../const';
 import { INSUFFICIENT_FUNDS_TEXT, SYNCHRONIZING_CHAIN_TEXT } from '@portkey-wallet/constants/constants-ca/payment';
 import { useEffectOnce } from 'react-use';
 import { limitText, validValueCheck } from '../utils';
-import { IBuyErrMsgHandlerParams, ISellErrMsgHandlerParams } from '../types';
+import { IErrMsgHandlerParams } from '../types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
+import { formatAmountShow } from '@portkey-wallet/utils/converter';
 
-export const useUpdateReceiveAndInterval = (type: RampType) => {
+interface IUpdateReceiveAndIntervalProps {
+  cryptoSelectedRef: MutableRefObject<IRampCryptoItem>;
+  fiatSelectedRef: MutableRefObject<IRampFiatItem>;
+  fiatAmountRef?: MutableRefObject<string>;
+  cryptoAmountRef?: MutableRefObject<string>;
+}
+
+export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateReceiveAndIntervalProps) => {
   const checkManagerSyncState = useCheckManagerSyncState();
 
   const [receive, setReceive] = useState<string>('');
@@ -19,65 +27,129 @@ export const useUpdateReceiveAndInterval = (type: RampType) => {
   const [updateTime, setUpdateTime] = useState(MAX_UPDATE_TIME);
   const updateTimeRef = useRef(MAX_UPDATE_TIME);
   const updateTimerRef = useRef<NodeJS.Timer | number>();
+  const isShowErrorRef = useRef(false);
 
   const { updateBuyReceive, updateSellReceive, handleSetTimer, stopInterval, resetTimer } = useMemo(() => {
-    const updateBuyReceive = async (params: IGetRampDetailRequest) => {
+    const updateBuyReceive = async () => {
       try {
-        const { network, crypto, fiatAmount: fiatAmountInput, fiat, country } = params;
+        const { cryptoSelectedRef, fiatSelectedRef, fiatAmountRef } = params;
+        if (!fiatAmountRef?.current) {
+          setReceive('');
+          setErrMsg('');
+          setWarningMsg('');
+          stopInterval();
+          return;
+        }
         const { cryptoAmount, exchange } = await getBuyPrice({
-          network,
-          crypto,
-          fiatAmount: fiatAmountInput,
-          fiat,
-          country,
+          network: cryptoSelectedRef.current.network,
+          crypto: cryptoSelectedRef.current.symbol,
+          fiatAmount: fiatAmountRef.current,
+          fiat: fiatSelectedRef.current.symbol,
+          country: fiatSelectedRef.current.country,
         });
-        // if (params.amount !== valueSaveRef.current.amount) return;
+
+        await checkBuyLimit();
 
         setExchange(exchange);
-        setReceive(cryptoAmount);
-        setErrMsg('');
-        setWarningMsg('');
+        if (isShowErrorRef.current) return;
+        setReceive(formatAmountShow(Number(cryptoAmount), 4));
 
         if (!updateTimerRef.current) {
-          resetTimer(params);
+          resetTimer();
         }
       } catch (error) {
         console.log('getBuyPrice error:', error);
       }
     };
 
-    const updateSellReceive = async (params: IGetRampDetailRequest) => {
+    const updateSellReceive = async () => {
       try {
-        const { network, crypto, cryptoAmount: cryptoAmountInput, fiat, country } = params;
+        const { cryptoSelectedRef, fiatSelectedRef, cryptoAmountRef } = params;
+        if (!cryptoAmountRef?.current) {
+          setReceive('');
+          setErrMsg('');
+          setWarningMsg('');
+          stopInterval();
+          return;
+        }
         const { fiatAmount, exchange } = await getSellPrice({
-          network,
-          crypto,
-          cryptoAmount: cryptoAmountInput,
-          fiat,
-          country,
+          network: cryptoSelectedRef.current.network,
+          crypto: cryptoSelectedRef.current.symbol,
+          cryptoAmount: cryptoAmountRef.current,
+          fiat: fiatSelectedRef.current.symbol,
+          country: fiatSelectedRef.current.country,
         });
-        // if (params.amount !== valueSaveRef.current.amount) return;
+
+        await checkSellLimit();
 
         setExchange(exchange);
-        setReceive(fiatAmount);
-        setErrMsg('');
-        setWarningMsg('');
-        // isShowMsg.current = false;
+        if (isShowErrorRef.current) return;
+        setReceive(formatAmountShow(Number(fiatAmount), 4));
 
         if (!updateTimerRef.current) {
-          resetTimer(params);
+          resetTimer();
         }
       } catch (error) {
         console.log('getSellPrice error:', error);
       }
     };
 
-    const handleSetTimer = (params: IGetRampDetailRequest) => {
+    const errMsgHandler = ({ min, max, symbol, amount }: IErrMsgHandlerParams) => {
+      if (min !== null && max !== null) {
+        if (!validValueCheck({ amount, min, max })) {
+          setReceive('');
+          stopInterval();
+          setErrMsg(limitText({ symbol, min, max }));
+          setWarningMsg('');
+          isShowErrorRef.current = true;
+        } else {
+          setErrMsg('');
+          setWarningMsg('');
+          isShowErrorRef.current = false;
+        }
+      }
+    };
+
+    const checkBuyLimit = async () => {
+      const { cryptoSelectedRef, fiatSelectedRef, fiatAmountRef } = params;
+      const { minLimit, maxLimit } = await getBuyLimit({
+        crypto: cryptoSelectedRef.current.symbol,
+        network: cryptoSelectedRef.current.network,
+        fiat: fiatSelectedRef.current.symbol,
+        country: fiatSelectedRef.current.country,
+      });
+
+      errMsgHandler({
+        symbol: fiatSelectedRef.current.symbol,
+        amount: fiatAmountRef?.current || '',
+        min: minLimit,
+        max: maxLimit,
+      });
+    };
+
+    const checkSellLimit = async () => {
+      const { cryptoSelectedRef, fiatSelectedRef, cryptoAmountRef } = params;
+      const { minLimit, maxLimit } = await getSellLimit({
+        crypto: cryptoSelectedRef.current.symbol,
+        network: cryptoSelectedRef.current.network,
+        fiat: fiatSelectedRef.current.symbol,
+        country: fiatSelectedRef.current.country,
+      });
+
+      errMsgHandler({
+        symbol: cryptoSelectedRef.current.symbol,
+        amount: cryptoAmountRef?.current || '',
+        min: minLimit,
+        max: maxLimit,
+      });
+    };
+
+    const handleSetTimer = () => {
       updateTimerRef.current = setInterval(() => {
         --updateTimeRef.current;
 
         if (updateTimeRef.current === 0) {
-          type === RampType.BUY ? updateBuyReceive(params) : updateSellReceive(params);
+          type === RampType.BUY ? updateBuyReceive() : updateSellReceive();
           updateTimeRef.current = MAX_UPDATE_TIME;
         }
 
@@ -91,48 +163,16 @@ export const useUpdateReceiveAndInterval = (type: RampType) => {
       setExchange('');
     };
 
-    const resetTimer = (params: IGetRampDetailRequest) => {
+    const resetTimer = () => {
       clearInterval(updateTimerRef.current);
       updateTimerRef.current = undefined;
       updateTimeRef.current = MAX_UPDATE_TIME;
       setUpdateTime(MAX_UPDATE_TIME);
-      handleSetTimer(params);
+      handleSetTimer();
     };
 
     return { updateBuyReceive, updateSellReceive, handleSetTimer, stopInterval, resetTimer };
-  }, [type]);
-
-  const buyErrMsgHandler = useCallback(
-    ({ min, max, fiat, fiatAmount }: IBuyErrMsgHandlerParams) => {
-      if (min !== null && max !== null) {
-        if (!validValueCheck({ amount: fiatAmount, min, max })) {
-          stopInterval();
-          setErrMsg(limitText({ symbol: fiat, min, max }));
-          // isShowMsg.current = true;
-        } else {
-          // isShowMsg.current = false;
-          setReceive('');
-        }
-      }
-    },
-    [stopInterval],
-  );
-
-  const sellErrMsgHandler = useCallback(
-    ({ min, max, crypto, cryptoAmount }: ISellErrMsgHandlerParams) => {
-      if (min !== null && max !== null) {
-        if (!validValueCheck({ amount: cryptoAmount, min, max })) {
-          stopInterval();
-          setErrMsg(limitText({ symbol: crypto, min, max }));
-          // isShowMsg.current = true;
-        } else {
-          // isShowMsg.current = false;
-          setReceive('');
-        }
-      }
-    },
-    [stopInterval],
-  );
+  }, [params, type]);
 
   const setInsufficientFundsMsg = useCallback(() => {
     stopInterval();
@@ -163,14 +203,13 @@ export const useUpdateReceiveAndInterval = (type: RampType) => {
 
   return {
     receive,
+    setReceive,
     exchange,
     errMsg,
     warningMsg,
     updateTime,
     updateBuyReceive,
     updateSellReceive,
-    buyErrMsgHandler,
-    sellErrMsgHandler,
     handleSetTimer,
     stopInterval,
     resetTimer,

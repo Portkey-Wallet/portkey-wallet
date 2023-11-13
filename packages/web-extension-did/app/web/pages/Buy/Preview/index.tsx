@@ -4,8 +4,8 @@ import { Button, message } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
-import { initPreviewData, MAX_UPDATE_TIME } from '../const';
-import { getAchSignature, getOrderQuote, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
+import { initPreviewData, InitProviderSelected, MAX_UPDATE_TIME } from '../const';
+import { getAchSignature, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
@@ -23,74 +23,87 @@ import CustomModal from 'pages/components/CustomModal';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { ACH_WITHDRAW_URL } from 'constants/index';
 import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { generateRateText, generateReceiveText } from '../utils';
+import { RampType } from '@portkey-wallet/ramp';
+import { IGetBuyDetail, IGetSellDetail, getBuyDetail, getSellDetail } from '@portkey-wallet/utils/ramp';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 
 export default function Preview() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
+  // const state = initPreviewData;
   const { isPrompt } = useCommonState();
   const updateRef = useRef(MAX_UPDATE_TIME);
-  const [receive, setReceive] = useState('');
-  const [rate, setRate] = useState('');
+  const [receive, setReceive] = useState('1');
+  const [rate, setRate] = useState('1');
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
   const { refreshBuyButton } = useExtensionBuyButtonShow();
 
+  const [providerList, setProviderList] = useState<IGetBuyDetail[] | IGetSellDetail[]>([]);
+  const [providerSelected, setProviderSelected] = useState<IGetBuyDetail | IGetSellDetail>(InitProviderSelected);
+
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
-  const showRateText = useMemo(() => `1 ${data.crypto} ≈ ${formatAmountShow(rate, 2)} ${data.fiat}`, [data, rate]);
+  // const data = useMemo(() => ({ ...initPreviewData }), []);
+  const showRateText = useMemo(() => generateRateText(data.crypto, rate, data.fiat), [data.crypto, data.fiat, rate]);
   const receiveText = useMemo(
-    () =>
-      `I will receive ≈ ${formatAmountShow(receive)} ${data.side === PaymentTypeEnum.BUY ? data.crypto : data.fiat}`,
-    [data, receive],
+    () => generateReceiveText(receive, data.side === RampType.BUY ? data.crypto : data.fiat),
+    [data.crypto, data.fiat, data.side, receive],
   );
   const apiUrl = useCurrentApiUrl();
   const getAchTokenInfo = useGetAchTokenInfo();
 
-  const setReceiveCase = useCallback(
-    ({
-      fiatQuantity,
-      rampFee,
-      cryptoQuantity,
-    }: {
-      fiatQuantity?: string;
-      rampFee: string;
-      cryptoQuantity?: string;
-    }) => {
-      if (data.side === PaymentTypeEnum.SELL && fiatQuantity && rampFee) {
-        const receive = Number(fiatQuantity) - Number(rampFee);
-        setReceive(formatAmountShow(receive, 4));
-      }
-      if (data.side === PaymentTypeEnum.BUY) {
-        setReceive(formatAmountShow(cryptoQuantity || '', 4));
-      }
-    },
-    [data.side],
-  );
+  const onSwitchProvider = useCallback((provider: IGetBuyDetail | IGetSellDetail) => {
+    setProviderSelected(provider);
+    setReceive(provider.amount);
+    setRate(provider.exchange);
+  }, []);
 
-  const updateReceive = useCallback(async () => {
+  const getRampDetail = useCallback(async () => {
     try {
-      const rst = await getOrderQuote(data);
-      const { cryptoPrice, fiatQuantity, rampFee, cryptoQuantity } = rst;
-      setReceiveCase({ fiatQuantity, rampFee, cryptoQuantity });
-      setRate(cryptoPrice);
+      if (data.side === RampType.BUY) {
+        const canUseBuyProviders = await getBuyDetail({
+          network: state.network,
+          crypto: state.crypto,
+          fiat: state.fiat,
+          country: state.country,
+          fiatAmount: state.amount,
+        });
+        setProviderList(canUseBuyProviders);
+        setProviderSelected(canUseBuyProviders[0]);
+        setReceive(canUseBuyProviders[0].cryptoAmount);
+        setRate(canUseBuyProviders[0].exchange);
+        return;
+      }
+      const canUseSellProviders = await getSellDetail({
+        network: state.network,
+        crypto: state.crypto,
+        fiat: state.fiat,
+        country: state.country,
+        cryptoAmount: state.amount,
+      });
+      setProviderList(canUseSellProviders);
+      setProviderSelected(canUseSellProviders[0]);
+      setReceive(canUseSellProviders[0].fiatAmount);
+      setRate(canUseSellProviders[0].exchange);
     } catch (error) {
-      console.log('error', error);
+      message.error(handleErrorMessage(error));
     }
-  }, [data, setReceiveCase]);
+  }, [data.side, state.amount, state.country, state.crypto, state.fiat, state.network]);
 
   useEffect(() => {
-    updateReceive();
-  }, [updateReceive]);
+    getRampDetail();
+  }, [getRampDetail]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       --updateRef.current;
       if (updateRef.current === 0) {
-        updateReceive();
+        // updateReceive();
         updateRef.current = MAX_UPDATE_TIME;
       }
     }, 1000);
@@ -107,7 +120,7 @@ export default function Preview() {
     const isBuySectionShow = result.isBuySectionShow;
     const isSellSectionShow = result.isSellSectionShow;
     // Compatible with the situation where the function is turned off when the user is on the page.
-    if ((side === PaymentTypeEnum.BUY && !isBuySectionShow) || (side === PaymentTypeEnum.SELL && !isSellSectionShow)) {
+    if ((side === RampType.BUY && !isBuySectionShow) || (side === RampType.SELL && !isSellSectionShow)) {
       setLoading(false);
       message.error(SERVICE_UNAVAILABLE_TEXT);
       return navigate('/');
@@ -128,7 +141,7 @@ export default function Preview() {
       });
       achUrl += `&merchantOrderNo=${orderNo}`;
 
-      if (side === PaymentTypeEnum.BUY) {
+      if (side === RampType.BUY) {
         achUrl += `&type=buy&fiatAmount=${amount}`;
 
         const achTokenInfo = await getAchTokenInfo();
@@ -177,11 +190,11 @@ export default function Preview() {
       content: (
         <>
           <div className="title">Disclaimer</div>
-          {t(DISCLAIMER_TEXT)}
+          {providerSelected?.providerInfo.name + DISCLAIMER_TEXT}
         </>
       ),
     });
-  }, [t]);
+  }, [providerSelected?.providerInfo.name]);
 
   const handleBack = useCallback(() => {
     navigate('/buy', { state: state });
@@ -192,33 +205,48 @@ export default function Preview() {
       <div className={clsx(['preview-frame flex-column', isPrompt ? 'detail-page-prompt' : ''])}>
         <div className="preview-title">
           <BackHeader
-            title={`${data.side === PaymentTypeEnum.BUY ? 'Buy' : 'Sell'} ${state.crypto}`}
+            title={`${data.side === RampType.BUY ? 'Buy' : 'Sell'} ${state.crypto}`}
             leftCallBack={handleBack}
             rightElement={<CustomSvg type="Close2" onClick={handleBack} />}
           />
         </div>
+
         <div className="preview-content">
           <div className="transaction flex-column-center">
             <div className="send">
               <span className="amount">{formatAmountShow(data.amount)}</span>
-              <span className="currency">{data.side === PaymentTypeEnum.BUY ? data.fiat : data.crypto}</span>
+              <span className="currency">{data.side === RampType.BUY ? data.fiat : data.crypto}</span>
             </div>
             <div className="receive">{receiveText}</div>
           </div>
           <div className="card">
             <div className="label">{t('Service provider')}</div>
-            <div className="card-item flex-column">
-              <div className="flex-between-center ach">
-                <CustomSvg type="BuyAch" />
-                <div className="rate">{showRateText}</div>
+            {providerList.map((item) => (
+              <div
+                className={clsx([
+                  'card-item',
+                  providerSelected?.providerInfo.key === item?.providerInfo.key && 'card-item-selected',
+                  'flex-column',
+                ])}
+                key={item?.providerInfo.key}
+                onClick={() => onSwitchProvider(item)}>
+                <div className="flex-row-center ramp-provider">
+                  <img src={item?.providerInfo.logo} className="ramp-provider-logo" />
+                  <div className="rate">{showRateText}</div>
+                </div>
+                <div className="ramp-provider-pay">
+                  {item?.providerInfo.paymentTags.map((tag, index) => (
+                    <img src={tag} key={'paymentTags-' + index} className="ramp-provider-pay-item" />
+                  ))}
+                </div>
+                {providerSelected?.providerInfo.key === item?.providerInfo.key && (
+                  <CustomSvg type="CardSelected" className="card-selected-icon" />
+                )}
               </div>
-              <div className="ach-pay">
-                <CustomSvg type="BUY-PAY" />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-        <div>
+        <div className="preview-footer">
           <div className="disclaimer">
             <span>
               Proceeding with this transaction means that you have read and understood
@@ -228,10 +256,8 @@ export default function Preview() {
               .
             </span>
           </div>
-        </div>
-        <div className="preview-footer">
           <Button type="primary" htmlType="submit" onClick={goPayPage}>
-            {t('Go to AlchemyPay')}
+            {'Go to ' + providerSelected?.providerInfo.name}
           </Button>
         </div>
         {isPrompt && <PromptEmptyElement />}
@@ -245,6 +271,10 @@ export default function Preview() {
       goPayPage,
       handleBack,
       isPrompt,
+      onSwitchProvider,
+      providerList,
+      providerSelected?.providerInfo.key,
+      providerSelected?.providerInfo.name,
       receiveText,
       showDisclaimerTipModal,
       showRateText,

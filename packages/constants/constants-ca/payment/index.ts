@@ -40,7 +40,7 @@ export const SELL_SOON_TEXT = 'Off-ramp is currently not supported. It will be l
 export const SERVICE_UNAVAILABLE_TEXT = 'Sorry, the service you are using is temporarily unavailable.';
 
 export const DISCLAIMER_TEXT =
-  'AlchemyPay is a fiat-to-crypto platform independently operated by a third-party entity. Portkey shall not be held liable for any losses or damages suffered as a result of using AlchemyPay services.';
+  ' is a fiat-to-crypto platform independently operated by a third-party entity. Portkey shall not be held liable for any losses or damages suffered as a result of using AlchemyPay services.';
 
 export const INSUFFICIENT_FUNDS_TEXT = 'Insufficient funds';
 

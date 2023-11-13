@@ -13,8 +13,8 @@ import { ScreenWidth } from '@rneui/base';
 import Touchable from 'components/Touchable';
 
 const ChatQrCodePage: React.FC = () => {
-  const { userId, walletName } = useWallet();
-  const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userId}`, [userId]);
+  const { userInfo, walletName } = useWallet();
+  const qrCodeData = useMemo(() => `${LinkPortkeyPath.addContact}${userInfo?.userId}`, [userInfo?.userId]);
 
   return (
     <PageContainer
@@ -23,9 +23,16 @@ const ChatQrCodePage: React.FC = () => {
       hideTouchable={true}
       titleDom="My QR Code"
       containerStyles={[PageStyle.containerStyles]}>
-      <CommonAvatar hasBorder title={walletName} avatarSize={pTd(80)} style={PageStyle.avatar} />
+      <CommonAvatar
+        hasBorder
+        resizeMode="cover"
+        title={walletName}
+        avatarSize={pTd(80)}
+        style={PageStyle.avatar}
+        imageUrl={userInfo?.avatar}
+      />
       <TextXXXL numberOfLines={1} style={GStyles.marginTop(pTd(8))}>
-        {walletName}
+        {userInfo?.nickName || walletName || ''}
       </TextXXXL>
       <View style={PageStyle.qrCodeWrap}>
         <CommonQRCodeStyled qrData={qrCodeData || ''} width={pTd(236)} />

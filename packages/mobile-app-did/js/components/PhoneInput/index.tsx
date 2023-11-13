@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, TextInput } from 'react-native';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useLanguage } from 'i18n/hooks';
 import myEvents from 'utils/deviceEvent';
@@ -8,11 +8,10 @@ import Touchable from 'components/Touchable';
 import CommonInput, { CommonInputProps } from 'components/CommonInput';
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import { pTd } from 'utils/unit';
-import { useFocusEffect } from '@react-navigation/native';
-
 import Svg from 'components/Svg';
 import { defaultColors } from 'assets/theme';
 import { TextM } from 'components/CommonText';
+import { useInputFocus } from 'hooks/useInputFocus';
 
 interface PhoneInputProps extends CommonInputProps {
   selectCountry?: CountryItem;
@@ -22,8 +21,8 @@ interface PhoneInputProps extends CommonInputProps {
 export default function PhoneInput({ selectCountry, onCountryChange, ...inputProps }: PhoneInputProps) {
   const { t } = useLanguage();
 
-  const timer = useRef<NodeJS.Timeout | null>(null);
-  const iptRef = useRef<any>();
+  const iptRef = useRef<TextInput>();
+  useInputFocus(iptRef);
 
   useEffectOnce(() => {
     const countryListener = myEvents.setCountry.addListener((country: CountryItem) => {
@@ -33,21 +32,6 @@ export default function PhoneInput({ selectCountry, onCountryChange, ...inputPro
       countryListener.remove();
     };
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!iptRef || !iptRef?.current) return;
-      timer.current = setTimeout(() => {
-        iptRef.current.focus();
-      }, 200);
-    }, []),
-  );
-
-  useEffect(() => {
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, []);
 
   return (
     <CommonInput

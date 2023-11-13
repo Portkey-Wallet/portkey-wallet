@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import CommonInput from 'components/CommonInput';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
@@ -8,25 +8,24 @@ import navigationService from 'utils/navigationService';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
 import { TextM } from 'components/CommonText';
-import { useFocusEffect } from '@react-navigation/native';
 import Svg from 'components/Svg';
 import fonts from 'assets/theme/fonts';
 import RecordSection from '../components/SearchRecordSection';
 import SearchDiscoverSection from '../components/SearchDiscoverSection';
-import { isIOS } from '@rneui/base';
 import { checkIsUrl, getHost, prefixUrlWithProtocol } from '@portkey-wallet/utils/dapp/browser';
 import { useDiscoverGroupList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { DiscoverItem } from '@portkey-wallet/store/store-ca/cms/types';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import { useInputFocus } from 'hooks/useInputFocus';
 
 export default function DiscoverSearch() {
   const { t } = useLanguage();
 
+  const iptRef = useRef<TextInput>();
+  useInputFocus(iptRef);
+
   const discoverGroupList = useDiscoverGroupList();
   const jumpToWebview = useDiscoverJumpWithNetWork();
-
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const iptRef = useRef<any>();
   const [value, setValue] = useState<string>('');
   const [showRecord, setShowRecord] = useState<boolean>(true);
   const [filteredDiscoverList, setFilteredDiscoverList] = useState<DiscoverItem[]>([]);
@@ -73,23 +72,6 @@ export default function DiscoverSearch() {
       setShowRecord(false);
     }
   }, [flatList, onDiscoverJump, value]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (iptRef?.current && !isIOS) {
-        timerRef.current = setTimeout(() => {
-          iptRef.current.focus();
-        }, 300);
-      }
-    }, []),
-  );
-
-  useEffect(
-    () => () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    },
-    [],
-  );
 
   return (
     <PageContainer

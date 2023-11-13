@@ -1,10 +1,10 @@
 import PageContainer from 'components/PageContainer';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import CommonButton from 'components/CommonButton';
 import navigationService from 'utils/navigationService';
 import { View, StyleSheet } from 'react-native';
-import { useCurrentCaInfo, useSetWalletName, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentCaInfo, useSetUserInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import ProfilePortkeyIDSection from 'pages/My/components/ProfileIDSection';
 import ProfileHeaderSection from 'pages/My/components/ProfileHeaderSection';
 import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
@@ -16,6 +16,7 @@ import { windowHeight } from '@portkey-wallet/utils/mobile/device';
 import { headerHeight } from 'components/CustomHeader/style/index.style';
 import { FontStyles } from 'assets/theme/styles';
 import { useIsShowDeletion } from 'hooks/account';
+import Touchable from 'components/Touchable';
 
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { isValidCAWalletName } from '@portkey-wallet/utils/reg';
@@ -26,16 +27,24 @@ import FormItem from 'components/FormItem';
 import CommonInput from 'components/CommonInput';
 import { ErrorType } from 'types/common';
 import { isIOS } from '@rneui/base';
+import GStyles from 'assets/theme/GStyles';
+import ImageWithUploadFunc, { ImageWithUploadFuncInstance } from 'components/ImageWithUploadFunc';
+import { TextL } from 'components/CommonText';
+import { pTd } from 'utils/unit';
+import { sleep } from '@portkey-wallet/utils';
 const PageHeight = windowHeight - headerHeight;
 
 const WalletName: React.FC = () => {
   const { t } = useLanguage();
-  const { walletName, userId } = useWallet();
+  const uploadRef = useRef<ImageWithUploadFuncInstance>(null);
+
+  const { userInfo } = useWallet();
   const caInfo = useCurrentCaInfo();
   const showDeletion = useIsShowDeletion();
-  const [nameValue, setNameValue] = useState<string>(walletName);
+  const [nameValue, setNameValue] = useState<string>(userInfo?.nickName || '');
   const [nameError, setNameError] = useState<ErrorType>(INIT_HAS_ERROR);
-  const setWalletName = useSetWalletName();
+  const setUserInfo = useSetUserInfo();
+  const [avatar, setAvatar] = useState<string>(userInfo?.avatar || '');
 
   const showChat = useIsChatShow();
 
@@ -79,39 +88,54 @@ const WalletName: React.FC = () => {
     // }
     Loading.show();
     try {
-      await setWalletName(_nameValue);
+      await sleep(500); // adjust large size on android
+      const s3Url = await uploadRef.current?.uploadPhoto();
+      setAvatar(s3Url || userInfo?.avatar || '');
+      await setUserInfo({ nickName: _nameValue, avatar: s3Url || userInfo?.avatar || '' });
       navigationService.goBack();
       CommonToast.success(t('Saved Successful'), undefined, 'bottom');
     } catch (error: any) {
-      CommonToast.failError(error.error);
       console.log('setWalletName: error', error);
+      CommonToast.failError(error);
     }
     Loading.hide();
-  }, [nameValue, setWalletName, t]);
+  }, [nameValue, t, setUserInfo, userInfo?.avatar]);
+
   return (
-    <PageContainer titleDom={t('My Wallet')} safeAreaColor={['blue', 'gray']} containerStyles={pageStyles.pageWrap}>
+    <PageContainer titleDom={t('My Profile')} safeAreaColor={['blue', 'gray']} containerStyles={pageStyles.pageWrap}>
       <View style={pageStyles.pageContainer}>
         <View>
           {showChat ? (
             <>
-              <ProfileHeaderSection name={walletName} />
-              <ProfilePortkeyIDSection showQrCodeButton id={userId || ''} />
+              <ProfileHeaderSection name={userInfo?.nickName || ''} avatarUrl={userInfo?.avatar || ''} />
+              <ProfilePortkeyIDSection showQrCodeButton id={userInfo?.userId || ''} />
               <ProfileAddressSection isMySelf addressList={caInfoList} />
             </>
           ) : (
-            <FormItem title={'Wallet Name'}>
-              <CommonInput
-                type="general"
-                spellCheck={false}
-                autoCorrect={false}
-                value={nameValue}
-                theme={'white-bg'}
-                placeholder={t('Enter Wallet Name')}
-                onChangeText={onNameChange}
-                maxLength={16}
-                errorMessage={nameError.errorMsg}
-              />
-            </FormItem>
+            <>
+              <Touchable style={GStyles.center} onPress={() => uploadRef.current?.selectPhoto()}>
+                <ImageWithUploadFunc
+                  avatarSize={pTd(80)}
+                  ref={uploadRef}
+                  title={userInfo?.nickName || ''}
+                  imageUrl={avatar || ''}
+                />
+                <TextL style={[FontStyles.font4, pageStyles.setButton]}>Set New Photo</TextL>
+              </Touchable>
+              <FormItem title={'Wallet Name'}>
+                <CommonInput
+                  type="general"
+                  spellCheck={false}
+                  autoCorrect={false}
+                  value={nameValue}
+                  theme={'white-bg'}
+                  placeholder={t('Enter Wallet Name')}
+                  onChangeText={onNameChange}
+                  maxLength={16}
+                  errorMessage={nameError.errorMsg}
+                />
+              </FormItem>
+            </>
           )}
         </View>
         <CommonButton
@@ -150,5 +174,9 @@ export const pageStyles = StyleSheet.create({
     paddingBottom: isIOS ? 40 : 20,
     height: PageHeight,
     justifyContent: 'space-between',
+  },
+  setButton: {
+    marginTop: pTd(8),
+    marginBottom: pTd(24),
   },
 });

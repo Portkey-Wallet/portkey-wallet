@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
-import { View } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { TextInput, View } from 'react-native';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { checkEmail } from '@portkey-wallet/utils/check';
 import { BGStyles } from 'assets/theme/styles';
@@ -15,8 +15,8 @@ import { PageLoginType, PageType } from '../types';
 import { useOnLogin } from 'hooks/login';
 import TermsServiceButton from './TermsServiceButton';
 import Button from './Button';
-import { useFocusEffect } from '@react-navigation/native';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useInputFocus } from 'hooks/useInputFocus';
 
 const TitleMap = {
   [PageType.login]: {
@@ -35,9 +35,8 @@ export default function Email({
   type?: PageType;
 }) {
   const { t } = useLanguage();
-  const iptRef = useRef<any>();
-
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const iptRef = useRef<TextInput>();
+  useInputFocus(iptRef);
   const [loading] = useState<boolean>();
   const [loginAccount, setLoginAccount] = useState<string>();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -63,22 +62,6 @@ export default function Email({
     });
     return () => listener.remove();
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      if (!iptRef || !iptRef?.current) return;
-      timerRef.current = setTimeout(() => {
-        iptRef.current.focus();
-      }, 200);
-    }, []),
-  );
-
-  useEffect(
-    () => () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    },
-    [],
-  );
 
   return (
     <View style={[BGStyles.bg1, styles.card, GStyles.itemCenter]}>

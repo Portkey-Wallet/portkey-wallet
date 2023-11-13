@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -22,8 +22,13 @@ import NoData from 'components/NoData';
 import Lottie from 'lottie-react-native';
 import Touchable from 'components/Touchable';
 import { copyText } from 'utils';
+import { useInputFocus } from 'hooks/useInputFocus';
+import CommonToast from 'components/CommonToast';
 
 const FindMorePeople = () => {
+  const iptRef = useRef<TextInput>(null);
+  useInputFocus(iptRef);
+
   const { userId } = useWallet();
   const navToChatDetails = useJumpToChatDetails();
   const [keyword, setKeyword] = useState('');
@@ -46,7 +51,7 @@ const FindMorePeople = () => {
       console.log('more people', data);
     } catch (error) {
       setList([]);
-      console.log(error);
+      CommonToast.failError(error);
     } finally {
       setLoading(false);
     }
@@ -101,6 +106,7 @@ const FindMorePeople = () => {
       containerStyles={styles.container}>
       <View style={[BGStyles.bg5, GStyles.paddingArg(8, 20, 8)]}>
         <CommonInput
+          ref={iptRef}
           loading={loading}
           allowClear
           value={keyword}

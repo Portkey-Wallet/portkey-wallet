@@ -31,8 +31,14 @@ export interface ChainItemType {
   defaultToken: DefaultToken;
 }
 
+export interface UserInfoType {
+  nickName: string;
+  userId: string;
+  avatar?: string | undefined;
+}
+
 export interface WalletState {
-  walletAvatar: string;
+  walletAvatar: string; // to be scrapped, please use userInfo.avatar
   walletType: WalletType;
   walletName: string;
   currentNetwork: NetworkType;
@@ -41,4 +47,5 @@ export interface WalletState {
   chainInfo?: { [key in NetworkType]?: ChainItemType[] };
   originChainId?: ChainId;
   userId?: string;
+  userInfo?: UserInfoType;
 }

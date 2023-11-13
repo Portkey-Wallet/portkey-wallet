@@ -12,9 +12,7 @@ import CommonButton from 'components/CommonButton';
 import achImg from 'assets/image/pngs/ach.png';
 import achPaymentImg from 'assets/image/pngs/ach_payment.png';
 import ActionSheet from 'components/ActionSheet';
-import { CryptoItemType } from '../types';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 import { useReceive } from '../hooks';
 import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
 import { getAchSignature, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
@@ -27,23 +25,23 @@ import Loading from 'components/Loading';
 import { ACH_REDIRECT_URL, ACH_WITHDRAW_URL } from 'constants/common';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 
 interface RouterParams {
-  type?: PaymentTypeEnum;
-  token?: CryptoItemType;
-  fiat?: FiatType;
+  type?: RampType;
+  crypto?: IRampCryptoItem;
+  fiat?: IRampFiatItem;
   amount?: string;
   receiveAmount?: string;
   rate?: string;
 }
 
-export default function BuyPreview() {
+export default function RampPreview() {
   const {
-    type = PaymentTypeEnum.BUY,
-    token,
+    type = RampType.BUY,
+    crypto,
     fiat,
     amount,
     receiveAmount: receiveAmountProps,
@@ -52,8 +50,8 @@ export default function BuyPreview() {
 
   const { t } = useLanguage();
   const defaultToken = useDefaultToken();
-  const { rate, receiveAmount } = useReceive(type, amount || '', fiat, token, receiveAmountProps, rateProps);
-  const isBuy = useMemo(() => type === PaymentTypeEnum.BUY, [type]);
+  const { rate, receiveAmount } = useReceive(type, amount || '', fiat, crypto, receiveAmountProps, rateProps);
+  const isBuy = useMemo(() => type === RampType.BUY, [type]);
   const apiUrl = useCurrentApiUrl();
   const wallet = useCurrentWalletInfo();
   const { buyConfig } = useCurrentNetworkInfo();
@@ -64,13 +62,13 @@ export default function BuyPreview() {
     async (isNoEmail = false) => {
       const appId = buyConfig?.ach?.appId;
       const baseUrl = buyConfig?.ach?.baseUrl;
-      if (!amount || !receiveAmount || !fiat || !token || !appId || !baseUrl) return;
+      if (!amount || !receiveAmount || !fiat || !crypto || !appId || !baseUrl) return;
       Loading.show();
 
       let isSectionShow = false;
       try {
         const result = await refreshBuyButton();
-        isSectionShow = type === PaymentTypeEnum.BUY ? result.isBuySectionShow : result.isSellSectionShow;
+        isSectionShow = type === RampType.BUY ? result.isBuySectionShow : result.isSellSectionShow;
       } catch (error) {
         console.log(error);
       }
@@ -83,15 +81,15 @@ export default function BuyPreview() {
 
       try {
         const callbackUrl = encodeURIComponent(`${apiUrl}${paymentApi.updateAchOrder}`);
-        let achUrl = `${baseUrl}/?crypto=${token.crypto}&network=${token.network}&country=${fiat.country}&fiat=${fiat.currency}&appId=${appId}&callbackUrl=${callbackUrl}`;
+        let achUrl = `${baseUrl}/?crypto=${crypto.symbol}&network=${crypto.network}&country=${fiat.country}&fiat=${fiat.currency}&appId=${appId}&callbackUrl=${callbackUrl}`;
 
         const orderNo = await getPaymentOrderNo({
-          transDirect: type === PaymentTypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
+          transDirect: type === RampType.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
           merchantName: ACH_MERCHANT_NAME,
         });
         achUrl += `&merchantOrderNo=${orderNo}`;
 
-        if (type === PaymentTypeEnum.BUY) {
+        if (type === RampType.BUY) {
           const achTokenInfo = await getAchTokenInfo();
           if (achTokenInfo !== undefined && isNoEmail === false) {
             achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
@@ -126,10 +124,10 @@ export default function BuyPreview() {
         navigationService.navigate('ViewOnWebView', {
           title: 'Alchemy Pay Ramp',
           url: achUrl,
-          webViewPageType: type === PaymentTypeEnum.BUY ? 'ach' : 'achSell',
+          webViewPageType: type === RampType.BUY ? 'ach' : 'achSell',
           injectedJavaScript,
           params:
-            type === PaymentTypeEnum.BUY
+            type === RampType.BUY
               ? undefined
               : {
                   orderNo,
@@ -150,7 +148,7 @@ export default function BuyPreview() {
       getAchTokenInfo,
       receiveAmount,
       refreshBuyButton,
-      token,
+      crypto,
       type,
       wallet.AELF?.caAddress,
     ],
@@ -166,10 +164,10 @@ export default function BuyPreview() {
         <View style={styles.amountContainer}>
           <View style={styles.primaryWrap}>
             <Text style={styles.primaryAmount}>{amount}</Text>
-            <TextM style={styles.primaryUnit}>{isBuy ? fiat?.currency : token?.crypto}</TextM>
+            <TextM style={styles.primaryUnit}>{isBuy ? fiat?.currency || '' : crypto?.symbol || ''}</TextM>
           </View>
           <TextM style={FontStyles.font3}>
-            I will receive {receiveAmount} {isBuy ? token?.crypto : fiat?.currency}
+            I will receive {receiveAmount} {isBuy ? crypto?.symbol || '' : fiat?.currency || ''}
           </TextM>
         </View>
 
@@ -177,7 +175,7 @@ export default function BuyPreview() {
         <View style={styles.paymentWrap}>
           <View style={[GStyles.flexRow, GStyles.spaceBetween, GStyles.itemCenter, GStyles.marginBottom(24)]}>
             <Image resizeMode="contain" source={achImg} style={styles.achImgStyle} />
-            <TextM style={FontStyles.font3}>{`1 ${token?.crypto} ≈ ${rate} ${fiat?.currency}`}</TextM>
+            <TextM style={FontStyles.font3}>{`1 ${crypto?.symbol || ''} ≈ ${rate} ${fiat?.currency}`}</TextM>
           </View>
           <Image resizeMode="contain" source={achPaymentImg} style={styles.achPaymentImgStyle} />
         </View>

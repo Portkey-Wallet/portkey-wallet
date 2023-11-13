@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useAppCASelector, useAppCommonDispatch } from '../../index';
-import ramp from '@portkey-wallet/ramp';
+import ramp, { IRampProviderType } from '@portkey-wallet/ramp';
 import { sleep } from '@portkey-wallet/utils';
 import { setRampEntry } from '@portkey-wallet/store/store-ca/ramp/actions';
 import { useBuyFiat } from './buy';
@@ -63,10 +63,10 @@ export const useRampEntryShow = () => {
     const rampProviders = ramp.providerMap;
 
     const isBuySectionShowNew = Object.keys(rampProviders).some(key => {
-      return rampProviders[key].coverage.buy === true;
+      return rampProviders[key as IRampProviderType]?.providerInfo.coverage.buy === true;
     });
     const isSellSectionShowNew = Object.keys(rampProviders).some(key => {
-      return rampProviders[key].coverage.sell === true;
+      return rampProviders[key as IRampProviderType]?.providerInfo.coverage.sell === true;
     });
     const isRampShowNew = isBuySectionShowNew || isSellSectionShowNew;
 

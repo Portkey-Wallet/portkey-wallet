@@ -10,6 +10,8 @@ import ramp, {
   IGetSellDetailRequest,
   IGetSellTransactionRequest,
   IGetOrderNoRequest,
+  ISellProviderPrice,
+  IBuyProviderPrice,
 } from '@portkey-wallet/ramp';
 import { IRampLimit } from '@portkey-wallet/types/types-ca/ramp';
 import BigNumber from 'bignumber.js';
@@ -51,8 +53,19 @@ export const getBuyPrice = async (params: IGetBuyPriceRequest) => {
 
 export const getBuyDetail = async (params: IGetBuyDetailRequest) => {
   const {
-    data: { providersList },
+    data: { providersList: resultList },
   } = await ramp.service.getBuyDetail(params);
+
+  const providersList: IBuyProviderPrice[] = [];
+  resultList.forEach(item => {
+    const provider = ramp.getProvider(item.thirdPart);
+    if (!provider) return;
+    providersList.push({
+      ...item,
+      providerInfo: provider.providerInfo,
+    });
+  });
+
   return providersList;
 };
 
@@ -94,8 +107,19 @@ export const getSellPrice = async (params: IGetSellPriceRequest) => {
 
 export const getSellDetail = async (params: IGetSellDetailRequest) => {
   const {
-    data: { providersList },
+    data: { providersList: resultList },
   } = await ramp.service.getSellDetail(params);
+
+  const providersList: ISellProviderPrice[] = [];
+  resultList.forEach(item => {
+    const provider = ramp.getProvider(item.thirdPart);
+    if (!provider) return;
+    providersList.push({
+      ...item,
+      providerInfo: provider.providerInfo,
+    });
+  });
+
   return providersList;
 };
 

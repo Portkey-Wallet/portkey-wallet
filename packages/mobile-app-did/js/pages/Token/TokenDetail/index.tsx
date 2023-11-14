@@ -33,6 +33,7 @@ import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wal
 import FaucetButton from 'components/FaucetButton';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 interface RouterParams {
   tokenInfo: TokenItemShowType;
@@ -211,6 +212,7 @@ const TokenDetail: React.FC = () => {
         onEndReached={() => {
           getActivityList();
         }}
+        onEndReachedThreshold={ON_END_REACHED_THRESHOLD}
       />
     </PageContainer>
   );

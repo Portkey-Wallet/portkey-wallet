@@ -21,7 +21,14 @@ export default function CustomChatAvatar(props: AvatarProps<ChatMessage>) {
           relationId: currentMessage?.from,
         })
       }>
-      <CommonAvatar hasBorder title={currentMessage?.fromName} avatarSize={pTd(40)} style={styles.avatarStyle} />
+      <CommonAvatar
+        hasBorder
+        resizeMode="cover"
+        title={currentMessage?.fromName}
+        avatarSize={pTd(40)}
+        style={styles.avatarStyle}
+        imageUrl={currentMessage?.fromAvatar}
+      />
     </Touchable>
   );
 }

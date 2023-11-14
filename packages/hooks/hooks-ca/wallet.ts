@@ -7,12 +7,12 @@ import { useCurrentNetworkInfo } from './network';
 import { useCurrentChain, useCurrentChainList } from './chainList';
 import { request } from '@portkey-wallet/api/api-did';
 import { useAppCommonDispatch } from '../index';
-import { setWalletNameAction } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { setWalletNameAction, setUserInfoAction } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { DeviceInfoType } from '@portkey-wallet/types/types-ca/device';
 import { extraDataListDecode } from '@portkey-wallet/utils/device';
 import { ChainId } from '@portkey-wallet/types';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
-
+import { RequireAtLeastOne } from '@portkey-wallet/types/common';
 import { getCAHolderManagerInfo } from '@portkey-wallet/graphql/contract/queries';
 import { ManagerInfo, Maybe } from '@portkey-wallet/graphql/contract/__generated__/types';
 
@@ -183,6 +183,21 @@ export const useSetWalletName = () => {
         },
       });
       dispatch(setWalletNameAction(nickName));
+    },
+    [dispatch, networkInfo],
+  );
+};
+
+export const useSetUserInfo = () => {
+  const dispatch = useAppCommonDispatch();
+  const networkInfo = useCurrentNetworkInfo();
+  return useCallback(
+    async (params: RequireAtLeastOne<{ nickName: string; avatar: string }>) => {
+      await request.wallet.editHolderInfo({
+        baseURL: networkInfo.apiUrl,
+        params,
+      });
+      dispatch(setUserInfoAction(params));
     },
     [dispatch, networkInfo],
   );

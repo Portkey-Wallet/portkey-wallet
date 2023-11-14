@@ -126,7 +126,7 @@ export const useEntrance = (config: IEntranceMatchValueConfig, isInit = false) =
       const _entrance = await generateEntranceShow(config, _entranceList || []);
       dispatch(
         setEntrance({
-          network: networkType,
+          network: network || networkType,
           value: _entrance,
         }),
       );

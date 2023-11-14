@@ -68,6 +68,7 @@ export type GetOtherUserInfoDefaultResult = {
 export type CreateChannelParams = {
   name: string;
   type: ChannelTypeEnum;
+  channelIcon?: string;
   members: string[];
 };
 
@@ -180,9 +181,10 @@ export type LeaveChannelParams = {
   channelUuid: string;
 };
 
-export type UpdateChannelNameParams = {
+export type UpdateChannelInfoParams = {
   channelUuid: string;
   channelName: string;
+  channelIcon?: string;
 };
 
 export type JoinChannelParams = {
@@ -225,7 +227,7 @@ export interface IIMService {
   addChannelMembers(params: AddChannelMembersParams): IMServiceCommon<null>;
   removeChannelMembers(params: RemoveChannelMembersParams): IMServiceCommon<null>;
   leaveChannel(params: LeaveChannelParams): IMServiceCommon<null>;
-  updateChannelName(params: UpdateChannelNameParams): IMServiceCommon<null>;
+  updateChannelInfo(params: UpdateChannelInfoParams): IMServiceCommon<null>;
   joinChannel(params: JoinChannelParams): IMServiceCommon<null>;
 
   addStranger(params: AddStrangerParams): IMServiceCommon<ContactItemType>;

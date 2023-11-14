@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { pTd } from 'utils/unit';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -14,11 +14,14 @@ interface DiscoverWebsiteImageProps {
 export default function DiscoverWebsiteImage(props: DiscoverWebsiteImageProps) {
   const { size = pTd(32), imageUrl, style } = props;
 
-  const sizeStyle = {
-    width: size,
-    height: size,
-    borderRadius: size,
-  };
+  const sizeStyle = useMemo(
+    () => ({
+      width: size,
+      height: size,
+      borderRadius: size,
+    }),
+    [size],
+  );
 
   return (
     <FastImage

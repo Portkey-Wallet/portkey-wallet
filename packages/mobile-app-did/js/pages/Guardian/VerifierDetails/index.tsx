@@ -33,6 +33,7 @@ import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
 import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
+import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -117,7 +118,7 @@ export default function VerifierDetails() {
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
-      Loading.show(isRequestResult ? { text: 'Creating address on the chain...' } : undefined);
+      Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
       try {
         const rst = await verification.checkVerificationCode({
           params: {

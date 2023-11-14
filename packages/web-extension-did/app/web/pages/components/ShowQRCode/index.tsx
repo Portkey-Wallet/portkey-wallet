@@ -1,12 +1,15 @@
 import CustomSvg from 'components/CustomSvg';
 import QRCodeCommon from 'pages/components/QRCodeCommon';
+import { Avatar } from '@portkey-wallet/im-ui-web';
+import { ChannelTypeEnum } from '@portkey-wallet/im';
 import './index.less';
 
 export interface IShowQRCodeProps {
   onBack?: () => void;
   showName?: string;
-  isGroup?: boolean;
+  type?: ChannelTypeEnum;
   desc?: string;
+  icon?: string;
   qrCodeValue?: string;
   showHeader?: boolean;
 }
@@ -14,8 +17,9 @@ export interface IShowQRCodeProps {
 export default function ShowQRCode({
   onBack,
   showName = '',
-  isGroup = false,
+  type,
   desc = '',
+  icon,
   qrCodeValue,
   showHeader = true,
 }: IShowQRCodeProps) {
@@ -28,13 +32,7 @@ export default function ShowQRCode({
       )}
       <div className="show-qrcode-content flex-column-center">
         <div className="qrcode-content-icon"></div>
-        {isGroup ? (
-          <div className="group-icon common-icon flex-center">
-            <CustomSvg type="GroupAvatar" />
-          </div>
-        ) : (
-          <div className="common-icon flex-center">{showName.slice(0, 1)?.toUpperCase() || 'A'}</div>
-        )}
+        <Avatar avatarSize="large" src={icon} channelType={type} letter={showName.slice(0, 1)?.toUpperCase()} />
         <div className="qrcode-content-name">{showName}</div>
         <div className="qrcode-content-qrcode"></div>
         <QRCodeCommon value={`${qrCodeValue}`} />

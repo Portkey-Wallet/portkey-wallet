@@ -22,7 +22,7 @@ import { useAppBridgeButtonShow, useAppBuyButtonShow } from 'hooks/cms';
 
 const Card: React.FC = () => {
   const isMainnet = useIsMainnet();
-  const { walletName } = useWallet();
+  const { userInfo } = useWallet();
   const accountBalanceUSD = useAccountBalanceUSD();
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const { isBuyButtonShow } = useAppBuyButtonShow();
@@ -60,8 +60,7 @@ const Card: React.FC = () => {
         </TouchableOpacity>
       </View>
       <Text style={styles.usdtBalance}>{isMainnet ? `$${accountBalanceUSD}` : 'Dev Mode'}</Text>
-      <TextM style={styles.accountName}>{walletName}</TextM>
-
+      <TextM style={styles.accountName}>{userInfo?.nickName}</TextM>
       <View style={[GStyles.flexRow, GStyles.spaceBetween, styles.buttonGroupWrap, buttonGroupWrapStyle]}>
         {isBuyButtonShow && <BuyButton themeType="dashBoard" wrapStyle={buttonWrapStyle} />}
         {isBridgeShow && <BridgeButton wrapStyle={buttonWrapStyle} />}

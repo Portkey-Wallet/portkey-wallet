@@ -133,6 +133,9 @@ export const sendSellTransaction = async (params: IGetSellTransactionRequest) =>
 };
 
 export const getOrderNo = async (params: IGetOrderNoRequest) => {
-  const { data: orderNo } = await ramp.service.getOrderNo(params);
-  return orderNo;
+  const {
+    data: { id },
+  } = await ramp.service.getOrderNo(params);
+
+  return id;
 };

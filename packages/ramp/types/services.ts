@@ -174,7 +174,7 @@ export type IGetSellTransactionRequest = {
 };
 
 export type IGetOrderNoResult = {
-  orderNo: string;
+  id: string;
 };
 
 export type IGetAchPayTokenRequest = {

@@ -16,8 +16,6 @@ import { ActivityStateType } from '@portkey-wallet/store/store-ca/activity/type'
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { IDiscoverStateType } from '@portkey-wallet/store/store-ca/discover/type';
 
-import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
-import { PaymentStateType } from '@portkey-wallet/store/store-ca/payment/type';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { MiscState } from '@portkey-wallet/store/store-ca/misc/types';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
@@ -43,7 +41,6 @@ export type CACommonState = RootCommonState & {
   [contactSlice.name]: ContactState;
   [guardiansSlice.name]: GuardiansState;
   [discoverSlice.name]: IDiscoverStateType;
-  [paymentSlice.name]: PaymentStateType;
   [rampSlice.name]: IRampStateType;
   [miscSlice.name]: MiscState;
   [dappSlice.name]: IDappStoreState;

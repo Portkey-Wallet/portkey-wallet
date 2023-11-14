@@ -2,7 +2,7 @@ import { IRampCryptoItem, IRampFiatItem, RampType } from '@portkey-wallet/ramp';
 import { getBuyLimit, getBuyPrice, getSellLimit, getSellPrice } from '@portkey-wallet/utils/ramp';
 import { MutableRefObject, useCallback, useMemo, useRef, useState } from 'react';
 import { MAX_UPDATE_TIME } from '../const';
-import { INSUFFICIENT_FUNDS_TEXT, SYNCHRONIZING_CHAIN_TEXT } from '@portkey-wallet/constants/constants-ca/payment';
+import { INSUFFICIENT_FUNDS_TEXT, SYNCHRONIZING_CHAIN_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useEffectOnce } from 'react-use';
 import { limitText, validValueCheck } from '../utils';
 import { IErrMsgHandlerParams } from '../types';

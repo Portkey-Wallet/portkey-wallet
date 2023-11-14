@@ -18,7 +18,7 @@ import { FiatType } from '@portkey-wallet/store/store-ca/payment/type';
 import { useReceive } from '../hooks';
 import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
 import { getAchSignature, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
-import { ACH_MERCHANT_NAME, TransDirectEnum } from '@portkey-wallet/constants/constants-ca/payment';
+import { ACH_MERCHANT_NAME } from '@portkey-wallet/constants/constants-ca/ramp';
 import navigationService from 'utils/navigationService';
 import { useCurrentApiUrl } from '@portkey-wallet/hooks/hooks-ca/network';
 import paymentApi from '@portkey-wallet/api/api-did/payment';
@@ -30,6 +30,7 @@ import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import { ITransDirectEnum } from '@portkey-wallet/ramp';
 
 interface RouterParams {
   type?: PaymentTypeEnum;
@@ -86,7 +87,7 @@ export default function BuyPreview() {
         let achUrl = `${baseUrl}/?crypto=${token.crypto}&network=${token.network}&country=${fiat.country}&fiat=${fiat.currency}&appId=${appId}&callbackUrl=${callbackUrl}`;
 
         const orderNo = await getPaymentOrderNo({
-          transDirect: type === PaymentTypeEnum.BUY ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
+          transDirect: type === PaymentTypeEnum.BUY ? ITransDirectEnum.TOKEN_BUY : ITransDirectEnum.TOKEN_SELL,
           merchantName: ACH_MERCHANT_NAME,
         });
         achUrl += `&merchantOrderNo=${orderNo}`;

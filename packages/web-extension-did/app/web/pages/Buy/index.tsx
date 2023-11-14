@@ -13,10 +13,10 @@ import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import BuyForm from './components/BuyForm';
 import SellForm from './components/SellForm';
 import { useEffectOnce } from 'react-use';
-import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import CustomTipModal from 'pages/components/CustomModal';
-import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constants-ca/payment';
+import { BUY_SOON_TEXT, SELL_SOON_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { RampType } from '@portkey-wallet/ramp';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ export default function Buy() {
   const { state } = useLocation();
   const { isPrompt } = useCommonState();
 
-  const [page, setPage] = useState<PaymentTypeEnum>(PaymentTypeEnum.BUY);
+  const [page, setPage] = useState<RampType>(RampType.BUY);
 
   const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useRampEntryShow();
 
@@ -33,7 +33,7 @@ export default function Buy() {
   useEffectOnce(() => {
     // TODO token detail
     if (!isBuySectionShow && isSellSectionShow) {
-      const side = PaymentTypeEnum.SELL;
+      const side = RampType.SELL;
       setPage(side);
     }
   });
@@ -44,13 +44,13 @@ export default function Buy() {
 
       const side = e.target.value;
       // Compatible with the situation where the function is turned off when the user is on the page.
-      if (side === PaymentTypeEnum.BUY && !isBuySectionShow) {
+      if (side === RampType.BUY && !isBuySectionShow) {
         CustomTipModal({
           content: t(BUY_SOON_TEXT),
         });
         return;
       }
-      if (side === PaymentTypeEnum.SELL && !isSellSectionShow) {
+      if (side === RampType.SELL && !isSellSectionShow) {
         CustomTipModal({
           content: t(SELL_SOON_TEXT),
         });
@@ -85,17 +85,13 @@ export default function Buy() {
         </div>
         <div className="buy-content flex-column-center">
           <div className="buy-radio">
-            <Radio.Group
-              defaultValue={PaymentTypeEnum.BUY}
-              buttonStyle="solid"
-              value={page}
-              onChange={handlePageChange}>
-              <Radio.Button value={PaymentTypeEnum.BUY}>{t('Buy')}</Radio.Button>
-              <Radio.Button value={PaymentTypeEnum.SELL}>{t('Sell')}</Radio.Button>
+            <Radio.Group defaultValue={RampType.BUY} buttonStyle="solid" value={page} onChange={handlePageChange}>
+              <Radio.Button value={RampType.BUY}>{t('Buy')}</Radio.Button>
+              <Radio.Button value={RampType.SELL}>{t('Sell')}</Radio.Button>
             </Radio.Group>
           </div>
-          {page === PaymentTypeEnum.BUY && <BuyForm />}
-          {page === PaymentTypeEnum.SELL && <SellForm />}
+          {page === RampType.BUY && <BuyForm />}
+          {page === RampType.SELL && <SellForm />}
         </div>
         {isPrompt && <PromptEmptyElement />}
       </div>

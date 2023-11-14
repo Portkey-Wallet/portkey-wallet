@@ -1,6 +1,5 @@
-import { PaymentStateType } from '@portkey-wallet/store/store-ca/payment/type';
-
-export const PaymentState: { payment: PaymentStateType } = {
+// TODO PaymentStore was deleted
+export const PaymentState: { payment: any } = {
   payment: {
     achTokenInfo: {
       expires: 1682146455494,

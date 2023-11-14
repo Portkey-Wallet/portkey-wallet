@@ -7,6 +7,7 @@ import {
 import { IStorage } from '@portkey-wallet/types/storage';
 import { baseStore } from '@portkey-wallet/utils/mobile/storage';
 import { verifyHumanMachine } from 'components/VerifyHumanMachine';
+import { getAppCheckToken } from './appCheck';
 
 class MobileVerification extends Verification {
   constructor(store: IStorage) {
@@ -18,6 +19,7 @@ class MobileVerification extends Verification {
 
     try {
       const item = this.get(key);
+
       if (item) {
         return item;
       } else {
@@ -29,11 +31,32 @@ class MobileVerification extends Verification {
         const isNeedRecaptcha = !!result;
 
         if (isNeedRecaptcha) {
-          // TODO: add language
-          const reCaptchaToken = await verifyHumanMachine('en');
-          config.headers = {
-            reCaptchaToken: reCaptchaToken as string,
-          };
+          // app check
+          try {
+            const appCheckToken = await getAppCheckToken(true);
+            if (!appCheckToken) throw Error('get appCheckToken fail');
+
+            config.headers = {
+              acToken: appCheckToken || '',
+            };
+
+            const request1 = await request.verify.sendVerificationRequest(config);
+            await this.set(key, { ...request1, time: Date.now() });
+
+            return request1;
+          } catch (err) {
+            // google  human-machine verification
+            // TODO: add language
+            console.log('appCheck  error', err);
+            const reCaptchaToken = await verifyHumanMachine('en');
+            config.headers = {
+              reCaptchaToken: reCaptchaToken as string,
+            };
+
+            const request2 = await request.verify.sendVerificationRequest(config);
+            await this.set(key, { ...request2, time: Date.now() });
+            return request2;
+          }
         }
 
         const req = await request.verify.sendVerificationRequest(config);

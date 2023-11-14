@@ -17,16 +17,17 @@ import { useLoading } from 'store/Provider/hooks';
 import { Button, message } from 'antd';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { generateRateText } from 'pages/Buy/utils';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
 
 export default function BuyForm() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  // const { state } = useLocation();
+  const { state } = useLocation();
 
   // get data
   const { refreshRampShow } = useRampEntryShow();
@@ -80,10 +81,29 @@ export default function BuyForm() {
         if (v.symbol && v.country) {
           setFiatSelected(v);
           fiatSelectedRef.current = v;
+
+          // update crypto list and crypto default
+          const { buyDefaultCrypto, buyCryptoList } = await getBuyCrypto({ fiat: v.symbol, country: v.country });
+          const buyCryptoSelectedExit = buyCryptoList.filter(
+            (item) =>
+              item.symbol === cryptoSelectedRef.current.symbol && item.network === cryptoSelectedRef.current.network,
+          );
+          if (buyCryptoSelectedExit.length > 0) {
+            // latest cryptoSelected - exit
+            cryptoSelectedRef.current = buyCryptoSelectedExit[0];
+          } else {
+            // latest cryptoSelected - not exit
+            const newDefaultCrypto = buyCryptoList.filter(
+              (item) => item.symbol === buyDefaultCrypto.symbol && item.network === buyDefaultCrypto.network,
+            );
+            setCryptoSelected({ ...newDefaultCrypto[0] });
+            cryptoSelectedRef.current = { ...newDefaultCrypto[0] };
+          }
+
           await updateBuyReceive();
         }
       } catch (error) {
-        console.log('error', error);
+        message.error(handleErrorMessage(error));
       }
     },
     [updateBuyReceive],
@@ -98,7 +118,7 @@ export default function BuyForm() {
           await updateBuyReceive();
         }
       } catch (error) {
-        console.log('error', error);
+        message.error(handleErrorMessage(error));
       }
     },
     [updateBuyReceive],
@@ -128,7 +148,7 @@ export default function BuyForm() {
           country: fiatSelectedRef.current.country,
           amount: fiatAmountRef.current,
           side: RampType.BUY,
-          // tokenInfo: state ? state.tokenInfo : null, // TODO
+          tokenInfo: state ? state.tokenInfo : null,
         },
       });
     } catch (error) {
@@ -136,7 +156,7 @@ export default function BuyForm() {
     } finally {
       setLoading(false);
     }
-  }, [navigate, refreshRampShow, setLoading]);
+  }, [navigate, refreshRampShow, setLoading, state]);
 
   return (
     <>

@@ -32,7 +32,7 @@ export default {
     config: { method: 'POST' },
   },
   getOrderNo: {
-    target: '/api/app/thirdPart/order',
+    target: '/api/app/thirdPart/ramp/order',
     config: { method: 'POST' },
   },
   getAchPayToken: {

@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useAppCommonDispatch } from '../../index';
-import ramp from '@portkey-wallet/ramp';
 import {
   setSellCryptoList,
   setSellDefaultCrypto,
@@ -13,6 +12,7 @@ import {
   useSellDefaultFiatListState,
   useSellDefaultFiatState,
 } from '.';
+import { getSellCrypto, getSellFiat } from '@portkey-wallet/utils/ramp';
 
 export const useSellCrypto = () => {
   const dispatch = useAppCommonDispatch();
@@ -22,12 +22,8 @@ export const useSellCrypto = () => {
   const sellDefaultFiat = useSellDefaultFiatState();
 
   const refreshSellCrypto = useCallback(async () => {
-    const {
-      data: { cryptoList, defaultCrypto },
-    } = await ramp.service.getSellCryptoData();
-    const {
-      data: { fiatList, defaultFiat },
-    } = await ramp.service.getSellFiatData({
+    const { cryptoList, defaultCrypto } = await getSellCrypto();
+    const { sellFiatList, sellDefaultFiat } = await getSellFiat({
       crypto: defaultCrypto.symbol,
       network: defaultCrypto.network,
     });
@@ -40,19 +36,19 @@ export const useSellCrypto = () => {
     );
     dispatch(
       setSellDefaultFiatList({
-        list: fiatList,
+        list: sellFiatList,
       }),
     );
     dispatch(
       setSellDefaultFiat({
-        value: defaultFiat,
+        value: sellDefaultFiat,
       }),
     );
     return {
       sellCryptoList: cryptoList,
       sellDefaultCrypto: defaultCrypto,
-      sellDefaultFiatList: fiatList,
-      sellDefaultFiat: defaultFiat,
+      sellDefaultFiatList: sellFiatList,
+      sellDefaultFiat,
     };
   }, [dispatch]);
 

@@ -19,7 +19,7 @@ import { useEffectOnce } from 'react-use';
 import { Button, message } from 'antd';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -28,12 +28,13 @@ import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { generateRateText } from 'pages/Buy/utils';
+import { getSellFiat } from '@portkey-wallet/utils/ramp';
 
 export default function SellFrom() {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const navigate = useNavigate();
-  // const { state } = useLocation();
+  const { state } = useLocation();
 
   // get data
   const { refreshRampShow } = useRampEntryShow();
@@ -106,10 +107,29 @@ export default function SellFrom() {
         if (v.symbol && v.network) {
           setCryptoSelected(v);
           cryptoSelectedRef.current = v;
+
+          // update fiat list and fiat default
+          const { sellDefaultFiat, sellFiatList } = await getSellFiat({ crypto: v.symbol, network: v.network });
+          const sellFiatSelectedExit = sellFiatList.filter(
+            (item) =>
+              item.symbol === fiatSelectedRef.current.symbol && item.country === fiatSelectedRef.current.country,
+          );
+          if (sellFiatSelectedExit.length > 0) {
+            // latest fiatSelected - exit
+            fiatSelectedRef.current = sellFiatSelectedExit[0];
+          } else {
+            // latest fiatSelected - not exit
+            const newDefaultFiat = sellFiatList.filter(
+              (item) => item.symbol === sellDefaultFiat.symbol && item.country === sellDefaultFiat.country,
+            );
+            setFiatSelected({ ...newDefaultFiat[0] });
+            fiatSelectedRef.current = { ...newDefaultFiat[0] };
+          }
+
           await updateSellReceive();
         }
       } catch (error) {
-        console.log('error', error);
+        message.error(handleErrorMessage(error));
       }
     },
     [updateSellReceive],
@@ -124,7 +144,7 @@ export default function SellFrom() {
           await updateSellReceive();
         }
       } catch (error) {
-        console.log('error', error);
+        message.error(handleErrorMessage(error));
       }
     },
     [updateSellReceive],
@@ -188,7 +208,7 @@ export default function SellFrom() {
           country: fiatSelectedRef.current.country,
           amount: cryptoAmountRef.current,
           side: RampType.SELL,
-          // tokenInfo: state ? state.tokenInfo : null, // TODO
+          tokenInfo: state ? state.tokenInfo : null,
         },
       });
     } catch (error) {
@@ -208,6 +228,7 @@ export default function SellFrom() {
     refreshRampShow,
     setInsufficientFundsMsg,
     setLoading,
+    state,
     wallet,
   ]);
 

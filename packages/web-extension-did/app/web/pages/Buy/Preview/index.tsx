@@ -4,7 +4,7 @@ import { Button, message } from 'antd';
 import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
-import { initPreviewData, InitProviderSelected, MAX_UPDATE_TIME } from '../const';
+import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
@@ -40,11 +40,15 @@ export default function Preview() {
   const [providerList, setProviderList] = useState<Array<IGetBuyDetail | IGetSellDetail>>([]);
   const [providerSelected, setProviderSelected] = useState<IGetBuyDetail | IGetSellDetail>(InitProviderSelected);
 
-  const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
+  const data = useMemo(() => ({ ...state }), [state]);
   const showRateText = useMemo(() => generateRateText(data.crypto, rate, data.fiat), [data.crypto, data.fiat, rate]);
   const receiveText = useMemo(
-    () => generateReceiveText(receive, data.side === RampType.BUY ? data.crypto : data.fiat),
+    () => receive && generateReceiveText(receive, data.side === RampType.BUY ? data.crypto : data.fiat),
     [data.crypto, data.fiat, data.side, receive],
+  );
+  const disabled = useMemo(
+    () => providerList.length > 0 && !!providerSelected?.thirdPart,
+    [providerList.length, providerSelected?.thirdPart],
   );
 
   const onSwitchProvider = useCallback((provider: IGetBuyDetail | IGetSellDetail) => {
@@ -75,7 +79,7 @@ export default function Preview() {
       }
 
       setProviderList(canUseProviders);
-      const providerSelectedExit = canUseProviders.filter((item) => item.thirdPart === providerSelected.thirdPart);
+      const providerSelectedExit = canUseProviders.filter((item) => item?.thirdPart === providerSelected?.thirdPart);
 
       if (providerSelectedExit.length === 0) {
         // providerSelected not exit
@@ -90,11 +94,11 @@ export default function Preview() {
     } catch (error) {
       message.error(handleErrorMessage(error));
     }
-  }, [data.side, providerSelected.thirdPart, state.amount, state.country, state.crypto, state.fiat, state.network]);
+  }, [data.side, providerSelected?.thirdPart, state.amount, state.country, state.crypto, state.fiat, state.network]);
 
   useEffect(() => {
     getRampDetail();
-  }, [getRampDetail]);
+  }, [getRampDetail, state]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -111,6 +115,7 @@ export default function Preview() {
   }, []);
 
   const goPayPage = useCallback(async () => {
+    if (!providerSelected?.providerInfo) return;
     const { side } = data;
     setLoading(true);
     const { isBuySectionShow, isSellSectionShow } = await refreshRampShow();
@@ -165,20 +170,10 @@ export default function Preview() {
       navigate('/');
     } catch (error) {
       message.error('There is a network error, please try again.');
-      console.log(error);
     } finally {
       setLoading(false);
     }
-  }, [
-    data,
-    navigate,
-    providerSelected.providerInfo.appId,
-    providerSelected.providerInfo.baseUrl,
-    providerSelected.providerInfo.callbackUrl,
-    refreshRampShow,
-    setLoading,
-    wallet?.AELF?.caAddress,
-  ]);
+  }, [data, navigate, providerSelected?.providerInfo, refreshRampShow, setLoading, wallet?.AELF?.caAddress]);
 
   const showDisclaimerTipModal = useCallback(() => {
     CustomModal({
@@ -194,6 +189,59 @@ export default function Preview() {
   const handleBack = useCallback(() => {
     navigate('/buy', { state: state });
   }, [navigate, state]);
+
+  const renderProviderList = useMemo(() => {
+    return providerList.length > 0 ? (
+      <div className="card">
+        <div className="label">{t('Service provider')}</div>
+        {providerList.map((item) => (
+          <div
+            className={clsx([
+              'card-item',
+              providerSelected?.providerInfo.key === item?.providerInfo.key && 'card-item-selected',
+              'flex-column',
+            ])}
+            key={item?.providerInfo.key}
+            onClick={() => onSwitchProvider(item)}>
+            <div className="flex-row-center ramp-provider">
+              <img src={item?.providerInfo.logo} className="ramp-provider-logo" />
+              <div className="rate">{showRateText}</div>
+            </div>
+            <div className="ramp-provider-pay">
+              {item?.providerInfo.paymentTags.map((tag, index) => (
+                <img src={tag} key={'paymentTags-' + index} className="ramp-provider-pay-item" />
+              ))}
+            </div>
+            {providerSelected?.providerInfo.key === item?.providerInfo.key && (
+              <CustomSvg type="CardSelected" className="card-selected-icon" />
+            )}
+          </div>
+        ))}
+      </div>
+    ) : null;
+  }, [onSwitchProvider, providerList, providerSelected?.providerInfo.key, showRateText, t]);
+
+  const renderFooter = useMemo(() => {
+    return providerSelected?.providerInfo.name ? (
+      <>
+        <div className="preview-footer">
+          <div className="disclaimer">
+            <span>
+              Proceeding with this transaction means that you have read and understood
+              <span className="highlight" onClick={showDisclaimerTipModal}>
+                &nbsp;the Disclaimer
+              </span>
+              .
+            </span>
+          </div>
+          <Button type="primary" htmlType="submit" onClick={goPayPage} disabled={!disabled}>
+            {'Go to ' + providerSelected.providerInfo.name}
+          </Button>
+        </div>
+        {isPrompt && <PromptEmptyElement />}
+      </>
+    ) : null;
+  }, [disabled, goPayPage, isPrompt, providerSelected?.providerInfo.name, showDisclaimerTipModal]);
 
   const mainContent = useMemo(
     () => (
@@ -214,48 +262,10 @@ export default function Preview() {
             </div>
             <div className="receive">{receiveText}</div>
           </div>
-          <div className="card">
-            <div className="label">{t('Service provider')}</div>
-            {providerList.map((item) => (
-              <div
-                className={clsx([
-                  'card-item',
-                  providerSelected?.providerInfo.key === item?.providerInfo.key && 'card-item-selected',
-                  'flex-column',
-                ])}
-                key={item?.providerInfo.key}
-                onClick={() => onSwitchProvider(item)}>
-                <div className="flex-row-center ramp-provider">
-                  <img src={item?.providerInfo.logo} className="ramp-provider-logo" />
-                  <div className="rate">{showRateText}</div>
-                </div>
-                <div className="ramp-provider-pay">
-                  {item?.providerInfo.paymentTags.map((tag, index) => (
-                    <img src={tag} key={'paymentTags-' + index} className="ramp-provider-pay-item" />
-                  ))}
-                </div>
-                {providerSelected?.providerInfo.key === item?.providerInfo.key && (
-                  <CustomSvg type="CardSelected" className="card-selected-icon" />
-                )}
-              </div>
-            ))}
-          </div>
+          {renderProviderList}
         </div>
-        <div className="preview-footer">
-          <div className="disclaimer">
-            <span>
-              Proceeding with this transaction means that you have read and understood
-              <span className="highlight" onClick={showDisclaimerTipModal}>
-                &nbsp;the Disclaimer
-              </span>
-              .
-            </span>
-          </div>
-          <Button type="primary" htmlType="submit" onClick={goPayPage}>
-            {'Go to ' + providerSelected?.providerInfo.name}
-          </Button>
-        </div>
-        {isPrompt && <PromptEmptyElement />}
+
+        {renderFooter}
       </div>
     ),
     [
@@ -263,18 +273,12 @@ export default function Preview() {
       data.crypto,
       data.fiat,
       data.side,
-      goPayPage,
       handleBack,
       isPrompt,
-      onSwitchProvider,
-      providerList,
-      providerSelected?.providerInfo.key,
-      providerSelected?.providerInfo.name,
       receiveText,
-      showDisclaimerTipModal,
-      showRateText,
+      renderFooter,
+      renderProviderList,
       state.crypto,
-      t,
     ],
   );
   return <>{isPrompt ? <PromptFrame content={mainContent} /> : mainContent}</>;

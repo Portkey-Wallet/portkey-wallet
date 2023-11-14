@@ -51,7 +51,7 @@ export class DidService extends ServiceInit {
     };
   };
 
-  setRefreshTokenConfig = (config: RefreshTokenConfig) => {
+  setRefreshTokenConfig = async (config: RefreshTokenConfig) => {
     // make sure clean Authorization
     if (this.refreshTokenConfig?.ca_hash !== config.ca_hash) {
       this.defaultConfig.headers = {
@@ -61,9 +61,10 @@ export class DidService extends ServiceInit {
     }
     this.refreshTokenConfig = config;
     try {
-      this.getConnectToken();
+      return await this.getConnectToken();
     } catch (error) {
       console.log(error);
+      return undefined;
     }
   };
   send = async (base: BaseConfig, config?: RequestConfig, reCount = 0): Promise<any> => {
@@ -104,7 +105,12 @@ export class DidService extends ServiceInit {
       method,
     });
     if (fetchResult && fetchResult.status === 401 && fetchResult.message === 'unauthorized') {
-      if (!this.refreshTokenConfig) throw fetchResult;
+      if (!this.refreshTokenConfig) {
+        // default init
+        await sleep(1000);
+
+        if (!this.refreshTokenConfig) throw fetchResult;
+      }
       if (reCount > 5) throw fetchResult;
       await this.handleConnectToken(fetchResult);
       return this.send(base, config, ++reCount);

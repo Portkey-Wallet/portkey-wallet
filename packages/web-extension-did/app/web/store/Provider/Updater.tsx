@@ -25,6 +25,7 @@ import s3Instance from '@portkey-wallet/utils/s3';
 import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
+import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -59,7 +60,14 @@ export default function Updater() {
   useUpdateRedux();
   useLocationChange();
   useChainListFetch();
-  useRefreshTokenConfig(passwordSeed);
+
+  const initRamp = useInitRamp({ clientType: 'Extension' });
+  const refreshToken = useRefreshTokenConfig(passwordSeed);
+  useMemo(async () => {
+    await refreshToken();
+    await initRamp();
+  }, [initRamp, refreshToken]);
+
   const checkUpdate = useCheckUpdate();
 
   useCheckManager(checkManagerOnLogout);

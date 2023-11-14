@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useAppCommonDispatch } from '../../index';
-import ramp from '@portkey-wallet/ramp';
 import {
   setBuyDefaultCrypto,
   setBuyDefaultCryptoList,
@@ -8,6 +7,7 @@ import {
   setBuyFiatList,
 } from '@portkey-wallet/store/store-ca/ramp/actions';
 import { useBuyDefaultCryptoListState, useBuyDefaultCryptoState, useBuyDefaultFiatState, useBuyFiatListState } from '.';
+import { getBuyCrypto, getBuyFiat } from '@portkey-wallet/utils/ramp';
 
 export const useBuyFiat = () => {
   const dispatch = useAppCommonDispatch();
@@ -17,12 +17,11 @@ export const useBuyFiat = () => {
   const buyDefaultCrypto = useBuyDefaultCryptoState();
 
   const refreshBuyFiat = useCallback(async () => {
-    const {
-      data: { fiatList, defaultFiat },
-    } = await ramp.service.getBuyFiatData();
-    const {
-      data: { cryptoList, defaultCrypto },
-    } = await ramp.service.getBuyCryptoData({ fiat: defaultFiat.symbol, country: defaultFiat.country });
+    const { fiatList, defaultFiat } = await getBuyFiat();
+    const { buyCryptoList, buyDefaultCrypto } = await getBuyCrypto({
+      fiat: defaultFiat.symbol,
+      country: defaultFiat.country,
+    });
 
     dispatch(setBuyFiatList({ list: fiatList }));
     dispatch(
@@ -32,20 +31,20 @@ export const useBuyFiat = () => {
     );
     dispatch(
       setBuyDefaultCryptoList({
-        list: cryptoList,
+        list: buyCryptoList,
       }),
     );
     dispatch(
       setBuyDefaultCrypto({
-        value: defaultCrypto,
+        value: buyDefaultCrypto,
       }),
     );
 
     return {
       buyFiatList: fiatList,
       buyDefaultFiat: defaultFiat,
-      buyDefaultCryptoList: cryptoList,
-      buyDefaultCrypto: defaultCrypto,
+      buyDefaultCryptoList: buyCryptoList,
+      buyDefaultCrypto,
     };
   }, [dispatch]);
 

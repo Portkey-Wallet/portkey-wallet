@@ -5,57 +5,47 @@ import BackHeader from 'components/BackHeader';
 import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
 import { initPreviewData, InitProviderSelected, MAX_UPDATE_TIME } from '../const';
-import { getAchSignature, getPaymentOrderNo } from '@portkey-wallet/api/api-did/payment/util';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import {
   ACH_MERCHANT_NAME,
-  TransDirectEnum,
   DISCLAIMER_TEXT,
   SERVICE_UNAVAILABLE_TEXT,
-} from '@portkey-wallet/constants/constants-ca/payment';
+} from '@portkey-wallet/constants/constants-ca/ramp';
 import clsx from 'clsx';
-import { useGetAchTokenInfo } from '@portkey-wallet/hooks/hooks-ca/payment';
-import paymentApi from '@portkey-wallet/api/api-did/payment';
-import { useCurrentApiUrl, useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import CustomModal from 'pages/components/CustomModal';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ACH_WITHDRAW_URL } from 'constants/index';
-import { useExtensionBuyButtonShow } from 'hooks/cms';
 import { generateRateText, generateReceiveText } from '../utils';
-import { RampType } from '@portkey-wallet/ramp';
-import { IGetBuyDetail, IGetSellDetail, getBuyDetail, getSellDetail } from '@portkey-wallet/utils/ramp';
+import { ITransDirectEnum, RampType } from '@portkey-wallet/ramp';
+import { IGetBuyDetail, IGetSellDetail, getBuyDetail, getOrderNo, getSellDetail } from '@portkey-wallet/utils/ramp';
 import { handleErrorMessage } from '@portkey-wallet/utils';
+import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
 
 export default function Preview() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
-  // const state = initPreviewData;
   const { isPrompt } = useCommonState();
   const updateRef = useRef(MAX_UPDATE_TIME);
   const [receive, setReceive] = useState('1');
   const [rate, setRate] = useState('1');
   const { setLoading } = useLoading();
   const wallet = useCurrentWalletInfo();
-  const { buyConfig } = useCurrentNetworkInfo();
-  const { refreshBuyButton } = useExtensionBuyButtonShow();
+  const { refreshRampShow } = useRampEntryShow();
 
-  const [providerList, setProviderList] = useState<IGetBuyDetail[] | IGetSellDetail[]>([]);
+  const [providerList, setProviderList] = useState<Array<IGetBuyDetail | IGetSellDetail>>([]);
   const [providerSelected, setProviderSelected] = useState<IGetBuyDetail | IGetSellDetail>(InitProviderSelected);
 
   const data = useMemo(() => ({ ...initPreviewData, ...state }), [state]);
-  // const data = useMemo(() => ({ ...initPreviewData }), []);
   const showRateText = useMemo(() => generateRateText(data.crypto, rate, data.fiat), [data.crypto, data.fiat, rate]);
   const receiveText = useMemo(
     () => generateReceiveText(receive, data.side === RampType.BUY ? data.crypto : data.fiat),
     [data.crypto, data.fiat, data.side, receive],
   );
-  const apiUrl = useCurrentApiUrl();
-  const getAchTokenInfo = useGetAchTokenInfo();
 
   const onSwitchProvider = useCallback((provider: IGetBuyDetail | IGetSellDetail) => {
     setProviderSelected(provider);
@@ -65,35 +55,42 @@ export default function Preview() {
 
   const getRampDetail = useCallback(async () => {
     try {
+      let canUseProviders: Array<IGetBuyDetail | IGetSellDetail> = [];
       if (data.side === RampType.BUY) {
-        const canUseBuyProviders = await getBuyDetail({
+        canUseProviders = await getBuyDetail({
           network: state.network,
           crypto: state.crypto,
           fiat: state.fiat,
           country: state.country,
           fiatAmount: state.amount,
         });
-        setProviderList(canUseBuyProviders);
-        setProviderSelected(canUseBuyProviders[0]);
-        setReceive(canUseBuyProviders[0].cryptoAmount);
-        setRate(canUseBuyProviders[0].exchange);
-        return;
+      } else {
+        canUseProviders = await getSellDetail({
+          network: state.network,
+          crypto: state.crypto,
+          fiat: state.fiat,
+          country: state.country,
+          cryptoAmount: state.amount,
+        });
       }
-      const canUseSellProviders = await getSellDetail({
-        network: state.network,
-        crypto: state.crypto,
-        fiat: state.fiat,
-        country: state.country,
-        cryptoAmount: state.amount,
-      });
-      setProviderList(canUseSellProviders);
-      setProviderSelected(canUseSellProviders[0]);
-      setReceive(canUseSellProviders[0].fiatAmount);
-      setRate(canUseSellProviders[0].exchange);
+
+      setProviderList(canUseProviders);
+      const providerSelectedExit = canUseProviders.filter((item) => item.thirdPart === providerSelected.thirdPart);
+
+      if (providerSelectedExit.length === 0) {
+        // providerSelected not exit
+        setProviderSelected(canUseProviders[0]);
+        setReceive(canUseProviders[0].amount);
+        setRate(canUseProviders[0].exchange);
+      } else {
+        setProviderSelected(providerSelectedExit[0]);
+        setReceive(providerSelectedExit[0].amount);
+        setRate(providerSelectedExit[0].exchange);
+      }
     } catch (error) {
       message.error(handleErrorMessage(error));
     }
-  }, [data.side, state.amount, state.country, state.crypto, state.fiat, state.network]);
+  }, [data.side, providerSelected.thirdPart, state.amount, state.country, state.crypto, state.fiat, state.network]);
 
   useEffect(() => {
     getRampDetail();
@@ -103,7 +100,7 @@ export default function Preview() {
     const timer = setInterval(() => {
       --updateRef.current;
       if (updateRef.current === 0) {
-        // updateReceive();
+        getRampDetail();
         updateRef.current = MAX_UPDATE_TIME;
       }
     }, 1000);
@@ -116,9 +113,7 @@ export default function Preview() {
   const goPayPage = useCallback(async () => {
     const { side } = data;
     setLoading(true);
-    const result = await refreshBuyButton();
-    const isBuySectionShow = result.isBuySectionShow;
-    const isSellSectionShow = result.isSellSectionShow;
+    const { isBuySectionShow, isSellSectionShow } = await refreshRampShow();
     // Compatible with the situation where the function is turned off when the user is on the page.
     if ((side === RampType.BUY && !isBuySectionShow) || (side === RampType.SELL && !isSellSectionShow)) {
       setLoading(false);
@@ -126,17 +121,18 @@ export default function Preview() {
       return navigate('/');
     }
 
-    const appId = buyConfig?.ach?.appId;
-    const baseUrl = buyConfig?.ach?.baseUrl;
+    const appId = providerSelected.providerInfo.appId;
+    const baseUrl = providerSelected.providerInfo.baseUrl;
+    const callbackUrl = providerSelected.providerInfo.callbackUrl;
     if (!appId || !baseUrl) return setLoading(false);
     try {
       const { network, country, fiat, amount, crypto } = data;
       let achUrl = `${baseUrl}/?crypto=${crypto}&network=${network}&country=${country}&fiat=${fiat}&appId=${appId}&callbackUrl=${encodeURIComponent(
-        `${apiUrl}${paymentApi.updateAchOrder}`,
+        `${callbackUrl}`,
       )}`;
 
-      const orderNo = await getPaymentOrderNo({
-        transDirect: side === 'BUY' ? TransDirectEnum.TOKEN_BUY : TransDirectEnum.TOKEN_SELL,
+      const orderNo = await getOrderNo({
+        transDirect: side === RampType.BUY ? ITransDirectEnum.TOKEN_BUY : ITransDirectEnum.TOKEN_SELL,
         merchantName: ACH_MERCHANT_NAME,
       });
       achUrl += `&merchantOrderNo=${orderNo}`;
@@ -144,13 +140,13 @@ export default function Preview() {
       if (side === RampType.BUY) {
         achUrl += `&type=buy&fiatAmount=${amount}`;
 
-        const achTokenInfo = await getAchTokenInfo();
+        const achTokenInfo = { token: '' }; // TODO
         if (achTokenInfo !== undefined) {
           achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
         }
 
         const address = wallet?.AELF?.caAddress || '';
-        const signature = await getAchSignature({ address });
+        const signature = address; // TODO
         achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
       } else {
         const withdrawUrl = encodeURIComponent(
@@ -174,13 +170,12 @@ export default function Preview() {
       setLoading(false);
     }
   }, [
-    apiUrl,
-    buyConfig?.ach?.appId,
-    buyConfig?.ach?.baseUrl,
     data,
-    getAchTokenInfo,
     navigate,
-    refreshBuyButton,
+    providerSelected.providerInfo.appId,
+    providerSelected.providerInfo.baseUrl,
+    providerSelected.providerInfo.callbackUrl,
+    refreshRampShow,
     setLoading,
     wallet?.AELF?.caAddress,
   ]);

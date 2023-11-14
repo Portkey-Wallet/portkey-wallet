@@ -16,7 +16,7 @@ import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
 import { useLoading } from 'store/Provider/hooks';
 import { Button, message } from 'antd';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/payment';
+import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useNavigate } from 'react-router';
 import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { generateRateText } from 'pages/Buy/utils';

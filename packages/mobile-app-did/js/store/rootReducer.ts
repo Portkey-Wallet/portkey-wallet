@@ -14,7 +14,6 @@ import { tokenManagementSlice } from '@portkey-wallet/store/store-ca/tokenManage
 
 import { activitySlice } from '@portkey-wallet/store/store-ca/activity/slice';
 import { guardiansSlice } from '@portkey-wallet/store/store-ca/guardians/slice';
-import { paymentSlice } from '@portkey-wallet/store/store-ca/payment/slice';
 import { discoverSlice } from '@portkey-wallet/store/store-ca/discover/slice';
 import { miscSlice } from '@portkey-wallet/store/store-ca/misc/slice';
 import { dappSlice } from '@portkey-wallet/store/store-ca/dapp/slice';
@@ -58,7 +57,6 @@ const rootReducer = combineReducers({
   [assetsSlice.name]: assetsSlice.reducer,
   [activitySlice.name]: activitySlice.reducer,
   [tokenManagementSlice.name]: tokenManagementSlice.reducer,
-  [paymentSlice.name]: paymentSlice.reducer,
   [dappSlice.name]: dappSlice.reducer,
   [cmsSlice.name]: cmsSlice.reducer,
   [userSlice.name]: userReducer,

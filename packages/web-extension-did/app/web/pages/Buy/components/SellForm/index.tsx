@@ -18,7 +18,7 @@ import { useLoading } from 'store/Provider/hooks';
 import { useEffectOnce } from 'react-use';
 import { Button, message } from 'antd';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/payment';
+import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useNavigate } from 'react-router';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';

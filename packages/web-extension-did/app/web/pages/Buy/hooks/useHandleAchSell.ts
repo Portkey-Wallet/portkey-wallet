@@ -1,9 +1,6 @@
-import { ACH_MERCHANT_NAME } from '@portkey-wallet/constants/constants-ca/payment';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useSellTransfer } from '@portkey-wallet/hooks/hooks-ca/payment';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { AchTxAddressReceivedType } from '@portkey-wallet/types/types-ca/payment';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { message } from 'antd';
 import { useCallback, useMemo } from 'react';
@@ -16,10 +13,11 @@ import getTransactionRaw from 'utils/sandboxUtil/getTransactionRaw';
 import AElf from 'aelf-sdk';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import SparkMD5 from 'spark-md5';
+import ramp, { IOrderInfo } from '@portkey-wallet/ramp';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
-  const sellTransfer = useSellTransfer();
+  const sellTransfer = ramp.transferCrypto;
 
   const { accountToken } = useAssets();
   const aelfToken = useMemo(
@@ -31,7 +29,7 @@ export const useHandleAchSell = () => {
   const currentNetwork = useCurrentNetworkInfo();
 
   const paymentSellTransfer = useCallback(
-    async (params: AchTxAddressReceivedType) => {
+    async (params: IOrderInfo) => {
       if (!chainInfo) throw new Error('Sell Transfer: No ChainInfo');
 
       const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
@@ -79,11 +77,7 @@ export const useHandleAchSell = () => {
     async (orderId: string) => {
       try {
         setLoading(true, 'Payment is being processed and may take around 10 seconds to complete.');
-        await sellTransfer({
-          merchantName: ACH_MERCHANT_NAME,
-          orderId,
-          paymentSellTransfer,
-        });
+        await sellTransfer(orderId, paymentSellTransfer);
         message.success('Transaction completed.');
       } catch (error: any) {
         if (error?.code === 'TIMEOUT') {

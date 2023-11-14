@@ -663,6 +663,8 @@ PODS:
     - React-Core
   - RNCAsyncStorage (1.17.10):
     - React-Core
+  - RNDeviceInfo (10.11.0):
+    - React-Core
   - RNFastImage (8.6.3):
     - React-Core
     - SDWebImage (~> 5.11.1)
@@ -877,6 +879,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
@@ -1094,6 +1097,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@invertase/react-native-apple-authentication"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFastImage:
     :path: "../node_modules/react-native-fast-image"
   RNFBAnalytics:
@@ -1250,6 +1255,7 @@ SPEC CHECKSUMS:
   ReactCommon: 1e783348b9aa73ae68236271df972ba898560a95
   RNAppleAuthentication: 0571c08da8c327ae2afc0261b48b4a515b0286a6
   RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
+  RNDeviceInfo: bf8a32acbcb875f568217285d1793b0e8588c974
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNFBAnalytics: 468af995e05d72cd13dae34262514b2b41ea48ba
   RNFBApp: 5e457a31687a849c91ca96af024ec90e2cdb9e6c

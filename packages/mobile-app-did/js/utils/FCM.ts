@@ -4,6 +4,8 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import { PermissionsAndroid, Platform } from 'react-native';
 
 import { copyText } from 'utils';
+import { getDeviceInfo } from './deviceInfo';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export const requestUserPermission = async () => {
   // iOS permission
@@ -29,21 +31,33 @@ export const requestUserPermission = async () => {
   return androidResult;
 };
 
-export const getFCMToken = async (refresh: boolean) => {
+export const getFCMToken = async (refresh?: boolean): Promise<string> => {
   try {
     // Usage of "messaging().registerDeviceForRemoteMessages()" is not required. You only need to register if auto-registration is disabled in your 'firebase.json' configuration file via the 'messaging_ios_auto_register_for_remote_messages' property.
     // const result = await messaging().registerDeviceForRemoteMessages();
     // console.log('result', result);
-
     if (refresh) await messaging().deleteToken();
     const token = await messaging().getToken();
-    console.log('token', token);
-    alert(token);
+    console.log('fcm token', token);
 
-    if (__DEV__) await copyText(token);
+    if (__DEV__) {
+      alert(token);
+      await copyText(token);
+    }
     // save the token to the db
     return token;
   } catch (error) {
     console.log('getFCMToken error', error);
+    return '';
   }
+};
+
+export const initFCMSignalR = async () => {
+  const deviceInfo = await getDeviceInfo();
+
+  signalrFCM.init({
+    deviceInfo,
+    deviceId: deviceInfo.deviceId,
+    getFCMTokenFunc: getFCMToken,
+  });
 };

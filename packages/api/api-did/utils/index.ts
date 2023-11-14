@@ -49,7 +49,7 @@ export function setRefreshTokenConfig({
   const pubkey = (account.keyPair as any).getPublic('hex');
   const ca_hash = caHash;
 
-  request.setRefreshTokenConfig({
+  return request.setRefreshTokenConfig({
     grant_type: 'signature',
     client_id: 'CAServer_App',
     scope: 'CAServer',

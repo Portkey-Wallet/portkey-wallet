@@ -9,6 +9,7 @@ export type IRampServiceCommon<T> = Promise<{
   code: string;
   message: string;
   data: T;
+  success: boolean;
 }>;
 
 export type IRampInfoResult = {
@@ -174,7 +175,7 @@ export type IGetSellTransactionRequest = {
 };
 
 export type IGetOrderNoResult = {
-  id: string;
+  orderId: string;
 };
 
 export type IGetAchPayTokenRequest = {

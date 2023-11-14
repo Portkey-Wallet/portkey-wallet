@@ -171,7 +171,7 @@ export class Ramp extends BaseRamp {
         case IRampProviderType.AlchemyPay:
           this.setProvider(
             new AlchemyPayProvider({
-              providerInfo: { key: IRampProviderType.AlchemyPay, ...thirdPart.AlchemyPay },
+              providerInfo: { key: IRampProviderType.AlchemyPay, ...thirdPart.Alchemy },
               service: new AlchemyPayRampService({
                 request: this.request,
                 baseUrl: this.baseUrl,
@@ -184,7 +184,7 @@ export class Ramp extends BaseRamp {
         case IRampProviderType.Transak:
           this.setProvider(
             new TransakProvider({
-              providerInfo: { key: IRampProviderType.Transak, ...thirdPart.AlchemyPay },
+              providerInfo: { key: IRampProviderType.Transak, ...thirdPart.Transak },
               service: new RampService({
                 request: this.request,
                 baseUrl: this.baseUrl,

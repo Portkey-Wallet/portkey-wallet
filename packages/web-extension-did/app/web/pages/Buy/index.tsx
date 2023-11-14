@@ -24,14 +24,13 @@ export default function Buy() {
   const { state } = useLocation();
   const { isPrompt } = useCommonState();
 
-  const [page, setPage] = useState<RampType>(RampType.BUY);
+  const [page, setPage] = useState<RampType>(state?.side || RampType.BUY);
 
   const { isBuySectionShow, isSellSectionShow, refreshRampShow } = useRampEntryShow();
 
   useFetchTxFee();
 
   useEffectOnce(() => {
-    // TODO token detail
     if (!isBuySectionShow && isSellSectionShow) {
       const side = RampType.SELL;
       setPage(side);

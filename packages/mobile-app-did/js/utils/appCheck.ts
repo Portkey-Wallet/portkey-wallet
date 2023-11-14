@@ -1,7 +1,7 @@
 import { firebase } from '@react-native-firebase/app-check';
 import { copyText } from 'utils';
 
-export const getAppCheckToken = async (forceRefresh?: boolean): Promise<string> => {
+export const getAppCheckToken = (forceRefresh?: boolean): Promise<string> => {
   return new Promise<string>((resolve, reject) => {
     const timeout = setTimeout(() => {
       reject(new Error('getAppCheckToken timeout'));

@@ -138,6 +138,24 @@ export default function GuardianApproval() {
   }, [approvalType]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
   const registerAccount = useCallback(() => {
+    console.log(
+      {
+        managerInfo: {
+          verificationType: VerificationType.communityRecovery,
+          loginAccount,
+          type: loginType,
+        } as ManagerInfo,
+        guardiansApproved: handleGuardiansApproved(
+          guardiansStatus as GuardiansStatus,
+          userGuardiansList as UserGuardianItem[],
+        ) as GuardiansApproved,
+        verifierInfo,
+      },
+      guardiansStatus,
+      userGuardiansList,
+      '=====registerAccount',
+    );
+
     onRequestOrSetPin({
       managerInfo: {
         verificationType: VerificationType.communityRecovery,
@@ -156,6 +174,7 @@ export default function GuardianApproval() {
     if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
     Loading.show({ text: t('Processing on the chain...') });
     try {
+      // o != origin
       const caContract = await getCurrentCAContract();
       const req = await addGuardian(
         caContract,

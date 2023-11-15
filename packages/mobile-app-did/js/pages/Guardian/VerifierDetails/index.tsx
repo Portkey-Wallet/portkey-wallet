@@ -25,7 +25,7 @@ import myEvents from 'utils/deviceEvent';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { setLoginAccount } from 'utils/guardian';
-import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
+import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
 import { GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
@@ -33,12 +33,14 @@ import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
 import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { handleGuardiansApproved } from 'utils/login';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
   requestCodeResult?: { verifierSessionId: string };
   startResend?: boolean;
   verificationType?: VerificationType;
+  autoLogin?: boolean;
 };
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -64,9 +66,9 @@ export default function VerifierDetails() {
     requestCodeResult: paramsRequestCodeResult,
     startResend,
     verificationType,
+    autoLogin,
   } = useRouterParams<RouterParams>();
   const originChainId = useOriginChainId();
-
   const countdown = useRef<VerifierCountdownInterface>();
   useEffectOnce(() => {
     if (!startResend) countdown.current?.resetTime(60);
@@ -109,6 +111,32 @@ export default function VerifierDetails() {
   const operationType: OperationTypeEnum = useMemo(
     () => VERIFICATION_TO_OPERATION_MAP[verificationType as VerificationType] || OperationTypeEnum.unknown,
     [verificationType],
+  );
+
+  const registerAccount = useCallback(
+    ({
+      verifierInfo,
+      requestCodeResult,
+    }: {
+      verifierInfo: VerifierInfo;
+      requestCodeResult?: {
+        verifierSessionId: string;
+      };
+    }) => {
+      const key = guardianItem?.key as string;
+      onRequestOrSetPin({
+        managerInfo: {
+          verificationType: VerificationType.communityRecovery,
+          loginAccount: guardianItem?.guardianAccount,
+          type: guardianItem?.guardianType,
+        } as ManagerInfo,
+        guardiansApproved: handleGuardiansApproved(
+          { [key]: { status: VerifyStatus.Verified, verifierInfo, requestCodeResult } },
+          userGuardiansList as UserGuardianItem[],
+        ) as GuardiansApproved,
+      });
+    },
+    [],
   );
 
   const onFinish = useLockCallback(

@@ -25,7 +25,7 @@ export function handleUserGuardiansList(
     return {
       ...item,
       guardianAccount: item.guardianIdentifier || item.identifierHash,
-      guardianType: LoginType[item.type as any],
+      guardianType: LoginType[item.type as any] as unknown as LoginType,
       key: `${item.guardianIdentifier}&${item.verifierId}`,
       verifier: Array.isArray(verifierServers)
         ? verifierServers.find(verifierItem => verifierItem.id === item.verifierId)

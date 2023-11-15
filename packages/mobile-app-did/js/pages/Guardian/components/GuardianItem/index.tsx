@@ -33,8 +33,7 @@ import { PRIVATE_GUARDIAN_ACCOUNT } from '@portkey-wallet/constants/constants-ca
 import myEvents from 'utils/deviceEvent';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { APPROVAL_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
-
-export const AuthTypes = [LoginType.Apple, LoginType.Google];
+import { AuthTypes } from 'constants/guardian';
 
 const APPROVAL_TO_VERIFICATION_MAP = {
   [ApprovalType.addGuardian]: VerificationType.addGuardianByApprove,

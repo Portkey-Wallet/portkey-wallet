@@ -56,6 +56,7 @@ import { Text } from 'react-native';
 import { TextL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { AuthTypes } from 'constants/guardian';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -229,7 +230,35 @@ export function useGoGuardianApproval(isLogin?: boolean) {
       userGuardiansList?: any;
       authenticationInfo?: AuthenticationInfo;
     }) => {
-      const onConfirm = () => {
+      const onConfirm = async () => {
+        console.log(userGuardiansList, '====userGuardiansList');
+
+        if (userGuardiansList?.length === 10) {
+          const guardianItem = userGuardiansList[0];
+          const guardianInfo = { guardianItem, verificationType: VerificationType.communityRecovery };
+          if (AuthTypes.includes(guardianItem.guardianType)) {
+          } else {
+            const req = await verification.sendVerificationCode({
+              params: {
+                type: LoginType[guardianItem.guardianType],
+                guardianIdentifier: guardianItem.guardianAccount,
+                verifierId: guardianItem.verifier?.id,
+                chainId: originChainId,
+                operationType: OperationTypeEnum.communityRecovery,
+              },
+            });
+            if (req.verifierSessionId) {
+              Loading.hide();
+              await sleep(200);
+              dispatch(setOriginChainId(originChainId));
+              return navigationService.push('VerifierDetails', {
+                autoLogin: true,
+                ...guardianInfo,
+                requestCodeResult: req,
+              });
+            }
+          }
+        }
         dispatch(setOriginChainId(originChainId));
         navigationService.navigate('GuardianApproval', {
           loginAccount,
@@ -461,7 +490,8 @@ export function useOnLogin(isLogin?: boolean) {
         }
 
         const holderInfo = await getGuardiansInfo({ guardianIdentifier: loginAccount }, chainInfo);
-        if (holderInfo?.guardianAccounts || holderInfo?.guardianList) {
+        const { guardianList, guardianAccounts } = holderInfo || {};
+        if (guardianAccounts || guardianList) {
           goGuardianApproval({
             originChainId,
             loginAccount,

@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import Svg from 'components/Svg';
-import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
+import { View, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
@@ -13,6 +13,7 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import navigationService from 'utils/navigationService';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
+import Touchable from 'components/Touchable';
 
 type BridgeButtonPropsType = {
   wrapStyle?: StyleProp<ViewProps>;
@@ -40,9 +41,9 @@ const BridgeButton = (props: BridgeButtonPropsType) => {
 
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
-      <TouchableOpacity style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]} onPress={onPressButton}>
+      <Touchable style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]} onPress={onPressButton}>
         <Svg icon="eBridge" size={pTd(46)} />
-      </TouchableOpacity>
+      </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, commonButtonStyle.dashBoardTitleColorStyle]}>
         {t('Bridge')}
       </TextM>

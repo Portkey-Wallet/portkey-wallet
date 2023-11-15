@@ -45,6 +45,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
+import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -92,13 +93,25 @@ export default function GuardianApproval() {
 
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
 
+  const getVerifierServers = useGetVerifierServers();
+  const refreshGuardiansList = useRefreshGuardiansList();
+  const initGuardian = useCallback(async () => {
+    try {
+      await getVerifierServers();
+      refreshGuardiansList();
+    } catch (error) {
+      console.log(error, 'GuardianApprove initGuardian ==error');
+    }
+  }, [getVerifierServers, refreshGuardiansList]);
+
+  const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
+
   useEffectOnce(() => {
+    initGuardian();
     return () => {
       lastOnEmitDapp.current();
     };
   });
-
-  const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
 
   const userGuardiansList = useMemo(() => {
     if (paramUserGuardiansList) return paramUserGuardiansList;
@@ -455,7 +468,14 @@ export default function GuardianApproval() {
           </View>
         </View>
       </View>
-      {!isExpired && <CommonButton onPress={onFinish} disabled={!isSuccess} type="primary" title={'Confirm'} />}
+      {!isExpired && (
+        <CommonButton
+          onPress={onFinish}
+          disabled={!isSuccess || guardianCount === 0}
+          type="primary"
+          title={'Confirm'}
+        />
+      )}
     </PageContainer>
   );
 }

@@ -9,6 +9,7 @@ import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { commonButtonStyle } from '../SendButton/style';
+import Touchable from 'components/Touchable';
 
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
@@ -30,14 +31,14 @@ const BuyButton = (props: SendButtonType) => {
 
   return (
     <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
-      <TouchableOpacity
+      <Touchable
         style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={async () => {
           if (!isMainnet) return;
           navigationService.navigate('BuyHome');
         }}>
         <Svg icon={themeType === 'dashBoard' ? 'buy' : 'buy1'} size={pTd(46)} />
-      </TouchableOpacity>
+      </Touchable>
       <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Buy')}</TextM>
     </View>
   );

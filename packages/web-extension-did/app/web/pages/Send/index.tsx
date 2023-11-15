@@ -202,6 +202,8 @@ export default function Send() {
     try {
       setLoading(true);
       if (!ZERO.plus(amount).toNumber()) return 'Please input amount';
+      if (!balance) return TransactionError.TOKEN_NOT_ENOUGH;
+
       const _isManagerSynced = await checkManagerSyncState(state.chainId);
       if (!_isManagerSynced) {
         return 'Synchronizing on-chain account information...';

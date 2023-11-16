@@ -34,7 +34,7 @@ export async function setupAppCheck() {
   await appCheckProvider.configure({
     android: {
       provider: __DEV__ ? 'debug' : 'playIntegrity',
-      debugToken: '21214D7B-5841-48EE-931D-90E6A02B2EB3',
+      debugToken: Config.ANDROID_APP_CHECK_DEBUG_KEY || '',
     },
     apple: {
       // TODO: change provider type

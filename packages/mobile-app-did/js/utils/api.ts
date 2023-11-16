@@ -40,10 +40,10 @@ class MobileVerification extends Verification {
               acToken: appCheckToken || '',
             };
 
-            const request1 = await request.verify.sendVerificationRequest(config);
-            await this.set(key, { ...request1, time: Date.now() });
+            const responseByAppCheck = await request.verify.sendVerificationRequest(config);
+            await this.set(key, { ...responseByAppCheck, time: Date.now() });
 
-            return request1;
+            return responseByAppCheck;
           } catch (err) {
             // google  human-machine verification
             // TODO: add language
@@ -53,9 +53,9 @@ class MobileVerification extends Verification {
               reCaptchaToken: reCaptchaToken as string,
             };
 
-            const request2 = await request.verify.sendVerificationRequest(config);
-            await this.set(key, { ...request2, time: Date.now() });
-            return request2;
+            const responseByCaptchaToken = await request.verify.sendVerificationRequest(config);
+            await this.set(key, { ...responseByCaptchaToken, time: Date.now() });
+            return responseByCaptchaToken;
           }
         }
 

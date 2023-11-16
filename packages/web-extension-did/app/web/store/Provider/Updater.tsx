@@ -6,7 +6,6 @@ import { useChainListFetch } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCaInfoOnChain } from 'hooks/useCaInfoOnChain';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useRefreshTokenConfig } from '@portkey-wallet/hooks/hooks-ca/api';
-import { useUserInfo } from './hooks';
 import { request } from '@portkey-wallet/api/api-did';
 import useLocking from 'hooks/useLocking';
 import { useActiveLockStatus } from 'hooks/useActiveLockStatus';
@@ -26,6 +25,7 @@ import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
 import { useInitRamp } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { getPin } from 'utils/lib/serviceWorkerAction';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -33,7 +33,6 @@ request.setExceptionManager(exceptionManager);
 export default function Updater() {
   const onLocking = useLocking();
   const { pathname } = useLocation();
-  const { passwordSeed } = useUserInfo();
   const checkManagerOnLogout = useCheckManagerOnLogout();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
@@ -62,9 +61,10 @@ export default function Updater() {
   useChainListFetch();
 
   const initRamp = useInitRamp({ clientType: 'Extension' });
-  const refreshToken = useRefreshTokenConfig(passwordSeed);
+  const refreshToken = useRefreshTokenConfig();
   useMemo(async () => {
-    await refreshToken();
+    const pin = await getPin();
+    await refreshToken(pin);
     await initRamp();
   }, [initRamp, refreshToken]);
 

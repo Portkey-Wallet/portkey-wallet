@@ -18,12 +18,14 @@ export const initialRampState: IRampStateType = {
     symbol: '',
     amount: '',
     network: '',
+    chainId: 'AELF',
   },
   sellCryptoList: [],
   sellDefaultCrypto: {
     symbol: '',
     amount: '',
     network: '',
+    chainId: 'AELF',
   },
   sellDefaultFiatList: [],
   sellDefaultFiat: {

@@ -98,6 +98,9 @@ export class RampService implements IRampService {
       url: RampApi.getRampDetail.target,
       method: RampApi.getRampDetail.config.method,
       params: { type: RampType.BUY, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   getSellCryptoData(params?: IGetCryptoDataRequest): IRampServiceCommon<IRampCryptoResult> {
@@ -140,6 +143,9 @@ export class RampService implements IRampService {
       url: RampApi.getRampDetail.target,
       method: RampApi.getRampDetail.config.method,
       params: { type: RampType.SELL, ...params },
+      headers: {
+        'Client-Type': this.clientType,
+      },
     });
   }
   sendSellTransaction(params: IGetSellTransactionRequest): IRampServiceCommon<any> {

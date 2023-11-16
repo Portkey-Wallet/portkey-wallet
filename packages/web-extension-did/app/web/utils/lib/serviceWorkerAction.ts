@@ -3,7 +3,7 @@ import { ISocialLogin } from '@portkey-wallet/types/types-ca/wallet';
 import { sleep } from '@portkey-wallet/utils';
 import { message } from 'antd';
 import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import InternalMessageTypes, { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useCallback } from 'react';
 import { CloseParams } from 'service/NotificationService';
 import { CreatePromptType, ReCaptchaResponseParams, SendResponseParams } from 'types';
@@ -55,4 +55,10 @@ export const reCAPTCHAAction = async (): Promise<ReCaptchaResponseParams> => {
   return await InternalMessage.payload(PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE, {
     externalLink: `${RECAPTCHA_URL}`,
   }).send();
+};
+
+export const getPin = async () => {
+  const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
+  const pin = getSeedResult.data.privateKey;
+  return pin;
 };

@@ -61,3 +61,13 @@ export function useGetChainInfo() {
     [currentChainList, dispatch],
   );
 }
+
+export function useGetChain() {
+  const currentChainList = useCurrentChainList();
+  return useCallback(
+    (chainId?: ChainId) => {
+      return currentChainList?.find(chain => chain.chainId === chainId);
+    },
+    [currentChainList],
+  );
+}

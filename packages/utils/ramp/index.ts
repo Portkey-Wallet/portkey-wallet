@@ -9,7 +9,6 @@ import ramp, {
   IGetSellPriceRequest,
   IGetSellDetailRequest,
   IGetSellTransactionRequest,
-  IGetOrderNoRequest,
   ISellProviderPrice,
   IBuyProviderPrice,
 } from '@portkey-wallet/ramp';
@@ -106,7 +105,7 @@ export const getBuyDetail = async (params: IGetBuyDetailRequest) => {
   const providersList: IGetBuyDetail[] = [];
   resultList.forEach(item => {
     const provider = ramp.getProvider(item.thirdPart);
-    if (!provider) return;
+    if (!provider) throw new Error('Failed to get ramp provider');
     providersList.push({
       ...item,
       amount: item.cryptoAmount,
@@ -212,7 +211,7 @@ export const getSellDetail = async (params: IGetSellDetailRequest) => {
   const providersList: IGetSellDetail[] = [];
   resultList.forEach(item => {
     const provider = ramp.getProvider(item.thirdPart);
-    if (!provider) return;
+    if (!provider) throw new Error('Failed to get ramp provider');
     providersList.push({
       ...item,
       amount: item.fiatAmount,
@@ -225,19 +224,4 @@ export const getSellDetail = async (params: IGetSellDetailRequest) => {
 
 export const sendSellTransaction = async (params: IGetSellTransactionRequest) => {
   await ramp.service.sendSellTransaction(params);
-};
-
-export const getOrderNo = async (params: IGetOrderNoRequest) => {
-  const {
-    data: { orderId },
-    code,
-    message,
-    success,
-  } = await ramp.service.getOrderNo(params);
-
-  if (!success || code.substring(0, 1) !== '2') {
-    throw new Error(message);
-  }
-
-  return orderId;
 };

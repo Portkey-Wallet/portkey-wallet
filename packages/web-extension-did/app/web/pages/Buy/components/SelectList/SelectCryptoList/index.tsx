@@ -70,7 +70,7 @@ export default function SelectCryptoList({
             <CustomSvg type="elf-icon" />
             <div className="flex-column text">
               <div>{crypto.symbol}</div>
-              <div className="chain">{transNetworkText(crypto.network?.split('-')[1], !isMainNet)}</div>
+              <div className="chain">{transNetworkText(crypto.chainId, !isMainNet)}</div>
             </div>
           </div>
         ))}

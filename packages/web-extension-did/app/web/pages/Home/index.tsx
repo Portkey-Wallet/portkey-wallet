@@ -13,6 +13,7 @@ import { useEffectOnce } from 'react-use';
 import { getStoreState } from 'store/utils/getStore';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import initIm from 'hooks/im';
+import { sleep } from '@portkey-wallet/utils';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -36,6 +37,10 @@ export default function Home() {
       if (detail && method === walletMessage.ACH_SELL_REDIRECT && !locked && isSell.current === 0) {
         history.replaceState(null, '', location.pathname);
         isSell.current = 1;
+
+        // wait ramp init
+        await sleep(2000);
+
         await handleAchSell(detail);
       }
     }

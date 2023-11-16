@@ -17,7 +17,6 @@ import ramp, { IOrderInfo } from '@portkey-wallet/ramp';
 
 export const useHandleAchSell = () => {
   const { setLoading } = useLoading();
-  const sellTransfer = ramp.transferCrypto;
 
   const { accountToken } = useAssets();
   const aelfToken = useMemo(
@@ -77,7 +76,7 @@ export const useHandleAchSell = () => {
     async (orderId: string) => {
       try {
         setLoading(true, 'Payment is being processed and may take around 10 seconds to complete.');
-        await sellTransfer(orderId, paymentSellTransfer);
+        await ramp.transferCrypto(orderId, paymentSellTransfer);
         message.success('Transaction completed.');
       } catch (error: any) {
         if (error?.code === 'TIMEOUT') {
@@ -89,6 +88,6 @@ export const useHandleAchSell = () => {
         setLoading(false);
       }
     },
-    [paymentSellTransfer, sellTransfer, setLoading],
+    [paymentSellTransfer, setLoading],
   );
 };

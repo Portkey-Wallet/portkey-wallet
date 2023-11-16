@@ -15,10 +15,8 @@ import ExchangeRate from '../ExchangeRate';
 import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
 import { useLoading } from 'store/Provider/hooks';
 import { Button, message } from 'antd';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useLocation, useNavigate } from 'react-router';
-import { useFetchTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { generateRateText } from 'pages/Buy/utils';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import { getBuyCrypto } from '@portkey-wallet/utils/ramp';
@@ -43,7 +41,6 @@ export default function BuyForm() {
     () => defaultCryptoList.filter((item) => item.symbol === defaultCrypto && item.network === defaultNetwork),
     [defaultCrypto, defaultCryptoList, defaultNetwork],
   );
-  useFetchTxFee(); // TODO
 
   // pay
   const [fiatAmount, setFiatAmount] = useState<string>(defaultFiatAmount);
@@ -103,7 +100,7 @@ export default function BuyForm() {
           await updateBuyReceive();
         }
       } catch (error) {
-        message.error(handleErrorMessage(error));
+        console.log('handleFiatSelect error:', error);
       }
     },
     [updateBuyReceive],
@@ -118,7 +115,7 @@ export default function BuyForm() {
           await updateBuyReceive();
         }
       } catch (error) {
-        message.error(handleErrorMessage(error));
+        console.log('handleCryptoSelect error:', error);
       }
     },
     [updateBuyReceive],
@@ -152,7 +149,7 @@ export default function BuyForm() {
         },
       });
     } catch (error) {
-      message.error(handleErrorMessage(error));
+      console.log('go preview error:', error);
     } finally {
       setLoading(false);
     }

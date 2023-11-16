@@ -8,8 +8,6 @@ import { limitText, validValueCheck } from '../utils';
 import { IErrMsgHandlerParams } from '../types';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
-import { handleErrorMessage } from '@portkey-wallet/utils';
-import { message } from 'antd';
 
 interface IUpdateReceiveAndIntervalProps {
   cryptoSelectedRef: MutableRefObject<IRampCryptoItem>;
@@ -60,7 +58,7 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
           resetTimer();
         }
       } catch (error) {
-        message.error(handleErrorMessage(error));
+        console.log('updateBuyReceive error:', error);
       }
     };
 
@@ -92,7 +90,7 @@ export const useUpdateReceiveAndInterval = (type: RampType, params: IUpdateRecei
           resetTimer();
         }
       } catch (error) {
-        message.error(handleErrorMessage(error));
+        console.log('updateSellReceive error:', error);
       }
     };
 

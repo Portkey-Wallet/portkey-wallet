@@ -1,3 +1,4 @@
+import { ChainId } from '@portkey-wallet/types';
 import { IClientType, IRampProviderInfo, IRampRequest, IRequestConfig, ITransDirectEnum } from '.';
 import { IRampProviderType } from '..';
 
@@ -24,14 +25,16 @@ export type IRampCryptoItem = {
   symbol: string;
   icon: string;
   decimals: number;
-  network: string; // chain-chainId
+  network: string;
+  chainId: ChainId;
   address: string;
 };
 
 export type IRampCryptoDefault = {
   symbol: string;
   amount: string;
-  network: string; // chain-chainId
+  network: string;
+  chainId: ChainId;
 };
 
 export type IRampFiatItem = {
@@ -114,6 +117,7 @@ export type IProviderDetail = {
   cryptoAmount: string;
   exchange: string;
   feeInfo: IFeeInfo;
+  providerNetwork: string;
 };
 
 export type IBuyProviderDetail = Omit<IProviderDetail, 'fiatAmount'>;

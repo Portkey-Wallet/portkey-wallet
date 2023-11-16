@@ -1,9 +1,10 @@
 import { IRampProviderType, RampType } from '../constants';
-import { IAlchemyPayRampService, IRampService } from './services';
+import { IAlchemyPayRampService, IGetOrderNoRequest, IRampService } from './services';
 
 export interface IRampProvider {
   providerInfo: IRampProviderInfo;
   service: IRampService;
+  getOrderId(params: IGetOrderNoRequest): Promise<string>;
   createOrder(params: IRampProviderCreateOrderParams): Promise<IRampProviderCreateOrderResult>;
 }
 export interface IAlchemyPayProvider extends IRampProvider {
@@ -45,6 +46,36 @@ export type IRampProviderCreateOrderParams = {
   type: RampType;
   address: string;
   email?: string;
+  crypto: string;
+  network: string;
+  country: string;
+  fiat: string;
+  amount: string;
+  withdrawUrl?: string; // only for sell
 };
 
 export type IRampProviderCreateOrderResult = { orderId: string; url: string };
+
+export type AlchemyPayHandleOrderQuery = {
+  appId: string;
+  callbackUrl: string;
+  type: string;
+  network: string;
+  country: string;
+  fiat: string;
+  crypto: string;
+  merchantOrderNo: string;
+};
+
+export type AlchemyPayHandleBuyOrderQuery = AlchemyPayHandleOrderQuery & {
+  fiatAmount: string;
+  token?: string;
+  address?: string;
+  sign?: string;
+};
+
+export type AlchemyPayHandleSellOrderQuery = AlchemyPayHandleOrderQuery & {
+  cryptoAmount: string;
+  withdrawUrl: string;
+  source: string;
+};

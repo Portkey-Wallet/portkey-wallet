@@ -18,6 +18,7 @@ export const InitProviderSelected: IGetBuyDetail | IGetSellDetail = {
   exchange: '',
   fiatAmount: '',
   amount: '',
+  providerNetwork: '',
   feeInfo: {
     networkFee: {
       amount: '',

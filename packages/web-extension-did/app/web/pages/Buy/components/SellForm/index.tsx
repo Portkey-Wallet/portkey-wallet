@@ -17,18 +17,17 @@ import { useUpdateReceiveAndInterval } from 'pages/Buy/hooks';
 import { useLoading } from 'store/Provider/hooks';
 import { useEffectOnce } from 'react-use';
 import { Button, message } from 'antd';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import { useLocation, useNavigate } from 'react-router';
 import { useAssets } from '@portkey-wallet/hooks/hooks-ca/assets';
-import { useCurrentChain, useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getBalance } from 'utils/sandboxUtil/getBalance';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useFetchTxFee, useGetOneTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import { generateRateText } from 'pages/Buy/utils';
 import { getSellFiat } from '@portkey-wallet/utils/ramp';
+import { useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 export default function SellFrom() {
   const { t } = useTranslation();
@@ -50,7 +49,7 @@ export default function SellFrom() {
     () => defaultFiatList.filter((item) => item.symbol === defaultFiat && item.country === defaultCountry),
     [defaultCountry, defaultFiat, defaultFiatList],
   );
-  useFetchTxFee(); // TODO
+  useFetchTxFee();
 
   // pay
   const [cryptoAmount, setCryptoAmount] = useState<string>(defaultCryptoAmount);
@@ -129,7 +128,7 @@ export default function SellFrom() {
           await updateSellReceive();
         }
       } catch (error) {
-        message.error(handleErrorMessage(error));
+        console.log('handleCryptoSelect error:', error);
       }
     },
     [updateSellReceive],
@@ -144,7 +143,7 @@ export default function SellFrom() {
           await updateSellReceive();
         }
       } catch (error) {
-        message.error(handleErrorMessage(error));
+        console.log('handleFiatSelect error:', error);
       }
     },
     [updateSellReceive],
@@ -155,11 +154,10 @@ export default function SellFrom() {
   const {
     accountToken: { accountTokenList },
   } = useAssets();
-  const currentChain = useCurrentChain('AELF'); // TODO
+  const getCurrentChain = useGetChain();
   const currentNetwork = useCurrentNetworkInfo();
-  const defaultToken = useDefaultToken('AELF'); // TODO
   const wallet = useCurrentWalletInfo();
-  const { ach: achFee } = useGetTxFee('AELF');
+  const getOneTxFee = useGetOneTxFee();
 
   const handleNext = useCallback(async () => {
     try {
@@ -173,6 +171,9 @@ export default function SellFrom() {
         return navigate('/');
       }
 
+      const chainId = cryptoSelectedRef.current.chainId;
+
+      const currentChain = getCurrentChain(chainId);
       if (!currentChain) return setLoading(false);
 
       const _isManagerSynced = await checkManagerSynced();
@@ -184,16 +185,18 @@ export default function SellFrom() {
         address: accountTokenList[0].tokenContractAddress || '',
         chainType: currentNetwork.walletType,
         paramsOption: {
-          owner: wallet['AELF']?.caAddress || '',
-          symbol: defaultToken.symbol,
+          owner: wallet[chainId]?.caAddress || '', // TODO
+          symbol: currentChain.defaultToken.symbol,
         },
       });
       setLoading(false);
       const balance = result.result.balance;
 
+      const achFee = getOneTxFee(chainId, 'MAIN');
+
       if (
-        ZERO.plus(divDecimals(balance, defaultToken.decimals)).isLessThanOrEqualTo(
-          ZERO.plus(achFee).plus(cryptoAmountRef.current),
+        ZERO.plus(divDecimals(balance, currentChain.defaultToken.decimals)).isLessThanOrEqualTo(
+          ZERO.plus(achFee.ach).plus(cryptoAmountRef.current),
         )
       ) {
         setInsufficientFundsMsg();
@@ -212,18 +215,16 @@ export default function SellFrom() {
         },
       });
     } catch (error) {
-      message.error(handleErrorMessage(error));
+      console.log('handleCryptoSelect error:', error);
     } finally {
       setLoading(false);
     }
   }, [
     accountTokenList,
-    achFee,
     checkManagerSynced,
-    currentChain,
     currentNetwork.walletType,
-    defaultToken.decimals,
-    defaultToken.symbol,
+    getCurrentChain,
+    getOneTxFee,
     navigate,
     refreshRampShow,
     setInsufficientFundsMsg,

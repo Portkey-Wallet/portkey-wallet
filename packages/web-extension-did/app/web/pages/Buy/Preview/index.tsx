@@ -6,13 +6,9 @@ import CustomSvg from 'components/CustomSvg';
 import { useLocation, useNavigate } from 'react-router';
 import { InitProviderSelected, MAX_UPDATE_TIME } from '../const';
 import { formatAmountShow } from '@portkey-wallet/utils/converter';
-import { useCommonState, useLoading } from 'store/Provider/hooks';
+import { useCommonState, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
-import {
-  ACH_MERCHANT_NAME,
-  DISCLAIMER_TEXT,
-  SERVICE_UNAVAILABLE_TEXT,
-} from '@portkey-wallet/constants/constants-ca/ramp';
+import { DISCLAIMER_TEXT, SERVICE_UNAVAILABLE_TEXT } from '@portkey-wallet/constants/constants-ca/ramp';
 import clsx from 'clsx';
 import CustomModal from 'pages/components/CustomModal';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
@@ -20,10 +16,10 @@ import './index.less';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { ACH_WITHDRAW_URL } from 'constants/index';
 import { generateRateText, generateReceiveText } from '../utils';
-import { ITransDirectEnum, RampType } from '@portkey-wallet/ramp';
-import { IGetBuyDetail, IGetSellDetail, getBuyDetail, getOrderNo, getSellDetail } from '@portkey-wallet/utils/ramp';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import ramp, { RampType } from '@portkey-wallet/ramp';
+import { IGetBuyDetail, IGetSellDetail, getBuyDetail, getSellDetail } from '@portkey-wallet/utils/ramp';
 import { useRampEntryShow } from '@portkey-wallet/hooks/hooks-ca/ramp';
+import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 
 export default function Preview() {
   const { t } = useTranslation();
@@ -92,7 +88,7 @@ export default function Preview() {
         setRate(providerSelectedExit[0].exchange);
       }
     } catch (error) {
-      message.error(handleErrorMessage(error));
+      console.log('getRampDetail error:', error);
     }
   }, [data.side, providerSelected?.thirdPart, state.amount, state.country, state.crypto, state.fiat, state.network]);
 
@@ -114,6 +110,8 @@ export default function Preview() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const { userGuardiansList } = useGuardiansInfo();
+
   const goPayPage = useCallback(async () => {
     if (!providerSelected?.providerInfo) return;
     const { side } = data;
@@ -126,43 +124,32 @@ export default function Preview() {
       return navigate('/');
     }
 
-    const appId = providerSelected.providerInfo.appId;
-    const baseUrl = providerSelected.providerInfo.baseUrl;
-    const callbackUrl = providerSelected.providerInfo.callbackUrl;
-    if (!appId || !baseUrl) return setLoading(false);
     try {
-      const { network, country, fiat, amount, crypto } = data;
-      let achUrl = `${baseUrl}/?crypto=${crypto}&network=${network}&country=${country}&fiat=${fiat}&appId=${appId}&callbackUrl=${encodeURIComponent(
-        `${callbackUrl}`,
-      )}`;
+      const provider = ramp.getProvider(providerSelected.providerInfo.key);
+      if (!provider) throw new Error('Failed to get ramp provider');
 
-      const orderNo = await getOrderNo({
-        transDirect: side === RampType.BUY ? ITransDirectEnum.TOKEN_BUY : ITransDirectEnum.TOKEN_SELL,
-        merchantName: ACH_MERCHANT_NAME,
-      });
-      achUrl += `&merchantOrderNo=${orderNo}`;
-
-      if (side === RampType.BUY) {
-        achUrl += `&type=buy&fiatAmount=${amount}`;
-
-        const achTokenInfo = { token: '' }; // TODO
-        if (achTokenInfo !== undefined) {
-          achUrl += `&token=${encodeURIComponent(achTokenInfo.token)}`;
-        }
-
-        const address = wallet?.AELF?.caAddress || '';
-        const signature = address; // TODO
-        achUrl += `&address=${address}&sign=${encodeURIComponent(signature)}`;
-      } else {
-        const withdrawUrl = encodeURIComponent(
-          ACH_WITHDRAW_URL + `&payload=${encodeURIComponent(JSON.stringify({ orderNo: orderNo }))}`,
-        );
-
-        achUrl += `&type=sell&cryptoAmount=${amount}&withdrawUrl=${withdrawUrl}&source=3#/sell-formUserInfo`;
+      if (userGuardiansList === undefined) {
+        throw new Error('userGuardiansList is undefined');
       }
+      const emailGuardian = userGuardiansList?.find(
+        (item) => item.guardianType === LoginType.Email && item.isLoginAccount,
+      );
 
-      console.log('achUrl', achUrl);
-      const openWinder = window.open(achUrl, '_blank');
+      const { country, fiat, amount, crypto } = data;
+      const { url } = await provider.createOrder({
+        type: side,
+        address: wallet?.AELF?.caAddress || '',
+        email: emailGuardian?.guardianAccount,
+        crypto: crypto,
+        network: providerSelected.providerNetwork,
+        country: country,
+        fiat: fiat,
+        amount: amount,
+        withdrawUrl: ACH_WITHDRAW_URL,
+      });
+
+      console.log('go to pay url: ', url);
+      const openWinder = window.open(url, '_blank');
       if (openWinder) {
         openWinder.opener = null;
       }
@@ -173,7 +160,16 @@ export default function Preview() {
     } finally {
       setLoading(false);
     }
-  }, [data, navigate, providerSelected?.providerInfo, refreshRampShow, setLoading, wallet?.AELF?.caAddress]);
+  }, [
+    data,
+    navigate,
+    providerSelected.providerInfo,
+    providerSelected.providerNetwork,
+    refreshRampShow,
+    setLoading,
+    userGuardiansList,
+    wallet?.AELF?.caAddress,
+  ]);
 
   const showDisclaimerTipModal = useCallback(() => {
     CustomModal({

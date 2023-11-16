@@ -13,7 +13,7 @@ export enum IRampProviderType {
   Transak = 'Transak',
 }
 
-export declare const DefaultRampListenList: readonly ['onRampOrderChanged'];
+export const DefaultRampListenList = ['onRampOrderChanged'];
 
 export const RAMP_SOCKET_TIMEOUT = 15 * 1000;
 

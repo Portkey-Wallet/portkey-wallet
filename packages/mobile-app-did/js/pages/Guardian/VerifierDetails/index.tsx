@@ -41,6 +41,7 @@ type RouterParams = {
   startResend?: boolean;
   verificationType?: VerificationType;
   targetChainId?: ChainId;
+  accelerateChainId?: ChainId;
 };
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
   const [first, last] = useMemo(() => {
@@ -67,6 +68,7 @@ export default function VerifierDetails() {
     startResend,
     verificationType,
     targetChainId,
+    accelerateChainId,
   } = useRouterParams<RouterParams>();
   const originChainId = useOriginChainId();
 
@@ -159,6 +161,7 @@ export default function VerifierDetails() {
                 guardianItem,
                 verifierInfo,
                 verifiedTime: Date.now(),
+                accelerateChainId,
               });
             }
             break;
@@ -194,6 +197,7 @@ export default function VerifierDetails() {
       onRequestOrSetPin,
       onSetLoginAccount,
       setGuardianStatus,
+      accelerateChainId,
     ],
   );
 

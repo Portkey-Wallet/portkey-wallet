@@ -62,8 +62,13 @@ export const useSecuritySafeCheckAndToast = (): ((fromChainId?: ChainId) => Prom
   return useLockCallback(
     async (fromChainId?: ChainId): Promise<boolean> => {
       // if fromChainId exit, use isOriginChainSafe to check, or use isTransferSafe & isSynchronizing
-      if (!caHash) return false;
-      return checkSecuritySafe(caHash, fromChainId && originChainId === fromChainId);
+      if (!caHash || !originChainId) return false;
+      if (!fromChainId) fromChainId = originChainId;
+      return checkSecuritySafe({
+        caHash,
+        originChainId,
+        accelerateChainId: fromChainId,
+      });
     },
     [caHash, originChainId],
   );

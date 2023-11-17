@@ -424,7 +424,7 @@ export default class DappMobileOperator extends Operator {
         // is safe
         try {
           const originChainId = await this.dappManager.getOriginChainId();
-          const isSafe = await this.securityCheck(originChainId === payload.chainId);
+          const isSafe = await this.securityCheck(payload.chainId, originChainId);
           if (!isSafe) return this.userDenied(eventName);
         } catch (error) {
           return this.userDenied(eventName);
@@ -526,10 +526,14 @@ export default class DappMobileOperator extends Operator {
     this.isLockDapp = isLockDapp;
   };
 
-  public securityCheck = async (isOrigin?: boolean) => {
+  public securityCheck = async (fromChainId: ChainId, originChainId: ChainId) => {
     const caHash = getCurrentCaHash();
     if (!caHash) return false;
-    return checkSecuritySafe(caHash, isOrigin);
+    return checkSecuritySafe({
+      caHash,
+      originChainId,
+      accelerateChainId: fromChainId,
+    });
   };
   protected checkManagerSyncState = async (chainId: ChainId) => {
     const [caInfo, managerAddress] = await Promise.all([

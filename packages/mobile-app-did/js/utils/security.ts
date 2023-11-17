@@ -1,6 +1,8 @@
 import { checkSecurity } from '@portkey-wallet/utils/securityTest';
+import { ChainId } from '@portkey/provider-types';
 import ActionSheet from 'components/ActionSheet';
 import WalletSecurityOverlay from 'components/WalletSecurityOverlay';
+import WalletSecurityAccelerate from 'components/WalletSecurityAccelerate';
 
 export const guardianSyncingAlert = () => {
   ActionSheet.alert({
@@ -9,17 +11,39 @@ export const guardianSyncingAlert = () => {
   });
 };
 
-export async function checkSecuritySafe(caHash: string, isOrigin?: boolean) {
-  const { isTransferSafe, isSynchronizing, isOriginChainSafe } = await checkSecurity(caHash);
-  if (isOrigin) {
-    if (!isOriginChainSafe) WalletSecurityOverlay.alert();
-    return isOriginChainSafe;
-  }
+export async function checkSecuritySafe({
+  caHash,
+  originChainId,
+  accelerateChainId,
+}: {
+  caHash: string;
+  originChainId: ChainId;
+  accelerateChainId: ChainId;
+}) {
+  const isOrigin = originChainId === accelerateChainId;
+  const { isTransferSafe, isSynchronizing, isOriginChainSafe, accelerateGuardians } = await checkSecurity(
+    caHash,
+    accelerateChainId,
+  );
+
+  console.log('checkSecurity', { isTransferSafe, isSynchronizing, isOriginChainSafe, accelerateGuardians });
+
   if (isTransferSafe) return true;
-  if (isSynchronizing) {
-    guardianSyncingAlert();
-  } else {
-    WalletSecurityOverlay.alert();
+  if (isOrigin && isOriginChainSafe) return true;
+
+  if (!isOrigin && isSynchronizing) {
+    if (Array.isArray(accelerateGuardians)) {
+      const accelerateGuardian = accelerateGuardians.find(item => item.transactionId && item.chainId === originChainId);
+      if (accelerateGuardian) {
+        WalletSecurityAccelerate.alert(accelerateChainId, originChainId, accelerateGuardian);
+        return false;
+      }
+    }
+
+    WalletSecurityOverlay.alert(accelerateChainId);
+    return false;
   }
+
+  WalletSecurityOverlay.alert(accelerateChainId);
   return false;
 }

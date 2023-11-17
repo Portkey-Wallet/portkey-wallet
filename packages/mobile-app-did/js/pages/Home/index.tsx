@@ -38,6 +38,7 @@ import {
   useUnreadCount,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import dayjs from 'dayjs';
+import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
 
 export default function HomeScreen() {
   const wallet = useCurrentWalletInfo();
@@ -96,6 +97,21 @@ export default function HomeScreen() {
   return (
     <SafeAreaBox>
       <ScrollView>
+        <Button
+          title="tx result"
+          onPress={async () => {
+            try {
+              const result = await getAelfTxResult(
+                'https://aelf-public-node.aelf.io',
+                '6031c64a3a424d5ea8e8df54f1bf7ffdfa9fb297a79ae83872991476b3e0a643',
+              );
+              if (result.Status !== 'Mined') throw new Error('Transaction failed');
+              console.log('result', result);
+              const params = JSON.parse(result.Transaction.Params);
+              console.log('params', params);
+            } catch (error) {}
+          }}
+        />
         {/* <Button title="ActionSheet show" onPress={() => ActionSheet.show([{ title: '123' }, { title: '123' }])} />
         <Button
           title="loading show"

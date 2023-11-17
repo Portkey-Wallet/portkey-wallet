@@ -28,12 +28,12 @@ import ActionSheet from 'components/ActionSheet';
 import myEvents from 'utils/deviceEvent';
 import Loading from 'components/Loading';
 import { useGuardiansInfo } from 'hooks/store';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import CommonToast from 'components/CommonToast';
 import { useAppDispatch } from 'store/hooks';
 import { setPreGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { addGuardian, deleteGuardian, editGuardian, modifyTransferLimit, removeOtherManager } from 'utils/guardian';
-import { useGetCurrentCAContract } from 'hooks/contract';
+import { useGetCAContract, useGetCurrentCAContract } from 'hooks/contract';
 import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../types';
 import { handleGuardiansApproved } from 'utils/login';
 import { useOnRequestOrSetPin } from 'hooks/login';
@@ -46,6 +46,7 @@ import { useLatestRef } from '@portkey-wallet/hooks';
 import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
 import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
+import { SendResult } from '@portkey-wallet/contracts/types';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -60,6 +61,7 @@ export type RouterParams = {
   approveParams?: ApproveParams;
   transferLimitDetail?: ITransferLimitItem;
   targetChainId?: ChainId;
+  accelerateChainId?: ChainId;
 };
 export default function GuardianApproval() {
   const {
@@ -75,6 +77,7 @@ export default function GuardianApproval() {
     approveParams,
     transferLimitDetail,
     targetChainId,
+    accelerateChainId,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
@@ -125,7 +128,10 @@ export default function GuardianApproval() {
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const updateTransferLimit = useUpdateTransferLimit();
 
+  const originChainId = useOriginChainId();
   const getCurrentCAContract = useGetCurrentCAContract(targetChainId);
+  const getCAContract = useGetCAContract();
+
   const [authenticationInfo, setAuthenticationInfo] = useState<AuthenticationInfo>(_authenticationInfo || {});
   useEffectOnce(() => {
     const listener = myEvents.setAuthenticationInfo.addListener((item: AuthenticationInfo) => {
@@ -216,10 +222,14 @@ export default function GuardianApproval() {
 
   const onAddGuardian = useCallback(async () => {
     if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
+
+    console.log('accelerateChainId', accelerateChainId);
+
     Loading.show({ text: t('Processing on the chain...') });
+    let req: SendResult | undefined;
     try {
       const caContract = await getCurrentCAContract();
-      const req = await addGuardian(
+      req = await addGuardian(
         caContract,
         managerAddress,
         caHash,
@@ -228,18 +238,55 @@ export default function GuardianApproval() {
         userGuardiansList,
         guardiansStatus,
       );
-      if (req && !req.error) {
-        CommonToast.success('Guardians Added');
-        myEvents.refreshGuardiansList.emit();
-        navigationService.navigate('GuardianHome');
-      } else {
-        CommonToast.fail(req?.error?.message || '');
-      }
     } catch (error) {
       CommonToast.failError(error);
+      Loading.hide();
+      return;
+    }
+
+    if (accelerateChainId && accelerateChainId !== originChainId) {
+      try {
+        const accelerateCAContract = await getCAContract(accelerateChainId);
+        const accelerateReq = await addGuardian(
+          accelerateCAContract,
+          managerAddress,
+          caHash,
+          verifierInfo,
+          guardianItem,
+          userGuardiansList,
+          guardiansStatus,
+        );
+        console.log('accelerateReq', accelerateReq);
+      } catch (error) {
+        console.log('accelerateReq error', error);
+      }
+    }
+
+    if (req && !req.error) {
+      CommonToast.success('Guardians Added');
+      myEvents.refreshGuardiansList.emit();
+      if (!accelerateChainId) {
+        navigationService.navigate('GuardianHome');
+      } else {
+        navigationService.pop(3);
+      }
+    } else {
+      CommonToast.fail(req?.error?.message || '');
     }
     Loading.hide();
-  }, [caHash, getCurrentCAContract, guardianItem, guardiansStatus, managerAddress, t, userGuardiansList, verifierInfo]);
+  }, [
+    accelerateChainId,
+    caHash,
+    getCAContract,
+    getCurrentCAContract,
+    guardianItem,
+    guardiansStatus,
+    managerAddress,
+    originChainId,
+    t,
+    userGuardiansList,
+    verifierInfo,
+  ]);
 
   const onDeleteGuardian = useCallback(async () => {
     if (!managerAddress || !caHash || !guardianItem || !userGuardiansList || !guardiansStatus) return;

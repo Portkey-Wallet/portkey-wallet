@@ -1,8 +1,8 @@
-import { Modal } from 'antd';
+import { Modal, ModalFuncProps } from 'antd';
 import { ReactNode } from 'react';
 import './index.less';
 
-export interface ICustomModalProps {
+export interface ICustomModalProps extends ModalFuncProps {
   type?: 'info' | 'confirm';
   content: ReactNode;
   okText?: string;
@@ -11,7 +11,7 @@ export interface ICustomModalProps {
   onCancel?: () => void;
 }
 
-const CustomModal = ({ type, content, okText, onCancel, onOk, cancelText }: ICustomModalProps) => {
+const CustomModal = ({ type, content, okText, onCancel, onOk, cancelText, ...extraProps }: ICustomModalProps) => {
   const props = {
     open: true,
     width: 320,
@@ -33,6 +33,7 @@ const CustomModal = ({ type, content, okText, onCancel, onOk, cancelText }: ICus
         content,
         onOk: onOk,
         onCancel: onCancel,
+        ...extraProps,
       })
     : Modal.info({
         ...props,
@@ -40,6 +41,7 @@ const CustomModal = ({ type, content, okText, onCancel, onOk, cancelText }: ICus
         okText: okText || 'OK',
         content,
         onOk: onOk,
+        ...extraProps,
       });
 };
 

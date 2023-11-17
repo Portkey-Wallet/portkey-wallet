@@ -136,7 +136,7 @@ export default function TransferSettingsEdit() {
             state: `setTransferLimit_${JSON.stringify(params)}`,
           })
         : InternalMessage.payload(
-            PortkeyMessageTypes.GUARDIANS_APPROVAL,
+            PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
             `setTransferLimit_${JSON.stringify(params)}`,
           ).send();
     } catch (error) {

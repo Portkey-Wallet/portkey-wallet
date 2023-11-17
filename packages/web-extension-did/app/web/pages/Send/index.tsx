@@ -213,16 +213,6 @@ export default function Send() {
       const securityRes = await checkSecurity(tokenInfo.chainId);
       if (!securityRes) return WalletIsNotSecure;
 
-      // transfer limit check
-      const res = await checkLimit({
-        chainId: tokenInfo.chainId,
-        symbol: tokenInfo.symbol,
-        amount: amount,
-        decimals: tokenInfo.decimals,
-        from: ICheckLimitBusiness.SEND,
-      });
-      if (typeof res !== 'boolean') return ExceedLimit;
-
       if (type === 'token') {
         // insufficient balance check
         if (timesDecimals(amount, tokenInfo.decimals).isGreaterThan(balance)) {
@@ -247,6 +237,17 @@ export default function Send() {
       } else {
         return TransactionError.FEE_NOT_ENOUGH;
       }
+
+      // transfer limit check
+      const res = await checkLimit({
+        chainId: tokenInfo.chainId,
+        symbol: tokenInfo.symbol,
+        amount: amount,
+        decimals: tokenInfo.decimals,
+        from: ICheckLimitBusiness.SEND,
+      });
+      if (typeof res !== 'boolean') return ExceedLimit;
+
       return '';
     } catch (error: any) {
       console.log('checkTransactionValue===', error);

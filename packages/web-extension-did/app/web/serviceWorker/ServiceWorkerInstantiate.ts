@@ -174,6 +174,9 @@ export default class ServiceWorkerInstantiate {
       case PortkeyMessageTypes.GUARDIANS_APPROVAL:
         ServiceWorkerInstantiate.expandGuardiansApproval(message.payload);
         break;
+      case PortkeyMessageTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY:
+        ServiceWorkerInstantiate.expandPaymentSecurityGuardiansApproval(message.payload);
+        break;
       case PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE:
         this.openRecaptchaPage(sendResponse, message.payload);
         break;
@@ -327,6 +330,16 @@ export default class ServiceWorkerInstantiate {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.GUARDIANS_APPROVAL,
+        search: payload,
+      },
+      'tabs',
+    );
+  }
+
+  static expandPaymentSecurityGuardiansApproval(payload: any) {
+    notificationService.openPrompt(
+      {
+        method: PromptRouteTypes.GUARDIANS_APPROVAL_PAYMENT_SECURITY,
         search: payload,
       },
       'tabs',

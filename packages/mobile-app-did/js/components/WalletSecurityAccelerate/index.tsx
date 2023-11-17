@@ -43,23 +43,24 @@ function AlertBody({
     if (!managerAddress || !caHash) return;
 
     const chain = getChain(accelerateGuardian.chainId);
-    console.log('chain', chain);
     if (!chain) throw new Error('chain not found');
     let transactionId: string | undefined = accelerateGuardian.transactionId;
     if (!transactionId) {
       const result = await getAccelerateGuardianTxId(caHash, accelerateChainId, originChainId);
-      if (result.isSafe) return;
+      if (result.isSafe) {
+        // no need to accelerate
+        return;
+      }
       transactionId = result.transactionId;
       if (!transactionId) {
         throw new Error('transactionId not found');
       }
     }
 
-    const txResult = await getAelfTxResult(chain.endPoint, accelerateGuardian.transactionId);
+    const txResult = await getAelfTxResult(chain.endPoint, transactionId);
     console.log('txResult', txResult);
     if (txResult.Status !== TransactionStatus.Mined) throw new Error('Transaction failed');
     const params = JSON.parse(txResult.Transaction.Params);
-    console.log('params', params);
 
     const caContract = await getCAContract(accelerateChainId);
     const req = await caContract.callSendMethod('AddGuardian', managerAddress, {
@@ -67,13 +68,13 @@ function AlertBody({
       guardianToAdd: params.guardianToAdd,
       guardiansApproved: params.guardiansApproved,
     });
-    console.log('req', req);
 
     if (req && !req.error) {
-      // TODO: check if the tx is successful
-      CommonToast.success('');
+      // accelerate success
+      return;
     }
-    console.log('req', req);
+
+    throw new Error('Transaction failed');
   }, [
     accelerateChainId,
     accelerateGuardian.chainId,
@@ -92,16 +93,17 @@ function AlertBody({
   }[] => {
     return [
       {
-        title: 'Accelerate',
+        title: 'OK',
         type: 'primary',
         onPress: async () => {
           OverlayModal.hide();
           Loading.show();
           try {
             await accelerate();
+            CommonToast.success('Guardian added');
           } catch (error) {
-            console.log('error', error);
-            // TODO: toast error
+            console.log('accelerate error', error);
+            CommonToast.failError('Guardian failed to be added. Please wait a while for the addition to complete');
           }
           Loading.hide();
 
@@ -125,10 +127,10 @@ function AlertBody({
       </View>
 
       <Image resizeMode="cover" source={securityWarning} style={styles.img} />
-      <TextXL style={styles.alertTitle}>Wallet security check in progress</TextXL>
+      <TextXL style={styles.alertTitle}>{'Wallet Security Level Upgrade in Progress'}</TextXL>
       <TextM style={styles.alertMessage}>
         {
-          'We are testing the security of your wallet, which will take about 1-3 minutes. You can click "Accelerate" to complete the test immediately.'
+          'You can click "OK" to complete the addition of guardian immediately. Alternatively, you have the option to close this window and wait for the completion, which will take around 1-3 minutes.'
         }
       </TextM>
       <ButtonRow buttons={buttons} />

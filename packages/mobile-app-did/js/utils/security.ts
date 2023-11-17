@@ -26,8 +26,6 @@ export async function checkSecuritySafe({
     accelerateChainId,
   );
 
-  console.log('checkSecurity', { isTransferSafe, isSynchronizing, isOriginChainSafe, accelerateGuardians });
-
   if (isTransferSafe) return true;
   if (isOrigin && isOriginChainSafe) return true;
 

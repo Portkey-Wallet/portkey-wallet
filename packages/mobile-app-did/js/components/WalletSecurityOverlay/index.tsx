@@ -55,7 +55,9 @@ function AlertBody({ accelerateChainId }: { accelerateChainId: ChainId }) {
       <Image resizeMode="cover" source={securityWarning} style={styles.img} />
       <TextXL style={styles.alertTitle}>Upgrade Wallet Security Level</TextXL>
       <TextM style={styles.alertMessage}>
-        {'You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding.'}
+        {`You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding.
+
+Note: If you have tried to add a guardian and the action was not completed, please initiate the process again.`}
       </TextM>
       <ButtonRow buttons={buttons} />
     </View>

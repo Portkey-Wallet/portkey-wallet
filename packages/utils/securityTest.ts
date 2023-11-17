@@ -24,13 +24,12 @@ export const checkSecurity = async (caHash: string, chainId: ChainId): Promise<C
   return await request.security.balanceCheck({
     params: {
       caHash,
-      chainId,
+      checkTransferSafeChainId: chainId,
     },
   });
 };
 
 export const getAccelerateGuardianTxId = async (caHash: string, accelerateChainId: ChainId, originChainId: ChainId) => {
-  console.log('getAccelerateGuardianTxId', accelerateChainId, originChainId);
   let isTimeout = false;
   let isSafe = false;
   const timer = setTimeout(() => {
@@ -43,7 +42,7 @@ export const getAccelerateGuardianTxId = async (caHash: string, accelerateChainI
     let accelerateGuardians: IAccelerateGuardian[] = [];
     try {
       const result = await checkSecurity(caHash, accelerateChainId);
-      console.log('checkSecurity result', result);
+
       if (result.isTransferSafe) {
         isSafe = true;
         break;

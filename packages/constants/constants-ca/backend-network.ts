@@ -115,6 +115,7 @@ export const BackEndNetWorkMap: {
     connectUrl: 'http://192.168.67.179:8001',
     cmsUrl: 'http://192.168.66.62:8055/graphql',
     s3Url: 'https://portkey-cms-dev.s3.ap-northeast-1.amazonaws.com',
+    imS3Bucket: 'portkey-im-dev',
     portkeyFinanceUrl: 'https://portkey-website-dev.vercel.app/',
     buyConfig: {
       ach: {

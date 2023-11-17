@@ -39,6 +39,7 @@ export const getAccelerateGuardianTxId = async (caHash: string, accelerateChainI
   let accelerateGuardian: IAccelerateGuardian | undefined;
   let retryCount = 0;
   while (retryCount < 5 && !accelerateGuardian) {
+    console.log('retryCount', retryCount);
     let accelerateGuardians: IAccelerateGuardian[] = [];
     try {
       const result = await checkSecurity(caHash, accelerateChainId);
@@ -64,7 +65,7 @@ export const getAccelerateGuardianTxId = async (caHash: string, accelerateChainI
 
     retryCount++;
     if (isTimeout) break;
-    await sleep(1000);
+    await sleep(2000);
     if (isTimeout) break;
   }
 

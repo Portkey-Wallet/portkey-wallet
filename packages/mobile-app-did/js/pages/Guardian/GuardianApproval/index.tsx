@@ -269,6 +269,7 @@ export default function GuardianApproval() {
         navigationService.navigate('GuardianHome');
       } else {
         navigationService.pop(3);
+        refreshGuardiansList();
       }
     } else {
       CommonToast.fail(req?.error?.message || '');
@@ -283,6 +284,7 @@ export default function GuardianApproval() {
     guardiansStatus,
     managerAddress,
     originChainId,
+    refreshGuardiansList,
     t,
     userGuardiansList,
     verifierInfo,

@@ -26,16 +26,15 @@ export async function checkSecuritySafe({
     accelerateChainId,
   );
 
+  console.log('checkSecurity', { isTransferSafe, isSynchronizing, isOriginChainSafe, accelerateGuardians });
   if (isTransferSafe) return true;
   if (isOrigin && isOriginChainSafe) return true;
 
-  if (!isOrigin && isSynchronizing) {
-    if (Array.isArray(accelerateGuardians)) {
+  if (!isOrigin && isSynchronizing && isOriginChainSafe) {
+    if (Array.isArray(accelerateGuardians) && accelerateGuardians.length > 0) {
       const accelerateGuardian = accelerateGuardians.find(item => item.transactionId && item.chainId === originChainId);
-      if (accelerateGuardian) {
-        WalletSecurityAccelerate.alert(accelerateChainId, originChainId, accelerateGuardian);
-        return false;
-      }
+      WalletSecurityAccelerate.alert(accelerateChainId, originChainId, accelerateGuardian);
+      return false;
     }
 
     WalletSecurityOverlay.alert(accelerateChainId);

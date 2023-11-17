@@ -31,7 +31,7 @@ function AlertBody({
 }: {
   accelerateChainId: ChainId;
   originChainId: ChainId;
-  accelerateGuardian: IAccelerateGuardian;
+  accelerateGuardian?: IAccelerateGuardian;
 }) {
   const dispatch = useAppDispatch();
   const isDrawerOpen = useAppCASelector(state => state.discover.isDrawerOpen);
@@ -42,20 +42,25 @@ function AlertBody({
   const accelerate = useCallback(async () => {
     if (!managerAddress || !caHash) return;
 
-    const chain = getChain(accelerateGuardian.chainId);
-    if (!chain) throw new Error('chain not found');
-    let transactionId: string | undefined = accelerateGuardian.transactionId;
+    let _accelerateGuardian = accelerateGuardian;
+    let transactionId: string | undefined = _accelerateGuardian?.transactionId;
+
     if (!transactionId) {
       const result = await getAccelerateGuardianTxId(caHash, accelerateChainId, originChainId);
       if (result.isSafe) {
         // no need to accelerate
         return;
       }
-      transactionId = result.transactionId;
+      _accelerateGuardian = result.accelerateGuardian;
+      transactionId = _accelerateGuardian?.transactionId;
       if (!transactionId) {
         throw new Error('transactionId not found');
       }
     }
+    if (!_accelerateGuardian) throw new Error('accelerateGuardian not found');
+
+    const chain = getChain(_accelerateGuardian.chainId);
+    if (!chain) throw new Error('chain not found');
 
     const txResult = await getAelfTxResult(chain.endPoint, transactionId);
     console.log('txResult', txResult);
@@ -75,16 +80,7 @@ function AlertBody({
     }
 
     throw new Error('Transaction failed');
-  }, [
-    accelerateChainId,
-    accelerateGuardian.chainId,
-    accelerateGuardian.transactionId,
-    caHash,
-    getCAContract,
-    getChain,
-    managerAddress,
-    originChainId,
-  ]);
+  }, [accelerateChainId, accelerateGuardian, caHash, getCAContract, getChain, managerAddress, originChainId]);
 
   const buttons = useMemo((): {
     title: string;
@@ -138,7 +134,7 @@ function AlertBody({
   );
 }
 
-const alert = async (accelerateChainId: ChainId, originChainId: ChainId, accelerateGuardian: IAccelerateGuardian) => {
+const alert = async (accelerateChainId: ChainId, originChainId: ChainId, accelerateGuardian?: IAccelerateGuardian) => {
   Keyboard.dismiss();
   OverlayModal.show(
     <AlertBody

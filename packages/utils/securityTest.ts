@@ -36,9 +36,9 @@ export const getAccelerateGuardianTxId = async (caHash: string, accelerateChainI
     isTimeout = true;
   }, 10 * 1000);
 
-  let transactionId: string | undefined;
+  let accelerateGuardian: IAccelerateGuardian | undefined;
   let retryCount = 0;
-  while (retryCount < 5 && !transactionId) {
+  while (retryCount < 5 && !accelerateGuardian) {
     let accelerateGuardians: IAccelerateGuardian[] = [];
     try {
       const result = await checkSecurity(caHash, accelerateChainId);
@@ -57,7 +57,7 @@ export const getAccelerateGuardianTxId = async (caHash: string, accelerateChainI
         item => item.transactionId && item.chainId === originChainId,
       );
       if (_accelerateGuardian) {
-        transactionId = _accelerateGuardian.transactionId;
+        accelerateGuardian = _accelerateGuardian;
         break;
       }
     }
@@ -71,6 +71,6 @@ export const getAccelerateGuardianTxId = async (caHash: string, accelerateChainI
   clearTimeout(timer);
   return {
     isSafe,
-    transactionId,
+    accelerateGuardian,
   };
 };

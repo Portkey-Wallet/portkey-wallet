@@ -20,6 +20,7 @@ import { customFetch } from '@portkey-wallet/utils/fetch';
 import { NetworkList } from '@portkey-wallet/constants/constants-ca/network';
 import { ChainId } from '@portkey-wallet/types';
 import { contractQueries } from '@portkey-wallet/graphql';
+import { CheckSecurityResult } from '@portkey-wallet/utils/securityTest';
 
 const storeInSW = {
   getState: getSWReduxState,
@@ -328,11 +329,7 @@ export default class AELFMethodController {
   getAccounts: RequestCommonHandler = async (sendResponse, message) => {
     try {
       const { origin } = message;
-      let accounts = {};
-      const unlocked = this.isUnlocked();
-      if (unlocked) accounts = await this.dappManager.accounts(origin);
-      console.log(accounts, 'accounts===');
-      sendResponse({ ...errorHandler(0), data: accounts });
+      sendResponse({ ...errorHandler(0), data: this.dappManager.accounts(origin) });
     } catch (error) {
       console.log('getAccounts===', error);
       sendResponse({
@@ -414,7 +411,7 @@ export default class AELFMethodController {
     }
   };
 
-  checkWalletSecurity = async () => {
+  checkWalletSecurity = async (checkTransferSafeChainId: ChainId) => {
     try {
       const networkType = await this.dappManager.networkType();
       const caHash = await getCurrentCaHash();
@@ -424,6 +421,7 @@ export default class AELFMethodController {
         method: 'GET',
         params: {
           caHash,
+          checkTransferSafeChainId,
         },
       });
       return result;
@@ -467,15 +465,23 @@ export default class AELFMethodController {
             msg: 'Invalid contractAddress',
           },
         });
-      const safeRes = await this.checkWalletSecurity();
+      const safeRes: CheckSecurityResult = await this.checkWalletSecurity(payload.chainId);
       const isOriginChainId = originChainId === payload.chainId;
-      const isSafe = (isOriginChainId && safeRes.isOriginChainSafe) || (!isOriginChainId && safeRes.isTransferSafe);
+
+      const isSafe = safeRes.isTransferSafe || (isOriginChainId && safeRes.isOriginChainSafe);
       const showGuardian =
-        (isOriginChainId && !safeRes.isOriginChainSafe) || (!isOriginChainId && !safeRes.isSynchronizing);
-      const showSync = !isOriginChainId && safeRes.isSynchronizing;
+        (isOriginChainId && !safeRes.isOriginChainSafe) ||
+        (!isOriginChainId && !safeRes.isSynchronizing) ||
+        (!isOriginChainId && safeRes.isSynchronizing && !safeRes.isOriginChainSafe);
+      const showSync = !isOriginChainId && safeRes.isSynchronizing && safeRes.isOriginChainSafe;
+
       if (!isSafe && (showGuardian || showSync)) {
         // Open Prompt to approve add guardian
-        this.approvalController.authorizedToCheckWalletSecurity({ showSync, showGuardian });
+        this.approvalController.authorizedToCheckWalletSecurity({
+          showSync,
+          showGuardian,
+          operateChainId: payload.chainId,
+        });
         return sendResponse({
           ...errorHandler(400001),
           data: {

@@ -477,10 +477,20 @@ export default class AELFMethodController {
 
       if (!isSafe && (showGuardian || showSync)) {
         // Open Prompt to approve add guardian
+
+        let _txId;
+        if (Array.isArray(safeRes.accelerateGuardians)) {
+          const _accelerateGuardian = safeRes.accelerateGuardians.find(
+            (item) => item.transactionId && item.chainId === originChainId,
+          );
+          _txId = _accelerateGuardian?.transactionId;
+        }
+
         this.approvalController.authorizedToCheckWalletSecurity({
           showSync,
           showGuardian,
           operateChainId: payload.chainId,
+          accelerateGuardianTxId: _txId,
         });
         return sendResponse({
           ...errorHandler(400001),

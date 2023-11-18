@@ -18,14 +18,15 @@ import { useLoading } from 'store/Provider/hooks';
 import { getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
 import { SecurityAccelerateErrorTip } from 'constants/security';
 import SecurityAccelerate from './SecurityAccelerate';
+import { sleep } from '@portkey-wallet/utils';
 import './index.less';
 
 export default function WalletSecurityApprove() {
-  const { showGuardian, accelerateGuardiansTxId, operateChainId } = usePromptSearch<{
+  const { showGuardian, accelerateGuardianTxId, operateChainId } = usePromptSearch<{
     showGuardian: boolean;
     showSync: boolean;
     operateChainId: ChainId;
-    accelerateGuardiansTxId?: string;
+    accelerateGuardianTxId?: string;
   }>();
   const navigate = useNavigate();
   const originChainId = useOriginChainId();
@@ -36,16 +37,17 @@ export default function WalletSecurityApprove() {
   const { setLoading } = useLoading();
 
   const handleSyncGuardian = useCallback(
-    async (accelerateGuardiansTxId: string) => {
+    async (accelerateTxId: string) => {
       try {
         const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
         const pin = getSeedResult.data.privateKey;
         const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+
         if (!operateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
           return message.error(SecurityAccelerateErrorTip);
 
-        const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateGuardiansTxId);
-        if (result.Status !== 'Mined') return message.error(SecurityAccelerateErrorTip);
+        const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateTxId);
+        if (result.Status !== 'MINED') return message.error(SecurityAccelerateErrorTip);
         const params = JSON.parse(result.Transaction.Params);
 
         await handleGuardian({
@@ -63,6 +65,8 @@ export default function WalletSecurityApprove() {
           },
         });
         setLoading(false);
+        message.success('Guardian added');
+        await sleep(1000);
         closeTabPrompt(errorHandler(0, 'Guardian added'));
       } catch (error: any) {
         console.log('===add guardian accelerate error', error);
@@ -83,14 +87,15 @@ export default function WalletSecurityApprove() {
   const checkAccelerateIsReady = useCallback(async () => {
     try {
       setLoading(true);
-      if (accelerateGuardiansTxId) {
-        await handleSyncGuardian(accelerateGuardiansTxId);
+      if (accelerateGuardianTxId) {
+        await handleSyncGuardian(accelerateGuardianTxId);
       } else {
         if (!walletInfo?.caHash) message.error(SecurityAccelerateErrorTip);
         const res = await getAccelerateGuardianTxId(walletInfo?.caHash as string, operateChainId, originChainId);
         if (res.isSafe) {
           setLoading(false);
           message.success('Guardian added');
+          await sleep(1000);
           closeTabPrompt(errorHandler(0, 'Guardian added'));
         } else if (res.accelerateGuardian?.transactionId) {
           await handleSyncGuardian(res.accelerateGuardian.transactionId);
@@ -103,7 +108,7 @@ export default function WalletSecurityApprove() {
     } finally {
       setLoading(false);
     }
-  }, [accelerateGuardiansTxId, handleSyncGuardian, operateChainId, originChainId, walletInfo?.caHash, setLoading]);
+  }, [accelerateGuardianTxId, handleSyncGuardian, operateChainId, originChainId, walletInfo?.caHash, setLoading]);
 
   return (
     <div>

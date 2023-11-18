@@ -411,7 +411,7 @@ export default function AddGuardian() {
           identifierHash: guardianIdentifier,
         }),
       );
-      navigate('/setting/guardians/guardian-approval', { state: 'guardians/add' });
+      navigate('/setting/guardians/guardian-approval', { state: `guardians/add_operateChainId=${operateChainId}` });
     } catch (error) {
       const msg = handleErrorMessage(error);
       message.error(msg);
@@ -432,6 +432,7 @@ export default function AddGuardian() {
     userGuardianList,
     verifierVal,
     walletInfo,
+    operateChainId,
   ]);
 
   const handleVerify = useCallback(async () => {

@@ -489,7 +489,7 @@ export default class AELFMethodController {
         this.approvalController.authorizedToCheckWalletSecurity({
           showSync,
           showGuardian,
-          operateChainId: payload.chainId,
+          accelerateChainId: payload.chainId,
           accelerateGuardianTxId: _txId,
         });
         return sendResponse({

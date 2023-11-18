@@ -26,7 +26,10 @@ export default function Guardians() {
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const getGuardianList = useGuardianList();
   const originChainId = useOriginChainId();
-  const operateChainId = useMemo(() => state?.operateChainId || originChainId, [originChainId, state?.operateChainId]);
+  const accelerateChainId = useMemo(
+    () => state?.accelerateChainId || originChainId,
+    [originChainId, state?.accelerateChainId],
+  );
   useVerifierList();
 
   useEffect(() => {
@@ -45,9 +48,9 @@ export default function Guardians() {
 
   const onAdd = useCallback(() => {
     isPrompt
-      ? navigate('/setting/guardians/add', { state: { operateChainId } })
-      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, `operateChainId_${operateChainId}`).send();
-  }, [isPrompt, navigate, operateChainId]);
+      ? navigate('/setting/guardians/add', { state: { accelerateChainId } })
+      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, `accelerateChainId_${accelerateChainId}`).send();
+  }, [isPrompt, navigate, accelerateChainId]);
 
   const headerTitle = useMemo(() => 'Guardians', []);
 

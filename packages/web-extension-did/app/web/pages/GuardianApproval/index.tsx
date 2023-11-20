@@ -19,8 +19,6 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import qs from 'query-string';
 import './index.less';
-import { useEffectOnce } from 'react-use';
-import { sleep } from '@portkey-wallet/utils';
 
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
@@ -88,15 +86,12 @@ export default function GuardianApproval() {
     }
   }, [handleGuardianRecovery, handleRemoveOtherManage, managerAddress, navigate, onManagerAddressAndQueryResult]);
 
-  const checkGuardiansApprovalFinished = useCallback(async () => {
-    await sleep(500);
-    const isNeedApproval = userVerifiedList.some((item) => !item.status || item.status !== VerifyStatus.Verified);
-    if (!isNeedApproval) recoveryWallet();
-  }, [recoveryWallet, userVerifiedList]);
-
-  useEffectOnce(() => {
-    checkGuardiansApprovalFinished();
-  });
+  useEffect(() => {
+    if (alreadyApprovalLength >= approvalLength && !isExpired) {
+      recoveryWallet();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alreadyApprovalLength, approvalLength, isExpired]);
 
   useEffect(() => {
     if (!guardianExpiredTime) return setIsExpired(false);

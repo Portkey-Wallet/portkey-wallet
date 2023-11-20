@@ -41,22 +41,24 @@ class MobileVerification extends Verification {
             };
 
             const responseByAppCheck = await request.verify.sendVerificationRequest(config);
-            await this.set(key, { ...responseByAppCheck, time: Date.now() });
+            if (!responseByAppCheck?.verifierSessionId) throw Error('no verifierSessionId');
 
+            await this.set(key, { ...responseByAppCheck, time: Date.now() });
             return responseByAppCheck;
           } catch (err) {
-            // google  human-machine verification
-            // TODO: add language
             console.log('appCheck  error', err);
-            const reCaptchaToken = await verifyHumanMachine('en');
-            config.headers = {
-              reCaptchaToken: reCaptchaToken as string,
-            };
-
-            const responseByCaptchaToken = await request.verify.sendVerificationRequest(config);
-            await this.set(key, { ...responseByCaptchaToken, time: Date.now() });
-            return responseByCaptchaToken;
           }
+
+          // google  human-machine verification
+          // TODO: add language
+          const reCaptchaToken = await verifyHumanMachine('en');
+          config.headers = {
+            reCaptchaToken: reCaptchaToken as string,
+          };
+
+          const responseByCaptchaToken = await request.verify.sendVerificationRequest(config);
+          await this.set(key, { ...responseByCaptchaToken, time: Date.now() });
+          return responseByCaptchaToken;
         }
 
         const req = await request.verify.sendVerificationRequest(config);

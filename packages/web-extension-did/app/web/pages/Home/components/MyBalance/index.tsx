@@ -14,6 +14,7 @@ import {
   useCaAddressInfoList,
   useChainIdList,
   useCurrentWallet,
+  useOriginChainId,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
@@ -95,6 +96,7 @@ export default function MyBalance() {
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
   const checkSecurity = useCheckSecurity();
+  const originChainId = useOriginChainId();
   const { checkDappIsConfirmed } = useDisclaimer();
   const [bridgeShow, setBridgeShow] = useState<boolean>(false);
 
@@ -189,7 +191,7 @@ export default function MyBalance() {
   }, [isMainNet, navigate]);
 
   const handleBridge = useCallback(async () => {
-    const isSafe = await checkSecurity();
+    const isSafe = await checkSecurity(originChainId);
     if (!isSafe) return;
     if (checkDappIsConfirmed(eBridgeUrl)) {
       const openWinder = window.open(eBridgeUrl, '_blank');
@@ -199,7 +201,7 @@ export default function MyBalance() {
     } else {
       setBridgeShow(true);
     }
-  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl]);
+  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
 
   return (
     <div className="balance">

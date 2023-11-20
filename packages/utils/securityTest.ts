@@ -13,7 +13,7 @@ export interface IAccelerateGuardian {
   chainId: ChainId;
 }
 
-type CheckSecurityResult = {
+export type CheckSecurityResult = {
   isTransferSafe: boolean;
   isSynchronizing: boolean;
   isOriginChainSafe: boolean;

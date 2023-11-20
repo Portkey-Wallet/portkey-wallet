@@ -14,6 +14,12 @@ export const ExceedDailyLimit = 'Maximum daily limit exceeded. To proceed, pleas
 
 export const SecurityVulnerabilityTitle = 'Upgrade Wallet Security Level';
 
+export const SecurityAccelerateTitle = 'Wallet Security Level Upgrade in Progress';
+
+export const SecurityAccelerateContent = `You can click "OK" to complete the addition of guardian immediately. Alternatively, you have the option to close this window and wait for the completion, which will take around 1-3 minutes.`;
+
+export const SecurityAccelerateErrorTip = `Guardian failed to be added. Please wait a while for the addition to complete.`;
+
 export const SecurityVulnerabilityTip =
   'You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding.';
 

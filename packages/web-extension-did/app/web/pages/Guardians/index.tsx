@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import useGuardianList from 'hooks/useGuardianList';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useCommonState, useGuardiansInfo } from 'store/Provider/hooks';
-import { useCurrentWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { setCurrentGuardianAction, setOpGuardianAction } from '@portkey-wallet/store/store-ca/guardians/actions';
 import VerifierPair from 'components/VerifierPair';
 import { Button } from 'antd';
@@ -19,11 +19,14 @@ import './index.less';
 export default function Guardians() {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
+  const { state } = useLocation();
   const navigate = useNavigate();
   const { userGuardiansList } = useGuardiansInfo();
   const { walletInfo } = useCurrentWallet();
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const getGuardianList = useGuardianList();
+  const originChainId = useOriginChainId();
+  const operateChainId = useMemo(() => state?.operateChainId || originChainId, [originChainId, state?.operateChainId]);
   useVerifierList();
 
   useEffect(() => {
@@ -41,8 +44,10 @@ export default function Guardians() {
   }, [navigate]);
 
   const onAdd = useCallback(() => {
-    isPrompt ? navigate('/setting/guardians/add') : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS).send();
-  }, [isPrompt, navigate]);
+    isPrompt
+      ? navigate('/setting/guardians/add', { state: { operateChainId } })
+      : InternalMessage.payload(PortkeyMessageTypes.ADD_GUARDIANS, `operateChainId_${operateChainId}`).send();
+  }, [isPrompt, navigate, operateChainId]);
 
   const headerTitle = useMemo(() => 'Guardians', []);
 

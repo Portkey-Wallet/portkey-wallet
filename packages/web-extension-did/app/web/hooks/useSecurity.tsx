@@ -4,10 +4,16 @@ import {
   useCheckTransferLimit,
   useGetTransferLimit,
 } from '@portkey-wallet/hooks/hooks-ca/security';
-import { useCurrentWallet, useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet, useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { Image, message } from 'antd';
-import { SecurityVulnerabilityTip, SecurityVulnerabilityTitle } from 'constants/security';
+import {
+  SecurityVulnerabilityTip,
+  SecurityVulnerabilityTitle,
+  SecurityAccelerateTitle,
+  SecurityAccelerateContent,
+  SecurityAccelerateErrorTip,
+} from 'constants/security';
 import {
   useDailyTransferLimitModal,
   useSingleTransferLimitModal,
@@ -22,12 +28,14 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { ChainId } from '@portkey/provider-types';
 import { ICheckLimitBusiness, ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
-
-export interface IBalanceCheckResult {
-  isOriginChainSafe: boolean;
-  isSynchronizing: boolean;
-  isTransferSafe: boolean;
-}
+import InternalMessage from 'messages/InternalMessage';
+import InternalMessageTypes from 'messages/InternalMessageTypes';
+import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
+import { getAelfTxResult } from '@portkey-wallet/utils/aelf';
+import { CheckSecurityResult, getAccelerateGuardianTxId } from '@portkey-wallet/utils/securityTest';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
+import CustomSvg from 'components/CustomSvg';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
@@ -36,38 +44,36 @@ export const useCheckSecurity = () => {
   const synchronizingModal = useSynchronizingModal();
 
   return useCallback(
-    async (targetChainId?: ChainId): Promise<boolean> => {
+    async (targetChainId: ChainId): Promise<boolean> => {
       try {
         setLoading(true);
-        const res: IBalanceCheckResult = await request.security.balanceCheck({
-          params: { caHash: wallet?.caHash || '' },
+        const res: CheckSecurityResult = await request.security.balanceCheck({
+          params: { caHash: wallet?.caHash || '', checkTransferSafeChainId: targetChainId },
         });
-
         setLoading(false);
 
-        // don’t know the chain of operations
-        if (!targetChainId) {
-          if (res.isTransferSafe) return true;
-          if (res.isSynchronizing) {
-            synchronizingModal();
-            return false;
-          }
-          addGuardiansModal();
-          return false;
-        }
+        if (res.isTransferSafe) return true;
 
-        // know the chain of operations
         if (wallet.originChainId === targetChainId) {
           if (res.isOriginChainSafe) return true;
-          addGuardiansModal();
+          addGuardiansModal(targetChainId);
           return false;
         } else {
-          if (res.isTransferSafe) return true;
-          if (res.isSynchronizing) {
-            synchronizingModal();
+          if (res.isSynchronizing && res.isOriginChainSafe) {
+            let _txId;
+            if (Array.isArray(res.accelerateGuardians)) {
+              const _accelerateGuardian = res.accelerateGuardians.find(
+                (item) => item.transactionId && item.chainId === wallet.originChainId,
+              );
+              _txId = _accelerateGuardian?.transactionId;
+            }
+            synchronizingModal({
+              operateChainId: targetChainId,
+              accelerateGuardiansTxId: _txId,
+            });
             return false;
           }
-          addGuardiansModal();
+          addGuardiansModal(targetChainId);
           return false;
         }
       } catch (error) {
@@ -82,35 +88,146 @@ export const useCheckSecurity = () => {
 
 export function useSynchronizingModal() {
   const { t } = useTranslation();
+  const { walletInfo } = useCurrentWallet();
+  const originChainId = useOriginChainId();
+  const originChainInfo = useCurrentChain(originChainId);
+  const currentNetwork = useCurrentNetworkInfo();
+  const { setLoading } = useLoading();
 
-  return useCallback(() => {
-    CustomModal({
-      type: 'info',
-      content: 'Syncing guardian info, which may take 1-2 minutes. Please try again later.',
-      okText: t('Ok'),
-    });
-  }, [t]);
+  const handleSyncGuardian = useCallback(
+    async ({
+      accelerateGuardiansTxId,
+      operateChainId,
+    }: {
+      accelerateGuardiansTxId: string;
+      operateChainId: ChainId;
+    }) => {
+      try {
+        const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
+        const pin = getSeedResult.data.privateKey;
+        const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+        const operateChainInfo = await getCurrentChainInfo(operateChainId);
+        if (!operateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
+          return message.error(SecurityAccelerateErrorTip);
+        const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateGuardiansTxId);
+        if (result.Status !== 'MINED') return message.error(SecurityAccelerateErrorTip);
+        const params = JSON.parse(result.Transaction.Params);
+        const res = await handleGuardian({
+          rpcUrl: operateChainInfo?.endPoint as string,
+          chainType: currentNetwork.walletType,
+          address: operateChainInfo?.caContractAddress as string,
+          privateKey,
+          paramsOption: {
+            method: 'AddGuardian',
+            params: {
+              caHash: walletInfo?.caHash,
+              guardianToAdd: params.guardianToAdd,
+              guardiansApproved: params.guardiansApproved,
+            },
+          },
+        });
+        message.success('Guardian added');
+        console.log('===handleGuardian accelerate res', res);
+      } catch (error: any) {
+        console.log('===handleGuardian accelerate error', error);
+        message.error(SecurityAccelerateErrorTip);
+      }
+    },
+    [currentNetwork.walletType, originChainInfo?.endPoint, walletInfo.AESEncryptPrivateKey, walletInfo?.caHash],
+  );
+
+  const checkAccelerateIsReady = useCallback(
+    async ({
+      accelerateGuardiansTxId,
+      operateChainId,
+    }: {
+      accelerateGuardiansTxId?: string;
+      operateChainId: ChainId;
+    }) => {
+      try {
+        setLoading(true);
+        if (accelerateGuardiansTxId) {
+          await handleSyncGuardian({ operateChainId, accelerateGuardiansTxId });
+        } else {
+          if (!walletInfo?.caHash) return message.error(SecurityAccelerateErrorTip);
+          const res = await getAccelerateGuardianTxId(walletInfo?.caHash, operateChainId, originChainId);
+          if (res.isSafe) {
+            message.success('Guardian added');
+          } else if (res.accelerateGuardian?.transactionId) {
+            await handleSyncGuardian({
+              operateChainId,
+              accelerateGuardiansTxId: res.accelerateGuardian.transactionId,
+            });
+          } else {
+            message.error(SecurityAccelerateErrorTip);
+          }
+        }
+      } catch (error: any) {
+        message.error(SecurityAccelerateErrorTip);
+        console.log('===checkAccelerateIsReady error', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [handleSyncGuardian, originChainId, setLoading, walletInfo?.caHash],
+  );
+
+  return useCallback(
+    ({ operateChainId, accelerateGuardiansTxId }: { operateChainId: ChainId; accelerateGuardiansTxId?: string }) => {
+      const modal = CustomModal({
+        type: 'info',
+        content: (
+          <div className="security-modal">
+            <CustomSvg type="Close2" onClick={() => modal.destroy()} />
+            <Image
+              width={180}
+              height={108}
+              src="assets/images/securityTip.png"
+              className="modal-logo"
+              preview={false}
+            />
+            <div className="modal-title">{SecurityAccelerateTitle}</div>
+            <div>{SecurityAccelerateContent}</div>
+          </div>
+        ),
+        okText: t('OK'),
+        onOk: () => {
+          modal.destroy();
+          checkAccelerateIsReady({ operateChainId, accelerateGuardiansTxId });
+        },
+      });
+    },
+    [checkAccelerateIsReady, t],
+  );
 }
 
 export function useAddGuardiansModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-
-  return useCallback(() => {
-    CustomModal({
-      type: 'confirm',
-      content: (
-        <div className="security-modal">
-          <Image width={180} height={108} src="assets/images/securityTip.png" className="modal-logo" preview={false} />
-          <div className="modal-title">{SecurityVulnerabilityTitle}</div>
-          <div>{SecurityVulnerabilityTip}</div>
-        </div>
-      ),
-      cancelText: t('Not Now'),
-      okText: t('Add Guardians'),
-      onOk: () => navigate('/setting/guardians'),
-    });
-  }, [navigate, t]);
+  return useCallback(
+    (operateChainId: ChainId) => {
+      CustomModal({
+        type: 'confirm',
+        content: (
+          <div className="security-modal">
+            <Image
+              width={180}
+              height={108}
+              src="assets/images/securityTip.png"
+              className="modal-logo"
+              preview={false}
+            />
+            <div className="modal-title">{SecurityVulnerabilityTitle}</div>
+            <div>{SecurityVulnerabilityTip}</div>
+          </div>
+        ),
+        cancelText: t('Not Now'),
+        okText: t('Add Guardians'),
+        onOk: () => navigate('/setting/guardians', { state: { operateChainId } }),
+      });
+    },
+    [navigate, t],
+  );
 }
 
 export interface ICheckLimitParams {

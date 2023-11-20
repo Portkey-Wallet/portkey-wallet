@@ -60,9 +60,10 @@ export default function GuardianApproval() {
   const userVerifiedList = useMemo(() => {
     const tempVerifiedList: UserGuardianStatus[] = Object.values(userGuardianStatus ?? {});
     let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
+    const _query = query.split('_')[0];
     if (query === 'guardians/edit') {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);
-    } else if (['guardians/del', 'guardians/add'].includes(query)) {
+    } else if (['guardians/del', 'guardians/add'].includes(_query)) {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== opGuardian?.key);
     }
     return filterVerifiedList;
@@ -126,7 +127,7 @@ export default function GuardianApproval() {
     if (query && query.indexOf('guardians') !== -1) {
       if (['guardians/del', 'guardians/edit'].includes(query)) {
         navigate(`/setting/guardians/edit`);
-      } else if ('guardians/add' === query) {
+      } else if (query && query.indexOf('guardians/add') !== -1) {
         navigate('/setting/guardians/add', { state: 'back' });
       }
     } else if (query && query.indexOf('removeManage') !== -1) {

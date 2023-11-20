@@ -118,6 +118,12 @@ export interface ITextMessage extends IMessage {
 
 export type ITextMessageProps = ITextMessage;
 
+export interface IRedPacketMessage extends IMessage {
+  subType?: string;
+}
+
+export type IRedPacketMessageProps = IRedPacketMessage;
+
 export interface IInputProps {
   autofocus?: boolean;
   reference?: any;
@@ -202,6 +208,7 @@ export interface IUnreadTipProps {
 export type MessageType =
   | ({ type: 'image' } & IImageMessageProps)
   | ({ type: 'text' } & ITextMessageProps)
+  | ({ type: 'red-packet' } & IRedPacketMessageProps) // TODO update red-packet
   | ({ type: 'system' } & ISystemMessageProps);
 
 export type MessageListType = MessageType & IMessageListProps;

@@ -69,6 +69,27 @@ const ChatItem: React.FC<IChatItemProps> = ({
     return () => document.removeEventListener('click', hidePop);
   }, [hidePop]);
 
+  const renderSubtitle = useMemo(() => {
+    const { subtitle, muted } = props;
+    // TODO
+    const isMine = true;
+    const showRedPacket = true;
+    const showRedPacketHighlight = !muted && isMine;
+    if (showRedPacket) {
+      return (
+        <div className="red-packet flex">
+          <span
+            className={clsx(
+              'red-packet-tag',
+              showRedPacketHighlight && 'red-packet-tag-highlight',
+            )}>{`[Red Packet]`}</span>
+          <span className="red-packet-subtitle">{subtitle || 'Best Wishes!'}</span>
+        </div>
+      );
+    }
+    return subtitle;
+  }, [props]);
+
   return (
     <Popover
       key={`pop-${props.id}`}
@@ -106,7 +127,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
             </div>
 
             <div className="body-bottom flex">
-              <div className="body-bottom-title">{props.subtitle}</div>
+              <div className="body-bottom-title">{renderSubtitle}</div>
               <div className="body-bottom-status">
                 {unread && unread > 0 ? (
                   <UnreadTip unread={unread} muted={showMute && props.muted} />

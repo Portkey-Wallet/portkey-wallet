@@ -43,7 +43,7 @@ export const useRecovery = () => {
   const accelerateChainId: ChainId = useMemo(() => {
     if (state && state.indexOf('guardians/add') !== -1) {
       const _query = state.split('_')[1];
-      return _query.split('=')?.[1];
+      return _query?.split('=')?.[1];
     }
     return originChainId;
   }, [state, originChainId]);
@@ -55,7 +55,7 @@ export const useRecovery = () => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('handle guardian error');
       let value;
-      const _query = state.split('_')[0];
+      const _query = state?.split('_')[0];
       switch (_query) {
         case 'guardians/add':
           value = formatAddGuardianValue({ userGuardianStatus, opGuardian });

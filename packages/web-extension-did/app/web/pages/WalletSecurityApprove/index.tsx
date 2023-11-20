@@ -22,16 +22,16 @@ import { sleep } from '@portkey-wallet/utils';
 import './index.less';
 
 export default function WalletSecurityApprove() {
-  const { showGuardian, accelerateGuardianTxId, operateChainId } = usePromptSearch<{
+  const { showGuardian, accelerateGuardianTxId, accelerateChainId } = usePromptSearch<{
     showGuardian: boolean;
     showSync: boolean;
-    operateChainId: ChainId;
+    accelerateChainId: ChainId;
     accelerateGuardianTxId?: string;
   }>();
   const navigate = useNavigate();
   const originChainId = useOriginChainId();
   const originChainInfo = useCurrentChain(originChainId);
-  const operateChainInfo = useCurrentChain(operateChainId);
+  const accelerateChainInfo = useCurrentChain(accelerateChainId);
   const { walletInfo } = useCurrentWallet();
   const currentNetwork = useCurrentNetworkInfo();
   const { setLoading } = useLoading();
@@ -43,7 +43,7 @@ export default function WalletSecurityApprove() {
         const pin = getSeedResult.data.privateKey;
         const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
 
-        if (!operateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
+        if (!accelerateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
           return message.error(SecurityAccelerateErrorTip);
 
         const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateTxId);
@@ -51,9 +51,9 @@ export default function WalletSecurityApprove() {
         const params = JSON.parse(result.Transaction.Params);
 
         await handleGuardian({
-          rpcUrl: operateChainInfo?.endPoint as string,
+          rpcUrl: accelerateChainInfo?.endPoint as string,
           chainType: currentNetwork.walletType,
-          address: operateChainInfo?.caContractAddress as string,
+          address: accelerateChainInfo?.caContractAddress as string,
           privateKey,
           paramsOption: {
             method: 'AddGuardian',
@@ -75,8 +75,8 @@ export default function WalletSecurityApprove() {
     },
     [
       currentNetwork.walletType,
-      operateChainInfo?.caContractAddress,
-      operateChainInfo?.endPoint,
+      accelerateChainInfo?.caContractAddress,
+      accelerateChainInfo?.endPoint,
       originChainInfo?.endPoint,
       walletInfo.AESEncryptPrivateKey,
       walletInfo?.caHash,
@@ -91,7 +91,7 @@ export default function WalletSecurityApprove() {
         await handleSyncGuardian(accelerateGuardianTxId);
       } else {
         if (!walletInfo?.caHash) message.error(SecurityAccelerateErrorTip);
-        const res = await getAccelerateGuardianTxId(walletInfo?.caHash as string, operateChainId, originChainId);
+        const res = await getAccelerateGuardianTxId(walletInfo?.caHash as string, accelerateChainId, originChainId);
         if (res.isSafe) {
           setLoading(false);
           message.success('Guardian added');
@@ -108,14 +108,14 @@ export default function WalletSecurityApprove() {
     } finally {
       setLoading(false);
     }
-  }, [accelerateGuardianTxId, handleSyncGuardian, operateChainId, originChainId, walletInfo?.caHash, setLoading]);
+  }, [accelerateGuardianTxId, handleSyncGuardian, accelerateChainId, originChainId, walletInfo?.caHash, setLoading]);
 
   return (
     <div>
       {showGuardian ? (
         <div className="full-screen-height portkey-ui-flex-center wallet-security-approve">
           <SecurityCheck
-            onConfirm={() => navigate('/setting/guardians', { state: { operateChainId } })}
+            onConfirm={() => navigate('/setting/guardians', { state: { accelerateChainId } })}
             onCancel={() => {
               closeTabPrompt(errorHandler(200003));
             }}

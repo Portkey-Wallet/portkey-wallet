@@ -68,7 +68,7 @@ export const useCheckSecurity = () => {
               _txId = _accelerateGuardian?.transactionId;
             }
             synchronizingModal({
-              operateChainId: targetChainId,
+              accelerateChainId: targetChainId,
               accelerateGuardiansTxId: _txId,
             });
             return false;
@@ -97,25 +97,25 @@ export function useSynchronizingModal() {
   const handleSyncGuardian = useCallback(
     async ({
       accelerateGuardiansTxId,
-      operateChainId,
+      accelerateChainId,
     }: {
       accelerateGuardiansTxId: string;
-      operateChainId: ChainId;
+      accelerateChainId: ChainId;
     }) => {
       try {
         const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
         const pin = getSeedResult.data.privateKey;
         const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
-        const operateChainInfo = await getCurrentChainInfo(operateChainId);
-        if (!operateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
+        const accelerateChainInfo = await getCurrentChainInfo(accelerateChainId);
+        if (!accelerateChainInfo?.endPoint || !originChainInfo?.endPoint || !privateKey)
           return message.error(SecurityAccelerateErrorTip);
         const result = await getAelfTxResult(originChainInfo?.endPoint, accelerateGuardiansTxId);
         if (result.Status !== 'MINED') return message.error(SecurityAccelerateErrorTip);
         const params = JSON.parse(result.Transaction.Params);
         const res = await handleGuardian({
-          rpcUrl: operateChainInfo?.endPoint as string,
+          rpcUrl: accelerateChainInfo?.endPoint as string,
           chainType: currentNetwork.walletType,
-          address: operateChainInfo?.caContractAddress as string,
+          address: accelerateChainInfo?.caContractAddress as string,
           privateKey,
           paramsOption: {
             method: 'AddGuardian',
@@ -139,23 +139,23 @@ export function useSynchronizingModal() {
   const checkAccelerateIsReady = useCallback(
     async ({
       accelerateGuardiansTxId,
-      operateChainId,
+      accelerateChainId,
     }: {
       accelerateGuardiansTxId?: string;
-      operateChainId: ChainId;
+      accelerateChainId: ChainId;
     }) => {
       try {
         setLoading(true);
         if (accelerateGuardiansTxId) {
-          await handleSyncGuardian({ operateChainId, accelerateGuardiansTxId });
+          await handleSyncGuardian({ accelerateChainId, accelerateGuardiansTxId });
         } else {
           if (!walletInfo?.caHash) return message.error(SecurityAccelerateErrorTip);
-          const res = await getAccelerateGuardianTxId(walletInfo?.caHash, operateChainId, originChainId);
+          const res = await getAccelerateGuardianTxId(walletInfo?.caHash, accelerateChainId, originChainId);
           if (res.isSafe) {
             message.success('Guardian added');
           } else if (res.accelerateGuardian?.transactionId) {
             await handleSyncGuardian({
-              operateChainId,
+              accelerateChainId,
               accelerateGuardiansTxId: res.accelerateGuardian.transactionId,
             });
           } else {
@@ -173,7 +173,13 @@ export function useSynchronizingModal() {
   );
 
   return useCallback(
-    ({ operateChainId, accelerateGuardiansTxId }: { operateChainId: ChainId; accelerateGuardiansTxId?: string }) => {
+    ({
+      accelerateChainId,
+      accelerateGuardiansTxId,
+    }: {
+      accelerateChainId: ChainId;
+      accelerateGuardiansTxId?: string;
+    }) => {
       const modal = CustomModal({
         type: 'info',
         content: (
@@ -193,7 +199,7 @@ export function useSynchronizingModal() {
         okText: t('OK'),
         onOk: () => {
           modal.destroy();
-          checkAccelerateIsReady({ operateChainId, accelerateGuardiansTxId });
+          checkAccelerateIsReady({ accelerateChainId, accelerateGuardiansTxId });
         },
       });
     },
@@ -205,7 +211,7 @@ export function useAddGuardiansModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   return useCallback(
-    (operateChainId: ChainId) => {
+    (accelerateChainId: ChainId) => {
       CustomModal({
         type: 'confirm',
         content: (
@@ -223,7 +229,7 @@ export function useAddGuardiansModal() {
         ),
         cancelText: t('Not Now'),
         okText: t('Add Guardians'),
-        onOk: () => navigate('/setting/guardians', { state: { operateChainId } }),
+        onOk: () => navigate('/setting/guardians', { state: { accelerateChainId } }),
       });
     },
     [navigate, t],

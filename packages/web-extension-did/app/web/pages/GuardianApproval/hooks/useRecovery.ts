@@ -40,14 +40,14 @@ export const useRecovery = () => {
   const navigate = useNavigate();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus, opGuardian, preGuardian } = useGuardiansInfo();
-  const operateChainId: ChainId = useMemo(() => {
+  const accelerateChainId: ChainId = useMemo(() => {
     if (state && state.indexOf('guardians/add') !== -1) {
       const _query = state.split('_')[1];
-      return _query.split('=')?.[1];
+      return _query?.split('=')?.[1];
     }
     return originChainId;
   }, [state, originChainId]);
-  const operateChainInfo = useCurrentChain(operateChainId);
+  const accelerateChainInfo = useCurrentChain(accelerateChainId);
 
   return useCallback(async () => {
     try {
@@ -55,7 +55,7 @@ export const useRecovery = () => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('handle guardian error');
       let value;
-      const _query = state.split('_')[0];
+      const _query = state?.split('_')[0];
       switch (_query) {
         case 'guardians/add':
           value = formatAddGuardianValue({ userGuardianStatus, opGuardian });
@@ -83,12 +83,12 @@ export const useRecovery = () => {
         },
       });
       try {
-        if (state && state.indexOf('guardians/add') !== -1 && operateChainId !== originChainId) {
-          if (!operateChainInfo?.endPoint) return;
+        if (state && state.indexOf('guardians/add') !== -1 && accelerateChainId !== originChainId) {
+          if (!accelerateChainInfo?.endPoint) return;
           const res = await handleGuardian({
-            rpcUrl: operateChainInfo.endPoint,
+            rpcUrl: accelerateChainInfo.endPoint,
             chainType: currentNetwork.walletType,
-            address: operateChainInfo.caContractAddress,
+            address: accelerateChainInfo.caContractAddress,
             privateKey,
             paramsOption: {
               method: GuardianMth.addGuardian,
@@ -130,9 +130,9 @@ export const useRecovery = () => {
     getGuardianList,
     navigate,
     opGuardian,
-    operateChainId,
-    operateChainInfo?.caContractAddress,
-    operateChainInfo?.endPoint,
+    accelerateChainId,
+    accelerateChainInfo?.caContractAddress,
+    accelerateChainInfo?.endPoint,
     originChainId,
     passwordSeed,
     preGuardian,

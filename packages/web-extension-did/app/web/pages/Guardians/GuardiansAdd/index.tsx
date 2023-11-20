@@ -63,15 +63,14 @@ export default function AddGuardian() {
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const { currentNetwork } = useWalletInfo();
-  const operateChainId = useMemo(() => {
+  const accelerateChainId = useMemo(() => {
     if (search) {
       const { detail } = qs.parse(search);
-      if (detail && detail.indexOf('operateChainId') !== -1) {
-        const _operateChainId = detail.split('_')[1];
-        return _operateChainId;
+      if (detail && detail.indexOf('accelerateChainId') !== -1) {
+        return detail.split('_')[1];
       }
     }
-    return state?.operateChainId || originChainId;
+    return state?.accelerateChainId || originChainId;
   }, [originChainId, search, state]);
 
   const disabled = useMemo(() => {
@@ -334,7 +333,9 @@ export default function AddGuardian() {
           };
           dispatch(setCurrentGuardianAction(newGuardian));
           dispatch(setOpGuardianAction(newGuardian));
-          navigate('/setting/guardians/verifier-account', { state: `guardians/add_operateChainId=${operateChainId}` });
+          navigate('/setting/guardians/verifier-account', {
+            state: `guardians/add_accelerateChainId=${accelerateChainId}`,
+          });
         }
       } catch (error) {
         setLoading(false);
@@ -354,7 +355,7 @@ export default function AddGuardian() {
       currentChain,
       curKey,
       navigate,
-      operateChainId,
+      accelerateChainId,
     ],
   );
 
@@ -411,7 +412,9 @@ export default function AddGuardian() {
           identifierHash: guardianIdentifier,
         }),
       );
-      navigate('/setting/guardians/guardian-approval', { state: `guardians/add_operateChainId=${operateChainId}` });
+      navigate('/setting/guardians/guardian-approval', {
+        state: `guardians/add_accelerateChainId=${accelerateChainId}`,
+      });
     } catch (error) {
       const msg = handleErrorMessage(error);
       message.error(msg);
@@ -432,7 +435,7 @@ export default function AddGuardian() {
     userGuardianList,
     verifierVal,
     walletInfo,
-    operateChainId,
+    accelerateChainId,
   ]);
 
   const handleVerify = useCallback(async () => {

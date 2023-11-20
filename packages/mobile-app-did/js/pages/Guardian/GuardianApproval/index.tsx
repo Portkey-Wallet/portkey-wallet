@@ -2,7 +2,7 @@ import { TextM, TextXXXL } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
@@ -37,6 +37,7 @@ import { useGetCurrentCAContract } from 'hooks/contract';
 import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../types';
 import { handleGuardiansApproved } from 'utils/login';
 import { useOnRequestOrSetPin } from 'hooks/login';
+import { useIsFocused } from '@react-navigation/native';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -128,7 +129,11 @@ export default function GuardianApproval() {
       expiredTimer && clearInterval(expiredTimer);
     };
   });
-
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isSuccess && isFocused && !isExpired) onFinish();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, isFocused, isExpired]);
   const onBack = useCallback(() => {
     if (approvalType === ApprovalType.addGuardian) {
       navigationService.navigate('GuardianEdit');

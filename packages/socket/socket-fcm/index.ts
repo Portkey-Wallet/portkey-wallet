@@ -1,19 +1,14 @@
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { formatTokenWithOutBear } from '@portkey-wallet/api/api-did/utils';
+import { DeviceInfoType, AppStatusUnit } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { BaseSignalr } from '@portkey/socket';
 import { ISignalrOptions } from '@portkey/socket/dist/commonjs/types';
-type AppStatus = 'foreground' | 'background';
 
-type DeviceInfoType = {
-  deviceType?: string;
-  deviceBrand?: string;
-  operatingSystemVersion?: string;
-};
 class SignalrFCM extends BaseSignalr {
   portkeyToken?: string;
   fcmToken?: string;
-  fcmRefreshTokenTime?: string;
+  fcmRefreshTokenTime?: number;
   deviceId?: string;
   deviceInfo?: DeviceInfoType;
   getFCMTokenFunc?: (refresh?: boolean) => Promise<string>;
@@ -45,17 +40,31 @@ class SignalrFCM extends BaseSignalr {
     if (!this.getFCMTokenFunc) throw Error('Please init SignalrFCM ');
 
     const fcmToken = await this.getFCMTokenFunc(refresh);
+    console.log('fcmToken', fcmToken);
     this.fcmToken = fcmToken;
-    if (refresh || !fcmToken) this.fcmRefreshTokenTime = String(Date.now());
+    this.fcmRefreshTokenTime = Date.now();
   };
 
-  public reportAppStatus = async (status: AppStatus) => {
-    return this.signalr?.invoke('reportAppStatus', status);
+  public reportAppStatus = async (status: AppStatusUnit) => {
+    console.log('reportAppStatus', { status, unReadCount: 99 });
+    return this.signalr?.invoke('reportAppStatus', { status: 0, unReadCount: 99 });
   };
 
   // TODO: change ts
-  public reportDeviceInfo = (reportDeviceInfo: any) => {
-    return this.signalr?.invoke('reportDeviceInfo', reportDeviceInfo);
+  public reportDeviceInfo = () => {
+    console.log('deviceInfo', this.deviceInfo);
+    // return this.signalr?.invoke('reportDeviceInfo', this.deviceInfo);
+
+    const data = {
+      deviceId: this.deviceId || '',
+      token: this.fcmToken || '',
+      refreshTime: this.fcmRefreshTokenTime || Date.now(),
+      deviceInfo: this.deviceInfo,
+    };
+
+    console.log('deviceInfo  data', data);
+
+    return this.signalr?.invoke('reportDeviceInfo', data);
   };
 
   private resetSignalrFCM = () => {
@@ -65,14 +74,17 @@ class SignalrFCM extends BaseSignalr {
 
   public exitWallet = () => {
     this.signalr?.invoke('exitWallet');
-    this.resetSignalrFCM();
     this.signalr?.stop();
+    this.resetSignalrFCM();
   };
 
   public switchNetwork = () => {
     this.signalr?.invoke('switchNetwork');
-    this.resetSignalrFCM();
     this.signalr?.stop();
+    this.resetSignalrFCM();
+  };
+  public getRefreshTime = () => {
+    console.log(this.fcmRefreshTokenTime);
   };
 
   public doOpen = async ({ url, clientId }: { url: string; clientId: string }): Promise<any> => {

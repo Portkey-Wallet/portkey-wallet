@@ -27,8 +27,8 @@ export const requestUserPermission = async () => {
   } else {
     androidResult = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
   }
-  console.log('androidResult', androidResult);
-  return androidResult;
+  console.log('androidResult');
+  return androidResult === 'granted';
 };
 
 export const getFCMToken = async (refresh?: boolean): Promise<string> => {
@@ -55,7 +55,9 @@ export const getFCMToken = async (refresh?: boolean): Promise<string> => {
 export const initFCMSignalR = async () => {
   const deviceInfo = await getDeviceInfo();
 
-  signalrFCM.init({
+  await requestUserPermission();
+
+  await signalrFCM.init({
     deviceInfo,
     deviceId: deviceInfo.deviceId,
     getFCMTokenFunc: getFCMToken,

@@ -52,13 +52,14 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
 
   const operationType: OperationTypeEnum = useMemo(() => {
     switch (query) {
-      case 'guardians/add':
-        return OperationTypeEnum.addGuardian;
       case 'guardians/edit':
         return OperationTypeEnum.editGuardian;
       case 'guardians/del':
         return OperationTypeEnum.deleteGuardian;
       default:
+        if (query && query.indexOf('guardians/add') !== -1) {
+          return OperationTypeEnum.addGuardian;
+        }
         if (query && query?.indexOf('removeManage') !== -1) {
           return OperationTypeEnum.removeOtherManager;
         } else if (query && query?.indexOf('setTransferLimit') !== -1) {

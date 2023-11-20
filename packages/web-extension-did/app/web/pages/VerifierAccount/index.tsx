@@ -47,7 +47,7 @@ export default function VerifierAccount() {
   const { passwordSeed } = useUserInfo();
   const getGuardianList = useGuardianList();
   const isBigScreenPrompt = useMemo(
-    () => (isNotLessThan768 ? state.includes('guardian') || state.includes('removeManage') : false),
+    () => (isNotLessThan768 ? state?.includes('guardian') || state?.includes('removeManage') : false),
     [isNotLessThan768, state],
   );
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult('register');

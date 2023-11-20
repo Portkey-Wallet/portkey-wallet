@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLoginInfo, useGuardiansInfo, useCommonState } from 'store/Provider/hooks';
 import { VerifyStatus } from '@portkey-wallet/types/verifier';
 import { useNavigate, useLocation } from 'react-router';
@@ -19,6 +19,8 @@ import InternalMessage from 'messages/InternalMessage';
 import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import qs from 'query-string';
 import './index.less';
+import { useEffectOnce } from 'react-use';
+import { sleep } from '@portkey-wallet/utils';
 
 export default function GuardianApproval() {
   const { userGuardianStatus, guardianExpiredTime, opGuardian, preGuardian } = useGuardiansInfo();
@@ -28,14 +30,17 @@ export default function GuardianApproval() {
   const navigate = useNavigate();
   const { state, search } = useLocation();
   const [query, setQuery] = useState('');
+  const queryRef = useRef('');
   useEffect(() => {
     if (search) {
       const { detail } = qs.parse(search);
       setQuery(detail);
+      queryRef.current = detail;
     } else {
       setQuery(state);
+      queryRef.current = state;
     }
-  }, [query, search, state]);
+  }, [search, state]);
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const isBigScreenPrompt: boolean = useMemo(() => {
@@ -47,13 +52,13 @@ export default function GuardianApproval() {
   const userVerifiedList = useMemo(() => {
     const tempVerifiedList = Object.values(userGuardianStatus ?? {});
     let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
-    if (query === 'guardians/edit') {
+    if (queryRef.current === 'guardians/edit') {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);
-    } else if (['guardians/del', 'guardians/add'].includes(query)) {
+    } else if (['guardians/del', 'guardians/add'].includes(queryRef.current)) {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== opGuardian?.key);
     }
     return filterVerifiedList;
-  }, [opGuardian?.key, preGuardian?.key, query, userGuardianStatus]);
+  }, [opGuardian?.key, preGuardian?.key, userGuardianStatus]);
 
   const approvalLength = useMemo(() => {
     return getApprovalCount(userVerifiedList.length);
@@ -69,9 +74,9 @@ export default function GuardianApproval() {
   const handleRemoveOtherManage = useRemoveOtherManage();
 
   const recoveryWallet = useCallback(async () => {
-    if (query && query.indexOf('guardians') !== -1) {
+    if (queryRef.current && queryRef.current?.indexOf('guardians') !== -1) {
       handleGuardianRecovery();
-    } else if (query && query.indexOf('removeManage') !== -1) {
+    } else if (queryRef.current && queryRef.current?.indexOf('removeManage') !== -1) {
       handleRemoveOtherManage();
     } else {
       const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
@@ -81,14 +86,17 @@ export default function GuardianApproval() {
         navigate('/login/set-pin/login');
       }
     }
-  }, [
-    handleGuardianRecovery,
-    handleRemoveOtherManage,
-    managerAddress,
-    navigate,
-    onManagerAddressAndQueryResult,
-    query,
-  ]);
+  }, [handleGuardianRecovery, handleRemoveOtherManage, managerAddress, navigate, onManagerAddressAndQueryResult]);
+
+  const checkGuardiansApprovalFinished = useCallback(async () => {
+    await sleep(500);
+    const isNeedApproval = userVerifiedList.some((item) => !item.status || item.status !== VerifyStatus.Verified);
+    if (!isNeedApproval) recoveryWallet();
+  }, [recoveryWallet, userVerifiedList]);
+
+  useEffectOnce(() => {
+    checkGuardiansApprovalFinished();
+  });
 
   useEffect(() => {
     if (!guardianExpiredTime) return setIsExpired(false);
@@ -106,19 +114,19 @@ export default function GuardianApproval() {
   }, [guardianExpiredTime]);
 
   const handleBack = useCallback(() => {
-    if (query && query.indexOf('guardians') !== -1) {
-      if (['guardians/del', 'guardians/edit'].includes(query)) {
+    if (queryRef.current && queryRef.current?.indexOf('guardians') !== -1) {
+      if (['guardians/del', 'guardians/edit'].includes(queryRef.current)) {
         navigate(`/setting/guardians/edit`);
-      } else if ('guardians/add' === query) {
+      } else if ('guardians/add' === queryRef.current) {
         navigate('/setting/guardians/add', { state: 'back' });
       }
-    } else if (query && query.indexOf('removeManage') !== -1) {
-      const manageAddress = query.split('_')[1];
+    } else if (queryRef.current && queryRef.current?.indexOf('removeManage') !== -1) {
+      const manageAddress = queryRef.current?.split('_')[1];
       navigate(`/setting/wallet-security/manage-devices/${manageAddress}`);
     } else {
       navigate('/register/start');
     }
-  }, [navigate, query]);
+  }, [navigate]);
 
   const renderContent = useMemo(
     () => (

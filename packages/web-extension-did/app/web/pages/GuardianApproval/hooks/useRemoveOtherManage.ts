@@ -4,7 +4,7 @@ import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-
 import aes from '@portkey-wallet/utils/aes';
 import { message } from 'antd';
 import { DEVICE_TYPE } from 'constants/index';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { removeOtherManager } from 'utils/sandboxUtil/removeOtherManager';
@@ -25,21 +25,21 @@ export const useRemoveOtherManage = () => {
   const navigate = useNavigate();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus } = useGuardiansInfo();
-  const [query, setQuery] = useState('');
+  const queryRef = useRef('');
 
   useEffect(() => {
     if (search) {
       const { detail } = qs.parse(search);
-      setQuery(detail);
+      queryRef.current = detail;
     } else {
-      setQuery(state);
+      queryRef.current = state;
     }
-  }, [query, search, state]);
+  }, [search, state]);
 
   return useCallback(async () => {
     try {
       setLoading(true);
-      const manageAddress = query.split('_')[1];
+      const manageAddress = queryRef.current?.split('_')[1];
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
@@ -71,14 +71,5 @@ export const useRemoveOtherManage = () => {
       const _error = contractErrorHandler(error) || 'Try again later';
       message.error(_error);
     }
-  }, [
-    currentChain,
-    currentNetwork.walletType,
-    navigate,
-    passwordSeed,
-    setLoading,
-    query,
-    userGuardianStatus,
-    walletInfo,
-  ]);
+  }, [currentChain, currentNetwork.walletType, navigate, passwordSeed, setLoading, userGuardianStatus, walletInfo]);
 };

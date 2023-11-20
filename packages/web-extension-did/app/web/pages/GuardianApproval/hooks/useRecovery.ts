@@ -90,6 +90,8 @@ export const useRecovery = () => {
       console.log('---op-guardian-error', error);
       const _error = contractErrorHandler(error) || 'Something error';
       message.error(_error);
+    } finally {
+      setLoading(false);
     }
   }, [
     currentChain,

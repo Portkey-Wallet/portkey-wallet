@@ -20,6 +20,7 @@ import {
   VerificationType,
   VerifierInfo,
   VerifierItem,
+  VerifyStatus,
 } from '@portkey-wallet/types/verifier';
 import { handleErrorCode, sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
@@ -44,7 +45,7 @@ import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { usePin, useUser } from './store';
-import { queryFailAlert } from 'utils/login';
+import { handleGuardiansApproved, queryFailAlert } from 'utils/login';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import { ChainId } from '@portkey-wallet/types';
 import ActionSheet from 'components/ActionSheet';
@@ -57,6 +58,7 @@ import { TextL } from 'components/CommonText';
 import fonts from 'assets/theme/fonts';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { AuthTypes } from 'constants/guardian';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 export function useOnResultFail() {
   const dispatch = useAppDispatch();
@@ -218,8 +220,34 @@ type LoginParams = {
 
 export function useGoGuardianApproval(isLogin?: boolean) {
   const dispatch = useAppDispatch();
+  const verifyToken = useVerifyToken();
+  const onRequestOrSetPin = useOnRequestOrSetPin();
+
+  const onVerifierAuth = useCallback(
+    async ({
+      guardianItem,
+      originChainId,
+      operationType = OperationTypeEnum.communityRecovery,
+      authenticationInfo,
+    }: {
+      guardianItem: UserGuardianItem;
+      originChainId: ChainId;
+      operationType?: OperationTypeEnum;
+      authenticationInfo?: AuthenticationInfo;
+    }) => {
+      return verifyToken(guardianItem.guardianType, {
+        accessToken: authenticationInfo?.[guardianItem.guardianAccount],
+        id: guardianItem.guardianAccount,
+        verifierId: guardianItem.verifier?.id,
+        chainId: originChainId,
+        operationType,
+      });
+    },
+    [verifyToken],
+  );
+
   return useCallback(
-    ({
+    async ({
       originChainId,
       loginAccount,
       userGuardiansList,
@@ -230,13 +258,30 @@ export function useGoGuardianApproval(isLogin?: boolean) {
       userGuardiansList?: any;
       authenticationInfo?: AuthenticationInfo;
     }) => {
-      const onConfirm = async () => {
-        console.log(userGuardiansList, '====userGuardiansList');
+      console.log(userGuardiansList, '====userGuardiansList');
 
-        if (userGuardiansList?.length === 10) {
+      const onConfirm = async () => {
+        // auto login
+        if (userGuardiansList?.length === 1) {
           const guardianItem = userGuardiansList[0];
           const guardianInfo = { guardianItem, verificationType: VerificationType.communityRecovery };
           if (AuthTypes.includes(guardianItem.guardianType)) {
+            const req = await onVerifierAuth({ guardianItem, originChainId, authenticationInfo });
+            // console.log(req, '=====onVerifierAuth');
+            const verifierInfo: VerifierInfo = { ...req, verifierId: guardianItem?.verifier?.id };
+            const key = guardianItem.key as string;
+            return onRequestOrSetPin({
+              managerInfo: {
+                verificationType: VerificationType.communityRecovery,
+                loginAccount: guardianItem.guardianAccount,
+                type: guardianItem.guardianType,
+              } as ManagerInfo,
+              autoLogin: true,
+              guardiansApproved: handleGuardiansApproved({ [key]: { status: VerifyStatus.Verified, verifierInfo } }, [
+                guardianItem,
+              ]) as GuardiansApproved,
+              showLoading: true,
+            });
           } else {
             const req = await verification.sendVerificationCode({
               params: {
@@ -259,6 +304,7 @@ export function useGoGuardianApproval(isLogin?: boolean) {
             }
           }
         }
+        Loading.hide();
         dispatch(setOriginChainId(originChainId));
         navigationService.navigate('GuardianApproval', {
           loginAccount,
@@ -279,10 +325,10 @@ export function useGoGuardianApproval(isLogin?: boolean) {
           ],
         });
       } else {
-        onConfirm();
+        await onConfirm();
       }
     },
-    [dispatch, isLogin],
+    [dispatch, isLogin, onRequestOrSetPin, onVerifierAuth],
   );
 }
 
@@ -492,7 +538,7 @@ export function useOnLogin(isLogin?: boolean) {
         const holderInfo = await getGuardiansInfo({ guardianIdentifier: loginAccount }, chainInfo);
         const { guardianList, guardianAccounts } = holderInfo || {};
         if (guardianAccounts || guardianList) {
-          goGuardianApproval({
+          await goGuardianApproval({
             originChainId,
             loginAccount,
             userGuardiansList: handleUserGuardiansList(holderInfo, verifierServers),
@@ -533,12 +579,16 @@ export function useOnRequestOrSetPin() {
       managerInfo,
       verifierInfo,
       guardiansApproved,
+      autoLogin,
     }: {
       showLoading?: boolean;
       managerInfo: Omit<ManagerInfo, 'managerUniqueId'>;
       verifierInfo?: VerifierInfo;
       guardiansApproved?: GuardiansApproved;
+      autoLogin?: boolean;
     }) => {
+      console.log(guardiansApproved, showLoading, '====guardiansApproved');
+
       if (walletInfo?.address && pin) {
         onManagerAddressAndQueryResult({
           managerInfo,
@@ -553,6 +603,7 @@ export function useOnRequestOrSetPin() {
           managerInfo,
           guardiansApproved,
           verifierInfo,
+          autoLogin,
         });
       }
     },

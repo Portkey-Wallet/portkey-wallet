@@ -26,7 +26,7 @@ import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/ho
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { setLoginAccount } from 'utils/guardian';
 import { LoginType, ManagerInfo } from '@portkey-wallet/types/types-ca/wallet';
-import { GuardiansStatusItem } from '../types';
+import { GuardiansApproved, GuardiansStatusItem } from '../types';
 import { verification } from 'utils/api';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
@@ -114,36 +114,39 @@ export default function VerifierDetails() {
   );
 
   const registerAccount = useCallback(
-    ({
+    async ({
       verifierInfo,
-      requestCodeResult,
+      codeResult,
     }: {
       verifierInfo: VerifierInfo;
-      requestCodeResult?: {
+      codeResult?: {
         verifierSessionId: string;
       };
     }) => {
-      const key = guardianItem?.key as string;
+      if (!guardianItem) return CommonToast.fail('Guardian not found');
+      const key = guardianItem.key as string;
       onRequestOrSetPin({
         managerInfo: {
           verificationType: VerificationType.communityRecovery,
-          loginAccount: guardianItem?.guardianAccount,
-          type: guardianItem?.guardianType,
+          loginAccount: guardianItem.guardianAccount,
+          type: guardianItem.guardianType,
         } as ManagerInfo,
         guardiansApproved: handleGuardiansApproved(
-          { [key]: { status: VerifyStatus.Verified, verifierInfo, requestCodeResult } },
-          userGuardiansList as UserGuardianItem[],
+          { [key]: { status: VerifyStatus.Verified, verifierInfo, requestCodeResult: codeResult } },
+          [guardianItem],
         ) as GuardiansApproved,
+        showLoading: true,
+        autoLogin: true,
       });
     },
-    [],
+    [guardianItem, onRequestOrSetPin],
   );
 
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
-      Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
+      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
       try {
         const rst = await verification.checkVerificationCode({
           params: {
@@ -164,7 +167,13 @@ export default function VerifierDetails() {
         };
 
         switch (verificationType) {
-          case VerificationType.communityRecovery:
+          case VerificationType.communityRecovery: {
+            if (autoLogin) {
+              registerAccount({ verifierInfo, codeResult: requestCodeResult });
+              break;
+            }
+          }
+          // eslint-disable-next-line no-fallthrough
           case VerificationType.addGuardianByApprove:
           case VerificationType.editGuardian:
           case VerificationType.deleteGuardian:
@@ -204,9 +213,9 @@ export default function VerifierDetails() {
       } catch (error) {
         CommonToast.failError(error, 'Verify Fail');
         digitInput.current?.reset();
-        Loading.hide();
+        Loading.hide(loadingKey);
       }
-      !isRequestResult && Loading.hide();
+      !isRequestResult && Loading.hide(loadingKey);
     },
     [
       requestCodeResult,

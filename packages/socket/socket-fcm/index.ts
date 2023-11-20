@@ -1,4 +1,4 @@
-import { HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnectionBuilder, HubConnection } from '@microsoft/signalr';
 import { formatTokenWithOutBear } from '@portkey-wallet/api/api-did/utils';
 import { DeviceInfoType, AppStatusUnit } from './types';
 import { sleep } from '@portkey-wallet/utils';
@@ -53,7 +53,7 @@ class SignalrFCM extends BaseSignalr {
   // TODO: change ts
   public reportDeviceInfo = () => {
     console.log('deviceInfo', this.deviceInfo);
-    // return this.signalr?.invoke('reportDeviceInfo', this.deviceInfo);
+    if (!this.deviceInfo) return;
 
     const data = {
       deviceId: this.deviceId || '',
@@ -61,8 +61,6 @@ class SignalrFCM extends BaseSignalr {
       refreshTime: this.fcmRefreshTokenTime || Date.now(),
       deviceInfo: this.deviceInfo,
     };
-
-    console.log('deviceInfo  data', data);
 
     return this.signalr?.invoke('reportDeviceInfo', data);
   };
@@ -87,14 +85,14 @@ class SignalrFCM extends BaseSignalr {
     console.log(this.fcmRefreshTokenTime);
   };
 
-  public doOpen = async ({ url, clientId }: { url: string; clientId: string }): Promise<any> => {
+  public doOpen = async ({ url, clientId }: { url: string; clientId?: string }): Promise<HubConnection> => {
     if (!this.portkeyToken) {
       await sleep(3000);
-      return this.doOpen({ url, clientId });
+      return this.doOpen({ url: `${url}/dataReporting`, clientId: clientId || this.deviceId || '' });
     }
 
     const signalr = new HubConnectionBuilder()
-      .withUrl(url, {
+      .withUrl(`${url}/dataReporting`, {
         accessTokenFactory: () => formatTokenWithOutBear(this.portkeyToken || ''),
       })
       .withAutomaticReconnect()
@@ -103,7 +101,8 @@ class SignalrFCM extends BaseSignalr {
     if (this.signalr) await this.signalr.stop();
 
     await signalr.start();
-    await signalr.invoke('Connect', clientId);
+    await signalr.invoke('Connect', clientId || this.deviceId || '');
+    await this.reportDeviceInfo();
 
     this.connectionId = signalr.connectionId ?? '';
     this.signalr = signalr;

@@ -59,6 +59,8 @@ export const useRecovery = () => {
         default:
           value = {};
       }
+      if (value?.guardiansApproved?.length === 0) return;
+
       await handleGuardian({
         rpcUrl: currentChain.endPoint,
         chainType: currentNetwork.walletType,

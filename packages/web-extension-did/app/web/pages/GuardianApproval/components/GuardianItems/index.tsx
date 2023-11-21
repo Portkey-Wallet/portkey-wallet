@@ -4,7 +4,7 @@ import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier'
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
@@ -29,15 +29,15 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const { state, search } = useLocation();
-  const [query, setQuery] = useState('');
-  useEffect(() => {
+  const query = useMemo(() => {
     if (search) {
       const { detail } = qs.parse(search);
-      setQuery(detail);
+      return detail;
     } else {
-      setQuery(state);
+      return state;
     }
-  }, [query, search, state]);
+  }, [search, state]);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const originChainId = useOriginChainId();

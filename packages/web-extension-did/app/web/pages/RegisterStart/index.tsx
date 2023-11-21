@@ -22,7 +22,7 @@ import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { useGetRegisterInfo, useGuardiansInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
+import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
 import CustomModal from 'pages/components/CustomModal';
@@ -36,6 +36,7 @@ import { useTranslation } from 'react-i18next';
 import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
+import { getStoreState } from 'store/utils/getStore';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -49,7 +50,6 @@ export default function RegisterStart() {
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
-  const { userGuardianStatus } = useGuardiansInfo();
 
   const networkList = useNetworkList();
 
@@ -210,6 +210,8 @@ export default function RegisterStart() {
         dispatch(resetGuardians());
         await fetchUserVerifier({ guardianIdentifier: loginInfo.guardianAccount });
 
+        const userGuardianStatus = getStoreState().guardians.userGuardianStatus;
+
         // Google and Apple login-accounts will automatically login
         const autoVerifiedList: Promise<void>[] = [];
         Object.values(userGuardianStatus ?? {}).forEach((item) => {
@@ -240,7 +242,7 @@ export default function RegisterStart() {
         setLoading(false);
       }
     },
-    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading, socialVerify, userGuardianStatus],
+    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading, socialVerify],
   );
   const loginInfoRef = useRef<LoginInfo>();
   const onInputFinish = useCallback(

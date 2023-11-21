@@ -49,6 +49,7 @@ export type RouterParams = {
   removeManagerAddress?: string;
   loginType?: LoginType;
   authenticationInfo?: AuthenticationInfo;
+  initGuardiansStatus?: GuardiansStatus;
 };
 export default function GuardianApproval() {
   const {
@@ -61,6 +62,7 @@ export default function GuardianApproval() {
     removeManagerAddress,
     loginType,
     authenticationInfo: _authenticationInfo,
+    initGuardiansStatus,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
 
@@ -91,7 +93,7 @@ export default function GuardianApproval() {
     };
   });
 
-  const [guardiansStatus, setApproved] = useState<GuardiansStatus>();
+  const [guardiansStatus, setApproved] = useState<GuardiansStatus | undefined>(initGuardiansStatus);
   const [isExpired, setIsExpired] = useState<boolean>();
 
   const guardianExpiredTime = useRef<number>();

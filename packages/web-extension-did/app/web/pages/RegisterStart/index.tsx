@@ -22,7 +22,7 @@ import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
 import { SocialLoginFinishHandler } from 'types/wallet';
 import { getGoogleUserInfo, parseAppleIdentityToken } from '@portkey-wallet/utils/authentication';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
-import { useGetRegisterInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
+import { useGetRegisterInfo, useGuardiansInfo } from '@portkey-wallet/hooks/hooks-ca/guardian';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import useChangeNetworkText from 'hooks/useChangeNetworkText';
 import CustomModal from 'pages/components/CustomModal';
@@ -33,8 +33,9 @@ import { request } from '@portkey-wallet/api/api-did';
 import useCheckVerifier from 'hooks/useVerifier';
 import CommonModal from 'components/CommonModal';
 import { useTranslation } from 'react-i18next';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -48,6 +49,7 @@ export default function RegisterStart() {
   const isMainnet = useIsMainnet();
   const [open, setOpen] = useState<boolean>();
   const { t } = useTranslation();
+  const { userGuardianStatus } = useGuardiansInfo();
 
   const networkList = useNetworkList();
 
@@ -195,6 +197,7 @@ export default function RegisterStart() {
     [confirmRegisterOrLogin, dispatch, saveState, setLoading],
   );
 
+  const socialVerify = useSocialVerify();
   const onLoginFinish = useCallback(
     async (loginInfo: LoginInfo) => {
       try {
@@ -206,6 +209,27 @@ export default function RegisterStart() {
         saveState({ ...loginInfo, createType: 'login' });
         dispatch(resetGuardians());
         await fetchUserVerifier({ guardianIdentifier: loginInfo.guardianAccount });
+
+        // Google and Apple login-accounts will automatically login
+        const autoVerifiedList: Promise<void>[] = [];
+        Object.values(userGuardianStatus ?? {}).forEach((item) => {
+          if (
+            item.isLoginAccount &&
+            item.guardianAccount === loginInfo.guardianAccount &&
+            [LoginType.Google, LoginType.Apple].includes(item.guardianType)
+          ) {
+            autoVerifiedList.push(
+              socialVerify({
+                operateGuardian: item,
+                originChainId,
+                loginAccount: loginInfo,
+                operationType: OperationTypeEnum.communityRecovery,
+              }),
+            );
+          }
+        });
+        await Promise.all(autoVerifiedList);
+
         setLoading(false);
         navigate('/login/guardian-approval');
       } catch (error) {
@@ -216,7 +240,7 @@ export default function RegisterStart() {
         setLoading(false);
       }
     },
-    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading],
+    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading, socialVerify, userGuardianStatus],
   );
   const loginInfoRef = useRef<LoginInfo>();
   const onInputFinish = useCallback(

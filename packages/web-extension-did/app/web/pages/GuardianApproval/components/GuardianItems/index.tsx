@@ -1,6 +1,6 @@
 import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { UserGuardianItem, UserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/type';
-import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import VerifierPair from 'components/VerifierPair';
@@ -14,11 +14,10 @@ import { verifyErrorHandler } from 'utils/tryErrorHandler';
 import { verification } from 'utils/api';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
-import { useVerifyToken } from 'hooks/authentication';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import qs from 'query-string';
 import './index.less';
+import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 
 interface GuardianItemProps {
   disabled?: boolean;
@@ -168,43 +167,16 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
     [setLoading, query, loginAccount, originChainId, operationType, guardianSendCode, dispatch, navigate],
   );
 
-  const verifyToken = useVerifyToken();
-
-  const socialVerifyHandler = useCallback(
-    async (item: UserGuardianItem) => {
-      try {
-        setLoading(true);
-        const result = await verifyToken(item.guardianType, {
-          accessToken: loginAccount?.authenticationInfo?.[item.guardianAccount],
-          id: item.guardianAccount,
-          verifierId: item.verifier?.id,
-          chainId: originChainId,
-          operationType,
-        });
-        const verifierInfo: VerifierInfo = { ...result, verifierId: item?.verifier?.id };
-        const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
-        dispatch(
-          setUserGuardianItemStatus({
-            key: item.key,
-            signature: verifierInfo.signature,
-            verificationDoc: verifierInfo.verificationDoc,
-            status: VerifyStatus.Verified,
-            identifierHash: guardianIdentifier,
-          }),
-        );
-      } catch (error) {
-        const msg = handleErrorMessage(error);
-        message.error(msg);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [setLoading, verifyToken, loginAccount, originChainId, operationType, dispatch],
-  );
-
+  const socialVerify = useSocialVerify();
   const verifyingHandler = useCallback(
     async (item: UserGuardianItem) => {
-      if (isSocialLogin) return socialVerifyHandler(item);
+      if (isSocialLogin)
+        return socialVerify({
+          operateGuardian: item,
+          operationType,
+          originChainId,
+          loginAccount,
+        });
       dispatch(setCurrentGuardianAction({ ...item, isInitStatus: false }));
       if (query?.includes('guardians')) {
         navigate('/setting/guardians/verifier-account', { state: query });
@@ -214,7 +186,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
         navigate('/login/verifier-account', { state: 'login' });
       }
     },
-    [dispatch, isSocialLogin, navigate, socialVerifyHandler, query],
+    [isSocialLogin, socialVerify, operationType, originChainId, loginAccount, dispatch, query, navigate],
   );
 
   const accountShow = useCallback((guardian: UserGuardianItem) => {

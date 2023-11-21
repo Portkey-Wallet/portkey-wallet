@@ -21,7 +21,7 @@ import { ApprovalType } from '@portkey-wallet/types/verifier';
 import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
-import { divDecimals, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';
@@ -125,8 +125,8 @@ const ApproveModal = (props: SignModalPropsType) => {
   const onUseRecommendedValue = useCallback(() => {
     setErrorMessage('');
     if (LANG_MAX.lt(amount)) return onPressMax();
-    setSymbolNum(divDecimals(amount, decimals).toFixed(decimals));
-  }, [amount, decimals, onPressMax]);
+    setSymbolNum(parseInputNumberChange(divDecimalsStr(amount, decimals), MAX_NUM, decimals));
+  }, [MAX_NUM, amount, decimals, onPressMax]);
 
   useEffectOnce(() => {
     onUseRecommendedValue();

@@ -31,7 +31,7 @@ export async function checkSecuritySafe({
   if (isOrigin && isOriginChainSafe) return true;
 
   if (!isOrigin && isSynchronizing && isOriginChainSafe) {
-    if (Array.isArray(accelerateGuardians) && accelerateGuardians.length > 0) {
+    if (Array.isArray(accelerateGuardians)) {
       const accelerateGuardian = accelerateGuardians.find(item => item.transactionId && item.chainId === originChainId);
       WalletSecurityAccelerate.alert(accelerateChainId, originChainId, accelerateGuardian);
       return false;

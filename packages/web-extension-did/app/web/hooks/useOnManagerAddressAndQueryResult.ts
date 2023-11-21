@@ -2,7 +2,7 @@ import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-
 import AElf from 'aelf-sdk';
 import { useCallback } from 'react';
 import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
-import { randomId } from '@portkey-wallet/utils';
+import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
 import { getDeviceInfo } from 'utils/device';
@@ -10,7 +10,7 @@ import { DEVICE_TYPE } from 'constants/index';
 import { recoveryDIDWallet, registerDIDWallet } from '@portkey-wallet/api/api-did/utils/wallet';
 import type { AccountType, GuardiansApproved } from '@portkey/services';
 import { VerificationType, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
-import { setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { setCAInfo, setManagerInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import useFetchDidWallet from './useFetchDidWallet';
 import { isWalletError } from '@portkey-wallet/store/wallet/utils';
@@ -18,6 +18,11 @@ import { message } from 'antd';
 import ModalTip from 'pages/components/ModalTip';
 import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useTranslation } from 'react-i18next';
+import { contractQueries } from '@portkey-wallet/graphql';
+import { ChainId } from '@portkey/provider-types';
+import { getHolderInfoByContract } from 'utils/sandboxUtil/getHolderInfo';
+import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
+import { useNavigate } from 'react-router';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -28,6 +33,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { loginAccount, registerVerifier } = useLoginInfo();
   const network = useCurrentNetworkInfo();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const originChainId = useOriginChainId();
 
@@ -107,8 +113,68 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
     [loginAccount, getGuardiansApproved, originChainId],
   );
 
+  const distributeFail = useCallback(
+    async ({
+      messageStr,
+      wallet,
+      pin,
+      verificationType,
+    }: {
+      messageStr: string;
+      wallet: any;
+      pin: string;
+      verificationType: VerificationType;
+    }) => {
+      try {
+        if (messageStr.includes('ManagerInfo exists')) {
+          const address = wallet?.walletInfo?.address || '';
+          const { caHolderManagerInfo } = await contractQueries.getCAHolderByManager(wallet.currentNetwork, {
+            manager: wallet?.walletInfo?.address || '',
+          });
+          const info = caHolderManagerInfo[0];
+          if (!info.originChainId) throw new Error('caHolderManagerInfo is empty');
+          const chainInfo = await getCurrentChainInfo(info.originChainId as ChainId);
+          if (!chainInfo) throw 'getCurrentChainInfo error';
+          const contractInfo = await getHolderInfoByContract({
+            rpcUrl: chainInfo.endPoint,
+            chainType: network.walletType,
+            address: chainInfo.caContractAddress,
+            paramsOption: {
+              caHash: info.caHash || '',
+            },
+          });
+          const { managerInfos, caAddress, caHash } = contractInfo.result;
+          const exist = await managerInfos?.some((manager: { address: string }) => manager?.address === address);
+
+          if (exist) {
+            dispatch(
+              setCAInfo({
+                caInfo: {
+                  caAddress,
+                  caHash,
+                },
+                pin,
+                chainId: info.originChainId as ChainId,
+              }),
+            );
+            const path = VerificationType.register === verificationType ? 'register' : 'login';
+            navigate(`/success-page/${path}`);
+            return;
+          }
+        }
+      } catch {
+        //
+      }
+      message.error(handleErrorMessage(messageStr, 'Create wallet failed'));
+      return;
+    },
+    [dispatch, navigate, network.walletType],
+  );
+
   return useCallback(
     async (pin: string, verifierParams?: VerifierInfo) => {
+      const verificationType = state === 'register' ? VerificationType.register : VerificationType.communityRecovery;
+
       try {
         if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
           return message.error('Missing account!!! Please login/register again');
@@ -133,13 +199,12 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         } else {
           sessionInfo = await requestRecoveryDIDWallet({ managerAddress: _walletInfo.address });
         }
-
         const managerInfo = {
           managerUniqueId: sessionInfo.sessionId,
           requestId: sessionInfo.requestId,
           loginAccount: loginAccount?.guardianAccount,
           type: loginAccount.loginType,
-          verificationType: state === 'register' ? VerificationType.register : VerificationType.communityRecovery,
+          verificationType,
         };
         dispatch(
           setManagerInfo({
@@ -156,7 +221,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         await getWalletCAAddressResult({
           requestId: sessionInfo.requestId,
           clientId: _walletInfo.address,
-          verificationType: state === 'register' ? VerificationType.register : VerificationType.communityRecovery,
+          verificationType,
           managerUniqueId: sessionInfo.sessionId,
           pwd: pin,
           managerAddress: _walletInfo.address,
@@ -169,15 +234,21 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         console.log(error, 'onCreate==error');
         const walletError = isWalletError(error);
         if (walletError) return message.error(walletError);
-        if (error?.message || error?.error?.message) return message.error(error?.message || error?.error?.message);
-        const errorString = typeof error === 'string' ? error : 'Something error';
-        message.error(walletError || errorString);
+        const messageError = typeof error === 'string' ? error : error?.message || error?.error?.message;
+
+        distributeFail({
+          messageStr: handleErrorMessage(messageError, 'Create wallet failed'),
+          wallet: walletInfo,
+          pin,
+          verificationType,
+        });
       } finally {
         setLoading(false);
       }
     },
     [
       dispatch,
+      distributeFail,
       getWalletCAAddressResult,
       loginAccount,
       network.networkType,

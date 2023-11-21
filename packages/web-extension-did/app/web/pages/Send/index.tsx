@@ -499,7 +499,7 @@ export default function Send() {
                 <span className="label">{t('To_with_colon')}</span>
                 <div className="control">
                   <ToAccount value={toAccount} onChange={(v) => setToAccount(v)} focus={stage !== Stage.Amount} />
-                  {stage === Stage.Amount && (
+                  {toAccount.address && (
                     <CustomSvg
                       type="Close2"
                       onClick={() => {

@@ -3,6 +3,9 @@ import aes from '@portkey-wallet/utils/aes';
 import AElf from 'aelf-sdk';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { ChainId } from '@portkey-wallet/types';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
+import { getDefaultWallet } from './aelfUtils';
 const walletMap: { [address: string]: AElfWallet } = {};
 export const getState = () => store.getState();
 
@@ -58,4 +61,23 @@ export const getCurrentCaHash = () => {
   const caInfo = walletInfo?.caInfo?.[currentNetwork];
   const originChainId = wallet.originChainId || caInfo?.originChainId;
   return caInfo?.[originChainId || DefaultChainId]?.caHash;
+};
+
+export const getCurrentChainList = () => {
+  const { chainInfo, currentNetwork } = getWallet();
+  return chainInfo?.[currentNetwork];
+};
+
+export const getCurrentChainInfo = (chainId: ChainId) => {
+  return getCurrentChainList()?.find(chain => chain.chainId === chainId);
+};
+
+export const getCurrentCAViewContract = async (chainId: ChainId) => {
+  const chainInfo = getCurrentChainInfo(chainId);
+  if (!chainInfo) throw new Error(`${chainId} info not found`);
+  return getContractBasic({
+    rpcUrl: chainInfo.endPoint,
+    contractAddress: chainInfo.caContractAddress || '',
+    account: getDefaultWallet(),
+  });
 };

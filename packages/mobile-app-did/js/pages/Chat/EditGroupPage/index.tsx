@@ -63,7 +63,7 @@ const EditGroupPage = () => {
   const onSave = useCallback(async () => {
     try {
       Loading.show();
-      if (!isIOS) await sleep(500); // adjust large size photo on android
+      await sleep(500); // adjust large size photo on android
 
       const s3Url = await uploadRef.current?.uploadPhoto();
       await updateChannelInfo(currentChannelId || '', groupName?.trim(), s3Url || icon);

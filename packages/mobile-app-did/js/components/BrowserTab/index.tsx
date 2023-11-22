@@ -73,6 +73,7 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
         source={{ uri }}
         isHidden={isHidden}
         onLoadEnd={onPageLoadEnd}
+        isDiscover
         onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
       />
       <HttpModal uri={uri} />

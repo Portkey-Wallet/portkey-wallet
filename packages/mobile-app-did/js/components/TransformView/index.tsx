@@ -162,6 +162,7 @@ export default class TransformView extends Component<TransformViewProps, Transfo
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         const { pageY } = evt.nativeEvent;
         const { dx, dy } = gestureState;
+
         if (isIOS) {
           const isNotNestScrollViewArea = pageY < this.viewLayout.y + this.nestScrollViewLayout.y;
           return isNotNestScrollViewArea || (!!this.panResponderStatus && dx !== 0 && dy > 5);

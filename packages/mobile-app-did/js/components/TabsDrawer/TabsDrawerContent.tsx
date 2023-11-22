@@ -37,6 +37,7 @@ import { useNavigation } from '@react-navigation/native';
 import navigationService from 'utils/navigationService';
 import { useCurrentDappList } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 const TabsDrawerContent: React.FC = () => {
   const { t } = useLanguage();
@@ -55,6 +56,7 @@ const TabsDrawerContent: React.FC = () => {
   const { tabs } = discoverMap[networkType] ?? {};
   const checkAndUpDateRecordItemName = useCheckAndUpDateRecordItemName();
   const checkAndUpDateTabItemName = useCheckAndUpDateTabItemName();
+  const { getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const tabRef = useRef<IBrowserTab | null>(null);
   const [preActiveTabId, setPreActiveTabId] = useState<number | undefined>(activeTabId);
@@ -212,7 +214,7 @@ const TabsDrawerContent: React.FC = () => {
             <TextWithProtocolIcon
               type="iconLeft"
               location="header"
-              title={activeItem?.name}
+              title={getCmsWebsiteInfoName(activeItem?.url || '') || activeItem?.name}
               url={activeItem?.url || ''}
             />
           </TouchableOpacity>

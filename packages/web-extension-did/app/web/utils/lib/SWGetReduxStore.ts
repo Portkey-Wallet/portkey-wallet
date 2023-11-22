@@ -4,6 +4,7 @@ import { getStoreState as getDefaultState } from 'store/utils/getStore';
 import { getStoredState } from 'redux-persist';
 import { walletPersistConfig, dappPersistConfig, cmsPersistConfig } from 'store/Provider/config';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
+import { ChainId } from '@portkey-wallet/types';
 
 export async function getSWReduxState() {
   return {
@@ -43,4 +44,15 @@ export const getCurrentCaHash = async () => {
   const caInfo = walletInfo?.caInfo?.[currentNetwork];
   const originChainId = wallet.originChainId || caInfo?.originChainId;
   return caInfo?.[originChainId || DefaultChainId]?.caHash;
+};
+
+export const getCurrentChainList = async () => {
+  const currentWallet = await getWalletState();
+  const { currentNetwork, chainInfo } = currentWallet;
+  return chainInfo?.[currentNetwork];
+};
+
+export const getCurrentChainInfo = async (chainId: ChainId) => {
+  const currentChainList = await getCurrentChainList();
+  return currentChainList?.find((chain) => chain.chainId === chainId);
 };

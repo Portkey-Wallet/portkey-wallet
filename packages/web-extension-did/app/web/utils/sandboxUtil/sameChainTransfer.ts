@@ -18,7 +18,7 @@ const sameChainTransfer = async ({
   privateKey: string;
   tokenInfo: BaseToken;
   caHash: string;
-  amount: number;
+  amount: number | string;
   toAddress: string;
   memo?: string;
 }) => {

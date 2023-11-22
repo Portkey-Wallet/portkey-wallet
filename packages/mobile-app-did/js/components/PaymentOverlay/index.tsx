@@ -8,15 +8,13 @@ import { useAccountTokenList } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { TextL, TextM, TextTitle } from 'components/CommonText';
 import { useGetAccountTokenList } from 'hooks/account';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import merge from 'lodash/merge';
 import { useAsync } from 'react-use';
 import { ViewResult } from '@portkey-wallet/contracts/types';
 import LottieLoading from 'components/LottieLoading';
 import GStyles from 'assets/theme/GStyles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { divDecimals, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
-import { ZERO } from '@portkey-wallet/constants/misc';
+import { convertAmountUSDShow, divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import { TextS } from 'components/CommonText';
 import CommonButton from 'components/CommonButton';
@@ -29,6 +27,7 @@ import { FontStyles } from 'assets/theme/styles';
 import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
 import { addressFormat } from '@portkey-wallet/utils';
+import { useAppBuyButtonShow } from 'hooks/cms';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -53,14 +52,13 @@ const PaymentModal = ({
   onConfirm,
 }: PaymentOverlayProps) => {
   const getAccountTokenList = useGetAccountTokenList();
+
   const accountTokenList = useAccountTokenList();
   const defaultToken = useDefaultToken();
   const { currentNetwork } = useWallet();
   const currentCaInfo = useCurrentCaInfo();
   const currentCaAddress = useMemo(() => currentCaInfo?.[chainId]?.caAddress, [chainId, currentCaInfo]);
-  useEffectOnce(() => {
-    getAccountTokenList();
-  });
+
   const [tokenMap, crossSufficientList] = useMemo(() => {
     const currentSymbolList: TokenItemShowType[] = [];
     const crossSufficient: TokenItemShowType[] = [];
@@ -77,12 +75,18 @@ const PaymentModal = ({
   }, [accountTokenList, amount, chainId, tokenInfo.symbol]);
 
   const crossSufficientItem = useMemo(() => crossSufficientList[0], [crossSufficientList]);
-
   const currentTokenInfo: TokenItemShowType | undefined = useMemo(() => tokenMap?.[chainId], [chainId, tokenMap]);
-  console.log(tokenMap, currentTokenInfo, '=====tokenMap');
 
-  const isMainNet = useMemo(() => chainId === MAIN_CHAIN_ID, [chainId]);
-  console.log(isMainNet, '=====isMainNet');
+  const { isBuySectionShow } = useAppBuyButtonShow();
+  const isCanBuy = useMemo(
+    () => tokenInfo.symbol === defaultToken.symbol && isBuySectionShow,
+    [isBuySectionShow, defaultToken.symbol, tokenInfo.symbol],
+  );
+
+  // update AccountTokenList
+  useEffectOnce(() => {
+    getAccountTokenList();
+  });
 
   const fee = useAsync(async () => {
     const req = await calculateTransactionFee();
@@ -90,11 +94,6 @@ const PaymentModal = ({
     if (!req.data.TransactionFee || !req.data.Success) throw new Error('TransactionFee calculate fail');
     return req.data.TransactionFee?.[defaultToken.symbol] || '0';
   }, [calculateTransactionFee]);
-  const amountInUSD = useMemo(
-    () => formatAmountUSDShow(ZERO.plus(amount).times(currentTokenInfo?.price || 0), 2),
-    [amount, currentTokenInfo?.price],
-  );
-
   const feeComponent = useMemo(() => {
     if (fee?.error) return;
     return (
@@ -113,7 +112,7 @@ const PaymentModal = ({
           </View>
         </View>
         <View style={GStyles.alignEnd}>
-          <TextS>$ {formatAmountUSDShow(ZERO.plus(fee.value).times(currentTokenInfo?.price || 0), 2)}</TextS>
+          <TextS>{convertAmountUSDShow(fee.value, currentTokenInfo?.price)}</TextS>
         </View>
       </View>
     );
@@ -124,7 +123,6 @@ const PaymentModal = ({
     let buttonTitle = '',
       onPress;
     if (crossSufficientItem) {
-      // TODO: go back
       buttonTitle = 'Get ELF';
       onPress = async () => {
         OverlayModal.hide(false);
@@ -135,19 +133,18 @@ const PaymentModal = ({
               address: addressFormat(currentCaAddress, chainId),
             },
           },
-          // multiLevelParams
+          // TODO: multiLevelParams
           multiLevelParams: {
             successNavigateName: '123',
           },
         });
       };
-    } else if (isMainNet) {
-      // TODO: go back
+    } else if (isCanBuy) {
       buttonTitle = 'Buy ELF';
       onPress = () => {
         OverlayModal.hide(false);
         navigationService.navigateByMultiLevelParams('BuyHome', {
-          // multiLevelParams
+          // TODO: multiLevelParams
           multiLevelParams: {
             successNavigateName: '123',
           },
@@ -160,7 +157,8 @@ const PaymentModal = ({
         <TextS style={[FontStyles.weight500, FontStyles.font11]}>{buttonTitle}</TextS>
       </Touchable>
     );
-  }, [chainId, crossSufficientItem, currentCaAddress, fee.error, isMainNet]);
+  }, [chainId, crossSufficientItem, currentCaAddress, fee.error, isCanBuy]);
+
   return (
     <ModalBody modalBodyType="bottom" style={styles.wrapStyle}>
       <View style={[GStyles.itemCenter, GStyles.flex1]}>
@@ -168,7 +166,7 @@ const PaymentModal = ({
         <TextTitle>
           {amount} {tokenInfo.symbol}
         </TextTitle>
-        <TextL>${amountInUSD}</TextL>
+        <TextL>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextL>
         <View style={GStyles.width100}>
           <TextS>Balance</TextS>
           <View style={styles.balanceItemRow}>
@@ -215,8 +213,8 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
   });
 };
 
-export const showRedPacket = (props: PaymentOverlayProps) => {
-  return show(props);
+export const showRedPacket = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
+  return show({ ...props, title: 'Portkey Red Packet' });
 };
 
 export default {

@@ -17,6 +17,10 @@ export function useCurrentNetworkBalances() {
   }, [balances, currentNetwork.rpcUrl]);
 }
 
+export function useAccountTokenList() {
+  return useAppCASelector(state => state.assets?.accountToken.accountTokenList);
+}
+
 export const useAccountBalanceUSD = () => {
   const {
     accountToken: { accountTokenList },

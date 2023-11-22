@@ -140,3 +140,13 @@ export const formatAmountShow = (
   if (bigCount.isNaN()) return '0';
   return bigCount.decimalPlaces(typeof decimal !== 'number' ? Number(decimal) : decimal, roundingMode).toFormat();
 };
+
+export const formatAmountUSDShow = (
+  count: number | BigNumber | string,
+  decimal: string | number = 2,
+  roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN,
+) => {
+  const bigCount = BigNumber.isBigNumber(count) ? count : new BigNumber(count || '');
+  if (bigCount.isNaN()) return '0';
+  return bigCount.decimalPlaces(typeof decimal !== 'number' ? Number(decimal) : decimal, roundingMode).toFormat();
+};

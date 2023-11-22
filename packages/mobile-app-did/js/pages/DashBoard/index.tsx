@@ -7,6 +7,8 @@ import { RootStackName } from 'navigation';
 import myEvents from 'utils/deviceEvent';
 import useExceptionMessage from 'hooks/userExceptionMessage';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import CommonButton from 'components/CommonButton';
+import navigationService from 'utils/navigationService';
 
 const DashBoard: React.FC<any> = ({ navigation }) => {
   const exceptionMessage = useExceptionMessage();
@@ -34,6 +36,10 @@ const DashBoard: React.FC<any> = ({ navigation }) => {
     <SafeAreaBox edges={['top', 'right', 'left']} style={[BGStyles.bg5]}>
       <Card />
       <DashBoardTab />
+      <CommonButton
+        onPress={() =>
+          navigationService.navigateByMultiLevelParams('Home', { multiLevelParams: { name: 1 } })
+        }></CommonButton>
     </SafeAreaBox>
   );
 };

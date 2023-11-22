@@ -19,17 +19,20 @@ import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 let childrenNode: any = undefined;
 
 const bodyRootWrapper = document.body;
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [new Integrations.BrowserTracing()],
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-  // release: 'v1.0.0',
-  environment: process.env.NODE_ENV,
-});
-exceptionManager.setSentryInstance(Sentry);
+
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [new Integrations.BrowserTracing()],
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+    // release: 'v1.0.0',
+    environment: process.env.NODE_ENV,
+  });
+  exceptionManager.setSentryInstance(Sentry);
+}
 
 ConfigProvider.config({
   prefixCls,

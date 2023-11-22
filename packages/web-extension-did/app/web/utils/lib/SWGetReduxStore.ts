@@ -2,9 +2,10 @@ import { IDappStoreState } from '@portkey-wallet/store/store-ca/dapp/type';
 import { WalletState } from '@portkey-wallet/store/store-ca/wallet/type';
 import { getStoreState as getDefaultState } from 'store/utils/getStore';
 import { getStoredState } from 'redux-persist';
-import { walletPersistConfig, dappPersistConfig, cmsPersistConfig } from 'store/Provider/config';
+import { walletPersistConfig, dappPersistConfig, cmsPersistConfig, loginPersistConfig } from 'store/Provider/config';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { ChainId } from '@portkey-wallet/types';
+import { LoginState } from 'store/reducers/loginCache/type';
 
 export async function getSWReduxState() {
   return {
@@ -55,4 +56,15 @@ export const getCurrentChainList = async () => {
 export const getCurrentChainInfo = async (chainId: ChainId) => {
   const currentChainList = await getCurrentChainList();
   return currentChainList?.find((chain) => chain.chainId === chainId);
+};
+
+export const getLoginCache = async () => {
+  let loginCache = await getStoredState(loginPersistConfig);
+  if (!loginCache) loginCache = getDefaultState().loginCache;
+  return loginCache as LoginState;
+};
+
+export const getLoginAccount = async () => {
+  const loginCache = await getLoginCache();
+  return loginCache.loginAccount;
 };

@@ -21,7 +21,7 @@ import { ApprovalType } from '@portkey-wallet/types/verifier';
 import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
-import { divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { LANG_MAX, ZERO } from '@portkey-wallet/constants/misc';
 import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';

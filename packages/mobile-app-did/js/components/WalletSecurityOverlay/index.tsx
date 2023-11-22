@@ -14,8 +14,9 @@ import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/
 import { useAppDispatch } from 'store/hooks';
 import { sleep } from '@portkey-wallet/utils';
 import { useAppCASelector } from '@portkey-wallet/hooks';
+import { ChainId } from '@portkey/provider-types';
 
-function AlertBody() {
+function AlertBody({ accelerateChainId }: { accelerateChainId: ChainId }) {
   const dispatch = useAppDispatch();
   const isDrawerOpen = useAppCASelector(state => state.discover.isDrawerOpen);
 
@@ -36,7 +37,9 @@ function AlertBody() {
         title: 'Add Guardians',
         type: 'primary',
         onPress: async () => {
-          navigationService.navigate('GuardianHome');
+          navigationService.navigate('GuardianEdit', {
+            accelerateChainId,
+          });
           OverlayModal.hide();
           if (isDrawerOpen) {
             await sleep(250);
@@ -45,23 +48,25 @@ function AlertBody() {
         },
       },
     ];
-  }, [dispatch, isDrawerOpen]);
+  }, [accelerateChainId, dispatch, isDrawerOpen]);
 
   return (
     <View style={styles.alertBox}>
       <Image resizeMode="cover" source={securityWarning} style={styles.img} />
       <TextXL style={styles.alertTitle}>Upgrade Wallet Security Level</TextXL>
       <TextM style={styles.alertMessage}>
-        {'You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding.'}
+        {`You have too few guardians to protect your wallet. Please add at least one more guardian before proceeding.
+
+Note: If you have tried to add a guardian and the action was not completed, please initiate the process again.`}
       </TextM>
       <ButtonRow buttons={buttons} />
     </View>
   );
 }
 
-const alert = async () => {
+const alert = async (accelerateChainId: ChainId) => {
   Keyboard.dismiss();
-  OverlayModal.show(<AlertBody />, {
+  OverlayModal.show(<AlertBody accelerateChainId={accelerateChainId} />, {
     modal: true,
     type: 'zoomOut',
     position: 'center',

@@ -1,7 +1,7 @@
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import AElf from 'aelf-sdk';
 import { useCallback } from 'react';
-import { useAppDispatch, useGuardiansInfo, useLoading, useLoginInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { handleErrorMessage, randomId } from '@portkey-wallet/utils';
 import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { extraDataEncode } from '@portkey-wallet/utils/device';
@@ -18,6 +18,7 @@ import { message } from 'antd';
 import ModalTip from 'pages/components/ModalTip';
 import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useTranslation } from 'react-i18next';
+import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -25,7 +26,6 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { userGuardianStatus } = useGuardiansInfo();
   const dispatch = useAppDispatch();
   const getWalletCAAddressResult = useFetchDidWallet(true);
-  const { loginAccount, registerVerifier } = useLoginInfo();
   const network = useCurrentNetworkInfo();
   const { t } = useTranslation();
 
@@ -45,9 +45,10 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
 
   const requestRegisterDIDWallet = useCallback(
     async ({ managerAddress, verifierParams }: { managerAddress: string; verifierParams?: VerifierInfo }) => {
-      // console.log(loginAccount, registerVerifier, 'requestRegisterDIDWallet==');
-      if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
+      const { loginAccount, registerVerifier } = await getLoginCache();
+      if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
         throw 'Missing account!!! Please login/register again';
+      }
       const requestId = randomId();
       let verifier: VerifierInfo;
       if (registerVerifier) {
@@ -77,13 +78,15 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         sessionId: result.sessionId,
       };
     },
-    [loginAccount, originChainId, registerVerifier],
+    [originChainId],
   );
 
   const requestRecoveryDIDWallet = useCallback(
     async ({ managerAddress }: { managerAddress: string }) => {
-      if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
+      const loginAccount = await getLoginAccount();
+      if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
         throw 'Missing account!!! Please login/register again';
+      }
       const guardiansApproved = getGuardiansApproved();
       const requestId = randomId();
       const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
@@ -104,14 +107,16 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         sessionId: result.sessionId,
       };
     },
-    [loginAccount, getGuardiansApproved, originChainId],
+    [getGuardiansApproved, originChainId],
   );
 
   return useCallback(
     async (pin: string, verifierParams?: VerifierInfo) => {
       try {
-        if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType])
+        const loginAccount = await getLoginAccount();
+        if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
           return message.error('Missing account!!! Please login/register again');
+        }
 
         if (loginAccount.createType === 'register') {
           setLoading(true, t(CreateAddressLoading));
@@ -178,7 +183,6 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
     [
       dispatch,
       getWalletCAAddressResult,
-      loginAccount,
       network.networkType,
       requestRecoveryDIDWallet,
       requestRegisterDIDWallet,

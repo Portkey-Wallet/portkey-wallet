@@ -11,7 +11,7 @@ import { TextM } from 'components/CommonText';
 import { FontStyles } from 'assets/theme/styles';
 import { pTd } from 'utils/unit';
 import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
-import { divDecimalsStr } from '@portkey-wallet/utils/converter';
+import { divDecimalsToShow } from '@portkey-wallet/utils/converter';
 import { useGetTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useGetCurrentCAContract } from 'hooks/contract';
@@ -75,8 +75,8 @@ const PaymentSecurityDetail: React.FC = () => {
     if (!detail) return undefined;
     return {
       ...detail,
-      singleLimit: divDecimalsStr(detail.singleLimit, detail.decimals),
-      dailyLimit: divDecimalsStr(detail.dailyLimit, detail.decimals),
+      singleLimit: divDecimalsToShow(detail.singleLimit, detail.decimals),
+      dailyLimit: divDecimalsToShow(detail.dailyLimit, detail.decimals),
     };
   }, [detail]);
 

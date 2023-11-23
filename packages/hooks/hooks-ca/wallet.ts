@@ -63,6 +63,11 @@ export const useCurrentWalletInfo = () => {
   }, [walletInfo, currentNetwork, originChainId]);
 };
 
+export const useCurrentCaHash = () => {
+  const { caHash } = useCurrentWalletInfo();
+  return useMemo(() => caHash, [caHash]);
+};
+
 export const useCurrentWallet = () => {
   const wallet = useWallet();
   const originChainId = useOriginChainId();

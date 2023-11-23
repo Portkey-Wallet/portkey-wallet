@@ -143,7 +143,7 @@ type HandleContractParamsParams = { paramsOption: any; functionName: string; ins
 export const handleContractParams = async ({ paramsOption, functionName, instance }: HandleContractParamsParams) => {
   if (functionName === 'ManagerForwardCall') {
     const { contractAddress, methodName, args, caHash } = paramsOption || {};
-    if (!(contractAddress && methodName && args && caHash)) {
+    if (!(contractAddress && methodName && caHash)) {
       throw new Error('ManagerForwardCall parameter is missing');
     }
     const methods = await getContractMethods(instance, paramsOption.contractAddress);
@@ -151,9 +151,7 @@ export const handleContractParams = async ({ paramsOption, functionName, instanc
     if (!inputType) throw new Error(`Contract ${contractAddress} does not exist ${methodName}`);
     const _args = await encodedParams(inputType, args);
     return {
-      caHash,
-      contractAddress,
-      methodName,
+      ...paramsOption,
       args: _args,
     };
   }

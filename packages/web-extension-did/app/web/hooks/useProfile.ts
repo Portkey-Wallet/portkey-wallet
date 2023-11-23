@@ -7,6 +7,7 @@ import { useCopyToClipboard } from 'react-use';
 import { useCommonState } from 'store/Provider/hooks';
 import { ExtraType, IProfileDetailDataProps } from 'types/Profile';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import singleMessage from 'utils/singleMessage';
 
 export const useGoProfile = () => {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ export const useProfileCopy = () => {
   return useCallback(
     (val: string) => {
       setCopied(val);
-      message.success(t('Copy Success'));
+      singleMessage.success(t('Copy Success'));
     },
     [setCopied, t],
   );

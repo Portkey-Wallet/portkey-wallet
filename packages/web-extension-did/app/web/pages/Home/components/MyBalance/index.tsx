@@ -14,6 +14,7 @@ import {
   useCaAddressInfoList,
   useChainIdList,
   useCurrentWallet,
+  useOriginChainId,
 } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { fetchTokenListAsync } from '@portkey-wallet/store/store-ca/assets/slice';
 import { fetchAllTokenListAsync, getSymbolImagesAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
@@ -28,14 +29,17 @@ import useGuardianList from 'hooks/useGuardianList';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import AccountConnect from 'pages/components/AccountConnect';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import ChatEntry from 'pages/IMChat/ChatEntry';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
+import { useCheckSecurity } from 'hooks/useSecurity';
+import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+import BridgeModal from '../BridgeModal';
 import './index.less';
-import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
 
 export interface TransactionResult {
   total: number;
@@ -61,6 +65,7 @@ export default function MyBalance() {
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
+  const { eBridgeUrl = '' } = useCurrentNetworkInfo();
   const renderTabsData = useMemo(
     () => [
       {
@@ -85,9 +90,15 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
+
+  const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isBuyButtonShow } = useExtensionBuyButtonShow();
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
+  const checkSecurity = useCheckSecurity();
+  const originChainId = useOriginChainId();
+  const { checkDappIsConfirmed } = useDisclaimer();
+  const [bridgeShow, setBridgeShow] = useState<boolean>(false);
 
   useEffect(() => {
     if (state?.key) {
@@ -179,6 +190,19 @@ export default function MyBalance() {
     }
   }, [isMainNet, navigate]);
 
+  const handleBridge = useCallback(async () => {
+    const isSafe = await checkSecurity(originChainId);
+    if (!isSafe) return;
+    if (checkDappIsConfirmed(eBridgeUrl)) {
+      const openWinder = window.open(eBridgeUrl, '_blank');
+      if (openWinder) {
+        openWinder.opener = null;
+      }
+    } else {
+      setBridgeShow(true);
+    }
+  }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
+
   return (
     <div className="balance">
       {isShowChat && !isPrompt && (
@@ -200,8 +224,10 @@ export default function MyBalance() {
       <BalanceCard
         amount={accountBalance}
         isShowBuy={isBuyButtonShow}
+        isShowBridge={isBridgeShow}
+        onClickBridge={handleBridge}
         onBuy={handleBuy}
-        onSend={() => {
+        onSend={async () => {
           setNavTarget('send');
           return setTokenOpen(true);
         }}
@@ -213,6 +239,7 @@ export default function MyBalance() {
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
       {isPrompt && <PromptEmptyElement className="empty-element" />}
+      <BridgeModal open={bridgeShow} onClose={() => setBridgeShow(false)} />
     </div>
   );
 }

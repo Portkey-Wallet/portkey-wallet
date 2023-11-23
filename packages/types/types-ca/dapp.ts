@@ -26,6 +26,7 @@ export interface IDappManager<T = CACommonState> {
   currentManagerAddress(): Promise<Address | undefined>;
   getSessionInfo(origin: string): Promise<SessionInfo | undefined>;
   getRememberMeBlackList(): Promise<string[] | undefined>;
+  getOriginChainId(): Promise<ChainId>;
   updateManagerSyncState(chainId: ChainId): Promise<void>;
 }
 export interface IDappManagerStore<T = CACommonState> {

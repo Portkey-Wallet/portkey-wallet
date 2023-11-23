@@ -40,6 +40,19 @@ export interface RememberMeBlackListSiteItem {
   url: string;
 }
 
+export interface EntranceControlType {
+  isAndroidBridgeShow?: boolean;
+  isExtensionBridgeShow?: boolean;
+  isIOSBridgeShow?: boolean;
+}
+
+export interface CmsWebsiteMapItem {
+  title?: string;
+  imgUrl?: {
+    filename_disk?: string;
+  };
+}
+
 export interface CMSState {
   socialMediaListNetMap: {
     [T in NetworkType]?: SocialMediaItem[];
@@ -52,6 +65,9 @@ export interface CMSState {
   };
   rememberMeBlackListMap?: {
     [T in NetworkType]?: RememberMeBlackListSiteItem[];
+  };
+  cmsWebsiteMap?: {
+    [url: string]: CmsWebsiteMapItem;
   };
   entranceNetMap?: {
     [T in NetworkType]?: Partial<IEntrance>;

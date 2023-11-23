@@ -166,7 +166,7 @@ export default class ServiceWorkerInstantiate {
         ServiceWorkerInstantiate.expandSetting();
         break;
       case PortkeyMessageTypes.ADD_GUARDIANS:
-        ServiceWorkerInstantiate.expandAddGuardians();
+        ServiceWorkerInstantiate.expandAddGuardians(message.payload);
         break;
       case PortkeyMessageTypes.GUARDIANS_VIEW:
         ServiceWorkerInstantiate.expandGuardiansView();
@@ -304,10 +304,11 @@ export default class ServiceWorkerInstantiate {
     );
   }
 
-  static expandAddGuardians() {
+  static expandAddGuardians(payload: any) {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.ADD_GUARDIANS,
+        search: payload,
       },
       'tabs',
     );

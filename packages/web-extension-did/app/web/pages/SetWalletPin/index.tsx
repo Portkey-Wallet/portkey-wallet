@@ -19,13 +19,12 @@ import {
   SetPinAndAddManager,
   AddManagerType,
   DIDWalletInfo,
-  CommonModal,
-  PortkeyStyleProvider,
   CreatePendingInfo,
   handleErrorMessage,
 } from '@portkey/did-ui-react';
 import type { AccountType, GuardiansApproved } from '@portkey/services';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
+import CommonModal from 'components/CommonModal';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();
@@ -212,17 +211,20 @@ export default function SetWalletPin() {
         />
       </div>
 
-      <PortkeyStyleProvider>
-        <CommonModal closable={false} open={returnOpen} title={t('Leave this page?')} getContainer={'#set-wallet-pin'}>
-          <p className="modal-content">{t('returnTip')}</p>
-          <div className="btn-wrapper">
-            <Button onClick={() => setReturnOpen(false)}>No</Button>
-            <Button type="primary" onClick={backHandler}>
-              Yes
-            </Button>
-          </div>
-        </CommonModal>
-      </PortkeyStyleProvider>
+      <CommonModal
+        closable={false}
+        open={returnOpen}
+        title={t('Leave this page?')}
+        getContainer={'#set-wallet-pin'}
+        width={320}>
+        <p className="modal-content">{t('returnTip')}</p>
+        <div className="btn-wrapper">
+          <Button onClick={() => setReturnOpen(false)}>No</Button>
+          <Button type="primary" onClick={backHandler}>
+            Yes
+          </Button>
+        </div>
+      </CommonModal>
     </div>
   );
 }

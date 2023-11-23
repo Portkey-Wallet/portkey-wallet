@@ -15,7 +15,6 @@ import ProfileAddressSection from 'pages/My/components/ProfileAddressSection';
 import im from '@portkey-wallet/im';
 import { useIsStranger } from '@portkey-wallet/hooks/hooks-ca/im';
 import CommonToast from 'components/CommonToast';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { pTd } from 'utils/unit';
 import { useJumpToChatDetails } from 'hooks/chat';
 import { useAddStrangerContact, useContactInfo, useReadImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
@@ -152,7 +151,7 @@ const ContactProfile: React.FC = () => {
             try {
               navToChatDetail({ toRelationId: relationId || contactInfo?.imInfo?.relationId || '' });
             } catch (error) {
-              CommonToast.fail(handleErrorMessage(error));
+              CommonToast.failError(error);
             }
           }}
         />

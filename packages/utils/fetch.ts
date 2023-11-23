@@ -1,3 +1,4 @@
+import { timeoutPromise } from '@portkey-wallet/im/request';
 import { stringify } from 'query-string';
 
 export interface CustomFetchConfig extends RequestInit {
@@ -14,7 +15,7 @@ export type CustomFetchFun = (
 const defaultHeaders = {
   Accept: 'text/plain;v=1.0',
   'Content-Type': 'application/json',
-  version: 'v1.4.8',
+  version: 'v1.4.9',
 };
 
 function formatResponse(response: string) {
@@ -26,15 +27,6 @@ function formatResponse(response: string) {
   }
   return result;
 }
-
-const timeoutPromise = (delay?: number) => {
-  return new Promise(_resolve => {
-    const ids = setTimeout(() => {
-      clearTimeout(ids);
-      _resolve({ type: 'timeout' });
-    }, delay);
-  });
-};
 
 const fetchFormat = (
   requestConfig: RequestInit & { url: string; params?: any; resourceUrl?: CustomFetchConfig['resourceUrl'] },

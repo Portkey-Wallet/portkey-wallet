@@ -6,6 +6,18 @@ export const APPROVAL_TO_OPERATION_MAP = {
   [ApprovalType.editGuardian]: OperationTypeEnum.editGuardian,
   [ApprovalType.deleteGuardian]: OperationTypeEnum.deleteGuardian,
   [ApprovalType.removeOtherManager]: OperationTypeEnum.removeOtherManager,
+  [ApprovalType.managerApprove]: OperationTypeEnum.managerApprove,
+  [ApprovalType.modifyTransferLimit]: OperationTypeEnum.modifyTransferLimit,
+};
+
+export const APPROVAL_TO_VERIFICATION_MAP = {
+  [ApprovalType.addGuardian]: VerificationType.addGuardianByApprove,
+  [ApprovalType.editGuardian]: VerificationType.editGuardian,
+  [ApprovalType.deleteGuardian]: VerificationType.deleteGuardian,
+  [ApprovalType.removeOtherManager]: VerificationType.removeOtherManager,
+  [ApprovalType.communityRecovery]: VerificationType.communityRecovery,
+  [ApprovalType.managerApprove]: VerificationType.managerApprove,
+  [ApprovalType.modifyTransferLimit]: VerificationType.modifyTransferLimit,
 };
 
 export const VERIFICATION_TO_OPERATION_MAP = {
@@ -18,4 +30,6 @@ export const VERIFICATION_TO_OPERATION_MAP = {
   [VerificationType.removeOtherManager]: OperationTypeEnum.removeOtherManager,
   [VerificationType.setLoginAccount]: OperationTypeEnum.setLoginAccount,
   [VerificationType.addManager]: OperationTypeEnum.unknown,
+  [VerificationType.managerApprove]: OperationTypeEnum.managerApprove,
+  [VerificationType.modifyTransferLimit]: OperationTypeEnum.modifyTransferLimit,
 };

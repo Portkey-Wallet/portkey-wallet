@@ -3,6 +3,8 @@ import { useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import clsx from 'clsx';
+import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
 
 export interface BalanceCardProps {
@@ -12,11 +14,21 @@ export interface BalanceCardProps {
   onReceive?: () => void;
   onBuy?: () => void;
   isShowBuy?: boolean;
+  isShowBridge?: boolean;
+  onClickBridge?: () => void;
 }
 
-export default function BalanceCard({ onSend, onReceive, onBuy, isShowBuy }: BalanceCardProps) {
+export default function BalanceCard({
+  onSend,
+  onReceive,
+  onBuy,
+  isShowBuy,
+  isShowBridge,
+  onClickBridge,
+}: BalanceCardProps) {
   const { t } = useTranslation();
   const isMainNet = useIsMainnet();
+  const { isPrompt } = useCommonState();
 
   const renderBuy = useMemo(
     () =>
@@ -40,10 +52,27 @@ export default function BalanceCard({ onSend, onReceive, onBuy, isShowBuy }: Bal
     [isMainNet, onBuy, t],
   );
 
+  const renderBridge = useMemo(
+    () =>
+      isShowBridge && (
+        <span className="send btn" onClick={onClickBridge}>
+          <CustomSvg type="Bridge" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Bridge')}</span>
+        </span>
+      ),
+    [isShowBridge, onClickBridge, t],
+  );
+
+  const showCardNum = useMemo(
+    () => (renderBuy ? 1 : 0) + (renderFaucet ? 1 : 0) + (renderBridge ? 1 : 0),
+    [renderBridge, renderBuy, renderFaucet],
+  );
+
   return (
     <div className="balance-card">
-      <div className="balance-btn">
+      <div className={clsx(['balance-btn', showCardNum > 1 && !isPrompt && 'popup-card-num-more-than-3'])}>
         {renderBuy}
+        {renderBridge}
         <span className="send btn" onClick={onSend}>
           <CustomSvg type="RightTop" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Send')}</span>

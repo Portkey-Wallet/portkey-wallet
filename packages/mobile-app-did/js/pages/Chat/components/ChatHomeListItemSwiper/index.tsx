@@ -42,9 +42,9 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   const eventEmit = useDeviceEvent(myEvents.chatHomeListCloseSwiped.name, listenerCallBack);
   const lastMessage = useMemo(() => {
     if (item.lastMessageType === 'TEXT') {
-      return item.lastMessageContent;
+      return item.lastMessageContent as string;
     } else if (item.lastMessageType === 'SYS') {
-      return item.lastMessageContent;
+      return item.lastMessageContent as string;
     } else if (item.lastMessageType === 'IMAGE') {
       return '[Image]';
     } else {

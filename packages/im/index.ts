@@ -308,6 +308,7 @@ export class IM {
     if (account !== this._account || caHash !== this._caHash) throw new Error('account changed');
     this.setAuthorization(token);
     this.updateToken(token);
+    return token;
   }
 
   private rewriteFetch() {

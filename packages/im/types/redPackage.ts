@@ -1,0 +1,51 @@
+import { ChainId } from '.';
+
+export type RedPackageStatusInfo = {
+  viewStatus: RedPackageStatusEnum;
+};
+
+export enum RedPackageTypeEnum {
+  P2P = 1,
+  RANDOM = 2,
+  FIXED = 3,
+}
+
+export enum RedPackageStatusEnum {
+  UNOPENED = 1,
+  OPENED = 2,
+  NONE_LEFT = 3,
+  EXPIRED = 4,
+}
+
+export type RedPackageDetail = {
+  totalCount: number;
+  senderId: string;
+  senderAvatar: string;
+  senderName: string;
+  luckKingId?: string;
+  createTime: number;
+  endTime: number; // The value is 0 if not finished
+  expireTime: number;
+  totalAmount: string;
+  memo: string;
+  chainId: ChainId;
+  symbol: string;
+  decimal: string | number;
+  grabbedAmount: string;
+  isCurrentUserGrabbed: boolean;
+  isRedPackageFullyClaimed: boolean;
+  isRedPackageExpired: boolean;
+  count: number;
+  grabbed: number;
+  type: RedPackageTypeEnum;
+  viewStatus: RedPackageStatusEnum;
+};
+
+export type RedPackageGrabInfoItem = {
+  userId: string;
+  username: string;
+  avatar: string;
+  grabTime: number;
+  isLuckyKing: boolean;
+  amount: string;
+};

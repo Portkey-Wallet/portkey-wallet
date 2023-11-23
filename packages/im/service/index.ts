@@ -34,6 +34,17 @@ import {
   VerifySignatureLoopParams,
   VerifySignatureParams,
   VerifySignatureResult,
+  CreateRedPackageParams,
+  CreateRedPackageResult,
+  GetRedPackageConfigParams,
+  GetRedPackageConfigResult,
+  GetRedPackageCreationStatusResult,
+  GetRedPackageDetailParams,
+  GetRedPackageDetailResult,
+  GrabRedPackageParams,
+  GrabRedPackageResult,
+  SendRedPackageParams,
+  SendRedPackageResult,
 } from '../types/service';
 import { ChannelInfo, ChannelMemberInfo, Message, MessageCount } from '../types';
 import { sleep } from '@portkey-wallet/utils';
@@ -271,6 +282,49 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
   ): IMServiceCommon<IContactProfile> {
     return this._request.send({
       url: '/api/v1/contacts/profile',
+      params,
+      method: 'GET',
+    });
+  }
+
+  createRedPackage(params: CreateRedPackageParams): IMServiceCommon<CreateRedPackageResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/generate',
+      params,
+      method: 'POST',
+    });
+  }
+  sendRedPackage(params: SendRedPackageParams): IMServiceCommon<SendRedPackageResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/send',
+      params,
+      method: 'POST',
+    });
+  }
+  getRedPackageCreationStatus(params: SendRedPackageResult): IMServiceCommon<GetRedPackageCreationStatusResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/getCreationResult',
+      params,
+      method: 'GET',
+    });
+  }
+  getRedPackageDetail(params: GetRedPackageDetailParams): IMServiceCommon<GetRedPackageDetailResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/detail',
+      params,
+      method: 'GET',
+    });
+  }
+  grabRedPackage(params: GrabRedPackageParams): IMServiceCommon<GrabRedPackageResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/grab',
+      params,
+      method: 'POST',
+    });
+  }
+  getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<GetRedPackageConfigResult> {
+    return this._request.send({
+      url: '/api/v1/redPackage/config',
       params,
       method: 'GET',
     });

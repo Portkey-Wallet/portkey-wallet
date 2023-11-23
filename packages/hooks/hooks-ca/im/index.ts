@@ -18,6 +18,7 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { request } from '@portkey-wallet/api/api-did';
 import useLockCallback from '../../useLockCallback';
 import { handleLoopFetch } from '@portkey-wallet/utils';
+import { messageContentParser } from '@portkey-wallet/im/utils';
 
 export const useIMState = () => useAppCASelector(state => state.im);
 export const useIMHasNextNetMapState = () => useAppCASelector(state => state.im.hasNextNetMap);
@@ -105,7 +106,7 @@ export const useInitIM = () => {
                 unreadMessageCount: 1,
                 mentionsCount: 0,
                 lastMessageType: rawMsg.type,
-                lastMessageContent: rawMsg.content,
+                lastMessageContent: messageContentParser(rawMsg.type, rawMsg.content),
                 lastPostAt: rawMsg.createAt,
                 mute: rawMsg.mute,
                 pin: false,
@@ -124,7 +125,14 @@ export const useInitIM = () => {
             channelUuid: rawMsg.channelUuid,
           });
           if (list.length) {
-            const channelInfo = list[0];
+            const channelInfoResult = list[0];
+            const channelInfo = {
+              ...channelInfoResult,
+              lastMessageContent: messageContentParser(
+                channelInfoResult.lastMessageType,
+                channelInfoResult.lastMessageContent,
+              ),
+            };
             dispatch(
               addChannel({
                 network: networkType,
@@ -147,7 +155,7 @@ export const useInitIM = () => {
                   unreadMessageCount: 1,
                   mentionsCount: 0,
                   lastMessageType: rawMsg.type,
-                  lastMessageContent: rawMsg.content,
+                  lastMessageContent: messageContentParser(rawMsg.type, rawMsg.content),
                   lastPostAt: rawMsg.createAt,
                   mute: rawMsg.mute,
                   pin: channelInfo.pin,
@@ -168,7 +176,7 @@ export const useInitIM = () => {
             channelId: rawMsg.channelUuid,
             value: {
               lastMessageType: rawMsg.type,
-              lastMessageContent: rawMsg.content,
+              lastMessageContent: messageContentParser(rawMsg.type, rawMsg.content),
               lastPostAt: rawMsg.createAt,
             },
             type: UpdateChannelAttributeTypeEnum.UPDATE_UNREAD_CHANNEL,
@@ -216,7 +224,10 @@ export const useInitIM = () => {
         },
       });
 
-      handleLoopFetch(getRelationId, 3).catch(error => {
+      handleLoopFetch({
+        fetch: getRelationId,
+        times: 3,
+      }).catch(error => {
         console.log('initIm getRelationId error', error);
       });
     },

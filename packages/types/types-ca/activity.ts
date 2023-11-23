@@ -35,7 +35,7 @@ export type NftInfo = {
 
 export type TransactionFees = {
   symbol: string;
-  fee: number;
+  fee: number | string;
   feeInUsd: string;
   decimals: string;
 };
@@ -46,7 +46,7 @@ export type the2ThFailedActivityItemType = {
     chainType: ChainType;
     managerAddress: string;
     tokenInfo: BaseToken;
-    amount: number;
+    amount: number | string;
     toAddress: string;
     memo?: string;
     issueChainId: number;

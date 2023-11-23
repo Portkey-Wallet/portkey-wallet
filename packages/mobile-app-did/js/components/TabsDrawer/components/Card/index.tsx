@@ -6,13 +6,14 @@ import { StyleSheet, View, Image } from 'react-native';
 import { pTd } from 'utils/unit';
 import Svg from 'components/Svg';
 
-import { getFaviconUrl, getHost } from '@portkey-wallet/utils/dapp/browser';
+import { getHost } from '@portkey-wallet/utils/dapp/browser';
 import { useAppCommonDispatch } from '@portkey-wallet/hooks';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { closeExistingTab, setActiveTab } from '@portkey-wallet/store/store-ca/discover/slice';
 import DiscoverWebsiteImage from 'pages/Discover/components/DiscoverWebsiteImage';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { defaultColors } from 'assets/theme';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 interface ICardsProps {
   item: ITabItem;
@@ -20,16 +21,16 @@ interface ICardsProps {
 
 const Card: React.FC<ICardsProps> = (props: ICardsProps) => {
   const { item } = props;
-
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   return (
     <View style={tabShowItemStyle.cardWrap}>
       <View style={tabShowItemStyle.header}>
-        <DiscoverWebsiteImage size={pTd(20)} imageUrl={getFaviconUrl(item.url)} />
+        <DiscoverWebsiteImage size={pTd(20)} imageUrl={getCmsWebsiteInfoImageUrl(item.url)} />
         <TextS numberOfLines={1} ellipsizeMode="tail" style={tabShowItemStyle.title}>
-          {item?.name || getHost(item?.url)}
+          {getCmsWebsiteInfoName(item.url) || item?.name || getHost(item?.url)}
         </TextS>
         <TouchableOpacity onPress={() => dispatch(closeExistingTab({ id: item?.id, networkType }))}>
           <Svg icon="close" size={12} />

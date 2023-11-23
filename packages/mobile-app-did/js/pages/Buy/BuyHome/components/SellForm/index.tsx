@@ -38,12 +38,19 @@ import { PaymentLimitType, PaymentTypeEnum } from '@portkey-wallet/types/types-c
 import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
+import { useGetCurrentCAContract } from 'hooks/contract';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import { useAppBuyButtonShow } from 'hooks/cms';
 
 export default function SellForm() {
   const { sellFiatList: fiatList } = usePayment();
   const { refreshBuyButton } = useAppBuyButtonShow();
   const checkManagerSyncState = useCheckManagerSyncState();
+  const getCurrentCAContract = useGetCurrentCAContract(MAIN_CHAIN_ID);
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const [fiat, setFiat] = useState<FiatType | undefined>(
     fiatList.find(item => item.currency === 'USD' && item.country === 'US'),
@@ -149,7 +156,7 @@ export default function SellForm() {
     setAmount(text);
   }, []);
 
-  const onNext = useCallback(async () => {
+  const onNext = useLockCallback(async () => {
     if (!limitAmountRef.current || !refreshReceiveRef.current) return;
     const amountNum = Number(amount);
     const { min, max } = limitAmountRef.current;
@@ -184,7 +191,17 @@ export default function SellForm() {
     }
 
     try {
-      Loading.show();
+      if (!(await securitySafeCheckAndToast(MAIN_CHAIN_ID))) {
+        Loading.hide();
+        return;
+      }
+    } catch (error) {
+      CommonToast.failError(error);
+      Loading.hide();
+      return;
+    }
+
+    try {
       const _isManagerSynced = await checkManagerSyncState(chainId);
       if (!_isManagerSynced) {
         setAmountLocalError({
@@ -200,6 +217,21 @@ export default function SellForm() {
         throw new Error('Insufficient funds');
       }
       const isRefreshReceiveValidValue = isRefreshReceiveValid.current;
+
+      const caContract = await getCurrentCAContract();
+      const checkTransferLimitResult = await checkTransferLimitWithJump(
+        {
+          caContract,
+          symbol,
+          decimals,
+          amount,
+        },
+        chainId,
+      );
+      if (!checkTransferLimitResult) {
+        Loading.hide();
+        return;
+      }
 
       const account = getManagerAccount(pin);
       if (!account) return;
@@ -248,9 +280,11 @@ export default function SellForm() {
     fiat,
     token,
     refreshBuyButton,
+    wallet,
     checkManagerSyncState,
     achFee,
-    wallet,
+    getCurrentCAContract,
+    checkTransferLimitWithJump,
   ]);
 
   return (

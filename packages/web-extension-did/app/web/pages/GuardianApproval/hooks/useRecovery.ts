@@ -12,7 +12,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import ModalTip from 'pages/components/ModalTip';
 import { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { GuardianMth } from 'types/guardians';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -20,6 +20,8 @@ import { contractErrorHandler } from 'utils/tryErrorHandler';
 import { formatAddGuardianValue } from '../utils/formatAddGuardianValue';
 import { formatDelGuardianValue } from '../utils/formatDelGuardianValue';
 import { formatEditGuardianValue } from '../utils/formatEditGuardianValue';
+import InternalMessage from 'messages/InternalMessage';
+import InternalMessageTypes from 'messages/InternalMessageTypes';
 
 enum MethodType {
   'guardians/add' = GuardianMth.addGuardian,
@@ -30,7 +32,6 @@ enum MethodType {
 export const useRecovery = () => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
   const getGuardianList = useGuardianList();
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
@@ -43,8 +44,15 @@ export const useRecovery = () => {
   return useCallback(async () => {
     try {
       setLoading(true, 'Processing on the chain...');
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
-      if (!currentChain?.endPoint || !privateKey) return message.error('handle guardian error');
+      const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
+      const pin = getSeedResult.data.privateKey;
+      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+
+      if (!currentChain?.endPoint || !privateKey) {
+        console.log('handle guardian error===', currentChain, privateKey);
+        return message.error('handle guardian error');
+      }
+
       let value;
       switch (state) {
         case 'guardians/add':
@@ -102,7 +110,6 @@ export const useRecovery = () => {
     getGuardianList,
     navigate,
     opGuardian,
-    passwordSeed,
     preGuardian,
     setLoading,
     state,

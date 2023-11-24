@@ -14,6 +14,9 @@ import AddMembersPage from './AddMembersPage';
 import RemoveMembersPage from './RemoveMembersPage';
 import ChatQrCodePage from './ChatQrCodePage';
 import ChatGroupQrCodePage from './ChatGroupQrCodePage';
+import SendPacketP2PPage from './SendPacketP2PPage';
+import SendPacketGroupPage from './SendPacketGroupPage';
+import RedPacketDetails from './RedPacketDetailsPage';
 
 const stackNav = [
   { name: 'ChatHomePage', component: ChatHomePage },
@@ -32,6 +35,15 @@ const stackNav = [
   { name: 'RemoveMembersPage', component: RemoveMembersPage },
   { name: 'ChatQrCodePage', component: ChatQrCodePage },
   { name: 'ChatGroupQrCodePage', component: ChatGroupQrCodePage },
+  { name: 'SendPacketP2PPage', component: SendPacketP2PPage },
+  { name: 'SendPacketGroupPage', component: SendPacketGroupPage },
+  {
+    name: 'RedPacketDetails',
+    component: RedPacketDetails,
+    options: {
+      animationEnabled: false,
+    },
+  },
 ] as const;
 
 export default stackNav;

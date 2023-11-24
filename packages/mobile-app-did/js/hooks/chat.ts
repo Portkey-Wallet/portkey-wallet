@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useCreateP2pChannel } from '@portkey-wallet/hooks/hooks-ca/im';
-import { setCurrentChannelId } from 'pages/Chat/context/chatsContext';
+import { setCurrentChannel } from 'pages/Chat/context/chatsContext';
 import { useChatsDispatch } from 'pages/Chat/context/hooks';
 import navigationService from 'utils/navigationService';
 import CommonToast from 'components/CommonToast';
@@ -26,10 +26,20 @@ export function useJumpToChatDetails() {
     async ({ toRelationId, channelUuid }: { toRelationId?: string; channelUuid?: string }) => {
       try {
         if (channelUuid) {
-          chatDispatch(setCurrentChannelId(channelUuid || ''));
+          chatDispatch(
+            setCurrentChannel({
+              currentChannelId: channelUuid || '',
+              currentChannelType: 'P2P',
+            }),
+          );
         } else {
           const channelInfo = await createChannel(toRelationId || '');
-          chatDispatch(setCurrentChannelId(channelInfo.channelUuid || ''));
+          chatDispatch(
+            setCurrentChannel({
+              currentChannelId: channelInfo.channelUuid || '',
+              currentChannelType: 'P2P',
+            }),
+          );
         }
 
         // if group chat exist, destroy it
@@ -57,10 +67,20 @@ export function useJumpToChatGroupDetails() {
     async ({ toRelationId, channelUuid }: { toRelationId?: string; channelUuid?: string }) => {
       try {
         if (channelUuid) {
-          chatDispatch(setCurrentChannelId(channelUuid || ''));
+          chatDispatch(
+            setCurrentChannel({
+              currentChannelId: channelUuid || '',
+              currentChannelType: 'Group',
+            }),
+          );
         } else {
           const channelInfo = await createChannel(toRelationId || '');
-          chatDispatch(setCurrentChannelId(channelInfo.channelUuid || ''));
+          chatDispatch(
+            setCurrentChannel({
+              currentChannelId: channelInfo.channelUuid || '',
+              currentChannelType: 'Group',
+            }),
+          );
         }
         navigationService.navigate('ChatGroupDetailsPage');
       } catch (error) {

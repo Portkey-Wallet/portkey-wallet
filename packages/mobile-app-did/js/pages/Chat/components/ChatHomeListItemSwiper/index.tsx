@@ -40,16 +40,39 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
   );
 
   const eventEmit = useDeviceEvent(myEvents.chatHomeListCloseSwiped.name, listenerCallBack);
-  const lastMessage = useMemo(() => {
-    if (item.lastMessageType === 'TEXT') {
-      return item.lastMessageContent as string;
-    } else if (item.lastMessageType === 'SYS') {
-      return item.lastMessageContent as string;
+  const renderLastMessage = useMemo(() => {
+    const redPacketIsHighLight = true;
+    // TODO: unmute & others & viewStatus = 1
+    console.log(redPacketIsHighLight);
+
+    let message;
+    // TODO: red packet
+    // if (item.lastMessageType)
+    //   return (
+    //     <View style={[GStyles.flexRow, styles.message]}>
+    //       <TextS numberOfLines={1} style={[FontStyles.font7, redPacketIsHighLight && FontStyles.font6]}>
+    //         {`[Red Packet] `}
+    //       </TextS>
+    //       <TextS numberOfLines={1} style={[FontStyles.font7, styles.redPacketLastMessageContent]}>
+    //         {item.lastMessageContent as string}
+    //       </TextS>
+    //     </View>
+    //   );
+
+    if (item.lastMessageType === 'TEXT' || item.lastMessageType === 'SYS') {
+      message = item.lastMessageContent;
     } else if (item.lastMessageType === 'IMAGE') {
-      return '[Image]';
+      message = '[Image]';
     } else {
-      return UN_SUPPORTED_FORMAT;
+      message = UN_SUPPORTED_FORMAT;
     }
+
+    return (
+      <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
+        {/* TODO: ts warning change */}
+        {'message'}
+      </TextS>
+    );
   }, [item.lastMessageContent, item.lastMessageType]);
 
   const deleteItem = useCallback(() => {
@@ -158,9 +181,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             </View>
             <View style={styles.blank} />
             <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween]}>
-              <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
-                {lastMessage}
-              </TextS>
+              {renderLastMessage}
               {RightBottomSection}
             </View>
           </View>
@@ -212,6 +233,9 @@ const styles = StyleSheet.create({
   },
   message: {
     maxWidth: pTd(240),
+  },
+  redPacketLastMessageContent: {
+    width: pTd(150),
   },
   messageNum: {
     backgroundColor: defaultColors.bg17,

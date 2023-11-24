@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import * as Network from 'expo-network';
 import { setStringAsync } from 'expo-clipboard';
 import i18n from 'i18n';
+export const INFINITY = 'Infinity';
 
 /**
  * timestamp to formatted time like 'Nov 10 at 1:09 pm', if last year format to "2020 Nov 10 at 1:09 pm "
@@ -53,4 +54,23 @@ export const copyText = async (text: string) => {
  */
 export const checkIsSvgUrl = (imgUrl: string) => {
   return /.svg$/.test(imgUrl);
+};
+
+/**
+ * A method to determine whether a number is within an interval, like (10,100]
+ * @param num
+ * @param left
+ * @param right
+ * @returns
+ */
+export const isNumberInInterval = (
+  num: number,
+  left: number | typeof INFINITY,
+  right: number | typeof INFINITY,
+): boolean => {
+  if (left === 'Infinity' && typeof right === 'number') return num <= right;
+  if (right === 'Infinity' && typeof left === 'number') return num > left;
+  if (typeof left === 'number' && typeof right === 'number') return num > left && num <= right;
+
+  return true;
 };

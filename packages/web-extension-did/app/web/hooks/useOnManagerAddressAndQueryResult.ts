@@ -19,15 +19,17 @@ import ModalTip from 'pages/components/ModalTip';
 import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useTranslation } from 'react-i18next';
 import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
+import { useNavigate } from 'react-router';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const { userGuardianStatus } = useGuardiansInfo();
   const dispatch = useAppDispatch();
-  const getWalletCAAddressResult = useFetchDidWallet(true);
+  const getWalletCAAddressResult = useFetchDidWallet();
   const network = useCurrentNetworkInfo();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const originChainId = useOriginChainId();
 
@@ -176,6 +178,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         if (walletError) return message.error(walletError);
         const errorTip = handleErrorMessage(error, 'Something error');
         message.error(errorTip);
+        navigate('/register/start');
       } finally {
         setLoading(false);
       }
@@ -183,6 +186,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
     [
       dispatch,
       getWalletCAAddressResult,
+      navigate,
       network.networkType,
       requestRecoveryDIDWallet,
       requestRegisterDIDWallet,

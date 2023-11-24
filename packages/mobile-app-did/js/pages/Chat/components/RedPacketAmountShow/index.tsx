@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, TextStyle, ViewStyle } from 'react-native';
 import { pTd } from 'utils/unit';
 import GStyles from 'assets/theme/GStyles';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { TextM } from 'components/CommonText';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
@@ -57,39 +56,48 @@ const RedPacketAmountShowInDetailPageStyleMap = {
   'amount-style7': {
     strLenIntervalLeft: 28,
     strLenIntervalRight: 37,
-    styles: { fontSize: pTd(16), lineHeight: pTd(24) },
+    styles: {
+      fontSize: pTd(16),
+      lineHeight: pTd(24),
+    },
   },
   'amount-style8': {
     strLenIntervalLeft: 37,
     strLenIntervalRight: 42,
-    styles: { fontSize: pTd(14), lineHeight: pTd(22) },
+    styles: {
+      fontSize: pTd(14),
+      lineHeight: pTd(22),
+    },
   },
   'amount-style9': {
     strLenIntervalLeft: 42,
     strLenIntervalRight: INFINITY,
-    styles: { fontSize: pTd(14), lineHeight: pTd(22) },
+    styles: {
+      fontSize: pTd(14),
+      lineHeight: pTd(22),
+    },
   },
 } as const;
 
 const RedPacketAmountShowInSendPageStyleMap = {
   'amount-style1': {
     strLenIntervalLeft: INFINITY,
-    strLenIntervalRight: 20,
+    strLenIntervalRight: 18,
     styles: {
       fontSize: pTd(30),
       lineHeight: pTd(38),
     },
   },
   'amount-style2': {
-    strLenIntervalLeft: 20,
-    strLenIntervalRight: 25,
+    strLenIntervalLeft: 18,
+    strLenIntervalRight: 24,
     styles: {
       fontSize: pTd(24),
       lineHeight: pTd(32),
     },
   },
   'amount-style3': {
-    strLenIntervalLeft: 25,
+    strLenIntervalLeft: 24,
     strLenIntervalRight: 30,
     styles: {
       fontSize: pTd(20),
@@ -127,16 +135,14 @@ export type RedPacketAmountShowInSendPageStyleKeyItemType = keyof typeof RedPack
 
 type RedPacketAmountShowPropsType = {
   componentType: 'packetDetailPage' | 'sendPacketPage';
-  amount: string;
-  decimals: string | number;
+  amountShow: string;
   symbol: string;
   textColor?: string;
   wrapStyle?: StyleProp<ViewStyle>;
 };
 
 export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
-  const { componentType, amount, decimals, symbol = 'ELF', textColor = defaultColors.font15, wrapStyle = {} } = props;
-  const amountShow = useMemo(() => formatAmountShow(divDecimals(amount, decimals), decimals), [amount, decimals]);
+  const { componentType, amountShow, symbol = 'ELF', textColor = defaultColors.font15, wrapStyle = {} } = props;
 
   const amountShowStyle = useMemo(() => {
     let type = 'amount-style1';
@@ -165,10 +171,10 @@ export const RedPacketAmountShow = (props: RedPacketAmountShowPropsType) => {
   const TextColorStyle = useMemo<StyleProp<TextStyle>>(() => ({ color: textColor }), [textColor]);
 
   return (
-    <View style={[GStyles.flexRowWrap, GStyles.itemEnd, GStyles.flexCenter, wrapStyle]}>
-      <Text style={[amountShowStyle, styles.amount, TextColorStyle]}>{amountShow}</Text>
-      <TextM style={[GStyles.marginLeft(pTd(8)), styles.symbol, TextColorStyle]}>{symbol}</TextM>
-    </View>
+    <Text style={[GStyles.textAlignCenter, wrapStyle]}>
+      <Text style={[amountShowStyle, styles.amount, TextColorStyle]}>{amountShow || '0.00'}</Text>
+      <TextM style={[GStyles.paddingLeft(pTd(8)), styles.symbol, TextColorStyle]}>{`  ${symbol}`}</TextM>
+    </Text>
   );
 };
 

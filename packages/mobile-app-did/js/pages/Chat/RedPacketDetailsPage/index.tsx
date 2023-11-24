@@ -44,12 +44,7 @@ export const RedPacketDetails = () => {
                 </TextXL>
                 <TextM style={[FontStyles.font7, styles.memo]}> Best Wishes!</TextM>
                 {/* TODO: change fontSize */}
-                <RedPacketAmountShow
-                  componentType="packetDetailPage"
-                  decimals={8}
-                  amount="1000000000001010001010"
-                  symbol="ELF"
-                />
+                <RedPacketAmountShow componentType="packetDetailPage" amountShow="1000000" symbol="ELF" />
                 <TextS style={[FontStyles.font15, styles.tips]}>Red Packet transferred to Wallet</TextS>
               </View>
               <Divider width={pTd(8)} style={styles.divider} />
@@ -122,16 +117,16 @@ const styles = StyleSheet.create({
   },
   redPacketStyleIntro: {
     marginTop: pTd(16),
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(12),
   },
   bottomWrap: {
     // flex: 1,
     paddingTop: pTd(16),
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(12),
   },
   innerDivider: {
     marginTop: pTd(8),
-    marginHorizontal: pTd(20),
+    marginHorizontal: pTd(12),
   },
   listFooterComponentStyle: {
     width: screenWidth,

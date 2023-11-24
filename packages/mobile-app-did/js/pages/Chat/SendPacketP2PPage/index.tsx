@@ -1,12 +1,21 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
-import SendRedPacketGroupSection from '../components/SendRedPacketGroupSection';
+import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
+import { TextM } from 'components/CommonText';
 
 const SendPacketP2PPage = () => {
+  const [values, setValues] = useState<ValuesType>({
+    packetNum: '',
+    count: '',
+    symbol: 'ELF',
+    decimals: '',
+    memo: '',
+  });
+
   return (
     <PageContainer
       titleDom="Send Red Packet"
@@ -14,7 +23,18 @@ const SendPacketP2PPage = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: false }}
       containerStyles={styles.container}>
-      <SendRedPacketGroupSection type="p2p" />
+      <SendRedPacketGroupSection
+        type="p2p"
+        values={values}
+        setValues={v => {
+          setValues(v);
+        }}
+        onPressButton={() => console.log('hi')}
+      />
+      <View style={GStyles.flex1} />
+      <TextM style={styles.tips}>
+        Red Packet is valid for 24 hours. Expired Red Packet will be refunded to you within 24 hours after expiration.
+      </TextM>
     </PageContainer>
   );
 };
@@ -25,7 +45,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'relative',
     backgroundColor: defaultColors.bg4,
-    flex: 1,
+    minHeight: '100%',
     ...GStyles.paddingArg(24, 20),
   },
   groupNameWrap: {
@@ -59,5 +79,9 @@ const styles = StyleSheet.create({
     height: 0,
     padding: 0,
     margin: 0,
+  },
+  tips: {
+    textAlign: 'center',
+    color: defaultColors.font3,
   },
 });

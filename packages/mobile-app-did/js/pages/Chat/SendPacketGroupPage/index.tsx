@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -8,7 +8,7 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
-import SendRedPacketGroupSection from '../components/SendRedPacketGroupSection';
+import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
 
 type TabItemType = {
   name: string;
@@ -16,25 +16,57 @@ type TabItemType = {
   component: JSX.Element;
 };
 
-const tabList: TabItemType[] = [
-  {
-    name: GroupRedPacketTabEnum.Random,
-    type: GroupRedPacketTabEnum.Random,
-    component: <SendRedPacketGroupSection key={GroupRedPacketTabEnum.Random} />,
-  },
-  {
-    name: GroupRedPacketTabEnum.Fixed,
-    type: GroupRedPacketTabEnum.Fixed,
-    component: <SendRedPacketGroupSection key={GroupRedPacketTabEnum.Fixed} />,
-  },
-];
-
 export default function SendPacketGroupPage() {
   // const {
   //   params: { type = GroupRedPacketTabEnum.Random },
   // } = useRoute<RouteProp<{ params: { type: GroupRedPacketTabEnum } }>>();
 
+  // TODO: should init
+  const [values, setValues] = useState<ValuesType>({
+    packetNum: '',
+    count: '',
+    symbol: 'ELF',
+    decimals: '',
+    memo: '',
+  });
+
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
+
+  const tabList: TabItemType[] = useMemo(
+    () => [
+      {
+        name: GroupRedPacketTabEnum.Random,
+        type: GroupRedPacketTabEnum.Random,
+        component: (
+          <SendRedPacketGroupSection
+            key={GroupRedPacketTabEnum.Random}
+            values={values}
+            setValues={(v: ValuesType) => {
+              console.log('setValues', v);
+              setValues(v);
+            }}
+            onPressButton={() => console.log('onPressButton')}
+          />
+        ),
+      },
+      {
+        name: GroupRedPacketTabEnum.Fixed,
+        type: GroupRedPacketTabEnum.Fixed,
+        component: (
+          <SendRedPacketGroupSection
+            key={GroupRedPacketTabEnum.Fixed}
+            values={values}
+            setValues={(v: ValuesType) => {
+              console.log('setValues', v);
+              setValues(v);
+            }}
+            onPressButton={() => console.log('onPressButton')}
+          />
+        ),
+      },
+    ],
+    [values],
+  );
 
   const onTabPress = useCallback((tabType: GroupRedPacketTabEnum) => {
     setSelectTab(tabType);
@@ -65,6 +97,7 @@ export default function SendPacketGroupPage() {
         </View>
       </View>
       <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
+      <TextM style={styles.tips}>Red Packets not opened within 24 hours will be refunded. </TextM>
     </PageContainer>
   );
 }
@@ -102,5 +135,9 @@ const styles = StyleSheet.create({
   selectTabTextStyle: {
     color: defaultColors.font5,
     ...fonts.mediumFont,
+  },
+  tips: {
+    textAlign: 'center',
+    color: defaultColors.font3,
   },
 });

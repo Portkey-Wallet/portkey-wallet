@@ -53,7 +53,7 @@ export default memo(RedPacketReceiverItem);
 const itemStyle = StyleSheet.create({
   wrap: {
     height: pTd(48),
-    paddingHorizontal: pTd(20),
+    paddingHorizontal: pTd(12),
     marginTop: pTd(16),
     display: 'flex',
     flexDirection: 'row',
@@ -82,6 +82,7 @@ const itemStyle = StyleSheet.create({
   },
   name: {
     lineHeight: pTd(22),
+    paddingRight: pTd(10),
     ...fonts.mediumFont,
   },
   time: {

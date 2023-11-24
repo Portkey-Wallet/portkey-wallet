@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -14,35 +14,30 @@ import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import TokenOverlay from 'components/TokenOverlay';
 import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import RedPacketAmountShow from '../RedPacketAmountShow';
+import CommonAvatar from 'components/CommonAvatar';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 
-type ValuesType = {
+export type ValuesType = {
   packetNum?: string;
-  amount?: string;
-  symbol?: string;
-  decimals?: string;
-  memo?: string;
+  count: string;
+  symbol: string;
+  decimals: string;
+  memo: string;
 };
 
-type SendRedPacketGroupSectionPropsType = {
+export type SendRedPacketGroupSectionPropsType = {
   // TODO: change type
   type?: 'p2p' | 'random' | 'fixed';
-  value?: ValuesType;
+  values: ValuesType;
+  setValues: (v: ValuesType) => void;
+  onPressButton: () => void;
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
-  const { type, value } = props;
+  const { type, values, setValues } = props;
   //   const errorMap = {};
-  const token = useDefaultToken();
-
-  const [values, setValues] = useState<ValuesType>(
-    value || {
-      packetNum: undefined,
-      amount: undefined,
-      symbol: token.symbol,
-      decimals: token.decimals,
-      memo: '',
-    },
-  );
+  const defaultToken = useDefaultToken();
+  const symbolImages = useSymbolImages();
 
   return (
     <>
@@ -52,7 +47,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             type="general"
             placeholder="Enter number"
             value={values.packetNum}
-            onChangeText={v => setValues(pre => ({ ...pre, packetNum: v }))}
+            onChangeText={v => setValues({ ...values, packetNum: v })}
             inputContainerStyle={styles.inputWrap}
           />
         </FormItem>
@@ -60,7 +55,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       <FormItem title="Total Amount">
         <CommonInput
           type="general"
-          value={values.amount}
+          value={values.count}
           placeholder="Enter amount"
           inputContainerStyle={styles.inputWrap}
           rightIcon={
@@ -69,11 +64,20 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               onPress={() => {
                 TokenOverlay.showTokenList({
                   onFinishSelectToken: (tokenInfo: TokenItemShowType) => {
-                    setValues(pre => ({ ...pre, symbol: tokenInfo.symbol, decimals: String(tokenInfo.decimals) }));
+                    setValues({ ...values, symbol: tokenInfo.symbol, decimals: String(tokenInfo.decimals) });
                   },
                 });
               }}>
-              <Svg size={24} icon="elf-icon" iconStyle={styles.unitIconStyle} />
+              <CommonAvatar
+                hasBorder
+                style={styles.avatar}
+                title={values.symbol}
+                avatarSize={pTd(24)}
+                // elf token icon is fixed , only use white background color
+                svgName={values?.symbol === defaultToken.symbol ? 'testnet' : undefined}
+                imageUrl={symbolImages[values.symbol]}
+              />
+              {/* <Svg size={24} icon="elf-icon" iconStyle={styles.unitIconStyle} /> */}
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{values.symbol}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />
             </Touchable>
@@ -81,7 +85,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           maxLength={30}
           autoCorrect={false}
           keyboardType="decimal-pad"
-          onChangeText={v => setValues(pre => ({ ...pre, amount: v }))}
+          onChangeText={v => setValues({ ...values, count: v })}
         />
       </FormItem>
       <FormItem title="Wished">
@@ -91,21 +95,22 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           placeholder="Best Wishes!"
           maxLength={80}
           inputContainerStyle={styles.inputWrap}
-          onChangeText={v => setValues(pre => ({ ...pre, memo: v }))}
+          onChangeText={v => setValues({ ...values, memo: v })}
         />
       </FormItem>
       {/* TODO: change real data */}
       <RedPacketAmountShow
         componentType="sendPacketPage"
-        amount="1000000"
-        symbol="ELF"
-        decimals={8}
+        amountShow={values.count}
+        symbol={values.symbol}
         textColor={defaultColors.font5}
+        wrapStyle={GStyles.marginTop(pTd(8))}
       />
       <CommonButton
         disabled
         type="primary"
         title={'Prepare Red Packet'}
+        style={styles.btnStyle}
         onPress={() => {
           console.log('Prepare Red Packet');
         }}
@@ -147,5 +152,12 @@ const styles = StyleSheet.create({
   refreshLabel: {
     marginLeft: pTd(4),
     color: defaultColors.font3,
+  },
+  btnStyle: {
+    marginTop: pTd(24),
+  },
+  avatar: {
+    marginRight: pTd(8),
+    fontSize: pTd(12),
   },
 });

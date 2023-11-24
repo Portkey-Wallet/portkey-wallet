@@ -5,6 +5,7 @@ import { TextS } from 'components/CommonText';
 import React, { useCallback, memo, useMemo } from 'react';
 import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
+import { pTd } from 'utils/unit';
 
 export type DigitTextProps = {
   maxLength?: number;
@@ -16,6 +17,7 @@ export type DigitTextProps = {
   text?: string;
   secureTextEntry?: boolean;
   errorMessage?: string;
+  isError?: boolean;
 };
 
 export type DigitInputInterface = {
@@ -44,26 +46,37 @@ const DigitText = ({
   errorMessage,
   type = 'default',
   text: textLabel = '',
+  isError: isErrorProp = false,
 }: DigitTextProps) => {
   const styleProps = useMemo(() => {
     return {
       inputItem: {
-        width: screenWidth / (maxLength + 4),
+        width: screenWidth / (maxLength + 2.5435),
         height: screenWidth / (maxLength + 2),
-      },
-      inputStyle: {
-        width: (screenWidth / (maxLength + 2)) * maxLength,
       },
     };
   }, [maxLength]);
+
+  const isError = useMemo(() => !!errorMessage || isErrorProp, [errorMessage, isErrorProp]);
+
   const getInputItem = useCallback(() => {
     const inputItem = [];
     for (let i = 0; i < maxLength; i++) {
       if (type === 'pin') {
-        inputItem.push(<View key={i} style={i < textLabel.length ? styles.pinSecureText : styles.pinPlaceholder} />);
+        inputItem.push(
+          <View
+            key={i}
+            style={[
+              i < textLabel.length ? styles.pinSecureText : styles.pinPlaceholder,
+              isError && styles.pinPlaceholderError,
+            ]}
+          />,
+        );
       } else {
         inputItem.push(
-          <View key={i} style={[styles.inputItem, styleProps.inputItem, inputItemStyle]}>
+          <View
+            key={i}
+            style={[styles.inputItem, isError && styles.inputItemError, styleProps.inputItem, inputItemStyle]}>
             {i < textLabel.length ? (
               <InputItem secureTextEntry={secureTextEntry} iconStyle={iconStyle} text={textLabel[i]} />
             ) : null}
@@ -72,7 +85,7 @@ const DigitText = ({
       }
     }
     return inputItem;
-  }, [iconStyle, inputItemStyle, maxLength, secureTextEntry, styleProps.inputItem, textLabel, type]);
+  }, [iconStyle, inputItemStyle, isError, maxLength, secureTextEntry, styleProps.inputItem, textLabel, type]);
 
   return (
     <View>
@@ -96,8 +109,12 @@ const styles = StyleSheet.create({
   inputItem: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: defaultColors.border6,
+    borderWidth: 1,
+    borderRadius: pTd(6),
+    borderColor: defaultColors.border6,
+  },
+  inputItemError: {
+    borderColor: defaultColors.error,
   },
   iconStyle: {
     width: 16,
@@ -111,7 +128,7 @@ const styles = StyleSheet.create({
     color: defaultColors.error,
   },
   textStyles: {
-    fontSize: 36,
+    fontSize: pTd(24),
     color: defaultColors.font5,
     fontWeight: 'bold',
   },
@@ -119,6 +136,9 @@ const styles = StyleSheet.create({
     height: 4,
     width: 16,
     backgroundColor: defaultColors.font5,
+  },
+  pinPlaceholderError: {
+    backgroundColor: defaultColors.error,
   },
   pinSecureText: {
     backgroundColor: defaultColors.font5,

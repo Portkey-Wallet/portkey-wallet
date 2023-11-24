@@ -34,6 +34,7 @@ import { usePin } from 'hooks/store';
 import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { handleGuardiansApproved } from 'utils/login';
+import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -80,6 +81,7 @@ export default function VerifierDetails() {
   const pin = usePin();
   const onRequestOrSetPin = useOnRequestOrSetPin();
   const getCurrentCAContract = useGetCurrentCAContract();
+
   const setGuardianStatus = useCallback(
     (status: GuardiansStatusItem) => {
       myEvents.setGuardianStatus.emit({
@@ -142,11 +144,14 @@ export default function VerifierDetails() {
     [guardianItem, onRequestOrSetPin],
   );
 
+  const [isInvalidCode, setIsInvalidCode] = useState(false);
+  const invalidCodeTimerRef = useRef<NodeJS.Timeout>();
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
       const isRequestResult = pin && verificationType === VerificationType.register && managerAddress;
-      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined);
+      digitInput.current?.lockInput();
+      const loadingKey = Loading.show(isRequestResult ? { text: CreateAddressLoading } : undefined, true);
       try {
         const rst = await verification.checkVerificationCode({
           params: {
@@ -211,10 +216,21 @@ export default function VerifierDetails() {
             break;
         }
       } catch (error) {
-        CommonToast.failError(error, 'Verify Fail');
+        const _isInvalidCode = checkVerifierIsInvalidCode(error);
+        if (_isInvalidCode) {
+          setIsInvalidCode(true);
+          invalidCodeTimerRef.current && clearTimeout(invalidCodeTimerRef.current);
+          invalidCodeTimerRef.current = setTimeout(() => {
+            setIsInvalidCode(false);
+          }, 1000);
+        } else {
+          CommonToast.failError(error, 'Verify Fail');
+        }
+
         digitInput.current?.reset();
         Loading.hide(loadingKey);
       }
+      digitInput.current?.unLockInput();
       !isRequestResult && Loading.hide(loadingKey);
     },
     [
@@ -231,10 +247,10 @@ export default function VerifierDetails() {
     ],
   );
 
-  const resendCode = useCallback(async () => {
+  const resendCode = useLockCallback(async () => {
+    digitInput.current?.lockInput();
+    Loading.show(undefined, true);
     try {
-      Loading.show();
-
       const req = await verification.sendVerificationCode({
         params: {
           type: LoginType[guardianItem?.guardianType as LoginType],
@@ -255,9 +271,16 @@ export default function VerifierDetails() {
     } catch (error) {
       CommonToast.failError(error, 'Verify Fail');
     }
+    digitInput.current?.unLockInput();
     digitInput.current?.reset();
     Loading.hide();
   }, [guardianItem, operationType, originChainId, setGuardianStatus]);
+
+  const onChangeText = useCallback(() => {
+    setIsInvalidCode(false);
+    invalidCodeTimerRef.current && clearTimeout(invalidCodeTimerRef.current);
+    invalidCodeTimerRef.current = undefined;
+  }, []);
 
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>
@@ -266,8 +289,19 @@ export default function VerifierDetails() {
         isRegister={!verificationType || (verificationType as VerificationType) === VerificationType.register}
         guardianAccount={guardianItem?.guardianAccount}
       />
-      <DigitInput ref={digitInput} onFinish={onFinish} maxLength={DIGIT_CODE.length} />
-      <VerifierCountdown style={GStyles.marginTop(24)} onResend={resendCode} ref={countdown} />
+      <DigitInput
+        ref={digitInput}
+        onChangeText={onChangeText}
+        onFinish={onFinish}
+        maxLength={DIGIT_CODE.length}
+        isError={isInvalidCode}
+      />
+      <VerifierCountdown
+        isInvalidCode={isInvalidCode}
+        style={GStyles.marginTop(24)}
+        onResend={resendCode}
+        ref={countdown}
+      />
     </PageContainer>
   );
 }

@@ -22,3 +22,5 @@ export const InitialTxFee = {
   crossChain: 0.35,
   max: 0.39,
 };
+
+export const VERIFY_INVALID_TIME = 1000;

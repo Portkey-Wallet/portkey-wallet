@@ -59,6 +59,8 @@ export const useRecovery = () => {
         default:
           value = {};
       }
+      if (value?.guardiansApproved?.length === 0) return;
+
       await handleGuardian({
         rpcUrl: currentChain.endPoint,
         chainType: currentNetwork.walletType,
@@ -90,6 +92,8 @@ export const useRecovery = () => {
       console.log('---op-guardian-error', error);
       const _error = contractErrorHandler(error) || 'Something error';
       message.error(_error);
+    } finally {
+      setLoading(false);
     }
   }, [
     currentChain,

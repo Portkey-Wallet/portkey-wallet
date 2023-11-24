@@ -27,15 +27,14 @@ export default function GuardianApproval() {
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const navigate = useNavigate();
   const { state, search } = useLocation();
-  const [query, setQuery] = useState('');
-  useEffect(() => {
+  const query = useMemo(() => {
     if (search) {
       const { detail } = qs.parse(search);
-      setQuery(detail);
+      return detail;
     } else {
-      setQuery(state);
+      return state;
     }
-  }, [query, search, state]);
+  }, [search, state]);
   const { isPrompt, isNotLessThan768 } = useCommonState();
   const { t } = useTranslation();
   const isBigScreenPrompt: boolean = useMemo(() => {
@@ -44,9 +43,10 @@ export default function GuardianApproval() {
   }, [isNotLessThan768, query]);
   const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(query);
 
-  const userVerifiedList = useMemo(() => {
+  const userVerifiedListLogic = useCallback(() => {
     const tempVerifiedList = Object.values(userGuardianStatus ?? {});
     let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
+
     if (query === 'guardians/edit') {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);
     } else if (['guardians/del', 'guardians/add'].includes(query)) {
@@ -55,23 +55,26 @@ export default function GuardianApproval() {
     return filterVerifiedList;
   }, [opGuardian?.key, preGuardian?.key, query, userGuardianStatus]);
 
+  const userVerifiedList = useMemo(() => {
+    return userVerifiedListLogic();
+  }, [userVerifiedListLogic]);
+
   const approvalLength = useMemo(() => {
     return getApprovalCount(userVerifiedList.length);
   }, [userVerifiedList.length]);
 
-  const alreadyApprovalLength = useMemo(
-    () => userVerifiedList.filter((item) => item?.status === VerifyStatus.Verified).length,
-    [userVerifiedList],
-  );
+  const alreadyApprovalLength = useMemo(() => {
+    return userVerifiedList.filter((item) => item?.status === VerifyStatus.Verified).length;
+  }, [userVerifiedList]);
 
   const handleGuardianRecovery = useRecovery();
 
   const handleRemoveOtherManage = useRemoveOtherManage();
 
   const recoveryWallet = useCallback(async () => {
-    if (query && query.indexOf('guardians') !== -1) {
+    if (query && query?.indexOf('guardians') !== -1) {
       handleGuardianRecovery();
-    } else if (query && query.indexOf('removeManage') !== -1) {
+    } else if (query && query?.indexOf('removeManage') !== -1) {
       handleRemoveOtherManage();
     } else {
       const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
@@ -90,30 +93,38 @@ export default function GuardianApproval() {
     query,
   ]);
 
+  const isExpiredLogic = useCallback(() => {
+    const timeGap = (guardianExpiredTime ?? 0) - Date.now();
+    if (timeGap <= 0) return true;
+    return false;
+  }, [guardianExpiredTime]);
+
   useEffect(() => {
     if (!guardianExpiredTime) return setIsExpired(false);
-    const timeGap = (guardianExpiredTime ?? 0) - Date.now();
-    if (timeGap <= 0) return setIsExpired(true);
+    setIsExpired(isExpiredLogic());
 
     const timer = setInterval(() => {
-      const timeGap = (guardianExpiredTime ?? 0) - Date.now();
-      if (timeGap <= 0) return setIsExpired(true);
-      setIsExpired(false);
+      setIsExpired(isExpiredLogic());
     }, 1000);
     return () => {
       clearInterval(timer);
     };
-  }, [guardianExpiredTime]);
+  }, [guardianExpiredTime, isExpiredLogic]);
+
+  useEffect(() => {
+    if (alreadyApprovalLength >= approvalLength && !isExpired) recoveryWallet();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alreadyApprovalLength, approvalLength, isExpired]);
 
   const handleBack = useCallback(() => {
-    if (query && query.indexOf('guardians') !== -1) {
+    if (query && query?.indexOf('guardians') !== -1) {
       if (['guardians/del', 'guardians/edit'].includes(query)) {
         navigate(`/setting/guardians/edit`);
       } else if ('guardians/add' === query) {
         navigate('/setting/guardians/add', { state: 'back' });
       }
-    } else if (query && query.indexOf('removeManage') !== -1) {
-      const manageAddress = query.split('_')[1];
+    } else if (query && query?.indexOf('removeManage') !== -1) {
+      const manageAddress = query?.split('_')[1];
       navigate(`/setting/wallet-security/manage-devices/${manageAddress}`);
     } else {
       navigate('/register/start');

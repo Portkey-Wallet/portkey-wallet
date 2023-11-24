@@ -13,3 +13,6 @@ export enum TransactionError {
 
 export const AddressErrorArray = Object.values(AddressError);
 export const TransactionErrorArray = Object.values(TransactionError);
+
+export const SideChainTipTitle = `Send to exchange account?`;
+export const SideChainTipContent = `Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.`;

@@ -33,8 +33,10 @@ import { request } from '@portkey-wallet/api/api-did';
 import useCheckVerifier from 'hooks/useVerifier';
 import CommonModal from 'components/CommonModal';
 import { useTranslation } from 'react-i18next';
-import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
 import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
+import { getStoreState } from 'store/utils/getStore';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -195,6 +197,7 @@ export default function RegisterStart() {
     [confirmRegisterOrLogin, dispatch, saveState, setLoading],
   );
 
+  const socialVerify = useSocialVerify();
   const onLoginFinish = useCallback(
     async (loginInfo: LoginInfo) => {
       try {
@@ -206,6 +209,29 @@ export default function RegisterStart() {
         saveState({ ...loginInfo, createType: 'login' });
         dispatch(resetGuardians());
         await fetchUserVerifier({ guardianIdentifier: loginInfo.guardianAccount });
+
+        const userGuardianStatus = getStoreState().guardians.userGuardianStatus;
+
+        // Google and Apple login-accounts will automatically login
+        const autoVerifiedList: Promise<void>[] = [];
+        Object.values(userGuardianStatus ?? {}).forEach((item) => {
+          if (
+            item.isLoginAccount &&
+            item.guardianAccount === loginInfo.guardianAccount &&
+            [LoginType.Google, LoginType.Apple].includes(item.guardianType)
+          ) {
+            autoVerifiedList.push(
+              socialVerify({
+                operateGuardian: item,
+                originChainId,
+                loginAccount: loginInfo,
+                operationType: OperationTypeEnum.communityRecovery,
+              }),
+            );
+          }
+        });
+        await Promise.all(autoVerifiedList);
+
         setLoading(false);
         navigate('/login/guardian-approval');
       } catch (error) {
@@ -216,7 +242,7 @@ export default function RegisterStart() {
         setLoading(false);
       }
     },
-    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading],
+    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading, socialVerify],
   );
   const loginInfoRef = useRef<LoginInfo>();
   const onInputFinish = useCallback(

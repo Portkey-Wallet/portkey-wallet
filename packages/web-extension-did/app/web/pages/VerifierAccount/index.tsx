@@ -5,7 +5,7 @@ import { message } from 'antd';
 import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
 import useLocationState from 'hooks/useLocationState';
-import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWallet, useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
 import { GuardianMth } from 'types/guardians';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -26,7 +26,7 @@ import VerifierPage from 'pages/components/VerifierPage';
 
 export default function VerifierAccount() {
   const { loginAccount } = useLoginInfo();
-  const { userGuardianStatus, currentGuardian, opGuardian } = useGuardiansInfo();
+  const { userGuardianStatus, currentGuardian, opGuardian, userGuardiansList } = useGuardiansInfo();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { state } = useLocationState<
@@ -46,6 +46,7 @@ export default function VerifierAccount() {
   const { setLoading } = useLoading();
   const { passwordSeed } = useUserInfo();
   const getGuardianList = useGuardianList();
+  const { address: managerAddress } = useCurrentWalletInfo();
   const isBigScreenPrompt = useMemo(
     () => (isNotLessThan768 ? state?.includes('guardian') || state?.includes('removeManage') : false),
     [isNotLessThan768, state],
@@ -152,7 +153,16 @@ export default function VerifierAccount() {
             verificationDoc: res.verificationDoc,
           }),
         );
-        navigate('/login/guardian-approval');
+        if (userGuardiansList?.length === 1) {
+          const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
+          if (managerAddress && res.data.privateKey) {
+            onManagerAddressAndQueryResult(res.data.privateKey);
+          } else {
+            navigate('/login/set-pin/login');
+          }
+        } else {
+          navigate('/login/guardian-approval');
+        }
       } else if (state?.indexOf('guardians') !== -1) {
         onSuccessInGuardian(res);
         message.success('Verified Successful');
@@ -169,6 +179,8 @@ export default function VerifierAccount() {
       onManagerAddressAndQueryResult,
       navigate,
       currentGuardian,
+      userGuardiansList?.length,
+      managerAddress,
       onSuccessInGuardian,
       onSuccessInRemoveOtherManage,
     ],

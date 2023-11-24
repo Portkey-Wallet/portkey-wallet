@@ -69,7 +69,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
 
     return (
       <TextS numberOfLines={1} style={[FontStyles.font7, styles.message]}>
-        {/* TODO: ts warning */}
+        {/* TODO: ts warning change */}
         {'message'}
       </TextS>
     );

@@ -8,7 +8,7 @@ import { useCurrentNetworkInfo, useIsMainnet, useNetworkList } from '@portkey-wa
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useLoading } from 'store/Provider/hooks';
 import { setOriginChainId } from '@portkey-wallet/store/store-ca/wallet/actions';
-import { NetworkType } from '@portkey-wallet/types';
+import { ChainId, NetworkType } from '@portkey-wallet/types';
 import CommonSelect from 'components/CommonSelect1';
 import { useChangeNetwork } from 'hooks/useChangeNetwork';
 import i18n from 'i18n';
@@ -33,10 +33,13 @@ import { request } from '@portkey-wallet/api/api-did';
 import useCheckVerifier from 'hooks/useVerifier';
 import CommonModal from 'components/CommonModal';
 import { useTranslation } from 'react-i18next';
-import { OperationTypeEnum, VerifierItem } from '@portkey-wallet/types/verifier';
+import { OperationTypeEnum, VerifierItem, VerifyStatus } from '@portkey-wallet/types/verifier';
 import { AssignVerifierLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 import { getStoreState } from 'store/utils/getStore';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { verification } from 'utils/api';
+import { setCurrentGuardianAction, setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 
 export default function RegisterStart() {
   const { type } = useParams();
@@ -197,6 +200,60 @@ export default function RegisterStart() {
     [confirmRegisterOrLogin, dispatch, saveState, setLoading],
   );
 
+  const sendVerifyCode = useCallback(
+    async (item: UserGuardianItem, originChainId: ChainId) => {
+      try {
+        setLoading(true);
+
+        if (
+          !loginAccountRef.current ||
+          !LoginType[loginAccountRef.current.loginType] ||
+          !loginAccountRef.current.guardianAccount
+        ) {
+          throw 'User registration information is invalid, please fill in the registration method again';
+        }
+
+        const result = await verification.sendVerificationCode({
+          params: {
+            guardianIdentifier: item?.guardianAccount,
+            type: LoginType[item.guardianType],
+            verifierId: item.verifier?.id || '',
+            chainId: originChainId,
+            operationType: OperationTypeEnum.communityRecovery,
+          },
+        });
+
+        setLoading(false);
+        if (result.verifierSessionId) {
+          dispatch(
+            setCurrentGuardianAction({
+              ...item,
+              verifierInfo: {
+                sessionId: result.verifierSessionId,
+                endPoint: result.endPoint,
+              },
+              isInitStatus: true,
+            }),
+          );
+          dispatch(
+            setUserGuardianItemStatus({
+              key: item.key,
+              status: VerifyStatus.Verifying,
+            }),
+          );
+
+          navigate('/login/verifier-account', { state: 'login' });
+        }
+      } catch (error: any) {
+        console.log(error, 'error===');
+        setLoading(false);
+        const _error = handleErrorMessage(error);
+        message.error(_error);
+      }
+    },
+    [dispatch, navigate, setLoading],
+  );
+
   const socialVerify = useSocialVerify();
   const onLoginFinish = useCallback(
     async (loginInfo: LoginInfo) => {
@@ -211,10 +268,11 @@ export default function RegisterStart() {
         await fetchUserVerifier({ guardianIdentifier: loginInfo.guardianAccount });
 
         const userGuardianStatus = getStoreState().guardians.userGuardianStatus;
+        const userGuardianStatusList = Object.values(userGuardianStatus ?? {});
 
         // Google and Apple login-accounts will automatically login
         const autoVerifiedList: Promise<void>[] = [];
-        Object.values(userGuardianStatus ?? {}).forEach((item) => {
+        userGuardianStatusList.forEach((item) => {
           if (
             item.isLoginAccount &&
             item.guardianAccount === loginInfo.guardianAccount &&
@@ -232,8 +290,15 @@ export default function RegisterStart() {
         });
         await Promise.all(autoVerifiedList);
 
+        if (
+          userGuardianStatusList.length === 1 &&
+          [LoginType.Email, LoginType.Phone].includes(userGuardianStatusList[0].guardianType)
+        ) {
+          await sendVerifyCode(userGuardianStatusList[0], originChainId);
+        } else {
+          navigate('/login/guardian-approval');
+        }
         setLoading(false);
-        navigate('/login/guardian-approval');
       } catch (error) {
         console.log(error, 'onLoginFinish====error');
         const errMsg = handleErrorMessage(error, 'login error');
@@ -242,7 +307,7 @@ export default function RegisterStart() {
         setLoading(false);
       }
     },
-    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, setLoading, socialVerify],
+    [dispatch, fetchUserVerifier, getRegisterInfo, navigate, saveState, sendVerifyCode, setLoading, socialVerify],
   );
   const loginInfoRef = useRef<LoginInfo>();
   const onInputFinish = useCallback(

@@ -268,7 +268,11 @@ export default function GuardianApproval() {
       if (!accelerateChainId) {
         navigationService.navigate('GuardianHome');
       } else {
-        navigationService.pop(3);
+        if ([LoginType.Email, LoginType.Phone].includes(guardianItem.guardianType)) {
+          navigationService.pop(3);
+        } else {
+          navigationService.pop(2);
+        }
         refreshGuardiansList();
       }
     } else {

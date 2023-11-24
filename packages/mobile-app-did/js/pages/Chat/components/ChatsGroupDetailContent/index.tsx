@@ -39,6 +39,7 @@ import CustomChatAvatar from '../CustomChatAvatar';
 import SystemInfo from '../SystemInfo';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import CustomView from '../CustomView';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -96,7 +97,9 @@ export default function ChatsGroupDetailContent() {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    (props: MessageTextProps<ChatMessage>) => <MessageText {...props} />,
+    // TODO: if is redPacket type return false
+    (props: MessageTextProps<ChatMessage>) =>
+      props.currentMessage?.content === 'red' ? null : <MessageText {...props} />,
     [],
   );
 
@@ -131,6 +134,15 @@ export default function ChatsGroupDetailContent() {
   const renderMessage = useCallback(
     (props: MessageProps<ChatMessage>) => {
       return <ChatMessageContainer onDismiss={onDismiss} {...props} />;
+    },
+    [onDismiss],
+  );
+
+  const renderCustomView = useCallback(
+    (props: MessageProps<ChatMessage>) => {
+      console.log('renderCustomView', props);
+
+      return <CustomView onDismiss={onDismiss} {...props} />;
     },
     [onDismiss],
   );
@@ -196,6 +208,7 @@ export default function ChatsGroupDetailContent() {
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
             onLoadEarlier={onLoadEarlier}
+            renderCustomView={renderCustomView}
           />
         )}
       </Touchable>

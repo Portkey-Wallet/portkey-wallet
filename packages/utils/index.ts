@@ -245,20 +245,41 @@ export function handlePhoneNumber(str?: string) {
   return str || '';
 }
 
-export const handleLoopFetch = async <T>(
-  fetch: () => Promise<T>,
+export const handleLoopFetch = async <T>({
+  fetch,
   times = 0,
-  interval = 0,
-  checkIsContinue?: () => boolean,
-): Promise<T> => {
+  interval = 1000,
+  checkIsContinue,
+  checkIsInvalid,
+}: {
+  fetch: () => Promise<T>;
+  times?: number;
+  interval?: number;
+  checkIsContinue?: (param: T) => boolean;
+  checkIsInvalid?: () => boolean;
+}): Promise<T> => {
   try {
-    return await fetch();
+    const result = await fetch();
+    if (checkIsContinue) {
+      const isContinue = checkIsContinue(result);
+      if (!isContinue) return result;
+    } else {
+      return result;
+    }
   } catch (error) {
-    const isContinue = checkIsContinue ? checkIsContinue() : true;
-    if (!isContinue) throw new Error('fetch invalid');
-    if (times === 1) throw error;
+    const isInvalid = checkIsInvalid ? checkIsInvalid() : true;
+    if (!isInvalid) throw new Error('fetch invalid');
     console.log('handleLoopFetch: error', times, error);
   }
+  if (times === 1) {
+    throw new Error('fetch exceed limit');
+  }
   await sleep(interval);
-  return handleLoopFetch(fetch, times - 1, interval, checkIsContinue);
+  return handleLoopFetch({
+    fetch,
+    times: times - 1,
+    interval,
+    checkIsContinue,
+    checkIsInvalid,
+  });
 };

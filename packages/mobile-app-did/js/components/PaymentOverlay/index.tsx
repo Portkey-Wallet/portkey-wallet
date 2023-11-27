@@ -4,9 +4,9 @@ import { StyleSheet, View, Text } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import { pTd } from 'utils/unit';
 import { ChainId } from '@portkey-wallet/types';
-import { useAccountTokenList } from '@portkey-wallet/hooks/hooks-ca/balances';
+import { useAccountTokenList, useAllTokenInfoList } from '@portkey-wallet/hooks/hooks-ca/balances';
 import { TextL, TextM } from 'components/CommonText';
-import { useGetAccountTokenList } from 'hooks/account';
+import { useGetAccountTokenList, useGetAllTokenInfoList } from 'hooks/account';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import merge from 'lodash/merge';
 import { useAsync } from 'react-use';
@@ -53,11 +53,15 @@ const PaymentModal = ({
   calculateTransactionFee,
   onConfirm,
 }: PaymentOverlayProps) => {
-  const getAccountTokenList = useGetAccountTokenList();
-
   const accountTokenList = useAccountTokenList();
+  const tokenInfoList = useAllTokenInfoList();
+
+  const getAccountTokenList = useGetAccountTokenList();
+  const allTokenInfoList = useGetAllTokenInfoList();
+
   const defaultToken = useDefaultToken();
   const { currentNetwork } = useWallet();
+
   const currentCaInfo = useCurrentCaInfo();
   const currentCaAddress = useMemo(() => currentCaInfo?.[chainId]?.caAddress, [chainId, currentCaInfo]);
 
@@ -77,7 +81,11 @@ const PaymentModal = ({
   }, [accountTokenList, amount, chainId, tokenInfo.symbol]);
 
   const crossSufficientItem = useMemo(() => crossSufficientList[0], [crossSufficientList]);
-  const currentTokenInfo: TokenItemShowType | undefined = useMemo(() => tokenMap?.[chainId], [chainId, tokenMap]);
+  const currentTokenInfo: TokenItemShowType | undefined = useMemo(() => {
+    if (tokenMap?.[chainId]) return tokenMap?.[chainId];
+
+    return tokenInfoList.find(ele => ele.symbol === tokenInfo.symbol);
+  }, [chainId, tokenInfo.symbol, tokenInfoList, tokenMap]);
 
   const { isBuySectionShow } = useAppBuyButtonShow();
   const isCanBuy = useMemo(
@@ -88,6 +96,7 @@ const PaymentModal = ({
   // update AccountTokenList
   useEffectOnce(() => {
     getAccountTokenList();
+    allTokenInfoList();
   });
 
   const fee = useAsync(async () => {
@@ -181,7 +190,7 @@ const PaymentModal = ({
                 <CommonAvatar
                   hasBorder
                   style={styles.avatar}
-                  title={currentTokenInfo.symbol}
+                  title={currentTokenInfo?.symbol}
                   avatarSize={pTd(24)}
                   imageUrl={currentTokenInfo?.imageUrl}
                 />
@@ -195,15 +204,15 @@ const PaymentModal = ({
               <Text style={GStyles.marginTop(pTd(4))}>
                 <TextS>
                   {formatAmountShow(
-                    divDecimals(currentTokenInfo?.balance, currentTokenInfo.decimals),
-                    currentTokenInfo.decimals,
+                    divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
+                    currentTokenInfo?.decimals,
                   )}
                 </TextS>
-                <TextS>{` ${currentTokenInfo.symbol}`}</TextS>
+                <TextS>{` ${currentTokenInfo?.symbol}`}</TextS>
                 <TextS>
                   {`  ${convertAmountUSDShow(
-                    divDecimals(currentTokenInfo?.balance, currentTokenInfo.decimals),
-                    currentTokenInfo.price,
+                    divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
+                    currentTokenInfo?.price,
                   )}`}
                 </TextS>
               </Text>
@@ -211,7 +220,7 @@ const PaymentModal = ({
               {!!(crossSufficientItem && fee.error) && (
                 <TextS style={[FontStyles.font6, GStyles.marginTop(pTd(4))]}>
                   {`You can transfer some ${tokenInfo.symbol} from your ${
-                    currentTokenInfo.chainId === MAIN_CHAIN_ID ? 'SideChain' : 'MainChain'
+                    currentTokenInfo?.chainId === MAIN_CHAIN_ID ? 'SideChain' : 'MainChain'
                   } address`}
                 </TextS>
               )}

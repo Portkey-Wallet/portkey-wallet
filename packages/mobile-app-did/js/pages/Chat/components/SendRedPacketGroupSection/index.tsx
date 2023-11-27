@@ -26,21 +26,25 @@ export type ValuesType = {
   decimals: string;
   memo: string;
   chainId: ChainId;
+  tokenContractAddress: string;
 };
 
 export type SendRedPacketGroupSectionPropsType = {
   // TODO: change type
   type?: 'p2p' | 'random' | 'fixed';
+  groupMemberCount?: number;
   values: ValuesType;
   setValues: (v: ValuesType) => void;
   onPressButton: () => void;
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
-  const { type, values, setValues, onPressButton } = props;
+  const { type, groupMemberCount, values, setValues, onPressButton } = props;
   //   const errorMap = {};
   const defaultToken = useDefaultToken();
   const symbolImages = useSymbolImages();
+
+  console.log('groupMemberCount', groupMemberCount);
 
   return (
     <>

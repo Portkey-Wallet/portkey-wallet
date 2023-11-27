@@ -9,6 +9,13 @@ import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { usePin } from 'hooks/store';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { getManagerAccount } from 'utils/redux';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
+import PaymentOverlay from 'components/PaymentOverlay';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
 
 type TabItemType = {
   name: string;
@@ -17,10 +24,6 @@ type TabItemType = {
 };
 
 export default function SendPacketGroupPage() {
-  // const {
-  //   params: { type = GroupRedPacketTabEnum.Random },
-  // } = useRoute<RouteProp<{ params: { type: GroupRedPacketTabEnum } }>>();
-
   // TODO: should init
   const [values, setValues] = useState<ValuesType>({
     packetNum: '',
@@ -28,7 +31,51 @@ export default function SendPacketGroupPage() {
     symbol: 'ELF',
     decimals: '',
     memo: '',
+    chainId: 'AELF',
+    tokenContractAddress: '',
   });
+
+  const pin = usePin();
+  const wallet = useCurrentWalletInfo();
+  const chainInfo = useCurrentChain(values.chainId);
+
+  const onPressBtn = useCallback(async () => {
+    try {
+      const req = await PaymentOverlay.showRedPacket({
+        tokenInfo: {
+          symbol: 'ELF',
+          decimals: 8,
+        },
+        amount: timesDecimals(values.count, values.decimals).toFixed(),
+        chainId: 'AELF',
+        calculateTransactionFee: async () => {
+          if (!pin) throw new Error('PIN is required');
+          const account = getManagerAccount(pin);
+          if (!account || !chainInfo) throw new Error('Account is required');
+          const contract = await getContractBasic({
+            contractAddress: chainInfo.caContractAddress,
+            rpcUrl: chainInfo.endPoint,
+            account,
+          });
+
+          return contract.calculateTransactionFee('ManagerForwardCall', {
+            caHash: wallet.caHash,
+            contractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
+            methodName: 'Transfer',
+            args: {
+              symbol: 'ELF',
+              to: '2PfWcs9yhY5xVcJPskxjtAHiKyNUbX7wyWv2NcwFJEg9iNfnPj',
+              amount: 1 * 10 ** 8,
+              memo: 'transfer address1 to address2',
+            },
+          });
+        },
+      });
+      console.log(req, '====req');
+    } catch (error) {
+      console.log(error, '====error');
+    }
+  }, [chainInfo, pin, values.count, values.decimals, wallet.caHash]);
 
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
 
@@ -45,7 +92,7 @@ export default function SendPacketGroupPage() {
               console.log('setValues', v);
               setValues(v);
             }}
-            onPressButton={() => console.log('onPressButton')}
+            onPressButton={onPressBtn}
           />
         ),
       },
@@ -60,12 +107,12 @@ export default function SendPacketGroupPage() {
               console.log('setValues', v);
               setValues(v);
             }}
-            onPressButton={() => console.log('onPressButton')}
+            onPressButton={onPressBtn}
           />
         ),
       },
     ],
-    [values],
+    [onPressBtn, values],
   );
 
   const onTabPress = useCallback((tabType: GroupRedPacketTabEnum) => {

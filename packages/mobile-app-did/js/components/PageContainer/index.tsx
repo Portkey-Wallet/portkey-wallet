@@ -10,6 +10,7 @@ import { ViewStyleType } from 'types/styles';
 const safeAreaColorMap = {
   white: defaultColors.bg1,
   blue: defaultColors.bg5,
+  red: defaultColors.bg17,
   gray: defaultColors.bg4,
   transparent: 'transparent',
 };

@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { ModalBody } from 'components/ModalBody';
 import { pTd } from 'utils/unit';
 import { ChainId } from '@portkey-wallet/types';
 import { useAccountTokenList } from '@portkey-wallet/hooks/hooks-ca/balances';
-import { TextL, TextM, TextTitle } from 'components/CommonText';
+import { TextL, TextM } from 'components/CommonText';
 import { useGetAccountTokenList } from 'hooks/account';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import merge from 'lodash/merge';
@@ -28,6 +28,8 @@ import { defaultColors } from 'assets/theme';
 import navigationService from 'utils/navigationService';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import RedPacketAmountShow from 'pages/Chat/components/RedPacketAmountShow';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -94,10 +96,11 @@ const PaymentModal = ({
     if (!req.data.TransactionFee || !req.data.Success) throw new Error('TransactionFee calculate fail');
     return req.data.TransactionFee?.[defaultToken.symbol] || '0';
   }, [calculateTransactionFee]);
+
   const feeComponent = useMemo(() => {
     if (fee?.error) return;
     return (
-      <View style={GStyles.width100}>
+      <View style={[GStyles.width100, GStyles.marginTop(pTd(16))]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
           <TextL>Transaction fee</TextL>
           <View>
@@ -112,7 +115,7 @@ const PaymentModal = ({
           </View>
         </View>
         <View style={GStyles.alignEnd}>
-          <TextS>{convertAmountUSDShow(fee.value, currentTokenInfo?.price)}</TextS>
+          <TextS>{convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), currentTokenInfo?.price)}</TextS>
         </View>
       </View>
     );
@@ -162,27 +165,54 @@ const PaymentModal = ({
   return (
     <ModalBody modalBodyType="bottom" style={styles.wrapStyle}>
       <View style={[GStyles.itemCenter, GStyles.flex1]}>
-        <TextTitle>{title}</TextTitle>
-        <TextTitle>
-          {amount} {tokenInfo.symbol}
-        </TextTitle>
-        <TextL>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextL>
-        <View style={GStyles.width100}>
-          <TextS>Balance</TextS>
-          <View style={styles.balanceItemRow}>
+        <TextM style={[FontStyles.font5, GStyles.marginBottom(pTd(8))]}> {title}</TextM>
+        <RedPacketAmountShow
+          componentType="sendPacketPage"
+          textColor={defaultColors.font5}
+          amountShow={amount}
+          symbol={tokenInfo.symbol}
+        />
+        <TextL style={GStyles.marginTop(pTd(8))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextL>
+        <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
+          <TextS style={FontStyles.font3}>Method</TextS>
+          <View style={[styles.balanceItemRow, (crossSufficientItem || fee.error) && styles.opacity]}>
             <View style={styles.rowCenter}>
               <View style={[GStyles.flex1, styles.rowCenter]}>
-                <CommonAvatar avatarSize={pTd(30)} imageUrl={currentTokenInfo?.imageUrl} />
-                <TextL>ELF ({formatChainInfoToShow(chainId, currentNetwork)})</TextL>
+                <CommonAvatar
+                  hasBorder
+                  style={styles.avatar}
+                  title={currentTokenInfo.symbol}
+                  avatarSize={pTd(24)}
+                  imageUrl={currentTokenInfo?.imageUrl}
+                />
+                <TextL style={FontStyles.font5}>
+                  {tokenInfo.symbol} ({formatChainInfoToShow(chainId, currentNetwork)})
+                </TextL>
               </View>
               {getButtonComponent}
             </View>
             <View style={GStyles.paddingLeft(pTd(30))}>
-              {!!fee.error && <TextS>Not enough balance</TextS>}
+              <Text style={GStyles.marginTop(pTd(4))}>
+                <TextS>
+                  {formatAmountShow(
+                    divDecimals(currentTokenInfo?.balance, currentTokenInfo.decimals),
+                    currentTokenInfo.decimals,
+                  )}
+                </TextS>
+                <TextS>{` ${currentTokenInfo.symbol}`}</TextS>
+                <TextS>
+                  {`  ${convertAmountUSDShow(
+                    divDecimals(currentTokenInfo?.balance, currentTokenInfo.decimals),
+                    currentTokenInfo.price,
+                  )}`}
+                </TextS>
+              </Text>
+              {!!fee.error && <TextS style={GStyles.marginTop(pTd(4))}>Insufficient balance</TextS>}
               {!!(crossSufficientItem && fee.error) && (
-                <TextS style={FontStyles.font6}>
-                  You can get {tokenInfo.symbol} from{' '}
-                  {formatChainInfoToShow(crossSufficientItem.chainId, currentNetwork)}
+                <TextS style={[FontStyles.font6, GStyles.marginTop(pTd(4))]}>
+                  {`You can transfer some ${tokenInfo.symbol} from your ${
+                    currentTokenInfo.chainId === MAIN_CHAIN_ID ? 'SideChain' : 'MainChain'
+                  } address`}
                 </TextS>
               )}
             </View>
@@ -240,12 +270,20 @@ export const styles = StyleSheet.create({
   },
   balanceItemRow: {
     backgroundColor: defaultColors.bg6,
-    paddingVertical: 15,
+    paddingVertical: pTd(14),
     paddingHorizontal: pTd(12),
+    marginTop: pTd(8),
     borderRadius: pTd(6),
+  },
+  opacity: {
+    opacity: 0.6,
   },
   rowCenter: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  avatar: {
+    fontSize: pTd(14),
+    marginRight: pTd(8),
   },
 });

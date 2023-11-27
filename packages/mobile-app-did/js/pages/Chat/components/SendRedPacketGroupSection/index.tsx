@@ -16,6 +16,7 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import RedPacketAmountShow from '../RedPacketAmountShow';
 import CommonAvatar from 'components/CommonAvatar';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { RedPackageTypeEnum } from '@portkey-wallet/im';
 
 export type ValuesType = {
   packetNum?: string;
@@ -26,8 +27,7 @@ export type ValuesType = {
 };
 
 export type SendRedPacketGroupSectionPropsType = {
-  // TODO: change type
-  type?: 'p2p' | 'random' | 'fixed';
+  type?: RedPackageTypeEnum;
   values: ValuesType;
   setValues: (v: ValuesType) => void;
   onPressButton: () => void;
@@ -41,7 +41,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
 
   return (
     <>
-      {type !== 'p2p' && (
+      {type !== RedPackageTypeEnum.P2P && (
         <FormItem title="Number of Red Packet">
           <CommonInput
             type="general"

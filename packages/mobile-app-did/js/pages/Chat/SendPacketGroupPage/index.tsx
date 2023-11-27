@@ -9,6 +9,7 @@ import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
+import { RedPackageTypeEnum } from '@portkey-wallet/im';
 
 type TabItemType = {
   name: string;
@@ -16,19 +17,20 @@ type TabItemType = {
   component: JSX.Element;
 };
 
+const INIT_VALUES = {
+  packetNum: '',
+  count: '',
+  symbol: 'ELF',
+  decimals: '',
+  memo: '',
+};
 export default function SendPacketGroupPage() {
   // const {
   //   params: { type = GroupRedPacketTabEnum.Random },
   // } = useRoute<RouteProp<{ params: { type: GroupRedPacketTabEnum } }>>();
 
   // TODO: should init
-  const [values, setValues] = useState<ValuesType>({
-    packetNum: '',
-    count: '',
-    symbol: 'ELF',
-    decimals: '',
-    memo: '',
-  });
+  const [values, setValues] = useState<ValuesType>(INIT_VALUES);
 
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
 
@@ -40,6 +42,7 @@ export default function SendPacketGroupPage() {
         component: (
           <SendRedPacketGroupSection
             key={GroupRedPacketTabEnum.Random}
+            type={RedPackageTypeEnum.RANDOM}
             values={values}
             setValues={(v: ValuesType) => {
               console.log('setValues', v);
@@ -55,6 +58,7 @@ export default function SendPacketGroupPage() {
         component: (
           <SendRedPacketGroupSection
             key={GroupRedPacketTabEnum.Fixed}
+            type={RedPackageTypeEnum.FIXED}
             values={values}
             setValues={(v: ValuesType) => {
               console.log('setValues', v);
@@ -70,6 +74,9 @@ export default function SendPacketGroupPage() {
 
   const onTabPress = useCallback((tabType: GroupRedPacketTabEnum) => {
     setSelectTab(tabType);
+    setValues({
+      ...INIT_VALUES,
+    });
   }, []);
 
   return (

@@ -6,6 +6,7 @@ import GStyles from 'assets/theme/GStyles';
 import { pTd } from 'utils/unit';
 import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
 import { TextM } from 'components/CommonText';
+import { RedPackageTypeEnum } from '@portkey-wallet/im';
 
 const SendPacketP2PPage = () => {
   const [values, setValues] = useState<ValuesType>({
@@ -24,7 +25,7 @@ const SendPacketP2PPage = () => {
       scrollViewProps={{ disabled: false }}
       containerStyles={styles.container}>
       <SendRedPacketGroupSection
-        type="p2p"
+        type={RedPackageTypeEnum.P2P}
         values={values}
         setValues={v => {
           setValues(v);

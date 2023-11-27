@@ -44,6 +44,8 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const defaultToken = useDefaultToken();
   const symbolImages = useSymbolImages();
 
+  console.log('groupMemberCount', groupMemberCount);
+
   return (
     <>
       {type !== 'p2p' && (

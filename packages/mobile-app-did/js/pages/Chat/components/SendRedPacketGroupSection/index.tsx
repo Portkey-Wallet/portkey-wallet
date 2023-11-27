@@ -16,6 +16,8 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import RedPacketAmountShow from '../RedPacketAmountShow';
 import CommonAvatar from 'components/CommonAvatar';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { ChainId } from '@portkey-wallet/types';
+import { filterEmoji } from 'utils';
 
 export type ValuesType = {
   packetNum?: string;
@@ -23,6 +25,7 @@ export type ValuesType = {
   symbol: string;
   decimals: string;
   memo: string;
+  chainId: ChainId;
 };
 
 export type SendRedPacketGroupSectionPropsType = {
@@ -34,7 +37,7 @@ export type SendRedPacketGroupSectionPropsType = {
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
-  const { type, values, setValues } = props;
+  const { type, values, setValues, onPressButton } = props;
   //   const errorMap = {};
   const defaultToken = useDefaultToken();
   const symbolImages = useSymbolImages();
@@ -95,7 +98,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           placeholder="Best Wishes!"
           maxLength={80}
           inputContainerStyle={styles.inputWrap}
-          onChangeText={v => setValues({ ...values, memo: v })}
+          onChangeText={v => setValues({ ...values, memo: filterEmoji(v) })}
         />
       </FormItem>
       {/* TODO: change real data */}
@@ -107,13 +110,12 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         wrapStyle={GStyles.marginTop(pTd(8))}
       />
       <CommonButton
-        disabled
+        // TODO:
+        disabled={false}
         type="primary"
         title={'Prepare Red Packet'}
         style={styles.btnStyle}
-        onPress={() => {
-          console.log('Prepare Red Packet');
-        }}
+        onPress={onPressButton}
       />
     </>
   );

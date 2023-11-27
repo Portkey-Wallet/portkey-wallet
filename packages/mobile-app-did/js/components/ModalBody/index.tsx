@@ -1,7 +1,7 @@
 import React from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, View, ViewProps } from 'react-native';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
@@ -12,13 +12,14 @@ import fonts from 'assets/theme/fonts';
 import { useGStyles } from 'assets/theme/useGStyles';
 import ButtonRow from 'components/ButtonRow';
 import { CommonButtonProps } from 'components/CommonButton';
+import { ViewStyleType } from 'types/styles';
 
 export interface ModalBodyProps extends ViewProps {
   title?: string;
   isShowLeftBackIcon?: boolean;
   isShowRightCloseIcon?: boolean;
   modalBodyType?: 'center' | 'bottom';
-  style?: ViewStyle;
+  style?: ViewStyleType;
   onClose?: () => void;
   onBack?: () => void;
   bottomButtonGroup?: {

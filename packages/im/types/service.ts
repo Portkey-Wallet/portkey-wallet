@@ -1,11 +1,16 @@
 import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import {
+  ChainId,
   ChannelInfo,
   ChannelItem,
   ChannelMemberInfo,
   ChannelTypeEnum,
   Message,
   MessageCount,
+  RedPackageDetail,
+  RedPackageGrabInfoItem,
+  RedPackageStatusEnum,
+  RedPackageTypeEnum,
   TriggerMessageEventActionEnum,
 } from '.';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
@@ -128,10 +133,14 @@ export type GetChannelListParams = {
   channelUuid?: string;
 };
 
+export type ChannelItemResult = ChannelItem & {
+  lastMessageContent: string | null;
+};
+
 export type GetChannelListResult = {
   totalCount: number;
   cursor: string;
-  list: ChannelItem[];
+  list: ChannelItemResult[];
 };
 
 export type UpdateChannelPinParams = {
@@ -191,6 +200,94 @@ export type JoinChannelParams = {
   channelUuid: string;
 };
 
+export type CreateRedPackageParams = {
+  chainId: ChainId;
+  symbol: string;
+};
+
+export type CreateRedPackageResult = {
+  id: string;
+  publicKey: string;
+  chainId: ChainId;
+  signature: string;
+  minAmount: string;
+  symbol: string;
+  decimal: string | number;
+  redPackageContractAddress: string;
+};
+
+export type SendRedPackageParams = {
+  id: string;
+  totalAmount: string;
+  type: RedPackageTypeEnum;
+  count: number;
+  chainId: ChainId;
+  symbol: string;
+  memo: string;
+  rawTransaction: string;
+  message: SendMessageParams;
+};
+
+export type SendRedPackageResult = {
+  sessionId: string;
+};
+
+export type GetRedPackageCreationStatusParams = SendRedPackageResult;
+
+export enum RedPackageCreationStatusEnum {
+  PENDING = 1,
+  SUCCESS = 2,
+  FAIL = 3,
+}
+export type GetRedPackageCreationStatusResult = {
+  status: RedPackageCreationStatusEnum;
+  message: string;
+  TransactionId: string;
+  TransactionResult: string;
+};
+
+export type GetRedPackageDetailParams = {
+  id: string;
+  skipCount: number;
+  maxResultCount: number;
+};
+
+export type GetRedPackageDetailResult = RedPackageDetail & {
+  items: RedPackageGrabInfoItem[];
+};
+
+export type GrabRedPackageParams = {
+  id: string;
+  channelUuid: string;
+};
+
+export enum GrabRedPackageResultEnum {
+  SUCCESS = 1,
+  FAIL = 2,
+}
+export type GrabRedPackageResult = {
+  result: GrabRedPackageResultEnum;
+  errorMessage: string;
+  amount: string;
+  decimal: string | number;
+  viewStatus: RedPackageStatusEnum;
+};
+
+export type GetRedPackageConfigParams = {
+  chainId?: ChainId;
+  token?: string;
+};
+
+export type RedPackageTokenInfo = {
+  chainId: ChainId;
+  symbol: string;
+  decimal: string | number;
+  minAmount: string;
+};
+export type GetRedPackageConfigResult = {
+  tokenInfo: RedPackageTokenInfo[];
+};
+
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -234,4 +331,13 @@ export interface IIMService {
   getProfile(
     params: RequireAtLeastOne<GetProfileParams, 'id' | 'portkeyId' | 'relationId'>,
   ): IMServiceCommon<IContactProfile>;
+
+  createRedPackage(params: CreateRedPackageParams): IMServiceCommon<CreateRedPackageResult>;
+  sendRedPackage(params: SendRedPackageParams): IMServiceCommon<SendRedPackageResult>;
+  getRedPackageCreationStatus(
+    params: GetRedPackageCreationStatusParams,
+  ): IMServiceCommon<GetRedPackageCreationStatusResult>;
+  getRedPackageDetail(params: GetRedPackageDetailParams): IMServiceCommon<GetRedPackageDetailResult>;
+  grabRedPackage(params: GrabRedPackageParams): IMServiceCommon<GrabRedPackageResult>;
+  getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<GetRedPackageConfigResult>;
 }

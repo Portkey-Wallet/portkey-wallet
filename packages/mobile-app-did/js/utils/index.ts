@@ -4,6 +4,10 @@ import * as Network from 'expo-network';
 import { setStringAsync } from 'expo-clipboard';
 import i18n from 'i18n';
 
+export const INFINITY = 'Infinity';
+export const emojiRegex =
+  /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}\u{1F900}-\u{1F9FF}\u{1F200}-\u{1F2FF}\u{1F910}-\u{1F95F}\u{1F980}-\u{1F9E0}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}]/g;
+
 /**
  * timestamp to formatted time like 'Nov 10 at 1:09 pm', if last year format to "2020 Nov 10 at 1:09 pm "
  * @param time
@@ -53,4 +57,32 @@ export const copyText = async (text: string) => {
  */
 export const checkIsSvgUrl = (imgUrl: string) => {
   return /.svg$/.test(imgUrl);
+};
+
+/**
+ * A method to determine whether a number is within an interval, like (10,100]
+ * @param num
+ * @param left
+ * @param right
+ * @returns
+ */
+export const isNumberInInterval = (
+  num: number,
+  left: number | typeof INFINITY,
+  right: number | typeof INFINITY,
+): boolean => {
+  if (left === 'Infinity' && typeof right === 'number') return num <= right;
+  if (right === 'Infinity' && typeof left === 'number') return num > left;
+  if (typeof left === 'number' && typeof right === 'number') return num > left && num <= right;
+
+  return true;
+};
+
+/**
+ * a func to filter emoji
+ * @param v
+ * @returns
+ */
+export const filterEmoji = (v: string): string => {
+  return v.replace(emojiRegex, '');
 };

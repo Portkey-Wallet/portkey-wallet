@@ -130,7 +130,7 @@ export const useInitIM = () => {
               ...channelInfoResult,
               lastMessageContent: messageContentParser(
                 channelInfoResult.lastMessageType,
-                channelInfoResult.lastMessageContent,
+                channelInfoResult.lastMessageContent || '',
               ),
             };
             dispatch(
@@ -272,3 +272,4 @@ export const useEditIMContact = () => {
 export * from './channelList';
 export * from './channel';
 export * from './group';
+export * from './redPackage';

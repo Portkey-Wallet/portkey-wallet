@@ -13,7 +13,7 @@ import { handleLoopFetch, randomId } from '@portkey-wallet/utils';
 import { useRelationId } from '.';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types/service';
 import { messageParser } from '@portkey-wallet/im/utils';
-import { useWallet } from '../wallet';
+import { useCurrentWalletInfo, useWallet } from '../wallet';
 import { useAppCommonDispatch } from '../../index';
 import {
   addChannelMessage,
@@ -23,9 +23,20 @@ import {
 } from '@portkey-wallet/store/store-ca/im/actions';
 import { useCurrentNetworkInfo } from '../network';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { generateRedPackageRawTransaction } from '@portkey-wallet/utils/chat';
 
+export interface ICreateRedPacketParams {
+  id: string;
+  symbol: string;
+  totalAmount: string;
+  minAmount: string;
+  expireTime: string;
+  totalCount: number;
+  type: RedPackageTypeEnum;
+  publicKey: string;
+  signature: string;
+}
 export interface ISendRedPackageHookParams {
-  image?: string;
   channelId: string;
   chainId: ChainId;
   symbol: string;
@@ -35,16 +46,22 @@ export interface ISendRedPackageHookParams {
   count: number;
   memo: string;
   caContract: ContractBasic;
+  image?: string;
 }
 export const useSendRedPackage = () => {
   const { relationId, getRelationId } = useRelationId();
   const { networkType } = useCurrentNetworkInfo();
   const { userInfo } = useWallet();
+  const wallet = useCurrentWalletInfo();
   const dispatch = useAppCommonDispatch();
 
   return useCallback(
     async (params: ISendRedPackageHookParams) => {
-      if (!userInfo) {
+      const { channelId, chainId, symbol, totalAmount, image = '', memo, type, count, caContract } = params;
+
+      const caHash = wallet.caHash;
+      const caAddress = wallet[chainId]?.caAddress;
+      if (!userInfo || !caHash || !caAddress) {
         throw new Error('No user info');
       }
       let _relationId = relationId;
@@ -56,18 +73,30 @@ export const useSendRedPackage = () => {
         }
       }
 
-      const { channelId, chainId, symbol, totalAmount, image = '', memo, type, count, caContract } = params;
-
+      await im.refreshToken();
       const redPackageInfo = await im.service.createRedPackage({
         chainId,
         symbol,
       });
-      const { id, publicKey, signature, minAmount, redPackageContractAddress } = redPackageInfo.data;
+      const { id, publicKey, signature, minAmount, redPackageContractAddress, expireTime } = redPackageInfo.data;
 
       // TODO: approve redPackageContractAddress
 
-      // generate CreateRedPacketInput rawTransaction
-      const rawTransaction = '';
+      const rawTransaction = await generateRedPackageRawTransaction({
+        caContract,
+        caHash,
+        caAddress,
+        contractAddress: redPackageContractAddress,
+        id,
+        symbol,
+        totalAmount,
+        minAmount,
+        expirationTime: Date.now() + expireTime,
+        totalCount: count,
+        type,
+        publicKey,
+        signature,
+      });
 
       const redPackageContent: ParsedRedPackage = {
         image,
@@ -86,7 +115,6 @@ export const useSendRedPackage = () => {
         sendUuid: `${_relationId}-${channelId}-${Date.now()}-${uuid}`,
       };
 
-      await im.refreshToken();
       const {
         data: { sessionId },
       } = await im.service.sendRedPackage({
@@ -97,8 +125,9 @@ export const useSendRedPackage = () => {
         chainId,
         symbol,
         memo,
+        channelUuid: channelId,
         rawTransaction,
-        message,
+        message: JSON.stringify(message),
       });
 
       const { data: creationStatus } = await handleLoopFetch({
@@ -149,7 +178,7 @@ export const useSendRedPackage = () => {
         }),
       );
     },
-    [dispatch, getRelationId, networkType, relationId, userInfo],
+    [dispatch, getRelationId, networkType, relationId, userInfo, wallet],
   );
 };
 

@@ -213,6 +213,7 @@ export type CreateRedPackageResult = {
   minAmount: string;
   symbol: string;
   decimal: string | number;
+  expireTime: string;
   redPackageContractAddress: string;
 };
 
@@ -224,8 +225,9 @@ export type SendRedPackageParams = {
   chainId: ChainId;
   symbol: string;
   memo: string;
+  channelUuid: string;
   rawTransaction: string;
-  message: SendMessageParams;
+  message: string;
 };
 
 export type SendRedPackageResult = {
@@ -235,9 +237,9 @@ export type SendRedPackageResult = {
 export type GetRedPackageCreationStatusParams = SendRedPackageResult;
 
 export enum RedPackageCreationStatusEnum {
-  PENDING = 1,
-  SUCCESS = 2,
-  FAIL = 3,
+  PENDING = 0,
+  SUCCESS = 1,
+  FAIL = 2,
 }
 export type GetRedPackageCreationStatusResult = {
   status: RedPackageCreationStatusEnum;

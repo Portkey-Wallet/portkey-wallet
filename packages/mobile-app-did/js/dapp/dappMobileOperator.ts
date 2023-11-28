@@ -332,7 +332,7 @@ export default class DappMobileOperator extends Operator {
       case MethodsWallet.GET_WALLET_SIGNATURE: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSignature;
-        payload = request.payload;
+        payload = { data: request.payload.data };
         if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;

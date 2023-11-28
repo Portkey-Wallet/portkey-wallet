@@ -9,7 +9,7 @@ import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
 import Collapsible from 'components/Collapsible';
-import { tryToUtf8Str } from '@portkey-wallet/utils/byteConversion';
+import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
 type TransactionDataSectionType = {
   dataInfo: { [key: string]: any } | string;
   style?: ViewStyle;
@@ -41,13 +41,13 @@ export const TransactionDataSection = (props: TransactionDataSectionType) => {
       return Object.entries(dataInfo).map(([key, value], index) => (
         <View key={index} style={styles.dataInfoGroup}>
           <TextM style={FontStyles.font5}>{key}</TextM>
-          <TextS style={[FontStyles.font3, styles.dataValue]}>{JSON.stringify(tryToUtf8Str(value))}</TextS>
+          <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(value)}</TextS>
         </View>
       ));
     } else {
       return (
         <View style={styles.dataInfoGroup}>
-          <TextS style={[FontStyles.font3, styles.dataValue]}>{JSON.stringify(dataInfo)}</TextS>
+          <TextS style={[FontStyles.font3, styles.dataValue]}>{showValueToStr(dataInfo)}</TextS>
         </View>
       );
     }

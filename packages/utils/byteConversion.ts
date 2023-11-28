@@ -18,3 +18,13 @@ export const tryToUtf8Str = (str: string) => {
   }
   return str;
 };
+
+export const valueToString = (v: any) => {
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number') return v.toString();
+  return JSON.stringify(v);
+};
+
+export const showValueToStr = (v: any) => {
+  return tryToUtf8Str(valueToString(v));
+};

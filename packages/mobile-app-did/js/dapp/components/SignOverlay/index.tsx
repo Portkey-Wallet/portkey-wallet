@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
@@ -52,7 +52,10 @@ const SignModal = (props: SignModalPropsType) => {
       <View style={styles.contentWrap}>
         <DappInfoSection dappInfo={dappInfo} />
         <TextXXXL style={styles.signTitle}>Sign Message</TextXXXL>
-        <TransactionDataSection dataInfo={signInfo} />
+        {/* fix ScrollView scroll */}
+        <ScrollView contentContainerStyle={GStyles.paddingBottom(100)}>
+          <TransactionDataSection dataInfo={signInfo} />
+        </ScrollView>
       </View>
       <OverlayBottomSection bottomButtonGroup={ButtonList} />
     </ModalBody>
@@ -63,6 +66,7 @@ export const showSignModal = (props: SignModalPropsType) => {
   OverlayModal.show(<SignModal {...props} />, {
     position: 'bottom',
     onCloseRequest: props.onReject,
+    enabledNestScrollView: true,
   });
 };
 
@@ -72,6 +76,7 @@ export default {
 
 const styles = StyleSheet.create({
   contentWrap: {
+    flex: 1,
     paddingLeft: pTd(20),
     paddingRight: pTd(20),
   },

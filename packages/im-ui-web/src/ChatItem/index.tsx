@@ -70,11 +70,9 @@ const ChatItem: React.FC<IChatItemProps> = ({
   }, [hidePop]);
 
   const renderSubtitle = useMemo(() => {
-    const { subtitle, muted } = props;
-    // TODO
-    const isMine = true;
-    const showRedPacket = true;
-    const showRedPacketHighlight = !muted && isMine;
+    const { subtitle, muted, isOwner, lastMessageType } = props;
+    const showRedPacket = lastMessageType === 'red-package-card';
+    const showRedPacketHighlight = !muted && !isOwner && unread > 0;
     if (showRedPacket) {
       return (
         <div className="red-packet flex">
@@ -88,7 +86,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
       );
     }
     return subtitle;
-  }, [props]);
+  }, [props, unread]);
 
   return (
     <Popover

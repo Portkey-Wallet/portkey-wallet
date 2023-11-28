@@ -18,6 +18,8 @@ export interface IChatItemProps {
   showMute?: boolean;
   pin?: boolean;
   status: ChannelStatusEnum;
+  isOwner?: boolean;
+  lastMessageType: string;
   onClick?: React.MouseEventHandler;
   onClickMute?: React.MouseEventHandler;
   onClickPin?: React.MouseEventHandler;
@@ -118,8 +120,18 @@ export interface ITextMessage extends IMessage {
 
 export type ITextMessageProps = ITextMessage;
 
+export type ParsedRedPackage = {
+  image: string;
+  link: string;
+  data: {
+    id: string;
+    senderId: string;
+    memo: string;
+  };
+};
+
 export interface IRedPacketMessage extends IMessage {
-  subType?: string;
+  redPacket?: ParsedRedPackage;
 }
 
 export type IRedPacketMessageProps = IRedPacketMessage;
@@ -208,7 +220,7 @@ export interface IUnreadTipProps {
 export type MessageType =
   | ({ type: 'image' } & IImageMessageProps)
   | ({ type: 'text' } & ITextMessageProps)
-  | ({ type: 'red-packet' } & IRedPacketMessageProps) // TODO update red-packet
+  | ({ type: 'red-package-card' } & IRedPacketMessageProps)
   | ({ type: 'system' } & ISystemMessageProps);
 
 export type MessageListType = MessageType & IMessageListProps;

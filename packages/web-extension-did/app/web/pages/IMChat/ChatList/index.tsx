@@ -9,10 +9,11 @@ import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
-import { ChannelItem } from '@portkey-wallet/im';
+import { ChannelItem, ParsedRedPackage } from '@portkey-wallet/im';
 import './index.less';
 import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
+import { useWalletInfo } from 'store/Provider/hooks';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function ChatList() {
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
+  const { userInfo } = useWalletInfo();
   const formatSubTitle = useCallback((item: ChannelItem) => {
     const _type = MessageTypeWeb[item.lastMessageType ?? ''];
     let subTitle = UN_SUPPORTED_FORMAT;
@@ -35,9 +37,24 @@ export default function ChatList() {
       subTitle = `${item.lastMessageContent}`;
     } else if (_type === MessageTypeWeb.SYS) {
       subTitle = `${item.lastMessageContent}`;
+    } else if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
+      const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
+      subTitle = `${redPackage?.memo || 'Best Wishes!'}`;
     }
     return subTitle;
   }, []);
+  const formatIsOwner = useCallback(
+    (item: ChannelItem) => {
+      const _type = MessageTypeWeb[item.lastMessageType ?? ''];
+      let isOwner = false;
+      if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
+        const senderId = (item.lastMessageContent as ParsedRedPackage).data?.senderId;
+        isOwner = senderId === userInfo?.userId;
+      }
+      return isOwner;
+    },
+    [userInfo?.userId],
+  );
   const popList = useMemo(
     () => [
       {
@@ -98,9 +115,11 @@ export default function ChatList() {
         channelType: item?.channelType,
         status: item.status,
         avatar: item.channelIcon,
+        isOwner: formatIsOwner(item),
+        lastMessageType: MessageTypeWeb[item.lastMessageType ?? ''],
       };
     });
-  }, [chatList, formatSubTitle]);
+  }, [chatList, formatSubTitle, formatIsOwner]);
 
   const handleClickChatItem = useHandleClickChatItem();
 

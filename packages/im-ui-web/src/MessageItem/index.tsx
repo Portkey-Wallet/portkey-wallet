@@ -31,7 +31,7 @@ const MessageItem: React.FC<MessageType> = ({ className, avatar, ...props }) => 
           <ImageMessage {...props} />
         </div>
       )}
-      {props.type === 'red-packet' && (
+      {props.type === 'red-package-card' && (
         <div className="flex-column">
           {props.showAvatar && <div className="message-item-form-name">{props.title}</div>}
           <RedPacketMessage {...props} />

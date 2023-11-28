@@ -1,4 +1,4 @@
-import { useCurrentNetworkInfo, useNetworkList } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ConfigProvider, ReCaptchaResponseType } from '@portkey/did-ui-react';
 import { localStorage } from 'redux-persist-webextension-storage';
 import { useCallback, useMemo } from 'react';
@@ -9,7 +9,6 @@ import { sleep } from '@portkey-wallet/utils';
 
 const usePortkeyUIConfig = () => {
   const currentNetwork = useCurrentNetworkInfo();
-  const networkList = useNetworkList();
   const { setLoading } = useLoading();
   const customReCaptchaHandler: () => Promise<{
     type: ReCaptchaResponseType;
@@ -57,15 +56,11 @@ const usePortkeyUIConfig = () => {
       requestDefaults: {
         baseURL: currentNetwork.apiUrl,
       },
-      network: {
-        defaultNetwork: currentNetwork.networkType,
-        networkList: networkList,
-      },
       reCaptchaConfig: {
         customReCaptchaHandler,
       },
     });
-  }, [currentNetwork, customReCaptchaHandler, networkList, socialLoginHandler]);
+  }, [currentNetwork, customReCaptchaHandler, socialLoginHandler]);
 };
 
 export default usePortkeyUIConfig;

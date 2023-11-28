@@ -17,6 +17,13 @@ export enum RedPackageStatusEnum {
   EXPIRED = 4,
 }
 
+export const redPackagesStatusShowMap = {
+  [RedPackageStatusEnum.UNOPENED]: 'Red Packet',
+  [RedPackageStatusEnum.OPENED]: 'Opened',
+  [RedPackageStatusEnum.NONE_LEFT]: 'None left',
+  [RedPackageStatusEnum.EXPIRED]: 'Expired',
+};
+
 export type RedPackageDetail = {
   totalCount: number;
   senderId: string;

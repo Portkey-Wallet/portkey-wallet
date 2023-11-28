@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { ImageBackground, Keyboard, StyleSheet, View, Animated, Easing } from 'react-native';
 import { pTd } from 'utils/unit';
@@ -15,10 +15,33 @@ import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import navigationService from 'utils/navigationService';
 import { ScreenHeight } from '@rneui/base';
 import { sleep } from '@portkey-wallet/utils';
+import { GetRedPackageDetailResult } from '@portkey-wallet/im';
+import { isExpired } from 'utils';
+import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import im from '@portkey-wallet/im';
 
 let timer: string | number | NodeJS.Timeout | undefined;
 
-export const ViewPacketOverlay = () => {
+type ViewPacketOverlayPropsType = {
+  data: GetRedPackageDetailResult;
+};
+
+export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
+  const { data } = props;
+  const { userInfo } = useWallet();
+
+  const expired = useMemo(() => data.isRedPackageExpired, [data.isRedPackageExpired]);
+  const isMyRedPacket = useMemo(() => data.senderId === userInfo?.userId, [data.senderId, userInfo?.userId]);
+
+  const isShowOpenButton = useMemo(() => {
+    return data?.grabbed < data?.count && !isExpired(data?.expireTime);
+  }, [data?.count, data.expireTime, data?.grabbed]);
+
+  const isShowViewDetailButton = useMemo<boolean>(() => {
+    if (isMyRedPacket) return true;
+    return !expired && data?.grabbed < data?.count;
+  }, [data?.count, data?.grabbed, expired, isMyRedPacket]);
+
   const animateRef = useRef<any>();
   const openBtnRef = useRef<OpenPacketButtonInstance>(null);
   const imgUpPosition = useRef(new Animated.Value(0)).current;
@@ -73,7 +96,8 @@ export const ViewPacketOverlay = () => {
 
   const onOpen = useCallback(async () => {
     openBtnRef.current?.startRotate();
-    await sleep(2000);
+    await sleep(1000);
+    await im.service.grabRedPackage(data);
     navigationService.navigate('RedPacketDetails');
     openBtnRef.current?.destroyDom();
     setShowDialogCloseButton(false);
@@ -101,20 +125,22 @@ export const ViewPacketOverlay = () => {
             },
           ]}>
           <ImageBackground source={Red_Packet_01} style={[styles.img, styles.imgUp, GStyles.itemCenter]}>
-            <CommonAvatar avatarSize={pTd(40)} title="red" />
+            <CommonAvatar avatarSize={pTd(40)} title={data.senderName} imageUrl={data.senderAvatar} />
             {/* TODO: */}
-            <TextL style={styles.sentBy}>{`Sent by xxxxxxxxxxxxxx`}</TextL>
-            <TextM numberOfLines={2} style={styles.memo}>
-              This red packet has been received for more than 24 hours. If you have received it, you can view it in the
-              details.
-            </TextM>
+            <TextL style={styles.sentBy}>{`Sent by ${data.senderName}`}</TextL>
+            {expired && (
+              <TextM numberOfLines={2} style={styles.memo}>
+                This red packet has been received for more than 24 hours. If you have received it, you can view it in
+                the details.
+              </TextM>
+            )}
             <TextXXXL numberOfLines={2} style={styles.memo}>
-              Best Wishes! Best wishes best wishes best Best Wishes! Best wishes best wishes best
+              {data.memo}
             </TextXXXL>
           </ImageBackground>
         </Animated.View>
 
-        <OpenPacketButton wrapStyle={styles.openButtonWrap} ref={openBtnRef} onPress={onOpen} />
+        {isShowOpenButton && <OpenPacketButton wrapStyle={styles.openButtonWrap} ref={openBtnRef} onPress={onOpen} />}
         <Animated.View
           style={[
             {
@@ -122,10 +148,18 @@ export const ViewPacketOverlay = () => {
             },
           ]}>
           <ImageBackground source={Red_Packet_02} style={[styles.img, styles.imgDown]}>
-            <Touchable style={styles.viewDetailWrap}>
-              <TextM style={styles.detailText}>View Detail</TextM>
-              <Svg icon="right-arrow" size={pTd(16)} color={defaultColors.font14} />
-            </Touchable>
+            {isShowViewDetailButton && (
+              <Touchable
+                style={styles.viewDetailWrap}
+                onPress={() => {
+                  // is show animation
+                  OverlayModal.hide();
+                  navigationService.navigate('RedPacketDetails');
+                }}>
+                <TextM style={styles.detailText}>View Detail</TextM>
+                <Svg icon="right-arrow" size={pTd(16)} color={defaultColors.font14} />
+              </Touchable>
+            )}
           </ImageBackground>
         </Animated.View>
         {showCloseButton && (
@@ -142,9 +176,9 @@ export const ViewPacketOverlay = () => {
   );
 };
 
-const showViewPacketOverlay = () => {
+const showViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   Keyboard.dismiss();
-  OverlayModal.show(<ViewPacketOverlay />, {
+  OverlayModal.show(<ViewPacketOverlay {...props} />, {
     position: 'center',
     animated: false,
     overlayOpacity: 0,
@@ -214,7 +248,7 @@ const styles = StyleSheet.create({
     marginRight: pTd(4),
   },
   viewDetailWrap: {
-    marginBottom: pTd(26),
+    marginBottom: pTd(18),
     zIndex: 1000,
     width: pTd(300),
     display: 'flex',

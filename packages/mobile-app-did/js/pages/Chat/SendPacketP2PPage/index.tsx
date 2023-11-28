@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -7,15 +7,74 @@ import { pTd } from 'utils/unit';
 import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
 import { TextM } from 'components/CommonText';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
+import PaymentOverlay from 'components/PaymentOverlay';
+import { usePin } from 'hooks/store';
+import { getManagerAccount } from 'utils/redux';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
+import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 const SendPacketP2PPage = () => {
   const [values, setValues] = useState<ValuesType>({
     packetNum: '',
     count: '',
     symbol: 'ELF',
-    decimals: '',
+    decimals: '8',
     memo: '',
+    chainId: 'AELF',
+    tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
   });
+  const pin = usePin();
+  const wallet = useCurrentWalletInfo();
+  const chainInfo = useCurrentChain(values.chainId);
+
+  const onPressBtn = useCallback(async () => {
+    try {
+      const req = await PaymentOverlay.showRedPacket({
+        tokenInfo: {
+          symbol: values.symbol,
+          decimals: Number(values.decimals),
+        },
+        amount: values.count,
+        chainId: values.chainId,
+        calculateTransactionFee: async () => {
+          if (!pin) throw new Error('PIN is required');
+          const account = getManagerAccount(pin);
+          if (!account || !chainInfo) throw new Error('Account is required');
+          const contract = await getContractBasic({
+            contractAddress: chainInfo.caContractAddress,
+            rpcUrl: chainInfo.endPoint,
+            account,
+          });
+
+          return contract.calculateTransactionFee('ManagerForwardCall', {
+            caHash: wallet.caHash,
+            contractAddress: values.tokenContractAddress,
+            methodName: 'Transfer',
+            args: {
+              symbol: values.symbol,
+              to: '2PfWcs9yhY5xVcJPskxjtAHiKyNUbX7wyWv2NcwFJEg9iNfnPj',
+              amount: 1 * 10 ** 8,
+              memo: values.memo,
+            },
+          });
+        },
+      });
+      console.log(req, '====req');
+    } catch (error) {
+      console.log(error, '====error');
+    }
+  }, [
+    chainInfo,
+    pin,
+    values.chainId,
+    values.count,
+    values.decimals,
+    values.memo,
+    values.symbol,
+    values.tokenContractAddress,
+    wallet.caHash,
+  ]);
 
   return (
     <PageContainer
@@ -30,7 +89,7 @@ const SendPacketP2PPage = () => {
         setValues={v => {
           setValues(v);
         }}
-        onPressButton={() => console.log('hi')}
+        onPressButton={onPressBtn}
       />
       <View style={GStyles.flex1} />
       <TextM style={styles.tips}>

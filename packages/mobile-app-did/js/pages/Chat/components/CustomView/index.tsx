@@ -1,6 +1,6 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 import { MessageProps } from 'react-native-gifted-chat';
-import { StyleSheet, TouchableHighlight, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { ChatMessage } from 'pages/Chat/types';
@@ -8,12 +8,9 @@ import isEqual from 'lodash/isEqual';
 import RedPacket from './RedPacket';
 
 function CustomView(props: MessageProps<ChatMessage> & { onDismiss: () => void }) {
-  const { currentMessage, position } = props;
+  const { currentMessage } = props;
 
-  console.log('props', currentMessage);
-
-  // TODO: change type
-  if (props.currentMessage?.content !== 'red') return null;
+  if (currentMessage?.messageType !== 'REDPACKAGE-CARD') return null;
 
   return <RedPacket {...props} />;
 }

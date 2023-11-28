@@ -11,8 +11,8 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
   const { isGroupChat, currentMessage, previousMessage, user } = props || {};
   const { messageType } = currentMessage || {};
 
-  // TODO: change red
-  const isGeneralMessage = currentMessage?.content !== 'red';
+  // not red packets
+  const isGeneralMessage = currentMessage?.messageType !== 'REDPACKAGE-CARD';
 
   const isHideName = useMemo(
     () => currentMessage?.user?._id === previousMessage?.user?._id || user?._id === currentMessage?.user?._id,
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   },
   redPacketWrapStyle: {
     borderRadius: pTd(12),
+    backgroundColor: 'transparent',
   },
   wrapLeft: {
     backgroundColor: defaultColors.bg18,

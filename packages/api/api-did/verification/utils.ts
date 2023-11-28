@@ -70,7 +70,6 @@ export class Verification extends StorageBaseLoader {
       if (req?.verifierSessionId) {
         await this.set(key, { ...req, time: Date.now() });
       }
-      await this.set(key, { ...req, time: Date.now() });
       return req;
     } catch (error: any) {
       const { message } = error?.error || error || {};

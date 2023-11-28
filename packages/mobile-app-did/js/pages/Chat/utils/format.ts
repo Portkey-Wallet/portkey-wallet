@@ -9,6 +9,7 @@ export const ONE_HOUR = ONE_MINUS * 60;
 export const ONE_DAY = ONE_HOUR * 24;
 
 export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
+  console.log('IMMessage', message);
   return message
     .map(ele => {
       const msg = {
@@ -37,9 +38,14 @@ export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
         }
         case 'TEXT':
           break;
+
+        case 'REDPACKAGE-CARD':
+          break;
+
         case 'SYS':
           msg.system = true;
           break;
+
         default: {
           msg.messageType = 'NOT_SUPPORTED';
           msg.text = UN_SUPPORTED_FORMAT;

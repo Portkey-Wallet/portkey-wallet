@@ -17,7 +17,6 @@ import RedPacketAmountShow from '../RedPacketAmountShow';
 import CommonAvatar from 'components/CommonAvatar';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { ChainId } from '@portkey-wallet/types';
-import { filterEmoji } from 'utils';
 
 export type ValuesType = {
   packetNum?: string;
@@ -43,8 +42,6 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   //   const errorMap = {};
   const defaultToken = useDefaultToken();
   const symbolImages = useSymbolImages();
-
-  console.log('groupMemberCount', groupMemberCount);
 
   return (
     <>
@@ -102,7 +99,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           placeholder="Best Wishes!"
           maxLength={80}
           inputContainerStyle={styles.inputWrap}
-          onChangeText={v => setValues({ ...values, memo: filterEmoji(v) })}
+          onChangeText={v => setValues({ ...values, memo: v })}
         />
       </FormItem>
       {/* TODO: change real data */}

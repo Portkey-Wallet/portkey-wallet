@@ -97,9 +97,8 @@ export default function ChatsGroupDetailContent() {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    // TODO: if is redPacket type return false
     (props: MessageTextProps<ChatMessage>) =>
-      props.currentMessage?.content === 'red' ? null : <MessageText {...props} />,
+      props.currentMessage?.messageType === 'REDPACKAGE-CARD' ? null : <MessageText {...props} />,
     [],
   );
 
@@ -140,8 +139,6 @@ export default function ChatsGroupDetailContent() {
 
   const renderCustomView = useCallback(
     (props: MessageProps<ChatMessage>) => {
-      console.log('renderCustomView', props);
-
       return <CustomView onDismiss={onDismiss} {...props} />;
     },
     [onDismiss],

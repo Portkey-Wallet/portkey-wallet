@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { MessageProps } from 'react-native-gifted-chat';
 import { StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -11,43 +11,61 @@ import Svg from 'components/Svg';
 import GStyles from 'assets/theme/GStyles';
 import Loading from 'components/Loading';
 import ViewPacketOverlay from '../../ViewPacketOverlay';
+import navigationService from 'utils/navigationService';
+import im, { ParsedRedPackage, RedPackageStatusEnum, redPackagesStatusShowMap } from '@portkey-wallet/im';
+import CommonToast from 'components/CommonToast';
 
 function RedPacket(props: MessageProps<ChatMessage>) {
   const { currentMessage } = props;
 
-  const isOpened = false;
-  const isExpired = false;
-  const isOpacity = !isOpened && !isExpired;
+  const isFresh = useMemo(
+    () => currentMessage?.redPackage?.viewStatus === RedPackageStatusEnum.UNOPENED,
+    [currentMessage?.redPackage?.viewStatus],
+  );
 
   console.log('currentMessage', currentMessage);
 
-  const onPress = useCallback(() => {
+  const onPress = useCallback(async () => {
     Loading.show();
     //TODO: get red packet states
-    //  if(open){
-    ViewPacketOverlay.showViewPacketOverlay();
-    //  }else{
-    //   navigationService.navigate("redpacket detail")
-    //  }
-    // ViewPacketOverlay.showViewPacketOverlay();
+    try {
+      if (isFresh) {
+        const { data } = await im.service.getRedPackageDetail({
+          id: (currentMessage?.parsedContent as ParsedRedPackage)?.data?.id,
+          skipCount: 0,
+          maxResultCount: 10,
+        });
+        console.log('data', data);
 
-    Loading.hide();
-  }, []);
+        ViewPacketOverlay.showViewPacketOverlay({ data });
+      } else {
+        navigationService.navigate('RedPacketDetails');
+      }
+    } catch (error) {
+      CommonToast.failError(error);
+    } finally {
+      Loading.hide();
+    }
+  }, [currentMessage?.parsedContent, isFresh]);
+
+  const redPacketStatus = useMemo(() => {
+    return redPackagesStatusShowMap[currentMessage?.redPackage?.viewStatus || RedPackageStatusEnum.UNOPENED];
+  }, [currentMessage?.redPackage?.viewStatus]);
 
   return (
     <Touchable
-      highlight={!isOpacity}
-      underlayColor={isOpacity ? undefined : defaultColors.bg24}
-      style={[styles.wrap, isOpacity && styles.opacityWrap]}
+      highlight={isFresh}
+      underlayColor={!isFresh ? undefined : defaultColors.bg24}
+      style={[styles.wrap, !isFresh && styles.opacityWrap]}
       onPress={onPress}>
       <View style={[GStyles.flexRow, GStyles.itemCenter]}>
-        <Svg icon={isOpened ? 'red-packet-opened' : 'red-packet'} size={pTd(40)} />
+        <Svg icon={isFresh ? 'red-packet' : 'red-packet-opened'} size={pTd(40)} />
         <View style={styles.rightSection}>
           <TextXL numberOfLines={1} style={styles.memo}>
-            Best Wishes! Best Wishes! Best Wishes! Best Wishes! Best Wishes!
+            {(currentMessage?.parsedContent as ParsedRedPackage)?.data?.memo}
           </TextXL>
           <View style={styles.blank} />
-          <TextS style={styles.state}>Expired</TextS>
+          <TextS style={styles.state}>{redPacketStatus}</TextS>
         </View>
       </View>
     </Touchable>

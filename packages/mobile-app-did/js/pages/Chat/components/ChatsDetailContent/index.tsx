@@ -94,7 +94,9 @@ export default function ChatsDetailContent() {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    (props: MessageTextProps<ChatMessage>) => <MessageText {...props} />,
+    (props: MessageTextProps<ChatMessage>) => {
+      return props.currentMessage?.messageType === 'REDPACKAGE-CARD' ? null : <MessageText {...props} />;
+    },
     [],
   );
 

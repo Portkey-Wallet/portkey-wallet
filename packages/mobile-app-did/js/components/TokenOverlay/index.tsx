@@ -19,14 +19,17 @@ import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenMana
 import NoData from 'components/NoData';
 import { useGStyles } from 'assets/theme/useGStyles';
 import myEvents from '../../utils/deviceEvent';
+import { ChainId } from '@portkey-wallet/types';
 
 type onFinishSelectTokenType = (tokenItem: TokenItemShowType) => void;
 type TokenListProps = {
+  currentSymbol?: string;
+  currentChainId?: ChainId;
   account?: AccountType;
   onFinishSelectToken?: onFinishSelectTokenType;
 };
 
-const TokenList = ({ onFinishSelectToken }: TokenListProps) => {
+const TokenList = ({ onFinishSelectToken, currentSymbol, currentChainId }: TokenListProps) => {
   const { t } = useLanguage();
 
   const { tokenDataShowInMarket } = useAppCASelector(state => state.tokenManagement);
@@ -44,13 +47,15 @@ const TokenList = ({ onFinishSelectToken }: TokenListProps) => {
         noBalanceShow
         key={`${item.symbol}${item.chainId}`}
         item={item}
+        currentSymbol={currentSymbol}
+        currentChainId={currentChainId}
         onPress={() => {
           OverlayModal.hide();
           onFinishSelectToken?.(item);
         }}
       />
     ),
-    [onFinishSelectToken],
+    [currentChainId, currentSymbol, onFinishSelectToken],
   );
 
   useEffect(() => {

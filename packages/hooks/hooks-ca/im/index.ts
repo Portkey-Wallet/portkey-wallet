@@ -27,6 +27,8 @@ export const useIMChannelMessageListNetMapState = () => useAppCASelector(state =
 export const useIMRelationIdNetMapNetMapState = () => useAppCASelector(state => state.im.relationIdNetMap);
 export const useIMRelationTokenNetMapNetMapState = () => useAppCASelector(state => state.im.relationTokenNetMap);
 export const useIMGroupInfoMapNetMapState = () => useAppCASelector(state => state.im.groupInfoMapNetMap);
+export const useRedPackageTokenConfigListMapState = () =>
+  useAppCASelector(state => state.im.redPackageTokenConfigListMap);
 
 export const useUnreadCount = () => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -130,7 +132,7 @@ export const useInitIM = () => {
               ...channelInfoResult,
               lastMessageContent: messageContentParser(
                 channelInfoResult.lastMessageType,
-                channelInfoResult.lastMessageContent,
+                channelInfoResult.lastMessageContent || '',
               ),
             };
             dispatch(
@@ -272,3 +274,4 @@ export const useEditIMContact = () => {
 export * from './channelList';
 export * from './channel';
 export * from './group';
+export * from './redPackage';

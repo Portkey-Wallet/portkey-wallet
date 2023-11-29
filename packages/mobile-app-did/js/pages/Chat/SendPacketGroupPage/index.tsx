@@ -9,13 +9,16 @@ import { pTd } from 'utils/unit';
 import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { RedPackageTypeEnum } from '@portkey-wallet/im';
+import { useCurrentChain, useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { usePin } from 'hooks/store';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { getManagerAccount } from 'utils/redux';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import PaymentOverlay from 'components/PaymentOverlay';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { useCurrentChannelId } from '../context/hooks';
+import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
 
 type TabItemType = {
   name: string;
@@ -25,21 +28,11 @@ type TabItemType = {
 
 export default function SendPacketGroupPage() {
   // TODO: should init
-  const [values, setValues] = useState<ValuesType>({
-    packetNum: '',
-    count: '',
-    symbol: 'ELF',
-    decimals: '',
-    memo: '',
-    chainId: 'AELF',
-    tokenContractAddress: '',
-  });
+  const currentChannelId = useCurrentChannelId();
+  const { groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
 
   const pin = usePin();
-  const wallet = useCurrentWalletInfo();
-  const chainInfo = useCurrentChain(values.chainId);
-
-  const onPressBtn = useCallback(async () => {
+  const onPressBtn = useCallback(async (values: ValuesType) => {
     try {
       const req = await PaymentOverlay.showRedPacket({
         tokenInfo: {
@@ -49,33 +42,14 @@ export default function SendPacketGroupPage() {
         amount: timesDecimals(values.count, values.decimals).toFixed(),
         chainId: 'AELF',
         calculateTransactionFee: async () => {
-          if (!pin) throw new Error('PIN is required');
-          const account = getManagerAccount(pin);
-          if (!account || !chainInfo) throw new Error('Account is required');
-          const contract = await getContractBasic({
-            contractAddress: chainInfo.caContractAddress,
-            rpcUrl: chainInfo.endPoint,
-            account,
-          });
-
-          return contract.calculateTransactionFee('ManagerForwardCall', {
-            caHash: wallet.caHash,
-            contractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
-            methodName: 'Transfer',
-            args: {
-              symbol: 'ELF',
-              to: '2PfWcs9yhY5xVcJPskxjtAHiKyNUbX7wyWv2NcwFJEg9iNfnPj',
-              amount: 1 * 10 ** 8,
-              memo: 'transfer address1 to address2',
-            },
-          });
+          return {} as any;
         },
       });
       console.log(req, '====req');
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [chainInfo, pin, values.count, values.decimals, wallet.caHash]);
+  }, []);
 
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
 
@@ -87,12 +61,9 @@ export default function SendPacketGroupPage() {
         component: (
           <SendRedPacketGroupSection
             key={GroupRedPacketTabEnum.Random}
-            values={values}
-            setValues={(v: ValuesType) => {
-              console.log('setValues', v);
-              setValues(v);
-            }}
+            type={RedPackageTypeEnum.RANDOM}
             onPressButton={onPressBtn}
+            groupMemberCount={groupInfo?.members?.length}
           />
         ),
       },
@@ -102,17 +73,14 @@ export default function SendPacketGroupPage() {
         component: (
           <SendRedPacketGroupSection
             key={GroupRedPacketTabEnum.Fixed}
-            values={values}
-            setValues={(v: ValuesType) => {
-              console.log('setValues', v);
-              setValues(v);
-            }}
+            type={RedPackageTypeEnum.FIXED}
             onPressButton={onPressBtn}
+            groupMemberCount={groupInfo?.members?.length}
           />
         ),
       },
     ],
-    [onPressBtn, values],
+    [groupInfo?.members?.length, onPressBtn],
   );
 
   const onTabPress = useCallback((tabType: GroupRedPacketTabEnum) => {
@@ -153,7 +121,7 @@ const styles = StyleSheet.create({
   containerStyles: { ...GStyles.paddingArg(16, 20), flex: 1, backgroundColor: defaultColors.bg6 },
 
   tabHeader: {
-    width: pTd(214),
+    width: pTd(190),
     backgroundColor: defaultColors.bg18,
     borderRadius: pTd(6),
     flexDirection: 'row',
@@ -162,7 +130,7 @@ const styles = StyleSheet.create({
     marginBottom: pTd(32),
   },
   tabWrap: {
-    width: pTd(100),
+    width: pTd(88),
     height: pTd(30),
     borderRadius: pTd(6),
     alignItems: 'center',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import GStyles from 'assets/theme/GStyles';
 import { StyleSheet } from 'react-native';
 import { defaultColors } from 'assets/theme';
@@ -16,7 +16,16 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-eoa/token';
 import RedPacketAmountShow from '../RedPacketAmountShow';
 import CommonAvatar from 'components/CommonAvatar';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { ChainId } from '@portkey-wallet/types';
+import { ErrorType } from 'types/common';
+import { INIT_NONE_ERROR } from 'constants/common';
+import { useGetRedPackageTokenConfig } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
+import { FontStyles } from 'assets/theme/styles';
 
 export type ValuesType = {
   packetNum?: string;
@@ -25,34 +34,131 @@ export type ValuesType = {
   decimals: string;
   memo: string;
   chainId: ChainId;
-  tokenContractAddress: string;
 };
 
 export type SendRedPacketGroupSectionPropsType = {
+  type?: RedPackageTypeEnum;
   // TODO: change type
-  type?: 'p2p' | 'random' | 'fixed';
   groupMemberCount?: number;
-  values: ValuesType;
-  setValues: (v: ValuesType) => void;
-  onPressButton: () => void;
+  onPressButton: (values: ValuesType) => void;
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
-  const { type, groupMemberCount, values, setValues, onPressButton } = props;
-  //   const errorMap = {};
-  const defaultToken = useDefaultToken();
+  const { type, groupMemberCount, onPressButton } = props;
+  const getRedPackageTokenConfig = useGetRedPackageTokenConfig();
+
+  const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
+  const [values, setValues] = useState<ValuesType>({
+    packetNum: '',
+    count: '',
+    symbol: defaultToken.symbol,
+    decimals: defaultToken.decimals,
+    memo: '',
+    chainId: MAIN_CHAIN_ID,
+  });
+
   const symbolImages = useSymbolImages();
+  const onAmountChange = useCallback(
+    (value: string) => {
+      const reg = /^(0|[1-9]\d*)(\.\d*)?$/;
+      if (value === '') {
+        setValues(pre => ({ ...pre, count: '' }));
+        setCountError({ isError: false, errorMsg: '' });
+        return;
+      }
+      if (value === '.') {
+        setValues(pre => ({ ...pre, count: '0.' }));
+        setCountError({ isError: false, errorMsg: '' });
+        return;
+      }
+
+      setValues(pre => {
+        const decimals = Number(pre.decimals || 0);
+        if (decimals === 0 && value.split('.').length > 1) return pre;
+        if (value.split('.')[1]?.length > Number(decimals)) return pre;
+        if (!reg.test(value)) return pre;
+        setCountError({ isError: false, errorMsg: '' });
+        return { ...pre, count: value };
+      });
+    },
+    [setValues],
+  );
+
+  const onPacketNumChange = useCallback(
+    (value: string) => {
+      if (value === '') {
+        setValues(pre => ({ ...pre, packetNum: '' }));
+        if (type === RedPackageTypeEnum.RANDOM) {
+          setCountError({ isError: false, errorMsg: '' });
+        }
+        return;
+      }
+
+      const reg = /^[1-9]\d*$/;
+      if (!reg.test(value)) return;
+      if (type === RedPackageTypeEnum.RANDOM) {
+        setCountError({ isError: false, errorMsg: '' });
+      }
+      setValues(pre => ({ ...pre, packetNum: value }));
+    },
+    [type],
+  );
+
+  const isAllowPrepare = useMemo(() => {
+    if (!values.symbol || values.decimals === '' || values.count === '') return false;
+
+    if (type !== RedPackageTypeEnum.P2P && !values.packetNum) {
+      return false;
+    }
+    return true;
+  }, [type, values.count, values.decimals, values.packetNum, values.symbol]);
+
+  const [countError, setCountError] = useState<ErrorType>(INIT_NONE_ERROR);
+  const onPreparePress = useCallback(() => {
+    const { packetNum, count, decimals, chainId, symbol } = values;
+    let isError = false;
+
+    const amount = timesDecimals(count, decimals);
+    const tokenConfig = getRedPackageTokenConfig(chainId, symbol);
+    const minAmount = tokenConfig?.minAmount || '1';
+
+    if (type !== RedPackageTypeEnum.RANDOM) {
+      if (amount.lt(minAmount)) {
+        // TODO: adjust error msg
+        setCountError({ isError: true, errorMsg: 'The amount is too small' });
+        isError = true;
+      }
+    } else {
+      const totalMinAmount = ZERO.plus(minAmount).times(packetNum || '1');
+      if (amount.lt(totalMinAmount)) {
+        // TODO: adjust error msg
+        setCountError({ isError: true, errorMsg: 'The amount is too small' });
+        isError = true;
+      }
+    }
+
+    if (isError) return;
+    onPressButton({
+      ...values,
+      packetNum: values.packetNum || '1',
+      memo: values.memo.trim() || RED_PACKAGE_DEFAULT_MEMO,
+    });
+  }, [getRedPackageTokenConfig, onPressButton, type, values]);
 
   return (
     <>
-      {type !== 'p2p' && (
+      {type !== RedPackageTypeEnum.P2P && (
         <FormItem title="Number of Red Packet">
           <CommonInput
             type="general"
             placeholder="Enter number"
             value={values.packetNum}
-            onChangeText={v => setValues({ ...values, packetNum: v })}
+            onChangeText={onPacketNumChange}
             inputContainerStyle={styles.inputWrap}
+            errorMessage={groupMemberCount ? `16 group members` : ''}
+            errorStyle={FontStyles.font7}
+            // inputStyle={{ backgroundColor: 'red' }}
+            containerStyle={styles.packetNumWrap}
           />
         </FormItem>
       )}
@@ -68,8 +174,15 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               onPress={() => {
                 TokenOverlay.showTokenList({
                   onFinishSelectToken: (tokenInfo: TokenItemShowType) => {
-                    setValues({ ...values, symbol: tokenInfo.symbol, decimals: String(tokenInfo.decimals) });
+                    setValues(pre => ({
+                      ...pre,
+                      symbol: tokenInfo.symbol,
+                      decimals: String(tokenInfo.decimals),
+                      chainId: tokenInfo.chainId,
+                    }));
                   },
+                  currentSymbol: values.symbol,
+                  currentChainId: values.chainId,
                 });
               }}>
               <CommonAvatar
@@ -89,17 +202,18 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           maxLength={30}
           autoCorrect={false}
           keyboardType="decimal-pad"
-          onChangeText={v => setValues({ ...values, count: v })}
+          onChangeText={onAmountChange}
+          errorMessage={countError.isError ? countError.errorMsg : ''}
         />
       </FormItem>
       <FormItem title="Wished">
         <CommonInput
           type="general"
           value={values.memo}
-          placeholder="Best Wishes!"
+          placeholder={RED_PACKAGE_DEFAULT_MEMO}
           maxLength={80}
           inputContainerStyle={styles.inputWrap}
-          onChangeText={v => setValues({ ...values, memo: v })}
+          onChangeText={v => setValues(pre => ({ ...pre, memo: v }))}
         />
       </FormItem>
       {/* TODO: change real data */}
@@ -111,12 +225,11 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         wrapStyle={GStyles.marginTop(pTd(8))}
       />
       <CommonButton
-        // TODO:
-        disabled={false}
+        disabled={!isAllowPrepare}
         type="primary"
         title={'Prepare Red Packet'}
         style={styles.btnStyle}
-        onPress={onPressButton}
+        onPress={onPreparePress}
       />
     </>
   );
@@ -134,6 +247,9 @@ const styles = StyleSheet.create({
   },
   inputContainerStyle: {
     height: pTd(64),
+  },
+  packetNumWrap: {
+    marginBottom: pTd(8),
   },
   unitWrap: {
     width: pTd(112),

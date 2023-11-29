@@ -23,6 +23,7 @@ import { StyleSheet } from 'react-native';
 import { useLanguage } from 'i18n/hooks';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import { changeCanLock } from 'utils/LockManager';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 type RouterParams = {
   oldPin?: string;
   pin?: string;
@@ -105,16 +106,26 @@ export default function ConfirmPin() {
     ],
   );
 
+  const timerRef = useRef<NodeJS.Timeout>();
   const onChangeText = useCallback(
     async (confirmPin: string) => {
       if (confirmPin.length !== PIN_SIZE) {
-        if (errorMessage) setErrorMessage(undefined);
+        if (errorMessage) {
+          setErrorMessage(undefined);
+          timerRef.current && clearTimeout(timerRef.current);
+          timerRef.current = undefined;
+        }
         return;
       }
 
       if (confirmPin !== pin) {
         pinRef.current?.reset();
-        return setErrorMessage('Pins do not match');
+        setErrorMessage('Pins do not match');
+        timerRef.current && clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => {
+          setErrorMessage(undefined);
+        }, VERIFY_INVALID_TIME);
+        return;
       }
 
       if (oldPin) return onChangePin(confirmPin);

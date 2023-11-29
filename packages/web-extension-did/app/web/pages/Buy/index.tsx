@@ -58,7 +58,7 @@ export default function Buy() {
   const valueSaveRef = useRef({ ...initValueSave });
   const [errMsg, setErrMsg] = useState<string>('');
   const [warningMsg, setWarningMsg] = useState<string>('');
-  const [page, setPage] = useState<PaymentTypeEnum>(PaymentTypeEnum.BUY);
+  const [page, setPage] = useState<PaymentTypeEnum>(state?.pageType || PaymentTypeEnum.BUY);
   const [rate, setRate] = useState('');
   const [amount, setAmount] = useState(initCurrency);
   const [receive, setReceive] = useState('');

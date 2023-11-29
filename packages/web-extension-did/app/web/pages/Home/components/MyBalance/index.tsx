@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Tabs } from 'antd';
 import { useLocation, useNavigate } from 'react-router';
 import BalanceCard from 'pages/components/BalanceCard';
@@ -26,7 +26,6 @@ import { useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPric
 import { useAccountBalanceUSD } from '@portkey-wallet/hooks/hooks-ca/balances';
 import useVerifierList from 'hooks/useVerifierList';
 import useGuardianList from 'hooks/useGuardianList';
-import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { BalanceTab } from '@portkey-wallet/constants/constants-ca/assets';
 import PromptEmptyElement from 'pages/components/PromptEmptyElement';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
@@ -38,8 +37,13 @@ import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/ac
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
-import './index.less';
+import DepositModal from '../DepositModal';
+import DepositDrawer from '../DepositDrawer';
 import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
+import { ETransType } from 'types/eTrans';
+import DisclaimerModal, { IDisclaimerProps } from '../../../components/DisclaimerModal';
+import { ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID } from '@portkey-wallet/constants/constants-ca/etrans';
+import './index.less';
 
 export interface TransactionResult {
   total: number;
@@ -52,6 +56,7 @@ export default function MyBalance() {
   const [activeKey, setActiveKey] = useState<string>(BalanceTab.TOKEN);
   const [navTarget, setNavTarget] = useState<'send' | 'receive'>('send');
   const [tokenOpen, setTokenOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
   const {
     accountToken: { accountTokenList },
     accountBalance,
@@ -65,7 +70,7 @@ export default function MyBalance() {
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
-  const { eBridgeUrl = '' } = useCurrentNetworkInfo();
+  const { eBridgeUrl = '', eTransUrl = '' } = useCurrentNetworkInfo();
   const renderTabsData = useMemo(
     () => [
       {
@@ -90,15 +95,24 @@ export default function MyBalance() {
   const getGuardianList = useGuardianList();
   useFreshTokenPrice();
   useVerifierList();
+  const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
+  const disclaimerData = useRef<IDisclaimerProps>({
+    policyId: ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID,
+    originUrl: eTransUrl,
+    originTitle: 'eTrans',
+    titleText: 'You will be directed to a third-party DApp: ETrans',
+    agreeText: 'I have read and agree to the terms.',
+    confirmText: 'Continue',
+  });
 
-  const { isBridgeShow } = useExtensionBridgeButtonShow();
-  const { isBuyButtonShow } = useExtensionBuyButtonShow();
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
   const checkSecurity = useCheckSecurity();
   const originChainId = useOriginChainId();
   const { checkDappIsConfirmed } = useDisclaimer();
   const [bridgeShow, setBridgeShow] = useState<boolean>(false);
+  const { isBridgeShow } = useExtensionBridgeButtonShow();
+  const { isBuyButtonShow } = useExtensionBuyButtonShow();
 
   useEffect(() => {
     if (state?.key) {
@@ -179,17 +193,6 @@ export default function MyBalance() {
     setActiveKey(key);
   }, []);
 
-  const handleBuy = useCallback(() => {
-    if (isMainNet) {
-      navigate('/buy');
-    } else {
-      const openWinder = window.open(FAUCET_URL, '_blank');
-      if (openWinder) {
-        openWinder.opener = null;
-      }
-    }
-  }, [isMainNet, navigate]);
-
   const handleBridge = useCallback(async () => {
     const isSafe = await checkSecurity(originChainId);
     if (!isSafe) return;
@@ -202,6 +205,53 @@ export default function MyBalance() {
       setBridgeShow(true);
     }
   }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
+
+  const handleClickETrans = useCallback(
+    async (eTransType: ETransType) => {
+      const isSafe = await checkSecurity(originChainId);
+      if (!isSafe) return;
+      if (checkDappIsConfirmed(eTransUrl)) {
+        let params = {};
+        if (eTransType === ETransType.Deposit) {
+          params = {};
+        } else if (eTransType === ETransType.Withdraw) {
+          params = {};
+        }
+        // TODO
+        console.log('params eTransType', eTransType, params);
+        const openWinder = window.open(eTransUrl, '_blank');
+        if (openWinder) {
+          openWinder.opener = null;
+        }
+      } else {
+        setDisclaimerOpen(true);
+      }
+    },
+    [checkDappIsConfirmed, checkSecurity, eTransUrl, originChainId],
+  );
+
+  const isShowDepositEntry = useMemo(() => {
+    let isDepositShow = false;
+    if (isMainNet) {
+      isDepositShow = isBridgeShow || isBuyButtonShow;
+    } else {
+      isDepositShow = true;
+    }
+    return isDepositShow;
+  }, [isBridgeShow, isBuyButtonShow, isMainNet]);
+
+  const renderDeposit = useMemo(() => {
+    if (!isShowDepositEntry) {
+      return <></>;
+    }
+    const props = {
+      open: depositOpen,
+      onClose: () => setDepositOpen(false),
+      onClickBridge: handleBridge,
+      onClickETrans: handleClickETrans,
+    };
+    return isNotLessThan768 ? <DepositModal {...props} /> : <DepositDrawer {...props} />;
+  }, [depositOpen, handleBridge, handleClickETrans, isNotLessThan768, isShowDepositEntry]);
 
   return (
     <div className="balance">
@@ -223,10 +273,8 @@ export default function MyBalance() {
       </div>
       <BalanceCard
         amount={accountBalance}
-        isShowBuy={isBuyButtonShow}
-        isShowBridge={isBridgeShow}
-        onClickBridge={handleBridge}
-        onBuy={handleBuy}
+        isShowDeposit={isShowDepositEntry}
+        onClickDeposit={() => setDepositOpen(true)}
         onSend={async () => {
           setNavTarget('send');
           return setTokenOpen(true);
@@ -240,6 +288,8 @@ export default function MyBalance() {
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
       {isPrompt && <PromptEmptyElement className="empty-element" />}
       <BridgeModal open={bridgeShow} onClose={() => setBridgeShow(false)} />
+      <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
+      {renderDeposit}
     </div>
   );
 }

@@ -4,15 +4,20 @@ import BalanceCard from 'pages/components/BalanceCard';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
 import Activity from 'pages/Home/components/Activity';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import './index.less';
+import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { ETransType } from 'types/eTrans';
+import { useCheckSecurity } from 'hooks/useSecurity';
+import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
+import DisclaimerModal, { IDisclaimerProps } from 'pages/components/DisclaimerModal';
+import { ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID } from '@portkey-wallet/constants/constants-ca/etrans';
+import './index.less';
 
 export enum TokenTransferStatus {
   CONFIRMED = 'Confirmed',
@@ -23,15 +28,29 @@ function TokenDetail() {
   const navigate = useNavigate();
   const { state: currentToken } = useLocation();
   const isMainNet = useIsMainnet();
+  const { checkDappIsConfirmed } = useDisclaimer();
+  const checkSecurity = useCheckSecurity();
+  const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
+  const { eTransUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt } = useCommonState();
   const { isBuyButtonShow } = useExtensionBuyButtonShow();
   const isShowBuy = useMemo(
     () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isBuyButtonShow,
     [currentToken.chainId, currentToken.symbol, isBuyButtonShow],
   );
+  // TODO
+  const isShowDepositUSDT = useMemo(() => currentToken.symbol === 'USDT', [currentToken.symbol]);
+  const isShowWithdrawUSDT = useMemo(() => currentToken.symbol === 'USDT', [currentToken.symbol]);
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
-
+  const disclaimerData = useRef<IDisclaimerProps>({
+    policyId: ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID,
+    originUrl: eTransUrl,
+    originTitle: 'eTrans',
+    titleText: 'You will be directed to a third-party DApp: ETrans',
+    agreeText: 'I have read and agree to the terms.',
+    confirmText: 'Continue',
+  });
   const handleBuy = useCallback(() => {
     if (isMainNet) {
       navigate('/buy', { state: { tokenInfo: currentToken } });
@@ -43,6 +62,29 @@ function TokenDetail() {
     }
   }, [currentToken, isMainNet, navigate]);
 
+  const handleClickETrans = useCallback(
+    async (eTransType: ETransType) => {
+      const isSafe = await checkSecurity(currentToken.chainId);
+      if (!isSafe) return;
+      if (checkDappIsConfirmed(eTransUrl)) {
+        let params = {};
+        if (eTransType === ETransType.Deposit) {
+          params = {};
+        } else if (eTransType === ETransType.Withdraw) {
+          params = {};
+        }
+        // TODO
+        console.log('params eTransType', eTransType, params);
+        const openWinder = window.open(eTransUrl, '_blank');
+        if (openWinder) {
+          openWinder.opener = null;
+        }
+      } else {
+        setDisclaimerOpen(true);
+      }
+    },
+    [checkDappIsConfirmed, checkSecurity, currentToken.chainId, eTransUrl],
+  );
   const mainContent = useCallback(() => {
     return (
       <div className={clsx(['token-detail', isPrompt ? 'portkey-body' : ''])}>
@@ -71,6 +113,10 @@ function TokenDetail() {
             </div>
             <BalanceCard
               amount={currentToken?.balanceInUsd}
+              isShowDepositUSDT={isShowDepositUSDT}
+              onClickDepositUSDT={() => handleClickETrans(ETransType.Deposit)}
+              onClickWithdrawUSDT={() => handleClickETrans(ETransType.Withdraw)}
+              isShowWithdrawUSDT={isShowWithdrawUSDT}
               isShowBuy={isShowBuy}
               onBuy={handleBuy}
               onSend={async () => {
@@ -91,9 +137,25 @@ function TokenDetail() {
         </div>
       </div>
     );
-  }, [isPrompt, currentToken, isMainNet, amountInUsdShow, isShowBuy, handleBuy, navigate]);
+  }, [
+    isPrompt,
+    currentToken,
+    isMainNet,
+    amountInUsdShow,
+    isShowDepositUSDT,
+    isShowWithdrawUSDT,
+    isShowBuy,
+    handleBuy,
+    navigate,
+    handleClickETrans,
+  ]);
 
-  return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
+  return (
+    <>
+      {isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}
+      <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
+    </>
+  );
 }
 
 export default TokenDetail;

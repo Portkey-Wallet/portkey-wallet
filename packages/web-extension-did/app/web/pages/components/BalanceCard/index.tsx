@@ -2,7 +2,6 @@
 import { useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
 import './index.less';
@@ -10,25 +9,32 @@ import './index.less';
 export interface BalanceCardProps {
   accountInfo?: any;
   amount?: string | number;
+  isShowBuy?: boolean;
+  isShowDeposit?: boolean;
+  isShowDepositUSDT?: boolean;
+  isShowWithdrawUSDT?: boolean;
+  onBuy?: () => void;
   onSend?: () => void;
   onReceive?: () => void;
-  onBuy?: () => void;
-  isShowBuy?: boolean;
-  isShowBridge?: boolean;
-  onClickBridge?: () => void;
+  onClickDeposit?: () => void;
+  onClickDepositUSDT?: () => void;
+  onClickWithdrawUSDT?: () => void;
 }
 
 export default function BalanceCard({
   onSend,
   onReceive,
-  onBuy,
+  onClickDeposit,
   isShowBuy,
-  isShowBridge,
-  onClickBridge,
+  isShowDeposit,
+  isShowDepositUSDT,
+  isShowWithdrawUSDT,
+  onBuy,
+  onClickDepositUSDT,
+  onClickWithdrawUSDT,
 }: BalanceCardProps) {
   const { t } = useTranslation();
-  const isMainNet = useIsMainnet();
-  const { isPrompt } = useCommonState();
+  const { isNotLessThan768 } = useCommonState();
 
   const renderBuy = useMemo(
     () =>
@@ -41,38 +47,50 @@ export default function BalanceCard({
     [isShowBuy, onBuy, t],
   );
 
-  const renderFaucet = useMemo(
+  const renderDepositUSDT = useMemo(
     () =>
-      !isMainNet && (
-        <span className="send btn" onClick={onBuy}>
-          <CustomSvg type="Faucet" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Faucet')}</span>
+      !!isShowDepositUSDT && (
+        <span className="send btn" onClick={onClickDepositUSDT}>
+          <CustomSvg type="Deposit" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Deposit')}</span>
         </span>
       ),
-    [isMainNet, onBuy, t],
+    [isShowDepositUSDT, onClickDepositUSDT, t],
   );
 
-  const renderBridge = useMemo(
+  const renderWithdrawUSDT = useMemo(
     () =>
-      isShowBridge && (
-        <span className="send btn" onClick={onClickBridge}>
-          <CustomSvg type="Bridge" style={{ width: 36, height: 36 }} />
-          <span className="btn-name">{t('Bridge')}</span>
+      !!isShowWithdrawUSDT && (
+        <span className="send btn" onClick={onClickWithdrawUSDT}>
+          <CustomSvg type="Withdraw" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Withdraw')}</span>
         </span>
       ),
-    [isShowBridge, onClickBridge, t],
+    [isShowWithdrawUSDT, onClickWithdrawUSDT, t],
   );
+
+  const renderDeposit = useMemo(() => {
+    return (
+      !!isShowDeposit && (
+        <span className="deposit btn" onClick={onClickDeposit}>
+          <CustomSvg type="Deposit" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Deposit')}</span>
+        </span>
+      )
+    );
+  }, [isShowDeposit, onClickDeposit, t]);
 
   const showCardNum = useMemo(
-    () => (renderBuy ? 1 : 0) + (renderFaucet ? 1 : 0) + (renderBridge ? 1 : 0),
-    [renderBridge, renderBuy, renderFaucet],
+    () => (renderBuy ? 1 : 0) + (renderDeposit ? 1 : 0) + (renderDepositUSDT ? 1 : 0) + (renderWithdrawUSDT ? 1 : 0),
+    [renderBuy, renderDeposit, renderDepositUSDT, renderWithdrawUSDT],
   );
-
   return (
     <div className="balance-card">
-      <div className={clsx(['balance-btn', showCardNum > 1 && !isPrompt && 'popup-card-num-more-than-3'])}>
+      <div className={clsx(['balance-btn', showCardNum > 1 && !isNotLessThan768 && 'popup-card-num-more-than-3'])}>
         {renderBuy}
-        {renderBridge}
+        {renderDeposit}
+        {renderDepositUSDT}
+        {renderWithdrawUSDT}
         <span className="send btn" onClick={onSend}>
           <CustomSvg type="RightTop" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Send')}</span>
@@ -81,7 +99,6 @@ export default function BalanceCard({
           <CustomSvg type="RightDown" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Receive')}</span>
         </span>
-        {renderFaucet}
       </div>
     </div>
   );

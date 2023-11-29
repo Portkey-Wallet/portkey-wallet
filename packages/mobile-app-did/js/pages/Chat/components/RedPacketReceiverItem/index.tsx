@@ -1,3 +1,5 @@
+import { RedPackageGrabInfoItem } from '@portkey-wallet/im';
+import { divDecimalsStr } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import fonts from 'assets/theme/fonts';
@@ -12,36 +14,45 @@ import { formatTransferTime } from 'utils';
 import { pTd } from 'utils/unit';
 
 interface IReceiverItemProps {
-  // TODO: change ts
-  item?: any;
+  item: RedPackageGrabInfoItem;
+  symbol: string;
+  decimals: string;
 }
 
 const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
-  // const { item } = props;
+  const { item, symbol, decimals } = props;
 
   return (
     <View style={itemStyle.wrap}>
-      <CommonAvatar style={itemStyle.left} title="David" avatarSize={pTd(48)} />
+      <CommonAvatar
+        resizeMode="cover"
+        style={itemStyle.left}
+        title={item.username}
+        avatarSize={pTd(48)}
+        imageUrl={item.avatar}
+      />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
           <TextL numberOfLines={1} style={itemStyle.name}>
-            David David David David
+            {item?.username || ''}
           </TextL>
           <View style={itemStyle.blank} />
           <TextM numberOfLines={1} style={[FontStyles.font3, itemStyle.time]}>
-            {formatTransferTime(Date.now())}
+            {formatTransferTime(item.grabTime)}
           </TextM>
         </View>
 
         <View style={itemStyle.balanceWrap}>
           <TextL style={itemStyle.amount} numberOfLines={1} ellipsizeMode={'tail'}>
-            {getEllipsisTokenShow('85.123445678901213213', 'ELF')}
+            {getEllipsisTokenShow(divDecimalsStr(item.amount, decimals), symbol)}
           </TextL>
           <View style={itemStyle.blank} />
-          <View style={[GStyles.flexRow, GStyles.itemCenter]}>
-            <Svg icon="luckiest" size={pTd(16)} />
-            <TextM style={itemStyle.luckiest}>Luckiest Draw</TextM>
-          </View>
+          {item.isLuckyKing && (
+            <View style={[GStyles.flexRow, GStyles.itemCenter]}>
+              <Svg icon="luckiest" size={pTd(16)} />
+              <TextM style={itemStyle.luckiest}>Luckiest Draw</TextM>
+            </View>
+          )}
         </View>
       </View>
     </View>

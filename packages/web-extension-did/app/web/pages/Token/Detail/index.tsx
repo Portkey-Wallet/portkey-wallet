@@ -73,7 +73,7 @@ function TokenDetail() {
               amount={currentToken?.balanceInUsd}
               isShowBuy={isShowBuy}
               onBuy={handleBuy}
-              onSend={() => {
+              onSend={async () => {
                 navigate(`/send/token/${currentToken?.symbol}`, {
                   state: { ...currentToken, address: currentToken?.tokenContractAddress },
                 });

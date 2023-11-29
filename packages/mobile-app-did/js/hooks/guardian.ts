@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
 import { setGuardiansAction, setVerifierListAction } from '@portkey-wallet/store/store-ca/guardians/actions';
@@ -8,7 +8,8 @@ import { VerifierItem } from '@portkey-wallet/types/verifier';
 import { ChainItemType } from '@portkey-wallet/store/store-ca/wallet/type';
 import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage, handleErrorCode } from '@portkey-wallet/utils';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import myEvents from 'utils/deviceEvent';
 
 export const useGetHolderInfoByViewContract = () => {
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
@@ -85,4 +86,45 @@ export const useGetVerifierServers = () => {
     },
     [dispatch, getCurrentCAViewContract],
   );
+};
+
+export const useRefreshGuardiansList = () => {
+  const { caHash } = useCurrentWalletInfo();
+  const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
+  const refreshGuardiansList = useCallback(async () => {
+    try {
+      await getGuardiansInfoWriteStore({
+        caHash,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [caHash, getGuardiansInfoWriteStore]);
+
+  return refreshGuardiansList;
+};
+
+export const useRegisterRefreshGuardianList = () => {
+  const refreshGuardiansList = useRefreshGuardiansList();
+  const getVerifierServers = useGetVerifierServers();
+  const init = useCallback(async () => {
+    try {
+      await getVerifierServers();
+      await refreshGuardiansList();
+      console.log('GuardianList init: success');
+    } catch (error) {
+      console.log(error, '===useRegisterRefreshGuardianList init: error');
+    }
+  }, [getVerifierServers, refreshGuardiansList]);
+
+  useEffect(() => {
+    const listener = myEvents.refreshGuardiansList.addListener(() => {
+      refreshGuardiansList();
+    });
+    return () => {
+      listener.remove();
+    };
+  }, [refreshGuardiansList]);
+
+  return init;
 };

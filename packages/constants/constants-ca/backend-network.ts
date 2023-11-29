@@ -27,7 +27,7 @@ export const BackEndNetWorkMap: {
     imApiUrl: 'http://192.168.66.243:5007',
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-dev',
-    eBridgeUrl: 'http://192.168.67.235:3000',
+    eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-test2': {
     name: 'aelf Mainnet',
@@ -47,7 +47,7 @@ export const BackEndNetWorkMap: {
         baseUrl: 'https://ramptest.alchemypay.org',
       },
     },
-    eBridgeUrl: 'http://192.168.67.235:3000',
+    eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-test1-ip': {
     name: 'aelf Testnet',
@@ -64,6 +64,7 @@ export const BackEndNetWorkMap: {
     imApiUrl: 'http://192.168.66.243:5007',
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-dev',
+    eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-test2-ip': {
     name: 'aelf Mainnet',
@@ -83,6 +84,7 @@ export const BackEndNetWorkMap: {
         baseUrl: 'https://ramptest.alchemypay.org',
       },
     },
+    eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-test3': {
     name: 'aelf Mainnet',
@@ -102,7 +104,7 @@ export const BackEndNetWorkMap: {
         baseUrl: 'https://ramptest.alchemypay.org',
       },
     },
-    eBridgeUrl: 'http://192.168.67.235:3000',
+    eBridgeUrl: 'http://192.168.67.173:3000',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',

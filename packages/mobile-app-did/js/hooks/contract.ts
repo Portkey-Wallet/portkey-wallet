@@ -1,4 +1,4 @@
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCurrentChain, useGetChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { ChainId } from '@portkey-wallet/types';
 import aes from '@portkey-wallet/utils/aes';
@@ -68,4 +68,36 @@ export function useGetCurrentCAContract(_chainId?: ChainId) {
     dispatch(setCAContract({ [key]: contract as ContractBasic }, chainId));
     return contract as ContractBasic;
   }, [AESEncryptPrivateKey, caContract, chainId, chainInfo, dispatch, key, pin]);
+}
+
+export function useGetCAContract() {
+  const pin = usePin();
+  const { AESEncryptPrivateKey, address } = useCurrentWalletInfo();
+  const [{ caContracts }, dispatch] = useInterface();
+
+  const getChain = useGetChain();
+
+  return useCallback(
+    async (chainId: ChainId) => {
+      const chainInfo = getChain(chainId);
+      if (!chainInfo) throw Error('Could not find chain information');
+      const key = address + '_' + chainInfo?.caContractAddress;
+      const caContract = caContracts?.[chainId]?.[key];
+      if (caContract) return caContract;
+
+      if (!pin || !AESEncryptPrivateKey) throw Error('Could not find wallet information');
+
+      const privateKey = aes.decrypt(AESEncryptPrivateKey, pin);
+      const wallet = AElf.wallet.getWalletByPrivateKey(privateKey);
+
+      const contract = await getContractBasic({
+        contractAddress: chainInfo.caContractAddress,
+        rpcUrl: chainInfo.endPoint,
+        account: wallet,
+      });
+      dispatch(setCAContract({ [key]: contract as ContractBasic }, chainId));
+      return contract as ContractBasic;
+    },
+    [AESEncryptPrivateKey, address, caContracts, dispatch, getChain, pin],
+  );
 }

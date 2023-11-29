@@ -82,7 +82,7 @@
 }
 
 .modal-title {
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   font-size: 18px;
   font-weight: bold;
   line-height: 22px;
@@ -303,6 +303,26 @@ td {
 
   @media screen and (max-width: 767px) {
     min-height: calc(100vh - 72px);
+  }
+}
+
+.popup-header-wrap {
+  overflow: hidden;
+  width: 100%;
+  padding-top: 16px;
+  background-color: @bg-13;
+  border-bottom: 1px solid @border-2;
+  z-index: 10;
+}
+
+.three-level-prompt-container {
+  width: 100%;
+  flex: 1;
+  border-left: 1px solid @border-2;
+  overflow-y: auto;
+
+  .three-level-prompt-body {
+    height: 100%;
   }
 }
 // =========================================================

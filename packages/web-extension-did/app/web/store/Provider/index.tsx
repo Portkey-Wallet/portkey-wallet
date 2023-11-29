@@ -12,35 +12,50 @@ import Updater from './Updater';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import { exceptionManager } from 'utils/errorHandler/ExceptionHandler';
-import { PortkeyConfigProvider } from '@portkey/did-ui-react';
+import { PortkeyProvider } from '@portkey/did-ui-react';
 import '@portkey/did-ui-react/dist/assets/index.css';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 
 let childrenNode: any = undefined;
 
 const bodyRootWrapper = document.body;
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  integrations: [new Integrations.BrowserTracing()],
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-  // release: 'v1.0.0',
-  environment: process.env.NODE_ENV,
-});
-exceptionManager.setSentryInstance(Sentry);
+
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [new Integrations.BrowserTracing()],
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+    // release: 'v1.0.0',
+    environment: process.env.NODE_ENV,
+  });
+  exceptionManager.setSentryInstance(Sentry);
+}
 
 ConfigProvider.config({
   prefixCls,
 });
 
-export default function ContextProviders({
-  children,
-  pageType = 'Popup',
-}: {
+interface BasePorviderProps {
   children?: React.ReactNode;
   pageType?: 'Popup' | 'Prompt';
-}) {
+}
+
+const UIElement = ({ children, pageType = 'Popup' }: BasePorviderProps) => {
+  const currentNetwork = useCurrentNetwork();
+
+  return (
+    <PortkeyProvider networkType={currentNetwork.netWorkType || 'MAIN'}>
+      <Modals />
+      <Updater />
+      <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
+    </PortkeyProvider>
+  );
+};
+
+export default function ContextProviders({ children, pageType = 'Popup' }: BasePorviderProps) {
   const { language } = useLanguage();
 
   console.log(children === childrenNode, pageType, 'PermissionCheck=ContextProviders');
@@ -58,17 +73,13 @@ export default function ContextProviders({
 
   return (
     <ErrorBoundary view="root" pageType={pageType}>
-      <PortkeyConfigProvider>
-        <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
-          <ReduxProvider>
-            <HashRouter>
-              <Modals />
-              <Updater />
-              <PermissionCheck pageType={pageType}>{children}</PermissionCheck>
-            </HashRouter>
-          </ReduxProvider>
-        </ConfigProvider>
-      </PortkeyConfigProvider>
+      <ConfigProvider locale={ANTD_LOCAL[language]} autoInsertSpaceInButton={false} prefixCls={prefixCls}>
+        <ReduxProvider>
+          <HashRouter>
+            <UIElement pageType={pageType}>{children}</UIElement>
+          </HashRouter>
+        </ReduxProvider>
+      </ConfigProvider>
     </ErrorBoundary>
   );
 }

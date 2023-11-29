@@ -218,6 +218,7 @@ function GuardianItemButton({
   return (
     <CommonButton
       type="primary"
+      radius={pTd(6)}
       disabled={disabled}
       disabledTitleStyle={styles.disabledTitleStyle}
       disabledStyle={styles.disabledItemStyle}
@@ -308,8 +309,9 @@ export default function GuardianItem({
 
 const styles = StyleSheet.create({
   itemRow: {
-    height: pTd(80),
-    marginTop: 8,
+    height: pTd(88),
+    marginTop: pTd(8),
+    paddingBottom: pTd(8),
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: defaultColors.border6,
     justifyContent: 'space-between',
@@ -345,12 +347,13 @@ const styles = StyleSheet.create({
     marginBottom: pTd(2),
   },
   buttonStyle: {
-    height: 24,
+    height: pTd(24),
+    minWidth: pTd(54),
   },
   titleStyle: {
-    height: isIOS ? 20 : 24,
+    lineHeight: pTd(22),
+    height: pTd(24),
     fontSize: pTd(12),
-    marginTop: 4,
   },
   confirmedButtonStyle: {
     opacity: 1,

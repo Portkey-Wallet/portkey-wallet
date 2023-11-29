@@ -318,7 +318,7 @@ export default function GuardianApproval() {
                 <Svg color={FontStyles.font3.color} size={pTd(16)} icon="question-mark" />
               </Touchable>
             </View>
-            <TextM>
+            <TextM style={styles.approvalRow}>
               <TextM style={FontStyles.font4}>{approvedList.length ?? 0}</TextM>/{guardianCount}
             </TextM>
           </View>
@@ -351,6 +351,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
     justifyContent: 'space-between',
+    paddingHorizontal: pTd(20),
   },
   expireText: {
     marginTop: 8,

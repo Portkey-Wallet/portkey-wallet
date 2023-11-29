@@ -145,7 +145,7 @@ export default function Send() {
         title: (
           <div className="flex-column-center transaction-msg">
             <CustomSvg type="warnRed" />
-            {t('Transaction failed ！')}
+            {t('Transaction failed !')}
           </div>
         ),
         onOk: () => {
@@ -164,7 +164,9 @@ export default function Send() {
         const privateKey = await aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
         if (!privateKey) throw t(WalletError.invalidPrivateKey);
         if (!currentChain) throw 'No ChainInfo';
+        const _caAddress = wallet?.[(state.chainId as ChainId) || defaultToken.symbol]?.caAddress;
         const feeRes = await getTransferFee({
+          caAddress: _caAddress || '',
           managerAddress: wallet.address,
           toAddress: toAccount?.address,
           privateKey,
@@ -184,13 +186,13 @@ export default function Send() {
       amount,
       currentChain,
       currentNetwork.walletType,
+      defaultToken.symbol,
       passwordSeed,
+      state.chainId,
       t,
       toAccount?.address,
       tokenInfo,
-      wallet.AESEncryptPrivateKey,
-      wallet.address,
-      wallet.caHash,
+      wallet,
     ],
   );
 

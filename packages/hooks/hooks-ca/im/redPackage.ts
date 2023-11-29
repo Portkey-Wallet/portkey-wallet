@@ -81,8 +81,6 @@ export const useSendRedPackage = () => {
       });
       const { id, publicKey, signature, minAmount, redPackageContractAddress, expireTime } = redPackageInfo.data;
 
-      // TODO: approve redPackageContractAddress
-
       const rawTransaction = await generateRedPackageRawTransaction({
         caContract,
         caHash,
@@ -137,7 +135,7 @@ export const useSendRedPackage = () => {
             sessionId,
           });
         },
-        times: 20,
+        times: 40,
         interval: 2000,
         checkIsContinue: _creationStatusResult => {
           return _creationStatusResult?.data?.status === RedPackageCreationStatusEnum.PENDING;
@@ -245,7 +243,7 @@ export const useGetRedPackageDetail = (id?: string) => {
   );
   const init = useCallback(
     async (params: { id: string }) => {
-      await next(params);
+      return await next(params);
     },
     [next],
   );
@@ -277,6 +275,8 @@ export const useGetRedPackageDetail = (id?: string) => {
           },
         }),
       );
+
+      return info;
     },
     [dispatch, networkType, next],
   );
@@ -295,12 +295,12 @@ export const useGrabRedPackage = () => {
   const { networkType } = useCurrentNetworkInfo();
   return useCallback(
     async (channelId: string, id: string) => {
-      const {
-        data: { viewStatus },
-      } = await im.service.grabRedPackage({
+      const { data } = await im.service.grabRedPackage({
         channelUuid: channelId,
         id,
       });
+
+      const { viewStatus } = data;
       dispatch(
         updateChannelMessageRedPackageAttribute({
           network: networkType,
@@ -321,7 +321,9 @@ export const useGrabRedPackage = () => {
           },
         }),
       );
+      return data;
     },
+
     [dispatch, networkType],
   );
 };
@@ -348,8 +350,6 @@ export const useGetRedPackageTokenConfig = (isInit = false) => {
         },
       });
       const tokenInfo = result?.data?.tokenInfo || [];
-      // TODO: remove mock data
-      tokenInfo.forEach(item => (item.minAmount = '123'));
       dispatch(
         setRedPackageTokenConfigList({
           network: networkType,
@@ -371,4 +371,20 @@ export const useGetRedPackageTokenConfig = (isInit = false) => {
     },
     [redPackageTokenConfigList],
   );
+};
+
+export const useIsMyRedPacket = (senderId: string): boolean => {
+  const { userInfo } = useWallet();
+
+  return userInfo?.userId === senderId;
+};
+
+export const useGetCurrentRedPacketId = (currentMessage?: Message): string => {
+  return (currentMessage?.parsedContent as ParsedRedPackage)?.data?.id || '';
+};
+
+export const useGetCurrentRedPacketParsedData = (
+  currentMessage?: Message,
+): { id: string; senderId: string; memo: string } => {
+  return (currentMessage?.parsedContent as ParsedRedPackage)?.data;
 };

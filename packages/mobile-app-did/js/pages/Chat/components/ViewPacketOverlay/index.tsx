@@ -15,32 +15,41 @@ import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import navigationService from 'utils/navigationService';
 import { ScreenHeight } from '@rneui/base';
 import { sleep } from '@portkey-wallet/utils';
-import { GetRedPackageDetailResult } from '@portkey-wallet/im';
-import { isExpired } from 'utils';
+import { GetRedPackageDetailResult, GrabRedPackageResultEnum } from '@portkey-wallet/im';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import im from '@portkey-wallet/im';
+import { useGetRedPackageDetail, useGrabRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useCurrentChannelId } from 'pages/Chat/context/hooks';
+import CommonToast from 'components/CommonToast';
 
 let timer: string | number | NodeJS.Timeout | undefined;
 
 type ViewPacketOverlayPropsType = {
-  data: GetRedPackageDetailResult;
+  redPacketData: GetRedPackageDetailResult;
+  redPacketId: string;
 };
 
 export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
-  const { data } = props;
+  const { redPacketData, redPacketId } = props;
   const { userInfo } = useWallet();
 
-  const expired = useMemo(() => data.isRedPackageExpired, [data.isRedPackageExpired]);
-  const isMyRedPacket = useMemo(() => data.senderId === userInfo?.userId, [data.senderId, userInfo?.userId]);
+  const currentChannelId = useCurrentChannelId();
+  const grabPacket = useGrabRedPackage();
+  const { init } = useGetRedPackageDetail();
+
+  const expired = useMemo(() => redPacketData?.isRedPackageExpired, [redPacketData?.isRedPackageExpired]);
+  const isMyRedPacket = useMemo(
+    () => redPacketData?.senderId === userInfo?.userId,
+    [redPacketData?.senderId, userInfo?.userId],
+  );
 
   const isShowOpenButton = useMemo(() => {
-    return data?.grabbed < data?.count && !isExpired(data?.expireTime);
-  }, [data?.count, data.expireTime, data?.grabbed]);
+    return !redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isRedPackageExpired;
+  }, [redPacketData?.isRedPackageFullyClaimed, redPacketData?.isRedPackageExpired]);
 
   const isShowViewDetailButton = useMemo<boolean>(() => {
     if (isMyRedPacket) return true;
-    return !expired && data?.grabbed < data?.count;
-  }, [data?.count, data?.grabbed, expired, isMyRedPacket]);
+    return !redPacketData?.isRedPackageExpired && !redPacketData?.isRedPackageFullyClaimed;
+  }, [isMyRedPacket, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);
 
   const animateRef = useRef<any>();
   const openBtnRef = useRef<OpenPacketButtonInstance>(null);
@@ -96,14 +105,24 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
 
   const onOpen = useCallback(async () => {
     openBtnRef.current?.startRotate();
-    await sleep(1000);
-    await im.service.grabRedPackage(data);
-    navigationService.navigate('RedPacketDetails');
-    openBtnRef.current?.destroyDom();
-    setShowDialogCloseButton(false);
+    await sleep(500);
 
-    startAnimation();
-  }, [startAnimation]);
+    try {
+      const { result } = await grabPacket(currentChannelId || '', redPacketId);
+
+      if (result === GrabRedPackageResultEnum.SUCCESS) {
+        const data = await init({ id: redPacketId });
+        console.log('data', data);
+        navigationService.navigate('RedPacketDetails', { redPacketId, data });
+        openBtnRef.current?.destroyDom();
+        setShowDialogCloseButton(false);
+        startAnimation();
+      }
+      // TODO : when  fail how
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+  }, [currentChannelId, grabPacket, init, redPacketId, startAnimation]);
 
   useEffect(
     () => () => {
@@ -125,9 +144,12 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
             },
           ]}>
           <ImageBackground source={Red_Packet_01} style={[styles.img, styles.imgUp, GStyles.itemCenter]}>
-            <CommonAvatar avatarSize={pTd(40)} title={data.senderName} imageUrl={data.senderAvatar} />
-            {/* TODO: */}
-            <TextL style={styles.sentBy}>{`Sent by ${data.senderName}`}</TextL>
+            <CommonAvatar
+              avatarSize={pTd(40)}
+              title={redPacketData?.senderName}
+              imageUrl={redPacketData?.senderAvatar}
+            />
+            <TextL style={styles.sentBy}>{`Sent by ${redPacketData?.senderName}`}</TextL>
             {expired && (
               <TextM numberOfLines={2} style={styles.memo}>
                 This red packet has been received for more than 24 hours. If you have received it, you can view it in
@@ -135,7 +157,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
               </TextM>
             )}
             <TextXXXL numberOfLines={2} style={styles.memo}>
-              {data.memo}
+              {redPacketData?.memo}
             </TextXXXL>
           </ImageBackground>
         </Animated.View>

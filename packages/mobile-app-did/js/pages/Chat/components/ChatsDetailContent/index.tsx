@@ -37,6 +37,7 @@ import { pTd } from 'utils/unit';
 import SystemInfo from '../SystemInfo';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import CustomView from '../CustomView';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -142,6 +143,13 @@ export default function ChatsDetailContent() {
     [],
   );
 
+  const renderCustomView = useCallback(
+    (props: MessageProps<ChatMessage>) => {
+      return <CustomView onDismiss={onDismiss} {...props} />;
+    },
+    [onDismiss],
+  );
+
   const bottomBar = useMemo(
     () => (
       <BottomBarContainer scrollToBottom={scrollToBottom}>
@@ -191,6 +199,7 @@ export default function ChatsDetailContent() {
             messagesContainerStyle={styles.messagesContainerStyle}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
+            renderCustomView={renderCustomView}
           />
         )}
       </Touchable>

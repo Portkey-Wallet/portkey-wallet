@@ -16,7 +16,7 @@ import { pTd } from 'utils/unit';
 interface IReceiverItemProps {
   item: RedPackageGrabInfoItem;
   symbol: string;
-  decimals: string;
+  decimals: string | number;
 }
 
 const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {

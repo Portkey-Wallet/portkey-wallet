@@ -12,41 +12,52 @@ import GStyles from 'assets/theme/GStyles';
 import Loading from 'components/Loading';
 import ViewPacketOverlay from '../../ViewPacketOverlay';
 import navigationService from 'utils/navigationService';
-import im, { ParsedRedPackage, RedPackageStatusEnum, redPackagesStatusShowMap } from '@portkey-wallet/im';
+import { RedPackageStatusEnum, RedPackageTypeEnum, redPackagesStatusShowMap } from '@portkey-wallet/im';
 import CommonToast from 'components/CommonToast';
+import {
+  useGetCurrentRedPacketParsedData,
+  useGetRedPackageDetail,
+  useIsMyRedPacket,
+} from '@portkey-wallet/hooks/hooks-ca/im';
+import { useCurrentChannelId } from 'pages/Chat/context/hooks';
+import { sleep } from '@portkey-wallet/utils';
 
 function RedPacket(props: MessageProps<ChatMessage>) {
   const { currentMessage } = props;
+
+  const currentChannelId = useCurrentChannelId();
+  const { id: redPacketId, memo: redPacketMemo, senderId } = useGetCurrentRedPacketParsedData(currentMessage);
+  const { initInfo } = useGetRedPackageDetail();
+  const isMyPacket = useIsMyRedPacket(senderId);
 
   const isFresh = useMemo(
     () => currentMessage?.redPackage?.viewStatus === RedPackageStatusEnum.UNOPENED,
     [currentMessage?.redPackage?.viewStatus],
   );
 
-  console.log('currentMessage', currentMessage);
-
   const onPress = useCallback(async () => {
     Loading.show();
-    //TODO: get red packet states
     try {
-      if (isFresh) {
-        const { data } = await im.service.getRedPackageDetail({
-          id: (currentMessage?.parsedContent as ParsedRedPackage)?.data?.id,
-          skipCount: 0,
-          maxResultCount: 10,
-        });
-        console.log('data', data);
+      const redPacketResult = await initInfo(currentChannelId || '', redPacketId);
 
-        ViewPacketOverlay.showViewPacketOverlay({ data });
+      await sleep(500);
+
+      const isJumpToDetail =
+        redPacketResult.isCurrentUserGrabbed || (redPacketResult.type === RedPackageTypeEnum.P2P && isMyPacket);
+
+      console.log(redPacketResult, isMyPacket);
+
+      if (isJumpToDetail) {
+        navigationService.navigate('RedPacketDetails', { redPacketId, data: redPacketResult });
       } else {
-        navigationService.navigate('RedPacketDetails');
+        ViewPacketOverlay.showViewPacketOverlay({ redPacketId, redPacketData: { ...redPacketResult, items: [] } });
       }
     } catch (error) {
       CommonToast.failError(error);
     } finally {
       Loading.hide();
     }
-  }, [currentMessage?.parsedContent, isFresh]);
+  }, [currentChannelId, initInfo, isMyPacket, redPacketId]);
 
   const redPacketStatus = useMemo(() => {
     return redPackagesStatusShowMap[currentMessage?.redPackage?.viewStatus || RedPackageStatusEnum.UNOPENED];
@@ -62,7 +73,7 @@ function RedPacket(props: MessageProps<ChatMessage>) {
         <Svg icon={isFresh ? 'red-packet' : 'red-packet-opened'} size={pTd(40)} />
         <View style={styles.rightSection}>
           <TextXL numberOfLines={1} style={styles.memo}>
-            {(currentMessage?.parsedContent as ParsedRedPackage)?.data?.memo}
+            {redPacketMemo}
           </TextXL>
           <View style={styles.blank} />
           <TextS style={styles.state}>{redPacketStatus}</TextS>

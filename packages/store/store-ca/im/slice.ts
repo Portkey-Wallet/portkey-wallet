@@ -23,6 +23,7 @@ import {
   addChannelMembers,
   updateChannelMessageRedPackageAttribute,
   updateChannelRedPackageAttribute,
+  setRedPackageTokenConfigList,
 } from './actions';
 import { formatChannelList } from './util';
 import { MessageTypeEnum, ParsedRedPackage } from '@portkey-wallet/im';
@@ -34,6 +35,7 @@ const initialState: IMStateType = {
   relationIdNetMap: {},
   relationTokenNetMap: {},
   groupInfoMapNetMap: {},
+  redPackageTokenConfigListMap: {},
 };
 export const imSlice = createSlice({
   name: 'im',
@@ -395,6 +397,17 @@ export const imSlice = createSlice({
           },
         };
       })
+      .addCase(setRedPackageTokenConfigList, (state, action) => {
+        const { network, value } = action.payload;
+        return {
+          ...state,
+          redPackageTokenConfigListMap: {
+            ...state.redPackageTokenConfigListMap,
+            [network]: value,
+          },
+        };
+      })
+
       .addCase(resetIm, (state, action) => {
         return {
           ...state,

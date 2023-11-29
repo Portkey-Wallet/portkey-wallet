@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import im, {
   Message,
   MessageTypeEnum,
@@ -10,13 +10,14 @@ import im, {
 } from '@portkey-wallet/im';
 import { ChainId } from '@portkey-wallet/types';
 import { handleLoopFetch, randomId } from '@portkey-wallet/utils';
-import { useRelationId } from '.';
+import { useRedPackageTokenConfigListMapState, useRelationId } from '.';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types/service';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useCurrentWalletInfo, useWallet } from '../wallet';
-import { useAppCommonDispatch } from '../../index';
+import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   addChannelMessage,
+  setRedPackageTokenConfigList,
   updateChannelAttribute,
   updateChannelMessageRedPackageAttribute,
   updateChannelRedPackageAttribute,
@@ -136,7 +137,7 @@ export const useSendRedPackage = () => {
             sessionId,
           });
         },
-        times: 10,
+        times: 20,
         interval: 2000,
         checkIsContinue: _creationStatusResult => {
           return _creationStatusResult?.data?.status === RedPackageCreationStatusEnum.PENDING;
@@ -322,5 +323,52 @@ export const useGrabRedPackage = () => {
       );
     },
     [dispatch, networkType],
+  );
+};
+
+export const useGetRedPackageTokenConfig = (isInit = false) => {
+  const dispatch = useAppCommonDispatch();
+  const { networkType } = useCurrentNetworkInfo();
+  const networkTypeRef = useRef(networkType);
+  networkTypeRef.current = networkType;
+  const redPackageTokenConfigListMap = useRedPackageTokenConfigListMapState();
+  const redPackageTokenConfigList = useMemo(
+    () => redPackageTokenConfigListMap?.[networkType] || [],
+    [networkType, redPackageTokenConfigListMap],
+  );
+
+  const refresh = useCallback(async () => {
+    try {
+      const _networkType = networkTypeRef.current;
+      const result = await handleLoopFetch({
+        fetch: () => im.service.getRedPackageConfig({}),
+        times: isInit ? 3 : 1,
+        checkIsInvalid: () => {
+          return _networkType !== networkTypeRef.current;
+        },
+      });
+      const tokenInfo = result?.data?.tokenInfo || [];
+      // TODO: remove mock data
+      tokenInfo.forEach(item => (item.minAmount = '123'));
+      dispatch(
+        setRedPackageTokenConfigList({
+          network: networkType,
+          value: tokenInfo,
+        }),
+      );
+    } catch (error) {
+      console.log('useGetRedPackageTokenConfig refresh', error);
+    }
+  }, [dispatch, isInit, networkType]);
+
+  useEffectOnce(() => {
+    refresh();
+  });
+
+  return useCallback(
+    (chainId: ChainId, symbol: string) => {
+      return redPackageTokenConfigList.find(item => item.chainId === chainId && item.symbol === symbol);
+    },
+    [redPackageTokenConfigList],
   );
 };

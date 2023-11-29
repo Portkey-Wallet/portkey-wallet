@@ -15,20 +15,12 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 
 const SendPacketP2PPage = () => {
-  const [values, setValues] = useState<ValuesType>({
-    packetNum: '',
-    count: '',
-    symbol: 'ELF',
-    decimals: '8',
-    memo: '',
-    chainId: 'AELF',
-    tokenContractAddress: 'JRmBduh4nXWi1aXgdUsj5gJrzeZb2LxmrAbf7W99faZSvoAaE',
-  });
   const pin = usePin();
   const wallet = useCurrentWalletInfo();
-  const chainInfo = useCurrentChain(values.chainId);
+  // const chainInfo = useCurrentChain(values.chainId);
+  const chainInfo = useCurrentChain();
 
-  const onPressBtn = useCallback(async () => {
+  const onPressBtn = useCallback(async (values: ValuesType) => {
     try {
       const req = await PaymentOverlay.showRedPacket({
         tokenInfo: {
@@ -38,43 +30,14 @@ const SendPacketP2PPage = () => {
         amount: values.count,
         chainId: values.chainId,
         calculateTransactionFee: async () => {
-          if (!pin) throw new Error('PIN is required');
-          const account = getManagerAccount(pin);
-          if (!account || !chainInfo) throw new Error('Account is required');
-          const contract = await getContractBasic({
-            contractAddress: chainInfo.caContractAddress,
-            rpcUrl: chainInfo.endPoint,
-            account,
-          });
-
-          return contract.calculateTransactionFee('ManagerForwardCall', {
-            caHash: wallet.caHash,
-            contractAddress: values.tokenContractAddress,
-            methodName: 'Transfer',
-            args: {
-              symbol: values.symbol,
-              to: '2PfWcs9yhY5xVcJPskxjtAHiKyNUbX7wyWv2NcwFJEg9iNfnPj',
-              amount: 1 * 10 ** 8,
-              memo: values.memo,
-            },
-          });
+          return {} as any;
         },
       });
       console.log(req, '====req');
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [
-    chainInfo,
-    pin,
-    values.chainId,
-    values.count,
-    values.decimals,
-    values.memo,
-    values.symbol,
-    values.tokenContractAddress,
-    wallet.caHash,
-  ]);
+  }, []);
 
   return (
     <PageContainer
@@ -83,14 +46,7 @@ const SendPacketP2PPage = () => {
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: false }}
       containerStyles={styles.container}>
-      <SendRedPacketGroupSection
-        type={RedPackageTypeEnum.P2P}
-        values={values}
-        setValues={v => {
-          setValues(v);
-        }}
-        onPressButton={onPressBtn}
-      />
+      <SendRedPacketGroupSection type={RedPackageTypeEnum.P2P} onPressButton={onPressBtn} />
       <View style={GStyles.flex1} />
       <TextM style={styles.tips}>
         Red Packet is valid for 24 hours. Expired Red Packet will be refunded to you within 24 hours after expiration.

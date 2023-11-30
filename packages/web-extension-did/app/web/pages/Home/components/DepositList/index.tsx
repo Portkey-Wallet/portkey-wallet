@@ -1,9 +1,7 @@
 import CustomSvg from 'components/CustomSvg';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
+import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
 import { PaymentTypeEnum } from '@portkey-wallet/types/types-ca/payment';
 import { ETransType } from 'types/eTrans';
 import { DepositType, IDepositItem, depositList } from './constant';
@@ -17,9 +15,9 @@ export interface IDepositListProps {
 
 export default function DepositList({ onClose, onClickBridge, onClickETrans }: IDepositListProps) {
   const navigate = useNavigate();
-  const isMainnet = useIsMainnet();
   const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isBuySectionShow, isSellSectionShow } = useExtensionBuyButtonShow();
+  const { isETransDepositShow, isETransWithdrawShow } = useExtensionETransShow();
 
   const handleBuy = useCallback(() => {
     onClose();
@@ -31,14 +29,6 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
     navigate('/buy', { state: { pageType: PaymentTypeEnum.SELL } });
   }, [navigate, onClose]);
 
-  const handleFaucet = useCallback(() => {
-    onClose();
-    const openWinder = window.open(FAUCET_URL, '_blank');
-    if (openWinder) {
-      openWinder.opener = null;
-    }
-  }, [onClose]);
-
   const formatDepositList = depositList.filter((item) => {
     if (item.type === DepositType.buy) {
       return isBuySectionShow;
@@ -49,16 +39,11 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
     if (item.type === DepositType.bridge) {
       return isBridgeShow;
     }
-    if (item.type === DepositType.faucet) {
-      return !isMainnet;
-    }
     if (item.type === DepositType['deposit-usdt']) {
-      // TODO
-      return true;
+      return isETransDepositShow;
     }
     if (item.type === DepositType['withdraw-usdt']) {
-      // TODO
-      return true;
+      return isETransWithdrawShow;
     }
     return true;
   });
@@ -78,10 +63,6 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
         onClickBridge?.();
         return;
       }
-      if (item.type === DepositType.faucet) {
-        handleFaucet();
-        return;
-      }
       if (item.type === DepositType['deposit-usdt']) {
         onClickETrans?.(ETransType.Deposit);
         return;
@@ -91,7 +72,7 @@ export default function DepositList({ onClose, onClickBridge, onClickETrans }: I
         return;
       }
     },
-    [handleBuy, handleFaucet, handleSell, onClickBridge, onClickETrans],
+    [handleBuy, handleSell, onClickBridge, onClickETrans],
   );
 
   return (

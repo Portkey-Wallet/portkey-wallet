@@ -11,7 +11,7 @@ import PromptFrame from 'pages/components/PromptFrame';
 import { useFreshTokenPrice, useAmountInUsdShow } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import { useCurrentNetworkInfo, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
-import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
 import { ETransType } from 'types/eTrans';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
@@ -38,9 +38,15 @@ function TokenDetail() {
     () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isBuyButtonShow,
     [currentToken.chainId, currentToken.symbol, isBuyButtonShow],
   );
-  // TODO
-  const isShowDepositUSDT = useMemo(() => currentToken.symbol === 'USDT', [currentToken.symbol]);
-  const isShowWithdrawUSDT = useMemo(() => currentToken.symbol === 'USDT', [currentToken.symbol]);
+  const { isETransDepositShow, isETransWithdrawShow } = useExtensionETransShow();
+  const isShowDepositUSDT = useMemo(
+    () => currentToken.symbol === 'USDT' && isETransDepositShow,
+    [currentToken.symbol, isETransDepositShow],
+  );
+  const isShowWithdrawUSDT = useMemo(
+    () => currentToken.symbol === 'USDT' && isETransWithdrawShow,
+    [currentToken.symbol, isETransWithdrawShow],
+  );
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
   const disclaimerData = useRef<IDisclaimerProps>({
@@ -73,7 +79,7 @@ function TokenDetail() {
         } else if (eTransType === ETransType.Withdraw) {
           params = {};
         }
-        // TODO
+        // TODO Sarah
         console.log('params eTransType', eTransType, params);
         const openWinder = window.open(eTransUrl, '_blank');
         if (openWinder) {

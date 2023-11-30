@@ -1,14 +1,16 @@
 /* eslint-disable no-inline-styles/no-inline-styles */
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import CustomSvg from 'components/CustomSvg';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useCommonState } from 'store/Provider/hooks';
+import { FAUCET_URL } from '@portkey-wallet/constants/constants-ca/payment';
 import './index.less';
 
 export interface BalanceCardProps {
   accountInfo?: any;
   amount?: string | number;
+  isShowFaucet?: boolean;
   isShowBuy?: boolean;
   isShowDeposit?: boolean;
   isShowDepositUSDT?: boolean;
@@ -26,6 +28,7 @@ export default function BalanceCard({
   onReceive,
   onClickDeposit,
   isShowBuy,
+  isShowFaucet,
   isShowDeposit,
   isShowDepositUSDT,
   isShowWithdrawUSDT,
@@ -80,9 +83,32 @@ export default function BalanceCard({
     );
   }, [isShowDeposit, onClickDeposit, t]);
 
+  const handleClickFaucet = useCallback(() => {
+    const openWinder = window.open(FAUCET_URL, '_blank');
+    if (openWinder) {
+      openWinder.opener = null;
+    }
+  }, []);
+
+  const renderFaucet = useMemo(
+    () =>
+      isShowFaucet && (
+        <span className="send btn" onClick={handleClickFaucet}>
+          <CustomSvg type="Faucet" style={{ width: 36, height: 36 }} />
+          <span className="btn-name">{t('Faucet')}</span>
+        </span>
+      ),
+    [handleClickFaucet, isShowFaucet, t],
+  );
+
   const showCardNum = useMemo(
-    () => (renderBuy ? 1 : 0) + (renderDeposit ? 1 : 0) + (renderDepositUSDT ? 1 : 0) + (renderWithdrawUSDT ? 1 : 0),
-    [renderBuy, renderDeposit, renderDepositUSDT, renderWithdrawUSDT],
+    () =>
+      (renderBuy ? 1 : 0) +
+      (renderDeposit ? 1 : 0) +
+      (renderDepositUSDT ? 1 : 0) +
+      (renderWithdrawUSDT ? 1 : 0) +
+      (renderFaucet ? 1 : 0),
+    [renderBuy, renderDeposit, renderDepositUSDT, renderFaucet, renderWithdrawUSDT],
   );
   return (
     <div className="balance-card">
@@ -99,6 +125,7 @@ export default function BalanceCard({
           <CustomSvg type="RightDown" style={{ width: 36, height: 36 }} />
           <span className="btn-name">{t('Receive')}</span>
         </span>
+        {renderFaucet}
       </div>
     </div>
   );

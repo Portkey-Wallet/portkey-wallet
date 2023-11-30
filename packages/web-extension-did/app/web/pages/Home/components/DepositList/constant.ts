@@ -5,7 +5,6 @@ export enum DepositType {
   sell,
   'deposit-usdt',
   'withdraw-usdt',
-  faucet,
   bridge,
 }
 
@@ -46,11 +45,5 @@ export const depositList: IDepositItem[] = [
     type: DepositType.bridge,
     icon: 'Bridge',
     desc: 'Make cross-chain transfers',
-  },
-  {
-    title: 'Faucet',
-    type: DepositType.faucet,
-    icon: 'Faucet',
-    desc: 'Faucet description',
   },
 ];

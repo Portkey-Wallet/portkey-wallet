@@ -39,7 +39,7 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
 import DepositModal from '../DepositModal';
 import DepositDrawer from '../DepositDrawer';
-import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
+import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
 import { ETransType } from 'types/eTrans';
 import DisclaimerModal, { IDisclaimerProps } from '../../../components/DisclaimerModal';
 import { ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID } from '@portkey-wallet/constants/constants-ca/etrans';
@@ -113,7 +113,7 @@ export default function MyBalance() {
   const [bridgeShow, setBridgeShow] = useState<boolean>(false);
   const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isBuyButtonShow } = useExtensionBuyButtonShow();
-
+  const { isETransShow } = useExtensionETransShow();
   useEffect(() => {
     if (state?.key) {
       setActiveKey(state.key);
@@ -201,6 +201,7 @@ export default function MyBalance() {
       if (openWinder) {
         openWinder.opener = null;
       }
+      setDepositOpen(false);
     } else {
       setBridgeShow(true);
     }
@@ -223,6 +224,7 @@ export default function MyBalance() {
         if (openWinder) {
           openWinder.opener = null;
         }
+        setDepositOpen(false);
       } else {
         setDisclaimerOpen(true);
       }
@@ -230,15 +232,10 @@ export default function MyBalance() {
     [checkDappIsConfirmed, checkSecurity, eTransUrl, originChainId],
   );
 
-  const isShowDepositEntry = useMemo(() => {
-    let isDepositShow = false;
-    if (isMainNet) {
-      isDepositShow = isBridgeShow || isBuyButtonShow;
-    } else {
-      isDepositShow = true;
-    }
-    return isDepositShow;
-  }, [isBridgeShow, isBuyButtonShow, isMainNet]);
+  const isShowDepositEntry = useMemo(
+    () => isBridgeShow || isBuyButtonShow || isETransShow,
+    [isBridgeShow, isBuyButtonShow, isETransShow],
+  );
 
   const renderDeposit = useMemo(() => {
     if (!isShowDepositEntry) {
@@ -283,6 +280,7 @@ export default function MyBalance() {
           setNavTarget('receive');
           return setTokenOpen(true);
         }}
+        isShowFaucet={!isMainNet}
       />
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />

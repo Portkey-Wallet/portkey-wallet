@@ -435,6 +435,7 @@ export default class ServiceWorkerInstantiate {
       setLocalStorage({
         locked: true,
       });
+      SWEventController.dispatchEvent({ eventName: 'accountsChanged', data: {} });
       sendResponse?.(errorHandler(0));
     } catch (e) {
       sendResponse?.(errorHandler(500001, e));

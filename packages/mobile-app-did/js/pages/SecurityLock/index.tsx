@@ -43,6 +43,7 @@ export default function SecurityLock() {
   const navigation = useNavigation();
   const onIntervalGetResult = useIntervalGetResult();
   const originChainId = useOriginChainId();
+  const locked = useRef<boolean>(false);
   useEffect(() => {
     if (isSyncCAInfo) {
       setTimeout(() => {
@@ -63,6 +64,7 @@ export default function SecurityLock() {
     (pinInput: string) => {
       Loading.hide();
       if (!isFocusedRef.current) return;
+      locked.current = true;
       if (!managerInfo) return navigationService.reset('LoginPortkey');
       if (navigation.canGoBack()) {
         navigation.goBack();

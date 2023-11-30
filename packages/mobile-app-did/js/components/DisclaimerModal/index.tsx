@@ -47,7 +47,7 @@ const DisclaimerModal = ({ url, title, description }: DisclaimerModalProps) => {
   }, [signPrivacyPolicy, title, url]);
 
   return (
-    <ModalBody modalBodyType="bottom" title={t('Disclaimer')} onClose={() => navigationService.navigate('Tab')}>
+    <ModalBody modalBodyType="bottom" title={t('Disclaimer')}>
       <View style={styles.contentWrap}>
         <View style={[GStyles.flexRow, GStyles.itemCenter]}>
           <Svg icon="eBridgeFavIcon" size={pTd(24)} />

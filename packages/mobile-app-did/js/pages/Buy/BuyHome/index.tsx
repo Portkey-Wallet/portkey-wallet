@@ -1,5 +1,5 @@
 import { defaultColors } from 'assets/theme';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import PageContainer from 'components/PageContainer';
@@ -20,6 +20,7 @@ import CommonToast from 'components/CommonToast';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppBuyButtonShow } from 'hooks/cms';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
 type TabItemType = {
   name: string;
@@ -46,8 +47,10 @@ export default function BuyHome() {
   const { caHash } = useCurrentWalletInfo();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
+  const { toTab } = useRouterParams<{ toTab: PaymentTypeEnum }>();
+
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
-    isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
+    toTab === PaymentTypeEnum.BUY && isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
   );
 
   useEffectOnce(() => {

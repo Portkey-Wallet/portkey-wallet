@@ -18,7 +18,8 @@ export enum DappMap {
   bridge = 'https://ebridge.exchange',
 }
 const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
-export const DAPP_WHITELIST: string[] = [...EBridgeList];
+const ETransList = NetworkList.map(i => i.eTransUrl).filter(i => !!i) as string[];
+export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransList];
 
 export const LinkPortkeyWebsite = OfficialWebsite;
 

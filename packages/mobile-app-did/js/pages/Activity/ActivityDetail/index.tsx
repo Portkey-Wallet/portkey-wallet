@@ -6,7 +6,6 @@ import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
 import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
-import { Image } from '@rneui/base';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';

@@ -33,7 +33,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
   const checkDapp = useIsInCurrentDappList();
   const dispatch = useAppDispatch();
   const caInfo = useCurrentCaInfo();
-  const { walletName, currentNetwork } = useWallet();
+  const { userInfo, currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
 
   const {
@@ -71,7 +71,7 @@ const MyWalletModal = ({ tabInfo }: MyWalletModalType) => {
       <View style={styles.contentWrap}>
         <TextM style={[styles.walletTitle, FontStyles.font3]}>{t('Wallet')}</TextM>
         <View style={styles.group}>
-          <TextL style={(FontStyles.font5, fonts.mediumFont)}>{walletName}</TextL>
+          <TextL style={(FontStyles.font5, fonts.mediumFont)}>{userInfo?.nickName}</TextL>
           {caInfoList?.map((item, index) => (
             <View key={item?.chainId} style={[styles.itemWrap, !!index && styles.itemBorderTop]}>
               <View>

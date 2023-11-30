@@ -193,6 +193,42 @@ export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
   };
 };
 
+export const useETransShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance, refresh } = useEntrance(config);
+
+  const isETransDepositShow = useMemo(() => entrance.eTransDeposit, [entrance.eTransDeposit]);
+
+  const isETransWithdrawShow = useMemo(() => entrance.eTransWithdraw, [entrance.eTransWithdraw]);
+
+  const isETransShow = useMemo(
+    () => isETransDepositShow || isETransWithdrawShow || false,
+    [isETransDepositShow, isETransWithdrawShow],
+  );
+
+  const refreshBuyButton = useCallback(async () => {
+    let _isETransDepositShow = false;
+    let _isETransWithdrawShow = false;
+    try {
+      const result = await refresh();
+      _isETransDepositShow = result.eTransDeposit;
+      _isETransWithdrawShow = result.eTransWithdraw;
+    } catch (error) {
+      console.log('refreshBuyButton error');
+    }
+
+    return {
+      isETransDepositShow: _isETransDepositShow,
+      isETransWithdrawShow: _isETransWithdrawShow,
+    };
+  }, [refresh]);
+
+  return {
+    isETransShow,
+    isETransDepositShow,
+    isETransWithdrawShow,
+    refreshBuyButton,
+  };
+};
 export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {
   const { entrance } = useEntrance(config);
   const isBridgeShow = useMemo(() => entrance?.bridge, [entrance.bridge]);

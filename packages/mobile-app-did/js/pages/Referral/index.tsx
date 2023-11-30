@@ -20,14 +20,17 @@ import { sleep } from '@portkey-wallet/utils';
 import GStyles from 'assets/theme/GStyles';
 import { TextM } from 'components/CommonText';
 import { pTd } from 'utils/unit';
+import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 
 export default function Referral() {
   const credentials = useCredentials();
   const { address, caHash } = useCurrentWalletInfo();
   const gStyles = useGStyles();
   const { t } = useLanguage();
+  const isFocusedRef = useLatestIsFocusedRef();
   const [isSplashScreen, setIsSplashScreen] = useState(true);
   const init = useCallback(async () => {
+    if (!isFocusedRef.current) return;
     await sleep(200);
     SplashScreen.hideAsync();
     await sleep(500);
@@ -38,7 +41,7 @@ export default function Referral() {
     }
     await sleep(500);
     setIsSplashScreen(false);
-  }, [credentials, address, caHash]);
+  }, [isFocusedRef, address, credentials, caHash]);
   useEffect(() => {
     init();
   }, [init]);

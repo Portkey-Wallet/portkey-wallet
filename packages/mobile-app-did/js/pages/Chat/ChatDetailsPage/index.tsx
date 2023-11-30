@@ -34,9 +34,11 @@ import type { ListItemType } from '../components/ChatOverlay/chatPopover';
 import myEvents from 'utils/deviceEvent';
 import { useHardwareBackPress } from '@portkey-wallet/hooks/mobile';
 import { measurePageY } from 'utils/measure';
+import { useIsFocused } from '@react-navigation/native';
 
 const ChatDetailsPage = () => {
   const dispatch = useAppCommonDispatch();
+  const isFocused = useIsFocused();
 
   const pinChannel = usePinChannel();
   const muteChannel = useMuteChannel();
@@ -49,6 +51,7 @@ const ChatDetailsPage = () => {
 
   const toRelationId = useMemo(() => currentChannelInfo?.toRelationId, [currentChannelInfo?.toRelationId]);
   const displayName = useMemo(() => currentChannelInfo?.displayName, [currentChannelInfo?.displayName]);
+  const avatar = useMemo(() => currentChannelInfo?.channelIcon, [currentChannelInfo?.channelIcon]);
   const pin = useMemo(() => currentChannelInfo?.pin, [currentChannelInfo?.pin]);
   const mute = useMemo(() => currentChannelInfo?.mute, [currentChannelInfo?.mute]);
 
@@ -163,13 +166,14 @@ const ChatDetailsPage = () => {
   }, []);
 
   useHardwareBackPress(
-    useMemo(
-      () => () => {
-        onBack();
-        return true;
-      },
-      [onBack],
-    ),
+    useMemo(() => {
+      if (isFocused) {
+        return () => {
+          onBack();
+          return true;
+        };
+      }
+    }, [isFocused, onBack]),
   );
 
   const leftDom = useMemo(
@@ -188,7 +192,14 @@ const ChatDetailsPage = () => {
               },
             });
           }}>
-          <CommonAvatar title={displayName} avatarSize={pTd(32)} style={FontStyles.size16} />
+          <CommonAvatar
+            title={displayName}
+            avatarSize={pTd(32)}
+            style={FontStyles.size16}
+            imageUrl={avatar}
+            resizeMode="cover"
+          />
+
           <TextL
             style={[FontStyles.font2, GStyles.marginRight(pTd(4)), GStyles.marginLeft(pTd(8)), FontStyles.weight500]}>
             {displayName}
@@ -198,7 +209,7 @@ const ChatDetailsPage = () => {
         {mute && <Svg size={pTd(16)} icon="chat-mute" color={defaultColors.bg1} />}
       </View>
     ),
-    [currentChannelInfo?.displayName, displayName, mute, onBack, toRelationId],
+    [avatar, currentChannelInfo?.displayName, displayName, mute, onBack, toRelationId],
   );
 
   return (

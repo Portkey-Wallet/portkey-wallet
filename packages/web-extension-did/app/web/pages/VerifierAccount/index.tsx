@@ -237,8 +237,6 @@ export default function VerifierAccount() {
         return OperationTypeEnum.register;
       case 'login':
         return OperationTypeEnum.communityRecovery;
-      case 'guardians/add':
-        return OperationTypeEnum.addGuardian;
       case 'guardians/edit':
         return OperationTypeEnum.editGuardian;
       case 'guardians/del':
@@ -250,6 +248,8 @@ export default function VerifierAccount() {
           return OperationTypeEnum.removeOtherManager;
         } else if (state && state?.indexOf('setTransferLimit') !== -1) {
           return OperationTypeEnum.modifyTransferLimit;
+        } else if (state && state?.indexOf('guardians/add') !== -1) {
+          return OperationTypeEnum.addGuardian;
         } else {
           return OperationTypeEnum.unknown;
         }

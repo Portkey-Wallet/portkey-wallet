@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -15,10 +15,132 @@ import { FontStyles } from 'assets/theme/styles';
 import Divider from 'components/Divider';
 import RedPacketReceiverItem from '../components/RedPacketReceiverItem';
 import RedPacketAmountShow from '../components/RedPacketAmountShow';
-import { formatRedPacketNoneLeftTime } from '../utils/format';
+import { useGetRedPackageDetail, useIsMyRedPacket } from '@portkey-wallet/hooks/hooks-ca/im';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { RedPackageDetail, RedPackageTypeEnum } from '@portkey-wallet/im';
+import { divDecimalsStr } from '@portkey-wallet/utils/converter';
+import { useEffectOnce } from '@portkey-wallet/hooks';
+
+export type RedPacketRouterParams = {
+  redPacketId: string;
+  data: RedPackageDetail;
+};
 
 export const RedPacketDetails = () => {
-  const [, refreshLayout] = useState(0);
+  const { redPacketId, data } = useRouterParams<RedPacketRouterParams>();
+
+  const { info, list, init } = useGetRedPackageDetail();
+  const redPacketData = useMemo(() => info || data, [data, info]);
+
+  console.log('redPacketDataredPacketDataredPacketData', redPacketData);
+  const isMyPacket = useIsMyRedPacket(redPacketData?.senderId);
+  const isP2P = useMemo(() => redPacketData?.type === RedPackageTypeEnum.P2P, [redPacketData?.type]);
+
+  const isShowBottomTips = useMemo(() => {
+    if (isP2P && redPacketData?.isRedPackageExpired && isMyPacket) return true;
+    if (!isP2P && !redPacketData?.isRedPackageFullyClaimed) return true;
+
+    return false;
+  }, [isMyPacket, isP2P, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);
+
+  useEffectOnce(() => {
+    init({ id: redPacketId });
+  });
+
+  const renderRedPacketTipContent = useMemo(() => {
+    // isP2P && my packet && isRedPackageFullyClaimed
+    if (isP2P && isMyPacket && redPacketData?.isRedPackageFullyClaimed)
+      return `This crypto box was opened, with ${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${
+        redPacketData?.symbol
+      } claimed.`;
+
+    // isP2P && my packet && !isRedPackageFullyClaimed
+    if (isP2P && isMyPacket && !redPacketData?.isRedPackageFullyClaimed)
+      return `${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${
+        redPacketData?.symbol
+      } to be claimed.`;
+
+    // isP2P && my packet && isRedPackageFullyClaimed && expired
+    if (isP2P && isMyPacket && redPacketData?.isRedPackageFullyClaimed && redPacketData?.isRedPackageExpired)
+      return `Crypto box expired. It was not opened, with ${divDecimalsStr(
+        redPacketData?.totalAmount,
+        redPacketData?.decimal,
+      )} ${redPacketData?.symbol} unclaimed.`;
+
+    // !isP2P  && !isRedPackageFullyClaimed & expired
+    if (!isP2P && !redPacketData?.isRedPackageFullyClaimed && redPacketData?.isRedPackageExpired)
+      return `Crypto box(es) expired, with ${redPacketData?.grabbed}/${
+        redPacketData?.count
+      } opened and ${divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal)}/${divDecimalsStr(
+        redPacketData?.totalAmount,
+        redPacketData?.decimal,
+      )} ${redPacketData?.symbol} claimed.`;
+
+    // !isP2P  && !isRedPackageFullyClaimed & !expired
+    if (!isP2P && !redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isRedPackageExpired)
+      return `${redPacketData?.grabbed}/${redPacketData?.count} crypto box(es) opened, with ${divDecimalsStr(
+        redPacketData?.grabbedAmount,
+        redPacketData?.decimal,
+      )}/${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${redPacketData?.symbol} claimed.`;
+
+    // !isP2P  && !isRedPackageFullyClaimed & !expired
+    if (!isP2P && !redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isRedPackageExpired)
+      return `${redPacketData?.grabbed}/${redPacketData?.count} crypto box(es) opened, with ${divDecimalsStr(
+        redPacketData?.grabbedAmount,
+        redPacketData?.decimal,
+      )}/${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${redPacketData?.symbol} claimed.`;
+
+    return '';
+  }, [
+    isMyPacket,
+    isP2P,
+    redPacketData?.count,
+    redPacketData?.decimal,
+    redPacketData?.grabbed,
+    redPacketData?.grabbedAmount,
+    redPacketData?.isRedPackageExpired,
+    redPacketData?.isRedPackageFullyClaimed,
+    redPacketData?.symbol,
+    redPacketData?.totalAmount,
+  ]);
+
+  const headerDom = useMemo(() => {
+    return (
+      <View style={[GStyles.center, styles.topWrap]}>
+        <CommonAvatar
+          resizeMode="cover"
+          style={styles.sendAvatar}
+          avatarSize={pTd(48)}
+          title={redPacketData?.senderName}
+          imageUrl={redPacketData?.senderAvatar}
+        />
+        <TextXL numberOfLines={1} style={[FontStyles.font5, styles.sendBy]}>
+          {`Red Packet Sent by ${redPacketData?.senderName}`}
+        </TextXL>
+        <TextM style={[FontStyles.font7, styles.memo]}>{redPacketData?.memo}</TextM>
+
+        {redPacketData.isCurrentUserGrabbed && (
+          <>
+            <RedPacketAmountShow
+              componentType="packetDetailPage"
+              amountShow={divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal)}
+              symbol={redPacketData?.symbol || ''}
+            />
+            <TextS style={[FontStyles.font15, styles.tips]}>Red Packet transferred to Wallet</TextS>
+          </>
+        )}
+      </View>
+    );
+  }, [
+    redPacketData?.decimal,
+    redPacketData?.grabbedAmount,
+    redPacketData.isCurrentUserGrabbed,
+    redPacketData?.memo,
+    redPacketData?.senderAvatar,
+    redPacketData?.senderName,
+    redPacketData?.symbol,
+  ]);
+
   return (
     <PageContainer
       hideHeader
@@ -31,38 +153,39 @@ export const RedPacketDetails = () => {
           <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font2} />
         </Touchable>
       </ImageBackground>
-      <View style={GStyles.flex1} onLayout={() => refreshLayout(i => ++i)}>
-        <FlatList
-          contentContainerStyle={styles.flatListContentContainerStyle}
-          data={new Array(4)}
-          ListHeaderComponent={() => (
-            <>
-              <View style={[GStyles.center, styles.topWrap]}>
-                <CommonAvatar style={styles.sendAvatar} avatarSize={pTd(48)} title="hi" />
-                <TextXL numberOfLines={1} style={[FontStyles.font5, styles.sendBy]}>
-                  Red Packet Sent by ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE ZOE .
-                </TextXL>
-                <TextM style={[FontStyles.font7, styles.memo]}> Best Wishes!</TextM>
-                {/* TODO: change fontSize */}
-                <RedPacketAmountShow componentType="packetDetailPage" amountShow="1000000" symbol="ELF" />
-                <TextS style={[FontStyles.font15, styles.tips]}>Red Packet transferred to Wallet</TextS>
-              </View>
-              <Divider width={pTd(8)} style={styles.divider} />
-              <TextM style={[FontStyles.font7, styles.redPacketStyleIntro]}>
-                {formatRedPacketNoneLeftTime(Date.now(), Date.now() + 800)}
-              </TextM>
-              <TextM style={[FontStyles.font7, styles.redPacketStyleIntro]}>
-                {`Red packet expired. Opened 3/10 with 30/20000.002 ELF`}
-              </TextM>
-              <Divider style={styles.innerDivider} />
-            </>
-          )}
-          renderItem={() => <RedPacketReceiverItem key={Math.random()} />}
-          ListFooterComponentStyle={styles.listFooterComponentStyle}
-          ListFooterComponent={() => (
-            <TextM style={styles.bottomTips}>Unopened Red Packets will be refunded when they expired</TextM>
-          )}
-        />
+      <View style={GStyles.flex1}>
+        {!isMyPacket && redPacketData.isRedPackageFullyClaimed ? (
+          headerDom
+        ) : (
+          <FlatList
+            contentContainerStyle={styles.flatListContentContainerStyle}
+            data={list}
+            ListHeaderComponent={() => (
+              <>
+                {headerDom}
+                {redPacketData.isCurrentUserGrabbed && <Divider width={pTd(8)} style={styles.divider} />}
+                <TextM style={[FontStyles.font7, styles.redPacketStyleIntro]}>{renderRedPacketTipContent}</TextM>
+                <Divider style={styles.innerDivider} />
+              </>
+            )}
+            renderItem={({ item }) => (
+              <RedPacketReceiverItem
+                key={item.userId}
+                item={item}
+                symbol={redPacketData?.symbol}
+                decimals={redPacketData?.decimal}
+              />
+            )}
+            ListFooterComponentStyle={styles.listFooterComponentStyle}
+            ListFooterComponent={() =>
+              isShowBottomTips ? (
+                <TextM style={styles.bottomTips}>
+                  Unclaimed tokens have been automatically returned to the sender.
+                </TextM>
+              ) : null
+            }
+          />
+        )}
       </View>
     </PageContainer>
   );

@@ -16,3 +16,8 @@ export type SchemeParsedUrl = {
 export type LinkDappData = {
   url: string;
 };
+
+// todo: add more type
+export type FCMMessageData = {
+  network: string;
+};

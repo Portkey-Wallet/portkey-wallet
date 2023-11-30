@@ -33,18 +33,11 @@ export const requestUserPermission = async () => {
 
 export const getFCMToken = async (refresh?: boolean): Promise<string> => {
   try {
-    // Usage of "messaging().registerDeviceForRemoteMessages()" is not required. You only need to register if auto-registration is disabled in your 'firebase.json' configuration file via the 'messaging_ios_auto_register_for_remote_messages' property.
-    // const result = await messaging().registerDeviceForRemoteMessages();
-    // console.log('result', result);
     if (refresh) await messaging().deleteToken();
     const token = await messaging().getToken();
+    if (__DEV__) await copyText(token);
     console.log('fcm token', token);
 
-    if (__DEV__) {
-      alert(token);
-      await copyText(token);
-    }
-    // save the token to the db
     return token;
   } catch (error) {
     console.log('getFCMToken error', error);
@@ -62,4 +55,20 @@ export const initFCMSignalR = async () => {
     deviceId: deviceInfo.deviceId,
     getFCMTokenFunc: getFCMToken,
   });
+};
+
+// TODO: change ts
+export const checkMessageIsFromMainnet = (message: any) => {
+  const isMainNet = true;
+
+  return isMainNet;
+};
+
+// TODO:
+export const parseFCMMessage = (message: any) => {
+  return {
+    channelId: 1,
+    type: 'P2P',
+    redPacketId: 1,
+  };
 };

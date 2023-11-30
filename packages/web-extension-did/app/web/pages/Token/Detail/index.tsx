@@ -15,8 +15,8 @@ import { useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
 import { ETransType } from 'types/eTrans';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import DisclaimerModal, { IDisclaimerProps } from 'pages/components/DisclaimerModal';
-import { ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID } from '@portkey-wallet/constants/constants-ca/etrans';
+import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from 'pages/components/DisclaimerModal';
+import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 
 export enum TokenTransferStatus {
@@ -34,7 +34,7 @@ function TokenDetail() {
   const { eTransUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt } = useCommonState();
   const { isBuyButtonShow } = useExtensionBuyButtonShow();
-  const isShowBuy = useMemo(
+  const isShowBuyEntry = useMemo(
     () => currentToken.symbol === 'ELF' && currentToken.chainId === 'AELF' && isBuyButtonShow,
     [currentToken.chainId, currentToken.symbol, isBuyButtonShow],
   );
@@ -49,14 +49,7 @@ function TokenDetail() {
   );
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
-  const disclaimerData = useRef<IDisclaimerProps>({
-    policyId: ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID,
-    originUrl: eTransUrl,
-    originTitle: 'eTrans',
-    titleText: 'You will be directed to a third-party DApp: ETrans',
-    agreeText: 'I have read and agree to the terms.',
-    confirmText: 'Continue',
-  });
+  const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
   const handleBuy = useCallback(() => {
     if (isMainNet) {
       navigate('/buy', { state: { tokenInfo: currentToken } });
@@ -72,24 +65,30 @@ function TokenDetail() {
     async (eTransType: ETransType) => {
       const isSafe = await checkSecurity(currentToken.chainId);
       if (!isSafe) return;
+      const targetUrl = stringifyETrans({
+        url: eTransUrl || '',
+        query: {
+          tokenSymbol: currentToken.symbol,
+          type: eTransType,
+          chainId: currentToken.chainId,
+        },
+      });
       if (checkDappIsConfirmed(eTransUrl)) {
-        let params = {};
-        if (eTransType === ETransType.Deposit) {
-          params = {};
-        } else if (eTransType === ETransType.Withdraw) {
-          params = {};
-        }
-        // TODO Sarah
-        console.log('params eTransType', eTransType, params);
-        const openWinder = window.open(eTransUrl, '_blank');
+        const openWinder = window.open(targetUrl, '_blank');
         if (openWinder) {
           openWinder.opener = null;
         }
       } else {
+        disclaimerData.current = {
+          targetUrl,
+          originUrl: eTransUrl,
+          originTitle: 'ETransfer',
+          titleText: 'You will be directed to a third-party DApp: ETransfer',
+        };
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, checkSecurity, currentToken.chainId, eTransUrl],
+    [checkDappIsConfirmed, checkSecurity, currentToken.chainId, currentToken.symbol, eTransUrl],
   );
   const mainContent = useCallback(() => {
     return (
@@ -123,7 +122,7 @@ function TokenDetail() {
               onClickDepositUSDT={() => handleClickETrans(ETransType.Deposit)}
               onClickWithdrawUSDT={() => handleClickETrans(ETransType.Withdraw)}
               isShowWithdrawUSDT={isShowWithdrawUSDT}
-              isShowBuy={isShowBuy}
+              isShowBuyEntry={isShowBuyEntry}
               onBuy={handleBuy}
               onSend={async () => {
                 navigate(`/send/token/${currentToken?.symbol}`, {
@@ -150,7 +149,7 @@ function TokenDetail() {
     amountInUsdShow,
     isShowDepositUSDT,
     isShowWithdrawUSDT,
-    isShowBuy,
+    isShowBuyEntry,
     handleBuy,
     navigate,
     handleClickETrans,

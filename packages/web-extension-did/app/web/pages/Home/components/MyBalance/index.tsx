@@ -36,13 +36,12 @@ import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import { useCheckSecurity } from 'hooks/useSecurity';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import BridgeModal from '../BridgeModal';
 import DepositModal from '../DepositModal';
 import DepositDrawer from '../DepositDrawer';
 import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow, useExtensionETransShow } from 'hooks/cms';
 import { ETransType } from 'types/eTrans';
-import DisclaimerModal, { IDisclaimerProps } from '../../../components/DisclaimerModal';
-import { ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID } from '@portkey-wallet/constants/constants-ca/etrans';
+import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from '../../../components/DisclaimerModal';
+import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 
 export interface TransactionResult {
@@ -96,21 +95,13 @@ export default function MyBalance() {
   useFreshTokenPrice();
   useVerifierList();
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
-  const disclaimerData = useRef<IDisclaimerProps>({
-    policyId: ETRANS_DISCLAIMER_TEXT_SHARE256_POLICY_ID,
-    originUrl: eTransUrl,
-    originTitle: 'eTrans',
-    titleText: 'You will be directed to a third-party DApp: ETrans',
-    agreeText: 'I have read and agree to the terms.',
-    confirmText: 'Continue',
-  });
+  const disclaimerData = useRef<IDisclaimerProps>(initDisclaimerData);
 
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
   const checkSecurity = useCheckSecurity();
   const originChainId = useOriginChainId();
   const { checkDappIsConfirmed } = useDisclaimer();
-  const [bridgeShow, setBridgeShow] = useState<boolean>(false);
   const { isBridgeShow } = useExtensionBridgeButtonShow();
   const { isBuyButtonShow } = useExtensionBuyButtonShow();
   const { isETransShow } = useExtensionETransShow();
@@ -203,7 +194,13 @@ export default function MyBalance() {
       }
       setDepositOpen(false);
     } else {
-      setBridgeShow(true);
+      disclaimerData.current = {
+        targetUrl: eBridgeUrl,
+        originUrl: eBridgeUrl,
+        originTitle: 'eBridge',
+        titleText: 'You will be directed to a third-party DApp: eBridge',
+      };
+      setDisclaimerOpen(true);
     }
   }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
 
@@ -211,21 +208,26 @@ export default function MyBalance() {
     async (eTransType: ETransType) => {
       const isSafe = await checkSecurity(originChainId);
       if (!isSafe) return;
+      const targetUrl = stringifyETrans({
+        url: eTransUrl,
+        query: {
+          tokenSymbol: 'USDT',
+          type: eTransType,
+        },
+      });
       if (checkDappIsConfirmed(eTransUrl)) {
-        let params = {};
-        if (eTransType === ETransType.Deposit) {
-          params = {};
-        } else if (eTransType === ETransType.Withdraw) {
-          params = {};
-        }
-        // TODO
-        console.log('params eTransType', eTransType, params);
-        const openWinder = window.open(eTransUrl, '_blank');
+        const openWinder = window.open(targetUrl, '_blank');
         if (openWinder) {
           openWinder.opener = null;
         }
         setDepositOpen(false);
       } else {
+        disclaimerData.current = {
+          targetUrl,
+          originUrl: eTransUrl,
+          originTitle: 'ETransfer',
+          titleText: 'You will be directed to a third-party DApp: ETransfer',
+        };
         setDisclaimerOpen(true);
       }
     },
@@ -285,8 +287,12 @@ export default function MyBalance() {
       {SelectTokenELe}
       <Tabs activeKey={activeKey} onChange={onChange} centered items={renderTabsData} className="balance-tab" />
       {isPrompt && <PromptEmptyElement className="empty-element" />}
-      <BridgeModal open={bridgeShow} onClose={() => setBridgeShow(false)} />
-      <DisclaimerModal open={disclaimerOpen} onClose={() => setDisclaimerOpen(false)} {...disclaimerData.current} />
+      <DisclaimerModal
+        open={disclaimerOpen}
+        onClose={() => setDisclaimerOpen(false)}
+        onCloseDepositModal={() => setDepositOpen(false)}
+        {...disclaimerData.current}
+      />
       {renderDeposit}
     </div>
   );

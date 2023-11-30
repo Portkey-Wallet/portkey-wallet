@@ -1,4 +1,4 @@
 export enum ETransType {
-  Deposit,
-  Withdraw,
+  Deposit = 'Deposit',
+  Withdraw = 'Withdraw',
 }

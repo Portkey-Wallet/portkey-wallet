@@ -1,38 +1,48 @@
 import { useCallback, useState } from 'react';
 import clsx from 'clsx';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import { DisclaimerArrayType, ETRANS_DISCLAIMER_ARRAY } from '@portkey-wallet/constants/constants-ca/etrans';
 import { Button, ModalProps, message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import { useCommonState, useLoading } from 'store/Provider/hooks';
 import CustomPromptModal from 'pages/components/CustomPromptModal';
+import {
+  EBRIDGE_DISCLAIMER_ARRAY,
+  EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID,
+} from '@portkey-wallet/constants/constants-ca/ebridge';
 import './index.less';
 
 export interface IDisclaimerProps {
-  disclaimerArr?: DisclaimerArrayType;
-  policyId: string;
   originUrl: string;
+  targetUrl: string;
   originTitle: string;
   titleText: string;
   agreeText?: string;
   confirmText?: string;
 }
 
+export const initDisclaimerData: IDisclaimerProps = {
+  originUrl: '',
+  targetUrl: '',
+  originTitle: '',
+  titleText: '',
+};
+
 export interface IDisclaimerModalProps extends IDisclaimerProps, ModalProps {
   open: boolean;
   onClose: () => void;
+  onCloseDepositModal?: () => void;
 }
 
 const DisclaimerModal = ({
   onClose,
+  onCloseDepositModal,
   open,
-  policyId,
   originUrl,
+  targetUrl,
   originTitle,
   titleText,
-  disclaimerArr = ETRANS_DISCLAIMER_ARRAY,
-  agreeText = 'I have read and agree to these terms.',
-  confirmText = 'confirm',
+  agreeText = 'I have read and agree to the terms.',
+  confirmText = 'Continue',
   ...props
 }: IDisclaimerModalProps) => {
   const { signPrivacyPolicy } = useDisclaimer();
@@ -43,19 +53,23 @@ const DisclaimerModal = ({
   const onConfirm = useCallback(async () => {
     try {
       setLoading(true);
-      await signPrivacyPolicy({ policyId, origin: originUrl });
-      const openWinder = window.open(originUrl, '_blank');
-      isPrompt && onClose();
+      await signPrivacyPolicy({ policyId: EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID, origin: originUrl });
+      const openWinder = window.open(targetUrl, '_blank');
+      if (isPrompt) {
+        onClose();
+        onCloseDepositModal?.();
+      }
       if (openWinder) {
         openWinder.opener = null;
       }
+      setConfirm(false);
     } catch (error) {
       message.error('Failed sign');
       console.log('===signPrivacyPolicy error', error);
     } finally {
       setLoading(false);
     }
-  }, [isPrompt, onClose, originUrl, policyId, setLoading, signPrivacyPolicy]);
+  }, [isPrompt, onClose, originUrl, setLoading, signPrivacyPolicy, onCloseDepositModal, targetUrl]);
 
   const handleClose = useCallback(() => {
     setConfirm(false);
@@ -80,7 +94,7 @@ const DisclaimerModal = ({
             </div>
             <div className="disclaimer-title">{titleText}</div>
             <div className="disclaimer-content flex-column" id="disclaimer-content">
-              {disclaimerArr.map((ele, index) => (
+              {EBRIDGE_DISCLAIMER_ARRAY.map((ele, index) => (
                 <div key={index} className={`content-${ele.type}`}>
                   {ele.content}
                 </div>

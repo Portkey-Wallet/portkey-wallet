@@ -248,7 +248,7 @@ const TokenDetail: React.FC = () => {
                     url: eTransUrl || '',
                     query: {
                       tokenSymbol: tokenInfo?.symbol,
-                      type: 'Withdrawal',
+                      type: 'Withdraw',
                       chainId: tokenInfo?.chainId,
                     },
                   }),

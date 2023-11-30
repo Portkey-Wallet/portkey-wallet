@@ -143,7 +143,7 @@ export function useDepositList() {
               url: eTransUrl || '',
               query: {
                 tokenSymbol: 'USDT',
-                type: 'Withdrawal',
+                type: 'Withdraw',
               },
             }),
           ),

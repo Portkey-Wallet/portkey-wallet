@@ -1,7 +1,7 @@
 import { ChainId } from '@portkey-wallet/types';
 import { stringifyUrl } from 'query-string';
 
-type ETransType = 'Deposit' | 'Withdrawal';
+type ETransType = 'Deposit' | 'Withdraw';
 
 type StringifyETransParams = {
   type?: ETransType;

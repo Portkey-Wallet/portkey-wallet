@@ -19,33 +19,42 @@ import {
 } from '@portkey-wallet/constants/constants-ca/ebridge';
 import myEvents from 'utils/deviceEvent';
 import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
+import { getUrlObj } from '@portkey-wallet/utils/dapp/browser';
+import Loading from 'components/Loading';
 
-const DisclaimerModal = () => {
+export type DisclaimerModalProps = {
+  url: string;
+  title: string;
+  description: string;
+};
+
+const DisclaimerModal = ({ url, title, description }: DisclaimerModalProps) => {
   const { t } = useLanguage();
-  const { eBridgeUrl } = useCurrentNetworkInfo();
   const { signPrivacyPolicy } = useDisclaimer();
   const [selected, setSelected] = useState(false);
 
   const onConfirm = useCallback(async () => {
+    Loading.show();
     try {
-      await signPrivacyPolicy({ policyId: EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID, origin: eBridgeUrl || '' });
-      OverlayModal.hide();
-      navigationService.navigate('EBridge');
+      const { origin } = getUrlObj(url);
+      await signPrivacyPolicy({ policyId: EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID, origin });
+      OverlayModal.hide(false);
+      navigationService.navigate('ProviderWebPage', { title, url });
     } catch (error) {
       console.log('error', error);
     }
-  }, [eBridgeUrl, signPrivacyPolicy]);
+    Loading.hide();
+  }, [signPrivacyPolicy, title, url]);
 
   return (
     <ModalBody modalBodyType="bottom" title={t('Disclaimer')} onClose={() => navigationService.navigate('Tab')}>
       <View style={styles.contentWrap}>
         <View style={[GStyles.flexRow, GStyles.itemCenter]}>
           <Svg icon="eBridgeFavIcon" size={pTd(24)} />
-          <TextM style={[FontStyles.font5, GStyles.marginLeft(pTd(8))]}>eBridge</TextM>
+          <TextM style={[FontStyles.font5, GStyles.marginLeft(pTd(8))]}>{title}</TextM>
         </View>
         <TextL style={[FontStyles.font5, fonts.mediumFont, GStyles.marginTop(pTd(8)), GStyles.marginBottom(pTd(16))]}>
-          You will be redirected to eBridge, a third-party cross-chain bridge on aelf.
+          {description}
         </TextL>
         <ScrollView
           style={styles.scrollView}
@@ -60,16 +69,16 @@ const DisclaimerModal = () => {
         </ScrollView>
         <Touchable style={[BGStyles.bg1, GStyles.flexRow, styles.agreeWrap]} onPress={() => setSelected(!selected)}>
           <Svg size={pTd(20)} icon={selected ? 'selected' : 'unselected'} />
-          <TextM style={GStyles.marginLeft(pTd(8))}>I have read and agree to these terms.</TextM>
+          <TextM style={GStyles.marginLeft(pTd(8))}>I have read and agree to the terms.</TextM>
         </Touchable>
-        <CommonButton disabled={!selected} type="primary" title={'Confirm'} onPress={onConfirm} />
+        <CommonButton disabled={!selected} type="primary" title={'Continue'} onPress={onConfirm} />
       </View>
     </ModalBody>
   );
 };
 
-export const showDisclaimerModal = () => {
-  OverlayModal.show(<DisclaimerModal />, {
+export const showDisclaimerModal = (props: DisclaimerModalProps) => {
+  OverlayModal.show(<DisclaimerModal {...props} />, {
     position: 'bottom',
     enabledNestScrollView: true,
   });

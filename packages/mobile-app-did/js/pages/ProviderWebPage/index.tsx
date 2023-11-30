@@ -5,23 +5,22 @@ import Progressbar, { IProgressbar } from 'components/Progressbar';
 import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
 import { SafeAreaColorMap } from 'components/PageContainer';
-import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { DappMap } from '@portkey-wallet/constants/constants-ca/network';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
-const EBridge = () => {
+const ProviderWebPage = () => {
   const webViewRef = useRef<IWebView | null>(null);
   const progressbarRef = useRef<IProgressbar>(null);
-  const { eBridgeUrl } = useCurrentNetworkInfo();
+  const { url, title } = useRouterParams<{ url: string; title: string }>();
 
   return (
-    <SafeAreaBox edges={['top', 'right', 'left']} style={[{ backgroundColor: SafeAreaColorMap.blue }]}>
-      <CustomHeader themeType={'blue'} titleDom="Bridge" />
+    <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: SafeAreaColorMap.blue }}>
+      <CustomHeader themeType={'blue'} titleDom={title} />
       <View style={styles.contentWrap}>
         <Progressbar ref={progressbarRef} />
         <ProviderWebview
           ref={webViewRef}
           style={styles.webview}
-          source={{ uri: eBridgeUrl || DappMap.bridge }}
+          source={{ uri: url }}
           onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
         />
       </View>
@@ -29,15 +28,9 @@ const EBridge = () => {
   );
 };
 
-export default EBridge;
+export default ProviderWebPage;
 
 const styles = StyleSheet.create({
-  pageContainer: {
-    paddingHorizontal: 0,
-  },
-  webViewContainer: {
-    flex: 1,
-  },
   webview: {
     width: '100%',
     flex: 1,

@@ -10,16 +10,17 @@ import aes from '@portkey-wallet/utils/aes';
 import { message } from 'antd';
 import useGuardianList from 'hooks/useGuardianList';
 import ModalTip from 'pages/components/ModalTip';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { GuardianMth } from 'types/guardians';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import { formatAddGuardianValue } from '../utils/formatAddGuardianValue';
 import { formatDelGuardianValue } from '../utils/formatDelGuardianValue';
 import { formatEditGuardianValue } from '../utils/formatEditGuardianValue';
+import { ChainId } from '@portkey-wallet/types';
 
 enum MethodType {
   'guardians/add' = GuardianMth.addGuardian,
@@ -39,6 +40,14 @@ export const useRecovery = () => {
   const navigate = useNavigate();
   const currentNetwork = useCurrentNetworkInfo();
   const { userGuardianStatus, opGuardian, preGuardian } = useGuardiansInfo();
+  const accelerateChainId: ChainId = useMemo(() => {
+    if (state && state.indexOf('guardians/add') !== -1) {
+      const _query = state.split('_')[1];
+      return _query?.split('=')?.[1];
+    }
+    return originChainId;
+  }, [state, originChainId]);
+  const accelerateChainInfo = useCurrentChain(accelerateChainId);
 
   return useCallback(async () => {
     try {
@@ -46,7 +55,8 @@ export const useRecovery = () => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('handle guardian error');
       let value;
-      switch (state) {
+      const _query = state?.split('_')[0];
+      switch (_query) {
         case 'guardians/add':
           value = formatAddGuardianValue({ userGuardianStatus, opGuardian });
           break;
@@ -65,13 +75,34 @@ export const useRecovery = () => {
         address: currentChain.caContractAddress,
         privateKey,
         paramsOption: {
-          method: MethodType[state],
+          method: `${MethodType[_query as keyof typeof MethodType]}`,
           params: {
             caHash: walletInfo?.caHash,
             ...value,
           },
         },
       });
+      try {
+        if (state && state.indexOf('guardians/add') !== -1 && accelerateChainId !== originChainId) {
+          if (!accelerateChainInfo?.endPoint) return;
+          const res = await handleGuardian({
+            rpcUrl: accelerateChainInfo.endPoint,
+            chainType: currentNetwork.walletType,
+            address: accelerateChainInfo.caContractAddress,
+            privateKey,
+            paramsOption: {
+              method: GuardianMth.addGuardian,
+              params: {
+                caHash: walletInfo?.caHash,
+                ...value,
+              },
+            },
+          });
+          console.log('===handleAddGuardian Accelerate res', res);
+        }
+      } catch (error: any) {
+        console.log('======handleAddGuardian Accelerate error', error);
+      }
       dispatch(resetLoginInfoAction());
       dispatch(resetUserGuardianStatus());
       dispatch(setPreGuardianAction());
@@ -88,21 +119,27 @@ export const useRecovery = () => {
     } catch (error: any) {
       setLoading(false);
       console.log('---op-guardian-error', error);
-      const _error = contractErrorHandler(error) || 'Something error';
+      const _error = handleErrorMessage(error, 'Something error');
       message.error(_error);
     }
   }, [
-    currentChain,
+    currentChain?.caContractAddress,
+    currentChain?.endPoint,
     currentNetwork.walletType,
     dispatch,
     getGuardianList,
     navigate,
     opGuardian,
+    accelerateChainId,
+    accelerateChainInfo?.caContractAddress,
+    accelerateChainInfo?.endPoint,
+    originChainId,
     passwordSeed,
     preGuardian,
     setLoading,
     state,
     userGuardianStatus,
-    walletInfo,
+    walletInfo.AESEncryptPrivateKey,
+    walletInfo.caHash,
   ]);
 };

@@ -15,7 +15,7 @@ export const crossChainTransferToCa = async ({
     toChainId: string;
     symbol: string;
     to: string;
-    amount: number;
+    amount: number | string;
     memo?: string;
   };
 }) => {

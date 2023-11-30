@@ -131,6 +131,11 @@ export default class OverlayModal extends React.Component {
     return Overlay.show(overlayView) as number;
   }
 
+  static showOnce(component: ReactNode, overlayProps: OverlayModalProps = {}) {
+    OverlayModal.hide();
+    OverlayModal.show(component, overlayProps);
+  }
+
   static hide() {
     elements = elements.filter(item => item); // Discard invalid data
     const topItem = elements.pop();

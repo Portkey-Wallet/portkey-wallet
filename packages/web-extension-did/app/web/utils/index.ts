@@ -8,6 +8,7 @@ import {
 } from 'constants/envType';
 import moment from 'moment';
 import { apis } from './BrowserApis';
+import BigNumber from 'bignumber.js';
 
 export const omitString = (input: string, start = 10, end = 10) => {
   if (!input) return '';
@@ -63,4 +64,11 @@ export const getPortkeyFinanceUrl = (currentNetwork: NetworkType) => {
     AUTH_APPLE_URL: `${host}/apple-auth`,
     RECAPTCHA_URL: `${host}/recaptcha-check`,
   };
+};
+
+export const isNFT = (symbol: string) => {
+  if (!symbol) return false;
+  if (!symbol.includes('-')) return false;
+  const lastStr = symbol.split('-').splice(-1)[0];
+  return !BigNumber(lastStr).isNaN();
 };

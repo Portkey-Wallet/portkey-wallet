@@ -66,7 +66,7 @@ export const useCurrentAccountTokenList = (): TokenItemType[] => {
     }
 
     return [];
-  }, [addedTokenData, currentChain, currentAccount]);
+  }, [currentChain, addedTokenData, currentAccount, isFetchingTokenList, dispatch]);
 };
 
 export const useAllAccountTokenList = (): AddedTokenData => {

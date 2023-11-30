@@ -15,7 +15,8 @@ import {
   setEntrance,
 } from '@portkey-wallet/store/store-ca/cms/actions';
 
-import { getOrigin } from '@portkey-wallet/utils/dapp/browser';
+import { getFaviconUrl, getOrigin } from '@portkey-wallet/utils/dapp/browser';
+
 import { checkSiteIsInBlackList } from '@portkey-wallet/utils/session';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { DEFAULT_ENTRANCE_SHOW, generateEntranceShow, getEntrance } from './util';
@@ -192,6 +193,15 @@ export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
   };
 };
 
+export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {
+  const { entrance } = useEntrance(config);
+  const isBridgeShow = useMemo(() => entrance?.bridge, [entrance.bridge]);
+
+  return {
+    isBridgeShow,
+  };
+};
+
 export const useRememberMeBlackList = (isInit = false) => {
   const dispatch = useAppCommonDispatch();
   const { rememberMeBlackListMap } = useCMS();
@@ -247,4 +257,28 @@ export const useIsChatShow = () => {
   }, [isIMServiceExist, networkType, tabMenuListNetMap]);
 
   return IsChatShow;
+};
+
+export const useGetCmsWebsiteInfo = () => {
+  const { cmsWebsiteMap } = useCMS();
+  const { s3Url } = useCurrentNetworkInfo();
+
+  const getCmsWebsiteInfoImageUrl = useCallback(
+    (domain: string): string => {
+      const target = cmsWebsiteMap?.[domain];
+
+      // if in cms
+      if (target?.imgUrl?.filename_disk) return `${s3Url}/${target?.imgUrl?.filename_disk}`;
+
+      return getFaviconUrl(domain);
+    },
+    [cmsWebsiteMap, s3Url],
+  );
+
+  const getCmsWebsiteInfoName = useCallback((domain: string) => cmsWebsiteMap?.[domain]?.title || '', [cmsWebsiteMap]);
+
+  return {
+    getCmsWebsiteInfoImageUrl,
+    getCmsWebsiteInfoName,
+  };
 };

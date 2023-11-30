@@ -32,7 +32,7 @@ export const settingsSlice = createSlice({
       state.leaveTime = Date.now();
     },
     addNotificationsModalTime: state => {
-      state.closeNotificationsModalTime = state.closeNotificationsModalTime + 1;
+      state.closeNotificationsModalTime = (state.closeNotificationsModalTime || 0) + 1;
     },
     resetSettings: state => {
       return { ...initialState, closeNotificationsModalTime: state.closeNotificationsModalTime };

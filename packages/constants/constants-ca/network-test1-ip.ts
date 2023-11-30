@@ -25,4 +25,5 @@ export enum DappMap {
   bridge = 'http://192.168.67.173:3000',
 }
 const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
-export const DAPP_WHITELIST: string[] = [...EBridgeList];
+const ETransList = NetworkList.map(i => i.eTransUrl).filter(i => !!i) as string[];
+export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransList];

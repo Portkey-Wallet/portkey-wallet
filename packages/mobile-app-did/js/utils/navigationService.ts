@@ -8,8 +8,9 @@ const ThrottleMap: { [key: string]: number } = {};
 function setTopLevelNavigator(navigatorRef: NavigationContainerRef<any>) {
   _navigator = navigatorRef;
 }
+export type NavigateName = keyof (RootStackParamList & TabParamList);
 
-function navigate(name: keyof (RootStackParamList & TabParamList), params?: any) {
+function navigate(name: NavigateName, params?: any) {
   _navigator?.dispatch(
     CommonActions.navigate({
       name,

@@ -29,8 +29,6 @@ class SignalrFCM extends BaseSignalr {
     this.deviceId = deviceId;
     this.deviceInfo = deviceInfo;
     this.getFCMTokenFunc = getFCMTokenFunc;
-
-    this.getFCMToken();
   };
 
   public setPortkeyToken = async (portkeyToken: string) => {
@@ -89,6 +87,12 @@ class SignalrFCM extends BaseSignalr {
   };
 
   public doOpen = async ({ url, clientId }: { url: string; clientId?: string }): Promise<HubConnection> => {
+    if (!this.fcmToken) {
+      this.getFCMTokenFunc?.();
+      await sleep(3000);
+      return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
+    }
+
     if (!this.portkeyToken) {
       await sleep(3000);
       return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });

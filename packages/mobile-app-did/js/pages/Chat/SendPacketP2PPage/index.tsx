@@ -9,9 +9,11 @@ import { TextM } from 'components/CommonText';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
 import { useCalculateRedPackageFee } from 'hooks/useCalculateRedPackageFee';
-
+import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { useCheckAllowanceAndApprove } from 'hooks/wallet';
 const SendPacketP2PPage = () => {
   const calculateRedPackageFee = useCalculateRedPackageFee();
+  const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
       try {
@@ -24,11 +26,21 @@ const SendPacketP2PPage = () => {
           chainId: values.chainId,
           calculateTransactionFee: () => calculateRedPackageFee(values),
         });
+
+        const redPacketContractAddress = '2sFCkQs61YKVkHpN3AT7887CLfMvzzXnMkNYYM431RK5tbKQS9';
+
+        const approved = await checkAllowanceAndApprove({
+          spender: redPacketContractAddress,
+          bigAmount: timesDecimals(values.count, values.decimals),
+          ...values,
+          decimals: Number(values.decimals),
+        });
+        console.log(approved, '====approved');
       } catch (error) {
         console.log(error, '====error');
       }
     },
-    [calculateRedPackageFee],
+    [calculateRedPackageFee, checkAllowanceAndApprove],
   );
 
   return (

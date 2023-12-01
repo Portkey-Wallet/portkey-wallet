@@ -1,10 +1,8 @@
-import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
-import { getWallet } from '@portkey-wallet/utils/aelf';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useCallback } from 'react';
-import { getCurrentCaInfo, getCurrentChainInfoByChainId, getCurrentTxFeeByChainId } from 'utils/redux';
+import { getCurrentCaInfo, getCurrentTxFeeByChainId, getViewTokenContractByChainId } from 'utils/redux';
 
 type CalculateRedPackageFeeParams = {
   count: string;
@@ -23,14 +21,9 @@ export function useCalculateRedPackageFee() {
       const fee = getCurrentTxFeeByChainId(chainId).redPackage;
 
       const bigFee = timesDecimals(fee, defaultToken.decimals);
-      const chainInfo = getCurrentChainInfoByChainId(chainId);
       const caInfo = getCurrentCaInfo(chainId);
 
-      const tokenContract = await getContractBasic({
-        contractAddress: chainInfo?.defaultToken.address || '',
-        rpcUrl: chainInfo?.endPoint,
-        account: getWallet(),
-      });
+      const tokenContract = await getViewTokenContractByChainId(chainId);
 
       const list = [
         tokenContract.callViewMethod('GetBalance', {

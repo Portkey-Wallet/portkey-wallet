@@ -5,6 +5,10 @@ import { AElfWallet } from '@portkey-wallet/types/aelf';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { ChainId } from '@portkey-wallet/types';
 import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
+import { getContractBasic } from '@portkey-wallet/contracts/utils';
+
+import { getWallet as getDefaultWallet } from '@portkey-wallet/utils/aelf';
+
 const walletMap: { [address: string]: AElfWallet } = {};
 export const getState = () => store.getState();
 
@@ -85,4 +89,14 @@ export const getCurrentChainInfo = () => {
 export const getCurrentChainInfoByChainId = (chainId: ChainId) => {
   const { currentNetwork, chainInfo } = getWallet();
   return chainInfo?.[currentNetwork]?.find(i => i.chainId === chainId);
+};
+
+export const getViewTokenContractByChainId = (chainId: ChainId) => {
+  const chainInfo = getCurrentChainInfoByChainId(chainId);
+
+  return getContractBasic({
+    contractAddress: chainInfo?.defaultToken.address || '',
+    rpcUrl: chainInfo?.endPoint,
+    account: getDefaultWallet(),
+  });
 };

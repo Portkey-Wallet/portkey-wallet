@@ -1,8 +1,8 @@
 import { useCopyToClipboard } from 'react-use';
-import { message } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import singleMessage from 'utils/singleMessage';
 
 export default function Copy({
   toCopy,
@@ -24,7 +24,7 @@ export default function Copy({
     <span
       onClick={() => {
         setCopied(toCopy);
-        message.success(t('Copy Success'));
+        singleMessage.success(t('Copy Success'));
       }}
       className={clsx('flex-row-center copy-wrapper', className)}
       // eslint-disable-next-line no-inline-styles/no-inline-styles

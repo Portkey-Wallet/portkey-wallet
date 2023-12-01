@@ -19,7 +19,6 @@ import { useFocusEffect } from '@react-navigation/native';
 export default function DiscoverHome() {
   useCheckAndInitNetworkDiscoverMap();
   const fetchCurrentRememberMeBlackList = useFetchCurrentRememberMeBlackList();
-
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
 
   const RightDom = useMemo(

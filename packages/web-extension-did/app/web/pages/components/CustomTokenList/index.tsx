@@ -10,8 +10,9 @@ import { useCaAddresses, useCaAddressInfoList, useChainIdList } from '@portkey-w
 import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenManagement/action';
 import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
-import { ELF_SYMBOL } from '@portkey-wallet/constants/constants-ca/assets';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
+import TokenImageDisplay from '../TokenImageDisplay';
 import './index.less';
 
 export interface ICustomTokenListProps {
@@ -43,7 +44,7 @@ export default function CustomTokenList({
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
   useFreshTokenPrice();
-
+  const symbolImages = useSymbolImages();
   useEffect(() => {
     if (drawerType === 'send') {
       setAssetList(accountAssets.accountAssetsList);
@@ -72,14 +73,8 @@ export default function CustomTokenList({
           className="item"
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, token, 'token')}>
-          <div className="icon">
-            <div className="custom">
-              {token.symbol === ELF_SYMBOL ? (
-                <CustomSvg className="token-logo" type="elf-icon" />
-              ) : (
-                token?.symbol?.slice(0, 1)
-              )}
-            </div>
+          <div className="icon flex-center">
+            <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>
@@ -98,7 +93,7 @@ export default function CustomTokenList({
         </div>
       );
     },
-    [amountInUsdShow, isTestNet, onChange],
+    [amountInUsdShow, isTestNet, onChange, symbolImages],
   );
 
   const renderReceiveToken = useCallback(
@@ -120,14 +115,8 @@ export default function CustomTokenList({
           className="item"
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, tokenTmp, 'token')}>
-          <div className="icon">
-            <div className="custom">
-              {token.symbol === ELF_SYMBOL ? (
-                <CustomSvg className="token-logo" type="elf-icon" />
-              ) : (
-                token?.symbol?.slice(0, 1)
-              )}
-            </div>
+          <div className="icon flex-center">
+            <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>
@@ -136,7 +125,7 @@ export default function CustomTokenList({
         </div>
       );
     },
-    [isTestNet, onChange],
+    [isTestNet, onChange, symbolImages],
   );
 
   const renderNft = useCallback(

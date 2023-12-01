@@ -52,6 +52,11 @@ import SendTransactions from 'pages/SendTransactions';
 import GetSignature from 'pages/GetSignature';
 import DappAutoTx from 'pages/DappAutoTx';
 import FindMore from 'pages/Contacts/FindMore';
+import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
+import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
+import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferSettingsEdit';
+import AllowanceApprove from 'pages/AllowanceApprove';
+import WalletSecurityApprove from 'pages/WalletSecurityApprove';
 import ChatPrivacy from 'pages/AccountSetting/ChatPrivacy';
 import ChatPrivacyEdit from 'pages/AccountSetting/ChatPrivacyEdit';
 
@@ -181,6 +186,15 @@ export const PageRouter = () => {
       path: '/auto-execute-tx',
       element: <DappAutoTx />,
     },
+    {
+      path: '/allowance-approve',
+      element: <AllowanceApprove />,
+    },
+    {
+      path: '/approve-wallet-security',
+      element: <WalletSecurityApprove />,
+    },
+
     {
       path: '*',
       element: <NotFound />,
@@ -315,6 +329,26 @@ export const PageRouter = () => {
               path: '/setting/wallet-security/connected-sites/:origin',
               element: <SiteDetail />,
             },
+            {
+              path: '/setting/wallet-security/payment-security',
+              element: <PaymentSecurity />,
+            },
+            {
+              path: '/setting/wallet-security/payment-security/transfer-settings',
+              element: <TransferSettings />,
+            },
+            {
+              path: '/setting/wallet-security/payment-security/transfer-settings-edit',
+              element: <TransferSettingsEdit />,
+            },
+            {
+              path: '/setting/wallet-security/payment-security/verifier-account',
+              element: <VerifierAccount />,
+            },
+            {
+              path: '/setting/wallet-security/payment-security/guardian-approval',
+              element: <GuardianApproval />,
+            },
           ],
         },
       ],
@@ -440,6 +474,26 @@ export const PageRouter = () => {
     {
       path: '/setting/wallet-security/connected-sites/:origin',
       element: <SiteDetail />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security',
+      element: <PaymentSecurity />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/transfer-settings',
+      element: <TransferSettings />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/transfer-settings-edit',
+      element: <TransferSettingsEdit />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/verifier-account',
+      element: <VerifierAccount />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/guardian-approval',
+      element: <GuardianApproval />,
     },
   ];
 

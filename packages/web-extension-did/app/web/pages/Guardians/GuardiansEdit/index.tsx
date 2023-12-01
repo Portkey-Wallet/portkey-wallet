@@ -16,7 +16,7 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { VerifierItem } from '@portkey-wallet/types/verifier';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import GuardianEditPrompt from './Prompt';
 import GuardianEditPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
@@ -99,7 +99,7 @@ export default function GuardiansEdit() {
     } catch (error: any) {
       setLoading(false);
       console.log('---edit-guardian-error', error);
-      message.error(contractErrorHandler(error));
+      message.error(handleErrorMessage(error));
     }
   }, [
     currentGuardian?.guardianAccount,

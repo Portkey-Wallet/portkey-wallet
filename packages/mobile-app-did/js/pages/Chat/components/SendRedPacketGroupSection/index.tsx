@@ -96,6 +96,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
 
       const reg = /^[1-9]\d*$/;
       if (!reg.test(value)) return;
+      if (Number(value) > 1000) return;
       if (type === RedPackageTypeEnum.RANDOM) {
         setCountError({ isError: false, errorMsg: '' });
       }
@@ -145,6 +146,17 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     });
   }, [getRedPackageTokenConfig, onPressButton, type, values]);
 
+  const amountLabel = useMemo(() => (type === RedPackageTypeEnum.FIXED ? 'Amount Each' : 'Total Amount'), [type]);
+
+  const amountShowStr = useMemo(() => {
+    if (type !== RedPackageTypeEnum.FIXED) return values.count;
+    if (values.packetNum === '' || values.count === '') return '';
+    if (Number.isNaN(values.packetNum) || Number.isNaN(values.count)) return '';
+    return ZERO.plus(values.count)
+      .times(values.packetNum || '1')
+      .toFixed();
+  }, [type, values.count, values.packetNum]);
+
   return (
     <>
       {type !== RedPackageTypeEnum.P2P && (
@@ -157,12 +169,11 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             inputContainerStyle={styles.inputWrap}
             errorMessage={groupMemberCount ? `16 group members` : ''}
             errorStyle={FontStyles.font7}
-            // inputStyle={{ backgroundColor: 'red' }}
             containerStyle={styles.packetNumWrap}
           />
         </FormItem>
       )}
-      <FormItem title="Total Amount">
+      <FormItem title={amountLabel}>
         <CommonInput
           type="general"
           value={values.count}
@@ -219,7 +230,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       {/* TODO: change real data */}
       <RedPacketAmountShow
         componentType="sendPacketPage"
-        amountShow={values.count}
+        amountShow={amountShowStr}
         symbol={values.symbol}
         textColor={defaultColors.font5}
         wrapStyle={GStyles.marginTop(pTd(8))}

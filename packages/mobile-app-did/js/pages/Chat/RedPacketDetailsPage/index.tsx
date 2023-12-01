@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -15,36 +15,41 @@ import { FontStyles } from 'assets/theme/styles';
 import Divider from 'components/Divider';
 import RedPacketReceiverItem from '../components/RedPacketReceiverItem';
 import RedPacketAmountShow from '../components/RedPacketAmountShow';
-import { useGetRedPackageDetail, useIsMyRedPacket } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  NextRedPackageDetailResult,
+  useGetRedPackageDetail,
+  useIsMyRedPacket,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
-import { RedPackageDetail, RedPackageTypeEnum } from '@portkey-wallet/im';
+import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { divDecimalsStr } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 
 export type RedPacketRouterParams = {
   redPacketId: string;
-  data: RedPackageDetail;
+  data?: NextRedPackageDetailResult;
 };
 
 export const RedPacketDetails = () => {
   const { redPacketId, data } = useRouterParams<RedPacketRouterParams>();
 
-  const { info, list, init } = useGetRedPackageDetail();
-  const redPacketData = useMemo(() => info || data, [data, info]);
+  const { info, list: _list, init, next } = useGetRedPackageDetail(redPacketId);
+  const redPacketData = useMemo(() => info || data?.info, [data, info]);
+  const list = useMemo(() => _list || data?.list || [], [_list, data?.list]);
 
-  console.log('redPacketDataredPacketDataredPacketData', redPacketData);
-  const isMyPacket = useIsMyRedPacket(redPacketData?.senderId);
+  const isMyPacket = useIsMyRedPacket(redPacketData?.senderId || '');
   const isP2P = useMemo(() => redPacketData?.type === RedPackageTypeEnum.P2P, [redPacketData?.type]);
+  const luckKingId = useMemo(() => redPacketData?.luckKingId || '', [redPacketData?.luckKingId]);
 
   const isShowBottomTips = useMemo(() => {
-    if (isP2P && redPacketData?.isRedPackageExpired && isMyPacket) return true;
-    if (!isP2P && !redPacketData?.isRedPackageFullyClaimed) return true;
+    if (!isMyPacket) return false;
+    if (redPacketData?.isRedPackageExpired && !redPacketData?.isRedPackageFullyClaimed) return true;
 
     return false;
-  }, [isMyPacket, isP2P, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);
+  }, [isMyPacket, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);
 
   useEffectOnce(() => {
-    init({ id: redPacketId });
+    init();
   });
 
   const renderRedPacketTipContent = useMemo(() => {
@@ -81,6 +86,7 @@ export const RedPacketDetails = () => {
       return `${redPacketData?.grabbed}/${redPacketData?.count} crypto box(es) opened, with ${divDecimalsStr(
         redPacketData?.grabbedAmount,
         redPacketData?.decimal,
+        '0',
       )}/${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${redPacketData?.symbol} claimed.`;
 
     // !isP2P  && !isRedPackageFullyClaimed & !expired
@@ -119,11 +125,11 @@ export const RedPacketDetails = () => {
         </TextXL>
         <TextM style={[FontStyles.font7, styles.memo]}>{redPacketData?.memo}</TextM>
 
-        {redPacketData.isCurrentUserGrabbed && (
+        {redPacketData?.isCurrentUserGrabbed && (
           <>
             <RedPacketAmountShow
               componentType="packetDetailPage"
-              amountShow={divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal)}
+              amountShow={divDecimalsStr(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal)}
               symbol={redPacketData?.symbol || ''}
             />
             <TextS style={[FontStyles.font15, styles.tips]}>Red Packet transferred to Wallet</TextS>
@@ -132,14 +138,18 @@ export const RedPacketDetails = () => {
       </View>
     );
   }, [
+    redPacketData?.currentUserGrabbedAmount,
     redPacketData?.decimal,
-    redPacketData?.grabbedAmount,
-    redPacketData.isCurrentUserGrabbed,
+    redPacketData?.isCurrentUserGrabbed,
     redPacketData?.memo,
     redPacketData?.senderAvatar,
     redPacketData?.senderName,
     redPacketData?.symbol,
   ]);
+
+  const nextList = useCallback(() => {
+    next();
+  }, [next]);
 
   return (
     <PageContainer
@@ -154,7 +164,7 @@ export const RedPacketDetails = () => {
         </Touchable>
       </ImageBackground>
       <View style={GStyles.flex1}>
-        {!isMyPacket && redPacketData.isRedPackageFullyClaimed ? (
+        {!isMyPacket && redPacketData?.isRedPackageFullyClaimed ? (
           headerDom
         ) : (
           <FlatList
@@ -163,7 +173,7 @@ export const RedPacketDetails = () => {
             ListHeaderComponent={() => (
               <>
                 {headerDom}
-                {redPacketData.isCurrentUserGrabbed && <Divider width={pTd(8)} style={styles.divider} />}
+                {redPacketData?.isCurrentUserGrabbed && <Divider width={pTd(8)} style={styles.divider} />}
                 <TextM style={[FontStyles.font7, styles.redPacketStyleIntro]}>{renderRedPacketTipContent}</TextM>
                 <Divider style={styles.innerDivider} />
               </>
@@ -172,15 +182,17 @@ export const RedPacketDetails = () => {
               <RedPacketReceiverItem
                 key={item.userId}
                 item={item}
-                symbol={redPacketData?.symbol}
-                decimals={redPacketData?.decimal}
+                symbol={redPacketData?.symbol || ''}
+                decimals={redPacketData?.decimal || ''}
+                isLuckyKing={item.userId === luckKingId}
               />
             )}
+            onEndReached={nextList}
             ListFooterComponentStyle={styles.listFooterComponentStyle}
             ListFooterComponent={() =>
               isShowBottomTips ? (
                 <TextM style={styles.bottomTips}>
-                  Unclaimed tokens have been automatically returned to the sender.
+                  {'Unclaimed tokens have been automatically returned to the sender.'}
                 </TextM>
               ) : null
             }

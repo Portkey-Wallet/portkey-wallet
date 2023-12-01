@@ -39,7 +39,7 @@
       "run_at": "document_end"
     }
   ],
-  "permissions": ["storage", "unlimitedStorage", "tabs", "alarms"],
+  "permissions": ["storage", "unlimitedStorage", "tabs", "alarms", "gcm"],
   "host_permissions": ["http://*/*", "https://*/*"],
   "web_accessible_resources": [
     {

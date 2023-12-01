@@ -36,6 +36,8 @@ import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { fetchContactListAsync } from '@portkey-wallet/store/store-ca/contact/actions';
 import './index.less';
 import { useExtensionBuyButtonShow } from 'hooks/cms';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 
 export interface TransactionResult {
   total: number;
@@ -88,6 +90,10 @@ export default function MyBalance() {
   const { isBuyButtonShow } = useExtensionBuyButtonShow();
   const isShowChat = useIsChatShow();
   const unreadCount = useUnreadCount();
+
+  useEffect(() => {
+    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+  }, [unreadCount]);
 
   useEffect(() => {
     if (state?.key) {

@@ -37,10 +37,15 @@ function RedPacket(props: MessageProps<ChatMessage>) {
 
   const onPress = useCallback(async () => {
     Loading.show();
+
     try {
+      const startTime = Date.now();
       const redPacketResult = await initInfo(currentChannelId || '', redPacketId);
 
-      await sleep(500);
+      const diffTime = Date.now() - startTime;
+      if (diffTime < 500) {
+        await sleep(500 - diffTime);
+      }
 
       const isJumpToDetail =
         redPacketResult.isCurrentUserGrabbed || (redPacketResult.type === RedPackageTypeEnum.P2P && isMyPacket);
@@ -48,7 +53,12 @@ function RedPacket(props: MessageProps<ChatMessage>) {
       console.log(redPacketResult, isMyPacket);
 
       if (isJumpToDetail) {
-        navigationService.navigate('RedPacketDetails', { redPacketId, data: redPacketResult });
+        navigationService.navigate('RedPacketDetails', {
+          redPacketId,
+          data: {
+            info: redPacketResult,
+          },
+        });
       } else {
         ViewPacketOverlay.showViewPacketOverlay({ redPacketId, redPacketData: { ...redPacketResult, items: [] } });
       }

@@ -20,6 +20,7 @@ import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetRedPackageDetail, useGrabRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
 import CommonToast from 'components/CommonToast';
+import Lottie from 'lottie-react-native';
 
 let timer: string | number | NodeJS.Timeout | undefined;
 
@@ -36,7 +37,6 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   const grabPacket = useGrabRedPackage();
   const { init } = useGetRedPackageDetail();
 
-  const expired = useMemo(() => redPacketData?.isRedPackageExpired, [redPacketData?.isRedPackageExpired]);
   const isMyRedPacket = useMemo(
     () => redPacketData?.senderId === userInfo?.userId,
     [redPacketData?.senderId, userInfo?.userId],
@@ -60,6 +60,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   const maskOpacity = useRef(new Animated.Value(0.3)).current;
 
   const [showCloseButton, setShowDialogCloseButton] = useState(true);
+  const isFetchingRef = useRef(false);
 
   const startAnimation = useCallback(() => {
     // navigationService.navigate('RedPacketDetails');
@@ -104,6 +105,8 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   }, [imgDownPosition, imgDownScale, maskOpacity, imgUpPosition, imgUpScale]);
 
   const onOpen = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     openBtnRef.current?.startRotate();
     await sleep(500);
 
@@ -112,7 +115,6 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
 
       if (result === GrabRedPackageResultEnum.SUCCESS) {
         const data = await init({ id: redPacketId });
-        console.log('data', data);
         navigationService.navigate('RedPacketDetails', { redPacketId, data });
         openBtnRef.current?.destroyDom();
         setShowDialogCloseButton(false);
@@ -122,6 +124,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
     } catch (error) {
       CommonToast.failError(error);
     }
+    isFetchingRef.current = false;
   }, [currentChannelId, grabPacket, init, redPacketId, startAnimation]);
 
   useEffect(
@@ -131,6 +134,33 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
     },
     [imgDownPosition, imgDownScale, imgUpPosition, imgUpScale],
   );
+
+  const [isGoDetailLoading, setIsGoDetailLoading] = useState(false);
+  const onGoDetail = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+
+    setIsGoDetailLoading(true);
+    try {
+      const data = await init({ id: redPacketId });
+
+      OverlayModal.hide();
+      navigationService.navigate('RedPacketDetails', { redPacketId, data });
+    } catch (error) {}
+    setIsGoDetailLoading(false);
+    isFetchingRef.current = false;
+  }, [init, redPacketId]);
+
+  const onClose = useCallback(() => {
+    if (isFetchingRef.current) return;
+    OverlayModal.hide();
+  }, []);
+
+  const memoStr = useMemo(() => {
+    if (redPacketData.isRedPackageExpired) return 'This crypto box has expired.';
+    if (redPacketData.isRedPackageFullyClaimed) return 'Better luck next time!';
+    return redPacketData.memo;
+  }, [redPacketData.isRedPackageExpired, redPacketData.isRedPackageFullyClaimed, redPacketData.memo]);
 
   return (
     <View style={[GStyles.center, styles.page]}>
@@ -150,14 +180,8 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
               imageUrl={redPacketData?.senderAvatar}
             />
             <TextL style={styles.sentBy}>{`Sent by ${redPacketData?.senderName}`}</TextL>
-            {expired && (
-              <TextM numberOfLines={2} style={styles.memo}>
-                This red packet has been received for more than 24 hours. If you have received it, you can view it in
-                the details.
-              </TextM>
-            )}
             <TextXXXL numberOfLines={2} style={styles.memo}>
-              {redPacketData?.memo}
+              {memoStr}
             </TextXXXL>
           </ImageBackground>
         </Animated.View>
@@ -171,25 +195,24 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
           ]}>
           <ImageBackground source={Red_Packet_02} style={[styles.img, styles.imgDown]}>
             {isShowViewDetailButton && (
-              <Touchable
-                style={styles.viewDetailWrap}
-                onPress={() => {
-                  // is show animation
-                  OverlayModal.hide();
-                  navigationService.navigate('RedPacketDetails');
-                }}>
+              <Touchable style={styles.viewDetailWrap} onPress={onGoDetail}>
                 <TextM style={styles.detailText}>View Detail</TextM>
-                <Svg icon="right-arrow" size={pTd(16)} color={defaultColors.font14} />
+                {isGoDetailLoading ? (
+                  <Lottie
+                    style={styles.loadingStyle}
+                    source={require('assets/lottieFiles/loading_white.json')}
+                    autoPlay
+                    loop
+                  />
+                ) : (
+                  <Svg icon="right-arrow" size={pTd(16)} color={defaultColors.font14} />
+                )}
               </Touchable>
             )}
           </ImageBackground>
         </Animated.View>
         {showCloseButton && (
-          <Touchable
-            style={styles.closeWrap}
-            onPress={() => {
-              OverlayModal.hide();
-            }}>
+          <Touchable style={styles.closeWrap} onPress={onClose}>
             <Svg icon="close-red-packet" size={pTd(40)} />
           </Touchable>
         )}
@@ -284,5 +307,8 @@ const styles = StyleSheet.create({
     bottom: -pTd(64),
     display: 'flex',
     alignItems: 'center',
+  },
+  loadingStyle: {
+    width: pTd(16),
   },
 });

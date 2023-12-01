@@ -59,7 +59,7 @@ function handleInputText(code: string): string {
   }
   return text;
 }
-function isEmoji(character: string) {
+export function isEmoji(character: string) {
   return /\p{Emoji}/u.test(character);
 }
 function handleDeleteText(): string {

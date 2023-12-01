@@ -27,6 +27,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { isEmoji } from 'pages/Chat/utils';
 
 export type ValuesType = {
   packetNum?: string;
@@ -175,6 +176,11 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     return convertAmountUSDShow(values.count, tokenPrice);
   }, [tokenPrice, values.count]);
 
+  const onMemoChange = useCallback((_value: string) => {
+    if (isEmoji(_value)) return;
+    setValues(pre => ({ ...pre, memo: _value }));
+  }, []);
+
   return (
     <>
       {type !== RedPackageTypeEnum.P2P && (
@@ -243,7 +249,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           placeholder={RED_PACKAGE_DEFAULT_MEMO}
           maxLength={80}
           inputContainerStyle={styles.inputWrap}
-          onChangeText={v => setValues(pre => ({ ...pre, memo: v }))}
+          onChangeText={onMemoChange}
         />
       </FormItem>
       {/* TODO: change real data */}

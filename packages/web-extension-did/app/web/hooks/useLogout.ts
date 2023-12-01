@@ -29,6 +29,8 @@ import { resetTxFee } from '@portkey-wallet/store/store-ca/txFee/actions';
 import im from '@portkey-wallet/im';
 import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
 import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { unSetFCMToken } from 'utils/FCM';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -44,9 +46,11 @@ export default function useLogOut() {
       im.destroy();
       dispatch(resetIm(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
+      signalrFCM.exitWallet();
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
       } else {
+        unSetFCMToken();
         dispatch(resetWallet());
         dispatch(resetToken());
         dispatch(resetSettings());

@@ -17,7 +17,7 @@ class SignalrFCM extends BaseSignalr {
     super(props);
   }
 
-  public init = ({
+  public init = async ({
     deviceId,
     deviceInfo,
     getFCMTokenFunc,
@@ -29,6 +29,8 @@ class SignalrFCM extends BaseSignalr {
     this.deviceId = deviceId;
     this.deviceInfo = deviceInfo;
     this.getFCMTokenFunc = getFCMTokenFunc;
+
+    this.getFCMToken();
   };
 
   public setPortkeyToken = async (portkeyToken: string) => {
@@ -43,11 +45,12 @@ class SignalrFCM extends BaseSignalr {
     console.log('fcmToken', fcmToken);
     this.fcmToken = fcmToken;
     this.fcmRefreshTokenTime = Date.now();
+    return fcmToken;
   };
 
-  public reportAppStatus = async (status: AppStatusUnit) => {
-    console.log('reportAppStatus', { status, unReadCount: 99 });
-    return this.signalr?.invoke('reportAppStatus', { status: 0, unReadCount: 99 });
+  public reportAppStatus = async (status: AppStatusUnit, unReadCount: number) => {
+    console.log('reportAppStatus', { status, unReadCount });
+    return this.signalr?.invoke('reportAppStatus', { status, unReadCount });
   };
 
   // TODO: change ts
@@ -88,7 +91,7 @@ class SignalrFCM extends BaseSignalr {
   public doOpen = async ({ url, clientId }: { url: string; clientId?: string }): Promise<HubConnection> => {
     if (!this.portkeyToken) {
       await sleep(3000);
-      return this.doOpen({ url: `${url}/dataReporting`, clientId: clientId || this.deviceId || '' });
+      return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
     }
 
     const signalr = new HubConnectionBuilder()
@@ -102,11 +105,13 @@ class SignalrFCM extends BaseSignalr {
 
     await signalr.start();
     await signalr.invoke('Connect', clientId || this.deviceId || '');
-    await this.reportDeviceInfo();
 
     this.connectionId = signalr.connectionId ?? '';
     this.signalr = signalr;
     this.url = url;
+
+    await this.reportDeviceInfo();
+
     return signalr;
   };
 }

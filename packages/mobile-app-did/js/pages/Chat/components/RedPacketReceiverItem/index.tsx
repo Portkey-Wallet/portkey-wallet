@@ -17,10 +17,11 @@ interface IReceiverItemProps {
   item: RedPackageGrabInfoItem;
   symbol: string;
   decimals: string | number;
+  isLuckyKing: boolean;
 }
 
 const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
-  const { item, symbol, decimals } = props;
+  const { item, symbol, decimals, isLuckyKing } = props;
 
   return (
     <View style={itemStyle.wrap}>
@@ -47,7 +48,7 @@ const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
             {getEllipsisTokenShow(divDecimalsStr(item.amount, decimals), symbol)}
           </TextL>
           <View style={itemStyle.blank} />
-          {item.isLuckyKing && (
+          {(item.isLuckyKing || isLuckyKing) && (
             <View style={[GStyles.flexRow, GStyles.itemCenter]}>
               <Svg icon="luckiest" size={pTd(16)} />
               <TextM style={itemStyle.luckiest}>Luckiest Draw</TextM>

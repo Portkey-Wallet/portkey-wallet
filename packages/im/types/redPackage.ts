@@ -38,6 +38,7 @@ export type RedPackageDetail = {
   chainId: ChainId;
   symbol: string;
   decimal: string | number;
+  currentUserGrabbedAmount: string;
   grabbedAmount: string;
   isCurrentUserGrabbed: boolean;
   isRedPackageFullyClaimed: boolean;

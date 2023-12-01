@@ -25,6 +25,7 @@ import {
 import { useCurrentNetworkInfo } from '../network';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { generateRedPackageRawTransaction } from '@portkey-wallet/utils/chat';
+import useLockCallback from '../../useLockCallback';
 
 export interface ICreateRedPacketParams {
   id: string;
@@ -181,6 +182,8 @@ export const useSendRedPackage = () => {
   );
 };
 
+type NextRedPackageDetailParams = { id?: string; skipCount?: number; maxResultCount?: number };
+export type NextRedPackageDetailResult = { info: RedPackageDetail; list: RedPackageGrabInfoItem[] };
 export const useGetRedPackageDetail = (id?: string) => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
@@ -195,19 +198,12 @@ export const useGetRedPackageDetail = (id?: string) => {
   });
 
   // TODO: change to useLockCallback
-  const next = useCallback(
-    async ({
-      id: _id,
-      skipCount: _skipCount,
-      maxResultCount: _maxResultCount,
-    }: {
-      id?: string;
-      skipCount?: number;
-      maxResultCount?: number;
-    }) => {
+  const next: (params?: NextRedPackageDetailParams) => Promise<NextRedPackageDetailResult> = useLockCallback(
+    async (params?: NextRedPackageDetailParams) => {
       const { skipCount, maxResultCount } = pagerRef.current;
+      const { id: _id, skipCount: _skipCount, maxResultCount: _maxResultCount } = params || {};
 
-      const params = {
+      const fetchParams = {
         id: _id ?? id ?? '',
         skipCount: _skipCount ?? skipCount ?? 0,
         maxResultCount: _maxResultCount ?? maxResultCount ?? 20,
@@ -215,7 +211,7 @@ export const useGetRedPackageDetail = (id?: string) => {
 
       const {
         data: { items, ...detail },
-      } = await im.service.getRedPackageDetail(params);
+      } = await im.service.getRedPackageDetail(fetchParams);
 
       setInfo(detail);
 
@@ -223,14 +219,14 @@ export const useGetRedPackageDetail = (id?: string) => {
         setList(items);
         pagerRef.current = {
           skipCount: items.length,
-          maxResultCount: params.maxResultCount,
+          maxResultCount: fetchParams.maxResultCount,
           totalCount: detail.totalCount,
         };
       } else {
         setList(pre => [...pre, ...items]);
         pagerRef.current = {
-          skipCount: params.skipCount + items.length,
-          maxResultCount: params.maxResultCount,
+          skipCount: fetchParams.skipCount + items.length,
+          maxResultCount: fetchParams.maxResultCount,
           totalCount: detail.totalCount,
         };
       }
@@ -242,7 +238,7 @@ export const useGetRedPackageDetail = (id?: string) => {
     [id],
   );
   const init = useCallback(
-    async (params: { id: string }) => {
+    async (params?: { id: string }) => {
       return await next(params);
     },
     [next],

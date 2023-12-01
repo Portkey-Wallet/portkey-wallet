@@ -95,7 +95,7 @@ export default class ServiceWorkerInstantiate {
     chrome.gcm.onMessage.addListener((message) => {
       const { from, data = {} } = message;
       let _count = '';
-      if (from === '339329964702') {
+      if (from === process.env.FCM_PROJECT_ID) {
         _count = (data as any)['gcm.notification.notification_count'];
       }
       console.log(message, '===onFCMMessaging');

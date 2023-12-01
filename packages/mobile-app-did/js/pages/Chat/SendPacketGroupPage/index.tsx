@@ -30,7 +30,6 @@ export default function SendPacketGroupPage() {
   // TODO: should init
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
-
   const pin = usePin();
   const onPressBtn = useCallback(async (values: ValuesType) => {
     try {

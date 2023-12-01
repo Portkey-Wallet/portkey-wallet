@@ -10,7 +10,6 @@ import { useGetAccountTokenList, useGetAllTokenInfoList } from 'hooks/account';
 import { useEffectOnce } from '@portkey-wallet/hooks';
 import merge from 'lodash/merge';
 import { useAsync } from 'react-use';
-import { ViewResult } from '@portkey-wallet/contracts/types';
 import LottieLoading from 'components/LottieLoading';
 import GStyles from 'assets/theme/GStyles';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
@@ -33,7 +32,7 @@ import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 export type PaymentTokenInfo = {
   symbol: string;
-  decimals: number;
+  decimals: number | string;
 };
 
 export type PaymentOverlayProps = {
@@ -41,7 +40,7 @@ export type PaymentOverlayProps = {
   chainId: ChainId;
   amount: string;
   title: string;
-  calculateTransactionFee: () => Promise<ViewResult>;
+  calculateTransactionFee: () => Promise<number>;
   onConfirm: (value: unknown) => void;
 };
 
@@ -100,11 +99,9 @@ const PaymentModal = ({
   });
 
   const fee = useAsync(async () => {
-    const req = await calculateTransactionFee();
-    if (req.error) throw req.error;
-    if (!req.data.TransactionFee || !req.data.Success) throw new Error('TransactionFee calculate fail');
-    return req.data.TransactionFee?.[defaultToken.symbol] || '0';
+    return calculateTransactionFee();
   }, [calculateTransactionFee]);
+  console.log(fee, '=====fee');
 
   const feeComponent = useMemo(() => {
     if (fee?.error) return;

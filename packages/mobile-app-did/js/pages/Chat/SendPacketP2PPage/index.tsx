@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -8,36 +8,28 @@ import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPack
 import { TextM } from 'components/CommonText';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
-import { usePin } from 'hooks/store';
-import { getManagerAccount } from 'utils/redux';
-import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useCalculateRedPackageFee } from 'hooks/useCalculateRedPackageFee';
 
 const SendPacketP2PPage = () => {
-  const pin = usePin();
-  const wallet = useCurrentWalletInfo();
-  // const chainInfo = useCurrentChain(values.chainId);
-  const chainInfo = useCurrentChain();
-
-  const onPressBtn = useCallback(async (values: ValuesType) => {
-    try {
-      const req = await PaymentOverlay.showRedPacket({
-        tokenInfo: {
-          symbol: values.symbol,
-          decimals: Number(values.decimals),
-        },
-        amount: values.count,
-        chainId: values.chainId,
-        calculateTransactionFee: async () => {
-          return {} as any;
-        },
-      });
-      console.log(req, '====req');
-    } catch (error) {
-      console.log(error, '====error');
-    }
-  }, []);
+  const calculateRedPackageFee = useCalculateRedPackageFee();
+  const onPressBtn = useCallback(
+    async (values: ValuesType) => {
+      try {
+        await PaymentOverlay.showRedPacket({
+          tokenInfo: {
+            symbol: values.symbol,
+            decimals: values.decimals,
+          },
+          amount: values.count,
+          chainId: values.chainId,
+          calculateTransactionFee: () => calculateRedPackageFee(values),
+        });
+      } catch (error) {
+        console.log(error, '====error');
+      }
+    },
+    [calculateRedPackageFee],
+  );
 
   return (
     <PageContainer

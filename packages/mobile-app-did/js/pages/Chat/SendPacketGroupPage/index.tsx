@@ -18,6 +18,9 @@ import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useGetCAContract } from 'hooks/contract';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
+import { sleep } from '@portkey-wallet/utils';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
 
 type TabItemType = {
   name: string;
@@ -37,10 +40,18 @@ export default function SendPacketGroupPage() {
 
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
+      Loading.show();
       try {
         const isSafe = await securitySafeCheckAndToast(values.chainId);
         if (!isSafe) return;
+      } catch (error) {
+        CommonToast.failError(error);
+        return;
+      } finally {
+        Loading.hide();
+      }
 
+      try {
         await PaymentOverlay.showRedPacket({
           tokenInfo: {
             symbol: values.symbol,

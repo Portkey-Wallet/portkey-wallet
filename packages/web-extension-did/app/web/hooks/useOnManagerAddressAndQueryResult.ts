@@ -18,7 +18,6 @@ import { message } from 'antd';
 import ModalTip from 'pages/components/ModalTip';
 import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useTranslation } from 'react-i18next';
-import { initFCMSignalROpen } from 'utils/loggedInitAction';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -166,7 +165,6 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         ModalTip({
           content: 'Requested successfully',
         });
-        initFCMSignalROpen();
       } catch (error: any) {
         console.log(error, 'onCreate==error');
         const walletError = isWalletError(error);

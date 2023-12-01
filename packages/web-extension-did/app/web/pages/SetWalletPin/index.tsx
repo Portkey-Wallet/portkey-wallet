@@ -26,7 +26,6 @@ import {
 } from '@portkey/did-ui-react';
 import type { AccountType, GuardiansApproved } from '@portkey/services';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
-import { initFCMSignalROpen } from 'utils/loggedInitAction';
 
 export default function SetWalletPin() {
   const { t } = useTranslation();
@@ -92,7 +91,6 @@ export default function SetWalletPin() {
       dispatch(setPasswordSeed(pin));
       scanWallet?.address && sendScanLoginSuccess({ targetClientId: scanWallet.address });
       navigate(`/success-page/${state}`);
-      initFCMSignalROpen();
     },
     [dispatch, navigate, scanCaWalletInfo, scanWalletInfo, state],
   );
@@ -120,7 +118,6 @@ export default function SetWalletPin() {
           }),
         );
         navigate(`/success-page/${state}`);
-        initFCMSignalROpen();
         setLoading(false);
 
         ModalTip({

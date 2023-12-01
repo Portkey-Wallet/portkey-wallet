@@ -17,7 +17,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { useDebounceCallback } from '@portkey-wallet/hooks';
 import Loading from 'components/Loading';
 import navigationService from 'utils/navigationService';
-import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
+import { sleep } from '@portkey-wallet/utils';
 import CommonToast from 'components/CommonToast';
 import { FontStyles } from 'assets/theme/styles';
 import GStyles from 'assets/theme/GStyles';
@@ -77,7 +77,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
       }
     } catch (err) {
       setBtnDisable(true);
-      CommonToast.fail(handleErrorMessage(err));
+      CommonToast.failError(err);
     } finally {
       Loading.hide();
     }
@@ -118,7 +118,7 @@ const CustomToken: React.FC<CustomTokenProps> = () => {
         await sleep(500);
         navigationService.navigate('ManageTokenList');
       } catch (err: any) {
-        CommonToast.fail(handleErrorMessage(err));
+        CommonToast.failError(err);
         console.log('add custom token error', err);
       } finally {
         Loading.hide();

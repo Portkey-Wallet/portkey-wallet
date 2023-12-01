@@ -20,7 +20,6 @@ import ActionSheet from 'components/ActionSheet';
 import Loading from 'components/Loading';
 import { useDeleteContact } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isValidRemark } from '@portkey-wallet/utils/reg';
-import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useEditIMContact } from '@portkey-wallet/hooks/hooks-ca/im';
 import ProfileLoginAccountsSection from '../components/ProfileLoginAccountsSection';
 
@@ -77,7 +76,7 @@ const ChatContactProfileEdit: React.FC = () => {
               navigationService.goBack();
             } catch (e: any) {
               console.log('onDelete:error', e);
-              CommonToast.fail(handleErrorMessage(e));
+              CommonToast.failError(e);
             }
             Loading.hide();
           },

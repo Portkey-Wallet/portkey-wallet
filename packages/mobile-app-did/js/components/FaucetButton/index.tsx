@@ -1,9 +1,7 @@
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useCallback, useMemo, useRef } from 'react';
 import Svg from 'components/Svg';
-import { dashBoardBtnStyle, innerPageStyles } from './style';
-import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 
-import { View, TouchableOpacity } from 'react-native';
+import { View, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
@@ -14,14 +12,16 @@ import { TOKEN_CLAIM_CONTRACT_CHAIN_ID } from '@portkey-wallet/constants/constan
 import { useGetCurrentCAContract } from 'hooks/contract';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import CommonToast from 'components/CommonToast';
+import { commonButtonStyle } from 'components/SendButton/style';
+import Touchable from 'components/Touchable';
+
 interface SendButtonType {
   themeType?: 'dashBoard' | 'innerPage';
-  sentToken?: TokenItemShowType;
+  wrapStyle?: StyleProp<ViewProps>;
 }
 
 const FaucetButton = (props: SendButtonType) => {
-  const { themeType = 'dashBoard' } = props;
-  const styles = themeType === 'dashBoard' ? dashBoardBtnStyle : innerPageStyles;
+  const { themeType = 'dashBoard', wrapStyle = {} } = props;
   const isMainnet = useIsMainnet();
   const { t } = useLanguage();
 
@@ -29,6 +29,14 @@ const FaucetButton = (props: SendButtonType) => {
   const currentNetworkInfo = useCurrentNetworkInfo();
   const getCurrentCAContract = useGetCurrentCAContract(TOKEN_CLAIM_CONTRACT_CHAIN_ID);
   const isLoading = useRef<boolean>(false);
+
+  const buttonTitleStyle = useMemo(
+    () =>
+      themeType === 'dashBoard'
+        ? commonButtonStyle.dashBoardTitleColorStyle
+        : commonButtonStyle.innerPageTitleColorStyle,
+    [themeType],
+  );
 
   const claimToken = useCallback(async () => {
     if (!currentWallet.address || !currentWallet.caHash || !currentNetworkInfo.tokenClaimContractAddress) return;
@@ -44,7 +52,7 @@ const FaucetButton = (props: SendButtonType) => {
         methodName: 'ClaimToken',
         args: {
           symbol: 'ELF',
-          amount: timesDecimals(100, 8).toString(),
+          amount: timesDecimals(100, 8).toFixed(0),
         },
       });
       if (rst.error) {
@@ -59,16 +67,16 @@ const FaucetButton = (props: SendButtonType) => {
   }, [currentNetworkInfo.tokenClaimContractAddress, currentWallet.address, currentWallet.caHash, getCurrentCAContract]);
 
   return (
-    <View style={styles.buttonWrap}>
-      <TouchableOpacity
-        style={[styles.iconWrapStyle, GStyles.alignCenter]}
+    <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
+      <Touchable
+        style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={async () => {
           if (isMainnet) return;
           claimToken();
         }}>
         <Svg icon={themeType === 'dashBoard' ? 'faucet' : 'faucet1'} size={pTd(46)} />
-      </TouchableOpacity>
-      <TextM style={styles.titleStyle}>{t('Faucet')}</TextM>
+      </Touchable>
+      <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Faucet')}</TextM>
     </View>
   );
 };

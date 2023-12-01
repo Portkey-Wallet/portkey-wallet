@@ -5,9 +5,9 @@ import React, { memo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { IRecordsItemType } from '@portkey-wallet/types/types-ca/discover';
-import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import DiscoverWebsiteImage from '../DiscoverWebsiteImage';
 import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 type RecordListItemType = {
   item: IRecordsItemType;
@@ -16,13 +16,17 @@ type RecordListItemType = {
 
 const SearchRecordItem: React.FC<RecordListItemType> = props => {
   const { item, onPress } = props;
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   return (
     <TouchableOpacity style={itemStyle.wrap} onPress={() => onPress?.()}>
-      <DiscoverWebsiteImage imageUrl={getFaviconUrl(item?.url || '')} />
+      <DiscoverWebsiteImage imageUrl={getCmsWebsiteInfoImageUrl(item?.url || '')} />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>
-          <TextWithProtocolIcon title={item?.name || ''} url={item.url || ''} />
+          <TextWithProtocolIcon
+            title={getCmsWebsiteInfoName(item?.url || '') || item.name || ''}
+            url={item.url || ''}
+          />
           <TextS numberOfLines={1} style={[FontStyles.font3, itemStyle.gameInfo]}>
             {item?.url || ''}
           </TextS>

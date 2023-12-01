@@ -8,10 +8,18 @@ import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPack
 import { TextM } from 'components/CommonText';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
-import { useCalculateRedPackageFee } from 'hooks/useCalculateRedPackageFee';
+import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
+import { useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGetCAContract } from 'hooks/contract';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { useCurrentChannelId } from '../context/hooks';
 
-const SendPacketP2PPage = () => {
-  const calculateRedPackageFee = useCalculateRedPackageFee();
+export default function SendPacketP2PPage() {
+  const currentChannelId = useCurrentChannelId();
+  const calculateRedPacketFee = useCalculateRedPacketFee();
+  const sendRedPackage = useSendRedPackage();
+  const getCAContract = useGetCAContract();
+
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
       try {
@@ -22,13 +30,26 @@ const SendPacketP2PPage = () => {
           },
           amount: values.count,
           chainId: values.chainId,
-          calculateTransactionFee: () => calculateRedPackageFee(values),
+          calculateTransactionFee: () => calculateRedPacketFee(values),
+        });
+
+        const caContract = await getCAContract(values.chainId);
+        await sendRedPackage({
+          chainId: values.chainId,
+          symbol: values.symbol,
+          totalAmount: timesDecimals(values.count, values.decimals).toFixed(),
+          decimal: values.decimals,
+          memo: values.memo,
+          caContract: caContract,
+          type: RedPackageTypeEnum.P2P,
+          count: 1,
+          channelId: currentChannelId || '',
         });
       } catch (error) {
         console.log(error, '====error');
       }
     },
-    [calculateRedPackageFee],
+    [calculateRedPacketFee, currentChannelId, getCAContract, sendRedPackage],
   );
 
   return (
@@ -45,9 +66,7 @@ const SendPacketP2PPage = () => {
       </TextM>
     </PageContainer>
   );
-};
-
-export default SendPacketP2PPage;
+}
 
 const styles = StyleSheet.create({
   container: {

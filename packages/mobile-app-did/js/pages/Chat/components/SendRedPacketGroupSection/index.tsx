@@ -22,10 +22,11 @@ import { ErrorType } from 'types/common';
 import { INIT_NONE_ERROR } from 'constants/common';
 import { useGetRedPackageTokenConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { convertAmountUSDShow, timesDecimals } from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
 export type ValuesType = {
   packetNum?: string;
@@ -46,6 +47,7 @@ export type SendRedPacketGroupSectionPropsType = {
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
   const { type, groupMemberCount, onPressButton } = props;
   const getRedPackageTokenConfig = useGetRedPackageTokenConfig();
+  const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
   const [values, setValues] = useState<ValuesType>({
@@ -56,6 +58,11 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     memo: '',
     chainId: MAIN_CHAIN_ID,
   });
+
+  const tokenPrice = useMemo<string | number | undefined>(
+    () => tokenPriceObject?.[values.symbol],
+    [tokenPriceObject, values.symbol],
+  );
 
   const symbolImages = useSymbolImages();
   const onAmountChange = useCallback(
@@ -143,6 +150,12 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       ...values,
       packetNum: values.packetNum || '1',
       memo: values.memo.trim() || RED_PACKAGE_DEFAULT_MEMO,
+      count:
+        type === RedPackageTypeEnum.FIXED
+          ? ZERO.plus(values.count)
+              .times(values.packetNum || 0)
+              .toFixed()
+          : values.count,
     });
   }, [getRedPackageTokenConfig, onPressButton, type, values]);
 
@@ -157,6 +170,11 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       .toFixed();
   }, [type, values.count, values.packetNum]);
 
+  const tokenPriceStr = useMemo(() => {
+    if (!tokenPrice) return '';
+    return convertAmountUSDShow(values.count, tokenPrice);
+  }, [tokenPrice, values.count]);
+
   return (
     <>
       {type !== RedPackageTypeEnum.P2P && (
@@ -167,7 +185,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
             value={values.packetNum}
             onChangeText={onPacketNumChange}
             inputContainerStyle={styles.inputWrap}
-            errorMessage={groupMemberCount ? `16 group members` : ''}
+            errorMessage={groupMemberCount ? `${groupMemberCount} group members` : ''}
             errorStyle={FontStyles.font7}
             containerStyle={styles.packetNumWrap}
           />
@@ -214,7 +232,8 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           autoCorrect={false}
           keyboardType="decimal-pad"
           onChangeText={onAmountChange}
-          errorMessage={countError.isError ? countError.errorMsg : ''}
+          errorStyle={!countError.isError && FontStyles.font7}
+          errorMessage={countError.isError ? countError.errorMsg : tokenPriceStr}
         />
       </FormItem>
       <FormItem title="Wished">

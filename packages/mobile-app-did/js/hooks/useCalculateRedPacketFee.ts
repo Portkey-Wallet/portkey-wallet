@@ -13,7 +13,7 @@ type CalculateRedPackageFeeParams = {
   symbol: string;
 };
 
-export function useCalculateRedPackageFee() {
+export function useCalculateRedPacketFee() {
   const defaultToken = useDefaultToken();
   return useCallback(
     async (params: CalculateRedPackageFeeParams) => {

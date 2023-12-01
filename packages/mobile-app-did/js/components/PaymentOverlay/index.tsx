@@ -29,6 +29,7 @@ import { addressFormat } from '@portkey-wallet/utils';
 import { useAppBuyButtonShow } from 'hooks/cms';
 import RedPacketAmountShow from 'pages/Chat/components/RedPacketAmountShow';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
+import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -59,6 +60,8 @@ const PaymentModal = ({
   const allTokenInfoList = useGetAllTokenInfoList();
 
   const defaultToken = useDefaultToken();
+
+  const defaultTokenPrice = useDefaultTokenPrice();
   const { currentNetwork } = useWallet();
 
   const currentCaInfo = useCurrentCaInfo();
@@ -121,11 +124,11 @@ const PaymentModal = ({
           </View>
         </View>
         <View style={GStyles.alignEnd}>
-          <TextS>{convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), currentTokenInfo?.price)}</TextS>
+          <TextS>{convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}</TextS>
         </View>
       </View>
     );
-  }, [fee, defaultToken, currentTokenInfo]);
+  }, [defaultToken.decimals, defaultToken.symbol, defaultTokenPrice, fee?.error, fee?.loading, fee.value]);
 
   const getButtonComponent = useMemo(() => {
     if (!fee.error) return;
@@ -178,7 +181,10 @@ const PaymentModal = ({
           amountShow={amount}
           symbol={tokenInfo.symbol}
         />
-        <TextL style={GStyles.marginTop(pTd(8))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextL>
+        {!!currentTokenInfo?.price && (
+          <TextL style={GStyles.marginTop(pTd(8))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextL>
+        )}
+
         <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
           <TextS style={FontStyles.font3}>Method</TextS>
           <View style={[styles.balanceItemRow, (crossSufficientItem || fee.error) && styles.opacity]}>
@@ -206,12 +212,14 @@ const PaymentModal = ({
                   )}
                 </TextS>
                 <TextS>{` ${currentTokenInfo?.symbol}`}</TextS>
-                <TextS>
-                  {`  ${convertAmountUSDShow(
-                    divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
-                    currentTokenInfo?.price,
-                  )}`}
-                </TextS>
+                {!!currentTokenInfo?.price && (
+                  <TextS>
+                    {`  ${convertAmountUSDShow(
+                      divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
+                      currentTokenInfo?.price,
+                    )}`}
+                  </TextS>
+                )}
               </Text>
               {!!fee.error && <TextS style={GStyles.marginTop(pTd(4))}>Insufficient balance</TextS>}
               {!!(crossSufficientItem && fee.error) && (

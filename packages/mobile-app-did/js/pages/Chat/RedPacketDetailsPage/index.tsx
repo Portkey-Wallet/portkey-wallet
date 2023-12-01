@@ -148,8 +148,9 @@ export const RedPacketDetails = () => {
   ]);
 
   const nextList = useCallback(() => {
+    if (redPacketData?.isRedPackageFullyClaimed) return;
     next();
-  }, [next]);
+  }, [next, redPacketData?.isRedPackageFullyClaimed]);
 
   return (
     <PageContainer
@@ -164,7 +165,7 @@ export const RedPacketDetails = () => {
         </Touchable>
       </ImageBackground>
       <View style={GStyles.flex1}>
-        {!isMyPacket && redPacketData?.isRedPackageFullyClaimed ? (
+        {isP2P && !isMyPacket && redPacketData?.isRedPackageFullyClaimed ? (
           headerDom
         ) : (
           <FlatList

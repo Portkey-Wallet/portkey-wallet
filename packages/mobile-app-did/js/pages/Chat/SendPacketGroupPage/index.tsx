@@ -17,6 +17,7 @@ import { ZERO } from '@portkey-wallet/constants/misc';
 import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useGetCAContract } from 'hooks/contract';
+import { useSecuritySafeCheckAndToast } from 'hooks/security';
 
 type TabItemType = {
   name: string;
@@ -32,10 +33,14 @@ export default function SendPacketGroupPage() {
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
   const sendRedPackage = useSendRedPackage();
   const getCAContract = useGetCAContract();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
       try {
+        const isSafe = await securitySafeCheckAndToast(values.chainId);
+        if (!isSafe) return;
+
         await PaymentOverlay.showRedPacket({
           tokenInfo: {
             symbol: values.symbol,

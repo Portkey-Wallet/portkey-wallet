@@ -1,4 +1,3 @@
-import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import CustomSvg from 'components/CustomSvg';
 import { AddressItem } from '@portkey-wallet/types/types-ca/contact';
@@ -9,6 +8,7 @@ import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkTextWithAllChain } from '@portkey-wallet/utils/activity';
 import { addressFormat } from '@portkey-wallet/utils';
 import { ChainType } from '@portkey/provider-types';
+import singleMessage from 'utils/singleMessage';
 
 export default function ContactAddressList({ list }: { list: AddressItem[] }) {
   const isTestNet = useIsTestnet();
@@ -17,7 +17,7 @@ export default function ContactAddressList({ list }: { list: AddressItem[] }) {
   const handleCopy = useCallback(
     (v: string) => {
       setCopied(v);
-      message.success(t('Copy Success'));
+      singleMessage.success(t('Copy Success'));
     },
     [setCopied, t],
   );

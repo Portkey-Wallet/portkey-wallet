@@ -8,6 +8,7 @@ import { IBookmarkItem } from '@portkey-wallet/store/store-ca/discover/type';
 import LoadingMore from 'components/LoadingMore/LoadingMore';
 import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import CircleLoading from 'components/CircleLoading';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 import './index.less';
 
 export interface IBookmarkListProps {
@@ -20,6 +21,7 @@ export default function BookmarkList({ onClick, onClose }: IBookmarkListProps) {
   const [bookmarkList, setBookmarkList] = useState<IBookmarkItem[]>([]);
   const [isFirstLoading, setIsFirstLoading] = useState(true);
   const [more, setMore] = useState(false);
+  const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
   const getData = useCallback(
     async (skip?: number) => {
@@ -56,10 +58,15 @@ export default function BookmarkList({ onClick, onClose }: IBookmarkListProps) {
         key: item?.id,
         element: (
           <div className="content flex">
-            <ImageDisplay defaultHeight={32} className="icon" src={getFaviconUrl(item?.url)} backupSrc="DappDefault" />
+            <ImageDisplay
+              defaultHeight={32}
+              className="icon"
+              src={getCmsWebsiteInfoImageUrl(item?.url) || getFaviconUrl(item?.url)}
+              backupSrc="DappDefault"
+            />
             <div className="desc flex-column">
               <div className="text name">
-                <span className="dapp-name">{item?.name}</span>
+                <span className="dapp-name">{getCmsWebsiteInfoName(item?.url) || item?.name}</span>
                 <CustomSvg type={isSafeOrigin(item?.url) ? 'DappLock' : 'DappWarn'} />
               </div>
               <div className="text origin">{item?.url}</div>
@@ -68,7 +75,7 @@ export default function BookmarkList({ onClick, onClose }: IBookmarkListProps) {
         ),
         click: () => onClick(item?.url),
       })),
-    [bookmarkList, onClick],
+    [bookmarkList, getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, onClick],
   );
 
   return (

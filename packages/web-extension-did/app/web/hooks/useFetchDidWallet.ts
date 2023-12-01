@@ -3,12 +3,12 @@ import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useFetchWalletCAAddress } from '@portkey-wallet/hooks/hooks-ca/wallet-result';
 import { resetWallet, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
 import { VerificationType } from '@portkey-wallet/types/verifier';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
 
 export default function useFetchDidWallet(isExistWallet = false) {
   const fetchWalletResult = useFetchWalletCAAddress();
@@ -83,7 +83,7 @@ export default function useFetchDidWallet(isExistWallet = false) {
           const path = VerificationType.register === verificationType ? 'register' : 'login';
           navigate(`/success-page/${path}`);
         } catch (error: any) {
-          throw contractErrorHandler(error) || error;
+          throw handleErrorMessage(error);
         }
       }
     },

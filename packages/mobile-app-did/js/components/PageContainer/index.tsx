@@ -7,7 +7,7 @@ import { TouchableWithoutFeedback, View, Keyboard, StatusBar } from 'react-nativ
 import { defaultColors } from 'assets/theme';
 import { ViewStyleType } from 'types/styles';
 
-const safeAreaColorMap = {
+export const SafeAreaColorMap = {
   white: defaultColors.bg1,
   blue: defaultColors.bg5,
   red: defaultColors.bg17,
@@ -15,7 +15,7 @@ const safeAreaColorMap = {
   transparent: 'transparent',
 };
 
-export type SafeAreaColorMapKeyUnit = keyof typeof safeAreaColorMap;
+export type SafeAreaColorMapKeyUnit = keyof typeof SafeAreaColorMap;
 
 export default function PageContainer({
   safeAreaColor = ['white', 'white'],
@@ -45,11 +45,11 @@ export default function PageContainer({
     <SafeAreaBox
       {...safeAreaProps}
       edges={['top', 'right', 'left']}
-      style={[{ backgroundColor: safeAreaColorMap[safeAreaColor[0]] }, safeAreaProps?.[0]?.style]}>
+      style={[{ backgroundColor: SafeAreaColorMap[safeAreaColor[0]] }, safeAreaProps?.[0]?.style]}>
       <SafeAreaBox
         edges={['bottom']}
         pageSafeBottomPadding={pageSafeBottomPadding}
-        style={[{ backgroundColor: safeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
+        style={[{ backgroundColor: SafeAreaColorMap[safeAreaColor[1]] }, safeAreaProps?.[1]?.style]}>
         {!hideHeader && <CustomHeader themeType={themeType} {...props} />}
         {themeType === 'white' && <StatusBar barStyle="dark-content" />}
         {scrollViewProps?.disabled ? (

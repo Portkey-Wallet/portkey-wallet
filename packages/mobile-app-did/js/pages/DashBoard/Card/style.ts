@@ -3,6 +3,7 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import fonts from 'assets/theme/fonts';
+import { ScreenWidth } from '@rneui/base';
 
 const { bg5, font2 } = defaultColors;
 
@@ -11,7 +12,7 @@ export const styles = StyleSheet.create({
     backgroundColor: bg5,
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   refreshWrap: {
@@ -42,12 +43,13 @@ export const styles = StyleSheet.create({
   },
   buttonGroupWrap: {
     marginTop: pTd(24),
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: ScreenWidth,
+    paddingHorizontal: pTd(16),
   },
   spacerStyle: {
     width: pTd(32),
+  },
+  buttonWrapStyle1: {
+    marginHorizontal: pTd(16),
   },
 });

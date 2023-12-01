@@ -2,6 +2,7 @@ import { ChainId, ChainType, NetworkType } from '@portkey-wallet/types';
 import { isAddress as web3IsAddress } from 'web3-utils';
 import { isAelfAddress, isDIDAelfAddress } from './aelf';
 import * as uuid from 'uuid';
+import { textProcessor } from './textProcessor';
 
 /**
  * format address like "aaa...bbb" to "ELF_aaa...bbb_AELF"
@@ -150,10 +151,9 @@ export const handleError = (error: any) => {
 
 export const handleErrorMessage = (error: any, errorText?: string) => {
   error = handleError(error);
-  if (!error) return errorText;
-  if (typeof error === 'string') return error;
-  if (typeof error.message === 'string') return error.message;
-  return errorText;
+  if (typeof error === 'string') errorText = error;
+  if (typeof error?.message === 'string') errorText = error.message;
+  return textProcessor.format(errorText || '') || '';
 };
 
 export const chainShowText = (chain: ChainId) => (chain === 'AELF' ? 'MainChain' : 'SideChain');

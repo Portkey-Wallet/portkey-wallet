@@ -1,6 +1,7 @@
 import ChatList from './ChatList';
 import TextMessage from './TextMessage';
 import ImageMessage from './ImageMessage';
+import RedPacketMessage from './RedPacketMessage';
 import Avatar from './Avatar';
 import PopoverMenuList from './PopoverMenuList';
 import SystemMessage from './SystemMessage';
@@ -15,6 +16,7 @@ export {
   ChatList,
   TextMessage,
   ImageMessage,
+  RedPacketMessage,
   Avatar,
   PopoverMenuList,
   SystemMessage,

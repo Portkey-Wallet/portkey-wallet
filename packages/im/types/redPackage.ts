@@ -18,7 +18,7 @@ export enum RedPackageStatusEnum {
 }
 
 export const redPackagesStatusShowMap = {
-  [RedPackageStatusEnum.UNOPENED]: 'Red Packet',
+  [RedPackageStatusEnum.UNOPENED]: 'Crypto Box',
   [RedPackageStatusEnum.OPENED]: 'Opened',
   [RedPackageStatusEnum.NONE_LEFT]: 'None left',
   [RedPackageStatusEnum.EXPIRED]: 'Expired',

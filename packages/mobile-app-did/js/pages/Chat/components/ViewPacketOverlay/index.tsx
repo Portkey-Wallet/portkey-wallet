@@ -48,8 +48,15 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
 
   const isShowViewDetailButton = useMemo<boolean>(() => {
     if (isMyRedPacket) return true;
-    return !redPacketData?.isRedPackageExpired && !redPacketData?.isRedPackageFullyClaimed;
-  }, [isMyRedPacket, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);
+    if (redPacketData?.isRedPackageExpired) return false;
+    if (!redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isCurrentUserGrabbed) return false;
+    return true;
+  }, [
+    isMyRedPacket,
+    redPacketData?.isCurrentUserGrabbed,
+    redPacketData?.isRedPackageExpired,
+    redPacketData?.isRedPackageFullyClaimed,
+  ]);
 
   const animateRef = useRef<any>();
   const openBtnRef = useRef<OpenPacketButtonInstance>(null);

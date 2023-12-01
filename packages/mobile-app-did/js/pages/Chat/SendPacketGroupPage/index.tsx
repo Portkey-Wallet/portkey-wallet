@@ -10,15 +10,17 @@ import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
-import { useCurrentChain, useGetChainInfo } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { usePin } from 'hooks/store';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { getManagerAccount } from 'utils/redux';
-import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import PaymentOverlay from 'components/PaymentOverlay';
-import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useCurrentChannelId } from '../context/hooks';
-import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGroupChannelInfo, useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
+import { timesDecimals } from '@portkey-wallet/utils/converter';
+import { useGetCAContract } from 'hooks/contract';
+import { useSecuritySafeCheckAndToast } from 'hooks/security';
+import { sleep } from '@portkey-wallet/utils';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
 
 type TabItemType = {
   name: string;
@@ -29,28 +31,55 @@ type TabItemType = {
 export default function SendPacketGroupPage() {
   // TODO: should init
   const currentChannelId = useCurrentChannelId();
+  const calculateRedPacketFee = useCalculateRedPacketFee();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
-  const pin = usePin();
-  const onPressBtn = useCallback(async (values: ValuesType) => {
-    try {
-      const req = await PaymentOverlay.showRedPacket({
-        tokenInfo: {
-          symbol: 'ELF',
-          decimals: 8,
-        },
-        amount: timesDecimals(values.count, values.decimals).toFixed(),
-        chainId: 'AELF',
-        calculateTransactionFee: async () => {
-          return {} as any;
-        },
-      });
-      console.log(req, '====req');
-    } catch (error) {
-      console.log(error, '====error');
-    }
-  }, []);
-
   const [selectTab, setSelectTab] = useState<GroupRedPacketTabEnum>(GroupRedPacketTabEnum.Random);
+  const sendRedPackage = useSendRedPackage();
+  const getCAContract = useGetCAContract();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
+
+  const onPressBtn = useCallback(
+    async (values: ValuesType) => {
+      Loading.show();
+      try {
+        const isSafe = await securitySafeCheckAndToast(values.chainId);
+        if (!isSafe) return;
+      } catch (error) {
+        CommonToast.failError(error);
+        return;
+      } finally {
+        Loading.hide();
+      }
+
+      try {
+        await PaymentOverlay.showRedPacket({
+          tokenInfo: {
+            symbol: values.symbol,
+            decimals: values.decimals,
+          },
+          amount: values.count,
+          chainId: values.chainId,
+          calculateTransactionFee: () => calculateRedPacketFee(values),
+        });
+
+        const caContract = await getCAContract(values.chainId);
+        await sendRedPackage({
+          chainId: values.chainId,
+          symbol: values.symbol,
+          totalAmount: timesDecimals(values.count, values.decimals).toFixed(),
+          decimal: values.decimals,
+          memo: values.memo,
+          caContract: caContract,
+          type: selectTab === GroupRedPacketTabEnum.Fixed ? RedPackageTypeEnum.FIXED : RedPackageTypeEnum.RANDOM,
+          count: Number(values.packetNum || 1),
+          channelId: currentChannelId || '',
+        });
+      } catch (error) {
+        console.log(error, '====error');
+      }
+    },
+    [calculateRedPacketFee, currentChannelId, getCAContract, securitySafeCheckAndToast, selectTab, sendRedPackage],
+  );
 
   const tabList: TabItemType[] = useMemo(
     () => [

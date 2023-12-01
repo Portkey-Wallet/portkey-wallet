@@ -30,6 +30,13 @@ function RedPacket(props: MessageProps<ChatMessage>) {
   const { initInfo } = useGetRedPackageDetail();
   const isMyPacket = useIsMyRedPacket(senderId);
 
+  const isOpened = useMemo(
+    () =>
+      [RedPackageStatusEnum.OPENED, RedPackageStatusEnum.NONE_LEFT].includes(
+        currentMessage?.redPackage?.viewStatus || RedPackageStatusEnum.UNOPENED,
+      ),
+    [currentMessage?.redPackage?.viewStatus],
+  );
   const isFresh = useMemo(
     () => currentMessage?.redPackage?.viewStatus === RedPackageStatusEnum.UNOPENED,
     [currentMessage?.redPackage?.viewStatus],
@@ -80,7 +87,11 @@ function RedPacket(props: MessageProps<ChatMessage>) {
       style={[styles.wrap, !isFresh && styles.opacityWrap]}
       onPress={onPress}>
       <View style={[GStyles.flexRow, GStyles.itemCenter]}>
-        <Svg icon={isFresh ? 'red-packet' : 'red-packet-opened'} size={pTd(40)} />
+        <Svg
+          iconStyle={!isFresh && styles.notFreshSvgStyle}
+          icon={isOpened ? 'red-packet-opened' : 'red-packet'}
+          size={pTd(40)}
+        />
         <View style={styles.rightSection}>
           <TextXL numberOfLines={1} style={styles.memo}>
             {redPacketMemo}
@@ -122,5 +133,8 @@ const styles = StyleSheet.create({
   },
   state: {
     color: defaultColors.font2,
+  },
+  notFreshSvgStyle: {
+    opacity: 0.6,
   },
 });

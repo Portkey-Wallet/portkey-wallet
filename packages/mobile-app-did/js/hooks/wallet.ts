@@ -13,6 +13,7 @@ import { randomId } from '@portkey-wallet/utils';
 import { useGetCAContract } from './contract';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 
 export const useCheckManagerSyncState = () => {
   const getHolderInfoByViewContract = useGetHolderInfoByViewContract();
@@ -52,59 +53,55 @@ type CheckAllowanceAndApproveParams = {
   symbol: string;
   bigAmount: BigNumber;
   decimals: number;
+  caContract: ContractBasic;
 };
 export const useCheckAllowanceAndApprove = () => {
-  const getCAContract = useGetCAContract();
-  return useCallback(
-    async (params: CheckAllowanceAndApproveParams) => {
-      const { chainId, spender, symbol, bigAmount, decimals } = params;
-      const caInfo = getCurrentCaInfo(chainId);
+  return useCallback(async (params: CheckAllowanceAndApproveParams) => {
+    const { chainId, spender, symbol, bigAmount, decimals, caContract } = params;
+    const caInfo = getCurrentCaInfo(chainId);
 
-      const tokenContract = await getViewTokenContractByChainId(chainId);
+    const tokenContract = await getViewTokenContractByChainId(chainId);
 
-      const allowance = await getAllowance(tokenContract, {
-        owner: caInfo?.caAddress || '',
-        spender,
-        symbol,
-      });
-      const eventName = randomId();
-      if (bigAmount.gt(allowance)) {
-        const info = await requestManagerApprove(
-          // TODO: origin, name;
-          { origin: '', name: '' },
-          {
-            eventName,
-            approveInfo: {
-              symbol,
-              amount: bigAmount.toString(),
-              spender,
-              decimals,
-              targetChainId: chainId,
-            },
-          },
-        );
-        if (!info) throw new Error('User canceled');
-        const caContract = await getCAContract(chainId);
-        const { guardiansApproved, approveInfo } = info;
-        const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
-          caHash: caInfo?.caHash,
-          spender: approveInfo.spender,
-          symbol: approveInfo.symbol,
-          amount: approveInfo.amount,
-          guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
-        });
-        if (approveReq?.error) throw approveReq?.error;
-        if (approveReq?.data) {
-          const confirmationAllowance = await getAllowance(tokenContract, {
-            owner: caInfo?.caAddress || '',
-            spender,
+    const allowance = await getAllowance(tokenContract, {
+      owner: caInfo?.caAddress || '',
+      spender,
+      symbol,
+    });
+    const eventName = randomId();
+    if (bigAmount.gt(allowance)) {
+      const info = await requestManagerApprove(
+        // TODO: origin, name;
+        { origin: '', name: '' },
+        {
+          eventName,
+          approveInfo: {
             symbol,
-          });
-          if (bigAmount.gt(confirmationAllowance)) throw new Error('Allowance Insufficient authorization');
-        }
+            amount: bigAmount.toString(),
+            spender,
+            decimals,
+            targetChainId: chainId,
+          },
+        },
+      );
+      if (!info) throw new Error('User canceled');
+      const { guardiansApproved, approveInfo } = info;
+      const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
+        caHash: caInfo?.caHash,
+        spender: approveInfo.spender,
+        symbol: approveInfo.symbol,
+        amount: approveInfo.amount,
+        guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
+      });
+      if (approveReq?.error) throw approveReq?.error;
+      if (approveReq?.data) {
+        const confirmationAllowance = await getAllowance(tokenContract, {
+          owner: caInfo?.caAddress || '',
+          spender,
+          symbol,
+        });
+        if (bigAmount.gt(confirmationAllowance)) throw new Error('Allowance Insufficient authorization');
       }
-      return true;
-    },
-    [getCAContract],
-  );
+    }
+    return true;
+  }, []);
 };

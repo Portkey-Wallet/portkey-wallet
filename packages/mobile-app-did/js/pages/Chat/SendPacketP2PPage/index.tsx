@@ -8,15 +8,38 @@ import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPack
 import { TextM } from 'components/CommonText';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
-import { useCalculateRedPackageFee } from 'hooks/useCalculateRedPackageFee';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useCheckAllowanceAndApprove } from 'hooks/wallet';
-const SendPacketP2PPage = () => {
-  const calculateRedPackageFee = useCalculateRedPackageFee();
+import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
+import { useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGetCAContract } from 'hooks/contract';
+import { useCurrentChannelId } from '../context/hooks';
+import { useSecuritySafeCheckAndToast } from 'hooks/security';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
+
+export default function SendPacketP2PPage() {
+  const currentChannelId = useCurrentChannelId();
+  const calculateRedPacketFee = useCalculateRedPacketFee();
+  const sendRedPackage = useSendRedPackage();
+  const getCAContract = useGetCAContract();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
   const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
+
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
       try {
+        Loading.show();
+        try {
+          const isSafe = await securitySafeCheckAndToast(values.chainId);
+          if (!isSafe) return;
+        } catch (error) {
+          CommonToast.failError(error);
+          return;
+        } finally {
+          Loading.hide();
+        }
+
         await PaymentOverlay.showRedPacket({
           tokenInfo: {
             symbol: values.symbol,
@@ -24,23 +47,44 @@ const SendPacketP2PPage = () => {
           },
           amount: values.count,
           chainId: values.chainId,
-          calculateTransactionFee: () => calculateRedPackageFee(values),
+          calculateTransactionFee: () => calculateRedPacketFee(values),
         });
 
         const redPacketContractAddress = '2sFCkQs61YKVkHpN3AT7887CLfMvzzXnMkNYYM431RK5tbKQS9';
+        const caContract = await getCAContract(values.chainId);
 
-        const approved = await checkAllowanceAndApprove({
+        const totalAmount = timesDecimals(values.count, values.decimals);
+        await checkAllowanceAndApprove({
+          caContract,
           spender: redPacketContractAddress,
-          bigAmount: timesDecimals(values.count, values.decimals),
+          bigAmount: totalAmount,
           ...values,
           decimals: Number(values.decimals),
         });
-        console.log(approved, '====approved');
+
+        await sendRedPackage({
+          chainId: values.chainId,
+          symbol: values.symbol,
+          totalAmount: totalAmount.toFixed(0),
+          decimal: values.decimals,
+          memo: values.memo,
+          caContract: caContract,
+          type: RedPackageTypeEnum.P2P,
+          count: 1,
+          channelId: currentChannelId || '',
+        });
       } catch (error) {
         console.log(error, '====error');
       }
     },
-    [calculateRedPackageFee, checkAllowanceAndApprove],
+    [
+      calculateRedPacketFee,
+      checkAllowanceAndApprove,
+      currentChannelId,
+      getCAContract,
+      securitySafeCheckAndToast,
+      sendRedPackage,
+    ],
   );
 
   return (
@@ -57,9 +101,7 @@ const SendPacketP2PPage = () => {
       </TextM>
     </PageContainer>
   );
-};
-
-export default SendPacketP2PPage;
+}
 
 const styles = StyleSheet.create({
   container: {

@@ -52,7 +52,7 @@ export const useHandleAchSell = () => {
         rpcUrl: endPoint,
         account: account,
       });
-      const amount = timesDecimals(params.cryptoAmount, decimals).toNumber();
+      const amount = timesDecimals(params.cryptoAmount, decimals).toFixed(0);
 
       const rawResult = await contract.encodedTx('ManagerForwardCall', {
         caHash,

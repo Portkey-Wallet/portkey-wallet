@@ -20,12 +20,13 @@ import { useGStyles } from 'assets/theme/useGStyles';
 import { CommonButtonProps } from 'components/CommonButton';
 import DappInfoSection from '../DappInfoSection';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { RememberInfoType, RememberMe } from 'components/RemeberMe';
+import { RememberInfoType, RememberMe } from 'components/RememberMe';
 import { OverlayBottomSection } from '../OverlayBottomSection';
 import { SessionExpiredPlan } from '@portkey-wallet/types/session';
 import { useUpdateSessionInfo } from '@portkey-wallet/hooks/hooks-ca/dapp';
 import { usePin } from 'hooks/store';
 import { getManagerAccount } from 'utils/redux';
+import { isIOS } from '@rneui/base';
 
 type ConnectModalType = {
   dappInfo: DappStoreItem;
@@ -133,6 +134,7 @@ export const showConnectModal = (props: ConnectModalType) => {
   OverlayModal.show(<ConnectModal {...props} />, {
     position: 'bottom',
     onCloseRequest: props.onReject,
+    containerStyle: [!isIOS && GStyles.paddingBottom(0)],
   });
 };
 

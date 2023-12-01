@@ -64,7 +64,7 @@ export default function SendPacketP2PPage() {
         console.log(error, '====error');
       }
     },
-    [calculateRedPacketFee, currentChannelId, getCAContract, sendRedPackage],
+    [calculateRedPacketFee, currentChannelId, getCAContract, securitySafeCheckAndToast, sendRedPackage],
   );
 
   return (

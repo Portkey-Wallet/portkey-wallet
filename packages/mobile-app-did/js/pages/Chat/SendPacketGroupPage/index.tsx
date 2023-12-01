@@ -78,7 +78,7 @@ export default function SendPacketGroupPage() {
         console.log(error, '====error');
       }
     },
-    [calculateRedPacketFee, currentChannelId, getCAContract, selectTab, sendRedPackage],
+    [calculateRedPacketFee, currentChannelId, getCAContract, securitySafeCheckAndToast, selectTab, sendRedPackage],
   );
 
   const tabList: TabItemType[] = useMemo(

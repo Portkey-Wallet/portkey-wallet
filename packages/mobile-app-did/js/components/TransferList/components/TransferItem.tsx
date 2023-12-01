@@ -150,9 +150,11 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
       <View style={[itemStyle.contentWrap]}>
         <CommonAvatar
           style={itemStyle.left}
-          svgName={
-            SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'transfer' : 'Contract'
-          }
+          // svgName={
+          //   SHOW_FROM_TRANSACTION_TYPES.includes(item?.transactionType as TransactionTypes) ? 'transfer' : 'Contract'
+          // }
+          svgName={item?.listIcon ? undefined : 'transfer'}
+          imageUrl={item?.listIcon || ''}
           avatarSize={pTd(32)}
         />
 

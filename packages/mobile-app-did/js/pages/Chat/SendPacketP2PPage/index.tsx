@@ -13,16 +13,31 @@ import { useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useGetCAContract } from 'hooks/contract';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useCurrentChannelId } from '../context/hooks';
+import { useSecuritySafeCheckAndToast } from 'hooks/security';
+import Loading from 'components/Loading';
+import CommonToast from 'components/CommonToast';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
   const calculateRedPacketFee = useCalculateRedPacketFee();
   const sendRedPackage = useSendRedPackage();
   const getCAContract = useGetCAContract();
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
       try {
+        Loading.show();
+        try {
+          const isSafe = await securitySafeCheckAndToast(values.chainId);
+          if (!isSafe) return;
+        } catch (error) {
+          CommonToast.failError(error);
+          return;
+        } finally {
+          Loading.hide();
+        }
+
         await PaymentOverlay.showRedPacket({
           tokenInfo: {
             symbol: values.symbol,

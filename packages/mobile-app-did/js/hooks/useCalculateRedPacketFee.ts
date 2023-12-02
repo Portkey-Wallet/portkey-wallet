@@ -51,7 +51,7 @@ export function useCalculateRedPacketFee() {
       } else {
         if (amount.minus(bigFee).gt(currentBalance?.data.balance)) throw new Error('Insufficient transaction fee');
       }
-      return fee;
+      return timesDecimals(fee, defaultToken.decimals).toString();
     },
     [defaultToken.decimals, defaultToken.symbol],
   );

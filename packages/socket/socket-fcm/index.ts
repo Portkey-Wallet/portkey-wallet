@@ -88,8 +88,7 @@ class SignalrFCM extends BaseSignalr {
 
   public doOpen = async ({ url, clientId }: { url: string; clientId?: string }): Promise<HubConnection> => {
     if (!this.fcmToken) {
-      this.getFCMToken();
-      await sleep(3000);
+      await this.getFCMToken();
       return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
     }
 

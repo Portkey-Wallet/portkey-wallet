@@ -25,8 +25,7 @@ import s3Instance from '@portkey-wallet/utils/s3';
 import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
-import { useEffectOnce } from '@portkey-wallet/hooks';
-import { initFCMSignalR } from 'utils/FCM';
+import useFCM from 'hooks/useFCM';
 
 keepAliveOnPages({});
 request.setExceptionManager(exceptionManager);
@@ -36,6 +35,8 @@ export default function Updater() {
   const { pathname } = useLocation();
   const { passwordSeed } = useUserInfo();
   const checkManagerOnLogout = useCheckManagerOnLogout();
+  useRefreshTokenConfig(passwordSeed);
+
   const isMainnet = useIsMainnet();
 
   const { apiUrl, imApiUrl, imWsUrl, imS3Bucket } = useCurrentNetworkInfo();
@@ -58,12 +59,14 @@ export default function Updater() {
       key: s3_key || '',
     });
   }, [imS3Bucket, isMainnet]);
+
+  useFCM();
   initIm();
   useVerifierList();
   useUpdateRedux();
   useLocationChange();
   useChainListFetch();
-  useRefreshTokenConfig(passwordSeed);
+
   const checkUpdate = useCheckUpdate();
 
   useCheckManager(checkManagerOnLogout);
@@ -90,8 +93,5 @@ export default function Updater() {
   useRememberMeBlackList(true);
   useTabMenuList(true);
   useCheckContactMap();
-  useEffectOnce(() => {
-    initFCMSignalR();
-  });
   return null;
 }

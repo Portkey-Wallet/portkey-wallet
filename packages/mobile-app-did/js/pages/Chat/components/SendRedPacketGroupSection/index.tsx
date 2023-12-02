@@ -36,6 +36,7 @@ export type ValuesType = {
   decimals: string;
   memo: string;
   chainId: ChainId;
+  imageUrl?: string;
 };
 
 export type SendRedPacketGroupSectionPropsType = {
@@ -232,7 +233,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                 avatarSize={pTd(24)}
                 // elf token icon is fixed , only use white background color
                 svgName={values?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-                imageUrl={symbolImages[values.symbol]}
+                imageUrl={values.imageUrl || symbolImages[values.symbol]}
               />
               <TextL style={[GStyles.flex1, fonts.mediumFont]}>{values.symbol}</TextL>
               <Svg size={16} icon="down-arrow" color={defaultColors.icon1} />

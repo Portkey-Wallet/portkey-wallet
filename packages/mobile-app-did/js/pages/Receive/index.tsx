@@ -50,7 +50,7 @@ export default function Receive() {
           title={symbol}
           avatarSize={pTd(32)}
           svgName={symbol === defaultToken.symbol ? 'testnet' : undefined}
-          imageUrl={symbolImages?.[symbol] || ''}
+          imageUrl={tokenItem.imageUrl || symbolImages?.[symbol]}
         />
         <View>
           <TextL>{symbol}</TextL>

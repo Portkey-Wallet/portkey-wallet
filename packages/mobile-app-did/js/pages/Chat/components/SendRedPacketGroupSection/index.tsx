@@ -20,14 +20,14 @@ import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { ChainId } from '@portkey-wallet/types';
 import { ErrorType } from 'types/common';
 import { INIT_NONE_ERROR } from 'constants/common';
-import { useGetRedPackageTokenConfig } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { convertAmountUSDShow, timesDecimals } from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { isEmoji } from 'pages/Chat/utils';
+import { isEmojiString } from 'pages/Chat/utils';
 
 export type ValuesType = {
   packetNum?: string;
@@ -47,7 +47,7 @@ export type SendRedPacketGroupSectionPropsType = {
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
   const { type, groupMemberCount, onPressButton } = props;
-  const getRedPackageTokenConfig = useGetRedPackageTokenConfig();
+  const { getTokenInfo } = useGetRedPackageConfig();
   const [tokenPriceObject] = useGetCurrentAccountTokenPrice();
 
   const defaultToken = useDefaultToken(MAIN_CHAIN_ID);
@@ -128,7 +128,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     let isError = false;
 
     const amount = timesDecimals(count, decimals);
-    const tokenConfig = getRedPackageTokenConfig(chainId, symbol);
+    const tokenConfig = getTokenInfo(chainId, symbol);
     const minAmount = tokenConfig?.minAmount || '1';
 
     if (type !== RedPackageTypeEnum.RANDOM) {
@@ -158,7 +158,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               .toFixed()
           : values.count,
     });
-  }, [getRedPackageTokenConfig, onPressButton, type, values]);
+  }, [getTokenInfo, onPressButton, type, values]);
 
   const amountLabel = useMemo(() => (type === RedPackageTypeEnum.FIXED ? 'Amount Each' : 'Total Amount'), [type]);
 
@@ -177,7 +177,8 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   }, [tokenPrice, values.count]);
 
   const onMemoChange = useCallback((_value: string) => {
-    if (isEmoji(_value)) return;
+    console.log('isEmoji(_value)', isEmojiString(_value));
+    if (isEmojiString(_value)) return;
     setValues(pre => ({ ...pre, memo: _value }));
   }, []);
 

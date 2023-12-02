@@ -5,8 +5,8 @@ import {
   ChannelItem,
   ChannelMemberInfo,
   Message,
+  RedPackageConfigType,
   RedPackageStatusInfo,
-  RedPackageTokenInfo,
 } from '@portkey-wallet/im';
 import { NetworkType } from '@portkey-wallet/types';
 
@@ -126,9 +126,9 @@ export const updateGroupInfo = createAction<{
   value: Partial<ChannelInfo>;
 }>('im/updateGroupInfo');
 
-export const setRedPackageTokenConfigList = createAction<{
+export const setRedPackageConfig = createAction<{
   network: NetworkType;
-  value: RedPackageTokenInfo[];
-}>('im/setRedPackageTokenConfigList');
+  value: RedPackageConfigType;
+}>('im/setRedPackageConfig');
 
 export const resetIm = createAction<NetworkType>('im/resetIm');

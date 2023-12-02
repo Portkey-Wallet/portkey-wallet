@@ -1,4 +1,4 @@
-import { ChannelInfo, ChannelItem, Message, RedPackageTokenInfo } from '@portkey-wallet/im/types';
+import { ChannelInfo, ChannelItem, Message, RedPackageConfigType } from '@portkey-wallet/im/types';
 import { NetworkType } from '@portkey-wallet/types';
 
 export type ChannelList = {
@@ -31,8 +31,8 @@ export interface IMStateType {
       [channelId: string]: ChannelInfo;
     };
   };
-  redPackageTokenConfigListMap?: {
-    [T in NetworkType]?: RedPackageTokenInfo[];
+  redPackageConfigMap?: {
+    [T in NetworkType]?: RedPackageConfigType;
   };
 }
 

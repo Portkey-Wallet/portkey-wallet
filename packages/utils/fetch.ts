@@ -15,7 +15,7 @@ export type CustomFetchFun = (
 const defaultHeaders = {
   Accept: 'text/plain;v=1.0',
   'Content-Type': 'application/json',
-  version: 'v1.4.10',
+  version: 'v1.4.11',
 };
 
 function formatResponse(response: string) {

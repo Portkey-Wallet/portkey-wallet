@@ -11,8 +11,7 @@ import { useLanguage } from 'i18n/hooks';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from './chat';
 import myEvents from 'utils/deviceEvent';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
-
-import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
+import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
 
@@ -54,7 +53,7 @@ export const useNotify = () => {
   const { address, caHash } = useCurrentWalletInfo();
 
   const pin = usePin();
-  const { netWorkType } = useCurrentNetwork();
+  const currentNetwork = useCurrentNetwork();
   const logged = useMemo(() => !!address && caHash, [address, caHash]);
   const [remoteData, setRemoteData] = useState<any>();
 
@@ -64,7 +63,8 @@ export const useNotify = () => {
   const handleBackGroundMessage = useCallback(
     (data: FCMMessageData) => {
       const messageNetworkType = getFcmMessageNetwork(data);
-      if (netWorkType === messageNetworkType) {
+
+      if (currentNetwork === messageNetworkType) {
         notifyAct(NOTIFY_ACTION.openChat, data);
       } else {
         ActionSheet.alert({
@@ -78,14 +78,15 @@ export const useNotify = () => {
             {
               title: t('Confirm'),
               onPress: async () => {
-                changeNetwork();
+                // todo: switch network route
+                await changeNetwork();
               },
             },
           ],
         });
       }
     },
-    [changeNetwork, netWorkType, notifyAct, t],
+    [changeNetwork, currentNetwork, notifyAct, t],
   );
 
   useEffect(() => {
@@ -111,7 +112,7 @@ export const useNotify = () => {
       timer = setTimeout(() => {
         handleBackGroundMessage(remoteData as FCMMessageData);
         setRemoteData(undefined);
-      }, 800);
+      }, 500);
     }
 
     return () => {

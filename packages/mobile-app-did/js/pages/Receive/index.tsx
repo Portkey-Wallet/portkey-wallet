@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
-import { TextL, TextM, TextXL, TextS } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import AccountCard from 'pages/Receive/components/AccountCard';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Svg from 'components/Svg';

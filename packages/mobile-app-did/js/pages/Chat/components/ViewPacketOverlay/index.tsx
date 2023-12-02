@@ -113,7 +113,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   }, [imgDownPosition, imgDownScale, maskOpacity, imgUpPosition, imgUpScale]);
 
   const onOpen = useCallback(async () => {
-    if (wallet[redPacketData.chainId]?.caAddress) {
+    if (!wallet[redPacketData.chainId]?.caAddress) {
       CommonToast.warn(
         'Newly created accounts need a second for info update. Please come back to claim the crypto box later.',
       );

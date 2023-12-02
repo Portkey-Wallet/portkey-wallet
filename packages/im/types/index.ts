@@ -129,5 +129,21 @@ export type GroupMemberItemType = {
   isAdmin: boolean;
 };
 
+export type RedPackageTokenInfo = {
+  chainId: ChainId;
+  symbol: string;
+  decimal: string | number;
+  minAmount: string;
+};
+export type RedPackageContractAddressInfo = {
+  chainId: ChainId;
+  contractAddress: string;
+};
+
+export type RedPackageConfigType = {
+  tokenInfo: RedPackageTokenInfo[];
+  redPackageContractAddress: RedPackageContractAddressInfo[];
+};
+
 export * from './service';
 export * from './redPackage';

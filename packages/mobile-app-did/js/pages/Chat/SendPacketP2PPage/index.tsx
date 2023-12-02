@@ -11,12 +11,15 @@ import PaymentOverlay from 'components/PaymentOverlay';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useCheckAllowanceAndApprove } from 'hooks/wallet';
 import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
-import { useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
+import { useGetRedPackageConfig, useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useGetCAContract } from 'hooks/contract';
 import { useCurrentChannelId } from '../context/hooks';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import { useCheckManagerSyncState } from 'hooks/wallet';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import navigationService from 'utils/navigationService';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
@@ -25,21 +28,30 @@ export default function SendPacketP2PPage() {
   const getCAContract = useGetCAContract();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
   const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
+  const checkManagerSyncState = useCheckManagerSyncState();
+  const { getContractAddress } = useGetRedPackageConfig(true);
 
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
+      Loading.show();
       try {
-        Loading.show();
-        try {
-          const isSafe = await securitySafeCheckAndToast(values.chainId);
-          if (!isSafe) return;
-        } catch (error) {
-          CommonToast.failError(error);
+        const isManagerSynced = await checkManagerSyncState(values.chainId);
+        if (!isManagerSynced) {
+          CommonToast.warn('Synchronizing on-chain account information...');
           return;
-        } finally {
-          Loading.hide();
         }
+        const isSafe = await securitySafeCheckAndToast(values.chainId);
+        if (!isSafe) return;
+      } catch (error) {
+        CommonToast.failError(error);
+        return;
+      } finally {
+        Loading.hide();
+      }
 
+      const totalAmount = timesDecimals(values.count, values.decimals);
+      let caContract: ContractBasic;
+      try {
         await PaymentOverlay.showRedPacket({
           tokenInfo: {
             symbol: values.symbol,
@@ -50,18 +62,29 @@ export default function SendPacketP2PPage() {
           calculateTransactionFee: () => calculateRedPacketFee(values),
         });
 
-        const redPacketContractAddress = '2sFCkQs61YKVkHpN3AT7887CLfMvzzXnMkNYYM431RK5tbKQS9';
-        const caContract = await getCAContract(values.chainId);
+        const redPacketContractAddress = getContractAddress(values.chainId);
+        if (!redPacketContractAddress) {
+          //TODO: show error
+          return;
+        }
 
-        const totalAmount = timesDecimals(values.count, values.decimals);
+        caContract = await getCAContract(values.chainId);
+
         await checkAllowanceAndApprove({
           caContract,
           spender: redPacketContractAddress,
           bigAmount: totalAmount,
           ...values,
           decimals: Number(values.decimals),
+          isShowOnceLoading: true,
         });
+      } catch (error) {
+        console.log(error, 'send check ====error');
+        return;
+      }
 
+      Loading.showOnce();
+      try {
         await sendRedPackage({
           chainId: values.chainId,
           symbol: values.symbol,
@@ -73,15 +96,22 @@ export default function SendPacketP2PPage() {
           count: 1,
           channelId: currentChannelId || '',
         });
+        CommonToast.success('Sent successfully!');
+        navigationService.goBack();
       } catch (error) {
-        console.log(error, '====error');
+        console.log(error, 'sendRedPackage ====error');
+        CommonToast.success('Sent failed!');
+      } finally {
+        Loading.hide();
       }
     },
     [
       calculateRedPacketFee,
       checkAllowanceAndApprove,
+      checkManagerSyncState,
       currentChannelId,
       getCAContract,
+      getContractAddress,
       securitySafeCheckAndToast,
       sendRedPackage,
     ],
@@ -89,7 +119,7 @@ export default function SendPacketP2PPage() {
 
   return (
     <PageContainer
-      titleDom="Send Red Packet"
+      titleDom="Send Crypto Box"
       hideTouchable
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: false }}
@@ -97,7 +127,7 @@ export default function SendPacketP2PPage() {
       <SendRedPacketGroupSection type={RedPackageTypeEnum.P2P} onPressButton={onPressBtn} />
       <View style={GStyles.flex1} />
       <TextM style={styles.tips}>
-        Red Packet is valid for 24 hours. Expired Red Packet will be refunded to you within 24 hours after expiration.
+        {'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'}
       </TextM>
     </PageContainer>
   );

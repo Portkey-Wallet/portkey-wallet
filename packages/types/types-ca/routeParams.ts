@@ -1,3 +1,4 @@
+import { NavigateName } from 'utils/navigationService';
 import { ChainId, ChainType } from '..';
 import type { SendType } from './send';
 
@@ -36,4 +37,5 @@ export interface IToSendHomeParamsType {
 export interface IToSendPreviewParamsType extends IToSendHomeParamsType {
   transactionFee: string | number;
   sendNumber: string | number;
+  successNavigateName?: NavigateName;
 }

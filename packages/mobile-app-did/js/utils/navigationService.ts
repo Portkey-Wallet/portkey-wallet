@@ -6,6 +6,7 @@ type MultiLevelParamsIds = string[];
 let TempMultiLevelParams: {
   [id: string]: { multiLevelParamsIds: MultiLevelParamsIds; originMultiLevelRouterKey: string } & any;
 } = {};
+export type NavigateName = keyof (RootStackParamList & TabParamList);
 
 export let _navigator: NavigationContainerRef<any>;
 
@@ -48,7 +49,7 @@ function getMultiLevelParams() {
   }
 }
 
-function navigate(name: keyof (RootStackParamList & TabParamList), params?: any) {
+function navigate(name: NavigateName, params?: any) {
   const multiLevelParams = getMultiLevelParams();
   _navigator?.dispatch(
     CommonActions.navigate({

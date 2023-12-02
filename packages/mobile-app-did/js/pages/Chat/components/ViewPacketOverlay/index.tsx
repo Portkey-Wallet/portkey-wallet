@@ -16,7 +16,7 @@ import navigationService from 'utils/navigationService';
 import { ScreenHeight } from '@rneui/base';
 import { sleep } from '@portkey-wallet/utils';
 import { GetRedPackageDetailResult, GrabRedPackageResultEnum } from '@portkey-wallet/im';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetRedPackageDetail, useGrabRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
 import CommonToast from 'components/CommonToast';
@@ -36,6 +36,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   const currentChannelId = useCurrentChannelId();
   const grabPacket = useGrabRedPackage();
   const { init } = useGetRedPackageDetail();
+  const wallet = useCurrentWalletInfo();
 
   const isMyRedPacket = useMemo(
     () => redPacketData?.senderId === userInfo?.userId,
@@ -112,6 +113,13 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   }, [imgDownPosition, imgDownScale, maskOpacity, imgUpPosition, imgUpScale]);
 
   const onOpen = useCallback(async () => {
+    if (!wallet[redPacketData.chainId]?.caAddress) {
+      CommonToast.warn(
+        'Newly created accounts need a second for info update. Please come back to claim the crypto box later.',
+      );
+      return;
+    }
+
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
     openBtnRef.current?.startRotate();
@@ -132,7 +140,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
       CommonToast.failError(error);
     }
     isFetchingRef.current = false;
-  }, [currentChannelId, grabPacket, init, redPacketId, startAnimation]);
+  }, [currentChannelId, grabPacket, init, redPacketData.chainId, redPacketId, startAnimation, wallet]);
 
   useEffect(
     () => () => {
@@ -186,7 +194,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
               title={redPacketData?.senderName}
               imageUrl={redPacketData?.senderAvatar}
             />
-            <TextL style={styles.sentBy}>{`Sent by ${redPacketData?.senderName}`}</TextL>
+            <TextL style={styles.sentBy}>{`Crypto Box from ${redPacketData?.senderName}`}</TextL>
             <TextXXXL numberOfLines={2} style={styles.memo}>
               {memoStr}
             </TextXXXL>
@@ -203,7 +211,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
           <ImageBackground source={Red_Packet_02} style={[styles.img, styles.imgDown]}>
             {isShowViewDetailButton && (
               <Touchable style={styles.viewDetailWrap} onPress={onGoDetail}>
-                <TextM style={styles.detailText}>View Detail</TextM>
+                <TextM style={styles.detailText}>View Details</TextM>
                 {isGoDetailLoading ? (
                   <Lottie
                     style={styles.loadingStyle}

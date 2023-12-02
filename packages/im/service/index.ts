@@ -37,7 +37,6 @@ import {
   CreateRedPackageParams,
   CreateRedPackageResult,
   GetRedPackageConfigParams,
-  GetRedPackageConfigResult,
   GetRedPackageCreationStatusResult,
   GetRedPackageDetailParams,
   GetRedPackageDetailResult,
@@ -46,7 +45,7 @@ import {
   SendRedPackageParams,
   SendRedPackageResult,
 } from '../types/service';
-import { ChannelInfo, ChannelMemberInfo, Message, MessageCount } from '../types';
+import { ChannelInfo, ChannelMemberInfo, Message, MessageCount, RedPackageConfigType } from '../types';
 import { sleep } from '@portkey-wallet/utils';
 import { ContactItemType, IContactProfile } from '@portkey-wallet/types/types-ca/contact';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
@@ -322,7 +321,7 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       method: 'POST',
     });
   }
-  getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<GetRedPackageConfigResult> {
+  getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<RedPackageConfigType> {
     return this._request.send({
       url: '/api/v1/redPackage/config',
       params,

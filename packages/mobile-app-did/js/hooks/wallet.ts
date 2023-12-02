@@ -14,6 +14,7 @@ import { useGetCAContract } from './contract';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import Loading from 'components/Loading';
 
 export const useCheckManagerSyncState = () => {
   const getHolderInfoByViewContract = useGetHolderInfoByViewContract();
@@ -54,10 +55,11 @@ type CheckAllowanceAndApproveParams = {
   bigAmount: BigNumber;
   decimals: number;
   caContract: ContractBasic;
+  isShowOnceLoading?: boolean;
 };
 export const useCheckAllowanceAndApprove = () => {
   return useCallback(async (params: CheckAllowanceAndApproveParams) => {
-    const { chainId, spender, symbol, bigAmount, decimals, caContract } = params;
+    const { chainId, spender, symbol, bigAmount, decimals, caContract, isShowOnceLoading } = params;
     const caInfo = getCurrentCaInfo(chainId);
 
     const tokenContract = await getViewTokenContractByChainId(chainId);
@@ -85,21 +87,26 @@ export const useCheckAllowanceAndApprove = () => {
       );
       if (!info) throw new Error('User canceled');
       const { guardiansApproved, approveInfo } = info;
-      const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
-        caHash: caInfo?.caHash,
-        spender: approveInfo.spender,
-        symbol: approveInfo.symbol,
-        amount: approveInfo.amount,
-        guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
-      });
-      if (approveReq?.error) throw approveReq?.error;
-      if (approveReq?.data) {
-        const confirmationAllowance = await getAllowance(tokenContract, {
-          owner: caInfo?.caAddress || '',
-          spender,
-          symbol,
+      if (isShowOnceLoading) Loading.showOnce();
+      try {
+        const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
+          caHash: caInfo?.caHash,
+          spender: approveInfo.spender,
+          symbol: approveInfo.symbol,
+          amount: approveInfo.amount,
+          guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
         });
-        if (bigAmount.gt(confirmationAllowance)) throw new Error('Allowance Insufficient authorization');
+        if (approveReq?.error) throw approveReq?.error;
+        if (approveReq?.data) {
+          const confirmationAllowance = await getAllowance(tokenContract, {
+            owner: caInfo?.caAddress || '',
+            spender,
+            symbol,
+          });
+          if (bigAmount.gt(confirmationAllowance)) throw new Error('Allowance Insufficient authorization');
+        }
+      } catch (error) {
+        throw error as any;
       }
     }
     return true;

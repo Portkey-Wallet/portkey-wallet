@@ -24,12 +24,12 @@ import Touchable from 'components/Touchable';
 import { BGStyles } from 'assets/theme/styles';
 import { FontStyles } from 'assets/theme/styles';
 import { defaultColors } from 'assets/theme';
-import navigationService from 'utils/navigationService';
+import navigationService, { NavigateName } from 'utils/navigationService';
 import { addressFormat } from '@portkey-wallet/utils';
 import { useAppBuyButtonShow } from 'hooks/cms';
 import RedPacketAmountShow from 'pages/Chat/components/RedPacketAmountShow';
-import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
+import { useCurrentChannel } from 'pages/Chat/context/hooks';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -41,7 +41,7 @@ export type PaymentOverlayProps = {
   chainId: ChainId;
   amount: string;
   title: string;
-  calculateTransactionFee: () => Promise<number>;
+  calculateTransactionFee: () => Promise<number | string>;
   onConfirm: (value: unknown) => void;
 };
 
@@ -63,7 +63,7 @@ const PaymentModal = ({
 
   const defaultTokenPrice = useDefaultTokenPrice();
   const { currentNetwork } = useWallet();
-
+  const { currentChannelType } = useCurrentChannel() || {};
   const currentCaInfo = useCurrentCaInfo();
   const currentCaAddress = useMemo(() => currentCaInfo?.[chainId]?.caAddress, [chainId, currentCaInfo]);
 
@@ -104,14 +104,13 @@ const PaymentModal = ({
   const fee = useAsync(async () => {
     return calculateTransactionFee();
   }, [calculateTransactionFee]);
-  console.log(fee, '=====fee');
 
   const feeComponent = useMemo(() => {
     if (fee?.error) return;
     return (
       <View style={[GStyles.width100, GStyles.marginTop(pTd(16))]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
-          <TextL>Transaction fee</TextL>
+          <TextL>Transaction Fee</TextL>
           <View>
             <View style={[GStyles.flexRow, GStyles.itemCenter]}>
               {fee?.loading ? (
@@ -134,8 +133,9 @@ const PaymentModal = ({
     if (!fee.error) return;
     let buttonTitle = '',
       onPress;
+    const successNavigateName: NavigateName = currentChannelType === 'P2P' ? 'ChatDetailsPage' : 'ChatGroupDetailsPage';
     if (crossSufficientItem) {
-      buttonTitle = 'Get ELF';
+      buttonTitle = 'Transfer ELF';
       onPress = async () => {
         OverlayModal.hide(false);
         navigationService.navigateByMultiLevelParams('SendHome', {
@@ -145,9 +145,8 @@ const PaymentModal = ({
               address: addressFormat(currentCaAddress, chainId),
             },
           },
-          // TODO: multiLevelParams
           multiLevelParams: {
-            successNavigateName: '123',
+            successNavigateName,
           },
         });
       };
@@ -156,9 +155,8 @@ const PaymentModal = ({
       onPress = () => {
         OverlayModal.hide(false);
         navigationService.navigateByMultiLevelParams('BuyHome', {
-          // TODO: multiLevelParams
           multiLevelParams: {
-            successNavigateName: '123',
+            successNavigateName,
           },
         });
       };
@@ -169,8 +167,54 @@ const PaymentModal = ({
         <TextS style={[FontStyles.weight500, FontStyles.font11]}>{buttonTitle}</TextS>
       </Touchable>
     );
-  }, [chainId, crossSufficientItem, currentCaAddress, fee.error, isCanBuy]);
+  }, [chainId, crossSufficientItem, currentCaAddress, currentChannelType, fee.error, isCanBuy]);
 
+  const disableStyle = useMemo(() => !!fee.error && styles.opacity, [fee.error]);
+  const tokenRowComponent = useMemo(() => {
+    return (
+      <View style={[GStyles.flex1, styles.rowCenter, disableStyle]}>
+        <CommonAvatar
+          hasBorder
+          style={styles.avatar}
+          title={currentTokenInfo?.symbol}
+          avatarSize={pTd(24)}
+          imageUrl={currentTokenInfo?.imageUrl}
+        />
+        <TextL style={FontStyles.font5}>
+          {tokenInfo.symbol} ({formatChainInfoToShow(chainId, currentNetwork)})
+        </TextL>
+      </View>
+    );
+  }, [chainId, currentNetwork, currentTokenInfo?.imageUrl, currentTokenInfo?.symbol, disableStyle, tokenInfo.symbol]);
+
+  const tokenBalanceComponent = useMemo(() => {
+    if (fee.error) return;
+    return (
+      <Text style={styles.marginTop4}>
+        <TextS>
+          {formatAmountShow(
+            divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
+            currentTokenInfo?.decimals,
+          )}
+        </TextS>
+        <TextS>{` ${currentTokenInfo?.symbol}`}</TextS>
+        {!!currentTokenInfo?.price && (
+          <TextS>
+            {`  ${convertAmountUSDShow(
+              divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
+              currentTokenInfo?.price,
+            )}`}
+          </TextS>
+        )}
+      </Text>
+    );
+  }, [
+    currentTokenInfo?.balance,
+    currentTokenInfo?.decimals,
+    currentTokenInfo?.price,
+    currentTokenInfo?.symbol,
+    fee.error,
+  ]);
   return (
     <ModalBody modalBodyType="bottom" style={styles.wrapStyle}>
       <View style={[GStyles.itemCenter, GStyles.flex1]}>
@@ -187,46 +231,21 @@ const PaymentModal = ({
 
         <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
           <TextS style={FontStyles.font3}>Method</TextS>
-          <View style={[styles.balanceItemRow, (crossSufficientItem || fee.error) && styles.opacity]}>
+          <View style={styles.balanceItemRow}>
             <View style={styles.rowCenter}>
-              <View style={[GStyles.flex1, styles.rowCenter]}>
-                <CommonAvatar
-                  hasBorder
-                  style={styles.avatar}
-                  title={currentTokenInfo?.symbol}
-                  avatarSize={pTd(24)}
-                  imageUrl={currentTokenInfo?.imageUrl}
-                />
-                <TextL style={FontStyles.font5}>
-                  {tokenInfo.symbol} ({formatChainInfoToShow(chainId, currentNetwork)})
-                </TextL>
-              </View>
+              {tokenRowComponent}
               {getButtonComponent}
             </View>
-            <View style={GStyles.paddingLeft(pTd(30))}>
-              <Text style={GStyles.marginTop(pTd(4))}>
-                <TextS>
-                  {formatAmountShow(
-                    divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
-                    currentTokenInfo?.decimals,
-                  )}
-                </TextS>
-                <TextS>{` ${currentTokenInfo?.symbol}`}</TextS>
-                {!!currentTokenInfo?.price && (
-                  <TextS>
-                    {`  ${convertAmountUSDShow(
-                      divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
-                      currentTokenInfo?.price,
-                    )}`}
-                  </TextS>
-                )}
-              </Text>
-              {!!fee.error && <TextS style={GStyles.marginTop(pTd(4))}>Insufficient balance</TextS>}
+
+            <View style={[GStyles.paddingLeft(pTd(30))]}>
+              {tokenBalanceComponent}
+              {!!fee.error && <TextS style={[styles.marginTop4, disableStyle]}>Insufficient balance</TextS>}
               {!!(crossSufficientItem && fee.error) && (
-                <TextS style={[FontStyles.font6, GStyles.marginTop(pTd(4))]}>
-                  {`You can transfer some ${tokenInfo.symbol} from your ${
-                    currentTokenInfo?.chainId === MAIN_CHAIN_ID ? 'SideChain' : 'MainChain'
-                  } address`}
+                <TextS style={[FontStyles.font6, styles.marginTop4]}>
+                  {`You can transfer some ${tokenInfo.symbol} from your ${formatChainInfoToShow(
+                    crossSufficientItem?.chainId,
+                    currentNetwork,
+                  )} address`}
                 </TextS>
               )}
             </View>
@@ -236,8 +255,8 @@ const PaymentModal = ({
       </View>
       <CommonButton
         onPress={() => {
-          OverlayModal.hide();
           onConfirm(true);
+          OverlayModal.hide(false);
         }}
         disabled={!!(fee.loading || fee.error)}
         loading={fee.loading}
@@ -258,7 +277,7 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
 };
 
 export const showRedPacket = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
-  return show({ ...props, title: 'Portkey Red Packet' });
+  return show({ ...props, title: 'Portkey Crypto Box' });
 };
 
 export default {
@@ -299,5 +318,8 @@ export const styles = StyleSheet.create({
   avatar: {
     fontSize: pTd(14),
     marginRight: pTd(8),
+  },
+  marginTop4: {
+    marginTop: pTd(4),
   },
 });

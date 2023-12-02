@@ -9,7 +9,7 @@ export const ONE_HOUR = ONE_MINUS * 60;
 export const ONE_DAY = ONE_HOUR * 24;
 
 export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
-  console.log('IMMessage', message);
+  // console.log('IMMessage', message);
   return message
     .map(ele => {
       const msg = {

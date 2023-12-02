@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -48,6 +48,8 @@ export const RedPacketDetails = () => {
 
     return false;
   }, [isMyPacket, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);
+
+  const [, resetOverlayCount] = useState(0);
 
   useEffectOnce(() => {
     init();
@@ -176,7 +178,7 @@ export const RedPacketDetails = () => {
           <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font2} />
         </Touchable>
       </ImageBackground>
-      <View style={GStyles.flex1}>
+      <View style={GStyles.flex1} onLayout={() => resetOverlayCount(pre => pre + 1)}>
         {isP2P && !isMyPacket && redPacketData?.isRedPackageFullyClaimed ? (
           headerDom
         ) : (

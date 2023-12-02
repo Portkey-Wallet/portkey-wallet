@@ -197,7 +197,6 @@ export const useGetRedPackageDetail = (id?: string) => {
     totalCount: 0,
   });
 
-  // TODO: change to useLockCallback
   const next: (params?: NextRedPackageDetailParams) => Promise<NextRedPackageDetailResult> = useLockCallback(
     async (params?: NextRedPackageDetailParams) => {
       const { skipCount, maxResultCount } = pagerRef.current;

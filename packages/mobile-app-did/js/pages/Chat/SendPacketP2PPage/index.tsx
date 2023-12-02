@@ -100,6 +100,7 @@ export default function SendPacketP2PPage() {
         navigationService.goBack();
       } catch (error) {
         console.log(error, 'sendRedPackage ====error');
+        CommonToast.success('Sent failed!');
       } finally {
         Loading.hide();
       }

@@ -19,6 +19,7 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import navigationService from 'utils/navigationService';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
@@ -75,13 +76,14 @@ export default function SendPacketP2PPage() {
           bigAmount: totalAmount,
           ...values,
           decimals: Number(values.decimals),
+          isShowOnceLoading: true,
         });
       } catch (error) {
         console.log(error, 'send check ====error');
         return;
       }
 
-      Loading.show();
+      Loading.showOnce();
       try {
         await sendRedPackage({
           chainId: values.chainId,
@@ -94,6 +96,8 @@ export default function SendPacketP2PPage() {
           count: 1,
           channelId: currentChannelId || '',
         });
+        CommonToast.success('Sent successfully!');
+        navigationService.goBack();
       } catch (error) {
         console.log(error, 'sendRedPackage ====error');
       } finally {
@@ -114,7 +118,7 @@ export default function SendPacketP2PPage() {
 
   return (
     <PageContainer
-      titleDom="Send Red Packet"
+      titleDom="Send Crypto Box"
       hideTouchable
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: false }}
@@ -122,7 +126,7 @@ export default function SendPacketP2PPage() {
       <SendRedPacketGroupSection type={RedPackageTypeEnum.P2P} onPressButton={onPressBtn} />
       <View style={GStyles.flex1} />
       <TextM style={styles.tips}>
-        Red Packet is valid for 24 hours. Expired Red Packet will be refunded to you within 24 hours after expiration.
+        {'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'}
       </TextM>
     </PageContainer>
   );

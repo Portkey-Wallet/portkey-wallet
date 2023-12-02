@@ -81,11 +81,6 @@ export const getCurrentTxFeeByChainId = (chainId: ChainId) => {
   return getCurrentTxFee()?.[chainId] || InitialTxFee;
 };
 
-export const getCurrentChainInfo = () => {
-  const { currentNetwork, chainInfo } = getWallet();
-  return chainInfo?.[currentNetwork];
-};
-
 export const getCurrentChainInfoByChainId = (chainId: ChainId) => {
   const { currentNetwork, chainInfo } = getWallet();
   return chainInfo?.[currentNetwork]?.find(i => i.chainId === chainId);
@@ -97,6 +92,25 @@ export const getViewTokenContractByChainId = (chainId: ChainId) => {
   return getContractBasic({
     contractAddress: chainInfo?.defaultToken.address || '',
     rpcUrl: chainInfo?.endPoint,
+    account: getDefaultWallet(),
+  });
+};
+
+export const getCurrentChainList = () => {
+  const { chainInfo, currentNetwork } = getWallet();
+  return chainInfo?.[currentNetwork];
+};
+
+export const getCurrentChainInfo = (chainId: ChainId) => {
+  return getCurrentChainList()?.find(chain => chain.chainId === chainId);
+};
+
+export const getCurrentCAViewContract = async (chainId: ChainId) => {
+  const chainInfo = getCurrentChainInfo(chainId);
+  if (!chainInfo) throw new Error(`${chainId} info not found`);
+  return getContractBasic({
+    rpcUrl: chainInfo.endPoint,
+    contractAddress: chainInfo.caContractAddress || '',
     account: getDefaultWallet(),
   });
 };

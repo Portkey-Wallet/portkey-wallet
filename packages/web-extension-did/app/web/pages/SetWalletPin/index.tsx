@@ -197,7 +197,7 @@ export default function SetWalletPin() {
 
   return (
     <div className="common-page set-wallet-pin" id="set-wallet-pin">
-      <PortKeyTitle leftElement leftCallBack={leftCallBack} />
+      <PortKeyTitle leftElement={state !== 'login'} leftCallBack={leftCallBack} />
       <div className="common-content1 set-pin-content">
         <SetPinAndAddManager
           accountType={LoginType[loginAccount?.loginType as LoginType] as AccountType}

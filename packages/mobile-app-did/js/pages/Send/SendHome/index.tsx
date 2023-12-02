@@ -29,7 +29,7 @@ import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet
 import BigNumber from 'bignumber.js';
 
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
-import { BGStyles } from 'assets/theme/styles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
@@ -46,6 +46,10 @@ import { request } from '@portkey-wallet/api/api-did';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import CommonToast from 'components/CommonToast';
+import { TextM } from 'components/CommonText';
+import GStyles from 'assets/theme/GStyles';
+import Touchable from 'components/Touchable';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 const SendHome: React.FC = () => {
   const {
@@ -217,7 +221,7 @@ const SendHome: React.FC = () => {
 
   // warning dialog
   const showDialog = useCallback(
-    (type: 'clearAddress' | 'crossChain', confirmCallBack?: () => void) => {
+    (type: 'clearAddress' | 'crossChain' | 'exchange', confirmCallBack?: () => void) => {
       switch (type) {
         case 'clearAddress':
           ActionSheet.alert({
@@ -247,6 +251,21 @@ const SendHome: React.FC = () => {
                 onPress: () => {
                   confirmCallBack?.();
                 },
+              },
+            ],
+          });
+          break;
+
+        case 'exchange':
+          ActionSheet.alert({
+            title: t('Send to exchange account?'),
+            message: t(
+              "Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.",
+            ),
+            buttons: [
+              {
+                title: t('Got it'),
+                type: 'primary',
               },
             ],
           });
@@ -537,6 +556,16 @@ const SendHome: React.FC = () => {
           {t(err)}
         </Text>
       ))}
+
+      {assetInfo?.chainId !== MAIN_CHAIN_ID && (
+        <Touchable
+          style={[GStyles.flexRow, GStyles.itemCenter, styles.warningWrap]}
+          onPress={() => showDialog('exchange')}>
+          <Svg icon="warning1" size={pTd(16)} />
+          <TextM style={[GStyles.marginLeft(pTd(8)), GStyles.flex1, FontStyles.font3]}>Send to exchange account?</TextM>
+          <Svg icon="down-arrow" size={pTd(16)} />
+        </Touchable>
+      )}
 
       {/* Group 2 token */}
       {sendType === 'token' && step === 2 && (

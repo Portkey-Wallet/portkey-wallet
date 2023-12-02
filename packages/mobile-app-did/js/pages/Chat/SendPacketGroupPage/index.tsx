@@ -12,15 +12,15 @@ import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPack
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
 import { useCurrentChannelId } from '../context/hooks';
-import { useGroupChannelInfo, useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
-import { ZERO } from '@portkey-wallet/constants/misc';
+import { useGetRedPackageConfig, useGroupChannelInfo, useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useGetCAContract } from 'hooks/contract';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
-import { sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import { useCheckAllowanceAndApprove, useCheckManagerSyncState } from 'hooks/wallet';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 
 type TabItemType = {
   name: string;
@@ -29,7 +29,6 @@ type TabItemType = {
 };
 
 export default function SendPacketGroupPage() {
-  // TODO: should init
   const currentChannelId = useCurrentChannelId();
   const calculateRedPacketFee = useCalculateRedPacketFee();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
@@ -37,11 +36,19 @@ export default function SendPacketGroupPage() {
   const sendRedPackage = useSendRedPackage();
   const getCAContract = useGetCAContract();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
+  const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
+  const checkManagerSyncState = useCheckManagerSyncState();
+  const { getContractAddress } = useGetRedPackageConfig(true);
 
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
       Loading.show();
       try {
+        const isManagerSynced = await checkManagerSyncState(values.chainId);
+        if (!isManagerSynced) {
+          CommonToast.warn('Synchronizing on-chain account information...');
+          return;
+        }
         const isSafe = await securitySafeCheckAndToast(values.chainId);
         if (!isSafe) return;
       } catch (error) {
@@ -50,6 +57,9 @@ export default function SendPacketGroupPage() {
       } finally {
         Loading.hide();
       }
+
+      const totalAmount = timesDecimals(values.count, values.decimals);
+      let caContract: ContractBasic;
 
       try {
         await PaymentOverlay.showRedPacket({
@@ -62,11 +72,32 @@ export default function SendPacketGroupPage() {
           calculateTransactionFee: () => calculateRedPacketFee(values),
         });
 
-        const caContract = await getCAContract(values.chainId);
+        const redPacketContractAddress = getContractAddress(values.chainId);
+        if (!redPacketContractAddress) {
+          //TODO: show error
+          return;
+        }
+
+        caContract = await getCAContract(values.chainId);
+
+        await checkAllowanceAndApprove({
+          caContract,
+          spender: redPacketContractAddress,
+          bigAmount: totalAmount,
+          ...values,
+          decimals: Number(values.decimals),
+        });
+      } catch (error) {
+        console.log(error, 'send check ====error');
+        return;
+      }
+
+      Loading.show();
+      try {
         await sendRedPackage({
           chainId: values.chainId,
           symbol: values.symbol,
-          totalAmount: timesDecimals(values.count, values.decimals).toFixed(),
+          totalAmount: totalAmount.toFixed(0),
           decimal: values.decimals,
           memo: values.memo,
           caContract: caContract,
@@ -75,10 +106,22 @@ export default function SendPacketGroupPage() {
           channelId: currentChannelId || '',
         });
       } catch (error) {
-        console.log(error, '====error');
+        console.log(error, 'sendRedPackage ====error');
+      } finally {
+        Loading.hide();
       }
     },
-    [calculateRedPacketFee, currentChannelId, getCAContract, securitySafeCheckAndToast, selectTab, sendRedPackage],
+    [
+      calculateRedPacketFee,
+      checkAllowanceAndApprove,
+      checkManagerSyncState,
+      currentChannelId,
+      getCAContract,
+      getContractAddress,
+      securitySafeCheckAndToast,
+      selectTab,
+      sendRedPackage,
+    ],
   );
 
   const tabList: TabItemType[] = useMemo(
@@ -118,7 +161,7 @@ export default function SendPacketGroupPage() {
   return (
     <PageContainer
       safeAreaColor={['blue', 'gray']}
-      scrollViewProps={{ disabled: true }}
+      scrollViewProps={{ disabled: false }}
       hideTouchable={true}
       containerStyles={styles.containerStyles}
       titleDom="Send Red Packet">

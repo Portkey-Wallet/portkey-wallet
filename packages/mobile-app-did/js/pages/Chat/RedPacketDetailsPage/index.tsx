@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
@@ -47,6 +47,8 @@ export const RedPacketDetails = () => {
 
     return false;
   }, [isMyPacket, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);
+
+  const [, resetOverlayCount] = useState(0);
 
   useEffectOnce(() => {
     init();
@@ -112,7 +114,7 @@ export const RedPacketDetails = () => {
 
   const headerDom = useMemo(() => {
     return (
-      <View style={[GStyles.center, styles.topWrap]}>
+      <View style={[GStyles.center, styles.topWrap]} onLayout={() => resetOverlayCount(pre => pre + 1)}>
         <CommonAvatar
           resizeMode="cover"
           style={styles.sendAvatar}

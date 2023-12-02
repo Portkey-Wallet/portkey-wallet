@@ -16,17 +16,15 @@ export default function useFCM() {
   useEffectOnce(() => {
     // only im
     if (!isShowChat) return;
+    // only popup
+    if (isPrompt) return;
+
     initFCMSignalR();
     if (!request.defaultConfig.baseURL) return;
-    if (isPrompt) return;
     signalrFCM.doOpen({
       url: `${request.defaultConfig.baseURL}`,
     });
-  });
 
-  useEffectOnce(() => {
-    // only im
-    if (!isShowChat) return;
     timerRef.current = setInterval(() => {
       console.log('report AppStatus update', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
       if (!signalrFCM.fcmToken) return;

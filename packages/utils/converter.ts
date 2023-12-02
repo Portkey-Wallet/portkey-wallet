@@ -42,7 +42,7 @@ export function divDecimals(a?: BigNumber.Value, decimals: string | number = 18)
 
 export function divDecimalsStr(a?: BigNumber.Value, decimals: string | number = 8, defaultVal = '0') {
   const n = divDecimals(a, decimals);
-  return isEffectiveNumber(n) ? n.toString() : defaultVal;
+  return isEffectiveNumber(n) ? n.toFixed() : defaultVal;
 }
 
 export function divDecimalsToShow(a?: BigNumber.Value, decimals: string | number = 8, defaultVal = '--') {

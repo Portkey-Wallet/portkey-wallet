@@ -22,7 +22,7 @@ import { ErrorType } from 'types/common';
 import { INIT_NONE_ERROR } from 'constants/common';
 import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
-import { convertAmountUSDShow, divDecimalsToShow, timesDecimals } from '@portkey-wallet/utils/converter';
+import { convertAmountUSDShow, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 import { FontStyles } from 'assets/theme/styles';
@@ -144,7 +144,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         // TODO: adjust error msg
         setCountError({
           isError: true,
-          errorMsg: `At least ${divDecimalsToShow(minAmount, decimals || 1)} ${symbol} for each crypto box`,
+          errorMsg: `At least ${divDecimalsStr(minAmount, decimals || 1)} ${symbol} for each crypto box`,
         });
         isError = true;
       }

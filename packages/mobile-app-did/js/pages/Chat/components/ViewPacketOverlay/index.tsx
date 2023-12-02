@@ -127,16 +127,17 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
 
     try {
       const { result } = await grabPacket(currentChannelId || '', redPacketId);
-
       if (result === GrabRedPackageResultEnum.SUCCESS) {
         const data = await init({ id: redPacketId });
         navigationService.navigate('RedPacketDetails', { redPacketId, data });
-        openBtnRef.current?.destroyDom();
         setShowDialogCloseButton(false);
         startAnimation();
+      } else {
+        setIsGrabFail(true);
+        openBtnRef.current?.destroyDom();
       }
-      // TODO : when  fail how
     } catch (error) {
+      openBtnRef.current?.stopRotate();
       CommonToast.failError(error);
     }
     isFetchingRef.current = false;
@@ -171,11 +172,13 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
     OverlayModal.hide();
   }, []);
 
+  const [isGrabFail, setIsGrabFail] = useState(false);
   const memoStr = useMemo(() => {
+    if (isGrabFail) return 'Better luck next time!';
     if (redPacketData.isRedPackageExpired) return 'This crypto box has expired.';
     if (redPacketData.isRedPackageFullyClaimed) return 'Better luck next time!';
     return redPacketData.memo;
-  }, [redPacketData.isRedPackageExpired, redPacketData.isRedPackageFullyClaimed, redPacketData.memo]);
+  }, [isGrabFail, redPacketData.isRedPackageExpired, redPacketData.isRedPackageFullyClaimed, redPacketData.memo]);
 
   return (
     <View style={[GStyles.center, styles.page]}>

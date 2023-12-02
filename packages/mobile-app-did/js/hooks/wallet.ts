@@ -10,7 +10,6 @@ import { getCurrentCaInfo, getViewTokenContractByChainId } from 'utils/redux';
 import BigNumber from 'bignumber.js';
 import { requestManagerApprove } from 'dapp/dappOverlay';
 import { randomId, sleep } from '@portkey-wallet/utils';
-import { useGetCAContract } from './contract';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
@@ -65,7 +64,7 @@ export const useCheckAllowanceAndApprove = () => {
     const tokenContract = await getViewTokenContractByChainId(chainId);
 
     let allowance: string;
-    Loading.show();
+    if (isShowOnceLoading) Loading.showOnce();
     const startTime = Date.now();
     try {
       allowance = await getAllowance(tokenContract, {
@@ -79,12 +78,11 @@ export const useCheckAllowanceAndApprove = () => {
       }
     } catch (error) {
       throw error as any;
-    } finally {
-      Loading.hide();
     }
 
     const eventName = randomId();
     if (bigAmount.gt(allowance)) {
+      if (isShowOnceLoading) Loading.hide();
       const info = await requestManagerApprove(
         // TODO: origin, name;
         { origin: '', name: '' },

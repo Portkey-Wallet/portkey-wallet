@@ -41,6 +41,7 @@ export const OpenPacketButton = forwardRef(function OpenPacketButton(props: Open
 
   const stopRotate = useCallback(() => {
     if (timer) clearInterval(timer);
+    setCurrentBgImgIndex(0);
   }, []);
 
   const destroyDom = useCallback(() => {

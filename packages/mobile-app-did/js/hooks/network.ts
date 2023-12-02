@@ -12,6 +12,7 @@ import ActionSheet from 'components/ActionSheet';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import im from '@portkey-wallet/im';
 import { request } from '@portkey-wallet/api/api-did';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const dispatch = useAppDispatch();
@@ -21,12 +22,16 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const { t } = useLanguage();
   const onConfirm = useThrottleCallback(
     async (network: NetworkItem, logged: boolean) => {
+      if (!route) return;
+
       let routeName: keyof RootStackParamList = 'LoginPortkey';
       if (logged) routeName = 'Tab';
       resetStore();
       request.initService();
       im.destroy();
       dispatch(changeNetworkType(network.networkType));
+      signalrFCM.switchNetwork();
+
       if (routeName !== route.name && !(routeName === 'LoginPortkey' && route.name === 'SignupPortkey'))
         navigationService.reset(routeName);
     },

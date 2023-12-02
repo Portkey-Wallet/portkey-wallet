@@ -29,6 +29,7 @@ import { changeDrawerOpenStatus, resetDiscover } from '@portkey-wallet/store/sto
 import im from '@portkey-wallet/im';
 import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
 import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -43,6 +44,8 @@ export default function useLogOut() {
       dispatch(resetDiscover(currentNetwork));
       dispatch(changeDrawerOpenStatus(false));
       im.destroy();
+      signalrFCM.exitWallet();
+
       dispatch(resetIm(currentNetwork));
       dispatch(resetSecurity(currentNetwork));
 

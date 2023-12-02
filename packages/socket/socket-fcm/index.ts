@@ -37,7 +37,7 @@ class SignalrFCM extends BaseSignalr {
 
   public getFCMToken = async (refresh: boolean = false) => {
     if (!refresh && this.fcmToken) return this.fcmToken;
-    if (!this.getFCMTokenFunc) throw Error('Please init SignalrFCM ');
+    if (!this.getFCMTokenFunc) throw Error('Please add getFCMTokenFunc ');
 
     const fcmToken = await this.getFCMTokenFunc(refresh);
     console.log('fcmToken', fcmToken);
@@ -88,7 +88,7 @@ class SignalrFCM extends BaseSignalr {
 
   public doOpen = async ({ url, clientId }: { url: string; clientId?: string }): Promise<HubConnection> => {
     if (!this.fcmToken) {
-      this.getFCMTokenFunc?.();
+      this.getFCMToken();
       await sleep(3000);
       return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
     }

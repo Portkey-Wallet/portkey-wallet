@@ -7,8 +7,6 @@ import CommonToast from 'components/CommonToast';
 import myEvents from 'utils/deviceEvent';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { sleep } from '@portkey-wallet/utils';
-import { useNavigation } from '@react-navigation/native';
-import { RootStackName } from 'navigation';
 import { useThrottleCallback } from '@portkey-wallet/hooks';
 import { parseLinkPortkeyUrl } from 'utils/scheme';
 import { useDiscoverJumpWithNetWork } from './discover';
@@ -19,11 +17,10 @@ const WWW_URL_PATTERN = /^www\./i;
 export function useJumpToChatDetails() {
   const chatDispatch = useChatsDispatch();
   const createChannel = useCreateP2pChannel();
-  const navigation = useNavigation();
-  const routesArr: { name: RootStackName }[] = navigation.getState().routes;
 
   return useCallback(
     async ({ toRelationId, channelUuid }: { toRelationId?: string; channelUuid?: string }) => {
+      const routesArr = navigationService.getState()?.routes;
       try {
         if (channelUuid) {
           chatDispatch(setCurrentChannelId(channelUuid || ''));
@@ -45,7 +42,7 @@ export function useJumpToChatDetails() {
         CommonToast.failError(error);
       }
     },
-    [chatDispatch, createChannel, routesArr],
+    [chatDispatch, createChannel],
   );
 }
 

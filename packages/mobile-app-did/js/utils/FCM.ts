@@ -6,6 +6,8 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import { copyText } from 'utils';
 import { getDeviceInfo } from './deviceInfo';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { FCMMessageData } from 'types/common';
+import { NetworkType } from '@portkey-wallet/types';
 
 export const requestUserPermission = async () => {
   // iOS permission
@@ -48,7 +50,7 @@ export const getFCMToken = async (refresh?: boolean): Promise<string> => {
 export const initFCMSignalR = async () => {
   const deviceInfo = await getDeviceInfo();
 
-  await requestUserPermission();
+  console.log('initFCMSignalR', deviceInfo);
 
   await signalrFCM.init({
     deviceInfo,
@@ -57,18 +59,12 @@ export const initFCMSignalR = async () => {
   });
 };
 
-// TODO: change ts
-export const checkMessageIsFromMainnet = (message: any) => {
-  const isMainNet = true;
-
-  return isMainNet;
+export const checkMessageIsFromMainnet = (message: FCMMessageData) => {
+  return message.network.toLocaleLowerCase().includes('main');
 };
 
-// TODO:
-export const parseFCMMessage = (message: any) => {
-  return {
-    channelId: 1,
-    type: 'P2P',
-    redPacketId: 1,
-  };
+export const getFcmMessageNetwork = (message: FCMMessageData): NetworkType => {
+  if (message.network.toLocaleLowerCase().includes('main')) return 'MAIN';
+  if (message.network.toLocaleLowerCase().includes('main')) return 'TESTNET';
+  return 'MAIN';
 };

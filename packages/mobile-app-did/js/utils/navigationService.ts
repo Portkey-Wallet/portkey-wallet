@@ -46,9 +46,14 @@ function pop(count: number) {
   _navigator?.dispatch(pushAction);
 }
 
+function getState() {
+  return _navigator?.getState();
+}
+
 export default {
   setTopLevelNavigator,
   navigate,
+  getState,
   goBack,
   reset,
   push,

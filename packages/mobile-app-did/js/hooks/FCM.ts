@@ -1,27 +1,38 @@
-import { useEffect } from 'react';
-import messaging from '@react-native-firebase/messaging';
-import navigationService from 'utils/navigationService';
+import { useEffect, useRef } from 'react';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { AppState } from 'react-native';
+import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
+import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import { request } from '@portkey-wallet/api/api-did';
 
-export function useCheckMessageUpdate() {
+export function useReportingSignalR() {
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const unreadCount = useUnreadCount();
+
   useEffect(() => {
-    // From app background status
-    // Assume a message-notification contains a "type" property in the data payload of the screen to open
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Notification caused app to open from background state:', remoteMessage.notification);
-      alert('from background state:' + String(remoteMessage.notification));
-
-      // navigationService.navigate('AboutUs');
+    if (!request.defaultConfig.baseURL) return;
+    signalrFCM.doOpen({
+      url: `${request.defaultConfig.baseURL}`,
     });
-
-    // From app quit status
-    // Check whether an initial notification is available
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          console.log('Notification caused app to open from quit state:', remoteMessage.notification);
-          alert('from quit state:' + String(remoteMessage.notification));
-        }
-      });
   }, []);
+
+  useEffect(() => {
+    // report AppStatus  and unReadMessage
+    let appState = AppStatusUnit.BACKGROUND;
+    if (AppState.currentState === 'background') appState = AppStatusUnit.BACKGROUND;
+    if (AppState.currentState === 'active') appState = AppStatusUnit.FOREGROUND;
+
+    timerRef.current = setInterval(() => {
+      console.log('report AppStatus', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
+      if (!signalrFCM.fcmToken) return;
+      if (!signalrFCM.portkeyToken) return;
+      if (!signalrFCM.signalr) return;
+
+      signalrFCM.reportAppStatus(appState, unreadCount);
+    }, 3000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [unreadCount]);
 }

@@ -7,7 +7,6 @@ import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { AppState, AppStateStatus } from 'react-native';
 import { useCheckUpdate } from 'hooks/device';
-import { useCheckMessageUpdate } from 'hooks/FCM';
 let appState = 'active',
   changeTime = Date.now();
 interface AppListenerProps {
@@ -27,7 +26,6 @@ const AppListener: React.FC<AppListenerProps> = props => {
   }, [autoLockingTime, originChainId, walletInfo]);
   const prevLockingTime = usePrevious(lockingTime);
   const checkUpdate = useCheckUpdate();
-  useCheckMessageUpdate();
 
   useEffect(() => {
     if (prevLockingTime !== lockingTime) lockManager.current?.updateLockTime(lockingTime * 1000);

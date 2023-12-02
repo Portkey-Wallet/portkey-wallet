@@ -98,28 +98,29 @@ export default function HomeScreen() {
 
   const sendRedPackage = useSendRedPackage();
   const sendRedPackageTest = useCallback(async () => {
-    const params = {
-      channelId: 'eff010f5d9dd4df986a20251ae634e86',
-      type: RedPackageTypeEnum.RANDOM,
-      count: 2,
-    };
-
     // const params = {
-    //   // channelId: '54aadf08ab98499ea0313664dc8def96',
-    //   // channelId: '5ff0dba5e16845b89923c2a3118c0e6f',
-    //   channelId: '31e10db9361f49cd923b74548c9acf2a',
-    //   type: RedPackageTypeEnum.P2P,
+    //   channelId: 'eff010f5d9dd4df986a20251ae634e86',
+    //   type: RedPackageTypeEnum.FIXED,
     //   count: 1,
     // };
+
+    const params = {
+      // channelId: '54aadf08ab98499ea0313664dc8def96',
+      // channelId: '5ff0dba5e16845b89923c2a3118c0e6f',
+      // channelId: '31e10db9361f49cd923b74548c9acf2a',
+      channelId: '0f1f398a16b84ca2b6e2d70691f6e8ad',
+      type: RedPackageTypeEnum.P2P,
+      count: 1,
+    };
 
     try {
       const caContract = await getCurrentCAContract();
       const result = await sendRedPackage({
         chainId: 'AELF',
         symbol: 'ELF',
-        totalAmount: '100000000',
+        totalAmount: '10000000',
         decimal: '8',
-        memo: 'test redPackage',
+        memo: `test ${Date.now()}`,
         caContract: caContract,
         ...params,
       });

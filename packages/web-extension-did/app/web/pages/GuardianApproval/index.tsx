@@ -59,6 +59,7 @@ export default function GuardianApproval() {
   const userVerifiedListLogic = useCallback(() => {
     const tempVerifiedList = Object.values(userGuardianStatus ?? {});
     let filterVerifiedList: UserGuardianStatus[] = tempVerifiedList;
+    const _query = query?.split('_')[0];
 
     if (query === 'guardians/edit') {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== preGuardian?.key);

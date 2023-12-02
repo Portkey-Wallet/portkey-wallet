@@ -255,7 +255,7 @@ const PaymentModal = ({
       </View>
       <CommonButton
         onPress={() => {
-          OverlayModal.hide();
+          OverlayModal.hide(false);
           onConfirm(true);
         }}
         disabled={!!(fee.loading || fee.error)}

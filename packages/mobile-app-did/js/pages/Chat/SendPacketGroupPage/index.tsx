@@ -22,6 +22,8 @@ import CommonToast from 'components/CommonToast';
 import { useCheckAllowanceAndApprove, useCheckManagerSyncState } from 'hooks/wallet';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import navigationService from 'utils/navigationService';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type TabItemType = {
   name: string;
@@ -165,42 +167,50 @@ export default function SendPacketGroupPage() {
 
   return (
     <PageContainer
+      titleDom="Send Crypto Box"
+      hideTouchable
       safeAreaColor={['blue', 'gray']}
-      scrollViewProps={{ disabled: false }}
-      hideTouchable={true}
-      containerStyles={styles.containerStyles}
-      titleDom="Send Crypto Box">
-      <View style={[GStyles.flexRow, GStyles.alignCenter]}>
-        <View style={styles.tabHeader}>
-          {tabList.map(tabItem => (
-            <TouchableOpacity
-              key={tabItem.name}
-              onPress={() => {
-                onTabPress(tabItem.type);
-              }}>
-              <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
-                <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
-                  {tabItem.name}
-                </TextM>
-              </View>
-            </TouchableOpacity>
-          ))}
+      scrollViewProps={{ disabled: true }}
+      containerStyles={styles.containerStyles}>
+      <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+        <View style={[GStyles.flexRow, GStyles.alignCenter]}>
+          <View style={styles.tabHeader}>
+            {tabList.map(tabItem => (
+              <TouchableOpacity
+                key={tabItem.name}
+                onPress={() => {
+                  onTabPress(tabItem.type);
+                }}>
+                <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
+                  <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
+                    {tabItem.name}
+                  </TextM>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-      </View>
-      <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
-      <TextM style={styles.tips}>
-        {'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'}
-      </TextM>
+        <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
+        <TextM style={styles.tips}>
+          {
+            'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'
+          }
+        </TextM>
+      </KeyboardAwareScrollView>
     </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
   containerStyles: {
-    ...GStyles.paddingArg(16, 20),
+    position: 'relative',
     flex: 1,
-    backgroundColor: defaultColors.bg6,
+    backgroundColor: defaultColors.bg4,
+    ...GStyles.paddingArg(0, 0),
+  },
+  scrollStyle: {
     minHeight: '100%',
+    ...GStyles.paddingArg(16, 20),
   },
   tabHeader: {
     width: pTd(190),
@@ -234,7 +244,9 @@ const styles = StyleSheet.create({
     ...fonts.mediumFont,
   },
   tips: {
+    marginTop: pTd(40),
     textAlign: 'center',
     color: defaultColors.font3,
+    marginBottom: isIOS ? 0 : pTd(16),
   },
 });

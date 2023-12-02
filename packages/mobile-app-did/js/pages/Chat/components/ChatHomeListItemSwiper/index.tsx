@@ -54,7 +54,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
       return (
         <View style={[GStyles.flexRow, styles.message]}>
           <TextS numberOfLines={1} style={[FontStyles.font7, redPacketIsHighLight && FontStyles.font6]}>
-            {`[Red Packet] `}
+            {`[Crypto Box] `}
           </TextS>
           <TextS numberOfLines={1} style={[FontStyles.font7, styles.redPacketLastMessageContent]}>
             {(item.lastMessageContent as ParsedRedPackage).data.memo}

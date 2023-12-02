@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
@@ -20,6 +20,8 @@ import CommonToast from 'components/CommonToast';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import navigationService from 'utils/navigationService';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 export default function SendPacketP2PPage() {
   const currentChannelId = useCurrentChannelId();
@@ -30,6 +32,7 @@ export default function SendPacketP2PPage() {
   const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
   const checkManagerSyncState = useCheckManagerSyncState();
   const { getContractAddress } = useGetRedPackageConfig(true);
+  const [, resetOverlayCount] = useState(0);
 
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
@@ -122,13 +125,17 @@ export default function SendPacketP2PPage() {
       titleDom="Send Crypto Box"
       hideTouchable
       safeAreaColor={['blue', 'gray']}
-      scrollViewProps={{ disabled: false }}
+      scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
-      <SendRedPacketGroupSection type={RedPackageTypeEnum.P2P} onPressButton={onPressBtn} />
-      <View style={GStyles.flex1} />
-      <TextM style={styles.tips}>
-        {'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'}
-      </TextM>
+      <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+        <SendRedPacketGroupSection type={RedPackageTypeEnum.P2P} onPressButton={onPressBtn} />
+        <View style={GStyles.flex1} onLayout={() => resetOverlayCount(p => p + 1)} />
+        <TextM style={styles.tips}>
+          {
+            'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'
+          }
+        </TextM>
+      </KeyboardAwareScrollView>
     </PageContainer>
   );
 }
@@ -136,9 +143,13 @@ export default function SendPacketP2PPage() {
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
+    flex: 1,
     backgroundColor: defaultColors.bg4,
+    ...GStyles.paddingArg(0, 0),
+  },
+  scrollStyle: {
     minHeight: '100%',
-    ...GStyles.paddingArg(24, 20),
+    ...GStyles.paddingArg(16, 20),
   },
   groupNameWrap: {
     height: pTd(72),
@@ -173,7 +184,9 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   tips: {
+    marginTop: pTd(40),
     textAlign: 'center',
     color: defaultColors.font3,
+    marginBottom: isIOS ? 0 : pTd(16),
   },
 });

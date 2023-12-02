@@ -268,7 +268,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         disabled={!isAllowPrepare}
         type="primary"
         title={'Send Crypto Box'}
-        style={styles.btnStyle}
+        containerStyle={styles.btnStyle}
         onPress={onPreparePress}
       />
     </>

@@ -9,7 +9,7 @@ import { getAllowance } from '@portkey-wallet/utils/contract';
 import { getCurrentCaInfo, getViewTokenContractByChainId } from 'utils/redux';
 import BigNumber from 'bignumber.js';
 import { requestManagerApprove } from 'dapp/dappOverlay';
-import { randomId } from '@portkey-wallet/utils';
+import { randomId, sleep } from '@portkey-wallet/utils';
 import { useGetCAContract } from './contract';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
@@ -64,11 +64,25 @@ export const useCheckAllowanceAndApprove = () => {
 
     const tokenContract = await getViewTokenContractByChainId(chainId);
 
-    const allowance = await getAllowance(tokenContract, {
-      owner: caInfo?.caAddress || '',
-      spender,
-      symbol,
-    });
+    let allowance: string;
+    Loading.show();
+    const startTime = Date.now();
+    try {
+      allowance = await getAllowance(tokenContract, {
+        owner: caInfo?.caAddress || '',
+        spender,
+        symbol,
+      });
+      const diffTime = Date.now() - startTime;
+      if (diffTime < 500) {
+        await sleep(500 - diffTime);
+      }
+    } catch (error) {
+      throw error as any;
+    } finally {
+      Loading.hide();
+    }
+
     const eventName = randomId();
     if (bigAmount.gt(allowance)) {
       const info = await requestManagerApprove(

@@ -116,8 +116,7 @@ export default function SetWalletPin() {
             chainId: value.chainId,
           }),
         );
-        const path = state ? 'register' : 'login';
-        navigate(`/success-page/${path}`);
+        navigate(`/success-page/${state}`);
         setLoading(false);
 
         ModalTip({

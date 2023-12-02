@@ -114,7 +114,7 @@ export const RedPacketDetails = () => {
 
   const headerDom = useMemo(() => {
     return (
-      <View style={[GStyles.center, styles.topWrap]} onLayout={() => resetOverlayCount(pre => pre + 1)}>
+      <View style={[GStyles.center, styles.topWrap]}>
         <CommonAvatar
           resizeMode="cover"
           style={styles.sendAvatar}
@@ -168,7 +168,7 @@ export const RedPacketDetails = () => {
           <Svg icon="left-arrow" size={pTd(20)} color={defaultColors.font2} />
         </Touchable>
       </ImageBackground>
-      <View style={GStyles.flex1}>
+      <View style={GStyles.flex1} onLayout={() => resetOverlayCount(pre => pre + 1)}>
         {isP2P && !isMyPacket && redPacketData?.isRedPackageFullyClaimed ? (
           headerDom
         ) : (

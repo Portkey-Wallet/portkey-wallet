@@ -13,7 +13,10 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		19EC8BC9327908E9BDB886C0 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4EB37D631CAABEBC0CC18B /* ExpoModulesProvider.swift */; };
 		2B25ECFC2A1B48DC00586D7D /* InpageBridgeWeb3.js in Resources */ = {isa = PBXBuildFile; fileRef = 2B25ECFB2A1B48DC00586D7D /* InpageBridgeWeb3.js */; };
+		2B2BE6B12B1B033C00398E50 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B2BE6B02B1B033C00398E50 /* NotificationService.m */; };
+		2B2BE6B52B1B033C00398E50 /* ImageNotification.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2B2BE6AD2B1B033C00398E50 /* ImageNotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4829DA60155431BA80859D69 /* libPods-Portkey.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CBC1376EE4546148277B04B0 /* libPods-Portkey.a */; };
+		5D567DBB70848747E4DF35CF /* libPods-ImageNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F239A7312667BA17FE8595F /* libPods-ImageNotification.a */; };
 		6067DF7E96A3512FE02CDF4C /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EB8AAA944A581AA64A54B32 /* ExpoModulesProvider.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9C403D3329E5603000035DBC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C403D3229E5603000035DBC /* GoogleService-Info.plist */; };
@@ -29,7 +32,28 @@
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
 			remoteInfo = Portkey;
 		};
+		2B2BE6B32B1B033C00398E50 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B2BE6AC2B1B033C00398E50;
+			remoteInfo = ImageNotification;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2B2BE6B62B1B033C00398E50 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				2B2BE6B52B1B033C00398E50 /* ImageNotification.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		00E356EE1AD99517003FC87E /* PortkeyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PortkeyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,7 +65,12 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Portkey/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Portkey/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Portkey/main.m; sourceTree = "<group>"; };
+		1F239A7312667BA17FE8595F /* libPods-ImageNotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ImageNotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2B25ECFB2A1B48DC00586D7D /* InpageBridgeWeb3.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = InpageBridgeWeb3.js; path = ../js/utils/InpageBridgeWeb3.js; sourceTree = "<group>"; };
+		2B2BE6AD2B1B033C00398E50 /* ImageNotification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ImageNotification.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B2BE6AF2B1B033C00398E50 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		2B2BE6B02B1B033C00398E50 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
+		2B2BE6B22B1B033C00398E50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2B4CF73429344C200071ED92 /* hermes.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = hermes.xcframework; path = "Pods/hermes-engine/destroot/Library/Frameworks/universal/hermes.xcframework"; sourceTree = "<group>"; };
 		2B96396A28ACF299003CD665 /* Portkey.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Portkey.entitlements; path = Portkey/Portkey.entitlements; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Portkey.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey.debug.xcconfig"; path = "Target Support Files/Pods-Portkey/Pods-Portkey.debug.xcconfig"; sourceTree = "<group>"; };
@@ -49,6 +78,7 @@
 		5B7EB9410499542E8C5724F5 /* Pods-Portkey-DIDTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey-DIDTests.debug.xcconfig"; path = "Target Support Files/Pods-Portkey-DIDTests/Pods-Portkey-DIDTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5C4EB37D631CAABEBC0CC18B /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Portkey-PortkeyTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Portkey/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		83CFC53DB2ED967129CD7113 /* Pods-ImageNotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.release.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.release.xcconfig"; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-Portkey-DIDTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey-DIDTests.release.xcconfig"; path = "Target Support Files/Pods-Portkey-DIDTests/Pods-Portkey-DIDTests.release.xcconfig"; sourceTree = "<group>"; };
 		9C403D3229E5603000035DBC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		9EB8AAA944A581AA64A54B32 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Portkey/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -58,6 +88,7 @@
 		D8B841D69BD6243E09089D47 /* Pods-Portkey-PortkeyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey-PortkeyTests.release.xcconfig"; path = "Target Support Files/Pods-Portkey-PortkeyTests/Pods-Portkey-PortkeyTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F516F04C5343350422866DD6 /* Pods-Portkey-PortkeyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Portkey-PortkeyTests.debug.xcconfig"; path = "Target Support Files/Pods-Portkey-PortkeyTests/Pods-Portkey-PortkeyTests.debug.xcconfig"; sourceTree = "<group>"; };
+		FC8A208655444E35B83A45DC /* Pods-ImageNotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ImageNotification.debug.xcconfig"; path = "Target Support Files/Pods-ImageNotification/Pods-ImageNotification.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +105,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				4829DA60155431BA80859D69 /* libPods-Portkey.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B2BE6AA2B1B033C00398E50 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D567DBB70848747E4DF35CF /* libPods-ImageNotification.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,6 +168,16 @@
 			name = Portkey;
 			sourceTree = "<group>";
 		};
+		2B2BE6AE2B1B033C00398E50 /* ImageNotification */ = {
+			isa = PBXGroup;
+			children = (
+				2B2BE6AF2B1B033C00398E50 /* NotificationService.h */,
+				2B2BE6B02B1B033C00398E50 /* NotificationService.m */,
+				2B2BE6B22B1B033C00398E50 /* Info.plist */,
+			);
+			path = ImageNotification;
+			sourceTree = "<group>";
+		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -136,6 +185,7 @@
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				CBC1376EE4546148277B04B0 /* libPods-Portkey.a */,
 				D8495AACC538C0C18A1ADB57 /* libPods-Portkey-PortkeyTests.a */,
+				1F239A7312667BA17FE8595F /* libPods-ImageNotification.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -163,6 +213,7 @@
 				13B07FAE1A68108700A75B9A /* Portkey */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* PortkeyTests */,
+				2B2BE6AE2B1B033C00398E50 /* ImageNotification */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
@@ -178,6 +229,7 @@
 			children = (
 				13B07F961A680F5B00A75B9A /* Portkey.app */,
 				00E356EE1AD99517003FC87E /* PortkeyTests.xctest */,
+				2B2BE6AD2B1B033C00398E50 /* ImageNotification.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -191,6 +243,8 @@
 				89C6BE57DB24E9ADA2F236DE /* Pods-Portkey-DIDTests.release.xcconfig */,
 				F516F04C5343350422866DD6 /* Pods-Portkey-PortkeyTests.debug.xcconfig */,
 				D8B841D69BD6243E09089D47 /* Pods-Portkey-PortkeyTests.release.xcconfig */,
+				FC8A208655444E35B83A45DC /* Pods-ImageNotification.debug.xcconfig */,
+				83CFC53DB2ED967129CD7113 /* Pods-ImageNotification.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -234,15 +288,35 @@
 				9DFEA78485ED6E65937C7504 /* [CP-User] [RNFB] Core Configuration */,
 				8365FD4267607D634034D505 /* [CP-User] [RNFB] Crashlytics Configuration */,
 				6063C2F68830469A811F6745 /* Upload Debug Symbols to Sentry */,
+				2B2BE6B62B1B033C00398E50 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				2B2BE6B42B1B033C00398E50 /* PBXTargetDependency */,
 			);
 			name = Portkey;
 			productName = Portkey;
 			productReference = 13B07F961A680F5B00A75B9A /* Portkey.app */;
 			productType = "com.apple.product-type.application";
+		};
+		2B2BE6AC2B1B033C00398E50 /* ImageNotification */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2B2BE6B92B1B033C00398E50 /* Build configuration list for PBXNativeTarget "ImageNotification" */;
+			buildPhases = (
+				EE311A2B1F38C7780BEC4E1E /* [CP] Check Pods Manifest.lock */,
+				2B2BE6A92B1B033C00398E50 /* Sources */,
+				2B2BE6AA2B1B033C00398E50 /* Frameworks */,
+				2B2BE6AB2B1B033C00398E50 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ImageNotification;
+			productName = ImageNotification;
+			productReference = 2B2BE6AD2B1B033C00398E50 /* ImageNotification.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -258,6 +332,9 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1120;
+					};
+					2B2BE6AC2B1B033C00398E50 = {
+						CreatedOnToolsVersion = 14.2;
 					};
 				};
 			};
@@ -276,6 +353,7 @@
 			targets = (
 				13B07F861A680F5B00A75B9A /* Portkey */,
 				00E356ED1AD99517003FC87E /* PortkeyTests */,
+				2B2BE6AC2B1B033C00398E50 /* ImageNotification */,
 			);
 		};
 /* End PBXProject section */
@@ -297,6 +375,13 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				E5A1B79EA5754765B45B0F05 /* SplashScreen.storyboard in Resources */,
 				9C403D3329E5603000035DBC /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B2BE6AB2B1B033C00398E50 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,6 +538,28 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Portkey/Pods-Portkey-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		EE311A2B1F38C7780BEC4E1E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ImageNotification-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -511,6 +618,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2B2BE6A92B1B033C00398E50 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B2BE6B12B1B033C00398E50 /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -518,6 +633,11 @@
 			isa = PBXTargetDependency;
 			target = 13B07F861A680F5B00A75B9A /* Portkey */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
+		};
+		2B2BE6B42B1B033C00398E50 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2B2BE6AC2B1B033C00398E50 /* ImageNotification */;
+			targetProxy = 2B2BE6B32B1B033C00398E50 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -640,6 +760,82 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		2B2BE6B72B1B033C00398E50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FC8A208655444E35B83A45DC /* Pods-ImageNotification.debug.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 56DKXVFJS2;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImageNotification/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+				PRODUCT_BUNDLE_IDENTIFIER = com.portkey.did.ImageNotification;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		2B2BE6B82B1B033C00398E50 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 83CFC53DB2ED967129CD7113 /* Pods-ImageNotification.release.xcconfig */;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 56DKXVFJS2;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImageNotification/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ImageNotification;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+				PRODUCT_BUNDLE_IDENTIFIER = com.portkey.did.ImageNotification;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -797,6 +993,15 @@
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
 				13B07F951A680F5B00A75B9A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2B2BE6B92B1B033C00398E50 /* Build configuration list for PBXNativeTarget "ImageNotification" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2B2BE6B72B1B033C00398E50 /* Debug */,
+				2B2BE6B82B1B033C00398E50 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

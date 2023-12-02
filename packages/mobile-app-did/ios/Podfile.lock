@@ -100,7 +100,7 @@ PODS:
   - Firebase/Performance (10.15.0):
     - Firebase/CoreOnly
     - FirebasePerformance (~> 10.15.0)
-  - FirebaseABTesting (10.16.0):
+  - FirebaseABTesting (10.18.0):
     - FirebaseCore (~> 10.0)
   - FirebaseAnalytics (10.15.0):
     - FirebaseAnalytics/AdIdSupport (= 10.15.0)
@@ -164,10 +164,11 @@ PODS:
     - GoogleUtilities/ISASwizzler (~> 7.8)
     - GoogleUtilities/MethodSwizzler (~> 7.8)
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - FirebaseRemoteConfig (10.16.0):
+  - FirebaseRemoteConfig (10.18.0):
     - FirebaseABTesting (~> 10.0)
     - FirebaseCore (~> 10.0)
     - FirebaseInstallations (~> 10.0)
+    - FirebaseSharedSwift (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
   - FirebaseSessions (10.16.0):
@@ -178,6 +179,7 @@ PODS:
     - GoogleUtilities/Environment (~> 7.10)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesSwift (~> 2.1)
+  - FirebaseSharedSwift (10.18.0)
   - Flipper (0.125.0):
     - Flipper-Folly (~> 2.6)
     - Flipper-RSocket (~> 1.4)
@@ -798,6 +800,8 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - Firebase
+  - Firebase/Messaging
+  - FirebaseABTesting
   - FirebaseAppCheck
   - FirebaseCore
   - FirebaseCoreExtension
@@ -805,6 +809,7 @@ DEPENDENCIES:
   - FirebaseCrashlytics
   - FirebaseInstallations
   - FirebaseMessaging
+  - FirebaseSessions
   - Flipper (= 0.125.0)
   - Flipper-Boost-iOSX (= 1.76.0.1.11)
   - Flipper-DoubleConversion (= 3.2.0.1)
@@ -917,6 +922,7 @@ SPEC REPOS:
     - FirebasePerformance
     - FirebaseRemoteConfig
     - FirebaseSessions
+    - FirebaseSharedSwift
     - Flipper
     - Flipper-Boost-iOSX
     - Flipper-DoubleConversion
@@ -1171,7 +1177,7 @@ SPEC CHECKSUMS:
   FBLazyVector: 6b7f5692909b4300d50e7359cdefbcd09dd30faa
   FBReactNativeSpec: affcf71d996f6b0c01f68883482588297b9d5e6e
   Firebase: 66043bd4579e5b73811f96829c694c7af8d67435
-  FirebaseABTesting: 03f0a8b88cf618350527f2c6a2234e29b9c65064
+  FirebaseABTesting: d8b10ff4c6d1a9d6b11f02a08463ad5fd9fc6b1b
   FirebaseAnalytics: 47cef43728f81a839cf1306576bdd77ffa2eac7e
   FirebaseAppCheck: 66eea1c882cddd1bce9d92a0a7efd596f7204782
   FirebaseCore: 2cec518b43635f96afe7ac3a9c513e47558abd2e
@@ -1181,8 +1187,9 @@ SPEC CHECKSUMS:
   FirebaseInstallations: b822f91a61f7d1ba763e5ccc9d4f2e6f2ed3b3ee
   FirebaseMessaging: 0c0ae1eb722ef0c07f7801e5ded8dccd1357d6d4
   FirebasePerformance: b7988bc06c87e9c3b9e6b1ae854cd460b646ebd6
-  FirebaseRemoteConfig: 17ec974c6cac5cdc6cf8297062c2219851857f06
+  FirebaseRemoteConfig: bbd42790a4e84fde6aab7eae810b608e7b5c0bf6
   FirebaseSessions: 96e7781e545929cde06dd91088ddbb0841391b43
+  FirebaseSharedSwift: 62e248642c0582324d0390706cadd314687c116b
   Flipper: 26fc4b7382499f1281eb8cb921e5c3ad6de91fe0
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
@@ -1279,6 +1286,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: c2b36de418bec62be55285f4da56e83dd207df3f
+PODFILE CHECKSUM: 4f625d93b6e40e8477de2f9c546abba40464b420
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.13.0

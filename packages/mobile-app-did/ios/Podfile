@@ -31,6 +31,7 @@ target 'Portkey' do
   pod 'Firebase', :modular_headers => true
   pod 'FirebaseCore', :modular_headers => true
   pod 'FirebaseCoreInternal', :modular_headers => true
+  pod 'FirebaseSessions', :modular_headers => true
   pod 'FirebaseCoreExtension', :modular_headers => true
   pod 'FirebaseAppCheck', :modular_headers => true
   pod 'FirebaseCrashlytics', :modular_headers => true
@@ -78,4 +79,12 @@ target 'Portkey' do
       end
     end
   end
+end
+
+
+target 'ImageNotification' do
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'FirebaseABTesting', :modular_headers => true
+  pod 'FirebaseMessaging', :modular_headers => true
+  pod 'Firebase/Messaging', :modular_headers => true
 end

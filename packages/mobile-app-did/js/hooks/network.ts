@@ -22,8 +22,6 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
   const { t } = useLanguage();
   const onConfirm = useThrottleCallback(
     async (network: NetworkItem, logged: boolean) => {
-      if (!route) return;
-
       let routeName: keyof RootStackParamList = 'LoginPortkey';
       if (logged) routeName = 'Tab';
       resetStore();

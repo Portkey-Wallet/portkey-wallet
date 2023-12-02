@@ -90,9 +90,8 @@ const ApproveModal = (props: SignModalPropsType) => {
             targetChainId,
             approvalType: ApprovalType.managerApprove,
           });
-          await sleep(250);
           dispatch(changeDrawerOpenStatus(false));
-          OverlayModal.hide();
+          OverlayModal.hide(false);
         },
       },
     ],

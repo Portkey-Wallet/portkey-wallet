@@ -134,7 +134,9 @@ export const RedPacketDetails = () => {
               amountShow={divDecimalsStr(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal)}
               symbol={redPacketData?.symbol || ''}
             />
-            <TextS style={[FontStyles.font15, styles.tips]}>Red Packet transferred to Wallet</TextS>
+            <TextS style={[FontStyles.font15, styles.tips]}>
+              {'You can find the claiming record in the "Activity" section.'}
+            </TextS>
           </>
         )}
       </View>

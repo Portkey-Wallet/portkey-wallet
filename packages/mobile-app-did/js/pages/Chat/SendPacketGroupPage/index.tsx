@@ -21,6 +21,7 @@ import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
 import { useCheckAllowanceAndApprove, useCheckManagerSyncState } from 'hooks/wallet';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import navigationService from 'utils/navigationService';
 
 type TabItemType = {
   name: string;
@@ -86,13 +87,14 @@ export default function SendPacketGroupPage() {
           bigAmount: totalAmount,
           ...values,
           decimals: Number(values.decimals),
+          isShowOnceLoading: true,
         });
       } catch (error) {
         console.log(error, 'send check ====error');
         return;
       }
 
-      Loading.show();
+      Loading.showOnce();
       try {
         await sendRedPackage({
           chainId: values.chainId,
@@ -105,6 +107,8 @@ export default function SendPacketGroupPage() {
           count: Number(values.packetNum || 1),
           channelId: currentChannelId || '',
         });
+        CommonToast.success('Sent successfully!');
+        navigationService.goBack();
       } catch (error) {
         console.log(error, 'sendRedPackage ====error');
       } finally {
@@ -164,7 +168,7 @@ export default function SendPacketGroupPage() {
       scrollViewProps={{ disabled: false }}
       hideTouchable={true}
       containerStyles={styles.containerStyles}
-      titleDom="Send Red Packet">
+      titleDom="Send Crypto Box">
       <View style={[GStyles.flexRow, GStyles.alignCenter]}>
         <View style={styles.tabHeader}>
           {tabList.map(tabItem => (
@@ -183,14 +187,20 @@ export default function SendPacketGroupPage() {
         </View>
       </View>
       <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
-      <TextM style={styles.tips}>Red Packets not opened within 24 hours will be refunded. </TextM>
+      <TextM style={styles.tips}>
+        {'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'}
+      </TextM>
     </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  containerStyles: { ...GStyles.paddingArg(16, 20), flex: 1, backgroundColor: defaultColors.bg6 },
-
+  containerStyles: {
+    ...GStyles.paddingArg(16, 20),
+    flex: 1,
+    backgroundColor: defaultColors.bg6,
+    minHeight: '100%',
+  },
   tabHeader: {
     width: pTd(190),
     backgroundColor: defaultColors.bg18,

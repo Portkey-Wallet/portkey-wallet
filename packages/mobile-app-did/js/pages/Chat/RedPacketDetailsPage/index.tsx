@@ -24,6 +24,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { divDecimalsStr } from '@portkey-wallet/utils/converter';
 import { useEffectOnce } from '@portkey-wallet/hooks';
+import { formatRedPacketNoneLeftTime, getNumberWithUnit, getUnit } from '../utils/format';
 
 export type RedPacketRouterParams = {
   redPacketId: string;
@@ -72,36 +73,45 @@ export const RedPacketDetails = () => {
         redPacketData?.decimal,
       )} ${redPacketData?.symbol} unclaimed.`;
 
-    // !isP2P  && !isRedPackageFullyClaimed & expired
-    if (!isP2P && !redPacketData?.isRedPackageFullyClaimed && redPacketData?.isRedPackageExpired)
-      return `Crypto box(es) expired, with ${redPacketData?.grabbed}/${
-        redPacketData?.count
-      } opened and ${divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal)}/${divDecimalsStr(
+    // !isP2P  && my wallet && isRedPackageFullyClaimed
+    if (!isP2P && isMyPacket && redPacketData?.isRedPackageFullyClaimed)
+      return `${getNumberWithUnit(redPacketData.count, 'crypto box', 'crypto boxes')} with ${divDecimalsStr(
+        redPacketData?.totalAmount,
+        redPacketData?.decimal,
+      )} ${redPacketData?.symbol} in total, opened in ${formatRedPacketNoneLeftTime(
+        redPacketData.createTime,
+        redPacketData.endTime,
+      )}`;
+
+    // !isP2P  && my wallet && !isRedPackageFullyClaimed
+    if (!isP2P && isMyPacket && !redPacketData?.isRedPackageFullyClaimed && redPacketData?.isRedPackageExpired)
+      return `${redPacketData?.grabbed}/${redPacketData?.count} crypto ${getUnit(
+        redPacketData?.count,
+        'box',
+        'boxes',
+      )} opened, with ${divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal, '0')}/${divDecimalsStr(
         redPacketData?.totalAmount,
         redPacketData?.decimal,
       )} ${redPacketData?.symbol} claimed.`;
 
-    // !isP2P  && !isRedPackageFullyClaimed & !expired
-    if (!isP2P && !redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isRedPackageExpired)
-      return `${redPacketData?.grabbed}/${redPacketData?.count} crypto box(es) opened, with ${divDecimalsStr(
-        redPacketData?.grabbedAmount,
+    // !isP2P  && grabbed & expired
+    if (!isP2P && redPacketData?.currentUserGrabbedAmount && redPacketData?.isRedPackageExpired)
+      return `Crypto ${getUnit(redPacketData?.count || 1, 'box', 'boxes')} expired, with ${redPacketData?.grabbed}/${
+        redPacketData?.count
+      } opened and  ${divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal)}/${divDecimalsStr(
+        redPacketData?.totalAmount,
         redPacketData?.decimal,
-        '0',
-      )}/${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${redPacketData?.symbol} claimed.`;
-
-    // !isP2P  && !isRedPackageFullyClaimed & !expired
-    if (!isP2P && !redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isRedPackageExpired)
-      return `${redPacketData?.grabbed}/${redPacketData?.count} crypto box(es) opened, with ${divDecimalsStr(
-        redPacketData?.grabbedAmount,
-        redPacketData?.decimal,
-      )}/${divDecimalsStr(redPacketData?.totalAmount, redPacketData?.decimal)} ${redPacketData?.symbol} claimed.`;
+      )} ${redPacketData?.symbol} claimed.`;
 
     return '';
   }, [
     isMyPacket,
     isP2P,
     redPacketData?.count,
+    redPacketData?.createTime,
+    redPacketData?.currentUserGrabbedAmount,
     redPacketData?.decimal,
+    redPacketData?.endTime,
     redPacketData?.grabbed,
     redPacketData?.grabbedAmount,
     redPacketData?.isRedPackageExpired,
@@ -132,7 +142,9 @@ export const RedPacketDetails = () => {
               amountShow={divDecimalsStr(redPacketData?.currentUserGrabbedAmount, redPacketData?.decimal)}
               symbol={redPacketData?.symbol || ''}
             />
-            <TextS style={[FontStyles.font15, styles.tips]}>Red Packet transferred to Wallet</TextS>
+            <TextS style={[FontStyles.font15, styles.tips]}>
+              {`You can find the claiming record in the "Activity" section.`}
+            </TextS>
           </>
         )}
       </View>

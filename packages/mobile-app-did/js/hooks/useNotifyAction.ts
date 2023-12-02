@@ -17,9 +17,6 @@ import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
 
 export const useNotifyAction = () => {
-  const { t } = useLanguage();
-  const changeNetwork = useChangeNetwork({ key: 'tab', name: 'tab' });
-
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
   const jumpToChatDetails = useJumpToChatDetails();
 
@@ -27,26 +24,6 @@ export const useNotifyAction = () => {
     (action: NOTIFY_ACTION, data?: FCMMessageData) => {
       try {
         switch (action) {
-          case NOTIFY_ACTION.switchNetwork: {
-            ActionSheet.alert({
-              title: t('Switch????'),
-              message: t('switch network'),
-              buttons: [
-                {
-                  title: t('No'),
-                  type: 'outline',
-                },
-                {
-                  title: t('Yes'),
-                  onPress: async () => {
-                    changeNetwork();
-                  },
-                },
-              ],
-            });
-            break;
-          }
-
           case NOTIFY_ACTION.openChat: {
             if (!data) return;
             const { channelId = '', channelType } = data;
@@ -68,11 +45,12 @@ export const useNotifyAction = () => {
         console.log(error);
       }
     },
-    [changeNetwork, jumpToChatDetails, jumpToChatGroupDetails, t],
+    [jumpToChatDetails, jumpToChatGroupDetails],
   );
 };
 
 export const useNotify = () => {
+  const { t } = useLanguage();
   const { address, caHash } = useCurrentWalletInfo();
 
   const pin = usePin();
@@ -81,6 +59,7 @@ export const useNotify = () => {
   const [remoteData, setRemoteData] = useState<any>();
 
   const notifyAct = useNotifyAction();
+  const changeNetwork = useChangeNetwork({ key: 'tab', name: 'tab' });
 
   const handleBackGroundMessage = useCallback(
     (data: FCMMessageData) => {
@@ -88,10 +67,25 @@ export const useNotify = () => {
       if (netWorkType === messageNetworkType) {
         notifyAct(NOTIFY_ACTION.openChat, data);
       } else {
-        notifyAct(NOTIFY_ACTION.switchNetwork);
+        ActionSheet.alert({
+          title: t(`Do you want to switch to ${messageNetworkType} to view the new messages?`),
+          message: t(`Upon confirmation, you will be switched to ${messageNetworkType} to view the messages.`),
+          buttons: [
+            {
+              title: t('Cancel'),
+              type: 'outline',
+            },
+            {
+              title: t('Confirm'),
+              onPress: async () => {
+                changeNetwork();
+              },
+            },
+          ],
+        });
       }
     },
-    [netWorkType, notifyAct],
+    [changeNetwork, netWorkType, notifyAct, t],
   );
 
   useEffect(() => {

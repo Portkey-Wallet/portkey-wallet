@@ -1,4 +1,4 @@
-import { Message as IMMessage } from '@portkey-wallet/im/types';
+import { Message as IMMessage, ParsedImage } from '@portkey-wallet/im/types';
 import { ChatMessage } from '../types';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import dayjs from 'dayjs';
@@ -26,12 +26,14 @@ export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
         case 'IMAGE': {
           if (typeof ele.parsedContent !== 'string') {
             delete (msg as any).text;
-            msg.image = decodeURIComponent(ele.parsedContent?.thumbImgUrl || ele.parsedContent?.imgUrl || '');
+            msg.image = decodeURIComponent(
+              (ele.parsedContent as ParsedImage)?.thumbImgUrl || (ele.parsedContent as ParsedImage)?.imgUrl || '',
+            );
             msg.imageInfo = {
-              width: ele.parsedContent?.width,
-              height: ele.parsedContent?.height,
-              imgUri: decodeURIComponent(ele.parsedContent?.imgUrl || ''),
-              thumbUri: decodeURIComponent(ele.parsedContent?.thumbImgUrl || ''),
+              width: (ele.parsedContent as ParsedImage)?.width,
+              height: (ele.parsedContent as ParsedImage)?.height,
+              imgUri: decodeURIComponent((ele.parsedContent as ParsedImage)?.imgUrl || ''),
+              thumbUri: decodeURIComponent((ele.parsedContent as ParsedImage)?.thumbImgUrl || ''),
             };
           }
           break;
@@ -65,6 +67,11 @@ export const formatMessageList = (message: IMMessage[]): ChatMessage[] => {
 export const getNumberWithUnit = (num: number, singleUnit: string, pluralUnit: string) => {
   if (num <= 1) return `${num} ${singleUnit}`;
   return `${num} ${pluralUnit}`;
+};
+
+export const getUnit = (num: number, singleUnit: string, pluralUnit: string) => {
+  if (num <= 1) return singleUnit;
+  return pluralUnit;
 };
 
 export const formatRedPacketNoneLeftTime = (startTimestamp: number, endTimestamp: number): string => {

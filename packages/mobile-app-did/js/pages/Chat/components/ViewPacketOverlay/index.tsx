@@ -131,10 +131,11 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
         const data = await init({ id: redPacketId });
         navigationService.navigate('RedPacketDetails', { redPacketId, data });
         setShowDialogCloseButton(false);
+        openBtnRef.current?.destroyDom();
         startAnimation();
       } else {
-        setIsGrabFail(true);
         openBtnRef.current?.destroyDom();
+        setIsGrabFail(true);
       }
     } catch (error) {
       openBtnRef.current?.stopRotate();

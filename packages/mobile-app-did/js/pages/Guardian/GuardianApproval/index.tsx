@@ -2,7 +2,7 @@ import { TextM, TextXXXL } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
@@ -37,6 +37,7 @@ import { useGetCurrentCAContract } from 'hooks/contract';
 import { GuardiansApproved, GuardiansStatus, GuardiansStatusItem } from '../types';
 import { handleGuardiansApproved } from 'utils/login';
 import { useOnRequestOrSetPin } from 'hooks/login';
+import { useIsFocused } from '@react-navigation/native';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -48,6 +49,7 @@ export type RouterParams = {
   removeManagerAddress?: string;
   loginType?: LoginType;
   authenticationInfo?: AuthenticationInfo;
+  initGuardiansStatus?: GuardiansStatus;
 };
 export default function GuardianApproval() {
   const {
@@ -60,6 +62,7 @@ export default function GuardianApproval() {
     removeManagerAddress,
     loginType,
     authenticationInfo: _authenticationInfo,
+    initGuardiansStatus,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
 
@@ -90,7 +93,7 @@ export default function GuardianApproval() {
     };
   });
 
-  const [guardiansStatus, setApproved] = useState<GuardiansStatus>();
+  const [guardiansStatus, setApproved] = useState<GuardiansStatus | undefined>(initGuardiansStatus);
   const [isExpired, setIsExpired] = useState<boolean>();
 
   const guardianExpiredTime = useRef<number>();
@@ -128,7 +131,11 @@ export default function GuardianApproval() {
       expiredTimer && clearInterval(expiredTimer);
     };
   });
-
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isSuccess && isFocused && !isExpired) onFinish();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, isFocused, isExpired]);
   const onBack = useCallback(() => {
     if (approvalType === ApprovalType.addGuardian) {
       navigationService.navigate('GuardianEdit');
@@ -138,6 +145,24 @@ export default function GuardianApproval() {
   }, [approvalType]);
   const onRequestOrSetPin = useOnRequestOrSetPin();
   const registerAccount = useCallback(() => {
+    console.log(
+      {
+        managerInfo: {
+          verificationType: VerificationType.communityRecovery,
+          loginAccount,
+          type: loginType,
+        } as ManagerInfo,
+        guardiansApproved: handleGuardiansApproved(
+          guardiansStatus as GuardiansStatus,
+          userGuardiansList as UserGuardianItem[],
+        ) as GuardiansApproved,
+        verifierInfo,
+      },
+      guardiansStatus,
+      userGuardiansList,
+      '=====registerAccount',
+    );
+
     onRequestOrSetPin({
       managerInfo: {
         verificationType: VerificationType.communityRecovery,
@@ -156,6 +181,7 @@ export default function GuardianApproval() {
     if (!managerAddress || !caHash || !verifierInfo || !guardianItem || !guardiansStatus || !userGuardiansList) return;
     Loading.show({ text: t('Processing on the chain...') });
     try {
+      // o != origin
       const caContract = await getCurrentCAContract();
       const req = await addGuardian(
         caContract,
@@ -318,7 +344,7 @@ export default function GuardianApproval() {
                 <Svg color={FontStyles.font3.color} size={pTd(16)} icon="question-mark" />
               </Touchable>
             </View>
-            <TextM>
+            <TextM style={styles.approvalRow}>
               <TextM style={FontStyles.font4}>{approvedList.length ?? 0}</TextM>/{guardianCount}
             </TextM>
           </View>
@@ -351,6 +377,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
     justifyContent: 'space-between',
+    paddingHorizontal: pTd(20),
   },
   expireText: {
     marginTop: 8,

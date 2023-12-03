@@ -7,14 +7,14 @@ import { defaultColors } from 'assets/theme';
 import { ChatMessage } from 'pages/Chat/types';
 import GStyles from 'assets/theme/GStyles';
 
-function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?: any }) {
+function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?: ChatMessage }) {
   const { previousMessage, currentMessage } = props;
 
   const isMarginTop8 = useMemo(() => {
     if (previousMessage?.messageType === currentMessage?.messageType) return true;
   }, [currentMessage, previousMessage]);
 
-  console.log('previousMessage', previousMessage, currentMessage);
+  // console.log('previousMessage', previousMessage, currentMessage);
 
   return (
     <TextS style={[styles.textStyles, isMarginTop8 && GStyles.marginTop(pTd(8))]}>{currentMessage?.content}</TextS>

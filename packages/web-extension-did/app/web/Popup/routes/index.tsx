@@ -35,6 +35,9 @@ import RecentDetail from 'pages/Send/components/RecentDetail';
 import ConnectedSites from 'pages/WalletSecurity/ConnectedSites';
 import SiteDetail from 'pages/WalletSecurity/ConnectedSites/SiteDetail';
 import FindMore from 'pages/Contacts/FindMore';
+import PaymentSecurity from 'pages/WalletSecurity/PaymentSecurity/PaymentSecurity';
+import TransferSettings from 'pages/WalletSecurity/PaymentSecurity/TransferSettings';
+import TransferSettingsEdit from 'pages/WalletSecurity/PaymentSecurity/TransferSettingsEdit';
 import ChatList from 'pages/IMChat/ChatList';
 import ChatBox from 'pages/IMChat/ChatBox';
 import NewChat from 'pages/IMChat/NewChat';
@@ -214,6 +217,26 @@ export const PageRouter = () =>
     {
       path: '/setting/wallet-security/connected-sites/:origin',
       element: <SiteDetail />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security',
+      element: <PaymentSecurity />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/transfer-settings',
+      element: <TransferSettings />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/transfer-settings-edit',
+      element: <TransferSettingsEdit />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/verifier-account',
+      element: <VerifierAccount />,
+    },
+    {
+      path: '/setting/wallet-security/payment-security/guardian-approval',
+      element: <GuardianApproval />,
     },
     {
       path: '/chat-list',

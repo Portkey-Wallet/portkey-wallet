@@ -23,9 +23,12 @@ import { getInfo } from 'utils/fs';
 import { MAX_FILE_SIZE_BYTE } from '@portkey-wallet/constants/constants-ca/im';
 import { changeCanLock } from 'utils/LockManager';
 import { useLanguage } from 'i18n/hooks';
+import { useCurrentChannel } from 'pages/Chat/context/hooks';
 
 export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType }) {
   const { t } = useLanguage();
+  const currentChannel = useCurrentChannel();
+  const currentIsGroupChat = currentChannel?.currentChannelType === 'Group';
   const [, requestQrPermission] = useQrScanPermission();
   const { sendChannelImage, sendChannelMessage } = useSendCurrentChannelMessage();
 
@@ -117,13 +120,23 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
             },
           }),
       },
+      {
+        label: 'Crypto Box',
+        icon: 'send-red-packet-button',
+        onPress: () => {
+          navigationService.navigate(currentIsGroupChat ? 'SendPacketGroupPage' : 'SendPacketP2PPage');
+        },
+      },
     ];
-  }, [requestQrPermission, selectPhoto, sendChannelMessage, showDialog]);
+  }, [currentIsGroupChat, requestQrPermission, selectPhoto, sendChannelMessage, showDialog]);
 
   return (
     <View style={[GStyles.flex1, GStyles.flexRowWrap, styles.wrap, style]}>
-      {toolList.map(ele => (
-        <Touchable key={ele.label} style={[GStyles.center, styles.toolsItem]} onPress={ele.onPress}>
+      {toolList.map((ele, idx) => (
+        <Touchable
+          key={ele.label}
+          style={[GStyles.center, styles.toolsItem, idx % 4 === 3 && styles.marginRight0]}
+          onPress={ele.onPress}>
           <View style={[GStyles.center, styles.toolsItemIconWrap]}>
             <Svg icon={ele.icon} size={pTd(24)} color={defaultColors.font5} />
           </View>
@@ -141,7 +154,10 @@ const styles = StyleSheet.create({
   toolsItem: {
     width: pTd(77),
     height: pTd(76),
-    marginRight: pTd(8),
+    marginRight: pTd(10),
+  },
+  marginRight0: {
+    marginRight: 0,
   },
   toolsItemIconWrap: {
     backgroundColor: defaultColors.bg1,

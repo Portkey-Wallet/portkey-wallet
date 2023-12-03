@@ -73,7 +73,7 @@ const AboutUs = () => {
       <View style={styles.btnContainer}>
         {officialList.map((item, index) => (
           <View key={index}>
-            <MenuItem icon={item.iconName} title={item.title} onPress={() => item.onPress()} />
+            <MenuItem icon={item.iconName} title={item.title} onPress={item.onPress} />
             {index !== officialList.length - 1 && <Divider style={styles.dividerStyle} />}
           </View>
         ))}

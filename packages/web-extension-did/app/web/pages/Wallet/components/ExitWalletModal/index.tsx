@@ -8,7 +8,7 @@ import { useLoading, useUserInfo } from 'store/Provider/hooks';
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { removeManager } from 'utils/sandboxUtil/removeManager';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
+import { handleErrorMessage } from '@portkey-wallet/utils';
 import useLogOut from 'hooks/useLogout';
 import { DEVICE_TYPE } from 'constants/index';
 import aes from '@portkey-wallet/utils/aes';
@@ -57,7 +57,7 @@ export default function ExitWalletModal({ open, onCancel }: ExitWalletModalProps
       setLoading(false);
     } catch (error: any) {
       setLoading(false);
-      const _error = contractErrorHandler(error) || 'Something error';
+      const _error = handleErrorMessage(error, 'Something error');
       message.error(_error);
     }
   }, [

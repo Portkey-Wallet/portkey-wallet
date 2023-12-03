@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import navigationService from 'utils/navigationService';
@@ -44,6 +44,9 @@ import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
 import { CalculateTransactionFeeResponse } from '@portkey-wallet/types';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
+import CommonToast from 'components/CommonToast';
 import { TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import Touchable from 'components/Touchable';
@@ -60,6 +63,8 @@ const SendHome: React.FC = () => {
 
   const wallet = useCurrentWalletInfo();
   const chainInfo = useCurrentChain(assetInfo?.chainId);
+  const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
+
   const pin = usePin();
 
   const { max: maxFee, crossChain: crossFee } = useGetTxFee(assetInfo?.chainId);
@@ -70,7 +75,7 @@ const SendHome: React.FC = () => {
   const [selectedFromAccount] = useState({ name: '', address: '' }); // from
   const [selectedToContact, setSelectedToContact] = useState(toInfo); // to
   const [selectedAssets, setSelectedAssets] = useState(assetInfo); // token or nft
-  const [sendNumber, setSendNumber] = useState<string>('0'); // tokenNumber  like 100
+  const [sendNumber, setSendNumber] = useState<string>(''); // tokenNumber  like 100
   const debounceSendNumber = useDebounce(sendNumber, 500);
   const [, setTransactionFee] = useState<string>('0'); // like 1.2ELF
 
@@ -79,6 +84,8 @@ const SendHome: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<any[]>([]);
 
   const checkManagerSyncState = useCheckManagerSyncState();
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
+  const contractRef = useRef<ContractBasic>();
 
   useEffect(() => {
     setSelectedToContact(toInfo);
@@ -91,11 +98,14 @@ const SendHome: React.FC = () => {
       const account = getManagerAccount(pin);
       if (!account) return;
 
-      const contract = await getContractBasic({
-        contractAddress: chainInfo.caContractAddress,
-        rpcUrl: chainInfo?.endPoint,
-        account: account,
-      });
+      if (!contractRef.current) {
+        contractRef.current = await getContractBasic({
+          contractAddress: chainInfo.caContractAddress,
+          rpcUrl: chainInfo.endPoint,
+          account,
+        });
+      }
+      const contract = contractRef.current;
 
       const firstMethodName = isCross ? 'ManagerTransfer' : 'ManagerForwardCall';
       const secondParams = isCross
@@ -104,7 +114,7 @@ const SendHome: React.FC = () => {
             caHash: wallet.caHash,
             symbol: selectedAssets.symbol,
             to: wallet.address,
-            amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
+            amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
             memo: '',
           }
         : {
@@ -114,7 +124,7 @@ const SendHome: React.FC = () => {
             args: {
               symbol: selectedAssets.symbol,
               to: selectedToContact.address,
-              amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toNumber(),
+              amount: timesDecimals(sendAmount ?? debounceSendNumber, selectedAssets.decimals || '0').toFixed(),
               memo: '',
             },
           };
@@ -175,13 +185,13 @@ const SendHome: React.FC = () => {
       setSendNumber(
         divDecimals(selectedAssets.balance, selectedAssets.decimals || '0')
           .minus(fee || '0')
-          .toString(),
+          .toFixed(),
       );
     } catch (err: any) {
       if (err?.code === 500) {
         setTransactionFee(String(maxFee));
         const selectedAssetsNum = divDecimals(selectedAssets.balance, selectedAssets.decimals || '0');
-        setSendNumber(selectedAssetsNum.minus(maxFee).toString());
+        setSendNumber(selectedAssetsNum.minus(maxFee).toFixed());
       }
     } finally {
       Loading.hide();
@@ -340,48 +350,103 @@ const SendHome: React.FC = () => {
     let fee;
     setErrorMessage([]);
 
+    if (!chainInfo || !pin) {
+      return { status: false };
+    }
+    const account = getManagerAccount(pin);
+    if (!account) {
+      return { status: false };
+    }
+
+    Loading.show();
+    // check is security safe
     try {
-      // check is SYNCHRONIZING
-      const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
-      if (!_isManagerSynced) {
-        setErrorMessage([TransactionError.SYNCHRONIZING]);
+      const securitySafeResult = await securitySafeCheckAndToast(assetInfo.chainId);
+      if (!securitySafeResult) {
+        Loading.hide();
         return { status: false };
       }
+    } catch (err) {
+      CommonToast.failError(err);
+      Loading.hide();
+    }
 
-      const sendBigNumber = timesDecimals(sendNumber, selectedAssets.decimals || '0');
-      const assetBalanceBigNumber = ZERO.plus(selectedAssets.balance);
-      const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId);
+    // checkTransferLimitResult
+    try {
+      if (!contractRef.current) {
+        contractRef.current = await getContractBasic({
+          contractAddress: chainInfo.caContractAddress,
+          rpcUrl: chainInfo.endPoint,
+          account,
+        });
+      }
+      const contract = contractRef.current;
+      const checkTransferLimitResult = await checkTransferLimitWithJump(
+        {
+          caContract: contract,
+          symbol: assetInfo.symbol,
+          decimals: assetInfo.decimals,
+          amount: sendNumber,
+        },
+        chainInfo.chainId,
+      );
+      if (!checkTransferLimitResult) {
+        Loading.hide();
+        return { status: false };
+      }
+    } catch (error) {
+      CommonToast.failError(error);
+      Loading.hide();
+      return { status: false };
+    }
 
-      // input check
-      if (sendType === 'token') {
-        // token
-        if (assetInfo.symbol === defaultToken.symbol) {
-          // ELF
-          if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-            setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
-            return { status: false };
-          }
+    // check is SYNCHRONIZING
+    const _isManagerSynced = await checkManagerSyncState(chainInfo?.chainId || 'AELF');
+    if (!_isManagerSynced) {
+      Loading.hide();
+      setErrorMessage([TransactionError.SYNCHRONIZING]);
+      return { status: false };
+    }
 
-          if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
-            setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
-            return { status: false };
-          }
-        } else {
-          //Other Token
-          if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-            setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
-            return { status: false };
-          }
+    const sendBigNumber = timesDecimals(sendNumber, selectedAssets.decimals || '0');
+    const assetBalanceBigNumber = ZERO.plus(selectedAssets.balance);
+    const isCross = isCrossChain(selectedToContact.address, assetInfo.chainId);
+
+    // input check
+    if (sendType === 'token') {
+      // token
+      if (assetInfo.symbol === defaultToken.symbol) {
+        // ELF
+        if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
+          setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+          Loading.hide();
+          return { status: false };
+        }
+
+        if (isCross && sendBigNumber.isLessThanOrEqualTo(timesDecimals(crossFee, defaultToken.decimals))) {
+          setErrorMessage([TransactionError.CROSS_NOT_ENOUGH]);
+          Loading.hide();
+          return { status: false };
         }
       } else {
         // nft
         if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
-          setErrorMessage([TransactionError.NFT_NOT_ENOUGH]);
+          setErrorMessage([TransactionError.TOKEN_NOT_ENOUGH]);
+          Loading.hide();
           return { status: false };
         }
       }
+    } else {
+      // nft
+      if (sendBigNumber.isGreaterThan(assetBalanceBigNumber)) {
+        setErrorMessage([TransactionError.NFT_NOT_ENOUGH]);
+        Loading.hide();
+        return { status: false };
+      }
+    }
 
-      // transaction fee check
+    // transaction fee check
+    try {
       fee = await getTransactionFee(isCross);
       setTransactionFee(fee || '0');
     } catch (err: any) {
@@ -397,13 +462,17 @@ const SendHome: React.FC = () => {
     return { status: true, fee };
   }, [
     assetInfo.chainId,
+    assetInfo.decimals,
     assetInfo.symbol,
-    chainInfo?.chainId,
+    chainInfo,
     checkManagerSyncState,
+    checkTransferLimitWithJump,
     crossFee,
     defaultToken.decimals,
     defaultToken.symbol,
     getTransactionFee,
+    pin,
+    securitySafeCheckAndToast,
     selectedAssets.balance,
     selectedAssets.decimals,
     selectedToContact.address,

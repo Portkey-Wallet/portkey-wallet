@@ -17,11 +17,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useQrScanPermissionAndToast } from 'hooks/useQrScan';
 import { measurePageY } from 'utils/measure';
+import useRequestNotifyPermission from 'hooks/usePermission';
 
 export default function DiscoverHome() {
   const qrScanPermissionAndToast = useQrScanPermissionAndToast();
   const emitCloseSwiped = useCallback(() => myEvents.chatHomeListCloseSwiped.emit(''), []);
   const lastEmitCloseSwiped = useLatestRef(emitCloseSwiped);
+  const requestNotifyPermission = useRequestNotifyPermission();
+
   const onRightPress = useCallback(
     async (event: GestureResponderEvent) => {
       const { pageY } = event.nativeEvent;
@@ -82,6 +85,12 @@ export default function DiscoverHome() {
     useCallback(() => {
       lastEmitCloseSwiped.current();
     }, [lastEmitCloseSwiped]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      requestNotifyPermission();
+    }, [requestNotifyPermission]),
   );
 
   return (

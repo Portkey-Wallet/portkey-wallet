@@ -16,6 +16,7 @@ import { LoginType } from '@portkey-wallet/types/types-ca/wallet';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import qs from 'query-string';
+import { ChainId } from '@portkey-wallet/types';
 import './index.less';
 import { useSocialVerify } from 'pages/GuardianApproval/hooks/useSocialVerify';
 
@@ -24,8 +25,9 @@ interface GuardianItemProps {
   isExpired?: boolean;
   item: UserGuardianStatus;
   loginAccount?: LoginInfo;
+  targetChainId?: ChainId;
 }
-export default function GuardianItems({ disabled, item, isExpired, loginAccount }: GuardianItemProps) {
+export default function GuardianItems({ disabled, item, isExpired, loginAccount, targetChainId }: GuardianItemProps) {
   const { t } = useTranslation();
   const { setLoading } = useLoading();
   const { state, search } = useLocation();
@@ -49,15 +51,18 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
 
   const operationType: OperationTypeEnum = useMemo(() => {
     switch (query) {
-      case 'guardians/add':
-        return OperationTypeEnum.addGuardian;
       case 'guardians/edit':
         return OperationTypeEnum.editGuardian;
       case 'guardians/del':
         return OperationTypeEnum.deleteGuardian;
       default:
+        if (query && query.indexOf('guardians/add') !== -1) {
+          return OperationTypeEnum.addGuardian;
+        }
         if (query && query?.indexOf('removeManage') !== -1) {
           return OperationTypeEnum.removeOtherManager;
+        } else if (query && query?.indexOf('setTransferLimit') !== -1) {
+          return OperationTypeEnum.modifyTransferLimit;
         }
         return OperationTypeEnum.communityRecovery;
     }
@@ -131,6 +136,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
             verifierId: item.verifier?.id || '',
             chainId: originChainId,
             operationType,
+            targetChainId: targetChainId,
           },
         });
         setLoading(false);
@@ -152,10 +158,12 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
             }),
           );
           if (query && query.indexOf('removeManage') !== -1) {
-            navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
-          } else {
-            navigate('/login/verifier-account', { state: 'login' });
+            return navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
           }
+          if (query && query.indexOf('setTransferLimit') !== -1) {
+            return navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
+          }
+          return navigate('/login/verifier-account', { state: 'login' });
         }
       } catch (error: any) {
         console.log(error, 'error===');
@@ -164,7 +172,17 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
         message.error(_error);
       }
     },
-    [setLoading, query, loginAccount, originChainId, operationType, guardianSendCode, dispatch, navigate],
+    [
+      setLoading,
+      query,
+      loginAccount,
+      originChainId,
+      operationType,
+      targetChainId,
+      guardianSendCode,
+      dispatch,
+      navigate,
+    ],
   );
 
   const socialVerify = useSocialVerify();
@@ -182,6 +200,8 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount 
         navigate('/setting/guardians/verifier-account', { state: query });
       } else if (query?.includes('removeManage')) {
         navigate('/setting/wallet-security/manage-devices/verifier-account', { state: query });
+      } else if (query?.includes('setTransferLimit')) {
+        navigate('/setting/wallet-security/payment-security/verifier-account', { state: query });
       } else {
         navigate('/login/verifier-account', { state: 'login' });
       }

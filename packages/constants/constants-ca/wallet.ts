@@ -18,9 +18,10 @@ export const DEFAULT_TOKEN = {
 };
 
 export const InitialTxFee = {
-  ach: 0.39,
-  crossChain: 0.35,
-  max: 0.39,
+  ach: 0.0041,
+  crossChain: 0.0041,
+  max: 0.0041,
+  redPackage: 0.0041,
 };
 
 export const VERIFY_INVALID_TIME = 1000;

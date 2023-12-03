@@ -36,6 +36,13 @@ const WalletSecurity: React.FC = () => {
           navigationService.navigate('DappList');
         }}
       />
+      <MenuItem
+        style={pageStyles.menuStyle}
+        title="Payment Security"
+        onPress={() => {
+          navigationService.navigate('PaymentSecurityList');
+        }}
+      />
     </PageContainer>
   );
 };

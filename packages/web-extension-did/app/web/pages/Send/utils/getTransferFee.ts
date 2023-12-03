@@ -28,7 +28,7 @@ const getTransferFee = async ({
   toAddress: string;
   token: BaseToken;
   caHash: string;
-  amount: number;
+  amount: number | string;
   memo?: string;
 }) => {
   if (isCrossChain(toAddress, chainInfo?.chainId ?? 'AELF')) {

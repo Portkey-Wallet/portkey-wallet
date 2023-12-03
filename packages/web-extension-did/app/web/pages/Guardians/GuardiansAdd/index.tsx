@@ -34,14 +34,16 @@ import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import GuardianAddPrompt from './Prompt';
 import GuardianAddPopup from './Popup';
 import CustomModal from '../../components/CustomModal';
-import './index.less';
+import { useEffectOnce } from '@portkey-wallet/hooks';
 import { useCommonState } from 'store/Provider/hooks';
 import { MessageType } from 'antd/lib/message';
+import qs from 'query-string';
+import './index.less';
 
 export default function AddGuardian() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { state } = useLocation();
+  const { state, search } = useLocation();
   const { verifierMap, userGuardiansList, opGuardian } = useGuardiansInfo();
   const [guardianType, setGuardianType] = useState<LoginType>();
   const [verifierVal, setVerifierVal] = useState<string>();
@@ -61,6 +63,15 @@ export default function AddGuardian() {
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const { currentNetwork } = useWalletInfo();
+  const accelerateChainId = useMemo(() => {
+    if (search) {
+      const { detail } = qs.parse(search);
+      if (detail && detail.indexOf('accelerateChainId') !== -1) {
+        return detail.split('_')[1];
+      }
+    }
+    return state?.accelerateChainId || originChainId;
+  }, [originChainId, search, state]);
 
   const disabled = useMemo(() => {
     let check = true;
@@ -143,7 +154,7 @@ export default function AddGuardian() {
     setCurKey(key);
   }, [emailVal, guardianType, phoneValue, socialValue, verifierVal]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (state === 'back' && opGuardian) {
       setGuardianType(opGuardian.guardianType);
       setVerifierVal(opGuardian.verifier?.id);
@@ -162,7 +173,7 @@ export default function AddGuardian() {
           break;
       }
     }
-  }, [state, opGuardian]);
+  });
 
   const guardianTypeChange = useCallback((value: LoginType) => {
     setExist(false);
@@ -334,7 +345,9 @@ export default function AddGuardian() {
           };
           dispatch(setCurrentGuardianAction(newGuardian));
           dispatch(setOpGuardianAction(newGuardian));
-          navigate('/setting/guardians/verifier-account', { state: 'guardians/add' });
+          navigate('/setting/guardians/verifier-account', {
+            state: `guardians/add_accelerateChainId=${accelerateChainId}`,
+          });
         }
       } catch (error) {
         setLoading(false);
@@ -356,11 +369,13 @@ export default function AddGuardian() {
       phoneValue,
       socialValue,
       navigate,
+      accelerateChainId,
     ],
   );
 
   const handleSocialVerify = useCallback(async () => {
     try {
+      setLoading(true);
       dispatch(resetUserGuardianStatus());
       await userGuardianList({ caHash: walletInfo.caHash });
       dispatch(
@@ -369,7 +384,6 @@ export default function AddGuardian() {
           loginType: walletInfo.managerInfo?.type || LoginType.Email,
         }),
       );
-      setLoading(true);
       const newGuardian: StoreUserGuardianItem = {
         isLoginAccount: false,
         verifier: selectVerifierItem,
@@ -412,7 +426,9 @@ export default function AddGuardian() {
           identifierHash: guardianIdentifier,
         }),
       );
-      navigate('/setting/guardians/guardian-approval', { state: 'guardians/add' });
+      navigate('/setting/guardians/guardian-approval', {
+        state: `guardians/add_accelerateChainId=${accelerateChainId}`,
+      });
     } catch (error) {
       const msg = handleErrorMessage(error);
       message.error(msg);
@@ -433,6 +449,7 @@ export default function AddGuardian() {
     userGuardianList,
     verifierVal,
     walletInfo,
+    accelerateChainId,
   ]);
 
   const handleVerify = useCallback(async () => {

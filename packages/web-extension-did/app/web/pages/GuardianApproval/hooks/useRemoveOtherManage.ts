@@ -8,11 +8,10 @@ import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
 import { removeOtherManager } from 'utils/sandboxUtil/removeOtherManager';
-import { contractErrorHandler } from 'utils/tryErrorHandler';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { formatGuardianValue } from '../utils/formatGuardianValue';
 import qs from 'query-string';
 import ModalTip from 'pages/components/ModalTip';
-import { sleep } from '@portkey-wallet/utils';
 
 export const useRemoveOtherManage = () => {
   const { setLoading } = useLoading();
@@ -66,7 +65,7 @@ export const useRemoveOtherManage = () => {
     } catch (error: any) {
       setLoading(false);
       console.log('---remove-other-manage-error', error);
-      const _error = contractErrorHandler(error) || 'Try again later';
+      const _error = handleErrorMessage(error, 'Try again later');
       message.error(_error);
     }
   }, [

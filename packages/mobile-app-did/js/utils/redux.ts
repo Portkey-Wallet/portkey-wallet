@@ -4,9 +4,10 @@ import AElf from 'aelf-sdk';
 import { AElfWallet } from '@portkey-wallet/types/aelf';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import { ChainId } from '@portkey-wallet/types';
+import { InitialTxFee } from '@portkey-wallet/constants/constants-ca/wallet';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
-import { getDefaultWallet } from './aelfUtils';
-import { isEqAddress } from '@portkey-wallet/utils/aelf';
+import { getWallet as getDefaultWallet, isEqAddress } from '@portkey-wallet/utils/aelf';
+
 const walletMap: { [address: string]: AElfWallet } = {};
 export const getState = () => store.getState();
 
@@ -62,11 +63,40 @@ export const getCurrentCaInfo = () => {
   return walletInfo?.caInfo?.[currentNetwork];
 };
 
+export const getCurrentCaInfoByChainId = (chainId?: ChainId) => {
+  return getCurrentCaInfo()?.[chainId || DefaultChainId];
+};
+
 export const getCurrentCaHash = () => {
   const wallet = getWallet();
   const caInfo = getCurrentCaInfo();
   const originChainId = wallet.originChainId || caInfo?.originChainId;
   return caInfo?.[originChainId || DefaultChainId]?.caHash;
+};
+
+export const getTxFee = () => getState().txFee;
+
+export const getCurrentTxFee = () => {
+  return getTxFee()?.[getWallet()?.currentNetwork];
+};
+
+export const getCurrentTxFeeByChainId = (chainId: ChainId) => {
+  return getCurrentTxFee()?.[chainId] || InitialTxFee;
+};
+
+export const getCurrentChainInfoByChainId = (chainId: ChainId) => {
+  const { currentNetwork, chainInfo } = getWallet();
+  return chainInfo?.[currentNetwork]?.find(i => i.chainId === chainId);
+};
+
+export const getViewTokenContractByChainId = (chainId: ChainId) => {
+  const chainInfo = getCurrentChainInfoByChainId(chainId);
+
+  return getContractBasic({
+    contractAddress: chainInfo?.defaultToken.address || '',
+    rpcUrl: chainInfo?.endPoint,
+    account: getDefaultWallet(),
+  });
 };
 
 export const getCurrentChainList = () => {

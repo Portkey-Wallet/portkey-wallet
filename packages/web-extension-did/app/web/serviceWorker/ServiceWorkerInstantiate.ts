@@ -88,6 +88,29 @@ export default class ServiceWorkerInstantiate {
       getPassword: () => seed,
     });
     this.setupInternalMessaging();
+    this.onFCMMessaging();
+  }
+
+  onFCMMessaging() {
+    chrome.gcm.onMessage.addListener((message) => {
+      const { from, data = {} } = message;
+      let _count = '';
+      if (from === process.env.FCM_PROJECT_ID) {
+        _count = (data as any)['gcm.notification.notification_count'];
+      }
+      console.log(message, '===onFCMMessaging');
+      this.setBadge({
+        value: _count,
+      });
+    });
+  }
+
+  setBadge(props: { value?: string; color?: string }) {
+    const { value, color } = props;
+    // set a badge
+    value && chrome.action.setBadgeText({ text: value });
+    // set badge color
+    color && chrome.action.setBadgeBackgroundColor({ color });
   }
 
   // Watches the internal messaging system ( LocalStream )
@@ -166,7 +189,7 @@ export default class ServiceWorkerInstantiate {
         ServiceWorkerInstantiate.expandSetting();
         break;
       case PortkeyMessageTypes.ADD_GUARDIANS:
-        ServiceWorkerInstantiate.expandAddGuardians();
+        ServiceWorkerInstantiate.expandAddGuardians(message.payload);
         break;
       case PortkeyMessageTypes.GUARDIANS_VIEW:
         ServiceWorkerInstantiate.expandGuardiansView();
@@ -304,10 +327,11 @@ export default class ServiceWorkerInstantiate {
     );
   }
 
-  static expandAddGuardians() {
+  static expandAddGuardians(payload: any) {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.ADD_GUARDIANS,
+        search: payload,
       },
       'tabs',
     );

@@ -32,6 +32,7 @@ import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
 import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
+import { ChainId } from '@portkey-wallet/types';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { handleGuardiansApproved } from 'utils/login';
 import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
@@ -41,6 +42,8 @@ type RouterParams = {
   requestCodeResult?: { verifierSessionId: string };
   startResend?: boolean;
   verificationType?: VerificationType;
+  targetChainId?: ChainId;
+  accelerateChainId?: ChainId;
   autoLogin?: boolean;
 };
 function TipText({ guardianAccount, isRegister }: { guardianAccount?: string; isRegister?: boolean }) {
@@ -67,6 +70,8 @@ export default function VerifierDetails() {
     requestCodeResult: paramsRequestCodeResult,
     startResend,
     verificationType,
+    targetChainId,
+    accelerateChainId,
     autoLogin,
   } = useRouterParams<RouterParams>();
   const originChainId = useOriginChainId();
@@ -162,6 +167,7 @@ export default function VerifierDetails() {
             verifierId: guardianItem?.verifier?.id,
             chainId: originChainId,
             operationType,
+            targetChainId,
           },
         });
         !isRequestResult && CommonToast.success('Verified Successfully');
@@ -172,38 +178,7 @@ export default function VerifierDetails() {
         };
 
         switch (verificationType) {
-          case VerificationType.communityRecovery: {
-            if (autoLogin) {
-              registerAccount({ verifierInfo, codeResult: requestCodeResult });
-              break;
-            }
-          }
-          // eslint-disable-next-line no-fallthrough
-          case VerificationType.addGuardianByApprove:
-          case VerificationType.editGuardian:
-          case VerificationType.deleteGuardian:
-          case VerificationType.removeOtherManager:
-            setGuardianStatus({
-              requestCodeResult: requestCodeResult,
-              status: VerifyStatus.Verified,
-              verifierInfo,
-            });
-            navigationService.goBack();
-            break;
-          case VerificationType.addGuardian:
-            if (verifierInfo.signature && verifierInfo.verificationDoc) {
-              navigationService.navigate('GuardianApproval', {
-                approvalType: ApprovalType.addGuardian,
-                guardianItem,
-                verifierInfo,
-                verifiedTime: Date.now(),
-              });
-            }
-            break;
-          case VerificationType.setLoginAccount:
-            await onSetLoginAccount();
-            break;
-          default:
+          case VerificationType.register:
             onRequestOrSetPin({
               showLoading: false,
               managerInfo: {
@@ -213,6 +188,37 @@ export default function VerifierDetails() {
               },
               verifierInfo,
             });
+            break;
+
+          case VerificationType.addGuardian:
+            if (verifierInfo.signature && verifierInfo.verificationDoc) {
+              navigationService.navigate('GuardianApproval', {
+                approvalType: ApprovalType.addGuardian,
+                guardianItem,
+                verifierInfo,
+                verifiedTime: Date.now(),
+                accelerateChainId,
+              });
+            }
+            break;
+          case VerificationType.setLoginAccount:
+            await onSetLoginAccount();
+            break;
+
+          case VerificationType.communityRecovery: {
+            if (autoLogin) {
+              registerAccount({ verifierInfo, codeResult: requestCodeResult });
+              break;
+            }
+          }
+          // eslint-disable-next-line no-fallthrough
+          default:
+            setGuardianStatus({
+              requestCodeResult: requestCodeResult,
+              status: VerifyStatus.Verified,
+              verifierInfo,
+            });
+            navigationService.goBack();
             break;
         }
       } catch (error) {
@@ -241,9 +247,11 @@ export default function VerifierDetails() {
       managerAddress,
       originChainId,
       operationType,
-      setGuardianStatus,
-      onSetLoginAccount,
+      targetChainId,
       onRequestOrSetPin,
+      onSetLoginAccount,
+      setGuardianStatus,
+      accelerateChainId,
     ],
   );
 
@@ -258,6 +266,7 @@ export default function VerifierDetails() {
           verifierId: guardianItem?.verifier?.id,
           chainId: originChainId,
           operationType,
+          targetChainId,
         },
       });
       if (req.verifierSessionId) {
@@ -274,7 +283,7 @@ export default function VerifierDetails() {
     digitInput.current?.unLockInput();
     digitInput.current?.reset();
     Loading.hide();
-  }, [guardianItem, operationType, originChainId, setGuardianStatus]);
+  }, [guardianItem, operationType, originChainId, setGuardianStatus, targetChainId]);
 
   const onChangeText = useCallback(() => {
     setIsInvalidCode(false);

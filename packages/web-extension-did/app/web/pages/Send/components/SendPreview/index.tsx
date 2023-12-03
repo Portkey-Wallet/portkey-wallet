@@ -68,7 +68,7 @@ export default function SendPreview({
       return (
         <>
           <span className="usd">
-            {isMainnet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toString(), 0, symbol)}
+            {isMainnet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
           </span>
           {`${formatAmountShow(ZERO.plus(amount).minus(crossChainFee))} ${symbol}`}
         </>

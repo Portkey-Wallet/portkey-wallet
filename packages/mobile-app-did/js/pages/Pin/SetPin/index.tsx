@@ -12,7 +12,7 @@ import { AElfWallet } from '@portkey-wallet/types/aelf';
 import PinContainer from 'components/PinContainer';
 import { GuardiansApproved } from 'pages/Guardian/types';
 import { StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useCheckRouteExistInRouteStack } from 'hooks/route';
 
 type RouterParams = {
   oldPin?: string;
@@ -42,7 +42,8 @@ export default function SetPin() {
   const { oldPin, managerInfo, caInfo, walletInfo, verifierInfo, guardiansApproved, autoLogin } =
     useRouterParams<RouterParams>();
   const digitInput = useRef<DigitInputInterface>();
-  const navigation = useNavigation();
+
+  const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
 
   useEffectOnce(() => {
     const listener = myEvents.clearSetPin.addListener(() => digitInput.current?.reset());
@@ -61,8 +62,7 @@ export default function SetPin() {
             onPress: () => {
               if (managerInfo.verificationType === VerificationType.addManager) myEvents.clearQRWallet.emit();
               if (managerInfo.verificationType === VerificationType.register) {
-                const routesArr = navigation.getState().routes;
-                const isSignUpPageExist = routesArr.some(item => item.name === 'SignupPortkey');
+                const isSignUpPageExist = checkRouteExistInRouteStack('SignupPortkey');
                 if (isSignUpPageExist) {
                   navigationService.navigate('SignupPortkey');
                 } else {
@@ -80,7 +80,7 @@ export default function SetPin() {
       return navigationService.navigate(RouterMap[managerInfo.verificationType]);
 
     navigationService.goBack();
-  }, [autoLogin, managerInfo, navigation, oldPin]);
+  }, [autoLogin, checkRouteExistInRouteStack, managerInfo, oldPin]);
   return (
     <PageContainer
       scrollViewProps={scrollViewProps}

@@ -7,7 +7,7 @@ import { defaultColors } from 'assets/theme';
 import { ChatMessage } from 'pages/Chat/types';
 import GStyles from 'assets/theme/GStyles';
 
-function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?: any }) {
+function SystemInfo(props: SystemMessageProps<ChatMessage> & { previousMessage?: ChatMessage }) {
   const { previousMessage, currentMessage } = props;
 
   const isMarginTop8 = useMemo(() => {

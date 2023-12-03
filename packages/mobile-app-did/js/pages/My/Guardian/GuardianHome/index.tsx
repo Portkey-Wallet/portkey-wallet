@@ -1,6 +1,6 @@
 import { defaultColors } from 'assets/theme';
 import Svg from 'components/Svg';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import navigationService from 'utils/navigationService';
@@ -9,10 +9,8 @@ import { useLanguage } from 'i18n/hooks';
 import { useGuardiansInfo } from 'hooks/store';
 import GuardianItem from 'pages/Guardian/components/GuardianItem';
 import Touchable from 'components/Touchable';
-import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
-import { useGetGuardiansInfoWriteStore, useGetVerifierServers } from 'hooks/guardian';
+import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
 import useEffectOnce from 'hooks/useEffectOnce';
-import myEvents from 'utils/deviceEvent';
 import GStyles from 'assets/theme/GStyles';
 
 export default function GuardianHome() {
@@ -24,18 +22,8 @@ export default function GuardianHome() {
     return [...userGuardiansList].reverse();
   }, [userGuardiansList]);
 
-  const { caHash } = useCurrentWalletInfo();
-  const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   const getVerifierServers = useGetVerifierServers();
-  const refreshGuardiansList = useCallback(async () => {
-    try {
-      await getGuardiansInfoWriteStore({
-        caHash,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }, [caHash, getGuardiansInfoWriteStore]);
+  const refreshGuardiansList = useRefreshGuardiansList();
 
   const init = useCallback(async () => {
     try {
@@ -48,15 +36,6 @@ export default function GuardianHome() {
   useEffectOnce(() => {
     init();
   });
-
-  useEffect(() => {
-    const listener = myEvents.refreshGuardiansList.addListener(() => {
-      refreshGuardiansList();
-    });
-    return () => {
-      listener.remove();
-    };
-  }, [refreshGuardiansList]);
 
   const renderGuardianBtn = useCallback(
     () => <Svg icon="right-arrow" color={defaultColors.icon1} size={pTd(16)} />,

@@ -12,7 +12,7 @@ export interface ILoadingMoreProps {
 export default function LoadingMore({
   hasMore = false,
   loadingText = 'Loading',
-  noDataText = 'No Data',
+  noDataText = '',
   className = '',
   loadMore,
 }: ILoadingMoreProps) {
@@ -26,7 +26,7 @@ export default function LoadingMore({
           <DotLoading />
         </>
       ) : (
-        <span className={className}>{t(noDataText)}</span>
+        <span className={className}>{noDataText}</span>
       )}
     </InfiniteScroll>
   );

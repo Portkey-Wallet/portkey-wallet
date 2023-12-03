@@ -54,6 +54,9 @@
           margin-left: 12px;
           color: @font-12;
         }
+        .account-text-two-row .detail {
+          color: @font-12;
+        }
       }
     }
   }
@@ -77,28 +80,6 @@
     .status-wrap {
       display: flex;
       align-items: center;
-      .login-switch {
-        width: 43px;
-        height: 24px;
-        border: 2px solid @border-1;
-        background: @bg-11;
-        .@{app-prefix}-switch-handle {
-          top: 1px;
-          &::before {
-            background: @bg-23;
-          }
-        }
-      }
-      .@{app-prefix}-switch-checked {
-        border: 2px solid @border-3;
-        .@{app-prefix}-switch-handle::before {
-          background: @bg-7;
-        }
-      }
-      .@{app-prefix}-switch:focus {
-        box-shadow: none;
-      }
-
       .status {
         line-height: 22px;
         color: @font-13;

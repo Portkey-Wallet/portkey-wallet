@@ -28,11 +28,23 @@ const getTransferFee = async ({
       methodName,
       privateKey,
     });
-    const feeRes = transactionRes.result['ELF'];
-    const fee = divDecimalsStr(feeRes, DEFAULT_TOKEN.decimals);
-    if (Number.isNaN(ZERO.plus(fee).toNumber())) {
-      return '0';
+    const { TransactionFees, TransactionFee } = transactionRes.result;
+    if (TransactionFees) {
+      const { Fee } = TransactionFees;
+      const feeRes = Fee?.[DEFAULT_TOKEN.symbol];
+      const fee = divDecimalsStr(feeRes, DEFAULT_TOKEN.decimals);
+      // fee for free
+      if (Number.isNaN(ZERO.plus(fee).toNumber())) {
+        return '0';
+      }
+      return fee;
     } else {
+      const feeRes = TransactionFee?.[DEFAULT_TOKEN.symbol];
+      const fee = divDecimalsStr(feeRes, DEFAULT_TOKEN.decimals);
+      // fee for free
+      if (Number.isNaN(ZERO.plus(fee).toNumber())) {
+        return '0';
+      }
       return fee;
     }
   } catch (error) {

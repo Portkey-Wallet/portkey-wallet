@@ -46,6 +46,7 @@ import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wal
 import useEffectOnce from 'hooks/useEffectOnce';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
 import CommonAvatar from 'components/CommonAvatar';
+import { useCheckTransferLimitWithJump } from 'hooks/security';
 
 const SendHome: React.FC = () => {
   const { t } = useLanguage();
@@ -73,6 +74,7 @@ const SendHome: React.FC = () => {
   const isTokenHasPrice = useIsTokenHasPrice(assetInfo.symbol);
 
   const isCrossChainTransfer = isCrossChain(toInfo.address, assetInfo.chainId);
+  const checkTransferLimitWithJump = useCheckTransferLimitWithJump();
 
   const showRetry = useCallback(
     (retryFunc: () => void) => {
@@ -112,7 +114,18 @@ const SendHome: React.FC = () => {
     }
 
     const contract = contractRef.current;
-    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toNumber();
+    const amount = timesDecimals(sendNumber, tokenInfo.decimals).toFixed();
+
+    const checkTransferLimitResult = await checkTransferLimitWithJump(
+      {
+        caContract: contract,
+        symbol: tokenInfo.symbol,
+        decimals: tokenInfo.decimals,
+        amount: String(sendNumber),
+      },
+      chainInfo.chainId,
+    );
+    if (!checkTransferLimitResult) return;
 
     if (isCrossChainTransfer) {
       if (!tokenContractRef.current) {
@@ -172,6 +185,7 @@ const SendHome: React.FC = () => {
     caAddressInfos,
     caAddresses,
     chainInfo,
+    checkTransferLimitWithJump,
     crossDefaultFee,
     currentNetwork.walletType,
     dispatch,

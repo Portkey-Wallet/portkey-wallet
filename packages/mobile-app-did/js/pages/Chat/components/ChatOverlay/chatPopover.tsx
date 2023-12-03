@@ -2,10 +2,11 @@ import React from 'react';
 import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import OverlayModal, { CustomBounds } from 'components/OverlayModal';
 import Touchable from 'components/Touchable';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
+import { TextL } from 'components/CommonText';
 
 const vertical = 20;
 const horizontal = 20;
@@ -77,7 +78,7 @@ function ChatPopover({
               }}
               style={formatType === 'fixedWidth' ? styles.itemStyles : styles.dynamicWidthItemStyles}>
               <Svg size={pTd(20)} icon={item.iconName} color={item.iconColor || defaultColors.icon1} />
-              <Text style={styles.textStyles}>{item.title}</Text>
+              <TextL style={styles.textStyles}>{item.title}</TextL>
             </Touchable>
           );
         })}
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   textStyles: {
-    marginLeft: pTd(16),
+    marginLeft: pTd(12),
     color: defaultColors.font5,
   },
   backgroundBox: { height: screenHeight, width: screenWidth, backgroundColor: 'transparent' },

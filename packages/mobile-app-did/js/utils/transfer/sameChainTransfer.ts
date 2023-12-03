@@ -14,7 +14,7 @@ const sameChainTransfer = ({
   contract: ContractBasic;
   tokenInfo: BaseToken;
   caHash: string;
-  amount: number;
+  amount: number | string;
   toAddress: string;
   memo?: string;
   sendOptions?: SendOptions;

@@ -15,9 +15,9 @@ import TextWithProtocolIcon from 'components/TextWithProtocolIcon';
 import { defaultColors } from 'assets/theme';
 import myEvents from 'utils/deviceEvent';
 import useEffectOnce from 'hooks/useEffectOnce';
-import { getFaviconUrl } from '@portkey-wallet/utils/dapp/browser';
 import { ITabItem } from '@portkey-wallet/store/store-ca/discover/type';
 import { useDiscoverJumpWithNetWork } from 'hooks/discover';
+import { useGetCmsWebsiteInfo } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 type RecordItemType = RenderItemParams<ITabItem> & { onDelete: (item: ITabItem) => void };
 
@@ -26,6 +26,7 @@ export default memo(
     const { item, onDelete } = props;
 
     const discoverJump = useDiscoverJumpWithNetWork();
+    const { getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName } = useGetCmsWebsiteInfo();
 
     const swipeableRef = useRef<SwipeableItemImperativeRef>(null);
     const [{ isEdit }] = useBookmark();
@@ -78,6 +79,14 @@ export default memo(
         </Touchable>
       );
     }, [isEdit]);
+
+    const recordInfo = useMemo(() => {
+      return {
+        title: getCmsWebsiteInfoName(item.url || ''),
+        imageUrl: getCmsWebsiteInfoImageUrl(item.url || ''),
+      };
+    }, [getCmsWebsiteInfoImageUrl, getCmsWebsiteInfoName, item.url]);
+
     return (
       <ScaleDecorator activeScale={1.05}>
         <SwipeableItem
@@ -99,15 +108,11 @@ export default memo(
               styles.marginContainer,
             ]}>
             {EditDom}
-            <DiscoverWebsiteImage
-              size={pTd(40)}
-              style={styles.websiteIconStyle}
-              imageUrl={getFaviconUrl(item?.url || '')}
-            />
+            <DiscoverWebsiteImage size={pTd(40)} style={styles.websiteIconStyle} imageUrl={recordInfo.imageUrl} />
             <View style={styles.infoWrap}>
-              <TextWithProtocolIcon url={item?.url} title={item?.name} textFontSize={pTd(16)} />
+              <TextWithProtocolIcon url={item?.url} title={recordInfo?.title || item.url} textFontSize={pTd(16)} />
               <TextS numberOfLines={1} ellipsizeMode="tail" style={[FontStyles.font7]}>
-                {item?.url}
+                {recordInfo?.title || item.url}
               </TextS>
             </View>
 

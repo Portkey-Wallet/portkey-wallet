@@ -1,9 +1,9 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import Svg from 'components/Svg';
-import { dashBoardBtnStyle, innerPageStyles } from '../../../components/SendButton/style';
+import { commonButtonStyle } from 'components/SendButton/style';
 import navigationService from 'utils/navigationService';
 
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, StyleProp, ViewProps } from 'react-native';
 import { TextM } from 'components/CommonText';
 import { useLanguage } from 'i18n/hooks';
 import { pTd } from 'utils/unit';
@@ -11,23 +11,31 @@ import GStyles from 'assets/theme/GStyles';
 
 interface ActivityButtonProps {
   themeType?: 'dashBoard' | 'innerPage';
+  wrapStyle?: StyleProp<ViewProps>;
 }
 
 const ActivityButton = (props: ActivityButtonProps) => {
-  const { themeType = 'dashBoard' } = props;
+  const { themeType = 'dashBoard', wrapStyle = {} } = props;
   const { t } = useLanguage();
-  const styles = themeType === 'dashBoard' ? dashBoardBtnStyle : innerPageStyles;
+
+  const buttonTitleStyle = useMemo(
+    () =>
+      themeType === 'dashBoard'
+        ? commonButtonStyle.dashBoardTitleColorStyle
+        : commonButtonStyle.innerPageTitleColorStyle,
+    [themeType],
+  );
 
   return (
-    <View style={styles.buttonWrap}>
+    <View style={[commonButtonStyle.buttonWrap, wrapStyle]}>
       <TouchableOpacity
-        style={[styles.iconWrapStyle, GStyles.alignCenter]}
+        style={[commonButtonStyle.iconWrapStyle, GStyles.alignCenter]}
         onPress={() => {
           return navigationService.navigate('ActivityListPage');
         }}>
         <Svg icon={'activity'} size={pTd(46)} />
       </TouchableOpacity>
-      <TextM style={styles.titleStyle}>{t('Activity')}</TextM>
+      <TextM style={[commonButtonStyle.commonTitleStyle, buttonTitleStyle]}>{t('Activity')}</TextM>
     </View>
   );
 };

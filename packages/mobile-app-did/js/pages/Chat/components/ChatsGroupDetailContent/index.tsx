@@ -38,6 +38,7 @@ import { pTd } from 'utils/unit';
 import CustomChatAvatar from '../CustomChatAvatar';
 import SystemInfo from '../SystemInfo';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
+import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -57,7 +58,7 @@ export default function ChatsGroupDetailContent() {
   const { list, init, hasNext, next } = useGroupChannel(currentChannelId || '');
   const [initializing, setInitializing] = useState(true);
   const formattedList = useMemo(() => formatMessageList(list), [list]);
-  const relationId = useRelationId();
+  const { relationId } = useRelationId();
   const user = useMemo(() => ({ _id: relationId || '' }), [relationId]);
 
   const onLoadEarlier = useLockCallback(async () => {
@@ -118,6 +119,7 @@ export default function ChatsGroupDetailContent() {
       ...ListViewProps,
       contentContainerStyle: styles.contentStyle,
       onEndReached: () => onLoadEarlier(),
+      onEndReachedThreshold: ON_END_REACHED_THRESHOLD,
       onScrollBeginDrag: onDismiss,
     };
   }, [onDismiss, onLoadEarlier]);

@@ -14,6 +14,7 @@ import { useLocation } from 'react-router';
 import { OperationTypeEnum } from '@portkey-wallet/types/verifier';
 import { CodeVerifyUI } from '@portkey/did-ui-react';
 import { AccountType } from '@portkey/services';
+import { ChainId } from '@portkey-wallet/types';
 
 const MAX_TIMER = 60;
 
@@ -28,6 +29,7 @@ interface VerifierPageProps {
   currentGuardian?: UserGuardianItem;
   guardianType?: LoginType;
   isInitStatus?: boolean;
+  targetChainId?: ChainId;
   onSuccess?: (res: { verificationDoc: string; signature: string; verifierId: string }) => void;
 }
 
@@ -40,6 +42,7 @@ export default function VerifierPage({
   currentGuardian,
   guardianType,
   isInitStatus,
+  targetChainId,
   onSuccess,
 }: VerifierPageProps) {
   const { setLoading } = useLoading();
@@ -75,6 +78,7 @@ export default function VerifierPage({
               verifierId: currentGuardian.verifier?.id || '',
               chainId: originChainId,
               operationType,
+              targetChainId: targetChainId,
             },
           });
 
@@ -96,7 +100,7 @@ export default function VerifierPage({
         message.error(_error);
       }
     },
-    [guardianType, originChainId, currentGuardian, setLoading, onSuccess, t, operationType],
+    [guardianType, originChainId, currentGuardian, setLoading, targetChainId, onSuccess, t, operationType],
   );
 
   const resendCode = useCallback(async () => {
@@ -112,6 +116,7 @@ export default function VerifierPage({
           verifierId: currentGuardian.verifier?.id || '',
           chainId: originChainId,
           operationType,
+          targetChainId: targetChainId,
         },
       });
       setLoading(false);
@@ -133,7 +138,7 @@ export default function VerifierPage({
       const _error = verifyErrorHandler(error);
       message.error(_error);
     }
-  }, [currentGuardian, guardianType, originChainId, dispatch, setLoading, operationType]);
+  }, [currentGuardian, guardianType, originChainId, dispatch, setLoading, operationType, targetChainId]);
 
   return currentGuardian?.verifier ? (
     <CodeVerifyUI

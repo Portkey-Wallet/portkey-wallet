@@ -2,6 +2,7 @@ import { ChainId, ChainType, NetworkType } from '@portkey-wallet/types';
 import { isAddress as web3IsAddress } from 'web3-utils';
 import { isAelfAddress, isDIDAelfAddress } from './aelf';
 import * as uuid from 'uuid';
+import { textProcessor } from './textProcessor';
 
 /**
  * format address like "aaa...bbb" to "ELF_aaa...bbb_AELF"
@@ -150,10 +151,9 @@ export const handleError = (error: any) => {
 
 export const handleErrorMessage = (error: any, errorText?: string) => {
   error = handleError(error);
-  if (!error) return errorText;
-  if (typeof error === 'string') return error;
-  if (typeof error.message === 'string') return error.message;
-  return errorText;
+  if (typeof error === 'string') errorText = error;
+  if (typeof error?.message === 'string') errorText = error.message;
+  return textProcessor.format(errorText || '') || '';
 };
 
 export const chainShowText = (chain: ChainId) => (chain === 'AELF' ? 'MainChain' : 'SideChain');
@@ -244,3 +244,21 @@ export function handlePhoneNumber(str?: string) {
   }
   return str || '';
 }
+
+export const handleLoopFetch = async <T>(
+  fetch: () => Promise<T>,
+  times = 0,
+  interval = 0,
+  checkIsContinue?: () => boolean,
+): Promise<T> => {
+  try {
+    return await fetch();
+  } catch (error) {
+    const isContinue = checkIsContinue ? checkIsContinue() : true;
+    if (!isContinue) throw new Error('fetch invalid');
+    if (times === 1) throw error;
+    console.log('handleLoopFetch: error', times, error);
+  }
+  await sleep(interval);
+  return handleLoopFetch(fetch, times - 1, interval, checkIsContinue);
+};

@@ -12,7 +12,7 @@ import './index.less';
 
 export default function MemberList() {
   const { channelUuid } = useParams();
-  const myRelationId = useRelationId();
+  const { relationId: myRelationId } = useRelationId();
   const { groupInfo, refresh } = useGroupChannelInfo(`${channelUuid}`);
   const { t } = useTranslation();
   const { state } = useLocation();
@@ -61,7 +61,7 @@ export default function MemberList() {
         {showMemberList?.map((m) => (
           <div className="member-item flex-row-between" key={m.relationId} onClick={() => handleGoProfile(m)}>
             <div className="flex member-basic">
-              <Avatar width={28} height={28} letter={m.name.slice(0, 1).toUpperCase()} />
+              <Avatar avatarSize="small" src={m.avatar} letter={m.name.slice(0, 1).toUpperCase()} />
               <div className="member-name">{m.name}</div>
             </div>
             {m.isAdmin && <div className="admin-icon flex-center">Owner</div>}

@@ -3,11 +3,14 @@ import { RootStackParamList, TabParamList } from 'navigation';
 
 export let _navigator: NavigationContainerRef<any>;
 
+const ThrottleMap: { [key: string]: number } = {};
+
 function setTopLevelNavigator(navigatorRef: NavigationContainerRef<any>) {
   _navigator = navigatorRef;
 }
+export type NavigateName = keyof (RootStackParamList & TabParamList);
 
-function navigate(name: keyof (RootStackParamList & TabParamList), params?: any) {
+function navigate(name: NavigateName, params?: any) {
   _navigator?.dispatch(
     CommonActions.navigate({
       name,
@@ -21,6 +24,11 @@ function goBack() {
 }
 
 function reset(name: keyof RootStackParamList | { name: keyof RootStackParamList; params?: any }[], params?: object) {
+  const key = JSON.stringify(name);
+  // throttle
+  if (ThrottleMap[key] && Date.now() - ThrottleMap[key] < 2000) return;
+  ThrottleMap[key] = Date.now();
+
   let resetAction;
   if (Array.isArray(name)) {
     resetAction = CommonActions.reset({

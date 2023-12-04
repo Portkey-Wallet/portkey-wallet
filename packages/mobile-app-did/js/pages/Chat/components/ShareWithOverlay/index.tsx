@@ -7,7 +7,6 @@ import GroupMemberItem, { GroupMemberItemType } from '../GroupMemberItem';
 import NoData from 'components/NoData';
 import { useLocalContactSearch } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { ContactsTab } from '@portkey-wallet/constants/constants-ca/assets';
-import CommonToast from 'components/CommonToast';
 import { ContactItemType } from '@portkey-wallet/types/types-ca/contact';
 import { pTd } from 'utils/unit';
 import myEvents from 'utils/deviceEvent';
@@ -51,6 +50,7 @@ function ShareWith(props: { linkContent: string }) {
       console.log(error);
     }
   }, [keyword, searchContactList]);
+  console.log('item!!', filterMemberList);
 
   return (
     <ModalBody
@@ -87,6 +87,7 @@ function ShareWith(props: { linkContent: string }) {
             item={{
               title: item.name || item.caHolderInfo?.walletName || item.imInfo?.name || '',
               relationId: item.imInfo?.relationId || '',
+              avatar: item.avatar || '',
             }}
             onPress={onPressItem}
           />

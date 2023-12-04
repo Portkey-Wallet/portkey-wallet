@@ -10,6 +10,7 @@ export interface IMyQRCodeProps {
   qrCodeValue: string;
   showName: string;
   desc: string;
+  icon?: string;
 }
 
 const qrCodeDesc = 'Scan my QR code to start Portkey chat';
@@ -17,7 +18,7 @@ const qrCodeDesc = 'Scan my QR code to start Portkey chat';
 const MyQRCode = () => {
   const navigate = useNavigate();
   const { pathname, state } = useLocation();
-  const { walletName, userId } = useWalletInfo();
+  const { userId, userInfo } = useWalletInfo();
   const { isNotLessThan768 } = useCommonState();
   const shareLink = useMemo(() => LinkPortkeyPath.addContact + userId, [userId]);
   const handleBack = useCallback(() => {
@@ -27,9 +28,21 @@ const MyQRCode = () => {
     return navigate(-1);
   }, [navigate, pathname, state]);
   return isNotLessThan768 ? (
-    <MyQRCodePrompt onBack={handleBack} qrCodeValue={shareLink} showName={walletName} desc={qrCodeDesc} />
+    <MyQRCodePrompt
+      icon={userInfo?.avatar}
+      onBack={handleBack}
+      qrCodeValue={shareLink}
+      showName={userInfo?.nickName || ''}
+      desc={qrCodeDesc}
+    />
   ) : (
-    <MyQRCodePopup onBack={handleBack} qrCodeValue={shareLink} showName={walletName} desc={qrCodeDesc} />
+    <MyQRCodePopup
+      icon={userInfo?.avatar}
+      onBack={handleBack}
+      qrCodeValue={shareLink}
+      showName={userInfo?.nickName || ''}
+      desc={qrCodeDesc}
+    />
   );
 };
 export default MyQRCode;

@@ -39,8 +39,8 @@ export default function NFT() {
           <div>{transNetworkText(state.chainId, !isMainNet)}</div>
         </div>
         <div className="alias info-item flex-between">
-          <div className="label">Token</div>
-          <div className="alias-name">{state.alias}</div>
+          <div className="label">Token symbol</div>
+          <div className="alias-name">{state.symbol}</div>
         </div>
         <div className="total-supply info-item flex-between">
           <div className="label">Total supply</div>
@@ -48,10 +48,10 @@ export default function NFT() {
         </div>
       </div>
     );
-  }, [isMainNet, state]);
+  }, [currentNetwork.walletType, isMainNet, state]);
 
   const mainContent = useCallback(() => {
-    const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance } = state;
+    const { collectionName, collectionImageUrl, tokenId, imageUrl, symbol, balance, alias } = state;
     return (
       <div className={clsx(['nft-detail', isPrompt && 'detail-page-prompt'])}>
         <div className="nft-detail-body">
@@ -66,7 +66,7 @@ export default function NFT() {
             </div>
             <div className="name">{collectionName}</div>
           </div>
-          <div className="token-id">#{tokenId}</div>
+          <div className="token-id">{`${alias} #${tokenId}`}</div>
           <div className="picture flex-center">
             {imageUrl ? (
               <img className="picture-common" src={imageUrl} />

@@ -167,8 +167,8 @@ android {
         applicationId "com.portkey.did"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 450
-        versionName "1.4.6"
+        versionCode 430
+        versionName "1.4.9"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -321,6 +321,8 @@ android {
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:30.3.1')
     implementation 'com.google.firebase:firebase-perf'
+
+    implementation 'com.facebook.fresco:animated-gif:2.5.0' // For animated GIF support
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
 

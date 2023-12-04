@@ -1,4 +1,5 @@
 @import './color.less';
+
 .utils-modal {
   .@{app-prefix}-modal-content {
     border-radius: 10px;
@@ -122,5 +123,25 @@
         line-height: 22px;
       }
     }
+  }
+}
+
+.security-modal{
+  position: relative;
+  .close2-icon {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    cursor: pointer;
+    svg {
+      width: 12px;
+      height: 12px;
+    }
+  }
+  .modal-logo{
+    margin: 0 auto;
+  }
+  .modal-title{
+    margin-top: 8px;
   }
 }

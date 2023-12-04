@@ -21,9 +21,19 @@ import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { getCurrentCaHash, getManagerAccount, getPin } from 'utils/redux';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { isEqDapp } from '@portkey-wallet/utils/dapp/browser';
-import { CA_METHOD_WHITELIST, REMEMBER_ME_ACTION_WHITELIST } from '@portkey-wallet/constants/constants-ca/dapp';
+import {
+  ApproveMethod,
+  CA_METHOD_WHITELIST,
+  DAPP_WHITELIST,
+  DAPP_WHITELIST_ACTION_WHITELIST,
+  REMEMBER_ME_ACTION_WHITELIST,
+} from '@portkey-wallet/constants/constants-ca/dapp';
 import { checkSiteIsInBlackList, hasSessionInfoExpired, verifySession } from '@portkey-wallet/utils/session';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ChainId } from '@portkey-wallet/types';
+import { checkSecuritySafe } from 'utils/security';
+
 const SEND_METHOD: { [key: string]: true } = {
   [MethodsBase.SEND_TRANSACTION]: true,
   [MethodsBase.REQUEST_ACCOUNTS]: true,
@@ -55,6 +65,7 @@ export type DappMobileOperatorOptions = {
   stream: IDappInteractionStream;
   dappManager: IDappManager;
   dappOverlay: IDappOverlay;
+  isDiscover?: boolean;
 };
 export default class DappMobileOperator extends Operator {
   public dapp: DappStoreItem;
@@ -62,13 +73,15 @@ export default class DappMobileOperator extends Operator {
   protected dappManager: IDappManager;
   protected dappOverlay: IDappOverlay;
   public isLockDapp?: boolean;
-  constructor({ stream, origin, dappManager, dappOverlay }: DappMobileOperatorOptions) {
+  public isDiscover?: boolean;
+  constructor({ stream, origin, dappManager, dappOverlay, isDiscover }: DappMobileOperatorOptions) {
     super(stream);
     this.dapp = { origin };
     this.onCreate();
     this.stream = stream;
     this.dappManager = dappManager;
     this.dappOverlay = dappOverlay;
+    this.isDiscover = isDiscover;
   }
   private onCreate = () => {
     DappEventBus.registerOperator(this);
@@ -194,20 +207,41 @@ export default class DappMobileOperator extends Operator {
     });
   };
 
+  protected async getCAContract(params: SendTransactionParams, eventName: string) {
+    const [chainInfo, caInfo] = await Promise.all([
+      this.dappManager.getChainInfo(params.chainId),
+      this.dappManager.getCaInfo(params.chainId),
+    ]);
+    if (!chainInfo?.endPoint || !caInfo?.caHash)
+      return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' });
+    if (chainInfo?.endPoint !== params.rpcUrl)
+      return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' });
+
+    return {
+      chainInfo,
+      caInfo,
+      caContract: await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.caContractAddress }),
+    };
+  }
+
+  protected async getTokenContract(chainId: ChainId) {
+    const [chainInfo, caInfo] = await Promise.all([
+      this.dappManager.getChainInfo(chainId),
+      this.dappManager.getCaInfo(chainId),
+    ]);
+    if (!chainInfo?.endPoint || !caInfo?.caHash) return 'invalid chain id';
+
+    return {
+      chainInfo,
+      caInfo,
+      tokenContract: await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.defaultToken.address }),
+    };
+  }
   protected handleSendTransaction: SendRequest<SendTransactionParams> = async (eventName, params) => {
     try {
-      const [chainInfo, caInfo] = await Promise.all([
-        this.dappManager.getChainInfo(params.chainId),
-        this.dappManager.getCaInfo(params.chainId),
-      ]);
-
-      if (!chainInfo?.endPoint || !caInfo?.caHash)
-        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid chain id' });
-
-      if (chainInfo?.endPoint !== params.rpcUrl)
-        return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: 'invalid rpcUrl' });
-
-      const contract = await getContract({ rpcUrl: chainInfo.endPoint, contractAddress: chainInfo.caContractAddress });
+      const info: any = await this.getCAContract(params, eventName);
+      const { caContract: contract, caInfo, chainInfo } = info || {};
+      if (!contract) return info;
 
       const isForward = chainInfo.caContractAddress !== params.contractAddress;
 
@@ -230,7 +264,6 @@ export default class DappMobileOperator extends Operator {
           code: ResponseCode.CONTRACT_ERROR,
           msg: 'method is not in the whitelist',
         });
-
       const data = await contract!.callSendMethod(functionName, '', paramsOption, { onMethod: 'transactionHash' });
       if (!data?.error) {
         return generateNormalResponse({
@@ -281,6 +314,10 @@ export default class DappMobileOperator extends Operator {
     method: keyof IDappOverlay;
     callBack: SendRequest;
   }) {
+    // is whitelist && is whitelist actions
+    if (DAPP_WHITELIST.includes(this.dapp.origin) && DAPP_WHITELIST_ACTION_WHITELIST.includes(method))
+      return callBack(eventName, params);
+
     const validSession = await this.verifySessionInfo();
 
     // valid session && is remember me actions
@@ -291,6 +328,63 @@ export default class DappMobileOperator extends Operator {
     if (response) return response;
     return callBack(eventName, params);
   }
+
+  protected handleApprove = async (request: IRequestParams) => {
+    const { payload, eventName } = request || {};
+    const { params } = payload || {};
+    const { symbol, amount, spender } = params?.paramsOption || {};
+    // check approve input && check valid amount
+    if (!(symbol && amount && spender) || ZERO.plus(amount).isNaN() || ZERO.plus(amount).lte(0))
+      return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+
+    const contractInfo = await this.getTokenContract(payload.chainId);
+
+    if (typeof contractInfo === 'string')
+      return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: contractInfo });
+
+    const { tokenContract: contract, chainInfo } = contractInfo || {};
+
+    const tokenInfo = await contract?.callViewMethod('GetTokenInfo', { symbol });
+
+    if (tokenInfo?.error || isNaN(tokenInfo?.data.decimals))
+      return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS, msg: `${symbol} error` });
+
+    const info = await this.dappOverlay.approve(this.dapp, {
+      approveInfo: {
+        ...params?.paramsOption,
+        decimals: tokenInfo?.data.decimals,
+        targetChainId: payload.chainId,
+      },
+      isDiscover: this.isDiscover,
+      eventName,
+    });
+    if (!info) return this.userDenied(eventName);
+    const { guardiansApproved, approveInfo } = info;
+    const caHash = getCurrentCaHash();
+    return this.handleSendTransaction(eventName, {
+      ...payload,
+      method: ApproveMethod.ca,
+      contractAddress: chainInfo?.caContractAddress,
+      params: {
+        paramsOption: {
+          caHash,
+          spender: approveInfo.spender,
+          symbol: approveInfo.symbol,
+          amount: approveInfo.amount,
+          guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
+        },
+      },
+    } as SendTransactionParams);
+  };
+
+  protected isApprove = async (request: IRequestParams) => {
+    const { contractAddress, method: contractMethod, chainId } = request.payload || {};
+    const chainInfo = await this.dappManager.getChainInfo(chainId);
+    return (
+      (contractAddress === chainInfo?.defaultToken.address && contractMethod === ApproveMethod.token) ||
+      (contractAddress === chainInfo?.caContractAddress && contractMethod === ApproveMethod.ca)
+    );
+  };
 
   protected handleSendRequest = async (request: IRequestParams): Promise<IResponseType> => {
     const { method, eventName, origin } = request;
@@ -316,7 +410,7 @@ export default class DappMobileOperator extends Operator {
       }
       case MethodsBase.SEND_TRANSACTION: {
         if (!isActive) return this.unauthenticated(eventName);
-        callBack = this.handleSendTransaction;
+
         payload = request.payload;
         if (
           !payload ||
@@ -327,12 +421,25 @@ export default class DappMobileOperator extends Operator {
           !payload.rpcUrl
         )
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
+        // is safe
+        try {
+          const originChainId = await this.dappManager.getOriginChainId();
+          const isSafe = await this.securityCheck(payload.chainId, originChainId);
+          if (!isSafe) return this.userDenied(eventName);
+        } catch (error) {
+          return this.userDenied(eventName);
+        }
+        // is approve
+        const isApprove = await this.isApprove(request);
+        if (isApprove) return this.handleApprove(request);
+
+        callBack = this.handleSendTransaction;
         break;
       }
       case MethodsWallet.GET_WALLET_SIGNATURE: {
         if (!isActive) return this.unauthenticated(eventName);
         callBack = this.handleSignature;
-        payload = request.payload;
+        payload = { data: request.payload.data };
         if (!payload || (typeof payload.data !== 'string' && typeof payload.data !== 'number'))
           return generateErrorResponse({ eventName, code: ResponseCode.ERROR_IN_PARAMS });
         break;
@@ -419,6 +526,15 @@ export default class DappMobileOperator extends Operator {
     this.isLockDapp = isLockDapp;
   };
 
+  public securityCheck = async (fromChainId: ChainId, originChainId: ChainId) => {
+    const caHash = getCurrentCaHash();
+    if (!caHash) return false;
+    return checkSecuritySafe({
+      caHash,
+      originChainId,
+      accelerateChainId: fromChainId,
+    });
+  };
   protected checkManagerSyncState = async (chainId: ChainId) => {
     const [caInfo, managerAddress] = await Promise.all([
       this.dappManager.getCaInfo(chainId),

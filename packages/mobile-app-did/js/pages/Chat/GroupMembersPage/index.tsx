@@ -16,7 +16,7 @@ import navigationService from 'utils/navigationService';
 import { strIncludes } from '@portkey-wallet/utils';
 
 const GroupMembersPage = () => {
-  const myRelationId = useRelationId();
+  const { relationId: myRelationId } = useRelationId();
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
   const { members = [] } = groupInfo || {};
@@ -75,6 +75,7 @@ const GroupMembersPage = () => {
             item={{
               relationId: item.relationId,
               title: item.name,
+              avatar: item.avatar,
             }}
             isOwner={item.isAdmin}
             onPress={onPressItem}

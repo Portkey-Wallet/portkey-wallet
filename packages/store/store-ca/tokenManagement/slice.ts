@@ -55,7 +55,10 @@ export const tokenManagementSlice = createSlice({
         // state.status = 'failed';
       })
       .addCase(getSymbolImagesAsync.fulfilled, (state, action) => {
-        state.symbolImages = action.payload;
+        state.symbolImages = {
+          ...state.symbolImages,
+          ...action.payload,
+        };
       })
       .addCase(getSymbolImagesAsync.rejected, (_state, action) => {
         console.log('getSymbolImagesAsync:rejected', action);

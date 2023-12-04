@@ -8,7 +8,7 @@ import TransformView from 'components/TransformView';
 import { ViewStyleType } from 'types/styles';
 
 export type OverlayInterface = {
-  close?: () => void;
+  close?: (animated?: boolean) => void;
 };
 
 let elements: OverlayInterface[] = [];
@@ -131,10 +131,15 @@ export default class OverlayModal extends React.Component {
     return Overlay.show(overlayView) as number;
   }
 
-  static hide() {
+  static showOnce(component: ReactNode, overlayProps: OverlayModalProps = {}) {
+    OverlayModal.hide();
+    OverlayModal.show(component, overlayProps);
+  }
+
+  static hide(animated?: boolean) {
     elements = elements.filter(item => item); // Discard invalid data
     const topItem = elements.pop();
-    topItem?.close?.();
+    topItem?.close?.(animated);
   }
 
   static hideKey(key: number) {

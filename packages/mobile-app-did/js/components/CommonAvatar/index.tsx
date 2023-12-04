@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Svg, { IconName } from 'components/Svg';
 import { pTd } from 'utils/unit';
 import { Text } from 'react-native';
@@ -7,8 +7,9 @@ import { defaultColors } from 'assets/theme';
 import { checkIsSvgUrl } from 'utils';
 import { SvgCssUri } from 'react-native-svg';
 import FastImage from 'components/FastImage';
+import { ResizeMode } from 'react-native-fast-image';
 
-interface CommonAvatarProps {
+export interface CommonAvatarProps {
   title?: string;
   avatarSize?: string | number;
   hasBorder?: boolean;
@@ -17,6 +18,7 @@ interface CommonAvatarProps {
   shapeType?: 'square' | 'circular';
   style?: any;
   color?: string;
+  resizeMode?: ResizeMode;
 }
 
 export default function CommonAvatar(props: CommonAvatarProps) {
@@ -29,15 +31,19 @@ export default function CommonAvatar(props: CommonAvatarProps) {
     imageUrl,
     shapeType = 'circular',
     hasBorder,
+    resizeMode = 'contain',
   } = props;
   const initialsTitle = String(title?.[0] || '').toUpperCase();
 
-  const sizeStyle = {
-    width: Number(avatarSize),
-    height: Number(avatarSize),
-    lineHeight: hasBorder ? Number(avatarSize) - pTd(2) : Number(avatarSize),
-    borderRadius: shapeType === 'square' ? pTd(6) : Number(avatarSize) / 2,
-  };
+  const sizeStyle = useMemo(
+    () => ({
+      width: Number(avatarSize),
+      height: Number(avatarSize),
+      lineHeight: hasBorder ? Number(avatarSize) - pTd(2) : Number(avatarSize),
+      borderRadius: shapeType === 'square' ? pTd(6) : Number(avatarSize) / 2,
+    }),
+    [avatarSize, hasBorder, shapeType],
+  );
 
   if (svgName)
     return (
@@ -62,7 +68,7 @@ export default function CommonAvatar(props: CommonAvatarProps) {
       />
     ) : (
       <FastImage
-        resizeMode={'contain'}
+        resizeMode={resizeMode}
         style={[styles.avatarWrap, shapeType === 'square' && styles.squareStyle, sizeStyle, style]}
         source={{
           uri: imageUrl,

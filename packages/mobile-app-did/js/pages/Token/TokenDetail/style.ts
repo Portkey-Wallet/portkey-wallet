@@ -65,4 +65,8 @@ export const styles = StyleSheet.create({
   subTitle: {
     fontSize: pTd(10),
   },
+  buttonWrapStyle1: {
+    marginHorizontal: pTd(16),
+  },
+  buttonRow: { width: '85%', justifyContent: 'space-around' },
 });

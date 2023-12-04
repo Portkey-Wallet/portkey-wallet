@@ -1,3 +1,4 @@
+import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
 import { FontStyles } from 'assets/theme/styles';
 import CommonAvatar from 'components/CommonAvatar';
@@ -21,9 +22,10 @@ const ProfileHeader: React.FC<ProfileHeaderPropsType> = props => {
     <View style={[GStyles.center, styles.wrap, noMarginTop && GStyles.marginTop(0)]}>
       <CommonAvatar
         hasBorder
+        resizeMode="cover"
         avatarSize={pTd(80)}
         title={remark || name}
-        imageUrl={avatarUrl}
+        imageUrl={avatarUrl || ''}
         style={styles.avatarStyle}
       />
       <TextXXXL style={[FontStyles.font5, GStyles.marginTop(pTd(8))]}>{name}</TextXXXL>
@@ -44,5 +46,6 @@ const styles = StyleSheet.create({
   },
   avatarStyle: {
     fontSize: pTd(40),
+    backgroundColor: defaultColors.bg18,
   },
 });

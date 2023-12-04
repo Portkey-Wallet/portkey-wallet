@@ -84,7 +84,7 @@ const DeviceList: React.FC = () => {
         keyExtractor={(_item: IDeviceItem, index: number) => `${index}`}
         renderItem={renderItem}
         onRefresh={getDeviceList}
-        onEndReached={getDeviceList}
+        // onEndReached={getDeviceList}
         ListHeaderComponent={
           <TextM style={[FontStyles.font3, pageStyles.tipsWrap]}>
             {`You can manage your login devices and remove any device. 

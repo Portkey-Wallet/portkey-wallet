@@ -74,7 +74,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   }, [currentMessage?.messageType]);
 
   return (
-    <Touchable onPress={onPress} onLongPress={onLongPress}>
+    <Touchable onPress={onPress} onLongPress={onLongPress} style={styles.textRow}>
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
         {isNotSupported ? (
           <TextM style={FontStyles.font4}>{currentMessage?.text}</TextM>
@@ -104,6 +104,10 @@ export default memo(Message, (prevProps, nextProps) => {
 });
 
 const styles = StyleSheet.create({
+  textRow: {
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
   textStyles: {
     fontSize: pTd(16),
     lineHeight: pTd(24),
@@ -135,7 +139,6 @@ const timeTextStyle = {
 
 const messageStyles = {
   left: StyleSheet.create({
-    container: {},
     text: {
       color: defaultColors.font5,
       ...styles.textStyles,
@@ -146,7 +149,6 @@ const messageStyles = {
     },
   }),
   right: StyleSheet.create({
-    container: {},
     text: {
       color: defaultColors.font5,
       ...styles.textStyles,

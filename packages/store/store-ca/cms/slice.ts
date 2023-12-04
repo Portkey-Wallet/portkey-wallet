@@ -6,7 +6,7 @@ import {
   getRememberMeBlackListAsync,
   setEntrance,
 } from './actions';
-import { CMSState } from './types';
+import { CMSState, CmsWebsiteMapItem } from './types';
 
 const initialState: CMSState = {
   socialMediaListNetMap: {},
@@ -34,9 +34,26 @@ export const cmsSlice = createSlice({
         };
       })
       .addCase(getDiscoverGroupAsync.fulfilled, (state, action) => {
+        const newWebSiteMap: { [url: string]: CmsWebsiteMapItem } = {};
+        Object.values(action.payload.discoverGroupListNetMap).map(networkData => {
+          networkData.map(group => {
+            group.items.map(item => {
+              newWebSiteMap[item.url] = {
+                title: item.title,
+                imgUrl: item.imgUrl,
+              };
+            });
+          });
+        });
+
         state.discoverGroupListNetMap = {
           ...state.discoverGroupListNetMap,
           ...action.payload.discoverGroupListNetMap,
+        };
+
+        state.cmsWebsiteMap = {
+          ...state.cmsWebsiteMap,
+          ...newWebSiteMap,
         };
       })
       .addCase(getRememberMeBlackListAsync.fulfilled, (state, action) => {

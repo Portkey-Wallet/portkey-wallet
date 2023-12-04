@@ -142,7 +142,7 @@ export default class ServiceWorkerInstantiate {
         ServiceWorkerInstantiate.clearSeed(sendResponse);
         break;
       case PortkeyMessageTypes.LOCK_WALLET:
-        ServiceWorkerInstantiate.lockWallet(sendResponse);
+        ServiceWorkerInstantiate.lockWallet(sendResponse, true);
         break;
       case PortkeyMessageTypes.CHECK_WALLET_STATUS:
         this.checkWalletStatus(sendResponse);
@@ -166,7 +166,7 @@ export default class ServiceWorkerInstantiate {
         ServiceWorkerInstantiate.expandSetting();
         break;
       case PortkeyMessageTypes.ADD_GUARDIANS:
-        ServiceWorkerInstantiate.expandAddGuardians();
+        ServiceWorkerInstantiate.expandAddGuardians(message.payload);
         break;
       case PortkeyMessageTypes.GUARDIANS_VIEW:
         ServiceWorkerInstantiate.expandGuardiansView();
@@ -304,10 +304,11 @@ export default class ServiceWorkerInstantiate {
     );
   }
 
-  static expandAddGuardians() {
+  static expandAddGuardians(payload: any) {
     notificationService.openPrompt(
       {
         method: PromptRouteTypes.ADD_GUARDIANS,
+        search: payload,
       },
       'tabs',
     );
@@ -428,12 +429,13 @@ export default class ServiceWorkerInstantiate {
     }
   }
 
-  static lockWallet(sendResponse?: SendResponseFun) {
+  static lockWallet(sendResponse?: SendResponseFun, isManualLockWallet?: boolean) {
     try {
       seed = null;
       setLocalStorage({
         locked: true,
       });
+      isManualLockWallet && SWEventController.dispatchEvent({ eventName: 'accountsChanged', data: {} });
       sendResponse?.(errorHandler(0));
     } catch (e) {
       sendResponse?.(errorHandler(500001, e));

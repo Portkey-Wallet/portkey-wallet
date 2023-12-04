@@ -7,6 +7,7 @@ export enum TransactionTypes {
 export const DEFAULT_AMOUNT = 0;
 export const DEFAULT_DECIMAL = 8;
 export const DEFAULT_DIGITS = 4;
+export const DEFAULT_NFT_DECIMAL = 0;
 
 export const ELF_DECIMAL = 8;
 
@@ -22,3 +23,6 @@ export const SHOW_FROM_TRANSACTION_TYPES = [
   TransactionTypes.CROSS_CHAIN_TRANSFER,
   TransactionTypes.CLAIM_TOKEN,
 ];
+
+export const ON_END_REACHED_THRESHOLD = 0.3;
+export const ACTIVITY_PAGE_SIZE = 20;

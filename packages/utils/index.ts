@@ -3,6 +3,7 @@ import { isAddress as web3IsAddress } from 'web3-utils';
 import { isAelfAddress, isDIDAelfAddress } from './aelf';
 import * as uuid from 'uuid';
 import { textProcessor } from './textProcessor';
+import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 
 /**
  * format address like "aaa...bbb" to "ELF_aaa...bbb_AELF"
@@ -282,4 +283,8 @@ export const handleLoopFetch = async <T>({
     checkIsContinue,
     checkIsInvalid,
   });
+};
+
+export const checkIsUserCancel = (error: any) => {
+  return handleErrorMessage(error) === USER_CANCELED;
 };

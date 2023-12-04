@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   selectTabStyle: {
     shadowColor: defaultColors.shadow1,

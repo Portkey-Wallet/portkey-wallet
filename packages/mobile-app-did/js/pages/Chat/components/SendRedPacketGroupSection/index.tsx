@@ -161,7 +161,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           ? ZERO.plus(values.count)
               .times(values.packetNum || 0)
               .toFixed()
-          : values.count,
+          : ZERO.plus(values.count).toFixed(),
     });
   }, [getTokenInfo, onPressButton, type, values]);
 

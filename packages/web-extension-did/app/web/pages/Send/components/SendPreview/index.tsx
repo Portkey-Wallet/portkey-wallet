@@ -11,8 +11,8 @@ import { getEntireDIDAelfAddress, isAelfAddress } from '@portkey-wallet/utils/ae
 import { ChainId } from '@portkey-wallet/types';
 import { chainShowText } from '@portkey-wallet/utils';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useIsTestnet } from 'hooks/useNetwork';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 
 export default function SendPreview({
   amount,
@@ -39,7 +39,7 @@ export default function SendPreview({
 }) {
   const { walletName } = useWalletInfo();
   const wallet = useCurrentWalletInfo();
-  const isTestNet = useIsTestnet();
+  const isMainnet = useIsMainnet();
   const amountInUsdShow = useAmountInUsdShow();
   useFreshTokenPrice();
   const { crossChain: crossChainFee } = useGetTxFee(chainId);
@@ -60,20 +60,21 @@ export default function SendPreview({
     if (ZERO.plus(amount).isLessThanOrEqualTo(crossChainFee)) {
       return (
         <>
-          <span className="usd">{!isTestNet && '$0'}</span>0
+          <span className="usd">{isMainnet && '$0'}</span>
+          {`0 ${symbol}`}
         </>
       );
     } else {
       return (
         <>
           <span className="usd">
-            {!isTestNet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
+            {isMainnet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
           </span>
-          {formatAmountShow(ZERO.plus(amount).minus(crossChainFee))}
+          {`${formatAmountShow(ZERO.plus(amount).minus(crossChainFee))} ${symbol}`}
         </>
       );
     }
-  }, [amount, amountInUsdShow, crossChainFee, isTestNet, symbol]);
+  }, [amount, amountInUsdShow, crossChainFee, isMainnet, symbol]);
 
   return (
     <div className="send-preview">
@@ -82,7 +83,7 @@ export default function SendPreview({
           <p className="amount">
             -{formatAmountShow(amount)} {symbol}
           </p>
-          <p className="convert">{!isTestNet && amountInUsdShow(amount, 0, symbol)}</p>
+          <p className="convert">{isMainnet && amountInUsdShow(amount, 0, symbol)}</p>
         </div>
       ) : (
         <div className="amount-preview nft">
@@ -130,7 +131,7 @@ export default function SendPreview({
         <span className="label">Transaction fee</span>
         <p className="value">
           <span className="symbol">
-            <span className="usd">{!isTestNet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</span>
+            <span className="usd">{isMainnet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</span>
             {` ${formatAmountShow(transactionFee)} ${defaultToken.symbol}`}
           </span>
         </p>
@@ -141,7 +142,7 @@ export default function SendPreview({
             <span className="label">Cross-chain Transaction fee</span>
             <p className="value">
               <span className="symbol">
-                <span className="usd">{!isTestNet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
+                <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
                 {` ${formatAmountShow(crossChainFee)} ${defaultToken.symbol}`}
               </span>
             </p>

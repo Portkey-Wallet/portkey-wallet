@@ -67,8 +67,7 @@ export default function SendPacketP2PPage() {
 
         const redPacketContractAddress = getContractAddress(values.chainId);
         if (!redPacketContractAddress) {
-          //TODO: show error
-          return;
+          throw new Error('redPacketContractAddress is not exist');
         }
 
         caContract = await getCAContract(values.chainId);
@@ -83,6 +82,7 @@ export default function SendPacketP2PPage() {
         });
       } catch (error) {
         console.log(error, 'send check ====error');
+        CommonToast.failError('Sent failed!');
         return;
       }
 

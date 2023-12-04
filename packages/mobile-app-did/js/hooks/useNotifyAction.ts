@@ -14,24 +14,33 @@ import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
+import Loading from 'components/Loading';
 
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
   const jumpToChatDetails = useJumpToChatDetails();
 
   return useCallback(
-    (action: NOTIFY_ACTION, data?: FCMMessageData) => {
+    async (action: NOTIFY_ACTION, data?: FCMMessageData) => {
       try {
         switch (action) {
           case NOTIFY_ACTION.openChat: {
             if (!data) return;
-            const { channelId = '', channelType } = data;
-            myEvents.navToBottomTab.emit({ tabName: ChatTabName });
-            if (channelType === ChannelTypeEnum.GROUP) {
-              // TODO: if group delete
-              jumpToChatGroupDetails({ channelUuid: channelId });
-            } else {
-              jumpToChatDetails({ channelUuid: channelId });
+            Loading.show();
+
+            try {
+              const { channelId = '', channelType } = data;
+              myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+              if (channelType === ChannelTypeEnum.GROUP) {
+                // TODO: if group delete
+                await jumpToChatGroupDetails({ channelUuid: channelId });
+              } else {
+                await jumpToChatDetails({ channelUuid: channelId });
+              }
+            } catch (error) {
+              console.log('error', error);
+            } finally {
+              Loading.hide();
             }
 
             break;
@@ -66,6 +75,8 @@ export const useNotify = () => {
     (data: FCMMessageData) => {
       const messageNetworkType = getFcmMessageNetwork(data);
 
+      console.log('messageNetworkType', messageNetworkType, 'currentNetwork', currentNetwork, 'data', data);
+
       if (currentNetwork === messageNetworkType) {
         notifyAct(NOTIFY_ACTION.openChat, data);
       } else {
@@ -95,14 +106,14 @@ export const useNotify = () => {
     if (!logged) return;
 
     messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('remoteMessage', remoteMessage);
+      console.log('--remoteMessage', remoteMessage);
       setRemoteData(remoteMessage.data);
     });
 
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
-        console.log('remoteMessage', remoteMessage);
+        console.log('--remoteMessage', remoteMessage);
         setRemoteData(remoteMessage?.data);
       });
   }, [logged]);
@@ -114,7 +125,7 @@ export const useNotify = () => {
       timer = setTimeout(() => {
         handleBackGroundMessage(remoteData as FCMMessageData);
         setRemoteData(undefined);
-      }, 500);
+      }, 400);
     }
 
     return () => {

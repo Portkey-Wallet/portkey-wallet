@@ -82,38 +82,38 @@ const RedPacketAmountShowInDetailPageStyleMap = {
 const RedPacketAmountShowInSendPageStyleMap = {
   'amount-style1': {
     strLenIntervalLeft: INFINITY,
-    strLenIntervalRight: 18,
+    strLenIntervalRight: 16,
     styles: {
       fontSize: pTd(30),
       lineHeight: pTd(38),
     },
   },
   'amount-style2': {
-    strLenIntervalLeft: 18,
-    strLenIntervalRight: 24,
+    strLenIntervalLeft: 16,
+    strLenIntervalRight: 22,
     styles: {
       fontSize: pTd(24),
       lineHeight: pTd(32),
     },
   },
   'amount-style3': {
-    strLenIntervalLeft: 24,
-    strLenIntervalRight: 30,
+    strLenIntervalLeft: 22,
+    strLenIntervalRight: 26,
     styles: {
       fontSize: pTd(20),
       lineHeight: pTd(28),
     },
   },
   'amount-style4': {
-    strLenIntervalLeft: 30,
-    strLenIntervalRight: 36,
+    strLenIntervalLeft: 26,
+    strLenIntervalRight: 34,
     styles: {
       fontSize: pTd(16),
       lineHeight: pTd(24),
     },
   },
   'amount-style5': {
-    strLenIntervalLeft: 36,
+    strLenIntervalLeft: 34,
     strLenIntervalRight: 42,
     styles: {
       fontSize: pTd(14),

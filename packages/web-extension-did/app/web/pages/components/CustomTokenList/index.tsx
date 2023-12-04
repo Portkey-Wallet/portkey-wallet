@@ -11,7 +11,6 @@ import { fetchAllTokenListAsync } from '@portkey-wallet/store/store-ca/tokenMana
 import { useIsTestnet } from 'hooks/useNetwork';
 import { transNetworkText } from '@portkey-wallet/utils/activity';
 import { useAmountInUsdShow, useFreshTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import TokenImageDisplay from '../TokenImageDisplay';
 import './index.less';
 
@@ -44,7 +43,6 @@ export default function CustomTokenList({
   const amountInUsdShow = useAmountInUsdShow();
   const caAddressInfos = useCaAddressInfoList();
   useFreshTokenPrice();
-  const symbolImages = useSymbolImages();
   useEffect(() => {
     if (drawerType === 'send') {
       setAssetList(accountAssets.accountAssetsList);
@@ -74,7 +72,7 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, token, 'token')}>
           <div className="icon flex-center">
-            <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
+            <TokenImageDisplay symbol={token?.symbol} src={token.tokenInfo?.imageUrl} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>
@@ -93,7 +91,7 @@ export default function CustomTokenList({
         </div>
       );
     },
-    [amountInUsdShow, isTestNet, onChange, symbolImages],
+    [amountInUsdShow, isTestNet, onChange],
   );
 
   const renderReceiveToken = useCallback(
@@ -116,7 +114,7 @@ export default function CustomTokenList({
           key={`${token.symbol}_${token.chainId}`}
           onClick={onChange?.bind(undefined, tokenTmp, 'token')}>
           <div className="icon flex-center">
-            <TokenImageDisplay symbol={token?.symbol} src={symbolImages[token?.symbol]} />
+            <TokenImageDisplay symbol={token?.symbol} src={token?.imageUrl} />
           </div>
           <div className="info">
             <p className="symbol">{`${token.symbol}`}</p>
@@ -125,7 +123,7 @@ export default function CustomTokenList({
         </div>
       );
     },
-    [isTestNet, onChange, symbolImages],
+    [isTestNet, onChange],
   );
 
   const renderNft = useCallback(

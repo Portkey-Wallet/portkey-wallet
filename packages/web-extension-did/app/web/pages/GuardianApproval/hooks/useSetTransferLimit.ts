@@ -20,7 +20,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const { passwordSeed } = useUserInfo();
   const {
     accountToken: { accountTokenList },
-    accountAllAssets: { accountAssetsList },
+    accountAllAssets,
   } = useAssetInfo();
 
   const currentChain = useCurrentChain(targetChainId);
@@ -42,7 +42,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
   const checkBackPath = useCallback(
     (state: ITransferLimitRouteState) => {
       const chainId = state.targetChainId || state.chainId;
-      const allAssetList = accountAssetsList?.filter((item) => {
+      const allAssetList = accountAllAssets?.accountAssetsList?.filter((item) => {
         return item.chainId === chainId && item.symbol === state.symbol;
       });
       const tokenList = accountTokenList?.filter((item) => {
@@ -72,7 +72,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
       }
       return;
     },
-    [accountAssetsList, accountTokenList, navigate],
+    [accountAllAssets?.accountAssetsList, accountTokenList, navigate],
   );
 
   return useCallback(async () => {

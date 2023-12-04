@@ -34,6 +34,7 @@ import im from '@portkey-wallet/im';
 import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
 import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { deleteFCMToken } from 'utils/FCM';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -59,6 +60,7 @@ export default function useLogOut() {
         dispatch(resetCaInfo(currentNetwork));
         navigationService.reset('LoginPortkey');
       } else {
+        deleteFCMToken();
         dispatch(resetWallet());
         dispatch(resetUser());
         dispatch(resetSettings());

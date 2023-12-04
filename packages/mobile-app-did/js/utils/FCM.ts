@@ -47,6 +47,10 @@ export const getFCMToken = async (refresh?: boolean): Promise<string> => {
   }
 };
 
+export const deleteFCMToken = () => {
+  return messaging().deleteToken();
+};
+
 export const initFCMSignalR = async () => {
   const deviceInfo = await getDeviceInfo();
 

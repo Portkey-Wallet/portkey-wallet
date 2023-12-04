@@ -44,7 +44,7 @@ export const RedPacketDetails = () => {
 
   const isShowBottomTips = useMemo(() => {
     if (!isMyPacket) return false;
-    if (redPacketData?.isRedPackageExpired && !redPacketData?.isRedPackageFullyClaimed) return true;
+    if (!redPacketData?.isRedPackageExpired && !redPacketData?.isRedPackageFullyClaimed) return true;
 
     return false;
   }, [isMyPacket, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);
@@ -86,9 +86,9 @@ export const RedPacketDetails = () => {
       )}`;
 
     // !isP2P  && my wallet && !isRedPackageFullyClaimed
-    if (!isP2P && isMyPacket && !redPacketData?.isRedPackageFullyClaimed && redPacketData?.isRedPackageExpired)
+    if (!isP2P && isMyPacket && !redPacketData?.isRedPackageFullyClaimed)
       return `${redPacketData?.grabbed}/${redPacketData?.count} crypto ${getUnit(
-        redPacketData?.count,
+        redPacketData?.count || 1,
         'box',
         'boxes',
       )} opened, with ${divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal, '0')}/${divDecimalsStr(

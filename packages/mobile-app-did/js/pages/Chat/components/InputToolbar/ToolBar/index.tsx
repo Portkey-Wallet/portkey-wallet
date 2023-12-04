@@ -121,7 +121,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
           }),
       },
       {
-        label: 'Red Packet',
+        label: 'Crypto Box',
         icon: 'send-red-packet-button',
         onPress: () => {
           navigationService.navigate(currentIsGroupChat ? 'SendPacketGroupPage' : 'SendPacketP2PPage');
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     padding: pTd(16),
   },
   toolsItem: {
-    width: pTd(78),
+    width: pTd(77),
     height: pTd(76),
     marginRight: pTd(10),
   },

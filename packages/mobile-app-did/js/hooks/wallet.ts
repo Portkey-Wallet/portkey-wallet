@@ -9,12 +9,12 @@ import { getAllowance } from '@portkey-wallet/utils/contract';
 import { getCurrentCaInfo, getViewTokenContractByChainId } from 'utils/redux';
 import BigNumber from 'bignumber.js';
 import { requestManagerApprove } from 'dapp/dappOverlay';
-import { randomId } from '@portkey-wallet/utils';
-import { useGetCAContract } from './contract';
+import { randomId, sleep } from '@portkey-wallet/utils';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
+import Loading from 'components/Loading';
 
 export const useCheckManagerSyncState = () => {
   const getHolderInfoByViewContract = useGetHolderInfoByViewContract();
@@ -55,21 +55,35 @@ type CheckAllowanceAndApproveParams = {
   bigAmount: BigNumber;
   decimals: number;
   caContract: ContractBasic;
+  isShowOnceLoading?: boolean;
 };
 export const useCheckAllowanceAndApprove = () => {
   return useCallback(async (params: CheckAllowanceAndApproveParams) => {
-    const { chainId, spender, symbol, bigAmount, decimals, caContract } = params;
+    const { chainId, spender, symbol, bigAmount, decimals, caContract, isShowOnceLoading } = params;
     const caInfo = getCurrentCaInfo(chainId);
 
     const tokenContract = await getViewTokenContractByChainId(chainId);
 
-    const allowance = await getAllowance(tokenContract, {
-      owner: caInfo?.caAddress || '',
-      spender,
-      symbol,
-    });
+    let allowance: string;
+    if (isShowOnceLoading) Loading.showOnce();
+    const startTime = Date.now();
+    try {
+      allowance = await getAllowance(tokenContract, {
+        owner: caInfo?.caAddress || '',
+        spender,
+        symbol,
+      });
+      const diffTime = Date.now() - startTime;
+      if (diffTime < 500) {
+        await sleep(500 - diffTime);
+      }
+    } catch (error) {
+      throw error as any;
+    }
+
     const eventName = randomId();
     if (bigAmount.gt(allowance)) {
+      if (isShowOnceLoading) Loading.hide();
       const info = await requestManagerApprove(
         // TODO: origin, name;
         { origin: '', name: '' },
@@ -86,21 +100,26 @@ export const useCheckAllowanceAndApprove = () => {
       );
       if (!info) throw new Error(USER_CANCELED);
       const { guardiansApproved, approveInfo } = info;
-      const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
-        caHash: caInfo?.caHash,
-        spender: approveInfo.spender,
-        symbol: approveInfo.symbol,
-        amount: approveInfo.amount,
-        guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
-      });
-      if (approveReq?.error) throw approveReq?.error;
-      if (approveReq?.data) {
-        const confirmationAllowance = await getAllowance(tokenContract, {
-          owner: caInfo?.caAddress || '',
-          spender,
-          symbol,
+      if (isShowOnceLoading) Loading.showOnce();
+      try {
+        const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
+          caHash: caInfo?.caHash,
+          spender: approveInfo.spender,
+          symbol: approveInfo.symbol,
+          amount: approveInfo.amount,
+          guardiansApproved: getGuardiansApprovedByApprove(guardiansApproved),
         });
-        if (bigAmount.gt(confirmationAllowance)) throw new Error('Allowance Insufficient authorization');
+        if (approveReq?.error) throw approveReq?.error;
+        if (approveReq?.data) {
+          const confirmationAllowance = await getAllowance(tokenContract, {
+            owner: caInfo?.caAddress || '',
+            spender,
+            symbol,
+          });
+          if (bigAmount.gt(confirmationAllowance)) throw new Error('Allowance Insufficient authorization');
+        }
+      } catch (error) {
+        throw error as any;
       }
     }
     return true;

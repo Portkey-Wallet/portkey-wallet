@@ -10,14 +10,14 @@ import im, {
 } from '@portkey-wallet/im';
 import { ChainId } from '@portkey-wallet/types';
 import { handleLoopFetch, randomId } from '@portkey-wallet/utils';
-import { useRedPackageTokenConfigListMapState, useRelationId } from '.';
+import { useRedPackageConfigMapState, useRelationId } from '.';
 import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types/service';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useCurrentWalletInfo, useWallet } from '../wallet';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';
 import {
   addChannelMessage,
-  setRedPackageTokenConfigList,
+  setRedPackageConfig,
   updateChannelAttribute,
   updateChannelMessageRedPackageAttribute,
   updateChannelRedPackageAttribute,
@@ -136,7 +136,7 @@ export const useSendRedPackage = () => {
             sessionId,
           });
         },
-        times: 40,
+        times: 10,
         interval: 2000,
         checkIsContinue: _creationStatusResult => {
           return _creationStatusResult?.data?.status === RedPackageCreationStatusEnum.PENDING;
@@ -150,7 +150,7 @@ export const useSendRedPackage = () => {
       const msgObj: Message = messageParser({
         ...message,
         from: _relationId,
-        fromAvatar: '', // TODO: from walletAvatar
+        fromAvatar: userInfo.avatar,
         fromName: userInfo.nickName,
         createAt: `${Date.now()}`,
         id: '', // TODO: from creationStatus
@@ -197,7 +197,6 @@ export const useGetRedPackageDetail = (id?: string) => {
     totalCount: 0,
   });
 
-  // TODO: change to useLockCallback
   const next: (params?: NextRedPackageDetailParams) => Promise<NextRedPackageDetailResult> = useLockCallback(
     async (params?: NextRedPackageDetailParams) => {
       const { skipCount, maxResultCount } = pagerRef.current;
@@ -324,16 +323,13 @@ export const useGrabRedPackage = () => {
   );
 };
 
-export const useGetRedPackageTokenConfig = (isInit = false) => {
+export const useGetRedPackageConfig = (isAutoFetch = false, isInit = false) => {
   const dispatch = useAppCommonDispatch();
   const { networkType } = useCurrentNetworkInfo();
   const networkTypeRef = useRef(networkType);
   networkTypeRef.current = networkType;
-  const redPackageTokenConfigListMap = useRedPackageTokenConfigListMapState();
-  const redPackageTokenConfigList = useMemo(
-    () => redPackageTokenConfigListMap?.[networkType] || [],
-    [networkType, redPackageTokenConfigListMap],
-  );
+  const redPackageConfigMap = useRedPackageConfigMapState();
+  const redPackageConfig = useMemo(() => redPackageConfigMap?.[networkType], [networkType, redPackageConfigMap]);
 
   const refresh = useCallback(async () => {
     try {
@@ -346,27 +342,46 @@ export const useGetRedPackageTokenConfig = (isInit = false) => {
         },
       });
       const tokenInfo = result?.data?.tokenInfo || [];
+      const redPackageContractAddress = result?.data?.redPackageContractAddress || [];
+      const redPackageConfig = {
+        tokenInfo,
+        redPackageContractAddress,
+      };
       dispatch(
-        setRedPackageTokenConfigList({
+        setRedPackageConfig({
           network: networkType,
-          value: tokenInfo,
+          value: redPackageConfig,
         }),
       );
+      return redPackageConfig;
     } catch (error) {
-      console.log('useGetRedPackageTokenConfig refresh', error);
+      console.log('useGetRedPackageConfig refresh', error);
     }
   }, [dispatch, isInit, networkType]);
 
   useEffectOnce(() => {
-    refresh();
+    isAutoFetch && refresh();
   });
 
-  return useCallback(
+  const getTokenInfo = useCallback(
     (chainId: ChainId, symbol: string) => {
-      return redPackageTokenConfigList.find(item => item.chainId === chainId && item.symbol === symbol);
+      return redPackageConfig?.tokenInfo.find(item => item.chainId === chainId && item.symbol === symbol);
     },
-    [redPackageTokenConfigList],
+    [redPackageConfig?.tokenInfo],
   );
+
+  const getContractAddress = useCallback(
+    (chainId: ChainId) => {
+      return redPackageConfig?.redPackageContractAddress.find(item => item.chainId === chainId)?.contractAddress;
+    },
+    [redPackageConfig?.redPackageContractAddress],
+  );
+
+  return {
+    refresh,
+    getTokenInfo,
+    getContractAddress,
+  };
 };
 
 export const useIsMyRedPacket = (senderId: string): boolean => {

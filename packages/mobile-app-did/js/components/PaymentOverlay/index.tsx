@@ -111,7 +111,7 @@ const PaymentModal = ({
     return (
       <View style={[GStyles.width100, GStyles.marginTop(pTd(16))]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
-          <TextL>Transaction fee</TextL>
+          <TextL>Transaction Fee</TextL>
           <View>
             <View style={[GStyles.flexRow, GStyles.itemCenter]}>
               {fee?.loading ? (
@@ -136,7 +136,7 @@ const PaymentModal = ({
       onPress;
     const successNavigateName: NavigateName = currentChannelType === 'P2P' ? 'ChatDetailsPage' : 'ChatGroupDetailsPage';
     if (crossSufficientItem) {
-      buttonTitle = 'Get ELF';
+      buttonTitle = 'Transfer ELF';
       onPress = async () => {
         OverlayModal.hide(false);
         navigationService.navigateByMultiLevelParams('SendHome', {
@@ -256,8 +256,8 @@ const PaymentModal = ({
       </View>
       <CommonButton
         onPress={() => {
-          OverlayModal.hide();
           onConfirm(true);
+          OverlayModal.hide(false);
         }}
         disabled={!!(fee.loading || fee.error)}
         loading={fee.loading}
@@ -278,7 +278,7 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
 };
 
 export const showRedPacket = (props: Omit<PaymentOverlayProps, 'onConfirm' | 'title'>) => {
-  return show({ ...props, title: 'Portkey Red Packet' });
+  return show({ ...props, title: 'Portkey Crypto Box' });
 };
 
 export default {

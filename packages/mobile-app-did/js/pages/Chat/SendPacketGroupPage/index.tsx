@@ -12,15 +12,18 @@ import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPack
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import PaymentOverlay from 'components/PaymentOverlay';
 import { useCurrentChannelId } from '../context/hooks';
-import { useGroupChannelInfo, useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
-import { ZERO } from '@portkey-wallet/constants/misc';
+import { useGetRedPackageConfig, useGroupChannelInfo, useSendRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCalculateRedPacketFee } from 'hooks/useCalculateRedPacketFee';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useGetCAContract } from 'hooks/contract';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
-import { sleep } from '@portkey-wallet/utils';
 import Loading from 'components/Loading';
 import CommonToast from 'components/CommonToast';
+import { useCheckAllowanceAndApprove, useCheckManagerSyncState } from 'hooks/wallet';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import navigationService from 'utils/navigationService';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { isIOS } from '@portkey-wallet/utils/mobile/device';
 
 type TabItemType = {
   name: string;
@@ -29,7 +32,6 @@ type TabItemType = {
 };
 
 export default function SendPacketGroupPage() {
-  // TODO: should init
   const currentChannelId = useCurrentChannelId();
   const calculateRedPacketFee = useCalculateRedPacketFee();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', true);
@@ -37,11 +39,19 @@ export default function SendPacketGroupPage() {
   const sendRedPackage = useSendRedPackage();
   const getCAContract = useGetCAContract();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
+  const checkAllowanceAndApprove = useCheckAllowanceAndApprove();
+  const checkManagerSyncState = useCheckManagerSyncState();
+  const { getContractAddress } = useGetRedPackageConfig(true);
 
   const onPressBtn = useCallback(
     async (values: ValuesType) => {
       Loading.show();
       try {
+        const isManagerSynced = await checkManagerSyncState(values.chainId);
+        if (!isManagerSynced) {
+          CommonToast.warn('Synchronizing on-chain account information...');
+          return;
+        }
         const isSafe = await securitySafeCheckAndToast(values.chainId);
         if (!isSafe) return;
       } catch (error) {
@@ -50,6 +60,9 @@ export default function SendPacketGroupPage() {
       } finally {
         Loading.hide();
       }
+
+      const totalAmount = timesDecimals(values.count, values.decimals);
+      let caContract: ContractBasic;
 
       try {
         await PaymentOverlay.showRedPacket({
@@ -62,11 +75,33 @@ export default function SendPacketGroupPage() {
           calculateTransactionFee: () => calculateRedPacketFee(values),
         });
 
-        const caContract = await getCAContract(values.chainId);
+        const redPacketContractAddress = getContractAddress(values.chainId);
+        if (!redPacketContractAddress) {
+          throw new Error('redPacketContractAddress is not exist');
+        }
+
+        caContract = await getCAContract(values.chainId);
+
+        await checkAllowanceAndApprove({
+          caContract,
+          spender: redPacketContractAddress,
+          bigAmount: totalAmount,
+          ...values,
+          decimals: Number(values.decimals),
+          isShowOnceLoading: true,
+        });
+      } catch (error) {
+        console.log(error, 'send check ====error');
+        CommonToast.failError('Sent failed!');
+        return;
+      }
+
+      Loading.showOnce();
+      try {
         await sendRedPackage({
           chainId: values.chainId,
           symbol: values.symbol,
-          totalAmount: timesDecimals(values.count, values.decimals).toFixed(),
+          totalAmount: totalAmount.toFixed(0),
           decimal: values.decimals,
           memo: values.memo,
           caContract: caContract,
@@ -74,11 +109,26 @@ export default function SendPacketGroupPage() {
           count: Number(values.packetNum || 1),
           channelId: currentChannelId || '',
         });
+        CommonToast.success('Sent successfully!');
+        navigationService.goBack();
       } catch (error) {
-        console.log(error, '====error');
+        console.log(error, 'sendRedPackage ====error');
+        CommonToast.failError('Sent failed!');
+      } finally {
+        Loading.hide();
       }
     },
-    [calculateRedPacketFee, currentChannelId, getCAContract, securitySafeCheckAndToast, selectTab, sendRedPackage],
+    [
+      calculateRedPacketFee,
+      checkAllowanceAndApprove,
+      checkManagerSyncState,
+      currentChannelId,
+      getCAContract,
+      getContractAddress,
+      securitySafeCheckAndToast,
+      selectTab,
+      sendRedPackage,
+    ],
   );
 
   const tabList: TabItemType[] = useMemo(
@@ -117,37 +167,51 @@ export default function SendPacketGroupPage() {
 
   return (
     <PageContainer
+      titleDom="Send Crypto Box"
+      hideTouchable
       safeAreaColor={['blue', 'gray']}
       scrollViewProps={{ disabled: true }}
-      hideTouchable={true}
-      containerStyles={styles.containerStyles}
-      titleDom="Send Red Packet">
-      <View style={[GStyles.flexRow, GStyles.alignCenter]}>
-        <View style={styles.tabHeader}>
-          {tabList.map(tabItem => (
-            <TouchableOpacity
-              key={tabItem.name}
-              onPress={() => {
-                onTabPress(tabItem.type);
-              }}>
-              <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
-                <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
-                  {tabItem.name}
-                </TextM>
-              </View>
-            </TouchableOpacity>
-          ))}
+      containerStyles={styles.containerStyles}>
+      <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
+        <View style={[GStyles.flexRow, GStyles.alignCenter]}>
+          <View style={styles.tabHeader}>
+            {tabList.map(tabItem => (
+              <TouchableOpacity
+                key={tabItem.name}
+                onPress={() => {
+                  onTabPress(tabItem.type);
+                }}>
+                <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
+                  <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
+                    {tabItem.name}
+                  </TextM>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-      </View>
-      <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
-      <TextM style={styles.tips}>Red Packets not opened within 24 hours will be refunded. </TextM>
+        <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
+        <TextM style={styles.tips}>
+          {
+            'A crypto box is valid for 24 hours. Unclaimed tokens will be automatically returned to you upon expiration.'
+          }
+        </TextM>
+      </KeyboardAwareScrollView>
     </PageContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  containerStyles: { ...GStyles.paddingArg(16, 20), flex: 1, backgroundColor: defaultColors.bg6 },
-
+  containerStyles: {
+    position: 'relative',
+    flex: 1,
+    backgroundColor: defaultColors.bg4,
+    ...GStyles.paddingArg(0, 0),
+  },
+  scrollStyle: {
+    minHeight: '100%',
+    ...GStyles.paddingArg(16, 20),
+  },
   tabHeader: {
     width: pTd(190),
     backgroundColor: defaultColors.bg18,
@@ -163,6 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   selectTabStyle: {
     shadowColor: defaultColors.shadow1,
@@ -180,7 +245,9 @@ const styles = StyleSheet.create({
     ...fonts.mediumFont,
   },
   tips: {
+    marginTop: pTd(40),
     textAlign: 'center',
     color: defaultColors.font3,
+    marginBottom: isIOS ? 0 : pTd(16),
   },
 });

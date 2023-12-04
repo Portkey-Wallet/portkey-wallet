@@ -7,6 +7,7 @@ import {
   ChannelTypeEnum,
   Message,
   MessageCount,
+  RedPackageConfigType,
   RedPackageDetail,
   RedPackageGrabInfoItem,
   RedPackageStatusEnum,
@@ -280,16 +281,6 @@ export type GetRedPackageConfigParams = {
   token?: string;
 };
 
-export type RedPackageTokenInfo = {
-  chainId: ChainId;
-  symbol: string;
-  decimal: string | number;
-  minAmount: string;
-};
-export type GetRedPackageConfigResult = {
-  tokenInfo: RedPackageTokenInfo[];
-};
-
 export interface IIMService {
   verifySignature(params: VerifySignatureParams): IMServiceCommon<VerifySignatureResult>;
   verifySignatureLoop(
@@ -341,5 +332,5 @@ export interface IIMService {
   ): IMServiceCommon<GetRedPackageCreationStatusResult>;
   getRedPackageDetail(params: GetRedPackageDetailParams): IMServiceCommon<GetRedPackageDetailResult>;
   grabRedPackage(params: GrabRedPackageParams): IMServiceCommon<GrabRedPackageResult>;
-  getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<GetRedPackageConfigResult>;
+  getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<RedPackageConfigType>;
 }

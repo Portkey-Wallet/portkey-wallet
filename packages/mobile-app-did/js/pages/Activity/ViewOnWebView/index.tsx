@@ -55,8 +55,11 @@ const ViewOnWebView: React.FC = () => {
       if (webViewPageType === 'default') return;
       if (webViewPageType === 'ach') {
         if (navState.url.startsWith(ACH_REDIRECT_URL)) {
-          if (successNavigateName) navigationService.navigate(successNavigateName);
-          navigationService.navigate('Tab');
+          if (successNavigateName) {
+            navigationService.navigate(successNavigateName);
+          } else {
+            navigationService.navigate('Tab');
+          }
         }
         return;
       }
@@ -73,7 +76,7 @@ const ViewOnWebView: React.FC = () => {
         }
       }
     },
-    [handleAchSell, params, webViewPageType],
+    [handleAchSell, params, successNavigateName, webViewPageType],
   );
 
   return (

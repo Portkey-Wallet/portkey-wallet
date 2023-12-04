@@ -16,7 +16,7 @@ import navigationService from 'utils/navigationService';
 import { ScreenHeight } from '@rneui/base';
 import { sleep } from '@portkey-wallet/utils';
 import { GetRedPackageDetailResult, GrabRedPackageResultEnum } from '@portkey-wallet/im';
-import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetRedPackageDetail, useGrabRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
 import CommonToast from 'components/CommonToast';
@@ -36,6 +36,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   const currentChannelId = useCurrentChannelId();
   const grabPacket = useGrabRedPackage();
   const { init } = useGetRedPackageDetail();
+  const wallet = useCurrentWalletInfo();
 
   const isMyRedPacket = useMemo(
     () => redPacketData?.senderId === userInfo?.userId,
@@ -112,6 +113,13 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   }, [imgDownPosition, imgDownScale, maskOpacity, imgUpPosition, imgUpScale]);
 
   const onOpen = useCallback(async () => {
+    if (!wallet[redPacketData.chainId]?.caAddress) {
+      CommonToast.warn(
+        'Newly created accounts need a second for info update. Please come back to claim the crypto box later.',
+      );
+      return;
+    }
+
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
     openBtnRef.current?.startRotate();
@@ -119,20 +127,22 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
 
     try {
       const { result } = await grabPacket(currentChannelId || '', redPacketId);
-
       if (result === GrabRedPackageResultEnum.SUCCESS) {
         const data = await init({ id: redPacketId });
         navigationService.navigate('RedPacketDetails', { redPacketId, data });
-        openBtnRef.current?.destroyDom();
         setShowDialogCloseButton(false);
+        openBtnRef.current?.destroyDom();
         startAnimation();
+      } else {
+        openBtnRef.current?.destroyDom();
+        setIsGrabFail(true);
       }
-      // TODO : when  fail how
     } catch (error) {
+      openBtnRef.current?.stopRotate();
       CommonToast.failError(error);
     }
     isFetchingRef.current = false;
-  }, [currentChannelId, grabPacket, init, redPacketId, startAnimation]);
+  }, [currentChannelId, grabPacket, init, redPacketData.chainId, redPacketId, startAnimation, wallet]);
 
   useEffect(
     () => () => {
@@ -163,11 +173,13 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
     OverlayModal.hide();
   }, []);
 
+  const [isGrabFail, setIsGrabFail] = useState(false);
   const memoStr = useMemo(() => {
+    if (isGrabFail) return 'Better luck next time!';
     if (redPacketData.isRedPackageExpired) return 'This crypto box has expired.';
     if (redPacketData.isRedPackageFullyClaimed) return 'Better luck next time!';
     return redPacketData.memo;
-  }, [redPacketData.isRedPackageExpired, redPacketData.isRedPackageFullyClaimed, redPacketData.memo]);
+  }, [isGrabFail, redPacketData.isRedPackageExpired, redPacketData.isRedPackageFullyClaimed, redPacketData.memo]);
 
   return (
     <View style={[GStyles.center, styles.page]}>
@@ -186,7 +198,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
               title={redPacketData?.senderName}
               imageUrl={redPacketData?.senderAvatar}
             />
-            <TextL style={styles.sentBy}>{`Sent by ${redPacketData?.senderName}`}</TextL>
+            <TextL style={styles.sentBy}>{`Crypto Box from ${redPacketData?.senderName}`}</TextL>
             <TextXXXL numberOfLines={2} style={styles.memo}>
               {memoStr}
             </TextXXXL>
@@ -203,7 +215,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
           <ImageBackground source={Red_Packet_02} style={[styles.img, styles.imgDown]}>
             {isShowViewDetailButton && (
               <Touchable style={styles.viewDetailWrap} onPress={onGoDetail}>
-                <TextM style={styles.detailText}>View Detail</TextM>
+                <TextM style={styles.detailText}>View Details</TextM>
                 {isGoDetailLoading ? (
                   <Lottie
                     style={styles.loadingStyle}

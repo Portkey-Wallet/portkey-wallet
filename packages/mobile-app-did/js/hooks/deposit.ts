@@ -61,6 +61,7 @@ const DepositMap = {
 export type ModalDescribe = {
   title: string;
   description: string;
+  icon?: IconName;
 };
 
 export const DepositModalMap: { [key: string]: ModalDescribe } = {
@@ -71,10 +72,12 @@ export const DepositModalMap: { [key: string]: ModalDescribe } = {
   depositUSDT: {
     title: 'ETransfer',
     description: 'You will be directed to a third-party DApp: ETransfer',
+    icon: 'ETransfer',
   },
   withdrawUSDT: {
     title: 'ETransfer',
     description: 'You will be directed to a third-party DApp: ETransfer',
+    icon: 'ETransfer',
   },
 };
 

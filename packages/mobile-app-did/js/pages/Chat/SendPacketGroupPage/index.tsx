@@ -24,6 +24,7 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import navigationService from 'utils/navigationService';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { checkIsUserCancel } from '@portkey-wallet/utils';
 
 type TabItemType = {
   name: string;
@@ -92,7 +93,9 @@ export default function SendPacketGroupPage() {
         });
       } catch (error) {
         console.log(error, 'send check ====error');
-        CommonToast.failError('Sent failed!');
+        if (!checkIsUserCancel(error)) {
+          CommonToast.failError('Sent failed!');
+        }
         return;
       }
 

@@ -16,7 +16,6 @@ import { ApproveParams } from 'dapp/dappOverlay';
 import navigationService from 'utils/navigationService';
 import { useAppDispatch } from 'store/hooks';
 import { changeDrawerOpenStatus } from '@portkey-wallet/store/store-ca/discover/slice';
-import { sleep } from '@portkey-wallet/utils';
 import { ApprovalType } from '@portkey-wallet/types/verifier';
 import Touchable from 'components/Touchable';
 import { FontStyles } from 'assets/theme/styles';
@@ -27,6 +26,7 @@ import { parseInputNumberChange } from '@portkey-wallet/utils/input';
 import useEffectOnce from 'hooks/useEffectOnce';
 import { isIOS } from '@rneui/base';
 import { isValidNumber } from '@portkey-wallet/utils/reg';
+import Svg from 'components/Svg';
 
 type SignModalPropsType = {
   dappInfo: DappStoreItem;
@@ -139,7 +139,12 @@ const ApproveModal = (props: SignModalPropsType) => {
           Keyboard.dismiss();
         }}>
         <View style={[GStyles.center, styles.headerSection]}>
-          <DiscoverWebsiteImage size={pTd(48)} imageUrl={getFaviconUrl(dappInfo.origin)} />
+          {dappInfo.svgIcon ? (
+            <Svg icon={dappInfo.svgIcon} size={pTd(48)} />
+          ) : (
+            <DiscoverWebsiteImage size={pTd(48)} imageUrl={getFaviconUrl(dappInfo.origin)} />
+          )}
+
           <TextL
             style={[
               FontStyles.font5,

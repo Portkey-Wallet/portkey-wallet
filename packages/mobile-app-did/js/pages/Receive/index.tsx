@@ -24,7 +24,7 @@ export default function Receive() {
   const defaultToken = useDefaultToken();
 
   const tokenItem = useRouterParams<TokenItemShowType>();
-  const { chainId, symbol } = tokenItem;
+  const { chainId, symbol, imageUrl } = tokenItem;
   const symbolImages = useSymbolImages();
   const currentWallet = useCurrentWalletInfo();
 
@@ -40,7 +40,7 @@ export default function Receive() {
           title={symbol}
           avatarSize={pTd(32)}
           svgName={symbol === defaultToken.symbol ? 'testnet' : undefined}
-          imageUrl={symbolImages?.[symbol] || ''}
+          imageUrl={imageUrl || symbolImages?.[symbol] || ''}
         />
         <View>
           <TextL>{symbol}</TextL>

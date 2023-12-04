@@ -12,10 +12,11 @@ import { pTd } from 'utils/unit';
 import { useIsTestnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
+import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 interface TokenListItemType {
   noBalanceShow?: boolean;
-  item?: any;
-  onPress?: (item: any) => void;
+  item: TokenItemShowType;
+  onPress?: (item: TokenItemShowType) => void;
 }
 
 const TokenListItem: React.FC<TokenListItemType> = props => {
@@ -38,7 +39,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         avatarSize={pTd(48)}
         // elf token icon is fixed , only use white background color
         svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-        imageUrl={symbolImages[item?.symbol]}
+        imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
       />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>

@@ -11,9 +11,10 @@ import { useLanguage } from 'i18n/hooks';
 import { useJumpToChatDetails, useJumpToChatGroupDetails } from './chat';
 import myEvents from 'utils/deviceEvent';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
-import { useCurrentNetwork } from '@portkey-wallet/hooks/hooks-ca/network';
+import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
@@ -54,6 +55,8 @@ export const useNotify = () => {
 
   const pin = usePin();
   const currentNetwork = useCurrentNetwork();
+  const isMainnet = useIsMainnet();
+
   const logged = useMemo(() => !!address && caHash, [address, caHash]);
   const [remoteData, setRemoteData] = useState<any>();
 
@@ -79,14 +82,14 @@ export const useNotify = () => {
               title: t('Confirm'),
               onPress: async () => {
                 // todo: switch network route
-                await changeNetwork();
+                await changeNetwork(isMainnet ? 'TESTNET' : 'MAIN');
               },
             },
           ],
         });
       }
     },
-    [changeNetwork, currentNetwork, notifyAct, t],
+    [changeNetwork, currentNetwork, isMainnet, notifyAct, t],
   );
 
   useEffect(() => {

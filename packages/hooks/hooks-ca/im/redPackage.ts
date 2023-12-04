@@ -372,9 +372,6 @@ export const useGetRedPackageConfig = (isAutoFetch = false, isInit = false) => {
 
   const getContractAddress = useCallback(
     (chainId: ChainId) => {
-      if (chainId === 'AELF') return '2sFCkQs61YKVkHpN3AT7887CLfMvzzXnMkNYYM431RK5tbKQS9';
-      else return '2d9wJKt3a2xszgYiDTPBRPZpKttU58uL8CvUvZxhXqsdfV1SGK';
-
       return redPackageConfig?.redPackageContractAddress.find(item => item.chainId === chainId)?.contractAddress;
     },
     [redPackageConfig?.redPackageContractAddress],

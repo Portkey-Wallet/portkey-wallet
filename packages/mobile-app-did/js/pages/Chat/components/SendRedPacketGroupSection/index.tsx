@@ -181,7 +181,6 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   }, [tokenPrice, values.count]);
 
   const onMemoChange = useCallback((_value: string) => {
-    console.log('isEmoji(_value)', isEmojiString(_value));
     if (isEmojiString(_value)) return;
     setValues(pre => ({ ...pre, memo: _value }));
   }, []);
@@ -193,6 +192,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
           <CommonInput
             type="general"
             placeholder="Enter quantity"
+            keyboardType="decimal-pad"
             value={values.packetNum}
             onChangeText={onPacketNumChange}
             inputContainerStyle={styles.inputWrap}
@@ -216,6 +216,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                   onFinishSelectToken: (tokenInfo: TokenItemShowType) => {
                     setValues(pre => ({
                       ...pre,
+                      count: pre.symbol !== tokenInfo.symbol || pre.chainId !== tokenInfo.chainId ? '' : pre.count,
                       symbol: tokenInfo.symbol,
                       decimals: String(tokenInfo.decimals),
                       chainId: tokenInfo.chainId,

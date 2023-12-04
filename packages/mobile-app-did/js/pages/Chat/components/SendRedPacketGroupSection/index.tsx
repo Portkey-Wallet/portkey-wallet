@@ -228,6 +228,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               }}>
               <CommonAvatar
                 hasBorder
+                resizeMode="cover"
                 style={styles.avatar}
                 title={values.symbol}
                 avatarSize={pTd(24)}

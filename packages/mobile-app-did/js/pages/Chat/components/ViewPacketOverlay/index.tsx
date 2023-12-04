@@ -194,6 +194,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
           ]}>
           <ImageBackground source={Red_Packet_01} style={[styles.img, styles.imgUp, GStyles.itemCenter]}>
             <CommonAvatar
+              resizeMode="cover"
               avatarSize={pTd(40)}
               title={redPacketData?.senderName}
               imageUrl={redPacketData?.senderAvatar}

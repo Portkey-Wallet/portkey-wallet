@@ -9,7 +9,7 @@ import { TextL, TextM } from 'components/CommonText';
 import GStyles from 'assets/theme/GStyles';
 import { BGStyles, FontStyles } from 'assets/theme/styles';
 import CommonButton from 'components/CommonButton';
-import Svg from 'components/Svg';
+import Svg, { IconName } from 'components/Svg';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
 import fonts from 'assets/theme/fonts';
@@ -26,9 +26,10 @@ export type DisclaimerModalProps = {
   url: string;
   title: string;
   description: string;
+  icon?: IconName;
 };
 
-const DisclaimerModal = ({ url, title, description }: DisclaimerModalProps) => {
+const DisclaimerModal = ({ url, title, description, icon }: DisclaimerModalProps) => {
   const { t } = useLanguage();
   const { signPrivacyPolicy } = useDisclaimer();
   const [selected, setSelected] = useState(false);
@@ -50,7 +51,7 @@ const DisclaimerModal = ({ url, title, description }: DisclaimerModalProps) => {
     <ModalBody modalBodyType="bottom" title={t('Disclaimer')}>
       <View style={styles.contentWrap}>
         <View style={[GStyles.flexRow, GStyles.itemCenter]}>
-          <Svg icon="eBridgeFavIcon" size={pTd(24)} />
+          <Svg icon={icon || 'eBridgeFavIcon'} size={pTd(24)} />
           <TextM style={[FontStyles.font5, GStyles.marginLeft(pTd(8))]}>{title}</TextM>
         </View>
         <TextL style={[FontStyles.font5, fonts.mediumFont, GStyles.marginTop(pTd(8)), GStyles.marginBottom(pTd(16))]}>

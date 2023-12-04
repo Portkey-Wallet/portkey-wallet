@@ -14,6 +14,7 @@ import { useGetCAContract } from './contract';
 import { ApproveMethod } from '@portkey-wallet/constants/constants-ca/dapp';
 import { getGuardiansApprovedByApprove } from 'utils/guardian';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 
 export const useCheckManagerSyncState = () => {
   const getHolderInfoByViewContract = useGetHolderInfoByViewContract();
@@ -83,7 +84,7 @@ export const useCheckAllowanceAndApprove = () => {
           },
         },
       );
-      if (!info) throw new Error('User canceled');
+      if (!info) throw new Error(USER_CANCELED);
       const { guardiansApproved, approveInfo } = info;
       const approveReq = await caContract.callSendMethod(ApproveMethod.ca, '', {
         caHash: caInfo?.caHash,

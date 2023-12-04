@@ -30,6 +30,7 @@ import { useAppBuyButtonShow } from 'hooks/cms';
 import RedPacketAmountShow from 'pages/Chat/components/RedPacketAmountShow';
 import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCurrentChannel } from 'pages/Chat/context/hooks';
+import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -271,7 +272,7 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
   return new Promise((resolve, reject) => {
     OverlayModal.show(<PaymentModal {...props} onConfirm={resolve} />, {
       position: 'bottom',
-      onDisappearCompleted: () => reject(new Error('user cancelled')),
+      onDisappearCompleted: () => reject(new Error(USER_CANCELED)),
     });
   });
 };

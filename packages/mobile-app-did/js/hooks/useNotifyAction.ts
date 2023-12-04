@@ -14,7 +14,6 @@ import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
-import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();

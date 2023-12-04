@@ -84,8 +84,7 @@ export const useCheckAllowanceAndApprove = () => {
     if (bigAmount.gt(allowance)) {
       if (isShowOnceLoading) Loading.hide();
       const info = await requestManagerApprove(
-        // TODO: origin, name;
-        { origin: '', name: '' },
+        { origin: 'Crypto Box', name: 'Crypto Box', svgIcon: 'crypto-box-with-border' },
         {
           eventName,
           approveInfo: {

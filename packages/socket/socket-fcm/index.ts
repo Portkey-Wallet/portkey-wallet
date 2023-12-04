@@ -47,7 +47,7 @@ class SignalrFCM extends BaseSignalr {
   };
 
   public reportAppStatus = async (status: AppStatusUnit, unReadCount: number) => {
-    console.log('reportAppStatus', { status, unReadCount });
+    console.log('reportAppStatus', { status, unReadCount }, 'deviceId', this.deviceId, 'deviceInfo', this.deviceInfo);
     return this.signalr?.invoke('reportAppStatus', { status, unReadCount });
   };
 
@@ -88,6 +88,7 @@ class SignalrFCM extends BaseSignalr {
 
   public doOpen = async ({ url, clientId }: { url: string; clientId?: string }): Promise<HubConnection> => {
     if (!this.fcmToken) {
+      await sleep(3000);
       await this.getFCMToken();
       return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
     }

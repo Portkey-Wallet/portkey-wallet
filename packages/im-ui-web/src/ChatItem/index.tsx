@@ -80,7 +80,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
             className={clsx(
               'red-packet-tag',
               showRedPacketHighlight && 'red-packet-tag-highlight',
-            )}>{`[Red Packet]`}</span>
+            )}>{`[Crypto Box]`}</span>
           <span className="red-packet-subtitle">{subtitle || 'Best Wishes!'}</span>
         </div>
       );

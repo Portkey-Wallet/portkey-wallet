@@ -3,8 +3,7 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
-import { useRef } from 'react';
-import { useEffectOnce } from 'react-use';
+import { useEffect, useRef } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import { initFCMSignalR } from 'utils/FCM';
 
@@ -13,17 +12,27 @@ export default function useFCM() {
   const isShowChat = useIsChatShow();
   const { isPrompt } = useCommonState();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  useEffectOnce(() => {
+
+  useEffect(() => {
+    (async () => {
+      // only im
+      if (!isShowChat) return;
+      // only popup
+      if (isPrompt) return;
+
+      await initFCMSignalR();
+      if (!request.defaultConfig.baseURL) return;
+      signalrFCM.doOpen({
+        url: `${request.defaultConfig.baseURL}`,
+      });
+    })();
+  }, [isPrompt, isShowChat]);
+
+  useEffect(() => {
     // only im
     if (!isShowChat) return;
     // only popup
     if (isPrompt) return;
-
-    initFCMSignalR();
-    if (!request.defaultConfig.baseURL) return;
-    signalrFCM.doOpen({
-      url: `${request.defaultConfig.baseURL}`,
-    });
 
     timerRef.current = setInterval(() => {
       console.log('report AppStatus update', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
@@ -37,5 +46,5 @@ export default function useFCM() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  });
+  }, [isPrompt, isShowChat, unreadCount]);
 }

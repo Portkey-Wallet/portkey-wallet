@@ -12,16 +12,13 @@ export const deviceInfo = {
 };
 
 export const getFCMToken = async (): Promise<string> => {
-  chrome.gcm.unregister((...args) => {
-    console.log(args, '===getGCMToken===unregister===args');
-  });
-
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     chrome.gcm.register([`${process.env.FCM_PROJECT_ID}`], (registrationId) => {
       if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
+        console.log('===getGCMToken===reject===', chrome.runtime.lastError);
+        resolve('');
       } else {
-        console.log(registrationId, '===getGCMToken===register===args');
+        console.log(registrationId, '===getGCMToken===register===');
         resolve(registrationId);
       }
     });
@@ -46,7 +43,7 @@ const generateDeviceId = async () => {
 
 export const initFCMSignalR = async () => {
   const deviceId = await generateDeviceId();
-  console.log('deviceId', deviceId, 'process.env.FCM_PROJECT_ID', process.env.FCM_PROJECT_ID);
+  console.log('generateDeviceId', deviceId);
   signalrFCM.init({
     deviceInfo,
     deviceId,

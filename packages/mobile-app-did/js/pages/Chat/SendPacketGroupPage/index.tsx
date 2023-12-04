@@ -77,8 +77,7 @@ export default function SendPacketGroupPage() {
 
         const redPacketContractAddress = getContractAddress(values.chainId);
         if (!redPacketContractAddress) {
-          //TODO: show error
-          return;
+          throw new Error('redPacketContractAddress is not exist');
         }
 
         caContract = await getCAContract(values.chainId);
@@ -93,6 +92,7 @@ export default function SendPacketGroupPage() {
         });
       } catch (error) {
         console.log(error, 'send check ====error');
+        CommonToast.failError('Sent failed!');
         return;
       }
 
@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: pTd(6),
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   selectTabStyle: {
     shadowColor: defaultColors.shadow1,

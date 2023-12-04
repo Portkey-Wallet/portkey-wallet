@@ -30,6 +30,7 @@ import { useAppBuyButtonShow } from 'hooks/cms';
 import RedPacketAmountShow from 'pages/Chat/components/RedPacketAmountShow';
 import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCurrentChannel } from 'pages/Chat/context/hooks';
+import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -217,52 +218,54 @@ const PaymentModal = ({
   ]);
   return (
     <ModalBody modalBodyType="bottom" style={styles.wrapStyle}>
-      <View style={[GStyles.itemCenter, GStyles.flex1]}>
-        <TextM style={[FontStyles.font5, GStyles.marginBottom(pTd(8))]}> {title}</TextM>
-        <RedPacketAmountShow
-          componentType="sendPacketPage"
-          textColor={defaultColors.font5}
-          amountShow={amount}
-          symbol={tokenInfo.symbol}
-        />
-        {!!currentTokenInfo?.price && (
-          <TextL style={GStyles.marginTop(pTd(8))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextL>
-        )}
+      <View style={styles.containerStyle}>
+        <View style={[GStyles.itemCenter, GStyles.flex1]}>
+          <TextM style={[FontStyles.font5, GStyles.marginBottom(pTd(8))]}> {title}</TextM>
+          <RedPacketAmountShow
+            componentType="sendPacketPage"
+            textColor={defaultColors.font5}
+            amountShow={amount}
+            symbol={tokenInfo.symbol}
+          />
+          {!!currentTokenInfo?.price && (
+            <TextL style={GStyles.marginTop(pTd(8))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextL>
+          )}
 
-        <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
-          <TextS style={FontStyles.font3}>Method</TextS>
-          <View style={styles.balanceItemRow}>
-            <View style={styles.rowCenter}>
-              {tokenRowComponent}
-              {getButtonComponent}
-            </View>
+          <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
+            <TextS style={FontStyles.font3}>Method</TextS>
+            <View style={styles.balanceItemRow}>
+              <View style={styles.rowCenter}>
+                {tokenRowComponent}
+                {getButtonComponent}
+              </View>
 
-            <View style={[GStyles.paddingLeft(pTd(30))]}>
-              {tokenBalanceComponent}
-              {!!fee.error && <TextS style={[styles.marginTop4, disableStyle]}>Insufficient balance</TextS>}
-              {!!(crossSufficientItem && fee.error) && (
-                <TextS style={[FontStyles.font6, styles.marginTop4]}>
-                  {`You can transfer some ${tokenInfo.symbol} from your ${formatChainInfoToShow(
-                    crossSufficientItem?.chainId,
-                    currentNetwork,
-                  )} address`}
-                </TextS>
-              )}
+              <View style={[GStyles.paddingLeft(pTd(30))]}>
+                {tokenBalanceComponent}
+                {!!fee.error && <TextS style={[styles.marginTop4, disableStyle]}>Insufficient balance</TextS>}
+                {!!(crossSufficientItem && fee.error) && (
+                  <TextS style={[FontStyles.font6, styles.marginTop4]}>
+                    {`You can transfer some ${tokenInfo.symbol} from your ${formatChainInfoToShow(
+                      crossSufficientItem?.chainId,
+                      currentNetwork,
+                    )} address`}
+                  </TextS>
+                )}
+              </View>
             </View>
           </View>
+          {feeComponent}
         </View>
-        {feeComponent}
+        <CommonButton
+          onPress={() => {
+            onConfirm(true);
+            OverlayModal.hide(false);
+          }}
+          disabled={!!(fee.loading || fee.error)}
+          loading={fee.loading}
+          type="primary">
+          Confirm
+        </CommonButton>
       </View>
-      <CommonButton
-        onPress={() => {
-          onConfirm(true);
-          OverlayModal.hide(false);
-        }}
-        disabled={!!(fee.loading || fee.error)}
-        loading={fee.loading}
-        type="primary">
-        Confirm
-      </CommonButton>
     </ModalBody>
   );
 };
@@ -271,7 +274,7 @@ export const show = (props: Omit<PaymentOverlayProps, 'onConfirm'>) => {
   return new Promise((resolve, reject) => {
     OverlayModal.show(<PaymentModal {...props} onConfirm={resolve} />, {
       position: 'bottom',
-      onDisappearCompleted: () => reject(new Error('user cancelled')),
+      onDisappearCompleted: () => reject(new Error(USER_CANCELED)),
     });
   });
 };
@@ -287,8 +290,11 @@ export default {
 
 export const styles = StyleSheet.create({
   wrapStyle: {
-    paddingHorizontal: pTd(20),
     paddingVertical: 8,
+  },
+  containerStyle: {
+    paddingHorizontal: pTd(20),
+    flex: 1,
   },
   lottieStyle: {
     width: 15,

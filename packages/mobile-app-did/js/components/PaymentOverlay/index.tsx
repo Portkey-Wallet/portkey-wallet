@@ -172,7 +172,7 @@ const PaymentModal = ({
   const disableStyle = useMemo(() => !!fee.error && styles.opacity, [fee.error]);
   const tokenRowComponent = useMemo(() => {
     return (
-      <View style={[GStyles.flex1, styles.rowCenter, disableStyle]}>
+      <View style={[GStyles.flex1, GStyles.flexRow, styles.rowCenter, disableStyle]}>
         <CommonAvatar
           hasBorder
           style={styles.avatar}
@@ -180,7 +180,7 @@ const PaymentModal = ({
           avatarSize={pTd(24)}
           imageUrl={currentTokenInfo?.imageUrl}
         />
-        <TextL style={FontStyles.font5}>
+        <TextL style={[GStyles.flex1, GStyles.paddingRight(8), FontStyles.font5]} numberOfLines={1}>
           {tokenInfo.symbol} ({formatChainInfoToShow(chainId, currentNetwork)})
         </TextL>
       </View>

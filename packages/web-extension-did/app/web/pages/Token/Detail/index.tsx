@@ -82,6 +82,7 @@ function TokenDetail() {
         disclaimerData.current = {
           targetUrl,
           originUrl: eTransUrl,
+          dappIcon: 'ETransFavicon',
           originTitle: 'ETransfer',
           titleText: 'You will be directed to a third-party DApp: ETransfer',
         };

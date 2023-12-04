@@ -9,6 +9,7 @@ import {
   EBRIDGE_DISCLAIMER_ARRAY,
   EBRIDGE_DISCLAIMER_TEXT_SHARE256_POLICY_ID,
 } from '@portkey-wallet/constants/constants-ca/ebridge';
+import { SvgType } from 'components/CustomSvg';
 import './index.less';
 
 export interface IDisclaimerProps {
@@ -18,6 +19,7 @@ export interface IDisclaimerProps {
   titleText: string;
   agreeText?: string;
   confirmText?: string;
+  dappIcon: SvgType;
 }
 
 export const initDisclaimerData: IDisclaimerProps = {
@@ -25,6 +27,7 @@ export const initDisclaimerData: IDisclaimerProps = {
   targetUrl: '',
   originTitle: '',
   titleText: '',
+  dappIcon: 'BridgeFavicon',
 };
 
 export interface IDisclaimerModalProps extends IDisclaimerProps, ModalProps {
@@ -41,6 +44,7 @@ const DisclaimerModal = ({
   targetUrl,
   originTitle,
   titleText,
+  dappIcon = 'BridgeFavicon',
   agreeText = 'I have read and agree to the terms.',
   confirmText = 'Continue',
   ...props
@@ -89,7 +93,7 @@ const DisclaimerModal = ({
           <div className="disclaimer-modal-header flex-center">Disclaimer</div>
           <div className={clsx(['disclaimer-modal-content', 'flex-column', isPrompt && 'isPrompt'])}>
             <div className="disclaimer-detail flex-row-center">
-              <CustomSvg type="BridgeFavicon" />
+              <CustomSvg type={dappIcon} />
               <span className="origin">{originTitle}</span>
             </div>
             <div className="disclaimer-title">{titleText}</div>

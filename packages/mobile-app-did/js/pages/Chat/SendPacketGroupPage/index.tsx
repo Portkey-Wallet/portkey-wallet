@@ -96,6 +96,7 @@ export default function SendPacketGroupPage() {
         if (!checkIsUserCancel(error)) {
           CommonToast.failError('Sent failed!');
         }
+        Loading.hide();
         return;
       }
 

@@ -46,8 +46,8 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
           [isGeneralMessage, messageType],
         )}
         containerToNextStyle={{
-          left: styles.containerToNextLeftStyle,
-          right: styles.containerToNextRightStyle,
+          left: [styles.containerToNextLeftStyle, !isGeneralMessage && styles.redPacketContainerToNextStyle],
+          right: [styles.containerToNextRightStyle, !isGeneralMessage && styles.redPacketContainerToNextStyle],
         }}
         containerStyle={{
           left: styles.containerStyle,
@@ -79,6 +79,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: pTd(2),
     marginRight: 0,
     overflow: 'hidden',
+  },
+  redPacketContainerToNextStyle: {
+    borderBottomRightRadius: pTd(12),
+    borderBottomLeftRadius: pTd(12),
+    borderTopRightRadius: pTd(12),
+    borderTopLeftRadius: pTd(12),
   },
   containerToNextRightStyle: {
     borderBottomRightRadius: pTd(20),

@@ -366,33 +366,35 @@ const SendHome: React.FC = () => {
             )}
           </View>
 
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
-            <Text style={[styles.divider, styles.marginTop0]} />
-          )}
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
-            <View style={styles.section}>
-              <View style={[styles.flexSpaceBetween]}>
-                <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle]}>
-                  {t('Cross chain Transaction fee')}
-                </TextM>
-                <View>
-                  <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
-                    crossDefaultFee,
-                  )} ${defaultToken.symbol}`}</TextM>
-                  {!isTestnet ? (
-                    <TextS
-                      style={[styles.blackFontColor, styles.lightGrayFontColor, GStyles.alignEnd]}>{`$ ${unitConverter(
-                      ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
-                    )}`}</TextS>
-                  ) : (
-                    <TextM />
-                  )}
+          {isCrossChainTransfer && (
+            <>
+              <Text style={[styles.divider, styles.marginTop0]} />
+              <View style={styles.section}>
+                <View style={[styles.flexSpaceBetween]}>
+                  <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle]}>
+                    {t('Estimated CrossChain Transfer')}
+                  </TextM>
+                  <View>
+                    <TextM style={[styles.blackFontColor, styles.fontBold, GStyles.alignEnd]}>{`${unitConverter(
+                      crossDefaultFee,
+                    )} ${defaultToken.symbol}`}</TextM>
+                    {!isTestnet ? (
+                      <TextS
+                        style={[
+                          styles.blackFontColor,
+                          styles.lightGrayFontColor,
+                          GStyles.alignEnd,
+                        ]}>{`$ ${unitConverter(
+                        ZERO.plus(crossDefaultFee).multipliedBy(tokenPriceObject[defaultToken.symbol]),
+                      )}`}</TextS>
+                    ) : (
+                      <TextM />
+                    )}
+                  </View>
                 </View>
               </View>
-            </View>
-          )}
-          {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
-            <Text style={[styles.divider, styles.marginTop0]} />
+              <Text style={[styles.divider, styles.marginTop0]} />
+            </>
           )}
           {isCrossChainTransfer && assetInfo.symbol === defaultToken.symbol && (
             <View style={styles.section}>

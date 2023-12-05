@@ -28,7 +28,6 @@ export const BackEndNetWorkMap: {
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-dev',
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-test2': {
     name: 'aelf Mainnet',
@@ -49,7 +48,6 @@ export const BackEndNetWorkMap: {
       },
     },
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-test1-ip': {
     name: 'aelf Testnet',
@@ -67,7 +65,6 @@ export const BackEndNetWorkMap: {
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-dev',
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-test2-ip': {
     name: 'aelf Mainnet',
@@ -88,7 +85,6 @@ export const BackEndNetWorkMap: {
       },
     },
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-test3': {
     name: 'aelf Mainnet',
@@ -109,7 +105,6 @@ export const BackEndNetWorkMap: {
       },
     },
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',

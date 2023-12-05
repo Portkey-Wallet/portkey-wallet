@@ -1,6 +1,6 @@
 {
   "name": "web-extension-did",
-  "version": "1.4.13",
+  "version": "1.4.11",
   "description": "web-extension-did",
   "private": true,
   "dependencies": {

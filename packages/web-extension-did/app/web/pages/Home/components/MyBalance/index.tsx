@@ -197,6 +197,7 @@ export default function MyBalance() {
       disclaimerData.current = {
         targetUrl: eBridgeUrl,
         originUrl: eBridgeUrl,
+        dappIcon: 'BridgeFavicon',
         originTitle: 'eBridge',
         titleText: 'You will be directed to a third-party DApp: eBridge',
       };
@@ -225,6 +226,7 @@ export default function MyBalance() {
         disclaimerData.current = {
           targetUrl,
           originUrl: eTransferUrl,
+          dappIcon: 'ETransFavicon',
           originTitle: 'ETransfer',
           titleText: 'You will be directed to a third-party DApp: ETransfer',
         };

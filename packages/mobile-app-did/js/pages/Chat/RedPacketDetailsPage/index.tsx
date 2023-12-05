@@ -111,7 +111,7 @@ export const RedPacketDetails = () => {
         redPacketData?.count,
         'crypto box',
         'crypto boxes',
-      )} opened in ${formatRedPacketNoneLeftTime(redPacketData.createTime, redPacketData?.endTime)}`;
+      )} opened in ${formatRedPacketNoneLeftTime(redPacketData?.createTime, redPacketData?.endTime)}`;
 
     // !isP2P  && !my wallet  && !isRedPackageFullyClaimed &&  isRedPackageExpired
     if (!isP2P && !isMyPacket && !redPacketData?.isRedPackageFullyClaimed && redPacketData?.isRedPackageExpired)

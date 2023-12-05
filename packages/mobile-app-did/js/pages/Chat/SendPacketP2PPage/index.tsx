@@ -88,6 +88,7 @@ export default function SendPacketP2PPage() {
         if (!checkIsUserCancel(error)) {
           CommonToast.failError('Crypto box failed to be sent. Please try again.');
         }
+        Loading.hide();
         return;
       }
 

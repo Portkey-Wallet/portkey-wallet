@@ -24,7 +24,9 @@ import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import navigationService from 'utils/navigationService';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
-import { checkIsUserCancel } from '@portkey-wallet/utils';
+import { checkIsUserCancel, handleErrorMessage } from '@portkey-wallet/utils';
+import myEvents from 'utils/deviceEvent';
+import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 
 type TabItemType = {
   name: string;
@@ -94,7 +96,7 @@ export default function SendPacketGroupPage() {
       } catch (error) {
         console.log(error, 'send check ====error');
         if (!checkIsUserCancel(error)) {
-          CommonToast.failError('Sent failed!');
+          CommonToast.failError('Crypto box failed to be sent. Please try again.');
         }
         Loading.hide();
         return;
@@ -117,7 +119,13 @@ export default function SendPacketGroupPage() {
         navigationService.goBack();
       } catch (error) {
         console.log(error, 'sendRedPackage ====error');
-        CommonToast.failError('Sent failed!');
+        if (handleErrorMessage(error) === 'fetch exceed limit') {
+          CommonToast.warn('You can view the crypto box you sent later in the chat window.');
+          navigationService.navigate('Tab');
+          myEvents.navToBottomTab.emit({ tabName: ChatTabName });
+        } else {
+          CommonToast.failError('Crypto box failed to be sent. Please try again.');
+        }
       } finally {
         Loading.hide();
       }

@@ -14,6 +14,7 @@ import './index.less';
 import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import { useWalletInfo } from 'store/Provider/hooks';
+import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export default function ChatList() {
       subTitle = `${item.lastMessageContent}`;
     } else if (_type === MessageTypeWeb['REDPACKAGE-CARD']) {
       const redPackage = (item.lastMessageContent as ParsedRedPackage).data;
-      subTitle = `${redPackage?.memo || 'Best Wishes!'}`;
+      subTitle = `${redPackage?.memo || RED_PACKAGE_DEFAULT_MEMO}`;
     }
     return subTitle;
   }, []);

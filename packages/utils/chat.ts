@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
 import { dateToDayjs } from './time';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
+dayjs.extend(utc);
 
 export const formatMessageCountToStr = (num: number): string | undefined => {
   if (!num || num < 0) return undefined;

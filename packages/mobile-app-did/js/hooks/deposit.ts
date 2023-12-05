@@ -114,7 +114,7 @@ export function useDepositList() {
   const { isBridgeShow } = useAppBridgeButtonShow();
   const { isETransDepositShow, isETransWithdrawShow } = useAppETransShow();
 
-  const { eBridgeUrl, eTransUrl } = useCurrentNetworkInfo();
+  const { eBridgeUrl, eTransferUrl } = useCurrentNetworkInfo();
 
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   return useMemo(() => {
@@ -128,7 +128,7 @@ export function useDepositList() {
           onDisclaimerModalPress(
             DepositModalMap.depositUSDT,
             stringifyETrans({
-              url: eTransUrl || '',
+              url: eTransferUrl || '',
               query: {
                 tokenSymbol: 'USDT',
                 type: 'Deposit',
@@ -143,7 +143,7 @@ export function useDepositList() {
           onDisclaimerModalPress(
             DepositModalMap.withdrawUSDT,
             stringifyETrans({
-              url: eTransUrl || '',
+              url: eTransferUrl || '',
               query: {
                 tokenSymbol: 'USDT',
                 type: 'Withdraw',
@@ -161,7 +161,7 @@ export function useDepositList() {
     return list;
   }, [
     eBridgeUrl,
-    eTransUrl,
+    eTransferUrl,
     isBridgeShow,
     isBuyButtonShow,
     isETransDepositShow,

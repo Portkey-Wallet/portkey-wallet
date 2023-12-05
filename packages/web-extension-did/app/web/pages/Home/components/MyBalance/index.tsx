@@ -69,7 +69,7 @@ export default function MyBalance() {
   const isMainNet = useIsMainnet();
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
-  const { eBridgeUrl = '', eTransUrl = '' } = useCurrentNetworkInfo();
+  const { eBridgeUrl = '', eTransferUrl = '' } = useCurrentNetworkInfo();
   const renderTabsData = useMemo(
     () => [
       {
@@ -209,13 +209,13 @@ export default function MyBalance() {
       const isSafe = await checkSecurity(originChainId);
       if (!isSafe) return;
       const targetUrl = stringifyETrans({
-        url: eTransUrl,
+        url: eTransferUrl,
         query: {
           tokenSymbol: 'USDT',
           type: eTransType,
         },
       });
-      if (checkDappIsConfirmed(eTransUrl)) {
+      if (checkDappIsConfirmed(eTransferUrl)) {
         const openWinder = window.open(targetUrl, '_blank');
         if (openWinder) {
           openWinder.opener = null;
@@ -224,14 +224,14 @@ export default function MyBalance() {
       } else {
         disclaimerData.current = {
           targetUrl,
-          originUrl: eTransUrl,
+          originUrl: eTransferUrl,
           originTitle: 'ETransfer',
           titleText: 'You will be directed to a third-party DApp: ETransfer',
         };
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, checkSecurity, eTransUrl, originChainId],
+    [checkDappIsConfirmed, checkSecurity, eTransferUrl, originChainId],
   );
 
   const isShowDepositEntry = useMemo(

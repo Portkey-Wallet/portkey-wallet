@@ -31,7 +31,7 @@ function TokenDetail() {
   const { checkDappIsConfirmed } = useDisclaimer();
   const checkSecurity = useCheckSecurity();
   const [disclaimerOpen, setDisclaimerOpen] = useState<boolean>(false);
-  const { eTransUrl = '' } = useCurrentNetworkInfo();
+  const { eTransferUrl = '' } = useCurrentNetworkInfo();
   const { isPrompt } = useCommonState();
   const { isBuyButtonShow } = useExtensionBuyButtonShow();
   const isShowBuyEntry = useMemo(
@@ -66,14 +66,14 @@ function TokenDetail() {
       const isSafe = await checkSecurity(currentToken.chainId);
       if (!isSafe) return;
       const targetUrl = stringifyETrans({
-        url: eTransUrl || '',
+        url: eTransferUrl || '',
         query: {
           tokenSymbol: currentToken.symbol,
           type: eTransType,
           chainId: currentToken.chainId,
         },
       });
-      if (checkDappIsConfirmed(eTransUrl)) {
+      if (checkDappIsConfirmed(eTransferUrl)) {
         const openWinder = window.open(targetUrl, '_blank');
         if (openWinder) {
           openWinder.opener = null;
@@ -81,14 +81,14 @@ function TokenDetail() {
       } else {
         disclaimerData.current = {
           targetUrl,
-          originUrl: eTransUrl,
+          originUrl: eTransferUrl,
           originTitle: 'ETransfer',
           titleText: 'You will be directed to a third-party DApp: ETransfer',
         };
         setDisclaimerOpen(true);
       }
     },
-    [checkDappIsConfirmed, checkSecurity, currentToken.chainId, currentToken.symbol, eTransUrl],
+    [checkDappIsConfirmed, checkSecurity, currentToken.chainId, currentToken.symbol, eTransferUrl],
   );
   const mainContent = useCallback(() => {
     return (

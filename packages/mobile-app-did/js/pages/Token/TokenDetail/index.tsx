@@ -155,7 +155,7 @@ const TokenDetail: React.FC = () => {
     () => isETransToken && isETransWithdrawShow && !isBuyButtonShow && !isFaucetButtonShow,
     [isETransToken, isETransWithdrawShow, isBuyButtonShow, isFaucetButtonShow],
   );
-  const { eTransUrl } = useCurrentNetworkInfo();
+  const { eTransferUrl } = useCurrentNetworkInfo();
   const onDisclaimerModalPress = useOnDisclaimerModalPress();
   const buttonCount = useMemo(() => {
     let count = 3;
@@ -224,7 +224,7 @@ const TokenDetail: React.FC = () => {
                 onDisclaimerModalPress(
                   DepositModalMap.depositUSDT,
                   stringifyETrans({
-                    url: eTransUrl || '',
+                    url: eTransferUrl || '',
                     query: {
                       tokenSymbol: tokenInfo?.symbol,
                       type: 'Deposit',
@@ -245,7 +245,7 @@ const TokenDetail: React.FC = () => {
                 onDisclaimerModalPress(
                   DepositModalMap.withdrawUSDT,
                   stringifyETrans({
-                    url: eTransUrl || '',
+                    url: eTransferUrl || '',
                     query: {
                       tokenSymbol: tokenInfo?.symbol,
                       type: 'Withdraw',

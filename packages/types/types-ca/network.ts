@@ -22,5 +22,5 @@ export type NetworkItem = {
   imWsUrl?: string;
   imS3Bucket?: string;
   eBridgeUrl?: string;
-  eTransUrl?: string;
+  eTransferUrl?: string;
 };

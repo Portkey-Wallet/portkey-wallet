@@ -28,7 +28,7 @@ export const BackEndNetWorkMap: {
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-dev',
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransUrl: 'https://test.etrans.exchange',
+    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-test2': {
     name: 'aelf Mainnet',
@@ -49,7 +49,7 @@ export const BackEndNetWorkMap: {
       },
     },
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransUrl: 'https://test.etrans.exchange',
+    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-test1-ip': {
     name: 'aelf Testnet',
@@ -67,7 +67,7 @@ export const BackEndNetWorkMap: {
     imWsUrl: 'wss://testnet.relationlabs.ai/pk-sim/ws/',
     imS3Bucket: 'portkey-im-dev',
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransUrl: 'https://test.etrans.exchange',
+    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-test2-ip': {
     name: 'aelf Mainnet',
@@ -88,7 +88,7 @@ export const BackEndNetWorkMap: {
       },
     },
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransUrl: 'https://test.etrans.exchange',
+    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-test3': {
     name: 'aelf Mainnet',
@@ -109,7 +109,7 @@ export const BackEndNetWorkMap: {
       },
     },
     eBridgeUrl: 'http://192.168.67.173:3000',
-    eTransUrl: 'https://test.etrans.exchange',
+    eTransferUrl: 'https://test.etrans.exchange',
   },
   'back-end-testnet': {
     name: 'aelf Testnet',
@@ -125,7 +125,7 @@ export const BackEndNetWorkMap: {
     imS3Bucket: 'portkey-im-testnet',
     portkeyFinanceUrl: 'https://test.portkey.finance',
     eBridgeUrl: 'https://test.ebridge.exchange',
-    eTransUrl: 'https://test.etrans.exchange',
+    eTransferUrl: 'https://test.etransfer.exchange',
   },
   'back-end-mainnet': {
     name: 'aelf Mainnet',
@@ -148,6 +148,6 @@ export const BackEndNetWorkMap: {
     imWsUrl: 'wss://diok8uqxgvc3.cloudfront.net/ws/',
     imS3Bucket: 'portkey-im',
     eBridgeUrl: 'https://ebridge.exchange',
-    eTransUrl: 'https://etrans.exchange',
+    eTransferUrl: 'https://etransfer.exchange',
   },
 };

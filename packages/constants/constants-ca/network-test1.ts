@@ -17,8 +17,8 @@ export enum DappMap {
 }
 
 const EBridgeList = NetworkList.map(i => i.eBridgeUrl).filter(i => !!i) as string[];
-const ETransList = NetworkList.map(i => i.eTransUrl).filter(i => !!i) as string[];
-export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransList];
+const ETransferList = NetworkList.map(i => i.eTransferUrl).filter(i => !!i) as string[];
+export const DAPP_WHITELIST: string[] = [...EBridgeList, ...ETransferList];
 
 export const LinkPortkeyWebsite = 'https://portkey-website-dev.vercel.app';
 export const LinkPortkeyPath = {

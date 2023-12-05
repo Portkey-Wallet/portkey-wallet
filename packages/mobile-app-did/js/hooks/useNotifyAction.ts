@@ -106,14 +106,14 @@ export const useNotify = () => {
     if (!logged) return;
 
     messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('--remoteMessage', remoteMessage);
+      console.log('--remoteMessage onNotificationOpenedApp', remoteMessage);
       setRemoteData(remoteMessage.data);
     });
 
     messaging()
       .getInitialNotification()
       .then(remoteMessage => {
-        console.log('--remoteMessage', remoteMessage);
+        console.log('--remoteMessage getInitialNotification', remoteMessage);
         setRemoteData(remoteMessage?.data);
       });
   }, [logged]);

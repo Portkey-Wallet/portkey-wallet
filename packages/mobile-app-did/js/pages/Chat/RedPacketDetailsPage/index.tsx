@@ -237,7 +237,8 @@ const styles = StyleSheet.create({
   },
   backIconWrap: {
     paddingLeft: pTd(16),
-    paddingTop: pTd(16),
+    paddingVertical: pTd(16),
+    width: pTd(60),
   },
   flatListContentContainerStyle: {
     paddingBottom: pTd(56),

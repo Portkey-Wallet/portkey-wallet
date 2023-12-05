@@ -119,8 +119,9 @@ export const getCurrentCAViewContract = async (chainId: ChainId) => {
 };
 
 export const isMyPayTransactionFee = (address: string, chainId?: ChainId) => {
-  const { walletInfo } = getWallet();
-  if (isEqAddress(walletInfo?.address, address)) return true;
+  // manager transaction fee hide
+  // const { walletInfo } = getWallet();
+  // if (isEqAddress(walletInfo?.address, address)) return true;
   const caInfo = getCurrentCaInfo();
 
   if (chainId) {

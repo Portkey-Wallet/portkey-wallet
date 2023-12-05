@@ -161,6 +161,7 @@ const ChatGroupDetailsPage = () => {
     useMemo(() => {
       if (isFocused) {
         return () => {
+          console.log('useHardwareBackPress');
           onBack();
           return true;
         };

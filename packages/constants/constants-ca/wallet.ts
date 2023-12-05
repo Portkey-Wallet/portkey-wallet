@@ -23,3 +23,5 @@ export const InitialTxFee = {
   max: 0.0041,
   redPackage: 0.0041,
 };
+
+export const VERIFY_INVALID_TIME = 1000;

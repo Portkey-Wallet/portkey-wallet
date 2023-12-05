@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 import PageContainer from 'components/PageContainer';
-import { TextL, TextM, TextXL, TextS } from 'components/CommonText';
+import { TextL, TextM, TextS } from 'components/CommonText';
 import AccountCard from 'pages/Receive/components/AccountCard';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import { useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import Svg from 'components/Svg';
@@ -14,25 +14,35 @@ import { TokenItemShowType } from '@portkey-wallet/types/types-ca/token';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
-import { formatChainInfoToShow } from '@portkey-wallet/utils';
+import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/utils';
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { copyText } from 'utils';
+import Touchable from 'components/Touchable';
+import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
+import { FontStyles } from 'assets/theme/styles';
+import fonts from 'assets/theme/fonts';
 
 export default function Receive() {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
+  const isMainnet = useIsMainnet();
 
   const tokenItem = useRouterParams<TokenItemShowType>();
-  const { chainId, symbol } = tokenItem;
+  const { chainId, symbol, imageUrl } = tokenItem;
   const symbolImages = useSymbolImages();
   const currentWallet = useCurrentWalletInfo();
 
   const currentCaAddress = currentWallet?.[chainId]?.caAddress;
 
+  const copyId = useCallback(() => copyText(`ELF_${currentCaAddress}_${chainId}`), [chainId, currentCaAddress]);
+
   return (
-    <PageContainer titleDom={t('Receive')} safeAreaColor={['blue', 'gray']} containerStyles={styles.containerStyles}>
-      <TextXL style={styles.tips}>{t('You can provide QR code to receive')}</TextXL>
+    <PageContainer
+      titleDom={t('Receive')}
+      safeAreaColor={['blue', 'white']}
+      containerStyles={styles.containerStyles}
+      scrollViewProps={{ disabled: false }}>
       <View style={styles.topWrap}>
         <CommonAvatar
           hasBorder
@@ -40,7 +50,7 @@ export default function Receive() {
           title={symbol}
           avatarSize={pTd(32)}
           svgName={symbol === defaultToken.symbol ? 'testnet' : undefined}
-          imageUrl={symbolImages?.[symbol] || ''}
+          imageUrl={imageUrl || symbolImages?.[symbol] || ''}
         />
         <View>
           <TextL>{symbol}</TextL>
@@ -54,16 +64,27 @@ export default function Receive() {
         style={styles.accountCardStyle}
       />
 
-      <View style={styles.buttonWrap}>
-        <TouchableOpacity
-          style={styles.buttonTop}
-          onPress={() => {
-            const tmpStr = `ELF_${currentCaAddress}_${chainId}`;
-            copyText(tmpStr);
-          }}>
-          <Svg icon="copy" size={pTd(20)} color={defaultColors.font2} />
-        </TouchableOpacity>
-        <TextM style={styles.buttonText}>{t('Copy')}</TextM>
+      <TextM style={styles.tips}>{t('You can provide QR code to receive')}</TextM>
+
+      <View style={[GStyles.flexRow, GStyles.itemCenter, GStyles.spaceBetween, styles.addressWrap]}>
+        <TextM style={styles.address}>
+          {formatStr2EllipsisStr(addressFormat(currentCaAddress, chainId, 'aelf'), 32)}
+        </TextM>
+        <Touchable onPress={() => copyId()}>
+          <Svg icon="copy" size={pTd(16)} />
+        </Touchable>
+      </View>
+
+      <View style={styles.warningWrap}>
+        <View style={[GStyles.flexRow, GStyles.itemCenter]}>
+          <Svg icon="warning1" size={pTd(16)} />
+          <TextM style={[GStyles.marginLeft(pTd(8)), FontStyles.font3]}>Receive from exchange account?</TextM>
+        </View>
+        <TextS style={[styles.warningContent, FontStyles.font3]}>
+          {isMainnet
+            ? `Please note that your Portkey account can only receive assets from certain exchanges, like Binance, Upbit, and OKX, and you need to ensure that "AELF" is selected as the withdrawal network.`
+            : `Please note that your SideChain address may not be able to receive assets directly from exchanges. You can send your assets in exchanges to your MainChain address before transferring them to the SideChain.`}
+        </TextS>
       </View>
     </PageContainer>
   );
@@ -71,53 +92,57 @@ export default function Receive() {
 
 const styles = StyleSheet.create({
   containerStyles: {
-    backgroundColor: defaultColors.bg4,
+    backgroundColor: defaultColors.bg1,
+    flex: 1,
   },
-  tips: {
-    marginTop: pTd(49),
-    width: '100%',
-    color: defaultColors.font5,
-    textAlign: 'center',
-  },
+
   topWrap: {
     ...GStyles.flexRowWrap,
-    marginTop: pTd(20),
+    marginTop: pTd(40),
     height: pTd(38),
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: defaultColors.bg1,
   },
   svgStyle: {
     marginRight: pTd(8),
     fontSize: pTd(16),
   },
-
   accountCardStyle: {
-    marginTop: pTd(40),
-    // width: pTd(280),
+    marginTop: pTd(24),
+    marginBottom: 0,
     alignItems: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
   },
-  buttonWrap: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  buttonTop: {
-    marginTop: pTd(40),
-    width: pTd(48),
-    height: pTd(48),
-    borderRadius: pTd(48),
-    backgroundColor: defaultColors.bg5,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: defaultColors.font4,
+  tips: {
+    marginTop: pTd(16),
+    width: '100%',
+    color: defaultColors.font3,
     textAlign: 'center',
-    marginTop: pTd(4),
-    fontSize: pTd(14),
+  },
+  addressWrap: {
+    borderWidth: pTd(1),
+    borderRadius: pTd(6),
+    paddingHorizontal: pTd(16),
+    paddingVertical: pTd(12),
+    marginTop: pTd(32),
+    borderColor: defaultColors.border6,
+  },
+  address: {
     lineHeight: pTd(20),
+    width: pTd(270),
+    color: defaultColors.font5,
+    ...fonts.mediumFont,
+  },
+  warningWrap: {
+    backgroundColor: defaultColors.bg6,
+    marginTop: pTd(24),
+    padding: pTd(12),
+    borderRadius: pTd(6),
+  },
+  warningContent: {
+    marginTop: pTd(4),
+    marginLeft: pTd(24),
   },
 });

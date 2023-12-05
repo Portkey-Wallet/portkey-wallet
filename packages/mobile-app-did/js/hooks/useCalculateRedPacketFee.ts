@@ -2,7 +2,7 @@ import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { ChainId } from '@portkey-wallet/types';
 import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { useCallback } from 'react';
-import { getCurrentCaInfo, getCurrentTxFeeByChainId, getViewTokenContractByChainId } from 'utils/redux';
+import { getCurrentCaInfoByChainId, getCurrentTxFeeByChainId, getViewTokenContractByChainId } from 'utils/redux';
 
 type CalculateRedPackageFeeParams = {
   count: string;
@@ -21,7 +21,7 @@ export function useCalculateRedPacketFee() {
       const fee = getCurrentTxFeeByChainId(chainId).redPackage;
 
       const bigFee = timesDecimals(fee, defaultToken.decimals);
-      const caInfo = getCurrentCaInfo(chainId);
+      const caInfo = getCurrentCaInfoByChainId(chainId);
 
       const tokenContract = await getViewTokenContractByChainId(chainId);
 

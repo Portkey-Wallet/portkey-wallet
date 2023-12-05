@@ -40,6 +40,8 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
 import './index.less';
 import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 
 export interface TransactionResult {
   total: number;
@@ -101,6 +103,10 @@ export default function MyBalance() {
   const [bridgeShow, setBridgeShow] = useState<boolean>(false);
 
   useEffect(() => {
+    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+  }, [unreadCount]);
+
+  useEffect(() => {
     if (state?.key) {
       setActiveKey(state.key);
     }
@@ -133,7 +139,7 @@ export default function MyBalance() {
         address: isNFT ? v?.nftInfo?.tokenContractAddress : v?.tokenInfo?.tokenContractAddress,
         symbol: v.symbol,
         name: v.symbol,
-        imageUrl: isNFT ? v.nftInfo?.imageUrl : '',
+        imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
         alias: isNFT ? v.nftInfo?.alias : '',
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
       };

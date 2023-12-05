@@ -11,6 +11,7 @@ import { sleep } from '@portkey-wallet/utils';
 import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network';
 import OpenNewTabController from 'controllers/openNewTabController';
 import im from '@portkey-wallet/im';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export function useChangeNetwork() {
   const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export function useChangeNetwork() {
 
       resetStore();
       im.destroy();
+      signalrFCM.switchNetwork();
       dispatch(setWalletNameAction(''));
       dispatch(changeNetworkType(network.networkType));
       if (tmpCaInfo?.managerInfo && tmpCaInfo?.[tmpChainId]?.caAddress) {

@@ -58,7 +58,8 @@ const getTransferFee = async ({
         return '0';
       }
       if (ChargingAddress) {
-        if (isEqAddress(caAddress, ChargingAddress) || isEqAddress(managerAddress, ChargingAddress)) {
+        // no check manager address
+        if (isEqAddress(caAddress, ChargingAddress)) {
           return fee;
         }
       }

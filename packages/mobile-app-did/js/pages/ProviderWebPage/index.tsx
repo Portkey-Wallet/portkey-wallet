@@ -6,6 +6,7 @@ import SafeAreaBox from 'components/SafeAreaBox';
 import CustomHeader from 'components/CustomHeader';
 import { SafeAreaColorMap } from 'components/PageContainer';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const ProviderWebPage = () => {
   const webViewRef = useRef<IWebView | null>(null);
@@ -15,7 +16,7 @@ const ProviderWebPage = () => {
   return (
     <SafeAreaBox edges={['top', 'right', 'left']} style={{ backgroundColor: SafeAreaColorMap.blue }}>
       <CustomHeader themeType={'blue'} titleDom={title} />
-      <View style={styles.contentWrap}>
+      <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
         <Progressbar ref={progressbarRef} />
         <ProviderWebview
           ref={webViewRef}
@@ -23,7 +24,7 @@ const ProviderWebPage = () => {
           source={{ uri: url }}
           onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
         />
-      </View>
+      </KeyboardAwareScrollView>
     </SafeAreaBox>
   );
 };
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1,
   },
-  contentWrap: {
+  scrollStyle: {
     position: 'relative',
     flex: 1,
   },

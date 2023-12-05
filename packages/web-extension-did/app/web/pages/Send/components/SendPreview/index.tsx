@@ -136,24 +136,24 @@ export default function SendPreview({
           </span>
         </p>
       </div>
+      {isCross && (
+        <div className="fee-preview">
+          <span className="label">Estimated CrossChain Transfer</span>
+          <p className="value">
+            <span className="symbol">
+              <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
+              {` ${formatAmountShow(crossChainFee)} ${defaultToken.symbol}`}
+            </span>
+          </p>
+        </div>
+      )}
       {isCross && symbol === defaultToken.symbol && (
-        <>
-          <div className="fee-preview">
-            <span className="label">Cross-chain Transaction fee</span>
-            <p className="value">
-              <span className="symbol">
-                <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
-                {` ${formatAmountShow(crossChainFee)} ${defaultToken.symbol}`}
-              </span>
-            </p>
-          </div>
-          <div className="fee-preview">
-            <span className="label">Estimated amount received</span>
-            <p className="value">
-              <span className="symbol">{renderEstimateAmount}</span>
-            </p>
-          </div>
-        </>
+        <div className="fee-preview">
+          <span className="label">Estimated amount received</span>
+          <p className="value">
+            <span className="symbol">{renderEstimateAmount}</span>
+          </p>
+        </div>
       )}
     </div>
   );

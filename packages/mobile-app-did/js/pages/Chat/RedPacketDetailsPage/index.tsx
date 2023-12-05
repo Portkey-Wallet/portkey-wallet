@@ -105,6 +105,17 @@ export const RedPacketDetails = () => {
         redPacketData?.decimal,
       )} ${redPacketData?.symbol} claimed.`;
 
+    // !isP2P  && grabbed & !expired
+    if (!isP2P && redPacketData?.currentUserGrabbedAmount && !redPacketData?.isRedPackageExpired)
+      return `${redPacketData?.grabbed}/${redPacketData?.count} crypto ${getUnit(
+        redPacketData?.count || 1,
+        'box',
+        'boxes',
+      )} opened, with ${divDecimalsStr(redPacketData?.grabbedAmount, redPacketData?.decimal, '0')}/${divDecimalsStr(
+        redPacketData?.totalAmount,
+        redPacketData?.decimal,
+      )} ${redPacketData?.symbol} claimed.`;
+
     return '';
   }, [
     isMyPacket,

@@ -21,8 +21,17 @@ import RedPacketDetails from './RedPacketDetailsPage';
 const stackNav = [
   { name: 'ChatHomePage', component: ChatHomePage },
   { name: 'ChatCameraPage', component: ChatCameraPage },
-  { name: 'ChatDetailsPage', component: ChatDetailsPage },
-  { name: 'ChatGroupDetailsPage', component: ChatGroupDetailsPage },
+  {
+    name: 'ChatDetailsPage',
+    component: ChatDetailsPage,
+  },
+  {
+    name: 'ChatGroupDetailsPage',
+    component: ChatGroupDetailsPage,
+    options: {
+      gestureEnabled: false,
+    },
+  },
   { name: 'CreateGroupPage', component: CreateGroupPage },
   { name: 'SearchPeoplePage', component: SearchPeoplePage },
   { name: 'NewChatHomePage', component: NewChatHomePage },

@@ -205,7 +205,7 @@ export const useETransShow = (config: IEntranceMatchValueConfig) => {
     [isETransDepositShow, isETransWithdrawShow],
   );
 
-  const refreshBuyButton = useCallback(async () => {
+  const refreshETrans = useCallback(async () => {
     let _isETransDepositShow = false;
     let _isETransWithdrawShow = false;
     try {
@@ -226,7 +226,7 @@ export const useETransShow = (config: IEntranceMatchValueConfig) => {
     isETransShow,
     isETransDepositShow,
     isETransWithdrawShow,
-    refreshBuyButton,
+    refreshETrans,
   };
 };
 export const useBridgeButtonShow = (config: IEntranceMatchValueConfig) => {

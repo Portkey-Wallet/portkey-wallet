@@ -130,9 +130,11 @@ const styles = StyleSheet.create({
   },
   memo: {
     color: defaultColors.font2,
+    lineHeight: pTd(22),
   },
   state: {
     color: defaultColors.font2,
+    lineHeight: pTd(16),
   },
   notFreshSvgStyle: {
     opacity: 0.6,

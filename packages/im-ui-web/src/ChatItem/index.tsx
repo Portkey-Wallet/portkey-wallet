@@ -9,6 +9,7 @@ import { formatChatListTime } from '../utils';
 import PopoverMenuList from '../PopoverMenuList';
 import { ChannelTypeEnum } from '@portkey-wallet/im/types';
 import './index.less';
+import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
 
 const ChatItem: React.FC<IChatItemProps> = ({
   date = new Date().getTime(),
@@ -81,7 +82,7 @@ const ChatItem: React.FC<IChatItemProps> = ({
               'red-packet-tag',
               showRedPacketHighlight && 'red-packet-tag-highlight',
             )}>{`[Red Packet]`}</span>
-          <span className="red-packet-subtitle">{subtitle || 'Best Wishes!'}</span>
+          <span className="red-packet-subtitle">{subtitle || RED_PACKAGE_DEFAULT_MEMO}</span>
         </div>
       );
     }

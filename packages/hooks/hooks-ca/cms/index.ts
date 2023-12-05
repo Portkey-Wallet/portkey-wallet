@@ -195,10 +195,17 @@ export const useBuyButtonShow = (config: IEntranceMatchValueConfig) => {
 
 export const useETransShow = (config: IEntranceMatchValueConfig) => {
   const { entrance, refresh } = useEntrance(config);
+  const { eTransferUrl } = useCurrentNetworkInfo();
 
-  const isETransDepositShow = useMemo(() => entrance.eTransDeposit, [entrance.eTransDeposit]);
+  const isETransDepositShow = useMemo(
+    () => !!(entrance.eTransDeposit && eTransferUrl),
+    [eTransferUrl, entrance.eTransDeposit],
+  );
 
-  const isETransWithdrawShow = useMemo(() => entrance.eTransWithdraw, [entrance.eTransWithdraw]);
+  const isETransWithdrawShow = useMemo(
+    () => !!(entrance.eTransWithdraw && eTransferUrl),
+    [eTransferUrl, entrance.eTransWithdraw],
+  );
 
   const isETransShow = useMemo(
     () => isETransDepositShow || isETransWithdrawShow || false,

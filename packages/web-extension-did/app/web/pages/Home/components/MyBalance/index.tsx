@@ -40,6 +40,8 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
 import './index.less';
 import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
+import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 
 export interface TransactionResult {
   total: number;
@@ -99,6 +101,10 @@ export default function MyBalance() {
   const originChainId = useOriginChainId();
   const { checkDappIsConfirmed } = useDisclaimer();
   const [bridgeShow, setBridgeShow] = useState<boolean>(false);
+
+  useEffect(() => {
+    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+  }, [unreadCount]);
 
   useEffect(() => {
     if (state?.key) {

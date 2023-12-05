@@ -53,7 +53,8 @@ const SendHome: React.FC = () => {
   const isTestnet = useIsTestnet();
   const defaultToken = useDefaultToken();
 
-  const { sendType, assetInfo, toInfo, transactionFee, sendNumber } = useRouterParams<IToSendPreviewParamsType>();
+  const { sendType, assetInfo, toInfo, transactionFee, sendNumber, successNavigateName } =
+    useRouterParams<IToSendPreviewParamsType>();
 
   useFetchTxFee();
   const { crossChain: crossDefaultFee } = useGetTxFee(assetInfo.chainId);
@@ -177,8 +178,11 @@ const SendHome: React.FC = () => {
     } else {
       dispatch(fetchTokenListAsync({ caAddresses: caAddresses, caAddressInfos }));
     }
-
-    navigationService.navigate('Tab', { clearType: sendType + Math.random() });
+    if (successNavigateName) {
+      navigationService.navigate(successNavigateName);
+    } else {
+      navigationService.navigate('Tab', { clearType: sendType + Math.random() });
+    }
     CommonToast.success('success');
   }, [
     assetInfo,
@@ -193,6 +197,7 @@ const SendHome: React.FC = () => {
     pin,
     sendNumber,
     sendType,
+    successNavigateName,
     toInfo.address,
     wallet.address,
     wallet.caHash,

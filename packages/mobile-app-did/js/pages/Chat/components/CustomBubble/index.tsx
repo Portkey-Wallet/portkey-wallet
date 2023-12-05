@@ -11,6 +11,9 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
   const { isGroupChat, currentMessage, previousMessage, user } = props || {};
   const { messageType } = currentMessage || {};
 
+  // not red packets
+  const isGeneralMessage = currentMessage?.messageType !== 'REDPACKAGE-CARD';
+
   const isHideName = useMemo(
     () => currentMessage?.user?._id === previousMessage?.user?._id || user?._id === currentMessage?.user?._id,
     [currentMessage?.user?._id, previousMessage?.user?._id, user?._id],
@@ -27,10 +30,20 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
         touchableProps={{ disabled: true }}
         wrapperStyle={useMemo(
           () => ({
-            left: [styles.wrapperStyle, styles.wrapLeft, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
-            right: [styles.wrapperStyle, styles.wrapRight, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+            left: [
+              styles.wrapperStyle,
+              styles.wrapLeft,
+              !isGeneralMessage && styles.redPacketWrapStyle,
+              messageType === 'NOT_SUPPORTED' && styles.notSupportStyle,
+            ],
+            right: [
+              styles.wrapperStyle,
+              styles.wrapRight,
+              !isGeneralMessage && styles.redPacketWrapStyle,
+              messageType === 'NOT_SUPPORTED' && styles.notSupportStyle,
+            ],
           }),
-          [messageType],
+          [isGeneralMessage, messageType],
         )}
         containerToNextStyle={{
           left: styles.containerToNextLeftStyle,
@@ -50,6 +63,10 @@ const styles = StyleSheet.create({
   wrapperStyle: {
     borderRadius: pTd(20),
     color: defaultColors.font5,
+  },
+  redPacketWrapStyle: {
+    borderRadius: pTd(12),
+    backgroundColor: 'transparent',
   },
   wrapLeft: {
     backgroundColor: defaultColors.bg18,

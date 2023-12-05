@@ -37,6 +37,7 @@ import { pTd } from 'utils/unit';
 import SystemInfo from '../SystemInfo';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
+import CustomView from '../CustomView';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -94,7 +95,9 @@ export default function ChatsDetailContent() {
   }, [dispatch]);
 
   const renderMessageText: GiftedChatProps['renderMessageText'] = useCallback(
-    (props: MessageTextProps<ChatMessage>) => <MessageText {...props} />,
+    (props: MessageTextProps<ChatMessage>) => {
+      return props.currentMessage?.messageType === 'REDPACKAGE-CARD' ? null : <MessageText {...props} />;
+    },
     [],
   );
 
@@ -138,6 +141,13 @@ export default function ChatsDetailContent() {
       return <SystemInfo {...props} />;
     },
     [],
+  );
+
+  const renderCustomView = useCallback(
+    (props: MessageProps<ChatMessage>) => {
+      return <CustomView onDismiss={onDismiss} {...props} />;
+    },
+    [onDismiss],
   );
 
   const bottomBar = useMemo(
@@ -189,6 +199,7 @@ export default function ChatsDetailContent() {
             messagesContainerStyle={styles.messagesContainerStyle}
             renderMessageText={renderMessageText}
             renderMessageImage={renderMessageImage}
+            renderCustomView={renderCustomView}
           />
         )}
       </Touchable>

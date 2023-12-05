@@ -10,7 +10,6 @@ import { WebViewErrorEvent, WebViewNavigationEvent } from 'react-native-webview/
 import { useFetchCurrentRememberMeBlackList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import useEffectOnce from 'hooks/useEffectOnce';
 import OverlayModal from 'components/OverlayModal';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type BrowserTabProps = {
   isHidden: boolean;
@@ -68,18 +67,16 @@ const BrowserTab = forwardRef<IBrowserTab, BrowserTabProps>(function BrowserTab(
       ref={viewRef}
       collapsable={false}
       style={[styles.webViewContainer, isHidden && styles.webViewContainerHidden]}>
-      <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
-        <Progressbar ref={progressbarRef} />
-        <ProviderWebview
-          ref={webViewRef}
-          source={{ uri }}
-          isHidden={isHidden}
-          onLoadEnd={onPageLoadEnd}
-          isDiscover
-          onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
-        />
-        <HttpModal uri={uri} />
-      </KeyboardAwareScrollView>
+      <Progressbar ref={progressbarRef} />
+      <ProviderWebview
+        ref={webViewRef}
+        source={{ uri }}
+        isHidden={isHidden}
+        onLoadEnd={onPageLoadEnd}
+        isDiscover
+        onLoadProgress={({ nativeEvent }) => progressbarRef.current?.changeInnerBarWidth(nativeEvent.progress)}
+      />
+      <HttpModal uri={uri} />
     </View>
   );
 });
@@ -101,9 +98,6 @@ export const styles = StyleSheet.create({
     position: 'relative',
   },
   webViewContainer: {
-    flex: 1,
-  },
-  scrollStyle: {
     flex: 1,
   },
 });

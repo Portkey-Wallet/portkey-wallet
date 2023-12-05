@@ -30,7 +30,8 @@ class MobileVerification extends Verification {
         });
         const isNeedRecaptcha = !!result;
 
-        if (isNeedRecaptcha) {
+      
+         if (isNeedRecaptcha) {
           // app check
           try {
             const appCheckToken = await getAppCheckToken(true);

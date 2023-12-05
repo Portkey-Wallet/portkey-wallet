@@ -42,6 +42,7 @@ SplashScreen.preventAutoHideAsync();
 initLanguage();
 setupAppCheck();
 initFCMSignalR();
+
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');
 
 const persistor = persistStore(store);

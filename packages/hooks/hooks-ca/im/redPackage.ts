@@ -356,6 +356,7 @@ export const useGetRedPackageConfig = (isAutoFetch = false, isInit = false) => {
       return redPackageConfig;
     } catch (error) {
       console.log('useGetRedPackageConfig refresh', error);
+      throw error;
     }
   }, [dispatch, isInit, networkType]);
 

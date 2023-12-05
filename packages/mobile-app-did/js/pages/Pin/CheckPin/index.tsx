@@ -10,6 +10,7 @@ import myEvents from 'utils/deviceEvent';
 import { useFocusEffect } from '@react-navigation/native';
 import PinContainer from 'components/PinContainer';
 import { StyleSheet } from 'react-native';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 
 export default function CheckPin() {
   const { openBiometrics } = useRouterParams<{ openBiometrics?: boolean }>();
@@ -20,12 +21,19 @@ export default function CheckPin() {
       pinRef.current?.reset();
     }, []),
   );
+
+  const timerRef = useRef<NodeJS.Timeout>();
   const onChangeText = useCallback(
     (pin: string) => {
       if (pin.length === PIN_SIZE) {
         if (!checkPin(pin)) {
           pinRef.current?.reset();
-          return setErrorMessage(PinErrorMessage.invalidPin);
+          setErrorMessage(PinErrorMessage.invalidPin);
+          timerRef.current && clearTimeout(timerRef.current);
+          timerRef.current = setTimeout(() => {
+            setErrorMessage(undefined);
+          }, VERIFY_INVALID_TIME);
+          return;
         }
         if (openBiometrics) {
           myEvents.openBiometrics.emit(pin);
@@ -35,6 +43,8 @@ export default function CheckPin() {
         }
       } else if (errorMessage) {
         setErrorMessage(undefined);
+        timerRef.current && clearTimeout(timerRef.current);
+        timerRef.current = undefined;
       }
     },
     [errorMessage, openBiometrics],

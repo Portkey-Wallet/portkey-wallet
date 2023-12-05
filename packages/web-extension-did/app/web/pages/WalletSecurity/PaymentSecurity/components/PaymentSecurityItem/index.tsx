@@ -17,7 +17,7 @@ export default function PaymentSecurityItem({
   return (
     <div className="flex-row-between payment-security-item" onClick={() => onClick(item)}>
       <div className="flex-center">
-        <TokenImageDisplay symbol={item.symbol} />
+        <TokenImageDisplay symbol={item.symbol} src={item.imageUrl} />
         <div className="token-info">
           <div className="token-symbol">{item.symbol}</div>
           <div className="token-network">{transNetworkText(item.chainId, !isMainnet)}</div>

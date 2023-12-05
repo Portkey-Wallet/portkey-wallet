@@ -10,7 +10,7 @@ import { pTd } from 'utils/unit';
 import { defaultColors } from 'assets/theme';
 import { isIOS, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import { formatChatListTime, formatMessageCountToStr } from '@portkey-wallet/utils/chat';
-import { ChannelItem, ChannelTypeEnum, ParsedImage, ParsedRedPackage } from '@portkey-wallet/im/types';
+import { ChannelItem, ChannelTypeEnum, ParsedRedPackage } from '@portkey-wallet/im/types';
 import CommonAvatar from 'components/CommonAvatar';
 import { useDeviceEvent } from 'hooks/useDeviceEvent';
 import myEvents from 'utils/deviceEvent';
@@ -49,7 +49,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         item.unreadMessageCount > 0 &&
         !item.mute &&
         item.lastMessageType === 'REDPACKAGE-CARD' &&
-        (item.lastMessageContent as ParsedRedPackage).data.senderId !== userInfo?.userId;
+        (item.lastMessageContent as ParsedRedPackage)?.data?.senderId !== userInfo?.userId;
 
       return (
         <View style={[GStyles.flexRow, styles.message]}>
@@ -57,7 +57,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             {`[Crypto Box] `}
           </TextS>
           <TextS numberOfLines={1} style={[FontStyles.font7, styles.redPacketLastMessageContent]}>
-            {(item.lastMessageContent as ParsedRedPackage).data.memo}
+            {(item.lastMessageContent as ParsedRedPackage)?.data?.memo}
           </TextS>
         </View>
       );
@@ -78,7 +78,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         {message}
       </TextS>
     );
-  }, [item.lastMessageContent, item.lastMessageType, item.mute, item.unreadMessageCount, userInfo?.userId]);
+  }, [item, userInfo?.userId]);
 
   const deleteItem = useCallback(() => {
     swipeableRef.current?.close();

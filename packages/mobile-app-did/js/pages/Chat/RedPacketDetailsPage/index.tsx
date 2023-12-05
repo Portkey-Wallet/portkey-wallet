@@ -44,7 +44,7 @@ export const RedPacketDetails = () => {
 
   const isShowBottomTips = useMemo(() => {
     if (!isMyPacket) return false;
-    if (redPacketData?.isRedPackageExpired && !redPacketData?.isRedPackageFullyClaimed) return true;
+    if (!redPacketData?.isRedPackageExpired && !redPacketData?.isRedPackageFullyClaimed) return true;
 
     return false;
   }, [isMyPacket, redPacketData?.isRedPackageExpired, redPacketData?.isRedPackageFullyClaimed]);

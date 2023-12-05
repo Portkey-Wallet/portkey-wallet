@@ -19,6 +19,7 @@ class MobileVerification extends Verification {
 
     try {
       const item = this.get(key);
+
       if (item) {
         return item;
       } else {
@@ -29,34 +30,36 @@ class MobileVerification extends Verification {
         });
         const isNeedRecaptcha = !!result;
 
-        if (isNeedRecaptcha) {
+      
+         if (isNeedRecaptcha) {
           // app check
           try {
             const appCheckToken = await getAppCheckToken(true);
+            if (!appCheckToken) throw Error('get appCheckToken fail');
+
             config.headers = {
               acToken: appCheckToken || '',
             };
-            const request1 = await request.verify.sendVerificationRequest(config);
-            await this.set(key, { ...request1, time: Date.now() });
-            return request1;
-          } catch (err: any) {
-            // google  human-machine verification
-            if (err?.code === 208) {
-              // TODO: add language
-              const reCaptchaToken = await verifyHumanMachine('en');
-              config.headers = {
-                reCaptchaToken: reCaptchaToken as string,
-              };
-              const request2 = await request.verify.sendVerificationRequest(config);
-              await this.set(key, { ...request2, time: Date.now() });
-              return request2;
-            }
+
+            const responseByAppCheck = await request.verify.sendVerificationRequest(config);
+            if (!responseByAppCheck?.verifierSessionId) throw Error('no verifierSessionId');
+
+            await this.set(key, { ...responseByAppCheck, time: Date.now() });
+            return responseByAppCheck;
+          } catch (err) {
+            console.log('appCheck  error', err);
           }
 
+          // google  human-machine verification
+          // TODO: add language
           const reCaptchaToken = await verifyHumanMachine('en');
           config.headers = {
             reCaptchaToken: reCaptchaToken as string,
           };
+
+          const responseByCaptchaToken = await request.verify.sendVerificationRequest(config);
+          await this.set(key, { ...responseByCaptchaToken, time: Date.now() });
+          return responseByCaptchaToken;
         }
 
         const req = await request.verify.sendVerificationRequest(config);

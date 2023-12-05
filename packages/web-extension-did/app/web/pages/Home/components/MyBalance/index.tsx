@@ -139,7 +139,7 @@ export default function MyBalance() {
         address: isNFT ? v?.nftInfo?.tokenContractAddress : v?.tokenInfo?.tokenContractAddress,
         symbol: v.symbol,
         name: v.symbol,
-        imageUrl: isNFT ? v.nftInfo?.imageUrl : '',
+        imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
         alias: isNFT ? v.nftInfo?.alias : '',
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
       };

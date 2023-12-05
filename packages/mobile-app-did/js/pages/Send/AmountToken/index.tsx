@@ -74,7 +74,7 @@ export default function AmountToken({
             shapeType="circular"
             title={selectedToken.symbol}
             svgName={selectedToken.symbol === defaultToken.symbol ? aelfIconName : undefined}
-            imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol] || ''}
+            imageUrl={selectedToken.imageUrl || symbolImages[selectedToken.symbol]}
             avatarSize={28}
             style={styles.avatarStyle}
           />

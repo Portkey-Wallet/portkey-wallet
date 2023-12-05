@@ -19,7 +19,7 @@ interface TokenListItemType {
   currentSymbol?: string;
   currentChainId?: ChainId;
   noBalanceShow?: boolean;
-  item?: any;
+  item: TokenItemShowType;
   onPress?: (item: TokenItemShowType) => void;
 }
 
@@ -43,7 +43,7 @@ const TokenListItem: React.FC<TokenListItemType> = props => {
         avatarSize={pTd(48)}
         // elf token icon is fixed , only use white background color
         svgName={item?.symbol === defaultToken.symbol ? 'testnet' : undefined}
-        imageUrl={item.imageUrl || symbolImages[item?.symbol]}
+        imageUrl={item?.imageUrl || symbolImages[item?.symbol]}
       />
       <View style={itemStyle.right}>
         <View style={itemStyle.infoWrap}>

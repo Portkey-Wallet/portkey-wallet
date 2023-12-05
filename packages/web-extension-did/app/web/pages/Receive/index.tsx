@@ -13,7 +13,6 @@ import QRCodeCommon from 'pages/components/QRCodeCommon';
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
-import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import './index.less';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
@@ -30,7 +29,6 @@ export default function Receive() {
     () => `ELF_${wallet?.[(state.chainId as ChainId) || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
   );
-  const symbolImages = useSymbolImages();
 
   const rightElement = useMemo(() => {
     return (
@@ -74,7 +72,7 @@ export default function Receive() {
             <div className="name">My Wallet Address to Receive</div>
           </div>
           <div className="token-info">
-            <TokenImageDisplay width={24} className="icon" symbol={symbol} src={symbolImages[symbol || '']} />
+            <TokenImageDisplay width={24} className="icon" symbol={symbol} src={state?.imageUrl} />
             <p className="symbol">{symbol}</p>
             <p className="network">{transNetworkText(state.chainId, isTestNet)}</p>
           </div>
@@ -96,7 +94,7 @@ export default function Receive() {
         {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [caAddress, isPrompt, isTestNet, rightElement, state.chainId, symbol, symbolImages, value]);
+  }, [caAddress, isPrompt, isTestNet, rightElement, state.chainId, state?.imageUrl, symbol, value]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

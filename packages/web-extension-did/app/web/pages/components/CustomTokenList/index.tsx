@@ -101,6 +101,7 @@ export default function CustomTokenList({
         symbol: token.symbol,
         address: token.address,
         tokenInfo: {
+          imageUrl: token.imageUrl,
           id: token.id || '',
           balance: token.balance,
           decimals: `${token.decimals}`,

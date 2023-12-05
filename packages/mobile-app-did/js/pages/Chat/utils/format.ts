@@ -2,6 +2,8 @@ import { Message as IMMessage, ParsedImage } from '@portkey-wallet/im/types';
 import { ChatMessage } from '../types';
 import { UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+dayjs.extend(utc);
 
 export const ONE_SECONDS = 1000;
 export const ONE_MINUS = ONE_SECONDS * 60;

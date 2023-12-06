@@ -232,7 +232,7 @@ const PaymentModal = ({
           )}
 
           <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
-            <TextS style={FontStyles.font3}>Method</TextS>
+            <TextS style={FontStyles.font3}>Balance</TextS>
             <View style={styles.balanceItemRow}>
               <View style={styles.rowCenter}>
                 {tokenRowComponent}

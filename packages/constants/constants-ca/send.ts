@@ -14,5 +14,8 @@ export enum TransactionError {
 export const AddressErrorArray = Object.values(AddressError);
 export const TransactionErrorArray = Object.values(TransactionError);
 
-export const SideChainTipTitle = `Send to exchange account?`;
-export const SideChainTipContent = `Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.`;
+export const SideChainTipTitle = `Receive from exchange account?`;
+export const SideChainTipContent = `Please note that your SideChain address may not be able to receive assets directly from exchanges. You can send your assets in exchanges to your MainChain address before transferring them to the SideChain.`;
+
+export const MainChainTipTitle = `Receive from exchange account?`;
+export const MainChainTipContent = `Please note that your Portkey account can only receive assets from certain exchanges, like Binance, Upbit, OKX, and gate.io, and you need to ensure that "AELF" is selected as the withdrawal network.`;

@@ -16,7 +16,12 @@ import { useCommonState, useWalletInfo } from 'store/Provider/hooks';
 import TokenImageDisplay from 'pages/components/TokenImageDisplay';
 import './index.less';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
-import { SideChainTipContent, SideChainTipTitle } from '@portkey-wallet/constants/constants-ca/send';
+import {
+  SideChainTipContent,
+  SideChainTipTitle,
+  MainChainTipTitle,
+  MainChainTipContent,
+} from '@portkey-wallet/constants/constants-ca/send';
 
 export default function Receive() {
   const navigate = useNavigate();
@@ -28,6 +33,14 @@ export default function Receive() {
   const caAddress = useMemo(
     () => `ELF_${wallet?.[(state.chainId as ChainId) || 'AELF']?.caAddress}_${state.chainId}`,
     [state, wallet],
+  );
+  const tipTitle = useMemo(
+    () => (state.chainId === MAIN_CHAIN_ID ? MainChainTipTitle : SideChainTipTitle),
+    [state.chainId],
+  );
+  const tipContent = useMemo(
+    () => (state.chainId === MAIN_CHAIN_ID ? MainChainTipContent : SideChainTipContent),
+    [state.chainId],
   );
 
   const rightElement = useMemo(() => {
@@ -81,20 +94,29 @@ export default function Receive() {
             <div className="address">{caAddress}</div>
             <Copy className="copy-icon" toCopy={caAddress}></Copy>
           </div>
-          {state.chainId !== MAIN_CHAIN_ID && (
-            <div className="flex receive-tip">
-              <CustomSvg type="Info" />
-              <div className="receive-tip-text">
-                <div className="receive-tip-title">{SideChainTipTitle}</div>
-                <div>{SideChainTipContent}</div>
-              </div>
+          <div className="flex receive-tip">
+            <CustomSvg type="Info" />
+            <div className="receive-tip-text">
+              <div className="receive-tip-title">{tipTitle}</div>
+              <div>{tipContent}</div>
             </div>
-          )}
+          </div>
         </div>
         {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [caAddress, isPrompt, isTestNet, rightElement, state.chainId, state?.imageUrl, symbol, value]);
+  }, [
+    caAddress,
+    isPrompt,
+    isTestNet,
+    rightElement,
+    state.chainId,
+    state?.imageUrl,
+    symbol,
+    tipContent,
+    tipTitle,
+    value,
+  ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

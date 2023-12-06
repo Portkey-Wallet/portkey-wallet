@@ -92,7 +92,7 @@ export const useNotify = () => {
               title: t('Confirm'),
               onPress: async () => {
                 // todo: switch network route
-                await changeNetwork(isMainnet ? 'TESTNET' : 'MAIN');
+                await changeNetwork({ networkType: isMainnet ? 'TESTNET' : 'MAIN' }, false);
               },
             },
           ],

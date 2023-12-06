@@ -36,13 +36,16 @@ export function useChangeNetwork(route: RouteProp<ParamListBase>) {
     [dispatch, route.name],
   );
   return useThrottleCallback(
-    (network: NetworkItem) => {
+    (network: NetworkItem, isShowAlert = true) => {
       const { walletInfo, originChainId } = wallet;
       const { caInfo } = walletInfo || {};
       const tmpCaInfo = caInfo?.[network.networkType];
       const tmpChainId = tmpCaInfo?.originChainId || originChainId || DefaultChainId;
       const logged = tmpCaInfo?.managerInfo && tmpCaInfo[tmpChainId]?.caAddress;
       const networkName = network.networkType === 'MAIN' ? 'Mainnet' : 'Testnet';
+
+      if (!isShowAlert) return onConfirm(network, logged);
+
       ActionSheet.alert({
         title: t('You are about to switch to', {
           title: `aelf ${networkName}`,

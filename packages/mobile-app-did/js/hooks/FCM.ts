@@ -20,7 +20,7 @@ export function useReportingSignalR() {
 
   const handleAppStateChange = useCallback((nextAppState: AppStateStatus) => {
     // report AppStatus and unReadMessage
-    let appState = AppStatusUnit.BACKGROUND;
+    let appState = AppStatusUnit.FOREGROUND;
     if (nextAppState === 'background') appState = AppStatusUnit.BACKGROUND;
     if (nextAppState === 'active') appState = AppStatusUnit.FOREGROUND;
 

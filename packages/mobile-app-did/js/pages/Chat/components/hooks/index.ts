@@ -69,8 +69,12 @@ export function useSendCurrentChannelMessage() {
   const { sendChannelMessage, sendChannelImageByS3Result } = useSendChannelMessage();
   return useMemo(
     () => ({
-      sendChannelMessage: (content: string, type?: MessageType) =>
-        sendChannelMessage(currentChannelId || '', content, type),
+      sendChannelMessage: ({ content, type }: { content: string; type?: MessageType }) =>
+        sendChannelMessage({
+          channelId: currentChannelId || '',
+          content,
+          type,
+        }),
       sendChannelImage: async (file: { uri: string; width: number; height: number }) => {
         const fileBase64 = await readFile(file.uri, { encoding: 'base64' });
         const data = formatRNImage(file, fileBase64);
@@ -80,7 +84,10 @@ export function useSendCurrentChannelMessage() {
         });
         await bindUriToLocalImage(file.uri, s3Result.url);
 
-        return sendChannelImageByS3Result(currentChannelId || '', { ...s3Result, ...data });
+        return sendChannelImageByS3Result({
+          channelId: currentChannelId || '',
+          s3Result: { ...s3Result, ...data },
+        });
       },
     }),
     [currentChannelId, sendChannelImageByS3Result, sendChannelMessage],

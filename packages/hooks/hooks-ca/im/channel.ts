@@ -129,7 +129,17 @@ export const useSendChannelMessage = () => {
   );
 
   const sendChannelMessage = useCallback(
-    async (channelId: string, content: string, type = 'TEXT' as MessageType) => {
+    async ({
+      channelId,
+      content,
+      type = 'TEXT',
+      quoteMessage,
+    }: {
+      channelId: string;
+      content: string;
+      type?: MessageType;
+      quoteMessage?: Message;
+    }) => {
       let _relationId = relationId;
       if (!_relationId) {
         try {
@@ -144,6 +154,7 @@ export const useSendChannelMessage = () => {
         type,
         content,
         sendUuid: `${_relationId}-${channelId}-${Date.now()}-${uuid}`,
+        quoteId: quoteMessage?.id,
       };
 
       const msgObj: Message = messageParser({
@@ -153,6 +164,8 @@ export const useSendChannelMessage = () => {
         fromName: walletName,
         createAt: `${Date.now()}`,
       });
+      msgObj.quote = quoteMessage;
+
       dispatch(
         addChannelMessage({
           network: networkType,
@@ -192,7 +205,15 @@ export const useSendChannelMessage = () => {
     [dispatch, getRelationId, networkType, relationId, walletName],
   );
   const sendChannelImageByS3Result = useCallback(
-    async (channelId: string, s3Result: UploadFileType & ImageMessageFileType) => {
+    async ({
+      channelId,
+      s3Result,
+      quoteMessage,
+    }: {
+      channelId: string;
+      s3Result: UploadFileType & ImageMessageFileType;
+      quoteMessage?: Message;
+    }) => {
       try {
         const { thumbWidth, thumbHeight } = getThumbSize(s3Result.width, s3Result.height);
 
@@ -219,7 +240,12 @@ export const useSendChannelMessage = () => {
 
         const content = `type:image;action:localImage;p1(Text):${p1Url},p2(Text):${p1Key},p3(Text):${p2Url},p4(Text):${p2Key},p5(Text):${s3Result.width},p6(Text):${s3Result.height}`;
 
-        return sendChannelMessage(channelId, content, 'IMAGE');
+        return sendChannelMessage({
+          channelId,
+          content,
+          type: 'IMAGE',
+          quoteMessage,
+        });
       } catch (error) {
         console.log('sendChannelImage: error', error);
         throw error;
@@ -228,13 +254,25 @@ export const useSendChannelMessage = () => {
     [sendChannelMessage],
   );
   const sendChannelImage = useCallback(
-    async (channelId: string, file: ImageMessageFileType) => {
+    async ({
+      channelId,
+      file,
+      quoteMessage,
+    }: {
+      channelId: string;
+      file: ImageMessageFileType;
+      quoteMessage?: Message;
+    }) => {
       try {
         const s3Result = await s3Instance.uploadFile({
           body: file.body,
           suffix: file.suffix,
         });
-        await sendChannelImageByS3Result(channelId, { ...s3Result, ...file });
+        await sendChannelImageByS3Result({
+          channelId,
+          s3Result: { ...s3Result, ...file },
+          quoteMessage,
+        });
         return s3Result;
       } catch (error) {
         console.log('sendChannelImage: error', error);
@@ -499,14 +537,21 @@ export const useChannel = (channelId: string) => {
   const exit = useCallback(async () => hideChannel(channelId), [channelId, hideChannel]);
 
   const sendMessage = useCallback(
-    (content: string, type?: MessageType) => {
-      return sendChannelMessage(channelId, content, type);
+    ({ content, type }: { content: string; type?: MessageType }) => {
+      return sendChannelMessage({
+        channelId,
+        content,
+        type,
+      });
     },
     [channelId, sendChannelMessage],
   );
   const sendImage = useCallback(
     (file: ImageMessageFileType) => {
-      return sendChannelImage(channelId, file);
+      return sendChannelImage({
+        channelId,
+        file,
+      });
     },
     [channelId, sendChannelImage],
   );

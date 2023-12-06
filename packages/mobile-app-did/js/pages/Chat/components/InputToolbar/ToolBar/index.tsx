@@ -113,7 +113,9 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
             onPressCallBack: async item => {
               OverlayModal.hide();
               await sleep(200);
-              sendChannelMessage(item.url);
+              sendChannelMessage({
+                content: item.url,
+              });
             },
           }),
       },

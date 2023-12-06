@@ -1,13 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
-import { AppState } from 'react-native';
+import { AppState, AppStateStatus } from 'react-native';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 import { request } from '@portkey-wallet/api/api-did';
+import useEffectOnce from './useEffectOnce';
 
 export function useReportingSignalR() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const unreadCount = useUnreadCount();
+  const [appStatus, setAppStatus] = useState<AppStatusUnit>(AppStatusUnit.BACKGROUND);
 
   useEffect(() => {
     if (!request.defaultConfig.baseURL) return;
@@ -16,23 +18,34 @@ export function useReportingSignalR() {
     });
   }, []);
 
-  useEffect(() => {
-    // report AppStatus  and unReadMessage
+  const handleAppStateChange = useCallback((nextAppState: AppStateStatus) => {
+    // report AppStatus and unReadMessage
     let appState = AppStatusUnit.BACKGROUND;
-    if (AppState.currentState === 'background') appState = AppStatusUnit.BACKGROUND;
-    if (AppState.currentState === 'active') appState = AppStatusUnit.FOREGROUND;
+    if (nextAppState === 'background') appState = AppStatusUnit.BACKGROUND;
+    if (nextAppState === 'active') appState = AppStatusUnit.FOREGROUND;
 
+    setAppStatus(appState);
+  }, []);
+
+  useEffect(() => {
     timerRef.current = setInterval(() => {
       console.log('report AppStatus', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
       if (!signalrFCM.fcmToken) return;
       if (!signalrFCM.portkeyToken) return;
       if (!signalrFCM.signalr) return;
 
-      signalrFCM.reportAppStatus(appState, unreadCount);
+      signalrFCM.reportAppStatus(appStatus, unreadCount);
     }, 3000);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [unreadCount]);
+  }, [appStatus, unreadCount]);
+
+  useEffectOnce(() => {
+    const listener = AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      listener.remove();
+    };
+  });
 }

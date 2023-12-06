@@ -68,7 +68,7 @@ export const generateRedPackageRawTransaction = async (params: IGenerateRedPacka
       redPacketType: params.type,
       publicKey: params.publicKey,
       redPacketSignature: params.signature,
-      fromSender: params.caAddress,
+      senderAddress: params.caAddress,
     },
   });
   if (!rawResult || !rawResult.data) {

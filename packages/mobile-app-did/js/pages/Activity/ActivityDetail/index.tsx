@@ -5,7 +5,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
-import { divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, formatAmountShow, formatAmountUSDShow } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
@@ -151,13 +151,13 @@ const ActivityDetail = () => {
             <View>
               {transactionFees.map((item, index) => (
                 <View key={index} style={[styles.transactionFeeItemWrap, index > 0 && styles.marginTop8]}>
-                  <TextM style={[styles.blackFontColor, styles.fontBold]}>{`${formatAmountShow(
-                    divDecimals(item?.fee ?? 0, ELF_DECIMAL),
+                  <TextM style={[styles.blackFontColor, styles.fontBold]}>{`${divDecimalsStr(
+                    item?.fee ?? 0,
+                    ELF_DECIMAL,
                   )} ${item.symbol}`}</TextM>
                   {!isTestnet && (
-                    <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountShow(
+                    <TextS style={[styles.lightGrayFontColor, styles.marginTop4]}>{`$ ${formatAmountUSDShow(
                       item?.feeInUsd ?? 0,
-                      2,
                     )}`}</TextS>
                   )}
                 </View>

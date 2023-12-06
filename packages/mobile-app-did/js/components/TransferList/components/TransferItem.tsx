@@ -10,7 +10,7 @@ import { formatChainInfoToShow, formatStr2EllipsisStr } from '@portkey-wallet/ut
 import { pTd } from 'utils/unit';
 import { ActivityItemType } from '@portkey-wallet/types/types-ca/activity';
 import { TransactionTypes } from '@portkey-wallet/constants/constants-ca/activity';
-import { AmountSign, divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { AmountSign, divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
 import CommonButton from 'components/CommonButton';
 import { useAppCASelector } from '@portkey-wallet/hooks/hooks-ca';
 import Loading from 'components/Loading';
@@ -31,6 +31,7 @@ import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { useGetCurrentAccountTokenPrice, useIsTokenHasPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import fonts from 'assets/theme/fonts';
 import { ZERO } from '@portkey-wallet/constants/misc';
+import { getEllipsisTokenShow } from 'pages/Chat/utils/format';
 
 interface ActivityItemPropsType {
   item?: ActivityItemType;
@@ -52,10 +53,11 @@ const ActivityItem: React.FC<ActivityItemPropsType> = ({ item, onPress }) => {
   const amountString = useMemo(() => {
     const { amount = '', isReceived, decimals = 8, symbol } = item || {};
     let prefix = ' ';
-
     if (amount && !ZERO.isEqualTo(amount)) prefix = isReceived ? AmountSign.PLUS : AmountSign.MINUS;
 
-    return `${prefix} ${formatAmountShow(divDecimals(amount, Number(decimals)))}${symbol ? ' ' + symbol : ''}`;
+    const tmpAmount = getEllipsisTokenShow(divDecimalsStr(amount, decimals), symbol || '', 10);
+
+    return `${prefix} ${tmpAmount}`;
   }, [item]);
 
   const showRetry = useCallback(
@@ -233,6 +235,7 @@ const itemStyle = StyleSheet.create({
     textAlign: 'right',
     color: defaultColors.font5,
     fontSize: pTd(16),
+    maxWidth: pTd(130),
   },
   usdtBalance: {
     textAlign: 'right',

@@ -18,15 +18,14 @@ import { addressFormat, formatChainInfoToShow, formatStr2EllipsisStr } from '@po
 import { useDefaultToken } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { copyText } from 'utils';
 import Touchable from 'components/Touchable';
-import { useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { FontStyles } from 'assets/theme/styles';
 import fonts from 'assets/theme/fonts';
+import { DefaultChainId } from '@portkey-wallet/constants/constants-ca/network-mainnet';
 
 export default function Receive() {
   const { t } = useLanguage();
   const { currentNetwork } = useWallet();
   const defaultToken = useDefaultToken();
-  const isMainnet = useIsMainnet();
 
   const tokenItem = useRouterParams<TokenItemShowType>();
   const { chainId, symbol, imageUrl } = tokenItem;
@@ -36,6 +35,8 @@ export default function Receive() {
   const currentCaAddress = currentWallet?.[chainId]?.caAddress;
 
   const copyId = useCallback(() => copyText(`ELF_${currentCaAddress}_${chainId}`), [chainId, currentCaAddress]);
+
+  const isMainChain = useMemo(() => chainId === DefaultChainId, [chainId]);
 
   return (
     <PageContainer
@@ -81,7 +82,7 @@ export default function Receive() {
           <TextM style={[GStyles.marginLeft(pTd(8)), FontStyles.font3]}>Receive from exchange account?</TextM>
         </View>
         <TextS style={[styles.warningContent, FontStyles.font3]}>
-          {isMainnet
+          {isMainChain
             ? `Please note that your Portkey account can only receive assets from certain exchanges, like Binance, Upbit, and OKX, and you need to ensure that "AELF" is selected as the withdrawal network.`
             : `Please note that your SideChain address may not be able to receive assets directly from exchanges. You can send your assets in exchanges to your MainChain address before transferring them to the SideChain.`}
         </TextS>

@@ -28,6 +28,7 @@ import 'utils/sentryInit';
 import 'utils/logBox';
 import 'utils/initExceptionManager';
 import { initFCMSignalR } from 'utils/FCM';
+import { initNotifications } from 'utils/notifee';
 
 const codePushOptions = {
   updateDialog: false,
@@ -41,8 +42,8 @@ SplashScreen.preventAutoHideAsync();
 
 initLanguage();
 setupAppCheck();
+initNotifications();
 initFCMSignalR();
-
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');
 
 const persistor = persistStore(store);

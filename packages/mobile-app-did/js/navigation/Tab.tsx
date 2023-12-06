@@ -19,6 +19,8 @@ import { TextS } from 'components/CommonText';
 import { useTabMenuList } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useIsImputation } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
+import { setBadge } from 'utils/notifee';
+import messaging from '@react-native-firebase/messaging';
 
 const Tab = createBottomTabNavigator();
 
@@ -108,6 +110,10 @@ export default function TabRoot() {
     if (!address) logOut();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address]);
+
+  useEffect(() => {
+    setBadge(unreadCount);
+  }, [unreadCount]);
 
   return (
     <Tab.Navigator

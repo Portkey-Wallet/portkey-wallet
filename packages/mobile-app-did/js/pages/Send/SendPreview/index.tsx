@@ -371,7 +371,7 @@ const SendHome: React.FC = () => {
               <Text style={[styles.divider, styles.marginTop0]} />
               <View style={styles.section}>
                 <View style={[styles.flexSpaceBetween]}>
-                  <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftTitle]}>
+                  <TextM style={[styles.blackFontColor, styles.fontBold, styles.leftEstimatedTitle]}>
                     {t('Estimated CrossChain Transfer')}
                   </TextM>
                   <View>
@@ -617,5 +617,8 @@ export const styles = StyleSheet.create({
   leftTitle: {
     width: pTd(120),
     lineHeight: pTd(20),
+  },
+  leftEstimatedTitle: {
+    width: pTd(180),
   },
 });

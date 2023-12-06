@@ -2,6 +2,7 @@ export enum TransactionTypes {
   TRANSFER = 'Transfer',
   CROSS_CHAIN_TRANSFER = 'CrossChainTransfer', // CrossChain Transfer
   CLAIM_TOKEN = 'ClaimToken', // faucet receive transfer
+  TRANSFER_RED_PACKET = 'TransferRedPacket',
 }
 
 export const DEFAULT_AMOUNT = 0;
@@ -22,6 +23,7 @@ export const SHOW_FROM_TRANSACTION_TYPES = [
   TransactionTypes.TRANSFER,
   TransactionTypes.CROSS_CHAIN_TRANSFER,
   TransactionTypes.CLAIM_TOKEN,
+  TransactionTypes.TRANSFER_RED_PACKET,
 ];
 
 export const ON_END_REACHED_THRESHOLD = 0.3;

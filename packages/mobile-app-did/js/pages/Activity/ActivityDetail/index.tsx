@@ -5,7 +5,7 @@ import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { fetchActivity } from '@portkey-wallet/store/store-ca/activity/api';
 import { ActivityItemType, TransactionStatus } from '@portkey-wallet/types/types-ca/activity';
 import { addressFormat, formatChainInfoToShow, getExploreLink } from '@portkey-wallet/utils';
-import { divDecimals, formatAmountShow } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, formatAmountShow } from '@portkey-wallet/utils/converter';
 import { defaultColors } from 'assets/theme';
 import fonts from 'assets/theme/fonts';
 import GStyles from 'assets/theme/GStyles';
@@ -169,6 +169,12 @@ const ActivityDetail = () => {
     );
   }, [activityItem?.isDelegated, activityItem?.transactionFees, defaultToken.symbol, isTestnet, t]);
 
+  const amountShow = useMemo(() => {
+    return `${activityItem?.isReceived ? '+' : '-'} ${divDecimalsStr(activityItem?.amount, activityItem?.decimals)} ${
+      activityItem?.symbol || ''
+    }`;
+  }, [activityItem?.amount, activityItem?.decimals, activityItem?.isReceived, activityItem?.symbol]);
+
   useEffectOnce(() => {
     getTokenPrice(activityItem?.symbol);
   });
@@ -207,11 +213,7 @@ const ActivityDetail = () => {
         ) : (
           <>
             <Text style={[styles.tokenCount, styles.fontBold]}>
-              {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) &&
-                (activityItem?.isReceived ? '+' : '-')}
-              {`${formatAmountShow(divDecimals(activityItem?.amount, activityItem?.decimals))} ${
-                activityItem?.symbol || ''
-              }`}
+              {SHOW_FROM_TRANSACTION_TYPES.includes(activityItem?.transactionType as TransactionTypes) && amountShow}
             </Text>
             {!isTestnet && isTokenHasPrice && (
               <Text style={styles.usdtCount}>{`$ ${formatAmountShow(

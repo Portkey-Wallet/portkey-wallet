@@ -119,8 +119,11 @@ export const RedPacketDetails = () => {
 
     // !isP2P  && !my wallet  && !isRedPackageFullyClaimed &&  !isRedPackageExpired
     if (!isP2P && !isMyPacket && !redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isRedPackageExpired)
-      return `${redPacketData?.grabbed} crypto ${getUnit(redPacketData?.grabbed || 1, 'box', 'boxes')} opened.`;
-
+      return `${redPacketData?.grabbed}/${redPacketData?.count} crypto ${getUnit(
+        redPacketData?.grabbed || 1,
+        'box',
+        'boxes',
+      )} opened.`;
     return '';
   }, [
     isMyPacket,

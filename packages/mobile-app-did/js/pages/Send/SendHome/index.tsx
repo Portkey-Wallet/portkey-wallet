@@ -24,7 +24,7 @@ import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import { getManagerAccount } from 'utils/redux';
 import { usePin } from 'hooks/store';
-import { divDecimals, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import BigNumber from 'bignumber.js';
 
@@ -131,7 +131,7 @@ const SendHome: React.FC = () => {
       const { TransactionFee } = req.data || {};
       if (!TransactionFee) throw { code: 500, message: 'no enough fee' };
 
-      return unitConverter(divDecimals(TransactionFee?.[defaultToken.symbol], defaultToken.decimals));
+      return divDecimalsStr(TransactionFee?.[defaultToken.symbol], defaultToken.decimals);
     },
     [
       chainInfo,

@@ -1,11 +1,17 @@
 import { Popover, message } from 'antd';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { ChatList as ChannelList, IChatItemProps, PopoverMenuList, StyleProvider } from '@portkey-wallet/im-ui-web';
 import CustomSvg from 'components/CustomSvg';
 import SettingHeader from 'pages/components/SettingHeader';
-import { useChannelList, usePinChannel, useMuteChannel, useHideChannel } from '@portkey-wallet/hooks/hooks-ca/im';
+import {
+  useChannelList,
+  usePinChannel,
+  useMuteChannel,
+  useHideChannel,
+  useUnreadCount,
+} from '@portkey-wallet/hooks/hooks-ca/im';
 import { useEffectOnce } from 'react-use';
 import { formatChatListTime } from '@portkey-wallet/utils/chat';
 import { MessageTypeWeb } from 'types/im';
@@ -15,6 +21,8 @@ import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import { useWalletInfo } from 'store/Provider/hooks';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -28,6 +36,7 @@ export default function ChatList() {
     next: nextChannelList,
     hasNext: hasNextChannelList,
   } = useChannelList();
+  const unreadCount = useUnreadCount();
   const { userInfo } = useWalletInfo();
   const formatSubTitle = useCallback((item: ChannelItem) => {
     const _type = MessageTypeWeb[item.lastMessageType ?? ''];
@@ -164,6 +173,10 @@ export default function ChatList() {
   useEffectOnce(() => {
     initChannelList();
   });
+
+  useEffect(() => {
+    InternalMessage.payload(PortkeyMessageTypes.SET_BADGE, { value: unreadCount }).send();
+  }, [unreadCount]);
 
   return (
     <div className="chat-list-page">

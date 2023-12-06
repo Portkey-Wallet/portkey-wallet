@@ -89,8 +89,8 @@ export const formatRedPacketNoneLeftTime = (startTimestamp: number, endTimestamp
 };
 
 export const getEllipsisTokenShow = (amountShow: string, symbol: string, digits = 21) => {
-  const amountShowLen = amountShow.length;
-  const symbolLen = symbol.length;
+  const amountShowLen = amountShow?.length || 0;
+  const symbolLen = symbol?.length || 0;
   if (amountShowLen + symbolLen > digits) return `${amountShow.slice(0, digits - symbolLen)}... ${symbol}`;
 
   return `${amountShow} ${symbol}`;

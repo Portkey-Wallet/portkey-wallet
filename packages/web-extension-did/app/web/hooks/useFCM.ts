@@ -3,6 +3,8 @@ import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 import { useEffect, useRef } from 'react';
 import { useCommonState } from 'store/Provider/hooks';
 import { initFCMSignalR } from 'utils/FCM';
@@ -41,7 +43,8 @@ export default function useFCM() {
       if (!signalrFCM.signalr) return;
 
       signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
-    }, 3000);
+      InternalMessage.payload(PortkeyMessageTypes.SET_BADGE, { value: unreadCount }).send();
+    }, 5000);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);

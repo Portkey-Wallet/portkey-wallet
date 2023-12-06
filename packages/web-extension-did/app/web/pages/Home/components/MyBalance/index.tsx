@@ -40,8 +40,8 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
 import './index.less';
 import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
-import signalrFCM from '@portkey-wallet/socket/socket-fcm';
-import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export interface TransactionResult {
   total: number;
@@ -103,7 +103,7 @@ export default function MyBalance() {
   const [bridgeShow, setBridgeShow] = useState<boolean>(false);
 
   useEffect(() => {
-    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
+    InternalMessage.payload(PortkeyMessageTypes.SET_BADGE, { value: unreadCount }).send();
   }, [unreadCount]);
 
   useEffect(() => {

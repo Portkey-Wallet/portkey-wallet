@@ -70,11 +70,11 @@ export default function SendPreview({
           <span className="usd">
             {isMainnet && amountInUsdShow(ZERO.plus(amount).minus(crossChainFee).toFixed(), 0, symbol)}
           </span>
-          {`${formatAmountShow(ZERO.plus(amount).minus(crossChainFee))} ${symbol}`}
+          {`${formatAmountShow(ZERO.plus(amount).minus(crossChainFee), Number(defaultToken.decimals))} ${symbol}`}
         </>
       );
     }
-  }, [amount, amountInUsdShow, crossChainFee, isMainnet, symbol]);
+  }, [amount, amountInUsdShow, crossChainFee, defaultToken.decimals, isMainnet, symbol]);
 
   return (
     <div className="send-preview">
@@ -132,7 +132,7 @@ export default function SendPreview({
         <p className="value">
           <span className="symbol">
             <span className="usd">{isMainnet && amountInUsdShow(transactionFee, 0, defaultToken.symbol)}</span>
-            {` ${formatAmountShow(transactionFee)} ${defaultToken.symbol}`}
+            {` ${formatAmountShow(transactionFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
           </span>
         </p>
       </div>
@@ -142,7 +142,7 @@ export default function SendPreview({
           <p className="value">
             <span className="symbol">
               <span className="usd">{isMainnet && amountInUsdShow(crossChainFee, 0, symbol)}</span>
-              {` ${formatAmountShow(crossChainFee)} ${defaultToken.symbol}`}
+              {` ${formatAmountShow(crossChainFee, Number(defaultToken.decimals))} ${defaultToken.symbol}`}
             </span>
           </p>
         </div>

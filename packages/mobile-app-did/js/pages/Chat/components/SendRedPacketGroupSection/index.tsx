@@ -213,6 +213,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
               style={styles.unitWrap}
               onPress={() => {
                 TokenOverlay.showTokenList({
+                  title: 'Select Assets',
                   onFinishSelectToken: (tokenInfo: TokenItemShowType) => {
                     setValues(pre => ({
                       ...pre,

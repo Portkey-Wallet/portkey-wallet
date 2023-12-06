@@ -56,6 +56,8 @@ export const PortkeyMessageTypes = {
   OPEN_RECAPTCHA_PAGE: 'OPEN_RECAPTCHA_PAGE',
   SOCIAL_LOGIN: 'SOCIAL_LOGIN',
 
+  SET_BADGE: 'SET_BADGE',
+
   // my
   SETTING: 'SETTING',
 

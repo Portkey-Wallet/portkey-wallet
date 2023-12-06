@@ -83,7 +83,7 @@ export default function Receive() {
         </View>
         <TextS style={[styles.warningContent, FontStyles.font3]}>
           {isMainChain
-            ? `Please note that your Portkey account can only receive assets from certain exchanges, like Binance, Upbit, and OKX, and you need to ensure that "AELF" is selected as the withdrawal network.`
+            ? `Please note that your Portkey account can only receive assets from certain exchanges, like Binance, Upbit, OKX, and gate.io, and you need to ensure that "AELF" is selected as the withdrawal network.`
             : `Please note that your SideChain address may not be able to receive assets directly from exchanges. You can send your assets in exchanges to your MainChain address before transferring them to the SideChain.`}
         </TextS>
       </View>

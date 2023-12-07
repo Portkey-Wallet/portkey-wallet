@@ -41,9 +41,14 @@ export type ValuesType = {
 
 export type SendRedPacketGroupSectionPropsType = {
   type?: RedPackageTypeEnum;
-  // TODO: change type
   groupMemberCount?: number;
   onPressButton: (values: ValuesType) => void;
+};
+
+const AMOUNT_LABEL_MAP = {
+  [RedPackageTypeEnum.P2P]: 'Amount',
+  [RedPackageTypeEnum.FIXED]: 'Amount Each',
+  [RedPackageTypeEnum.RANDOM]: 'Total Amount',
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
@@ -166,7 +171,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     });
   }, [getTokenInfo, onPressButton, type, values]);
 
-  const amountLabel = useMemo(() => (type === RedPackageTypeEnum.FIXED ? 'Amount Each' : 'Total Amount'), [type]);
+  const amountLabel = useMemo(() => AMOUNT_LABEL_MAP[type || RedPackageTypeEnum.P2P], [type]);
 
   const amountShowStr = useMemo(() => {
     if (type !== RedPackageTypeEnum.FIXED) return values.count;

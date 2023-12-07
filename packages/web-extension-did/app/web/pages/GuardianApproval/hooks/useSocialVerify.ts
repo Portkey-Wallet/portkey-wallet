@@ -38,6 +38,7 @@ export const useSocialVerify = () => {
         });
         const verifierInfo: VerifierInfo = { ...result, verifierId: operateGuardian?.verifier?.id };
         const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
+        console.log('operateGuardian.key======', operateGuardian.key);
         dispatch(
           setUserGuardianItemStatus({
             key: operateGuardian.key,

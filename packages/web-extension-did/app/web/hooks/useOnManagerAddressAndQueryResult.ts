@@ -23,6 +23,7 @@ import { ChainId } from '@portkey/provider-types';
 import { getHolderInfoByContract } from 'utils/sandboxUtil/getHolderInfo';
 import { getCurrentChainInfo, getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
 import { useNavigate } from 'react-router';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -87,12 +88,26 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   );
 
   const requestRecoveryDIDWallet = useCallback(
-    async ({ managerAddress }: { managerAddress: string }) => {
+    async ({
+      managerAddress,
+      guardiansApprovedList,
+    }: {
+      managerAddress: string;
+      guardiansApprovedList?: GuardiansApproved[];
+    }) => {
       const loginAccount = await getLoginAccount();
       if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
         throw 'Missing account!!! Please login/register again';
       }
-      const guardiansApproved = getGuardiansApproved();
+      console.log('guardiansApprovedList====', guardiansApprovedList);
+      let guardiansApproved = getGuardiansApproved();
+      if (
+        guardiansApprovedList &&
+        (!guardiansApproved || (Array.isArray(guardiansApproved) && guardiansApproved?.length === 0))
+      ) {
+        guardiansApproved = guardiansApprovedList;
+      }
+      console.log('guardiansApproved====', guardiansApproved);
       const requestId = randomId();
       const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
       const result = await recoveryDIDWallet({
@@ -173,7 +188,15 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   );
 
   return useCallback(
-    async (pin: string, verifierParams?: VerifierInfo) => {
+    async ({
+      pin,
+      verifierParams,
+      currentGuardian,
+    }: {
+      pin: string;
+      verifierParams?: VerifierInfo;
+      currentGuardian?: UserGuardianItem;
+    }) => {
       const verificationType = state === 'register' ? VerificationType.register : VerificationType.communityRecovery;
 
       try {
@@ -200,7 +223,20 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         if (state === 'register') {
           sessionInfo = await requestRegisterDIDWallet({ managerAddress: _walletInfo.address, verifierParams });
         } else {
-          sessionInfo = await requestRecoveryDIDWallet({ managerAddress: _walletInfo.address });
+          let guardiansApprovedList: GuardiansApproved[] | undefined = undefined;
+          if (verifierParams && currentGuardian) {
+            guardiansApprovedList = [
+              {
+                type: LoginType[currentGuardian.guardianType] as AccountType,
+                identifier: currentGuardian.guardianAccount,
+                verifierId: verifierParams.verifierId,
+                verificationDoc: verifierParams?.verificationDoc,
+                signature: verifierParams.signature,
+                identifierHash: currentGuardian.identifierHash,
+              },
+            ];
+          }
+          sessionInfo = await requestRecoveryDIDWallet({ managerAddress: _walletInfo.address, guardiansApprovedList });
         }
         const managerInfo = {
           managerUniqueId: sessionInfo.sessionId,

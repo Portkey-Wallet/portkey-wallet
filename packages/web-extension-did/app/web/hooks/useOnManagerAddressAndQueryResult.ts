@@ -165,10 +165,9 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
           }
         }
       } catch {
-        //
+        message.error(handleErrorMessage(messageStr, 'Create wallet failed'));
+        return;
       }
-      message.error(handleErrorMessage(messageStr, 'Create wallet failed'));
-      return;
     },
     [dispatch, navigate, network.walletType],
   );

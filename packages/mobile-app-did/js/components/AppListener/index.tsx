@@ -45,11 +45,11 @@ const AppListener: React.FC<AppListenerProps> = props => {
     [checkUpdate],
   );
   useEffectOnce(() => {
-    const timer = setTimeout(checkUpdate, 1000);
+    // const timer = setTimeout(checkUpdate, 1000);
     // const listener = AppState.addEventListener('change', handleAppStateChange);
     lockManager.current = new LockManager(lockingTime * 1000);
     return () => {
-      timer && clearTimeout(timer);
+      // timer && clearTimeout(timer);
       lockManager.current?.stopListening();
       // listener.remove();
     };

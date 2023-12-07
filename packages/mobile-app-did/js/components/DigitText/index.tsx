@@ -1,7 +1,7 @@
 import { PIN_SIZE } from '@portkey-wallet/constants/misc';
 import { Text } from '@rneui/base';
 import { defaultColors } from 'assets/theme';
-import { TextS } from 'components/CommonText';
+import { TextM } from 'components/CommonText';
 import React, { useCallback, memo, useMemo } from 'react';
 import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
@@ -90,7 +90,7 @@ const DigitText = ({
   return (
     <View>
       <View style={[styles.container, type === 'pin' ? styles.pinContainer : undefined, style]}>{getInputItem()}</View>
-      {errorMessage ? <TextS style={styles.errorText}>{errorMessage}</TextS> : null}
+      {errorMessage ? <TextM style={styles.errorText}>{errorMessage}</TextM> : null}
     </View>
   );
 };
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   errorText: {
-    marginTop: 40,
+    marginTop: pTd(24),
     textAlign: 'center',
     color: defaultColors.error,
   },
@@ -133,8 +133,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   pinPlaceholder: {
-    height: 4,
-    width: 16,
+    height: pTd(4),
+    width: pTd(16),
     backgroundColor: defaultColors.font5,
   },
   pinPlaceholderError: {

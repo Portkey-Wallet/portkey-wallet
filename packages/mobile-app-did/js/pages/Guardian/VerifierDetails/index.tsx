@@ -34,6 +34,7 @@ import { usePin } from 'hooks/store';
 import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
+import { pTd } from 'utils/unit';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -271,6 +272,7 @@ export default function VerifierDetails() {
 
 const styles = StyleSheet.create({
   containerStyles: {
-    paddingTop: 8,
+    paddingTop: pTd(8),
+    paddingHorizontal: pTd(20),
   },
 });

@@ -76,12 +76,12 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       const reg = /^(0|[1-9]\d*)(\.\d*)?$/;
       if (value === '') {
         setValues(pre => ({ ...pre, count: '' }));
-        setCountError({ isError: false, errorMsg: '' });
+        setCountError({ ...INIT_NONE_ERROR });
         return;
       }
       if (value === '.') {
         setValues(pre => ({ ...pre, count: '0.' }));
-        setCountError({ isError: false, errorMsg: '' });
+        setCountError({ ...INIT_NONE_ERROR });
         return;
       }
 
@@ -90,7 +90,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         if (decimals === 0 && value.split('.').length > 1) return pre;
         if (value.split('.')[1]?.length > Number(decimals)) return pre;
         if (!reg.test(value)) return pre;
-        setCountError({ isError: false, errorMsg: '' });
+        setCountError({ ...INIT_NONE_ERROR });
         return { ...pre, count: value };
       });
     },
@@ -102,7 +102,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       if (value === '') {
         setValues(pre => ({ ...pre, packetNum: '' }));
         if (type === RedPackageTypeEnum.RANDOM) {
-          setCountError({ isError: false, errorMsg: '' });
+          setCountError({ ...INIT_NONE_ERROR });
         }
         return;
       }
@@ -111,7 +111,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       if (!reg.test(value)) return;
       if (Number(value) > 1000) return;
       if (type === RedPackageTypeEnum.RANDOM) {
-        setCountError({ isError: false, errorMsg: '' });
+        setCountError({ ...INIT_NONE_ERROR });
       }
       setValues(pre => ({ ...pre, packetNum: value }));
     },
@@ -228,6 +228,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                       decimals: String(tokenInfo.decimals),
                       chainId: tokenInfo.chainId,
                     }));
+                    setCountError({ ...INIT_NONE_ERROR });
                   },
                   currentSymbol: values.symbol,
                   currentChainId: values.chainId,

@@ -49,7 +49,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
         item.unreadMessageCount > 0 &&
         !item.mute &&
         item.lastMessageType === 'REDPACKAGE-CARD' &&
-        (item.lastMessageContent as ParsedRedPackage).data.senderId !== userInfo?.userId;
+        (item.lastMessageContent as ParsedRedPackage)?.data?.senderId !== userInfo?.userId;
 
       return (
         <View style={[GStyles.flexRow, styles.message]}>
@@ -57,7 +57,7 @@ export default memo(function ChatHomeListItemSwiped(props: ChatHomeListItemSwipe
             {`[Crypto Box] `}
           </TextS>
           <TextS numberOfLines={1} style={[FontStyles.font7, styles.redPacketLastMessageContent]}>
-            {(item.lastMessageContent as ParsedRedPackage).data.memo}
+            {(item.lastMessageContent as ParsedRedPackage)?.data?.memo}
           </TextS>
         </View>
       );

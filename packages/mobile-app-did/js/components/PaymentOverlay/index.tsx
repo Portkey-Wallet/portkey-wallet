@@ -111,7 +111,7 @@ const PaymentModal = ({
     return (
       <View style={[GStyles.width100, GStyles.marginTop(pTd(16))]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
-          <TextL>Transaction Fee</TextL>
+          <TextM>Transaction Fee</TextM>
           <View>
             <View style={[GStyles.flexRow, GStyles.itemCenter]}>
               {fee?.loading ? (
@@ -217,10 +217,10 @@ const PaymentModal = ({
     fee.error,
   ]);
   return (
-    <ModalBody modalBodyType="bottom" style={styles.wrapStyle}>
+    <ModalBody modalBodyType="bottom">
       <View style={styles.containerStyle}>
         <View style={[GStyles.itemCenter, GStyles.flex1]}>
-          <TextM style={[FontStyles.font5, GStyles.marginBottom(pTd(8))]}> {title}</TextM>
+          <TextM style={styles.titleStyle}> {title}</TextM>
           <RedPacketAmountShow
             componentType="sendPacketPage"
             textColor={defaultColors.font5}
@@ -228,11 +228,11 @@ const PaymentModal = ({
             symbol={tokenInfo.symbol}
           />
           {!!currentTokenInfo?.price && (
-            <TextL style={GStyles.marginTop(pTd(8))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextL>
+            <TextM style={GStyles.marginTop(pTd(2))}>{convertAmountUSDShow(amount, currentTokenInfo?.price)}</TextM>
           )}
 
           <View style={[GStyles.marginTop(pTd(40)), GStyles.width100]}>
-            <TextS style={FontStyles.font3}>Balance</TextS>
+            <TextS style={styles.balanceLabelStyle}>Balance</TextS>
             <View style={styles.balanceItemRow}>
               <View style={styles.rowCenter}>
                 {tokenRowComponent}
@@ -289,22 +289,29 @@ export default {
 };
 
 export const styles = StyleSheet.create({
-  wrapStyle: {
-    paddingVertical: 8,
-  },
   containerStyle: {
+    paddingTop: pTd(16),
+    paddingBottom: pTd(16),
     paddingHorizontal: pTd(20),
     flex: 1,
   },
+  titleStyle: {
+    color: defaultColors.font5,
+    marginBottom: pTd(12),
+  },
+  balanceLabelStyle: {
+    color: defaultColors.font3,
+    marginLeft: pTd(8),
+  },
   lottieStyle: {
-    width: 15,
-    height: 15,
+    width: pTd(15),
+    height: pTd(15),
   },
   lottieWrapStyle: { paddingRight: 10, paddingTop: 0 },
   getButtonRow: {
     ...BGStyles.bg5,
     paddingHorizontal: pTd(8),
-    paddingVertical: 4,
+    paddingVertical: pTd(4),
     borderRadius: pTd(6),
   },
   balanceItemRow: {

@@ -29,7 +29,7 @@ const BackType: any = {
 };
 
 export default function LoginPortkey() {
-  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.referral);
+  const [loginType, setLoginType] = useState<PageLoginType>(PageLoginType.phone);
   const { t } = useLanguage();
   const isMainnet = useIsMainnet();
   const loginMap = useMemo(
@@ -52,7 +52,8 @@ export default function LoginPortkey() {
         containerStyles={styles.containerStyles}
         safeAreaColor={safeAreaColor}
         scrollViewProps={scrollViewProps}
-        leftCallback={BackType[loginType] ? () => setLoginType(PageLoginType.referral) : undefined}>
+        // leftCallback={BackType[loginType] ? () => setLoginType(PageLoginType.referral) : undefined}
+      >
         <Svg icon="logo-icon" size={pTd(60)} iconStyle={styles.logoIconStyle} color={defaultColors.bg1} />
         <View style={GStyles.center}>
           {!isMainnet && (

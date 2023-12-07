@@ -49,7 +49,7 @@ export default function Receive() {
           hasBorder
           style={styles.svgStyle}
           title={symbol}
-          avatarSize={pTd(32)}
+          avatarSize={pTd(40)}
           svgName={symbol === defaultToken.symbol ? 'testnet' : undefined}
           imageUrl={imageUrl || symbolImages?.[symbol] || ''}
         />
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.bg1,
   },
   svgStyle: {
-    marginRight: pTd(8),
+    marginRight: pTd(12),
     fontSize: pTd(16),
   },
   accountCardStyle: {
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   addressWrap: {
-    borderWidth: pTd(1),
+    borderWidth: 1,
     borderRadius: pTd(6),
     paddingHorizontal: pTd(16),
     paddingVertical: pTd(12),

@@ -192,7 +192,7 @@ export default class ServiceWorkerInstantiate {
         ServiceWorkerInstantiate.loginWallet();
         break;
       case PortkeyMessageTypes.EXPAND_FULL_SCREEN:
-        ServiceWorkerInstantiate.expandFullScreen();
+        ServiceWorkerInstantiate.expandFullScreen(sendResponse);
         break;
       case PortkeyMessageTypes.SETTING:
         ServiceWorkerInstantiate.expandSetting();
@@ -321,13 +321,16 @@ export default class ServiceWorkerInstantiate {
    */
   getPageState = () => pageState;
 
-  static expandFullScreen() {
-    notificationService.openPrompt(
+  static async expandFullScreen(sendResponse: SendResponseFun) {
+    await notificationService.openPrompt(
       {
         method: PromptRouteTypes.EXPAND_FULL_SCREEN,
       },
       'tabs',
     );
+    sendResponse(errorHandler(0));
+    /**  */
+    await OpenNewTabController.closeOpenTabs(true);
   }
 
   static expandSetting() {

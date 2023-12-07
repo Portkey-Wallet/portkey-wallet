@@ -21,8 +21,7 @@ import { useHandleClickChatItem } from 'hooks/im';
 import { PIN_LIMIT_EXCEED, UN_SUPPORTED_FORMAT } from '@portkey-wallet/constants/constants-ca/chat';
 import { useWalletInfo } from 'store/Provider/hooks';
 import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca/im';
-import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { setBadge } from 'utils/FCM';
 
 export default function ChatList() {
   const navigate = useNavigate();
@@ -175,7 +174,7 @@ export default function ChatList() {
   });
 
   useEffect(() => {
-    InternalMessage.payload(PortkeyMessageTypes.SET_BADGE, { value: unreadCount }).send();
+    setBadge({ value: unreadCount });
   }, [unreadCount]);
 
   return (

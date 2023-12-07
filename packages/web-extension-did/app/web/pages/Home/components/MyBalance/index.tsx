@@ -40,8 +40,8 @@ import { useDisclaimer } from '@portkey-wallet/hooks/hooks-ca/disclaimer';
 import BridgeModal from '../BridgeModal';
 import './index.less';
 import { useExtensionBridgeButtonShow, useExtensionBuyButtonShow } from 'hooks/cms';
-import InternalMessage from 'messages/InternalMessage';
-import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
+import { setBadge } from 'utils/FCM';
+import { useFCMEnable } from 'hooks/useFCM';
 
 export interface TransactionResult {
   total: number;
@@ -68,6 +68,7 @@ export default function MyBalance() {
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
   const { eBridgeUrl = '' } = useCurrentNetworkInfo();
+  const isFCMEnable = useFCMEnable();
   const renderTabsData = useMemo(
     () => [
       {
@@ -101,10 +102,6 @@ export default function MyBalance() {
   const originChainId = useOriginChainId();
   const { checkDappIsConfirmed } = useDisclaimer();
   const [bridgeShow, setBridgeShow] = useState<boolean>(false);
-
-  useEffect(() => {
-    InternalMessage.payload(PortkeyMessageTypes.SET_BADGE, { value: unreadCount }).send();
-  }, [unreadCount]);
 
   useEffect(() => {
     if (state?.key) {
@@ -208,6 +205,11 @@ export default function MyBalance() {
       setBridgeShow(true);
     }
   }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
+
+  useEffect(() => {
+    if (!isFCMEnable()) return;
+    setBadge({ value: unreadCount });
+  }, [isFCMEnable, unreadCount]);
 
   return (
     <div className="balance">

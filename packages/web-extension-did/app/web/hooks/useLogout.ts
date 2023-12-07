@@ -17,7 +17,7 @@ import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
 import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ManagerInfo } from '@portkey-wallet/graphql/contract/__generated__/types';
-import { handleErrorMessage } from '@portkey-wallet/utils';
+import { handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { message } from 'antd';
 import { useResetStore } from '@portkey-wallet/hooks/hooks-ca';
 import InternalMessage from 'messages/InternalMessage';
@@ -31,7 +31,8 @@ import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
 import { resetDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
 import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
-import { unSetFCMToken } from 'utils/FCM';
+import { setBadge, unSetFCMToken } from 'utils/FCM';
+import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function useLogOut() {
   const dispatch = useAppDispatch();
@@ -40,9 +41,14 @@ export default function useLogOut() {
   const { isPrompt } = useCommonState();
   const navigate = useNavigate();
   const otherNetworkLogged = useOtherNetworkLogged();
+  const isShowChat = useIsChatShow();
 
   return useCallback(async () => {
     try {
+      if (isShowChat) {
+        unSetFCMToken();
+        setBadge({ value: '' });
+      }
       resetStore();
       im.destroy();
       dispatch(resetIm(currentNetwork));
@@ -52,7 +58,6 @@ export default function useLogOut() {
       if (otherNetworkLogged) {
         dispatch(resetCaInfo(currentNetwork));
       } else {
-        unSetFCMToken();
         dispatch(resetWallet());
         dispatch(resetToken());
         dispatch(resetSettings());
@@ -64,6 +69,7 @@ export default function useLogOut() {
       dispatch(resetTxFee(currentNetwork));
 
       if (!isPrompt) {
+        await sleep(500);
         InternalMessage.payload(PortkeyMessageTypes.LOGIN_WALLET).send();
       } else {
         navigate('/register');
@@ -75,7 +81,7 @@ export default function useLogOut() {
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [currentNetwork, dispatch, isPrompt, navigate, otherNetworkLogged, resetStore]);
+  }, [currentNetwork, dispatch, isPrompt, isShowChat, navigate, otherNetworkLogged, resetStore]);
 }
 
 export function useCheckManager() {

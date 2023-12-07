@@ -122,10 +122,14 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   closeIcon: {
-    ...GStyles.paddingArg(21, 20),
     position: 'absolute',
-    right: 0,
+    top: pTd(17),
+    right: pTd(20),
     zIndex: 10000,
+    width: pTd(20),
+    height: pTd(20),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerRow: {
     paddingTop: pTd(14),

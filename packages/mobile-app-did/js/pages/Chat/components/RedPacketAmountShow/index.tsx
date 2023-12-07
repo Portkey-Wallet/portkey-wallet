@@ -10,67 +10,67 @@ import { isNumberInInterval, INFINITY } from 'utils';
 const RedPacketAmountShowInDetailPageStyleMap = {
   'amount-style1': {
     strLenIntervalLeft: INFINITY,
-    strLenIntervalRight: 14,
+    strLenIntervalRight: 12,
     styles: {
       fontSize: pTd(40),
       lineHeight: pTd(48),
     },
   },
   'amount-style2': {
-    strLenIntervalLeft: 14,
-    strLenIntervalRight: 16,
+    strLenIntervalLeft: 12,
+    strLenIntervalRight: 14,
     styles: { fontSize: pTd(36), lineHeight: pTd(44) },
   },
   'amount-style3': {
-    strLenIntervalLeft: 16,
-    strLenIntervalRight: 18,
+    strLenIntervalLeft: 14,
+    strLenIntervalRight: 16,
     styles: {
       fontSize: pTd(32),
       lineHeight: pTd(40),
     },
   },
   'amount-style4': {
-    strLenIntervalLeft: 18,
-    strLenIntervalRight: 20,
+    strLenIntervalLeft: 16,
+    strLenIntervalRight: 18,
     styles: {
-      fontSize: pTd(28),
-      lineHeight: pTd(36),
+      fontSize: pTd(26),
+      lineHeight: pTd(34),
     },
   },
   'amount-style5': {
-    strLenIntervalLeft: 20,
-    strLenIntervalRight: 24,
+    strLenIntervalLeft: 18,
+    strLenIntervalRight: 22,
     styles: {
       fontSize: pTd(24),
       lineHeight: pTd(32),
     },
   },
   'amount-style6': {
-    strLenIntervalLeft: 24,
-    strLenIntervalRight: 28,
+    strLenIntervalLeft: 22,
+    strLenIntervalRight: 26,
     styles: {
       fontSize: pTd(20),
       lineHeight: pTd(28),
     },
   },
   'amount-style7': {
-    strLenIntervalLeft: 28,
-    strLenIntervalRight: 37,
+    strLenIntervalLeft: 26,
+    strLenIntervalRight: 32,
     styles: {
       fontSize: pTd(16),
       lineHeight: pTd(24),
     },
   },
   'amount-style8': {
-    strLenIntervalLeft: 37,
-    strLenIntervalRight: 42,
+    strLenIntervalLeft: 32,
+    strLenIntervalRight: 36,
     styles: {
       fontSize: pTd(14),
       lineHeight: pTd(22),
     },
   },
   'amount-style9': {
-    strLenIntervalLeft: 42,
+    strLenIntervalLeft: 36,
     strLenIntervalRight: INFINITY,
     styles: {
       fontSize: pTd(14),

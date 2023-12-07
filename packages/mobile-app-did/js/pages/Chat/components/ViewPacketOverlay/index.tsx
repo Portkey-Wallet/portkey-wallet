@@ -15,7 +15,7 @@ import { screenHeight, screenWidth } from '@portkey-wallet/utils/mobile/device';
 import navigationService from 'utils/navigationService';
 import { ScreenHeight } from '@rneui/base';
 import { sleep } from '@portkey-wallet/utils';
-import { GetRedPackageDetailResult, GrabRedPackageResultEnum } from '@portkey-wallet/im';
+import { GetRedPackageDetailResult, GrabRedPackageResultEnum, RedPackageStatusEnum } from '@portkey-wallet/im';
 import { useCurrentWalletInfo, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useGetRedPackageDetail, useGrabRedPackage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
@@ -28,6 +28,8 @@ type ViewPacketOverlayPropsType = {
   redPacketData: GetRedPackageDetailResult;
   redPacketId: string;
 };
+
+const OVERLAY_MODAL_ANIMATED_TIME = 200;
 
 export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   const { redPacketData, redPacketId } = props;
@@ -75,31 +77,31 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
     animateRef.current = Animated.parallel([
       Animated.timing(imgUpPosition, {
         toValue: -pTd(ScreenHeight / 2),
-        duration: 600,
+        duration: OVERLAY_MODAL_ANIMATED_TIME,
         easing: Easing.linear,
         useNativeDriver: true,
       }),
       Animated.timing(imgUpScale, {
         toValue: screenWidth / pTd(300),
-        duration: 600,
+        duration: OVERLAY_MODAL_ANIMATED_TIME,
         easing: Easing.linear,
         useNativeDriver: true,
       }),
       Animated.timing(imgDownPosition, {
         toValue: pTd(400),
-        duration: 600,
+        duration: OVERLAY_MODAL_ANIMATED_TIME,
         easing: Easing.linear,
         useNativeDriver: true,
       }),
       Animated.timing(imgDownScale, {
         toValue: screenWidth / pTd(300),
-        duration: 600,
+        duration: OVERLAY_MODAL_ANIMATED_TIME,
         easing: Easing.linear,
         useNativeDriver: true,
       }),
       Animated.timing(maskOpacity, {
         toValue: 0,
-        duration: 600,
+        duration: OVERLAY_MODAL_ANIMATED_TIME,
         easing: Easing.linear,
         useNativeDriver: true,
       }),
@@ -109,7 +111,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
 
     timer = setTimeout(() => {
       OverlayModal.hide();
-    }, 600);
+    }, OVERLAY_MODAL_ANIMATED_TIME);
   }, [imgDownPosition, imgDownScale, maskOpacity, imgUpPosition, imgUpScale]);
 
   const onOpen = useCallback(async () => {
@@ -126,7 +128,7 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
     await sleep(500);
 
     try {
-      const { result } = await grabPacket(currentChannelId || '', redPacketId);
+      const { result, viewStatus } = await grabPacket(currentChannelId || '', redPacketId);
       if (result === GrabRedPackageResultEnum.SUCCESS) {
         const data = await init({ id: redPacketId });
         navigationService.navigate('RedPacketDetails', { redPacketId, data });
@@ -135,7 +137,8 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
         startAnimation();
       } else {
         openBtnRef.current?.destroyDom();
-        setIsGrabFail(true);
+        if (viewStatus === RedPackageStatusEnum.NONE_LEFT) setIsGrabNoneFail(true);
+        else setIsGrabExpiredFail(true);
       }
     } catch (error) {
       openBtnRef.current?.stopRotate();
@@ -173,13 +176,21 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
     OverlayModal.hide();
   }, []);
 
-  const [isGrabFail, setIsGrabFail] = useState(false);
+  const [isGrabNoneFail, setIsGrabNoneFail] = useState(false);
+  const [isGrabExpiredFail, setIsGrabExpiredFail] = useState(false);
   const memoStr = useMemo(() => {
-    if (isGrabFail) return 'Better luck next time!';
+    if (isGrabNoneFail) return 'Better luck next time!';
+    if (isGrabExpiredFail) return 'This crypto box has expired.';
     if (redPacketData.isRedPackageExpired) return 'This crypto box has expired.';
     if (redPacketData.isRedPackageFullyClaimed) return 'Better luck next time!';
     return redPacketData.memo;
-  }, [isGrabFail, redPacketData.isRedPackageExpired, redPacketData.isRedPackageFullyClaimed, redPacketData.memo]);
+  }, [
+    isGrabExpiredFail,
+    isGrabNoneFail,
+    redPacketData.isRedPackageExpired,
+    redPacketData.isRedPackageFullyClaimed,
+    redPacketData.memo,
+  ]);
 
   return (
     <View style={[GStyles.center, styles.page]}>

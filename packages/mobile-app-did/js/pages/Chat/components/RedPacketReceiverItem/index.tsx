@@ -26,6 +26,7 @@ const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
   return (
     <View style={itemStyle.wrap}>
       <CommonAvatar
+        hasBorder
         resizeMode="cover"
         style={itemStyle.left}
         title={item.username}
@@ -48,11 +49,13 @@ const RedPacketReceiverItem: React.FC<IReceiverItemProps> = props => {
             {getEllipsisTokenShow(divDecimalsStr(item.amount, decimals), symbol)}
           </TextL>
           <View style={itemStyle.blank} />
-          {(item.isLuckyKing || isLuckyKing) && (
+          {item.isLuckyKing || isLuckyKing ? (
             <View style={[GStyles.flexRow, GStyles.itemCenter]}>
               <Svg icon="luckiest" size={pTd(16)} />
               <TextM style={itemStyle.luckiest}>Luckiest Draw</TextM>
             </View>
+          ) : (
+            <TextM>{''}</TextM>
           )}
         </View>
       </View>

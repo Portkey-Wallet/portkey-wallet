@@ -134,15 +134,16 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
 
     if (type !== RedPackageTypeEnum.RANDOM) {
       if (amount.lt(minAmount)) {
-        // TODO: adjust error msg
-        setCountError({ isError: true, errorMsg: 'The amount is too small' });
+        setCountError({
+          isError: true,
+          errorMsg: `At least ${divDecimalsStr(minAmount, decimals || 1)} ${symbol} for each crypto box`,
+        });
         isError = true;
       }
     } else {
       const eachMinAmount = ZERO.plus(minAmount);
       const totalMinAmount = eachMinAmount.times(packetNum || '1');
       if (amount.lt(totalMinAmount)) {
-        // TODO: adjust error msg
         setCountError({
           isError: true,
           errorMsg: `At least ${divDecimalsStr(minAmount, decimals || 1)} ${symbol} for each crypto box`,

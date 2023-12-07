@@ -4,6 +4,8 @@ import { getDeviceInfo } from './device';
 import { DEVICE_TYPE } from 'constants/index';
 import { randomId } from '@portkey-wallet/utils';
 import { getLocalStorage, setLocalStorage } from 'utils/storage/chromeStorage';
+import InternalMessage from 'messages/InternalMessage';
+import { PortkeyMessageTypes } from 'messages/InternalMessageTypes';
 
 export const deviceInfo = {
   deviceType: DeviceTypeUnit.EXTENSION,
@@ -29,6 +31,10 @@ export const unSetFCMToken = () => {
   chrome.gcm.unregister((...args) => {
     console.log(args, '===getGCMToken===unregister===args');
   });
+};
+
+export const setBadge = async ({ value, color }: { value?: string | number; color?: string }) => {
+  await InternalMessage.payload(PortkeyMessageTypes.SET_BADGE, { value, color }).send();
 };
 
 const generateDeviceId = async () => {

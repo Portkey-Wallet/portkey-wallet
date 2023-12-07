@@ -28,9 +28,6 @@ const stackNav = [
   {
     name: 'ChatGroupDetailsPage',
     component: ChatGroupDetailsPage,
-    options: {
-      gestureEnabled: false,
-    },
   },
   { name: 'CreateGroupPage', component: CreateGroupPage },
   { name: 'SearchPeoplePage', component: SearchPeoplePage },

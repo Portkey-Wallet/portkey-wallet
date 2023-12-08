@@ -58,6 +58,10 @@ export const PortkeyMessageTypes = {
 
   SET_BADGE: 'SET_BADGE',
 
+  // FCM
+  UN_REGISTER_FCM: 'UN_REGISTER_FCM',
+  INIT_FCM_MESSAGE: 'INIT_FCM_MESSAGE',
+
   // my
   SETTING: 'SETTING',
 

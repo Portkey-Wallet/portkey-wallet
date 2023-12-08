@@ -5,7 +5,7 @@ import im from '@portkey-wallet/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { initFCMSignalR, setBadge } from 'utils/FCM';
+import { initFCMMessage, initFCMSignalR, setBadge } from 'utils/FCM';
 import { getPageType } from 'utils/setBody';
 
 export function useFCMEnable() {
@@ -29,6 +29,7 @@ export default function useFCM() {
     await initFCMSignalR();
     if (!request.defaultConfig.baseURL) return;
     if (signalrFCM.signalr) return;
+    initFCMMessage();
     signalrFCM.doOpen({
       url: `${request.defaultConfig.baseURL}`,
     });
@@ -41,7 +42,7 @@ export default function useFCM() {
   useEffect(() => {
     if (!isFCMEnabled()) return;
     timerRef.current = setInterval(() => {
-      console.log('report AppStatus update', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
+      // console.log('report AppStatus update', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
       if (!signalrFCM.fcmToken) return;
       if (!signalrFCM.portkeyToken) return;
       if (!signalrFCM.signalr) return;

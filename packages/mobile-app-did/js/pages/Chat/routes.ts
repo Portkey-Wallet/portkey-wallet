@@ -17,6 +17,29 @@ import ChatGroupQrCodePage from './ChatGroupQrCodePage';
 import SendPacketP2PPage from './SendPacketP2PPage';
 import SendPacketGroupPage from './SendPacketGroupPage';
 import RedPacketDetails from './RedPacketDetailsPage';
+import { Animated } from 'react-native';
+
+const RedPacketDetailsPageOptions = {
+  transitionSpec: {
+    open: {
+      animation: 'timing',
+      config: {
+        duration: 0,
+      } as Animated.TimingAnimationConfig,
+    },
+    close: {
+      animation: 'spring',
+      config: {
+        stiffness: 1000,
+        damping: 500,
+        mass: 3,
+        overshootClamping: true,
+        restDisplacementThreshold: 0.01,
+        restSpeedThreshold: 0.01,
+      },
+    },
+  },
+};
 
 const stackNav = [
   { name: 'ChatHomePage', component: ChatHomePage },
@@ -46,9 +69,7 @@ const stackNav = [
   {
     name: 'RedPacketDetails',
     component: RedPacketDetails,
-    options: {
-      animationEnabled: false,
-    },
+    options: RedPacketDetailsPageOptions,
   },
 ] as const;
 

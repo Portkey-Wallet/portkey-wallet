@@ -66,6 +66,13 @@ export default function GuardianApproval() {
     } else if (['guardians/del', 'guardians/add'].includes(_query)) {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== opGuardian?.key);
     }
+    console.log(
+      'userVerifiedListLogic:',
+      opGuardian?.key,
+      preGuardian?.key,
+      JSON.parse(JSON.stringify(query)),
+      JSON.parse(JSON.stringify(filterVerifiedList)),
+    );
     return filterVerifiedList;
   }, [opGuardian?.key, preGuardian?.key, query, userGuardianStatus]);
 
@@ -87,7 +94,9 @@ export default function GuardianApproval() {
   const handleSetTransferLimit = useSetTransferLimit(targetChainId);
 
   const recoveryWallet = useCallback(async () => {
+    console.log('recoveryWallet', JSON.parse(JSON.stringify(query)));
     if (query && query?.indexOf('guardians') !== -1) {
+      console.log('recoveryWallet guardians', '');
       handleGuardianRecovery();
     } else if (query && query?.indexOf('removeManage') !== -1) {
       handleRemoveOtherManage();

@@ -61,6 +61,7 @@ export default function Guardians() {
           <li
             key={key}
             onClick={() => {
+              console.log('🌈 🌈 🌈 🌈 🌈 🌈 Guardians-renderGuardianList', JSON.parse(JSON.stringify(item)));
               dispatch(setCurrentGuardianAction({ ...item, isLoginAccount: !!item.isLoginAccount }));
               dispatch(setOpGuardianAction({ ...item, isLoginAccount: !!item.isLoginAccount }));
               isPrompt

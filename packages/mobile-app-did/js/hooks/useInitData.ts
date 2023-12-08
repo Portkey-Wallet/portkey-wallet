@@ -6,7 +6,7 @@ import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/acti
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
-import { useGetGuardiansInfoWriteStore, useGetVerifierServers, useRefreshGuardianList } from './guardian';
+import { useRefreshGuardianList } from './guardian';
 import useEffectOnce from './useEffectOnce';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 import { reportUserCurrentNetwork } from 'utils/analysisiReport';
@@ -32,10 +32,8 @@ export default function useInitData() {
   const pin = usePin();
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
   const wallet = useCurrentWalletInfo();
-  const getVerifierServers = useGetVerifierServers();
   const { netWorkType } = useCurrentNetwork();
 
-  const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   const isMainNetwork = useIsMainnet();
   useCheckAndInitNetworkDiscoverMap();
 
@@ -72,23 +70,14 @@ export default function useInitData() {
 
       loadBookmarkList();
       // getGuardiansInfoWriteStore after getVerifierServers
-      await getVerifierServers();
-      getGuardiansInfoWriteStore({
-        caHash: wallet.caHash,
-      });
+      // await getVerifierServers();
+      // getGuardiansInfoWriteStore({
+      //   caHash: wallet.caHash,
+      // });
     } catch (error) {
       console.log(error, '====error');
     }
-  }, [
-    dispatch,
-    getCurrentCAViewContract,
-    getGuardiansInfoWriteStore,
-    getVerifierServers,
-    initGuardianList,
-    isMainNetwork,
-    loadBookmarkList,
-    wallet.caHash,
-  ]);
+  }, [dispatch, getCurrentCAViewContract, initGuardianList, isMainNetwork, loadBookmarkList]);
 
   const isChat = useIsChatShow();
   useEffect(() => {

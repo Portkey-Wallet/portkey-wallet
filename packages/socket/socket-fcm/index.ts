@@ -109,7 +109,7 @@ class SignalrFCM extends BaseSignalr {
 
     await signalr.start();
     await signalr.invoke('Connect', clientId || this.deviceId || '');
-
+    signalr.onreconnected(connectionId => this.onReconnected(signalr, connectionId));
     this.connectionId = signalr.connectionId ?? '';
     this.signalr = signalr;
     this.url = url;
@@ -118,6 +118,11 @@ class SignalrFCM extends BaseSignalr {
 
     return signalr;
   };
+
+  async onReconnected(signalr: HubConnection, connectionId?: string) {
+    console.log('onReconnected: signalr, connectionId, deviceId', signalr, connectionId, this.deviceId);
+    signalr.invoke('Connect', this.deviceId || '');
+  }
 }
 
 const signalrFCM = new SignalrFCM({

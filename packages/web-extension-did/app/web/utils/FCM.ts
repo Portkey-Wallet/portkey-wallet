@@ -27,10 +27,12 @@ export const getFCMToken = async (): Promise<string> => {
   });
 };
 
-export const unSetFCMToken = () => {
-  chrome.gcm.unregister((...args) => {
-    console.log(args, '===getGCMToken===unregister===args');
-  });
+export const initFCMMessage = () => {
+  InternalMessage.payload(PortkeyMessageTypes.INIT_FCM_MESSAGE).send();
+};
+
+export const unRegisterFCM = () => {
+  InternalMessage.payload(PortkeyMessageTypes.UN_REGISTER_FCM).send();
 };
 
 export const setBadge = async ({ value, color }: { value?: string | number; color?: string }) => {

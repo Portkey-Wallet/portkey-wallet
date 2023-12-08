@@ -19,7 +19,8 @@ import SocialLoginController from 'controllers/socialLoginController';
 import { LocalStream } from 'utils/extensionStreams';
 import { MethodsWallet, MethodsBase } from '@portkey/provider-types';
 import OpenNewTabController from 'controllers/openNewTabController';
-import { ZERO } from '@portkey-wallet/constants/misc';
+import BadgeController from 'controllers/BadgeController';
+import GCMController from 'controllers/GCMController';
 
 const notificationService = new NotificationService();
 const socialLoginService = new SocialLoginController();
@@ -48,6 +49,8 @@ const permissionWhitelist = [
   PortkeyMessageTypes.SOCIAL_LOGIN,
   PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE,
   PortkeyMessageTypes.SET_BADGE,
+  PortkeyMessageTypes.UN_REGISTER_FCM,
+  PortkeyMessageTypes.INIT_FCM_MESSAGE,
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
   MethodsWallet.GET_WALLET_STATE,
@@ -70,6 +73,8 @@ export default class ServiceWorkerInstantiate {
   protected permissionController: PermissionController;
   protected approvalController: ApprovalController;
   protected aelfMethodController: AELFMethodController;
+  protected badgeController: BadgeController;
+  protected gcmController: GCMController;
   constructor() {
     // Controller that handles portkey checks
     this.permissionController = new PermissionController({
@@ -89,37 +94,9 @@ export default class ServiceWorkerInstantiate {
       getPageState: this.getPageState,
       getPassword: () => seed,
     });
+    this.badgeController = new BadgeController();
+    this.gcmController = new GCMController(this.badgeController);
     this.setupInternalMessaging();
-    this.onFCMMessaging();
-  }
-
-  onFCMMessaging() {
-    chrome.gcm.onMessage.addListener((message) => {
-      const { from, data = {} } = message;
-      let _count = '';
-      if (from === process.env.FCM_PROJECT_ID) {
-        _count = (data as any)['gcm.notification.notification_count'];
-      }
-      console.log(message, '===onFCMMessaging');
-      this.setBadge({
-        value: _count,
-      });
-    });
-  }
-
-  setBadge(props: { value?: string | number; color?: string }) {
-    const { value, color } = props;
-    // set a badge
-    let _v = '';
-    if (value && value !== '0' && !isNaN(ZERO.plus(value).toNumber())) {
-      _v = ZERO.plus(value).toFixed(0);
-      if (ZERO.plus(value).gt(999)) {
-        _v = '999+';
-      }
-    }
-    chrome.action.setBadgeText({ text: _v });
-    // set badge color
-    color && chrome.action.setBadgeBackgroundColor({ color: `${color}` });
   }
 
   // Watches the internal messaging system ( LocalStream )
@@ -213,7 +190,13 @@ export default class ServiceWorkerInstantiate {
         this.socialLogin(sendResponse, message.payload);
         break;
       case PortkeyMessageTypes.SET_BADGE:
-        this.setBadge(message.payload);
+        this.badgeController.setBadge(message.payload);
+        break;
+      case PortkeyMessageTypes.INIT_FCM_MESSAGE:
+        this.gcmController.initFCMMessage();
+        break;
+      case PortkeyMessageTypes.UN_REGISTER_FCM:
+        this.gcmController.unRegisterFCM();
         break;
       case WalletMessageTypes.SET_RECAPTCHA_CODE_V2:
         this.getRecaptcha(sendResponse, message.payload);

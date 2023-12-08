@@ -31,7 +31,7 @@ import { resetIm } from '@portkey-wallet/store/store-ca/im/actions';
 import { resetDisclaimerConfirmedDapp } from '@portkey-wallet/store/store-ca/discover/slice';
 import { resetSecurity } from '@portkey-wallet/store/store-ca/security/actions';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
-import { setBadge, unSetFCMToken } from 'utils/FCM';
+import { unRegisterFCM } from 'utils/FCM';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 
 export default function useLogOut() {
@@ -46,8 +46,7 @@ export default function useLogOut() {
   return useCallback(async () => {
     try {
       if (isShowChat) {
-        unSetFCMToken();
-        setBadge({ value: '' });
+        unRegisterFCM();
       }
       resetStore();
       im.destroy();

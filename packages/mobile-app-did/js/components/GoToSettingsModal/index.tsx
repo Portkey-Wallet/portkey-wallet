@@ -27,7 +27,7 @@ const GoToSettingsModal = (props: GoToSettingsModalType) => {
       </ImageBackground>
       <TextXL style={styles.headerTitle}>Stay updated on the latest</TextXL>
       <TextM style={styles.content}>
-        Turn on notifications for timely message updates. You can disable it later in the Settings if needed.
+        {'Turn on notifications for timely message updates. You can disable it later in the Settings if needed.'}
       </TextM>
       <CommonButton
         title="Turn on Notifications"
@@ -60,13 +60,13 @@ export const styles = StyleSheet.create({
   },
   headerTitle: {
     marginHorizontal: pTd(20),
-    marginTop: pTd(16),
+    marginTop: pTd(24),
     textAlign: 'center',
     ...fonts.mediumFont,
   },
   content: {
     marginHorizontal: pTd(20),
-    marginTop: pTd(24),
+    marginTop: pTd(16),
     textAlign: 'center',
   },
   closeWrap: {
@@ -78,5 +78,6 @@ export const styles = StyleSheet.create({
   buttonWrap: {
     marginHorizontal: pTd(20),
     marginTop: pTd(34),
+    marginBottom: pTd(12),
   },
 });

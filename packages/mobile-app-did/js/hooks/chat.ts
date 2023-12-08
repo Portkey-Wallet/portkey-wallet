@@ -20,7 +20,6 @@ export function useJumpToChatDetails() {
 
   return useCallback(
     async ({ toRelationId, channelUuid }: { toRelationId?: string; channelUuid?: string }) => {
-      const routesArr = navigationService.getState()?.routes;
       try {
         if (channelUuid) {
           chatDispatch(
@@ -40,13 +39,9 @@ export function useJumpToChatDetails() {
         }
 
         // if group chat exist, destroy it
-        if (routesArr.find(ele => ele.name === 'ChatGroupDetailsPage')) {
-          navigationService.reset([{ name: 'Tab' }, { name: 'ChatDetailsPage' }]);
-          await sleep(1000);
-          myEvents.navToBottomTab.emit({ tabName: ChatTabName });
-        } else {
-          navigationService.navigate('ChatDetailsPage');
-        }
+        navigationService.reset([{ name: 'Tab' }, { name: 'ChatDetailsPage' }]);
+        await sleep(1000);
+        myEvents.navToBottomTab.emit({ tabName: ChatTabName });
       } catch (error) {
         console.log(error);
         CommonToast.failError(error);
@@ -79,7 +74,9 @@ export function useJumpToChatGroupDetails() {
             }),
           );
         }
-        navigationService.navigate('ChatGroupDetailsPage');
+        navigationService.reset([{ name: 'Tab' }, { name: 'ChatGroupDetailsPage' }]);
+        await sleep(1000);
+        myEvents.navToBottomTab.emit({ tabName: ChatTabName });
       } catch (error) {
         console.log(error);
         CommonToast.failError(error);

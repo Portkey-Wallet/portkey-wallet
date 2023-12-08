@@ -211,7 +211,7 @@ const itemStyle = StyleSheet.create({
     height: pTd(74),
   },
   left: {
-    marginRight: pTd(18),
+    marginRight: pTd(12),
     width: pTd(32),
     height: pTd(32),
     borderWidth: 0,

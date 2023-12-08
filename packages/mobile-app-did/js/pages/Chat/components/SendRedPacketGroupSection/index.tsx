@@ -41,9 +41,14 @@ export type ValuesType = {
 
 export type SendRedPacketGroupSectionPropsType = {
   type?: RedPackageTypeEnum;
-  // TODO: change type
   groupMemberCount?: number;
   onPressButton: (values: ValuesType) => void;
+};
+
+const AMOUNT_LABEL_MAP = {
+  [RedPackageTypeEnum.P2P]: 'Amount',
+  [RedPackageTypeEnum.FIXED]: 'Amount Each',
+  [RedPackageTypeEnum.RANDOM]: 'Total Amount',
 };
 
 export default function SendRedPacketGroupSection(props: SendRedPacketGroupSectionPropsType) {
@@ -72,12 +77,12 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       const reg = /^(0|[1-9]\d*)(\.\d*)?$/;
       if (value === '') {
         setValues(pre => ({ ...pre, count: '' }));
-        setCountError({ isError: false, errorMsg: '' });
+        setCountError({ ...INIT_NONE_ERROR });
         return;
       }
       if (value === '.') {
         setValues(pre => ({ ...pre, count: '0.' }));
-        setCountError({ isError: false, errorMsg: '' });
+        setCountError({ ...INIT_NONE_ERROR });
         return;
       }
 
@@ -86,7 +91,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         if (decimals === 0 && value.split('.').length > 1) return pre;
         if (value.split('.')[1]?.length > Number(decimals)) return pre;
         if (!reg.test(value)) return pre;
-        setCountError({ isError: false, errorMsg: '' });
+        setCountError({ ...INIT_NONE_ERROR });
         return { ...pre, count: value };
       });
     },
@@ -98,7 +103,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       if (value === '') {
         setValues(pre => ({ ...pre, packetNum: '' }));
         if (type === RedPackageTypeEnum.RANDOM) {
-          setCountError({ isError: false, errorMsg: '' });
+          setCountError({ ...INIT_NONE_ERROR });
         }
         return;
       }
@@ -107,7 +112,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
       if (!reg.test(value)) return;
       if (Number(value) > 1000) return;
       if (type === RedPackageTypeEnum.RANDOM) {
-        setCountError({ isError: false, errorMsg: '' });
+        setCountError({ ...INIT_NONE_ERROR });
       }
       setValues(pre => ({ ...pre, packetNum: value }));
     },
@@ -134,15 +139,16 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
 
     if (type !== RedPackageTypeEnum.RANDOM) {
       if (amount.lt(minAmount)) {
-        // TODO: adjust error msg
-        setCountError({ isError: true, errorMsg: 'The amount is too small' });
+        setCountError({
+          isError: true,
+          errorMsg: `At least ${divDecimalsStr(minAmount, decimals || 1)} ${symbol} for each crypto box`,
+        });
         isError = true;
       }
     } else {
       const eachMinAmount = ZERO.plus(minAmount);
       const totalMinAmount = eachMinAmount.times(packetNum || '1');
       if (amount.lt(totalMinAmount)) {
-        // TODO: adjust error msg
         setCountError({
           isError: true,
           errorMsg: `At least ${divDecimalsStr(minAmount, decimals || 1)} ${symbol} for each crypto box`,
@@ -165,7 +171,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
     });
   }, [getTokenInfo, onPressButton, type, values]);
 
-  const amountLabel = useMemo(() => (type === RedPackageTypeEnum.FIXED ? 'Amount Each' : 'Total Amount'), [type]);
+  const amountLabel = useMemo(() => AMOUNT_LABEL_MAP[type || RedPackageTypeEnum.P2P], [type]);
 
   const amountShowStr = useMemo(() => {
     if (type !== RedPackageTypeEnum.FIXED) return values.count;
@@ -223,6 +229,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
                       decimals: String(tokenInfo.decimals),
                       chainId: tokenInfo.chainId,
                     }));
+                    setCountError({ ...INIT_NONE_ERROR });
                   },
                   currentSymbol: values.symbol,
                   currentChainId: values.chainId,

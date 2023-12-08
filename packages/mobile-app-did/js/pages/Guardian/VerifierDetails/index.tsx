@@ -36,6 +36,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { handleGuardiansApproved } from 'utils/login';
 import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
+import { pTd } from 'utils/unit';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -317,6 +318,7 @@ export default function VerifierDetails() {
 
 const styles = StyleSheet.create({
   containerStyles: {
-    paddingTop: 8,
+    paddingTop: pTd(8),
+    paddingHorizontal: pTd(20),
   },
 });

@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import navigationService from 'utils/navigationService';
-import { TextM } from 'components/CommonText';
+import { TextS } from 'components/CommonText';
 import * as ImagePicker from 'expo-image-picker';
 import { useQrScanPermission } from 'hooks/useQrScan';
 import ActionSheet from 'components/ActionSheet';
@@ -140,7 +140,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
           <View style={[GStyles.center, styles.toolsItemIconWrap]}>
             <Svg icon={ele.icon} size={pTd(24)} color={defaultColors.font5} />
           </View>
-          <TextM style={FontStyles.font3}>{ele.label}</TextM>
+          <TextS style={FontStyles.font3}>{ele.label}</TextS>
         </Touchable>
       ))}
     </View>

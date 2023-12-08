@@ -144,13 +144,14 @@ export const RedPacketDetails = () => {
     return (
       <View style={[GStyles.center, styles.topWrap]}>
         <CommonAvatar
+          hasBorder
           resizeMode="cover"
           style={styles.sendAvatar}
           avatarSize={pTd(48)}
           title={redPacketData?.senderName}
           imageUrl={redPacketData?.senderAvatar}
         />
-        <TextXL numberOfLines={1} style={[FontStyles.font5, styles.sendBy]}>
+        <TextXL numberOfLines={1} style={[FontStyles.font5, styles.sendBy, FontStyles.weight500]}>
           {`Crypto Box from ${redPacketData?.senderName}`}
         </TextXL>
         <TextM style={[FontStyles.font7, styles.memo]}>{redPacketData?.memo}</TextM>

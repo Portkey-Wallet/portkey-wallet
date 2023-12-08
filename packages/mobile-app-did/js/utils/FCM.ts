@@ -1,7 +1,7 @@
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import messaging from '@react-native-firebase/messaging';
 import { PERMISSIONS, request } from 'react-native-permissions';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import { copyText } from 'utils';
 import { getDeviceInfo } from './deviceInfo';
@@ -27,9 +27,8 @@ export const requestUserPermission = async () => {
   if (Number(deviceAPiLevel) >= 33) {
     androidResult = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
   } else {
-    androidResult = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+    return true;
   }
-  console.log('androidResult');
   return androidResult === 'granted';
 };
 

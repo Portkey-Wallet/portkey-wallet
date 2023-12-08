@@ -96,7 +96,7 @@ export default function GuardianApproval() {
     } else {
       const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
       if (managerAddress && res.data.privateKey) {
-        onManagerAddressAndQueryResult(res.data.privateKey);
+        onManagerAddressAndQueryResult({ pin: res.data.privateKey });
       } else {
         navigate('/login/set-pin/login');
       }

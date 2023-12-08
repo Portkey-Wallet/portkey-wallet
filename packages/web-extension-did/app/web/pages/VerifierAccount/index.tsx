@@ -64,7 +64,7 @@ export default function VerifierAccount() {
     }
     return undefined;
   }, [state]);
-  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult('register');
+  const onManagerAddressAndQueryResult = useOnManagerAddressAndQueryResult(state);
 
   const onSuccessInGuardian = useCallback(
     async (res: VerifierInfo) => {
@@ -170,7 +170,10 @@ export default function VerifierAccount() {
         dispatch(setRegisterVerifierAction(res));
         const result = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
         if (walletInfo.address && result.data.privateKey) {
-          onManagerAddressAndQueryResult(result.data.privateKey, res);
+          onManagerAddressAndQueryResult({
+            pin: result.data.privateKey,
+            verifierParams: res,
+          });
         } else {
           navigate('/login/set-pin/register');
         }
@@ -185,9 +188,13 @@ export default function VerifierAccount() {
           }),
         );
         if (userGuardiansList?.length === 1) {
-          const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
-          if (managerAddress && res.data.privateKey) {
-            onManagerAddressAndQueryResult(res.data.privateKey);
+          const checkRes = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
+          if (managerAddress && checkRes.data.privateKey) {
+            onManagerAddressAndQueryResult({
+              pin: checkRes.data.privateKey,
+              verifierParams: res,
+              currentGuardian: currentGuardian,
+            });
           } else {
             navigate('/login/set-pin/login');
           }

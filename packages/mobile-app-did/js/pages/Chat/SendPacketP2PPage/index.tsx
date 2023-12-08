@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     flex: 1,
     backgroundColor: defaultColors.bg4,
-    ...GStyles.paddingArg(0, 0),
+    ...GStyles.paddingArg(8, 0, 0),
   },
   scrollStyle: {
     minHeight: '100%',

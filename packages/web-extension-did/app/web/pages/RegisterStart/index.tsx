@@ -14,7 +14,7 @@ import { useChangeNetwork } from 'hooks/useChangeNetwork';
 import i18n from 'i18n';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
-import { resetGuardians } from '@portkey-wallet/store/store-ca/guardians/actions';
+import { resetGuardians, setUserGuardianStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import useGuardianList from 'hooks/useGuardianList';
 import { handleErrorCode, handleErrorMessage, sleep } from '@portkey-wallet/utils';
 import { Button, message } from 'antd';
@@ -287,9 +287,21 @@ export default function RegisterStart() {
               operationType: OperationTypeEnum.communityRecovery,
             }),
           );
+        if (!userGuardianStatus) throw "Can't get user guardianlist";
 
-        console.log('autoVerifiedList', JSON.parse(JSON.stringify(autoVerifiedList)));
-        await Promise.all(autoVerifiedList);
+        const _userGuardianStatus = { ...userGuardianStatus };
+        (await Promise.all(autoVerifiedList)).forEach((guardian) => {
+          const key = guardian?.key;
+
+          if (!key) return;
+          const userGuardian = _userGuardianStatus[key];
+
+          if (guardian && userGuardian) {
+            _userGuardianStatus[key] = { ...userGuardian, ...guardian };
+          }
+        });
+
+        dispatch(setUserGuardianStatus(_userGuardianStatus));
 
         if (
           userGuardianStatusList.length === 1 &&

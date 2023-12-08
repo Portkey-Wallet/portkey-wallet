@@ -20,6 +20,7 @@ import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constant
 import { useTranslation } from 'react-i18next';
 import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { useNavigate } from 'react-router';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
@@ -29,6 +30,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const getWalletCAAddressResult = useFetchDidWallet();
   const network = useCurrentNetworkInfo();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const originChainId = useOriginChainId();
 
@@ -212,6 +214,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         const walletError = isWalletError(error);
         if (walletError) return message.error(walletError);
         message.error(handleErrorMessage(error, 'Create Wallet Failed'));
+        navigate('/register/start');
       } finally {
         setLoading(false);
       }
@@ -219,6 +222,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
     [
       dispatch,
       getWalletCAAddressResult,
+      navigate,
       network.networkType,
       requestRecoveryDIDWallet,
       requestRegisterDIDWallet,

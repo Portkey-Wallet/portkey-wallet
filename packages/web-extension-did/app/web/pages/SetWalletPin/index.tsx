@@ -237,9 +237,10 @@ export default function SetWalletPin() {
         const walletError = isWalletError(error);
         if (walletError) return message.error(walletError);
         message.error(handleErrorMessage(error, 'Create wallet failed'));
+        navigate('/register/start');
       }
     },
-    [currentNetwork, dispatch, distributeFail, otherNetworkLogged, state],
+    [currentNetwork, dispatch, distributeFail, navigate, otherNetworkLogged, state],
   );
 
   return (

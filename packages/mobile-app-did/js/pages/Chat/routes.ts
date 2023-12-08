@@ -43,13 +43,7 @@ const stackNav = [
   { name: 'ChatGroupQrCodePage', component: ChatGroupQrCodePage },
   { name: 'SendPacketP2PPage', component: SendPacketP2PPage },
   { name: 'SendPacketGroupPage', component: SendPacketGroupPage },
-  {
-    name: 'RedPacketDetails',
-    component: RedPacketDetails,
-    options: {
-      animationEnabled: false,
-    },
-  },
+  { name: 'RedPacketDetails', component: RedPacketDetails },
 ] as const;
 
 export default stackNav;

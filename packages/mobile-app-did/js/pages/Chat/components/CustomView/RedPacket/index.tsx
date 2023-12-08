@@ -20,7 +20,6 @@ import {
   useIsMyRedPacket,
 } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentChannelId } from 'pages/Chat/context/hooks';
-import { sleep } from '@portkey-wallet/utils';
 
 function RedPacket(props: MessageProps<ChatMessage>) {
   const { currentMessage } = props;
@@ -46,18 +45,10 @@ function RedPacket(props: MessageProps<ChatMessage>) {
     Loading.show();
 
     try {
-      const startTime = Date.now();
       const redPacketResult = await initInfo(currentChannelId || '', redPacketId);
-
-      const diffTime = Date.now() - startTime;
-      if (diffTime < 500) {
-        await sleep(500 - diffTime);
-      }
 
       const isJumpToDetail =
         redPacketResult.isCurrentUserGrabbed || (redPacketResult.type === RedPackageTypeEnum.P2P && isMyPacket);
-
-      console.log(redPacketResult, isMyPacket);
 
       if (isJumpToDetail) {
         navigationService.navigate('RedPacketDetails', {

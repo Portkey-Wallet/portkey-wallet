@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   },
   imgDown: {
     height: pTd(140),
-    marginTop: -pTd(40),
+    marginTop: -pTd(42),
     zIndex: 10,
     display: 'flex',
     justifyContent: 'flex-end',

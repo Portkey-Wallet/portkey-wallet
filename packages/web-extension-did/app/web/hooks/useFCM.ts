@@ -41,7 +41,7 @@ export default function useFCM() {
   useEffect(() => {
     if (!isFCMEnabled()) return;
     timerRef.current = setInterval(() => {
-      console.log('report AppStatus update', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
+      // console.log('report AppStatus update', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
       if (!signalrFCM.fcmToken) return;
       if (!signalrFCM.portkeyToken) return;
       if (!signalrFCM.signalr) return;

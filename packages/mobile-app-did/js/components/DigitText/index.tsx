@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   pinContainer: {
-    height: 16,
+    height: pTd(16),
   },
   inputItem: {
     justifyContent: 'center',
@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
     borderColor: defaultColors.error,
   },
   iconStyle: {
-    width: 16,
-    height: 16,
+    width: pTd(16),
+    height: pTd(16),
     backgroundColor: defaultColors.font5,
     borderRadius: 8,
   },
@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
   },
   pinSecureText: {
     backgroundColor: defaultColors.font5,
-    height: 16,
-    width: 16,
-    borderRadius: 8,
+    height: pTd(16),
+    width: pTd(16),
+    borderRadius: pTd(8),
   },
 });

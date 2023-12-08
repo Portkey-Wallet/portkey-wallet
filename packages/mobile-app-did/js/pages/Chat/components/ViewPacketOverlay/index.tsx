@@ -256,7 +256,7 @@ const showViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   Keyboard.dismiss();
   OverlayModal.show(<ViewPacketOverlay {...props} />, {
     position: 'center',
-    animated: false,
+    type: 'zoomOut',
     overlayOpacity: 0,
     containerStyle: {
       marginBottom: 0,

@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   addressWrap: {
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: pTd(6),
     paddingHorizontal: pTd(16),
     paddingVertical: pTd(12),

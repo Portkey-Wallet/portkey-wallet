@@ -113,6 +113,7 @@ export const useRecovery = () => {
       } catch (error: any) {
         console.log('======handleAddGuardian Accelerate error', error);
       }
+      console.log('useRecovery', '');
       dispatch(resetLoginInfoAction());
       dispatch(resetUserGuardianStatus());
       dispatch(setPreGuardianAction());

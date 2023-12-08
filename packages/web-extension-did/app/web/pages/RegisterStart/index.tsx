@@ -235,6 +235,7 @@ export default function RegisterStart() {
               isInitStatus: true,
             }),
           );
+          console.log('registerStart - guardians item', JSON.parse(JSON.stringify(item)));
           dispatch(
             setUserGuardianItemStatus({
               key: item.key,
@@ -269,25 +270,25 @@ export default function RegisterStart() {
 
         const userGuardianStatus = getStoreState().guardians.userGuardianStatus;
         const userGuardianStatusList = Object.values(userGuardianStatus ?? {});
-
+        console.log('onLoginFinish - userGuardianStatusList', JSON.parse(JSON.stringify(userGuardianStatusList)));
         // Google and Apple login-accounts will automatically login
-        const autoVerifiedList: Promise<void>[] = [];
-        userGuardianStatusList.forEach((item) => {
-          if (
-            item.isLoginAccount &&
-            item.guardianAccount === loginInfo.guardianAccount &&
-            [LoginType.Google, LoginType.Apple].includes(item.guardianType)
-          ) {
-            autoVerifiedList.push(
-              socialVerify({
-                operateGuardian: item,
-                originChainId,
-                loginAccount: loginInfo,
-                operationType: OperationTypeEnum.communityRecovery,
-              }),
-            );
-          }
-        });
+        const autoVerifiedList = userGuardianStatusList
+          .filter(
+            (guardian) =>
+              guardian.isLoginAccount &&
+              guardian.guardianAccount === loginInfo.guardianAccount &&
+              [LoginType.Google, LoginType.Apple].includes(guardian.guardianType),
+          )
+          .map((item) =>
+            socialVerify({
+              operateGuardian: item,
+              originChainId,
+              loginAccount: loginInfo,
+              operationType: OperationTypeEnum.communityRecovery,
+            }),
+          );
+
+        console.log('autoVerifiedList', JSON.parse(JSON.stringify(autoVerifiedList)));
         await Promise.all(autoVerifiedList);
 
         if (

@@ -99,6 +99,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
               isInitStatus: true,
             }),
           );
+          console.log('guardianItem - guardians item', JSON.parse(JSON.stringify(item)));
           dispatch(
             setUserGuardianItemStatus({
               key: item.key,
@@ -151,6 +152,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
               isInitStatus: true,
             }),
           );
+          console.log('guardianItem - guardians item 2', JSON.parse(JSON.stringify(item)));
           dispatch(
             setUserGuardianItemStatus({
               key: item.key,

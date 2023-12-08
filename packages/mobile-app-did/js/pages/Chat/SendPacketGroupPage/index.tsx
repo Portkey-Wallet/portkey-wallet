@@ -1,12 +1,10 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import PageContainer from 'components/PageContainer';
 import GStyles from 'assets/theme/GStyles';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { FontStyles } from 'assets/theme/styles';
+import { StyleSheet, View } from 'react-native';
 import { GroupRedPacketTabEnum } from '../types';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
-import fonts from 'assets/theme/fonts';
 import { TextM } from 'components/CommonText';
 import SendRedPacketGroupSection, { ValuesType } from '../components/SendRedPacketGroupSection';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
@@ -27,12 +25,7 @@ import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { checkIsUserCancel, handleErrorMessage } from '@portkey-wallet/utils';
 import myEvents from 'utils/deviceEvent';
 import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
-
-type TabItemType = {
-  name: string;
-  type: GroupRedPacketTabEnum;
-  component: JSX.Element;
-};
+import CommonTouchableTabs, { TabItemType } from 'components/CommonTouchableTabs';
 
 export default function SendPacketGroupPage() {
   const currentChannelId = useCurrentChannelId();
@@ -143,7 +136,7 @@ export default function SendPacketGroupPage() {
     ],
   );
 
-  const tabList: TabItemType[] = useMemo(
+  const tabList: TabItemType<GroupRedPacketTabEnum>[] = useMemo(
     () => [
       {
         name: GroupRedPacketTabEnum.Random,
@@ -186,21 +179,7 @@ export default function SendPacketGroupPage() {
       containerStyles={styles.containerStyles}>
       <KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.scrollStyle}>
         <View style={[GStyles.flexRow, GStyles.alignCenter]}>
-          <View style={styles.tabHeader}>
-            {tabList.map(tabItem => (
-              <TouchableOpacity
-                key={tabItem.name}
-                onPress={() => {
-                  onTabPress(tabItem.type);
-                }}>
-                <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
-                  <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
-                    {tabItem.name}
-                  </TextM>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <CommonTouchableTabs tabList={tabList} onTabPress={onTabPress} selectTab={selectTab} />
         </View>
         <View style={GStyles.flex1}>{tabList.find(item => item.type === selectTab)?.component}</View>
         <TextM style={styles.tips}>
@@ -223,38 +202,6 @@ const styles = StyleSheet.create({
   scrollStyle: {
     minHeight: '100%',
     ...GStyles.paddingArg(16, 20),
-  },
-  tabHeader: {
-    width: pTd(190),
-    backgroundColor: defaultColors.bg18,
-    borderRadius: pTd(6),
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    ...GStyles.paddingArg(3),
-    marginBottom: pTd(32),
-  },
-  tabWrap: {
-    width: pTd(88),
-    height: pTd(30),
-    borderRadius: pTd(6),
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  selectTabStyle: {
-    shadowColor: defaultColors.shadow1,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.09,
-    shadowRadius: 4,
-    elevation: 2,
-    backgroundColor: defaultColors.bg1,
-  },
-  selectTabTextStyle: {
-    color: defaultColors.font5,
-    ...fonts.mediumFont,
   },
   tips: {
     marginTop: pTd(40),

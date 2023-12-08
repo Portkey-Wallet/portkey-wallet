@@ -20,12 +20,7 @@ import CommonToast from 'components/CommonToast';
 import { useSecuritySafeCheckAndToast } from 'hooks/security';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppBuyButtonShow } from 'hooks/cms';
-
-type TabItemType = {
-  name: string;
-  type: PaymentTypeEnum;
-  component: JSX.Element;
-};
+import { TabItemType } from 'components/CommonTouchableTabs';
 
 const tabList: TabItemType[] = [
   {
@@ -116,15 +111,13 @@ export default function BuyHome() {
         <View style={styles.tabHeader}>
           {tabList.map(tabItem => (
             <TouchableOpacity
+              activeOpacity={0.8}
               key={tabItem.name}
-              onPress={() => {
-                onTabPress(tabItem.type);
-              }}>
-              <View style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
-                <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
-                  {tabItem.name}
-                </TextM>
-              </View>
+              onPress={() => onTabPress(tabItem.type)}
+              style={[styles.tabWrap, selectTab === tabItem.type && styles.selectTabStyle]}>
+              <TextM style={[FontStyles.font7, selectTab === tabItem.type && styles.selectTabTextStyle]}>
+                {tabItem.name}
+              </TextM>
             </TouchableOpacity>
           ))}
         </View>

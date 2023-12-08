@@ -9,30 +9,20 @@ import { useLanguage } from 'i18n/hooks';
 import { useGuardiansInfo } from 'hooks/store';
 import GuardianItem from 'pages/Guardian/components/GuardianItem';
 import Touchable from 'components/Touchable';
-import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
+import { useRefreshGuardianList } from 'hooks/guardian';
 import useEffectOnce from 'hooks/useEffectOnce';
 import GStyles from 'assets/theme/GStyles';
 
 export default function GuardianHome() {
   const { t } = useLanguage();
 
-  const { userGuardiansList } = useGuardiansInfo();
+  const { userGuardiansList, verifierMap } = useGuardiansInfo();
   const guardianList = useMemo(() => {
     if (!userGuardiansList) return [];
     return [...userGuardiansList].reverse();
   }, [userGuardiansList]);
 
-  const getVerifierServers = useGetVerifierServers();
-  const refreshGuardiansList = useRefreshGuardiansList();
-
-  const init = useCallback(async () => {
-    try {
-      await getVerifierServers();
-      refreshGuardiansList();
-    } catch (error) {
-      console.log(error, '==error');
-    }
-  }, [getVerifierServers, refreshGuardiansList]);
+  const { init } = useRefreshGuardianList();
   useEffectOnce(() => {
     init();
   });
@@ -42,6 +32,15 @@ export default function GuardianHome() {
     [],
   );
 
+  const isAddAllowed = useMemo(() => {
+    if (guardianList.length === 0) return false;
+    const verifierNum = Object.keys(verifierMap || {}).length;
+    const guardianVerifierMap: Record<string, boolean> = {};
+    guardianList.forEach(item => (guardianVerifierMap[item.verifier?.id || ''] = true));
+    const guardianVerifierNum = Object.keys(guardianVerifierMap).length;
+    return verifierNum > guardianVerifierNum;
+  }, [guardianList, verifierMap]);
+
   return (
     <PageContainer
       safeAreaColor={['blue', 'white']}
@@ -49,13 +48,15 @@ export default function GuardianHome() {
       containerStyles={pageStyles.pageWrap}
       scrollViewProps={{ disabled: false }}
       rightDom={
-        <TouchableOpacity
-          style={{ padding: pTd(16) }}
-          onPress={() => {
-            navigationService.navigate('GuardianEdit');
-          }}>
-          <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
-        </TouchableOpacity>
+        isAddAllowed && (
+          <TouchableOpacity
+            style={{ padding: pTd(16) }}
+            onPress={() => {
+              navigationService.navigate('GuardianEdit');
+            }}>
+            <Svg icon="add1" size={pTd(20)} color={defaultColors.font2} />
+          </TouchableOpacity>
+        )
       }>
       <View>
         {guardianList.map((guardian, idx) => (

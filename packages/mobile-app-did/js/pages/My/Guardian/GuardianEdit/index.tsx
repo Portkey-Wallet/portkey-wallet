@@ -50,6 +50,7 @@ import { cancelLoginAccount } from 'utils/guardian';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import myEvents from 'utils/deviceEvent';
 import { ChainId } from '@portkey-wallet/types';
+import { useRefreshGuardiansList } from 'hooks/guardian';
 
 type RouterParams = {
   guardian?: UserGuardianItem;
@@ -70,6 +71,7 @@ const GuardianEdit: React.FC = () => {
   const originChainId = useOriginChainId();
   const { caHash, address: managerAddress } = useCurrentWalletInfo();
   const getCurrentCAContract = useGetCurrentCAContract();
+  const refreshGuardiansList = useRefreshGuardiansList();
 
   const { guardian: editGuardian, isEdit = false, accelerateChainId = originChainId } = useRouterParams<RouterParams>();
 
@@ -79,8 +81,8 @@ const GuardianEdit: React.FC = () => {
   const [selectedType, setSelectedType] = useState<TypeItemType>();
   const [selectedVerifier, setSelectedVerifier] = useState<VerifierItem>();
   const [account, setAccount] = useState<string>();
-  const [guardianTypeError, setGuardianTypeError] = useState<ErrorType>({ ...INIT_HAS_ERROR });
-  const [guardianError, setGuardianError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
+  const [guardianAccountError, setGuardianAccountError] = useState<ErrorType>({ ...INIT_HAS_ERROR });
+  const [verifierError, setVerifierError] = useState<ErrorType>({ ...INIT_NONE_ERROR });
   const { localPhoneCountryCode: country } = usePhoneCountryCode();
   const { appleSign } = useAppleAuthentication();
   const { googleSign } = useGoogleAuthentication();
@@ -103,55 +105,51 @@ const GuardianEdit: React.FC = () => {
 
   const onAccountChange = useCallback((value: string) => {
     setAccount(value);
-    setGuardianTypeError({ ...INIT_NONE_ERROR });
+    setGuardianAccountError({ ...INIT_NONE_ERROR });
   }, []);
 
   const onChooseVerifier = useCallback((item: VerifierItem) => {
-    setGuardianError({ ...INIT_NONE_ERROR });
+    setVerifierError({ ...INIT_NONE_ERROR });
     setSelectedVerifier(item);
   }, []);
 
   const checkCurGuardianRepeat = useCallback(() => {
-    if (!selectedType) {
-      return { ...INIT_HAS_ERROR };
+    if (!selectedType) return false;
+
+    let guardiansList = userGuardiansList || [];
+    if (isEdit) {
+      guardiansList = guardiansList.filter(guardian => guardian.key !== editGuardian?.key);
     }
+    let isValid = true;
+    let guardianAccount: string | undefined;
     if ([LoginType.Email, LoginType.Phone].includes(selectedType.value)) {
-      let _account = account;
-
       if (selectedType.value === LoginType.Phone && !isEdit) {
-        _account = `+${country?.code}${account}`;
-      }
-
-      if (
-        userGuardiansList?.findIndex(
-          guardian =>
-            guardian.guardianType === selectedType?.value &&
-            guardian.guardianAccount === _account &&
-            guardian.verifier?.id === selectedVerifier?.id,
-        ) !== -1
-      ) {
-        return { ...INIT_HAS_ERROR, errorMsg: t('This guardian already exists') };
+        guardianAccount = `+${country?.code}${account}`;
       } else {
-        return { ...INIT_NONE_ERROR };
+        guardianAccount = account;
       }
+    } else {
+      // LoginType.Apple & LoginType.Google
+      guardianAccount = isEdit ? editGuardian?.guardianAccount : thirdPartyInfoRef.current?.id;
     }
 
-    if ([LoginType.Apple, LoginType.Google].includes(selectedType.value)) {
-      const guardianAccount = isEdit ? editGuardian?.guardianAccount : thirdPartyInfoRef.current?.id;
-      if (
-        userGuardiansList?.findIndex(
-          guardian =>
-            guardian.guardianType === selectedType?.value &&
-            guardian.guardianAccount === guardianAccount &&
-            guardian.verifier?.id === selectedVerifier?.id,
-        ) !== -1
-      ) {
-        return { ...INIT_HAS_ERROR, errorMsg: t('This guardian already exists') };
-      } else {
-        return { ...INIT_NONE_ERROR };
-      }
+    if (
+      guardiansList.find(item => item.guardianType === selectedType?.value && item.guardianAccount === guardianAccount)
+    ) {
+      isValid = false;
+      setGuardianAccountError({ ...INIT_HAS_ERROR, errorMsg: t('The account already exists') });
+    } else {
+      setGuardianAccountError({ ...INIT_NONE_ERROR });
     }
-    return { ...INIT_NONE_ERROR };
+
+    if (guardiansList.find(item => item.verifier?.id === selectedVerifier?.id)) {
+      isValid = false;
+      setVerifierError({ ...INIT_HAS_ERROR, errorMsg: t('The verifier already exists') });
+    } else {
+      setVerifierError({ ...INIT_NONE_ERROR });
+    }
+
+    return isValid;
   }, [account, country?.code, editGuardian, isEdit, selectedType, selectedVerifier?.id, t, userGuardiansList]);
 
   const thirdPartyConfirm = useCallback(
@@ -202,18 +200,17 @@ const GuardianEdit: React.FC = () => {
     if (guardianType === LoginType.Email) {
       const guardianErrorMsg = checkEmail(account);
       if (guardianErrorMsg) {
-        setGuardianTypeError({
+        setGuardianAccountError({
           isError: true,
           errorMsg: guardianErrorMsg,
         });
-        setGuardianError({ ...INIT_NONE_ERROR });
+        setVerifierError({ ...INIT_NONE_ERROR });
         return;
       }
     }
 
-    const _guardianError = checkCurGuardianRepeat();
-    setGuardianError(_guardianError);
-    if (_guardianError.isError) return;
+    const isValid = checkCurGuardianRepeat();
+    if (!isValid) return;
 
     if ([LoginType.Apple, LoginType.Google].includes(guardianType)) {
       if (!thirdPartyInfoRef.current) return;
@@ -294,9 +291,8 @@ const GuardianEdit: React.FC = () => {
   ]);
 
   const onApproval = useCallback(() => {
-    const _guardianError = checkCurGuardianRepeat();
-    setGuardianError(_guardianError);
-    if (_guardianError.isError || !editGuardian || !selectedVerifier) return;
+    const isValid = checkCurGuardianRepeat();
+    if (!isValid || !editGuardian || !selectedVerifier) return;
     dispatch(setPreGuardianAction(editGuardian));
 
     navigationService.navigate('GuardianApproval', {
@@ -393,7 +389,7 @@ const GuardianEdit: React.FC = () => {
     setAccount(undefined);
     setFirstName(undefined);
     thirdPartyInfoRef.current = undefined;
-    setGuardianError({ ...INIT_NONE_ERROR });
+    setGuardianAccountError({ ...INIT_NONE_ERROR });
   }, []);
 
   const onAppleSign = useCallback(async () => {
@@ -464,12 +460,15 @@ const GuardianEdit: React.FC = () => {
       <>
         <TextM style={pageStyles.accountLabel}>Guardian Google</TextM>
         {account ? (
-          <View style={pageStyles.thirdPartAccount}>
-            {firstName && <TextM style={pageStyles.firstNameStyle}>{firstName}</TextM>}
-            <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
-              {account}
-            </TextS>
-          </View>
+          <>
+            <View style={pageStyles.thirdPartAccount}>
+              {firstName && <TextM style={pageStyles.firstNameStyle}>{firstName}</TextM>}
+              <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
+                {account}
+              </TextS>
+            </View>
+            <TextM>{guardianAccountError.errorMsg}</TextM>
+          </>
         ) : (
           <Touchable onPress={onGoogleSign}>
             <View style={pageStyles.oAuthBtn}>
@@ -479,19 +478,22 @@ const GuardianEdit: React.FC = () => {
         )}
       </>
     );
-  }, [account, firstName, onGoogleSign]);
+  }, [account, firstName, guardianAccountError.errorMsg, onGoogleSign]);
 
   const renderAppleAccount = useCallback(() => {
     return (
       <>
         <TextM style={pageStyles.accountLabel}>Guardian Apple</TextM>
         {account ? (
-          <View style={pageStyles.thirdPartAccount}>
-            {firstName && <TextM style={pageStyles.firstNameStyle}>{firstName}</TextM>}
-            <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
-              {account}
-            </TextS>
-          </View>
+          <>
+            <View style={pageStyles.thirdPartAccount}>
+              {firstName && <TextM style={pageStyles.firstNameStyle}>{firstName}</TextM>}
+              <TextS style={[!!firstName && FontStyles.font3]} numberOfLines={1}>
+                {account}
+              </TextS>
+            </View>
+            <TextM>{guardianAccountError.errorMsg}</TextM>
+          </>
         ) : (
           <Touchable onPress={onAppleSign}>
             <View style={pageStyles.oAuthBtn}>
@@ -501,7 +503,7 @@ const GuardianEdit: React.FC = () => {
         )}
       </>
     );
-  }, [account, firstName, onAppleSign]);
+  }, [account, firstName, guardianAccountError.errorMsg, onAppleSign]);
 
   const renderGuardianAccount = useCallback(() => {
     if (isEdit) {
@@ -509,6 +511,7 @@ const GuardianEdit: React.FC = () => {
         <View style={pageStyles.accountWrap}>
           <TextM style={pageStyles.accountLabel}>Guardian {LoginType[editGuardian?.guardianType || 0]}</TextM>
           <GuardianAccountItem guardian={editGuardian} />
+          <TextM>{guardianAccountError.errorMsg}</TextM>
         </View>
       );
     }
@@ -526,7 +529,7 @@ const GuardianEdit: React.FC = () => {
             value={account}
             placeholder={t('Enter email')}
             onChangeText={onAccountChange}
-            errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
+            errorMessage={guardianAccountError.isError ? guardianAccountError.errorMsg : ''}
             keyboardType="email-address"
           />
         );
@@ -536,7 +539,7 @@ const GuardianEdit: React.FC = () => {
             label={t('Guardian Phone')}
             theme="white-bg"
             value={account}
-            errorMessage={guardianTypeError.isError ? guardianTypeError.errorMsg : ''}
+            errorMessage={guardianAccountError.isError ? guardianAccountError.errorMsg : ''}
             onChangeText={onAccountChange}
             selectCountry={country}
           />
@@ -553,8 +556,8 @@ const GuardianEdit: React.FC = () => {
     account,
     country,
     editGuardian,
-    guardianTypeError.errorMsg,
-    guardianTypeError.isError,
+    guardianAccountError.errorMsg,
+    guardianAccountError.isError,
     isEdit,
     onAccountChange,
     renderAppleAccount,
@@ -607,9 +610,8 @@ const GuardianEdit: React.FC = () => {
           onPress={() => {
             VerifierSelectOverlay.showList({
               id: selectedVerifier?.id,
-              labelAttrName: 'name',
-              list: verifierList,
               callBack: onChooseVerifier,
+              editGuardian: editGuardian,
             });
           }}
           titleLeftElement={
@@ -628,7 +630,7 @@ const GuardianEdit: React.FC = () => {
           title={selectedVerifier?.name || t('Select guardian verifiers')}
           rightElement={<Svg size={pTd(20)} icon="down-arrow" />}
         />
-        {guardianError.isError && <TextS style={pageStyles.errorTips}>{guardianError.errorMsg || ''}</TextS>}
+        {verifierError.isError && <TextS style={pageStyles.errorTips}>{verifierError.errorMsg || ''}</TextS>}
       </View>
 
       <View>

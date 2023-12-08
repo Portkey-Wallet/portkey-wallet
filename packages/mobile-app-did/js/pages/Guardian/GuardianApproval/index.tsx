@@ -45,7 +45,7 @@ import { ChainId } from '@portkey-wallet/types';
 import { useLatestRef } from '@portkey-wallet/hooks';
 import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security';
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
-import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
+import { useRefreshGuardianList } from 'hooks/guardian';
 import { SendResult } from '@portkey-wallet/contracts/types';
 
 export type RouterParams = {
@@ -96,16 +96,7 @@ export default function GuardianApproval() {
 
   const lastOnEmitDapp = useLatestRef(onEmitDapp);
 
-  const getVerifierServers = useGetVerifierServers();
-  const refreshGuardiansList = useRefreshGuardiansList();
-  const initGuardian = useCallback(async () => {
-    try {
-      await getVerifierServers();
-      refreshGuardiansList();
-    } catch (error) {
-      console.log(error, 'GuardianApprove initGuardian ==error');
-    }
-  }, [getVerifierServers, refreshGuardiansList]);
+  const { init: initGuardian } = useRefreshGuardianList();
 
   const { userGuardiansList: storeUserGuardiansList, preGuardian } = useGuardiansInfo();
 
@@ -273,7 +264,6 @@ export default function GuardianApproval() {
         } else {
           navigationService.pop(2);
         }
-        refreshGuardiansList();
       }
     } else {
       CommonToast.fail(req?.error?.message || '');
@@ -288,7 +278,6 @@ export default function GuardianApproval() {
     guardiansStatus,
     managerAddress,
     originChainId,
-    refreshGuardiansList,
     t,
     userGuardiansList,
     verifierInfo,

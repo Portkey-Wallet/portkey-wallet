@@ -6,7 +6,7 @@ import { getCaHolderInfoAsync } from '@portkey-wallet/store/store-ca/wallet/acti
 import { useCallback, useEffect, useRef } from 'react';
 import { useAppDispatch } from 'store/hooks';
 import { useGetCurrentCAViewContract } from './contract';
-import { useGetGuardiansInfoWriteStore, useGetVerifierServers, useRegisterRefreshGuardianList } from './guardian';
+import { useGetGuardiansInfoWriteStore, useGetVerifierServers, useRefreshGuardianList } from './guardian';
 import useEffectOnce from './useEffectOnce';
 import { useCurrentNetwork } from '@portkey-wallet/hooks/network';
 import { reportUserCurrentNetwork } from 'utils/analysisiReport';
@@ -41,7 +41,7 @@ export default function useInitData() {
 
   const { refresh: loadBookmarkList } = useBookmarkList();
   const initIM = useInitIM();
-  const initGuardianList = useRegisterRefreshGuardianList();
+  const { init: initGuardianList } = useRefreshGuardianList(true);
 
   const loadIM = useCallback(async () => {
     if (!pin) return;

@@ -10,6 +10,7 @@ import { request } from '@portkey-wallet/api/api-did';
 import { handleErrorMessage, handleErrorCode } from '@portkey-wallet/utils';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import myEvents from 'utils/deviceEvent';
+import { GuardiansInfo } from '@portkey-wallet/types/types-ca/guardian';
 
 export const useGetHolderInfoByViewContract = () => {
   const getCurrentCAViewContract = useGetCurrentCAViewContract();
@@ -62,7 +63,7 @@ export const useGetGuardiansInfoWriteStore = () => {
   const getGetGuardiansInfo = useGetGuardiansInfo();
   return useCallback(
     async (loginInfo: LoginInfo, chainInfo?: ChainItemType) => {
-      const guardiansInfo = await getGetGuardiansInfo(loginInfo, chainInfo);
+      const guardiansInfo: GuardiansInfo = await getGetGuardiansInfo(loginInfo, chainInfo);
       dispatch(setGuardiansAction(guardiansInfo));
       return guardiansInfo;
     },
@@ -93,18 +94,19 @@ export const useRefreshGuardiansList = () => {
   const getGuardiansInfoWriteStore = useGetGuardiansInfoWriteStore();
   const refreshGuardiansList = useCallback(async () => {
     try {
-      await getGuardiansInfoWriteStore({
+      return await getGuardiansInfoWriteStore({
         caHash,
       });
     } catch (error) {
       console.log(error);
     }
+    return undefined;
   }, [caHash, getGuardiansInfoWriteStore]);
 
   return refreshGuardiansList;
 };
 
-export const useRegisterRefreshGuardianList = () => {
+export const useRefreshGuardianList = (isInit = false) => {
   const refreshGuardiansList = useRefreshGuardiansList();
   const getVerifierServers = useGetVerifierServers();
   const init = useCallback(async () => {
@@ -113,18 +115,23 @@ export const useRegisterRefreshGuardianList = () => {
       await refreshGuardiansList();
       console.log('GuardianList init: success');
     } catch (error) {
-      console.log(error, '===useRegisterRefreshGuardianList init: error');
+      console.log(error, '===useRefreshGuardianList init: error');
     }
   }, [getVerifierServers, refreshGuardiansList]);
 
   useEffect(() => {
+    if (!isInit) return;
     const listener = myEvents.refreshGuardiansList.addListener(() => {
       refreshGuardiansList();
     });
     return () => {
       listener.remove();
     };
-  }, [refreshGuardiansList]);
+  }, [isInit, refreshGuardiansList]);
 
-  return init;
+  return {
+    init,
+    refreshGuardiansList,
+    getVerifierServers,
+  };
 };

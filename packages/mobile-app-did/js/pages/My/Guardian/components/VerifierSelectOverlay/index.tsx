@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import OverlayModal from 'components/OverlayModal';
 import { Keyboard, ScrollView, View } from 'react-native';
 import Touchable from 'components/Touchable';
@@ -10,36 +10,38 @@ import { pTd } from 'utils/unit';
 import { useLanguage } from 'i18n/hooks';
 import { VerifierImage } from 'pages/Guardian/components/VerifierImage';
 import { ModalBody } from 'components/ModalBody';
+import { useGuardiansInfo } from 'hooks/store';
+import { VerifierItem } from '@portkey-wallet/types/verifier';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 
-type ValueType = string | number;
-type DefaultValueType = string;
-
-type ItemTypeBase<T extends ValueType = DefaultValueType> = {
-  id: T;
-  [key: string]: any;
+type SelectListProps = {
+  id?: string;
+  editGuardian?: UserGuardianItem;
+  callBack: (item: VerifierItem) => void;
 };
 
-type SelectListProps<ItemType extends ItemTypeBase<ItemValueType>, ItemValueType extends ValueType> = {
-  id?: ItemValueType;
-  list: Array<ItemType>;
-  callBack: (item: ItemType) => void;
-  labelAttrName?: string;
-};
-
-const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType extends ValueType>({
-  list,
-  callBack,
-  id,
-  labelAttrName = 'id',
-}: SelectListProps<ItemType, ItemValueType>) => {
+const SelectList = ({ callBack, id, editGuardian }: SelectListProps) => {
   const { t } = useLanguage();
+  const { verifierMap, userGuardiansList } = useGuardiansInfo();
+  const verifierList = useMemo(() => (verifierMap ? Object.values(verifierMap) : []), [verifierMap]);
+  const disabledMap = useMemo(() => {
+    if (!userGuardiansList) return {};
+    const guardianList = userGuardiansList.filter(item => item.key !== editGuardian?.key);
+    const map: Record<string, boolean> = {};
+    guardianList.forEach(item => {
+      map[item.verifier?.id || ''] = true;
+    });
+    return map;
+  }, [editGuardian, userGuardiansList]);
 
   return (
     <ModalBody title={t('Select verifiers')} modalBodyType="bottom">
       <ScrollView alwaysBounceVertical={false}>
-        {list.map(item => {
+        {verifierList.map(item => {
           return (
             <Touchable
+              style={disabledMap[item.id] && { opacity: 0.6 }}
+              disabled={disabledMap[item.id]}
               key={item.id}
               onPress={() => {
                 OverlayModal.hide();
@@ -47,13 +49,13 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
               }}>
               <View style={styles.itemRow}>
                 <VerifierImage
-                  label={item[labelAttrName]}
+                  label={item.name}
                   style={styles.verifierImageStyle}
                   size={pTd(35.5)}
                   uri={item.imageUrl}
                 />
                 <View style={styles.itemContent}>
-                  <TextL>{item[labelAttrName]}</TextL>
+                  <TextL>{item.name}</TextL>
                   {id !== undefined && id === item.id && (
                     <Svg iconStyle={styles.itemIcon} icon="selected" size={pTd(24)} />
                   )}
@@ -67,11 +69,9 @@ const SelectList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType 
   );
 };
 
-const showList = <ItemType extends ItemTypeBase<ItemValueType>, ItemValueType extends ValueType = DefaultValueType>(
-  params: SelectListProps<ItemType, ItemValueType>,
-) => {
+const showList = (params: SelectListProps) => {
   Keyboard.dismiss();
-  OverlayModal.show(<SelectList<ItemType, ItemValueType> {...params} />, {
+  OverlayModal.show(<SelectList {...params} />, {
     position: 'bottom',
   });
 };

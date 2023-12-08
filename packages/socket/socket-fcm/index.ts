@@ -47,7 +47,7 @@ class SignalrFCM extends BaseSignalr {
   };
 
   public reportAppStatus = async (status: AppStatusUnit, unReadCount: number) => {
-    console.log('reportAppStatus', { status, unReadCount }, 'deviceId', this.deviceId, 'deviceInfo', this.deviceInfo);
+    // console.log('reportAppStatus', { status, unReadCount }, 'deviceId', this.deviceId, 'deviceInfo', this.deviceInfo);
     return this.signalr?.invoke('reportAppStatus', { status, unReadCount });
   };
 

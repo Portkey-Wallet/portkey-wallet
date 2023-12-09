@@ -192,6 +192,7 @@ class Content {
       .then((result) => {
         delete message.payload;
         let response;
+        if (!result) return;
         if (result.error === 0) {
           response = generateNormalResponse({
             ...message,

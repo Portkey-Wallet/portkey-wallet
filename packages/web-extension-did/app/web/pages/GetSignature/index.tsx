@@ -11,6 +11,7 @@ import { closePrompt } from 'utils/lib/serviceWorkerAction';
 import { ResponseCode } from '@portkey/provider-types';
 import { getWallet } from '@portkey-wallet/utils/aelf';
 import ImageDisplay from 'pages/components/ImageDisplay';
+import { showValueToStr } from '@portkey-wallet/utils/byteConversion';
 import './index.less';
 
 export default function GetSignature() {
@@ -72,7 +73,7 @@ export default function GetSignature() {
       <div className="title flex-center">{t('Sign Message')}</div>
       <div className="message">
         <div>Message</div>
-        <div className="data">{payload?.data}</div>
+        <div className="data">{showValueToStr(payload?.data)}</div>
       </div>
       <div className="btn flex-between">
         <Button

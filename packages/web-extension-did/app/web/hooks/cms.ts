@@ -1,4 +1,4 @@
-import { useBuyButtonShow, useEntrance, useBridgeButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import { useBuyButtonShow, useETransShow, useEntrance, useBridgeButtonShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { IEntranceMatchValueConfig } from '@portkey-wallet/types/types-ca/cms';
 
 import { VersionDeviceType } from '@portkey-wallet/types/types-ca/device';
@@ -22,6 +22,10 @@ export const useExtensionBuyButtonShow = () => {
   return useBuyButtonShow(config);
 };
 
+export const useExtensionETransShow = () => {
+  const config = useEntranceConfig();
+  return useETransShow(config);
+};
 export const useExtensionBridgeButtonShow = () => {
   const config = useEntranceConfig();
   return useBridgeButtonShow(config);

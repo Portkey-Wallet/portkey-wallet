@@ -49,12 +49,20 @@ export const initNotifications = () => {
 };
 
 export const setBadge = async (count: number) => {
+  const currentBadgeCount = await Notifications.getBadgeCountAsync();
+  if (currentBadgeCount === count) return;
+
   return await Notifications.setBadgeCountAsync(count);
+};
+
+export const resetBadge = async () => {
+  return await Notifications.setBadgeCountAsync(0);
 };
 
 export default {
   initNotifications,
   setBadge,
+  resetBadge,
   onDisplayNotification,
   onUpdateNotification,
 };

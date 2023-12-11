@@ -30,13 +30,10 @@ export const useNotifyAction = () => {
 
             try {
               const { channelId = '', channelType } = data;
+              if (channelType === ChannelTypeEnum.GROUP) await jumpToChatGroupDetails({ channelUuid: channelId });
+              if (channelType === ChannelTypeEnum.P2P) await jumpToChatDetails({ channelUuid: channelId });
+
               myEvents.navToBottomTab.emit({ tabName: ChatTabName });
-              if (channelType === ChannelTypeEnum.GROUP) {
-                // TODO: if group delete
-                await jumpToChatGroupDetails({ channelUuid: channelId });
-              } else {
-                await jumpToChatDetails({ channelUuid: channelId });
-              }
             } catch (error) {
               console.log('error', error);
             } finally {

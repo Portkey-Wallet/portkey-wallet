@@ -3,6 +3,7 @@ export enum MessageTypeWeb {
   'TEXT' = 'text',
   // 'CARD' = '',
   'IMAGE' = 'image',
+  'REDPACKAGE-CARD' = 'red-package-card',
   '' = '',
   // 'ANNOUNCEMENT' = '',
   // 'BATCH_TRANSFER' = '',

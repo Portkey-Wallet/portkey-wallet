@@ -1,4 +1,11 @@
-import im, { utils, MessageType, Message, TriggerMessageEventActionEnum, ChannelStatusEnum } from '@portkey-wallet/im';
+import im, {
+  MessageType,
+  Message,
+  TriggerMessageEventActionEnum,
+  ChannelStatusEnum,
+  MessageTypeEnum,
+  RedPackageStatusEnum,
+} from '@portkey-wallet/im';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { randomId } from '@portkey-wallet/utils';
 import { MESSAGE_LIST_LIMIT, SEARCH_CHANNEL_LIMIT } from '@portkey-wallet/constants/constants-ca/im';
@@ -169,7 +176,7 @@ export const useSendChannelMessage = () => {
             channelId: channelId,
             value: {
               lastMessageType: msgObj.type,
-              lastMessageContent: msgObj.content,
+              lastMessageContent: msgObj.parsedContent,
               lastPostAt: msgObj.createAt,
             },
           }),
@@ -294,7 +301,7 @@ export const useDeleteMessage = (channelId: string) => {
                 channelId: channelId,
                 value: {
                   lastMessageType: nextMsg.type,
-                  lastMessageContent: nextMsg.content,
+                  lastMessageContent: nextMsg.parsedContent,
                 },
               }),
             );
@@ -344,7 +351,7 @@ export const useChannelMessageList = (channelId: string) => {
         const hasNextValue = length >= MESSAGE_LIST_LIMIT;
         setHasNext(hasNextValue);
 
-        const list: Message[] = result.data.map((item: any) => utils.messageParser(item));
+        const list: Message[] = result.data.map((item: any) => messageParser(item));
         if (isInit) {
           dispatch(
             setChannelMessageList({
@@ -411,6 +418,8 @@ export const useChannel = (channelId: string) => {
   const info = useChannelItemInfo(channelId);
   const isStranger = useIsStranger(info?.toRelationId || '');
   const { list, next, hasNext, init, loading } = useChannelMessageList(channelId);
+  const listRef = useRef(list);
+  listRef.current = list;
 
   const connectHandler = useCallback(
     async (e: any) => {
@@ -434,7 +443,13 @@ export const useChannel = (channelId: string) => {
     (e: any) => {
       const rawMsg = e['im-message'];
       if (rawMsg.channelUuid !== channelId) return;
-      const parsedMsg = utils.messageParser(rawMsg);
+      if (listRef.current.findIndex(ele => ele.sendUuid === rawMsg.sendUuid) >= 0) return;
+      const parsedMsg = messageParser(rawMsg);
+      if (parsedMsg.type === MessageTypeEnum.REDPACKAGE_CARD) {
+        parsedMsg.redPackage = {
+          viewStatus: RedPackageStatusEnum.UNOPENED,
+        };
+      }
       dispatch(
         addChannelMessage({
           network: networkType,
@@ -449,7 +464,7 @@ export const useChannel = (channelId: string) => {
           channelId: channelId,
           value: {
             lastMessageType: parsedMsg.type,
-            lastMessageContent: parsedMsg.content,
+            lastMessageContent: parsedMsg.parsedContent,
             lastPostAt: parsedMsg.createAt,
           },
         }),

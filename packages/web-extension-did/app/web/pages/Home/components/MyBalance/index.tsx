@@ -43,6 +43,8 @@ import { ETransType } from 'types/eTrans';
 import DisclaimerModal, { IDisclaimerProps, initDisclaimerData } from '../../../components/DisclaimerModal';
 import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
+import { setBadge } from 'utils/FCM';
+import { useFCMEnable } from 'hooks/useFCM';
 
 export interface TransactionResult {
   total: number;
@@ -70,6 +72,8 @@ export default function MyBalance() {
   const { walletInfo } = useCurrentWallet();
   const caAddressInfos = useCaAddressInfoList();
   const { eBridgeUrl = '', eTransferUrl = '' } = useCurrentNetworkInfo();
+  const isFCMEnable = useFCMEnable();
+
   const renderTabsData = useMemo(
     () => [
       {
@@ -138,7 +142,7 @@ export default function MyBalance() {
         address: isNFT ? v?.nftInfo?.tokenContractAddress : v?.tokenInfo?.tokenContractAddress,
         symbol: v.symbol,
         name: v.symbol,
-        imageUrl: isNFT ? v.nftInfo?.imageUrl : '',
+        imageUrl: isNFT ? v.nftInfo?.imageUrl : v.tokenInfo?.imageUrl,
         alias: isNFT ? v.nftInfo?.alias : '',
         tokenId: isNFT ? v.nftInfo?.tokenId : '',
       };
@@ -205,6 +209,10 @@ export default function MyBalance() {
     }
   }, [checkDappIsConfirmed, checkSecurity, eBridgeUrl, originChainId]);
 
+  useEffect(() => {
+    if (!isFCMEnable()) return;
+    setBadge({ value: unreadCount });
+  }, [isFCMEnable, unreadCount]);
   const handleClickETrans = useCallback(
     async (eTransType: ETransType) => {
       const isSafe = await checkSecurity(originChainId);

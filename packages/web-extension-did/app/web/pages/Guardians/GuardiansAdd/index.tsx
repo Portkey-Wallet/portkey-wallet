@@ -16,7 +16,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import { setLoginAccountAction } from 'store/reducers/loginCache/actions';
 import { useCurrentWallet, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import BaseVerifierIcon from 'components/BaseVerifierIcon';
-import { StoreUserGuardianItem, UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { StoreUserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { useTranslation } from 'react-i18next';
 import { verification } from 'utils/api';
 import PhoneInput from '../components/PhoneInput';
@@ -278,7 +278,9 @@ export default function AddGuardian() {
         label: t('Guardian Email'),
       },
       [LoginType.Phone]: {
-        element: <PhoneInput onChange={handlePhoneInputChange} />,
+        element: (
+          <PhoneInput code={phoneValue?.code} phoneNumber={phoneValue?.phoneNumber} onChange={handlePhoneInputChange} />
+        ),
         label: t('Guardian Phone'),
       },
       [LoginType.Google]: {
@@ -290,7 +292,15 @@ export default function AddGuardian() {
         label: t('Guardian Apple'),
       },
     }),
-    [emailVal, handleEmailInputChange, handlePhoneInputChange, renderSocialGuardianAccount, t],
+    [
+      emailVal,
+      handleEmailInputChange,
+      handlePhoneInputChange,
+      phoneValue?.code,
+      phoneValue?.phoneNumber,
+      renderSocialGuardianAccount,
+      t,
+    ],
   );
 
   const handleCommonVerify = useCallback(
@@ -317,7 +327,7 @@ export default function AddGuardian() {
         });
         setLoading(false);
         if (result.verifierSessionId) {
-          const newGuardian: UserGuardianItem = {
+          const newGuardian: StoreUserGuardianItem = {
             isLoginAccount: false,
             verifier: selectVerifierItem,
             guardianAccount,
@@ -330,6 +340,8 @@ export default function AddGuardian() {
             isInitStatus: true,
             identifierHash: '',
             salt: '',
+            phone: phoneValue,
+            social: socialValue,
           };
           dispatch(setCurrentGuardianAction(newGuardian));
           dispatch(setOpGuardianAction(newGuardian));
@@ -346,14 +358,16 @@ export default function AddGuardian() {
     },
     [
       dispatch,
-      originChainId,
       guardianType,
       setLoading,
       userGuardianList,
-      walletInfo,
+      walletInfo.caHash,
       selectVerifierItem,
-      currentChain,
+      currentChain?.chainId,
+      originChainId,
       curKey,
+      phoneValue,
+      socialValue,
       navigate,
       accelerateChainId,
     ],
@@ -403,6 +417,7 @@ export default function AddGuardian() {
         });
       }
       const { guardianIdentifier } = handleVerificationDoc(res.verificationDoc);
+      console.log('guardianAdd - guardians item', JSON.parse(JSON.stringify(curKey)));
       dispatch(
         setUserGuardianItemStatus({
           key: curKey,
@@ -467,6 +482,23 @@ export default function AddGuardian() {
       }) ?? false;
     setExist(isExist);
     if (isExist) return;
+
+    const _opGuardian: StoreUserGuardianItem = {
+      isLoginAccount: false,
+      verifier: selectVerifierItem,
+      guardianAccount: emailVal || '',
+      guardianType: guardianType as LoginType,
+      firstName: socialValue?.name,
+      thirdPartyEmail: socialValue?.value,
+      key: curKey,
+      isInitStatus: true,
+      identifierHash: '',
+      salt: '',
+      phone: phoneValue,
+      social: socialValue,
+    };
+    dispatch(setOpGuardianAction(_opGuardian));
+
     if ([LoginType.Google, LoginType.Apple].includes(guardianType as LoginType)) {
       handleSocialVerify();
     } else {
@@ -487,8 +519,11 @@ export default function AddGuardian() {
     guardianType,
     selectVerifierItem,
     userGuardiansList,
-    emailVal,
+    socialValue,
     curKey,
+    phoneValue,
+    dispatch,
+    emailVal,
     handleSocialVerify,
     verifierName,
     accountShow,

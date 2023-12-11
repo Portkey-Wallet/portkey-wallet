@@ -26,6 +26,7 @@ import ActionSheet from 'components/ActionSheet';
 import { isUserBiometricsError } from 'utils/biometrics';
 import GStyles from 'assets/theme/GStyles';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
+import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 export default function SecurityLock() {
   const { biometrics } = useUser();
   const biometricsReady = useBiometricsReady();
@@ -168,17 +169,25 @@ export default function SecurityLock() {
       listener.remove();
     };
   }, [handleAppStateChange]);
+
+  const timerRef = useRef<NodeJS.Timeout>();
   const onChangeText = useCallback(
     (enterPin: string) => {
       if (enterPin.length === PIN_SIZE) {
         if (!checkPin(enterPin)) {
           digitInput.current?.reset();
           setErrorMessage('Incorrect Pin');
+          timerRef.current && clearTimeout(timerRef.current);
+          timerRef.current = setTimeout(() => {
+            setErrorMessage(undefined);
+          }, VERIFY_INVALID_TIME);
           return;
         }
         handlePassword(enterPin);
       } else if (errorMessage) {
         setErrorMessage(undefined);
+        timerRef.current && clearTimeout(timerRef.current);
+        timerRef.current = undefined;
       }
     },
     [errorMessage, handlePassword],

@@ -1,5 +1,9 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
 import { dateToDayjs } from './time';
+import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
+import { RedPackageTypeEnum } from '@portkey-wallet/im';
+dayjs.extend(utc);
 
 export const formatMessageCountToStr = (num: number): string | undefined => {
   if (!num || num < 0) return undefined;
@@ -34,4 +38,43 @@ export const formatMessageTime = (date?: dayjs.ConfigType): string => {
   } else {
     return messageTime.format('YYYY-MM-DD');
   }
+};
+
+export interface IGenerateRedPackageRawTransaction {
+  caContract: ContractBasic;
+  caHash: string;
+  caAddress: string;
+  contractAddress: string;
+  id: string;
+  symbol: string;
+  totalAmount: string;
+  minAmount: string;
+  expirationTime: string;
+  totalCount: number;
+  type: RedPackageTypeEnum;
+  publicKey: string;
+  signature: string;
+}
+export const generateRedPackageRawTransaction = async (params: IGenerateRedPackageRawTransaction) => {
+  const rawResult = await params.caContract.encodedTx('ManagerForwardCall', {
+    caHash: params.caHash,
+    contractAddress: params.contractAddress,
+    methodName: 'CreateRedPacket',
+    args: {
+      redPacketId: params.id,
+      redPacketSymbol: params.symbol,
+      totalAmount: params.totalAmount,
+      minAmount: params.minAmount,
+      expirationTime: params.expirationTime,
+      totalCount: params.totalCount,
+      redPacketType: params.type,
+      publicKey: params.publicKey,
+      redPacketSignature: params.signature,
+      senderAddress: params.caAddress,
+    },
+  });
+  if (!rawResult || !rawResult.data) {
+    throw new Error('Failed to get raw transaction.');
+  }
+  return rawResult.data;
 };

@@ -40,12 +40,14 @@ export interface UserInfoType {
 export interface WalletState {
   walletAvatar: string; // to be scrapped, please use userInfo.avatar
   walletType: WalletType;
+  /**  @deprecated will be removed, userInfo instead */
   walletName: string;
   currentNetwork: NetworkType;
   walletInfo?: CAWalletInfoType;
   chainList: ChainItemType[];
   chainInfo?: { [key in NetworkType]?: ChainItemType[] };
   originChainId?: ChainId;
+  /**  @deprecated will be removed, userInfo instead */
   userId?: string;
   userInfo?: UserInfoType;
 }

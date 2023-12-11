@@ -107,10 +107,13 @@ const useCheckVerifier = () => {
         const res = await InternalMessage.payload(PortkeyMessageTypes.CHECK_WALLET_STATUS).send();
         setLoading(false);
         if (managerAddress && res.data.privateKey) {
-          onManagerAddressAndQueryResult(res.data.privateKey, {
-            verifierId: verifierItem.id as string,
-            verificationDoc: rst.verificationDoc,
-            signature: rst.signature,
+          onManagerAddressAndQueryResult({
+            pin: res.data.privateKey,
+            verifierParams: {
+              verifierId: verifierItem.id as string,
+              verificationDoc: rst.verificationDoc,
+              signature: rst.signature,
+            },
           });
         } else {
           navigate('/login/set-pin/register');

@@ -12,7 +12,7 @@ import useGuardianList from 'hooks/useGuardianList';
 import ModalTip from 'pages/components/ModalTip';
 import { useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch, useGuardiansInfo, useLoading, useUserInfo } from 'store/Provider/hooks';
+import { useAppDispatch, useGuardiansInfo, useLoading } from 'store/Provider/hooks';
 import { resetLoginInfoAction } from 'store/reducers/loginCache/actions';
 import { GuardianMth } from 'types/guardians';
 import { handleGuardian } from 'utils/sandboxUtil/handleGuardian';
@@ -21,6 +21,8 @@ import { formatAddGuardianValue } from '../utils/formatAddGuardianValue';
 import { formatDelGuardianValue } from '../utils/formatDelGuardianValue';
 import { formatEditGuardianValue } from '../utils/formatEditGuardianValue';
 import { ChainId } from '@portkey-wallet/types';
+import InternalMessage from 'messages/InternalMessage';
+import InternalMessageTypes from 'messages/InternalMessageTypes';
 
 enum MethodType {
   'guardians/add' = GuardianMth.addGuardian,
@@ -31,7 +33,6 @@ enum MethodType {
 export const useRecovery = () => {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
-  const { passwordSeed } = useUserInfo();
   const getGuardianList = useGuardianList();
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
@@ -52,8 +53,15 @@ export const useRecovery = () => {
   return useCallback(async () => {
     try {
       setLoading(true, 'Processing on the chain...');
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
-      if (!currentChain?.endPoint || !privateKey) return message.error('handle guardian error');
+      const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
+      const pin = getSeedResult.data.privateKey;
+      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+
+      if (!currentChain?.endPoint || !privateKey) {
+        console.log('handle guardian error===', currentChain, privateKey);
+        return message.error('handle guardian error');
+      }
+
       let value;
       const _query = state?.split('_')[0];
       switch (_query) {
@@ -69,6 +77,8 @@ export const useRecovery = () => {
         default:
           value = {};
       }
+      if (value?.guardiansApproved?.length === 0) return;
+
       await handleGuardian({
         rpcUrl: currentChain.endPoint,
         chainType: currentNetwork.walletType,
@@ -86,9 +96,9 @@ export const useRecovery = () => {
         if (state && state.indexOf('guardians/add') !== -1 && accelerateChainId !== originChainId) {
           if (!accelerateChainInfo?.endPoint) return;
           const res = await handleGuardian({
-            rpcUrl: accelerateChainInfo.endPoint,
+            rpcUrl: accelerateChainInfo?.endPoint,
             chainType: currentNetwork.walletType,
-            address: accelerateChainInfo.caContractAddress,
+            address: accelerateChainInfo?.caContractAddress,
             privateKey,
             paramsOption: {
               method: GuardianMth.addGuardian,
@@ -103,6 +113,7 @@ export const useRecovery = () => {
       } catch (error: any) {
         console.log('======handleAddGuardian Accelerate error', error);
       }
+      console.log('useRecovery', '');
       dispatch(resetLoginInfoAction());
       dispatch(resetUserGuardianStatus());
       dispatch(setPreGuardianAction());
@@ -121,20 +132,20 @@ export const useRecovery = () => {
       console.log('---op-guardian-error', error);
       const _error = handleErrorMessage(error, 'Something error');
       message.error(_error);
+    } finally {
+      setLoading(false);
     }
   }, [
-    currentChain?.caContractAddress,
-    currentChain?.endPoint,
+    accelerateChainId,
+    accelerateChainInfo?.caContractAddress,
+    accelerateChainInfo?.endPoint,
+    currentChain,
     currentNetwork.walletType,
     dispatch,
     getGuardianList,
     navigate,
     opGuardian,
-    accelerateChainId,
-    accelerateChainInfo?.caContractAddress,
-    accelerateChainInfo?.endPoint,
     originChainId,
-    passwordSeed,
     preGuardian,
     setLoading,
     state,

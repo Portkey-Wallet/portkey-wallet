@@ -19,15 +19,18 @@ import ModalTip from 'pages/components/ModalTip';
 import { CreateAddressLoading, InitLoginLoading } from '@portkey-wallet/constants/constants-ca/wallet';
 import { useTranslation } from 'react-i18next';
 import { getLoginAccount, getLoginCache } from 'utils/lib/SWGetReduxStore';
+import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
+import { useNavigate } from 'react-router';
 
 export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   const { setLoading } = useLoading();
   const { walletInfo } = useCurrentWallet();
   const { userGuardianStatus } = useGuardiansInfo();
   const dispatch = useAppDispatch();
-  const getWalletCAAddressResult = useFetchDidWallet(true);
+  const getWalletCAAddressResult = useFetchDidWallet();
   const network = useCurrentNetworkInfo();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const originChainId = useOriginChainId();
 
@@ -82,12 +85,26 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   );
 
   const requestRecoveryDIDWallet = useCallback(
-    async ({ managerAddress }: { managerAddress: string }) => {
+    async ({
+      managerAddress,
+      guardiansApprovedList,
+    }: {
+      managerAddress: string;
+      guardiansApprovedList?: GuardiansApproved[];
+    }) => {
       const loginAccount = await getLoginAccount();
       if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
         throw 'Missing account!!! Please login/register again';
       }
-      const guardiansApproved = getGuardiansApproved();
+      console.log('guardiansApprovedList====', guardiansApprovedList);
+      let guardiansApproved = getGuardiansApproved();
+      if (
+        guardiansApprovedList &&
+        (!guardiansApproved || (Array.isArray(guardiansApproved) && guardiansApproved?.length === 0))
+      ) {
+        guardiansApproved = guardiansApprovedList;
+      }
+      console.log('guardiansApproved====', guardiansApproved);
       const requestId = randomId();
       const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
       const result = await recoveryDIDWallet({
@@ -111,7 +128,17 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
   );
 
   return useCallback(
-    async (pin: string, verifierParams?: VerifierInfo) => {
+    async ({
+      pin,
+      verifierParams,
+      currentGuardian,
+    }: {
+      pin: string;
+      verifierParams?: VerifierInfo;
+      currentGuardian?: UserGuardianItem;
+    }) => {
+      const verificationType = state === 'register' ? VerificationType.register : VerificationType.communityRecovery;
+
       try {
         const loginAccount = await getLoginAccount();
         if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
@@ -136,15 +163,27 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         if (state === 'register') {
           sessionInfo = await requestRegisterDIDWallet({ managerAddress: _walletInfo.address, verifierParams });
         } else {
-          sessionInfo = await requestRecoveryDIDWallet({ managerAddress: _walletInfo.address });
+          let guardiansApprovedList: GuardiansApproved[] | undefined = undefined;
+          if (verifierParams && currentGuardian) {
+            guardiansApprovedList = [
+              {
+                type: LoginType[currentGuardian.guardianType] as AccountType,
+                identifier: currentGuardian.guardianAccount,
+                verifierId: verifierParams.verifierId,
+                verificationDoc: verifierParams?.verificationDoc,
+                signature: verifierParams.signature,
+                identifierHash: currentGuardian.identifierHash,
+              },
+            ];
+          }
+          sessionInfo = await requestRecoveryDIDWallet({ managerAddress: _walletInfo.address, guardiansApprovedList });
         }
-
         const managerInfo = {
           managerUniqueId: sessionInfo.sessionId,
           requestId: sessionInfo.requestId,
           loginAccount: loginAccount?.guardianAccount,
           type: loginAccount.loginType,
-          verificationType: state === 'register' ? VerificationType.register : VerificationType.communityRecovery,
+          verificationType,
         };
         dispatch(
           setManagerInfo({
@@ -161,7 +200,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         await getWalletCAAddressResult({
           requestId: sessionInfo.requestId,
           clientId: _walletInfo.address,
-          verificationType: state === 'register' ? VerificationType.register : VerificationType.communityRecovery,
+          verificationType,
           managerUniqueId: sessionInfo.sessionId,
           pwd: pin,
           managerAddress: _walletInfo.address,
@@ -174,8 +213,8 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
         console.log(error, 'onCreate==error');
         const walletError = isWalletError(error);
         if (walletError) return message.error(walletError);
-        const errorTip = handleErrorMessage(error, 'Something error');
-        message.error(errorTip);
+        message.error(handleErrorMessage(error, 'Create Wallet Failed'));
+        navigate('/register/start');
       } finally {
         setLoading(false);
       }
@@ -183,6 +222,7 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
     [
       dispatch,
       getWalletCAAddressResult,
+      navigate,
       network.networkType,
       requestRecoveryDIDWallet,
       requestRegisterDIDWallet,

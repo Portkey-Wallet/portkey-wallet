@@ -1,0 +1,28 @@
+@import '../../../../assets/theme/color.less';
+
+.deposit-list-wrapper {
+  font-size: 16px;
+  line-height: 22px;
+  color: @font-11;
+  .deposit-item-container {
+    padding: 20px 24px;
+    gap: 16px;
+    border-bottom: 1px solid @border-2;
+    cursor: pointer;
+    &:last-child {
+      border: none;
+    }
+    .custom-svg {
+      width: 32px;
+      height: 32px;
+    }
+    .deposit-item {
+      font-size: 16px;
+      .deposit-item-desc {
+        font-size: 12px;
+        line-height: 16px;
+        color: @font-13;
+      }
+    }
+  }
+}

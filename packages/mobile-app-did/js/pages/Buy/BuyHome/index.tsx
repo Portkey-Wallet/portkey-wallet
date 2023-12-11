@@ -21,8 +21,9 @@ import { useSecuritySafeCheckAndToast } from 'hooks/security';
 import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 import { useAppBuyButtonShow } from 'hooks/cms';
 import { TabItemType } from 'components/CommonTouchableTabs';
+import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 
-const tabList: TabItemType[] = [
+const tabList: TabItemType<PaymentTypeEnum>[] = [
   {
     name: 'Buy',
     type: PaymentTypeEnum.BUY,
@@ -41,8 +42,10 @@ export default function BuyHome() {
   const { caHash } = useCurrentWalletInfo();
   const securitySafeCheckAndToast = useSecuritySafeCheckAndToast();
 
+  const { toTab } = useRouterParams<{ toTab: PaymentTypeEnum }>();
+
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
-    isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
+    toTab === PaymentTypeEnum.BUY && isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
   );
 
   useEffectOnce(() => {

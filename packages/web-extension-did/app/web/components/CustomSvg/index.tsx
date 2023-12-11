@@ -18,3 +18,5 @@ export default function ({
       {...props}></div>
   );
 }
+
+export type SvgType = keyof typeof svgsList;

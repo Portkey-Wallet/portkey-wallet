@@ -14,7 +14,6 @@ import AddMembersPage from './AddMembersPage';
 import RemoveMembersPage from './RemoveMembersPage';
 import ChatQrCodePage from './ChatQrCodePage';
 import ChatGroupQrCodePage from './ChatGroupQrCodePage';
-import PinnedListPage from './PinnedListPage';
 
 const stackNav = [
   { name: 'ChatHomePage', component: ChatHomePage },
@@ -33,7 +32,6 @@ const stackNav = [
   { name: 'RemoveMembersPage', component: RemoveMembersPage },
   { name: 'ChatQrCodePage', component: ChatQrCodePage },
   { name: 'ChatGroupQrCodePage', component: ChatGroupQrCodePage },
-  { name: 'PinnedListPage', component: PinnedListPage },
 ] as const;
 
 export default stackNav;

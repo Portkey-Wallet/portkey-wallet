@@ -45,7 +45,7 @@ export default function BuyHome() {
   const { toTab } = useRouterParams<{ toTab: PaymentTypeEnum }>();
 
   const [selectTab, setSelectTab] = useState<PaymentTypeEnum>(
-    toTab === PaymentTypeEnum.BUY && isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
+    toTab !== PaymentTypeEnum.SELL && isBuySectionShow ? PaymentTypeEnum.BUY : PaymentTypeEnum.SELL,
   );
 
   useEffectOnce(() => {

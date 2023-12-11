@@ -190,13 +190,17 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
   const socialVerify = useSocialVerify();
   const verifyingHandler = useCallback(
     async (item: UserGuardianItem) => {
-      if (isSocialLogin)
-        return socialVerify({
+      if (isSocialLogin) {
+        const verifiedInfo = await socialVerify({
           operateGuardian: item,
           operationType,
           originChainId,
           loginAccount,
         });
+        verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
+        return;
+      }
+
       dispatch(setCurrentGuardianAction({ ...item, isInitStatus: false }));
       if (query?.includes('guardians')) {
         navigate('/setting/guardians/verifier-account', { state: query });

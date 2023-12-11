@@ -124,7 +124,7 @@ export default class SWEventController {
         apis.tabs.sendMessage(tabId, event, (res) => {
           const { lastError } = apis.runtime;
           if (lastError) SWEventController.unregisterOperator(tabId);
-          console.error('dispatchEvent:tabs.sendMessage', res);
+          console.error('dispatchEvent:tabs.sendMessage', lastError, res);
         });
       });
     });

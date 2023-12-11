@@ -1,4 +1,3 @@
-import { setUserGuardianItemStatus } from '@portkey-wallet/store/store-ca/guardians/actions';
 import { UserGuardianItem } from '@portkey-wallet/store/store-ca/guardians/type';
 import { ChainId } from '@portkey-wallet/types';
 import { OperationTypeEnum, VerifierInfo, VerifyStatus } from '@portkey-wallet/types/verifier';
@@ -7,12 +6,11 @@ import { handleVerificationDoc } from '@portkey-wallet/utils/guardian';
 import { message } from 'antd';
 import { useVerifyToken } from 'hooks/authentication';
 import { useCallback } from 'react';
-import { useAppDispatch, useLoading } from 'store/Provider/hooks';
+import { useLoading } from 'store/Provider/hooks';
 import { LoginInfo } from 'store/reducers/loginCache/type';
 
 export const useSocialVerify = () => {
   const { setLoading } = useLoading();
-  const dispatch = useAppDispatch();
   const verifyToken = useVerifyToken();
 
   return useCallback(
@@ -39,22 +37,21 @@ export const useSocialVerify = () => {
         const verifierInfo: VerifierInfo = { ...result, verifierId: operateGuardian?.verifier?.id };
         const { guardianIdentifier } = handleVerificationDoc(verifierInfo.verificationDoc);
         console.log('operateGuardian.key======', operateGuardian.key);
-        dispatch(
-          setUserGuardianItemStatus({
-            key: operateGuardian.key,
-            signature: verifierInfo.signature,
-            verificationDoc: verifierInfo.verificationDoc,
-            status: VerifyStatus.Verified,
-            identifierHash: guardianIdentifier,
-          }),
-        );
+        return {
+          key: operateGuardian.key,
+          signature: verifierInfo.signature,
+          verificationDoc: verifierInfo.verificationDoc,
+          status: VerifyStatus.Verified,
+          identifierHash: guardianIdentifier,
+        };
       } catch (error) {
         const msg = handleErrorMessage(error);
         message.error(msg);
       } finally {
         setLoading(false);
       }
+      return;
     },
-    [setLoading, verifyToken, dispatch],
+    [setLoading, verifyToken],
   );
 };

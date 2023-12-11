@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     width: pTd(16),
     height: pTd(16),
     backgroundColor: defaultColors.font5,
-    borderRadius: 8,
+    borderRadius: pTd(9),
   },
   errorText: {
     marginTop: pTd(24),
@@ -144,6 +144,6 @@ const styles = StyleSheet.create({
     backgroundColor: defaultColors.font5,
     height: pTd(16),
     width: pTd(16),
-    borderRadius: pTd(8),
+    borderRadius: pTd(9),
   },
 });

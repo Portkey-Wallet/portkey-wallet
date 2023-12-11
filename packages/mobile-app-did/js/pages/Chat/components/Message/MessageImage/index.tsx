@@ -13,6 +13,7 @@ import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import isEqual from 'lodash/isEqual';
 import CommonToast from 'components/CommonToast';
 import Broken_Image from 'assets/image/pngs/broken-image.png';
+import { ListItemType } from '../../ChatOverlay/chatPopover';
 
 const maxWidth = pTd(280);
 const maxHeight = pTd(280);
@@ -69,25 +70,41 @@ function MessageImage(props: MessageProps<ChatMessage>) {
   const onShowChatPopover = useCallback(
     (event: GestureResponderEvent) => {
       const { pageX, pageY } = event.nativeEvent;
-      if (position === 'right')
-        ChatOverlay.showChatPopover({
-          list: [
-            {
-              title: 'Delete',
-              iconName: 'chat-delete',
-              onPress: async () => {
-                try {
-                  await deleteMessage(currentMessage?.id);
-                } catch (error) {
-                  CommonToast.fail('Failed to delete message');
-                }
-              },
-            },
-          ],
-          px: pageX,
-          py: pageY,
-          formatType: 'dynamicWidth',
+
+      const list: ListItemType[] = [];
+
+      // if pinned, hide pin icon
+      if (!pageX) {
+        list.push({
+          // TODO: if not pinned message, show pin
+          title: 'Pin',
+          iconName: 'chat-pin',
+          onPress: async () => {
+            try {
+              // todo: pin IMG
+            } catch (error) {
+              // TODO: change to failError
+              CommonToast.failError(error);
+            }
+          },
         });
+      }
+
+      if (position === 'right') {
+        list.push({
+          title: 'Delete',
+          iconName: 'chat-delete',
+          onPress: async () => {
+            try {
+              await deleteMessage(currentMessage?.id);
+            } catch (error) {
+              CommonToast.fail('Failed to delete message');
+            }
+          },
+        });
+      }
+
+      list.length && ChatOverlay.showChatPopover({ list, px: pageX, py: pageY, formatType: 'dynamicWidth' });
     },
     [currentMessage?.id, deleteMessage, position],
   );

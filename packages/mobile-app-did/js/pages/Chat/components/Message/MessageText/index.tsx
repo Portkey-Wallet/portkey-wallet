@@ -33,6 +33,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
   const onLongPress = useCallback(
     (event: GestureResponderEvent) => {
       const { pageX, pageY } = event.nativeEvent;
+
       const list: ShowChatPopoverParams['list'] = isNotSupported
         ? []
         : [
@@ -41,6 +42,20 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
               iconName: 'copy3',
               onPress: async () => {
                 await copyText(currentMessage?.content || '');
+              },
+            },
+            {
+              // TODO: if not pinned message, show pin
+              title: 'Pin',
+              iconName: 'chat-pin',
+              onPress: async () => {
+                try {
+                  // todo: pin message
+                  await copyText(currentMessage?.content || '');
+                } catch (error) {
+                  // TODO: change to failError
+                  CommonToast.failError(error);
+                }
               },
             },
           ];

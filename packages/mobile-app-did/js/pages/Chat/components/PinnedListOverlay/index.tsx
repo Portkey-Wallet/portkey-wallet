@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
+  AvatarProps,
   BubbleProps,
   DayProps,
   GiftedChat,
@@ -122,10 +123,6 @@ function PinnedListOverlay() {
       onScrollBeginDrag: onDismiss,
     };
   }, [onDismiss, onLoadEarlier]);
-
-  const renderScrollToBottomComponent = useCallback(() => {
-    return <Svg icon="chat-scroll-to-bottom" size={pTd(24)} />;
-  }, []);
 
   const renderMessage = useCallback(
     (props: MessageProps<ChatMessage>) => {

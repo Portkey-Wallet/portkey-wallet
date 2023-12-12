@@ -164,11 +164,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const timeContainerStyle = {
-  left: styles.timeBoxStyle,
-  right: styles.timeBoxStyle,
-};
-
 const timeInnerWrapStyle = {
   left: styles.timeInnerWrapStyle,
   right: styles.timeInnerWrapStyle,

@@ -123,42 +123,33 @@ export default function Buy() {
   );
 
   useEffectOnce(() => {
-    if (state) {
-      if (state.amount !== undefined) {
-        const { amount, country, fiat, crypto, network, side } = state;
-        setAmount(amount);
-        setCurFiat({ country, currency: fiat });
-        setCurToken({ crypto, network });
-        setPage(side);
-        valueSaveRef.current = {
-          amount,
-          currency: fiat,
-          country,
-          crypto,
-          network,
-          max: null,
-          min: null,
-          side,
-          receive: '',
-          isShowErrMsg: false,
-        };
-        updateCrypto();
-      } else if (state.side === PaymentTypeEnum.SELL) {
-        stopInterval();
-        setPage(PaymentTypeEnum.SELL);
-        valueSaveRef.current.side = PaymentTypeEnum.SELL;
-        setAmount(initCrypto);
-        valueSaveRef.current.amount = initCrypto;
-        setCurFiat(initFiat);
-        setWarningMsg('');
-        setErrMsg('');
-        valueSaveRef.current.isShowErrMsg = false;
-        setReceive('');
-        valueSaveRef.current.receive = '';
-        setRate('');
-        updateCrypto();
-      }
+    // from preview back
+    if (state && state.amount !== undefined) {
+      const { amount, country, fiat, crypto, network, side } = state;
+      setAmount(amount);
+      setCurFiat({ country, currency: fiat });
+      setCurToken({ crypto, network });
+      setPage(side);
+      valueSaveRef.current = {
+        amount,
+        currency: fiat,
+        country,
+        crypto,
+        network,
+        max: null,
+        min: null,
+        side,
+        receive: '',
+        isShowErrMsg: false,
+      };
+    } else if (state && state.side === PaymentTypeEnum.SELL) {
+      // from sell entry
+      setPage(PaymentTypeEnum.SELL);
+      valueSaveRef.current.side = PaymentTypeEnum.SELL;
+      setAmount(initCrypto);
+      valueSaveRef.current.amount = initCrypto;
     } else {
+      // default and from token detail
       if (!isBuySectionShow && isSellSectionShow) {
         const side = PaymentTypeEnum.SELL;
         setPage(side);
@@ -172,8 +163,10 @@ export default function Buy() {
           console.log('check security error: ', msg);
         });
       }
-      updateCrypto();
     }
+
+    updateCrypto();
+
     return () => {
       clearInterval(updateTimerRef.current);
       updateTimerRef.current = undefined;

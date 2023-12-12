@@ -2,7 +2,7 @@ import { TextM, TextXXXL } from 'components/CommonText';
 import PageContainer from 'components/PageContainer';
 import useRouterParams from '@portkey-wallet/hooks/useRouterParams';
 import { useLanguage } from 'i18n/hooks';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GUARDIAN_EXPIRED_TIME, VERIFIER_EXPIRATION } from '@portkey-wallet/constants/misc';
 import { DeviceEventEmitter, ScrollView, StyleSheet, View } from 'react-native';
 import GStyles from 'assets/theme/GStyles';
@@ -47,6 +47,7 @@ import { useUpdateTransferLimit } from '@portkey-wallet/hooks/hooks-ca/security'
 import { useCheckRouteExistInRouteStack } from 'hooks/route';
 import { useGetVerifierServers, useRefreshGuardiansList } from 'hooks/guardian';
 import { SendResult } from '@portkey-wallet/contracts/types';
+import { useIsFocused } from '@react-navigation/native';
 
 export type RouterParams = {
   loginAccount?: string;
@@ -62,6 +63,7 @@ export type RouterParams = {
   transferLimitDetail?: ITransferLimitItem;
   targetChainId?: ChainId;
   accelerateChainId?: ChainId;
+  initGuardiansStatus?: GuardiansStatus;
 };
 export default function GuardianApproval() {
   const {
@@ -78,6 +80,7 @@ export default function GuardianApproval() {
     transferLimitDetail,
     targetChainId,
     accelerateChainId,
+    initGuardiansStatus,
   } = useRouterParams<RouterParams>();
   const dispatch = useAppDispatch();
   const checkRouteExistInRouteStack = useCheckRouteExistInRouteStack();
@@ -145,7 +148,7 @@ export default function GuardianApproval() {
     };
   });
 
-  const [guardiansStatus, setApproved] = useState<GuardiansStatus>();
+  const [guardiansStatus, setApproved] = useState<GuardiansStatus | undefined>(initGuardiansStatus);
   const [isExpired, setIsExpired] = useState<boolean>();
 
   const guardianExpiredTime = useRef<number>();
@@ -183,7 +186,11 @@ export default function GuardianApproval() {
       expiredTimer && clearInterval(expiredTimer);
     };
   });
-
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isSuccess && isFocused && !isExpired) onFinish();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess, isFocused, isExpired]);
   const onBack = useCallback(() => {
     lastOnEmitDapp.current();
     if (approvalType === ApprovalType.addGuardian) {
@@ -206,6 +213,24 @@ export default function GuardianApproval() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guardiansStatus, userGuardiansList]);
   const registerAccount = useCallback(() => {
+    console.log(
+      {
+        managerInfo: {
+          verificationType: VerificationType.communityRecovery,
+          loginAccount,
+          type: loginType,
+        } as ManagerInfo,
+        guardiansApproved: handleGuardiansApproved(
+          guardiansStatus as GuardiansStatus,
+          userGuardiansList as UserGuardianItem[],
+        ) as GuardiansApproved,
+        verifierInfo,
+      },
+      guardiansStatus,
+      userGuardiansList,
+      '=====registerAccount',
+    );
+
     onRequestOrSetPin({
       managerInfo: {
         verificationType: VerificationType.communityRecovery,
@@ -228,6 +253,7 @@ export default function GuardianApproval() {
     Loading.show({ text: t('Processing on the chain...') });
     let req: SendResult | undefined;
     try {
+      // o != origin
       const caContract = await getCurrentCAContract();
       req = await addGuardian(
         caContract,
@@ -268,7 +294,11 @@ export default function GuardianApproval() {
       if (!accelerateChainId) {
         navigationService.navigate('GuardianHome');
       } else {
-        navigationService.pop(3);
+        if ([LoginType.Email, LoginType.Phone].includes(guardianItem.guardianType)) {
+          navigationService.pop(3);
+        } else {
+          navigationService.pop(2);
+        }
         refreshGuardiansList();
       }
     } else {
@@ -492,7 +522,7 @@ export default function GuardianApproval() {
                 <Svg color={FontStyles.font3.color} size={pTd(16)} icon="question-mark" />
               </Touchable>
             </View>
-            <TextM>
+            <TextM style={styles.approvalRow}>
               <TextM style={FontStyles.font4}>{approvedList.length ?? 0}</TextM>/{guardianCount}
             </TextM>
           </View>
@@ -533,6 +563,7 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     paddingBottom: 16,
     justifyContent: 'space-between',
+    paddingHorizontal: pTd(20),
   },
   expireText: {
     marginTop: 8,

@@ -21,6 +21,15 @@ export const getWalletState = async () => {
   return wallet as WalletState;
 };
 
+export const getCurrentChainList = async () => {
+  const { chainInfo, currentNetwork } = await getWalletState();
+  return chainInfo?.[currentNetwork];
+};
+
+export const getCurrentChainInfo = async (chainId: ChainId) => {
+  return (await getCurrentChainList())?.find((chain) => chain.chainId === chainId);
+};
+
 export const getDappState = async () => {
   let dapp = await getStoredState(dappPersistConfig);
   if (!dapp) dapp = getDefaultState().dapp;
@@ -45,17 +54,6 @@ export const getCurrentCaHash = async () => {
   const caInfo = walletInfo?.caInfo?.[currentNetwork];
   const originChainId = wallet.originChainId || caInfo?.originChainId;
   return caInfo?.[originChainId || DefaultChainId]?.caHash;
-};
-
-export const getCurrentChainList = async () => {
-  const currentWallet = await getWalletState();
-  const { currentNetwork, chainInfo } = currentWallet;
-  return chainInfo?.[currentNetwork];
-};
-
-export const getCurrentChainInfo = async (chainId: ChainId) => {
-  const currentChainList = await getCurrentChainList();
-  return currentChainList?.find((chain) => chain.chainId === chainId);
 };
 
 export const getLoginCache = async () => {

@@ -21,7 +21,6 @@ export const getTokenInfo = async ({
     methodName: 'GetTokenInfo',
     paramsOption,
   });
-  console.log(tokenInfoResult, 'tokenInfoResult===');
 
   if (tokenInfoResult.code === SandboxErrorCode.error) throw tokenInfoResult.error;
   const issueChainId = tokenInfoResult.message.issueChainId;

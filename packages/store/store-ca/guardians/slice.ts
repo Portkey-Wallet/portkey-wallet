@@ -43,6 +43,7 @@ export const guardiansSlice = createSlice({
         state.verifierMap = map;
       })
       .addCase(setGuardiansAction, (state, action) => {
+        console.log('setGuardiansAction', JSON.parse(JSON.stringify(action.payload)));
         const { verifierMap } = state;
         if (!action.payload) {
           state.userGuardiansList = [];
@@ -71,6 +72,7 @@ export const guardiansSlice = createSlice({
         state.guardianExpiredTime = undefined;
       })
       .addCase(setPreGuardianAction, (state, action) => {
+        console.log('setPreGuardianAction', JSON.parse(JSON.stringify(action.payload)));
         if (!action.payload) {
           state.preGuardian = undefined;
         } else {
@@ -81,6 +83,7 @@ export const guardiansSlice = createSlice({
         }
       })
       .addCase(setOpGuardianAction, (state, action) => {
+        console.log('setOpGuardianAction', JSON.parse(JSON.stringify(action.payload)));
         if (!action.payload) {
           state.opGuardian = undefined;
         } else {
@@ -91,6 +94,7 @@ export const guardiansSlice = createSlice({
         }
       })
       .addCase(setCurrentGuardianAction, (state, action) => {
+        console.log('setCurrentGuardianAction', JSON.parse(JSON.stringify(action.payload)));
         state.currentGuardian = {
           ...state.userGuardianStatus?.[action.payload.key],
           ...action.payload,
@@ -101,12 +105,18 @@ export const guardiansSlice = createSlice({
         };
       })
       .addCase(setUserGuardianStatus, (state, action) => {
+        console.log('setUserGuardianStatus', JSON.parse(JSON.stringify(action.payload)));
         const userStatus = action.payload;
         state.userGuardianStatus = userStatus;
       })
       .addCase(setUserGuardianItemStatus, (state, action) => {
         const { key, status, signature, verificationDoc, identifierHash } = action.payload;
+        console.log(
+          'setUserGuardianItemStatus-state.userGuardianStatus',
+          JSON.parse(JSON.stringify(state.userGuardianStatus)),
+        );
         if (!state.userGuardianStatus?.[key]) throw Error("Can't find this item");
+        console.log('setUserGuardianItemStatus-status', status);
         state.userGuardianStatus[key]['status'] = status;
         state.userGuardianStatus[key]['signature'] = signature;
         state.userGuardianStatus[key]['verificationDoc'] = verificationDoc;

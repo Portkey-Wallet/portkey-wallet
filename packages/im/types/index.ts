@@ -1,5 +1,17 @@
-export type MessageType = 'TEXT' | 'IMAGE' | 'SYS';
-export type ParsedContent = string | ParsedImage;
+import { RedPackageStatusInfo } from './redPackage';
+
+export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
+
+export type MessageType = 'TEXT' | 'IMAGE' | 'SYS' | 'REDPACKAGE-CARD';
+
+export enum MessageTypeEnum {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  SYS = 'SYS',
+  REDPACKAGE_CARD = 'REDPACKAGE-CARD',
+}
+
+export type ParsedContent = string | ParsedImage | ParsedRedPackage | undefined;
 export type ParsedImage = {
   type: string;
   action: string;
@@ -9,6 +21,15 @@ export type ParsedImage = {
   thumbS3Key?: string;
   width?: string;
   height?: string;
+};
+export type ParsedRedPackage = {
+  image: string;
+  link: string;
+  data: {
+    id: string;
+    senderId: string;
+    memo: string;
+  };
 };
 
 export type Message = {
@@ -25,6 +46,7 @@ export type Message = {
   quote?: Message;
   parsedContent?: ParsedContent;
   unidentified?: boolean | undefined;
+  redPackage?: RedPackageStatusInfo;
 };
 
 export type SocketMessage = Message & {
@@ -72,12 +94,13 @@ export type ChannelItem = {
   unreadMessageCount: number;
   mentionsCount: number;
   lastMessageType: MessageType | null;
-  lastMessageContent: string | null;
+  lastMessageContent: ParsedContent | null;
   lastPostAt: string | null;
   mute: boolean;
   pin: boolean;
   pinAt: string;
   toRelationId?: string;
+  redPackage?: RedPackageStatusInfo;
 };
 
 export enum IMStatusEnum {
@@ -105,3 +128,22 @@ export type GroupMemberItemType = {
   avatar: string;
   isAdmin: boolean;
 };
+
+export type RedPackageTokenInfo = {
+  chainId: ChainId;
+  symbol: string;
+  decimal: string | number;
+  minAmount: string;
+};
+export type RedPackageContractAddressInfo = {
+  chainId: ChainId;
+  contractAddress: string;
+};
+
+export type RedPackageConfigType = {
+  tokenInfo: RedPackageTokenInfo[];
+  redPackageContractAddress: RedPackageContractAddressInfo[];
+};
+
+export * from './service';
+export * from './redPackage';

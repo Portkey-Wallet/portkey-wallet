@@ -1,6 +1,6 @@
-@import '../../../../assets/theme/constants.less';
+@import '../../../assets/theme/constants.less';
 
-.bridge-disclaimer-modal {
+.disclaimer-modal-wrapper {
   .portkey-modal {
     .portkey-modal-content {
       margin: auto;
@@ -24,7 +24,7 @@
   }
 }
 
-.bridge-modal {
+.disclaimer-modal {
   .container {
     position: relative;
     height: 100%;
@@ -41,18 +41,18 @@
       height: 12px;
       cursor: pointer;
     }
-    .bridge-modal-header {
+    .disclaimer-modal-header {
       font-size: 18px;
       line-height: 22px;
       font-weight: 500;
       color: @font-11;
     }
-    .bridge-modal-content {
+    .disclaimer-modal-content {
       height: 334px;
       gap: 8px;
-      .bridge-detail {
+      .disclaimer-detail {
         gap: 8px;
-        .bridgefavicon-icon {
+        .custom-svg {
           flex-shrink: 0;
           width: 24px;
           height: 24px;
@@ -63,7 +63,7 @@
           color: @font-11;
         }
       }
-      .bridge-title {
+      .disclaimer-title {
         font-size: 16px;
         line-height: 22px;
         font-weight: 500;
@@ -87,7 +87,7 @@
     }
   }
   .footer {
-    .bridge-modal-footer {
+    .disclaimer-modal-footer {
       padding: 16px;
       gap: 8px;
       border-top: 1px solid @border-2;

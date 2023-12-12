@@ -1,8 +1,9 @@
 import { customFetch } from '@portkey-wallet/utils/fetch';
 import { BaseConfig, RequestConfig, UrlObj } from '../types';
 import { getRequestConfig, spliceUrl } from '../utils';
+import EventEmitter from 'events';
 
-export class ServiceInit {
+export class ServiceInit extends EventEmitter {
   [x: string]: any;
   /**
    * @method parseRouter
@@ -12,6 +13,7 @@ export class ServiceInit {
   public defaultConfig: RequestConfig;
 
   constructor() {
+    super();
     this.defaultConfig = {};
   }
 

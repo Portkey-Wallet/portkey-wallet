@@ -1,7 +1,8 @@
 import { useCurrentChain } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
+import { useOriginChainId, useOtherNetworkLogged, useWallet } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useFetchWalletCAAddress } from '@portkey-wallet/hooks/hooks-ca/wallet-result';
-import { resetWallet, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { resetCaInfo, setCAInfo } from '@portkey-wallet/store/store-ca/wallet/actions';
+import { resetWallet } from '@portkey-wallet/store/wallet/actions';
 import { VerificationType } from '@portkey-wallet/types/verifier';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { PinErrorMessage } from '@portkey-wallet/utils/wallet/types';
@@ -9,14 +10,18 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppDispatch } from 'store/Provider/hooks';
 import { getHolderInfo } from 'utils/sandboxUtil/getHolderInfo';
+import useDistributeLoginFail from './useDistributeLoginFail';
 
-export default function useFetchDidWallet(isExistWallet = false) {
+export default function useFetchDidWallet() {
   const fetchWalletResult = useFetchWalletCAAddress();
   const dispatch = useAppDispatch();
 
   const originChainId = useOriginChainId();
   const currentChain = useCurrentChain(originChainId);
   const navigate = useNavigate();
+  const { currentNetwork } = useWallet();
+  const otherNetworkLogged = useOtherNetworkLogged();
+  const distributeFail = useDistributeLoginFail();
 
   const fetch = useCallback(
     async ({
@@ -51,7 +56,23 @@ export default function useFetchDidWallet(isExistWallet = false) {
       console.log(walletResult, 'walletResult===');
       if (walletResult.status !== 'pass') {
         const errorString = walletResult?.message || walletResult.status;
-        if (!isExistWallet) {
+        if (errorString?.includes('ManagerInfo exists')) {
+          try {
+            const isSuccess = await distributeFail({
+              messageStr: errorString,
+              managerAddress,
+              currentNetwork,
+              pin: pwd,
+              verificationType,
+            });
+            if (isSuccess) return;
+          } catch (error) {
+            //
+          }
+        }
+        if (otherNetworkLogged) {
+          dispatch(resetCaInfo(currentNetwork));
+        } else {
           dispatch(resetWallet());
         }
         throw (errorString as string) || 'Something error';
@@ -87,7 +108,16 @@ export default function useFetchDidWallet(isExistWallet = false) {
         }
       }
     },
-    [currentChain, dispatch, fetchWalletResult, isExistWallet, navigate, originChainId],
+    [
+      currentChain,
+      currentNetwork,
+      dispatch,
+      distributeFail,
+      fetchWalletResult,
+      navigate,
+      originChainId,
+      otherNetworkLogged,
+    ],
   );
   return fetch;
 }

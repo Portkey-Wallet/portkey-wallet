@@ -235,7 +235,6 @@ export default function RegisterStart() {
               isInitStatus: true,
             }),
           );
-          console.log('registerStart - guardians item', JSON.parse(JSON.stringify(item)));
           dispatch(
             setUserGuardianItemStatus({
               key: item.key,
@@ -270,7 +269,6 @@ export default function RegisterStart() {
 
         const userGuardianStatus = getStoreState().guardians.userGuardianStatus;
         const userGuardianStatusList = Object.values(userGuardianStatus ?? {});
-        console.log('onLoginFinish - userGuardianStatusList', JSON.parse(JSON.stringify(userGuardianStatusList)));
         // Google and Apple login-accounts will automatically login
         const autoVerifiedList = userGuardianStatusList
           .filter(

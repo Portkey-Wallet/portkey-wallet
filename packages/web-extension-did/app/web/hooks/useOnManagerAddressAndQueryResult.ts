@@ -96,7 +96,6 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       if (!loginAccount?.guardianAccount || !LoginType[loginAccount.loginType]) {
         throw 'Missing account!!! Please login/register again';
       }
-      console.log('guardiansApprovedList====', guardiansApprovedList);
       let guardiansApproved = getGuardiansApproved();
       if (
         guardiansApprovedList &&
@@ -104,7 +103,6 @@ export function useOnManagerAddressAndQueryResult(state: string | undefined) {
       ) {
         guardiansApproved = guardiansApprovedList;
       }
-      console.log('guardiansApproved====', guardiansApproved);
       const requestId = randomId();
       const extraData = await extraDataEncode(getDeviceInfo(DEVICE_TYPE));
       const result = await recoveryDIDWallet({

@@ -14,7 +14,6 @@ import { ChatTabName } from '@portkey-wallet/constants/constants-ca/chat';
 import { useCurrentNetwork, useIsMainnet } from '@portkey-wallet/hooks/hooks-ca/network';
 import { ChannelTypeEnum } from '@portkey-wallet/im';
 import { useChangeNetwork } from './network';
-import Loading from 'components/Loading';
 
 export const useNotifyAction = () => {
   const jumpToChatGroupDetails = useJumpToChatGroupDetails();
@@ -26,7 +25,6 @@ export const useNotifyAction = () => {
         switch (action) {
           case NOTIFY_ACTION.openChat: {
             if (!data) return;
-            Loading.show();
 
             try {
               const { channelId = '', channelType } = data;
@@ -36,9 +34,7 @@ export const useNotifyAction = () => {
               myEvents.navToBottomTab.emit({ tabName: ChatTabName });
             } catch (error) {
               console.log('error', error);
-            } finally {
-              Loading.hide();
-            }
+            } 
 
             break;
           }

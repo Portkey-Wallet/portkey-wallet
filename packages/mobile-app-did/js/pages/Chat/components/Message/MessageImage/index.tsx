@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { MessageProps, Time } from 'react-native-gifted-chat';
-import { GestureResponderEvent, StyleSheet, Image } from 'react-native';
+import { GestureResponderEvent, StyleSheet, Image, View } from 'react-native';
 import CacheImage from 'components/CacheImage';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
@@ -14,6 +14,7 @@ import isEqual from 'lodash/isEqual';
 import CommonToast from 'components/CommonToast';
 import Broken_Image from 'assets/image/pngs/broken-image.png';
 import { ListItemType } from '../../ChatOverlay/chatPopover';
+import Svg from 'components/Svg';
 
 const maxWidth = pTd(280);
 const maxHeight = pTd(280);
@@ -113,12 +114,16 @@ function MessageImage(props: MessageProps<ChatMessage>) {
     <Touchable onPress={onPreviewImage} onLongPress={onShowChatPopover}>
       {loadError ? errorImg : img}
       {!loadError && (
-        <Time
-          timeFormat="HH:mm"
-          timeTextStyle={timeTextStyle}
-          containerStyle={timeContainerStyle}
-          currentMessage={currentMessage}
-        />
+        <View style={styles.timeBoxStyle}>
+          {/* todo: if pinned show this */}
+          <Svg icon="pin-message" size={pTd(12)} iconStyle={styles.iconStyle} />
+          <Time
+            timeFormat="HH:mm"
+            timeTextStyle={timeTextStyle}
+            containerStyle={timeInnerWrapStyle}
+            currentMessage={currentMessage}
+          />
+        </View>
       )}
     </Touchable>
   );
@@ -152,9 +157,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: pTd(8),
     borderRadius: pTd(8),
     opacity: 0.8,
-    bottom: 0,
-    right: -pTd(4),
+    bottom: pTd(8),
+    right: pTd(8),
     height: pTd(16),
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconStyle: {
+    marginRight: pTd(4),
+  },
+  timeInnerWrap: {
+    margin: 0,
+    marginLeft: 0,
+    marginRight: 0,
   },
   timeTextStyle: {
     color: defaultColors.font2,
@@ -166,6 +182,11 @@ const styles = StyleSheet.create({
 const timeContainerStyle = {
   left: styles.timeBoxStyle,
   right: styles.timeBoxStyle,
+};
+
+const timeInnerWrapStyle = {
+  left: styles.timeInnerWrap,
+  right: styles.timeInnerWrap,
 };
 
 const timeTextStyle = {

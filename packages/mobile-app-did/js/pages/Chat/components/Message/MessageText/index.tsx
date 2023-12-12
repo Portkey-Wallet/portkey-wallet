@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { MessageTextProps, Time } from 'react-native-gifted-chat';
 import ParsedText from 'react-native-parsed-text';
-import { StyleSheet, Text, TextStyle } from 'react-native';
+import { StyleSheet, Text, TextStyle, View } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -18,8 +18,10 @@ import { FontStyles } from 'assets/theme/styles';
 import { GestureResponderEvent } from 'react-native';
 import CommonToast from 'components/CommonToast';
 import { useOnUrlPress } from 'hooks/chat';
+import Svg from 'components/Svg';
 
-const UNICODE_SPACE = isIOS
+const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
+const TIME_UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
 
@@ -101,10 +103,15 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
             {currentMessage?.text}
           </ParsedText>
         )}
-
-        {UNICODE_SPACE}
+        {/* todo: when pinned show this */}
+        {PIN_UNICODE_SPACE}
+        {TIME_UNICODE_SPACE}
       </Text>
-      <Time timeFormat="HH:mm" timeTextStyle={timeTextStyle} containerStyle={timeContainerStyle} {...props} />
+      <View style={styles.timeBoxStyle}>
+        {/* todo: if pinned show this */}
+        <Svg icon="pin-message" size={pTd(12)} iconStyle={styles.iconStyle} color={defaultColors.font7} />
+        <Time timeFormat="HH:mm" timeTextStyle={timeTextStyle} containerStyle={timeInnerWrapStyle} {...props} />
+      </View>
     </Touchable>
   );
 }
@@ -132,10 +139,25 @@ const styles = StyleSheet.create({
   linkStyle: {
     color: defaultColors.font4,
   },
+  iconStyle: {
+    marginRight: pTd(4),
+  },
   timeBoxStyle: {
     position: 'absolute',
+    paddingHorizontal: pTd(8),
+    bottom: pTd(4),
     right: pTd(8),
-    bottom: pTd(0),
+    height: pTd(16),
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timeInnerWrapStyle: {
+    marginRight: 0,
+    marginLeft: 0,
+    marginBottom: 0,
+    marginTop: 0,
   },
   timeTextStyle: {
     color: defaultColors.font7,
@@ -145,6 +167,11 @@ const styles = StyleSheet.create({
 const timeContainerStyle = {
   left: styles.timeBoxStyle,
   right: styles.timeBoxStyle,
+};
+
+const timeInnerWrapStyle = {
+  left: styles.timeInnerWrapStyle,
+  right: styles.timeInnerWrapStyle,
 };
 
 const timeTextStyle = {

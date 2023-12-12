@@ -41,6 +41,7 @@ import OverlayModal from 'components/OverlayModal';
 import { useGStyles } from 'assets/theme/useGStyles';
 import { screenWidth } from '@portkey-wallet/utils/mobile/device';
 import CustomChatAvatar from '../CustomChatAvatar';
+import { TextL } from 'components/CommonText';
 
 const ListViewProps = {
   // windowSize: 50,
@@ -87,11 +88,6 @@ function PinnedListOverlay() {
       destroyChatInputRecorder();
     };
   });
-
-  const scrollToBottom = useCallback(() => {
-    if (messageContainerRef?.current?.scrollToOffset)
-      messageContainerRef.current?.scrollToOffset({ offset: 0, animated: false });
-  }, []);
 
   const onDismiss = useThrottleCallback(() => {
     Keyboard.dismiss();
@@ -155,12 +151,18 @@ function PinnedListOverlay() {
     init();
   });
 
+  const unPinAll = useCallback(() => {
+    // TODO
+    console.log('unPinAll');
+    OverlayModal.hide();
+  }, []);
+
   return (
     <View style={[gStyles.overlayStyle, styles.wrap]}>
       <View style={[GStyles.flexCenter, styles.header]}>
         <Text style={styles.headerTitle}>5 pinned messages</Text>
         <Touchable style={styles.closeWrap} onPress={() => OverlayModal.hide()}>
-          <Svg icon="close" size={pTd(12.5)} />
+          <Svg icon="close1" size={pTd(12.5)} />
         </Touchable>
       </View>
       <Touchable disabled={disabledTouchable} activeOpacity={1} onPress={onDismiss} style={GStyles.flex1}>
@@ -197,6 +199,9 @@ function PinnedListOverlay() {
           />
         )}
       </Touchable>
+      <Touchable style={styles.bottomButtonWrap} onPress={unPinAll}>
+        <TextL style={FontStyles.font4}>{`Unpin All 5 Messages`}</TextL>
+      </Touchable>
     </View>
   );
 }
@@ -207,6 +212,7 @@ export const showPinnedListOverlay = (params: any) => {
   OverlayModal.show(<PinnedListOverlay {...params} />, {
     position: 'bottom',
     enabledNestScrollView: true,
+    containerStyle: { backgroundColor: defaultColors.bg6 },
   });
 };
 
@@ -233,6 +239,7 @@ const styles = StyleSheet.create({
     paddingVertical: pTd(21),
     paddingHorizontal: pTd(24),
     right: 0,
+    zIndex: 1,
   },
   messagesContainerStyle: {
     backgroundColor: defaultColors.bg1,
@@ -240,5 +247,15 @@ const styles = StyleSheet.create({
   },
   contentStyle: {
     paddingTop: pTd(24),
+  },
+  bottomButtonWrap: {
+    width: screenWidth,
+    height: pTd(60),
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: defaultColors.bg6,
+    borderTopWidth: pTd(0.5),
+    borderTopColor: defaultColors.border6,
   },
 });

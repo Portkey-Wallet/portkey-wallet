@@ -60,7 +60,7 @@ export default function Buy() {
   const valueSaveRef = useRef({ ...initValueSave });
   const [errMsg, setErrMsg] = useState<string>('');
   const [warningMsg, setWarningMsg] = useState<string>('');
-  const [page, setPage] = useState<PaymentTypeEnum>(state?.pageType || PaymentTypeEnum.BUY);
+  const [page, setPage] = useState<PaymentTypeEnum>(state?.side || PaymentTypeEnum.BUY);
   const [rate, setRate] = useState('');
   const [amount, setAmount] = useState(initCurrency);
   const [receive, setReceive] = useState('');
@@ -123,25 +123,41 @@ export default function Buy() {
   );
 
   useEffectOnce(() => {
-    if (state && state.amount !== undefined) {
-      const { amount, country, fiat, crypto, network, side } = state;
-      setAmount(amount);
-      setCurFiat({ country, currency: fiat });
-      setCurToken({ crypto, network });
-      setPage(side);
-      valueSaveRef.current = {
-        amount,
-        currency: fiat,
-        country,
-        crypto,
-        network,
-        max: null,
-        min: null,
-        side,
-        receive: '',
-        isShowErrMsg: false,
-      };
-      updateCrypto();
+    if (state) {
+      if (state.amount !== undefined) {
+        const { amount, country, fiat, crypto, network, side } = state;
+        setAmount(amount);
+        setCurFiat({ country, currency: fiat });
+        setCurToken({ crypto, network });
+        setPage(side);
+        valueSaveRef.current = {
+          amount,
+          currency: fiat,
+          country,
+          crypto,
+          network,
+          max: null,
+          min: null,
+          side,
+          receive: '',
+          isShowErrMsg: false,
+        };
+        updateCrypto();
+      } else if (state.side === PaymentTypeEnum.SELL) {
+        stopInterval();
+        setPage(PaymentTypeEnum.SELL);
+        valueSaveRef.current.side = PaymentTypeEnum.SELL;
+        setAmount(initCrypto);
+        valueSaveRef.current.amount = initCrypto;
+        setCurFiat(initFiat);
+        setWarningMsg('');
+        setErrMsg('');
+        valueSaveRef.current.isShowErrMsg = false;
+        setReceive('');
+        valueSaveRef.current.receive = '';
+        setRate('');
+        updateCrypto();
+      }
     } else {
       if (!isBuySectionShow && isSellSectionShow) {
         const side = PaymentTypeEnum.SELL;

@@ -111,7 +111,7 @@ const PaymentModal = ({
     return (
       <View style={[GStyles.width100, GStyles.marginTop(pTd(16))]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
-          <TextM>Transaction Fee</TextM>
+          <TextM>Estimated Transaction Fee</TextM>
           <View>
             <View style={[GStyles.flexRow, GStyles.itemCenter]}>
               {fee?.loading ? (

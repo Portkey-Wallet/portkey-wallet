@@ -8,10 +8,13 @@ import {
   Message,
   MessageCount,
   RedPackageConfigType,
+  RedPackageCreationStatusEnum,
   RedPackageDetail,
   RedPackageGrabInfoItem,
   RedPackageStatusEnum,
   RedPackageTypeEnum,
+  TransferStatusEnum,
+  TransferTypeEnum,
   TriggerMessageEventActionEnum,
 } from '.';
 import { RequireAtLeastOne } from '@portkey-wallet/types/common';
@@ -237,11 +240,6 @@ export type SendRedPackageResult = {
 
 export type GetRedPackageCreationStatusParams = SendRedPackageResult;
 
-export enum RedPackageCreationStatusEnum {
-  PENDING = 0,
-  SUCCESS = 1,
-  FAIL = 2,
-}
 export type GetRedPackageCreationStatusResult = {
   status: RedPackageCreationStatusEnum;
   message: string;
@@ -279,6 +277,34 @@ export type GrabRedPackageResult = {
 export type GetRedPackageConfigParams = {
   chainId?: ChainId;
   token?: string;
+};
+
+export type SendTransferParams = {
+  amount: string;
+  type: TransferTypeEnum;
+  toUserId?: string;
+  chainId: ChainId;
+  symbol: string;
+  memo?: string;
+  channelUuid?: string;
+  rawTransaction: string;
+  message: string;
+};
+export type SendTransferResult = {
+  transferId: string;
+};
+
+export type GetTransferStatusParams = {
+  transferId: string;
+};
+
+export type GetTransferStatusResult = {
+  status: TransferStatusEnum;
+  message?: string;
+  transactionId: string;
+  transactionResult: string;
+  blockHash: string;
+  channelUuid: string;
 };
 
 export interface IIMService {
@@ -333,4 +359,7 @@ export interface IIMService {
   getRedPackageDetail(params: GetRedPackageDetailParams): IMServiceCommon<GetRedPackageDetailResult>;
   grabRedPackage(params: GrabRedPackageParams): IMServiceCommon<GrabRedPackageResult>;
   getRedPackageConfig(params: GetRedPackageConfigParams): IMServiceCommon<RedPackageConfigType>;
+
+  sendTransfer(params: SendTransferParams): IMServiceCommon<SendTransferResult>;
+  getTransferStatus(params: GetTransferStatusParams): IMServiceCommon<GetTransferStatusResult>;
 }

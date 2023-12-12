@@ -11,7 +11,7 @@ import im, {
 import { ChainId } from '@portkey-wallet/types';
 import { handleLoopFetch, randomId } from '@portkey-wallet/utils';
 import { useRedPackageConfigMapState, useRelationId } from '.';
-import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types/service';
+import { RedPackageCreationStatusEnum } from '@portkey-wallet/im/types';
 import { messageParser } from '@portkey-wallet/im/utils';
 import { useCurrentWalletInfo, useWallet } from '../wallet';
 import { useAppCommonDispatch, useEffectOnce } from '../../index';

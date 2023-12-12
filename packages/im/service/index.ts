@@ -34,6 +34,8 @@ import {
   VerifySignatureLoopParams,
   VerifySignatureParams,
   VerifySignatureResult,
+  GetPinListParams,
+  UnSetPinParams,
 } from '../types/service';
 import { ChannelInfo, ChannelMemberInfo, Message, MessageCount } from '../types';
 import { sleep } from '@portkey-wallet/utils';
@@ -274,5 +276,15 @@ export class IMService<T extends IBaseRequest = IBaseRequest> extends BaseServic
       params,
       method: 'GET',
     });
+  }
+
+  getPinList(params: GetPinListParams): IMServiceCommon<Message[]> {
+    throw new Error('Method not implemented.');
+  }
+  setPin(params: Message): IMServiceCommon<null> {
+    throw new Error('Method not implemented.');
+  }
+  unSetPin(params: UnSetPinParams): IMServiceCommon<null> {
+    throw new Error('Method not implemented.');
   }
 }

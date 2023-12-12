@@ -1,4 +1,4 @@
-import { Message, ParsedImage } from '../types';
+import { Message, MessageType, ParsedContent, ParsedImage } from '../types';
 
 const imageMessageParser = (str: string): ParsedImage => {
   str = str.replace(/,/g, ';');
@@ -21,23 +21,29 @@ const imageMessageParser = (str: string): ParsedImage => {
   };
 };
 
-export const messageParser = (message: Message): Message => {
-  switch (message.type) {
+export const messageContentParser = (type: MessageType | null, content: string): ParsedContent => {
+  switch (type) {
     case 'TEXT':
     case 'SYS':
-      return {
-        ...message,
-        parsedContent: message.content,
-      };
+      return content;
     case 'IMAGE':
-      return {
-        ...message,
-        parsedContent: imageMessageParser(message.content),
-      };
+      return imageMessageParser(content);
     default:
-      return {
-        ...message,
-        unidentified: true,
-      };
+      return undefined;
   }
+};
+
+export const messageParser = (message: Message): Message => {
+  let quote = message.quote;
+  if (quote) {
+    quote = messageParser(quote);
+  }
+
+  const parsedContent = messageContentParser(message.type, message.content);
+  return {
+    ...message,
+    parsedContent: parsedContent,
+    unidentified: parsedContent === undefined,
+    quote,
+  };
 };

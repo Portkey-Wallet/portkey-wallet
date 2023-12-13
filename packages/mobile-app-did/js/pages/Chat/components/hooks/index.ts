@@ -17,7 +17,7 @@ import { pTd } from 'utils/unit';
 
 const TopSpacing = isIOS ? bottomBarHeight : isXiaoMi ? Math.max(-bottomBarHeight, -10) : 0;
 
-const ToolsHeight = pTd(120);
+const ToolsHeight = pTd(196);
 
 export function useKeyboardAnim({ textInputRef }: { textInputRef: React.RefObject<TextInput> }) {
   const keyboardAnim = useRef(new Animated.Value(0)).current;

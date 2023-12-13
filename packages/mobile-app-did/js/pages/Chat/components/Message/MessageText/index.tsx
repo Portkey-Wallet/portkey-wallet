@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { isIOS } from '@portkey-wallet/utils/mobile/device';
 import { MessageTextProps, Time } from 'react-native-gifted-chat';
 import ParsedText from 'react-native-parsed-text';
-import { StyleSheet, Text, TextStyle, View } from 'react-native';
+import { StyleSheet, Text, TextStyle, View, Image } from 'react-native';
 import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
@@ -24,6 +24,31 @@ const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
 const TIME_UNICODE_SPACE = isIOS
   ? '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
+
+function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
+  return (
+    <View style={replyMessageTextStyles.wrap}>
+      <View style={replyMessageTextStyles.blueBlank} />
+      <TextM style={replyMessageTextStyles.name}>Guo</TextM>
+      <TextM style={replyMessageTextStyles.content} numberOfLines={2}>
+        Hi, Do you want to buy or sell some tokens? Buy tokens want to buy or sell some tokens? Buy tokens want to buy
+      </TextM>
+    </View>
+  );
+}
+
+function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
+  return (
+    <View style={replyMessageImageStyles.wrap}>
+      <View style={replyMessageImageStyles.blueBlank} />
+      <Image style={replyMessageImageStyles.img} source={{ uri: '' }} />
+      <TextM style={replyMessageImageStyles.name}>Guo</TextM>
+      <TextM style={replyMessageImageStyles.content} numberOfLines={1}>
+        Photo
+      </TextM>
+    </View>
+  );
+}
 
 function MessageText(props: MessageTextProps<ChatMessage>) {
   const { currentMessage, textProps, position = 'right', customTextStyle, textStyle } = props;
@@ -92,6 +117,8 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
 
   return (
     <Touchable onPress={onPress} onLongPress={onLongPress} style={styles.textRow}>
+      {/* <ReplyMessageText /> */}
+      <ReplyMessageImage />
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
         {isNotSupported ? (
           <TextM style={FontStyles.font4}>{currentMessage?.text}</TextM>
@@ -196,3 +223,69 @@ const messageStyles = {
     },
   }),
 };
+
+const replyMessageTextStyles = StyleSheet.create({
+  wrap: {
+    position: 'relative',
+    backgroundColor: defaultColors.bg3,
+    borderRadius: pTd(8),
+    paddingVertical: pTd(4),
+    paddingLeft: pTd(11),
+    paddingRight: pTd(8),
+    margin: pTd(8),
+    marginBottom: 0,
+    overflow: 'hidden',
+  },
+  blueBlank: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: pTd(3),
+    height: pTd(300),
+    backgroundColor: defaultColors.primaryColor,
+  },
+  img: {
+    width: pTd(32),
+    height: pTd(32),
+    borderRadius: pTd(3),
+  },
+  name: {
+    color: defaultColors.font5,
+  },
+  content: {
+    color: defaultColors.font3,
+  },
+});
+
+const replyMessageImageStyles = StyleSheet.create({
+  wrap: {
+    position: 'relative',
+    backgroundColor: defaultColors.bg3,
+    borderRadius: pTd(8),
+    paddingVertical: pTd(4),
+    paddingLeft: pTd(11),
+    paddingRight: pTd(8),
+    margin: pTd(8),
+    marginBottom: 0,
+    overflow: 'hidden',
+  },
+  blueBlank: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: pTd(3),
+    height: pTd(300),
+    backgroundColor: defaultColors.primaryColor,
+  },
+  img: {
+    width: pTd(32),
+    height: pTd(32),
+    borderRadius: pTd(3),
+  },
+  name: {
+    color: defaultColors.font5,
+  },
+  content: {
+    color: defaultColors.font3,
+  },
+});

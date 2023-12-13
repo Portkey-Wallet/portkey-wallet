@@ -7,11 +7,18 @@ export enum ChatBottomBarStatus {
   emoji,
 }
 
+export type ReplyMessageInfoType = {
+  fromId: string;
+  fromName: string;
+  img?: string;
+  text: string;
+};
 export interface ChatsState {
   currentChannelId?: string;
   showTools?: boolean;
   bottomBarStatus?: ChatBottomBarStatus;
   text: string;
+  replyMessageInfo?: ReplyMessageInfoType;
   selection?: TextInputSelectionChangeEventData['selection'];
   showSoftInputOnFocus?: boolean;
 }
@@ -23,6 +30,9 @@ export const chatSlice = createSlice({
   reducers: {
     setChatText: (state, action: PayloadAction<ChatsState['text']>) => {
       state.text = action.payload;
+    },
+    setReplyMessageInfo: (state, action: PayloadAction<ChatsState['replyMessageInfo']>) => {
+      state.replyMessageInfo = action.payload;
     },
     setCurrentChannelId: (state, action: PayloadAction<ChatsState['currentChannelId']>) => {
       state.currentChannelId = action.payload;

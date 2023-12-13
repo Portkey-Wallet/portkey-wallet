@@ -45,6 +45,8 @@ import { stringifyETrans } from '@portkey-wallet/utils/dapp/url';
 import './index.less';
 import { setBadge } from 'utils/FCM';
 import { useFCMEnable } from 'hooks/useFCM';
+import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
+import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 
 export interface TransactionResult {
   total: number;
@@ -211,6 +213,7 @@ export default function MyBalance() {
 
   useEffect(() => {
     if (!isFCMEnable()) return;
+    signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
     setBadge({ value: unreadCount });
   }, [isFCMEnable, unreadCount]);
   const handleClickETrans = useCallback(

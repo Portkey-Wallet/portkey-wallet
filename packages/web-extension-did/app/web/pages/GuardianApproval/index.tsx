@@ -48,7 +48,8 @@ export default function GuardianApproval() {
   }, [isNotLessThan768, query]);
   const targetChainId: ChainId | undefined = useMemo(() => {
     if (query && query.indexOf('setTransferLimit') !== -1) {
-      const state = query.split('_')[1];
+      const i = query.indexOf('_');
+      const state = query.substring(i + 1);
       const _params = JSON.parse(state || '{}');
       return _params.targetChainId;
     }
@@ -66,13 +67,6 @@ export default function GuardianApproval() {
     } else if (['guardians/del', 'guardians/add'].includes(_query)) {
       filterVerifiedList = tempVerifiedList.filter((item) => item.key !== opGuardian?.key);
     }
-    console.log(
-      'userVerifiedListLogic:',
-      opGuardian?.key,
-      preGuardian?.key,
-      JSON.parse(JSON.stringify(query)),
-      JSON.parse(JSON.stringify(filterVerifiedList)),
-    );
     return filterVerifiedList;
   }, [opGuardian?.key, preGuardian?.key, query, userGuardianStatus]);
 
@@ -94,7 +88,6 @@ export default function GuardianApproval() {
   const handleSetTransferLimit = useSetTransferLimit(targetChainId);
 
   const recoveryWallet = useCallback(async () => {
-    console.log('recoveryWallet', JSON.parse(JSON.stringify(query)));
     if (query && query?.indexOf('guardians') !== -1) {
       console.log('recoveryWallet guardians', '');
       handleGuardianRecovery();
@@ -144,21 +137,34 @@ export default function GuardianApproval() {
   }, [alreadyApprovalLength, approvalLength, isExpired]);
 
   const handleBack = useCallback(() => {
-    if (query && query?.indexOf('guardians') !== -1) {
-      if (['guardians/del', 'guardians/edit'].includes(query)) {
-        navigate(`/setting/guardians/edit`);
-      } else if (query && query.indexOf('guardians/add') !== -1) {
-        navigate('/setting/guardians/add', { state: 'back' });
+    if (query) {
+      if (query.indexOf('guardians') !== -1) {
+        if (['guardians/del', 'guardians/edit'].includes(query)) {
+          navigate(`/setting/guardians/edit`);
+          return;
+        } else if (query.indexOf('guardians/add') !== -1) {
+          navigate('/setting/guardians/add', { state: 'back' });
+          return;
+        }
       }
-    } else if (query && query?.indexOf('removeManage') !== -1) {
-      const manageAddress = query?.split('_')[1];
-      navigate(`/setting/wallet-security/manage-devices/${manageAddress}`);
-    } else if (query && query.indexOf('setTransferLimit') !== -1) {
-      const state = query.split('_')[1];
-      navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, { state: JSON.parse(state) });
-    } else {
-      navigate('/register/start');
+      if (query.indexOf('removeManage') !== -1) {
+        const i = query.indexOf('_');
+        const manageAddress = query.substring(i + 1);
+        navigate(`/setting/wallet-security/manage-devices/${manageAddress}`);
+        return;
+      }
+      if (query.indexOf('setTransferLimit') !== -1) {
+        const i = query.indexOf('_');
+        const state = query.substring(i + 1);
+        navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, { state: JSON.parse(state) });
+        return;
+      }
+      console.log('===guardian approval back error', query);
+      return;
     }
+
+    // default back
+    navigate('/register/start');
   }, [navigate, query]);
 
   const renderContent = useMemo(

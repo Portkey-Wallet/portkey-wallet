@@ -6,7 +6,6 @@ import {
   setOpGuardianAction,
   setPreGuardianAction,
 } from '@portkey-wallet/store/store-ca/guardians/actions';
-import aes from '@portkey-wallet/utils/aes';
 import { message } from 'antd';
 import useGuardianList from 'hooks/useGuardianList';
 import ModalTip from 'pages/components/ModalTip';
@@ -21,8 +20,7 @@ import { formatAddGuardianValue } from '../utils/formatAddGuardianValue';
 import { formatDelGuardianValue } from '../utils/formatDelGuardianValue';
 import { formatEditGuardianValue } from '../utils/formatEditGuardianValue';
 import { ChainId } from '@portkey-wallet/types';
-import InternalMessage from 'messages/InternalMessage';
-import InternalMessageTypes from 'messages/InternalMessageTypes';
+import getSeed from 'utils/getSeed';
 
 enum MethodType {
   'guardians/add' = GuardianMth.addGuardian,
@@ -53,9 +51,7 @@ export const useRecovery = () => {
   return useCallback(async () => {
     try {
       setLoading(true, 'Processing on the chain...');
-      const getSeedResult = await InternalMessage.payload(InternalMessageTypes.GET_SEED).send();
-      const pin = getSeedResult.data.privateKey;
-      const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, pin);
+      const { privateKey } = await getSeed();
 
       if (!currentChain?.endPoint || !privateKey) {
         console.log('handle guardian error===', currentChain, privateKey);
@@ -149,7 +145,6 @@ export const useRecovery = () => {
     setLoading,
     state,
     userGuardianStatus,
-    walletInfo.AESEncryptPrivateKey,
     walletInfo.caHash,
   ]);
 };

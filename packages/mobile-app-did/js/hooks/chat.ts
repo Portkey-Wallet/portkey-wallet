@@ -12,6 +12,7 @@ import { parseLinkPortkeyUrl } from 'utils/scheme';
 import { useDiscoverJumpWithNetWork } from './discover';
 import { useHandlePortkeyId, useHandleGroupId } from './useQrScan';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
+import useLockCallback from '@portkey-wallet/hooks/useLockCallback';
 const WWW_URL_PATTERN = /^www\./i;
 
 export function useJumpToChatDetails() {
@@ -104,7 +105,6 @@ export function useOnUrlPress() {
   const handlePortkeyId = useHandlePortkeyId();
   const handleGroupId = useHandleGroupId();
   const isChatShow = useIsChatShow();
-
   return useThrottleCallback(
     (url: string) => {
       if (WWW_URL_PATTERN.test(url)) url = `https://${url}`;

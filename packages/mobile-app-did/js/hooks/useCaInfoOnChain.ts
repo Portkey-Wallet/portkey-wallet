@@ -71,7 +71,7 @@ export const useCaInfoOnChain = () => {
         fetch();
       }
     },
-    5000,
     [check, fetch],
+    5000,
   );
 };

@@ -1,7 +1,7 @@
 import { DependencyList, useEffect, useRef } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 
-const useInterval = (callback: () => void, delay?: number | null, deps?: DependencyList): void => {
+const useInterval = (callback: () => void, deps?: DependencyList, delay?: number | null): void => {
   const savedCallback = useRef<() => void>();
   useEffect(() => {
     savedCallback.current = callback;

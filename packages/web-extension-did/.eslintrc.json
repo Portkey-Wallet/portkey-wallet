@@ -33,7 +33,13 @@
     "@typescript-eslint/ban-types": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "no-inline-styles/no-inline-styles": 2,
-    "@typescript-eslint/no-non-null-assertion": 0
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "^use(LockCallback|Interval|ThrottleCallback|DebounceCallback)$"
+      }
+    ]
   },
   "env": {
     "browser": true,

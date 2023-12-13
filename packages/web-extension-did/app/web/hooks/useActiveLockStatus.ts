@@ -15,8 +15,8 @@ export const useActiveLockStatus = () => {
         });
       }
     },
-    1000 * 60,
     [],
+    1000 * 60,
   );
   return () => timer.remove();
 };

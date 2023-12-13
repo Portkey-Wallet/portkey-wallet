@@ -32,7 +32,13 @@
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/ban-types": 0,
     "@typescript-eslint/no-explicit-any": 0,
-    "no-inline-styles/no-inline-styles": 2
+    "no-inline-styles/no-inline-styles": 2,
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "^use(LockCallback|Interval|ThrottleCallback|DebounceCallback)$"
+      }
+    ]
   },
   "env": {
     "browser": true,

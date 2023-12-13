@@ -27,7 +27,13 @@
         "@typescript-eslint/no-explicit-any": "off",
         "no-empty": "off",
         "eslint-comments/no-unused-disable": "off",
-        "eslint-comments/no-unlimited-disable": "off"
+        "eslint-comments/no-unlimited-disable": "off",
+        "react-hooks/exhaustive-deps": [
+          "warn",
+          {
+            "additionalHooks": "^use(LockCallback|Interval|ThrottleCallback|DebounceCallback)$"
+          }
+        ]
       }
     }
   ]

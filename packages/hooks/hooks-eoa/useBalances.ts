@@ -59,7 +59,7 @@ const useBalances = ({ tokens, tokenAddress, rpcUrl, delay = 10000 }: useBalance
     setBalances(bs?.map(i => new BigNumber(i ?? '')));
   }, []);
 
-  useInterval(onGetBalance, delay, [currentAccount, tokens]);
+  useInterval(onGetBalance, [currentAccount, tokens], delay);
 
   return [balances, onGetBalance];
 };

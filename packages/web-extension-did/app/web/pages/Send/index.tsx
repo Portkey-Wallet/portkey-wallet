@@ -11,7 +11,7 @@ import { timesDecimals } from '@portkey-wallet/utils/converter';
 import { Button, message, Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
 import TitleWrapper from 'components/TitleWrapper';
-import { ReactElement, useCallback, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useAppDispatch, useCommonState, useLoading, useUserInfo, useWalletInfo } from 'store/Provider/hooks';
@@ -37,6 +37,8 @@ import './index.less';
 import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { ExceedLimit, WalletIsNotSecure } from 'constants/security';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
+import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
+import { GuardianItem } from 'types/guardians';
 
 export type Account = { address: string; name?: string };
 
@@ -64,6 +66,8 @@ export default function Send() {
   const { setLoading } = useLoading();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const oneTimeApprovalList = useRef<GuardianItem[]>([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [tipMsg, setTipMsg] = useState('');
   const [toAccount, setToAccount] = useState<{ name?: string; address: string }>({ address: '' });
@@ -195,7 +199,104 @@ export default function Send() {
     ],
   );
 
+  const sendTransfer = useCallback(async () => {
+    try {
+      if (!chainInfo || !passwordSeed) return;
+      const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
+      if (!privateKey) return;
+      if (!tokenInfo) throw 'No Symbol info';
+
+      if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
+        await crossChainTransfer({
+          chainInfo,
+          chainType: currentNetwork.walletType,
+          privateKey,
+          managerAddress: wallet.address,
+          tokenInfo,
+          caHash: wallet?.caHash || '',
+          amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
+          toAddress: toAccount.address,
+          fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
+        });
+      } else {
+        console.log('sameChainTransfers==sendHandler');
+        await sameChainTransfer({
+          chainInfo,
+          chainType: currentNetwork.walletType,
+          privateKey,
+          tokenInfo,
+          caHash: wallet?.caHash || '',
+          amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
+          toAddress: toAccount.address,
+        });
+      }
+      message.success('success');
+      navigate('/');
+    } catch (error: any) {
+      setLoading(false);
+      if (!error?.type) return message.error(error);
+      if (error.type === 'managerTransfer') {
+        return message.error(error);
+      } else if (error.type === 'crossChainTransfer') {
+        dispatch(addFailedActivity(error.data));
+        console.log('addFailedActivity', error);
+
+        showErrorModal(error.data);
+        return;
+      } else {
+        message.error(handleErrorMessage(error));
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    amount,
+    chainInfo,
+    currentNetwork.walletType,
+    defaultToken.decimals,
+    dispatch,
+    navigate,
+    passwordSeed,
+    setLoading,
+    showErrorModal,
+    toAccount.address,
+    tokenInfo,
+    txFee,
+    wallet.AESEncryptPrivateKey,
+    wallet.address,
+    wallet?.caHash,
+  ]);
+
   const checkLimit = useCheckLimit(tokenInfo.chainId);
+  const handleOneTimeApproval = useCallback(() => {
+    setOpenGuardiansApprove(true);
+    console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
+  }, []);
+  const onCloseGuardianApprove = useCallback(() => {
+    setOpenGuardiansApprove(false);
+  }, []);
+  const getApproveRes = useCallback(
+    async (approveList: GuardianItem[]) => {
+      try {
+        oneTimeApprovalList.current = approveList;
+        if (Array.isArray(approveList) && approveList.length > 0) {
+          console.log('🌈 🌈 🌈 🌈 🌈 🌈 approveList', approveList);
+          setOpenGuardiansApprove(false);
+          console.log('🌈 🌈 🌈 🌈 🌈 🌈 stage', stage);
+          if (stage === Stage.Amount) {
+            setStage(Stage.Preview);
+          } else if (stage === Stage.Preview) {
+            await sendTransfer();
+          }
+        } else {
+          // TODO guardians throw error
+        }
+      } catch (error) {
+        // TODO guardians throw error
+      }
+    },
+    [sendTransfer, stage],
+  );
 
   const checkSecurity = useCheckSecurity();
   const handleCheckPreview = useCallback(async () => {
@@ -230,6 +331,20 @@ export default function Send() {
       } else {
         return 'input error';
       }
+
+      // TODO guardians :amount + constants >=balance // limit all
+      // transfer limit check
+      const limitRes = await checkLimit({
+        chainId: tokenInfo.chainId,
+        symbol: tokenInfo.symbol,
+        amount: amount,
+        decimals: tokenInfo.decimals,
+        from: ICheckLimitBusiness.SEND,
+        balance,
+        onOneTimeApproval: handleOneTimeApproval,
+      });
+      if (!limitRes) return ExceedLimit;
+
       const fee = await getTranslationInfo();
       console.log('---getTranslationInfo', fee);
       if (fee) {
@@ -237,16 +352,6 @@ export default function Send() {
       } else {
         return TransactionError.FEE_NOT_ENOUGH;
       }
-
-      // transfer limit check
-      const res = await checkLimit({
-        chainId: tokenInfo.chainId,
-        symbol: tokenInfo.symbol,
-        amount: amount,
-        decimals: tokenInfo.decimals,
-        from: ICheckLimitBusiness.SEND,
-      });
-      if (typeof res !== 'boolean') return ExceedLimit;
 
       return '';
     } catch (error: any) {
@@ -258,16 +363,17 @@ export default function Send() {
   }, [
     setLoading,
     amount,
+    balance,
     checkManagerSyncState,
     state.chainId,
-    type,
-    getTranslationInfo,
     checkSecurity,
     tokenInfo.chainId,
     tokenInfo.symbol,
     tokenInfo.decimals,
+    type,
+    getTranslationInfo,
     checkLimit,
-    balance,
+    handleOneTimeApproval,
     toAccount.address,
     chainInfo?.chainId,
     symbol,
@@ -275,23 +381,22 @@ export default function Send() {
     crossChainFee,
   ]);
 
-  const sendHandler = useCallback(async () => {
-    try {
-      if (!chainInfo || !passwordSeed) return;
-      const privateKey = aes.decrypt(wallet.AESEncryptPrivateKey, passwordSeed);
-      if (!privateKey) return;
-      if (!tokenInfo) throw 'No Symbol info';
-      setLoading(true);
+  const sendHandler = useCallback(async (): Promise<string | void> => {
+    if (!oneTimeApprovalList.current || oneTimeApprovalList.current.length === 0) {
       try {
+        if (!tokenInfo) throw 'No Symbol info';
+        setLoading(true);
         // transfer limit check
-        const res = await checkLimit({
+        const limitRes = await checkLimit({
           chainId: tokenInfo.chainId,
           symbol: tokenInfo.symbol,
           amount: amount,
           decimals: tokenInfo.decimals,
           from: ICheckLimitBusiness.SEND,
+          balance,
+          onOneTimeApproval: handleOneTimeApproval,
         });
-        if (typeof res !== 'boolean') {
+        if (!limitRes) {
           setLoading(false);
           return ExceedLimit;
         }
@@ -301,68 +406,9 @@ export default function Send() {
         const msg = handleErrorMessage(error);
         message.error(msg);
       }
-
-      if (isCrossChain(toAccount.address, chainInfo?.chainId ?? 'AELF')) {
-        await crossChainTransfer({
-          chainInfo,
-          chainType: currentNetwork.walletType,
-          privateKey,
-          managerAddress: wallet.address,
-          tokenInfo,
-          caHash: wallet?.caHash || '',
-          amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
-          toAddress: toAccount.address,
-          fee: timesDecimals(txFee, defaultToken.decimals).toFixed(),
-        });
-      } else {
-        console.log('sameChainTransfers==sendHandler');
-        await sameChainTransfer({
-          chainInfo,
-          chainType: currentNetwork.walletType,
-          privateKey,
-          tokenInfo,
-          caHash: wallet?.caHash || '',
-          amount: timesDecimals(amount, tokenInfo.decimals).toFixed(),
-          toAddress: toAccount.address,
-        });
-      }
-      message.success('success');
-      navigate('/');
-    } catch (error: any) {
-      console.log('sendHandler==error', error);
-      if (!error?.type) return message.error(error);
-      if (error.type === 'managerTransfer') {
-        return message.error(error);
-      } else if (error.type === 'crossChainTransfer') {
-        dispatch(addFailedActivity(error.data));
-        console.log('addFailedActivity', error);
-
-        showErrorModal(error.data);
-        return;
-      } else {
-        message.error(handleErrorMessage(error));
-      }
-    } finally {
-      setLoading(false);
     }
-  }, [
-    amount,
-    chainInfo,
-    checkLimit,
-    currentNetwork.walletType,
-    defaultToken.decimals,
-    dispatch,
-    navigate,
-    passwordSeed,
-    setLoading,
-    showErrorModal,
-    toAccount.address,
-    tokenInfo,
-    txFee,
-    wallet.AESEncryptPrivateKey,
-    wallet.address,
-    wallet?.caHash,
-  ]);
+    await sendTransfer();
+  }, [amount, balance, checkLimit, handleOneTimeApproval, sendTransfer, setLoading, tokenInfo]);
 
   const StageObj: TypeStageObj = useMemo(
     () => ({
@@ -536,10 +582,34 @@ export default function Send() {
             {StageObj[stage].btnText}
           </Button>
         </div>
+
+        <GuardianApproveModal
+          open={openGuardiansApprove}
+          targetChainId={tokenInfo.chainId}
+          onClose={onCloseGuardianApprove}
+          getApproveRes={getApproveRes}
+        />
+
         {isPrompt && <PromptEmptyElement />}
       </div>
     );
-  }, [StageObj, btnDisabled, errorMsg, isPrompt, navigate, stage, symbol, t, toAccount, type, walletName]);
+  }, [
+    StageObj,
+    btnDisabled,
+    errorMsg,
+    getApproveRes,
+    isPrompt,
+    navigate,
+    onCloseGuardianApprove,
+    openGuardiansApprove,
+    stage,
+    symbol,
+    t,
+    toAccount,
+    tokenInfo.chainId,
+    type,
+    walletName,
+  ]);
 
   return <>{isPrompt ? <PromptFrame content={mainContent()} /> : mainContent()}</>;
 }

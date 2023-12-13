@@ -47,6 +47,8 @@ import { useCheckLimit, useCheckSecurity } from 'hooks/useSecurity';
 import { handleErrorMessage } from '@portkey-wallet/utils';
 import { ICheckLimitBusiness } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { useExtensionBuyButtonShow } from 'hooks/cms';
+import { GuardianItem } from 'types/guardians';
+import GuardianApproveModal from 'pages/components/GuardianApprovalModal';
 
 export default function Buy() {
   const { t } = useTranslation();
@@ -73,6 +75,46 @@ export default function Buy() {
   const defaultToken = useDefaultToken('AELF');
   const checkSecurity = useCheckSecurity();
   const checkLimit = useCheckLimit('AELF');
+  const [openGuardiansApprove, setOpenGuardiansApprove] = useState<boolean>(false);
+  const oneTimeApprovalList = useRef<GuardianItem[]>([]);
+  const handleOneTimeApproval = useCallback(() => {
+    setOpenGuardiansApprove(true);
+    console.log('🌈 🌈 🌈 🌈 🌈 🌈 handleOneTimeApproval', '');
+  }, []);
+  const onCloseGuardianApprove = useCallback(() => {
+    setOpenGuardiansApprove(false);
+  }, []);
+  const goPreview = useCallback(() => {
+    const { amount, currency, country, crypto, network, side } = valueSaveRef.current;
+    navigate('/buy/preview', {
+      state: {
+        crypto,
+        network,
+        fiat: currency,
+        country,
+        amount,
+        side,
+        tokenInfo: state ? state.tokenInfo : null,
+      },
+    });
+  }, [navigate, state]);
+  const getApproveRes = useCallback(
+    async (approveList: GuardianItem[]) => {
+      try {
+        oneTimeApprovalList.current = approveList;
+        if (Array.isArray(approveList) && approveList.length > 0) {
+          console.log('🌈 🌈 🌈 🌈 🌈 🌈 approveList', approveList);
+          setOpenGuardiansApprove(false);
+          goPreview();
+        } else {
+          // TODO sell throw error
+        }
+      } catch (error) {
+        // TODO sell throw error
+      }
+    },
+    [goPreview],
+  );
 
   const disabled = useMemo(() => !!errMsg || !amount, [errMsg, amount]);
   const showRateText = useMemo(
@@ -430,16 +472,6 @@ export default function Buy() {
         // CHECK 2: security
         const securityRes = await checkSecurity('AELF');
         if (!securityRes) return setLoading(false);
-
-        // CHECK 3: transfer limit
-        const limitRes = await checkLimit({
-          chainId: 'AELF',
-          symbol: defaultToken.symbol,
-          amount: valueSaveRef.current?.amount,
-          decimals: defaultToken.decimals,
-          from: ICheckLimitBusiness.RAMP_SELL,
-        });
-        if (typeof limitRes !== 'boolean') return setLoading(false);
       } catch (error) {
         setLoading(false);
 
@@ -468,21 +500,22 @@ export default function Buy() {
         setInsufficientFundsMsg();
         return;
       }
+
+      // CHECK 3: transfer limit
+      const limitRes = await checkLimit({
+        chainId: 'AELF',
+        symbol: defaultToken.symbol,
+        amount: valueSaveRef.current?.amount,
+        decimals: defaultToken.decimals,
+        from: ICheckLimitBusiness.RAMP_SELL,
+        balance,
+        onOneTimeApproval: handleOneTimeApproval,
+      });
+      if (!limitRes) return setLoading(false);
     }
     setLoading(false);
 
-    const { amount, currency, country, crypto, network } = valueSaveRef.current;
-    navigate('/buy/preview', {
-      state: {
-        crypto,
-        network,
-        fiat: currency,
-        country,
-        amount,
-        side,
-        tokenInfo: state ? state.tokenInfo : null,
-      },
-    });
+    goPreview();
   }, [
     accountTokenList,
     achFee,
@@ -493,11 +526,12 @@ export default function Buy() {
     currentNetwork.walletType,
     defaultToken.decimals,
     defaultToken.symbol,
+    goPreview,
+    handleOneTimeApproval,
     navigate,
     refreshBuyButton,
     setInsufficientFundsMsg,
     setLoading,
-    state,
     wallet,
   ]);
 
@@ -586,6 +620,13 @@ export default function Buy() {
           </Button>
         </div>
         {isPrompt && <PromptEmptyElement />}
+
+        <GuardianApproveModal
+          open={openGuardiansApprove}
+          targetChainId="AELF"
+          onClose={onCloseGuardianApprove}
+          getApproveRes={getApproveRes}
+        />
       </div>
     ),
     [
@@ -594,12 +635,15 @@ export default function Buy() {
       curToken,
       disabled,
       errMsg,
+      getApproveRes,
       handleBack,
       handleInputChange,
       handleNext,
       handlePageChange,
       handleSelect,
       isPrompt,
+      onCloseGuardianApprove,
+      openGuardiansApprove,
       page,
       rate,
       receive,

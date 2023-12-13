@@ -27,3 +27,10 @@ export const SecurityVulnerabilityTip =
 export const ExceedLimit = 'ExceedLimit';
 
 export const WalletIsNotSecure = 'WalletIsNotSecure';
+
+export enum LimitType {
+  Single = 'Single',
+  Daily = 'Daily',
+}
+
+export const MAX_TRANSACTION_FEE = '0.1';

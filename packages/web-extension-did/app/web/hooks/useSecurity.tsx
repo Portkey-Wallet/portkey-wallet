@@ -13,10 +13,12 @@ import {
   SecurityAccelerateTitle,
   SecurityAccelerateContent,
   SecurityAccelerateErrorTip,
+  LimitType,
+  MAX_TRANSACTION_FEE,
 } from 'constants/security';
 import {
-  useDailyTransferLimitModal,
-  useSingleTransferLimitModal,
+  useTransferLimitApprovalModal,
+  useTransferLimitModal,
 } from 'pages/WalletSecurity/PaymentSecurity/hooks/useLimitModal';
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
@@ -36,6 +38,8 @@ import { CheckSecurityResult, getAccelerateGuardianTxId } from '@portkey-wallet/
 import { useCurrentNetworkInfo } from '@portkey-wallet/hooks/hooks-ca/network';
 import { getCurrentChainInfo } from 'utils/lib/SWGetReduxStore';
 import CustomSvg from 'components/CustomSvg';
+import { ZERO } from '@portkey-wallet/constants/misc';
+import { divDecimals } from '@portkey-wallet/utils/converter';
 
 export const useCheckSecurity = () => {
   const wallet = useCurrentWalletInfo();
@@ -242,6 +246,8 @@ export interface ICheckLimitParams {
   decimals: number | string;
   amount: string;
   from: ICheckLimitBusiness;
+  balance: string;
+  onOneTimeApproval: () => void;
 }
 
 export const useCheckLimit = (targetChainId: ChainId) => {
@@ -249,11 +255,19 @@ export const useCheckLimit = (targetChainId: ChainId) => {
   const { walletInfo } = useCurrentWallet();
   const { passwordSeed } = useUserInfo();
   const checkTransferLimit = useCheckTransferLimit();
-  const dailyTransferLimitModal = useDailyTransferLimitModal();
-  const singleTransferLimitModal = useSingleTransferLimitModal();
+  const transferLimitApprovalModal = useTransferLimitApprovalModal();
+  const transferLimitModal = useTransferLimitModal();
 
   return useCallback(
-    async ({ chainId, symbol, decimals, amount, from }: ICheckLimitParams): Promise<boolean | object> => {
+    async ({
+      chainId,
+      symbol,
+      decimals,
+      amount,
+      from,
+      balance,
+      onOneTimeApproval,
+    }: ICheckLimitParams): Promise<boolean | object> => {
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
       if (!currentChain?.endPoint || !privateKey) return message.error('Invalid user information, please check');
 
@@ -280,10 +294,28 @@ export const useCheckLimit = (targetChainId: ChainId) => {
         from,
       };
       if (limitRes?.isSingleLimited) {
-        return singleTransferLimitModal(settingParams);
+        if (
+          ZERO.plus(amount)
+            .plus(MAX_TRANSACTION_FEE)
+            .gte(ZERO.plus(divDecimals(balance, decimals)))
+        ) {
+          transferLimitModal(settingParams, LimitType.Single);
+        } else {
+          transferLimitApprovalModal(settingParams, LimitType.Single, onOneTimeApproval);
+        }
+        return false;
       }
       if (limitRes?.isDailyLimited) {
-        return dailyTransferLimitModal(settingParams);
+        if (
+          ZERO.plus(amount)
+            .plus(MAX_TRANSACTION_FEE)
+            .gte(ZERO.plus(divDecimals(balance, decimals)))
+        ) {
+          transferLimitModal(settingParams, LimitType.Daily);
+        } else {
+          transferLimitApprovalModal(settingParams, LimitType.Daily, onOneTimeApproval);
+        }
+        return false;
       }
       return true;
     },
@@ -291,9 +323,9 @@ export const useCheckLimit = (targetChainId: ChainId) => {
       checkTransferLimit,
       currentChain?.caContractAddress,
       currentChain?.endPoint,
-      dailyTransferLimitModal,
       passwordSeed,
-      singleTransferLimitModal,
+      transferLimitApprovalModal,
+      transferLimitModal,
       walletInfo.AESEncryptPrivateKey,
     ],
   );

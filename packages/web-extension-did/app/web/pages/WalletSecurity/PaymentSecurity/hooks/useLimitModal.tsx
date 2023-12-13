@@ -1,20 +1,20 @@
 import { ITransferLimitRouteState } from '@portkey-wallet/types/types-ca/paymentSecurity';
 import { Modal } from 'antd';
 import CustomSvg from 'components/CustomSvg';
-import { ExceedDailyLimit, ExceedSingleLimit } from 'constants/security';
-import { useGuardiansNavigate } from 'hooks/guardians';
+import { ExceedDailyLimit, ExceedSingleLimit, LimitType } from 'constants/security';
+// import { useGuardiansNavigate } from 'hooks/guardians'; // TODO guardians
 import CustomModal from 'pages/components/CustomModal';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
-export function useSingleTransferLimitModal() {
+export function useTransferLimitApprovalModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const guardiansNavigate = useGuardiansNavigate();
+  // const guardiansNavigate = useGuardiansNavigate();
 
   return useCallback(
-    (state: ITransferLimitRouteState) => {
+    (state: ITransferLimitRouteState, type: LimitType, onOneTimeApproval: () => void) => {
       const transferLimitModal = CustomModal({
         type: 'confirm',
         content: (
@@ -23,7 +23,7 @@ export function useSingleTransferLimitModal() {
               <CustomSvg type="Close2" />
             </div>
 
-            <span>{ExceedSingleLimit}</span>
+            <span>{type === LimitType.Daily ? ExceedDailyLimit : ExceedSingleLimit}</span>
           </div>
         ),
         className: 'transfer-limit-modal',
@@ -32,7 +32,7 @@ export function useSingleTransferLimitModal() {
         centered: true,
         okText: t(`Request One-Time Approval`),
         cancelText: t('Modify Transfer Limit for All'),
-        onOk: () => guardiansNavigate({ ...state, initStateBackUp: state }),
+        onOk: onOneTimeApproval,
         onCancel: () =>
           navigate('/setting/wallet-security/payment-security/transfer-settings-edit', {
             state: { ...state, initStateBackUp: state },
@@ -40,19 +40,19 @@ export function useSingleTransferLimitModal() {
       });
       return transferLimitModal;
     },
-    [guardiansNavigate, navigate, t],
+    [navigate, t],
   );
 }
 
-export function useDailyTransferLimitModal() {
+export function useTransferLimitModal() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   return useCallback(
-    (state: ITransferLimitRouteState) => {
+    (state: ITransferLimitRouteState, type: LimitType) => {
       return Modal.confirm({
         width: 320,
-        content: ExceedDailyLimit,
+        content: type === LimitType.Daily ? ExceedDailyLimit : ExceedSingleLimit,
         className: 'cross-modal',
         autoFocusButton: null,
         icon: null,

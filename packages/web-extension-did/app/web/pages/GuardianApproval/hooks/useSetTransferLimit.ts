@@ -82,7 +82,7 @@ export const useSetTransferLimit = (targetChainId?: ChainId) => {
       setLoading(true);
 
       const privateKey = aes.decrypt(walletInfo.AESEncryptPrivateKey, passwordSeed);
-      if (!currentChain?.endPoint || !privateKey) return message.error('remove manage error');
+      if (!currentChain?.endPoint || !privateKey) return message.error('SetTransferLimit error');
       const { guardiansApproved } = formatGuardianValue(userGuardianStatus);
       const transQuery: ITransferLimitRouteState = JSON.parse(query.split('_')[1]);
       const symbol = transQuery?.symbol;

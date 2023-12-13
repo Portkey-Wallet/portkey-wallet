@@ -11,7 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import PinContainer from 'components/PinContainer';
 import { StyleSheet } from 'react-native';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
-import { useErrorTimer } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 export default function CheckPin() {
   const { openBiometrics } = useRouterParams<{ openBiometrics?: boolean }>();
@@ -22,13 +22,13 @@ export default function CheckPin() {
     }, []),
   );
 
-  const { error: textError, setErrorTimer, clearErrorTimer } = useErrorTimer(VERIFY_INVALID_TIME);
+  const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
     (pin: string) => {
       if (pin.length === PIN_SIZE) {
         if (!checkPin(pin)) {
           pinRef.current?.reset();
-          setErrorTimer(PinErrorMessage.invalidPin);
+          setTextError(PinErrorMessage.invalidPin, VERIFY_INVALID_TIME);
           return;
         }
         if (openBiometrics) {
@@ -38,10 +38,10 @@ export default function CheckPin() {
           navigationService.navigate('SetPin', { oldPin: pin });
         }
       } else if (textError.isError) {
-        clearErrorTimer();
+        setTextError();
       }
     },
-    [clearErrorTimer, openBiometrics, setErrorTimer, textError.isError],
+    [openBiometrics, setTextError, textError.isError],
   );
   return (
     <PageContainer

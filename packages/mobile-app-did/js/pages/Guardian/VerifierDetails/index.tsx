@@ -37,7 +37,7 @@ import { CreateAddressLoading, VERIFY_INVALID_TIME } from '@portkey-wallet/const
 import { handleGuardiansApproved } from 'utils/login';
 import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
-import { useErrorTimer } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -151,7 +151,7 @@ export default function VerifierDetails() {
     [guardianItem, onRequestOrSetPin],
   );
 
-  const { error: codeError, setErrorTimer, clearErrorTimer } = useErrorTimer(VERIFY_INVALID_TIME);
+  const { error: codeError, setError: setCodeError } = useErrorMessage();
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
@@ -225,7 +225,7 @@ export default function VerifierDetails() {
       } catch (error) {
         const _isInvalidCode = checkVerifierIsInvalidCode(error);
         if (_isInvalidCode) {
-          setErrorTimer('');
+          setCodeError('', VERIFY_INVALID_TIME);
         } else {
           CommonToast.failError(error, 'Verify Fail');
         }
@@ -251,7 +251,7 @@ export default function VerifierDetails() {
       accelerateChainId,
       autoLogin,
       registerAccount,
-      setErrorTimer,
+      setCodeError,
     ],
   );
 
@@ -294,7 +294,9 @@ export default function VerifierDetails() {
       />
       <DigitInput
         ref={digitInput}
-        onChangeText={clearErrorTimer}
+        onChangeText={() => {
+          setCodeError();
+        }}
         onFinish={onFinish}
         maxLength={DIGIT_CODE.length}
         isError={codeError.isError}

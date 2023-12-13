@@ -38,8 +38,13 @@ export function useJumpToChatDetails() {
           );
         }
 
-        // if group chat exist, destroy it
-        navigationService.reset([{ name: 'Tab' }, { name: 'ChatDetailsPage' }]);
+        const routesArr = navigationService.getState()?.routes;
+
+        if (routesArr[routesArr.length - 1].name === 'Tab') {
+          navigationService.navigate('ChatDetailsPage');
+        } else {
+          navigationService.reset([{ name: 'Tab' }, { name: 'ChatDetailsPage' }]);
+        }
         await sleep(1000);
         myEvents.navToBottomTab.emit({ tabName: ChatTabName });
       } catch (error) {
@@ -74,7 +79,15 @@ export function useJumpToChatGroupDetails() {
             }),
           );
         }
-        navigationService.reset([{ name: 'Tab' }, { name: 'ChatGroupDetailsPage' }]);
+
+        const routesArr = navigationService.getState()?.routes;
+
+        if (routesArr[routesArr.length - 1].name === 'Tab') {
+          navigationService.navigate('ChatGroupDetailsPage');
+        } else {
+          navigationService.reset([{ name: 'Tab' }, { name: 'ChatGroupDetailsPage' }]);
+        }
+
         await sleep(1000);
         myEvents.navToBottomTab.emit({ tabName: ChatTabName });
       } catch (error) {

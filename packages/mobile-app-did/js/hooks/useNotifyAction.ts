@@ -26,15 +26,11 @@ export const useNotifyAction = () => {
           case NOTIFY_ACTION.openChat: {
             if (!data) return;
 
-            try {
-              const { channelId = '', channelType } = data;
-              if (channelType === ChannelTypeEnum.GROUP) await jumpToChatGroupDetails({ channelUuid: channelId });
-              if (channelType === ChannelTypeEnum.P2P) await jumpToChatDetails({ channelUuid: channelId });
+            const { channelId = '', channelType } = data;
+            if (channelType === ChannelTypeEnum.GROUP) await jumpToChatGroupDetails({ channelUuid: channelId });
+            if (channelType === ChannelTypeEnum.P2P) await jumpToChatDetails({ channelUuid: channelId });
 
-              myEvents.navToBottomTab.emit({ tabName: ChatTabName });
-            } catch (error) {
-              console.log('error', error);
-            } 
+            myEvents.navToBottomTab.emit({ tabName: ChatTabName });
 
             break;
           }
@@ -84,7 +80,6 @@ export const useNotify = () => {
             {
               title: t('Confirm'),
               onPress: async () => {
-                // todo: switch network route
                 await changeNetwork({ networkType: isMainnet ? 'TESTNET' : 'MAIN' }, false);
               },
             },

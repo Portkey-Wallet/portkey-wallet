@@ -27,6 +27,7 @@ import CodePush from 'react-native-code-push';
 import 'utils/sentryInit';
 import 'utils/logBox';
 import 'utils/initExceptionManager';
+import 'utils/initRequest';
 import { initFCMSignalR } from 'utils/FCM';
 import { initNotifications } from 'utils/notifee';
 

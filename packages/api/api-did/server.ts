@@ -34,7 +34,7 @@ export class DidService extends ServiceInit {
     try {
       if (!this.refreshTokenConfig || !isValidRefreshTokenConfig(this.refreshTokenConfig)) return;
       const authorization = await queryAuthorization(this.refreshTokenConfig);
-      this.defaultConfig.headers = { ...this.defaultConfig.headers, Authorization: authorization };
+      this.set('headers', { Authorization: authorization });
       this.emitConnectTokenChange(authorization);
 
       this.locked = false;

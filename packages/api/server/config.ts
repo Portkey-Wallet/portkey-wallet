@@ -2,6 +2,7 @@ import { customFetch } from '@portkey-wallet/utils/fetch';
 import { BaseConfig, RequestConfig, UrlObj } from '../types';
 import { getRequestConfig, spliceUrl } from '../utils';
 import EventEmitter from 'events';
+import merge from 'lodash/merge';
 
 export class ServiceInit extends EventEmitter {
   [x: string]: any;
@@ -44,6 +45,10 @@ export class ServiceInit extends EventEmitter {
   }
 
   set(key: keyof RequestConfig, value: any) {
-    this.defaultConfig[key] = value;
+    if (typeof value === 'object' && this.defaultConfig[key]) {
+      this.defaultConfig[key] = merge(this.defaultConfig[key] || {}, value);
+    } else {
+      this.defaultConfig[key] = value;
+    }
   }
 }

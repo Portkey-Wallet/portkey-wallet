@@ -26,7 +26,7 @@ import initIm from 'hooks/im';
 import { useCheckContactMap } from '@portkey-wallet/hooks/hooks-ca/contact';
 import { useExtensionEntrance } from 'hooks/cms';
 import { useEffectOnce } from '@portkey-wallet/hooks';
-import { initConfig } from './initConfig';
+import { initConfig, initRequest } from './initConfig';
 import useFCM from 'hooks/useFCM';
 
 keepAliveOnPages({});
@@ -98,6 +98,7 @@ export default function Updater() {
 
   useEffectOnce(() => {
     initConfig();
+    initRequest();
   });
   return null;
 }

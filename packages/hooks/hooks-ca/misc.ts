@@ -145,31 +145,33 @@ export const useTimer = () => {
   return { setTimer, clearTimer };
 };
 
-export const useErrorTimer = (time: number) => {
+export const useErrorMessage = () => {
   const { setTimer, clearTimer } = useTimer();
   const [error, setError] = useState(INIT_ERROR);
 
-  const setErrorTimer = useCallback(
-    (errorMsg: string) => {
+  const onSetError = useCallback(
+    (errorMsg?: string, time?: number) => {
+      clearTimer();
+      if (errorMsg === undefined) {
+        setError({ ...INIT_NONE_ERROR });
+        return;
+      }
+
       setError({
         errorMsg,
         isError: true,
       });
-      setTimer(() => {
-        setError({ ...INIT_NONE_ERROR });
-      }, time);
+      if (time !== undefined) {
+        setTimer(() => {
+          setError({ ...INIT_NONE_ERROR });
+        }, time);
+      }
     },
-    [setTimer, time],
+    [clearTimer, setTimer],
   );
-
-  const clearErrorTimer = useCallback(() => {
-    setError({ ...INIT_NONE_ERROR });
-    clearTimer();
-  }, [clearTimer]);
 
   return {
     error,
-    setErrorTimer,
-    clearErrorTimer,
+    setError: onSetError,
   };
 };

@@ -27,7 +27,7 @@ import { isUserBiometricsError } from 'utils/biometrics';
 import GStyles from 'assets/theme/GStyles';
 import useLatestIsFocusedRef from 'hooks/useLatestIsFocusedRef';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
-import { useErrorTimer } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 export default function SecurityLock() {
   const { biometrics } = useUser();
   const biometricsReady = useBiometricsReady();
@@ -170,21 +170,21 @@ export default function SecurityLock() {
     };
   }, [handleAppStateChange]);
 
-  const { error: textError, setErrorTimer, clearErrorTimer } = useErrorTimer(VERIFY_INVALID_TIME);
+  const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
     (enterPin: string) => {
       if (enterPin.length === PIN_SIZE) {
         if (!checkPin(enterPin)) {
           digitInput.current?.reset();
-          setErrorTimer('Incorrect Pin');
+          setTextError('Incorrect Pin', VERIFY_INVALID_TIME);
           return;
         }
         handlePassword(enterPin);
       } else if (textError.isError) {
-        clearErrorTimer();
+        setTextError();
       }
     },
-    [clearErrorTimer, textError.isError, handlePassword, setErrorTimer],
+    [textError.isError, handlePassword, setTextError],
   );
   return (
     <PageContainer hideHeader containerStyles={GStyles.flex1} scrollViewProps={{ disabled: true }}>

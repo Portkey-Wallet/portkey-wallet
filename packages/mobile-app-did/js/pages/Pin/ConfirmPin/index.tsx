@@ -24,7 +24,7 @@ import { useLanguage } from 'i18n/hooks';
 import { sendScanLoginSuccess } from '@portkey-wallet/api/api-did/message/utils';
 import { changeCanLock } from 'utils/LockManager';
 import { VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
-import { useErrorTimer } from '@portkey-wallet/hooks/hooks-ca/misc';
+import { useErrorMessage } from '@portkey-wallet/hooks/hooks-ca/misc';
 type RouterParams = {
   oldPin?: string;
   pin?: string;
@@ -106,26 +106,26 @@ export default function ConfirmPin() {
     ],
   );
 
-  const { error: textError, setErrorTimer, clearErrorTimer } = useErrorTimer(VERIFY_INVALID_TIME);
+  const { error: textError, setError: setTextError } = useErrorMessage();
   const onChangeText = useCallback(
     async (confirmPin: string) => {
       if (confirmPin.length !== PIN_SIZE) {
         if (textError.isError) {
-          clearErrorTimer();
+          setTextError();
         }
         return;
       }
 
       if (confirmPin !== pin) {
         pinRef.current?.reset();
-        setErrorTimer('Pins do not match');
+        setTextError('Pins do not match', VERIFY_INVALID_TIME);
         return;
       }
 
       if (oldPin) return onChangePin(confirmPin);
       if (managerInfo) return onFinish(confirmPin);
     },
-    [pin, oldPin, onChangePin, managerInfo, onFinish, textError.isError, clearErrorTimer, setErrorTimer],
+    [pin, oldPin, onChangePin, managerInfo, onFinish, textError.isError, setTextError],
   );
 
   return (

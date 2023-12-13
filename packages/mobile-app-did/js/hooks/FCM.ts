@@ -3,20 +3,12 @@ import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { AppState, AppStateStatus } from 'react-native';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
-import { request } from '@portkey-wallet/api/api-did';
 import useEffectOnce from './useEffectOnce';
 
 export function useReportingSignalR() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const unreadCount = useUnreadCount();
   const [appStatus, setAppStatus] = useState<AppStatusUnit>(AppStatusUnit.BACKGROUND);
-
-  useEffect(() => {
-    if (!request.defaultConfig.baseURL) return;
-    signalrFCM.doOpen({
-      url: `${request.defaultConfig.baseURL}`,
-    });
-  }, []);
 
   const handleAppStateChange = useCallback((nextAppState: AppStateStatus) => {
     // report AppStatus and unReadMessage

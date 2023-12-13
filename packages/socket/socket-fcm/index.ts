@@ -4,6 +4,7 @@ import { DeviceInfoType, AppStatusUnit } from './types';
 import { sleep } from '@portkey-wallet/utils';
 import { BaseSignalr } from '@portkey/socket';
 import { ISignalrOptions } from '@portkey/socket/dist/commonjs/types';
+import { request } from '@portkey-wallet/api/api-did';
 
 class SignalrFCM extends BaseSignalr {
   portkeyToken?: string;
@@ -12,9 +13,11 @@ class SignalrFCM extends BaseSignalr {
   deviceId?: string;
   deviceInfo?: DeviceInfoType;
   getFCMTokenFunc?: (refresh?: boolean) => Promise<string>;
+  public openStateMap: { [key: string]: boolean };
 
   constructor(props: ISignalrOptions<any>) {
     super(props);
+    this.openStateMap = {};
   }
 
   public init = async ({
@@ -47,11 +50,11 @@ class SignalrFCM extends BaseSignalr {
   };
 
   public reportAppStatus = async (status: AppStatusUnit, unReadCount: number) => {
-    // console.log('reportAppStatus', { status, unReadCount }, 'deviceId', this.deviceId, 'deviceInfo', this.deviceInfo);
+    const url = request.defaultConfig.baseURL || '';
+    if (!this.openStateMap[url]) await this.doOpen({ url });
     return this.signalr?.invoke('reportAppStatus', { status, unReadCount });
   };
 
-  // TODO: change ts
   public reportDeviceInfo = () => {
     console.log('deviceInfo', this.deviceInfo);
     if (!this.deviceInfo) return;
@@ -87,6 +90,7 @@ class SignalrFCM extends BaseSignalr {
   };
 
   public doOpen = async ({ url, clientId }: { url: string; clientId?: string }): Promise<HubConnection> => {
+    if (!url) throw Error('Please add url');
     if (!this.fcmToken) {
       await sleep(3000);
       await this.getFCMToken();
@@ -115,7 +119,7 @@ class SignalrFCM extends BaseSignalr {
     this.url = url;
 
     await this.reportDeviceInfo();
-
+    this.openStateMap = { [url]: true };
     return signalr;
   };
 

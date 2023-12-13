@@ -111,7 +111,6 @@
     "postcss": "^8.4.16",
     "postcss-less": "^6.0.0",
     "prettier": "^2.7.1",
-    "sass-loader": "^13.0.2",
     "spark-md5": "^3.0.2",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.1",
@@ -140,7 +139,7 @@
     "none:watch": "webpack watch --mode none",
     "dev": "webpack --mode development",
     "dev:watch": "webpack watch --mode development",
-    "pro": "webpack --mode production",
+    "pro": "rm -rf app/public && webpack --mode production",
     "pro:watch": "webpack watch --mode production",
     "prepare": "husky install"
   },

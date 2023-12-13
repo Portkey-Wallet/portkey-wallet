@@ -48,7 +48,7 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
 
 const styles = StyleSheet.create({
   wrapperStyle: {
-    borderRadius: pTd(20),
+    borderRadius: pTd(16),
     color: defaultColors.font5,
   },
   wrapLeft: {
@@ -64,11 +64,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   containerToNextRightStyle: {
-    borderBottomRightRadius: pTd(20),
+    borderBottomRightRadius: pTd(16),
   },
   containerToNextLeftStyle: {
     borderTopLeftRadius: pTd(2),
-    borderBottomLeftRadius: pTd(20),
+    borderBottomLeftRadius: pTd(16),
   },
   containerStyle: {
     marginHorizontal: pTd(4),
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   },
   memberName: {
     color: defaultColors.font7,
-    marginBottom: pTd(4),
+    marginBottom: pTd(2),
     marginLeft: -pTd(4),
   },
 });

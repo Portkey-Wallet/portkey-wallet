@@ -128,7 +128,7 @@ export const ToolBar = memo(function ToolBar({ style }: { style?: ViewStyleType 
         label: 'Transfer',
         icon: 'chat-transfer',
         onPress: () => {
-          console.log('Crypto');
+          navigationService.navigate('SelectGroupMembersToTransferPage');
         },
       },
     ];

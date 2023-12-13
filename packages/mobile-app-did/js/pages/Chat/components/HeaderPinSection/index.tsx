@@ -11,7 +11,7 @@ import { showPinnedListOverlay } from '../PinnedListOverlay';
 
 export default function HeaderPinSection() {
   return (
-    <View style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]}>
+    <Touchable style={[GStyles.flexRow, GStyles.itemCenter, styles.wrap]} onPress={() => showPinnedListOverlay({})}>
       <View style={styles.leftBlue} />
       {/* TODO */}
       <Image style={styles.img} resizeMode="cover" source={{ uri: '' }} />
@@ -23,10 +23,8 @@ export default function HeaderPinSection() {
           Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message Pin Message
         </TextM>
       </View>
-      <Touchable onPress={() => showPinnedListOverlay({})}>
-        <Svg icon="add-contact" size={pTd(20)} />
-      </Touchable>
-    </View>
+      <Svg icon="add-contact" size={pTd(20)} />
+    </Touchable>
   );
 }
 

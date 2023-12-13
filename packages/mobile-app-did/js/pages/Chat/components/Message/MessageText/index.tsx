@@ -26,8 +26,10 @@ const TIME_UNICODE_SPACE = isIOS
   : '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0';
 
 function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
+  const { position } = props;
+
   return (
-    <View style={replyMessageTextStyles.wrap}>
+    <View style={[replyMessageTextStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageTextStyles.blueBlank} />
       <TextM style={replyMessageTextStyles.name}>Guo</TextM>
       <TextM style={replyMessageTextStyles.content} numberOfLines={2}>
@@ -38,14 +40,17 @@ function ReplyMessageText(props: MessageTextProps<ChatMessage>) {
 }
 
 function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
+  const { position } = props;
   return (
-    <View style={replyMessageImageStyles.wrap}>
+    <View style={[replyMessageImageStyles.wrap, position === 'right' && replyMessageImageStyles.rightWrap]}>
       <View style={replyMessageImageStyles.blueBlank} />
       <Image style={replyMessageImageStyles.img} source={{ uri: '' }} />
-      <TextM style={replyMessageImageStyles.name}>Guo</TextM>
-      <TextM style={replyMessageImageStyles.content} numberOfLines={1}>
-        Photo
-      </TextM>
+      <View style={replyMessageImageStyles.rightWrap}>
+        <TextM style={replyMessageImageStyles.name}>Guo</TextM>
+        <TextM style={replyMessageImageStyles.content} numberOfLines={1}>
+          Photo
+        </TextM>
+      </View>
     </View>
   );
 }
@@ -117,8 +122,8 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
 
   return (
     <Touchable onPress={onPress} onLongPress={onLongPress} style={styles.textRow}>
-      {/* <ReplyMessageText /> */}
-      <ReplyMessageImage />
+      {/* <ReplyMessageText {...props} /> */}
+      {/* <ReplyMessageImage {...props} /> */}
       <Text style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}>
         {isNotSupported ? (
           <TextM style={FontStyles.font4}>{currentMessage?.text}</TextM>
@@ -159,7 +164,7 @@ const styles = StyleSheet.create({
   },
   textStyles: {
     fontSize: pTd(16),
-    lineHeight: pTd(24),
+    lineHeight: pTd(22),
     marginVertical: pTd(8),
     marginHorizontal: pTd(12),
   },
@@ -236,6 +241,9 @@ const replyMessageTextStyles = StyleSheet.create({
     marginBottom: 0,
     overflow: 'hidden',
   },
+  rightWrap: {
+    backgroundColor: defaultColors.bg22,
+  },
   blueBlank: {
     position: 'absolute',
     left: 0,
@@ -268,6 +276,12 @@ const replyMessageImageStyles = StyleSheet.create({
     margin: pTd(8),
     marginBottom: 0,
     overflow: 'hidden',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rightWrap: {
+    backgroundColor: defaultColors.bg22,
   },
   blueBlank: {
     position: 'absolute',
@@ -280,7 +294,9 @@ const replyMessageImageStyles = StyleSheet.create({
   img: {
     width: pTd(32),
     height: pTd(32),
+    marginRight: pTd(8),
     borderRadius: pTd(3),
+    backgroundColor: defaultColors.bg5,
   },
   name: {
     color: defaultColors.font5,

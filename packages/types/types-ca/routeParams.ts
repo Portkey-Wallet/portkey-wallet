@@ -31,6 +31,7 @@ export interface IToSendHomeParamsType {
     chainType?: ChainType;
   };
   assetInfo: IToSendAssetParamsType;
+  isFixedToContact?: boolean;
 }
 
 export interface IToSendPreviewParamsType extends IToSendHomeParamsType {

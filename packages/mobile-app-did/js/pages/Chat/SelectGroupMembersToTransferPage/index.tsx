@@ -3,55 +3,56 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import PageContainer from 'components/PageContainer';
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
+import GroupMemberItem from '../components/GroupMemberItem';
 import CommonInput from 'components/CommonInput';
 import useDebounce from 'hooks/useDebounce';
-import CommonToast from 'components/CommonToast';
-import GroupInfoMemberItem, { GroupInfoMemberItemType } from '../components/GroupInfoMemberItem';
-import { pTd } from 'utils/unit';
 import NoData from 'components/NoData';
-import { useGroupChannelInfo, useRelationId } from '@portkey-wallet/hooks/hooks-ca/im';
 import { useCurrentChannelId } from '../context/hooks';
-import { BGStyles } from 'assets/theme/styles';
-import navigationService from 'utils/navigationService';
+import { useGroupChannelInfo } from '@portkey-wallet/hooks/hooks-ca/im';
+import { ChannelMemberInfo } from '@portkey-wallet/im/types/index';
+import useEffectOnce from 'hooks/useEffectOnce';
 import { strIncludes } from '@portkey-wallet/utils';
+import { showAssetList } from 'pages/DashBoard/AssetsOverlay';
 
-const GroupMembersPage = () => {
-  const { relationId: myRelationId } = useRelationId();
+const SelectGroupMembersToTransferPage = () => {
   const currentChannelId = useCurrentChannelId();
   const { groupInfo } = useGroupChannelInfo(currentChannelId || '', false);
   const { members = [] } = groupInfo || {};
+  const [rawMemberList, setRawMemberList] = useState<ChannelMemberInfo[]>([]);
 
   const [keyword, setKeyword] = useState('');
   const debounceKeyword = useDebounce(keyword, 200);
-  const [filterMemberList, setFilterMemberList] = useState(members);
-
-  const onPressItem = useCallback(
-    (item: GroupInfoMemberItemType) => {
-      if (myRelationId === item.relationId) {
-        navigationService.navigate('WalletName');
-      } else {
-        navigationService.navigate('ChatContactProfile', {
-          relationId: item.relationId,
-          contact: {
-            name: item?.title,
-          },
-        });
-      }
-    },
-    [myRelationId],
-  );
+  const [filterMembers, setFilterMembers] = useState<ChannelMemberInfo[]>([]);
 
   useEffect(() => {
-    try {
-      setFilterMemberList(() => members.filter(ele => strIncludes(ele.name, debounceKeyword)));
-    } catch (error) {
-      CommonToast.failError(error);
-    }
-  }, [debounceKeyword, members]);
+    setFilterMembers(() => {
+      let result = [];
+      if (debounceKeyword) {
+        result = rawMemberList.filter(ele => strIncludes(ele.name, debounceKeyword) && !ele.isAdmin);
+      } else {
+        result = rawMemberList.filter(ele => !ele.isAdmin);
+      }
+      return [...result];
+    });
+  }, [debounceKeyword, rawMemberList]);
+
+  const onPressItem = useCallback((id: string) => {
+    // todo: change item
+    console.log('id', id);
+    showAssetList({
+      isFixedToContact: true,
+      toAddress: 'xxxx',
+      name: 'yyy',
+    });
+  }, []);
+
+  useEffectOnce(() => {
+    setRawMemberList([...members]);
+  });
 
   return (
     <PageContainer
-      titleDom="Members"
+      titleDom="Select Group Members"
       safeAreaColor={['blue', 'white']}
       scrollViewProps={{ disabled: true }}
       containerStyles={styles.container}>
@@ -59,7 +60,7 @@ const GroupMembersPage = () => {
         <CommonInput
           allowClear
           value={keyword}
-          placeholder={'Search members'}
+          placeholder={'Search'}
           onChangeText={v => {
             setKeyword(v.trim());
           }}
@@ -67,19 +68,20 @@ const GroupMembersPage = () => {
       </View>
 
       <FlatList
-        data={filterMemberList}
-        ListEmptyComponent={<NoData noPic message="No search result" style={BGStyles.bg1} />}
-        keyExtractor={item => item.relationId}
+        data={filterMembers}
+        extraData={(item: ChannelMemberInfo) => item.relationId}
+        ListEmptyComponent={<NoData noPic message={debounceKeyword ? 'No search result' : 'No member'} />}
         renderItem={({ item }) => (
-          <GroupInfoMemberItem
+          <GroupMemberItem
+            key={item.relationId}
+            multiple={false}
             item={{
-              relationId: item.relationId,
               title: item.name,
+              relationId: item.relationId,
               avatar: item.avatar,
             }}
-            isOwner={item.isAdmin}
+            selected={false}
             onPress={onPressItem}
-            style={styles.itemStyle}
           />
         )}
       />
@@ -87,7 +89,7 @@ const GroupMembersPage = () => {
   );
 };
 
-export default GroupMembersPage;
+export default SelectGroupMembersToTransferPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -99,9 +101,6 @@ const styles = StyleSheet.create({
   inputWrap: {
     backgroundColor: defaultColors.bg5,
     ...GStyles.paddingArg(8, 20, 8),
-  },
-  itemStyle: {
-    paddingHorizontal: pTd(20),
   },
   buttonWrap: {
     ...GStyles.marginArg(10, 20, 16),

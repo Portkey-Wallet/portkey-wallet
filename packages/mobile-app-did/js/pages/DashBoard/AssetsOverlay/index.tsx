@@ -26,6 +26,12 @@ import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/u
 import CommonAvatar from 'components/CommonAvatar';
 import { ON_END_REACHED_THRESHOLD } from '@portkey-wallet/constants/constants-ca/activity';
 
+type ShowAssetListParamsType = {
+  toAddress?: string;
+  name?: string;
+  isFixedToContact?: boolean;
+};
+
 const AssetItem = (props: { symbol: string; onPress: (item: any) => void; item: IAssetItemType }) => {
   const { symbol, onPress, item } = props;
 
@@ -78,7 +84,7 @@ const INIT_PAGE_INFO = {
   isLoading: false,
 };
 
-const AssetList = ({ toAddress }: { toAddress: string }) => {
+const AssetList = ({ toAddress, name, isFixedToContact }: ShowAssetListParamsType) => {
   const { t } = useLanguage();
   const caAddresses = useCaAddresses();
   const caAddressInfos = useCaAddressInfoList();
@@ -156,15 +162,16 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
                 : { ...item?.tokenInfo, chainId: item.chainId, symbol: item.symbol },
               toInfo: {
                 address: toAddress || '',
-                name: '',
+                name: name || '',
               },
+              isFixedToContact,
             };
             navigationService.navigate('SendHome', routeParams as unknown as IToSendHomeParamsType);
           }}
         />
       );
     },
-    [toAddress],
+    [isFixedToContact, name, toAddress],
   );
 
   const noData = useMemo(() => {
@@ -214,9 +221,8 @@ const AssetList = ({ toAddress }: { toAddress: string }) => {
   );
 };
 
-export const showAssetList = (params?: { toAddress: string }) => {
-  const { toAddress = '' } = params || {};
-  OverlayModal.show(<AssetList toAddress={toAddress} />, {
+export const showAssetList = (params?: ShowAssetListParamsType) => {
+  OverlayModal.show(<AssetList {...params} />, {
     position: 'bottom',
     autoKeyboardInsets: false,
     enabledNestScrollView: true,

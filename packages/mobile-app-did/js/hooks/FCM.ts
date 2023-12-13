@@ -21,11 +21,6 @@ export function useReportingSignalR() {
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
-      // console.log('report AppStatus', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
-      if (!signalrFCM.fcmToken) return;
-      if (!signalrFCM.portkeyToken) return;
-      if (!signalrFCM.signalr) return;
-
       signalrFCM.reportAppStatus(appStatus, unreadCount);
     }, 3000);
 

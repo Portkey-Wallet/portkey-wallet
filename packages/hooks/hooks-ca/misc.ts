@@ -7,6 +7,7 @@ import { DefaultCountry, getCountryCodeIndex } from '@portkey-wallet/constants/c
 import { CountryItem } from '@portkey-wallet/types/types-ca/country';
 import signalrDid from '@portkey-wallet/socket/socket-did';
 import { request } from '@portkey-wallet/api/api-did';
+import { INIT_ERROR, INIT_NONE_ERROR } from '@portkey-wallet/constants/constants-ca/common';
 
 export const useMisc = () => useAppCASelector(state => state.misc);
 
@@ -120,4 +121,55 @@ export const useIsScanQRCode = (clientId: string | undefined) => {
   }, [clientId]);
 
   return isScanQRCode;
+};
+
+export const useTimer = () => {
+  const timerRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    return () => {
+      timerRef.current && clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  const setTimer = useCallback((callback: () => void, time: number) => {
+    timerRef.current && clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(callback, time);
+  }, []);
+
+  const clearTimer = useCallback(() => {
+    timerRef.current && clearTimeout(timerRef.current);
+    timerRef.current = undefined;
+  }, []);
+
+  return { setTimer, clearTimer };
+};
+
+export const useErrorTimer = (time: number) => {
+  const { setTimer, clearTimer } = useTimer();
+  const [error, setError] = useState(INIT_ERROR);
+
+  const setErrorTimer = useCallback(
+    (errorMsg: string) => {
+      setError({
+        errorMsg,
+        isError: true,
+      });
+      setTimer(() => {
+        setError({ ...INIT_NONE_ERROR });
+      }, time);
+    },
+    [setTimer, time],
+  );
+
+  const clearErrorTimer = useCallback(() => {
+    setError({ ...INIT_NONE_ERROR });
+    clearTimer();
+  }, [clearTimer]);
+
+  return {
+    error,
+    setErrorTimer,
+    clearErrorTimer,
+  };
 };

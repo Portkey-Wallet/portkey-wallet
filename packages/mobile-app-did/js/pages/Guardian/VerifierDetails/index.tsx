@@ -33,10 +33,11 @@ import { useOnRequestOrSetPin } from 'hooks/login';
 import { usePin } from 'hooks/store';
 import { VERIFICATION_TO_OPERATION_MAP } from '@portkey-wallet/constants/constants-ca/verifier';
 import { ChainId } from '@portkey-wallet/types';
-import { CreateAddressLoading } from '@portkey-wallet/constants/constants-ca/wallet';
+import { CreateAddressLoading, VERIFY_INVALID_TIME } from '@portkey-wallet/constants/constants-ca/wallet';
 import { handleGuardiansApproved } from 'utils/login';
 import { checkVerifierIsInvalidCode } from '@portkey-wallet/utils/guardian';
 import { pTd } from 'utils/unit';
+import { useErrorTimer } from '@portkey-wallet/hooks/hooks-ca/misc';
 
 type RouterParams = {
   guardianItem?: UserGuardianItem;
@@ -150,8 +151,7 @@ export default function VerifierDetails() {
     [guardianItem, onRequestOrSetPin],
   );
 
-  const [isInvalidCode, setIsInvalidCode] = useState(false);
-  const invalidCodeTimerRef = useRef<NodeJS.Timeout>();
+  const { error: codeError, setErrorTimer, clearErrorTimer } = useErrorTimer(VERIFY_INVALID_TIME);
   const onFinish = useLockCallback(
     async (code: string) => {
       if (!requestCodeResult || !guardianItem || !code) return;
@@ -225,11 +225,7 @@ export default function VerifierDetails() {
       } catch (error) {
         const _isInvalidCode = checkVerifierIsInvalidCode(error);
         if (_isInvalidCode) {
-          setIsInvalidCode(true);
-          invalidCodeTimerRef.current && clearTimeout(invalidCodeTimerRef.current);
-          invalidCodeTimerRef.current = setTimeout(() => {
-            setIsInvalidCode(false);
-          }, 1000);
+          setErrorTimer('');
         } else {
           CommonToast.failError(error, 'Verify Fail');
         }
@@ -253,6 +249,9 @@ export default function VerifierDetails() {
       onSetLoginAccount,
       setGuardianStatus,
       accelerateChainId,
+      autoLogin,
+      registerAccount,
+      setErrorTimer,
     ],
   );
 
@@ -286,12 +285,6 @@ export default function VerifierDetails() {
     Loading.hide();
   }, [guardianItem, operationType, originChainId, setGuardianStatus, targetChainId]);
 
-  const onChangeText = useCallback(() => {
-    setIsInvalidCode(false);
-    invalidCodeTimerRef.current && clearTimeout(invalidCodeTimerRef.current);
-    invalidCodeTimerRef.current = undefined;
-  }, []);
-
   return (
     <PageContainer type="leftBack" titleDom containerStyles={styles.containerStyles}>
       {guardianItem ? <GuardianItem guardianItem={guardianItem} isButtonHide /> : null}
@@ -301,13 +294,13 @@ export default function VerifierDetails() {
       />
       <DigitInput
         ref={digitInput}
-        onChangeText={onChangeText}
+        onChangeText={clearErrorTimer}
         onFinish={onFinish}
         maxLength={DIGIT_CODE.length}
-        isError={isInvalidCode}
+        isError={codeError.isError}
       />
       <VerifierCountdown
-        isInvalidCode={isInvalidCode}
+        isInvalidCode={codeError.isError}
         style={GStyles.marginTop(24)}
         onResend={resendCode}
         ref={countdown}

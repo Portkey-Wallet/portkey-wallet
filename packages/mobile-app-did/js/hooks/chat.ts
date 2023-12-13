@@ -39,10 +39,11 @@ export function useJumpToChatDetails() {
         }
 
         const routesArr = navigationService.getState()?.routes;
+
         if (routesArr[routesArr.length - 1].name === 'Tab') {
-          navigationService.reset([{ name: 'Tab' }, { name: 'ChatDetailsPage' }]);
-        } else {
           navigationService.navigate('ChatDetailsPage');
+        } else {
+          navigationService.reset([{ name: 'Tab' }, { name: 'ChatDetailsPage' }]);
         }
         await sleep(1000);
         myEvents.navToBottomTab.emit({ tabName: ChatTabName });
@@ -80,10 +81,11 @@ export function useJumpToChatGroupDetails() {
         }
 
         const routesArr = navigationService.getState()?.routes;
+
         if (routesArr[routesArr.length - 1].name === 'Tab') {
-          navigationService.reset([{ name: 'Tab' }, { name: 'ChatGroupDetailsPage' }]);
-        } else {
           navigationService.navigate('ChatGroupDetailsPage');
+        } else {
+          navigationService.reset([{ name: 'Tab' }, { name: 'ChatGroupDetailsPage' }]);
         }
 
         await sleep(1000);

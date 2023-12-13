@@ -5,7 +5,6 @@ import { sleep } from '@portkey-wallet/utils';
 import { BaseSignalr } from '@portkey/socket';
 import { ISignalrOptions } from '@portkey/socket/dist/commonjs/types';
 import { request } from '@portkey-wallet/api/api-did';
-
 class SignalrFCM extends BaseSignalr {
   portkeyToken?: string;
   fcmToken?: string;
@@ -14,7 +13,7 @@ class SignalrFCM extends BaseSignalr {
   deviceInfo?: DeviceInfoType;
   getFCMTokenFunc?: (refresh?: boolean) => Promise<string>;
   public openStateMap: { [key: string]: boolean };
-
+  public locked?: boolean;
   constructor(props: ISignalrOptions<any>) {
     super(props);
     this.openStateMap = {};
@@ -52,6 +51,7 @@ class SignalrFCM extends BaseSignalr {
   public reportAppStatus = async (status: AppStatusUnit, unReadCount: number) => {
     const url = request.defaultConfig.baseURL || '';
     if (!this.openStateMap[url]) await this.doOpen({ url });
+
     return this.signalr?.invoke('reportAppStatus', { status, unReadCount });
   };
 
@@ -91,36 +91,44 @@ class SignalrFCM extends BaseSignalr {
 
   public doOpen = async ({ url, clientId }: { url: string; clientId?: string }): Promise<HubConnection> => {
     if (!url) throw Error('Please add url');
-    if (!this.fcmToken) {
-      await sleep(3000);
-      await this.getFCMToken();
-      return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
+    if (this.locked) throw Error('locked');
+    this.locked = true;
+    try {
+      if (!this.fcmToken) {
+        await sleep(3000);
+        await this.getFCMToken();
+        return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
+      }
+
+      if (!this.portkeyToken) {
+        await sleep(3000);
+        return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
+      }
+
+      const signalr = new HubConnectionBuilder()
+        .withUrl(`${url}/dataReporting`, {
+          accessTokenFactory: () => formatTokenWithOutBear(this.portkeyToken || ''),
+        })
+        .withAutomaticReconnect()
+        .build();
+
+      if (this.signalr) await this.signalr.stop();
+
+      await signalr.start();
+      await signalr.invoke('Connect', clientId || this.deviceId || '');
+      signalr.onreconnected(connectionId => this.onReconnected(signalr, connectionId));
+      this.connectionId = signalr.connectionId ?? '';
+      this.signalr = signalr;
+      this.url = url;
+
+      await this.reportDeviceInfo();
+      this.openStateMap = { [url]: true };
+      return signalr;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.locked = false;
     }
-
-    if (!this.portkeyToken) {
-      await sleep(3000);
-      return this.doOpen({ url: `${url}`, clientId: clientId || this.deviceId || '' });
-    }
-
-    const signalr = new HubConnectionBuilder()
-      .withUrl(`${url}/dataReporting`, {
-        accessTokenFactory: () => formatTokenWithOutBear(this.portkeyToken || ''),
-      })
-      .withAutomaticReconnect()
-      .build();
-
-    if (this.signalr) await this.signalr.stop();
-
-    await signalr.start();
-    await signalr.invoke('Connect', clientId || this.deviceId || '');
-    signalr.onreconnected(connectionId => this.onReconnected(signalr, connectionId));
-    this.connectionId = signalr.connectionId ?? '';
-    this.signalr = signalr;
-    this.url = url;
-
-    await this.reportDeviceInfo();
-    this.openStateMap = { [url]: true };
-    return signalr;
   };
 
   async onReconnected(signalr: HubConnection, connectionId?: string) {

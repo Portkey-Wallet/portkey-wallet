@@ -4,7 +4,7 @@ import { showGoToSettingsModal } from 'components/GoToSettingsModal';
 import OverlayModal from 'components/OverlayModal';
 import { useCallback } from 'react';
 import { useAppDispatch } from 'store/hooks';
-import { requestUserPermission } from 'utils/FCM';
+import { requestUserNotifyPermission } from 'utils/FCM';
 import { openSettings } from 'react-native-permissions';
 
 export default function useRequestNotifyPermission() {
@@ -24,7 +24,7 @@ export default function useRequestNotifyPermission() {
   return useCallback(async () => {
     if (settings.closeNotificationsModalTime) return;
 
-    const isPermissionOK = await requestUserPermission();
+    const isPermissionOK = await requestUserNotifyPermission();
     if (!isPermissionOK && !settings.closeNotificationsModalTime) {
       showGoToSettingsModal({ onClose, onGoToSetting });
     }

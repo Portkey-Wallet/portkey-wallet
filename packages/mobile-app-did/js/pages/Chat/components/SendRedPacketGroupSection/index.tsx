@@ -18,8 +18,7 @@ import CommonAvatar from 'components/CommonAvatar';
 import { useSymbolImages } from '@portkey-wallet/hooks/hooks-ca/useToken';
 import { RedPackageTypeEnum } from '@portkey-wallet/im';
 import { ChainId } from '@portkey-wallet/types';
-import { ErrorType } from 'types/common';
-import { INIT_NONE_ERROR } from 'constants/common';
+import { INIT_NONE_ERROR, ErrorType } from '@portkey-wallet/constants/constants-ca/common';
 import { useGetRedPackageConfig } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ZERO } from '@portkey-wallet/constants/misc';
 import { convertAmountUSDShow, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
@@ -28,6 +27,7 @@ import { RED_PACKAGE_DEFAULT_MEMO } from '@portkey-wallet/constants/constants-ca
 import { FontStyles } from 'assets/theme/styles';
 import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { isEmojiString } from 'pages/Chat/utils';
+import { isPotentialNumber } from '@portkey-wallet/utils/reg';
 
 export type ValuesType = {
   packetNum?: string;
@@ -74,7 +74,6 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
   const symbolImages = useSymbolImages();
   const onAmountChange = useCallback(
     (value: string) => {
-      const reg = /^(0|[1-9]\d*)(\.\d*)?$/;
       if (value === '') {
         setValues(pre => ({ ...pre, count: '' }));
         setCountError({ ...INIT_NONE_ERROR });
@@ -90,7 +89,7 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
         const decimals = Number(pre.decimals || 0);
         if (decimals === 0 && value.split('.').length > 1) return pre;
         if (value.split('.')[1]?.length > Number(decimals)) return pre;
-        if (!reg.test(value)) return pre;
+        if (!isPotentialNumber(value)) return pre;
         setCountError({ ...INIT_NONE_ERROR });
         return { ...pre, count: value };
       });
@@ -175,8 +174,9 @@ export default function SendRedPacketGroupSection(props: SendRedPacketGroupSecti
 
   const amountShowStr = useMemo(() => {
     if (type !== RedPackageTypeEnum.FIXED) return values.count;
-    if (values.packetNum === '' || values.count === '') return '';
-    if (Number.isNaN(values.packetNum) || Number.isNaN(values.count)) return '';
+    if (values.packetNum === '' || values.packetNum === undefined || values.count === '' || values.count === undefined)
+      return '';
+    if (ZERO.plus(values.packetNum).isNaN() || ZERO.plus(values.count).isNaN()) return '';
     return ZERO.plus(values.count)
       .times(values.packetNum || '1')
       .toFixed();

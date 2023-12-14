@@ -21,7 +21,7 @@ export const InitialTxFee = {
   ach: 0.0041,
   crossChain: 0.0041,
   max: 0.0041,
-  redPackage: 0.0041,
+  redPackage: 0.009,
 };
 
-export const VERIFY_INVALID_TIME = 1000;
+export const VERIFY_INVALID_TIME = 2 * 1000;

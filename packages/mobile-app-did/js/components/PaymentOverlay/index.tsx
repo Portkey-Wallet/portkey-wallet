@@ -31,6 +31,7 @@ import RedPacketAmountShow from 'pages/Chat/components/RedPacketAmountShow';
 import { useDefaultTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 import { useCurrentChannel } from 'pages/Chat/context/hooks';
 import { USER_CANCELED } from '@portkey-wallet/constants/errorMessage';
+import { useGetCurrentAccountTokenPrice } from '@portkey-wallet/hooks/hooks-ca/useTokensPrice';
 
 export type PaymentTokenInfo = {
   symbol: string;
@@ -56,6 +57,7 @@ const PaymentModal = ({
 }: PaymentOverlayProps) => {
   const accountTokenList = useAccountTokenList();
   const tokenInfoList = useAllTokenInfoList();
+  const [, , getTokensPrice] = useGetCurrentAccountTokenPrice();
 
   const getAccountTokenList = useGetAccountTokenList();
   const allTokenInfoList = useGetAllTokenInfoList();
@@ -108,6 +110,7 @@ const PaymentModal = ({
 
   const feeComponent = useMemo(() => {
     if (fee?.error) return;
+
     return (
       <View style={[GStyles.width100, GStyles.marginTop(pTd(16))]}>
         <View style={[GStyles.flexRow, GStyles.spaceBetween]}>
@@ -124,11 +127,23 @@ const PaymentModal = ({
           </View>
         </View>
         <View style={GStyles.alignEnd}>
-          <TextS>{convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}</TextS>
+          {!!currentTokenInfo?.price && (
+            <TextS style={FontStyles.font3}>
+              {convertAmountUSDShow(divDecimals(fee.value, defaultToken.decimals), defaultTokenPrice)}
+            </TextS>
+          )}
         </View>
       </View>
     );
-  }, [defaultToken.decimals, defaultToken.symbol, defaultTokenPrice, fee?.error, fee?.loading, fee.value]);
+  }, [
+    currentTokenInfo?.price,
+    defaultToken.decimals,
+    defaultToken.symbol,
+    defaultTokenPrice,
+    fee?.error,
+    fee?.loading,
+    fee.value,
+  ]);
 
   const getButtonComponent = useMemo(() => {
     if (!fee.error) return;
@@ -192,15 +207,15 @@ const PaymentModal = ({
     if (fee.error) return;
     return (
       <Text style={styles.marginTop4}>
-        <TextS>
+        <TextS style={FontStyles.font3}>
           {formatAmountShow(
             divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
             currentTokenInfo?.decimals,
           )}
         </TextS>
-        <TextS>{` ${currentTokenInfo?.symbol}`}</TextS>
+        <TextS style={FontStyles.font3}>{` ${currentTokenInfo?.symbol}`}</TextS>
         {!!currentTokenInfo?.price && (
-          <TextS>
+          <TextS style={FontStyles.font3}>
             {`  ${convertAmountUSDShow(
               divDecimals(currentTokenInfo?.balance, currentTokenInfo?.decimals),
               currentTokenInfo?.price,
@@ -216,6 +231,11 @@ const PaymentModal = ({
     currentTokenInfo?.symbol,
     fee.error,
   ]);
+
+  useEffectOnce(() => {
+    getTokensPrice([tokenInfo.symbol, defaultToken.symbol]);
+  });
+
   return (
     <ModalBody modalBodyType="bottom">
       <View style={styles.containerStyle}>

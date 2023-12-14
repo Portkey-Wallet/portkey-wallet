@@ -9,7 +9,7 @@ import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { FCMMessageData } from 'types/common';
 import { NetworkType } from '@portkey-wallet/types';
 
-export const requestUserPermission = async () => {
+export const requestUserNotifyPermission = async () => {
   // iOS permission
   if (isIOS) {
     const authStatus = await messaging().requestPermission();

@@ -1,7 +1,5 @@
-import { request } from '@portkey-wallet/api/api-did';
 import { useIsChatShow } from '@portkey-wallet/hooks/hooks-ca/cms';
 import { useUnreadCount } from '@portkey-wallet/hooks/hooks-ca/im';
-import im from '@portkey-wallet/im';
 import signalrFCM from '@portkey-wallet/socket/socket-fcm';
 import { AppStatusUnit } from '@portkey-wallet/socket/socket-fcm/types';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -27,12 +25,7 @@ export default function useFCM() {
     if (!isFCMEnabled()) return;
 
     await initFCMSignalR();
-    if (!request.defaultConfig.baseURL) return;
-    if (signalrFCM.signalr) return;
     initFCMMessage();
-    signalrFCM.doOpen({
-      url: `${request.defaultConfig.baseURL}`,
-    });
   }, [isFCMEnabled]);
 
   useEffect(() => {
@@ -42,11 +35,6 @@ export default function useFCM() {
   useEffect(() => {
     if (!isFCMEnabled()) return;
     timerRef.current = setInterval(() => {
-      // console.log('report AppStatus update', signalrFCM.fcmToken, signalrFCM.portkeyToken, signalrFCM.signalr);
-      if (!signalrFCM.fcmToken) return;
-      if (!signalrFCM.portkeyToken) return;
-      if (!signalrFCM.signalr) return;
-      if (!im.getInstance()) return;
       signalrFCM.reportAppStatus(AppStatusUnit.FOREGROUND, unreadCount);
       setBadge({ value: unreadCount });
     }, 5000);

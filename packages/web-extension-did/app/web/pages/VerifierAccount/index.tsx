@@ -57,7 +57,8 @@ export default function VerifierAccount() {
   );
   const targetChainId: ChainId | undefined = useMemo(() => {
     if (state && state.indexOf('setTransferLimit') !== -1) {
-      const params = state.split('_')[1];
+      const i = state.indexOf('_');
+      const params = state.substring(i + 1);
       const _params = JSON.parse(params || '{}');
       return _params.targetChainId;
     }

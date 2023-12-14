@@ -49,7 +49,8 @@ export default function GuardianApproval() {
   }, [isNotLessThan768, query]);
   const targetChainId: ChainId | undefined = useMemo(() => {
     if (query && query.indexOf('setTransferLimit') !== -1) {
-      const state = query.split('_')[1];
+      const i = query.indexOf('_');
+      const state = query.substring(i + 1);
       const _params = JSON.parse(state || '{}');
       return _params.targetChainId;
     }
@@ -127,15 +128,21 @@ export default function GuardianApproval() {
     if (query && query.indexOf('guardians') !== -1) {
       if (['guardians/del', 'guardians/edit'].includes(query)) {
         navigate(`/setting/guardians/edit`);
+        return;
       } else if (query && query.indexOf('guardians/add') !== -1) {
         navigate('/setting/guardians/add', { state: 'back' });
+        return;
       }
     } else if (query && query.indexOf('removeManage') !== -1) {
-      const manageAddress = query.split('_')[1];
+      const i = query.indexOf('_');
+      const manageAddress = query.substring(i + 1);
       navigate(`/setting/wallet-security/manage-devices/${manageAddress}`);
+      return;
     } else if (query && query.indexOf('setTransferLimit') !== -1) {
-      const state = query.split('_')[1];
+      const i = query.indexOf('_');
+      const state = query.substring(i + 1);
       navigate(`/setting/wallet-security/payment-security/transfer-settings-edit`, { state: JSON.parse(state) });
+      return;
     } else {
       navigate('/register/start');
     }

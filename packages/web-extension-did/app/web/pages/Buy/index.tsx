@@ -518,6 +518,14 @@ export default function Buy() {
         decimals: defaultToken.decimals,
         from: ICheckLimitBusiness.RAMP_SELL,
         balance,
+        extra: {
+          side,
+          country: valueSaveRef.current.country,
+          fiat: valueSaveRef.current.currency,
+          crypto: valueSaveRef.current.crypto,
+          network: valueSaveRef.current.network,
+          amount: valueSaveRef.current?.amount,
+        },
         onOneTimeApproval: handleOneTimeApproval,
       });
       if (!limitRes) return setLoading(false);

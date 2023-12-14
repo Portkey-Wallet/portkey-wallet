@@ -194,6 +194,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
           operationType,
           originChainId,
           loginAccount,
+          targetChainId,
         });
         verifiedInfo && dispatch(setUserGuardianItemStatus(verifiedInfo));
         return;
@@ -210,7 +211,7 @@ export default function GuardianItems({ disabled, item, isExpired, loginAccount,
         navigate('/login/verifier-account', { state: 'login' });
       }
     },
-    [isSocialLogin, socialVerify, operationType, originChainId, loginAccount, dispatch, query, navigate],
+    [isSocialLogin, socialVerify, operationType, originChainId, loginAccount, dispatch, query, navigate, targetChainId],
   );
 
   const accountShow = useCallback((guardian: UserGuardianItem) => {

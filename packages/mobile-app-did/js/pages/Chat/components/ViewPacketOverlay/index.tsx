@@ -173,7 +173,10 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
 
       OverlayModal.hide();
       navigationService.navigate('RedPacketDetails', { redPacketId, data });
-    } catch (error) {}
+    } catch (error) {
+      CommonToast.failError(error);
+    }
+
     setIsGoDetailLoading(false);
     isFetchingRef.current = false;
   }, [init, redPacketId]);

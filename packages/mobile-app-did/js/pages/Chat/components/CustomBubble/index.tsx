@@ -73,12 +73,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: pTd(2),
     marginLeft: -pTd(8),
     overflow: 'hidden',
+    borderColor: 'transparent',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   wrapRight: {
     backgroundColor: defaultColors.bg9,
     borderTopRightRadius: pTd(2),
     marginRight: 0,
     overflow: 'hidden',
+    borderColor: 'transparent',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   redPacketContainerToNextStyle: {
     borderBottomRightRadius: pTd(12),

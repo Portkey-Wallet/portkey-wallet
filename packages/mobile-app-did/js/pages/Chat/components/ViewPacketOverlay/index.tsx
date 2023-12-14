@@ -40,6 +40,9 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   const { init } = useGetRedPackageDetail();
   const wallet = useCurrentWalletInfo();
 
+  const [isGrabNoneFail, setIsGrabNoneFail] = useState(false);
+  const [isGrabExpiredFail, setIsGrabExpiredFail] = useState(false);
+
   const isMyRedPacket = useMemo(
     () => redPacketData?.senderId === userInfo?.userId,
     [redPacketData?.senderId, userInfo?.userId],
@@ -50,11 +53,15 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
   }, [redPacketData?.isRedPackageFullyClaimed, redPacketData?.isRedPackageExpired]);
 
   const isShowViewDetailButton = useMemo<boolean>(() => {
+    if (isGrabNoneFail) return true;
+
     if (isMyRedPacket) return true;
     if (redPacketData?.isRedPackageExpired) return false;
     if (!redPacketData?.isRedPackageFullyClaimed && !redPacketData?.isCurrentUserGrabbed) return false;
+
     return true;
   }, [
+    isGrabNoneFail,
     isMyRedPacket,
     redPacketData?.isCurrentUserGrabbed,
     redPacketData?.isRedPackageExpired,
@@ -176,8 +183,6 @@ export const ViewPacketOverlay = (props: ViewPacketOverlayPropsType) => {
     OverlayModal.hide();
   }, []);
 
-  const [isGrabNoneFail, setIsGrabNoneFail] = useState(false);
-  const [isGrabExpiredFail, setIsGrabExpiredFail] = useState(false);
   const memoStr = useMemo(() => {
     if (isGrabNoneFail) return 'Better luck next time!';
     if (isGrabExpiredFail) return 'This crypto box has expired.';

@@ -45,7 +45,6 @@ import verificationApiConfig from '@portkey-wallet/api/api-did/verification';
 import { useCurrentWalletInfo, useOriginChainId } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { usePhoneCountryCode } from '@portkey-wallet/hooks/hooks-ca/misc';
 import { checkIsLastLoginAccount } from '@portkey-wallet/utils/guardian';
-import { cancelLoginAccount } from 'utils/guardian';
 import { useGetCurrentCAContract } from 'hooks/contract';
 import myEvents from 'utils/deviceEvent';
 import { ChainId } from '@portkey-wallet/types';
@@ -367,25 +366,26 @@ const GuardianEdit: React.FC = () => {
     });
     if (!result) return;
 
-    if (editGuardian.isLoginAccount) {
-      if (!managerAddress || !caHash) return;
-      Loading.show();
-      try {
-        const caContract = await getCurrentCAContract();
-        const req = await cancelLoginAccount(caContract, managerAddress, caHash, editGuardian);
-        if (req && !req.error) {
-          myEvents.refreshGuardiansList.emit();
-        } else {
-          CommonToast.fail(req?.error?.message || '');
-          return;
-        }
-      } catch (error) {
-        CommonToast.failError(error);
-        return;
-      } finally {
-        Loading.hide();
-      }
-    }
+    // TODO: 1.4.13 remove unset
+    // if (editGuardian.isLoginAccount) {
+    //   if (!managerAddress || !caHash) return;
+    //   Loading.show();
+    //   try {
+    //     const caContract = await getCurrentCAContract();
+    //     const req = await unsetLoginAccount(caContract, managerAddress, caHash, editGuardian);
+    //     if (req && !req.error) {
+    //       myEvents.refreshGuardiansList.emit();
+    //     } else {
+    //       CommonToast.fail(req?.error?.message || '');
+    //       return;
+    //     }
+    //   } catch (error) {
+    //     CommonToast.failError(error);
+    //     return;
+    //   } finally {
+    //     Loading.hide();
+    //   }
+    // }
 
     navigationService.navigate('GuardianApproval', {
       approvalType: ApprovalType.deleteGuardian,

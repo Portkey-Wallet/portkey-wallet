@@ -125,31 +125,61 @@ export function setLoginAccount(
   contract: ContractBasic,
   address: string,
   caHash: string,
+  verifierInfo: VerifierInfo,
   guardianItem: UserGuardianItem,
+  userGuardiansList: UserGuardianItem[],
+  guardiansStatus: GuardiansStatus,
 ) {
+  const guardian = {
+    identifierHash: guardianItem.identifierHash,
+    type: guardianItem.guardianType,
+    verificationInfo: {
+      id: guardianItem.verifier?.id,
+      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      verificationDoc: verifierInfo.verificationDoc,
+    },
+  };
+  const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
+  console.log('SetGuardianForLogin params', address, {
+    caHash,
+    guardian: guardian,
+    guardiansApproved: guardiansApproved,
+  });
   return contract?.callSendMethod('SetGuardianForLogin', address, {
     caHash,
-    guardian: {
-      type: guardianItem.guardianType,
-      verifierId: guardianItem.verifier?.id,
-      identifierHash: guardianItem.identifierHash,
-    },
+    guardian: guardian,
+    guardiansApproved: guardiansApproved,
   });
 }
 
-export function cancelLoginAccount(
+export function unsetLoginAccount(
   contract: ContractBasic,
   address: string,
   caHash: string,
+  verifierInfo: VerifierInfo,
   guardianItem: UserGuardianItem,
+  userGuardiansList: UserGuardianItem[],
+  guardiansStatus: GuardiansStatus,
 ) {
+  const guardian = {
+    identifierHash: guardianItem.identifierHash,
+    type: guardianItem.guardianType,
+    verificationInfo: {
+      id: guardianItem.verifier?.id,
+      signature: Object.values(Buffer.from(verifierInfo.signature as any, 'hex')),
+      verificationDoc: verifierInfo.verificationDoc,
+    },
+  };
+  const guardiansApproved = getGuardiansApproved(userGuardiansList, guardiansStatus);
+  console.log('UnsetGuardianForLogin params', address, {
+    caHash,
+    guardian: guardian,
+    guardiansApproved: guardiansApproved,
+  });
   return contract?.callSendMethod('UnsetGuardianForLogin', address, {
     caHash,
-    guardian: {
-      type: guardianItem.guardianType,
-      verifierId: guardianItem.verifier?.id,
-      identifierHash: guardianItem.identifierHash,
-    },
+    guardian: guardian,
+    guardiansApproved: guardiansApproved,
   });
 }
 

@@ -21,11 +21,16 @@ import InterfaceProvider from 'contexts/useInterface';
 import GlobalStyleHandler from 'components/GlobalStyleHandler';
 import ErrorBoundary from 'components/ErrorBoundary';
 import { lockScreenOrientation } from 'utils/screenOrientation';
+import { setupAppCheck } from 'utils/appCheck';
 import Updater from 'components/Updater';
 import CodePush from 'react-native-code-push';
 import 'utils/sentryInit';
 import 'utils/logBox';
 import 'utils/initExceptionManager';
+import 'utils/initRequest';
+import { initFCMSignalR } from 'utils/FCM';
+import { initNotifications } from 'utils/notifee';
+
 const codePushOptions = {
   updateDialog: false,
   deploymentKey: (isIOS ? Config.CODE_PUSH_IOS_DEPLOYMENT_KEY : Config.CODE_PUSH_ANDROID_DEPLOYMENT_KEY) || '',
@@ -37,6 +42,9 @@ const codePushOptions = {
 SplashScreen.preventAutoHideAsync();
 
 initLanguage();
+setupAppCheck();
+initNotifications();
+initFCMSignalR();
 secureStore.init(Config.PORT_KEY_CODE || 'EXAMPLE_PORT_KEY_CODE');
 
 const persistor = persistStore(store);

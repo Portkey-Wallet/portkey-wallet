@@ -19,6 +19,8 @@ import SocialLoginController from 'controllers/socialLoginController';
 import { LocalStream } from 'utils/extensionStreams';
 import { MethodsWallet, MethodsBase } from '@portkey/provider-types';
 import OpenNewTabController from 'controllers/openNewTabController';
+import BadgeController from 'controllers/BadgeController';
+import GCMController from 'controllers/GCMController';
 
 const notificationService = new NotificationService();
 const socialLoginService = new SocialLoginController();
@@ -46,6 +48,9 @@ const permissionWhitelist = [
   PortkeyMessageTypes.PERMISSION_FINISH,
   PortkeyMessageTypes.SOCIAL_LOGIN,
   PortkeyMessageTypes.OPEN_RECAPTCHA_PAGE,
+  PortkeyMessageTypes.SET_BADGE,
+  PortkeyMessageTypes.UN_REGISTER_FCM,
+  PortkeyMessageTypes.INIT_FCM_MESSAGE,
   WalletMessageTypes.SET_RECAPTCHA_CODE_V2,
   WalletMessageTypes.SOCIAL_LOGIN,
   MethodsWallet.GET_WALLET_STATE,
@@ -68,6 +73,8 @@ export default class ServiceWorkerInstantiate {
   protected permissionController: PermissionController;
   protected approvalController: ApprovalController;
   protected aelfMethodController: AELFMethodController;
+  protected badgeController: BadgeController;
+  protected gcmController: GCMController;
   constructor() {
     // Controller that handles portkey checks
     this.permissionController = new PermissionController({
@@ -87,6 +94,8 @@ export default class ServiceWorkerInstantiate {
       getPageState: this.getPageState,
       getPassword: () => seed,
     });
+    this.badgeController = new BadgeController();
+    this.gcmController = new GCMController(this.badgeController);
     this.setupInternalMessaging();
   }
 
@@ -160,7 +169,7 @@ export default class ServiceWorkerInstantiate {
         ServiceWorkerInstantiate.loginWallet();
         break;
       case PortkeyMessageTypes.EXPAND_FULL_SCREEN:
-        ServiceWorkerInstantiate.expandFullScreen();
+        ServiceWorkerInstantiate.expandFullScreen(sendResponse);
         break;
       case PortkeyMessageTypes.SETTING:
         ServiceWorkerInstantiate.expandSetting();
@@ -182,6 +191,15 @@ export default class ServiceWorkerInstantiate {
         break;
       case PortkeyMessageTypes.SOCIAL_LOGIN:
         this.socialLogin(sendResponse, message.payload);
+        break;
+      case PortkeyMessageTypes.SET_BADGE:
+        this.badgeController.setBadge(message.payload);
+        break;
+      case PortkeyMessageTypes.INIT_FCM_MESSAGE:
+        this.gcmController.initFCMMessage();
+        break;
+      case PortkeyMessageTypes.UN_REGISTER_FCM:
+        this.gcmController.unRegisterFCM();
         break;
       case WalletMessageTypes.SET_RECAPTCHA_CODE_V2:
         this.getRecaptcha(sendResponse, message.payload);
@@ -289,13 +307,16 @@ export default class ServiceWorkerInstantiate {
    */
   getPageState = () => pageState;
 
-  static expandFullScreen() {
-    notificationService.openPrompt(
+  static async expandFullScreen(sendResponse: SendResponseFun) {
+    await notificationService.openPrompt(
       {
         method: PromptRouteTypes.EXPAND_FULL_SCREEN,
       },
       'tabs',
     );
+    sendResponse(errorHandler(0));
+    /**  */
+    await OpenNewTabController.closeOpenTabs(true);
   }
 
   static expandSetting() {

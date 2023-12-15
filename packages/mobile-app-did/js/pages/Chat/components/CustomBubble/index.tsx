@@ -11,6 +11,9 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
   const { isGroupChat, currentMessage, previousMessage, user } = props || {};
   const { messageType } = currentMessage || {};
 
+  // not red packets
+  const isGeneralMessage = currentMessage?.messageType !== 'REDPACKAGE-CARD';
+
   const isHideName = useMemo(
     () => currentMessage?.user?._id === previousMessage?.user?._id || user?._id === currentMessage?.user?._id,
     [currentMessage?.user?._id, previousMessage?.user?._id, user?._id],
@@ -27,14 +30,24 @@ export default function CustomBubble(props: BubbleProps<ChatMessage> & { isGroup
         touchableProps={{ disabled: true }}
         wrapperStyle={useMemo(
           () => ({
-            left: [styles.wrapperStyle, styles.wrapLeft, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
-            right: [styles.wrapperStyle, styles.wrapRight, messageType === 'NOT_SUPPORTED' && styles.notSupportStyle],
+            left: [
+              styles.wrapperStyle,
+              styles.wrapLeft,
+              !isGeneralMessage && styles.redPacketWrapStyle,
+              messageType === 'NOT_SUPPORTED' && styles.notSupportStyle,
+            ],
+            right: [
+              styles.wrapperStyle,
+              styles.wrapRight,
+              !isGeneralMessage && styles.redPacketWrapStyle,
+              messageType === 'NOT_SUPPORTED' && styles.notSupportStyle,
+            ],
           }),
-          [messageType],
+          [isGeneralMessage, messageType],
         )}
         containerToNextStyle={{
-          left: styles.containerToNextLeftStyle,
-          right: styles.containerToNextRightStyle,
+          left: [styles.containerToNextLeftStyle, !isGeneralMessage && styles.redPacketContainerToNextStyle],
+          right: [styles.containerToNextRightStyle, !isGeneralMessage && styles.redPacketContainerToNextStyle],
         }}
         containerStyle={{
           left: styles.containerStyle,
@@ -51,17 +64,31 @@ const styles = StyleSheet.create({
     borderRadius: pTd(20),
     color: defaultColors.font5,
   },
+  redPacketWrapStyle: {
+    borderRadius: pTd(12),
+    backgroundColor: 'transparent',
+  },
   wrapLeft: {
     backgroundColor: defaultColors.bg18,
     borderTopLeftRadius: pTd(2),
     marginLeft: -pTd(8),
     overflow: 'hidden',
+    borderColor: 'transparent',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   wrapRight: {
     backgroundColor: defaultColors.bg9,
     borderTopRightRadius: pTd(2),
     marginRight: 0,
     overflow: 'hidden',
+    borderColor: 'transparent',
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  redPacketContainerToNextStyle: {
+    borderBottomRightRadius: pTd(12),
+    borderBottomLeftRadius: pTd(12),
+    borderTopRightRadius: pTd(12),
+    borderTopLeftRadius: pTd(12),
   },
   containerToNextRightStyle: {
     borderBottomRightRadius: pTd(20),

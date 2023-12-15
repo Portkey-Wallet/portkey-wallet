@@ -1,17 +1,28 @@
 import { Modal, ModalFuncProps } from 'antd';
 import { ReactNode } from 'react';
 import './index.less';
+import clsx from 'clsx';
 
 export interface ICustomModalProps extends ModalFuncProps {
   type?: 'info' | 'confirm';
   content: ReactNode;
   okText?: string;
   cancelText?: string;
+  className?: string;
   onOk?: () => void;
   onCancel?: () => void;
 }
 
-const CustomModal = ({ type, content, okText, onCancel, onOk, cancelText, ...extraProps }: ICustomModalProps) => {
+const CustomModal = ({
+  type,
+  content,
+  okText,
+  onCancel,
+  onOk,
+  cancelText,
+  className,
+  ...extraProps
+}: ICustomModalProps) => {
   const props = {
     open: true,
     width: 320,
@@ -27,7 +38,7 @@ const CustomModal = ({ type, content, okText, onCancel, onOk, cancelText, ...ext
   return type === 'confirm'
     ? Modal.confirm({
         ...props,
-        className: 'confirm-modal',
+        className: clsx(['confirm-modal', className]),
         okText: okText || 'OK',
         cancelText: cancelText || 'Cancel',
         content,
@@ -37,7 +48,7 @@ const CustomModal = ({ type, content, okText, onCancel, onOk, cancelText, ...ext
       })
     : Modal.info({
         ...props,
-        className: 'info-modal',
+        className: clsx(['info-modal', className]),
         okText: okText || 'OK',
         content,
         onOk: onOk,

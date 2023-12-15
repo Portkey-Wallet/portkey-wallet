@@ -1,9 +1,10 @@
 import { defaultColors } from 'assets/theme';
 import GStyles from 'assets/theme/GStyles';
+import { FontStyles } from 'assets/theme/styles';
 import { TextM } from 'components/CommonText';
 import Touchable from 'components/Touchable';
 import useEffectOnce from 'hooks/useEffectOnce';
-import React, { useCallback, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useCallback, useRef, useState, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ViewStyleType } from 'types/styles';
 import { clearBackgroundInterval, setBackgroundInterval } from 'utils/backgroundTimer';
@@ -14,9 +15,13 @@ export type VerifierCountdownInterface = {
 export type VerifierCountdownProps = {
   onResend?: () => void;
   style?: ViewStyleType;
+  isInvalidCode?: boolean;
 };
 
-const VerifierCountdown = forwardRef(function VerifierCountdown({ style, onResend }: VerifierCountdownProps, ref) {
+const VerifierCountdown = forwardRef(function VerifierCountdown(
+  { style, onResend, isInvalidCode = false }: VerifierCountdownProps,
+  ref,
+) {
   const [time, setTime] = useState<number>(0);
   const timer = useRef<NodeJS.Timer>();
   const startTimer = useCallback(() => {
@@ -48,15 +53,21 @@ const VerifierCountdown = forwardRef(function VerifierCountdown({ style, onResen
   );
   useImperativeHandle(ref, () => ({ resetTime }), [resetTime]);
 
-  return (
-    <View style={[GStyles.center, style]}>
-      {time > 0 ? (
+  const timeSection = useMemo(
+    () =>
+      time > 0 ? (
         <TextM style={styles.resendTip}>Resend after {time}s</TextM>
       ) : (
         <Touchable onPress={onResend}>
           <TextM style={styles.resendText}>Resend</TextM>
         </Touchable>
-      )}
+      ),
+    [onResend, time],
+  );
+
+  return (
+    <View style={[GStyles.center, style]}>
+      {isInvalidCode ? <TextM style={FontStyles.error}>{'Invalid code'}</TextM> : timeSection}
     </View>
   );
 });

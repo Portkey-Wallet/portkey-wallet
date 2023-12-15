@@ -22,14 +22,14 @@ import CommonButton from 'components/CommonButton';
 import { getContractBasic } from '@portkey-wallet/contracts/utils';
 import { useCurrentWalletInfo } from '@portkey-wallet/hooks/hooks-ca/wallet';
 import { useCurrentChain, useDefaultToken, useIsValidSuffix } from '@portkey-wallet/hooks/hooks-ca/chainList';
-import { getManagerAccount } from 'utils/redux';
+import { getManagerAccount, isMyPayTransactionFee } from 'utils/redux';
 import { usePin } from 'hooks/store';
-import { divDecimals, timesDecimals, unitConverter } from '@portkey-wallet/utils/converter';
+import { divDecimals, divDecimalsStr, timesDecimals } from '@portkey-wallet/utils/converter';
 import { IToSendHomeParamsType, IToSendPreviewParamsType } from '@portkey-wallet/types/types-ca/routeParams';
 import BigNumber from 'bignumber.js';
 
 import { getELFChainBalance } from '@portkey-wallet/utils/balance';
-import { BGStyles } from 'assets/theme/styles';
+import { BGStyles, FontStyles } from 'assets/theme/styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import Loading from 'components/Loading';
 import { useFetchTxFee, useGetTxFee } from '@portkey-wallet/hooks/hooks-ca/useTxFee';
@@ -43,9 +43,14 @@ import {
 import { getAddressChainId, isSameAddresses } from '@portkey-wallet/utils';
 import { useCheckManagerSyncState } from 'hooks/wallet';
 import { request } from '@portkey-wallet/api/api-did';
+import { CalculateTransactionFeeResponse } from '@portkey-wallet/types';
 import { ContractBasic } from '@portkey-wallet/contracts/utils/ContractBasic';
 import { useCheckTransferLimitWithJump, useSecuritySafeCheckAndToast } from 'hooks/security';
 import CommonToast from 'components/CommonToast';
+import { TextM } from 'components/CommonText';
+import GStyles from 'assets/theme/GStyles';
+import Touchable from 'components/Touchable';
+import { MAIN_CHAIN_ID } from '@portkey-wallet/constants/constants-ca/activity';
 
 const SendHome: React.FC = () => {
   const {
@@ -126,14 +131,23 @@ const SendHome: React.FC = () => {
 
       const req = await contract.calculateTransactionFee(firstMethodName, secondParams);
 
-      if (req.error) request.errorReport('calculateTransactionFee', secondParams, req.error);
+      if (req?.error) request.errorReport('calculateTransactionFee', secondParams, req.error);
 
-      const { TransactionFee } = req.data || {};
-      if (!TransactionFee) throw { code: 500, message: 'no enough fee' };
-
-      return unitConverter(divDecimals(TransactionFee?.[defaultToken.symbol], defaultToken.decimals));
+      const { TransactionFees, TransactionFee } = (req.data as CalculateTransactionFeeResponse) || {};
+      // V2 calculateTransactionFee
+      if (TransactionFees) {
+        const { ChargingAddress, Fee } = TransactionFees;
+        const myPayFee = isMyPayTransactionFee(ChargingAddress, assetInfo?.chainId);
+        if (myPayFee) return divDecimalsStr(Fee?.[defaultToken.symbol], defaultToken.decimals).toString();
+        return '0';
+      }
+      // V1 calculateTransactionFee
+      if (TransactionFee)
+        return divDecimalsStr(TransactionFee?.[defaultToken.symbol], defaultToken.decimals).toString();
+      throw { code: 500, message: 'no enough fee' };
     },
     [
+      assetInfo?.chainId,
       chainInfo,
       debounceSendNumber,
       defaultToken.decimals,
@@ -217,7 +231,7 @@ const SendHome: React.FC = () => {
 
   // warning dialog
   const showDialog = useCallback(
-    (type: 'clearAddress' | 'crossChain', confirmCallBack?: () => void) => {
+    (type: 'clearAddress' | 'crossChain' | 'exchange', confirmCallBack?: () => void) => {
       switch (type) {
         case 'clearAddress':
           ActionSheet.alert({
@@ -247,6 +261,21 @@ const SendHome: React.FC = () => {
                 onPress: () => {
                   confirmCallBack?.();
                 },
+              },
+            ],
+          });
+          break;
+
+        case 'exchange':
+          ActionSheet.alert({
+            title: t('Send to exchange account?'),
+            message: t(
+              "Please note that assets on the SideChain can't be sent directly to exchanges. You can transfer your SideChain assets to the MainChain before sending them to your exchange account.",
+            ),
+            buttons: [
+              {
+                title: t('Got it'),
+                type: 'primary',
               },
             ],
           });
@@ -537,6 +566,16 @@ const SendHome: React.FC = () => {
           {t(err)}
         </Text>
       ))}
+
+      {assetInfo?.chainId !== MAIN_CHAIN_ID && (
+        <Touchable
+          style={[GStyles.flexRow, GStyles.itemCenter, styles.warningWrap]}
+          onPress={() => showDialog('exchange')}>
+          <Svg icon="warning1" size={pTd(16)} />
+          <TextM style={[GStyles.marginLeft(pTd(8)), GStyles.flex1, FontStyles.font3]}>Send to exchange account?</TextM>
+          <Svg icon="down-arrow" size={pTd(16)} />
+        </Touchable>
+      )}
 
       {/* Group 2 token */}
       {sendType === 'token' && step === 2 && (

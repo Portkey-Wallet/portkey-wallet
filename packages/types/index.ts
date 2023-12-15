@@ -12,3 +12,22 @@ export type ChainId = 'AELF' | 'tDVV' | 'tDVW';
 export type OpacityType = number; // 0-1
 
 export type Timestamp = number;
+
+export type FeeResponse = {
+  [symbol: string]: string;
+};
+
+export type CalculateTransactionFeeResponse = {
+  Success: boolean;
+  TransactionFee: FeeResponse | null;
+  ResourceFee: FeeResponse | null;
+  TransactionFees: {
+    ChargingAddress: string;
+    Fee: FeeResponse;
+  } | null;
+  ResourceFees: {
+    ChargingAddress: string;
+    Fee: FeeResponse;
+  } | null;
+  Error: string | null;
+};

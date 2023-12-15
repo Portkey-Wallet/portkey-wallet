@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { ChatMessage } from 'pages/Chat/types';
 import { TextInputSelectionChangeEventData } from 'react-native';
 
 export enum ChatBottomBarStatus {
@@ -8,10 +9,13 @@ export enum ChatBottomBarStatus {
 }
 
 export type ReplyMessageInfoType = {
-  fromId: string;
-  fromName: string;
+  // TODO: delete some of these
+  fromId?: string;
+  fromName?: string;
   img?: string;
-  text: string;
+  text?: string;
+  messageType: 'text' | 'img';
+  message?: ChatMessage;
 };
 export interface ChatsState {
   currentChannelId?: string;

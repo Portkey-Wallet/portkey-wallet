@@ -26,10 +26,10 @@ export function ReplyContent() {
       {replyMessageInfo.img && <Image style={styles.img} resizeMode="cover" source={{ uri: replyMessageInfo.img }} />}
       <View style={GStyles.flex1}>
         <TextM numberOfLines={1} style={[FontStyles.font5, GStyles.flex1]}>
-          {`Reply to ${replyMessageInfo.fromName}`}
+          {`Reply to ${replyMessageInfo.message?.fromName}`}
         </TextM>
         <TextM numberOfLines={1} style={[FontStyles.font3, GStyles.flex1]}>
-          {replyMessageInfo.text}
+          {replyMessageInfo.messageType === 'img' ? 'Photo' : replyMessageInfo.message?.text}
         </TextM>
       </View>
       <Touchable onPress={closeReply}>

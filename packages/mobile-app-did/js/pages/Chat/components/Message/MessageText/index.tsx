@@ -7,7 +7,7 @@ import { defaultColors } from 'assets/theme';
 import { pTd } from 'utils/unit';
 import Touchable from 'components/Touchable';
 import ChatOverlay from '../../ChatOverlay';
-import { useCurrentChannelId } from 'pages/Chat/context/hooks';
+import { useChatsDispatch, useCurrentChannelId } from 'pages/Chat/context/hooks';
 import { useDeleteMessage } from '@portkey-wallet/hooks/hooks-ca/im';
 import { ChatMessage } from 'pages/Chat/types';
 import { ShowChatPopoverParams } from '../../ChatOverlay/chatPopover';
@@ -19,6 +19,8 @@ import { GestureResponderEvent } from 'react-native';
 import CommonToast from 'components/CommonToast';
 import { useOnUrlPress } from 'hooks/chat';
 import Svg from 'components/Svg';
+import { setReplyMessageInfo } from 'pages/Chat/context/chatsContext';
+import { websiteRE } from '@portkey-wallet/utils/reg';
 
 const PIN_UNICODE_SPACE = '\u00A0\u00A0\u00A0\u00A0';
 const TIME_UNICODE_SPACE = isIOS
@@ -58,6 +60,8 @@ function ReplyMessageImage(props: MessageTextProps<ChatMessage>) {
 function MessageText(props: MessageTextProps<ChatMessage>) {
   const { currentMessage, textProps, position = 'right', customTextStyle, textStyle } = props;
   const currentChannelId = useCurrentChannelId();
+  const dispatch = useChatsDispatch();
+
   const deleteMessage = useDeleteMessage(currentChannelId || '');
   const { messageType } = currentMessage || {};
   const isNotSupported = useMemo(() => messageType === 'NOT_SUPPORTED', [messageType]);
@@ -90,6 +94,19 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
                 }
               },
             },
+            {
+              // TODO: reply
+              title: 'Reply',
+              iconName: 'chat-pin',
+              onPress: async () => {
+                dispatch(
+                  setReplyMessageInfo({
+                    message: currentMessage,
+                    messageType: 'text',
+                  }),
+                );
+              },
+            },
           ];
       if (position === 'right')
         list.push({
@@ -111,7 +128,7 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
           formatType: 'dynamicWidth',
         });
     },
-    [currentMessage?.content, currentMessage?.id, deleteMessage, isNotSupported, position],
+    [currentMessage, deleteMessage, dispatch, isNotSupported, position],
   );
 
   const onPress = useCallback(() => {
@@ -130,7 +147,11 @@ function MessageText(props: MessageTextProps<ChatMessage>) {
         ) : (
           <ParsedText
             style={[messageStyles[position].text, textStyle && textStyle[position], customTextStyle]}
-            parse={[{ type: 'url', style: styles.linkStyle as TextStyle, onPress: onUrlPress }]}
+            parse={[
+              { type: 'url', style: styles.linkStyle as TextStyle, onPress: onUrlPress },
+              // TODO: test it
+              { pattern: websiteRE, style: styles.linkStyle as TextStyle, onPress: onUrlPress },
+            ]}
             childrenProps={{ ...textProps }}>
             {currentMessage?.text}
           </ParsedText>
